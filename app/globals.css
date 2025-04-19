@@ -1,26 +1,19 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
-  background: var(--background);
-  color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+@layer utilities {
+  .custom-login-input:-webkit-autofill {
+    @apply border-gray-100;
+    background-color: #1e3a8a !important; /* same as bg-blue-950 */
+    color: #f3f4f6 !important; /* same as text-gray-100 */
+    -webkit-text-fill-color: #f3f4f6 !important; /* force override autofill text */
+    transition: background-color 9999s ease-in-out 0s;
+  }
+
+  .custom-login-input:-webkit-autofill::first-line {
+    color: #f3f4f6 !important;
+  }
 }

@@ -21,15 +21,16 @@ export default function LoginPage() {
 
   return (
     <>
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-800">
-        <div className="relative w-[350px] h-[500px] overflow-hidden">
+      <div className="flex flex-col items-center  min-h-[100dvh] w-full bg-blue-950">
+        <p className={`${russoOne.className} text-gray-100 font-bold text-5xl p-4 bg-gray-900 w-full text-center`}>MyTrack</p>
+        <div className="relative flex flex-grow w-full  overflow-hidden">
           {/* Log in Form */}
 
           <form
             action={formAction2}
             className={`absolute top-0 left-0 w-full transition-transform duration-500 ease-in-out ${
               activeForm ? "-translate-y-full" : "translate-y-0"
-            } h-full  flex flex-col gap-5 p-10 bg-blue-950 rounded-xl shadow-lg border-2 border-b-0 rounded-b-none border-blue-500`}
+            } flex flex-col justify-center h-full gap-5 p-10 bg-blue-950`}
           >
             <label
               className={`${russoOne.className} text-gray-100 font-bold `}
@@ -79,7 +80,7 @@ export default function LoginPage() {
             action={formAction}
             className={`absolute top-0 left-0 w-full transition-transform duration-500 ease-in-out ${
               activeForm ? "translate-y-0" : "translate-y-full"
-            } h-full flex flex-col gap-5 p-10 bg-blue-950 rounded-xl shadow-lg border-2 border-b-0 rounded-b-none border-blue-500`}
+            } h-full flex flex-col justify-center gap-5 p-10 bg-blue-950 `}
           >
             <label
               className={`${russoOne.className} text-gray-100 font-bold `}
@@ -137,15 +138,24 @@ export default function LoginPage() {
             </div>
           </form>
         </div>
-        <div className="flex justify-center items-center w-[350px] bg-blue-500 p-8 rounded-b-md shadow-lg border-2 border-blue-500">
-          <button>
-            <span
-              className={`${russoOne.className} text-gray-100 font-bold border-b-3 border-l-3 border-blue-950 p-4 rounded-md bg-blue-900 hover:bg-blue-800 hover:scale-95`}
-              onClick={() => setActiveForm(!activeForm)}
+        <div className="flex justify-center items-center w-full bg-blue-950 p-8 pb-20">
+          <div className="flex flex-col items-center justify-center gap-10">
+            <p
+              className={`${russoOne.className} text-gray-100 font-bold text-lg`}
             >
-              {activeForm ? "Log in" : "Sign up"}
-            </span>
-          </button>
+              {activeForm
+                ? "Already have an account?"
+                : "Don't have an account?"}
+            </p>
+            <button>
+              <span
+                className={`${russoOne.className} text-gray-100 font-bold border-2 border-blue-400 py-4 px-10 rounded-md bg-blue-900 hover:bg-blue-800 hover:scale-95`}
+                onClick={() => setActiveForm(!activeForm)}
+              >
+                {activeForm ? "Log in" : "Sign up"}
+              </span>
+            </button>
+          </div>
         </div>
       </div>
     </>

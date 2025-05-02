@@ -53,25 +53,30 @@ export async function signup(
     };
   }
 
-  // Try signing in to see if user exists
+  // 🔍 Check if the user already exists by attempting to sign in
   const { error: signInError } = await supabase.auth.signInWithPassword(data);
 
   if (!signInError) {
     return {
       success: false,
-      message: "This email is already registered. Try logging in.",
+      message: "This email is already registered. Please log in instead.",
     };
   }
 
   // Proceed with sign up
-  const { error: signUpError } = await supabase.auth.signUp(data);
+  const { data: signUpData, error: signUpError } = await supabase.auth.signUp(
+    data
+  );
 
   if (signUpError) {
+    console.error("SignUp error:", signUpError);
     return {
       success: false,
-      message: "Something went wrong. Please try again.",
+      message: signUpError.message || "Something went wrong. Please try again.",
     };
   }
+
+  console.log("SignUp success:", signUpData);
 
   return {
     success: true,

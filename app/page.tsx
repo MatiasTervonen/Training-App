@@ -1,11 +1,7 @@
-import { createClient } from "@/utils/supabase/server";
 import GetSession from "@/lib/getSession";
 import SessionFeed from "./ui/homepage/sessionFeed";
 
-
 export default async function Home() {
-  const supabase = await createClient();
-
   const { session } = await GetSession();
 
   //   const simulateError = true; // ← flip this to test

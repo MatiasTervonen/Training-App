@@ -1,13 +1,10 @@
 import { createClient } from "@/utils/supabase/server";
-import Link from "next/link";
-import { russoOne } from "./ui/fonts";
 import GetSession from "@/lib/getSession";
 import SessionFeed from "./ui/homepage/sessionFeed";
-import Navbar from "./ui/homepage/navbar";
+
 
 export default async function Home() {
   const supabase = await createClient();
-  const { data } = await supabase.auth.getUser();
 
   const { session } = await GetSession();
 

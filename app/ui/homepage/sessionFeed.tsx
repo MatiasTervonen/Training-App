@@ -4,7 +4,6 @@ import { useState, useEffect, useRef } from "react";
 import { Session } from "@/types/session";
 import { russoOne } from "@/app/ui/fonts";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import TrainingSession from "@/app/components/expandSession/training";
 import NotesSession from "@/app/components/expandSession/notes";
 import { Pin } from "lucide-react";

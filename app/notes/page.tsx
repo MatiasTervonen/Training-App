@@ -8,7 +8,6 @@ import SaveButton from "@/app/ui/save-button";
 export default function Notes() {
   const [isSaving, setIsSaving] = useState(false);
   const [notes, setNotes] = useState("");
-  const [secondsElapsed, setSecondsElapsed] = useState(0);
   const [notesTitle, setNotesTitle] = useState(() => {
     const today = new Date();
     return `Notes - ${today.toLocaleDateString()}`;
@@ -51,7 +50,7 @@ export default function Notes() {
     }, 1000); // Save every second
 
     return () => clearInterval(interval);
-  }, [secondsElapsed, notes]);
+  }, [notes, notesTitle]);
 
   const resetNotes = () => {
     localStorage.removeItem("notes_draft");

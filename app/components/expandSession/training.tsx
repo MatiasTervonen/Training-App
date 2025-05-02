@@ -3,7 +3,7 @@ import { Session } from "@/types/session";
 export default function TrainingSession({ session }: { session: Session }) {
   return (
     <div>
-      {session.exercises.map(
+      {session.exercises?.map(
         (
           exercise: {
             name: string;

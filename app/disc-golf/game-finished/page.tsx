@@ -20,28 +20,29 @@ export default function GameFinished() {
       }[];
     }[]
   >([]);
+  const [time, setTime] = useState("N/A");
 
   useEffect(() => {
     const dataJSON = localStorage.getItem("holes");
     if (dataJSON) {
       setHoles(JSON.parse(dataJSON));
     }
-  }, []);
 
-  const finalTime = () => {
     const endTime = localStorage.getItem("finalTime");
 
-    if (!endTime) return "N/A";
+    if (endTime) {
+      const totalSeconds = parseInt(endTime, 10);
+      const minutes = Math.floor(totalSeconds / 60);
+      const seconds = totalSeconds % 60;
 
-    const totalSeconds = parseInt(endTime, 10);
-    const minutes = Math.floor(totalSeconds / 60);
-    const seconds = totalSeconds % 60;
-
-    return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(
-      2,
-      "0"
-    )}`;
-  };
+      setTime(
+        `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(
+          2,
+          "0"
+        )}`
+      );
+    }
+  }, []);
 
   return (
     <div className="bg-slate-800 p-5 min-h-[100dvh] relative">
@@ -88,17 +89,14 @@ export default function GameFinished() {
               }, 0);
               const scoreAgainstPar = total - totalPar;
 
-              return { playerName, total,  scores, scoreAgainstPar };
+              return { playerName, total, scores, scoreAgainstPar };
             })
             .sort((a, b) => a.scoreAgainstPar - b.scoreAgainstPar);
 
           return (
             <div className="flex flex-col mt-4">
               {sortedPlayers.map(
-                (
-                  { playerName, scores, total, scoreAgainstPar },
-                  index
-                ) => {
+                ({ playerName, scores, total, scoreAgainstPar }, index) => {
                   const formattedScore =
                     scoreAgainstPar === 0
                       ? "E"
@@ -207,7 +205,7 @@ export default function GameFinished() {
           Round Time
         </h2>
         <p className={`${russoOne.className} text-gray-100 text-xl mb-5`}>
-          {finalTime()}
+          {time}
         </p>
       </div>
       <button

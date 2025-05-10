@@ -1,23 +1,60 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { russoOne } from "@/app/ui/fonts";
+import { CirclePlay } from "lucide-react";
+import { CirclePause } from "lucide-react";
 
 type TimerProps = {
-  isRunning: boolean;
-  seconds: number;
-  setSeconds: React.Dispatch<React.SetStateAction<number>>;
+  sessionId: string;
+  resetTrigger?: number;
 };
 
-export default function Timer({ isRunning, seconds, setSeconds }: TimerProps) {
-  useEffect(() => {
-    if (!isRunning) return; // if not running, do nothing
+type TimerData = {
+  startTime: number | null;
+  elapsedBeforePause: number;
+  isRunning: boolean;
+};
 
+export default function Timer({ sessionId, resetTrigger }: TimerProps) {
+  const [elapsed, setElapsed] = useState(0);
+  const [isRunning, setIsRunning] = useState(false);
+
+  // Keep time synced every second
+  useEffect(() => {
     const interval = setInterval(() => {
-      setSeconds((prev) => prev + 1);
+
+      
+      const gameFinished = localStorage.getItem("gameFinished");
+      if (gameFinished) {
+        clearInterval(interval);
+        return;
+      }
+
+      const data = localStorage.getItem(`timer:${sessionId}`);
+      if (!data) return;
+
+      const { startTime, isRunning, elapsedBeforePause } = JSON.parse(data);
+      setIsRunning(isRunning);
+
+      if (isRunning && startTime) {
+        const secondsPassed = Math.floor((Date.now() - startTime) / 1000);
+        setElapsed(secondsPassed + (elapsedBeforePause || 0));
+      } else {
+        setElapsed(elapsedBeforePause || 0);
+      }
     }, 1000);
 
-    return () => clearInterval(interval); // cleanup
-  }, [isRunning, setSeconds]); // rerun this only when isRunning changes
+    return () => clearInterval(interval);
+  }, [sessionId]);
+
+  useEffect(() => {
+    if (resetTrigger !== undefined) {
+      // reset elapsed time
+      setElapsed(0);
+      // optionally clear interval or restart logic
+    }
+  }, [resetTrigger]);
 
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
@@ -27,7 +64,61 @@ export default function Timer({ isRunning, seconds, setSeconds }: TimerProps) {
     ).padStart(2, "0")}`;
   };
 
+  const startTimer = () => {
+    const now = Date.now();
+
+    const prevData = localStorage.getItem(`timer:${sessionId}`);
+    let elapsedBeforePause = 0;
+
+    if (prevData) {
+      const parsed: TimerData = JSON.parse(prevData);
+      elapsedBeforePause = parsed.elapsedBeforePause || 0;
+    }
+
+    const newData: TimerData = {
+      startTime: now,
+      elapsedBeforePause,
+      isRunning: true,
+    };
+
+    localStorage.setItem(`timer:${sessionId}`, JSON.stringify(newData));
+    setIsRunning(true);
+  };
+
+  const pauseTimer = () => {
+    const data = localStorage.getItem(`timer:${sessionId}`);
+    if (!data) return;
+
+    const { startTime, elapsedBeforePause } = JSON.parse(data);
+    if (!startTime) return;
+
+    const now = Date.now();
+    const sessionElapsed = Math.floor((now - startTime) / 1000);
+    const totalElapsed = sessionElapsed + (elapsedBeforePause || 0);
+
+    const newData: TimerData = {
+      startTime: null,
+      elapsedBeforePause: totalElapsed,
+      isRunning: false,
+    };
+
+    localStorage.setItem(`timer:${sessionId}`, JSON.stringify(newData));
+    setIsRunning(false);
+    setElapsed(totalElapsed);
+  };
+
   return (
-    <div className="text-gray-100 font-bold text-lg">{formatTime(seconds)}</div>
+    <div className={`${russoOne.className} flex items-center gap-2`}>
+      <span className="min-w-[55px] text-center">{formatTime(elapsed)}</span>
+      {isRunning ? (
+        <button onClick={pauseTimer}>
+          <CirclePause />
+        </button>
+      ) : (
+        <button onClick={startTimer}>
+          <CirclePlay />
+        </button>
+      )}
+    </div>
   );
 }

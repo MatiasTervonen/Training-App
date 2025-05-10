@@ -6,11 +6,17 @@ import Spinner from "@/app/components/spinner";
 import { createClient } from "@/utils/supabase/client";
 import { russoOne } from "@/app/ui/fonts";
 
-export default function SignOutButton() {
+export default function SignOutButton({
+  onSignOut,
+}: {
+  onSignOut?: () => void;
+}) {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const handleSignOut = async () => {
+    if (onSignOut) onSignOut();
+
     setIsLoading(true);
 
     const supabase = createClient();

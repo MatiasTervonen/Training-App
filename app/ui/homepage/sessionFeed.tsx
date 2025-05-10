@@ -10,6 +10,8 @@ import { Pin } from "lucide-react";
 import { SquareArrowOutUpRight } from "lucide-react";
 import EditSession from "@/app/components/editSession";
 import Modal from "@/app/components/modal";
+import { formatDate } from "@/lib/formatDate";
+import { useInView } from "react-intersection-observer";
 
 const formatDuration = (seconds: number) => {
   const totalMinutes = Math.floor(seconds / 60);
@@ -22,7 +24,6 @@ const formatDuration = (seconds: number) => {
   }
 };
 
-
 export default function SessionFeed({ sessions }: { sessions: Session[] }) {
   const [expandedSession, setExpandedSession] = useState<string | null>(null);
   const [showDropdown, setShowDropdown] = useState<string | null>(null);
@@ -30,6 +31,17 @@ export default function SessionFeed({ sessions }: { sessions: Session[] }) {
   const [editSession, setEditSession] = useState<Session | null>(null);
   const router = useRouter();
   const dropdownRef = useRef<HTMLDivElement | null>(null);
+
+  const [visibleSessions, setVisibleSessions] = useState(10);
+  const { ref, inView } = useInView({
+    threshold: 0,
+  });
+
+  useEffect(() => {
+    if (inView && visibleSessions < sessions.length) {
+      setVisibleSessions((prev) => prev + 10);
+    }
+  }, [inView]);
 
   // Close dropdown when clicking outside
 
@@ -125,119 +137,125 @@ export default function SessionFeed({ sessions }: { sessions: Session[] }) {
     <div
       className={`${russoOne.className} flex flex-col items-center justify-center text-gray-100 `}
     >
-      <div className="bg-slate-500 w-full text-center p-2">
-        <h2>Tracking Feed</h2>
-      </div>
-
       <div className="bg-slate-800 p-5 w-full min-h-screen items-center">
         {sessions.length === 0 ? (
           <p>No sessions yet. Let&apos;s get started!</p>
         ) : (
           <div className="flex flex-col">
-            {sortByNewest(sessions).map((session: Session) => (
-              <div key={session.id}>
-                {pinnedSession.includes(session.id) && (
-                  <div className="flex items-center gap-2 mb-2">
-                    <Pin size={20} />
-                    <p className="text-gray-400">Pinned</p>
-                  </div>
-                )}
+            {sortByNewest(sessions)
+              .slice(0, visibleSessions)
+              .map((session: Session) => (
+                <div key={session.id}>
+                  {pinnedSession.includes(session.id) && (
+                    <div className="flex items-center gap-2 mb-2">
+                      <Pin size={20} />
+                      <p className="text-gray-400">Pinned</p>
+                    </div>
+                  )}
 
-                <div className="border p-4 rounded-md bg-slate-700 flex flex-col justify-center mb-5">
-                  <div className="relative flex justify-between items-center mb-5">
-                    {session.title}
-                    <div
-                      ref={showDropdown === session.id ? dropdownRef : null}
-                      className="relative"
-                    >
-                      <button
-                        onMouseDown={() => toggleDropdown(session.id)}
-                        className=" text-gray-100"
+                  <div className="border p-4 rounded-md bg-slate-700 flex flex-col justify-center mb-5">
+                    <div className="flex justify-between items-center mb-2">
+                      <p className="text-sm text-gray-100 mb-3">
+                        {formatDate(session.created_at)}
+                      </p>
+                      <div
+                        ref={showDropdown === session.id ? dropdownRef : null}
+                        className="relative"
                       >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          strokeWidth={1.5}
-                          stroke="currentColor"
-                          className="size-6"
+                        <button
+                          onMouseDown={() => toggleDropdown(session.id)}
+                          className=" text-gray-100"
                         >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z"
-                          />
-                        </svg>
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            strokeWidth={1.5}
+                            stroke="currentColor"
+                            className="size-6"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z"
+                            />
+                          </svg>
+                        </button>
+                        {showDropdown === session.id && (
+                          <div className="absolute right-0 top-10 border-2  rounded-md flex flex-col  z-50 bg-gray-700">
+                            <button
+                              onClick={() => {
+                                setEditSession(session);
+                                setShowDropdown(null);
+                              }}
+                              className="border-b  text-gray-100 px-4 py-2"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => {
+                                togglePin(session.id);
+                                setShowDropdown(null);
+                              }}
+                              className="border-b  text-gray-100 px-4 py-2"
+                            >
+                              {pinnedSession.includes(session.id)
+                                ? "Unpin"
+                                : "Pin"}
+                            </button>
+                            <button
+                              onClick={() => {
+                                handleDelete(session.id);
+                                setShowDropdown(null);
+                              }}
+                              className="  text-gray-100 px-4 py-2"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    <div>{session.title}</div>
+
+                    {session.type === "gym" && session.duration && (
+                      <div>{formatDuration(session.duration)}</div>
+                    )}
+                    <div className="flex justify-between items-end mt-2">
+                      <div className="pr-2">
+                        {session.notes.length > 20
+                          ? `${session.notes.slice(0, 20)}...`
+                          : session.notes}
+                      </div>
+
+                      <button
+                        onClick={() => toggleSession(session.id)}
+                        className="bg-blue-500 text-gray-100 p-2 rounded-md hover:bg-blue-400"
+                      >
+                        <span>
+                          <SquareArrowOutUpRight size={20} />
+                        </span>
                       </button>
-                      {showDropdown === session.id && (
-                        <div className="absolute right-0 top-10 border-2  rounded-md flex flex-col  z-50 bg-gray-700">
-                          <button
-                            onClick={() => {
-                              setEditSession(session);
-                              setShowDropdown(null);
-                            }}
-                            className="border-b  text-gray-100 px-4 py-2"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => {
-                              togglePin(session.id);
-                              setShowDropdown(null);
-                            }}
-                            className="border-b  text-gray-100 px-4 py-2"
-                          >
-                            {pinnedSession.includes(session.id)
-                              ? "Unpin"
-                              : "Pin"}
-                          </button>
-                          <button
-                            onClick={() => {
-                              handleDelete(session.id);
-                              setShowDropdown(null);
-                            }}
-                            className="  text-gray-100 px-4 py-2"
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      )}
                     </div>
                   </div>
 
-                  {session.type === "training" && session.duration && (
-                    <div>{formatDuration(session.duration)}</div>
-                  )}
-                  <div className="flex justify-between items-end mt-2">
-                    <div className="pr-2">{session.notes}</div>
-
-                    <button
-                      onClick={() => toggleSession(session.id)}
-                      className="bg-blue-500 text-gray-100 p-2 rounded-md hover:bg-blue-400"
-                    >
-                      <span>
-                        <SquareArrowOutUpRight size={20} />
-                      </span>
-                    </button>
-                  </div>
+                  <Modal
+                    isOpen={expandedSession === session.id}
+                    onClose={() => setExpandedSession(null)}
+                  >
+                    {session.type === "gym" && (
+                      <TrainingSession session={session} />
+                    )}
+                    {session.type === "notes" && (
+                      <NotesSession session={session} />
+                    )}
+                  </Modal>
                 </div>
-
-                <Modal
-                  isOpen={expandedSession === session.id}
-                  onClose={() => setExpandedSession(null)}
-                >
-                  {session.type === "training" && (
-                    <TrainingSession session={session} />
-                  )}
-                  {session.type === "notes" && (
-                    <NotesSession session={session} />
-                  )}
-                </Modal>
-              </div>
-            ))}
+              ))}
           </div>
         )}
       </div>
+      {visibleSessions < sessions.length && <div ref={ref} className="h-10" />}
       {editSession && (
         <EditSession
           session={editSession}

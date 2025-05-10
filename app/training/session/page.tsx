@@ -1,12 +1,11 @@
 "use client";
 
 import { russoOne } from "@/app/ui/fonts";
-import { useState } from "react";
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import SaveButton from "@/app/ui/save-button";
 import Timer from "@/app/components/timer";
-import Image from "next/image";
+import DeleteSessionBtn from "@/app/ui/deleteSessionBtn";
 
 type ExerciseSet = { weight: string; reps: string };
 type ExerciseEntry = {
@@ -29,11 +28,10 @@ export default function TrainingSessionPage() {
   const [isAddingExercise, setIsAddingExercise] = useState(false);
   const router = useRouter();
   const [isSaving, setIsSaving] = useState(false);
-  const [isTimerRunning, setIsTimerRunning] = useState(false);
+  const [resetCount, setResetCount] = useState(0);
   const [secondsElapsed, setSecondsElapsed] = useState(0);
   const [sessionTitle, setSessionTitle] = useState(() => {
-    const today = new Date();
-    return `Training - ${today.toLocaleDateString()}`;
+    return "Gym -";
   });
 
   const isStarted = exercises.length > 0;
@@ -41,7 +39,28 @@ export default function TrainingSessionPage() {
   const startExercise = () => {
     if (!activeExerciseName.trim()) return;
     if (exercises.length === 0) {
-      setIsTimerRunning(true); // Start timer when first exercise is created
+      const now = Date.now();
+
+      localStorage.setItem("startTime", new Date().toISOString());
+
+      localStorage.setItem(
+        `timer:gym`,
+        JSON.stringify({
+          startTime: now,
+          elapsedBeforePause: 0,
+          isRunning: true,
+        })
+      );
+
+      localStorage.setItem(
+        "activeSession",
+        JSON.stringify({
+          type: "gym",
+          label: `${sessionTitle}`,
+          startedAt: new Date().toISOString(),
+          path: "/training/session",
+        })
+      );
     }
     setExercises((prev) => [...prev, { name: activeExerciseName, sets: [] }]);
     setActiveExerciseName("");
@@ -61,6 +80,18 @@ export default function TrainingSessionPage() {
     });
   };
 
+  const resetSession = () => {
+    setExercises([]);
+    setNotes("");
+    setActiveExerciseName("");
+    setWeight("");
+    setReps("");
+    setEditingSet(null);
+    setEditWeight("");
+    setEditReps("");
+    setSessionTitle("Gym -");
+  };
+
   const addNewExercise = () => {
     setIsAddingExercise(true);
     setActiveExerciseName("");
@@ -71,6 +102,23 @@ export default function TrainingSessionPage() {
   const saveSession = async () => {
     if (exercises.length === 0 && notes.trim() === "") return;
     setIsSaving(true); // Start saving
+
+    const TimerDataRaw = localStorage.getItem("timer:gym");
+    let duration = 0;
+
+    if (TimerDataRaw) {
+      const { startTime, elapsedBeforePause, isRunning } =
+        JSON.parse(TimerDataRaw);
+
+      if (isRunning && startTime) {
+        duration =
+          Math.floor((Date.now() - startTime) / 1000) +
+          (elapsedBeforePause || 0);
+      } else {
+        duration = elapsedBeforePause || 0;
+      }
+    }
+
     const response = await fetch("/api/save-session", {
       method: "POST",
       headers: {
@@ -80,12 +128,17 @@ export default function TrainingSessionPage() {
         title: sessionTitle,
         exercises,
         notes,
-        duration: secondsElapsed,
-        type: "training",
+        duration,
+        type: "gym",
       }),
     });
+
     if (response.ok) {
       console.log("Session saved successfully!");
+      localStorage.removeItem("gym_session_draft");
+      localStorage.removeItem("timer:gym");
+      localStorage.removeItem("activeSession");
+      localStorage.removeItem("startTime");
       resetSession();
       router.push("/training-finished"); // Redirect to the finished page
     } else {
@@ -94,59 +147,24 @@ export default function TrainingSessionPage() {
     setIsSaving(false); // End saving (in case something goes wrong)
   };
 
-  const resetSession = () => {
-    localStorage.removeItem("training_session_draft");
-    setExercises([]);
-    setNotes("");
-    setActiveExerciseName("");
-    setWeight("");
-    setReps("");
-    setEditingSet(null);
-    setEditWeight("");
-    setEditReps("");
-    setIsTimerRunning(false);
-  };
+  useEffect(() => {
+    if (
+      exercises.length === 0 &&
+      notes.trim() === "" &&
+      sessionTitle.trim() === "Gym -"
+    )
+      return;
 
-  const deleteSession = () => {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete the session?"
-    );
-    if (!confirmed) return;
-
-    localStorage.removeItem("training_session_draft");
-    setExercises([]);
-    setNotes("");
-    setActiveExerciseName("");
-    setWeight("");
-    setReps("");
-    setEditingSet(null);
-    setEditWeight("");
-    setEditReps("");
-    setIsTimerRunning(false);
-    setSecondsElapsed(0); // Reset timer
-  };
+    const sessionDraft = {
+      title: sessionTitle,
+      exercises,
+      notes,
+    };
+    localStorage.setItem("gym_session_draft", JSON.stringify(sessionDraft));
+  }, [exercises, notes, sessionTitle]);
 
   useEffect(() => {
-    if (exercises.length === 0 && notes.trim() === "") return;
-
-    const interval = setInterval(() => {
-      const sessionDraft = {
-        title: sessionTitle,
-        exercises,
-        notes,
-        duration: secondsElapsed,
-      };
-      localStorage.setItem(
-        "training_session_draft",
-        JSON.stringify(sessionDraft)
-      );
-    }, 1000); // Save every second
-
-    return () => clearInterval(interval);
-  }, [secondsElapsed, exercises, notes]);
-
-  useEffect(() => {
-    const draft = localStorage.getItem("training_session_draft");
+    const draft = localStorage.getItem("gym_session_draft");
     if (draft) {
       const {
         title: savedSessionTitle,
@@ -162,7 +180,10 @@ export default function TrainingSessionPage() {
   }, []);
 
   return (
-    <div className="flex flex-col min-h-screen w-full bg-slate-950">
+    <div className="bg-slate-950 p-5 min-h-[100dvh] relative">
+      <div className="text-gray-100 gap-2  border-2 rounded-xl border-gray-100 w-fit  px-4 py-2 bg-gray-900">
+        <Timer sessionId="gym" resetTrigger={resetCount} />
+      </div>
       <div className="flex flex-col flex-grow">
         <div className="flex flex-col items-center justify-center mt-10 gap-5">
           <p
@@ -176,32 +197,10 @@ export default function TrainingSessionPage() {
             <input
               className="text-lg text-black p-2 rounded-md border-2 border-gray-100 z-10  placeholder-gray-500  dark:text-gray-100 bg-gray-100 dark:bg-gray-900 hover:border-blue-500 focus:outline-none focus:border-green-300"
               type="text"
+              placeholder="Title..."
               value={sessionTitle}
               onChange={(e) => setSessionTitle(e.target.value)}
             />
-          </div>
-        </div>
-        <div className="flex items-center justify-center gap-2 mt-5 border-2 rounded-xl border-gray-100 w-fit mx-auto px-4 py-1 bg-gray-900">
-          <Timer
-            isRunning={isTimerRunning}
-            seconds={secondsElapsed}
-            setSeconds={setSecondsElapsed}
-          />
-          <div className="flex">
-            {isTimerRunning ? (
-              <button onClick={() => setIsTimerRunning(false)}>
-                <Image
-                  src="/PauseButton.png"
-                  alt="pause"
-                  width={20}
-                  height={20}
-                />
-              </button>
-            ) : (
-              <button onClick={() => setIsTimerRunning(true)}>
-                <Image src="/Play.png" alt="Play" width={20} height={20} />
-              </button>
-            )}
           </div>
         </div>
 
@@ -295,7 +294,7 @@ export default function TrainingSessionPage() {
                         </div>
 
                         <button
-                          className="bg-green-600 px-2 py-1 rounded text-white"
+                          className="bg-green-600 px-2 py-1 rounded text-gray-100"
                           onClick={() => {
                             const updated = [...exercises]; // copy exercises
                             updated[index].sets[i] = {
@@ -410,14 +409,17 @@ export default function TrainingSessionPage() {
             </div>
           </>
         )}
-        <div className="flex flex-col  items-center justify-center mt-10 gap-5 mx-4 mb-20">
+        <div className="flex flex-col  items-center justify-center mt-14 gap-5 mx-8 mb-20">
           <SaveButton isSaving={isSaving} onClick={saveSession} />
-          <button
-            className={`${russoOne.className} w-full  text-gray-100 font-bold border-b-3 border-l-3 border-blue-950 py-2 px-10 rounded-md bg-red-900 hover:bg-blue-800 hover:scale-95`}
-            onClick={deleteSession}
-          >
-            Delete
-          </button>
+          <DeleteSessionBtn
+            storageKey={[
+              "gym_session_draft",
+              "timer:gym",
+              "activeSession",
+              "startTime",
+            ]}
+            onDelete={resetSession}
+          />
         </div>
       </div>
     </div>

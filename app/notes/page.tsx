@@ -9,8 +9,7 @@ export default function Notes() {
   const [isSaving, setIsSaving] = useState(false);
   const [notes, setNotes] = useState("");
   const [notesTitle, setNotesTitle] = useState(() => {
-    const today = new Date();
-    return `Notes - ${today.toLocaleDateString()}`;
+    return "Notes";
   });
   const router = useRouter();
 

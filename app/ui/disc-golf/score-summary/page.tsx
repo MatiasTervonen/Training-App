@@ -11,10 +11,7 @@ export default function DiscGolfScores() {
       scores: { playerName: string; strokes: number }[];
     }[]
   >([]);
-  const [editing, setEditing] = useState<{
-    playerName: string;
-    holeNumber: number;
-  } | null>(null);
+
   const [editStrokesMap, setEditStrokesMap] = useState<{
     [key: string]: number | string;
   }>({});
@@ -59,7 +56,6 @@ export default function DiscGolfScores() {
             }
 
             setIsEditMode(!isEditMode);
-            setEditing(null);
           }}
           className={`${russoOne.className} text-gray-100`}
         >
@@ -162,7 +158,6 @@ export default function DiscGolfScores() {
                                 else formattedDiff = `${diff}`;
                               }
 
-                             
                               const key = `${playerName}_${score.hole}`;
 
                               return (

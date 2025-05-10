@@ -74,8 +74,6 @@ export default function DiscGolfGame() {
     const confirmed = confirm("Are you sure you want to finish the game?");
     if (!confirmed) return;
 
-    window;
-
     const holeData: HoleData = {
       hole_number: hole,
       length: parseInt(length),
@@ -191,7 +189,11 @@ export default function DiscGolfGame() {
         >
           Hole {hole}
         </h1>
-        <p className={`${russoOne.className} text-gray-100 flex justify-center my-2  `}>{courseName}</p>
+        <p
+          className={`${russoOne.className} text-gray-100 flex justify-center my-2  `}
+        >
+          {courseName}
+        </p>
         <div className="border-2 border-gray-100 p-5 rounded-xl">
           {/* <div className="flex flex-col gap-2">
             <label className="">

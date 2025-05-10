@@ -88,7 +88,7 @@ export default function GameFinished() {
               }, 0);
               const scoreAgainstPar = total - totalPar;
 
-              return { playerName, total, totalPar, scores, scoreAgainstPar };
+              return { playerName, total,  scores, scoreAgainstPar };
             })
             .sort((a, b) => a.scoreAgainstPar - b.scoreAgainstPar);
 
@@ -96,7 +96,7 @@ export default function GameFinished() {
             <div className="flex flex-col mt-4">
               {sortedPlayers.map(
                 (
-                  { playerName, scores, total, totalPar, scoreAgainstPar },
+                  { playerName, scores, total, scoreAgainstPar },
                   index
                 ) => {
                   const formattedScore =

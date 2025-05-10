@@ -28,8 +28,6 @@ export default function TrainingSessionPage() {
   const [isAddingExercise, setIsAddingExercise] = useState(false);
   const router = useRouter();
   const [isSaving, setIsSaving] = useState(false);
-  const [resetCount, setResetCount] = useState(0);
-  const [secondsElapsed, setSecondsElapsed] = useState(0);
   const [sessionTitle, setSessionTitle] = useState(() => {
     return "Gym -";
   });
@@ -170,11 +168,10 @@ export default function TrainingSessionPage() {
         title: savedSessionTitle,
         exercises: savedExercises,
         notes: savedNotes,
-        duration: savedDuration,
       } = JSON.parse(draft);
       if (savedExercises) setExercises(savedExercises);
       if (savedNotes) setNotes(savedNotes);
-      if (savedDuration) setSecondsElapsed(savedDuration);
+
       if (savedSessionTitle) setSessionTitle(savedSessionTitle);
     }
   }, []);
@@ -182,7 +179,7 @@ export default function TrainingSessionPage() {
   return (
     <div className="bg-slate-950 p-5 min-h-[100dvh] relative">
       <div className="text-gray-100 gap-2  border-2 rounded-xl border-gray-100 w-fit  px-4 py-2 bg-gray-900">
-        <Timer sessionId="gym" resetTrigger={resetCount} />
+        <Timer sessionId="gym" />
       </div>
       <div className="flex flex-col flex-grow">
         <div className="flex flex-col items-center justify-center mt-10 gap-5">

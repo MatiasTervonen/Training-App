@@ -162,10 +162,7 @@ export default function DiscGolfScores() {
                                 else formattedDiff = `${diff}`;
                               }
 
-                              const isEditing =
-                                editing?.playerName === playerName &&
-                                editing?.holeNumber === score.hole;
-
+                             
                               const key = `${playerName}_${score.hole}`;
 
                               return (

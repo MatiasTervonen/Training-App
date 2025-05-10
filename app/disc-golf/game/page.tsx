@@ -71,7 +71,6 @@ export default function DiscGolfGame() {
   }, []);
 
   const handleFinishGame = () => {
-
     const confirmed = confirm("Are you sure you want to finish the game?");
     if (!confirmed) return;
 
@@ -192,6 +191,7 @@ export default function DiscGolfGame() {
         >
           Hole {hole}
         </h1>
+        <p className={`${russoOne.className} text-gray-100 flex justify-center my-2  `}>{courseName}</p>
         <div className="border-2 border-gray-100 p-5 rounded-xl">
           {/* <div className="flex flex-col gap-2">
             <label className="">
@@ -220,6 +220,7 @@ export default function DiscGolfGame() {
             <p className={`${russoOne.className} text-gray-100 text-center`}>
               Par: {par}
             </p>
+
             <input
               className="w-full px-5 border border-gray-400 h-2 my-5 appearance-none bg-gray-700 rounded-md 
                      [&::-webkit-slider-thumb]:appearance-none 

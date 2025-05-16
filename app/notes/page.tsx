@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { russoOne } from "@/app/ui/fonts";
 import SaveButton from "@/app/ui/save-button";
+import DeleteSessionBtn from "../ui/deleteSessionBtn";
+import { set } from "zod";
 
 export default function Notes() {
   const [isSaving, setIsSaving] = useState(false);
@@ -53,16 +55,7 @@ export default function Notes() {
 
   const resetNotes = () => {
     localStorage.removeItem("notes_draft");
-    setNotes("");
-  };
-
-  const deleteNotes = () => {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete the session?"
-    );
-    if (!confirmed) return;
-
-    localStorage.removeItem("notes_draft");
+    setNotesTitle("Notes");
     setNotes("");
   };
 
@@ -118,14 +111,12 @@ export default function Notes() {
             />
           </div>
         </div>
-        <div className="flex flex-col  items-center justify-center mt-10 gap-5 mx-4 mb-20">
+        <div className="flex flex-col  items-center justify-center mt-10 gap-5 mx-10 mb-20">
           <SaveButton isSaving={isSaving} onClick={saveNotes} />
-          <button
-            className={`${russoOne.className} w-full  text-gray-100 font-bold border-b-3 border-l-3 border-blue-950 py-2 px-10 rounded-md bg-red-900 hover:bg-blue-800 hover:scale-95`}
-            onClick={deleteNotes}
-          >
-            Delete
-          </button>
+          <DeleteSessionBtn
+            storageKey={["notes_draft"]}
+            onDelete={resetNotes}
+          ></DeleteSessionBtn>
         </div>
       </div>
     </div>

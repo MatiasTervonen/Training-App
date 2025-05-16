@@ -30,7 +30,7 @@ export default function Navbar() {
 
   return (
     <div className="relative w-full">
-      <nav className="w-full flex items-center justify-between p-4 bg-slate-900">
+      <nav className="w-full flex items-center justify-between p-4 bg-slate-900 ">
         <Link
           href="/"
           className={`${russoOne.className} text-gray-100 font-bold text-3xl  bg-gray-900  `}

@@ -46,13 +46,25 @@ export default function DiscGolf() {
     }
   };
 
+  function shuffleArray<T>(array: T[]): T[] {
+    const newArray = [...array];
+    for (let i = newArray.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+    }
+    return newArray;
+  }
+
   const startGame = () => {
+    const randomizedPlayers = shuffleArray(players);
+
     const setupData = {
       courseName,
       sessionIsRunning: true,
-      players: [
-        ...players.map((p) => ({ name: p, is_quest: p !== userDisplayName })),
-      ],
+      players: randomizedPlayers.map((p) => ({
+        name: p,
+        is_quest: p !== userDisplayName,
+      })),
     };
 
     const now = Date.now();
@@ -118,29 +130,25 @@ export default function DiscGolf() {
           onChange={(e) => setCourseName(e.target.value)}
         />
       </div>
-      <label
+      <div
         className={`${russoOne.className} text-gray-100 flex flex-col gap-2 items-center mt-10`}
       >
-        Number of Holes {numHoles}
-        <input
-          className="w-full px-5 border border-gray-400 h-2 my-5 appearance-none bg-gray-700 rounded-md 
-                [&::-webkit-slider-thumb]:appearance-none 
-                [&::-webkit-slider-thumb]:h-6 
-                [&::-webkit-slider-thumb]:w-6 
-               [&::-webkit-slider-thumb]:bg-green-400 
-                [&::-webkit-slider-thumb]:rounded-full 
-                [&::-webkit-slider-thumb]:cursor-pointer"
-          type="range"
-          min={0}
-          max={25}
-          step={1}
-          placeholder="Number of Holes"
-          value={numHoles}
-          onChange={(e) => {
-            setNumHoles(parseInt(e.target.value));
-          }}
-        />
-      </label>
+        <p> Number of Holes {numHoles}</p>
+        <div className="flex gap-4">
+          <button
+            onClick={() => setNumHoles((prev) => Math.max(prev - 1, 1))}
+            className="bg-blue-800  text-gray-100 px-3 py-1 rounded text-lg"
+          >
+            -
+          </button>
+          <button
+            onClick={() => setNumHoles((prev) => Math.min(25, prev + 1))}
+            className="bg-blue-800 text-gray-100 px-3 py-1 rounded text-lg"
+          >
+            +
+          </button>
+        </div>
+      </div>
       <div className="mt-10 mb-5">
         <label
           className={`${russoOne.className} text-gray-100 flex flex-col gap-2 items-center`}

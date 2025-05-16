@@ -12,6 +12,11 @@ import EditSession from "@/app/components/editSession";
 import Modal from "@/app/components/modal";
 import { formatDate } from "@/lib/formatDate";
 import { useInView } from "react-intersection-observer";
+import DropdownMenu from "@/app/components/dropdownMenu";
+import { Ellipsis } from "lucide-react";
+import { Dumbbell } from "lucide-react";
+import { NotebookPen } from "lucide-react";
+import { Disc } from "lucide-react";
 
 const formatDuration = (seconds: number) => {
   const totalMinutes = Math.floor(seconds / 60);
@@ -26,12 +31,9 @@ const formatDuration = (seconds: number) => {
 
 export default function SessionFeed({ sessions }: { sessions: Session[] }) {
   const [expandedSession, setExpandedSession] = useState<string | null>(null);
-  const [showDropdown, setShowDropdown] = useState<string | null>(null);
   const [pinnedSession, setPinnedSession] = useState<string[]>([]);
   const [editSession, setEditSession] = useState<Session | null>(null);
   const router = useRouter();
-  const dropdownRef = useRef<HTMLDivElement | null>(null);
-
   const [visibleSessions, setVisibleSessions] = useState(10);
   const { ref, inView } = useInView({
     threshold: 0,
@@ -43,29 +45,8 @@ export default function SessionFeed({ sessions }: { sessions: Session[] }) {
     }
   }, [inView]);
 
-  // Close dropdown when clicking outside
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as Node;
-
-      if (dropdownRef.current && !dropdownRef.current.contains(target)) {
-        setShowDropdown(null);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
-
   const toggleSession = (id: string) => {
     setExpandedSession(expandedSession === id ? null : id);
-  };
-
-  const toggleDropdown = (id: string) => {
-    setShowDropdown(showDropdown === id ? null : id);
   };
 
   const togglePin = async (id: string) => {
@@ -153,69 +134,66 @@ export default function SessionFeed({ sessions }: { sessions: Session[] }) {
                     </div>
                   )}
 
-                  <div className="border p-4 rounded-md bg-slate-700 flex flex-col justify-center mb-5">
+                  <div
+                    className={`border p-4 rounded-md flex flex-col justify-center mb-5 transition-colors ${
+                      pinnedSession.includes(session.id)
+                        ? "bg-yellow-100 border-yellow-400 text-gray-800"
+                        : "bg-slate-700"
+                    }`}
+                  >
                     <div className="flex justify-between items-center mb-2">
-                      <p className="text-sm text-gray-100 mb-3">
-                        {formatDate(session.created_at)}
-                      </p>
-                      <div
-                        ref={showDropdown === session.id ? dropdownRef : null}
-                        className="relative"
+                      <div className="flex items-center gap-2">
+                        {session.type === "gym" && <Dumbbell size={20} />}
+                        {session.type === "notes" && <NotebookPen size={20} />}
+                        {session.type === "disc-golf" && <Disc size={20} />}
+                        <p
+                          className={` ${
+                            pinnedSession.includes(session.id)
+                              ? "text-gray-800"
+                              : "text-gray-100"
+                          }`}
+                        >
+                          {formatDate(session.created_at)}
+                        </p>
+                      </div>
+                      <DropdownMenu
+                        button={
+                          <Ellipsis
+                            className={`${
+                              pinnedSession.includes(session.id)
+                                ? "text-gray-800"
+                                : "text-gray-100"
+                            }`}
+                          />
+                        }
                       >
                         <button
-                          onMouseDown={() => toggleDropdown(session.id)}
-                          className=" text-gray-100"
+                          onClick={() => {
+                            setEditSession(session);
+                          }}
+                          className="border-b py-2 px-4"
                         >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            strokeWidth={1.5}
-                            stroke="currentColor"
-                            className="size-6"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z"
-                            />
-                          </svg>
+                          Edit
                         </button>
-                        {showDropdown === session.id && (
-                          <div className="absolute right-0 top-10 border-2  rounded-md flex flex-col  z-50 bg-gray-700">
-                            <button
-                              onClick={() => {
-                                setEditSession(session);
-                                setShowDropdown(null);
-                              }}
-                              className="border-b  text-gray-100 px-4 py-2"
-                            >
-                              Edit
-                            </button>
-                            <button
-                              onClick={() => {
-                                togglePin(session.id);
-                                setShowDropdown(null);
-                              }}
-                              className="border-b  text-gray-100 px-4 py-2"
-                            >
-                              {pinnedSession.includes(session.id)
-                                ? "Unpin"
-                                : "Pin"}
-                            </button>
-                            <button
-                              onClick={() => {
-                                handleDelete(session.id);
-                                setShowDropdown(null);
-                              }}
-                              className="  text-gray-100 px-4 py-2"
-                            >
-                              Delete
-                            </button>
-                          </div>
-                        )}
-                      </div>
+                        <button
+                          onClick={() => {
+                            togglePin(session.id);
+                          }}
+                          className="border-b py-2"
+                        >
+                          {pinnedSession.includes(session.id) ? "Unpin" : "Pin"}
+                        </button>
+                        <button
+                          onClick={() => {
+                            handleDelete(session.id);
+                          }}
+                          className="py-2"
+                        >
+                          Delete
+                        </button>
+                      </DropdownMenu>
                     </div>
+
                     <div>{session.title}</div>
 
                     {session.type === "gym" && session.duration && (

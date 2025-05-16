@@ -3,6 +3,7 @@ export type Exercise = {
   sets: {
     reps: string;
     weight: string;
+    difficulty: string;
   }[];
 };
 
@@ -16,4 +17,5 @@ export interface Session {
   created_at: string;
   type: string;
   pinned: boolean;
+ 
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { russoOne } from "@/app/ui/fonts";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import SaveButton from "@/app/ui/save-button";
 import Timer from "@/app/components/timer";

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Session } from "@/types/session";
 import { russoOne } from "@/app/ui/fonts";
 import { useRouter } from "next/navigation";

@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { russoOne } from "@/app/ui/fonts";
 import SaveButton from "@/app/ui/save-button";
 import DeleteSessionBtn from "../ui/deleteSessionBtn";
-import { set } from "zod";
 
 export default function Notes() {
   const [isSaving, setIsSaving] = useState(false);

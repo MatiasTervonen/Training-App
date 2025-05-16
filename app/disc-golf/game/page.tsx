@@ -27,22 +27,24 @@ type Player = {
   is_guest: boolean;
 };
 
+type PlayerStats = {
+  [playerName: string]: {
+    strokes?: number;
+    fairwayHit: boolean;
+    c1made: boolean;
+    c1attempted: boolean;
+    c2made: boolean;
+    c2attempted: boolean;
+  };
+};
+
 export default function DiscGolfGame() {
   const [hole, setHole] = useState(1);
   const [length, setLength] = useState(""); // input value
   const [par, setPar] = useState(3); // input value
   const [courseName, setCourseName] = useState("");
   const [players, setPlayers] = useState<Player[]>([]);
-  const [playerStats, setPlayerStats] = useState<{
-    [playerName: string]: {
-      strokes?: number;
-      fairwayHit: boolean;
-      c1made: boolean;
-      c1attempted: boolean;
-      c2made: boolean;
-      c2attempted: boolean;
-    };
-  }>({});
+  const [playerStats, setPlayerStats] = useState<PlayerStats>({});
   const [trackStats, setTrackStats] = useState(false);
   const router = useRouter();
   const [totalHoles, setTotalHoles] = useState<number>(18); // default fallback
@@ -203,7 +205,7 @@ export default function DiscGolfGame() {
       setPlayers(players);
 
       setPlayerStats(
-        players.reduce((acc: any, player: Player) => {
+        players.reduce((acc: PlayerStats, player: Player) => {
           acc[player.name] = {
             strokes: 3,
             fairwayHit: false,

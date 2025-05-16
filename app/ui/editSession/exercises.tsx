@@ -1,18 +1,10 @@
 import React from "react";
+import { Exercise } from "@/types/session";
 
-type set = {
-  reps: string;
-  weight: string;
-};
-
-type exercise = {
-  name: string;
-  sets: set[];
-};
 
 type editExercisesProps = {
-  exercises: exercise[];
-  onChange: (updated: exercise[]) => void;
+  exercises: Exercise[];
+  onChange: (updated: Exercise[]) => void;
 };
 
 export default function EditExercises({

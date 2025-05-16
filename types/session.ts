@@ -17,5 +17,4 @@ export interface Session {
   created_at: string;
   type: string;
   pinned: boolean;
- 
 }

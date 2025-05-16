@@ -17,7 +17,10 @@ export default function DropdownMenu({ button, children }: DropdownMenuProps) {
       <button onClick={() => setOpen((prev) => !prev)}>{button}</button>
 
       {open && (
-        <div className="absolute right-0  top-full flex flex-col border-2 px-4 py-2 text-gray-100 mt-2 shadow-lg rounded-md  z-50 bg-gray-700">
+        <div
+          className="absolute right-0  top-full flex flex-col border-2 px-4 py-2 text-gray-100 mt-2 shadow-lg rounded-md  z-50 bg-gray-700"
+          onClick={() => setOpen(false)}
+        >
           {children}
         </div>
       )}

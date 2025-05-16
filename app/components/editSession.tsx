@@ -72,23 +72,23 @@ export default function EditSession({
 
   return (
     <Modal isOpen={!!session} onClose={onClose}>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="p-4">
         {"title" in session && (
-          <div className="w-full flex flex-col mb-4 mt-10">
+          <div className="w-full flex flex-col mb-4 mt-10 ">
             <p>Title...</p>
             <input
               type="text"
               value={formData.title || ""}
               onChange={(e) => handleChange("title", e.target.value)}
-              className="text-lg text-black p-2 rounded-md border-2 border-gray-100 z-10  placeholder-gray-500  dark:text-gray-100 bg-gray-100 dark:bg-gray-900 hover:border-blue-500 focus:outline-none focus:border-green-300"
+              className="p-2 rounded-md border-2 border-gray-100 z-10  placeholder-gray-500 text-gray-100 bg-gray-700 hover:border-blue-500 focus:outline-none focus:border-green-300"
             />
           </div>
         )}
         {"notes" in session && (
-          <div className="w-full flex flex-col mb-4 mt-10">
+          <div className="w-full flex flex-col mb-10 mt-5">
             <p>Notes...</p>
             <textarea
-              className="text-md w-full  text-black p-2 rounded-md border-2 border-gray-100 z-10 placeholder-gray-500  dark:text-gray-100 bg-gray-100 dark:bg-gray-900 hover:border-blue-500 focus:outline-none focus:border-green-300 resize-none"
+              className="w-full   p-2 rounded-md border-2 border-gray-100 z-10 placeholder-gray-500  text-gray-100 bg-gray-700 hover:border-blue-500 focus:outline-none focus:border-green-300 resize-none"
               spellCheck={false}
               placeholder="Add Notes here..."
               name="notes"
@@ -101,7 +101,6 @@ export default function EditSession({
 
         {"exercises" in session && formData.exercises !== null && (
           <div>
-            <p>Exercises...</p>
             <EditExercises
               exercises={formData.exercises || []}
               onChange={(exercises) => handleChange("exercises", exercises)}
@@ -110,13 +109,15 @@ export default function EditSession({
         )}
       </form>
 
-      <button
-        onClick={handleSubmit}
-        type="submit"
-        className={`${russoOne.className} bg-blue-800 py-2 px-10 my-3 w-full  rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95`}
-      >
-        Save
-      </button>
+      <div className="flex items-center justify-center mb-20 mt-10 mx-10">
+        <button
+          onClick={handleSubmit}
+          type="submit"
+          className={`${russoOne.className} bg-blue-800 py-2 w-full rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95`}
+        >
+          Save
+        </button>
+      </div>
     </Modal>
   );
 }

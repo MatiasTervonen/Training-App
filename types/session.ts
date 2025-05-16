@@ -3,8 +3,9 @@ export type Exercise = {
   sets: {
     reps: string;
     weight: string;
-    difficulty: string;
+    lvl: string;
   }[];
+  notes?: string;
 };
 
 export interface Session {

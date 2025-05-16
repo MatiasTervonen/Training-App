@@ -8,11 +8,14 @@ import Timer from "@/app/components/timer";
 import DeleteSessionBtn from "@/app/ui/deleteSessionBtn";
 import DropdownMenu from "@/app/components/dropdownMenu";
 import { Ellipsis } from "lucide-react";
+import { SquarePen } from "lucide-react";
+import { SquareX } from "lucide-react";
 
-type ExerciseSet = { weight: string; reps: string; difficulty?: string };
+type ExerciseSet = { weight: string; reps: string; lvl?: string };
 type ExerciseEntry = {
   name: string;
   sets: ExerciseSet[];
+  notes?: string;
 };
 
 export default function TrainingSessionPage() {
@@ -27,14 +30,14 @@ export default function TrainingSessionPage() {
   } | null>(null);
   const [editWeight, setEditWeight] = useState("");
   const [editReps, setEditReps] = useState("");
-  const [editDifficulty, setEditDifficulty] = useState("");
+  const [editLvl, setEditLvl] = useState("");
   const [isAddingExercise, setIsAddingExercise] = useState(false);
   const router = useRouter();
   const [isSaving, setIsSaving] = useState(false);
   const [sessionTitle, setSessionTitle] = useState(() => {
     return "Gym -";
   });
-  const [difficulty, setDifficulty] = useState("Medium");
+  const [lvl, setLvl] = useState("Medium");
   const [resetTrigger, setResetTrigger] = useState(0);
 
   const isStarted = exercises.length > 0;
@@ -77,7 +80,7 @@ export default function TrainingSessionPage() {
     setExercises((prev) => {
       const updated = [...prev];
       const last = { ...updated[updated.length - 1] };
-      last.sets = [...last.sets, { weight, reps, difficulty }];
+      last.sets = [...last.sets, { weight, reps, lvl }];
       updated[updated.length - 1] = last;
       return updated;
     });
@@ -93,7 +96,7 @@ export default function TrainingSessionPage() {
     setEditWeight("");
     setEditReps("");
     setSessionTitle("Gym -");
-    setDifficulty("Medium");
+    setLvl("Medium");
 
     setResetTrigger((prev) => prev + 1);
   };
@@ -223,7 +226,7 @@ export default function TrainingSessionPage() {
               </svg>
             </div>
             <textarea
-              className="text-sm w-[280px]  text-black p-2 rounded-md border-2 border-gray-100 z-10  placeholder-gray-500  dark:text-gray-100 bg-gray-100 dark:bg-gray-900 hover:border-blue-500 focus:outline-none focus:border-green-300 resize-none"
+              className="text-sm w-[280px]   p-2 rounded-md border-2 border-gray-100 z-10  placeholder-gray-500 text-gray-100 bg-gray-900 hover:border-blue-500 focus:outline-none focus:border-green-300 resize-none"
               spellCheck={false}
               placeholder="Add Notes here..."
               name="Notes"
@@ -242,7 +245,7 @@ export default function TrainingSessionPage() {
                 className="text-lg text-black p-2 rounded-md border-2 border-gray-100 z-10  placeholder-gray-500  dark:text-gray-100 bg-gray-100 dark:bg-gray-900 hover:border-blue-500 focus:outline-none focus:border-green-300"
                 type="text"
                 spellCheck={false}
-                placeholder="Excercise..."
+                placeholder="Exercise..."
                 name="Exercise"
                 autoComplete="off"
                 value={activeExerciseName}
@@ -262,10 +265,10 @@ export default function TrainingSessionPage() {
             {exercises.map((exercise, index) => (
               <div
                 key={index}
-                className="flex flex-col items-center justify-center mt-10 mx-auto w-full max-w-[350px]"
+                className="flex flex-col items-center justify-center mt-10 mx-auto w-full max-w-screen bg-slate-800 rounded-md px-4 py-2 shadow-lg"
               >
-                <div className="relative flex items-center justify-between w-full gap-5 mb-5  border-b border-gray-100 ">
-                  <h2 className="text-xl font-bold text-white">
+                <div className="relative flex items-center justify-between w-full gap-5  border-gray-100 ">
+                  <h2 className="text-xl font-bold text-gray-100 p-2">
                     {exercise.name}
                   </h2>
 
@@ -294,15 +297,31 @@ export default function TrainingSessionPage() {
                   </DropdownMenu>
                 </div>
 
+                <div className="w-full my-4 flex flex-col">
+                  <label className="text-gray-100 mb-1 flex gap-2 items-center">
+                    Notes for {exercise.name}
+                    <SquarePen className="mb-1" />
+                  </label>
+                  <textarea
+                    className="text-sm w-full p-2 rounded-md border border-gray-100 placeholder-gray-500 text-gray-100  bg-gray-900 hover:border-blue-500 focus:outline-none focus:border-green-300 resize-none"
+                    placeholder="Add notes"
+                    value={exercise.notes || ""}
+                    onChange={(e) => {
+                      const updated = [...exercises];
+                      updated[index].notes = e.target.value;
+                      setExercises(updated);
+                    }}
+                  />
+                </div>
+
                 {/* Locked sets display */}
-                <table className="w-full text-left border-collapse text-white mb-4">
+                <table className="w-full text-left border-collapse text-gray-100 mb-4 ">
                   <thead>
                     <tr className="text-gray-300 border-b">
                       <th className="p-2">Set</th>
                       <th className="p-2">Weight</th>
                       <th className="p-2">Reps</th>
-                      <th className="p-2">Difficulty</th>
-                      <th className="p-2">Actions</th>
+                      <th className="p-2">Lvl</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -310,8 +329,8 @@ export default function TrainingSessionPage() {
                       <tr
                         key={i}
                         className={`border-b ${
-                          set.difficulty === "Failure" ? "bg-red-800" : ""
-                        }`}
+                          set.lvl === "Failure" ? "bg-red-800" : ""
+                        } ${set.lvl === "Warm-up" ? "bg-blue-500" : ""}`}
                       >
                         {editingSet?.exerciseIndex === index &&
                         editingSet?.setIndex === i ? (
@@ -334,11 +353,10 @@ export default function TrainingSessionPage() {
                             <td className="p-2">
                               <select
                                 className="text-lg p-1 rounded bg-gray-900 border border-gray-100 text-gray-100"
-                                value={editDifficulty}
-                                onChange={(e) =>
-                                  setEditDifficulty(e.target.value)
-                                }
+                                value={editLvl}
+                                onChange={(e) => setEditLvl(e.target.value)}
                               >
+                                <option value="Warm-up">Warm-up</option>
                                 <option value="Easy">Easy</option>
                                 <option value="Medium">Medium</option>
                                 <option value="Hard">Hard</option>
@@ -353,7 +371,7 @@ export default function TrainingSessionPage() {
                                   updated[index].sets[i] = {
                                     weight: editWeight,
                                     reps: editReps,
-                                    difficulty: editDifficulty,
+                                    lvl: editLvl,
                                   };
                                   setExercises(updated);
                                   setEditingSet(null);
@@ -368,31 +386,21 @@ export default function TrainingSessionPage() {
                             <td className="p-2">{i + 1}</td>
                             <td className="p-2">{set.weight}</td>
                             <td className="p-2">{set.reps}</td>
-                            <td className="p-2">{set.difficulty}</td>
-                            <td className="p-2 flex gap-2">
+                            <td className="p-2">{set.lvl}</td>
+                            <td>
                               <button
-                                className="bg-yellow-600 px-2 py-1 rounded text-white"
+                                className="bg-red-600 p-1 rounded text-gray-100 "
                                 onClick={() => {
-                                  setEditingSet({
-                                    exerciseIndex: index,
-                                    setIndex: i,
-                                  });
-                                  setEditWeight(set.weight);
-                                  setEditReps(set.reps);
-                                  setEditDifficulty(set.difficulty || "Medium");
-                                }}
-                              >
-                                Edit
-                              </button>
-                              <button
-                                className="bg-red-600 px-2 py-1 rounded text-white"
-                                onClick={() => {
+                                  const confirmed = window.confirm(
+                                    "Are you sure you want to delete this set?"
+                                  );
+                                  if (!confirmed) return;
                                   const updated = [...exercises];
                                   updated[index].sets.splice(i, 1);
                                   setExercises(updated);
                                 }}
                               >
-                                x
+                                <SquareX />
                               </button>
                             </td>
                           </>
@@ -423,9 +431,10 @@ export default function TrainingSessionPage() {
                   </div>
                   <select
                     className="text-lg text-black p-2 rounded-md border-2 border-gray-100 z-10 w-[100px]  placeholder-gray-500  dark:text-gray-100 bg-gray-100 dark:bg-gray-900 hover:border-blue-500 focus:outline-none focus:border-green-300"
-                    value={difficulty}
-                    onChange={(e) => setDifficulty(e.target.value)}
+                    value={lvl}
+                    onChange={(e) => setLvl(e.target.value)}
                   >
+                    <option value="Warm-up">Warm-up</option>
                     <option value="Easy">Easy</option>
                     <option value="Medium">Medium</option>
                     <option value="Hard">Hard</option>

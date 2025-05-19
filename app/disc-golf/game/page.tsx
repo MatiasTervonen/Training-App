@@ -6,14 +6,17 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import DeleteSessionBtn from "@/app/ui/deleteSessionBtn";
-import { useSwipeable } from "react-swipeable";
 import { motion, AnimatePresence } from "framer-motion";
+import { SquareArrowLeft } from "lucide-react";
+import { SquareArrowRight } from "lucide-react";
 
 type HoleData = {
   hole_number: number;
   length: number;
   par: number;
   scores: {
+    c2attempted: boolean;
+    c1attempted: boolean;
     playerName: string;
     strokes: number;
     fairwayHit: boolean;
@@ -50,14 +53,23 @@ export default function DiscGolfGame() {
   const [totalHoles, setTotalHoles] = useState<number>(18); // default fallback
   const [holeHistory, setHoleHistory] = useState<HoleData[]>([]);
   const [viewingHoleNumber, setViewingHoleNumber] = useState<number>(1);
-  const [swipeDirection, setSwipeDirection] = useState<"left" | "right">(
-    "left"
-  );
+
   const [previousHoleNumber, setPreviousHoleNumber] = useState<number | null>(
     null
   );
 
   useEffect(() => {
+    if (viewingHoleNumber) {
+      localStorage.setItem("viewingHoleNumber", viewingHoleNumber.toString());
+    }
+  }, [viewingHoleNumber]);
+
+  useEffect(() => {
+    if (viewingHoleNumber < 1) {
+      setViewingHoleNumber(1); // Prevent ever rendering hole 0
+      return;
+    }
+
     if (previousHoleNumber === null || !players.length) {
       setPreviousHoleNumber(viewingHoleNumber);
       return;
@@ -94,20 +106,6 @@ export default function DiscGolfGame() {
 
     setPreviousHoleNumber(viewingHoleNumber);
   }, [viewingHoleNumber]);
-
-  const handlers = useSwipeable({
-    onSwipedLeft: () => {
-      setSwipeDirection("left");
-      setViewingHoleNumber((h) => Math.min(h + 1, holeHistory.length));
-    },
-
-    onSwipedRight: () => {
-      setSwipeDirection("right");
-      setViewingHoleNumber((h) => Math.max(h - 1, 1));
-    },
-    trackMouse: true, // ← enable desktop testing
-    preventScrollOnSwipe: true,
-  });
 
   useEffect(() => {
     const savedHoles = localStorage.getItem("holes");
@@ -195,7 +193,9 @@ export default function DiscGolfGame() {
 
   useEffect(() => {
     const setup = localStorage.getItem("setupData");
+    const savedHoles = localStorage.getItem("holes");
     const currentHole = localStorage.getItem("currentHole");
+    const savedViewingHole = localStorage.getItem("viewingHoleNumber");
     const trackStats = localStorage.getItem("trackStats");
     const numHoles = localStorage.getItem("numHoles");
 
@@ -203,25 +203,18 @@ export default function DiscGolfGame() {
       const { courseName, players } = JSON.parse(setup);
       setCourseName(courseName);
       setPlayers(players);
-
-      setPlayerStats(
-        players.reduce((acc: PlayerStats, player: Player) => {
-          acc[player.name] = {
-            strokes: 3,
-            fairwayHit: false,
-            c1made: false,
-            c1attempted: false,
-            c2made: false,
-            c2attempted: false,
-          };
-          return acc;
-        }, {})
-      );
     }
 
-    if (currentHole) {
-      setHole(parseInt(currentHole));
+    if (savedHoles) {
+      const parsedHoles = JSON.parse(savedHoles);
+      setHoleHistory(parsedHoles);
     }
+
+    const holeToLoad = parseInt(currentHole || savedViewingHole || "1");
+
+    setHole(holeToLoad);
+    setViewingHoleNumber(holeToLoad);
+    setPreviousHoleNumber(holeToLoad); // <--- ensure this is initialized here
 
     if (trackStats) {
       setTrackStats(JSON.parse(trackStats));
@@ -231,6 +224,47 @@ export default function DiscGolfGame() {
       setTotalHoles(parseInt(numHoles));
     }
   }, []);
+
+  useEffect(() => {
+    const holeData = holeHistory.find(
+      (h) => h.hole_number === viewingHoleNumber
+    );
+    if (!holeData) {
+      // This is a new hole
+
+      setPar(3);
+      setLength("");
+
+      setPlayerStats(
+        players.reduce((acc, player) => {
+          acc[player.name] = {
+            strokes: 3, // Default to 3 strokes
+            fairwayHit: false,
+            c1made: false,
+            c1attempted: false,
+            c2made: false,
+            c2attempted: false,
+          };
+          return acc;
+        }, {} as PlayerStats)
+      );
+      return;
+    }
+
+    const stats: PlayerStats = {};
+    holeData.scores.forEach((s) => {
+      stats[s.playerName] = {
+        strokes: s.strokes,
+        fairwayHit: s.fairwayHit,
+        c1made: s.c1made,
+        c1attempted: s.c1attempted,
+        c2made: s.c2made,
+        c2attempted: s.c2attempted,
+      };
+    });
+
+    setPlayerStats(stats);
+  }, [holeHistory, viewingHoleNumber, players]);
 
   const handleFinishGame = () => {
     const confirmed = confirm("Are you sure you want to finish the game?");
@@ -348,16 +382,61 @@ export default function DiscGolfGame() {
           Live Scorecard
         </Link>
       </nav>
+      <div className="fixed inset-0 z-0 h-screen flex items-center justify-between bg-slate-600">
+        <div className="flex flex-col items-center gap-2 mx-2">
+          <div className="text-gray-400 text-2xl font-bold ">
+            <p>H</p>
+            <p>O</p>
+            <p>L</p>
+            <p>E</p>
+            <p> {viewingHoleNumber === 1 ? 2 : viewingHoleNumber - 1}</p>
+          </div>
+
+          <SquareArrowLeft size={35} className="text-gray-100/60" />
+        </div>
+        <div className="flex flex-col items-center gap-2 mx-2">
+          <div className="text-gray-400 text-2xl font-bold">
+            <p>H</p>
+            <p>O</p>
+            <p>L</p>
+            <p>E</p>
+            <p>{viewingHoleNumber + 1}</p>
+          </div>
+
+          <SquareArrowRight size={35} className="text-gray-100/60" />
+        </div>
+      </div>
 
       <AnimatePresence mode="wait">
         <motion.div
           key={viewingHoleNumber}
-          {...handlers}
-          initial={{ x: swipeDirection === "left" ? 300 : -300, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          exit={{ x: swipeDirection === "left" ? -300 : 300, opacity: 0 }}
-          transition={{ duration: 0.3 }}
-          className="bg-slate-800 p-5 min-h-[100dvh] relative"
+          className="absolute top-29 inset-0 z-50 overflow-y-auto bg-slate-800 p-5"
+          initial={false}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          drag="x"
+          dragConstraints={{ left: 0, right: 0 }}
+          onDragEnd={(_, info) => {
+            const swipeDistance = info.offset.x;
+
+            if (viewingHoleNumber === 1) {
+              // On hole 1, any swipe moves forward
+              if (
+                Math.abs(swipeDistance) > 100 &&
+                viewingHoleNumber < totalHoles
+              ) {
+                setViewingHoleNumber(2);
+              }
+              return;
+            }
+
+            if (info.offset.x > 100 && viewingHoleNumber > 1) {
+              setViewingHoleNumber((prev) => Math.max(1, prev - 1));
+            } else if (info.offset.x < -100 && viewingHoleNumber < totalHoles) {
+              setViewingHoleNumber((prev) => Math.min(prev + 1, totalHoles));
+            }
+          }}
+          transition={{ type: "spring", stiffness: 300, damping: 30 }}
         >
           <h1
             className={`${russoOne.className} text-gray-100 flex justify-center my-2 text-2xl `}
@@ -608,6 +687,7 @@ export default function DiscGolfGame() {
                 "currentHole",
                 "trackStats",
                 "numHoles",
+                "viewingHoleNumber",
               ]}
               onDelete={() => router.push("/disc-golf")}
             />

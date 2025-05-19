@@ -80,7 +80,7 @@ export default function Notes() {
           <div className="mb-5">
             <p className="text-gray-100 pb-1">Title...</p>
             <input
-              className="text-lg text-black p-2 rounded-md border-2 border-gray-100 z-10 placeholder-gray-500  dark:text-gray-100 bg-gray-100 dark:bg-gray-900 hover:border-blue-500 focus:outline-none focus:border-green-300"
+              className="text-lg  p-2 rounded-md border-2 border-gray-100 z-10 placeholder-gray-500 text-gray-100 bg-gray-900 hover:border-blue-500 focus:outline-none focus:border-green-300"
               type="text"
               value={notesTitle}
               onChange={(e) => setNotesTitle(e.target.value)}
@@ -88,7 +88,7 @@ export default function Notes() {
           </div>
           <div className="w-full ">
             <div className="flex items-center pb-1">
-              <p className="text-gray-100">Add notes...</p>
+              <label htmlFor="notes" className="text-gray-100">Add notes...</label>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
@@ -100,10 +100,12 @@ export default function Notes() {
               </svg>
             </div>
             <textarea
-              className="text-md w-full  text-black p-2 rounded-md border-2 border-gray-100 z-10 placeholder-gray-500  dark:text-gray-100 bg-gray-100 dark:bg-gray-900 hover:border-blue-500 focus:outline-none focus:border-green-300 resize-none"
+              className="text-md w-full p-2 rounded-md border-2 border-gray-100 z-10 placeholder-gray-500  text-gray-100 bg-gray-900 hover:border-blue-500 focus:outline-none focus:border-green-300 resize-none"
               spellCheck={false}
               placeholder="Add Notes here..."
               name="notes"
+              rows={5}
+              cols={30}
               autoComplete="off"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}

@@ -23,7 +23,9 @@ export default function TrainingSession({ session }: { session: Session }) {
         <h3 className="font-semibold mt-2">
           Duration: {formatDuration(session.duration)}
         </h3>
-        <p className="mt-4 text-gray-200">{session.notes}</p>
+        <p className="mt-4 text-gray-200 whitespace-pre-wrap break-words overflow-hidden max-w-full">
+          {session.notes}
+        </p>
       </div>
       {session.exercises?.map((exercise: Exercise, index: number) => (
         <div
@@ -33,7 +35,9 @@ export default function TrainingSession({ session }: { session: Session }) {
           <h3 className="text-lg font-bold text-gray-100 border-b mb-2">
             {exercise.name}
           </h3>
-          <div className="py-2">{exercise.notes}</div>
+          <div className="py-2 whitespace-pre-wrap break-words overflow-hidden max-w-full">
+            {exercise.notes}
+          </div>
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="text-gray-300">

@@ -8,6 +8,7 @@ import { CirclePause } from "lucide-react";
 type TimerProps = {
   sessionId: string;
   resetTrigger?: number;
+  onManualStart?: () => void;
 };
 
 type TimerData = {
@@ -16,15 +17,17 @@ type TimerData = {
   isRunning: boolean;
 };
 
-export default function Timer({ sessionId, resetTrigger }: TimerProps) {
+export default function Timer({
+  sessionId,
+  resetTrigger,
+  onManualStart,
+}: TimerProps) {
   const [elapsed, setElapsed] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
 
   // Keep time synced every second
   useEffect(() => {
     const interval = setInterval(() => {
-
-      
       const gameFinished = localStorage.getItem("gameFinished");
       if (gameFinished) {
         clearInterval(interval);
@@ -51,7 +54,9 @@ export default function Timer({ sessionId, resetTrigger }: TimerProps) {
   useEffect(() => {
     if (resetTrigger !== undefined) {
       // reset elapsed time
+
       setElapsed(0);
+      setIsRunning(false);
       // optionally clear interval or restart logic
     }
   }, [resetTrigger]);
@@ -83,6 +88,11 @@ export default function Timer({ sessionId, resetTrigger }: TimerProps) {
 
     localStorage.setItem(`timer:${sessionId}`, JSON.stringify(newData));
     setIsRunning(true);
+
+    if (onManualStart) {
+      console.log("Triggering onManualStart...");
+      onManualStart();
+    }
   };
 
   const pauseTimer = () => {

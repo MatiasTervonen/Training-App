@@ -1,9 +1,11 @@
+"use client";
+
 import { Exercise, Session } from "@/types/session";
 import Modal from "@/app/components/modal";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { russoOne } from "@/app/ui/fonts";
 import EditExercises from "../ui/editSession/exercises";
+import SaveButton from "@/app/ui/save-button";
 
 type SessionUpdatePayload = {
   id: number | string;
@@ -24,8 +26,18 @@ export default function EditSession({
   const [formData, setFormData] = useState<Partial<Session>>({
     ...session,
   });
+  const [isSaving, setIsSaving] = useState(false);
 
   const router = useRouter();
+
+  const textAreaRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    if (textAreaRef.current) {
+      textAreaRef.current.style.height = "auto"; // Reset height
+      textAreaRef.current.style.height = `${textAreaRef.current.scrollHeight}px`; // Set to scroll height
+    }
+  }, [formData.notes]);
 
   const handleChange = (
     field: keyof Session,
@@ -39,6 +51,7 @@ export default function EditSession({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSaving(true);
 
     const bodyToSend: SessionUpdatePayload = {
       id: session.id,
@@ -64,6 +77,7 @@ export default function EditSession({
     if (res.ok) {
       router.refresh();
       onClose();
+      setIsSaving(false);
     } else {
       const data = await res.json();
       alert(data.error || "Failed to update session");
@@ -88,10 +102,12 @@ export default function EditSession({
           <div className="w-full flex flex-col mb-10 mt-5">
             <p>Notes...</p>
             <textarea
+              ref={textAreaRef}
               className="w-full   p-2 rounded-md border-2 border-gray-100 z-10 placeholder-gray-500  text-gray-100 bg-gray-700 hover:border-blue-500 focus:outline-none focus:border-green-300 resize-none"
               spellCheck={false}
               placeholder="Add Notes here..."
               name="notes"
+              rows={1}
               autoComplete="off"
               value={formData.notes}
               onChange={(e) => handleChange("notes", e.target.value)}
@@ -110,13 +126,13 @@ export default function EditSession({
       </form>
 
       <div className="flex items-center justify-center mb-20 mt-10 mx-10">
-        <button
-          onClick={handleSubmit}
-          type="submit"
-          className={`${russoOne.className} bg-blue-800 py-2 w-full rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95`}
-        >
-          Save
-        </button>
+        <SaveButton
+          isSaving={isSaving}
+          label="Save Changes"
+          onClick={() =>
+            handleSubmit(new Event("submit") as unknown as React.FormEvent)
+          }
+        />
       </div>
     </Modal>
   );

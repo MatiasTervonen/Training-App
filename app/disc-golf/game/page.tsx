@@ -53,6 +53,8 @@ export default function DiscGolfGame() {
   const [totalHoles, setTotalHoles] = useState<number>(18); // default fallback
   const [holeHistory, setHoleHistory] = useState<HoleData[]>([]);
   const [viewingHoleNumber, setViewingHoleNumber] = useState<number>(1);
+  const [direction, setDirection] = useState(0);
+  const [isSwiping, setIsSwiping] = useState(false);
 
   const [previousHoleNumber, setPreviousHoleNumber] = useState<number | null>(
     null
@@ -382,61 +384,100 @@ export default function DiscGolfGame() {
           Live Scorecard
         </Link>
       </nav>
-      <div className="fixed inset-0 z-0 h-screen flex items-center justify-between bg-slate-600">
-        <div className="flex flex-col items-center gap-2 mx-2">
-          <div className="text-gray-400 text-2xl font-bold ">
-            <p>H</p>
-            <p>O</p>
-            <p>L</p>
-            <p>E</p>
-            <p> {viewingHoleNumber === 1 ? 2 : viewingHoleNumber - 1}</p>
-          </div>
+      <div className="fixed inset-0 z-0 h-screen flex justify-between bg-slate-600">
+        {!isSwiping && (
+          <>
+            <div className="flex flex-col items-center pt-32 gap-2 mx-2">
+              <div className="text-gray-400 text-center text-2xl font-bold ">
+                <p>H</p>
+                <p>O</p>
+                <p>L</p>
+                <p>E</p>
+                <p> {viewingHoleNumber === 1 ? 2 : viewingHoleNumber - 1}</p>
+              </div>
 
-          <SquareArrowLeft size={35} className="text-gray-100/60" />
-        </div>
-        <div className="flex flex-col items-center gap-2 mx-2">
-          <div className="text-gray-400 text-2xl font-bold">
-            <p>H</p>
-            <p>O</p>
-            <p>L</p>
-            <p>E</p>
-            <p>{viewingHoleNumber + 1}</p>
-          </div>
+              <SquareArrowLeft size={35} className="text-gray-100/60" />
+            </div>
+            <div className="flex flex-col items-center gap-2 mx-2 pt-32">
+              {viewingHoleNumber === totalHoles ? (
+                <div className="text-gray-400 text-center text-2xl font-bold ">
+                  <p>F</p>
+                  <p>I</p>
+                  <p>N</p>
+                  <p>I</p>
+                  <p>S</p>
+                  <p>H</p>
+                </div>
+              ) : (
+                <div className="text-gray-400 text-center text-2xl font-bold">
+                  <p>H</p>
+                  <p>O</p>
+                  <p>L</p>
+                  <p>E</p>
+                  <p>{viewingHoleNumber + 1}</p>
+                </div>
+              )}
 
-          <SquareArrowRight size={35} className="text-gray-100/60" />
-        </div>
+              <SquareArrowRight size={35} className="text-gray-100/60" />
+            </div>
+          </>
+        )}
       </div>
 
-      <AnimatePresence mode="wait">
+      <AnimatePresence initial={false} custom={direction}>
         <motion.div
           key={viewingHoleNumber}
           className="absolute top-29 inset-0 z-50 overflow-y-auto bg-slate-800 p-5"
-          initial={false}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
+          custom={direction}
+          initial="enter"
+          animate="center"
+          exit="exit"
+          onAnimationComplete={() => {
+            setIsSwiping(false);
+          }}
+          variants={{
+            enter: (direction: number) => ({
+              x: direction > 0 ? 300 : -300,
+              opacity: 0,
+            }),
+            center: {
+              x: 0,
+              opacity: 1,
+            },
+            exit: (direction: number) => ({
+              x: direction > 0 ? -300 : 300,
+              opacity: 0,
+            }),
+          }}
+          transition={{
+            x: { type: "spring", stiffness: 300, damping: 30 },
+            opacity: { duration: 0.2 },
+          }}
           drag="x"
           dragConstraints={{ left: 0, right: 0 }}
           onDragEnd={(_, info) => {
             const swipeDistance = info.offset.x;
+            const threshold = 150; // Minimum distance to trigger a swipe
 
-            if (viewingHoleNumber === 1) {
-              // On hole 1, any swipe moves forward
-              if (
-                Math.abs(swipeDistance) > 100 &&
-                viewingHoleNumber < totalHoles
-              ) {
-                setViewingHoleNumber(2);
-              }
-              return;
-            }
-
-            if (info.offset.x > 100 && viewingHoleNumber > 1) {
-              setViewingHoleNumber((prev) => Math.max(1, prev - 1));
-            } else if (info.offset.x < -100 && viewingHoleNumber < totalHoles) {
-              setViewingHoleNumber((prev) => Math.min(prev + 1, totalHoles));
+            if (swipeDistance > threshold && viewingHoleNumber > 1) {
+              setIsSwiping(true);
+              setDirection(-1);
+              setViewingHoleNumber((prev) => prev - 1);
+            } else if (
+              swipeDistance < -threshold &&
+              viewingHoleNumber < totalHoles
+            ) {
+              setIsSwiping(true);
+              setDirection(1);
+              setViewingHoleNumber((prev) => prev + 1);
+            } else if (
+              swipeDistance < -threshold &&
+              viewingHoleNumber === totalHoles
+            ) {
+              setIsSwiping(true);
+              handleFinishGame();
             }
           }}
-          transition={{ type: "spring", stiffness: 300, damping: 30 }}
         >
           <h1
             className={`${russoOne.className} text-gray-100 flex justify-center my-2 text-2xl `}
@@ -663,7 +704,7 @@ export default function DiscGolfGame() {
           ))}
 
           <div className="mb-10">
-            {hole < totalHoles && (
+            {viewingHoleNumber < totalHoles && (
               <button
                 onClick={handleNextHole}
                 className={`${russoOne.className} mb-5 flex items-center justify-center w-full  bg-blue-800 py-2 px-10 mt-10 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95`}

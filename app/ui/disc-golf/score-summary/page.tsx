@@ -124,8 +124,6 @@ export default function DiscGolfScores() {
                                 else formattedDiff = `${diff}`;
                               }
 
-                              const key = `${playerName}_${score.hole}`;
-
                               return (
                                 <div className="flex items-center justify-between gap-2">
                                   <span

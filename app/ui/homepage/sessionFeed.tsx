@@ -117,7 +117,7 @@ export default function SessionFeed({ sessions }: { sessions: Session[] }) {
   return (
     <>
       <div
-        className={`${russoOne.className} bg-slate-800 h-[calc(100vh-152px)] px-5 pt-3 overflow-y-auto touch-pan-y text-gray-100 `}
+        className={`${russoOne.className} bg-slate-800 h-[calc(100vh-152px)] px-5 pt-3 pb-20 overflow-y-auto touch-pan-y text-gray-100 `}
       >
         {sessions.length === 0 ? (
           <p>No sessions yet. Let&apos;s get started!</p>

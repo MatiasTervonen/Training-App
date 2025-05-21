@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 
 import "./globals.css";
 import Navbar from "./ui/homepage/navbar";
+import LayoutWrapper from "./ui/LayoutWrapper";
 
 export const metadata: Metadata = {
   title: "Training",
@@ -16,10 +17,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <div className="sticky top-0 z-50">
+        <div className="fixed top-0 left-0 w-full z-50">
           <Navbar />
         </div>
-        {children}
+        <LayoutWrapper>{children}</LayoutWrapper>
       </body>
     </html>
   );

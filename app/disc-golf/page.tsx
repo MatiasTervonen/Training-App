@@ -107,7 +107,7 @@ export default function DiscGolf() {
   };
 
   return (
-    <div className="bg-slate-800 p-5 min-h-screen relative">
+    <div className="bg-slate-800 p-5 h-full">
       <div>
         <h1
           className={`${russoOne.className} text-gray-100 flex justify-center my-5 text-2xl `}

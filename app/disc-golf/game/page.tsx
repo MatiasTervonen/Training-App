@@ -32,7 +32,7 @@ type Player = {
 
 type PlayerStats = {
   [playerName: string]: {
-    strokes?: number;
+    strokes: number;
     fairwayHit: boolean;
     c1made: boolean;
     c1attempted: boolean;
@@ -52,7 +52,11 @@ export default function DiscGolfGame() {
   const router = useRouter();
   const [totalHoles, setTotalHoles] = useState<number>(18); // default fallback
   const [holeHistory, setHoleHistory] = useState<HoleData[]>([]);
-  const [viewingHoleNumber, setViewingHoleNumber] = useState<number>(1);
+  const [viewingHoleNumber, setViewingHoleNumber] = useState<number>(() => {
+    if (typeof window === "undefined") return 1;
+    const saved = localStorage.getItem("viewingHoleNumber");
+    return saved ? parseInt(saved) : 1;
+  });
   const [direction, setDirection] = useState(0);
   const [isSwiping, setIsSwiping] = useState(false);
 
@@ -269,9 +273,6 @@ export default function DiscGolfGame() {
   }, [holeHistory, viewingHoleNumber, players]);
 
   const handleFinishGame = () => {
-    const confirmed = confirm("Are you sure you want to finish the game?");
-    if (!confirmed) return;
-
     const holeData: HoleData = {
       hole_number: hole,
       length: parseInt(length),
@@ -371,12 +372,11 @@ export default function DiscGolfGame() {
   };
 
   return (
-    <div className="bg-slate-800">
-      <nav className="flex items-center justify-between bg-gray-700 p-2 px-4 sticky top-19 z-40">
+    <>
+      <nav className="flex items-center justify-between bg-gray-700 p-2 px-4 fixed w-full z-40">
         <div className="flex items-center justify-center gap-2  text-gray-100">
           <Timer sessionId="disc-golf" />
         </div>
-
         <Link
           href="/ui/disc-golf/score-summary"
           className={`${russoOne.className} text-gray-100`}
@@ -384,113 +384,125 @@ export default function DiscGolfGame() {
           Live Scorecard
         </Link>
       </nav>
-      <div className="fixed inset-0 z-0 h-screen flex justify-between bg-slate-600">
-        {!isSwiping && (
-          <>
-            <div className="flex flex-col items-center pt-32 gap-2 mx-2">
-              <div className="text-gray-400 text-center text-2xl font-bold ">
-                <p>H</p>
-                <p>O</p>
-                <p>L</p>
-                <p>E</p>
-                <p> {viewingHoleNumber === 1 ? 2 : viewingHoleNumber - 1}</p>
+      <div className="pt-[40px] relative h-[calc(100dvh-72px)] overflow-hidden">
+        <div className="absolute inset-0 z-0 h-screen flex justify-between bg-slate-600">
+          {!isSwiping && (
+            <>
+              <div className="flex flex-col items-center pt-[50px] gap-2 mx-2">
+                {viewingHoleNumber > 1 && (
+                  <>
+                    <div className="text-gray-400 text-center text-2xl font-bold ">
+                      <p>H</p>
+                      <p>O</p>
+                      <p>L</p>
+                      <p>E</p>
+                      <p>{viewingHoleNumber - 1}</p>
+                    </div>
+                    <SquareArrowLeft size={35} className="text-gray-100/60" />
+                  </>
+                )}
               </div>
 
-              <SquareArrowLeft size={35} className="text-gray-100/60" />
-            </div>
-            <div className="flex flex-col items-center gap-2 mx-2 pt-32">
-              {viewingHoleNumber === totalHoles ? (
-                <div className="text-gray-400 text-center text-2xl font-bold ">
-                  <p>F</p>
-                  <p>I</p>
-                  <p>N</p>
-                  <p>I</p>
-                  <p>S</p>
-                  <p>H</p>
-                </div>
-              ) : (
-                <div className="text-gray-400 text-center text-2xl font-bold">
-                  <p>H</p>
-                  <p>O</p>
-                  <p>L</p>
-                  <p>E</p>
-                  <p>{viewingHoleNumber + 1}</p>
-                </div>
-              )}
+              <div className="flex flex-col items-center gap-2 mx-2 pt-[50px]">
+                {viewingHoleNumber === totalHoles ? (
+                  <div className="text-gray-400 text-center text-2xl font-bold ">
+                    <p>F</p>
+                    <p>I</p>
+                    <p>N</p>
+                    <p>I</p>
+                    <p>S</p>
+                    <p>H</p>
+                  </div>
+                ) : (
+                  <div className="text-gray-400 text-center text-2xl font-bold">
+                    <p>H</p>
+                    <p>O</p>
+                    <p>L</p>
+                    <p>E</p>
+                    <p>{viewingHoleNumber + 1}</p>
+                  </div>
+                )}
 
-              <SquareArrowRight size={35} className="text-gray-100/60" />
-            </div>
-          </>
-        )}
-      </div>
+                <SquareArrowRight size={35} className="text-gray-100/60" />
+              </div>
+            </>
+          )}
+        </div>
 
-      <AnimatePresence initial={false} custom={direction}>
-        <motion.div
-          key={viewingHoleNumber}
-          className="absolute top-29 inset-0 z-50 overflow-y-auto bg-slate-800 p-5"
-          custom={direction}
-          initial="enter"
-          animate="center"
-          exit="exit"
-          onAnimationComplete={() => {
-            setIsSwiping(false);
-          }}
-          variants={{
-            enter: (direction: number) => ({
-              x: direction > 0 ? 300 : -300,
-              opacity: 0,
-            }),
-            center: {
-              x: 0,
-              opacity: 1,
-            },
-            exit: (direction: number) => ({
-              x: direction > 0 ? -300 : 300,
-              opacity: 0,
-            }),
-          }}
-          transition={{
-            x: { type: "spring", stiffness: 300, damping: 30 },
-            opacity: { duration: 0.2 },
-          }}
-          drag="x"
-          dragConstraints={{ left: 0, right: 0 }}
-          onDragEnd={(_, info) => {
-            const swipeDistance = info.offset.x;
-            const threshold = 150; // Minimum distance to trigger a swipe
+        <AnimatePresence initial={false} custom={direction}>
+          <motion.div
+            key={viewingHoleNumber}
+            className="absolute w-full z-30 bg-slate-800 px-5 h-full overflow-y-auto flex flex-col justify-between"
+            custom={direction}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            onAnimationComplete={() => {
+              setIsSwiping(false);
+            }}
+            variants={{
+              enter: (direction: number) => ({
+                x: direction > 0 ? 300 : -300,
+                opacity: 0,
+              }),
+              center: {
+                x: 0,
+                opacity: 1,
+              },
+              exit: (direction: number) => ({
+                x: direction > 0 ? -300 : 300,
+                opacity: 0,
+              }),
+            }}
+            transition={{
+              x: { type: "spring", stiffness: 300, damping: 30 },
+              opacity: { duration: 0.2 },
+            }}
+            drag="x"
+            dragConstraints={{ left: 0, right: 0 }}
+            dragElastic={0.2}
+            onDragEnd={(_, info) => {
+              const swipeDistance = info.offset.x;
+              const threshold = 100;
 
-            if (swipeDistance > threshold && viewingHoleNumber > 1) {
-              setIsSwiping(true);
-              setDirection(-1);
-              setViewingHoleNumber((prev) => prev - 1);
-            } else if (
-              swipeDistance < -threshold &&
-              viewingHoleNumber < totalHoles
-            ) {
-              setIsSwiping(true);
-              setDirection(1);
-              setViewingHoleNumber((prev) => prev + 1);
-            } else if (
-              swipeDistance < -threshold &&
-              viewingHoleNumber === totalHoles
-            ) {
-              setIsSwiping(true);
-              handleFinishGame();
-            }
-          }}
-        >
-          <h1
-            className={`${russoOne.className} text-gray-100 flex justify-center my-2 text-2xl `}
+              if (swipeDistance > threshold) {
+                // Swipe right
+                if (viewingHoleNumber > 1) {
+                  setIsSwiping(true);
+                  setDirection(-1);
+                  setViewingHoleNumber((prev) => prev - 1);
+                } else {
+                  // At Hole 1: do nothing — Framer Motion will snap it back
+                }
+              } else if (swipeDistance < -threshold) {
+                // Swipe left
+                if (viewingHoleNumber < totalHoles) {
+                  setIsSwiping(true);
+                  setDirection(1);
+                  setViewingHoleNumber((prev) => prev + 1);
+                } else {
+                  const confirmed = confirm("Finish the game?");
+                  if (confirmed) {
+                    setIsSwiping(true);
+                    handleFinishGame();
+                  }
+                }
+              }
+            }}
           >
-            Hole {viewingHoleNumber}
-          </h1>
-          <p
-            className={`${russoOne.className} text-gray-100 flex justify-center my-2  `}
-          >
-            {courseName}
-          </p>
-          <div className="border-2 border-gray-100 p-5 rounded-xl mb-10 mx-10">
-            {/* <div className="flex flex-col gap-2">
+            <div>
+              <h1
+                className={`${russoOne.className} text-gray-100 flex justify-center my-2 text-2xl mt-5`}
+              >
+                Hole {viewingHoleNumber}
+              </h1>
+              <p
+                className={`${russoOne.className} text-gray-100 flex justify-center my-2  `}
+              >
+                {courseName}
+              </p>
+              <div className="border-2 border-gray-100 p-5 rounded-xl mb-10 mx-10">
+                {/* <div className="flex flex-col gap-2">
             <label className="">
               <p className={`${russoOne.className} text-gray-100 text-center`}>
                 Length: {length} m
@@ -513,228 +525,238 @@ export default function DiscGolfGame() {
             </label>
           </div> */}
 
-            <div
-              className={`${russoOne.className} flex items-center justify-between gap-2 text-gray-100 `}
-            >
-              <p className="text-xl">Par</p>
-              <div className="flex items-center gap-4">
-                <button
-                  onClick={() => setPar((prev) => Math.max(3, prev - 1))}
-                  className="bg-blue-800 text-gray-100 px-4 py-2 rounded"
+                <div
+                  className={`${russoOne.className} flex items-center justify-between gap-2 text-gray-100 `}
                 >
-                  -
-                </button>
-                <span>{par}</span>
-                <button
-                  onClick={() => setPar((prev) => Math.min(5, prev + 1))}
-                  className="bg-blue-800 text-gray-100 px-4 py-2 rounded"
-                >
-                  +
-                </button>
+                  <p className="text-xl">Par</p>
+                  <div className="flex items-center gap-4">
+                    <button
+                      onClick={() => setPar((prev) => Math.max(3, prev - 1))}
+                      className="bg-blue-800 text-gray-100 px-4 py-2 rounded"
+                    >
+                      -
+                    </button>
+                    <span>{par}</span>
+                    <button
+                      onClick={() => setPar((prev) => Math.min(5, prev + 1))}
+                      className="bg-blue-800 text-gray-100 px-4 py-2 rounded"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-          {getSortedPlayersByScoreAndLastHole().map((player, index) => (
-            <div key={index} className="flex flex-col gap-2 mt-5 mb-10">
-              <div
-                className={`${russoOne.className} flex items-center justify-between text-gray-100 text-lg border-b`}
-              >
-                {(() => {
-                  const { totalStrokes, formattedDiff } = getPlayerTotals(
-                    player.name
-                  );
-                  return (
-                    <p className="flex items-center gap-2">
-                      {index === 0 && <span>🥏</span>}
-                      {player.name} - {totalStrokes} ({formattedDiff})
-                    </p>
-                  );
-                })()}
+            {getSortedPlayersByScoreAndLastHole().map((player, index) => (
+              <div key={index} className="flex flex-col gap-2 mt-5 mb-10">
+                <div
+                  className={`${russoOne.className} flex items-center justify-between text-gray-100 text-lg border-b`}
+                >
+                  {(() => {
+                    const { totalStrokes, formattedDiff } = getPlayerTotals(
+                      player.name
+                    );
+                    return (
+                      <p className="flex items-center gap-2">
+                        {index === 0 && <span>🥏</span>}
+                        {player.name} - {totalStrokes} ({formattedDiff})
+                      </p>
+                    );
+                  })()}
 
-                <div className="flex items-center gap-6">
-                  <button
-                    className="bg-blue-800 text-gray-100 px-4 py-2 rounded"
-                    onClick={() =>
-                      setPlayerStats((prev) => ({
-                        ...prev,
-                        [player.name]: {
-                          ...prev[player.name],
-                          strokes: Math.max(
-                            (prev[player.name]?.strokes || 0) - 1,
-                            0
-                          ),
-                        },
-                      }))
-                    }
-                  >
-                    -
-                  </button>
-                  <span>{playerStats[player.name]?.strokes ?? 0}</span>
-                  <button
-                    className="bg-blue-800 text-gray-100 px-4 py-2 rounded"
-                    onClick={() =>
-                      setPlayerStats((prev) => ({
-                        ...prev,
-                        [player.name]: {
-                          ...prev[player.name],
-                          strokes: Math.min(
-                            (prev[player.name]?.strokes || 0) + 1,
-                            12
-                          ),
-                        },
-                      }))
-                    }
-                  >
-                    +
-                  </button>
+                  <div className="flex items-center gap-6">
+                    <button
+                      className="bg-blue-800 text-gray-100 px-4 py-2 rounded"
+                      onClick={() =>
+                        setPlayerStats((prev) => ({
+                          ...prev,
+                          [player.name]: {
+                            ...prev[player.name],
+                            strokes: Math.max(
+                              (prev[player.name]?.strokes || 0) - 1,
+                              0
+                            ),
+                          },
+                        }))
+                      }
+                    >
+                      -
+                    </button>
+                    <span>{playerStats[player.name]?.strokes ?? 0}</span>
+                    <button
+                      className="bg-blue-800 text-gray-100 px-4 py-2 rounded"
+                      onClick={() =>
+                        setPlayerStats((prev) => ({
+                          ...prev,
+                          [player.name]: {
+                            ...prev[player.name],
+                            strokes: Math.min(
+                              (prev[player.name]?.strokes || 0) + 1,
+                              12
+                            ),
+                          },
+                        }))
+                      }
+                    >
+                      +
+                    </button>
+                  </div>
                 </div>
+                {trackStats && (
+                  <div>
+                    <div
+                      className={`${russoOne.className} flex justify-between items-center gap-2 border-b border-gray-100 text-gray-100 mx-10 mt-5`}
+                    >
+                      <label>Fairway Hit</label>
+                      <input
+                        className="h-5 w-5"
+                        type="checkbox"
+                        checked={playerStats[player.name]?.fairwayHit ?? false}
+                        onChange={(e) =>
+                          setPlayerStats((prev) => ({
+                            ...prev,
+                            [player.name]: {
+                              ...prev[player.name],
+                              fairwayHit: e.target.checked,
+                            },
+                          }))
+                        }
+                      />
+                    </div>
+                    <div
+                      className={`${russoOne.className} flex justify-between items-center gap-2 border-b border-gray-100 text-gray-100 mx-10 `}
+                    >
+                      <label>C1 Made</label>
+                      <input
+                        className="h-5 w-5"
+                        type="checkbox"
+                        checked={playerStats[player.name]?.c1made ?? false}
+                        onChange={(e) =>
+                          setPlayerStats((prev) => ({
+                            ...prev,
+                            [player.name]: {
+                              ...prev[player.name],
+                              c1made: e.target.checked,
+                              c1attempted: e.target.checked
+                                ? true
+                                : prev[player.name]?.c1attempted,
+                            },
+                          }))
+                        }
+                      />
+                    </div>
+                    <div
+                      className={`${russoOne.className} flex justify-between items-center gap-2 border-b border-gray-100 text-gray-100 mx-10 `}
+                    >
+                      <label>C1 Attempted</label>
+                      <input
+                        className="h-5 w-5"
+                        type="checkbox"
+                        checked={playerStats[player.name]?.c1attempted ?? false}
+                        onChange={(e) =>
+                          setPlayerStats((prev) => ({
+                            ...prev,
+                            [player.name]: {
+                              ...prev[player.name],
+                              c1attempted: e.target.checked,
+                              c1made: e.target.checked
+                                ? prev[player.name]?.c1made
+                                : false,
+                            },
+                          }))
+                        }
+                      />
+                    </div>
+                    <div
+                      className={`${russoOne.className} flex justify-between items-center gap-2 border-b border-gray-100 text-gray-100 mx-10 `}
+                    >
+                      <label> C2 Made</label>
+                      <input
+                        className="h-5 w-5"
+                        type="checkbox"
+                        checked={playerStats[player.name]?.c2made ?? false}
+                        onChange={(e) =>
+                          setPlayerStats((prev) => ({
+                            ...prev,
+                            [player.name]: {
+                              ...prev[player.name],
+                              c2made: e.target.checked,
+                              c2attempted: e.target.checked
+                                ? true
+                                : prev[player.name]?.c2attempted,
+                            },
+                          }))
+                        }
+                      />
+                    </div>
+                    <div
+                      className={`${russoOne.className} flex justify-between items-center gap-2 border-b border-gray-100 text-gray-100 mx-10 mb-5`}
+                    >
+                      <label> C2 Attempted</label>
+                      <input
+                        className="h-5 w-5"
+                        type="checkbox"
+                        checked={playerStats[player.name]?.c2attempted ?? false}
+                        onChange={(e) =>
+                          setPlayerStats((prev) => ({
+                            ...prev,
+                            [player.name]: {
+                              ...prev[player.name],
+                              c2attempted: e.target.checked,
+                              c2made: e.target.checked
+                                ? prev[player.name]?.c2made
+                                : false,
+                            },
+                          }))
+                        }
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
-              {trackStats && (
-                <div>
-                  <div
-                    className={`${russoOne.className} flex justify-between items-center gap-2 border-b border-gray-100 text-gray-100 mx-10 mt-5`}
-                  >
-                    <label>Fairway Hit</label>
-                    <input
-                      className="h-5 w-5"
-                      type="checkbox"
-                      checked={playerStats[player.name]?.fairwayHit ?? false}
-                      onChange={(e) =>
-                        setPlayerStats((prev) => ({
-                          ...prev,
-                          [player.name]: {
-                            ...prev[player.name],
-                            fairwayHit: e.target.checked,
-                          },
-                        }))
-                      }
-                    />
-                  </div>
-                  <div
-                    className={`${russoOne.className} flex justify-between items-center gap-2 border-b border-gray-100 text-gray-100 mx-10 `}
-                  >
-                    <label>C1 Made</label>
-                    <input
-                      className="h-5 w-5"
-                      type="checkbox"
-                      checked={playerStats[player.name]?.c1made ?? false}
-                      onChange={(e) =>
-                        setPlayerStats((prev) => ({
-                          ...prev,
-                          [player.name]: {
-                            ...prev[player.name],
-                            c1made: e.target.checked,
-                            c1attempted: e.target.checked
-                              ? true
-                              : prev[player.name]?.c1attempted,
-                          },
-                        }))
-                      }
-                    />
-                  </div>
-                  <div
-                    className={`${russoOne.className} flex justify-between items-center gap-2 border-b border-gray-100 text-gray-100 mx-10 `}
-                  >
-                    <label>C1 Attempted</label>
-                    <input
-                      className="h-5 w-5"
-                      type="checkbox"
-                      checked={playerStats[player.name]?.c1attempted ?? false}
-                      onChange={(e) =>
-                        setPlayerStats((prev) => ({
-                          ...prev,
-                          [player.name]: {
-                            ...prev[player.name],
-                            c1attempted: e.target.checked,
-                            c1made: e.target.checked
-                              ? prev[player.name]?.c1made
-                              : false,
-                          },
-                        }))
-                      }
-                    />
-                  </div>
-                  <div
-                    className={`${russoOne.className} flex justify-between items-center gap-2 border-b border-gray-100 text-gray-100 mx-10 `}
-                  >
-                    <label> C2 Made</label>
-                    <input
-                      className="h-5 w-5"
-                      type="checkbox"
-                      checked={playerStats[player.name]?.c2made ?? false}
-                      onChange={(e) =>
-                        setPlayerStats((prev) => ({
-                          ...prev,
-                          [player.name]: {
-                            ...prev[player.name],
-                            c2made: e.target.checked,
-                            c2attempted: e.target.checked
-                              ? true
-                              : prev[player.name]?.c2attempted,
-                          },
-                        }))
-                      }
-                    />
-                  </div>
-                  <div
-                    className={`${russoOne.className} flex justify-between items-center gap-2 border-b border-gray-100 text-gray-100 mx-10 mb-5`}
-                  >
-                    <label> C2 Attempted</label>
-                    <input
-                      className="h-5 w-5"
-                      type="checkbox"
-                      checked={playerStats[player.name]?.c2attempted ?? false}
-                      onChange={(e) =>
-                        setPlayerStats((prev) => ({
-                          ...prev,
-                          [player.name]: {
-                            ...prev[player.name],
-                            c2attempted: e.target.checked,
-                            c2made: e.target.checked
-                              ? prev[player.name]?.c2made
-                              : false,
-                          },
-                        }))
-                      }
-                    />
-                  </div>
-                </div>
+            ))}
+
+            <div className="mb-20">
+              {viewingHoleNumber < totalHoles && (
+                <button
+                  onClick={handleNextHole}
+                  className={`${russoOne.className} mb-5 flex items-center justify-center w-full  bg-blue-800 py-2 px-10 mt-10 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95`}
+                >
+                  Next Hole
+                </button>
               )}
-            </div>
-          ))}
-
-          <div className="mb-10">
-            {viewingHoleNumber < totalHoles && (
               <button
-                onClick={handleNextHole}
-                className={`${russoOne.className} mb-5 flex items-center justify-center w-full  bg-blue-800 py-2 px-10 mt-10 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95`}
+                onClick={() => {
+                  const confirmed = confirm(
+                    "Are you sure you want to finish the game?"
+                  );
+
+                  if (confirmed) {
+                    handleFinishGame();
+                  }
+                }}
+                className={`${russoOne.className} mb-5 mt-10 flex items-center justify-center w-full  bg-blue-800 py-2 px-10  rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95`}
               >
-                Next Hole
+                Finish
               </button>
-            )}
-            <button
-              onClick={handleFinishGame}
-              className={`${russoOne.className} mb-5 mt-10 flex items-center justify-center w-full  bg-blue-800 py-2 px-10  rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95`}
-            >
-              Finish
-            </button>
-            <DeleteSessionBtn
-              storageKey={[
-                "activeSession",
-                "setupData",
-                "startTime",
-                "timer:disc-golf",
-                "holes",
-                "currentHole",
-                "trackStats",
-                "numHoles",
-                "viewingHoleNumber",
-              ]}
-              onDelete={() => router.push("/disc-golf")}
-            />
-          </div>
-        </motion.div>
-      </AnimatePresence>
-    </div>
+              <DeleteSessionBtn
+                storageKey={[
+                  "activeSession",
+                  "setupData",
+                  "startTime",
+                  "timer:disc-golf",
+                  "holes",
+                  "currentHole",
+                  "trackStats",
+                  "numHoles",
+                  "viewingHoleNumber",
+                ]}
+                onDelete={() => router.push("/disc-golf")}
+              />
+            </div>
+          </motion.div>
+        </AnimatePresence>
+      </div>
+    </>
   );
 }

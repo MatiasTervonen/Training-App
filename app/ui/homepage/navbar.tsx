@@ -8,6 +8,7 @@ import SignOutButton from "@/app/ui/singOutButton";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
 import { Settings } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -29,7 +30,7 @@ export default function Navbar() {
   if (pathname === "/login") return null; // Don't render the navbar on the login page
 
   return (
-    <div className="relative w-full">
+    <div className="relative w-full ">
       <nav className="w-full flex items-center justify-between p-4 bg-slate-900 ">
         <Link
           href="/"
@@ -41,20 +42,9 @@ export default function Navbar() {
         {pathname !== "/" && (
           <button
             onClick={handleBack}
-            className="border-2 border-gray-100 bg-blue-950 w-fit p-2 rounded-md cursor-pointer"
+            className="border-2 border-gray-100 bg-blue-950 w-fit p-1 rounded-md cursor-pointer"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-              className="size-6 text-gray-100"
-            >
-              <path
-                fillRule="evenodd"
-                d="M11.03 3.97a.75.75 0 0 1 0 1.06l-6.22 6.22H21a.75.75 0 0 1 0 1.5H4.81l6.22 6.22a.75.75 0 1 1-1.06 1.06l-7.5-7.5a.75.75 0 0 1 0-1.06l7.5-7.5a.75.75 0 0 1 1.06 0Z"
-                clipRule="evenodd"
-              />
-            </svg>
+            <ArrowLeft className="text-white" />
           </button>
         )}
 
@@ -172,7 +162,7 @@ export default function Navbar() {
       </nav>
       {pathname === "/" && (
         <div
-          className={`${russoOne.className} bg-slate-500 w-full text-center p-2 text-gray-100`}
+          className={`${russoOne.className} bg-slate-500 w-full text-center p-2 text-gray-100 z-0`}
         >
           <h2>Tracking Feed</h2>
         </div>

@@ -36,9 +36,11 @@ export default function ActiveSessionPopup() {
   if (!activeSession) return null; // Don't render anything if there's no active session
 
   return (
-    <div className="flex flex-row justify-between items-center text-center bg-gray-300 py-4 sticky top-28 z-40 border-2 border-green-500">
+    <div className="flex flex-row justify-between items-center text-center bg-gray-300 py-4 sticky top-0 z-10 border-2 border-green-500">
       <div className="ml-10">
-        <p className={`${russoOne.className} pb-2 text-start ml-2`}>{activeSession.label}</p>
+        <p className={`${russoOne.className} pb-2 text-start ml-2`}>
+          {activeSession.label}
+        </p>
         <div className={`${russoOne.className} text-slate-900 text-start`}>
           <Timer sessionId={activeSession.type} />
         </div>

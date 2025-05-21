@@ -201,345 +201,352 @@ export default function TrainingSessionPage() {
   }, []);
 
   return (
-    <ModalPageWrapper>
-      <div className="bg-slate-950 p-5 min-h-[100dvh] relative flex justify-center">
-        <div className="flex flex-col flex-grow w-full max-w-[800px] ">
-          <div className="text-gray-100 gap-2  border-2 rounded-xl border-gray-100 w-fit  px-4 py-2 bg-gray-900 ">
-            <Timer
-              sessionId="gym"
-              resetTrigger={resetTrigger}
-              onManualStart={startSession}
-            />
-          </div>
-          <div className="flex flex-col items-center justify-center mt-10 gap-5">
-            <p
-              className={`${russoOne.className} text-gray-100 font-bold text-lg
+    <>
+      <nav className="flex items-center justify-between bg-gray-700 p-2 fixed px-4 w-full z-40">
+        <div className="flex items-center justify-center gap-2  text-gray-100">
+          <Timer
+            sessionId="gym"
+            resetTrigger={resetTrigger}
+            onManualStart={startSession}
+          />
+        </div>
+      </nav>
+
+      <ModalPageWrapper>
+        <div className="flex justify-center relative min-h-[calc(100dvh-72px)] bg-slate-950">
+          <div className="flex flex-col w-full max-w-[800px] py-5">
+            <div className="flex flex-col items-center justify-center  gap-5">
+              <p
+                className={`${russoOne.className} text-gray-100 font-bold text-lg
         `}
-            >
-              Track your training progress
-            </p>
-            <div>
-              <p className="text-gray-100 pb-1">Title...</p>
-              <input
-                className="text-lg  p-2 rounded-md border-2 border-gray-100 z-10  placeholder-gray-500  text-gray-100 bg-gray-900 hover:border-blue-500 focus:outline-none focus:border-green-300"
-                type="text"
-                placeholder="Title..."
-                value={sessionTitle}
-                onChange={(e) => setSessionTitle(e.target.value)}
+              >
+                Track your training progress
+              </p>
+              <div>
+                <p className="text-gray-100 pb-1">Title...</p>
+                <input
+                  className="text-lg  p-2 rounded-md border-2 border-gray-100 z-10  placeholder-gray-500  text-gray-100 bg-gray-900 hover:border-blue-500 focus:outline-none focus:border-green-300"
+                  type="text"
+                  placeholder="Title..."
+                  value={sessionTitle}
+                  onChange={(e) => setSessionTitle(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="flex flex-col items-center justify-center mt-10 ">
+              <div>
+                <div className="flex items-center pb-1">
+                  <label htmlFor="Notes" className="text-gray-100">
+                    Add notes...
+                  </label>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="white"
+                    className="size-6 mb-2"
+                  >
+                    <path d="M21.731 2.269a2.625 2.625 0 0 0-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 0 0 0-3.712ZM19.513 8.199l-3.712-3.712-8.4 8.4a5.25 5.25 0 0 0-1.32 2.214l-.8 2.685a.75.75 0 0 0 .933.933l2.685-.8a5.25 5.25 0 0 0 2.214-1.32l8.4-8.4Z" />
+                    <path d="M5.25 5.25a3 3 0 0 0-3 3v10.5a3 3 0 0 0 3 3h10.5a3 3 0 0 0 3-3V13.5a.75.75 0 0 0-1.5 0v5.25a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5V8.25a1.5 1.5 0 0 1 1.5-1.5h5.25a.75.75 0 0 0 0-1.5H5.25Z" />
+                  </svg>
+                </div>
+                <textarea
+                  className="text-sm  p-2 rounded-md border-2 border-gray-100 z-10  placeholder-gray-500 text-gray-100 bg-gray-900 hover:border-blue-500 focus:outline-none focus:border-green-300 resize-none"
+                  spellCheck={false}
+                  placeholder="Add Notes here..."
+                  name="Notes"
+                  rows={2}
+                  cols={35}
+                  autoComplete="off"
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                ></textarea>
+              </div>
+            </div>
+
+            {!isStarted ? (
+              <div className="flex flex-col items-center justify-center gap-10 mt-10">
+                <div className="flex items-center gap-5">
+                  <h2 className="text-gray-100 text-xl">1.</h2>
+                  <input
+                    className="text-lg text-black p-2 rounded-md border-2 border-gray-100 z-10  placeholder-gray-500  dark:text-gray-100 bg-gray-100 dark:bg-gray-900 hover:border-blue-500 focus:outline-none focus:border-green-300"
+                    type="text"
+                    spellCheck={false}
+                    placeholder="Exercise..."
+                    name="Exercise"
+                    autoComplete="off"
+                    value={activeExerciseName}
+                    onChange={(e) => setActiveExerciseName(e.target.value)}
+                  />
+                </div>
+                <button
+                  onClick={startExercise}
+                  className={`${russoOne.className} px-6 py-2 bg-blue-900 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95`}
+                >
+                  Start Exercise
+                </button>
+              </div>
+            ) : (
+              <>
+                {/* Render all exercises and sets */}
+                {exercises.map((exercise, index) => (
+                  <div
+                    key={index}
+                    className="flex flex-col items-center justify-center mt-10 mx-4  max-w-screen bg-slate-800 rounded-md px-4 py-2  shadow-lg"
+                  >
+                    <div className="relative flex items-center justify-between w-full gap-5  border-gray-100 ">
+                      <h2 className="text-xl font-bold text-gray-100 p-2">
+                        {exercise.name}
+                      </h2>
+
+                      <DropdownMenu
+                        button={<Ellipsis className="text-gray-100" />}
+                      >
+                        <button
+                          onClick={() => {
+                            const updatedExercises = exercises.filter(
+                              (_, i) => i !== index
+                            );
+
+                            setExercises(updatedExercises);
+
+                            const sessionDraft = {
+                              title: sessionTitle,
+                              exercises: updatedExercises,
+                              notes,
+                            };
+                            localStorage.setItem(
+                              "gym_session_draft",
+                              JSON.stringify(sessionDraft)
+                            );
+                          }}
+                        >
+                          Delete
+                        </button>
+                      </DropdownMenu>
+                    </div>
+
+                    <div className="w-full my-4 flex flex-col">
+                      <label className="text-gray-100 mb-1 flex gap-2 items-center">
+                        Notes for {exercise.name}
+                        <SquarePen className="mb-1" />
+                      </label>
+                      <textarea
+                        className="text-sm w-full p-2 rounded-md border border-gray-100 placeholder-gray-500 text-gray-100  bg-gray-900 hover:border-blue-500 focus:outline-none focus:border-green-300 resize-none"
+                        placeholder="Add notes"
+                        value={exercise.notes || ""}
+                        onChange={(e) => {
+                          const updated = [...exercises];
+                          updated[index].notes = e.target.value;
+                          setExercises(updated);
+                        }}
+                      />
+                    </div>
+
+                    {/* Locked sets display */}
+                    <table className="w-full text-left border-collapse text-gray-100 mb-4 ">
+                      <thead>
+                        <tr className="text-gray-300 border-b">
+                          <th className="p-2">Set</th>
+                          <th className="p-2">Weight</th>
+                          <th className="p-2">Reps</th>
+                          <th className="p-2">Lvl</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {exercise.sets.map((set, i) => (
+                          <tr
+                            key={i}
+                            className={`border-b ${
+                              set.lvl === "Failure" ? "bg-red-800" : ""
+                            } ${set.lvl === "Warm-up" ? "bg-blue-500" : ""}`}
+                          >
+                            {editingSet?.exerciseIndex === index &&
+                            editingSet?.setIndex === i ? (
+                              <>
+                                <td className="p-2">{i + 1}</td>
+                                <td className="p-2">
+                                  <input
+                                    className="text-lg p-1 w-[60px] rounded bg-gray-900 border border-gray-100 text-gray-100"
+                                    type="number"
+                                    value={editWeight}
+                                    onChange={(e) =>
+                                      setEditWeight(e.target.value)
+                                    }
+                                  />
+                                </td>
+                                <td className="p-2">
+                                  <input
+                                    className="text-lg p-1 w-[60px] rounded bg-gray-900 border border-gray-100 text-gray-100"
+                                    type="number"
+                                    value={editReps}
+                                    onChange={(e) =>
+                                      setEditReps(e.target.value)
+                                    }
+                                  />
+                                </td>
+                                <td className="p-2">
+                                  <select
+                                    className="text-lg p-1 rounded bg-gray-900 border border-gray-100 text-gray-100"
+                                    value={editLvl}
+                                    onChange={(e) => setEditLvl(e.target.value)}
+                                  >
+                                    <option value="Warm-up">Warm-up</option>
+                                    <option value="Easy">Easy</option>
+                                    <option value="Medium">Medium</option>
+                                    <option value="Hard">Hard</option>
+                                    <option value="Failure">Failure</option>
+                                  </select>
+                                </td>
+                                <td className="p-2 flex gap-2">
+                                  <button
+                                    className="bg-green-600 px-2 py-1 rounded text-white"
+                                    onClick={() => {
+                                      const updated = [...exercises];
+                                      updated[index].sets[i] = {
+                                        weight: editWeight,
+                                        reps: editReps,
+                                        lvl: editLvl,
+                                      };
+                                      setExercises(updated);
+                                      setEditingSet(null);
+                                    }}
+                                  >
+                                    Save
+                                  </button>
+                                </td>
+                              </>
+                            ) : (
+                              <>
+                                <td className="p-2">{i + 1}</td>
+                                <td className="p-2">{set.weight}</td>
+                                <td className="p-2">{set.reps}</td>
+                                <td className="p-2">{set.lvl}</td>
+                                <td>
+                                  <button
+                                    className="bg-red-600 p-1 rounded text-gray-100 "
+                                    onClick={() => {
+                                      const confirmed = window.confirm(
+                                        "Are you sure you want to delete this set?"
+                                      );
+                                      if (!confirmed) return;
+                                      const updated = [...exercises];
+                                      updated[index].sets.splice(i, 1);
+                                      setExercises(updated);
+                                    }}
+                                  >
+                                    <SquareX />
+                                  </button>
+                                </td>
+                              </>
+                            )}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ))}
+
+                {!isAddingExercise && (
+                  <>
+                    <div className="flex items-center justify-center gap-4 mt-6">
+                      <div className="flex items-center gap-5">
+                        <input
+                          className="text-lg text-black p-2 rounded-md border-2 border-gray-100 z-10 w-[80px]  placeholder-gray-500  dark:text-gray-100 bg-gray-100 dark:bg-gray-900 hover:border-blue-500 focus:outline-none focus:border-green-300"
+                          placeholder="Weight..."
+                          type="number"
+                          value={weight}
+                          onChange={(e) => setWeight(e.target.value)}
+                        />
+                        <input
+                          className="text-lg text-black p-2 rounded-md border-2 border-gray-100 z-10 w-[80px]  placeholder-gray-500  dark:text-gray-100 bg-gray-100 dark:bg-gray-900 hover:border-blue-500 focus:outline-none focus:border-green-300"
+                          placeholder="Reps..."
+                          type="number"
+                          value={reps}
+                          onChange={(e) => setReps(e.target.value)}
+                        />
+                      </div>
+                      <select
+                        className="text-lg text-black p-2 rounded-md border-2 border-gray-100 z-10 w-[100px]  placeholder-gray-500  dark:text-gray-100 bg-gray-100 dark:bg-gray-900 hover:border-blue-500 focus:outline-none focus:border-green-300"
+                        value={lvl}
+                        onChange={(e) => setLvl(e.target.value)}
+                      >
+                        <option value="Warm-up">Warm-up</option>
+                        <option value="Easy">Easy</option>
+                        <option value="Medium">Medium</option>
+                        <option value="Hard">Hard</option>
+                        <option value="Failure">Failure</option>
+                      </select>
+                    </div>
+                    <div className="flex items-center justify-center gap-4 mt-6">
+                      <button
+                        onClick={logSet}
+                        className={`${russoOne.className} px-10 bg-blue-900 py-2 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95`}
+                      >
+                        Save
+                      </button>
+                    </div>
+                  </>
+                )}
+
+                {isAddingExercise && (
+                  <div className="flex flex-col items-center justify-center gap-5 mt-10">
+                    <div className="flex items-center gap-5">
+                      <h2 className="text-gray-100 text-xl">
+                        {exercises.length + 1}.
+                      </h2>
+                      <input
+                        className="text-lg text-black p-2 rounded-md border-2 border-gray-100 z-10 placeholder-gray-500 dark:text-gray-100 bg-gray-100 dark:bg-gray-900 hover:border-blue-500 focus:outline-none focus:border-green-300"
+                        type="text"
+                        placeholder="Exercise..."
+                        value={activeExerciseName}
+                        onChange={(e) => setActiveExerciseName(e.target.value)}
+                      />
+                    </div>
+                    <div className="flex flex-col items-center gap-5 w-[px]">
+                      <button
+                        onClick={startExercise}
+                        className={`${russoOne.className} w-full px-10 bg-blue-800 py-2 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95`}
+                      >
+                        Start Exercise
+                      </button>
+                      <button
+                        onClick={() => setIsAddingExercise(false)}
+                        className={`${russoOne.className} w-full px-10 bg-red-800 py-2 rounded-md shadow-xl border-2 border-red-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95`}
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {!isAddingExercise && (
+                  <div className="flex flex-col items-center justify-center mt-6">
+                    <button
+                      onClick={addNewExercise}
+                      className={`${russoOne.className}  px-10 bg-blue-900 py-2 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95`}
+                    >
+                      Add new Exercise
+                    </button>
+                  </div>
+                )}
+              </>
+            )}
+            <div className="flex flex-col justify-center mt-14 gap-5 mx-8 mb-10">
+              <SaveButton isSaving={isSaving} onClick={saveSession} />
+              <DeleteSessionBtn
+                storageKey={[
+                  "gym_session_draft",
+                  "timer:gym",
+                  "activeSession",
+                  "startTime",
+                ]}
+                onDelete={resetSession}
               />
             </div>
           </div>
-
-          <div className="flex flex-col items-center justify-center mt-10 ">
-            <div>
-              <div className="flex items-center pb-1">
-                <label htmlFor="Notes" className="text-gray-100">
-                  Add notes...
-                </label>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="white"
-                  className="size-6 mb-2"
-                >
-                  <path d="M21.731 2.269a2.625 2.625 0 0 0-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 0 0 0-3.712ZM19.513 8.199l-3.712-3.712-8.4 8.4a5.25 5.25 0 0 0-1.32 2.214l-.8 2.685a.75.75 0 0 0 .933.933l2.685-.8a5.25 5.25 0 0 0 2.214-1.32l8.4-8.4Z" />
-                  <path d="M5.25 5.25a3 3 0 0 0-3 3v10.5a3 3 0 0 0 3 3h10.5a3 3 0 0 0 3-3V13.5a.75.75 0 0 0-1.5 0v5.25a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5V8.25a1.5 1.5 0 0 1 1.5-1.5h5.25a.75.75 0 0 0 0-1.5H5.25Z" />
-                </svg>
-              </div>
-              <textarea
-                className="text-sm  p-2 rounded-md border-2 border-gray-100 z-10  placeholder-gray-500 text-gray-100 bg-gray-900 hover:border-blue-500 focus:outline-none focus:border-green-300 resize-none"
-                spellCheck={false}
-                placeholder="Add Notes here..."
-                name="Notes"
-                rows={2}
-                cols={35}
-                autoComplete="off"
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-              ></textarea>
-            </div>
-          </div>
-
-          {!isStarted ? (
-            <div className="flex flex-col items-center justify-center gap-10 mt-10">
-              <div className="flex items-center gap-5">
-                <h2 className="text-gray-100 text-xl">1.</h2>
-                <input
-                  className="text-lg text-black p-2 rounded-md border-2 border-gray-100 z-10  placeholder-gray-500  dark:text-gray-100 bg-gray-100 dark:bg-gray-900 hover:border-blue-500 focus:outline-none focus:border-green-300"
-                  type="text"
-                  spellCheck={false}
-                  placeholder="Exercise..."
-                  name="Exercise"
-                  autoComplete="off"
-                  value={activeExerciseName}
-                  onChange={(e) => setActiveExerciseName(e.target.value)}
-                />
-              </div>
-              <button
-                onClick={startExercise}
-                className={`${russoOne.className} px-6 py-2 bg-blue-900 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95`}
-              >
-                Start Exercise
-              </button>
-            </div>
-          ) : (
-            <>
-              {/* Render all exercises and sets */}
-              {exercises.map((exercise, index) => (
-                <div
-                  key={index}
-                  className="flex flex-col items-center justify-center mt-10 mx-auto w-full max-w-screen bg-slate-800 rounded-md px-4 py-2 shadow-lg"
-                >
-                  <div className="relative flex items-center justify-between w-full gap-5  border-gray-100 ">
-                    <h2 className="text-xl font-bold text-gray-100 p-2">
-                      {exercise.name}
-                    </h2>
-
-                    <DropdownMenu
-                      button={<Ellipsis className="text-gray-100" />}
-                    >
-                      <button
-                        onClick={() => {
-                          const updatedExercises = exercises.filter(
-                            (_, i) => i !== index
-                          );
-
-                          setExercises(updatedExercises);
-
-                          const sessionDraft = {
-                            title: sessionTitle,
-                            exercises: updatedExercises,
-                            notes,
-                          };
-                          localStorage.setItem(
-                            "gym_session_draft",
-                            JSON.stringify(sessionDraft)
-                          );
-                        }}
-                      >
-                        Delete
-                      </button>
-                    </DropdownMenu>
-                  </div>
-
-                  <div className="w-full my-4 flex flex-col">
-                    <label className="text-gray-100 mb-1 flex gap-2 items-center">
-                      Notes for {exercise.name}
-                      <SquarePen className="mb-1" />
-                    </label>
-                    <textarea
-                      className="text-sm w-full p-2 rounded-md border border-gray-100 placeholder-gray-500 text-gray-100  bg-gray-900 hover:border-blue-500 focus:outline-none focus:border-green-300 resize-none"
-                      placeholder="Add notes"
-                      value={exercise.notes || ""}
-                      onChange={(e) => {
-                        const updated = [...exercises];
-                        updated[index].notes = e.target.value;
-                        setExercises(updated);
-                      }}
-                    />
-                  </div>
-
-                  {/* Locked sets display */}
-                  <table className="w-full text-left border-collapse text-gray-100 mb-4 ">
-                    <thead>
-                      <tr className="text-gray-300 border-b">
-                        <th className="p-2">Set</th>
-                        <th className="p-2">Weight</th>
-                        <th className="p-2">Reps</th>
-                        <th className="p-2">Lvl</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {exercise.sets.map((set, i) => (
-                        <tr
-                          key={i}
-                          className={`border-b ${
-                            set.lvl === "Failure" ? "bg-red-800" : ""
-                          } ${set.lvl === "Warm-up" ? "bg-blue-500" : ""}`}
-                        >
-                          {editingSet?.exerciseIndex === index &&
-                          editingSet?.setIndex === i ? (
-                            <>
-                              <td className="p-2">{i + 1}</td>
-                              <td className="p-2">
-                                <input
-                                  className="text-lg p-1 w-[60px] rounded bg-gray-900 border border-gray-100 text-gray-100"
-                                  type="number"
-                                  value={editWeight}
-                                  onChange={(e) =>
-                                    setEditWeight(e.target.value)
-                                  }
-                                />
-                              </td>
-                              <td className="p-2">
-                                <input
-                                  className="text-lg p-1 w-[60px] rounded bg-gray-900 border border-gray-100 text-gray-100"
-                                  type="number"
-                                  value={editReps}
-                                  onChange={(e) => setEditReps(e.target.value)}
-                                />
-                              </td>
-                              <td className="p-2">
-                                <select
-                                  className="text-lg p-1 rounded bg-gray-900 border border-gray-100 text-gray-100"
-                                  value={editLvl}
-                                  onChange={(e) => setEditLvl(e.target.value)}
-                                >
-                                  <option value="Warm-up">Warm-up</option>
-                                  <option value="Easy">Easy</option>
-                                  <option value="Medium">Medium</option>
-                                  <option value="Hard">Hard</option>
-                                  <option value="Failure">Failure</option>
-                                </select>
-                              </td>
-                              <td className="p-2 flex gap-2">
-                                <button
-                                  className="bg-green-600 px-2 py-1 rounded text-white"
-                                  onClick={() => {
-                                    const updated = [...exercises];
-                                    updated[index].sets[i] = {
-                                      weight: editWeight,
-                                      reps: editReps,
-                                      lvl: editLvl,
-                                    };
-                                    setExercises(updated);
-                                    setEditingSet(null);
-                                  }}
-                                >
-                                  Save
-                                </button>
-                              </td>
-                            </>
-                          ) : (
-                            <>
-                              <td className="p-2">{i + 1}</td>
-                              <td className="p-2">{set.weight}</td>
-                              <td className="p-2">{set.reps}</td>
-                              <td className="p-2">{set.lvl}</td>
-                              <td>
-                                <button
-                                  className="bg-red-600 p-1 rounded text-gray-100 "
-                                  onClick={() => {
-                                    const confirmed = window.confirm(
-                                      "Are you sure you want to delete this set?"
-                                    );
-                                    if (!confirmed) return;
-                                    const updated = [...exercises];
-                                    updated[index].sets.splice(i, 1);
-                                    setExercises(updated);
-                                  }}
-                                >
-                                  <SquareX />
-                                </button>
-                              </td>
-                            </>
-                          )}
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              ))}
-
-              {!isAddingExercise && (
-                <>
-                  <div className="flex items-center justify-center gap-4 mt-6">
-                    <div className="flex items-center gap-5">
-                      <input
-                        className="text-lg text-black p-2 rounded-md border-2 border-gray-100 z-10 w-[80px]  placeholder-gray-500  dark:text-gray-100 bg-gray-100 dark:bg-gray-900 hover:border-blue-500 focus:outline-none focus:border-green-300"
-                        placeholder="Weight..."
-                        type="number"
-                        value={weight}
-                        onChange={(e) => setWeight(e.target.value)}
-                      />
-                      <input
-                        className="text-lg text-black p-2 rounded-md border-2 border-gray-100 z-10 w-[80px]  placeholder-gray-500  dark:text-gray-100 bg-gray-100 dark:bg-gray-900 hover:border-blue-500 focus:outline-none focus:border-green-300"
-                        placeholder="Reps..."
-                        type="number"
-                        value={reps}
-                        onChange={(e) => setReps(e.target.value)}
-                      />
-                    </div>
-                    <select
-                      className="text-lg text-black p-2 rounded-md border-2 border-gray-100 z-10 w-[100px]  placeholder-gray-500  dark:text-gray-100 bg-gray-100 dark:bg-gray-900 hover:border-blue-500 focus:outline-none focus:border-green-300"
-                      value={lvl}
-                      onChange={(e) => setLvl(e.target.value)}
-                    >
-                      <option value="Warm-up">Warm-up</option>
-                      <option value="Easy">Easy</option>
-                      <option value="Medium">Medium</option>
-                      <option value="Hard">Hard</option>
-                      <option value="Failure">Failure</option>
-                    </select>
-                  </div>
-                  <div className="flex items-center justify-center gap-4 mt-6">
-                    <button
-                      onClick={logSet}
-                      className={`${russoOne.className} px-10 bg-blue-900 py-2 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95`}
-                    >
-                      Save
-                    </button>
-                  </div>
-                </>
-              )}
-
-              {isAddingExercise && (
-                <div className="flex flex-col items-center justify-center gap-5 mt-10">
-                  <div className="flex items-center gap-5">
-                    <h2 className="text-gray-100 text-xl">
-                      {exercises.length + 1}.
-                    </h2>
-                    <input
-                      className="text-lg text-black p-2 rounded-md border-2 border-gray-100 z-10 placeholder-gray-500 dark:text-gray-100 bg-gray-100 dark:bg-gray-900 hover:border-blue-500 focus:outline-none focus:border-green-300"
-                      type="text"
-                      placeholder="Exercise..."
-                      value={activeExerciseName}
-                      onChange={(e) => setActiveExerciseName(e.target.value)}
-                    />
-                  </div>
-                  <div className="flex flex-col items-center gap-5 w-[px]">
-                    <button
-                      onClick={startExercise}
-                      className={`${russoOne.className} w-full px-10 bg-blue-800 py-2 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95`}
-                    >
-                      Start Exercise
-                    </button>
-                    <button
-                      onClick={() => setIsAddingExercise(false)}
-                      className={`${russoOne.className} w-full px-10 bg-red-800 py-2 rounded-md shadow-xl border-2 border-red-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95`}
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {!isAddingExercise && (
-                <div className="flex flex-col items-center justify-center mt-6">
-                  <button
-                    onClick={addNewExercise}
-                    className={`${russoOne.className}  px-10 bg-blue-900 py-2 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95`}
-                  >
-                    Add new Exercise
-                  </button>
-                </div>
-              )}
-            </>
-          )}
-          <div className="flex flex-col  items-center justify-center mt-14 gap-5 mx-8 mb-10">
-            <SaveButton isSaving={isSaving} onClick={saveSession} />
-            <DeleteSessionBtn
-              storageKey={[
-                "gym_session_draft",
-                "timer:gym",
-                "activeSession",
-                "startTime",
-              ]}
-              onDelete={resetSession}
-            />
-          </div>
         </div>
-      </div>
-    </ModalPageWrapper>
+      </ModalPageWrapper>
+    </>
   );
 }

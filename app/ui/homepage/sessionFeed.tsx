@@ -115,14 +115,14 @@ export default function SessionFeed({ sessions }: { sessions: Session[] }) {
   };
 
   return (
-    <div
-      className={`${russoOne.className} flex flex-col items-center justify-center text-gray-100 `}
-    >
-      <div className="bg-slate-800 p-5 w-full min-h-screen items-center">
+    <>
+      <div
+        className={`${russoOne.className} bg-slate-800 h-[calc(100vh-152px)] px-5 pt-3 overflow-y-auto touch-pan-y text-gray-100 `}
+      >
         {sessions.length === 0 ? (
           <p>No sessions yet. Let&apos;s get started!</p>
         ) : (
-          <div className="flex flex-col">
+          <>
             {sortByNewest(sessions)
               .slice(0, visibleSessions)
               .map((session: Session) => (
@@ -230,7 +230,7 @@ export default function SessionFeed({ sessions }: { sessions: Session[] }) {
                   </Modal>
                 </div>
               ))}
-          </div>
+          </>
         )}
       </div>
       {visibleSessions < sessions.length && <div ref={ref} className="h-10" />}
@@ -240,6 +240,6 @@ export default function SessionFeed({ sessions }: { sessions: Session[] }) {
           onClose={() => setEditSession(null)}
         />
       )}
-    </div>
+    </>
   );
 }

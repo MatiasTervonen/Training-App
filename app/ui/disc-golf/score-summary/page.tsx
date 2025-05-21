@@ -12,11 +12,6 @@ export default function DiscGolfScores() {
     }[]
   >([]);
 
-  const [editStrokesMap, setEditStrokesMap] = useState<{
-    [key: string]: number | string;
-  }>({});
-  const [isEditMode, setIsEditMode] = useState(false);
-
   useEffect(() => {
     const dataJSON = localStorage.getItem("holes");
     if (dataJSON) {
@@ -32,35 +27,6 @@ export default function DiscGolfScores() {
         >
           Live Scorecard
         </h1>
-        <button
-          onClick={() => {
-            if (isEditMode) {
-              const updateHoles = holes.map((hole) => ({
-                ...hole,
-                scores: hole.scores.map((score) => {
-                  const key = `${score.playerName}_${hole.hole_number}`;
-                  const updatedStrokes = editStrokesMap[key];
-                  return {
-                    ...score,
-                    strokes:
-                      updatedStrokes === undefined || updatedStrokes === ""
-                        ? score.strokes
-                        : Number(updatedStrokes),
-                  };
-                }),
-              }));
-
-              setHoles(updateHoles);
-              localStorage.setItem("holes", JSON.stringify(updateHoles));
-              setEditStrokesMap({});
-            }
-
-            setIsEditMode(!isEditMode);
-          }}
-          className={`${russoOne.className} text-gray-100`}
-        >
-          {isEditMode ? "Done" : "Edit"}
-        </button>
       </div>
 
       {holes.length > 0 &&
@@ -162,35 +128,14 @@ export default function DiscGolfScores() {
 
                               return (
                                 <div className="flex items-center justify-between gap-2">
-                                  {isEditMode ? (
-                                    <>
-                                      <input
-                                        className="inline-block w-8 h-8 leading-8 rounded-md text-center border  placeholder-gray-500  bg-gray-900 hover:border-blue-500 focus:outline-none focus:border-green-300"
-                                        type="number"
-                                        value={
-                                          editStrokesMap[key] ?? score.strokes
-                                        }
-                                        onChange={(e) => {
-                                          const value = e.target.value;
-                                          setEditStrokesMap({
-                                            ...editStrokesMap,
-                                            [key]: value,
-                                          });
-                                        }}
-                                      />
-                                    </>
-                                  ) : (
-                                    <>
-                                      <span
-                                        className={`inline-block w-8 h-8 leading-8 rounded-full text-center ${
-                                          circleClass || ""
-                                        }`}
-                                      >
-                                        {score.strokes}
-                                      </span>
-                                      <span>{formattedDiff}</span>
-                                    </>
-                                  )}
+                                  <span
+                                    className={`inline-block w-8 h-8 leading-8 rounded-full text-center ${
+                                      circleClass || ""
+                                    }`}
+                                  >
+                                    {score.strokes}
+                                  </span>
+                                  <span>{formattedDiff}</span>
                                 </div>
                               );
                             })()}

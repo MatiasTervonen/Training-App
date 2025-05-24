@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Navbar from "./ui/homepage/navbar";
 import LayoutWrapper from "./ui/LayoutWrapper";
-import { russoOne } from "@/app/ui/fonts";
 
 export const metadata: Metadata = {
   title: "Training",

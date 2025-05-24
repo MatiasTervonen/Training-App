@@ -3,7 +3,7 @@
 import { russoOne } from "../ui/fonts";
 import ModalPageWrapper from "../components/modalPageWrapper";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+
 
 export default function Timer() {
   const router = useRouter();

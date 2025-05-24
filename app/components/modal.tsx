@@ -31,7 +31,7 @@ export default function Modal({
   return (
     <AnimatePresence>
       <motion.div
-        className="fixed top-18 left-0 right-0 bottom-0 bg-black/50 z-50  overflow-y-auto border-t-2 border-green-500"
+        className="fixed top-28 left-0 right-0 bottom-0 bg-black/50 z-50 overflow-y-auto border-t-2 border-green-500"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}

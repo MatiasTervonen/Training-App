@@ -6,6 +6,7 @@ export type Exercise = {
     lvl: string;
   }[];
   notes?: string;
+  groupId?: string;
 };
 
 export interface Session {

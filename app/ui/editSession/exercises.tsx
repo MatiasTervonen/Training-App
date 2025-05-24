@@ -1,5 +1,7 @@
 import React from "react";
 import { Exercise } from "@/types/session";
+import { russoOne } from "@/app/ui/fonts";
+import { SquareX } from "lucide-react";
 
 type editExercisesProps = {
   exercises: Exercise[];
@@ -62,7 +64,7 @@ export default function EditExercises({
         exercises.map((exercise, exIndex) => (
           <div
             key={exIndex}
-            className="flex flex-col gap-2 mb-4 border p-4 rounded-md bg-slate-800"
+            className={`${russoOne.className} flex flex-col gap-2 mb-4 border p-4 rounded-md bg-slate-800 text-gray-100`}
           >
             <div className="flex justify-between items-center mb-5">
               <label>Exercise {exIndex + 1}</label>
@@ -87,8 +89,11 @@ export default function EditExercises({
               onChange={(e) => handleNotesChange(exIndex, e.target.value)}
             />
             {exercise.sets.map((set, setIndex) => (
-              <div key={setIndex} className="flex items-center gap-4 mt-2">
-                <span className="w-4">{setIndex + 1}</span>
+              <div
+                key={setIndex}
+                className="flex items-center justify-center gap-4 mt-2 flex-wrap"
+              >
+                <span className="w-2">{setIndex + 1}.</span>
                 <input
                   type="number"
                   value={set.weight}
@@ -96,7 +101,7 @@ export default function EditExercises({
                     handleSetChange(exIndex, setIndex, "weight", e.target.value)
                   }
                   placeholder="Weight..."
-                  className="p-2 rounded-md border-2 border-gray-100 z-10 w-[60px]  placeholder-gray-500  text-gray-100 bg-gray-800 hover:border-blue-500 focus:outline-none focus:border-green-300"
+                  className="p-2 rounded-md border-2 border-gray-100 z-10 w-[50px]  placeholder-gray-500  text-gray-100 bg-gray-800 hover:border-blue-500 focus:outline-none focus:border-green-300"
                 />
                 <input
                   type="number"
@@ -105,7 +110,7 @@ export default function EditExercises({
                     handleSetChange(exIndex, setIndex, "reps", e.target.value)
                   }
                   placeholder="Reps..."
-                  className="p-2 rounded-md border-2 border-gray-100 z-10 w-[60px]  placeholder-gray-500  text-gray-100 bg-gray-800 hover:border-blue-500 focus:outline-none focus:border-green-300"
+                  className="p-2 rounded-md border-2 border-gray-100 z-10 w-[50px]  placeholder-gray-500  text-gray-100 bg-gray-800 hover:border-blue-500 focus:outline-none focus:border-green-300"
                 />
                 <select
                   value={set.lvl}
@@ -122,9 +127,9 @@ export default function EditExercises({
                 </select>
                 <button
                   onClick={() => handleDeleteSet(exIndex, setIndex)}
-                  className="text-red-500 ml-auto"
+                  className="bg-red-600 p-1 rounded-md text-gray-100 "
                 >
-                  Delete
+                  <SquareX />
                 </button>
               </div>
             ))}

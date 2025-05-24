@@ -6,17 +6,19 @@ import { russoOne } from "@/app/ui/fonts";
 import { useRouter } from "next/navigation";
 import TrainingSession from "@/app/components/expandSession/training";
 import NotesSession from "@/app/components/expandSession/notes";
-import { Pin } from "lucide-react";
-import { SquareArrowOutUpRight } from "lucide-react";
 import EditSession from "@/app/components/editSession";
 import Modal from "@/app/components/modal";
 import { formatDate } from "@/lib/formatDate";
 import { useInView } from "react-intersection-observer";
 import DropdownMenu from "@/app/components/dropdownMenu";
-import { Ellipsis } from "lucide-react";
-import { Dumbbell } from "lucide-react";
-import { NotebookPen } from "lucide-react";
-import { Disc } from "lucide-react";
+import {
+  Pin,
+  SquareArrowOutUpRight,
+  Disc,
+  NotebookPen,
+  Dumbbell,
+  Ellipsis,
+} from "lucide-react";
 
 const formatDuration = (seconds: number) => {
   const totalMinutes = Math.floor(seconds / 60);
@@ -117,7 +119,7 @@ export default function SessionFeed({ sessions }: { sessions: Session[] }) {
   return (
     <>
       <div
-        className={`${russoOne.className} bg-slate-800 h-[calc(100vh-152px)] px-5 pt-3 pb-20 overflow-y-auto touch-pan-y text-gray-100 `}
+        className={`${russoOne.className} bg-slate-900 h-[calc(100vh-152px)] px-5 pt-3 pb-20 overflow-y-auto touch-pan-y text-gray-100 `}
       >
         {sessions.length === 0 ? (
           <p>No sessions yet. Let&apos;s get started!</p>
@@ -135,36 +137,25 @@ export default function SessionFeed({ sessions }: { sessions: Session[] }) {
                   )}
 
                   <div
-                    className={`border p-4 rounded-md flex flex-col justify-center mb-5 transition-colors ${
+                    className={`border rounded-md flex flex-col justify-center mb-5 transition-colors ${
                       pinnedSession.includes(session.id)
-                        ? "bg-yellow-100 border-yellow-400 text-gray-800"
+                        ? " border-yellow-200 bg-yellow-200 text-slate-900"
                         : "bg-slate-700"
                     }`}
                   >
-                    <div className="flex justify-between items-center mb-2">
-                      <div className="flex items-center gap-2">
-                        {session.type === "gym" && <Dumbbell size={20} />}
-                        {session.type === "notes" && <NotebookPen size={20} />}
-                        {session.type === "disc-golf" && <Disc size={20} />}
-                        <p
-                          className={` ${
-                            pinnedSession.includes(session.id)
-                              ? "text-gray-800"
-                              : "text-gray-100"
-                          }`}
-                        >
-                          {formatDate(session.created_at)}
-                        </p>
-                      </div>
+                    <div className="flex justify-between items-center">
+                      <div className="p-3">{session.title}</div>
                       <DropdownMenu
                         button={
-                          <Ellipsis
-                            className={`${
+                          <div
+                            className={`flex items-center justify-center p-[14px] rounded-tr-md ${
                               pinnedSession.includes(session.id)
-                                ? "text-gray-800"
+                                ? "text-slate-900"
                                 : "text-gray-100"
                             }`}
-                          />
+                          >
+                            <Ellipsis size={20} />
+                          </div>
                         }
                       >
                         <button
@@ -194,21 +185,52 @@ export default function SessionFeed({ sessions }: { sessions: Session[] }) {
                       </DropdownMenu>
                     </div>
 
-                    <div>{session.title}</div>
+                    <div className="pb-3 ml-3">
+                      {session.notes.length > 20
+                        ? `${session.notes.slice(0, 20)}...`
+                        : session.notes}
+                    </div>
 
-                    {session.type === "gym" && session.duration && (
-                      <div>{formatDuration(session.duration)}</div>
-                    )}
-                    <div className="flex justify-between items-end mt-2">
-                      <div className="pr-2">
-                        {session.notes.length > 20
-                          ? `${session.notes.slice(0, 20)}...`
-                          : session.notes}
+                    <div className="flex justify-between items-center mt-2 bg-black/40 rounded-b-md">
+                      {/* Icon */}
+
+                      <div className="flex items-center gap-4">
+                        <div className=" p-2 rounded-bl-md">
+                          {session.type === "gym" && <Dumbbell size={20} />}
+                          {session.type === "notes" && (
+                            <NotebookPen size={20} />
+                          )}
+                          {session.type === "disc-golf" && <Disc size={20} />}
+                        </div>
+                        <span>
+                          {session.type === "gym" && "Gym"}
+                          {session.type === "notes" && "Notes"}
+                        </span>
+
+                        {session.type === "gym" && session.duration && (
+                          <div className="flex gap-2 items-center ml-3">
+                            {formatDuration(session.duration)}
+                          </div>
+                        )}
+
+                        {/* Date */}
+
+                        <div className=" p-[8px]">
+                          <p
+                            className={` text-sm ${
+                              pinnedSession.includes(session.id)
+                                ? "text-ng-slate-900"
+                                : "text-gray-100"
+                            }`}
+                          >
+                            {formatDate(session.created_at)}
+                          </p>
+                        </div>
                       </div>
 
                       <button
                         onClick={() => toggleSession(session.id)}
-                        className="bg-blue-500 text-gray-100 p-2 rounded-md hover:bg-blue-400"
+                        className="bg-blue-500 text-gray-100 p-2 rounded-br-md hover:bg-blue-400"
                       >
                         <span>
                           <SquareArrowOutUpRight size={20} />

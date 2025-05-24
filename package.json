@@ -17,6 +17,7 @@
     "next": "15.3.0",
     "next-auth": "5.0.0-beta.25",
     "npm": "^11.3.0",
+    "postcss": "^8.5.3",
     "react": "^19.0.0",
     "react-calendar": "^5.1.0",
     "react-dom": "^19.0.0",
@@ -27,13 +28,13 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
-    "@tailwindcss/postcss": "^4",
+    "@tailwindcss/postcss": "^4.1.4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.3.0",
-    "tailwindcss": "^4",
+    "tailwindcss": "^4.1.7",
     "typescript": "^5"
   }
 }

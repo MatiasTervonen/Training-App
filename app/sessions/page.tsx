@@ -9,6 +9,7 @@ import { Footprints } from "lucide-react";
 import ModalPageWrapper from "../components/modalPageWrapper";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { Timer } from "lucide-react";
 
 export default function Sessions() {
   const router = useRouter();
@@ -24,8 +25,14 @@ export default function Sessions() {
   }, []);
 
   return (
-    <ModalPageWrapper noTopPadding>
-      <div className="bg-slate-800 p-5 h-full">
+    <ModalPageWrapper
+      noTopPadding
+      onSwipeRight={() => router.back()}
+      leftLabel="back"
+      onSwipeLeft={() => router.push("/")}
+      rightLabel="home"
+    >
+      <div className="bg-slate-900 p-5 h-full">
         <h1
           className={`${russoOne.className} text-gray-100 flex justify-center my-5 text-2xl `}
         >
@@ -33,7 +40,7 @@ export default function Sessions() {
         </h1>
         <div className="flex flex-col justify-center items-center text-center">
           <Link
-            href="/training/session"
+            href="/training"
             className={`${russoOne.className} flex items-center justify-center gap-2 bg-blue-800 py-2 w-full my-3 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95`}
           >
             Gym
@@ -60,6 +67,13 @@ export default function Sessions() {
           >
             Walking
             <Footprints />
+          </Link>
+          <Link
+            href="/timer"
+            className={`${russoOne.className} flex items-center justify-center gap-2 bg-blue-800 py-2 w-full my-3 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95`}
+          >
+            Timer
+            <Timer />
           </Link>
         </div>
       </div>

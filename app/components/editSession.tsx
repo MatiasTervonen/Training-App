@@ -6,6 +6,7 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import EditExercises from "../ui/editSession/exercises";
 import SaveButton from "@/app/ui/save-button";
+import { russoOne } from "@/app/ui/fonts";
 
 type SessionUpdatePayload = {
   id: number | string;
@@ -88,22 +89,26 @@ export default function EditSession({
     <Modal isOpen={!!session} onClose={onClose}>
       <form onSubmit={handleSubmit} className="p-4">
         {"title" in session && (
-          <div className="w-full flex flex-col mb-4 mt-10 ">
-            <p>Title...</p>
+          <div className="w-full flex flex-col mb-4 mt-10">
+            <label className={`${russoOne.className} text-gray-100`}>
+              Title...
+            </label>
             <input
               type="text"
               value={formData.title || ""}
               onChange={(e) => handleChange("title", e.target.value)}
-              className="p-2 rounded-md border-2 border-gray-100 z-10  placeholder-gray-500 text-gray-100 bg-gray-700 hover:border-blue-500 focus:outline-none focus:border-green-300"
+              className={`${russoOne.className} p-2 rounded-md border-2 border-gray-100 z-10  placeholder-gray-500 text-gray-100 bg-gray-700 hover:border-blue-500 focus:outline-none focus:border-green-300`}
             />
           </div>
         )}
         {"notes" in session && (
           <div className="w-full flex flex-col mb-10 mt-5">
-            <p>Notes...</p>
+            <label className={`${russoOne.className} text-gray-100`}>
+              Notes...
+            </label>
             <textarea
               ref={textAreaRef}
-              className="w-full   p-2 rounded-md border-2 border-gray-100 z-10 placeholder-gray-500  text-gray-100 bg-gray-700 hover:border-blue-500 focus:outline-none focus:border-green-300 resize-none"
+              className={`${russoOne.className} w-full p-2 rounded-md border-2 border-gray-100 z-10 placeholder-gray-500  text-gray-100 bg-gray-700 hover:border-blue-500 focus:outline-none focus:border-green-300 resize-none`}
               spellCheck={false}
               placeholder="Add Notes here..."
               name="notes"

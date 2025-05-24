@@ -5,6 +5,8 @@ import { Plus } from "lucide-react";
 import { useState, useEffect } from "react";
 import DeleteSessionBtn from "../ui/deleteSessionBtn";
 import { createClient } from "@/utils/supabase/client";
+import ModalPageWrapper from "../components/modalPageWrapper";
+import { useRouter } from "next/navigation";
 
 export default function DiscGolf() {
   const [players, setPlayers] = useState<string[]>([]);
@@ -13,6 +15,17 @@ export default function DiscGolf() {
   const [trackStats, setTrackStats] = useState(false);
   const [userDisplayName, setUserDisplayName] = useState<string | null>(null);
   const [numHoles, setNumHoles] = useState<number>(18); // Default to 18
+  const router = useRouter();
+
+  useEffect(() => {
+    const activeSession = localStorage.getItem("activeSession");
+    if (activeSession) {
+      alert(
+        "You already have an active session. Finish it before starting a new one."
+      );
+      router.back();
+    }
+  }, []);
 
   useEffect(() => {
     const fetchDisplayName = async () => {
@@ -107,105 +120,113 @@ export default function DiscGolf() {
   };
 
   return (
-    <div className="bg-slate-800 p-5 h-full">
-      <div>
-        <h1
-          className={`${russoOne.className} text-gray-100 flex justify-center my-5 text-2xl `}
-        >
-          Disc Golf
-        </h1>
-      </div>
-      <div className="flex flex-col justify-center items-center text-center">
-        <p
-          className={`${russoOne.className} text-gray-100 flex justify-center my-5 text-xl `}
-        >
-          Course Name
-        </p>
-
-        <input
-          className="text-lg text-gray-100 p-2 rounded-md border-2 border-gray-100 z-10  placeholder-gray-500 bg-gray-900 hover:border-blue-500 focus:outline-none focus:border-green-300"
-          type="text"
-          placeholder="Course Name"
-          value={courseName}
-          onChange={(e) => setCourseName(e.target.value)}
-        />
-      </div>
-      <div
-        className={`${russoOne.className} text-gray-100 flex flex-col gap-2 items-center mt-10`}
-      >
-        <p> Number of Holes {numHoles}</p>
-        <div className="flex gap-4">
-          <button
-            onClick={() => setNumHoles((prev) => Math.max(prev - 1, 1))}
-            className="bg-blue-800  text-gray-100 px-3 py-1 rounded text-lg"
+    <ModalPageWrapper
+      noTopPadding
+      onSwipeRight={() => router.back()}
+      leftLabel="back"
+      onSwipeLeft={() => router.push("/")}
+      rightLabel="home"
+    >
+      <div className="bg-slate-800 p-5 min-h-screen">
+        <div>
+          <h1
+            className={`${russoOne.className} text-gray-100 flex justify-center my-5 text-2xl `}
           >
-            -
-          </button>
-          <button
-            onClick={() => setNumHoles((prev) => Math.min(25, prev + 1))}
-            className="bg-blue-800 text-gray-100 px-3 py-1 rounded text-lg"
-          >
-            +
-          </button>
+            Disc Golf
+          </h1>
         </div>
-      </div>
-      <div className="mt-10 mb-5">
-        <label
-          className={`${russoOne.className} text-gray-100 flex flex-col gap-2 items-center`}
-        >
-          <input
-            type="checkbox"
-            checked={trackStats}
-            onChange={(e) => setTrackStats(e.target.checked)}
-            className="h-5 w-5 bg-gray-900"
-          />
-          Track Fairway Hits, C1 and C2 Putting
-        </label>
-      </div>
-      <div className="flex flex-col justify-center items-center text-center">
-        <p
-          className={`${russoOne.className} text-gray-100 flex justify-center my-5 text-xl `}
-        >
-          Add Players
-        </p>
-
-        <input
-          className="text-lg text-gray-100 p-2 rounded-md border-2 border-gray-100 z-10  placeholder-gray-500  dark:text-gray-100 bg-gray-900 hover:border-blue-500 focus:outline-none focus:border-green-300"
-          type="text"
-          placeholder={`Player ${players.length + 1}`}
-          value={newPlayer}
-          onChange={(e) => setNewPlayer(e.target.value)}
-        />
-      </div>
-      <button
-        onClick={addPlayer}
-        className={`${russoOne.className} flex items-center justify-center mx-auto  bg-blue-800 py-2 px-10 mt-10 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95`}
-      >
-        <Plus />
-      </button>
-      <div className="flex flex-col justify-center items-center text-center mt-10">
-        {players.length > 0 && (
+        <div className="flex flex-col justify-center items-center text-center">
           <p
-            className={`${russoOne.className} text-gray-100 text-xl border-b mb-5`}
+            className={`${russoOne.className} text-gray-100 flex justify-center my-5 text-xl `}
           >
-            Players
+            Course Name
           </p>
-        )}
-        {players.map((player, index) => (
-          <div key={index}>
-            <p className={`${russoOne.className} text-gray-100 text-xl mb-5`}>
-              {player === userDisplayName ? `${player} (you)` : player}
-            </p>
+
+          <input
+            className="text-lg text-gray-100 p-2 rounded-md border-2 border-gray-100 z-10  placeholder-gray-500 bg-gray-900 hover:border-blue-500 focus:outline-none focus:border-green-300"
+            type="text"
+            placeholder="Course Name"
+            value={courseName}
+            onChange={(e) => setCourseName(e.target.value)}
+          />
+        </div>
+        <div
+          className={`${russoOne.className} text-gray-100 flex flex-col gap-2 items-center mt-10`}
+        >
+          <p> Number of Holes {numHoles}</p>
+          <div className="flex gap-4">
+            <button
+              onClick={() => setNumHoles((prev) => Math.max(prev - 1, 1))}
+              className="bg-blue-800  text-gray-100 px-3 py-1 rounded text-lg"
+            >
+              -
+            </button>
+            <button
+              onClick={() => setNumHoles((prev) => Math.min(25, prev + 1))}
+              className="bg-blue-800 text-gray-100 px-3 py-1 rounded text-lg"
+            >
+              +
+            </button>
           </div>
-        ))}
+        </div>
+        <div className="mt-10 mb-5">
+          <label
+            className={`${russoOne.className} text-gray-100 flex flex-col gap-2 items-center`}
+          >
+            <input
+              type="checkbox"
+              checked={trackStats}
+              onChange={(e) => setTrackStats(e.target.checked)}
+              className="h-5 w-5 bg-gray-900"
+            />
+            Track Fairway Hits, C1 and C2 Putting
+          </label>
+        </div>
+        <div className="flex flex-col justify-center items-center text-center">
+          <p
+            className={`${russoOne.className} text-gray-100 flex justify-center my-5 text-xl `}
+          >
+            Add Players
+          </p>
+
+          <input
+            className="text-lg text-gray-100 p-2 rounded-md border-2 border-gray-100 z-10  placeholder-gray-500  dark:text-gray-100 bg-gray-900 hover:border-blue-500 focus:outline-none focus:border-green-300"
+            type="text"
+            placeholder={`Player ${players.length + 1}`}
+            value={newPlayer}
+            onChange={(e) => setNewPlayer(e.target.value)}
+          />
+        </div>
+        <button
+          onClick={addPlayer}
+          className={`${russoOne.className} flex items-center justify-center mx-auto  bg-blue-800 py-2 px-10 mt-10 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95`}
+        >
+          <Plus />
+        </button>
+        <div className="flex flex-col justify-center items-center text-center mt-10">
+          {players.length > 0 && (
+            <p
+              className={`${russoOne.className} text-gray-100 text-xl border-b mb-5`}
+            >
+              Players
+            </p>
+          )}
+          {players.map((player, index) => (
+            <div key={index}>
+              <p className={`${russoOne.className} text-gray-100 text-xl mb-5`}>
+                {player === userDisplayName ? `${player} (you)` : player}
+              </p>
+            </div>
+          ))}
+        </div>
+        <button
+          onClick={startGame}
+          className={`${russoOne.className} flex items-center justify-center w-full mb-5  bg-blue-800 py-2 px-10 mt-10 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95`}
+        >
+          Start
+        </button>
+        <DeleteSessionBtn onDelete={resetSessionState} />
       </div>
-      <button
-        onClick={startGame}
-        className={`${russoOne.className} flex items-center justify-center w-full mb-5  bg-blue-800 py-2 px-10 mt-10 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95`}
-      >
-        Start
-      </button>
-      <DeleteSessionBtn onDelete={resetSessionState} />
-    </div>
+    </ModalPageWrapper>
   );
 }

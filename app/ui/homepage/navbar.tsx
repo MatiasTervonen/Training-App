@@ -31,10 +31,10 @@ export default function Navbar() {
 
   return (
     <div className="relative w-full ">
-      <nav className="w-full flex items-center justify-between p-4 bg-slate-900 ">
+      <nav className="w-full flex items-center justify-between p-4 bg-slate-950">
         <Link
           href="/"
-          className={`${russoOne.className} text-gray-100 font-bold text-3xl  bg-gray-900  `}
+          className={`${russoOne.className} text-gray-100 font-bold text-3xl `}
         >
           MyTrack
         </Link>
@@ -162,7 +162,7 @@ export default function Navbar() {
       </nav>
       {pathname === "/" && (
         <div
-          className={`${russoOne.className} bg-slate-500 w-full text-center p-2 text-gray-100 z-0`}
+          className={`${russoOne.className} bg-slate-600 w-full text-center p-2 text-gray-100 z-0`}
         >
           <h2>Tracking Feed</h2>
         </div>

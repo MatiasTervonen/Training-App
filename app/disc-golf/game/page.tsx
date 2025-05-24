@@ -7,39 +7,8 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import DeleteSessionBtn from "@/app/ui/deleteSessionBtn";
 import { motion, AnimatePresence } from "framer-motion";
-import { SquareArrowLeft } from "lucide-react";
-import { SquareArrowRight } from "lucide-react";
-
-type HoleData = {
-  hole_number: number;
-  length: number;
-  par: number;
-  scores: {
-    c2attempted: boolean;
-    c1attempted: boolean;
-    playerName: string;
-    strokes: number;
-    fairwayHit: boolean;
-    c1made: boolean;
-    c2made: boolean;
-  }[];
-};
-
-type Player = {
-  name: string;
-  is_guest: boolean;
-};
-
-type PlayerStats = {
-  [playerName: string]: {
-    strokes: number;
-    fairwayHit: boolean;
-    c1made: boolean;
-    c1attempted: boolean;
-    c2made: boolean;
-    c2attempted: boolean;
-  };
-};
+import { SquareArrowLeft, SquareArrowRight } from "lucide-react";
+import { HoleData, Player, PlayerStats } from "../Types/disc-golf";
 
 export default function DiscGolfGame() {
   const [hole, setHole] = useState(1);
@@ -63,6 +32,14 @@ export default function DiscGolfGame() {
   const [previousHoleNumber, setPreviousHoleNumber] = useState<number | null>(
     null
   );
+
+  useEffect(() => {
+    const activeSession = localStorage.getItem("activeSession");
+    if (!activeSession) {
+      alert("You need to start a round before accessing this page.");
+      router.back();
+    }
+  }, []);
 
   useEffect(() => {
     if (viewingHoleNumber) {
@@ -378,34 +355,37 @@ export default function DiscGolfGame() {
           <Timer sessionId="disc-golf" />
         </div>
         <Link
-          href="/ui/disc-golf/score-summary"
+          href="/disc-golf/score-summary"
           className={`${russoOne.className} text-gray-100`}
         >
           Live Scorecard
         </Link>
       </nav>
       <div className="pt-[40px] relative h-[calc(100dvh-72px)] overflow-hidden">
-        <div className="absolute inset-0 z-0 h-screen flex justify-between bg-slate-600">
+        <div className="absolute inset-0 z-0 h-screen flex justify-between bg-slate-950">
           {!isSwiping && (
             <>
               <div className="flex flex-col items-center pt-[50px] gap-2 mx-2">
                 {viewingHoleNumber > 1 && (
                   <>
-                    <div className="text-gray-400 text-center text-2xl font-bold ">
+                    <div className="text-gray-100 text-center text-2xl font-bold ">
                       <p>H</p>
                       <p>O</p>
                       <p>L</p>
                       <p>E</p>
                       <p>{viewingHoleNumber - 1}</p>
                     </div>
-                    <SquareArrowLeft size={35} className="text-gray-100/60" />
+                    <SquareArrowLeft
+                      size={35}
+                      className="text-gray-100 animate-pulse"
+                    />
                   </>
                 )}
               </div>
 
               <div className="flex flex-col items-center gap-2 mx-2 pt-[50px]">
                 {viewingHoleNumber === totalHoles ? (
-                  <div className="text-gray-400 text-center text-2xl font-bold ">
+                  <div className="text-gray-100 text-center text-2xl font-bold ">
                     <p>F</p>
                     <p>I</p>
                     <p>N</p>
@@ -414,7 +394,7 @@ export default function DiscGolfGame() {
                     <p>H</p>
                   </div>
                 ) : (
-                  <div className="text-gray-400 text-center text-2xl font-bold">
+                  <div className="text-gray-100 text-center text-2xl font-bold">
                     <p>H</p>
                     <p>O</p>
                     <p>L</p>
@@ -423,7 +403,10 @@ export default function DiscGolfGame() {
                   </div>
                 )}
 
-                <SquareArrowRight size={35} className="text-gray-100/60" />
+                <SquareArrowRight
+                  size={35}
+                  className="text-gray-100 animate-pulse"
+                />
               </div>
             </>
           )}
@@ -432,7 +415,7 @@ export default function DiscGolfGame() {
         <AnimatePresence initial={false} custom={direction}>
           <motion.div
             key={viewingHoleNumber}
-            className="absolute w-full z-30 bg-slate-800 px-5 h-full overflow-y-auto flex flex-col justify-between"
+            className="absolute w-full z-30 bg-slate-950 px-5 h-full overflow-y-auto flex flex-col justify-between"
             custom={direction}
             initial="enter"
             animate="center"
@@ -456,7 +439,7 @@ export default function DiscGolfGame() {
             }}
             transition={{
               x: { type: "spring", stiffness: 300, damping: 30 },
-              opacity: { duration: 0.2 },
+              opacity: { duration: 0.3 },
             }}
             drag="x"
             dragConstraints={{ left: 0, right: 0 }}
@@ -502,29 +485,6 @@ export default function DiscGolfGame() {
                 {courseName}
               </p>
               <div className="border-2 border-gray-100 p-5 rounded-xl mb-10 mx-10">
-                {/* <div className="flex flex-col gap-2">
-            <label className="">
-              <p className={`${russoOne.className} text-gray-100 text-center`}>
-                Length: {length} m
-              </p>
-              <input
-                className="w-full px-5 border border-gray-400 h-2 my-5 appearance-none bg-gray-700 rounded-md 
-                     [&::-webkit-slider-thumb]:appearance-none 
-                     [&::-webkit-slider-thumb]:h-6 
-                     [&::-webkit-slider-thumb]:w-6 
-                    [&::-webkit-slider-thumb]:bg-green-400 
-                     [&::-webkit-slider-thumb]:rounded-full 
-                     [&::-webkit-slider-thumb]:cursor-pointer"
-                type="range"
-                min={40}
-                max={300}
-                placeholder={`Length...`}
-                value={length}
-                onChange={(e) => setLength(e.target.value)}
-              />
-            </label>
-          </div> */}
-
                 <div
                   className={`${russoOne.className} flex items-center justify-between gap-2 text-gray-100 `}
                 >

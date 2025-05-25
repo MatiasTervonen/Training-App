@@ -14,6 +14,8 @@ import ExerciseInput from "./components/ExerciseInput";
 import SuperSetInput from "./components/SupersetInput";
 import { groupExercises } from "./utils/groupExercises";
 import { ChevronDown } from "lucide-react";
+import FullScreenLoader from "@/app/components/FullScreenLoader";
+import { ClearLocalStorage } from "./utils/ClearLocalStorage";
 
 type ExerciseSet = { weight: string; reps: string; lvl: string };
 type ExerciseEntry = {
@@ -29,9 +31,7 @@ export default function TrainingSessionPage() {
   const [notes, setNotes] = useState("");
   const router = useRouter();
   const [isSaving, setIsSaving] = useState(false);
-  const [sessionTitle, setSessionTitle] = useState(() => {
-    return "Gym -";
-  });
+  const [sessionTitle, setSessionTitle] = useState("");
   const [resetTrigger, setResetTrigger] = useState(0);
   const [exerciseType, setExerciseType] = useState("Normal");
   const [supersetExercise, setSupersetExercise] = useState<string[]>([""]);
@@ -143,17 +143,20 @@ export default function TrainingSessionPage() {
   };
 
   const resetSession = () => {
+    ClearLocalStorage();
     setSupersetExercise([""]);
     setExerciseType("Normal");
     setExercises([]);
     setNotes("");
     setActiveExerciseName("");
-    setSessionTitle("Gym -");
+    setSessionTitle("");
 
     setResetTrigger((prev) => prev + 1);
   };
 
   const saveSession = async () => {
+    if (exercises.length === 0) return;
+
     const confirmSave = confirm(
       "Are you sure you want to finish this session?"
     );
@@ -194,24 +197,18 @@ export default function TrainingSessionPage() {
     });
 
     if (response.ok) {
-      console.log("Session saved successfully!");
-      localStorage.removeItem("gym_session_draft");
-      localStorage.removeItem("timer:gym");
-      localStorage.removeItem("activeSession");
-      localStorage.removeItem("startTime");
       resetSession();
       router.push("/training/training-finished"); // Redirect to the finished page
     } else {
       console.error("Failed to save session.");
     }
-    setIsSaving(false); // End saving (in case something goes wrong)
   };
 
   useEffect(() => {
     if (
       exercises.length === 0 &&
       notes.trim() === "" &&
-      sessionTitle.trim() === "Gym -"
+      sessionTitle.trim() === ""
     )
       return;
 
@@ -418,19 +415,12 @@ export default function TrainingSessionPage() {
             </>
             <div className="flex flex-col justify-center mt-14 gap-5 mx-8 mb-10">
               <SaveButton isSaving={isSaving} onClick={saveSession} />
-              <DeleteSessionBtn
-                storageKey={[
-                  "gym_session_draft",
-                  "timer:gym",
-                  "activeSession",
-                  "startTime",
-                ]}
-                onDelete={resetSession}
-              />
+              <DeleteSessionBtn onDelete={resetSession} />
             </div>
           </div>
         </div>
       </ModalPageWrapper>
+      {isSaving && <FullScreenLoader message="Saving session..." />}
     </>
   );
 }

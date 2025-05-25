@@ -9,6 +9,9 @@ import DeleteSessionBtn from "@/app/ui/deleteSessionBtn";
 import { motion, AnimatePresence } from "framer-motion";
 import { SquareArrowLeft, SquareArrowRight } from "lucide-react";
 import { HoleData, Player, PlayerStats } from "../Types/disc-golf";
+import SaveButton from "@/app/ui/save-button";
+import FullScreenLoader from "@/app/components/FullScreenLoader";
+import { clearLocalStorage } from "../components/ClearLocalStorage";
 
 export default function DiscGolfGame() {
   const [hole, setHole] = useState(1);
@@ -32,6 +35,7 @@ export default function DiscGolfGame() {
   const [previousHoleNumber, setPreviousHoleNumber] = useState<number | null>(
     null
   );
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     const activeSession = localStorage.getItem("activeSession");
@@ -249,9 +253,9 @@ export default function DiscGolfGame() {
     setPlayerStats(stats);
   }, [holeHistory, viewingHoleNumber, players]);
 
-  const handleFinishGame = () => {
-    const holeData: HoleData = {
-      hole_number: hole,
+  const handleFinishGame = async () => {
+    const finalHoleData: HoleData = {
+      hole_number: viewingHoleNumber,
       length: parseInt(length),
       par: par,
       scores: players.map((player) => ({
@@ -265,28 +269,70 @@ export default function DiscGolfGame() {
       })),
     };
 
-    // Save the hole data to local storage or send it to your backend
     const existingHoles = JSON.parse(
       localStorage.getItem("holes") || "[]"
     ) as HoleData[];
 
-    localStorage.setItem("holes", JSON.stringify([...existingHoles, holeData]));
+    const updatedHoles = [...existingHoles, finalHoleData];
 
-    const timer = JSON.parse(localStorage.getItem("timer:disc-golf") || "{}");
+    localStorage.setItem(
+      "holes",
+      JSON.stringify([...existingHoles, finalHoleData])
+    );
 
-    let finalTime = 0;
+    setHoleHistory(updatedHoles);
 
-    if (timer.isRunning && timer.startTime) {
-      finalTime =
-        Math.floor((Date.now() - timer.startTime) / 1000) +
-        (timer.elapsedBeforePause || 0);
-    } else {
-      finalTime = timer.elapsedBeforePause || 0;
+    console.log(
+      "Sending to backend:",
+      holeHistory.map((h) => h.hole_number)
+    );
+
+    const TimerDataRaw = localStorage.getItem("timer:disc-golf");
+    let duration = 0;
+
+    if (TimerDataRaw) {
+      const { startTime, elapsedBeforePause, isRunning } =
+        JSON.parse(TimerDataRaw);
+
+      if (isRunning && startTime) {
+        duration =
+          Math.floor((Date.now() - startTime) / 1000) +
+          (elapsedBeforePause || 0);
+      } else {
+        duration = elapsedBeforePause || 0;
+      }
     }
+    setIsSaving(true); // Start saving
 
-    localStorage.setItem("finalTime", finalTime.toString());
-    localStorage.setItem("gameFinished", "true");
-    router.push("/disc-golf/game-finished");
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    try {
+      const response = await fetch("/api/disc-golf/save-golf-session", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          courseName,
+          holes: updatedHoles,
+          isPublic: false, // You can change this based on your app logic
+          type: "disc-golf",
+          duration,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Server error:", errorData.error);
+        alert("Failed to save game data. Please try again.");
+        return;
+      }
+      
+      await router.push("/disc-golf/game-finished");
+    } catch (error) {
+      console.error("Error saving session:", error);
+      alert("Failed to save session. Please try again.");
+    }
   };
 
   const handleNextHole = () => {
@@ -346,6 +392,11 @@ export default function DiscGolfGame() {
         return acc;
       }, {})
     );
+  };
+
+  const deleteSession = () => {
+    clearLocalStorage();
+    router.push("/");
   };
 
   return (
@@ -685,37 +736,14 @@ export default function DiscGolfGame() {
                   Next Hole
                 </button>
               )}
-              <button
-                onClick={() => {
-                  const confirmed = confirm(
-                    "Are you sure you want to finish the game?"
-                  );
-
-                  if (confirmed) {
-                    handleFinishGame();
-                  }
-                }}
-                className={`${russoOne.className} mb-5 mt-10 flex items-center justify-center w-full  bg-blue-800 py-2 px-10  rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95`}
-              >
-                Finish
-              </button>
-              <DeleteSessionBtn
-                storageKey={[
-                  "activeSession",
-                  "setupData",
-                  "startTime",
-                  "timer:disc-golf",
-                  "holes",
-                  "currentHole",
-                  "trackStats",
-                  "numHoles",
-                  "viewingHoleNumber",
-                ]}
-                onDelete={() => router.push("/disc-golf")}
-              />
+              <div className="flex flex-col gap-5 items-center justify-center">
+                <SaveButton isSaving={isSaving} onClick={handleFinishGame} />
+                <DeleteSessionBtn onDelete={deleteSession} />
+              </div>
             </div>
           </motion.div>
         </AnimatePresence>
+        {isSaving && <FullScreenLoader message="Saving your game..." />}
       </div>
     </>
   );

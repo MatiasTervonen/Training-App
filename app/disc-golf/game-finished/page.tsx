@@ -3,6 +3,9 @@
 import { russoOne } from "@/app/ui/fonts";
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import { clearLocalStorage } from "../components/ClearLocalStorage";
+import SaveButton from "@/app/ui/save-button";
+import { useRouter } from "next/navigation";
 
 export default function GameFinished() {
   const [holes, setHoles] = useState<
@@ -21,6 +24,8 @@ export default function GameFinished() {
     }[]
   >([]);
   const [time, setTime] = useState("N/A");
+  const router = useRouter();
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     const dataJSON = localStorage.getItem("holes");
@@ -43,6 +48,12 @@ export default function GameFinished() {
       );
     }
   }, []);
+
+  const finishGame = async () => {
+    setIsSaving(true);
+    clearLocalStorage();
+    router.push("/");
+  };
 
   return (
     <div className="bg-slate-800 p-5 min-h-[100dvh] relative">
@@ -208,11 +219,7 @@ export default function GameFinished() {
           {time}
         </p>
       </div>
-      <button
-        className={`${russoOne.className} mb-5 mt-10 flex items-center justify-center w-full  bg-blue-800 py-2 px-10  rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95`}
-      >
-        Finish
-      </button>
+      <SaveButton isSaving={isSaving} onClick={finishGame} />
     </div>
   );
 }

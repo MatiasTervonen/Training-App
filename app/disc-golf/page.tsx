@@ -7,6 +7,7 @@ import DeleteSessionBtn from "../ui/deleteSessionBtn";
 import { createClient } from "@/utils/supabase/client";
 import ModalPageWrapper from "../components/modalPageWrapper";
 import { useRouter } from "next/navigation";
+import { clearLocalStorage } from "./components/ClearLocalStorage";
 
 export default function DiscGolf() {
   const [players, setPlayers] = useState<string[]>([]);
@@ -69,6 +70,8 @@ export default function DiscGolf() {
   }
 
   const startGame = () => {
+    clearLocalStorage();
+
     const randomizedPlayers = shuffleArray(players);
 
     const setupData = {
@@ -127,18 +130,14 @@ export default function DiscGolf() {
       onSwipeLeft={() => router.push("/")}
       rightLabel="home"
     >
-      <div className="bg-slate-800 p-5 min-h-screen">
+      <div className={` ${russoOne.className} bg-slate-800 p-5 min-h-screen `}>
         <div>
-          <h1
-            className={`${russoOne.className} text-gray-100 flex justify-center my-5 text-2xl `}
-          >
+          <h1 className="text-gray-100 flex justify-center my-5 text-2xl ">
             Disc Golf
           </h1>
         </div>
         <div className="flex flex-col justify-center items-center text-center">
-          <p
-            className={`${russoOne.className} text-gray-100 flex justify-center my-5 text-xl `}
-          >
+          <p className=" text-gray-100 flex justify-center my-5 text-xl">
             Course Name
           </p>
 
@@ -150,9 +149,7 @@ export default function DiscGolf() {
             onChange={(e) => setCourseName(e.target.value)}
           />
         </div>
-        <div
-          className={`${russoOne.className} text-gray-100 flex flex-col gap-2 items-center mt-10`}
-        >
+        <div className=" text-gray-100 flex flex-col gap-2 items-center mt-10">
           <p> Number of Holes {numHoles}</p>
           <div className="flex gap-4">
             <button
@@ -170,9 +167,7 @@ export default function DiscGolf() {
           </div>
         </div>
         <div className="mt-10 mb-5">
-          <label
-            className={`${russoOne.className} text-gray-100 flex flex-col gap-2 items-center`}
-          >
+          <label className=" text-gray-100 flex flex-col gap-2 items-center">
             <input
               type="checkbox"
               checked={trackStats}
@@ -183,9 +178,7 @@ export default function DiscGolf() {
           </label>
         </div>
         <div className="flex flex-col justify-center items-center text-center">
-          <p
-            className={`${russoOne.className} text-gray-100 flex justify-center my-5 text-xl `}
-          >
+          <p className=" text-gray-100 flex justify-center my-5 text-xl ">
             Add Players
           </p>
 
@@ -199,21 +192,17 @@ export default function DiscGolf() {
         </div>
         <button
           onClick={addPlayer}
-          className={`${russoOne.className} flex items-center justify-center mx-auto  bg-blue-800 py-2 px-10 mt-10 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95`}
+          className=" flex items-center justify-center mx-auto  bg-blue-800 py-2 px-10 mt-10 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95"
         >
           <Plus />
         </button>
         <div className="flex flex-col justify-center items-center text-center mt-10">
           {players.length > 0 && (
-            <p
-              className={`${russoOne.className} text-gray-100 text-xl border-b mb-5`}
-            >
-              Players
-            </p>
+            <p className="text-gray-100 text-xl border-b mb-5">Players</p>
           )}
           {players.map((player, index) => (
             <div key={index}>
-              <p className={`${russoOne.className} text-gray-100 text-xl mb-5`}>
+              <p className="text-gray-100 text-xl mb-5">
                 {player === userDisplayName ? `${player} (you)` : player}
               </p>
             </div>
@@ -221,7 +210,7 @@ export default function DiscGolf() {
         </div>
         <button
           onClick={startGame}
-          className={`${russoOne.className} flex items-center justify-center w-full mb-5  bg-blue-800 py-2 px-10 mt-10 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95`}
+          className=" flex items-center justify-center w-full mb-5  bg-blue-800 py-2 px-10 mt-10 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95"
         >
           Start
         </button>

@@ -9,7 +9,6 @@ interface DeleteSessionBtnProps {
 }
 
 export default function DeleteSessionBtn({
-  storageKey,
   onDelete,
   label = "Delete",
 }: DeleteSessionBtnProps) {
@@ -18,10 +17,6 @@ export default function DeleteSessionBtn({
       "Are you sure you want to delete this session?"
     );
     if (!confirmed) return;
-
-    storageKey?.forEach((key) => {
-      localStorage.removeItem(key);
-    });
 
     if (onDelete) onDelete();
   };

@@ -32,7 +32,7 @@ export default function Sessions() {
       onSwipeLeft={() => router.push("/")}
       rightLabel="home"
     >
-      <div className="bg-slate-900 p-5 h-full">
+      <div className="bg-slate-800 p-5 h-full">
         <h1
           className={`${russoOne.className} text-gray-100 flex justify-center my-5 text-2xl `}
         >

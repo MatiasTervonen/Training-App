@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
   }
 
   const body = await req.json();
-  const { courseName, holes, isPublic = false } = body;
+  const { courseName, holes, isPublic = false, type, duration } = body;
 
   const sessionId = randomUUID(); // same for all rows
 
@@ -36,6 +36,8 @@ export async function POST(req: NextRequest) {
         c2_putt_made: score.c2made,
         c2_putt_attempted: score.c2attempted,
         is_public: isPublic,
+        type,
+        duration,
       });
     }
   }

@@ -24,6 +24,7 @@ export default function GuestLogIn() {
     } else {
       console.log("Guest login successful");
       router.push("/");
+      router.refresh();
     }
   };
 

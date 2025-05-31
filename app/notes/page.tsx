@@ -19,7 +19,7 @@ export default function Notes() {
   const saveNotes = async () => {
     if (notes.length === 0) return;
     setIsSaving(true); // Start saving
-    const response = await fetch("/api/save-session", {
+    const response = await fetch("/api/notes/save-notes", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -36,6 +36,8 @@ export default function Notes() {
       router.push("/"); // Redirect to the finished page
     } else {
       console.error("Failed to save session.");
+      alert("Session not saved. You might be in demo mode.");
+      router.push("/");
     }
   };
 
@@ -79,9 +81,9 @@ export default function Notes() {
         onSwipeLeft={() => router.push("/")}
         rightLabel="home"
       >
-        <div className="flex flex-col h-full w-full bg-slate-800">
-          <div className="flex flex-col flex-grow">
-            <div className="flex flex-col items-center justify-center mt-5 mx-10 gap-5">
+        <div className="flex flex-col h-full w-full bg-slate-800 ">
+          <div className="flex flex-col flex-grow  ">
+            <div className="flex flex-col items-center justify-center mt-5 mx-10 gap-5 ">
               <p
                 className={`${russoOne.className} text-gray-100 font-bold text-lg
                     `}
@@ -95,7 +97,7 @@ export default function Notes() {
                   placeholder="Notes title..."
                 />
               </div>
-              <div className="flex flex-col w-full">
+              <div className="flex flex-col w-full xl:max-w-md">
                 <NotesInput
                   notes={notes}
                   setNotes={setNotes}
@@ -106,7 +108,7 @@ export default function Notes() {
                 />
               </div>
             </div>
-            <div className="flex flex-col  items-center justify-center mt-10 gap-5 mx-10 mb-20">
+            <div className="flex flex-col items-center justify-center mt-10 gap-5 mx-10 mb-20  xl:max-w-md xl:w-full xl:mx-auto xl:mt-20">
               <SaveButton isSaving={isSaving} onClick={saveNotes} />
               <DeleteSessionBtn
                 storageKey={["notes_draft"]}

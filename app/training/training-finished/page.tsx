@@ -17,7 +17,7 @@ export default function TrainingFinished() {
       onSwipeLeft={() => router.push("/")}
       rightLabel="home"
     >
-      <div className="flex flex-col h-full w-full justify-center px-10 gap-10 bg-slate-950">
+      <div className="flex flex-col h-full w-full justify-center px-10 gap-10 bg-slate-900">
         <div className="flex items-center justify-center gap-5">
           <Image src="/Confetti.png" alt="Confetti" width={50} height={50} />
           <h1

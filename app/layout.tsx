@@ -34,7 +34,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>
+      <body className="xl:max-w-3xl mx-auto bg-blue-900">
         <div className="fixed top-0 left-0 w-full z-50">
           <Navbar />
         </div>

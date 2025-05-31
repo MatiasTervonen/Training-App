@@ -2,65 +2,41 @@
 
 import { ReactNode } from "react";
 import Image from "next/image";
-import { useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function Modal({
   isOpen,
   onClose,
   children,
+  footerButton,
 }: {
   isOpen: boolean;
   onClose: () => void;
   children: ReactNode;
+  footerButton?: ReactNode;
 }) {
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [isOpen]);
-
   if (!isOpen) return null;
 
   return (
     <AnimatePresence>
-      <motion.div
-        className="fixed top-28 left-0 right-0 bottom-0 bg-black/50 z-50 overflow-y-auto border-t-2 border-green-500"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        drag="x"
-        dragConstraints={{ left: 0, right: 0 }}
-        onDragEnd={(_, info) => {
-          if (Math.abs(info.offset.x) > 150) {
-            onClose();
-          }
-        }}
-        transition={{ type: "spring", stiffness: 300, damping: 30 }}
-      >
-        <div className="flex items-center justify-center">
-          <motion.div
-            className="bg-slate-900  rounded-md w-full relative max-h-screen overflow-y-auto"
-            drag="x"
-            dragConstraints={{ left: 0, right: 0 }}
-            onDragEnd={(_, info) => {
-              if (Math.abs(info.offset.x) > 150) {
-                onClose();
-              }
-            }}
-            initial={{ x: 0, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            exit={{ x: 0, opacity: 0 }}
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
-          >
+      <div className="fixed inset-0 z-50  bg-black/50">
+        <motion.div
+          className="fixed top-0 left-0 right-0 bottom-0 z-50"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          drag="x"
+          dragConstraints={{ left: 0, right: 0 }}
+          onDragEnd={(_, info) => {
+            if (Math.abs(info.offset.x) > 200) {
+              onClose();
+            }
+          }}
+          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        >
+          <div className="bg-slate-800 relative mt-28 h-[calc(100dvh-7rem)] flex flex-col xl:max-w-3xl mx-auto">
             <button
-              className=" absolute top-2 right-2 text-gray-100 hover:text-gray-200 z-50"
+              className="absolute top-2 right-2 text-gray-100 hover:text-gray-200 z-[100]"
               onClick={onClose}
             >
               <Image
@@ -71,10 +47,23 @@ export default function Modal({
                 className="hover:cursor-pointer"
               />
             </button>
-            <div className="pb-12 p-2">{children}</div>
-          </motion.div>
-        </div>
-      </motion.div>
+
+            <div
+              className={`flex-grow overflow-y-auto touch-pan-y ${
+                !footerButton ? "pb-16" : ""
+              }`}
+            >
+              {children}
+            </div>
+
+            {footerButton && (
+              <div className="flex justify-center items-center p-4 border-t border-gray-700">
+                {footerButton}
+              </div>
+            )}
+          </div>
+        </motion.div>
+      </div>
     </AnimatePresence>
   );
 }

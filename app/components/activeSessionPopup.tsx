@@ -41,8 +41,11 @@ export default function ActiveSessionPopup() {
         <p className={`${russoOne.className} pb-2 text-start ml-2`}>
           {activeSession.label}
         </p>
-        <div className={`${russoOne.className} text-slate-900 text-start`}>
+        <div
+          className={`${russoOne.className} flex  gap-5 text-slate-900 text-start`}
+        >
           <Timer sessionId={activeSession.type} />
+          <p>{activeSession.type.toUpperCase()}</p>
         </div>
       </div>
       <div className="mr-5">

@@ -2,24 +2,33 @@ import { NextResponse, NextRequest } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 
 export async function POST(req: NextRequest) {
-  const { id } = await req.json();
-  console.log("Deleting session with ID:", id); 
-
-  if (!id) {
-    return NextResponse.json({ error: "Missing session ID" }, { status: 400 });
-  }
-
   const supabase = await createClient();
 
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
+
+  if (authError || !user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const body = await req.json();
+  const { item_id, table } = body;
+
   const { error } = await supabase
-    .from("sessions")
+    .from(table)
     .delete()
-    .eq("id", id);
+    .eq("id", item_id)
+    .eq("user_id", user.id);
 
   if (error) {
     console.error("Error deleting session:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  return NextResponse.json({ success: true });
+  return new Response(JSON.stringify({ success: true }), {
+    status: 200,
+    headers: { "Content-Type": "application/json" },
+  });
 }

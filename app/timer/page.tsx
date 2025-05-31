@@ -16,8 +16,8 @@ export default function Timer() {
       onSwipeLeft={() => router.push("/")}
       rightLabel="home"
     >
-      <div className={`${russoOne.className} bg-slate-950 p-5 h-full relative text-gray-100`}>
-        <h1>Timer</h1>
+      <div className={`${russoOne.className} bg-slate-800 p-5 h-full relative text-gray-100`}>
+        <h1 className="text-xl text-center">Timer</h1>
       </div>
     </ModalPageWrapper>
   );

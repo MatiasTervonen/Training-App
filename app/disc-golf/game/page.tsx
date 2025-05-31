@@ -324,10 +324,10 @@ export default function DiscGolfGame() {
       if (!response.ok) {
         const errorData = await response.json();
         console.error("Server error:", errorData.error);
-        alert("Failed to save game data. Please try again.");
-        return;
+        alert("Session not saved. You might be in demo mode.");
+        router.push("/");
       }
-      
+
       await router.push("/disc-golf/game-finished");
     } catch (error) {
       console.error("Error saving session:", error);
@@ -401,7 +401,7 @@ export default function DiscGolfGame() {
 
   return (
     <>
-      <nav className="flex items-center justify-between bg-gray-700 p-2 px-4 fixed w-full z-40">
+      <nav className="flex items-center justify-between bg-gray-700 p-2 px-4 fixed w-full z-40 xl:max-w-3xl mx-auto">
         <div className="flex items-center justify-center gap-2  text-gray-100">
           <Timer sessionId="disc-golf" />
         </div>
@@ -412,7 +412,7 @@ export default function DiscGolfGame() {
           Live Scorecard
         </Link>
       </nav>
-      <div className="pt-[40px] relative h-[calc(100dvh-72px)] overflow-hidden">
+      <div className="pt-[40px] relative h-[calc(100dvh-72px)] overflow-hidden xl:max-w-3xl mx-auto">
         <div className="absolute inset-0 z-0 h-screen flex justify-between bg-slate-950">
           {!isSwiping && (
             <>
@@ -466,7 +466,7 @@ export default function DiscGolfGame() {
         <AnimatePresence initial={false} custom={direction}>
           <motion.div
             key={viewingHoleNumber}
-            className="absolute w-full z-30 bg-slate-950 px-5 h-full overflow-y-auto flex flex-col justify-between"
+            className="absolute w-full z-30 bg-slate-950 px-5 h-full overflow-y-auto flex flex-col justify-between "
             custom={direction}
             initial="enter"
             animate="center"

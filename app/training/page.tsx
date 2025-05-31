@@ -10,34 +10,49 @@ import ModalPageWrapper from "@/app/components/modalPageWrapper";
 import TitleInput from "./components/TitleInput";
 import NotesInput from "./components/NotesInput";
 import ExerciseCard from "./components/ExerciseCard";
-import ExerciseInput from "./components/ExerciseInput";
-import SuperSetInput from "./components/SupersetInput";
 import { groupExercises } from "./utils/groupExercises";
 import { ChevronDown } from "lucide-react";
 import FullScreenLoader from "@/app/components/FullScreenLoader";
 import { ClearLocalStorage } from "./utils/ClearLocalStorage";
+import ExerciseDropdown from "./components/ExerciseDropdown";
+import Modal from "@/app/components/modal";
+import { Plus } from "lucide-react";
 
-type ExerciseSet = { weight: string; reps: string; lvl: string };
+type ExerciseSet = { weight: string; reps: string; rpe: string };
 type ExerciseEntry = {
+  exercise_id: string;
   name: string;
+  equipment?: string; // Optional, can be used to display equipment type
   sets: ExerciseSet[];
   notes?: string;
-  groupId?: string;
+  superset_id?: string; // For super-sets
+};
+
+const emptyExerciseEntry: ExerciseEntry = {
+  exercise_id: "",
+  name: "",
+  equipment: "",
+  sets: [],
+  notes: "",
+  superset_id: "",
 };
 
 export default function TrainingSessionPage() {
   const [exercises, setExercises] = useState<ExerciseEntry[]>([]);
-  const [activeExerciseName, setActiveExerciseName] = useState("");
   const [notes, setNotes] = useState("");
   const router = useRouter();
   const [isSaving, setIsSaving] = useState(false);
   const [sessionTitle, setSessionTitle] = useState("");
   const [resetTrigger, setResetTrigger] = useState(0);
   const [exerciseType, setExerciseType] = useState("Normal");
-  const [supersetExercise, setSupersetExercise] = useState<string[]>([""]);
+  const [supersetExercise, setSupersetExercise] = useState<ExerciseEntry[]>([]);
   const [exerciseInputs, setExerciseInputs] = useState<
-    { weight: string; reps: string; lvl: string }[]
+    { weight: string; reps: string; rpe: string }[]
   >([]);
+  const [selectedExercise, setSelectedExercise] =
+    useState<ExerciseEntry | null>(null);
+  const [dropdownResetKey, setDropdownResetKey] = useState(0);
+  const [isExerciseModalOpen, setIsExerciseModalOpen] = useState(false);
 
   const startSession = () => {
     const key = "timer:gym";
@@ -69,63 +84,76 @@ export default function TrainingSessionPage() {
     );
   };
 
+  const generateUUID = () => {
+    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
+      /[xy]/g,
+      function (c) {
+        const r = (Math.random() * 16) | 0,
+          v = c === "x" ? r : (r & 0x3) | 0x8;
+        return v.toString(16);
+      }
+    );
+  };
+
   const startExercise = () => {
     if (exerciseType === "Super-Set") {
-      const validNames = supersetExercise
-        .map((name) => name.trim())
-        .filter(Boolean);
-      if (validNames.length === 0) return;
+      const validExercises = supersetExercise.filter(
+        (ex) => ex && typeof ex.name === "string" && ex.name.trim() !== ""
+      );
+      if (validExercises.length === 0) return;
 
       if (exercises.length === 0) {
         startSession(); // Start the timer/session if not already started
       }
 
-      const newGroupId = Date.now().toString();
+      const newSupersetId = generateUUID();
 
-      const newExercise = validNames.map((name) => ({
-        name,
+      const newExercise = validExercises.map((ex) => ({
+        exercise_id: ex.exercise_id || "",
+        name: ex.name,
+        equipment: ex.equipment,
         sets: [],
-        groupId: newGroupId,
+        superset_id: newSupersetId,
+        notes: "",
       }));
 
       setExercises((prev) => {
         const newExercises = [...prev, ...newExercise];
         setExerciseInputs((inputs) => [
           ...inputs,
-          ...newExercise.map(() => ({ weight: "", reps: "", lvl: "Medium" })),
+          ...newExercise.map(() => ({ weight: "", reps: "", rpe: "Medium" })),
         ]);
         return newExercises;
       });
-      setSupersetExercise([""]);
+      setSupersetExercise([]);
       setExerciseType("Normal");
     } else {
-      if (!activeExerciseName.trim()) return;
+      if (!selectedExercise || !selectedExercise.name.trim()) return;
 
       if (exercises.length === 0) {
         startSession(); // Start the timer/session if not already started
       }
 
-      setExercises((prev) => {
-        const newExercises = [
-          ...prev,
-          {
-            name: activeExerciseName,
-            sets: [],
-            groupId: Date.now().toString(),
-          },
-        ];
-        setExerciseInputs((inputs) => [
-          ...inputs,
-          { weight: "", reps: "", lvl: "Medium" },
-        ]);
-        return newExercises;
-      });
-      setActiveExerciseName("");
+      const newSupersetId = generateUUID();
+
+      setExercises((prev) => [
+        ...prev,
+        {
+          ...selectedExercise,
+          superset_id: newSupersetId,
+        },
+      ]);
+      setExerciseInputs((prev) => [
+        ...prev,
+        { weight: "", reps: "", rpe: "Medium" },
+      ]);
+      setSelectedExercise(null);
+      setDropdownResetKey((prev) => prev + 1); // Reset the dropdown
     }
   };
 
   const logSetForExercise = (index: number) => {
-    const { weight, reps, lvl } = exerciseInputs[index];
+    const { weight, reps, rpe } = exerciseInputs[index];
     const safeWeight = weight.trim() === "" ? "0" : weight;
     const safeReps = reps.trim() === "" ? "0" : reps;
 
@@ -133,22 +161,21 @@ export default function TrainingSessionPage() {
     updated[index].sets.push({
       weight: safeWeight,
       reps: safeReps,
-      lvl: lvl,
+      rpe: rpe,
     });
     setExercises(updated);
 
     const updatedInputs = [...exerciseInputs];
-    updatedInputs[index] = { weight: "", reps: "", lvl: "Medium" };
+    updatedInputs[index] = { weight: "", reps: "", rpe: "Medium" };
     setExerciseInputs(updatedInputs);
   };
 
   const resetSession = () => {
     ClearLocalStorage();
-    setSupersetExercise([""]);
+    setSupersetExercise([]);
     setExerciseType("Normal");
     setExercises([]);
     setNotes("");
-    setActiveExerciseName("");
     setSessionTitle("");
 
     setResetTrigger((prev) => prev + 1);
@@ -182,7 +209,7 @@ export default function TrainingSessionPage() {
       }
     }
 
-    const response = await fetch("/api/save-session", {
+    const response = await fetch("/api/gym/save-session", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -192,7 +219,6 @@ export default function TrainingSessionPage() {
         exercises,
         notes,
         duration,
-        type: "gym",
       }),
     });
 
@@ -200,7 +226,9 @@ export default function TrainingSessionPage() {
       resetSession();
       router.push("/training/training-finished"); // Redirect to the finished page
     } else {
-      console.error("Failed to save session.");
+      alert("Session not saved. You might be in demo mode.");
+      resetSession();
+      router.push("/");
     }
   };
 
@@ -243,7 +271,7 @@ export default function TrainingSessionPage() {
 
   return (
     <>
-      <nav className="flex items-center justify-between bg-gray-700 p-2 fixed px-4 w-full z-40">
+      <nav className="flex items-center justify-between bg-gray-700 p-2 fixed px-4 w-full z-40 xl:max-w-3xl mx-auto">
         <div className="flex items-center justify-center gap-2  text-gray-100">
           <Timer
             sessionId="gym"
@@ -259,8 +287,8 @@ export default function TrainingSessionPage() {
         onSwipeLeft={() => router.push("/")}
         rightLabel="home"
       >
-        <div className="flex justify-center relative min-h-[calc(100dvh-72px)] bg-slate-950">
-          <div className="flex flex-col w-full max-w-[800px] py-5">
+        <div className="flex justify-center relative min-h-[calc(100dvh-72px)] bg-slate-950 ">
+          <div className="flex flex-col justify-between w-full max-w-[800px] py-5">
             <div className="flex flex-col items-center justify-center  gap-5">
               <p
                 className={`${russoOne.className} text-gray-100 font-bold text-lg
@@ -284,9 +312,9 @@ export default function TrainingSessionPage() {
             </div>
 
             <>
-              {Object.entries(groupedExercises).map(([groupId, group]) => (
+              {Object.entries(groupedExercises).map(([superset_id, group]) => (
                 <div
-                  key={groupId}
+                  key={superset_id}
                   className="flex flex-col items-center  justify-center mt-10 mx-4  max-w-screen bg-slate-800 rounded-md px-4 py-2  shadow-lg"
                 >
                   {group.length > 1 && (
@@ -344,73 +372,106 @@ export default function TrainingSessionPage() {
                 </div>
               ))}
 
-              <div className="flex flex-col items-center justify-center gap-5 mt-10">
-                {exerciseType === "Super-Set" ? (
-                  <>
-                    {supersetExercise.map((name, index) => (
-                      <div key={index}>
-                        <SuperSetInput
-                          index={index}
-                          value={name}
-                          onChange={(index, value) => {
-                            const updated = [...supersetExercise];
-                            updated[index] = value;
-                            setSupersetExercise(updated);
-                          }}
-                          placeholder="Exercise..."
-                          label={index + 1}
-                        />
+              <Modal
+                isOpen={isExerciseModalOpen}
+                onClose={() => setIsExerciseModalOpen(false)}
+                footerButton={
+                  <div className="flex flex-row gap-2 w-full">
+                    <div className="relative w-full">
+                      <select
+                        className={`${russoOne.className} appearance-none w-full px-10 bg-blue-800 py-2 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95`}
+                        value={exerciseType}
+                        onChange={(e) => {
+                          const type = e.target.value;
+                          setExerciseType(type);
+                          if (type === "Normal") {
+                            setSupersetExercise([]);
+                          } else if (type === "Super-Set") {
+                            setSupersetExercise([
+                              emptyExerciseEntry,
+                              emptyExerciseEntry,
+                            ]);
+                          }
+                        }}
+                      >
+                        <option value="Normal">Normal</option>
+                        <option value="Super-Set">Super-Set</option>
+                      </select>
+                      <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none">
+                        <ChevronDown className="text-gray-100" />
                       </div>
-                    ))}
+                    </div>
                     <button
                       onClick={() => {
-                        const updated = [...supersetExercise];
-                        updated.push("");
-                        setSupersetExercise(updated);
+                        startExercise();
+                        setIsExerciseModalOpen(false);
                       }}
-                      className={`${russoOne.className} px-10 bg-blue-900 py-2 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95`}
+                      className={`${russoOne.className} w-full px-2 bg-blue-800 py-2 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95`}
                     >
-                      + Exercise
+                      Add Exercise
                     </button>
-                  </>
+                  </div>
+                }
+              >
+                {exerciseType === "Super-Set" ? (
+                  <div className="flex flex-col gap-4">
+                    {supersetExercise.map((entry, index) => (
+                      <ExerciseDropdown
+                        key={index}
+                        onSelect={(exercise) => {
+                          const updated = [...supersetExercise];
+                          updated[index] = {
+                            exercise_id: String(exercise.id),
+                            name: exercise.name,
+                            equipment: exercise.equipment,
+                            sets: [],
+                            notes: "",
+                            superset_id: generateUUID(),
+                          };
+                          setSupersetExercise(updated);
+                        }}
+                        label={index + 1}
+                      />
+                    ))}
+                    <button
+                      onClick={() =>
+                        setSupersetExercise((prev) => [
+                          ...prev,
+                          emptyExerciseEntry,
+                        ])
+                      }
+                      className={`${russoOne.className} mx-10 mb-10 bg-blue-900 py-2 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95`}
+                    >
+                      + Add Another Exercise
+                    </button>
+                  </div>
                 ) : (
-                  <ExerciseInput
+                  <ExerciseDropdown
+                    onSelect={(exercise) => {
+                      const newExercise: ExerciseEntry = {
+                        exercise_id: String(exercise.id),
+                        name: exercise.name,
+                        equipment: exercise.equipment,
+                        sets: [],
+                        notes: "",
+                        superset_id: generateUUID(),
+                      };
+                      setSelectedExercise(newExercise);
+                    }}
                     label={exercises.length + 1}
-                    setExerciseName={setActiveExerciseName}
-                    placeholder="Exercise..."
-                    exerciseName={activeExerciseName}
+                    resetTrigger={dropdownResetKey}
                   />
                 )}
+              </Modal>
 
-                <div className=" flex flex-col items-center gap-5">
-                  <div className="relative w-full">
-                    <select
-                      className={`${russoOne.className} appearance-none w-full px-10 bg-blue-800 py-2 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95`}
-                      value={exerciseType}
-                      onChange={(e) => {
-                        const type = e.target.value;
-                        setExerciseType(type);
-                        if (type === "Normal") {
-                          setSupersetExercise([""]); // Clear inputs immediately
-                        } else if (type === "Super-Set") {
-                          setSupersetExercise(["", ""]);
-                        }
-                      }}
-                    >
-                      <option value="Normal">Normal</option>
-                      <option value="Super-Set">Super-Set</option>
-                    </select>
-                    <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none">
-                      <ChevronDown className="text-gray-100 " />
-                    </div>
-                  </div>
-                  <button
-                    onClick={startExercise}
-                    className={`${russoOne.className} w-full px-10 bg-blue-800 py-2 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95`}
-                  >
-                    Start Exercise
-                  </button>
-                </div>
+              <div className="flex items-center gap-5 w-fit mx-auto mt-10">
+                <button
+                  onClick={() => setIsExerciseModalOpen(true)}
+                  className={`${russoOne.className} w-full px-10 bg-blue-800 py-2 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95`}
+                >
+                  Add Exercise
+                  <Plus className=" inline ml-2" size={20} />
+                </button>
               </div>
             </>
             <div className="flex flex-col justify-center mt-14 gap-5 mx-8 mb-10">

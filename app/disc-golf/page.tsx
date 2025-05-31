@@ -130,7 +130,9 @@ export default function DiscGolf() {
       onSwipeLeft={() => router.push("/")}
       rightLabel="home"
     >
-      <div className={` ${russoOne.className} bg-slate-800 p-5 min-h-screen `}>
+      <div
+        className={` ${russoOne.className} bg-slate-800 p-5 min-h-screen`}
+      >
         <div>
           <h1 className="text-gray-100 flex justify-center my-5 text-2xl ">
             Disc Golf

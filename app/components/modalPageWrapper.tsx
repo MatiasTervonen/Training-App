@@ -30,7 +30,7 @@ export default function ModalPageWrapper({
 
   return (
     <div
-      className={`relative h-[calc(100dvh-72px)] overflow-hidden ${
+      className={`relative h-[calc(100dvh-72px)] overflow-hidden  ${
         noTopPadding ? "" : "pt-[40px]"
       }`}
     >

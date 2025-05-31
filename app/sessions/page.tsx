@@ -22,7 +22,7 @@ export default function Sessions() {
       );
       router.push("/");
     }
-  }, []);
+  }, [router]);
 
   return (
     <ModalPageWrapper

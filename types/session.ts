@@ -34,6 +34,7 @@ export type Exercises = {
   name: string;
   equipment: string;
   muscle_group: string;
+  superset_id?: string | null;
 };
 
 

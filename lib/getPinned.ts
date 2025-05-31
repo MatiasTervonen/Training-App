@@ -1,13 +1,11 @@
 import { createClient } from "@/utils/supabase/server";
-import { Notes, GymSessionFull } from "@/types/session";
 
-type FeedItem =
-  | { table: "notes"; item: Notes }
-  | { table: "gym_sessions"; item: GymSessionFull };
-
+type PinnedItem =
+  | { table: "notes"; item_id: string }
+  | { table: "gym_sessions"; item_id: string };
 
 export default async function GetPinned(): Promise<{
-  pinned: FeedItem[];
+  pinned: PinnedItem[];
   error: Error | null;
 }> {
   const supabase = await createClient();
@@ -34,7 +32,7 @@ export default async function GetPinned(): Promise<{
 
   const pinned = data.map((item) => ({
     table: item.table,
-    item: item.item_id,
+    item_id: item.item_id,
   }));
 
   return { pinned, error: null };

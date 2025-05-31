@@ -8,11 +8,13 @@ export default async function Home() {
   const { feed } = await GetSession();
   const { pinned } = await GetPinned();
 
-  const pinnedItems = new Set(pinned.map((item) => item.item));
+  const pinnedItems = new Set(
+    pinned.map((item) => `${item.table}:${item.item_id}`)
+  );
 
   const feedWithPinned = feed.map((item) => ({
     ...item,
-    pinned: pinnedItems.has(item.item.id),
+    pinned: pinnedItems.has(`${item.table}:${item.item.id}`),
   }));
 
   return (

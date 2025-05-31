@@ -3,10 +3,10 @@
 import { useState, useEffect } from "react";
 import { russoOne } from "@/app/ui/fonts";
 import { useRef } from "react";
-import { Exercise } from "@/app/training/Types/session";
+import { Exercises } from "@/types/session";
 
 type Props = {
-  onSelect: (exercise: Exercise) => void;
+  onSelect: (exercise: Exercises) => void;
   label?: string | number;
   resetTrigger?: number;
 };
@@ -17,11 +17,11 @@ export default function ExerciseDropdown({
   resetTrigger,
 }: Props) {
   const [searchQuery, setSearchQuery] = useState("");
-  const [exercises, setExercises] = useState<Exercise[]>([]);
-  const [filteredExercises, setFilteredExercises] = useState<Exercise[]>([]);
+  const [exercises, setExercises] = useState<Exercises[]>([]);
+  const [filteredExercises, setFilteredExercises] = useState<Exercises[]>([]);
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
-  const [recentExercises, setRecentExercises] = useState<Exercise[]>([]);
+  const [recentExercises, setRecentExercises] = useState<Exercises[]>([]);
   const [showDropdown, setShowDropdown] = useState(true);
   const [isDropdownLoading, setIsDropdownLoading] = useState(false);
 
@@ -76,7 +76,7 @@ export default function ExerciseDropdown({
     }
   };
 
-  const handleSelectExercise = (exercise: Exercise) => {
+  const handleSelectExercise = (exercise: Exercises) => {
     setSearchQuery(exercise.name + " " + "(" + exercise.equipment + ")");
     onSelect(exercise);
     setShowDropdown(false);

@@ -5,14 +5,14 @@ import NotesInput from "./NotesInput";
 import DropdownMenu from "@/app/components/dropdownMenu";
 import { Ellipsis, SquareX, ChevronDown } from "lucide-react";
 
-type ExerciseSet = { weight: string; reps: string; rpe: string };
+type ExerciseSet = { weight: number; reps: number; rpe: string };
 type ExerciseEntry = {
   exercise_id: string;
   name: string;
   sets: ExerciseSet[];
   notes?: string;
   groupId?: string;
-  equipment?: string;
+  equipment: string;
 };
 
 type ExerciseCardProps = {
@@ -24,7 +24,7 @@ type ExerciseCardProps = {
   onInputChange: (
     index: number,
     field: "weight" | "reps" | "rpe",
-    value: string
+    value: number | string
   ) => void;
   onAddSet: (index: number) => void;
   onDeleteSet: (exerciseIndex: number, setIndex: number) => void;

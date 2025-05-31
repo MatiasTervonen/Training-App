@@ -18,11 +18,11 @@ import ExerciseDropdown from "./components/ExerciseDropdown";
 import Modal from "@/app/components/modal";
 import { Plus } from "lucide-react";
 
-type ExerciseSet = { weight: string; reps: string; rpe: string };
+type ExerciseSet = { weight: number; reps: number; rpe: string };
 type ExerciseEntry = {
   exercise_id: string;
   name: string;
-  equipment?: string; // Optional, can be used to display equipment type
+  equipment: string; // Optional, can be used to display equipment type
   sets: ExerciseSet[];
   notes?: string;
   superset_id?: string; // For super-sets
@@ -154,8 +154,9 @@ export default function TrainingSessionPage() {
 
   const logSetForExercise = (index: number) => {
     const { weight, reps, rpe } = exerciseInputs[index];
-    const safeWeight = weight.trim() === "" ? "0" : weight;
-    const safeReps = reps.trim() === "" ? "0" : reps;
+
+    const safeWeight = weight === "" ? 0 : Number(weight);
+    const safeReps = reps === "" ? 0 : Number(reps);
 
     const updated = [...exercises];
     updated[index].sets.push({
@@ -259,7 +260,7 @@ export default function TrainingSessionPage() {
       if (savedExercises) {
         setExercises(savedExercises);
         setExerciseInputs(
-          savedExercises.map(() => ({ weight: "", reps: "", lvl: "Medium" }))
+          savedExercises.map(() => ({ weight: "", reps: "", rpe: "Medium" }))
         );
       }
       if (savedNotes) setNotes(savedNotes);

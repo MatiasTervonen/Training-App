@@ -1,8 +1,8 @@
-import { Exercises } from "@/types/session";
+import { Exercise } from "@/types/session";
 
 export function groupExercises(
-  exercises: Exercises[]
-): Record<string, { exercise: Exercises; index: number }[]> {
+  exercises: Exercise[]
+): Record<string, { exercise: Exercise; index: number }[]> {
   return exercises.reduce((acc, exercise, index) => {
     const groupKey =
       exercise.superset_id !== undefined
@@ -11,5 +11,5 @@ export function groupExercises(
     if (!acc[groupKey]) acc[groupKey] = [];
     acc[groupKey].push({ exercise, index });
     return acc;
-  }, {} as Record<string, { exercise: Exercises; index: number }[]>);
+  }, {} as Record<string, { exercise: Exercise; index: number }[]>);
 }

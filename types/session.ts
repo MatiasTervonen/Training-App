@@ -37,6 +37,13 @@ export type Exercises = {
   superset_id?: string | null;
 };
 
+export type Exercise = {
+  exercise_id: string;
+  name: string;
+  equipment: string;
+  superset_id?: string | null;
+  sets: GymSet[];
+};
 
 export type Notes = {
   id: string;
@@ -46,8 +53,6 @@ export type Notes = {
   created_at: string;
   pinned: boolean;
 };
-
-
 
 export type FeedCardProps =
   | {

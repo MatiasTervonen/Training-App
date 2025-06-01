@@ -167,11 +167,30 @@ export default function Navbar() {
           </div>
         )}
       </nav>
-      {pathname === "/" && (
+      {["/", "/notes", "/sessions"].includes(pathname) && (
         <div
-          className={`${russoOne.className} bg-slate-600 w-full text-center p-2 text-gray-100 z-0`}
+          className={`${russoOne.className} flex justify-between bg-slate-600 w-full text-center text-gray-100 z-0 `}
         >
-          <h2>Tracking Feed</h2>
+          <h2
+            className={
+              pathname === "/notes" ? "bg-blue-950/50 p-2 w-1/3" : "p-2 w-1/3"
+            }
+          >
+            Notes
+          </h2>
+
+          <h2
+            className={pathname === "/" ? "bg-blue-950/50 p-2 w-1/3" : "p-2 w-1/3"}
+          >
+            Feed
+          </h2>
+          <h2
+            className={
+              pathname === "/sessions" ? "bg-blue-950/50 p-2 w-1/3" : "p-2 w-1/3"
+            }
+          >
+            Sessions
+          </h2>
         </div>
       )}
     </div>

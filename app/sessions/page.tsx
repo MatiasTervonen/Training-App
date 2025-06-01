@@ -26,13 +26,12 @@ export default function Sessions() {
 
   return (
     <ModalPageWrapper
-      noTopPadding
       onSwipeRight={() => router.back()}
       leftLabel="back"
       onSwipeLeft={() => router.back()}
       rightLabel="back"
     >
-      <div className="bg-slate-800 p-5 h-full ">
+      <div className="bg-slate-800 p-5 h-full">
         <h1
           className={`${russoOne.className} text-gray-100 flex justify-center my-5 text-2xl `}
         >

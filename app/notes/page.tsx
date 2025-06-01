@@ -75,14 +75,13 @@ export default function Notes() {
   return (
     <>
       <ModalPageWrapper
-        noTopPadding
         onSwipeRight={() => router.back()}
         leftLabel="back"
         onSwipeLeft={() => router.back()}
         rightLabel="back"
       >
-        <div className="flex flex-col h-full w-full px-6 max-w-md mx-auto">
-          <div className="flex flex-col items-center mt-5 gap-5 flex-1 mb-10 ">
+        <div className="flex flex-col h-full w-full px-6 max-w-md mx-auto pb-10">
+          <div className="flex flex-col items-center mt-5 gap-5 flex-grow mb-10 h-full">
             <p
               className={`${russoOne.className} text-gray-100 text-lg text-center`}
             >

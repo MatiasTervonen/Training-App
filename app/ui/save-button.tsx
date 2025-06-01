@@ -19,6 +19,7 @@ export default function SaveButton({
 }: SaveButtonProps) {
   return (
     <button
+      aria-label={isSaving ? savingLabel : label}
       type="submit"
       onClick={onClick}
       disabled={isSaving}

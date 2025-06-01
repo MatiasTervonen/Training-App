@@ -6,6 +6,7 @@ import Spinner from "@/app/components/spinner";
 import { createClient } from "@/utils/supabase/client";
 import { russoOne } from "@/app/ui/fonts";
 import { LogOut } from "lucide-react";
+import FullScreenLoader from "../components/FullScreenLoader";
 
 export default function SignOutButton({
   onSignOut,
@@ -24,10 +25,8 @@ export default function SignOutButton({
 
     const { error } = await supabase.auth.signOut();
 
-    setIsLoading(false);
-
     if (error) {
-      console.error("Error signing out:", error.message);
+      console.error("Error logging out:", error.message);
       return;
     }
 
@@ -35,21 +34,25 @@ export default function SignOutButton({
   };
 
   return (
-    <button
-      onClick={handleSignOut}
-      className={`${russoOne.className} p-2 rounded-md shadow-xl bg-blue-900 border-2 border-blue-500 hover:bg-blue-700 hover:scale-95`}
-    >
-      {isLoading ? (
-        <div className="flex items-center gap-2 justify-center">
-          <Spinner />
-          <p>Singing out...</p>
-        </div>
-      ) : (
-        <div className="flex items-center gap-2 justify-center">
-          <LogOut />
-          <p>Sign out</p>
-        </div>
-      )}
-    </button>
+    <>
+      <button
+        aria-label={isLoading ? "Logging out..." : "Log out"}
+        onClick={handleSignOut}
+        className={`${russoOne.className} p-2 rounded-md shadow-xl bg-blue-900 border-2 border-blue-500 hover:bg-blue-700 hover:scale-95`}
+      >
+        {isLoading ? (
+          <div className="flex items-center gap-2 justify-center">
+            <Spinner />
+            <p>Logging out...</p>
+          </div>
+        ) : (
+          <div className="flex items-center gap-2 justify-center">
+            <LogOut />
+            <p>Log out</p>
+          </div>
+        )}
+      </button>
+      {isLoading && <FullScreenLoader  message="Logging out..." />}
+    </>
   );
 }

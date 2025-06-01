@@ -36,6 +36,7 @@ export default function NotesCard({
         <DropdownMenu
           button={
             <div
+              aria-label="More options"
               className={`flex items-center justify-center p-[14px] rounded-tr-md ${
                 pinned ? "text-slate-900" : "text-gray-100"
               }`}
@@ -45,6 +46,7 @@ export default function NotesCard({
           }
         >
           <button
+            aria-label="Edit note"
             onClick={() => {
               onEdit();
             }}
@@ -53,6 +55,7 @@ export default function NotesCard({
             Edit
           </button>
           <button
+            aria-label="Pin or unpin note"
             onClick={() => {
               onTogglePin();
             }}
@@ -61,6 +64,7 @@ export default function NotesCard({
             {pinned ? "Unpin" : "Pin"}
           </button>
           <button
+            aria-label="Delete note"
             onClick={() => {
               onDelete();
             }}
@@ -72,9 +76,7 @@ export default function NotesCard({
       </div>
 
       <div className="pb-3 ml-3">
-        {item.notes.length > 20
-          ? `${item.notes.slice(0, 20)}...`
-          : item.notes}
+        {item.notes.length > 20 ? `${item.notes.slice(0, 20)}...` : item.notes}
       </div>
       <div className="flex justify-between items-center mt-2 bg-black/40 rounded-b-md">
         {/* Icon */}
@@ -99,6 +101,7 @@ export default function NotesCard({
         </div>
 
         <button
+          aria-label="Expand note"
           onClick={onExpand}
           className="bg-blue-500 text-gray-100 p-2 rounded-br-md hover:bg-blue-400"
         >

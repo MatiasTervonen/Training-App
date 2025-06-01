@@ -49,6 +49,7 @@ export default function GymCard({
         <DropdownMenu
           button={
             <div
+              aria-label="More options"
               className={`flex items-center justify-center p-[14px] rounded-tr-md ${
                 pinned ? "text-slate-900" : "text-gray-100"
               }`}
@@ -58,6 +59,7 @@ export default function GymCard({
           }
         >
           <button
+            aria-label="Edit gym session"
             onClick={() => {
               onEdit();
             }}
@@ -66,6 +68,7 @@ export default function GymCard({
             Edit
           </button>
           <button
+            aria-label="Pin or unpin gym session"
             onClick={() => {
               onTogglePin();
             }}
@@ -74,6 +77,7 @@ export default function GymCard({
             {pinned ? "Unpin" : "Pin"}
           </button>
           <button
+            aria-label="Delete gym session"
             onClick={() => {
               onDelete();
             }}
@@ -111,6 +115,7 @@ export default function GymCard({
         </div>
 
         <button
+          aria-label="Expand gym session"
           onClick={onExpand}
           className="bg-blue-500 text-gray-100 p-2 rounded-br-md hover:bg-blue-400"
         >

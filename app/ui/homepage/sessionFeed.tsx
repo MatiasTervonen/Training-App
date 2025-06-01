@@ -42,7 +42,7 @@ export default function SessionFeed({ feed }: Props) {
     if (inView && visibleCount < feed.length) {
       setVisibleCount((prev) => prev + 10);
     }
-  }, [inView]);
+  }, [inView, feed.length, visibleCount]);
 
   const togglePin = async (
     item_id: string,

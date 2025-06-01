@@ -11,12 +11,11 @@ import TitleInput from "./components/TitleInput";
 import NotesInput from "./components/NotesInput";
 import ExerciseCard from "./components/ExerciseCard";
 import { groupExercises } from "./utils/groupExercises";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Plus } from "lucide-react";
 import FullScreenLoader from "@/app/components/FullScreenLoader";
 import { ClearLocalStorage } from "./utils/ClearLocalStorage";
 import ExerciseDropdown from "./components/ExerciseDropdown";
 import Modal from "@/app/components/modal";
-import { Plus } from "lucide-react";
 
 type ExerciseSet = { weight: number; reps: number; rpe: string };
 type ExerciseEntry = {

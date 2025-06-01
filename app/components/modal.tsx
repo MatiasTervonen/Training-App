@@ -57,7 +57,7 @@ export default function Modal({
             </div>
 
             {footerButton && (
-              <div className="flex justify-center items-center p-4 border-t border-gray-700">
+              <div className="flex justify-center items-center p-4">
                 {footerButton}
               </div>
             )}

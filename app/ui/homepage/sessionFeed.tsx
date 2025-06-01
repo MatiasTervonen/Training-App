@@ -156,7 +156,7 @@ export default function SessionFeed({ feed }: Props) {
         )}
 
         {editingItem && (
-          <Modal isOpen={true} onClose={() => setEditingItem(null)}>
+          <Modal footerButton isOpen={true} onClose={() => setEditingItem(null)}>
             {editingItem.table === "notes" && (
               <EditNote
                 note={editingItem.item}

@@ -27,7 +27,6 @@ export default function ModalPageWrapper({
     (state) => state.setDirection
   );
 
-
   const [isTransitioning, setIsTransitioning] = useState(false);
 
   return (
@@ -82,7 +81,7 @@ export default function ModalPageWrapper({
 
       <AnimatePresence mode="wait">
         <motion.div
-          className="absolute z-30 w-full h-full overflow-y-auto bg-gray-900 "
+          className="absolute z-30 w-full h-full overflow-y-auto bg-slate-800 "
           initial="enter"
           animate="center"
           exit="exit"

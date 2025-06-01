@@ -81,38 +81,35 @@ export default function Notes() {
         onSwipeLeft={() => router.back()}
         rightLabel="back"
       >
-        <div className="flex flex-col h-full w-full bg-slate-800 ">
-          <div className="flex flex-col justify-between mx-6 h-full">
-            <div className="flex flex-col items-center mt-5 gap-5 flex-1 w-full mb-10">
-              <p
-                className={`${russoOne.className} text-gray-100 font-bold text-lg
-                    `}
-              >
-                Add your notes here
-              </p>
-              <div className="mb-5">
-                <TitleInput
-                  title={notesTitle}
-                  setTitle={setNotesTitle}
-                  placeholder="Notes title..."
-                />
-              </div>
-              <div className="flex flex-col w-full max-w-md flex-grow">
-                <NotesInput
-                  notes={notes}
-                  setNotes={setNotes}
-                  placeholder="Write your notes here..."
-                  label="Notes..."
-                />
-              </div>
+        <div className="flex flex-col h-full w-full px-6 max-w-md mx-auto">
+          <div className="flex flex-col items-center mt-5 gap-5 flex-1 mb-10 ">
+            <p
+              className={`${russoOne.className} text-gray-100 text-lg text-center`}
+            >
+              Add your notes here
+            </p>
+            <div className="mb-5">
+              <TitleInput
+                title={notesTitle}
+                setTitle={setNotesTitle}
+                placeholder="Notes title..."
+              />
             </div>
-            <div className="flex flex-col items-center gap-5 mb-10 max-w-md self-center w-full">
-              <SaveButton isSaving={isSaving} onClick={saveNotes} />
-              <DeleteSessionBtn
-                storageKey={["notes_draft"]}
-                onDelete={resetNotes}
-              ></DeleteSessionBtn>
+            <div className="flex w-full  flex-grow">
+              <NotesInput
+                notes={notes}
+                setNotes={setNotes}
+                placeholder="Write your notes here..."
+                label="Notes..."
+              />
             </div>
+          </div>
+          <div className="flex flex-col items-center gap-5 mb-10  self-center w-full">
+            <SaveButton isSaving={isSaving} onClick={saveNotes} />
+            <DeleteSessionBtn
+              storageKey={["notes_draft"]}
+              onDelete={resetNotes}
+            ></DeleteSessionBtn>
           </div>
         </div>
       </ModalPageWrapper>

@@ -21,7 +21,6 @@ export default function EditNotes({ note, onClose, onSave }: Props) {
 
   const handleSubmit = async () => {
     setIsSaving(true);
-  
 
     const res = await fetch("/api/notes/edit-notes", {
       method: "POST",
@@ -49,10 +48,10 @@ export default function EditNotes({ note, onClose, onSave }: Props) {
 
   return (
     <>
-      <div className="flex flex-col w-full  bg-slate-800 ">
-        <div className="flex flex-col gap-10 mx-10 mt-10">
+      <div className="flex flex-col mx-auto w-full h-full bg-slate-800 max-w-md ">
+        <div className="flex flex-col items-center gap-5 mx-6 mt-5 h-full ">
           <h2
-            className={`${russoOne.className} text-gray-100 font-bold text-lg text-center 
+            className={`${russoOne.className} text-gray-100 text-lg text-center 
                             `}
           >
             Edit your notes
@@ -64,17 +63,17 @@ export default function EditNotes({ note, onClose, onSave }: Props) {
               placeholder="Notes title..."
             />
           </div>
-          <div>
+          <div className="flex w-full max-w-md flex-grow">
             <NotesInput
               notes={notes}
               setNotes={setNotes}
               placeholder="Write your notes here..."
-              rows={6}
-              cols={10}
               label="Notes..."
             />
           </div>
+           <div className="w-full">
           <SaveButton isSaving={isSaving} onClick={handleSubmit} />
+        </div>
         </div>
       </div>
 

@@ -7,8 +7,9 @@ import Link from "next/link";
 import SignOutButton from "@/app/ui/singOutButton";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
-import { Settings } from "lucide-react";
-import { ArrowLeft } from "lucide-react";
+import { Settings, ArrowLeft } from "lucide-react";
+import { useClickOutside } from "@/app/components/clickOutside";
+import { useRef } from "react";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -26,6 +27,9 @@ export default function Navbar() {
       router.push("/");
     }
   };
+
+  const menuRef = useRef<HTMLDivElement | null>(null);
+  useClickOutside(menuRef, () => setIsOpen(false));
 
   if (pathname === "/login") return null; // Don't render the navbar on the login page
 
@@ -77,7 +81,10 @@ export default function Navbar() {
           </button>
         </div>
         {isOpen && (
-          <div className="w-full bg-slate-950 p-4 absolute top-18 left-0 shadow-lg  text-gray-100 z-50 border-y-2 border-blue-500 ">
+          <div
+            ref={menuRef}
+            className="w-full bg-slate-950 p-4 absolute top-18 left-0 shadow-lg  text-gray-100 z-50 border-y-2 border-blue-500 "
+          >
             <div className="flex flex-col items-center justify-center gap-4 mt-5 ">
               <Link
                 href="/sessions"
@@ -91,7 +98,7 @@ export default function Navbar() {
                   <Link
                     href="/calendar"
                     onClick={toggleMenu}
-                    className={`${russoOne.className} flex items-center mx-auto w-35 p-2 gap-2 rounded-md shadow-xl bg-blue-900 border-2 border-blue-500 `}
+                    className={`${russoOne.className} flex items-center mx-auto w-35 p-2 gap-2 rounded-md shadow-xl bg-blue-900 border-2 border-blue-500 hover:bg-blue-700 hover:scale-95`}
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -112,7 +119,7 @@ export default function Navbar() {
                   <Link
                     href="/notes"
                     onClick={toggleMenu}
-                    className={`${russoOne.className} flex items-center mx-auto w-35 p-2 gap-2 rounded-md shadow-xl bg-blue-900 border-2 border-blue-500 `}
+                    className={`${russoOne.className} flex items-center mx-auto w-35 p-2 gap-2 rounded-md shadow-xl bg-blue-900 border-2 border-blue-500 hover:bg-blue-700 hover:scale-95`}
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -130,7 +137,7 @@ export default function Navbar() {
                   <Link
                     href="/settings"
                     onClick={toggleMenu}
-                    className={`${russoOne.className} flex items-center mx-auto w-35 p-2 gap-2 rounded-md shadow-xl bg-blue-900 border-2 border-blue-500 `}
+                    className={`${russoOne.className} flex items-center mx-auto w-35 p-2 gap-2 rounded-md shadow-xl bg-blue-900 border-2 border-blue-500 hover:bg-blue-700 hover:scale-95`}
                   >
                     <Settings />
                     Settings
@@ -138,7 +145,7 @@ export default function Navbar() {
                   <Link
                     href="/notes"
                     onClick={toggleMenu}
-                    className={`${russoOne.className} flex items-center mx-auto w-35 p-2 gap-2 rounded-md shadow-xl bg-blue-900 border-2 border-blue-500 `}
+                    className={`${russoOne.className} flex items-center mx-auto w-35 p-2 gap-2 rounded-md shadow-xl bg-blue-900 border-2 border-blue-500 hover:bg-blue-700 hover:scale-95 `}
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"

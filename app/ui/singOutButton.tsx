@@ -37,7 +37,7 @@ export default function SignOutButton({
   return (
     <button
       onClick={handleSignOut}
-      className={`${russoOne.className} p-2 rounded-md shadow-xl bg-blue-900 border-2 border-blue-500 `}
+      className={`${russoOne.className} p-2 rounded-md shadow-xl bg-blue-900 border-2 border-blue-500 hover:bg-blue-700 hover:scale-95`}
     >
       {isLoading ? (
         <div className="flex items-center gap-2 justify-center">

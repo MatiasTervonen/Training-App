@@ -26,6 +26,8 @@ export default function ModalPageWrapper({
   const setDirection = useTransitionDirectionStore(
     (state) => state.setDirection
   );
+
+
   const [isTransitioning, setIsTransitioning] = useState(false);
 
   return (

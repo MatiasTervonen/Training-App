@@ -33,8 +33,6 @@ export async function login(
   redirect("/");
 }
 
-
-
 export async function signup(
   prevState: AuthActionState | undefined,
   formData: FormData
@@ -55,16 +53,6 @@ export async function signup(
     };
   }
 
-  // 🔍 Check if the user already exists by attempting to sign in
-  const { error: signInError } = await supabase.auth.signInWithPassword(data);
-
-  if (!signInError) {
-    return {
-      success: false,
-      message: "This email is already registered. Please log in instead.",
-    };
-  }
-
   // Proceed with sign up
   const { data: signUpData, error: signUpError } = await supabase.auth.signUp(
     data
@@ -78,7 +66,14 @@ export async function signup(
     };
   }
 
-  console.log("SignUp success:", signUpData);
+  const userExists = (signUpData?.user?.identities?.length ?? 0) === 0;
+
+  if (userExists) {
+    return {
+      success: false,
+      message: "Email already registered. Please log in.",
+    };
+  }
 
   return {
     success: true,

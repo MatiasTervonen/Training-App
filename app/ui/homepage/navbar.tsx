@@ -30,7 +30,7 @@ export default function Navbar() {
   if (pathname === "/login") return null; // Don't render the navbar on the login page
 
   return (
-    <div className="relative w-full xl:max-w-3xl mx-auto">
+    <div className="relative w-full md:max-w-3xl mx-auto">
       <nav className="w-full flex items-center justify-between p-4 bg-slate-950">
         <Link
           href="/"

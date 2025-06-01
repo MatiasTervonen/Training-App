@@ -29,16 +29,16 @@ export default function Sessions() {
       noTopPadding
       onSwipeRight={() => router.back()}
       leftLabel="back"
-      onSwipeLeft={() => router.push("/")}
-      rightLabel="home"
+      onSwipeLeft={() => router.back()}
+      rightLabel="back"
     >
-      <div className="bg-slate-800 p-5 h-full">
+      <div className="bg-slate-800 p-5 h-full ">
         <h1
           className={`${russoOne.className} text-gray-100 flex justify-center my-5 text-2xl `}
         >
           Start Session
         </h1>
-        <div className="flex flex-col justify-center items-center text-center">
+        <div className="flex flex-col max-w-md mx-auto">
           <Link
             href="/training"
             className={`${russoOne.className} flex items-center justify-center gap-2 bg-blue-800 py-2 w-full my-3 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95`}

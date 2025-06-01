@@ -34,7 +34,7 @@ export default function Modal({
           }}
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
         >
-          <div className="bg-slate-800 relative mt-28 h-[calc(100dvh-7rem)] flex flex-col xl:max-w-3xl mx-auto">
+          <div className="bg-slate-800 relative mt-28 h-[calc(100dvh-7rem)] flex flex-col md:max-w-3xl mx-auto">
             <button
               className="absolute top-2 right-2 text-gray-100 hover:text-gray-200 z-[100]"
               onClick={onClose}

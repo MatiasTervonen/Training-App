@@ -29,21 +29,15 @@ export default function GuestLogIn() {
   };
 
   return (
-    <div
-      className={`${russoOne.className} flex flex-col rounded-xl border bg-slate-900 p-5 h-full relative text-gray-100`}
+    <button
+      onClick={handleGuestLogin}
+      className={`${russoOne.className} flex flex-col w-[250px] items-center justify-center gap-2 px-5 text-gray-100 border-2 border-blue-500 p-2 rounded-md bg-blue-900 hover:bg-blue-800 hover:scale-95`}
+      disabled={isLoading}
     >
-      <h1 className="text-xl text-center mb-4">Guest Login</h1>
-      <p className="text-center mb-6">
-        Use this account to explore the app without signing up.
-      </p>
-      <button
-        onClick={handleGuestLogin}
-        className="flex items-center justify-center gap-2 text-gray-100 border-2 border-blue-500 p-2 rounded-md bg-blue-900 hover:bg-blue-800 hover:scale-95"
-        disabled={isLoading}
-      >
-        {isLoading && <Spinner />}
-        {isLoading ? "Logging in..." : "Log in"}
-      </button>
-    </div>
+      {isLoading && <Spinner />}
+      <span className="inline-block text-center ">
+      {isLoading ? "Logging in..." : "Explore as a Guest (limited access)"}
+      </span>
+    </button>
   );
 }

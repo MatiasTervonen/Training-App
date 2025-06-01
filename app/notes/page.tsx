@@ -78,12 +78,12 @@ export default function Notes() {
         noTopPadding
         onSwipeRight={() => router.back()}
         leftLabel="back"
-        onSwipeLeft={() => router.push("/")}
-        rightLabel="home"
+        onSwipeLeft={() => router.back()}
+        rightLabel="back"
       >
         <div className="flex flex-col h-full w-full bg-slate-800 ">
-          <div className="flex flex-col flex-grow  ">
-            <div className="flex flex-col items-center justify-center mt-5 mx-10 gap-5 ">
+          <div className="flex flex-col justify-between mx-6 h-full">
+            <div className="flex flex-col items-center mt-5 gap-5 flex-1 w-full mb-10">
               <p
                 className={`${russoOne.className} text-gray-100 font-bold text-lg
                     `}
@@ -97,18 +97,16 @@ export default function Notes() {
                   placeholder="Notes title..."
                 />
               </div>
-              <div className="flex flex-col w-full xl:max-w-md">
+              <div className="flex flex-col w-full max-w-md flex-grow">
                 <NotesInput
                   notes={notes}
                   setNotes={setNotes}
                   placeholder="Write your notes here..."
-                  rows={6}
-                  cols={10}
                   label="Notes..."
                 />
               </div>
             </div>
-            <div className="flex flex-col items-center justify-center mt-10 gap-5 mx-10 mb-20  xl:max-w-md xl:w-full xl:mx-auto xl:mt-20">
+            <div className="flex flex-col items-center gap-5 mb-10 max-w-md self-center w-full">
               <SaveButton isSaving={isSaving} onClick={saveNotes} />
               <DeleteSessionBtn
                 storageKey={["notes_draft"]}

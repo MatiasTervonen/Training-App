@@ -43,7 +43,7 @@ export default function ExerciseCard({
   return (
     <>
       <div
-        className={`${russoOne.className} relative flex items-center justify-between w-full gap-5  border-gray-100`}
+        className={`${russoOne.className} relative flex items-center justify-between w-full gap-5 border-gray-100`}
       >
         <div className="flex items-center gap-5">
           <span className="text-gray-100 text-xl">

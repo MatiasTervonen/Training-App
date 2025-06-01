@@ -272,7 +272,7 @@ export default function TrainingSessionPage() {
 
   return (
     <>
-      <nav className="flex items-center justify-between bg-gray-700 p-2 fixed px-4 w-full z-40 xl:max-w-3xl mx-auto">
+      <nav className="flex items-center justify-between bg-gray-700 p-2 fixed px-4 w-full z-40 md:max-w-3xl">
         <div className="flex items-center justify-center gap-2  text-gray-100">
           <Timer
             sessionId="gym"
@@ -288,9 +288,9 @@ export default function TrainingSessionPage() {
         onSwipeLeft={() => router.push("/")}
         rightLabel="home"
       >
-        <div className="flex justify-center relative min-h-[calc(100dvh-72px)] bg-slate-950 ">
-          <div className="flex flex-col justify-between w-full max-w-[800px] py-5">
-            <div className="flex flex-col items-center justify-center  gap-5">
+        <div className="flex justify-center  relative min-h-[calc(100dvh-72px)] bg-slate-950 ">
+          <div className="flex flex-col justify-between py-5 w-full max-w-md">
+            <div className="flex flex-col items-center justify-center gap-5 ">
               <p
                 className={`${russoOne.className} text-gray-100 font-bold text-lg
         `}
@@ -316,7 +316,7 @@ export default function TrainingSessionPage() {
               {Object.entries(groupedExercises).map(([superset_id, group]) => (
                 <div
                   key={superset_id}
-                  className="flex flex-col items-center  justify-center mt-10 mx-4  max-w-screen bg-slate-800 rounded-md px-4 py-2  shadow-lg"
+                  className="flex flex-col items-center justify-center mt-10 bg-slate-800 rounded-md px-4 py-2 shadow-lg mx-4"
                 >
                   {group.length > 1 && (
                     <h2 className="text-gray-100 text-xl font-bold mb-2">
@@ -475,7 +475,7 @@ export default function TrainingSessionPage() {
                 </button>
               </div>
             </>
-            <div className="flex flex-col justify-center mt-14 gap-5 mx-8 mb-10">
+            <div className="flex flex-col justify-center items-center mt-14 gap-5 mb-10 mx-4">
               <SaveButton isSaving={isSaving} onClick={saveSession} />
               <DeleteSessionBtn onDelete={resetSession} />
             </div>

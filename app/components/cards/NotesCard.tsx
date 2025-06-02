@@ -32,7 +32,7 @@ export default function NotesCard({
       }`}
     >
       <div className=" flex justify-between items-center">
-        <div className="p-3">{item.title}</div>
+        <div className="ml-3 line-clamp-1">{item.title}</div>
         <DropdownMenu
           button={
             <div
@@ -75,8 +75,8 @@ export default function NotesCard({
         </DropdownMenu>
       </div>
 
-      <div className="pb-3 ml-3">
-        {item.notes.length > 20 ? `${item.notes.slice(0, 20)}...` : item.notes}
+      <div className="ml-3 mr-5 mb-2 line-clamp-2">
+        {item.notes}
       </div>
       <div className="flex justify-between items-center mt-2 bg-black/40 rounded-b-md">
         {/* Icon */}

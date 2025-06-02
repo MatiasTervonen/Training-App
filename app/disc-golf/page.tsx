@@ -131,7 +131,7 @@ export default function DiscGolf() {
       rightLabel="home"
     >
       <div
-        className={` ${russoOne.className} bg-slate-800 p-5 min-h-screen`}
+        className={` ${russoOne.className} bg-slate-800 p-5 min-h-(calc(100dvh-72px)) max-w-md mx-auto`}
       >
         <div>
           <h1 className="text-gray-100 flex justify-center my-5 text-2xl ">
@@ -198,7 +198,7 @@ export default function DiscGolf() {
         >
           <Plus />
         </button>
-        <div className="flex flex-col justify-center items-center text-center mt-10">
+        <div className="flex flex-col justify-center items-center text-center mt-10 ">
           {players.length > 0 && (
             <p className="text-gray-100 text-xl border-b mb-5">Players</p>
           )}

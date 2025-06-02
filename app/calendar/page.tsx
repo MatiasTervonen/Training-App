@@ -16,7 +16,7 @@ export default function CalendarPage() {
       onSwipeRight={() => router.back()}
       leftLabel="back"
       onSwipeLeft={() => router.back()}
-      rightLabel="home"
+      rightLabel="back"
     >
       <div className="flex flex-col min-h-[calc(100dvh-72px)] bg-slate-800 text-gray-100">
         <div className="flex flex-col flex-grow items-center  w-full">

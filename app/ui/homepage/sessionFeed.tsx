@@ -108,7 +108,7 @@ export default function SessionFeed({ feed }: Props) {
 
   return (
     <>
-      <div className="bg-slate-900 h-[calc(100dvh-72px)] px-5 pt-3 pb-20 overflow-y-auto touch-pan-y text-gray-100">
+      <div className="bg-slate-900 h-[calc(100dvh-72px)] px-5 pt-3 pb-20 overflow-y-auto touch-pan-y text-gray-100 ">
         {feed.length === 0 ? (
           <p>No sessions yet. Let&apos;s get started!</p>
         ) : (
@@ -125,6 +125,7 @@ export default function SessionFeed({ feed }: Props) {
                     </p>
                   </div>
                 )}
+                {!isPinned && <div className="mt-[32px]"></div>}
                 <FeedCard
                   {...feedItem}
                   pinned={isPinned}
@@ -156,7 +157,11 @@ export default function SessionFeed({ feed }: Props) {
         )}
 
         {editingItem && (
-          <Modal footerButton isOpen={true} onClose={() => setEditingItem(null)}>
+          <Modal
+            footerButton
+            isOpen={true}
+            onClose={() => setEditingItem(null)}
+          >
             {editingItem.table === "notes" && (
               <EditNote
                 note={editingItem.item}

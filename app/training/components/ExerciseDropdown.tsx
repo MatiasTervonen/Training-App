@@ -64,7 +64,7 @@ export default function ExerciseDropdown({
     if (value.length > 0) {
       const filteredExercises = exercises.filter((exercise) => {
         const combinedText =
-          `${exercise.name} ${exercise.equipment} ${exercise.muscle_group}`.toLowerCase();
+          `${exercise.name} ${exercise.equipment} ${exercise.muscle_group} ${exercise.main_group}`.toLowerCase();
         return value
           .toLowerCase()
           .split(" ")

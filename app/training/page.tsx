@@ -22,6 +22,7 @@ type ExerciseEntry = {
   exercise_id: string;
   name: string;
   equipment: string; // Optional, can be used to display equipment type
+  main_group?: string; // Optional, can be used to display main muscle group
   sets: ExerciseSet[];
   notes?: string;
   superset_id?: string; // For super-sets
@@ -52,6 +53,10 @@ export default function TrainingSessionPage() {
     useState<ExerciseEntry | null>(null);
   const [dropdownResetKey, setDropdownResetKey] = useState(0);
   const [isExerciseModalOpen, setIsExerciseModalOpen] = useState(false);
+
+  const isCardioExercise = (exercise: ExerciseEntry) => {
+    return exercise.main_group?.toLowerCase() === "cardio";
+  };
 
   const startSession = () => {
     const key = "timer:gym";
@@ -144,7 +149,11 @@ export default function TrainingSessionPage() {
       ]);
       setExerciseInputs((prev) => [
         ...prev,
-        { weight: "", reps: "", rpe: "Medium" },
+        {
+          weight: "",
+          reps: "",
+          rpe: isCardioExercise(selectedExercise) ? "Warm-up" : "Medium",
+        },
       ]);
       setSelectedExercise(null);
       setDropdownResetKey((prev) => prev + 1); // Reset the dropdown
@@ -452,6 +461,7 @@ export default function TrainingSessionPage() {
                         exercise_id: String(exercise.id),
                         name: exercise.name,
                         equipment: exercise.equipment,
+                        main_group: exercise.main_group,
                         sets: [],
                         notes: "",
                         superset_id: generateUUID(),

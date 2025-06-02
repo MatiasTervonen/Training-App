@@ -6,7 +6,7 @@ import TitleInput from "@/app/training/components/TitleInput";
 import SaveButton from "@/app/ui/save-button";
 import FullScreenLoader from "@/app/components/FullScreenLoader";
 import { russoOne } from "@/app/ui/fonts";
-import { GymSessionFull } from "@/types/session";
+import { GymSessionFull, GymExercise } from "@/types/session";
 import { groupGymExercises } from "@/lib/groupGymexercises";
 import { ChevronDown } from "lucide-react";
 
@@ -15,6 +15,9 @@ type EditGymSessionProps = {
   onClose: () => void;
   onSave?: () => void;
 };
+
+const isCardioExercise = (exercise: GymExercise) =>
+  exercise.gym_exercises.main_group?.toLowerCase() === "cardio";
 
 export default function EditGym({
   gym_session,
@@ -151,11 +154,20 @@ export default function EditGym({
                 </div>
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="text-gray-100">
-                      <th className="p-2 border-b font-normal">Set</th>
-                      <th className="p-2 border-b font-normal">Weight</th>
-                      <th className="p-2 border-b font-normal">Reps</th>
-                      <th className="p-2 border-b font-normal">Lvl</th>
+                    <tr className="text-gray-100 border-b">
+                      <th className="p-2 font-normal">Set</th>
+                      {isCardioExercise(exercise) ? (
+                        <>
+                          <th className="p-2 font-normal">Time (min)</th>
+                          <th className="p-2 font-normal">Rpe</th>
+                        </>
+                      ) : (
+                        <>
+                          <th className="p-2 font-normal">Weight</th>
+                          <th className="p-2 font-normal">Reps</th>
+                          <th className="p-2 font-normal">Rpe</th>
+                        </>
+                      )}
                     </tr>
                   </thead>
                   <tbody>
@@ -169,59 +181,104 @@ export default function EditGym({
                         } ${set.rpe === "Warm-up" ? "bg-blue-500" : ""}`}
                       >
                         <td className="p-2 border-b">{setIndex + 1}</td>
-                        <td className="p-2 border-b w-1/3">
-                          <input
-                            type="number"
-                            className="text-lg py-1 px-2 rounded-md border-2 border-gray-100 z-10 w-full  placeholder-gray-500  text-gray-100 bg-gray-800 hover:border-blue-500 focus:outline-none focus:border-green-300"
-                            value={set.weight}
-                            onChange={(e) =>
-                              handleUpdateSet(
-                                index,
-                                setIndex,
-                                "weight",
-                                e.target.value
-                              )
-                            }
-                          />
-                        </td>
-                        <td className="p-2 border-b w-1/3">
-                          <input
-                            type="number"
-                            className="text-lg py-1 px-2 rounded-md border-2 border-gray-100 z-10 w-full  placeholder-gray-500  text-gray-100 bg-gray-800 hover:border-blue-500 focus:outline-none focus:border-green-300"
-                            value={set.reps}
-                            onChange={(e) =>
-                              handleUpdateSet(
-                                index,
-                                setIndex,
-                                "reps",
-                                e.target.value
-                              )
-                            }
-                          />
-                        </td>
-                        <td className="p-2 border-b w-2/3 relative">
-                          <select
-                            className="text-lg appearance-none py-1 px-2 rounded-md border-2 border-gray-100 z-10 w-full  placeholder-gray-500  text-gray-100 bg-gray-800 hover:border-blue-500 focus:outline-none focus:border-green-300"
-                            value={set.rpe}
-                            onChange={(e) =>
-                              handleUpdateSet(
-                                index,
-                                setIndex,
-                                "rpe",
-                                e.target.value
-                              )
-                            }
-                          >
-                            <option value="Warm-up">Warm-up</option>
-                            <option value="Easy">Easy</option>
-                            <option value="Medium">Medium</option>
-                            <option value="Hard">Hard</option>
-                            <option value="Failure">Failure</option>
-                          </select>
-                          <div className="absolute inset-y-0 right-1 flex items-center pointer-events-none bg-gray-800 my-4 mr-2">
-                            <ChevronDown className="text-gray-100" />
-                          </div>
-                        </td>
+                        {isCardioExercise(exercise) ? (
+                          <>
+                            <td className="p-2 border-b w-2/4">
+                              <input
+                                type="number"
+                                className="text-lg py-1 px-2 rounded-md border-2 border-gray-100 z-10 w-full  placeholder-gray-500  text-gray-100 bg-gray-800 hover:border-blue-500 focus:outline-none focus:border-green-300"
+                                value={set.weight}
+                                onChange={(e) =>
+                                  handleUpdateSet(
+                                    index,
+                                    setIndex,
+                                    "weight",
+                                    e.target.value
+                                  )
+                                }
+                              />
+                            </td>
+                            <td className="p-2 border-b w-2/4 relative">
+                              <select
+                                className="text-lg appearance-none py-1 px-2 rounded-md border-2 border-gray-100 z-10 w-full  placeholder-gray-500  text-gray-100 bg-gray-800 hover:border-blue-500 focus:outline-none focus:border-green-300"
+                                value={set.rpe}
+                                onChange={(e) =>
+                                  handleUpdateSet(
+                                    index,
+                                    setIndex,
+                                    "rpe",
+                                    e.target.value
+                                  )
+                                }
+                              >
+                                <option value="Warm-up">Warm-up</option>
+                                <option value="Easy">Easy</option>
+                                <option value="Medium">Medium</option>
+                                <option value="Hard">Hard</option>
+                                <option value="Failure">Failure</option>
+                              </select>
+                              <div className="absolute inset-y-0 right-1 flex items-center pointer-events-none bg-gray-800 my-4 mr-2">
+                                <ChevronDown className="text-gray-100" />
+                              </div>
+                            </td>
+                          </>
+                        ) : (
+                          <>
+                            <td className="p-2 border-b w-1/3">
+                              <input
+                                type="number"
+                                className="text-lg py-1 px-2 rounded-md border-2 border-gray-100 z-10 w-full  placeholder-gray-500  text-gray-100 bg-gray-800 hover:border-blue-500 focus:outline-none focus:border-green-300"
+                                value={set.weight}
+                                onChange={(e) =>
+                                  handleUpdateSet(
+                                    index,
+                                    setIndex,
+                                    "weight",
+                                    e.target.value
+                                  )
+                                }
+                              />
+                            </td>
+                            <td className="p-2 border-b w-1/3">
+                              <input
+                                type="number"
+                                className="text-lg py-1 px-2 rounded-md border-2 border-gray-100 z-10 w-full  placeholder-gray-500  text-gray-100 bg-gray-800 hover:border-blue-500 focus:outline-none focus:border-green-300"
+                                value={set.reps}
+                                onChange={(e) =>
+                                  handleUpdateSet(
+                                    index,
+                                    setIndex,
+                                    "reps",
+                                    e.target.value
+                                  )
+                                }
+                              />
+                            </td>
+                            <td className="p-2 border-b w-2/3 relative">
+                              <select
+                                className="text-lg appearance-none py-1 px-2 rounded-md border-2 border-gray-100 z-10 w-full  placeholder-gray-500  text-gray-100 bg-gray-800 hover:border-blue-500 focus:outline-none focus:border-green-300"
+                                value={set.rpe}
+                                onChange={(e) =>
+                                  handleUpdateSet(
+                                    index,
+                                    setIndex,
+                                    "rpe",
+                                    e.target.value
+                                  )
+                                }
+                              >
+                                <option value="Warm-up">Warm-up</option>
+                                <option value="Easy">Easy</option>
+                                <option value="Medium">Medium</option>
+                                <option value="Hard">Hard</option>
+                                <option value="Failure">Failure</option>
+                              </select>
+                              <div className="absolute inset-y-0 right-1 flex items-center pointer-events-none bg-gray-800 my-4 mr-2">
+                                <ChevronDown className="text-gray-100" />
+                              </div>
+                            </td>
+                          </>
+                        )}
                       </tr>
                     ))}
                   </tbody>

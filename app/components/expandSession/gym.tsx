@@ -1,7 +1,7 @@
 import { formatDate } from "@/lib/formatDate";
 import { groupGymExercises } from "@/lib/groupGymexercises";
 import { russoOne } from "@/app/ui/fonts";
-import { GymSessionFull } from "@/types/session";
+import { GymSessionFull, GymExercise } from "@/types/session";
 
 const formatDuration = (seconds: number) => {
   const totalMinutes = Math.floor(seconds / 60);
@@ -18,6 +18,9 @@ export default function GymSession(gym_session: GymSessionFull) {
   const groupedExercises = groupGymExercises(
     gym_session.gym_session_exercises || []
   );
+
+  const isCardioExercise = (exercise: GymExercise) =>
+    exercise.gym_exercises.main_group?.toLowerCase() === "cardio";
 
   return (
     <div className={`${russoOne.className}`}>
@@ -59,11 +62,20 @@ export default function GymSession(gym_session: GymSessionFull) {
               </div>
               <table className="w-full text-left">
                 <thead>
-                  <tr className="text-gray-100">
-                    <th className="p-2 border-b font-normal">Set</th>
-                    <th className="p-2 border-b font-normal">Weight</th>
-                    <th className="p-2 border-b font-normal">Reps</th>
-                    <th className="p-2 border-b font-normal">Lvl</th>
+                  <tr className="text-gray-100 border-b">
+                    <th className="p-2 font-normal">Set</th>
+                    {isCardioExercise(exercise) ? (
+                      <>
+                        <th className="p-2 font-normal">Time (min)</th>
+                        <th className="p-2 font-normal">Rpe</th>
+                      </>
+                    ) : (
+                      <>
+                        <th className="p-2 font-normal">Weight</th>
+                        <th className="p-2 font-normal">Reps</th>
+                        <th className="p-2 font-normal">Rpe</th>
+                      </>
+                    )}
                   </tr>
                 </thead>
                 <tbody>
@@ -74,12 +86,22 @@ export default function GymSession(gym_session: GymSessionFull) {
                         set.rpe === "Failure"
                           ? "bg-red-500 text-white"
                           : "text-gray-100"
-                      } ${set.rpe === "Warm-up" ? "bg-blue-500" : ""}`}
+                      } ${set.rpe === "Warm-up" ? "bg-blue-500" : ""} border-b`}
                     >
-                      <td className="p-2 border-b">{setIndex + 1}</td>
-                      <td className="p-2 border-b">{set.weight}</td>
-                      <td className="p-2 border-b">{set.reps}</td>
-                      <td className="p-2 border-b">{set.rpe}</td>
+                      {isCardioExercise(exercise) ? (
+                        <>
+                          <td className="p-2">{setIndex + 1}</td>
+                          <td className="p-2">{set.weight} min</td>
+                          <td className="p-2">{set.rpe}</td>
+                        </>
+                      ) : (
+                        <>
+                          <td className="p-2">{setIndex + 1}</td>
+                          <td className="p-2">{set.weight}</td>
+                          <td className="p-2">{set.reps}</td>
+                          <td className="p-2">{set.rpe}</td>
+                        </>
+                      )}
                     </tr>
                   ))}
                 </tbody>

@@ -14,6 +14,7 @@ export type GymExercise = {
     id: string;
     name: string;
     equipment: string;
+    main_group?: string;
   };
   exercise_id: string;
   name: string;
@@ -34,6 +35,7 @@ export type Exercises = {
   name: string;
   equipment: string;
   muscle_group: string;
+  main_group: string;
   superset_id?: string | null;
 };
 

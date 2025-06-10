@@ -6,6 +6,7 @@ import { SquareArrowLeft } from "lucide-react";
 import { SquareArrowRight } from "lucide-react";
 import { useTransitionDirectionStore } from "../../lib/stores/transitionDirection";
 import { useState } from "react";
+import { russoOne } from "../ui/fonts";
 
 export default function ModalPageWrapper({
   children,
@@ -31,7 +32,9 @@ export default function ModalPageWrapper({
 
   return (
     <div
-      className={`relative h-[calc(100dvh-72px)] overflow-hidden  ${
+      className={`${
+        russoOne.className
+      } relative h-[calc(100dvh-72px)] overflow-hidden  ${
         noTopPadding ? "" : "pt-[40px]"
       }`}
     >
@@ -43,7 +46,7 @@ export default function ModalPageWrapper({
         <div className="flex flex-col items-center gap-2 ml-2">
           {isTransitioning && leftLabel && (
             <>
-              <div className="text-gray-100 text-center text-2xl font-bold">
+              <div className="text-gray-100 text-center text-xl">
                 {leftLabel
                   ?.toUpperCase()
                   .split("")
@@ -62,7 +65,7 @@ export default function ModalPageWrapper({
         <div className="flex flex-col items-center gap-2 mr-2">
           {isTransitioning && rightLabel && (
             <>
-              <div className="text-gray-100 text-center text-2xl font-bold">
+              <div className="text-gray-100 text-center text-xl">
                 {rightLabel
                   ?.toUpperCase()
                   .split("")
@@ -79,14 +82,14 @@ export default function ModalPageWrapper({
         </div>
       </div>
 
-      <AnimatePresence mode="wait">
+      <AnimatePresence>
         <motion.div
-          className="absolute z-30 w-full h-full overflow-y-auto bg-slate-800 "
+          className="absolute z-30 w-full h-full overflow-y-auto bg-slate-800"
           initial="enter"
           animate="center"
+          custom={direction}
           exit="exit"
           drag="x"
-          custom={direction}
           onAnimationComplete={() => {
             setDirection(0);
           }}

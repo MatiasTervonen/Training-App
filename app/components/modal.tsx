@@ -9,19 +9,21 @@ export default function Modal({
   onClose,
   children,
   footerButton,
+  noTopPadding = false,
 }: {
   isOpen: boolean;
   onClose: () => void;
   children: ReactNode;
   footerButton?: ReactNode;
+  noTopPadding?: boolean;
 }) {
   if (!isOpen) return null;
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50  bg-black/50">
+      <div className="fixed inset-0 z-50 bg-black/50">
         <motion.div
-          className="fixed top-0 left-0 right-0 bottom-0 z-50"
+          className={`fixed top-0 left-0 right-0 bottom-0 z-50`}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -34,7 +36,13 @@ export default function Modal({
           }}
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
         >
-          <div className="bg-slate-800 relative mt-28 h-[calc(100dvh-7rem)] flex flex-col md:max-w-3xl mx-auto">
+          <div
+            className={`bg-slate-800 relative flex h-[calc(100dvh-72px] flex-col md:max-w-3xl mx-auto ${
+              noTopPadding
+                ? "h-[calc(100dvh-72px)] mt-[72px]"
+                : "h-[calc(100dvh-112px)] mt-[112px]"
+            } `}
+          >
             <button
               className="absolute top-2 right-2 text-gray-100 hover:text-gray-200 z-[100]"
               onClick={onClose}

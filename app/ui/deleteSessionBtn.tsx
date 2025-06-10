@@ -23,7 +23,7 @@ export default function DeleteSessionBtn({
 
   return (
     <button
-      className={`${russoOne.className} flex items-center justify-center w-full  bg-red-800 py-2 rounded-md shadow-xl border-2 border-red-500 text-gray-100 text-lg cursor-pointer hover:bg-red-700 hover:scale-95`}
+      className={`${russoOne.className} max-w-md mx-auto flex items-center justify-center w-full  bg-red-800 py-2 rounded-md shadow-xl border-2 border-red-500 text-gray-100 text-lg cursor-pointer hover:bg-red-700 hover:scale-95`}
       onClick={handleDelete}
     >
       {label}

@@ -23,10 +23,8 @@ export default function GymSession(gym_session: GymSessionFull) {
     exercise.gym_exercises.main_group?.toLowerCase() === "cardio";
 
   return (
-    <div className={`${russoOne.className}`}>
-      <div
-        className={`${russoOne.className} my-5 flex flex-col gap-2 justify-center items-center`}
-      >
+    <div className={`${russoOne.className} mx-4`}>
+      <div className="my-5 flex flex-col gap-2 justify-center items-center">
         <div className="text-sm text-gray-400">
           {formatDate(gym_session.created_at)}
         </div>
@@ -41,7 +39,7 @@ export default function GymSession(gym_session: GymSessionFull) {
       {Object.entries(groupedExercises).map(([superset_id, group]) => (
         <div
           key={superset_id}
-          className="mt-6 bg-slate-900 rounded-md px-4 py-2 shadow-lg mx-4"
+          className="mt-6 bg-slate-900 rounded-md px-4 py-2 shadow-lg max-w-md mx-auto"
         >
           {group.length > 1 && (
             <h3 className="text-lg text-gray-100 mb-2 text-center">
@@ -51,11 +49,16 @@ export default function GymSession(gym_session: GymSessionFull) {
 
           {group.map(({ exercise, index }) => (
             <div key={index} className="mb-4">
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="text-lg text-gray-100 ">
-                  {exercise.gym_exercises.name}
-                </h3>
-                <h2>{exercise.gym_exercises.equipment}</h2>
+              <div className="flex  justify-between flex-col mb-2">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg text-gray-100 ">
+                    {exercise.gym_exercises.name}
+                  </h3>
+                  <h3 className="text-sm text-gray-300">{exercise.gym_exercises.muscle_group}</h3>
+                </div>
+                <h2 className="text-sm text-gray-400">
+                  {exercise.gym_exercises.equipment}
+                </h2>
               </div>
               <div className="py-2 whitespace-pre-wrap break-words overflow-hidden max-w-full">
                 {exercise.notes || ""}

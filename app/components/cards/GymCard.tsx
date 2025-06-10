@@ -21,8 +21,6 @@ export default function GymCard({
   onExpand,
   onEdit,
 }: Props) {
-  console.log("Pinned:", pinned);
-
   const formatDuration = (seconds: number) => {
     const totalMinutes = Math.floor(seconds / 60);
     const hours = Math.floor(totalMinutes / 60);
@@ -38,19 +36,19 @@ export default function GymCard({
     <div
       className={`${
         russoOne.className
-      } border rounded-md flex flex-col justify-center mb-5 transition-colors ${
+      } border rounded-md flex flex-col mb-2 justify-center transition-colors ${
         pinned
           ? " border-yellow-200 bg-yellow-200 text-slate-900"
           : "bg-slate-700"
       }`}
     >
-      <div className=" flex justify-between items-center">
-        <div className="p-3">{item.title}</div>
+      <div className=" flex justify-between items-center mt-2 mb-4 mx-4">
+        <div className="line-clamp-1 border-b">{item.title}</div>
         <DropdownMenu
           button={
             <div
               aria-label="More options"
-              className={`flex items-center justify-center p-[14px] rounded-tr-md ${
+              className={`flex items-center justify-center rounded-tr-md ${
                 pinned ? "text-slate-900" : "text-gray-100"
               }`}
             >
@@ -72,7 +70,7 @@ export default function GymCard({
             onClick={() => {
               onTogglePin();
             }}
-            className="border-b py-2"
+            className="border-b py-2 px-4"
           >
             {pinned ? "Unpin" : "Pin"}
           </button>
@@ -81,14 +79,14 @@ export default function GymCard({
             onClick={() => {
               onDelete();
             }}
-            className="py-2"
+            className="py-2 px-4"
           >
             Delete
           </button>
         </DropdownMenu>
       </div>
 
-      <div className="pb-3 ml-3">
+      <div className="ml-4 mb-4 mr-5 line-clamp-2">
         {item.notes.length > 20 ? `${item.notes.slice(0, 20)}...` : item.notes}
       </div>
       <div className="flex justify-between items-center mt-2 bg-black/40 rounded-b-md">

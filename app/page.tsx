@@ -1,27 +1,14 @@
-import GetSession from "@/lib/getSession";
 import SessionFeed from "./ui/homepage/sessionFeed";
-import GetPinned from "@/lib/getPinned";
+
 import ActiveSessionPopup from "./components/activeSessionPopup";
 import ClientModalWrapper from "./components/ClientModalWrapper";
 
 export default async function Home() {
-  const { feed } = await GetSession();
-  const { pinned } = await GetPinned();
-
-  const pinnedItems = new Set(
-    pinned.map((item) => `${item.table}:${item.item_id}`)
-  );
-
-  const feedWithPinned = feed.map((item) => ({
-    ...item,
-    pinned: pinnedItems.has(`${item.table}:${item.item.id}`),
-  }));
-
   return (
     <ClientModalWrapper>
       <div>
         <ActiveSessionPopup />
-        <SessionFeed feed={feedWithPinned} />
+        <SessionFeed />
       </div>
     </ClientModalWrapper>
   );

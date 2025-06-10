@@ -12,18 +12,18 @@ import EditNote from "@/app/ui/editSession/EditNotes";
 import EditGym from "@/app/ui/editSession/EditGym";
 import GymSession from "@/app/components/expandSession/gym";
 import { Notes, GymSessionFull } from "@/types/session";
+import useSWR, { mutate } from "swr";
+import Spinner from "@/app/components/spinner";
+import usePullToRefresh from "@/lib/usePullToRefresh";
 
 type FeedItem =
   | { table: "notes"; item: Notes; pinned: boolean }
   | { table: "gym_sessions"; item: GymSessionFull; pinned: boolean };
 
-type Props = {
-  feed: FeedItem[];
-};
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
-export default function SessionFeed({ feed }: Props) {
+export default function SessionFeed() {
   const [expandedItem, setExpandedItem] = useState<FeedItem | null>(null);
-  const [pinnedItem, setPinnedItem] = useState<string[]>([]);
   const router = useRouter();
   const [visibleCount, setVisibleCount] = useState(10);
   const { ref, inView } = useInView({
@@ -31,12 +31,20 @@ export default function SessionFeed({ feed }: Props) {
   });
   const [editingItem, setEditingItem] = useState<FeedItem | null>(null);
 
-  useEffect(() => {
-    const initiallyPinned = feed
-      .filter((item) => item.pinned)
-      .map((item) => item.item.id);
-    setPinnedItem(initiallyPinned);
-  }, [feed]);
+  const { containerRef, pullDistance, refreshing } = usePullToRefresh({
+    onRefresh: async () => {
+      await mutate("/api/feed");
+    },
+  });
+
+  const {
+    data: feed = [],
+    error,
+    isLoading,
+  } = useSWR<FeedItem[]>("/api/feed", fetcher, {
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+  });
 
   useEffect(() => {
     if (inView && visibleCount < feed.length) {
@@ -53,6 +61,19 @@ export default function SessionFeed({ feed }: Props) {
       ? "/api/pinned/unpin-items"
       : "/api/pinned/pin-items";
 
+    mutate(
+      "/api/feed",
+      (currentFeed: FeedItem[] = []) => {
+        return currentFeed.map((item) => {
+          if (item.item.id === item_id && item.table === table) {
+            return { ...item, pinned: !isPinned };
+          }
+          return item;
+        });
+      },
+      false
+    ); // Optimistically update the feed
+
     const res = await fetch(endpoint, {
       method: "POST",
       headers: {
@@ -64,12 +85,12 @@ export default function SessionFeed({ feed }: Props) {
     if (!res.ok) {
       const data = await res.json();
       console.error("Failed to toggle pin:", data.error);
+      alert(data.error || "Failed to toggle pin");
+      mutate("/api/feed");
       return;
-    } else {
-      setPinnedItem((prev) =>
-        isPinned ? prev.filter((id) => id !== item_id) : [...prev, item_id]
-      );
     }
+
+    mutate("/api/feed");
   };
 
   const handleDelete = async (item_id: string, table: string) => {
@@ -77,6 +98,16 @@ export default function SessionFeed({ feed }: Props) {
       "Are you sure you want to delete this session?"
     );
     if (!confirmDetlete) return;
+
+    mutate(
+      "/api/feed",
+      (currentFeed: FeedItem[] = []) => {
+        return currentFeed.filter(
+          (item) => !(item.item.id === item_id && item.table === table)
+        );
+      },
+      false
+    ); // Optimistically update the feed
 
     const res = await fetch("/api/delete-session", {
       method: "POST",
@@ -86,17 +117,19 @@ export default function SessionFeed({ feed }: Props) {
       body: JSON.stringify({ item_id, table }),
     });
 
-    if (res.ok) {
-      router.refresh();
-    } else {
+    if (!res.ok) {
       const data = await res.json();
       alert(data.error || "Failed to delete session");
+      mutate("/api/feed");
+      return;
     }
+
+    mutate("/api/feed"); // Refresh the feed after deletion
   };
 
   const sortedFeed = [...feed].sort((a, b) => {
-    const aIsPinned = pinnedItem.includes(a.item.id);
-    const bIsPinned = pinnedItem.includes(b.item.id);
+    const aIsPinned = a.pinned;
+    const bIsPinned = b.pinned;
 
     if (aIsPinned && !bIsPinned) return -1;
     if (!aIsPinned && bIsPinned) return 1;
@@ -108,12 +141,41 @@ export default function SessionFeed({ feed }: Props) {
 
   return (
     <>
-      <div className="bg-slate-900 h-[calc(100dvh-72px)] px-5 pt-3 pb-20 overflow-y-auto touch-pan-y text-gray-100 ">
-        {feed.length === 0 ? (
-          <p>No sessions yet. Let&apos;s get started!</p>
+      <div
+        ref={containerRef}
+        className={` ${russoOne.className} relative bg-slate-900 h-[calc(100dvh-72px)] px-5 pt-3 pb-20 text-gray-100 overflow-y-auto touch-pan-y`}
+      >
+        <div
+          className="flex items-center justify-center text-white transition-all"
+          style={{ height: pullDistance }}
+        >
+          {refreshing ? (
+            <div className="flex text-xl items-center gap-4">
+              <p>Refreshing...</p>
+              <Spinner size={20} />
+            </div>
+          ) : pullDistance > 0 ? (
+            <div className="flex text-xl items-center gap-2">
+              <p className="text-gray-100/70">Pull to refresh...</p>
+            </div>
+          ) : null}
+        </div>
+        {isLoading ? (
+          <div className="flex flex-col items-center justify-center gap-5">
+            <p className="text-center text-lg mt-10">Loading your sessions..</p>
+            <Spinner size={40} />
+          </div>
+        ) : error ? (
+          <p className="text-center text-lg mt-10 ">
+            Failed to load sessions. Please try again later.
+          </p>
+        ) : feed.length === 0 ? (
+          <p className="text-center text-lg mt-10">
+            No sessions yet. Let&apos;s get started!
+          </p>
         ) : (
           sortedFeed.slice(0, visibleCount).map((feedItem) => {
-            const isPinned = pinnedItem.includes(feedItem.item.id);
+            const isPinned = feedItem.pinned;
 
             return (
               <div key={feedItem.item.id}>

@@ -2,8 +2,7 @@
 
 html,
 body {
-  overscroll-behavior: none;
-  touch-action: pan-y;
+  overscroll-behavior-y: contain;
   height: 100%;
 }
 

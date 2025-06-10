@@ -121,11 +121,11 @@ export default function Timer({
     <div className={`${russoOne.className} flex items-center gap-2`}>
       <span className="min-w-[55px] text-center">{formatTime(elapsed)}</span>
       {isRunning ? (
-        <button onClick={pauseTimer}>
+        <button aria-label="Pause timer" onClick={pauseTimer}>
           <CirclePause />
         </button>
       ) : (
-        <button onClick={startTimer}>
+        <button aria-label="Start timer" onClick={startTimer}>
           <CirclePlay />
         </button>
       )}

@@ -25,10 +25,10 @@ export default function NotesInput({
   return (
     <div className={`flex flex-col ${shouldGrow ? "flex-1" : ""}`}>
       <div className="flex items-center">
-        <label className={`${russoOne.className} text-gray-100 text-sm mb-1`}>
+        <label className={`${russoOne.className} text-sm text-gray-300 mb-1`}>
           {label}
         </label>
-        <SquarePen className="text-gray-100 mb-2" />
+        <SquarePen size={18} className="text-gray-100 mb-2" />
       </div>
       <textarea
         className={`${

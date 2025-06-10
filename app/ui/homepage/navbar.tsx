@@ -136,30 +136,37 @@ export default function Navbar() {
         <div
           className={`${russoOne.className} flex justify-between bg-slate-600 w-full text-center text-gray-100 z-0 `}
         >
-          <h2
+          <Link
+            href={"/notes"}
             className={
-              pathname === "/notes" ? "bg-blue-950/50 p-2 w-1/3" : "p-2 w-1/3"
+              pathname === "/notes"
+                ? "bg-slate-500 p-2 w-1/3"
+                : "p-2 w-1/3 hover:bg-slate-500"
             }
           >
             Notes
-          </h2>
+          </Link>
 
-          <h2
+          <Link
+            href={"/"}
             className={
-              pathname === "/" ? "bg-blue-950/50 p-2 w-1/3" : "p-2 w-1/3"
+              pathname === "/"
+                ? "bg-slate-500 p-2 w-1/3"
+                : "p-2 w-1/3 hover:bg-slate-500"
             }
           >
             Feed
-          </h2>
-          <h2
+          </Link>
+          <Link
+            href={"/sessions"}
             className={
               pathname === "/sessions"
-                ? "bg-blue-950/50 p-2 w-1/3"
-                : "p-2 w-1/3"
+                ? "bg-slate-500 p-2 w-1/3"
+                : "p-2 w-1/3 hover:bg-slate-500"
             }
           >
             Sessions
-          </h2>
+          </Link>
         </div>
       )}
     </div>

@@ -5,7 +5,7 @@ import NotesInput from "./NotesInput";
 import DropdownMenu from "@/app/components/dropdownMenu";
 import { Ellipsis, SquareX, ChevronDown } from "lucide-react";
 
-type ExerciseSet = { weight: number; reps: number; rpe: string };
+type ExerciseSet = { weight?: number; reps?: number; rpe?: string };
 type ExerciseEntry = {
   exercise_id: string;
   name: string;
@@ -14,6 +14,7 @@ type ExerciseEntry = {
   groupId?: string;
   equipment: string;
   main_group?: string;
+  muscle_group?: string;
 };
 
 type ExerciseCardProps = {
@@ -22,6 +23,7 @@ type ExerciseCardProps = {
   input: { weight: string; reps: string; rpe: string };
   onUpdateExercise: (index: number, updated: ExerciseEntry) => void;
   onDeleteExercise: (index: number) => void;
+  lastExerciseHistory: (index: number) => void;
   onInputChange: (
     index: number,
     field: "weight" | "reps" | "rpe",
@@ -44,21 +46,23 @@ export default function ExerciseCard({
   onInputChange,
   onAddSet,
   onDeleteSet,
+  lastExerciseHistory,
 }: ExerciseCardProps) {
   return (
     <>
       <div
         className={`${russoOne.className} relative flex items-center justify-between w-full gap-5 border-gray-100`}
       >
-        <div className="flex items-center gap-5">
+        <div className="flex flex-col">
           <span className="text-gray-100 text-lg">
             {index + 1}. {exercise.name}
           </span>
-          <span className="text-gray-100 text-md">{exercise.equipment}</span>
+          <span className="text-sm text-gray-400">{exercise.equipment} / {exercise.muscle_group}</span>
         </div>
 
-        <DropdownMenu button={<Ellipsis className="text-gray-100" />}>
-          <button onClick={() => onDeleteExercise(index)}>Delete</button>
+        <DropdownMenu button={<Ellipsis className="text-gray-100 "/>}>
+          <button className="border-b py-2 px-4" onClick={() => onDeleteExercise(index)}>Delete</button>
+          <button className="py-2 px-4" onClick={() => lastExerciseHistory(index)}>History</button>
         </DropdownMenu>
       </div>
 

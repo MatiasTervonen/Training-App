@@ -9,11 +9,18 @@ import { russoOne } from "@/app/ui/fonts";
 import { GymSessionFull, GymExercise } from "@/types/session";
 import { groupGymExercises } from "@/lib/groupGymexercises";
 import { ChevronDown } from "lucide-react";
+import { mutate } from "swr";
 
 type EditGymSessionProps = {
   gym_session: GymSessionFull;
   onClose: () => void;
   onSave?: () => void;
+};
+
+type FeedItem = {
+  table: "gym_sessions";
+  item: GymSessionFull;
+  pinned: boolean;
 };
 
 const isCardioExercise = (exercise: GymExercise) =>
@@ -62,9 +69,34 @@ export default function EditGym({
       return;
     }
 
+    mutate(
+      "/api/feed",
+      (currentFeed: FeedItem[] = []) => {
+        return currentFeed.map((item) => {
+          if (
+            item.table === "gym_sessions" &&
+            item.item.id === gym_session.id
+          ) {
+            return {
+              ...item,
+              item: {
+                ...item.item,
+                title,
+                notes,
+              },
+            };
+          }
+          return item;
+        });
+      },
+      false
+    ); // Optimistically update the feed
+
     onSave?.();
     onClose();
     setIsSaving(false);
+
+    mutate("/api/feed");
   };
 
   const handleUpdateSet = (
@@ -95,7 +127,7 @@ export default function EditGym({
   return (
     <>
       <div
-        className={`${russoOne.className} flex flex-col w-full h-full mb-10`}
+        className={`${russoOne.className} flex flex-col w-full h-full mb-10 max-w-md mx-auto`}
       >
         <div className="flex flex-col gap-10 mx-10 mt-10">
           <h2 className={` text-gray-100  text-lg text-center `}>

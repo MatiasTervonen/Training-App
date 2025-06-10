@@ -9,21 +9,12 @@ export async function POST(req: NextRequest) {
     error: authError,
   } = await supabase.auth.getUser();
 
-  console.log("user.id from Supabase:", user?.id);
-
   if (authError || !user) {
     return new Response("Unauthorized", { status: 401 });
   }
 
   const body = await req.json();
   const { exercises, notes, duration, title } = body;
-
-  console.log("Insert to gym_sessions:", {
-    user_id: user.id,
-    title,
-    notes,
-    duration,
-  });
 
   const { data: sessionData, error: sessionError } = await supabase
     .from("gym_sessions")

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { russoOne } from "@/app/ui/fonts";
 import { useRef } from "react";
 import { Exercises } from "@/types/session";
+import useSWR from "swr";
 
 type Props = {
   onSelect: (exercise: Exercises) => void;
@@ -17,52 +18,44 @@ export default function ExerciseDropdown({
   resetTrigger,
 }: Props) {
   const [searchQuery, setSearchQuery] = useState("");
-  const [exercises, setExercises] = useState<Exercises[]>([]);
   const [filteredExercises, setFilteredExercises] = useState<Exercises[]>([]);
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
-  const [recentExercises, setRecentExercises] = useState<Exercises[]>([]);
   const [showDropdown, setShowDropdown] = useState(true);
-  const [isDropdownLoading, setIsDropdownLoading] = useState(false);
 
-  useEffect(() => {
-    const fetchExersises = async () => {
-      setIsDropdownLoading(true);
-      const res = await fetch("/api/gym/exercises");
-      const data = await res.json();
-      setIsDropdownLoading(false);
-      console.log("Fetched exercises:", data);
+  const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
-      if (res.ok && data) {
-        setExercises(data);
-      } else {
-        console.error("Error fetching exercises:", data.error);
-      }
-    };
-    fetchExersises();
-  }, []);
+  const {
+    data: exercises,
+    error: exercisesError,
+    isLoading: isExercisesLoading,
+  } = useSWR<Exercises[]>("/api/gym/exercises", fetcher, {
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+  });
 
-  useEffect(() => {
-    const fetchRecentExercises = async () => {
-      setIsDropdownLoading(true);
-      const res = await fetch("/api/gym/recent-exercises");
-      const data = await res.json();
-      setIsDropdownLoading(false);
-      if (res.ok && data) {
-        setRecentExercises(data);
-      } else {
-        console.error("Error fetching recent exercises:", data.error);
-      }
-    };
-    fetchRecentExercises();
-  }, []);
+  const {
+    data: recentExercises,
+    error: recentError,
+    isLoading: isRecentLoading,
+  } = useSWR<Exercises[]>("/api/gym/recent-exercises", fetcher, {
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+  });
+
+  const isLoading = isExercisesLoading || isRecentLoading;
+  const isError = exercisesError || recentError;
+
+  const allExercises = exercises || [];
+
+  const recentExercisesList = recentExercises || [];
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchQuery(value);
     setShowDropdown(true);
     if (value.length > 0) {
-      const filteredExercises = exercises.filter((exercise) => {
+      const filteredExercises = allExercises.filter((exercise) => {
         const combinedText =
           `${exercise.name} ${exercise.equipment} ${exercise.muscle_group} ${exercise.main_group}`.toLowerCase();
         return value
@@ -108,8 +101,8 @@ export default function ExerciseDropdown({
 
   return (
     <>
-      <div className="relative flex flex-col px-2 pb-2 w-full  h-full items-center gap-3 z-50 ">
-        <div className="flex h-10 items-center gap-2 mt-5 relative ">
+      <div className="flex flex-col px-2 w-full h-full gap-3 z-50 ">
+        <div className="flex h-10 items-center justify-center gap-2 mt-5">
           <label className={`${russoOne.className} text-gray-100 text-xl`}>
             {label}.
           </label>
@@ -129,58 +122,78 @@ export default function ExerciseDropdown({
         {showDropdown && (
           <>
             <div
-              className={`${russoOne.className} text-gray-100 text-md flex justify-between w-full items-center mt-5 px-4 z-10`}
-            >
-              <span>Exercise</span>
-              <span>Equipment</span>
-            </div>
-            <div
               ref={dropdownRef}
-              className={`relative w-full overflow-y-auto border rounded-md shadow-md bg-slate-900 border-gray-100 touch-pan-y ${
-                isDropdownLoading ? "h-full" : ""
-              }`}
+              className={`flex-1 w-full overflow-y-auto border rounded-md shadow-md 
+                    bg-slate-900 border-gray-100 touch-pan-y mt-5 ${
+                      showDropdown ? "h-[calc(100dvh-330px)]" : ""
+                    }`}
             >
-              {isDropdownLoading && (
-                <div className="absolute left-0 w-full h-full flex items-center justify-center z-50">
-                  <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-gray-100"></div>
+              {isLoading || isError ? (
+                <div className="absolute left-0 w-full h-full flex items-center justify-center z-50 text-center px-4">
+                  {isLoading && (
+                    <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-gray-100"></div>
+                  )}
+                  {isError && (
+                    <p className="text-red-500">
+                      Failed to load exercises. Try again!
+                    </p>
+                  )}
                 </div>
+              ) : (
+                searchQuery.length === 0 &&
+                recentExercisesList.length > 0 && (
+                  <div className="bg-slate-900">
+                    <h2 className="text-gray-100 text-center bg-slate-600">
+                      Recent Exercises
+                    </h2>
+                    {recentExercisesList.map((exercise) => (
+                      <button
+                        key={exercise.id}
+                        className="w-full text-left px-4 py-2 cursor-pointer z-40 text-gray-100 hover:bg-slate-600 hover:text-gray-100 border-b"
+                        onClick={() => handleSelectExercise(exercise)}
+                      >
+                        <div className="flex justify-between flex-col">
+                          <div className="flex justify-between items-center">
+                            <span>{exercise.name} </span>
+                            <span className="text-sm text-gray-300">
+                              {exercise.muscle_group}
+                            </span>
+                          </div>
+                          <span className="text-sm text-gray-400">
+                            {exercise.equipment}
+                          </span>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )
               )}
-              {searchQuery.length === 0 && recentExercises.length > 0 && (
-                <div className="border-b-2 border-gray-400 bg-gray-900">
-                  <h2 className="text-gray-100 text-center">
-                    Recent Exercises
-                  </h2>
-                  {recentExercises.map((exercise) => (
-                    <button
-                      key={exercise.id}
-                      className="w-full text-left px-4 py-2 text-lg cursor-pointer z-40 text-gray-100 hover:bg-slate-600 hover:text-gray-100"
-                      onClick={() => handleSelectExercise(exercise)}
-                    >
-                      <div className="flex justify-between items-center">
-                        <span>{exercise.name} </span>
-                        <span>{exercise.equipment}</span>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              )}
-              {(searchQuery.length > 0 ? filteredExercises : exercises).map(
+
+              <h2 className="text-gray-100 text-center  bg-slate-600">All Exercises</h2>
+              {(searchQuery.length > 0 ? filteredExercises : allExercises).map(
                 (exercise, index) => {
                   return (
-                    <div
+                    <button
                       key={index}
                       onClick={() => handleSelectExercise(exercise)}
-                      className={`px-4 py-2 text-lg cursor-pointer z-40  text-gray-100  ${
+                      className={`w-full text-left px-4 py-2 cursor-pointer z-40 text-gray-100 hover:bg-slate-600 hover:text-gray-100 border-b ${
                         selectedIndex === index
                           ? "bg-slate-600 hover:bg-slate-500"
                           : ""
                       }`}
                     >
-                      <div className="flex justify-between items-center">
-                        <span>{exercise.name}</span>
-                        <span>{exercise.equipment}</span>
+                      <div className="flex flex-col ">
+                        <div className="flex justify-between items-center">
+                          <p>{exercise.name} </p>
+                          <p className="text-sm text-gray-300">
+                            {exercise.muscle_group}
+                          </p>
+                        </div>
+                        <p className="text-sm text-gray-400">
+                          {exercise.equipment}
+                        </p>
                       </div>
-                    </div>
+                    </button>
                   );
                 }
               )}

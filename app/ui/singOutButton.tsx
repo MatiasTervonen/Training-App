@@ -7,6 +7,7 @@ import { createClient } from "@/utils/supabase/client";
 import { russoOne } from "@/app/ui/fonts";
 import { LogOut } from "lucide-react";
 import FullScreenLoader from "../components/FullScreenLoader";
+import { useSWRConfig } from "swr";
 
 export default function SignOutButton({
   onSignOut,
@@ -15,6 +16,7 @@ export default function SignOutButton({
 }) {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const { cache } = useSWRConfig();
 
   const handleSignOut = async () => {
     if (onSignOut) onSignOut();
@@ -24,6 +26,11 @@ export default function SignOutButton({
     const supabase = createClient();
 
     const { error } = await supabase.auth.signOut();
+
+    // ✅ Clear all SWR cache
+    if ("clear" in cache && typeof cache.clear === "function") {
+      cache.clear();
+    }
 
     if (error) {
       console.error("Error logging out:", error.message);
@@ -52,7 +59,7 @@ export default function SignOutButton({
           </div>
         )}
       </button>
-      {isLoading && <FullScreenLoader  message="Logging out..." />}
+      {isLoading && <FullScreenLoader message="Logging out..." />}
     </>
   );
 }

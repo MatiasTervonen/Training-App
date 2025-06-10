@@ -1,4 +1,5 @@
 export type GymSessionFull = {
+  name?: string;
   id: string;
   title: string;
   user_id: string;
@@ -14,6 +15,7 @@ export type GymExercise = {
     id: string;
     name: string;
     equipment: string;
+    muscle_group: string;
     main_group?: string;
   };
   exercise_id: string;
@@ -24,9 +26,10 @@ export type GymExercise = {
 };
 
 export type GymSet = {
-  weight: number;
-  reps: number;
-  rpe: string;
+  weight?: number;
+  reps?: number;
+  rpe?: string;
+  sets?: number;
 };
 
 export type Exercises = {
@@ -43,7 +46,8 @@ export type Exercise = {
   exercise_id: string;
   name: string;
   equipment: string;
-  superset_id?: string | null;
+  superset_id?: string;
+  muscle_group?: string;
   sets: GymSet[];
 };
 
@@ -75,3 +79,62 @@ export type FeedCardProps =
       onExpand: () => void;
       onEdit: () => void;
     };
+
+export type Template = {
+  id: string;
+  name: string;
+  created_at: string;
+  gym_template_exercises: TemplateExercise[];
+};
+
+ export type TemplateExercise = {
+  id: string;
+  sets: number;
+  reps: number;
+  superset_id: string;
+  gym_exercise: {
+    name: string;
+    equipment: string;
+    muscle_group: string;
+    main_group?: string;
+  };
+};
+
+export type SessionSet = {
+  set_number?: number;
+  weight?: number;
+  reps?: number;
+  rpe?: string;
+};
+
+export type HistoryResult = {
+  date: string;
+  sets: SessionSet[];
+};
+
+export type ExerciseSet = {
+  weight?: number;
+  reps?: number;
+  rpe?: string;
+  sets?: number;
+};
+export type ExerciseEntry = {
+  exercise_id: string;
+  name: string;
+  equipment: string; // Optional, can be used to display equipment type
+  main_group?: string; // Optional, can be used to display main muscle group
+  sets: ExerciseSet[];
+  notes?: string;
+  superset_id?: string; // For super-sets
+  muscle_group?: string; // Optional, can be used to display muscle group
+};
+
+export const emptyExerciseEntry: ExerciseEntry = {
+  exercise_id: "",
+  name: "",
+  equipment: "",
+  sets: [],
+  notes: "",
+  superset_id: "",
+  muscle_group: "",
+};

@@ -31,7 +31,6 @@ export default function Notes() {
       }),
     });
     if (response.ok) {
-      console.log("Session saved successfully!");
       resetNotes();
       router.push("/"); // Redirect to the finished page
     } else {

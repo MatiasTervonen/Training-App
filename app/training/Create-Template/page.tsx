@@ -175,11 +175,6 @@ export default function CreateTemplatePage() {
 
     setIsSaving(true);
 
-    console.log("Saving template payload:", {
-      name: workoutName,
-      exercises: simplified,
-    });
-
     const response = await fetch("/api/gym/save-template", {
       method: "POST",
       headers: {
@@ -194,7 +189,6 @@ export default function CreateTemplatePage() {
     if (response.ok) {
       localStorage.removeItem("gym_template_draft");
       const data = await response.json();
-      console.log("Template saved with ID:", data.templateId);
       router.push("/training/templates");
     } else {
       const errorData = await response.json();

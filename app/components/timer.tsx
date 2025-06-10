@@ -90,7 +90,6 @@ export default function Timer({
     setIsRunning(true);
 
     if (onManualStart) {
-      console.log("Triggering onManualStart...");
       onManualStart();
     }
   };

@@ -9,11 +9,11 @@ type SessionExercise = {
 
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ exerciseId: string }> }
+  { params }: { params: { exerciseId: string } }
 ) {
   const supabase = await createClient();
 
-  const { exerciseId } = await params;
+  const { exerciseId } = params;
 
   const {
     data: { user },
@@ -34,8 +34,6 @@ export async function GET(
 
   const sessions = data as SessionExercise[] | null;
 
-  console.log("Fetched sessions:", sessions);
-
   if (exerciseError || !sessions || sessions.length === 0) {
     console.error("Error fetching exercises:", exerciseError?.message);
     return new Response(
@@ -54,7 +52,6 @@ export async function GET(
         new Date(a.gym_sessions?.created_at).getTime()
     )
     .slice(0, 5);
-
 
   const allSorted = await Promise.all(
     sorted.map(async (session) => {
@@ -81,7 +78,6 @@ export async function GET(
 
   const filteredResults = allSorted.filter(Boolean);
 
-  console.log("Filtered Results:", filteredResults);
 
   return new Response(JSON.stringify(filteredResults), {
     status: 200,

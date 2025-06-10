@@ -22,8 +22,6 @@ export async function POST(req: NextRequest) {
     .eq("id", id)
     .eq("user_id", user.id);
 
-  console.log("Updating fields:", updateFields);
-
   if (error) {
     console.error("Supabase Update Error:", error);
     return new Response(JSON.stringify({ error: error.message }), {

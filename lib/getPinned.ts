@@ -16,7 +16,6 @@ export default async function GetPinned(): Promise<{
   } = await supabase.auth.getUser();
 
   if (authError || !user) {
-    console.log("Authentication error:", authError);
     return { pinned: [], error: authError || new Error("User not found") };
   }
 

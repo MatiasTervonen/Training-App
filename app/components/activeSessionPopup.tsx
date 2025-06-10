@@ -21,15 +21,9 @@ export default function ActiveSessionPopup() {
   useEffect(() => {
     const stored = localStorage.getItem("activeSession");
 
-    console.log(
-      "ActiveSession loaded from localStorage:",
-      localStorage.getItem("activeSession")
-    );
-
     if (!stored) return;
 
     const parsed = JSON.parse(stored);
-    console.log("Setting activeSession:", parsed);
     setActiveSession(parsed);
   }, []);
 

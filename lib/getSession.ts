@@ -18,7 +18,6 @@ export default async function GetSession(): Promise<{
   } = await supabase.auth.getUser();
 
   if (authError || !user) {
-    console.log("Authenication error:", authError);
     return { feed: [], error: authError || new Error("User not found") };
   }
 

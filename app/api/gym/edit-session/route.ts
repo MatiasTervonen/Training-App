@@ -9,8 +9,6 @@ export async function POST(req: NextRequest) {
     error: authError,
   } = await supabase.auth.getUser();
 
-  console.log("user.id from Supabase:", user?.id);
-
   if (authError || !user) {
     return new Response("Unauthorized", { status: 401 });
   }

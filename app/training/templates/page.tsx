@@ -45,8 +45,6 @@ export default function TemplatesPage() {
     revalidateOnReconnect: false,
   });
 
-  console.log("Templates data:", templates);
-
   const startWorkout = (template: Template) => {
     const workoutExercises: ExerciseEntry[] =
       template.gym_template_exercises.map((ex) => ({

@@ -23,7 +23,6 @@ export default function GuestLogIn() {
     if (error && !data) {
       console.error("Guest login failed:", error);
     } else {
-      console.log("Guest login successful");
       router.push("/");
       router.refresh();
     }

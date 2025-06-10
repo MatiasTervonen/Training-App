@@ -282,11 +282,6 @@ export default function DiscGolfGame() {
 
     setHoleHistory(updatedHoles);
 
-    console.log(
-      "Sending to backend:",
-      holeHistory.map((h) => h.hole_number)
-    );
-
     const TimerDataRaw = localStorage.getItem("timer:disc-golf");
     let duration = 0;
 

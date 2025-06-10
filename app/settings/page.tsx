@@ -25,7 +25,6 @@ export default function Settings() {
       console.error("Failed to update userName:", error.message);
       // optionally show a toast or message to user
     } else {
-      console.log("User metadata updated:", data);
       router.push("/");
       // optionally show a success message
     }

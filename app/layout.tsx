@@ -3,6 +3,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Navbar from "./ui/homepage/navbar";
 import LayoutWrapper from "./ui/LayoutWrapper";
+import { Toaster } from "react-hot-toast";
+import { UserEmailProvider } from "@/utils/supabase/UserEmail";
 
 export const metadata: Metadata = {
   title: "MyTrack",
@@ -38,7 +40,15 @@ export default function RootLayout({
         <div className="fixed top-0 left-0 w-full z-50">
           <Navbar />
         </div>
-        <LayoutWrapper>{children}</LayoutWrapper>
+
+        <Toaster position="top-center" reverseOrder={false} />
+
+        <LayoutWrapper>
+          <UserEmailProvider>
+            {/* This context provider can be used to access the user's email in any component */}
+            {children}
+          </UserEmailProvider>
+        </LayoutWrapper>
       </body>
     </html>
   );

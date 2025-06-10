@@ -19,6 +19,8 @@ import {
 } from "@/types/session";
 import ExerciseHistoryModal from "../components/ExerciseHistoryModal";
 import { generateUUID } from "@/lib/generateUUID";
+import { toast } from "react-hot-toast";
+
 
 export default function CreateTemplatePage() {
   const [workoutName, setWorkoutName] = useState("");
@@ -190,9 +192,8 @@ export default function CreateTemplatePage() {
       localStorage.removeItem("gym_template_draft");
       router.push("/training/templates");
     } else {
-      const errorData = await response.json();
-      console.error("Error saving template:", errorData.error);
-      alert("Failed to save template: " + errorData.error);
+      toast.error("Failed to save template. Try again later.");
+      setIsSaving(false);
     }
   };
 

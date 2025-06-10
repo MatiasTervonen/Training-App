@@ -23,6 +23,7 @@ import {
   emptyExerciseEntry,
 } from "@/types/session";
 import { generateUUID } from "@/lib/generateUUID";
+import { toast } from "react-hot-toast";
 
 export default function TrainingSessionPage() {
   const [exercises, setExercises] = useState<ExerciseEntry[]>([]);
@@ -238,9 +239,15 @@ export default function TrainingSessionPage() {
       resetSession();
       router.push("/training/training-finished"); // Redirect to the finished page
     } else {
-      alert("Session not saved. You might be in demo mode.");
-      resetSession();
-      router.push("/");
+      const result = await response.json();
+
+      if (result?.error === "demo_mode") {
+        toast.error("Template not saved. You are in demo mode.");
+        setIsSaving(false);
+      } else {
+        toast.error("Failed to save template. Try again later.");
+        setIsSaving(false);
+      }
     }
   };
 

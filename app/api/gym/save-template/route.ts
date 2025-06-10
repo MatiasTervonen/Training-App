@@ -18,6 +18,13 @@ export async function POST(req: NextRequest) {
     error: authError,
   } = await supabase.auth.getUser();
 
+  if (user?.email === "guest@example.com") {
+    return new Response(JSON.stringify({ error: "demo_mode" }), {
+      status: 403,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
   if (authError || !user) {
     return new Response("Unauthorized", { status: 401 });
   }

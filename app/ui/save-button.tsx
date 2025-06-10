@@ -1,8 +1,8 @@
 "use client";
 
 import Spinner from "@/app/components/spinner";
-
 import { russoOne } from "@/app/ui/fonts";
+import { useUserEmail } from "@/utils/supabase/UserEmail";
 
 type SaveButtonProps = {
   isSaving: boolean;
@@ -17,6 +17,21 @@ export default function SaveButton({
   label = "Finish",
   savingLabel = "Saving...",
 }: SaveButtonProps) {
+  const email = useUserEmail();
+  const isGuest = email === "guest@example.com";
+
+  if (isGuest) {
+    return (
+      <button
+        type="button"
+        disabled
+        className={`${russoOne.className}  flex items-center justify-center w-full gap-2 bg-gray-400 py-2 rounded-md shadow-xl border-2 border-gray-300 text-gray-100 text-lg cursor-not-allowed`}
+      >
+        Save (not allowed)
+      </button>
+    );
+  }
+
   return (
     <button
       aria-label={isSaving ? savingLabel : label}

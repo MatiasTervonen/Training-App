@@ -17,7 +17,7 @@ export default function Settings() {
   const saveSettings = async () => {
     setIsSaving(true);
 
-    const { data, error } = await supabase.auth.updateUser({
+    const { error } = await supabase.auth.updateUser({
       data: { display_name: userName },
     });
 

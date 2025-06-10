@@ -188,7 +188,6 @@ export default function CreateTemplatePage() {
 
     if (response.ok) {
       localStorage.removeItem("gym_template_draft");
-      const data = await response.json();
       router.push("/training/templates");
     } else {
       const errorData = await response.json();

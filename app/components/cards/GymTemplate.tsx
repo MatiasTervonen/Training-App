@@ -15,8 +15,6 @@ type Props = {
 export default function GymTemplate({
   item,
   onDelete,
-  onExpand,
-  onEdit,
   onStartWorkout,
 }: Props) {
   const groupedExercises = GroupTemplateExercises(

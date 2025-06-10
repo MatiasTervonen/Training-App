@@ -9,11 +9,11 @@ type SessionExercise = {
 
 export async function GET(
   request: Request,
-  { params }: { params: { exerciseId: string } }
+  contex: { params: { exerciseId: string } }
 ) {
   const supabase = await createClient();
 
-  const { exerciseId } = params;
+  const { exerciseId } = contex.params;
 
   const {
     data: { user },
@@ -77,7 +77,6 @@ export async function GET(
   );
 
   const filteredResults = allSorted.filter(Boolean);
-
 
   return new Response(JSON.stringify(filteredResults), {
     status: 200,

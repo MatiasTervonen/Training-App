@@ -1,5 +1,4 @@
 import { createClient } from "@/utils/supabase/server";
-import { NextRequest } from "next/server";
 
 type SessionExercise = {
   id: string;
@@ -9,8 +8,8 @@ type SessionExercise = {
 };
 
 export async function GET(
-  req: NextRequest,
-  { params }: { params: { exerciseId: string } }
+  request: Request,
+  { params }: { params: Promise<{ exerciseId: string }> }
 ) {
   const supabase = await createClient();
 

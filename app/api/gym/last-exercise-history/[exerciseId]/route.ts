@@ -9,11 +9,11 @@ type SessionExercise = {
 
 export async function GET(
   request: Request,
-  contex: { params: { exerciseId: string } }
+  { params }: { params: Promise<{ exerciseId: string }> }
 ) {
   const supabase = await createClient();
 
-  const { exerciseId } = contex.params;
+  const { exerciseId } = await params;
 
   const {
     data: { user },

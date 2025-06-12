@@ -28,7 +28,7 @@ export default function GymSession(gym_session: GymSessionFull) {
         <div className="text-sm text-gray-400">
           {formatDate(gym_session.created_at)}
         </div>
-        <h2 className="text-xl  mt-2">{gym_session.title}</h2>
+        <h2 className="text-xl mt-2">{gym_session.title}</h2>
         <h3 className="mt-2">
           Duration: {formatDuration(gym_session.duration)}
         </h3>
@@ -49,10 +49,10 @@ export default function GymSession(gym_session: GymSessionFull) {
 
           {group.map(({ exercise, index }) => (
             <div key={index} className="mb-4">
-              <div className="flex  justify-between flex-col mb-2">
+              <div className="flex justify-between flex-col mb-2">
                 <div className="flex items-center justify-between">
                   <h3 className="text-lg text-gray-100 ">
-                    {exercise.gym_exercises.name}
+                  {index + 1}. {exercise.gym_exercises.name}
                   </h3>
                   <h3 className="text-sm text-gray-300">{exercise.gym_exercises.muscle_group}</h3>
                 </div>

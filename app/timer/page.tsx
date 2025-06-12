@@ -4,7 +4,6 @@ import { russoOne } from "../ui/fonts";
 import ModalPageWrapper from "../components/modalPageWrapper";
 import { useRouter } from "next/navigation";
 
-
 export default function Timer() {
   const router = useRouter();
 
@@ -16,8 +15,15 @@ export default function Timer() {
       onSwipeLeft={() => router.push("/")}
       rightLabel="home"
     >
-      <div className={`${russoOne.className} bg-slate-800 p-5 h-full relative text-gray-100`}>
-        <h1 className="text-xl text-center">Timer</h1>
+      <div
+        className={`${russoOne.className} bg-slate-800 p-5 h-full relative text-gray-100`}
+      >
+        <h1 className="text-2xl text-center my-5">Timer</h1>
+        <div className="flex flex-col max-w-md mx-auto">
+          <p className="text-gray-300 text-center">
+            This page is under construction. Please check back later.
+          </p>
+        </div>
       </div>
     </ModalPageWrapper>
   );

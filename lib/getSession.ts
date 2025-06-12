@@ -1,10 +1,10 @@
 import { createClient } from "@/utils/supabase/server";
-import { Notes, GymSessionFull } from "@/types/session";
+import { Notes, GymSessionFull, Weight } from "@/types/session";
 
 type FeedItem =
   | { table: "notes"; item: Notes; pinned?: boolean }
-  | { table: "gym_sessions"; item: GymSessionFull; pinned?: boolean };
-
+  | { table: "gym_sessions"; item: GymSessionFull; pinned?: boolean }
+  | { table: "weight"; item: Weight; pinned?: boolean };
 
 export default async function GetSession(): Promise<{
   feed: FeedItem[];
@@ -21,8 +21,11 @@ export default async function GetSession(): Promise<{
     return { feed: [], error: authError || new Error("User not found") };
   }
 
-  const [notes, gym_sessions] = await Promise.all([
+  // Fetch notes, weight, and gym sessions in parallel. Remember to put them in right order!!
+
+  const [notes, weight, gym_sessions] = await Promise.all([
     supabase.from("notes").select("*").eq("user_id", user.id),
+    supabase.from("weight").select("*").eq("user_id", user.id),
     supabase
       .from("gym_sessions")
       .select(`*, gym_session_exercises(*, gym_exercises(*), gym_sets(*))`)
@@ -35,9 +38,16 @@ export default async function GetSession(): Promise<{
     notes.data.forEach((item) => feed.push({ table: "notes", item }));
 
   if (gym_sessions.data)
-    gym_sessions.data.forEach((item) => feed.push({ table: "gym_sessions", item }));
+    gym_sessions.data.forEach((item) =>
+      feed.push({ table: "gym_sessions", item })
+    );
 
-  const errors = [notes.error, gym_sessions.error].filter(Boolean);
+  if (weight.data)
+    weight.data.forEach((item) => feed.push({ table: "weight", item }));
+
+  const errors = [notes.error, gym_sessions.error, weight.error].filter(
+    Boolean
+  );
 
   const error = errors.length > 0 ? errors[0] : null;
 

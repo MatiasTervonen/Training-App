@@ -7,11 +7,19 @@ import SaveButton from "@/app/ui/save-button";
 import FullScreenLoader from "@/app/components/FullScreenLoader";
 import { russoOne } from "@/app/ui/fonts";
 import { Notes } from "@/types/session";
+import { mutate } from "swr";
+import toast from "react-hot-toast";
 
 type Props = {
   note: Notes;
   onClose: () => void;
   onSave?: () => void;
+};
+
+type FeedItem = {
+  table: "notes";
+  item: Notes;
+  pinned: boolean;
 };
 
 export default function EditNotes({ note, onClose, onSave }: Props) {
@@ -22,28 +30,56 @@ export default function EditNotes({ note, onClose, onSave }: Props) {
   const handleSubmit = async () => {
     setIsSaving(true);
 
-    const res = await fetch("/api/notes/edit-notes", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+    mutate(
+      "/api/feed",
+      (currentData: FeedItem[] = []) => {
+        return currentData.map((item) => {
+          if (item.table === "notes" && item.item.id === note.id) {
+            return {
+              ...item,
+              item: {
+                ...item.item,
+                title,
+                notes,
+              },
+            };
+          }
+          return item;
+        });
       },
-      body: JSON.stringify({
-        id: note.id,
-        title,
-        notes,
-      }),
-    });
-    if (!res.ok) {
-      const data = await res.json();
-      console.error("Failed to save notes:", data.error);
-      return;
-    } else {
-      setIsSaving(false);
+      false
+    );
+
+    try {
+      const res = await fetch("/api/notes/edit-notes", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: note.id,
+          title,
+          notes,
+        }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to update weight session");
+      }
+
+      await res.json();
+
       onSave?.();
       onClose();
-    }
 
-    setIsSaving(false);
+      mutate("/api/feed");
+    } catch (error) {
+      console.error("Error updating notes:", error);
+      toast.error("Failed to update notes");
+      mutate("/api/feed");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -69,11 +105,12 @@ export default function EditNotes({ note, onClose, onSave }: Props) {
               setNotes={setNotes}
               placeholder="Write your notes here..."
               label="Notes..."
+              className="bg-slate-900"
             />
           </div>
-           <div className="w-full">
-          <SaveButton isSaving={isSaving} onClick={handleSubmit} />
-        </div>
+          <div className="w-full">
+            <SaveButton isSaving={isSaving} onClick={handleSubmit} />
+          </div>
         </div>
       </div>
 

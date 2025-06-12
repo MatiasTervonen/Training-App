@@ -60,6 +60,38 @@ export type Notes = {
   pinned: boolean;
 };
 
+export type Weight = {
+  id: string;
+  title: string;
+  user_id: string;
+  weight: number;
+  created_at: string;
+  notes: string;
+};
+
+export type OptimisticWeight = {
+  id: string;
+  title: string;
+  weight: number;
+  notes: string;
+  created_at: string;
+};
+
+export type OptimisticGymSession = {
+  id: string;
+  title: string;
+  notes: string;
+  created_at: string;
+  duration: number;
+};
+
+export type OptimisticNotes = {
+  id: string;
+  title: string;
+  notes: string;
+  created_at: string;
+};
+
 export type FeedCardProps =
   | {
       table: "notes";
@@ -78,6 +110,15 @@ export type FeedCardProps =
       onDelete: () => void;
       onExpand: () => void;
       onEdit: () => void;
+    }
+  | {
+      table: "weight";
+      item: Weight;
+      pinned: boolean;
+      onTogglePin: () => void;
+      onDelete: () => void;
+      onExpand: () => void;
+      onEdit: () => void;
     };
 
 export type Template = {
@@ -87,7 +128,7 @@ export type Template = {
   gym_template_exercises: TemplateExercise[];
 };
 
- export type TemplateExercise = {
+export type TemplateExercise = {
   id: string;
   sets: number;
   reps: number;

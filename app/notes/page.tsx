@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { russoOne } from "@/app/ui/fonts";
 import SaveButton from "@/app/ui/save-button";
@@ -9,34 +9,83 @@ import ModalPageWrapper from "../components/modalPageWrapper";
 import NotesInput from "../training/components/NotesInput";
 import TitleInput from "../training/components/TitleInput";
 import FullScreenLoader from "../components/FullScreenLoader";
+import { mutate } from "swr";
+import toast from "react-hot-toast";
+import { generateUUID } from "@/lib/generateUUID";
+import { OptimisticNotes } from "@/types/session";
+
+type FeedItem = {
+  table: "notes";
+  item: OptimisticNotes;
+  pinned: boolean;
+};
 
 export default function Notes() {
   const [isSaving, setIsSaving] = useState(false);
   const [notes, setNotes] = useState("");
   const [notesTitle, setNotesTitle] = useState("");
   const router = useRouter();
+  const didNavigate = useRef(false);
 
   const saveNotes = async () => {
     if (notes.length === 0) return;
     setIsSaving(true); // Start saving
-    const response = await fetch("/api/notes/save-notes", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
+
+    const optimisticNotes: FeedItem = {
+      table: "notes",
+      pinned: false,
+      item: {
+        id: generateUUID(),
         title: notesTitle,
         notes,
-        type: "notes",
-      }),
-    });
-    if (response.ok) {
-      resetNotes();
-      router.push("/"); // Redirect to the finished page
-    } else {
-      console.error("Failed to save session.");
-      alert("Session not saved. You might be in demo mode.");
+        created_at: new Date().toISOString(),
+      },
+    };
+
+    mutate(
+      "/api/feed",
+      (prev: FeedItem[] = []) => [optimisticNotes, ...prev],
+      false
+    );
+
+    try {
+      const res = await fetch("/api/notes/save-notes", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title: notesTitle,
+          notes,
+          type: "notes",
+        }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to save notes");
+      }
+
+      await res.json();
+      didNavigate.current = true;
       router.push("/");
+      resetNotes();
+      mutate("/api/feed");
+    } catch (error) {
+      console.error("Error saving notes:", error);
+      toast.error("Failed to save notes. Please try again.");
+      mutate(
+        "/api/feed",
+        (prev: FeedItem[] = []) => {
+          return prev.filter(
+            (item) => item.item.id !== optimisticNotes.item.id
+          );
+        },
+        false
+      );
+    } finally {
+      if (!didNavigate.current) {
+        setIsSaving(false);
+      }
     }
   };
 
@@ -93,12 +142,13 @@ export default function Notes() {
                 placeholder="Notes title..."
               />
             </div>
-            <div className="flex w-full  flex-grow">
+            <div className="flex w-full flex-grow">
               <NotesInput
                 notes={notes}
                 setNotes={setNotes}
                 placeholder="Write your notes here..."
                 label="Notes..."
+                className="bg-slate-900"
               />
             </div>
           </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { russoOne } from "@/app/ui/fonts";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import SaveButton from "@/app/ui/save-button";
 import Timer from "@/app/components/timer";
@@ -13,7 +13,6 @@ import ExerciseCard from "../components/ExerciseCard";
 import { groupExercises } from "../utils/groupExercises";
 import { ChevronDown, Plus, CircleX } from "lucide-react";
 import FullScreenLoader from "@/app/components/FullScreenLoader";
-import { ClearLocalStorage } from "../utils/ClearLocalStorage";
 import ExerciseDropdown from "../components/ExerciseDropdown";
 import Modal from "@/app/components/modal";
 import ExerciseHistoryModal from "../components/ExerciseHistoryModal";
@@ -21,9 +20,11 @@ import {
   HistoryResult,
   ExerciseEntry,
   emptyExerciseEntry,
+  OptimisticGymSession,
 } from "@/types/session";
 import { generateUUID } from "@/lib/generateUUID";
 import { toast } from "react-hot-toast";
+import { mutate } from "swr";
 
 export default function TrainingSessionPage() {
   const [exercises, setExercises] = useState<ExerciseEntry[]>([]);
@@ -44,6 +45,13 @@ export default function TrainingSessionPage() {
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [hasLoadedDraft, sethasLaoding] = useState(false);
   const [isHistoryLoading, setIsHistoryLoading] = useState(false);
+  const didNavigate = useRef(false);
+
+  type FeedItem = {
+    table: "gym_sessions";
+    item: OptimisticGymSession;
+    pinned: boolean;
+  };
 
   const lastExerciseHistory = async (index: number) => {
     const exercise = exercises[index];
@@ -184,13 +192,18 @@ export default function TrainingSessionPage() {
   };
 
   const resetSession = () => {
-    ClearLocalStorage();
+    localStorage.removeItem("gym_session_draft");
+    localStorage.removeItem("timer:gym");
+    localStorage.removeItem("activeSession");
+    localStorage.removeItem("startTime");
     setSupersetExercise([]);
     setExerciseType("Normal");
     setExercises([]);
     setNotes("");
     setSessionTitle("");
-
+    setNormalExercises([]);
+    setExerciseInputs([]);
+    setLastHistory([]);
     setResetTrigger((prev) => prev + 1);
   };
 
@@ -222,31 +235,64 @@ export default function TrainingSessionPage() {
       }
     }
 
-    const response = await fetch("/api/gym/save-session", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
+    const optimisticGymSession: FeedItem = {
+      table: "gym_sessions",
+      pinned: false,
+      item: {
+        id: generateUUID(),
         title: sessionTitle,
-        exercises,
         notes,
         duration,
-      }),
-    });
+        created_at: new Date().toISOString(),
+      },
+    };
 
-    if (response.ok) {
-      resetSession();
+    mutate(
+      "/api/feed",
+      (prev: FeedItem[] = []) => [optimisticGymSession, ...prev],
+      false
+    );
+
+    try {
+      const res = await fetch("/api/gym/save-session", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title: sessionTitle,
+          exercises,
+          notes,
+          duration,
+        }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to save session gym session");
+      }
+
+      await res.json();
+      didNavigate.current = true;
       router.push("/training/training-finished"); // Redirect to the finished page
-    } else {
-      const result = await response.json();
+      resetSession(); // Clear the session data
+      mutate("/api/feed");
+    } catch (error) {
+      console.error("Error saving gym session:", error);
+      toast.error("Failed to save gym session. Please try again.");
+      mutate(
+        "/api/feed",
+        (prev: FeedItem[] = []) => {
+          return prev.filter(
+            (item) => item.item.id !== optimisticGymSession.item.id
+          );
+        },
+        false
+      );
 
-      if (result?.error === "demo_mode") {
-        toast.error("Template not saved. You are in demo mode.");
-        setIsSaving(false);
-      } else {
-        toast.error("Failed to save template. Try again later.");
-        setIsSaving(false);
+      mutate("/api/feed");
+    } finally {
+      if (!didNavigate.current) {
+        setIsSaving(false); // Stop saving
       }
     }
   };
@@ -317,12 +363,12 @@ export default function TrainingSessionPage() {
         rightLabel="home"
       >
         <div
-          className={` ${russoOne.className} flex justify-center  relative min-h-[calc(100dvh-72px)] bg-slate-950 `}
+          className={` ${russoOne.className} flex justify-center relative min-h-[calc(100dvh-72px)] max-w-md mx-auto py-5`}
         >
-          <div className="flex flex-col justify-between py-5 w-full max-w-md">
-            <div className="flex flex-col items-center justify-center gap-5 ">
+          <div className="flex flex-col justify-between w-full">
+            <div className="flex flex-col items-center justify-center gap-5">
               <p
-                className={`${russoOne.className} text-gray-100 text-xl
+                className={`${russoOne.className} text-gray-100 text-xl text-center
         `}
               >
                 Track your training progress
@@ -330,31 +376,29 @@ export default function TrainingSessionPage() {
               <TitleInput
                 title={sessionTitle}
                 setTitle={setSessionTitle}
-                placeholder="Session Title"
+                placeholder="Session Title..."
               />
-              <NotesInput
-                notes={notes}
-                setNotes={setNotes}
-                rows={2}
-                cols={35}
-                placeholder="Add your notes here..."
-                label="Session notes..."
-              />
+              <div className="w-full px-6 ">
+                <NotesInput
+                  notes={notes}
+                  setNotes={setNotes}
+                  placeholder="Add your notes here..."
+                  label="Session notes..."
+                  className="bg-slate-900"
+                />
+              </div>
             </div>
 
             <>
               {Object.entries(groupedExercises).map(([superset_id, group]) => (
-                <div
-                  key={superset_id}
-                  className="flex flex-col items-center justify-center mt-10 bg-slate-800 rounded-md px-4 py-2 shadow-lg mx-4"
-                >
+                <div key={superset_id} className="mt-10">
                   {group.length > 1 && (
                     <h2 className="text-gray-100 text-lg mb-2">Super-Set</h2>
                   )}
 
                   {group.map(({ exercise, index }) => {
                     return (
-                      <div key={index} className="mb-4 w-full">
+                      <div key={index} className="mx-4">
                         <ExerciseCard
                           exercise={exercise}
                           lastExerciseHistory={lastExerciseHistory}
@@ -595,7 +639,7 @@ export default function TrainingSessionPage() {
                 </button>
               </div>
             </>
-            <div className="flex flex-col justify-center items-center mt-14 gap-5 mb-10 mx-4">
+            <div className="flex flex-col justify-center items-center mt-14 gap-5 mb-10 px-4">
               <SaveButton isSaving={isSaving} onClick={saveSession} />
               <DeleteSessionBtn onDelete={resetSession} />
             </div>

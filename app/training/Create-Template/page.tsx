@@ -21,7 +21,6 @@ import ExerciseHistoryModal from "../components/ExerciseHistoryModal";
 import { generateUUID } from "@/lib/generateUUID";
 import { toast } from "react-hot-toast";
 
-
 export default function CreateTemplatePage() {
   const [workoutName, setWorkoutName] = useState("");
   const [isExerciseModalOpen, setIsExerciseModalOpen] = useState(false);
@@ -235,12 +234,12 @@ export default function CreateTemplatePage() {
       rightLabel="home"
     >
       <div
-        className={`${russoOne.className} h-full bg-slate-800 text-gray-100 p-5 `}
+        className={`${russoOne.className} h-full bg-slate-800 text-gray-100 px-4 pt-5`}
       >
-        <div className="max-w-md mx-auto">
-          <div className="flex flex-col items-center justify-center gap-5 ">
+        <div className="max-w-md mx-auto flex flex-col justify-between h-full">
+          <div className="flex flex-col items-center  gap-5 ">
             <h2
-              className={`${russoOne.className}  text-gray-100 font-bold text-lg
+              className={`${russoOne.className} text-gray-100 text-lg
         `}
             >
               Create your template
@@ -252,10 +251,7 @@ export default function CreateTemplatePage() {
             />
           </div>
           {Object.entries(groupedExercises).map(([superset_id, group]) => (
-            <div
-              key={superset_id}
-              className="mt-6 bg-slate-900 rounded-md px-4 py-2 shadow-lg"
-            >
+            <div key={superset_id} className="mt-10">
               {group.length > 1 && (
                 <h2 className="text-lg text-gray-100 mb-2 text-center">
                   Super-Set
@@ -263,7 +259,7 @@ export default function CreateTemplatePage() {
               )}
               {group.map(({ exercise, index }) => {
                 return (
-                  <div key={index} className="mb-4 w-full">
+                  <div key={index}>
                     <ExerciseCard
                       exercise={exercise}
                       lastExerciseHistory={lastExerciseHistory}
@@ -439,6 +435,7 @@ export default function CreateTemplatePage() {
                               superset_id: "",
                               muscle_group: selected.muscle_group,
                             };
+
                             setNormalExercises((prev) => {
                               const updated = [...prev];
                               updated[updated.length - 1] = newExercise;
@@ -502,7 +499,7 @@ export default function CreateTemplatePage() {
               <Plus className=" inline ml-2" size={20} />
             </button>
           </div>
-          <div className="flex flex-col justify-center items-center mt-14 gap-5 pb-10 mx-4">
+          <div className="flex flex-col justify-center items-center mt-14 gap-5 pb-5">
             <SaveButton isSaving={isSaving} onClick={handleSaveTemplate} />
             <DeleteSessionBtn onDelete={resetSession} />
           </div>

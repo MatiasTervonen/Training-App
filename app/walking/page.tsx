@@ -21,6 +21,11 @@ export default function Walking() {
         >
           Walking
         </h1>
+        <div className="flex flex-col max-w-md mx-auto">
+          <p className="text-gray-300 text-center">
+            This page is under construction. Please check back later.
+          </p>
+        </div>
       </div>
     </ModalPageWrapper>
   );

@@ -1,11 +1,11 @@
 import { russoOne } from "@/app/ui/fonts";
-import { Dumbbell, Ellipsis, SquareArrowOutUpRight } from "lucide-react";
+import { Scale, Ellipsis, SquareArrowOutUpRight } from "lucide-react";
 import DropdownMenu from "../dropdownMenu";
 import { formatDate } from "@/lib/formatDate";
-import { GymSessionFull } from "@/types/session";
+import { Weight } from "@/types/session";
 
 type Props = {
-  item: GymSessionFull;
+  item: Weight;
   pinned: boolean;
   onTogglePin: () => void;
   onDelete: () => void;
@@ -13,7 +13,7 @@ type Props = {
   onEdit: () => void;
 };
 
-export default function GymCard({
+export default function WeightCard({
   item,
   pinned,
   onTogglePin,
@@ -21,28 +21,17 @@ export default function GymCard({
   onExpand,
   onEdit,
 }: Props) {
-  const formatDuration = (seconds: number) => {
-    const totalMinutes = Math.floor(seconds / 60);
-    const hours = Math.floor(totalMinutes / 60);
-    const minutes = totalMinutes % 60;
-    if (hours > 0) {
-      return `${hours}h ${minutes}m`;
-    } else {
-      return `${minutes}m`;
-    }
-  };
-
   return (
     <div
       className={`${
         russoOne.className
-      } border rounded-md flex flex-col mb-2 justify-center transition-colors ${
+      } border rounded-md flex flex-col justify-center mb-2 transition-colors ${
         pinned
-          ? " border-yellow-200 bg-yellow-200 text-slate-900"
+          ? ` border-yellow-200 bg-yellow-200 text-slate-900`
           : "bg-slate-700"
       }`}
     >
-      <div className=" flex justify-between items-center mt-2 mb-4 mx-4">
+      <div className="flex justify-between items-center mt-2 mb-4 mx-4">
         <div className="line-clamp-1 border-b">{item.title}</div>
         <DropdownMenu
           button={
@@ -57,7 +46,7 @@ export default function GymCard({
           }
         >
           <button
-            aria-label="Edit gym session"
+            aria-label="Edit note"
             onClick={() => {
               onEdit();
             }}
@@ -66,7 +55,7 @@ export default function GymCard({
             Edit
           </button>
           <button
-            aria-label="Pin or unpin gym session"
+            aria-label="Pin or unpin note"
             onClick={() => {
               onTogglePin();
             }}
@@ -75,7 +64,7 @@ export default function GymCard({
             {pinned ? "Unpin" : "Pin"}
           </button>
           <button
-            aria-label="Delete gym session"
+            aria-label="Delete note"
             onClick={() => {
               onDelete();
             }}
@@ -86,17 +75,17 @@ export default function GymCard({
         </DropdownMenu>
       </div>
 
-      <div className="ml-4 mb-4 mr-5 line-clamp-2">
-        {item.notes}
-      </div>
+      <div className="ml-4 mb-4 mr-5 line-clamp-2">{item.notes}</div>
+      <div className="ml-4 mb-4 mr-5 line-clamp-2">Weight: {item.weight}</div>
+      
       <div className="flex justify-between items-center mt-2 bg-black/40 rounded-b-md">
         {/* Icon */}
 
         <div className="flex items-center gap-4">
           <div className=" p-2 rounded-bl-md">
-            <Dumbbell size={20} />
+            <Scale size={20} />
           </div>
-          <span>Gym</span>
+          <span>Weight</span>
 
           {/* Date */}
 
@@ -109,11 +98,10 @@ export default function GymCard({
               {formatDate(item.created_at)}
             </p>
           </div>
-          <p>{formatDuration(item.duration)}</p>
         </div>
 
         <button
-          aria-label="Expand gym session"
+          aria-label="Expand note"
           onClick={onExpand}
           className="bg-blue-500 text-gray-100 p-2 rounded-br-md hover:bg-blue-400"
         >

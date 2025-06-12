@@ -15,7 +15,7 @@ export default function TitleInput({
 }: TitleInputProps) {
   return (
     <div className="flex flex-col ">
-      <label className={`${russoOne.className} text-gray-100 mb-1`}>
+      <label className={`${russoOne.className} text-gray-300 mb-1`}>
         Title...
       </label>
       <input

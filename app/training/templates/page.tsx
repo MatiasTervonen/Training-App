@@ -17,6 +17,7 @@ type Template = {
   created_at: string;
   gym_template_exercises: {
     id: string;
+    exercise_id: string;
     sets: number;
     reps: number;
     superset_id: string;
@@ -48,7 +49,7 @@ export default function TemplatesPage() {
   const startWorkout = (template: Template) => {
     const workoutExercises: ExerciseEntry[] =
       template.gym_template_exercises.map((ex) => ({
-        exercise_id: ex.id,
+        exercise_id: ex.exercise_id,
         name: ex.gym_exercise.name,
         equipment: ex.gym_exercise.equipment,
         muscle_group: ex.gym_exercise.muscle_group,

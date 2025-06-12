@@ -15,6 +15,8 @@ export async function GET(
 
   const { exerciseId } = await params;
 
+  console.log("Fetching last exercise history for:", exerciseId);
+
   const {
     data: { user },
     error: authError,

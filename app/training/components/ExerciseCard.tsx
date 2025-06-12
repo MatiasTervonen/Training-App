@@ -49,24 +49,36 @@ export default function ExerciseCard({
   lastExerciseHistory,
 }: ExerciseCardProps) {
   return (
-    <>
+    <div className="bg-slate-900 py-2 px-4 rounded-md shadow-xl border-2 border-gray-500">
       <div
-        className={`${russoOne.className} relative flex items-center justify-between w-full gap-5 border-gray-100`}
+        className={`${russoOne.className} flex items-center justify-between`}
       >
         <div className="flex flex-col">
           <span className="text-gray-100 text-lg">
             {index + 1}. {exercise.name}
           </span>
-          <span className="text-sm text-gray-400">{exercise.equipment} / {exercise.muscle_group}</span>
+          <span className="text-sm text-gray-400">
+            {exercise.equipment} / {exercise.muscle_group}
+          </span>
         </div>
 
-        <DropdownMenu button={<Ellipsis className="text-gray-100 "/>}>
-          <button className="border-b py-2 px-4" onClick={() => onDeleteExercise(index)}>Delete</button>
-          <button className="py-2 px-4" onClick={() => lastExerciseHistory(index)}>History</button>
+        <DropdownMenu button={<Ellipsis className="text-gray-100 " />}>
+          <button
+            className="border-b py-2 px-4"
+            onClick={() => onDeleteExercise(index)}
+          >
+            Delete
+          </button>
+          <button
+            className="py-2 px-4"
+            onClick={() => lastExerciseHistory(index)}
+          >
+            History
+          </button>
         </DropdownMenu>
       </div>
 
-      <div className="w-full my-4 flex flex-col">
+      <div className="my-4 ">
         <NotesInput
           label={`Notes for ${exercise.name}...`}
           notes={exercise.notes || ""}
@@ -76,12 +88,11 @@ export default function ExerciseCard({
           rows={2}
           cols={35}
           placeholder="Add your notes here..."
+          className="bg-slate-800"
         />
       </div>
 
-      <table
-        className={`${russoOne.className} w-full text-left border-collapse text-gray-100 mb-4`}
-      >
+      <table className={`${russoOne.className} w-full text-left text-gray-100`}>
         <thead>
           <tr className="text-gray-300 border-b">
             <th className="p-2 font-normal">Set</th>
@@ -145,7 +156,7 @@ export default function ExerciseCard({
           <>
             <div className="flex items-center gap-5">
               <input
-                className="text-lg  p-2 rounded-md border-2 border-gray-100 z-10 w-full  placeholder-gray-500 text-gray-100 bg-gray-900 hover:border-blue-500 focus:outline-none focus:border-green-300"
+                className="text-lg  p-2 rounded-md border-2 border-gray-100 z-10 w-full  placeholder-gray-500 text-gray-100 bg-gray-800 hover:border-blue-500 focus:outline-none focus:border-green-300"
                 placeholder="Time in min..."
                 type="number"
                 value={input.weight}
@@ -154,7 +165,7 @@ export default function ExerciseCard({
             </div>
             <div className="relative w-2/3">
               <select
-                className="appearance-none text-lg p-2 rounded-md border-2 border-gray-100 z-10 w-full  placeholder-gray-500  text-gray-100 bg-gray-900 hover:border-blue-500 focus:outline-none focus:border-green-300"
+                className="appearance-none text-lg p-2 rounded-md border-2 border-gray-100 z-10 w-full  placeholder-gray-500  text-gray-100 bg-gray-800 hover:border-blue-500 focus:outline-none focus:border-green-300"
                 value={input.rpe}
                 onChange={(e) => onInputChange(index, "rpe", e.target.value)}
               >
@@ -164,7 +175,7 @@ export default function ExerciseCard({
                 <option value="Hard">Hard</option>
                 <option value="Failure">Failure</option>
               </select>
-              <div className="absolute inset-y-0 right-1 flex items-center pointer-events-none bg-slate-900 my-2 px-2">
+              <div className="absolute inset-y-0 right-1 flex items-center pointer-events-none bg-slate-800 my-2 px-2">
                 <ChevronDown className="text-gray-100" />
               </div>
             </div>
@@ -173,14 +184,14 @@ export default function ExerciseCard({
           <>
             <div className="flex items-center gap-5">
               <input
-                className="text-lg  p-2 rounded-md border-2 border-gray-100 z-10 w-full  placeholder-gray-500 text-gray-100 bg-gray-900 hover:border-blue-500 focus:outline-none focus:border-green-300"
+                className="text-lg  p-2 rounded-md border-2 border-gray-100 z-10 w-full  placeholder-gray-500 text-gray-100 bg-gray-800 hover:border-blue-500 focus:outline-none focus:border-green-300"
                 placeholder="Weight..."
                 type="number"
                 value={input.weight}
                 onChange={(e) => onInputChange(index, "weight", e.target.value)}
               />
               <input
-                className="text-lg  p-2 rounded-md border-2 border-gray-100 z-10 w-full  placeholder-gray-500 text-gray-100 bg-gray-900 hover:border-blue-500 focus:outline-none focus:border-green-300"
+                className="text-lg  p-2 rounded-md border-2 border-gray-100 z-10 w-full  placeholder-gray-500 text-gray-100 bg-gray-800 hover:border-blue-500 focus:outline-none focus:border-green-300"
                 placeholder="Reps..."
                 type="number"
                 value={input.reps}
@@ -189,7 +200,7 @@ export default function ExerciseCard({
             </div>
             <div className="relative w-2/3">
               <select
-                className="appearance-none text-lg p-2 rounded-md border-2 border-gray-100 z-10 w-full  placeholder-gray-500  text-gray-100 bg-gray-900 hover:border-blue-500 focus:outline-none focus:border-green-300"
+                className="appearance-none text-lg p-2 rounded-md border-2 border-gray-100 z-10 w-full  placeholder-gray-500  text-gray-100 bg-gray-800 hover:border-blue-500 focus:outline-none focus:border-green-300"
                 value={input.rpe}
                 onChange={(e) => onInputChange(index, "rpe", e.target.value)}
               >
@@ -199,14 +210,14 @@ export default function ExerciseCard({
                 <option value="Hard">Hard</option>
                 <option value="Failure">Failure</option>
               </select>
-              <div className="absolute inset-y-0 right-1 flex items-center pointer-events-none bg-slate-900 my-2 px-2">
+              <div className="absolute inset-y-0 right-1 flex items-center pointer-events-none bg-slate-800 my-2 px-2">
                 <ChevronDown className="text-gray-100" />
               </div>
             </div>
           </>
         )}
       </div>
-      <div className="flex items-center justify-center gap-4 mt-6">
+      <div className="flex items-center justify-center gap-4 my-6">
         <button
           onClick={() => onAddSet(index)}
           className={`${russoOne.className} px-10 bg-blue-900 py-2 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95`}
@@ -214,6 +225,6 @@ export default function ExerciseCard({
           Add Set
         </button>
       </div>
-    </>
+    </div>
   );
 }

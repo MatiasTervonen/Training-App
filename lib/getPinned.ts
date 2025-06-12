@@ -2,7 +2,8 @@ import { createClient } from "@/utils/supabase/server";
 
 type PinnedItem =
   | { table: "notes"; item_id: string }
-  | { table: "gym_sessions"; item_id: string };
+  | { table: "gym_sessions"; item_id: string }
+  | { table: "weight"; item_id: string };
 
 export default async function GetPinned(): Promise<{
   pinned: PinnedItem[];

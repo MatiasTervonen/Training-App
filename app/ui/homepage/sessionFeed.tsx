@@ -11,13 +11,16 @@ import { Pin } from "lucide-react";
 import EditNote from "@/app/ui/editSession/EditNotes";
 import EditGym from "@/app/ui/editSession/EditGym";
 import GymSession from "@/app/components/expandSession/gym";
-import { Notes, GymSessionFull } from "@/types/session";
+import { Notes, GymSessionFull, Weight } from "@/types/session";
 import useSWR, { mutate } from "swr";
 import Spinner from "@/app/components/spinner";
 import usePullToRefresh from "@/lib/usePullToRefresh";
+import WeightSession from "@/app/components/expandSession/weight";
+import EditWeight from "../editSession/EditWeight";
 
 type FeedItem =
   | { table: "notes"; item: Notes; pinned: boolean }
+  | { table: "weight"; item: Weight; pinned: boolean }
   | { table: "gym_sessions"; item: GymSessionFull; pinned: boolean };
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
@@ -215,6 +218,9 @@ export default function SessionFeed() {
             {expandedItem.table === "gym_sessions" && (
               <GymSession {...expandedItem.item} />
             )}
+            {expandedItem.table === "weight" && (
+              <WeightSession {...expandedItem.item} />
+            )}
           </Modal>
         )}
 
@@ -237,6 +243,16 @@ export default function SessionFeed() {
             {editingItem.table === "gym_sessions" && (
               <EditGym
                 gym_session={editingItem.item}
+                onClose={() => setEditingItem(null)}
+                onSave={() => {
+                  setEditingItem(null);
+                  router.refresh(); // Refresh to get updated feed
+                }}
+              />
+            )}
+            {editingItem.table === "weight" && (
+              <EditWeight
+                weight={editingItem.item}
                 onClose={() => setEditingItem(null)}
                 onSave={() => {
                   setEditingItem(null);

@@ -10,6 +10,7 @@ import { GymSessionFull, GymExercise } from "@/types/session";
 import { groupGymExercises } from "@/lib/groupGymexercises";
 import { ChevronDown } from "lucide-react";
 import { mutate } from "swr";
+import toast from "react-hot-toast";
 
 type EditGymSessionProps = {
   gym_session: GymSessionFull;
@@ -50,25 +51,6 @@ export default function EditGym({
   const handleSubmit = async () => {
     setIsSaving(true);
 
-    const res = await fetch("/api/gym/edit-session", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        id: gym_session.id,
-        title,
-        notes,
-        exercises: formattedExercises,
-      }),
-    });
-    if (!res.ok) {
-      const data = await res.json();
-      console.error("Failed to save gym session:", data.error);
-      setIsSaving(false);
-      return;
-    }
-
     mutate(
       "/api/feed",
       (currentFeed: FeedItem[] = []) => {
@@ -92,11 +74,37 @@ export default function EditGym({
       false
     ); // Optimistically update the feed
 
-    onSave?.();
-    onClose();
-    setIsSaving(false);
+    try {
+      const res = await fetch("/api/gym/edit-session", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: gym_session.id,
+          title,
+          notes,
+          exercises: formattedExercises,
+        }),
+      });
 
-    mutate("/api/feed");
+      if (!res.ok) {
+        throw new Error("Failed to save gym session");
+      }
+
+      await res.json();
+
+      onSave?.();
+      onClose();
+
+      mutate("/api/feed");
+    } catch (error) {
+      console.error("Error saving gym session:", error);
+      toast.error("Failed to edit gym session");
+      mutate("/api/feed");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleUpdateSet = (
@@ -148,6 +156,7 @@ export default function EditGym({
               rows={2}
               cols={35}
               label="Session Notes..."
+              className="bg-slate-900"
             />
           </div>
         </div>
@@ -157,20 +166,25 @@ export default function EditGym({
             className="flex flex-col items-center justify-center mt-10 mx-4  max-w-screen bg-slate-900 rounded-md px-4 py-2 shadow-lg"
           >
             {group.length > 1 && (
-              <h3 className="text-lg  text-gray-100 mb-2 text-center">
+              <h3 className="text-lg text-gray-100 text-center mb-2">
                 Super-Set
               </h3>
             )}
 
             {group.map(({ exercise, index }) => (
-              <div key={index} className="w-full">
-                <div className="flex items-center justify-between w-full">
-                  <span className="text-gray-100 text-lg">
-                    {index + 1}. {exercise.gym_exercises.name}
-                  </span>
-                  <span className="text-gray-100 ">
+              <div key={index} className="w-full mb-4">
+                <div className="flex justify-between flex-col mb-2">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-lg text-gray-100 ">
+                      {index + 1}. {exercise.gym_exercises.name}
+                    </h3>
+                    <h3 className="text-sm text-gray-300">
+                      {exercise.gym_exercises.muscle_group}
+                    </h3>
+                  </div>
+                  <h2 className="text-sm text-gray-400">
                     {exercise.gym_exercises.equipment}
-                  </span>
+                  </h2>
                 </div>
                 <div className="my-5 max-w-full">
                   <NotesInput
@@ -182,6 +196,7 @@ export default function EditGym({
                     cols={35}
                     placeholder="Add your notes here..."
                     label={`Notes for ${exercise.gym_exercises.name}...`}
+                    className="bg-slate-800"
                   />
                 </div>
                 <table className="w-full text-left border-collapse">

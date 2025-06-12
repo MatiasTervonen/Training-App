@@ -131,92 +131,96 @@ export default function DiscGolf() {
       rightLabel="home"
     >
       <div
-        className={` ${russoOne.className} bg-slate-800 p-5 min-h-(calc(100dvh-72px)) max-w-md mx-auto`}
+        className={` ${russoOne.className} bg-slate-800 p-5 h-full max-w-md mx-auto`}
       >
-        <div>
-          <h1 className="text-gray-100 flex justify-center my-5 text-2xl ">
-            Disc Golf
-          </h1>
-        </div>
-        <div className="flex flex-col justify-center items-center text-center">
-          <p className=" text-gray-100 flex justify-center my-5 text-xl">
-            Course Name
-          </p>
+        <div className="flex flex-col h-full w-full justify-between">
+          <div>
+            <h1 className="text-gray-100 flex justify-center my-5 text-2xl ">
+              Disc Golf
+            </h1>
+          </div>
+          <div className="flex flex-col justify-center items-center text-center">
+            <p className=" text-gray-100 flex justify-center my-5 text-xl">
+              Course Name
+            </p>
 
-          <input
-            className="text-lg text-gray-100 p-2 rounded-md border-2 border-gray-100 z-10  placeholder-gray-500 bg-gray-900 hover:border-blue-500 focus:outline-none focus:border-green-300"
-            type="text"
-            placeholder="Course Name"
-            value={courseName}
-            onChange={(e) => setCourseName(e.target.value)}
-          />
-        </div>
-        <div className=" text-gray-100 flex flex-col gap-2 items-center mt-10">
-          <p> Number of Holes {numHoles}</p>
-          <div className="flex gap-4">
-            <button
-              onClick={() => setNumHoles((prev) => Math.max(prev - 1, 1))}
-              className="bg-blue-800  text-gray-100 px-3 py-1 rounded text-lg"
-            >
-              -
-            </button>
-            <button
-              onClick={() => setNumHoles((prev) => Math.min(25, prev + 1))}
-              className="bg-blue-800 text-gray-100 px-3 py-1 rounded text-lg"
-            >
-              +
-            </button>
+            <input
+              className="text-lg text-gray-100 p-2 rounded-md border-2 border-gray-100 z-10  placeholder-gray-500 bg-gray-900 hover:border-blue-500 focus:outline-none focus:border-green-300"
+              type="text"
+              placeholder="Course Name"
+              value={courseName}
+              onChange={(e) => setCourseName(e.target.value)}
+            />
+          </div>
+          <div className=" text-gray-100 flex flex-col gap-2 items-center mt-10">
+            <p> Number of Holes {numHoles}</p>
+            <div className="flex gap-4">
+              <button
+                onClick={() => setNumHoles((prev) => Math.max(prev - 1, 1))}
+                className="bg-blue-800  text-gray-100 px-3 py-1 rounded text-lg"
+              >
+                -
+              </button>
+              <button
+                onClick={() => setNumHoles((prev) => Math.min(25, prev + 1))}
+                className="bg-blue-800 text-gray-100 px-3 py-1 rounded text-lg"
+              >
+                +
+              </button>
+            </div>
+          </div>
+          <div className="mt-10 mb-5">
+            <label className=" text-gray-100 flex flex-col gap-2 items-center">
+              <input
+                type="checkbox"
+                checked={trackStats}
+                onChange={(e) => setTrackStats(e.target.checked)}
+                className="h-5 w-5 bg-gray-900"
+              />
+              Track Fairway Hits, C1 and C2 Putting
+            </label>
+          </div>
+          <div className="flex flex-col justify-center items-center text-center">
+            <p className=" text-gray-100 flex justify-center my-5 text-xl ">
+              Add Players
+            </p>
+
+            <input
+              className="text-lg text-gray-100 p-2 rounded-md border-2 border-gray-100 z-10  placeholder-gray-500  dark:text-gray-100 bg-gray-900 hover:border-blue-500 focus:outline-none focus:border-green-300"
+              type="text"
+              placeholder={`Player ${players.length + 1}`}
+              value={newPlayer}
+              onChange={(e) => setNewPlayer(e.target.value)}
+            />
+          </div>
+          <button
+            onClick={addPlayer}
+            className=" flex items-center justify-center mx-auto  bg-blue-800 py-2 px-10 mt-10 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95"
+          >
+            <Plus />
+          </button>
+          <div className="flex flex-col justify-center items-center text-center mt-10 ">
+            {players.length > 0 && (
+              <p className="text-gray-100 text-xl border-b mb-5">Players</p>
+            )}
+            {players.map((player, index) => (
+              <div key={index}>
+                <p className="text-gray-100 text-xl mb-5">
+                  {player === userDisplayName ? `${player} (you)` : player}
+                </p>
+              </div>
+            ))}
+          </div>
+          <button
+            onClick={startGame}
+            className=" flex items-center justify-center w-full mb-5  bg-blue-800 py-2 px-10 mt-10 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95"
+          >
+            Start
+          </button>
+          <div className="pb-5">
+            <DeleteSessionBtn onDelete={resetSessionState} />
           </div>
         </div>
-        <div className="mt-10 mb-5">
-          <label className=" text-gray-100 flex flex-col gap-2 items-center">
-            <input
-              type="checkbox"
-              checked={trackStats}
-              onChange={(e) => setTrackStats(e.target.checked)}
-              className="h-5 w-5 bg-gray-900"
-            />
-            Track Fairway Hits, C1 and C2 Putting
-          </label>
-        </div>
-        <div className="flex flex-col justify-center items-center text-center">
-          <p className=" text-gray-100 flex justify-center my-5 text-xl ">
-            Add Players
-          </p>
-
-          <input
-            className="text-lg text-gray-100 p-2 rounded-md border-2 border-gray-100 z-10  placeholder-gray-500  dark:text-gray-100 bg-gray-900 hover:border-blue-500 focus:outline-none focus:border-green-300"
-            type="text"
-            placeholder={`Player ${players.length + 1}`}
-            value={newPlayer}
-            onChange={(e) => setNewPlayer(e.target.value)}
-          />
-        </div>
-        <button
-          onClick={addPlayer}
-          className=" flex items-center justify-center mx-auto  bg-blue-800 py-2 px-10 mt-10 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95"
-        >
-          <Plus />
-        </button>
-        <div className="flex flex-col justify-center items-center text-center mt-10 ">
-          {players.length > 0 && (
-            <p className="text-gray-100 text-xl border-b mb-5">Players</p>
-          )}
-          {players.map((player, index) => (
-            <div key={index}>
-              <p className="text-gray-100 text-xl mb-5">
-                {player === userDisplayName ? `${player} (you)` : player}
-              </p>
-            </div>
-          ))}
-        </div>
-        <button
-          onClick={startGame}
-          className=" flex items-center justify-center w-full mb-5  bg-blue-800 py-2 px-10 mt-10 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95"
-        >
-          Start
-        </button>
-        <DeleteSessionBtn onDelete={resetSessionState} />
       </div>
     </ModalPageWrapper>
   );

@@ -1,5 +1,6 @@
 export const clearLocalStorage = () => {
   const keysToRemove = [
+    "activeSession",
     "holes",
     "setupData",
     "startTime",
@@ -8,6 +9,7 @@ export const clearLocalStorage = () => {
     "timer:disc-golf",
     "activeSession",
     "viewingHoleNumber",
+    "currentHole",
   ];
 
   keysToRemove.forEach((key) => {

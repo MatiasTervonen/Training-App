@@ -14,7 +14,6 @@ import FullScreenLoader from "@/app/components/FullScreenLoader";
 import { clearLocalStorage } from "../components/ClearLocalStorage";
 
 export default function DiscGolfGame() {
-  const [hole, setHole] = useState(1);
   const [length, setLength] = useState(""); // input value
   const [par, setPar] = useState(3); // input value
   const [courseName, setCourseName] = useState("");
@@ -199,7 +198,6 @@ export default function DiscGolfGame() {
 
     const holeToLoad = parseInt(currentHole || savedViewingHole || "1");
 
-    setHole(holeToLoad);
     setViewingHoleNumber(holeToLoad);
     setPreviousHoleNumber(holeToLoad); // <--- ensure this is initialized here
 
@@ -332,71 +330,38 @@ export default function DiscGolfGame() {
 
   const handleNextHole = () => {
     window.scrollTo(0, 0); // Scroll to top of the page
-    const holeData: HoleData = {
-      hole_number: viewingHoleNumber,
-      length: parseInt(length),
-      par: par,
-      scores: players.map((player) => ({
-        playerName: player.name,
-        strokes: playerStats[player.name]?.strokes ?? 0,
-        fairwayHit: playerStats[player.name]?.fairwayHit ?? false,
-        c1made: playerStats[player.name]?.c1made ?? false,
-        c1attempted: playerStats[player.name]?.c1attempted ?? false,
-        c2made: playerStats[player.name]?.c2made ?? false,
-        c2attempted: playerStats[player.name]?.c2attempted ?? false,
-      })),
-    };
+    setDirection(1);
+    setIsSwiping(true);
 
-    // Save the hole data to local storage or send it to your backend
-    const existingHoles = JSON.parse(
-      localStorage.getItem("holes") || "[]"
-    ) as HoleData[];
+    // This triggers the same animation path as a swipe
+    setViewingHoleNumber((prev) => {
+      const nextHole = prev + 1;
+      localStorage.setItem("currentHole", JSON.stringify(nextHole));
+      return nextHole;
+    });
+  };
 
-    const nextHole = hole + 1;
+  const handlePerviousHole = () => {
+    window.scrollTo(0, 0); // Scroll to top of the page
+    setDirection(-1);
+    setIsSwiping(true);
 
-    const updatedHoles = [...existingHoles, holeData];
-
-    localStorage.setItem("holes", JSON.stringify([...existingHoles, holeData]));
-
-    localStorage.setItem("currentHole", JSON.stringify(nextHole));
-
-    setHoleHistory(updatedHoles);
-    setHole(nextHole);
-    setViewingHoleNumber(nextHole);
-    setLength("");
-    setPar(3);
-    setPlayerStats(
-      players.reduce<{
-        [playerName: string]: {
-          strokes: number;
-          fairwayHit: boolean;
-          c1made: boolean;
-          c1attempted: boolean;
-          c2made: boolean;
-          c2attempted: boolean;
-        };
-      }>((acc, player) => {
-        acc[player.name] = {
-          strokes: 3,
-          fairwayHit: false,
-          c1made: false,
-          c1attempted: false,
-          c2made: false,
-          c2attempted: false,
-        };
-        return acc;
-      }, {})
-    );
+    // This triggers the same animation path as a swipe
+    setViewingHoleNumber((prev) => {
+      const perviousHole = prev - 1;
+      localStorage.setItem("currentHole", JSON.stringify(perviousHole));
+      return perviousHole;
+    });
   };
 
   const deleteSession = () => {
     clearLocalStorage();
-    router.push("/");
+    router.push("/disc-golf");
   };
 
   return (
     <>
-      <nav className="flex items-center justify-between bg-gray-700 p-2 px-4 fixed w-full z-40 xl:max-w-3xl mx-auto">
+      <nav className="flex items-center justify-between bg-gray-700 p-2 px-4 fixed w-full z-40 md:max-w-3xl mx-auto">
         <div className="flex items-center justify-center gap-2  text-gray-100">
           <Timer sessionId="disc-golf" />
         </div>
@@ -407,7 +372,7 @@ export default function DiscGolfGame() {
           Live Scorecard
         </Link>
       </nav>
-      <div className="pt-[40px] relative h-[calc(100dvh-72px)] overflow-hidden xl:max-w-3xl mx-auto">
+      <div className="pt-[40px] relative h-[calc(100dvh-72px)] overflow-hidden">
         <div className="absolute inset-0 z-0 h-screen flex justify-between bg-slate-950">
           {!isSwiping && (
             <>
@@ -461,7 +426,7 @@ export default function DiscGolfGame() {
         <AnimatePresence initial={false} custom={direction}>
           <motion.div
             key={viewingHoleNumber}
-            className="absolute w-full z-30 bg-slate-950 px-5 h-full overflow-y-auto flex flex-col justify-between "
+            className="absolute w-full z-30 bg-slate-900 px-5 h-full overflow-y-auto flex flex-col justify-between"
             custom={direction}
             initial="enter"
             animate="center"
@@ -519,221 +484,239 @@ export default function DiscGolfGame() {
               }
             }}
           >
-            <div>
-              <h1
-                className={`${russoOne.className} text-gray-100 flex justify-center my-2 text-2xl mt-5`}
-              >
-                Hole {viewingHoleNumber}
-              </h1>
-              <p
-                className={`${russoOne.className} text-gray-100 flex justify-center my-2  `}
-              >
-                {courseName}
-              </p>
-              <div className="border-2 border-gray-100 p-5 rounded-xl mb-10 mx-10">
-                <div
-                  className={`${russoOne.className} flex items-center justify-between gap-2 text-gray-100 `}
+            <div className="max-w-md mx-auto flex flex-col  justify-between w-full h-full">
+              <div>
+                <h1
+                  className={`${russoOne.className} text-gray-100 flex justify-center my-2 text-2xl mt-5 `}
                 >
-                  <p className="text-xl">Par</p>
-                  <div className="flex items-center gap-4">
-                    <button
-                      onClick={() => setPar((prev) => Math.max(3, prev - 1))}
-                      className="bg-blue-800 text-gray-100 px-4 py-2 rounded"
-                    >
-                      -
-                    </button>
-                    <span>{par}</span>
-                    <button
-                      onClick={() => setPar((prev) => Math.min(5, prev + 1))}
-                      className="bg-blue-800 text-gray-100 px-4 py-2 rounded"
-                    >
-                      +
-                    </button>
+                  Hole {viewingHoleNumber}
+                </h1>
+                <p
+                  className={`${russoOne.className} text-gray-100 flex justify-center my-2  `}
+                >
+                  {courseName}
+                </p>
+                <div className="border-2 border-gray-100 p-5 rounded-xl mb-10 mx-10">
+                  <div
+                    className={`${russoOne.className} flex items-center justify-between gap-2 text-gray-100 `}
+                  >
+                    <p className="text-xl">Par</p>
+                    <div className="flex items-center gap-4">
+                      <button
+                        onClick={() => setPar((prev) => Math.max(3, prev - 1))}
+                        className="bg-blue-800 text-gray-100 px-4 py-2 rounded"
+                      >
+                        -
+                      </button>
+                      <span>{par}</span>
+                      <button
+                        onClick={() => setPar((prev) => Math.min(5, prev + 1))}
+                        className="bg-blue-800 text-gray-100 px-4 py-2 rounded"
+                      >
+                        +
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-            {getSortedPlayersByScoreAndLastHole().map((player, index) => (
-              <div key={index} className="flex flex-col gap-2 mt-5 mb-10">
-                <div
-                  className={`${russoOne.className} flex items-center justify-between text-gray-100 text-lg border-b`}
-                >
-                  {(() => {
-                    const { totalStrokes, formattedDiff } = getPlayerTotals(
-                      player.name
-                    );
-                    return (
-                      <p className="flex items-center gap-2">
-                        {index === 0 && <span>🥏</span>}
-                        {player.name} - {totalStrokes} ({formattedDiff})
-                      </p>
-                    );
-                  })()}
+              {getSortedPlayersByScoreAndLastHole().map((player, index) => (
+                <div key={index} className="flex flex-col gap-2 mt-5 mb-10">
+                  <div
+                    className={`${russoOne.className} flex items-center justify-between text-gray-100 text-lg border-b`}
+                  >
+                    {(() => {
+                      const { totalStrokes, formattedDiff } = getPlayerTotals(
+                        player.name
+                      );
+                      return (
+                        <p className="flex items-center gap-2">
+                          {index === 0 && <span>🥏</span>}
+                          {player.name} - {totalStrokes} ({formattedDiff})
+                        </p>
+                      );
+                    })()}
 
-                  <div className="flex items-center gap-6">
-                    <button
-                      className="bg-blue-800 text-gray-100 px-4 py-2 rounded"
-                      onClick={() =>
-                        setPlayerStats((prev) => ({
-                          ...prev,
-                          [player.name]: {
-                            ...prev[player.name],
-                            strokes: Math.max(
-                              (prev[player.name]?.strokes || 0) - 1,
-                              0
-                            ),
-                          },
-                        }))
-                      }
-                    >
-                      -
-                    </button>
-                    <span>{playerStats[player.name]?.strokes ?? 0}</span>
-                    <button
-                      className="bg-blue-800 text-gray-100 px-4 py-2 rounded"
-                      onClick={() =>
-                        setPlayerStats((prev) => ({
-                          ...prev,
-                          [player.name]: {
-                            ...prev[player.name],
-                            strokes: Math.min(
-                              (prev[player.name]?.strokes || 0) + 1,
-                              12
-                            ),
-                          },
-                        }))
-                      }
-                    >
-                      +
-                    </button>
+                    <div className="flex items-center gap-6">
+                      <button
+                        className="bg-blue-800 text-gray-100 px-4 py-2 rounded"
+                        onClick={() =>
+                          setPlayerStats((prev) => ({
+                            ...prev,
+                            [player.name]: {
+                              ...prev[player.name],
+                              strokes: Math.max(
+                                (prev[player.name]?.strokes || 0) - 1,
+                                0
+                              ),
+                            },
+                          }))
+                        }
+                      >
+                        -
+                      </button>
+                      <span>{playerStats[player.name]?.strokes ?? 0}</span>
+                      <button
+                        className="bg-blue-800 text-gray-100 px-4 py-2 rounded"
+                        onClick={() =>
+                          setPlayerStats((prev) => ({
+                            ...prev,
+                            [player.name]: {
+                              ...prev[player.name],
+                              strokes: Math.min(
+                                (prev[player.name]?.strokes || 0) + 1,
+                                12
+                              ),
+                            },
+                          }))
+                        }
+                      >
+                        +
+                      </button>
+                    </div>
                   </div>
+                  {trackStats && (
+                    <div>
+                      <div
+                        className={`${russoOne.className} flex justify-between items-center gap-2 border-b border-gray-100 text-gray-100 mx-10 mt-5`}
+                      >
+                        <label>Fairway Hit</label>
+                        <input
+                          className="h-5 w-5"
+                          type="checkbox"
+                          checked={
+                            playerStats[player.name]?.fairwayHit ?? false
+                          }
+                          onChange={(e) =>
+                            setPlayerStats((prev) => ({
+                              ...prev,
+                              [player.name]: {
+                                ...prev[player.name],
+                                fairwayHit: e.target.checked,
+                              },
+                            }))
+                          }
+                        />
+                      </div>
+                      <div
+                        className={`${russoOne.className} flex justify-between items-center gap-2 border-b border-gray-100 text-gray-100 mx-10 `}
+                      >
+                        <label>C1 Made</label>
+                        <input
+                          className="h-5 w-5"
+                          type="checkbox"
+                          checked={playerStats[player.name]?.c1made ?? false}
+                          onChange={(e) =>
+                            setPlayerStats((prev) => ({
+                              ...prev,
+                              [player.name]: {
+                                ...prev[player.name],
+                                c1made: e.target.checked,
+                                c1attempted: e.target.checked
+                                  ? true
+                                  : prev[player.name]?.c1attempted,
+                              },
+                            }))
+                          }
+                        />
+                      </div>
+                      <div
+                        className={`${russoOne.className} flex justify-between items-center gap-2 border-b border-gray-100 text-gray-100 mx-10 `}
+                      >
+                        <label>C1 Attempted</label>
+                        <input
+                          className="h-5 w-5"
+                          type="checkbox"
+                          checked={
+                            playerStats[player.name]?.c1attempted ?? false
+                          }
+                          onChange={(e) =>
+                            setPlayerStats((prev) => ({
+                              ...prev,
+                              [player.name]: {
+                                ...prev[player.name],
+                                c1attempted: e.target.checked,
+                                c1made: e.target.checked
+                                  ? prev[player.name]?.c1made
+                                  : false,
+                              },
+                            }))
+                          }
+                        />
+                      </div>
+                      <div
+                        className={`${russoOne.className} flex justify-between items-center gap-2 border-b border-gray-100 text-gray-100 mx-10 `}
+                      >
+                        <label> C2 Made</label>
+                        <input
+                          className="h-5 w-5"
+                          type="checkbox"
+                          checked={playerStats[player.name]?.c2made ?? false}
+                          onChange={(e) =>
+                            setPlayerStats((prev) => ({
+                              ...prev,
+                              [player.name]: {
+                                ...prev[player.name],
+                                c2made: e.target.checked,
+                                c2attempted: e.target.checked
+                                  ? true
+                                  : prev[player.name]?.c2attempted,
+                              },
+                            }))
+                          }
+                        />
+                      </div>
+                      <div
+                        className={`${russoOne.className} flex justify-between items-center gap-2 border-b border-gray-100 text-gray-100 mx-10 mb-5`}
+                      >
+                        <label> C2 Attempted</label>
+                        <input
+                          className="h-5 w-5"
+                          type="checkbox"
+                          checked={
+                            playerStats[player.name]?.c2attempted ?? false
+                          }
+                          onChange={(e) =>
+                            setPlayerStats((prev) => ({
+                              ...prev,
+                              [player.name]: {
+                                ...prev[player.name],
+                                c2attempted: e.target.checked,
+                                c2made: e.target.checked
+                                  ? prev[player.name]?.c2made
+                                  : false,
+                              },
+                            }))
+                          }
+                        />
+                      </div>
+                    </div>
+                  )}
                 </div>
-                {trackStats && (
-                  <div>
-                    <div
-                      className={`${russoOne.className} flex justify-between items-center gap-2 border-b border-gray-100 text-gray-100 mx-10 mt-5`}
-                    >
-                      <label>Fairway Hit</label>
-                      <input
-                        className="h-5 w-5"
-                        type="checkbox"
-                        checked={playerStats[player.name]?.fairwayHit ?? false}
-                        onChange={(e) =>
-                          setPlayerStats((prev) => ({
-                            ...prev,
-                            [player.name]: {
-                              ...prev[player.name],
-                              fairwayHit: e.target.checked,
-                            },
-                          }))
-                        }
-                      />
-                    </div>
-                    <div
-                      className={`${russoOne.className} flex justify-between items-center gap-2 border-b border-gray-100 text-gray-100 mx-10 `}
-                    >
-                      <label>C1 Made</label>
-                      <input
-                        className="h-5 w-5"
-                        type="checkbox"
-                        checked={playerStats[player.name]?.c1made ?? false}
-                        onChange={(e) =>
-                          setPlayerStats((prev) => ({
-                            ...prev,
-                            [player.name]: {
-                              ...prev[player.name],
-                              c1made: e.target.checked,
-                              c1attempted: e.target.checked
-                                ? true
-                                : prev[player.name]?.c1attempted,
-                            },
-                          }))
-                        }
-                      />
-                    </div>
-                    <div
-                      className={`${russoOne.className} flex justify-between items-center gap-2 border-b border-gray-100 text-gray-100 mx-10 `}
-                    >
-                      <label>C1 Attempted</label>
-                      <input
-                        className="h-5 w-5"
-                        type="checkbox"
-                        checked={playerStats[player.name]?.c1attempted ?? false}
-                        onChange={(e) =>
-                          setPlayerStats((prev) => ({
-                            ...prev,
-                            [player.name]: {
-                              ...prev[player.name],
-                              c1attempted: e.target.checked,
-                              c1made: e.target.checked
-                                ? prev[player.name]?.c1made
-                                : false,
-                            },
-                          }))
-                        }
-                      />
-                    </div>
-                    <div
-                      className={`${russoOne.className} flex justify-between items-center gap-2 border-b border-gray-100 text-gray-100 mx-10 `}
-                    >
-                      <label> C2 Made</label>
-                      <input
-                        className="h-5 w-5"
-                        type="checkbox"
-                        checked={playerStats[player.name]?.c2made ?? false}
-                        onChange={(e) =>
-                          setPlayerStats((prev) => ({
-                            ...prev,
-                            [player.name]: {
-                              ...prev[player.name],
-                              c2made: e.target.checked,
-                              c2attempted: e.target.checked
-                                ? true
-                                : prev[player.name]?.c2attempted,
-                            },
-                          }))
-                        }
-                      />
-                    </div>
-                    <div
-                      className={`${russoOne.className} flex justify-between items-center gap-2 border-b border-gray-100 text-gray-100 mx-10 mb-5`}
-                    >
-                      <label> C2 Attempted</label>
-                      <input
-                        className="h-5 w-5"
-                        type="checkbox"
-                        checked={playerStats[player.name]?.c2attempted ?? false}
-                        onChange={(e) =>
-                          setPlayerStats((prev) => ({
-                            ...prev,
-                            [player.name]: {
-                              ...prev[player.name],
-                              c2attempted: e.target.checked,
-                              c2made: e.target.checked
-                                ? prev[player.name]?.c2made
-                                : false,
-                            },
-                          }))
-                        }
-                      />
-                    </div>
-                  </div>
-                )}
-              </div>
-            ))}
+              ))}
 
-            <div className="mb-20">
-              {viewingHoleNumber < totalHoles && (
-                <button
-                  onClick={handleNextHole}
-                  className={`${russoOne.className} mb-5 flex items-center justify-center w-full  bg-blue-800 py-2 px-10 mt-10 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95`}
-                >
-                  Next Hole
-                </button>
-              )}
-              <div className="flex flex-col gap-5 items-center justify-center">
-                <SaveButton isSaving={isSaving} onClick={handleFinishGame} />
-                <DeleteSessionBtn onDelete={deleteSession} />
+              <div className="mb-20">
+                <div className="flex gap-4 items-center  ">
+                  {viewingHoleNumber > 1 && (
+                    <button
+                      onClick={handlePerviousHole}
+                      className={`${russoOne.className} mb-5 flex items-center justify-center w-full  bg-blue-800 py-2 px-10 mt-10 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95`}
+                    >
+                      Prev Hole
+                    </button>
+                  )}
+                  {viewingHoleNumber < totalHoles && (
+                    <button
+                      onClick={handleNextHole}
+                      className={`${russoOne.className} mb-5 flex items-center justify-center w-full  bg-blue-800 py-2 px-10 mt-10 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95`}
+                    >
+                      Next Hole
+                    </button>
+                  )}
+                </div>
+                <div className="flex flex-col gap-5 items-center justify-center">
+                  <SaveButton isSaving={isSaving} onClick={handleFinishGame} />
+                  <DeleteSessionBtn onDelete={deleteSession} />
+                </div>
               </div>
             </div>
           </motion.div>

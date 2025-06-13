@@ -154,22 +154,22 @@ export default function WorkoutAnalyticsPage() {
               title={weightTitle}
               setTitle={setWeightTitle}
               placeholder="Weight entry title..."
+              label="Title for Weight..."
             />
             <NotesInput
               notes={weightNotes}
               setNotes={setWeightNotes}
               placeholder="Enter your notes here..."
               label="Notes for Weight..."
-              className="bg-slate-900"
             />
-            <label htmlFor="weight" className="flex flex-col gap-1">
+            <label htmlFor="weight" className="flex flex-col gap-1 text-gray-400">
               Weight...
               <input
                 id="weight"
                 type="text"
                 inputMode="numeric"
                 placeholder="Enter your weight here..."
-                className="text-lg p-2 rounded-md border-2 border-gray-100 z-10  placeholder-gray-500  text-gray-100 bg-gray-900 hover:border-blue-500 focus:outline-none focus:border-green-300"
+                className="text-lg p-2 rounded-md border-2 border-gray-100 z-10  placeholder-gray-500  text-gray-100 bg-[linear-gradient(50deg,_#0f172a,_#1e293b,_#333333)] hover:border-blue-500 focus:outline-none focus:border-green-300"
                 value={weight}
                 onChange={(e) => setWeight(e.target.value)}
               />

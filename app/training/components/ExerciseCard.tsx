@@ -3,19 +3,10 @@
 import { russoOne } from "@/app/ui/fonts";
 import NotesInput from "./NotesInput";
 import DropdownMenu from "@/app/components/dropdownMenu";
-import { Ellipsis, SquareX, ChevronDown } from "lucide-react";
-
-type ExerciseSet = { weight?: number; reps?: number; rpe?: string };
-type ExerciseEntry = {
-  exercise_id: string;
-  name: string;
-  sets: ExerciseSet[];
-  notes?: string;
-  groupId?: string;
-  equipment: string;
-  main_group?: string;
-  muscle_group?: string;
-};
+import { Ellipsis, SquareX } from "lucide-react";
+import { ExerciseEntry } from "@/types/session";
+import SetInput from "./SetInput";
+import ExerciseTypeSelect from "./ExerciseTypeSelect";
 
 type ExerciseCardProps = {
   index: number;
@@ -49,7 +40,7 @@ export default function ExerciseCard({
   lastExerciseHistory,
 }: ExerciseCardProps) {
   return (
-    <div className="bg-slate-900 py-2 px-4 rounded-md shadow-xl border-2 border-gray-500">
+    <div className="py-2 px-4">
       <div
         className={`${russoOne.className} flex items-center justify-between`}
       >
@@ -88,7 +79,6 @@ export default function ExerciseCard({
           rows={2}
           cols={35}
           placeholder="Add your notes here..."
-          className="bg-slate-800"
         />
       </div>
 
@@ -155,65 +145,39 @@ export default function ExerciseCard({
         {isCardioExercise(exercise) ? (
           <>
             <div className="flex items-center gap-5">
-              <input
-                className="text-lg  p-2 rounded-md border-2 border-gray-100 z-10 w-full  placeholder-gray-500 text-gray-100 bg-gray-800 hover:border-blue-500 focus:outline-none focus:border-green-300"
+              <SetInput
                 placeholder="Time in min..."
                 type="number"
                 value={input.weight}
-                onChange={(e) => onInputChange(index, "weight", e.target.value)}
+                onChange={(val) => onInputChange(index, "weight", val)}
               />
             </div>
-            <div className="relative w-2/3">
-              <select
-                className="appearance-none text-lg p-2 rounded-md border-2 border-gray-100 z-10 w-full  placeholder-gray-500  text-gray-100 bg-gray-800 hover:border-blue-500 focus:outline-none focus:border-green-300"
-                value={input.rpe}
-                onChange={(e) => onInputChange(index, "rpe", e.target.value)}
-              >
-                <option value="Warm-up">Warm-up</option>
-                <option value="Easy">Easy</option>
-                <option value="Medium">Medium</option>
-                <option value="Hard">Hard</option>
-                <option value="Failure">Failure</option>
-              </select>
-              <div className="absolute inset-y-0 right-1 flex items-center pointer-events-none bg-slate-800 my-2 px-2">
-                <ChevronDown className="text-gray-100" />
-              </div>
-            </div>
+            <ExerciseTypeSelect
+              value={input.rpe}
+              onChange={(val) => onInputChange(index, "rpe", val)}
+            />
           </>
         ) : (
           <>
             <div className="flex items-center gap-5">
-              <input
-                className="text-lg  p-2 rounded-md border-2 border-gray-100 z-10 w-full  placeholder-gray-500 text-gray-100 bg-gray-800 hover:border-blue-500 focus:outline-none focus:border-green-300"
+              <SetInput
                 placeholder="Weight..."
                 type="number"
                 value={input.weight}
-                onChange={(e) => onInputChange(index, "weight", e.target.value)}
+                onChange={(val) => onInputChange(index, "weight", val)}
               />
-              <input
-                className="text-lg  p-2 rounded-md border-2 border-gray-100 z-10 w-full  placeholder-gray-500 text-gray-100 bg-gray-800 hover:border-blue-500 focus:outline-none focus:border-green-300"
+              <SetInput
                 placeholder="Reps..."
                 type="number"
                 value={input.reps}
-                onChange={(e) => onInputChange(index, "reps", e.target.value)}
+                onChange={(val) => onInputChange(index, "reps", val)}
               />
             </div>
-            <div className="relative w-2/3">
-              <select
-                className="appearance-none text-lg p-2 rounded-md border-2 border-gray-100 z-10 w-full  placeholder-gray-500  text-gray-100 bg-gray-800 hover:border-blue-500 focus:outline-none focus:border-green-300"
-                value={input.rpe}
-                onChange={(e) => onInputChange(index, "rpe", e.target.value)}
-              >
-                <option value="Warm-up">Warm-up</option>
-                <option value="Easy">Easy</option>
-                <option value="Medium">Medium</option>
-                <option value="Hard">Hard</option>
-                <option value="Failure">Failure</option>
-              </select>
-              <div className="absolute inset-y-0 right-1 flex items-center pointer-events-none bg-slate-800 my-2 px-2">
-                <ChevronDown className="text-gray-100" />
-              </div>
-            </div>
+
+            <ExerciseTypeSelect
+              value={input.rpe}
+              onChange={(val) => onInputChange(index, "rpe", val)}
+            />
           </>
         )}
       </div>

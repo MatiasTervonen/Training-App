@@ -8,6 +8,7 @@ import { createClient } from "@/utils/supabase/client";
 import ModalPageWrapper from "../components/modalPageWrapper";
 import { useRouter } from "next/navigation";
 import { clearLocalStorage } from "./components/ClearLocalStorage";
+import TitleInput from "../training/components/TitleInput";
 
 export default function DiscGolf() {
   const [players, setPlayers] = useState<string[]>([]);
@@ -139,19 +140,13 @@ export default function DiscGolf() {
               Disc Golf
             </h1>
           </div>
-          <div className="flex flex-col justify-center items-center text-center">
-            <p className=" text-gray-100 flex justify-center my-5 text-xl">
-              Course Name
-            </p>
+          <TitleInput
+            title={courseName}
+            placeholder="Course Name"
+            setTitle={setCourseName}
+            label="Course Name"
+          />
 
-            <input
-              className="text-lg text-gray-100 p-2 rounded-md border-2 border-gray-100 z-10  placeholder-gray-500 bg-gray-900 hover:border-blue-500 focus:outline-none focus:border-green-300"
-              type="text"
-              placeholder="Course Name"
-              value={courseName}
-              onChange={(e) => setCourseName(e.target.value)}
-            />
-          </div>
           <div className=" text-gray-100 flex flex-col gap-2 items-center mt-10">
             <p> Number of Holes {numHoles}</p>
             <div className="flex gap-4">
@@ -180,19 +175,12 @@ export default function DiscGolf() {
               Track Fairway Hits, C1 and C2 Putting
             </label>
           </div>
-          <div className="flex flex-col justify-center items-center text-center">
-            <p className=" text-gray-100 flex justify-center my-5 text-xl ">
-              Add Players
-            </p>
-
-            <input
-              className="text-lg text-gray-100 p-2 rounded-md border-2 border-gray-100 z-10  placeholder-gray-500  dark:text-gray-100 bg-gray-900 hover:border-blue-500 focus:outline-none focus:border-green-300"
-              type="text"
-              placeholder={`Player ${players.length + 1}`}
-              value={newPlayer}
-              onChange={(e) => setNewPlayer(e.target.value)}
-            />
-          </div>
+          <TitleInput
+            title={newPlayer}
+            setTitle={setNewPlayer}
+            label="Add Players"
+            placeholder={`Player ${players.length + 1}`}
+          />
           <button
             onClick={addPlayer}
             className=" flex items-center justify-center mx-auto  bg-blue-800 py-2 px-10 mt-10 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95"

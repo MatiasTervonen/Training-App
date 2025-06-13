@@ -146,7 +146,7 @@ export default function SessionFeed() {
     <>
       <div
         ref={containerRef}
-        className={` ${russoOne.className} relative bg-slate-900 h-[calc(100dvh-72px)] px-5 pt-3 pb-20 text-gray-100 overflow-y-auto touch-pan-y`}
+        className={` ${russoOne.className} relative bg-gradient-to-b from-slate-950 via-slate-900 to-slate-800 h-[calc(100dvh-72px)] px-5 pt-3 pb-20 text-gray-100 overflow-y-auto touch-pan-y`}
       >
         <div
           className="flex items-center justify-center text-white transition-all"

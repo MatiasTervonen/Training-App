@@ -8,9 +8,10 @@ import FullScreenLoader from "@/app/components/FullScreenLoader";
 import { russoOne } from "@/app/ui/fonts";
 import { GymSessionFull, GymExercise } from "@/types/session";
 import { groupGymExercises } from "@/lib/groupGymexercises";
-import { ChevronDown } from "lucide-react";
 import { mutate } from "swr";
 import toast from "react-hot-toast";
+import SetInput from "@/app/training/components/SetInput";
+import ExerciseTypeSelect from "@/app/training/components/ExerciseTypeSelect";
 
 type EditGymSessionProps = {
   gym_session: GymSessionFull;
@@ -146,6 +147,7 @@ export default function EditGym({
               title={title}
               setTitle={setTitle}
               placeholder="Session title..."
+              label="Session Title..."
             />
           </div>
           <div>
@@ -156,23 +158,26 @@ export default function EditGym({
               rows={2}
               cols={35}
               label="Session Notes..."
-              className="bg-slate-900"
             />
           </div>
         </div>
         {Object.entries(groupedExercises).map(([superset_id, group]) => (
           <div
             key={superset_id}
-            className="flex flex-col items-center justify-center mt-10 mx-4  max-w-screen bg-slate-900 rounded-md px-4 py-2 shadow-lg"
+            className={`mt-10 bg-gradient-to-tr from-gray-900 via-slate-800 to-blue-900 rounded-md mx-2 ${
+              group.length > 1
+                ? "border-2 border-blue-700"
+                : "border-2 border-gray-700"
+            }`}
           >
             {group.length > 1 && (
-              <h3 className="text-lg text-gray-100 text-center mb-2">
+              <h3 className="text-lg text-gray-100 text-center my-2">
                 Super-Set
               </h3>
             )}
 
             {group.map(({ exercise, index }) => (
-              <div key={index} className="w-full mb-4">
+              <div key={index} className="w-full py-2 px-4 mb-4">
                 <div className="flex justify-between flex-col mb-2">
                   <div className="flex items-center justify-between">
                     <h3 className="text-lg text-gray-100 ">
@@ -196,7 +201,6 @@ export default function EditGym({
                     cols={35}
                     placeholder="Add your notes here..."
                     label={`Notes for ${exercise.gym_exercises.name}...`}
-                    className="bg-slate-800"
                   />
                 </div>
                 <table className="w-full text-left border-collapse">
@@ -231,98 +235,63 @@ export default function EditGym({
                         {isCardioExercise(exercise) ? (
                           <>
                             <td className="p-2 border-b w-2/4">
-                              <input
+                              <SetInput
                                 type="number"
-                                className="text-lg py-1 px-2 rounded-md border-2 border-gray-100 z-10 w-full  placeholder-gray-500  text-gray-100 bg-gray-800 hover:border-blue-500 focus:outline-none focus:border-green-300"
+                                placeholder="Time (min)"
                                 value={set.weight}
-                                onChange={(e) =>
+                                onChange={(val) =>
                                   handleUpdateSet(
                                     index,
                                     setIndex,
                                     "weight",
-                                    e.target.value
+                                    val
                                   )
                                 }
                               />
                             </td>
                             <td className="p-2 border-b w-2/4 relative">
-                              <select
-                                className="text-lg appearance-none py-1 px-2 rounded-md border-2 border-gray-100 z-10 w-full  placeholder-gray-500  text-gray-100 bg-gray-800 hover:border-blue-500 focus:outline-none focus:border-green-300"
+                              <ExerciseTypeSelect
                                 value={set.rpe}
-                                onChange={(e) =>
-                                  handleUpdateSet(
-                                    index,
-                                    setIndex,
-                                    "rpe",
-                                    e.target.value
-                                  )
+                                onChange={(val) =>
+                                  handleUpdateSet(index, setIndex, "rpe", val)
                                 }
-                              >
-                                <option value="Warm-up">Warm-up</option>
-                                <option value="Easy">Easy</option>
-                                <option value="Medium">Medium</option>
-                                <option value="Hard">Hard</option>
-                                <option value="Failure">Failure</option>
-                              </select>
-                              <div className="absolute inset-y-0 right-1 flex items-center pointer-events-none bg-gray-800 my-4 mr-2">
-                                <ChevronDown className="text-gray-100" />
-                              </div>
+                              />
                             </td>
                           </>
                         ) : (
                           <>
                             <td className="p-2 border-b w-1/3">
-                              <input
+                              <SetInput
+                                placeholder="Weight..."
                                 type="number"
-                                className="text-lg py-1 px-2 rounded-md border-2 border-gray-100 z-10 w-full  placeholder-gray-500  text-gray-100 bg-gray-800 hover:border-blue-500 focus:outline-none focus:border-green-300"
                                 value={set.weight}
-                                onChange={(e) =>
+                                onChange={(val) =>
                                   handleUpdateSet(
                                     index,
                                     setIndex,
                                     "weight",
-                                    e.target.value
+                                    val
                                   )
                                 }
                               />
                             </td>
                             <td className="p-2 border-b w-1/3">
-                              <input
+                              <SetInput
                                 type="number"
-                                className="text-lg py-1 px-2 rounded-md border-2 border-gray-100 z-10 w-full  placeholder-gray-500  text-gray-100 bg-gray-800 hover:border-blue-500 focus:outline-none focus:border-green-300"
+                                placeholder="Reps..."
                                 value={set.reps}
-                                onChange={(e) =>
-                                  handleUpdateSet(
-                                    index,
-                                    setIndex,
-                                    "reps",
-                                    e.target.value
-                                  )
+                                onChange={(val) =>
+                                  handleUpdateSet(index, setIndex, "reps", val)
                                 }
                               />
                             </td>
                             <td className="p-2 border-b w-2/3 relative">
-                              <select
-                                className="text-lg appearance-none py-1 px-2 rounded-md border-2 border-gray-100 z-10 w-full  placeholder-gray-500  text-gray-100 bg-gray-800 hover:border-blue-500 focus:outline-none focus:border-green-300"
+                              <ExerciseTypeSelect
                                 value={set.rpe}
-                                onChange={(e) =>
-                                  handleUpdateSet(
-                                    index,
-                                    setIndex,
-                                    "rpe",
-                                    e.target.value
-                                  )
+                                onChange={(val) =>
+                                  handleUpdateSet(index, setIndex, "rpe", val)
                                 }
-                              >
-                                <option value="Warm-up">Warm-up</option>
-                                <option value="Easy">Easy</option>
-                                <option value="Medium">Medium</option>
-                                <option value="Hard">Hard</option>
-                                <option value="Failure">Failure</option>
-                              </select>
-                              <div className="absolute inset-y-0 right-1 flex items-center pointer-events-none bg-gray-800 my-4 mr-2">
-                                <ChevronDown className="text-gray-100" />
-                              </div>
+                              />
                             </td>
                           </>
                         )}

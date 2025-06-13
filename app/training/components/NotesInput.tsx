@@ -11,7 +11,6 @@ type NotesInputProps = {
   rows?: number;
   cols?: number;
   label?: string;
-  className?: string;
 };
 
 export default function NotesInput({
@@ -21,7 +20,6 @@ export default function NotesInput({
   rows,
   cols,
   label,
-  className = "",
 }: NotesInputProps) {
   const shouldGrow = !rows && !cols;
 
@@ -35,11 +33,10 @@ export default function NotesInput({
       </div>
       <textarea
         className={clsx(
-          "text-md touch-pan-y p-2 rounded-md border-2 border-gray-100 z-10 placeholder-gray-500 text-gray-100 hover:border-blue-500 focus:outline-none focus:border-green-300 resize-none",
+          "text-md touch-pan-y p-2 rounded-md border-2 border-gray-100 z-10 placeholder-gray-500 bg-[linear-gradient(50deg,_#0f172a,_#1e293b,_#333333)] text-gray-100 hover:border-blue-500 focus:outline-none focus:border-green-300 resize-none",
           {
             "h-full": shouldGrow,
           },
-          className
         )}
         placeholder={placeholder}
         value={notes}

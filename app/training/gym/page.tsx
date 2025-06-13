@@ -377,6 +377,7 @@ export default function TrainingSessionPage() {
                 title={sessionTitle}
                 setTitle={setSessionTitle}
                 placeholder="Session Title..."
+                label="Session Title..."
               />
               <div className="w-full px-6 ">
                 <NotesInput
@@ -384,21 +385,29 @@ export default function TrainingSessionPage() {
                   setNotes={setNotes}
                   placeholder="Add your notes here..."
                   label="Session notes..."
-                  className="bg-slate-900"
                 />
               </div>
             </div>
 
             <>
               {Object.entries(groupedExercises).map(([superset_id, group]) => (
-                <div key={superset_id} className="mt-10">
+                <div
+                  key={superset_id}
+                  className={`mt-10 bg-gradient-to-tr from-gray-900 via-slate-800 to-blue-900 rounded-md mx-2 ${
+                    group.length > 1
+                      ? "border-2 border-blue-700"
+                      : "border-2 border-gray-600"
+                  }`}
+                >
                   {group.length > 1 && (
-                    <h2 className="text-gray-100 text-lg mb-2">Super-Set</h2>
+                    <h2 className="text-gray-100 text-lg text-center my-2">
+                      Super-Set
+                    </h2>
                   )}
 
                   {group.map(({ exercise, index }) => {
                     return (
-                      <div key={index} className="mx-4">
+                      <div key={index}>
                         <ExerciseCard
                           exercise={exercise}
                           lastExerciseHistory={lastExerciseHistory}

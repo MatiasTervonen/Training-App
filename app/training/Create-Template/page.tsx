@@ -248,12 +248,18 @@ export default function CreateTemplatePage() {
               title={workoutName}
               setTitle={setWorkoutName}
               placeholder="Workout Name..."
+              label="Workout Name..."
             />
           </div>
           {Object.entries(groupedExercises).map(([superset_id, group]) => (
-            <div key={superset_id} className="mt-10">
+            <div
+              key={superset_id}
+              className={`mt-10 bg-gradient-to-tr from-gray-900 via-slate-800 to-blue-900  rounded-md mx-2 ${
+                group.length > 1 ? "border-2 border-blue-700" : ""
+              }`}
+            >
               {group.length > 1 && (
-                <h2 className="text-lg text-gray-100 mb-2 text-center">
+                <h2 className="text-lg text-gray-100 my-2 text-center">
                   Super-Set
                 </h2>
               )}

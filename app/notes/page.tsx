@@ -140,6 +140,7 @@ export default function Notes() {
                 title={notesTitle}
                 setTitle={setNotesTitle}
                 placeholder="Notes title..."
+                label="Title..."
               />
             </div>
             <div className="flex w-full flex-grow">
@@ -148,7 +149,6 @@ export default function Notes() {
                 setNotes={setNotes}
                 placeholder="Write your notes here..."
                 label="Notes..."
-                className="bg-slate-900"
               />
             </div>
           </div>

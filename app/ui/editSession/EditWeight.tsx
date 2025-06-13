@@ -109,13 +109,14 @@ export default function EditWeight({ weight, onClose, onSave }: Props) {
               title={title}
               setTitle={setTitle}
               placeholder="Weight title..."
+              label="Title..."
             />
             <NotesInput
               notes={notes}
               setNotes={setNotes}
               placeholder="Write your notes here..."
               label="Notes..."
-              className="bg-slate-900"
+
             />
 
             <label

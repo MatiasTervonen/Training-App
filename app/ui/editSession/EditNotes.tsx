@@ -97,6 +97,7 @@ export default function EditNotes({ note, onClose, onSave }: Props) {
               title={title}
               setTitle={setTitle}
               placeholder="Notes title..."
+              label="Title..."
             />
           </div>
           <div className="flex w-full max-w-md flex-grow">
@@ -105,7 +106,6 @@ export default function EditNotes({ note, onClose, onSave }: Props) {
               setNotes={setNotes}
               placeholder="Write your notes here..."
               label="Notes..."
-              className="bg-slate-900"
             />
           </div>
           <div className="w-full">

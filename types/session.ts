@@ -39,7 +39,7 @@ export type Exercises = {
   equipment: string;
   muscle_group: string;
   main_group: string;
-  language: string;
+  language?: string;
   superset_id?: string | null;
 };
 

@@ -16,7 +16,7 @@ export async function GET() {
   const { data, error } = await supabase
     .from("gym_session_exercises")
     .select(
-      `exercise:exercise_id ( id, user_id, name, equipment, muscle_group, main_group)`
+      `exercise:exercise_id ( id, user_id, name, equipment, muscle_group, main_group, language)`
     )
     .order("id", { ascending: false })
     .limit(10);

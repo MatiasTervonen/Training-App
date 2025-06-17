@@ -4,7 +4,7 @@ import { russoOne } from "@/app/ui/fonts";
 import ModalPageWrapper from "@/app/components/modalPageWrapper";
 import { useRouter } from "next/navigation";
 import TitleInput from "../components/TitleInput";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import ExerciseDropdown from "../components/ExerciseDropdown";
 import { ChevronDown, CircleX, Plus } from "lucide-react";
 import Modal from "@/app/components/modal";
@@ -22,6 +22,7 @@ import ExerciseHistoryModal from "../components/ExerciseHistoryModal";
 import { generateUUID } from "@/lib/generateUUID";
 import { toast } from "react-hot-toast";
 import { mutate } from "swr";
+import FullScreenLoader from "@/app/components/FullScreenLoader";
 
 export default function CreateTemplatePage() {
   const [workoutName, setWorkoutName] = useState("");
@@ -39,6 +40,7 @@ export default function CreateTemplatePage() {
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [isHistoryLoading, setIsHistoryLoading] = useState(false);
   const [hasLoadedDraft, sethasLaoding] = useState(false);
+  const didNavigate = useRef(false);
 
   const groupedExercises = groupExercises(exercises);
 
@@ -207,6 +209,7 @@ export default function CreateTemplatePage() {
       }
 
       await res.json();
+      didNavigate.current = true;
 
       mutate("/api/gym/get-templates");
 
@@ -215,8 +218,10 @@ export default function CreateTemplatePage() {
       toast.error("Failed to save template. Try again later.");
       console.error("Error saving template:", error);
     } finally {
-      setIsSaving(false);
-      resetSession();
+      if (!didNavigate.current) {
+        setIsSaving(false); // Stop saving
+      }
+      resetSession(); // Reset session after saving
     }
   };
 
@@ -536,6 +541,7 @@ export default function CreateTemplatePage() {
           </div>
         </div>
       </div>
+      {isSaving && <FullScreenLoader message="Saving template..." />}
     </ModalPageWrapper>
   );
 }

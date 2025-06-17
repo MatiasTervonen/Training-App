@@ -132,19 +132,19 @@ export default function Navbar() {
           </div>
         )}
       </nav>
-      {["/", "/notes", "/sessions"].includes(pathname) && (
+      {["/", "/menu", "/sessions"].includes(pathname) && (
         <div
           className={`${russoOne.className} flex justify-between bg-slate-600 w-full text-center text-gray-100 z-0 `}
         >
           <Link
-            href={"/notes"}
+            href={"/menu"}
             className={
-              pathname === "/notes"
+              pathname === "/menu"
                 ? "bg-slate-500 p-2 w-1/3"
                 : "p-2 w-1/3 hover:bg-slate-500"
             }
           >
-            Notes
+            Menu
           </Link>
 
           <Link

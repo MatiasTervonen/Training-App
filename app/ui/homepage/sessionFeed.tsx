@@ -17,6 +17,7 @@ import Spinner from "@/app/components/spinner";
 import usePullToRefresh from "@/lib/usePullToRefresh";
 import WeightSession from "@/app/components/expandSession/weight";
 import EditWeight from "../editSession/EditWeight";
+import toast from "react-hot-toast";
 
 type FeedItem =
   | { table: "notes"; item: Notes; pinned: boolean }
@@ -88,7 +89,7 @@ export default function SessionFeed() {
     if (!res.ok) {
       const data = await res.json();
       console.error("Failed to toggle pin:", data.error);
-      alert(data.error || "Failed to toggle pin");
+      toast.error("Failed to toggle pin");
       mutate("/api/feed");
       return;
     }
@@ -112,22 +113,27 @@ export default function SessionFeed() {
       false
     ); // Optimistically update the feed
 
-    const res = await fetch("/api/delete-session", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ item_id, table }),
-    });
+    try {
+      const res = await fetch("/api/delete-session", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ item_id, table }),
+      });
 
-    if (!res.ok) {
-      const data = await res.json();
-      alert(data.error || "Failed to delete session");
+      if (!res.ok) {
+        throw new Error("Failed to delete session");
+      }
+
+      await res.json();
       mutate("/api/feed");
-      return;
-    }
+    } catch (error) {
+      mutate("/api/feed");
 
-    mutate("/api/feed"); // Refresh the feed after deletion
+      toast.error("Failed to delete session");
+      console.error("Failed to delete session:", error);
+    }
   };
 
   const sortedFeed = [...feed].sort((a, b) => {

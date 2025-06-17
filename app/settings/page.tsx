@@ -40,7 +40,7 @@ export default function Settings() {
       onSwipeLeft={() => router.push("/")}
       rightLabel="home"
     >
-      <div className="bg-slate-900 p-5 min-h-[calc(100dvh-72px)] relative">
+      <div className="p-5 min-h-[calc(100dvh-72px)] relative">
         <div className="max-w-md mx-auto">
           <h1
             className={`${russoOne.className} text-gray-100 flex justify-center my-5 text-2xl `}
@@ -52,7 +52,7 @@ export default function Settings() {
               User Name
             </h2>
             <input
-              className=" text-gray-100 p-2 rounded-md border-2 border-gray-100 z-10  placeholder-gray-500 bg-slate-800 hover:border-blue-500 focus:outline-none focus:border-green-300"
+              className=" text-gray-100 p-2 rounded-md border-2 border-gray-100 z-10  placeholder-gray-500 bg-slate-900 hover:border-blue-500 focus:outline-none focus:border-green-300"
               placeholder="User Name.."
               type="text"
               value={userName}

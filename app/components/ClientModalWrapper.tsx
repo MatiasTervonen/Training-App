@@ -15,8 +15,8 @@ export default function ClientModalWrapper({
     <ModalPageWrapper
       onSwipeLeft={() => router.push("/sessions")}
       rightLabel="Sessions"
-      onSwipeRight={() => router.push("/notes")}
-      leftLabel="Notes"
+      onSwipeRight={() => router.push("/menu")}
+      leftLabel="Menu"
     >
       {children}
     </ModalPageWrapper>

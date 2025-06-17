@@ -62,7 +62,7 @@ export default function EditWeight({ weight, onClose, onSave }: Props) {
     );
 
     try {
-      const res = await fetch("/api/weight2/edit-weight", {
+      const res = await fetch("/api/weight/edit-weight", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

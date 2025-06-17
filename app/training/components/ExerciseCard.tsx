@@ -155,11 +155,18 @@ export default function ExerciseCard({
             <ExerciseTypeSelect
               value={input.rpe}
               onChange={(val) => onInputChange(index, "rpe", val)}
+              options={[
+                { value: "Warm-up", label: "Warm-up" },
+                { value: "Easy", label: "Easy" },
+                { value: "Medium", label: "Medium" },
+                { value: "Hard", label: "Hard" },
+                { value: "Failure", label: "Failure" },
+              ]}
             />
           </>
         ) : (
           <>
-            <div className="flex items-center gap-5">
+            <div className="flex items-center gap-5 w-2/3">
               <SetInput
                 placeholder="Weight..."
                 type="number"
@@ -173,11 +180,19 @@ export default function ExerciseCard({
                 onChange={(val) => onInputChange(index, "reps", val)}
               />
             </div>
-
-            <ExerciseTypeSelect
-              value={input.rpe}
-              onChange={(val) => onInputChange(index, "rpe", val)}
-            />
+            <div className="w-1/3">
+              <ExerciseTypeSelect
+                value={input.rpe}
+                onChange={(val) => onInputChange(index, "rpe", val)}
+                options={[
+                  { value: "Warm-up", label: "Warm-up" },
+                  { value: "Easy", label: "Easy" },
+                  { value: "Medium", label: "Medium" },
+                  { value: "Hard", label: "Hard" },
+                  { value: "Failure", label: "Failure" },
+                ]}
+              />
+            </div>
           </>
         )}
       </div>

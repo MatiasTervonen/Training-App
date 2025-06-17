@@ -34,11 +34,12 @@ export type GymSet = {
 
 export type Exercises = {
   id: number;
-  user_id: string | null;
+  user_id?: string | null;
   name: string;
   equipment: string;
   muscle_group: string;
   main_group: string;
+  language: string;
   superset_id?: string | null;
 };
 
@@ -127,6 +128,11 @@ export type Template = {
   created_at: string;
   gym_template_exercises: TemplateExercise[];
 };
+
+export type OptimisticTemplate = {
+  id: string;
+  name: string;
+}
 
 export type TemplateExercise = {
   id: string;

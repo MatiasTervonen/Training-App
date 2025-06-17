@@ -75,6 +75,12 @@ export async function signup(
     };
   }
 
+  await supabase.from("users").insert({
+    id:signUpData.user!.id,
+    email: data.email,
+    role: "user",
+  })
+  
   return {
     success: true,
     message: "Confirmation email sent. Please check your inbox.",

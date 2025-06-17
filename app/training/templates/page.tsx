@@ -10,6 +10,7 @@ import { useState } from "react";
 import GymTemplate from "@/app/components/cards/GymTemplate";
 import { ExerciseEntry } from "@/types/session";
 import useSWR, { mutate } from "swr";
+import toast from "react-hot-toast";
 
 type Template = {
   id: string;
@@ -80,29 +81,33 @@ export default function TemplatesPage() {
     if (!confirmDelete) return;
 
     mutate(
-      "/api/gym/get-templates",
+      "/api/gym/get-template",
       (currentTemplates: Template[] = []) => {
         return currentTemplates.filter((t) => t.id !== templateId);
       },
       false
     );
 
-    const res = await fetch("/api/gym/delete-template", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ item_id: templateId }),
-    });
+    try {
+      const res = await fetch("/api/gym/delete-template", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ item_id: templateId }),
+      });
 
-    if (res.ok) {
-      mutate("/api/gym/get-templates");
-    } else {
-      const data = await res.json();
-      console.error("Failed to delete template:", data.error);
-      alert("Failed to delete template. Please try again.");
+      if (!res.ok) {
+        throw new Error("Failed to delete template");
+      }
 
-      mutate("/api/gym/get-templates");
+      await res.json();
+
+      mutate("/api/gym/get-template");
+    } catch (error) {
+      toast.error("Failed to delete template. Please try again.");
+      mutate("/api/gym/get-template");
+      console.error("Failed to delete template:", error);
     }
   };
 

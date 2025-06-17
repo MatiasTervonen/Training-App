@@ -16,10 +16,12 @@ import {
   HistoryResult,
   ExerciseEntry,
   emptyExerciseEntry,
+  OptimisticTemplate,
 } from "@/types/session";
 import ExerciseHistoryModal from "../components/ExerciseHistoryModal";
 import { generateUUID } from "@/lib/generateUUID";
 import { toast } from "react-hot-toast";
+import { mutate } from "swr";
 
 export default function CreateTemplatePage() {
   const [workoutName, setWorkoutName] = useState("");
@@ -167,6 +169,8 @@ export default function CreateTemplatePage() {
   const handleSaveTemplate = async () => {
     if (workoutName.trim() === "" || exercises.length === 0) return;
 
+    setIsSaving(true);
+
     const simplified = exercises.map((ex) => ({
       exercise_id: ex.exercise_id,
       sets: ex.sets?.[0]?.sets,
@@ -174,25 +178,45 @@ export default function CreateTemplatePage() {
       superset_id: ex.superset_id,
     }));
 
-    setIsSaving(true);
+    mutate(
+      "/api/gym/get-templates",
+      (currentTemplates: OptimisticTemplate[] = []) => [
+        {
+          id: generateUUID(),
+          name: workoutName,
+        },
+        ...currentTemplates,
+      ],
+      false
+    );
 
-    const response = await fetch("/api/gym/save-template", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        exercises: simplified,
-        name: workoutName,
-      }),
-    });
+    try {
+      const res = await fetch("/api/gym/save-template", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          exercises: simplified,
+          name: workoutName,
+        }),
+      });
 
-    if (response.ok) {
-      localStorage.removeItem("gym_template_draft");
+      if (!res.ok) {
+        throw new Error("Failed to save template");
+      }
+
+      await res.json();
+
+      mutate("/api/gym/get-templates");
+
       router.push("/training/templates");
-    } else {
+    } catch (error) {
       toast.error("Failed to save template. Try again later.");
+      console.error("Error saving template:", error);
+    } finally {
       setIsSaving(false);
+      resetSession();
     }
   };
 
@@ -255,7 +279,9 @@ export default function CreateTemplatePage() {
             <div
               key={superset_id}
               className={`mt-10 bg-gradient-to-tr from-gray-900 via-slate-800 to-blue-900  rounded-md mx-2 ${
-                group.length > 1 ? "border-2 border-blue-700" : ""
+                group.length > 1
+                  ? "border-2 border-blue-700"
+                  : "border-2 border-gray-600"
               }`}
             >
               {group.length > 1 && (
@@ -448,7 +474,6 @@ export default function CreateTemplatePage() {
                               return [...updated, emptyExerciseEntry]; // Add new empty for next
                             });
                           }}
-                          label={index + 1}
                           resetTrigger={dropdownResetKey}
                         />
                       </div>

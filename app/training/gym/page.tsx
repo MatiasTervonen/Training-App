@@ -531,7 +531,6 @@ export default function TrainingSessionPage() {
                                   return [...updated, emptyExerciseEntry]; // Add one more for next
                                 });
                               }}
-                              label={index + 1}
                               resetTrigger={dropdownResetKey}
                             />
                           </div>
@@ -591,7 +590,6 @@ export default function TrainingSessionPage() {
                                   return [...updated, emptyExerciseEntry]; // Add new empty for next
                                 });
                               }}
-                              label={index + 1}
                               resetTrigger={dropdownResetKey}
                             />
                           </div>

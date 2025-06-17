@@ -31,7 +31,7 @@ export default function Sessions() {
       onSwipeLeft={() => router.back()}
       rightLabel="back"
     >
-      <div className="bg-slate-800 p-5 h-full">
+      <div className="p-5 h-full">
         <h1
           className={`${russoOne.className} text-gray-100 text-center  my-5 text-2xl `}
         >

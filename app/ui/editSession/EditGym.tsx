@@ -255,6 +255,13 @@ export default function EditGym({
                                 onChange={(val) =>
                                   handleUpdateSet(index, setIndex, "rpe", val)
                                 }
+                                options={[
+                                  { value: "Warm-up", label: "Warm-up" },
+                                  { value: "Easy", label: "Easy" },
+                                  { value: "Medium", label: "Medium" },
+                                  { value: "Hard", label: "Hard" },
+                                  { value: "Failure", label: "Failure" },
+                                ]}
                               />
                             </td>
                           </>
@@ -291,6 +298,13 @@ export default function EditGym({
                                 onChange={(val) =>
                                   handleUpdateSet(index, setIndex, "rpe", val)
                                 }
+                                options={[
+                                  { value: "Warm-up", label: "Warm-up" },
+                                  { value: "Easy", label: "Easy" },
+                                  { value: "Medium", label: "Medium" },
+                                  { value: "Hard", label: "Hard" },
+                                  { value: "Failure", label: "Failure" },
+                                ]}
                               />
                             </td>
                           </>

@@ -123,6 +123,7 @@ export default function Notes() {
   return (
     <>
       <ModalPageWrapper
+        noTopPadding
         onSwipeRight={() => router.back()}
         leftLabel="back"
         onSwipeLeft={() => router.back()}

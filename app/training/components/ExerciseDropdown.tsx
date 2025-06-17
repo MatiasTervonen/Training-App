@@ -34,6 +34,8 @@ export default function ExerciseDropdown({
     revalidateOnReconnect: false,
   });
 
+  console.log("Exercises data:", exercises);
+
   const {
     data: recentExercises,
     error: recentError,
@@ -99,18 +101,22 @@ export default function ExerciseDropdown({
     setSearchQuery("");
   }, [resetTrigger]);
 
+  useEffect(() => {
+    setShowDropdown(true);
+  }, [resetTrigger]);
+
   return (
     <>
       <div className="flex flex-col px-2 w-full h-full gap-3 z-50 ">
-        <div className="flex h-10 items-center justify-center gap-2 mt-5">
-          <label className={`${russoOne.className} text-gray-100 text-xl`}>
-            {label}.
+        <div className="flex flex-col h-10 justify-center gap-1 mt-5 px-10">
+          <label className={`${russoOne.className} text-gray-100 `}>
+            {label}
           </label>
           <input
-            className="text-lg p-2 rounded-md border-2 border-gray-100 z-10 placeholder-gray-500 text-gray-100 bg-gray-900 hover:border-blue-500 focus:outline-none focus:border-green-300"
+            className=" p-2  rounded-md border-2 border-gray-100 z-10 placeholder-gray-500 text-gray-100 bg-gray-900 hover:border-blue-500 focus:outline-none focus:border-green-300"
             type="text"
             value={searchQuery}
-            placeholder="Exercise... "
+            placeholder="Search exercises..."
             autoComplete="off"
             onChange={handleSearchChange}
             onKeyDown={handleKeyDown}
@@ -169,7 +175,9 @@ export default function ExerciseDropdown({
                 )
               )}
 
-              <h2 className="text-gray-100 text-center  bg-slate-600">All Exercises</h2>
+              <h2 className="text-gray-100 text-center  bg-slate-600">
+                All Exercises
+              </h2>
               {(searchQuery.length > 0 ? filteredExercises : allExercises).map(
                 (exercise, index) => {
                   return (

@@ -81,7 +81,7 @@ export default function TemplatesPage() {
     if (!confirmDelete) return;
 
     mutate(
-      "/api/gym/get-template",
+      "/api/gym/get-templates",
       (currentTemplates: Template[] = []) => {
         return currentTemplates.filter((t) => t.id !== templateId);
       },
@@ -103,10 +103,10 @@ export default function TemplatesPage() {
 
       await res.json();
 
-      mutate("/api/gym/get-template");
+      mutate("/api/gym/get-templates");
     } catch (error) {
       toast.error("Failed to delete template. Please try again.");
-      mutate("/api/gym/get-template");
+      mutate("/api/gym/get-templates");
       console.error("Failed to delete template:", error);
     }
   };

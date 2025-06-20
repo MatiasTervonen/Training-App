@@ -199,13 +199,13 @@ export default function DiscGolf() {
               </div>
             ))}
           </div>
-          <button
-            onClick={startGame}
-            className=" flex items-center justify-center w-full mb-5  bg-blue-800 py-2 px-10 mt-10 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95"
-          >
-            Start
-          </button>
           <div className="pb-5">
+            <button
+              onClick={startGame}
+              className=" flex items-center justify-center w-full mb-5  bg-blue-800 py-2 px-10 mt-10 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95"
+            >
+              Start
+            </button>
             <DeleteSessionBtn onDelete={resetSessionState} />
           </div>
         </div>

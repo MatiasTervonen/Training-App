@@ -25,6 +25,7 @@ import {
 import { generateUUID } from "@/lib/generateUUID";
 import { toast } from "react-hot-toast";
 import { mutate } from "swr";
+import { useCallback } from "react";
 
 export default function TrainingSessionPage() {
   const [exercises, setExercises] = useState<ExerciseEntry[]>([]);
@@ -89,7 +90,7 @@ export default function TrainingSessionPage() {
     return (exercise.main_group || "").toLowerCase() === "cardio";
   };
 
-  const startSession = () => {
+  const startSession = useCallback(() => {
     const key = "timer:gym";
     const existing = localStorage.getItem(key);
     const parsed = existing ? JSON.parse(existing) : null;
@@ -117,7 +118,17 @@ export default function TrainingSessionPage() {
         path: "/training/gym",
       })
     );
-  };
+  }, [sessionTitle]);
+
+  useEffect(() => {
+    if (!hasLoadedDraft) return;
+
+    const flag = localStorage.getItem("startedFromTemplate");
+    if (flag === "true") {
+      startSession();
+      localStorage.removeItem("startedFromTemplate");
+    }
+  }, [hasLoadedDraft, startSession]);
 
   const startExercise = () => {
     const newSupersetId = generateUUID();
@@ -196,6 +207,7 @@ export default function TrainingSessionPage() {
     localStorage.removeItem("timer:gym");
     localStorage.removeItem("activeSession");
     localStorage.removeItem("startTime");
+    localStorage.removeItem("startedFromTemplate");
     setSupersetExercise([]);
     setExerciseType("Normal");
     setExercises([]);
@@ -346,8 +358,8 @@ export default function TrainingSessionPage() {
 
   return (
     <>
-      <nav className="flex items-center justify-between bg-gray-700 p-2 fixed px-4 w-full z-40 md:max-w-3xl">
-        <div className="flex items-center justify-center gap-2  text-gray-100">
+      <nav className="flex items-center justify-between bg-gray-700 p-2 fixed px-4 w-full z-40 max-w-3xl left-1/2 -translate-x-1/2">
+        <div className="flex items-center justify-center gap-2 text-gray-100">
           <Timer
             sessionId="gym"
             resetTrigger={resetTrigger}

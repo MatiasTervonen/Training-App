@@ -34,7 +34,7 @@ export default function ModalPageWrapper({
     <div
       className={`${
         russoOne.className
-      } relative h-[calc(100dvh-72px)] overflow-hidden  ${
+      } relative h-[calc(100dvh-72px)] overflow-hidden max-w-3xl mx-auto ${
         noTopPadding ? "" : "pt-[40px]"
       }`}
     >

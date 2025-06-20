@@ -418,7 +418,6 @@ export default function CreateTemplatePage() {
                               return [...updated, emptyExerciseEntry]; // Add one more for next
                             });
                           }}
-                          label={index + 1}
                           resetTrigger={dropdownResetKey}
                         />
                       </div>

@@ -361,7 +361,7 @@ export default function DiscGolfGame() {
 
   return (
     <>
-      <nav className="flex items-center justify-between bg-gray-700 p-2 px-4 fixed w-full z-40 md:max-w-3xl mx-auto">
+      <nav className="flex items-center justify-between bg-gray-700 p-2 px-4 fixed w-full z-40 max-w-3xl left-1/2 -translate-x-1/2">
         <div className="flex items-center justify-center gap-2  text-gray-100">
           <Timer sessionId="disc-golf" />
         </div>
@@ -372,8 +372,8 @@ export default function DiscGolfGame() {
           Live Scorecard
         </Link>
       </nav>
-      <div className="pt-[40px] relative h-[calc(100dvh-72px)] overflow-hidden">
-        <div className="absolute inset-0 z-0 h-screen flex justify-between bg-slate-950">
+      <div className="pt-[40px] relative h-[calc(100dvh-112px)] max-w-3xl left-1/2 -translate-x-1/2">
+        <div className="absolute inset-0 z-0 h-full flex justify-between bg-slate-950">
           {!isSwiping && (
             <>
               <div className="flex flex-col items-center pt-[50px] gap-2 mx-2">
@@ -484,7 +484,7 @@ export default function DiscGolfGame() {
               }
             }}
           >
-            <div className="max-w-md mx-auto flex flex-col  justify-between w-full h-full">
+            <div className="max-w-md mx-auto flex flex-col justify-between w-full h-full">
               <div>
                 <h1
                   className={`${russoOne.className} text-gray-100 flex justify-center my-2 text-2xl mt-5 `}
@@ -694,7 +694,7 @@ export default function DiscGolfGame() {
                 </div>
               ))}
 
-              <div className="mb-20">
+              <div className="mb-5">
                 <div className="flex gap-4 items-center  ">
                   {viewingHoleNumber > 1 && (
                     <button

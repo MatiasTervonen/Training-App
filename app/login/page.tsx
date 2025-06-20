@@ -23,7 +23,7 @@ export default function LoginPage() {
   return (
     <>
       <div
-        className={` ${russoOne.className} flex flex-col items-center min-h-[100dvh] w-full bg-blue-950`}
+        className={` ${russoOne.className} flex flex-col items-center min-h-[100dvh] w-full bg-blue-950 max-w-2xl mx-auto`}
       >
         <p className=" text-gray-100 text-5xl p-4 bg-gray-900 w-full text-center">
           MyTrack
@@ -159,7 +159,7 @@ export default function LoginPage() {
         </div>
         <div className="flex justify-center items-center w-full bg-blue-950 p-8 pb-20">
           <div className="flex flex-col items-center justify-center gap-10">
-            <p className=" text-gray-100  text-lg">
+            <p className=" text-gray-100 text-center text-lg">
               {activeForm
                 ? "Already have an account?"
                 : "Don't have an account?"}

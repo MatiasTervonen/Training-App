@@ -1,6 +1,7 @@
 import { formatDate } from "@/lib/formatDate";
 import { russoOne } from "@/app/ui/fonts";
 import { Weight } from "@/types/session";
+import Link from "next/link";
 
 export default function WeightSession(weight: Weight) {
   return (
@@ -20,6 +21,12 @@ export default function WeightSession(weight: Weight) {
             <p>Weight: {weight.weight}</p>
           </div>
         </div>
+        <Link
+          href="/weight/analytics"
+          className={`${russoOne.className} mt-10 flex items-center justify-center w-full gap-2 bg-blue-800 py-2 rounded-md shadow-xl border-2 border-blue-500 text-gray-100  cursor-pointer hover:bg-blue-700 hover:scale-95`}
+        >
+          View Full History
+        </Link>
       </div>
     </div>
   );

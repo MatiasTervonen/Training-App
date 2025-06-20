@@ -18,7 +18,7 @@ export default function MenuPage() {
         data: { user },
       } = await supabase.auth.getUser();
       if (user) {
-        const role = user.user_metadata?.role;
+        const role = user.app_metadata?.role;
         if (role === "admin" || role === "super_admin") {
           setIsAdmin(true);
         }

@@ -71,6 +71,7 @@ export default function TemplatesPage() {
     };
 
     localStorage.setItem("gym_session_draft", JSON.stringify(sessionDraft));
+    localStorage.setItem("startedFromTemplate", "true");
     router.push("/training/gym");
   };
 

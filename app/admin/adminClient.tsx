@@ -23,6 +23,12 @@ export default function AdminClient({ isAdmin }: { isAdmin?: boolean }) {
           <h1 className="text-2xl my-5 text-center">Admin panel</h1>
           <div className="flex flex-col max-w-md mx-auto">
             <Link
+              href={"/admin/user-analytics"}
+              className={`${russoOne.className} flex items-center justify-center gap-2 bg-blue-800 py-2 w-full my-3 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95`}
+            >
+              user analytics
+            </Link>
+            <Link
               href={"/admin/add-exercises"}
               className={`${russoOne.className} flex items-center justify-center gap-2 bg-blue-800 py-2 w-full my-3 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95`}
             >

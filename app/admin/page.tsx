@@ -14,7 +14,7 @@ export default async function AdminPage() {
     return redirect("/login");
   }
 
-  const role = user.user_metadata?.role;
+  const role = user.app_metadata?.role;
 
   if (!role || (role !== "admin" && role !== "super_admin")) {
     return redirect("/");

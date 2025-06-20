@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     //     url: "/opengraph-image.png",
     //     width: 1200,
     //     height: 630,
-    //     alt: "Weather App",
+    //     alt: "",
     //   },
     // ],
     type: "website",
@@ -35,7 +35,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="md:max-w-3xl mx-auto bg-slate-900">
+      <body className=" bg-slate-900">
         
         <Toaster position="top-center" reverseOrder={false} />
 

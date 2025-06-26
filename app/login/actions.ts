@@ -9,6 +9,12 @@ type AuthActionState = {
   message: string;
 };
 
+const generateRandomUserName = (email: string) => {
+  const prefix = email.split("@")[0].replace(/[^a-zA-Z0-9]/g, "").toLowerCase();
+  const randomNumber = Math.floor(1000 + Math.random() * 9000); 
+  return `${prefix}${randomNumber}`;
+}
+
 export async function login(
   prevState: AuthActionState | undefined,
   formData: FormData
@@ -78,6 +84,7 @@ export async function signup(
   await supabase.from("users").insert({
     id:signUpData.user!.id,
     email: data.email,
+    display_name: generateRandomUserName(data.email), // Default display name
     role: "user",
   })
   

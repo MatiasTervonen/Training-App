@@ -3,6 +3,7 @@ import { useState } from "react";
 import React from "react";
 import { mutate } from "swr";
 import toast from "react-hot-toast";
+import { useUserStore } from "@/lib/stores/useUserStore";
 
 type WeightEntry = {
   id: string;
@@ -19,6 +20,9 @@ type AllDataProps = {
 
 export default function AllDataTable({ data }: AllDataProps) {
   const [expanded, setExpanded] = useState<string | null>(null);
+
+  const weightUnit =
+    useUserStore((state) => state.preferences?.weight_unit) || "kg";
 
   const sortedData = [...data].sort((a, b) => {
     return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
@@ -83,7 +87,7 @@ export default function AllDataTable({ data }: AllDataProps) {
             <React.Fragment key={entry.id}>
               <tr>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                  {entry.weight} kg
+                  {entry.weight} {weightUnit}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
                   {new Date(entry.created_at).toLocaleDateString()}

@@ -3,6 +3,7 @@ import { Scale, Ellipsis, SquareArrowOutUpRight } from "lucide-react";
 import DropdownMenu from "../dropdownMenu";
 import { formatDate } from "@/lib/formatDate";
 import { Weight } from "@/types/session";
+import { useUserStore } from "@/lib/stores/useUserStore";
 
 type Props = {
   item: Weight;
@@ -21,6 +22,8 @@ export default function WeightCard({
   onExpand,
   onEdit,
 }: Props) {
+  const weightUnit = useUserStore((state) => state.preferences?.weight_unit) || "kg";
+
   return (
     <div
       className={`${
@@ -76,7 +79,7 @@ export default function WeightCard({
       </div>
 
       <div className="ml-4 mb-4 mr-5 line-clamp-2">{item.notes}</div>
-      <div className="ml-4 mb-4 mr-5 line-clamp-2">Weight: {item.weight}</div>
+      <div className="ml-4 mb-4 mr-5 line-clamp-2">{item.weight} {weightUnit}</div>
       
       <div className="flex justify-between items-center mt-2 bg-black/40 rounded-b-md">
         {/* Icon */}

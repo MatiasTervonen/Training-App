@@ -29,7 +29,6 @@ export default function TrainingPage() {
 
   console.log("Weight data:", weight);
 
-
   return (
     <ModalPageWrapper
       noTopPadding

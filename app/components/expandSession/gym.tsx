@@ -2,6 +2,7 @@ import { formatDate } from "@/lib/formatDate";
 import { groupGymExercises } from "@/lib/groupGymexercises";
 import { russoOne } from "@/app/ui/fonts";
 import { GymSessionFull, GymExercise } from "@/types/session";
+import { useUserStore } from "@/lib/stores/useUserStore";
 
 const formatDuration = (seconds: number) => {
   const totalMinutes = Math.floor(seconds / 60);
@@ -18,6 +19,8 @@ export default function GymSession(gym_session: GymSessionFull) {
   const groupedExercises = groupGymExercises(
     gym_session.gym_session_exercises || []
   );
+
+  const weightUnit = useUserStore((state) => state.preferences?.weight_unit) || "kg";
 
   const isCardioExercise = (exercise: GymExercise) =>
     exercise.gym_exercises.main_group?.toLowerCase() === "cardio";
@@ -106,7 +109,7 @@ export default function GymSession(gym_session: GymSessionFull) {
                       ) : (
                         <>
                           <td className="p-2">{setIndex + 1}</td>
-                          <td className="p-2">{set.weight}</td>
+                          <td className="p-2">{set.weight} {weightUnit}</td>
                           <td className="p-2">{set.reps}</td>
                           <td className="p-2">{set.rpe}</td>
                         </>

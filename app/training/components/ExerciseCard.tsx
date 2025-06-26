@@ -7,6 +7,7 @@ import { Ellipsis, SquareX } from "lucide-react";
 import { ExerciseEntry } from "@/types/session";
 import SetInput from "./SetInput";
 import ExerciseTypeSelect from "./ExerciseTypeSelect";
+import { useUserStore } from "@/lib/stores/useUserStore";
 
 type ExerciseCardProps = {
   index: number;
@@ -39,6 +40,9 @@ export default function ExerciseCard({
   onDeleteSet,
   lastExerciseHistory,
 }: ExerciseCardProps) {
+  const weightUnit =
+    useUserStore((state) => state.preferences?.weight_unit) || "kg";
+
   return (
     <div className="py-2 px-4">
       <div
@@ -117,7 +121,7 @@ export default function ExerciseCard({
               ) : (
                 <>
                   <td className="p-2">{i + 1}</td>
-                  <td className="p-2">{set.weight}</td>
+                  <td className="p-2">{set.weight} {weightUnit}</td>
                   <td className="p-2">{set.reps}</td>
                   <td className="p-2">{set.rpe}</td>
                 </>

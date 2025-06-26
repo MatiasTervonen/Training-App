@@ -34,8 +34,6 @@ export default function ExerciseDropdown({
     revalidateOnReconnect: false,
   });
 
-  console.log("Exercises data:", exercises);
-
   const {
     data: recentExercises,
     error: recentError,

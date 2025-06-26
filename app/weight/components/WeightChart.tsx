@@ -10,6 +10,7 @@ import {
 } from "recharts";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useUserStore } from "@/lib/stores/useUserStore";
 
 type WeightEntry = {
   id: string;
@@ -160,6 +161,10 @@ export default function WeightChart({ range, data }: WeightChartProps) {
 
   const [start, end] = addOffsetToDate(latestDate, range, offset, earliestDate);
 
+  const weightUnit = useUserStore(
+    (state) => state.preferences?.weight_unit || "kg"
+  );
+
   useEffect(() => {
     setOffset(0); // Reset offset whenever range changes
   }, [range]);
@@ -168,6 +173,17 @@ export default function WeightChart({ range, data }: WeightChartProps) {
     const entryDate = new Date(entry.created_at);
     return entryDate >= start && entryDate <= end;
   });
+
+  const firstEntry = filteredData.find((entry) => entry.weight !== null);
+  const lastEntry = [...filteredData]
+    .reverse()
+    .find((entry) => entry.weight !== null);
+
+  let weightDifference: string | number = "N/A";
+
+  if (firstEntry && lastEntry) {
+    weightDifference = (lastEntry.weight - firstEntry.weight).toFixed(1);
+  }
 
   const fullDateRange = generateDateRange(start, end);
   const chartData = fillMissingDates(fullDateRange, filteredData);
@@ -212,20 +228,28 @@ export default function WeightChart({ range, data }: WeightChartProps) {
 
   return (
     <>
-      <div className="flex justify-center items-center mb-4 px-10">
-        <button onClick={() => setOffset((prev) => prev + 1)} className="mr-4">
-          <ChevronLeft />
-        </button>
-        <h2>{formatDateRange(start, end)}</h2>
-        <button
-          onClick={() => setOffset((prev) => Math.max(prev - 1, 0))}
-          disabled={offset === 0}
-          className="ml-4"
-        >
-          <ChevronRight />
-        </button>
-      </div>
       <div className="bg-slate-700  shadow-md">
+        <div className="flex justify-center items-center mb-4 px-10 pt-4">
+          <button
+            onClick={() => setOffset((prev) => prev + 1)}
+            className="mr-4"
+          >
+            <ChevronLeft />
+          </button>
+          <h2>{formatDateRange(start, end)}</h2>
+          <button
+            onClick={() => setOffset((prev) => Math.max(prev - 1, 0))}
+            disabled={offset === 0}
+            className="ml-4"
+          >
+            <ChevronRight />
+          </button>
+        </div>
+        <div className="flex justify-center items-center mb-4 px-10">
+          <h3>
+            {range}: {weightDifference} {weightUnit}
+          </h3>
+        </div>
         <ResponsiveContainer width="100%" height={300}>
           <LineChart
             data={chartData}

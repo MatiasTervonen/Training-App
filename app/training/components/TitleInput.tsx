@@ -4,7 +4,7 @@ import { russoOne } from "@/app/ui/fonts";
 
 type TitleInputProps = {
   title: string;
-  setTitle: React.Dispatch<React.SetStateAction<string>>;
+  setTitle: (value: string) => void;
   placeholder: string;
   label: string;
 };

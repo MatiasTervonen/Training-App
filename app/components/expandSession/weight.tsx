@@ -2,8 +2,11 @@ import { formatDate } from "@/lib/formatDate";
 import { russoOne } from "@/app/ui/fonts";
 import { Weight } from "@/types/session";
 import Link from "next/link";
+import { useUserStore } from "@/lib/stores/useUserStore";
 
 export default function WeightSession(weight: Weight) {
+  const weightUnit = useUserStore((state) => state.preferences?.weight_unit) || "kg";
+
   return (
     <div
       className={`${russoOne.className} text-center p-4 text-gray-100 max-w-md mx-auto`}
@@ -18,7 +21,7 @@ export default function WeightSession(weight: Weight) {
             {weight.notes && (
               <p className="mb-5">{weight.notes}</p> // Add gap only if notes exist
             )}
-            <p>Weight: {weight.weight}</p>
+            <p className="text-center">{weight.weight} {weightUnit}</p>
           </div>
         </div>
         <Link

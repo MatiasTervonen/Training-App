@@ -12,23 +12,21 @@ export async function GET() {
     return new Response("Unauthorized", { status: 401 });
   }
 
-  const { data: weight, error: weightError } = await supabase
-    .from("weight")
-    .select("id, weight, created_at, notes")
-    .eq("user_id", user.id)
-    .order("created_at", { ascending: true });
+  const { data, error } = await supabase
+    .from("users")
+    .select("display_name, weight_unit, profile_picture")
+    .eq("id", user.id)
+    .single();
 
-    console.log("Weight Data:", weight);
-
-  if (weightError || !weight) {
-    console.error("Supabase Insert Error:", weightError);
-    return new Response(JSON.stringify({ error: weightError?.message }), {
+  if (error) {
+    console.error("Error fetching settings:", error);
+    return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
     });
   }
 
-  return new Response(JSON.stringify(weight), {
+  return new Response(JSON.stringify(data), {
     status: 200,
     headers: { "Content-Type": "application/json" },
   });

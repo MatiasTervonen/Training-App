@@ -23,7 +23,7 @@ export default function LoginPage() {
   return (
     <>
       <div
-        className={` ${russoOne.className} flex flex-col items-center min-h-[100dvh] w-full bg-blue-950 max-w-2xl mx-auto`}
+        className={` ${russoOne.className} flex flex-col items-center h-[100dvh] w-full bg-blue-950 max-w-2xl mx-auto`}
       >
         <p className=" text-gray-100 text-5xl p-4 bg-gray-900 w-full text-center">
           MyTrack

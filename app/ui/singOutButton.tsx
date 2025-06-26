@@ -8,6 +8,7 @@ import { russoOne } from "@/app/ui/fonts";
 import { LogOut } from "lucide-react";
 import FullScreenLoader from "../components/FullScreenLoader";
 import { useSWRConfig } from "swr";
+import { useUserStore } from "@/lib/stores/useUserStore";
 
 export default function SignOutButton({
   onSignOut,
@@ -27,15 +28,19 @@ export default function SignOutButton({
 
     const { error } = await supabase.auth.signOut();
 
+    if (error) {
+      console.error("Error logging out:", error.message);
+      setIsLoading(false);
+      return;
+    }
+
     // ✅ Clear all SWR cache
     if ("clear" in cache && typeof cache.clear === "function") {
       cache.clear();
     }
 
-    if (error) {
-      console.error("Error logging out:", error.message);
-      return;
-    }
+    // ✅ Clear user store
+    useUserStore.getState().clearUserPreferences();
 
     router.push("/login");
   };

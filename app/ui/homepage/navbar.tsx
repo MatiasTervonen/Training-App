@@ -16,12 +16,23 @@ import {
 } from "lucide-react";
 import { useClickOutside } from "@/app/components/clickOutside";
 import { useRef } from "react";
+import { useUserStore } from "@/lib/stores/useUserStore";
+import Image from "next/image";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isSigningOut, setIsSigningOut] = useState(false);
+
   const router = useRouter();
   const pathname = usePathname();
+
+  const profilePictureRaw = useUserStore(
+    (state) => state.preferences?.profile_picture || null
+  );
+
+  const cacheBustedPicture = profilePictureRaw
+    ? `${profilePictureRaw}?t=${Date.now()}`
+    : "/default-avatar.png";
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
@@ -62,7 +73,16 @@ export default function Navbar() {
           </button>
         )}
 
-        <div className="flex">
+        <div className="flex gap-3 items-center">
+          <Link href={"/settings"}>
+            <Image
+              src={cacheBustedPicture}
+              alt="Profile Picture"
+              width={40}
+              height={40}
+              className="rounded-full border-2 border-blue-500 w-[40px] h-[40px] cursor-pointer"
+            />
+          </Link>
           <button
             aria-label={isOpen ? "Close menu" : "Open menu"}
             onClick={toggleMenu}

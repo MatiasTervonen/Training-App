@@ -10,10 +10,13 @@ type AuthActionState = {
 };
 
 const generateRandomUserName = (email: string) => {
-  const prefix = email.split("@")[0].replace(/[^a-zA-Z0-9]/g, "").toLowerCase();
-  const randomNumber = Math.floor(1000 + Math.random() * 9000); 
+  const prefix = email
+    .split("@")[0]
+    .replace(/[^a-zA-Z0-9]/g, "")
+    .toLowerCase();
+  const randomNumber = Math.floor(1000 + Math.random() * 9000);
   return `${prefix}${randomNumber}`;
-}
+};
 
 export async function login(
   prevState: AuthActionState | undefined,
@@ -35,8 +38,8 @@ export async function login(
     };
   }
 
-  revalidatePath("/", "layout");
-  redirect("/");
+  revalidatePath("/dashboard", "layout");
+  redirect("/dashboard");
 }
 
 export async function signup(
@@ -82,12 +85,12 @@ export async function signup(
   }
 
   await supabase.from("users").insert({
-    id:signUpData.user!.id,
+    id: signUpData.user!.id,
     email: data.email,
     display_name: generateRandomUserName(data.email), // Default display name
     role: "user",
-  })
-  
+  });
+
   return {
     success: true,
     message: "Confirmation email sent. Please check your inbox.",

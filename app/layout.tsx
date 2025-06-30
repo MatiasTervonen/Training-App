@@ -1,9 +1,5 @@
 import type { Metadata } from "next";
-
 import "./globals.css";
-import LayoutWrapper from "./ui/LayoutWrapper";
-import { Toaster } from "react-hot-toast";
-import { UserEmailProvider } from "@/utils/supabase/UserEmail";
 
 export const metadata: Metadata = {
   title: "MyTrack",
@@ -16,14 +12,14 @@ export const metadata: Metadata = {
       "Track everything from gym workouts to Disc Golf rounds and personal goals. MyTrack helps you stay organized and motivated—your progress, your way.",
     url: "https://training-app-bay.vercel.app/",
     siteName: "MyTrack",
-    // images: [
-    //   {
-    //     url: "/opengraph-image.png",
-    //     width: 1200,
-    //     height: 630,
-    //     alt: "",
-    //   },
-    // ],
+    images: [
+      {
+        url: "/opengraph-desktop.png",
+        width: 1200,
+        height: 630,
+        alt: "Home OG Image",
+      },
+    ],
     type: "website",
   },
 };
@@ -35,17 +31,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className=" bg-slate-900">
-        
-        <Toaster position="top-center" reverseOrder={false} />
-
-        <LayoutWrapper>
-          <UserEmailProvider>
-            {/* This context provider can be used to access the user's email in any component */}
-            {children}
-          </UserEmailProvider>
-        </LayoutWrapper>
-      </body>
+      <body className="bg-slate-950">{children}</body>
     </html>
   );
 }

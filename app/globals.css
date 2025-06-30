@@ -8,7 +8,7 @@ body {
 
 @layer utilities {
   .custom-login-input:-webkit-autofill {
-    @apply border-gray-100;
+    border-color: #f3f4f6 !important; /* same as border-gray-100 */
     background-color: #1e3a8a !important; /* same as bg-blue-950 */
     color: #f3f4f6 !important; /* same as text-gray-100 */
     -webkit-text-fill-color: #f3f4f6 !important; /* force override autofill text */

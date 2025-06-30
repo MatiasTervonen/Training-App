@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 import { login, signup } from "@/app/login/actions";
-import { russoOne } from "../ui/fonts";
+import { russoOne } from "@/app/ui/fonts";
 import React from "react";
-import LoginButton from "../ui/login/loginbutton";
-import SignupButton from "../ui/login/signupbutton";
-import GuestLogIn from "../components/GuestLogIn";
+import LoginButton from "@/app/(app)/ui/login/loginbutton";
+import SignupButton from "@/app/(app)/ui/login/signupbutton";
+import GuestLogIn from "@/app/(app)/components/GuestLogIn";
 
 export default function LoginPage() {
   const [activeForm, setActiveForm] = useState(false);
@@ -21,7 +21,7 @@ export default function LoginPage() {
   const [state2, formAction2] = React.useActionState(login, initialState);
 
   return (
-    <>
+    <div className="bg-slate-950">
       <div
         className={` ${russoOne.className} flex flex-col items-center h-[100dvh] w-full bg-blue-950 max-w-2xl mx-auto`}
       >
@@ -175,6 +175,6 @@ export default function LoginPage() {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }

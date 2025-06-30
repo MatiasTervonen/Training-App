@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     siteName: "MyTrack",
     images: [
       {
-        url: "/opengraph-desktop.png",
+        url: "https://training-app-bay.vercel.app/opengraph-desktop.png",
         width: 1200,
         height: 630,
         alt: "Home OG Image",

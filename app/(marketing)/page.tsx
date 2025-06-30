@@ -2,7 +2,6 @@
 
 import { russoOne } from "../ui/fonts";
 import Image from "next/image";
-import Link from "next/link";
 import {
   NotebookPen,
   Dumbbell,
@@ -16,30 +15,16 @@ import DiscGolf from "./components/disc-golf";
 import { useState } from "react";
 import Notes from "./components/notes";
 import Weight from "./components/weight";
+import Navbar from "./components/navbar";
 
 export default function Home() {
   const [activeSection, setActiveSection] = useState("gym");
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className={`${russoOne.className} bg-slate-950 h-full`}>
+    <div className={`${russoOne.className} bg-slate-950 h-full relative`}>
       <div className="max-w-7xl mx-auto">
-        <nav className="flex justify-between items-center px-5 py-3 text-gray-100">
-          <div className="text-2xl py-5">
-            <Link href={"/"}>MyTrack</Link>
-          </div>
-          <div className="flex items-center gap-4">
-            <Link href={"/login"}>
-              <button
-                className={`${russoOne.className}  text-gray-100 font-bold border-2 border-blue-500 p-2 rounded-xl bg-blue-900 hover:bg-blue-800 hover:scale-95 cursor-pointer`}
-              >
-                Log in / Sign up
-              </button>
-            </Link>
-            <div className="bg-slate-700 py-2 px-4 rounded-xl border-2 border-slate-300 hover:bg-slate-600 hover:scale-95 cursor-pointer">
-              <p>Download app</p>
-            </div>
-          </div>
-        </nav>
+        <Navbar isOpen={isOpen} setIsOpen={setIsOpen} />
         <div className="flex flex-col lg:flex-row justify-center items-center gap-20 text-gray-100 py-10 lg:py-30 bg-slate-950 px-5">
           <div className="flex flex-col text-center">
             <div className="flex flex-col items-center">
@@ -70,7 +55,7 @@ export default function Home() {
             />
           </div>
         </div>
-        <div className="flex flex-row justify-center px-4 gap-1 flex-wrap md:gap-4 lg:gap-16 text-gray-100 py-5 text-lg bg-slate-900">
+        <div className="flex flex-row justify-center px-4 gap-1 flex-wrap md:gap-4 lg:gap-14 text-gray-100 py-5 text-lg bg-slate-900">
           <div
             onClick={() => setActiveSection("gym")}
             className={`flex items-center gap-2 px-4 py-2 ${
@@ -125,13 +110,16 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="mt-10">
+        <div className="sm:mt-10">
           {activeSection === "gym" && <Gym />}
           {activeSection === "disc-golf" && <DiscGolf />}
           {activeSection === "notes" && <Notes />}
           {activeSection === "weight" && <Weight />}
         </div>
       </div>
+      {isOpen && (
+        <div className="fixed inset-0 backdrop-blur-xs z-10 pointer-events-none"></div>
+      )}
     </div>
   );
 }

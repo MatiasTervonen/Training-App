@@ -55,7 +55,7 @@ export default function Home() {
             />
           </div>
         </div>
-        <div className="flex flex-row justify-center px-4 gap-1 flex-wrap md:gap-4 lg:gap-14 text-gray-100 py-5 text-lg bg-slate-900">
+        <div className="flex flex-row justify-center px-4 flex-wrap md:gap-x-4 lg:gap-x-10 text-gray-100 py-5 text-lg bg-slate-900">
           <div
             onClick={() => setActiveSection("gym")}
             className={`flex items-center gap-2 px-4 py-2 ${

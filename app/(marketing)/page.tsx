@@ -64,8 +64,9 @@ export default function Home() {
               src="/phone-feed.png"
               alt="Landing Image"
               width={300}
-              height={300}
+              height={608}
               className="rounded-lg shadow-lg"
+              priority
             />
           </div>
         </div>

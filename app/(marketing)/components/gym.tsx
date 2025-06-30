@@ -27,8 +27,9 @@ export default function Gym() {
             src="/gym_empty_workout-portrait.png"
             alt="Gym Image"
             width={300}
-            height={300}
+            height={608}
             className="rounded-lg shadow-lg"
+            priority
           />
         </div>
       </div>

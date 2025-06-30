@@ -22,7 +22,7 @@ export default function Gym() {
         </div>
         <div>
           <Image
-            src="/gym_empty_workout-portrait.png"
+            src="/gym_empty_workout-portrait.webp"
             alt="Gym Image"
             width={300}
             height={608}

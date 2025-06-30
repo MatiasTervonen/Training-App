@@ -22,7 +22,7 @@ export default function DiscGolf() {
         </div>
         <div>
           <Image
-            src="/disc-golf-portrait.png"
+            src="/disc-golf-portrait.webp"
             alt="Gym Image"
             width={300}
             height={608}

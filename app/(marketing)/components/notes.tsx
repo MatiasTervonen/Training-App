@@ -16,7 +16,7 @@ export default function Notes() {
         </div>
         <div>
           <Image
-            src="/notes.png"
+            src="/notes.webp"
             alt="Gym Image"
             width={300}
             height={608}

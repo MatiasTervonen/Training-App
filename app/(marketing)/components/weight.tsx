@@ -22,7 +22,7 @@ export default function Weight() {
         </div>
         <div>
           <Image
-            src="/weight-portrait.png"
+            src="/weight-portrait.webp"
             alt="Gym Image"
             width={300}
             height={608}

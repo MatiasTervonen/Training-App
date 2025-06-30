@@ -61,7 +61,7 @@ export default function Home() {
           </div>
           <div className="">
             <Image
-              src="/phone-feed.png"
+              src="/feed.webp"
               alt="Landing Image"
               width={300}
               height={608}

@@ -21,7 +21,7 @@ export default function FullScreenLoader({
       >
         {message}
 
-        <Spinner size={40} />
+        <Spinner size="w-[40px] h-[40px]" />
       </div>
     </div>,
     document.body

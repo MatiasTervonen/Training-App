@@ -18,6 +18,7 @@ import usePullToRefresh from "@/app/(app)/lib/usePullToRefresh";
 import WeightSession from "@/app/(app)/components/expandSession/weight";
 import EditWeight from "@/app/(app)/ui/editSession/EditWeight";
 import toast from "react-hot-toast";
+import { FeedSkeleton } from "../loadingSkeletons/skeletons";
 
 type FeedItem =
   | { table: "notes"; item: Notes; pinned: boolean }
@@ -152,7 +153,7 @@ export default function SessionFeed() {
     <>
       <div
         ref={containerRef}
-        className={` ${russoOne.className} max-w-3xl mx-auto relative bg-gradient-to-b from-slate-950 via-slate-900 to-slate-800 h-[calc(100dvh-72px)] px-5 pt-3 pb-20 text-gray-100 overflow-y-auto touch-pan-y`}
+        className={` ${russoOne.className} max-w-3xl mx-auto relative bg-gradient-to-b from-slate-950 via-slate-900 to-slate-800  px-5 pt-3 pb-20 text-gray-100 overflow-y-auto touch-pan-y`}
       >
         <div
           className="flex items-center justify-center text-white transition-all"
@@ -161,7 +162,7 @@ export default function SessionFeed() {
           {refreshing ? (
             <div className="flex text-xl items-center gap-4">
               <p>Refreshing...</p>
-              <Spinner size={20} />
+              <Spinner />
             </div>
           ) : pullDistance > 0 ? (
             <div className="flex text-xl items-center gap-2">
@@ -170,10 +171,9 @@ export default function SessionFeed() {
           ) : null}
         </div>
         {isLoading ? (
-          <div className="flex flex-col items-center justify-center gap-5">
-            <p className="text-center text-lg mt-10">Loading your sessions..</p>
-            <Spinner size={40} />
-          </div>
+          <>
+            <FeedSkeleton count={5} />
+          </>
         ) : error ? (
           <p className="text-center text-lg mt-10 ">
             Failed to load sessions. Please try again later.

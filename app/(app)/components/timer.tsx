@@ -8,6 +8,8 @@ type TimerProps = {
   sessionId: string;
   resetTrigger?: number;
   onManualStart?: () => void;
+  className?: string;
+  onElapsedChange?: (elapsed: number) => void;
 };
 
 type TimerData = {
@@ -20,6 +22,8 @@ export default function Timer({
   sessionId,
   resetTrigger,
   onManualStart,
+  className = "",
+  onElapsedChange,
 }: TimerProps) {
   const [elapsed, setElapsed] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
@@ -41,14 +45,21 @@ export default function Timer({
 
       if (isRunning && startTime) {
         const secondsPassed = Math.floor((Date.now() - startTime) / 1000);
-        setElapsed(secondsPassed + (elapsedBeforePause || 0));
+        const totalElapsed = secondsPassed + (elapsedBeforePause || 0);
+        setElapsed(totalElapsed);
+        if (onElapsedChange) {
+          onElapsedChange(totalElapsed);
+        }
       } else {
         setElapsed(elapsedBeforePause || 0);
+        if (onElapsedChange) {
+          onElapsedChange(elapsedBeforePause || 0);
+        }
       }
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [sessionId]);
+  }, [sessionId, onElapsedChange]);
 
   useEffect(() => {
     if (resetTrigger !== undefined) {
@@ -113,11 +124,18 @@ export default function Timer({
     localStorage.setItem(`timer:${sessionId}`, JSON.stringify(newData));
     setIsRunning(false);
     setElapsed(totalElapsed);
+    if (onElapsedChange) {
+      onElapsedChange(totalElapsed);
+    }
   };
 
   return (
-    <div className={`${russoOne.className} flex items-center gap-2`}>
-      <span className="min-w-[55px] text-center">{formatTime(elapsed)}</span>
+    <div
+      className={`${russoOne.className} flex items-center justify-center gap-2 ${className}`}
+    >
+      <span className="text-center font-mono font-bold">
+        {formatTime(elapsed)}
+      </span>
       {isRunning ? (
         <button aria-label="Pause timer" onClick={pauseTimer}>
           <CirclePause />

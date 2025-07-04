@@ -28,7 +28,7 @@ export default function ExerciseHistoryModal({
           className={`${russoOne.className} text-lg text-gray-100 flex flex-col justify-center items-center mt-20 gap-5 mx-4`}
         >
           <p>Loading history</p>
-          <Spinner size={40} />
+          <Spinner size="w-[30px] h-[30px]" />
         </div>
       ) : history.length === 0 ? (
         <p className="text-center mt-20 text-lg mx-4 text-gray-100">

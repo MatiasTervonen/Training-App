@@ -330,6 +330,21 @@ export default function TrainingSessionPage() {
   }, [exercises, notes, sessionTitle, hasLoadedDraft]);
 
   useEffect(() => {
+    const existingSession = localStorage.getItem("activeSession");
+    if (existingSession) {
+      try {
+        const session = JSON.parse(existingSession);
+        if (session.type === "gym") {
+          session.label = sessionTitle;
+          localStorage.setItem("activeSession", JSON.stringify(session));
+        }
+      } catch (error) {
+        console.error("Failed to parse active session:", error);
+      }
+    }
+  }, [sessionTitle]);
+
+  useEffect(() => {
     const draft = localStorage.getItem("gym_session_draft");
     if (draft) {
       try {
@@ -364,6 +379,7 @@ export default function TrainingSessionPage() {
             sessionId="gym"
             resetTrigger={resetTrigger}
             onManualStart={startSession}
+            className=""
           />
         </div>
       </nav>

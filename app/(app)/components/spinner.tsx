@@ -1,9 +1,8 @@
-export default function Spinner({ size = 20 }: { size?: number }) {
+export default function Spinner({ size = "w-5 h-5", className = "" }: { size?: string, className?: string }) {
   return (
     <>
       <div
-        className={`w-[20px] h-[20px] border-[3px] rounded-full border-blue-500 border-t-transparent animate-spin`}
-        style={{ width: size, height: size }}
+        className={`border-[3px] rounded-full border-blue-500 border-t-transparent animate-spin ${size} ${className}`}
       />
     </>
   );

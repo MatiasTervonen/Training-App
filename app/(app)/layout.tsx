@@ -8,7 +8,7 @@ export default function appLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="bg-slate-900">
+    <div>
       <Toaster position="top-center" reverseOrder={false} />
       <LayoutWrapper>{children}</LayoutWrapper>
     </div>

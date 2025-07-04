@@ -9,6 +9,7 @@ import ModalPageWrapper from "../components/modalPageWrapper";
 import { useRouter } from "next/navigation";
 import { clearLocalStorage } from "./components/ClearLocalStorage";
 import TitleInput from "../training/components/TitleInput";
+import { useTimerStore } from "../lib/stores/timerStore";
 
 export default function DiscGolf() {
   const [players, setPlayers] = useState<string[]>([]);
@@ -19,15 +20,16 @@ export default function DiscGolf() {
   const [numHoles, setNumHoles] = useState<number>(18); // Default to 18
   const router = useRouter();
 
+  const { activeSession, setActiveSession, startTimer } = useTimerStore();
+
   useEffect(() => {
-    const activeSession = localStorage.getItem("activeSession");
     if (activeSession) {
       alert(
         "You already have an active session. Finish it before starting a new one."
       );
       router.back();
     }
-  }, []);
+  }, [router, activeSession]);
 
   useEffect(() => {
     const fetchDisplayName = async () => {
@@ -84,36 +86,21 @@ export default function DiscGolf() {
       })),
     };
 
-    const now = Date.now();
-
     localStorage.setItem("setupData", JSON.stringify(setupData));
-
-    localStorage.setItem("startTime", new Date().toISOString());
 
     localStorage.setItem("trackStats", JSON.stringify(trackStats));
 
     localStorage.setItem("numHoles", JSON.stringify(numHoles));
 
-    localStorage.setItem(
-      `timer:disc-golf`,
-      JSON.stringify({
-        startTime: now,
-        elapsedBeforePause: 0,
-        isRunning: true,
-      })
-    );
+    startTimer(0);
 
-    localStorage.setItem(
-      "activeSession",
-      JSON.stringify({
-        type: "disc-golf",
-        label: `Disc Golf - ${courseName}`,
-        startedAt: new Date().toISOString(),
-        path: "/disc-golf/game",
-      })
-    );
+    setActiveSession({
+      type: "disc-golf",
+      label: `Disc Golf - ${courseName}`,
+      path: "/disc-golf/game",
+    });
 
-    window.location.href = "/disc-golf/game";
+    router.push("/disc-golf/game");
   };
 
   const resetSessionState = () => {

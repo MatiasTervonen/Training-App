@@ -120,9 +120,7 @@ export default function TemplatesPage() {
       onSwipeRight={() => router.back()}
       onSwipeLeft={() => router.push("/dashboard")}
     >
-      <div
-        className={`${russoOne.className} h-full bg-slate-800 text-gray-100 p-5`}
-      >
+      <div className={`${russoOne.className} h-full text-gray-100 p-5`}>
         <div className="flex flex-col max-w-md mx-auto">
           <h1
             className={`${russoOne.className} text-gray-100 text-center  my-5 text-2xl `}

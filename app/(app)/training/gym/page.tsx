@@ -1,7 +1,7 @@
 "use client";
 
 import { russoOne } from "@/app/ui/fonts";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import SaveButton from "@/app/(app)/ui/save-button";
 import Timer from "@/app/(app)/components/timer";
@@ -25,7 +25,7 @@ import {
 import { generateUUID } from "@/app/(app)/lib/generateUUID";
 import { toast } from "react-hot-toast";
 import { mutate } from "swr";
-import { useCallback } from "react";
+import { useTimerStore } from "@/app/(app)/lib/stores/timerStore";
 
 export default function TrainingSessionPage() {
   const [exercises, setExercises] = useState<ExerciseEntry[]>([]);
@@ -33,7 +33,6 @@ export default function TrainingSessionPage() {
   const router = useRouter();
   const [isSaving, setIsSaving] = useState(false);
   const [sessionTitle, setSessionTitle] = useState("");
-  const [resetTrigger, setResetTrigger] = useState(0);
   const [exerciseType, setExerciseType] = useState("Normal");
   const [supersetExercise, setSupersetExercise] = useState<ExerciseEntry[]>([]);
   const [exerciseInputs, setExerciseInputs] = useState<
@@ -53,6 +52,14 @@ export default function TrainingSessionPage() {
     item: OptimisticGymSession;
     pinned: boolean;
   };
+
+  const {
+    activeSession,
+    setActiveSession,
+    startTimer,
+    stopTimer,
+    elapsedTime,
+  } = useTimerStore();
 
   const lastExerciseHistory = async (index: number) => {
     const exercise = exercises[index];
@@ -91,34 +98,14 @@ export default function TrainingSessionPage() {
   };
 
   const startSession = useCallback(() => {
-    const key = "timer:gym";
-    const existing = localStorage.getItem(key);
-    const parsed = existing ? JSON.parse(existing) : null;
+    setActiveSession({
+      type: "gym",
+      label: sessionTitle,
+      path: "/training/gym",
+    });
 
-    const now = Date.now();
-
-    if (!parsed?.isRunning || !parsed?.startTime) {
-      localStorage.setItem(
-        key,
-        JSON.stringify({
-          startTime: now,
-          elapsedBeforePause: 0,
-          isRunning: true,
-        })
-      );
-      localStorage.setItem("startTime", new Date().toISOString());
-    }
-
-    localStorage.setItem(
-      "activeSession",
-      JSON.stringify({
-        type: "gym",
-        label: sessionTitle,
-        startedAt: new Date().toISOString(),
-        path: "/training/gym",
-      })
-    );
-  }, [sessionTitle]);
+    startTimer(0);
+  }, [sessionTitle, setActiveSession, startTimer]);
 
   useEffect(() => {
     if (!hasLoadedDraft) return;
@@ -203,10 +190,8 @@ export default function TrainingSessionPage() {
   };
 
   const resetSession = () => {
+    stopTimer();
     localStorage.removeItem("gym_session_draft");
-    localStorage.removeItem("timer:gym");
-    localStorage.removeItem("activeSession");
-    localStorage.removeItem("startTime");
     localStorage.removeItem("startedFromTemplate");
     setSupersetExercise([]);
     setExerciseType("Normal");
@@ -216,7 +201,6 @@ export default function TrainingSessionPage() {
     setNormalExercises([]);
     setExerciseInputs([]);
     setLastHistory([]);
-    setResetTrigger((prev) => prev + 1);
   };
 
   const saveSession = async () => {
@@ -231,21 +215,7 @@ export default function TrainingSessionPage() {
 
     setIsSaving(true); // Start saving
 
-    const TimerDataRaw = localStorage.getItem("timer:gym");
-    let duration = 0;
-
-    if (TimerDataRaw) {
-      const { startTime, elapsedBeforePause, isRunning } =
-        JSON.parse(TimerDataRaw);
-
-      if (isRunning && startTime) {
-        duration =
-          Math.floor((Date.now() - startTime) / 1000) +
-          (elapsedBeforePause || 0);
-      } else {
-        duration = elapsedBeforePause || 0;
-      }
-    }
+    const duration = elapsedTime;
 
     const optimisticGymSession: FeedItem = {
       table: "gym_sessions",
@@ -330,19 +300,17 @@ export default function TrainingSessionPage() {
   }, [exercises, notes, sessionTitle, hasLoadedDraft]);
 
   useEffect(() => {
-    const existingSession = localStorage.getItem("activeSession");
-    if (existingSession) {
-      try {
-        const session = JSON.parse(existingSession);
-        if (session.type === "gym") {
-          session.label = sessionTitle;
-          localStorage.setItem("activeSession", JSON.stringify(session));
-        }
-      } catch (error) {
-        console.error("Failed to parse active session:", error);
-      }
+    if (
+      activeSession &&
+      activeSession.type === "gym" &&
+      activeSession.label !== sessionTitle
+    ) {
+      setActiveSession({
+        ...activeSession,
+        label: sessionTitle,
+      });
     }
-  }, [sessionTitle]);
+  }, [sessionTitle, activeSession, setActiveSession]);
 
   useEffect(() => {
     const draft = localStorage.getItem("gym_session_draft");
@@ -376,10 +344,12 @@ export default function TrainingSessionPage() {
       <nav className="flex items-center justify-between bg-gray-700 p-2 fixed px-4 w-full z-40 max-w-3xl left-1/2 -translate-x-1/2">
         <div className="flex items-center justify-center gap-2 text-gray-100">
           <Timer
-            sessionId="gym"
-            resetTrigger={resetTrigger}
-            onManualStart={startSession}
-            className=""
+            buttonsAlwaysVisible
+            manualSession={{
+              label: sessionTitle,
+              path: "/training/gym",
+              type: "gym",
+            }}
           />
         </div>
       </nav>

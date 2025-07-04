@@ -9,7 +9,7 @@ import { useState } from "react";
 import useSWR, { mutate } from "swr";
 import toast from "react-hot-toast";
 import TimerCard from "../components/TimerCard";
-import { startTimer } from "../utils/StartTimer";
+import { useTimerStore } from "../../lib/stores/timerStore";
 
 type Timer = {
   id: string;
@@ -34,6 +34,8 @@ export default function TimersPage() {
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
   });
+
+  const { startTimer, setActiveSession } = useTimerStore();
 
   const handleDeleteTimer = async (timerId: string) => {
     const confirmDelete = confirm(
@@ -82,7 +84,13 @@ export default function TimersPage() {
       })
     );
 
-    startTimer(timer.title, timer.notes, timer.time_seconds);
+    setActiveSession({
+      type: "timer",
+      label: timer.title,
+      path: "/timer/empty-timer",
+    });
+
+    startTimer(timer.time_seconds);
     router.push("/timer/empty-timer");
   };
 

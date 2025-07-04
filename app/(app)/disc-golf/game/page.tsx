@@ -12,6 +12,7 @@ import { HoleData, Player, PlayerStats } from "../Types/disc-golf";
 import SaveButton from "@/app/(app)/ui/save-button";
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import { clearLocalStorage } from "../components/ClearLocalStorage";
+import { useTimerStore } from "@/app/(app)/lib/stores/timerStore";
 
 export default function DiscGolfGame() {
   const [length, setLength] = useState(""); // input value
@@ -36,13 +37,7 @@ export default function DiscGolfGame() {
   );
   const [isSaving, setIsSaving] = useState(false);
 
-  useEffect(() => {
-    const activeSession = localStorage.getItem("activeSession");
-    if (!activeSession) {
-      alert("You need to start a round before accessing this page.");
-      router.back();
-    }
-  }, []);
+  const { stopTimer, elapsedTime } = useTimerStore();
 
   useEffect(() => {
     if (viewingHoleNumber) {
@@ -280,24 +275,9 @@ export default function DiscGolfGame() {
 
     setHoleHistory(updatedHoles);
 
-    const TimerDataRaw = localStorage.getItem("timer:disc-golf");
-    let duration = 0;
+    const duration = elapsedTime;
 
-    if (TimerDataRaw) {
-      const { startTime, elapsedBeforePause, isRunning } =
-        JSON.parse(TimerDataRaw);
-
-      if (isRunning && startTime) {
-        duration =
-          Math.floor((Date.now() - startTime) / 1000) +
-          (elapsedBeforePause || 0);
-      } else {
-        duration = elapsedBeforePause || 0;
-      }
-    }
     setIsSaving(true); // Start saving
-
-    await new Promise((resolve) => setTimeout(resolve, 2000));
 
     try {
       const response = await fetch("/api/disc-golf/save-golf-session", {
@@ -356,6 +336,7 @@ export default function DiscGolfGame() {
 
   const deleteSession = () => {
     clearLocalStorage();
+    stopTimer();
     router.push("/disc-golf");
   };
 
@@ -363,7 +344,7 @@ export default function DiscGolfGame() {
     <>
       <nav className="flex items-center justify-between bg-gray-700 p-2 px-4 fixed w-full z-40 max-w-3xl left-1/2 -translate-x-1/2">
         <div className="flex items-center justify-center gap-2  text-gray-100">
-          <Timer sessionId="disc-golf" />
+          <Timer buttonsAlwaysVisible />
         </div>
         <Link
           href="/disc-golf/score-summary"

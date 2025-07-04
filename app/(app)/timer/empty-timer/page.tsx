@@ -9,7 +9,7 @@ import SetInput from "@/app/(app)/training/components/SetInput";
 import NotesInput from "../../training/components/NotesInput";
 import Timer from "../../components/timer";
 import { CircleX, RotateCcw } from "lucide-react";
-import { startTimer } from "../utils/StartTimer";
+import { useTimerStore } from "../../lib/stores/timerStore";
 
 export default function TimerPage() {
   const [timerTitle, setTimerTitle] = useState("");
@@ -17,18 +17,24 @@ export default function TimerPage() {
   const [alarmMinutes, setAlarmMinutes] = useState("");
   const [alarmSeconds, setAlarmSeconds] = useState("");
   const [notes, setNotes] = useState("");
-  const [isRunning, setIsRunning] = useState(false);
-  const [totalDuration, setTotalDuration] = useState(0);
-  const [elapsedTime, setElapsedTime] = useState(0);
 
   const router = useRouter();
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
+  const {
+    totalDuration,
+    elapsedTime,
+    alarmFired,
+    setAlarmFired,
+    setActiveSession,
+    stopTimer,
+    startTimer,
+  } = useTimerStore();
+
   const handleReset = () => {
-    localStorage.removeItem("activeSession");
-    localStorage.removeItem("timer:timer");
-    localStorage.removeItem("timer:isRunning");
+    setActiveSession(null);
+    stopTimer();
     setTimerTitle("");
     setAlarmMinutes("");
     setAlarmSeconds("");
@@ -44,16 +50,14 @@ export default function TimerPage() {
     router.replace("/timer/empty-timer");
 
     setTimeout(() => {
-      localStorage.removeItem("activeSession");
-      localStorage.removeItem("timer:timer");
-      localStorage.removeItem("timer:isRunning");
+      const { setActiveSession, stopTimer } = useTimerStore.getState();
+
+      setActiveSession(null);
+      stopTimer();
       setTimerTitle("");
       setAlarmMinutes("");
       setAlarmSeconds("");
       setNotes("");
-      setIsRunning(false);
-      setTotalDuration(0);
-      setElapsedTime(0);
 
       if (audioRef.current) {
         audioRef.current.pause();
@@ -64,6 +68,12 @@ export default function TimerPage() {
   };
 
   const handleStartTimer = () => {
+    setActiveSession({
+      type: "timer",
+      label: timerTitle,
+      path: "/timer/empty-timer",
+    });
+
     const minutes = parseInt(alarmMinutes) || 0;
     const seconds = parseInt(alarmSeconds) || 0;
 
@@ -73,38 +83,14 @@ export default function TimerPage() {
     }
 
     const totalSeconds = minutes * 60 + seconds;
-    setTotalDuration(totalSeconds);
-    setElapsedTime(0);
 
-    startTimer(timerTitle, notes, totalSeconds);
-
-    setIsRunning(true);
+    startTimer(totalSeconds);
   };
 
   const restartTimer = () => {
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0;
-      audioRef.current = null;
-    }
-
+    stopTimer();
     handleStartTimer();
   };
-
-  useEffect(() => {
-    const existingSession = localStorage.getItem("activeSession");
-    if (existingSession) {
-      try {
-        const session = JSON.parse(existingSession);
-        if (session.type === "timer") {
-          session.label = timerTitle;
-          localStorage.setItem("activeSession", JSON.stringify(session));
-        }
-      } catch (error) {
-        console.error("Failed to parse active session:", error);
-      }
-    }
-  }, [timerTitle]);
 
   useEffect(() => {
     if (!hasLoadedDraft) return;
@@ -148,28 +134,14 @@ export default function TimerPage() {
         if (typeof durationInSeconds === "number") {
           setAlarmMinutes(Math.floor(durationInSeconds / 60).toString());
           setAlarmSeconds((durationInSeconds % 60).toString());
-          setTotalDuration(durationInSeconds);
         }
       } catch (error) {
         console.error("Failed to parse timer session draft:", error);
       }
     }
 
-    const runningStatus = localStorage.getItem("timer:isRunning");
-    if (runningStatus === "true") {
-      setIsRunning(true);
-    }
-
     sethasLaoding(true);
   }, []);
-
-  useEffect(() => {
-    if (isRunning && elapsedTime >= totalDuration) {
-      localStorage.removeItem("timer:isRunning");
-      localStorage.removeItem("timer:timer");
-      playAlarm();
-    }
-  }, [elapsedTime, totalDuration, isRunning]);
 
   const playAlarm = () => {
     if (!audioRef.current) {
@@ -179,12 +151,21 @@ export default function TimerPage() {
     audioRef.current.play();
   };
 
+  useEffect(() => {
+    if (alarmFired) {
+      playAlarm();
+    }
+  }, [alarmFired]);
+
   const stopAlarm = () => {
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current.currentTime = 0;
     }
+    setAlarmFired(false);
   };
+
+  const showTimerUI = totalDuration > 0;
 
   return (
     <ModalPageWrapper
@@ -195,10 +176,14 @@ export default function TimerPage() {
       rightLabel="home"
     >
       <div
-        onClick={stopAlarm}
+        onClick={() => {
+          if (alarmFired) {
+            stopAlarm();
+          }
+        }}
         className={`${russoOne.className} p-5 h-full relative text-gray-100 `}
       >
-        {isRunning ? (
+        {showTimerUI ? (
           <>
             <div className="flex items-center justify-center mb-5 text-xl">
               <h1>{timerTitle}</h1>
@@ -208,8 +193,6 @@ export default function TimerPage() {
             </p>
             <div>
               <Timer
-                sessionId="timer"
-                onElapsedChange={(elapsed) => setElapsedTime(elapsed)}
                 className={`text-8xl flex-col ${
                   elapsedTime >= totalDuration
                     ? "animate-pulse text-red-500"

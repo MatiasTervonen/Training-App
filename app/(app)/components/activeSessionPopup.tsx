@@ -1,36 +1,48 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { russoOne } from "@/app/ui/fonts";
 import Link from "next/link";
 import Timer from "./timer";
 import { SquareArrowRight } from "lucide-react";
-
-type ActiveSession = {
-  label: string;
-  path: string;
-  type: string;
-  sessionId: string;
-};
+import { useTimerStore } from "@/app/(app)/lib/stores/timerStore";
+import { useRef, useEffect } from "react";
 
 export default function ActiveSessionPopup() {
-  const [activeSession, setActiveSession] = useState<ActiveSession | null>(
-    null
-  );
+  const activeSession = useTimerStore((state) => state.activeSession);
+  const alarmFired = useTimerStore((state) => state.alarmFired);
+  const setAlarmFired = useTimerStore((state) => state.setAlarmFired);
+
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    const stored = localStorage.getItem("activeSession");
+    if (alarmFired) {
+      if (!audioRef.current) {
+        audioRef.current = new Audio(
+          "/timer-audio/mixkit-classic-alarm-995.wav"
+        );
+        audioRef.current.loop = true;
+      }
+      audioRef.current.play();
+    }
+  }, [alarmFired]);
 
-    if (!stored) return;
+  const stopAlarm = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
+    setAlarmFired(false);
+  };
 
-    const parsed = JSON.parse(stored);
-    setActiveSession(parsed);
-  }, []);
-
-  if (!activeSession) return null; // Don't render anything if there's no active session
+  if (!activeSession) return null;
 
   return (
-    <div className="flex flex-row justify-between items-center text-center bg-gray-300 py-4 sticky top-0 z-10 border-2 border-green-500">
+    <div
+      onClick={stopAlarm}
+      className={`flex flex-row justify-between items-center text-center bg-gray-300 py-4 sticky top-0 z-10 border-2 border-green-500 ${
+        alarmFired ? "bg-red-500 animate-pulse" : ""
+      }`}
+    >
       <div className="ml-10">
         <p className={`${russoOne.className} pb-2 text-start ml-2`}>
           {activeSession.label}
@@ -38,12 +50,13 @@ export default function ActiveSessionPopup() {
         <div
           className={`${russoOne.className} flex  gap-5 text-slate-900 text-start`}
         >
-          <Timer sessionId={activeSession.type} />
+          <Timer />
           <p>{activeSession.type.toUpperCase()}</p>
+          {alarmFired && <p className="text-gray-100">ALARM!</p>}
         </div>
       </div>
       <div className="mr-5">
-        <Link href={activeSession.path}>
+        <Link onClick={stopAlarm} href={activeSession.path}>
           <SquareArrowRight size={40} />
         </Link>
       </div>

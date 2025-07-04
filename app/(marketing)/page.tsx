@@ -22,7 +22,7 @@ export default function Home() {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className={`${russoOne.className} bg-slate-950 h-full relative`}>
+    <div className={`${russoOne.className} bg-slate-950 min-h-screen relative`}>
       <div className="max-w-7xl mx-auto">
         <Navbar isOpen={isOpen} setIsOpen={setIsOpen} />
         <div className="flex flex-col lg:flex-row justify-center items-center gap-20 text-gray-100 py-10 lg:py-30 bg-slate-950 px-5">

@@ -38,8 +38,6 @@ export const useTimerStore = create<TimerState>()(
       setActiveSession: (session) => set({ activeSession: session }),
 
       startTimer: (totalDuration) => {
-        
-
         if (interval) clearInterval(interval);
 
         const now = Date.now();
@@ -103,10 +101,23 @@ export const useTimerStore = create<TimerState>()(
         if (interval) clearInterval(interval);
 
         const now = Date.now();
-        const { elapsedTime } = get();
-        const newStart = now - elapsedTime * 1000;
+        const { elapsedTime, startTimestamp } = get();
 
-        set({ isRunning: true, startTimestamp: newStart });
+        let newElapsed = elapsedTime;
+        let newStart = now;
+
+        if (startTimestamp) {
+          newElapsed = Math.floor((now - startTimestamp) / 1000);
+          newStart = startTimestamp; // continue from actual start
+        } else {
+          newStart = now - elapsedTime * 1000; // fallback
+        }
+
+        set({
+          isRunning: true,
+          startTimestamp: newStart,
+          elapsedTime: newElapsed,
+        });
 
         interval = setInterval(() => {
           const { startTimestamp, totalDuration, isRunning } = get();

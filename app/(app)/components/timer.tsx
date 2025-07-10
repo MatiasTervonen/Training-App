@@ -43,6 +43,22 @@ export default function Timer({
     }
   }, [resumeTimer]);
 
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        const { isRunning, startTimestamp } = useTimerStore.getState();
+        if (isRunning && startTimestamp) {
+          resumeTimer();
+        }
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [resumeTimer]);
+
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;

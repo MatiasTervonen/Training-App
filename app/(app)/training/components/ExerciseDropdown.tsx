@@ -3,11 +3,12 @@
 import { useState, useEffect } from "react";
 import { russoOne } from "@/app/ui/fonts";
 import { useRef } from "react";
-import { Exercises } from "@/app/(app)/types/session";
+import { gym_exercises } from "../../types/models";
 import useSWR from "swr";
+import { fetcher } from "../../lib/fetcher"; 
 
 type Props = {
-  onSelect: (exercise: Exercises) => void;
+  onSelect: (exercise: gym_exercises) => void;
   label?: string | number;
   resetTrigger?: number;
 };
@@ -18,18 +19,16 @@ export default function ExerciseDropdown({
   resetTrigger,
 }: Props) {
   const [searchQuery, setSearchQuery] = useState("");
-  const [filteredExercises, setFilteredExercises] = useState<Exercises[]>([]);
+  const [filteredExercises, setFilteredExercises] = useState<gym_exercises[]>([]);
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
   const [showDropdown, setShowDropdown] = useState(true);
-
-  const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
   const {
     data: exercises,
     error: exercisesError,
     isLoading: isExercisesLoading,
-  } = useSWR<Exercises[]>("/api/gym/exercises", fetcher, {
+  } = useSWR<gym_exercises[]>("/api/gym/exercises", fetcher, {
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
   });
@@ -38,7 +37,7 @@ export default function ExerciseDropdown({
     data: recentExercises,
     error: recentError,
     isLoading: isRecentLoading,
-  } = useSWR<Exercises[]>("/api/gym/recent-exercises", fetcher, {
+  } = useSWR<gym_exercises[]>("/api/gym/recent-exercises", fetcher, {
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
   });
@@ -69,7 +68,7 @@ export default function ExerciseDropdown({
     }
   };
 
-  const handleSelectExercise = (exercise: Exercises) => {
+  const handleSelectExercise = (exercise: gym_exercises) => {
     setSearchQuery(exercise.name + " " + "(" + exercise.equipment + ")");
     onSelect(exercise);
     setShowDropdown(false);

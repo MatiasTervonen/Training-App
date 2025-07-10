@@ -4,25 +4,25 @@ import { useState } from "react";
 import { russoOne } from "@/app/ui/fonts";
 import Link from "next/link";
 import SignOutButton from "@/app/(app)/ui/singOutButton";
-import { useRouter, usePathname } from "next/navigation";
+import { usePathname } from "next/navigation";
 import {
   Settings,
-  ArrowLeft,
   Menu,
   CircleX,
   NotebookPen,
   CalendarDays,
+  MessageCircle,
 } from "lucide-react";
 import { useClickOutside } from "@/app/(app)/components/clickOutside";
 import { useRef } from "react";
 import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
 import Image from "next/image";
+import NotificationBell from "@/app/(app)/components/navbar/components/NotificationBell";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isSigningOut, setIsSigningOut] = useState(false);
 
-  const router = useRouter();
   const pathname = usePathname();
 
   const profilePictureRaw = useUserStore(
@@ -35,14 +35,6 @@ export default function Navbar() {
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
-  };
-
-  const handleBack = () => {
-    if (window.history.length > 1) {
-      router.back();
-    } else {
-      router.push("/dashboard");
-    }
   };
 
   const menuRef = useRef<HTMLDivElement | null>(null);
@@ -62,17 +54,14 @@ export default function Navbar() {
           MyTrack
         </Link>
 
-        {pathname !== "/dashboard" && (
-          <button
-            aria-label="Go back"
-            onClick={handleBack}
-            className="border-2 border-gray-100 bg-blue-950 w-fit p-1 rounded-md cursor-pointer"
-          >
-            <ArrowLeft className="text-white" />
-          </button>
-        )}
-
         <div className="flex gap-3 items-center">
+          <NotificationBell />
+          <Link
+            href={"/chat"}
+            className="text-gray-100 border-2 p-2 border-blue-500 rounded-full bg-gray-800"
+          >
+            <MessageCircle size={20} />
+          </Link>
           <Link href={"/settings"}>
             <Image
               src={cacheBustedPicture}

@@ -1,15 +1,6 @@
 import { mutate } from "swr";
 import { toast } from "react-hot-toast";
-
-type Users = {
-  id: string;
-  email: string;
-  role: string;
-  display_name: string;
-  created_at: string;
-  banned_until?: string | null;
-  ban_reason?: string | null;
-};
+import { users } from "@/app/(app)/types/models";
 
 export const deleteUser = async (userId: string) => {
   const confirmDelete = confirm(
@@ -19,7 +10,7 @@ export const deleteUser = async (userId: string) => {
 
   mutate(
     "/api/users/get-users",
-    (currentData: Users[] = []) => {
+    (currentData: users[] = []) => {
       return currentData?.filter((user) => user.id !== userId) || [];
     },
     false

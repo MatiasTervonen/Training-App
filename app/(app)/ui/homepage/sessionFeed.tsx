@@ -11,7 +11,6 @@ import { Pin } from "lucide-react";
 import EditNote from "@/app/(app)/ui/editSession/EditNotes";
 import EditGym from "@/app/(app)/ui/editSession/EditGym";
 import GymSession from "@/app/(app)/components/expandSession/gym";
-import { Notes, GymSessionFull, Weight } from "@/app/(app)/types/session";
 import useSWR, { mutate } from "swr";
 import Spinner from "@/app/(app)/components/spinner";
 import usePullToRefresh from "@/app/(app)/lib/usePullToRefresh";
@@ -19,11 +18,12 @@ import WeightSession from "@/app/(app)/components/expandSession/weight";
 import EditWeight from "@/app/(app)/ui/editSession/EditWeight";
 import toast from "react-hot-toast";
 import { FeedSkeleton } from "../loadingSkeletons/skeletons";
+import { notes, weight, full_gym_session } from "@/app/(app)/types/models";
 
 type FeedItem =
-  | { table: "notes"; item: Notes; pinned: boolean }
-  | { table: "weight"; item: Weight; pinned: boolean }
-  | { table: "gym_sessions"; item: GymSessionFull; pinned: boolean };
+  | { table: "notes"; item: notes; pinned: boolean }
+  | { table: "weight"; item: weight; pinned: boolean }
+  | { table: "gym_sessions"; item: full_gym_session; pinned: boolean };
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 

@@ -2,7 +2,6 @@
 
 import { russoOne } from "@/app/ui/fonts";
 import ModalPageWrapper from "@/app/(app)/components/modalPageWrapper";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import WeightChart from "../components/WeightChart";
 import AllDataTable from "../components/AllDataTable";
@@ -13,8 +12,6 @@ export default function TrainingPage() {
   const [range, setRange] = useState<"week" | "month" | "year" | "all">(
     "month"
   );
-
-  const router = useRouter();
 
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -27,16 +24,8 @@ export default function TrainingPage() {
     revalidateOnReconnect: false,
   });
 
-  console.log("Weight data:", weight);
-
   return (
-    <ModalPageWrapper
-      noTopPadding
-      onSwipeRight={() => router.back()}
-      leftLabel="back"
-      onSwipeLeft={() => router.push("/dashboard")}
-      rightLabel="home"
-    >
+    <ModalPageWrapper noTopPadding>
       <div
         className={`${russoOne.className} h-full bg-slate-800 text-gray-100 py-5`}
       >

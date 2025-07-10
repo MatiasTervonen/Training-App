@@ -1,8 +1,9 @@
 import { formatDate } from "@/app/(app)/lib/formatDate";
-import { groupGymExercises } from "@/app/(app)/lib/groupGymexercises";
 import { russoOne } from "@/app/ui/fonts";
-import { GymSessionFull, GymExercise } from "@/app/(app)/types/session";
 import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
+import { full_gym_session } from "../../types/models";
+import { groupExercises } from "../../training/utils/groupExercises";
+import { full_gym_exercises } from "../../types/models";
 
 const formatDuration = (seconds: number) => {
   const totalMinutes = Math.floor(seconds / 60);
@@ -15,16 +16,16 @@ const formatDuration = (seconds: number) => {
   }
 };
 
-export default function GymSession(gym_session: GymSessionFull) {
-  const groupedExercises = groupGymExercises(
+export default function GymSession(gym_session: full_gym_session) {
+  const groupedExercises = groupExercises(
     gym_session.gym_session_exercises || []
   );
 
   const weightUnit =
     useUserStore((state) => state.preferences?.weight_unit) || "kg";
 
-  const isCardioExercise = (exercise: GymExercise) =>
-    exercise.gym_exercises.main_group?.toLowerCase() === "cardio";
+  const isCardioExercise = (exercise: full_gym_exercises) =>
+    exercise.gym_exercises.main_group.toLowerCase() === "cardio";
 
   return (
     <div className={`${russoOne.className}  max-w-md mx-auto`}>

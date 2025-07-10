@@ -1,10 +1,10 @@
 import { formatDate } from "@/app/(app)/lib/formatDate";
 import { russoOne } from "@/app/ui/fonts";
-import { Weight } from "@/app/(app)/types/session";
 import Link from "next/link";
 import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
+import { weight } from "@/app/(app)/types/models";
 
-export default function WeightSession(weight: Weight) {
+export default function WeightSession(weight: weight) {
   const weightUnit =
     useUserStore((state) => state.preferences?.weight_unit) || "kg";
 

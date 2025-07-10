@@ -8,16 +8,8 @@ import { useState } from "react";
 import { banUser } from "./components/banUser";
 import { deleteUser } from "./components/deleteUser";
 import { promoteUser } from "./components/promoteUser";
-
-type Users = {
-  id: string;
-  email: string;
-  role: string;
-  display_name: string;
-  created_at: string;
-  banned_until?: string | null;
-  ban_reason?: string | null;
-};
+import { users } from "@/app/(app)/types/models";
+import { fetcher } from "../../lib/fetcher";
 
 export default function Sessions() {
   const [sortField, setSortField] = useState("created_at");
@@ -30,9 +22,7 @@ export default function Sessions() {
     [userId: string]: string;
   }>({});
 
-  const fetcher = (url: string) => fetch(url).then((res) => res.json());
-
-  const { data, error, isLoading } = useSWR<Users[]>(
+  const { data, error, isLoading } = useSWR<users[]>(
     "/api/users/get-users",
     fetcher,
     {

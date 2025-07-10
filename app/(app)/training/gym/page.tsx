@@ -9,8 +9,6 @@ import DeleteSessionBtn from "@/app/(app)/ui/deleteSessionBtn";
 import ModalPageWrapper from "@/app/(app)/components/modalPageWrapper";
 import TitleInput from "../components/TitleInput";
 import NotesInput from "../components/NotesInput";
-import ExerciseCard from "../components/ExerciseCard";
-import { groupExercises } from "../utils/groupExercises";
 import { ChevronDown, Plus, CircleX } from "lucide-react";
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import ExerciseDropdown from "../components/ExerciseDropdown";
@@ -20,38 +18,61 @@ import {
   HistoryResult,
   ExerciseEntry,
   emptyExerciseEntry,
-  OptimisticGymSession,
+  ExerciseInput,
+  FeedItem,
 } from "@/app/(app)/types/session";
 import { generateUUID } from "@/app/(app)/lib/generateUUID";
 import { toast } from "react-hot-toast";
 import { mutate } from "swr";
 import { useTimerStore } from "@/app/(app)/lib/stores/timerStore";
+import { groupTemplateExercises } from "../utils/groupTemplateExercises";
+import ExerciseCard from "../components/ExerciseCard";
 
 export default function TrainingSessionPage() {
-  const [exercises, setExercises] = useState<ExerciseEntry[]>([]);
-  const [notes, setNotes] = useState("");
+  const draft =
+    typeof window !== "undefined"
+      ? JSON.parse(localStorage.getItem("gym_session_draft") || "null")
+      : null;
+
+  const [sessionTitle, setSessionTitle] = useState(draft?.title || "");
+  const [exercises, setExercises] = useState<ExerciseEntry[]>(
+    draft?.exercises || []
+  );
+  const [notes, setNotes] = useState(draft?.notes || "");
+  const [exerciseInputs, setExerciseInputs] = useState<ExerciseInput[]>(
+    draft?.exercises
+      ? draft.exercises.map(() => ({ weight: "", reps: "", rpe: "Medium" }))
+      : []
+  );
   const router = useRouter();
   const [isSaving, setIsSaving] = useState(false);
-  const [sessionTitle, setSessionTitle] = useState("");
   const [exerciseType, setExerciseType] = useState("Normal");
   const [supersetExercise, setSupersetExercise] = useState<ExerciseEntry[]>([]);
-  const [exerciseInputs, setExerciseInputs] = useState<
-    { weight: string; reps: string; rpe: string }[]
-  >([]);
   const [dropdownResetKey, setDropdownResetKey] = useState(0);
   const [isExerciseModalOpen, setIsExerciseModalOpen] = useState(false);
   const [normalExercises, setNormalExercises] = useState<ExerciseEntry[]>([]);
   const [lastHistory, setLastHistory] = useState<HistoryResult[]>([]);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
-  const [hasLoadedDraft, sethasLaoding] = useState(false);
   const [isHistoryLoading, setIsHistoryLoading] = useState(false);
   const didNavigate = useRef(false);
 
-  type FeedItem = {
-    table: "gym_sessions";
-    item: OptimisticGymSession;
-    pinned: boolean;
-  };
+  useEffect(() => {
+    if (
+      exercises.length === 0 &&
+      notes.trim() === "" &&
+      sessionTitle.trim() === ""
+    ) {
+      localStorage.removeItem("gym_session_draft");
+      return;
+    }
+
+    const sessionDraft = {
+      title: sessionTitle,
+      exercises,
+      notes,
+    };
+    localStorage.setItem("gym_session_draft", JSON.stringify(sessionDraft));
+  }, [exercises, notes, sessionTitle]);
 
   const {
     activeSession,
@@ -108,14 +129,12 @@ export default function TrainingSessionPage() {
   }, [sessionTitle, setActiveSession, startTimer]);
 
   useEffect(() => {
-    if (!hasLoadedDraft) return;
-
     const flag = localStorage.getItem("startedFromTemplate");
     if (flag === "true") {
       startSession();
       localStorage.removeItem("startedFromTemplate");
     }
-  }, [hasLoadedDraft, startSession]);
+  }, [startSession]);
 
   const startExercise = () => {
     const newSupersetId = generateUUID();
@@ -280,26 +299,6 @@ export default function TrainingSessionPage() {
   };
 
   useEffect(() => {
-    if (!hasLoadedDraft) return;
-
-    if (
-      exercises.length === 0 &&
-      notes.trim() === "" &&
-      sessionTitle.trim() === ""
-    ) {
-      localStorage.removeItem("gym_session_draft");
-      return;
-    }
-
-    const sessionDraft = {
-      title: sessionTitle,
-      exercises,
-      notes,
-    };
-    localStorage.setItem("gym_session_draft", JSON.stringify(sessionDraft));
-  }, [exercises, notes, sessionTitle, hasLoadedDraft]);
-
-  useEffect(() => {
     if (
       activeSession &&
       activeSession.type === "gym" &&
@@ -312,32 +311,7 @@ export default function TrainingSessionPage() {
     }
   }, [sessionTitle, activeSession, setActiveSession]);
 
-  useEffect(() => {
-    const draft = localStorage.getItem("gym_session_draft");
-    if (draft) {
-      try {
-        const {
-          title: savedSessionTitle,
-          exercises: savedExercises,
-          notes: savedNotes,
-        } = JSON.parse(draft);
-        if (savedExercises) {
-          setExercises(savedExercises);
-          setExerciseInputs(
-            savedExercises.map(() => ({ weight: "", reps: "", rpe: "Medium" }))
-          );
-        }
-        if (savedNotes) setNotes(savedNotes);
-        if (savedSessionTitle) setSessionTitle(savedSessionTitle);
-      } catch (error) {
-        console.error("Failed to parse gym session draft:", error);
-      }
-    }
-
-    sethasLaoding(true);
-  }, []);
-
-  const groupedExercises = groupExercises(exercises);
+  const groupedExercises = groupTemplateExercises(exercises);
 
   return (
     <>
@@ -354,12 +328,7 @@ export default function TrainingSessionPage() {
         </div>
       </nav>
 
-      <ModalPageWrapper
-        onSwipeRight={() => router.back()}
-        leftLabel="back"
-        onSwipeLeft={() => router.push("/dashboard")}
-        rightLabel="home"
-      >
+      <ModalPageWrapper>
         <div
           className={` ${russoOne.className} flex justify-center relative min-h-[calc(100dvh-72px)] max-w-md mx-auto py-5`}
         >

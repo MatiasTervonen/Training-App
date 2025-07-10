@@ -2,10 +2,10 @@ import { russoOne } from "@/app/ui/fonts";
 import { NotebookPen, Ellipsis, SquareArrowOutUpRight } from "lucide-react";
 import DropdownMenu from "../dropdownMenu";
 import { formatDate } from "@/app/(app)/lib/formatDate";
-import { Notes } from "@/app/(app)/types/session";
+import { notes } from "@/app/(app)/types/models";
 
 type Props = {
-  item: Notes;
+  item: notes;
   pinned: boolean;
   onTogglePin: () => void;
   onDelete: () => void;

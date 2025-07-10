@@ -9,8 +9,8 @@ import ExerciseTypeSelect from "@/app/(app)/training/components/ExerciseTypeSele
 import SaveButton from "@/app/(app)/ui/save-button";
 import toast from "react-hot-toast";
 import ExerciseDropdown from "@/app/(app)/training/components/ExerciseDropdown";
-import { Exercises } from "@/app/(app)/types/session";
 import DeleteSessionBtn from "@/app/(app)/ui/deleteSessionBtn";
+import { gym_exercises } from "../../types/models";
 
 export default function EditExercises() {
   const [name, setName] = useState("");
@@ -19,7 +19,7 @@ export default function EditExercises() {
   const [muscle_group, setMuscleGroup] = useState("");
   const [main_group, setMainGroup] = useState("");
   const [isSaving, setIsSaving] = useState(false);
-  const [selectedExercise, setSelectedExercise] = useState<Exercises | null>(
+  const [selectedExercise, setSelectedExercise] = useState<gym_exercises | null>(
     null
   );
   const [resetTrigger, setResetTrigger] = useState(0);
@@ -67,7 +67,7 @@ export default function EditExercises() {
     }
   };
 
-  const handleDeleteExercise = async (exerciseId: number) => {
+  const handleDeleteExercise = async (exerciseId: string) => {
     try {
       const response = await fetch("/api/gym/delete-exercise", {
         method: "DELETE",

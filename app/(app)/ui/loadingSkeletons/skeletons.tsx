@@ -23,3 +23,16 @@ export const FeedSkeleton = ({ count = 3 }: { count?: number }) => (
     ))}
   </>
 );
+
+export const FriendCardSkeleton = ({ count = 3 }: { count?: number }) => (
+  <>
+    {[...Array(count)].map((_, i) => (
+      <div
+        key={i}
+        className="flex items-center mb-3 justify-center animate-pulse bg-slate-900 py-2 w-full rounded-md shadow border border-gray-700 h-[72px]"
+      >
+        <Spinner className="border-gray-500" />
+      </div>
+    ))}
+  </>
+);

@@ -18,13 +18,11 @@ export async function POST(req: NextRequest) {
 
   const { error: sessionError } = await supabase
     .from("gym_sessions")
-    .update([
-      {
-        title,
-        notes,
-        duration,
-      },
-    ])
+    .update({
+      title,
+      notes,
+      duration,
+    })
     .eq("id", sessionId)
     .eq("user_id", user.id);
 

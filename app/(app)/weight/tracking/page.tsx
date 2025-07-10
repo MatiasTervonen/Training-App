@@ -136,13 +136,7 @@ export default function WorkoutAnalyticsPage() {
   };
 
   return (
-    <ModalPageWrapper
-      noTopPadding
-      leftLabel="back"
-      rightLabel="home"
-      onSwipeLeft={() => router.push("/dashboard")}
-      onSwipeRight={() => router.back()}
-    >
+    <ModalPageWrapper noTopPadding>
       <div
         className={`${russoOne.className} h-full bg-slate-800 text-gray-100 py-5 px-10`}
       >

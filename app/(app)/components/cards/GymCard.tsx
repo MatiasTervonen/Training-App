@@ -2,10 +2,10 @@ import { russoOne } from "@/app/ui/fonts";
 import { Dumbbell, Ellipsis, SquareArrowOutUpRight } from "lucide-react";
 import DropdownMenu from "../dropdownMenu";
 import { formatDate } from "@/app/(app)/lib/formatDate";
-import { GymSessionFull } from "@/app/(app)/types/session";
+import { full_gym_session } from "../../types/models";
 
 type Props = {
-  item: GymSessionFull;
+  item: full_gym_session;
   pinned: boolean;
   onTogglePin: () => void;
   onDelete: () => void;

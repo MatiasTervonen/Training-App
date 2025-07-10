@@ -111,13 +111,7 @@ export default function DiscGolf() {
   };
 
   return (
-    <ModalPageWrapper
-      noTopPadding
-      onSwipeRight={() => router.back()}
-      leftLabel="back"
-      onSwipeLeft={() => router.push("/dashboard")}
-      rightLabel="home"
-    >
+    <ModalPageWrapper noTopPadding>
       <div
         className={` ${russoOne.className} bg-slate-800 p-5 h-full max-w-md mx-auto`}
       >

@@ -30,10 +30,23 @@ export default async function GetPinned(): Promise<{
     return { pinned: [], error };
   }
 
-  const pinned = data.map((item) => ({
-    table: item.table,
-    item_id: item.item_id,
-  }));
+  const pinned = data
+    .map((item) => {
+      if (
+        item.table === "notes" ||
+        item.table === "gym_sessions" ||
+        item.table === "weight"
+      ) {
+        return {
+          table: item.table,
+          item_id: item.item_id,
+        } as PinnedItem;
+      }
+
+      
+      return null;
+    })
+    .filter(Boolean) as PinnedItem[];
 
   return { pinned, error: null };
 }

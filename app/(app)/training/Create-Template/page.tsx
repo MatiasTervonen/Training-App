@@ -10,8 +10,6 @@ import { ChevronDown, CircleX, Plus } from "lucide-react";
 import Modal from "@/app/(app)/components/modal";
 import SaveButton from "@/app/(app)/ui/save-button";
 import DeleteSessionBtn from "@/app/(app)/ui/deleteSessionBtn";
-import { groupExercises } from "../utils/groupExercises";
-import ExerciseCard from "../components/ExerciseCard";
 import {
   HistoryResult,
   ExerciseEntry,
@@ -23,6 +21,8 @@ import { generateUUID } from "@/app/(app)/lib/generateUUID";
 import { toast } from "react-hot-toast";
 import { mutate } from "swr";
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
+import { groupTemplateExercises } from "../utils/groupTemplateExercises";
+import TemplateExerciseCard from "../components/ExerciseCard";
 
 export default function CreateTemplatePage() {
   const [workoutName, setWorkoutName] = useState("");
@@ -42,7 +42,7 @@ export default function CreateTemplatePage() {
   const [hasLoadedDraft, sethasLaoding] = useState(false);
   const didNavigate = useRef(false);
 
-  const groupedExercises = groupExercises(exercises);
+  const groupedExercises = groupTemplateExercises(exercises);
 
   const router = useRouter();
 
@@ -255,13 +255,7 @@ export default function CreateTemplatePage() {
   };
 
   return (
-    <ModalPageWrapper
-      noTopPadding
-      onSwipeRight={() => router.back()}
-      leftLabel="back"
-      onSwipeLeft={() => router.push("/dashboard")}
-      rightLabel="home"
-    >
+    <ModalPageWrapper noTopPadding>
       <div
         className={`${russoOne.className} h-full bg-slate-800 text-gray-100 px-4 pt-5`}
       >
@@ -297,7 +291,7 @@ export default function CreateTemplatePage() {
               {group.map(({ exercise, index }) => {
                 return (
                   <div key={index}>
-                    <ExerciseCard
+                    <TemplateExerciseCard
                       exercise={exercise}
                       lastExerciseHistory={lastExerciseHistory}
                       index={index}

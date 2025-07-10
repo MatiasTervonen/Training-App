@@ -6,19 +6,19 @@ import TitleInput from "@/app/(app)/training/components/TitleInput";
 import SaveButton from "@/app/(app)/ui/save-button";
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import { russoOne } from "@/app/ui/fonts";
-import { Notes } from "@/app/(app)/types/session";
 import { mutate } from "swr";
 import toast from "react-hot-toast";
-
+import { notes } from "@/app/(app)/types/models";
+ 
 type Props = {
-  note: Notes;
+  note: notes;
   onClose: () => void;
   onSave?: () => void;
 };
 
 type FeedItem = {
   table: "notes";
-  item: Notes;
+  item: notes;
   pinned: boolean;
 };
 
@@ -94,7 +94,7 @@ export default function EditNotes({ note, onClose, onSave }: Props) {
           </h2>
           <div>
             <TitleInput
-              title={title}
+              title={title || ""}
               setTitle={setTitle}
               placeholder="Notes title..."
               label="Title..."
@@ -102,7 +102,7 @@ export default function EditNotes({ note, onClose, onSave }: Props) {
           </div>
           <div className="flex w-full max-w-md flex-grow">
             <NotesInput
-              notes={notes}
+              notes={notes || ""}
               setNotes={setNotes}
               placeholder="Write your notes here..."
               label="Notes..."

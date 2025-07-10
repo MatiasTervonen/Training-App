@@ -1,20 +1,9 @@
-"use client";
-
 import { russoOne } from "@/app/ui/fonts";
 import ModalPageWrapper from "@/app/(app)/components/modalPageWrapper";
-import { useRouter } from "next/navigation";
 
 export default function WorkoutAnalyticsPage() {
-  const router = useRouter();
-
   return (
-    <ModalPageWrapper
-      noTopPadding
-      leftLabel="back"
-      rightLabel="home"
-      onSwipeLeft={() => router.push("/dashboard")}
-      onSwipeRight={() => router.back()}
-    >
+    <ModalPageWrapper noTopPadding>
       <div
         className={`${russoOne.className} h-full bg-slate-800 text-gray-100 p-5`}
       >

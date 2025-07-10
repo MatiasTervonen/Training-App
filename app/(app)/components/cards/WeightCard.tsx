@@ -2,11 +2,11 @@ import { russoOne } from "@/app/ui/fonts";
 import { Scale, Ellipsis, SquareArrowOutUpRight } from "lucide-react";
 import DropdownMenu from "../dropdownMenu";
 import { formatDate } from "@/app/(app)/lib/formatDate";
-import { Weight } from "@/app/(app)/types/session";
 import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
+import { weight } from "@/app/(app)/types/models";
 
 type Props = {
-  item: Weight;
+  item: weight;
   pinned: boolean;
   onTogglePin: () => void;
   onDelete: () => void;

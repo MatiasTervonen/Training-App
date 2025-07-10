@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, } from "react";
 import { useRouter } from "next/navigation";
 import { russoOne } from "@/app/ui/fonts";
 import SaveButton from "@/app/(app)/ui/save-button";
@@ -13,6 +13,7 @@ import { mutate } from "swr";
 import toast from "react-hot-toast";
 import { generateUUID } from "@/app/(app)/lib/generateUUID";
 import { OptimisticNotes } from "@/app/(app)/types/session";
+import { useDebouncedCallback } from "use-debounce";
 
 type FeedItem = {
   table: "notes";
@@ -21,9 +22,14 @@ type FeedItem = {
 };
 
 export default function Notes() {
+  const draft =
+    typeof window !== "undefined"
+      ? JSON.parse(localStorage.getItem("notes_draft") || "null")
+      : null;
+
+  const [notes, setNotes] = useState(draft?.notes || "");
+  const [notesTitle, setNotesTitle] = useState(draft?.title || "");
   const [isSaving, setIsSaving] = useState(false);
-  const [notes, setNotes] = useState("");
-  const [notesTitle, setNotesTitle] = useState("");
   const router = useRouter();
   const didNavigate = useRef(false);
 
@@ -57,7 +63,6 @@ export default function Notes() {
         body: JSON.stringify({
           title: notesTitle,
           notes,
-          type: "notes",
         }),
       });
 
@@ -89,21 +94,21 @@ export default function Notes() {
     }
   };
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (notes.trim().length === 0 && notesTitle.trim().length === 0) {
-        localStorage.removeItem("notes_draft");
-      } else {
-        const sessionDraft = {
-          title: notesTitle,
-          notes,
-        };
-        localStorage.setItem("notes_draft", JSON.stringify(sessionDraft));
-      }
-    }, 1000); // Save every second
+  const saveDraft = useDebouncedCallback(() => {
+    if (notes.trim().length === 0 && notesTitle.trim().length === 0) {
+      localStorage.removeItem("notes_draft");
+    } else {
+      const sessionDraft = {
+        title: notesTitle,
+        notes,
+      };
+      localStorage.setItem("notes_draft", JSON.stringify(sessionDraft));
+    }
+  }, 1000); // Save every second
 
-    return () => clearInterval(interval);
-  }, [notes, notesTitle]);
+  useEffect(() => {
+    saveDraft();
+  }, [notes, notesTitle, saveDraft]);
 
   const resetNotes = () => {
     localStorage.removeItem("notes_draft");
@@ -111,24 +116,9 @@ export default function Notes() {
     setNotes("");
   };
 
-  useEffect(() => {
-    const draft = localStorage.getItem("notes_draft");
-    if (draft) {
-      const { title: savedNotesTitle, notes: savedNotes } = JSON.parse(draft);
-      if (savedNotes) setNotes(savedNotes);
-      if (savedNotesTitle) setNotesTitle(savedNotesTitle);
-    }
-  }, []);
-
   return (
     <>
-      <ModalPageWrapper
-        noTopPadding
-        onSwipeRight={() => router.back()}
-        leftLabel="back"
-        onSwipeLeft={() => router.back()}
-        rightLabel="back"
-      >
+      <ModalPageWrapper noTopPadding>
         <div className="flex flex-col h-full w-full px-6 max-w-md mx-auto pb-10">
           <div className="flex flex-col items-center mt-5 gap-5 flex-grow mb-10 h-full">
             <p

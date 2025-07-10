@@ -4,10 +4,10 @@ import { russoOne } from "@/app/ui/fonts";
 import NotesInput from "./NotesInput";
 import DropdownMenu from "@/app/(app)/components/dropdownMenu";
 import { Ellipsis, SquareX } from "lucide-react";
-import { ExerciseEntry } from "@/app/(app)/types/session";
 import SetInput from "./SetInput";
 import ExerciseTypeSelect from "./ExerciseTypeSelect";
 import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
+import { ExerciseEntry } from "../../types/session";
 
 type ExerciseCardProps = {
   index: number;
@@ -53,7 +53,8 @@ export default function ExerciseCard({
             {index + 1}. {exercise.name}
           </span>
           <span className="text-sm text-gray-400">
-            {exercise.equipment} / {exercise.muscle_group}
+            {exercise.equipment} /{" "}
+            {exercise.muscle_group}
           </span>
         </div>
 

@@ -7,14 +7,15 @@ import { SquareArrowRight } from "lucide-react";
 import { useTransitionDirectionStore } from "@/app/(app)/lib/stores/transitionDirection";
 import { useState } from "react";
 import { russoOne } from "../../ui/fonts";
+import { useRouter } from "next/navigation";
 
 export default function ModalPageWrapper({
   children,
   noTopPadding = false,
   onSwipeLeft,
   onSwipeRight,
-  leftLabel,
-  rightLabel,
+  leftLabel = "back",
+  rightLabel = "home",
 }: {
   children: ReactNode;
   noTopPadding?: boolean;
@@ -29,6 +30,26 @@ export default function ModalPageWrapper({
   );
 
   const [isTransitioning, setIsTransitioning] = useState(false);
+
+  const router = useRouter();
+
+  const handleSwipeLeft = () => {
+    setDirection(1);
+    if (onSwipeLeft) {
+      onSwipeLeft();
+    } else {
+      router.push("/dashboard");
+    }
+  };
+
+  const handleSwipeRight = () => {
+    setDirection(-1);
+    if (onSwipeRight) {
+      onSwipeRight();
+    } else {
+      router.back();
+    }
+  };
 
   return (
     <div
@@ -121,17 +142,11 @@ export default function ModalPageWrapper({
             const swipedRight = info.offset.x > 200;
 
             if (swipedLeft) {
-              if (onSwipeLeft) {
-                setDirection(1);
-                onSwipeLeft();
-              }
+              handleSwipeLeft();
             }
 
             if (swipedRight) {
-              if (onSwipeRight) {
-                setDirection(-1);
-                onSwipeRight();
-              }
+              handleSwipeRight();
             }
           }}
         >

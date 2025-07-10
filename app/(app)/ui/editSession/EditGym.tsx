@@ -6,26 +6,26 @@ import TitleInput from "@/app/(app)/training/components/TitleInput";
 import SaveButton from "@/app/(app)/ui/save-button";
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import { russoOne } from "@/app/ui/fonts";
-import { GymSessionFull, GymExercise } from "@/app/(app)/types/session";
-import { groupGymExercises } from "@/app/(app)/lib/groupGymexercises";
 import { mutate } from "swr";
 import toast from "react-hot-toast";
 import SetInput from "@/app/(app)/training/components/SetInput";
 import ExerciseTypeSelect from "@/app/(app)/training/components/ExerciseTypeSelect";
+import { full_gym_exercises, full_gym_session } from "../../types/models";
+import { groupExercises } from "../../training/utils/groupExercises";
 
 type EditGymSessionProps = {
-  gym_session: GymSessionFull;
+  gym_session: full_gym_session;
   onClose: () => void;
   onSave?: () => void;
 };
 
 type FeedItem = {
   table: "gym_sessions";
-  item: GymSessionFull;
+  item: full_gym_session;
   pinned: boolean;
 };
 
-const isCardioExercise = (exercise: GymExercise) =>
+const isCardioExercise = (exercise: full_gym_exercises) =>
   exercise.gym_exercises.main_group?.toLowerCase() === "cardio";
 
 export default function EditGym({
@@ -129,7 +129,7 @@ export default function EditGym({
     setExercises(updated);
   };
 
-  const groupedExercises = groupGymExercises(
+  const groupedExercises = groupExercises(
     gym_session.gym_session_exercises || []
   );
 
@@ -144,7 +144,7 @@ export default function EditGym({
           </h2>
           <div>
             <TitleInput
-              title={title}
+              title={title || ""}
               setTitle={setTitle}
               placeholder="Session title..."
               label="Session Title..."
@@ -152,7 +152,7 @@ export default function EditGym({
           </div>
           <div>
             <NotesInput
-              notes={notes}
+              notes={notes || ""}
               setNotes={setNotes}
               placeholder="Write your notes here..."
               rows={2}

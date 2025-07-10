@@ -1,10 +1,14 @@
 import { russoOne } from "@/app/ui/fonts";
 import { formatDate } from "@/app/(app)/lib/formatDate";
 import GroupTemplateExercises from "@/app/(app)/lib/groupTemplateExercises";
-import { Template, TemplateExercise } from "@/app/(app)/types/session";
+import {
+  full_gym_template,
+  full_gym_template_exercise,
+} from "@/app/(app)/types/models";
+
 
 type Props = {
-  item: Template;
+  item: full_gym_template;
   onDelete: () => void;
   onExpand: () => void;
   onEdit: () => void;
@@ -12,12 +16,13 @@ type Props = {
 };
 
 export default function GymTemplate({ item, onDelete, onStartWorkout }: Props) {
+
   const groupedExercises = GroupTemplateExercises(
     item.gym_template_exercises || []
   );
 
-  const isCardioExercise = (exercise: TemplateExercise) =>
-    exercise.gym_exercise.main_group?.toLowerCase() === "cardio";
+  const isCardioExercise = (exercise: full_gym_template_exercise) =>
+    exercise.gym_exercises.main_group.toLowerCase() === "cardio";
 
   return (
     <div className={`${russoOne.className} mx-4`}>
@@ -42,14 +47,14 @@ export default function GymTemplate({ item, onDelete, onStartWorkout }: Props) {
               <div className="flex  justify-between flex-col mb-2">
                 <div className="flex items-center justify-between">
                   <h3 className="text-lg text-gray-100 ">
-                    {exercise.gym_exercise.name}
+                    {exercise.gym_exercises.name}
                   </h3>
                   <h3 className="text-sm text-gray-300">
-                    {exercise.gym_exercise.muscle_group}
+                    {exercise.gym_exercises.muscle_group}
                   </h3>
                 </div>
                 <h2 className="text-sm text-gray-400">
-                  {exercise.gym_exercise.equipment}
+                  {exercise.gym_exercises.equipment}
                 </h2>
               </div>
               <table className="w-full text-left">

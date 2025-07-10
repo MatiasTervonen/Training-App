@@ -1,10 +1,10 @@
 import { createClient } from "@/utils/supabase/server";
-import { Notes, GymSessionFull, Weight } from "@/app/(app)/types/session";
+import { notes, full_gym_session, weight } from "@/app/(app)/types/models";
 
 type FeedItem =
-  | { table: "notes"; item: Notes; pinned?: boolean }
-  | { table: "gym_sessions"; item: GymSessionFull; pinned?: boolean }
-  | { table: "weight"; item: Weight; pinned?: boolean };
+  | { table: "notes"; item: notes; pinned?: boolean }
+  | { table: "gym_sessions"; item: full_gym_session; pinned?: boolean }
+  | { table: "weight"; item: weight; pinned?: boolean };
 
 export default async function GetSession(): Promise<{
   feed: FeedItem[];

@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import Navbar from "@/app/(app)/ui/homepage/navbar";
+import Navbar from "@/app/(app)/components/navbar/navbar";
 import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
 import { useEffect } from "react";
 import { createClient } from "@/utils/supabase/client";

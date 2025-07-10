@@ -1,7 +1,6 @@
 "use client";
 
 import { russoOne } from "@/app/ui/fonts";
-
 import ModalPageWrapper from "@/app/(app)/components/modalPageWrapper";
 import { useRouter } from "next/navigation";
 import { TemplateSkeleton } from "@/app/(app)/ui/loadingSkeletons/skeletons";
@@ -10,53 +9,37 @@ import { useState } from "react";
 import GymTemplate from "@/app/(app)/components/cards/GymTemplate";
 import { ExerciseEntry } from "@/app/(app)/types/session";
 import useSWR, { mutate } from "swr";
+import { fetcher } from "../../lib/fetcher";
 import toast from "react-hot-toast";
+import { full_gym_template } from "../../types/models";
 
-type Template = {
-  id: string;
-  name: string;
-  created_at: string;
-  gym_template_exercises: {
-    id: string;
-    exercise_id: string;
-    sets: number;
-    reps: number;
-    superset_id: string;
-    gym_exercise: {
-      name: string;
-      equipment: string;
-      muscle_group: string;
-      main_group: string;
-    };
-  }[];
-};
 
 export default function TemplatesPage() {
-  const [expandedItem, setExpandedItem] = useState<Template | null>(null);
-
+  const [expandedItem, setExpandedItem] = useState<full_gym_template | null>(
+    null
+  );
+  
   const router = useRouter();
-
-  const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
   const {
     data: templates = [],
     error,
     isLoading,
-  } = useSWR("/api/gym/get-templates", fetcher, {
+  } = useSWR<full_gym_template[]>("/api/gym/get-templates", fetcher, {
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
   });
 
-  const startWorkout = (template: Template) => {
+  const startWorkout = (template: full_gym_template) => {
     const workoutExercises: ExerciseEntry[] =
       template.gym_template_exercises.map((ex) => ({
         exercise_id: ex.exercise_id,
-        name: ex.gym_exercise.name,
-        equipment: ex.gym_exercise.equipment,
-        muscle_group: ex.gym_exercise.muscle_group,
-        main_group: ex.gym_exercise.main_group,
-        sets: Array.from({ length: ex.sets }).map(() => ({
-          reps: ex.reps,
+        name: ex.gym_exercises.name,
+        equipment: ex.gym_exercises.equipment,
+        muscle_group: ex.gym_exercises.muscle_group ?? undefined,
+        main_group: ex.gym_exercises.main_group,
+        sets: Array.from({ length: ex.sets ?? 0 }).map(() => ({
+          reps: ex.reps ?? undefined,
           weight: undefined,
           rpe: undefined, // Default RPE
         })),
@@ -83,7 +66,7 @@ export default function TemplatesPage() {
 
     mutate(
       "/api/gym/get-templates",
-      (currentTemplates: Template[] = []) => {
+      (currentTemplates: full_gym_template[] = []) => {
         return currentTemplates.filter((t) => t.id !== templateId);
       },
       false
@@ -113,18 +96,10 @@ export default function TemplatesPage() {
   };
 
   return (
-    <ModalPageWrapper
-      noTopPadding
-      leftLabel="back"
-      rightLabel="home"
-      onSwipeRight={() => router.back()}
-      onSwipeLeft={() => router.push("/dashboard")}
-    >
+    <ModalPageWrapper noTopPadding>
       <div className={`${russoOne.className} h-full text-gray-100 p-5`}>
         <div className="flex flex-col max-w-md mx-auto">
-          <h1
-            className={`${russoOne.className} text-gray-100 text-center  my-5 text-2xl `}
-          >
+          <h1 className="text-gray-100 text-center  my-5 text-2xl">
             My Templates
           </h1>
 
@@ -143,10 +118,10 @@ export default function TemplatesPage() {
           )}
 
           {templates &&
-            templates.map((template: Template) => (
+            templates.map((template: full_gym_template) => (
               <div
                 key={template.id}
-                className={`${russoOne.className} text-gray-100 text-center bg-blue-800 py-2 my-3 rounded-md shadow-xl border-2 border-blue-500 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95`}
+                className="text-gray-100 text-center bg-blue-800 py-2 my-3 rounded-md shadow-xl border-2 border-blue-500 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95"
                 onClick={() => setExpandedItem(template)}
               >
                 {template.name}

@@ -15,7 +15,7 @@ export async function GET() {
   const { data: template, error: templateError } = await supabase
     .from("gym_templates")
     .select(
-      "id, name, created_at, gym_template_exercises(id, exercise_id, sets, reps, superset_id, gym_exercise:exercise_id(name, equipment, muscle_group, main_group))"
+      "id, name, created_at, gym_template_exercises(id, exercise_id, sets, reps, superset_id, gym_exercises:exercise_id(name, equipment, muscle_group, main_group))"
     )
     .eq("user_id", user.id)
     .order("created_at", { ascending: false });

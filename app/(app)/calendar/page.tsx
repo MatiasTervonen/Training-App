@@ -4,20 +4,12 @@ import Calendar from "react-calendar";
 import { useState } from "react";
 import "react-calendar/dist/Calendar.css";
 import ModalPageWrapper from "@/app/(app)/components/modalPageWrapper";
-import { useRouter } from "next/navigation";
 
 export default function CalendarPage() {
   const [date, setDate] = useState(new Date());
-  const router = useRouter();
 
   return (
-    <ModalPageWrapper
-      noTopPadding
-      onSwipeRight={() => router.back()}
-      leftLabel="back"
-      onSwipeLeft={() => router.back()}
-      rightLabel="back"
-    >
+    <ModalPageWrapper noTopPadding>
       <div className="flex flex-col min-h-[calc(100dvh-72px)] bg-slate-800 text-gray-100">
         <div className="flex flex-col flex-grow items-center  w-full">
           <h1 className="text-2xl font-bold m-4">My Calendar</h1>

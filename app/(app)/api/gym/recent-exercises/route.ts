@@ -1,5 +1,5 @@
 import { createClient } from "@/utils/supabase/server";
-import { Exercises } from "@/app/(app)/types/session";
+import { ExercisePreview } from "@/app/(app)/types/models";
 
 export async function GET() {
   const supabase = await createClient();
@@ -29,7 +29,7 @@ export async function GET() {
     });
   }
 
-  const uniqueExercises: Exercises[] = [];
+  const uniqueExercises: ExercisePreview[] = [];
   const seen = new Set<number>();
 
   for (const row of data) {

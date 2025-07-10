@@ -6,19 +6,19 @@ import TitleInput from "@/app/(app)/training/components/TitleInput";
 import SaveButton from "@/app/(app)/ui/save-button";
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import { russoOne } from "@/app/ui/fonts";
-import { Weight } from "@/app/(app)/types/session";
 import { mutate } from "swr";
 import toast from "react-hot-toast";
+import { weight } from "@/app/(app)/types/models";
 
 type Props = {
-  weight: Weight;
+  weight: weight;
   onClose: () => void;
   onSave?: () => void;
 };
 
 type FeedItem = {
   table: "weight";
-  item: Weight;
+  item: weight;
   pinned: boolean;
 };
 
@@ -106,13 +106,13 @@ export default function EditWeight({ weight, onClose, onSave }: Props) {
               Edit your weight session
             </h2>
             <TitleInput
-              title={title}
+              title={title || ""}
               setTitle={setTitle}
               placeholder="Weight title..."
               label="Title..."
             />
             <NotesInput
-              notes={notes}
+              notes={notes || ""}
               setNotes={setNotes}
               placeholder="Write your notes here..."
               label="Notes..."

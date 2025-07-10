@@ -1,13 +1,10 @@
 import { formatDate } from "@/app/(app)/lib/formatDate";
 import { russoOne } from "@/app/ui/fonts";
 import CopyButton from "../CopyButton";
+import { notes } from "@/app/(app)/types/models";
 
 type Props = {
-  notes: {
-    created_at: string;
-    title: string;
-    notes: string;
-  };
+  notes: notes;
 };
 
 export default function NotesSession({ notes }: Props) {

@@ -60,8 +60,6 @@ export default function Timer({
     pauseTimer();
   };
 
-  console.log({ buttonsAlwaysVisible, alarmFired, elapsedTime, totalDuration });
-
   return (
     <div
       className={`${russoOne.className} flex items-center justify-center gap-2 ${className}`}

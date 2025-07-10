@@ -23,8 +23,6 @@ export async function POST(req: NextRequest) {
         user_id: user.id,
         title,
         notes,
-        created_at: new Date().toISOString(),
-        type: "notes",
       },
     ])
     .select()

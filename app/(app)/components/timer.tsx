@@ -3,7 +3,6 @@
 import { russoOne } from "@/app/ui/fonts";
 import { CirclePlay, CirclePause } from "lucide-react";
 import { useTimerStore } from "@/app/(app)/lib/stores/timerStore";
-import { useEffect } from "react";
 
 type ActiveSession = {
   label: string;
@@ -29,7 +28,6 @@ export default function Timer({
     pauseTimer,
     totalDuration,
     alarmFired,
-    resumeTimer,
     setActiveSession,
     activeSession,
   } = useTimerStore();

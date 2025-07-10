@@ -34,12 +34,6 @@ export default function Timer({
     activeSession,
   } = useTimerStore();
 
-  useEffect(() => {
-    if (isRunning) {
-      resumeTimer();
-    }
-  }, [isRunning, resumeTimer]);
-
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;

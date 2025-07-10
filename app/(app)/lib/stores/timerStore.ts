@@ -14,6 +14,7 @@ interface TimerState {
   elapsedTime: number;
   totalDuration: number;
   alarmFired: boolean;
+  startTimestamp: number | null;
   setActiveSession: (session: ActiveSession | null) => void;
   startTimer: (totalDuration: number) => void;
   stopTimer: () => void;
@@ -32,27 +33,28 @@ export const useTimerStore = create<TimerState>()(
       elapsedTime: 0,
       totalDuration: 0,
       alarmFired: false,
+      startTimestamp: null,
 
       setActiveSession: (session) => set({ activeSession: session }),
 
       startTimer: (totalDuration) => {
         if (interval) clearInterval(interval);
 
-        const { elapsedTime } = get();
+        const now = Date.now();
 
         set({
           isRunning: true,
           totalDuration,
-          elapsedTime,
+          elapsedTime: 0,
           alarmFired: false,
+          startTimestamp: now,
         });
 
         interval = setInterval(() => {
-          const { elapsedTime, totalDuration, isRunning } = get();
-          if (!isRunning) return;
+          const { startTimestamp, totalDuration, isRunning } = get();
+          if (!isRunning || !startTimestamp) return;
 
-          const newElapsed = elapsedTime + 1;
-
+          const newElapsed = Math.floor((Date.now() - startTimestamp) / 1000);
           set({ elapsedTime: newElapsed });
 
           if (totalDuration > 0 && newElapsed >= totalDuration) {
@@ -74,6 +76,7 @@ export const useTimerStore = create<TimerState>()(
           totalDuration: 0,
           alarmFired: false,
           activeSession: null,
+          startTimestamp: null,
         });
       },
 
@@ -82,20 +85,32 @@ export const useTimerStore = create<TimerState>()(
           clearInterval(interval);
           interval = null;
         }
-        set({ isRunning: false });
+
+        const { startTimestamp } = get();
+        if (startTimestamp) {
+          const elapsed = Math.floor((Date.now() - startTimestamp) / 1000);
+          set({
+            elapsedTime: elapsed,
+            isRunning: false,
+            startTimestamp: null,
+          });
+        }
       },
 
       resumeTimer: () => {
         if (interval) clearInterval(interval);
 
-        set({ isRunning: true });
+        const now = Date.now();
+        const { elapsedTime } = get();
+        const newStart = now - elapsedTime * 1000;
+
+        set({ isRunning: true, startTimestamp: newStart });
 
         interval = setInterval(() => {
-          const { elapsedTime, totalDuration, isRunning } = get();
-          if (!isRunning) return;
+          const { startTimestamp, totalDuration, isRunning } = get();
+          if (!isRunning || !startTimestamp) return;
 
-          const newElapsed = elapsedTime + 1;
-
+          const newElapsed = Math.floor((Date.now() - startTimestamp) / 1000);
           set({ elapsedTime: newElapsed });
 
           if (totalDuration > 0 && newElapsed >= totalDuration) {

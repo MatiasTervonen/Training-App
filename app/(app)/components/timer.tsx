@@ -3,6 +3,7 @@
 import { russoOne } from "@/app/ui/fonts";
 import { CirclePlay, CirclePause } from "lucide-react";
 import { useTimerStore } from "@/app/(app)/lib/stores/timerStore";
+import { useEffect } from "react";
 
 type ActiveSession = {
   label: string;
@@ -30,7 +31,17 @@ export default function Timer({
     alarmFired,
     setActiveSession,
     activeSession,
+    resumeTimer,
+    startTimestamp,
   } = useTimerStore();
+
+  useEffect(() => {
+    const { isRunning, startTimestamp } = useTimerStore.getState();
+
+    if (isRunning && startTimestamp) {
+      resumeTimer();
+    }
+  }, [resumeTimer]);
 
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
@@ -45,7 +56,13 @@ export default function Timer({
       setActiveSession(manualSession);
     }
 
-    startTimer(totalDuration);
+    const isPaused = !isRunning && elapsedTime > 0 && startTimestamp === null;
+
+    if (isPaused) {
+      resumeTimer();
+    } else {
+      startTimer(totalDuration);
+    }
   };
 
   const handlePause = () => {

@@ -38,6 +38,8 @@ export const useTimerStore = create<TimerState>()(
       setActiveSession: (session) => set({ activeSession: session }),
 
       startTimer: (totalDuration) => {
+        
+
         if (interval) clearInterval(interval);
 
         const now = Date.now();

@@ -22,7 +22,7 @@ export async function guestLogin(): Promise<GuestLoginResult> {
   if (error) {
     return {
       success: false,
-      message: "Guest login failed. Please try again.",
+      message: `Error logging in as guest: ${error.message}`,
     };
   }
 

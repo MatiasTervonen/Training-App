@@ -7,8 +7,6 @@ import SignOutButton from "@/app/(app)/ui/singOutButton";
 import { usePathname } from "next/navigation";
 import {
   Settings,
-  Menu,
-  CircleX,
   NotebookPen,
   CalendarDays,
   MessageCircle,

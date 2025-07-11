@@ -1,14 +1,10 @@
-"use client";
-
 import { russoOne } from "../../ui/fonts";
 import ModalPageWrapper from "../components/modalPageWrapper";
 import MenuContext from "./components/MenuContext";
 import LinkButton from "../ui/LinkButton";
 import SignOutButton from "../ui/singOutButton";
-import { useState } from "react";
 
 export default function MenuPage() {
-  const [isSigningOut, setIsSigningOut] = useState(false);
 
   return (
     <ModalPageWrapper>
@@ -21,8 +17,8 @@ export default function MenuPage() {
             <LinkButton href={"/settings"}>Settings</LinkButton>
             <MenuContext />
           </div>
-          <div className="">
-            <SignOutButton onSignOut={() => setIsSigningOut(true)} />
+          <div>
+            <SignOutButton />
           </div>
         </div>
       </div>

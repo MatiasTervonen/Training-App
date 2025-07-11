@@ -65,12 +65,12 @@ export default function Navbar({ isOpen, setIsOpen }: NavbarProps) {
 
   return (
     <nav className="flex justify-between items-center px-5 py-3 text-gray-100">
-      <div className="text-2xl py-5">
+      <div className="text-3xl py-5">
         <Link href={"/"}>MyTrack</Link>
       </div>
       <div className="hidden md:flex items-center gap-4">
         <Link href={"/login"}>
-          <button className="text-gray-100 border-2 border-blue-500 p-2 rounded-xl bg-blue-900 hover:bg-blue-800 hover:scale-95 cursor-pointer">
+          <button className="text-white bg-gradient-to-tr from-slate-950  to-blue-700 px-5 py-2 rounded-xl border-2 border-blue-900 shadow-md shadow-blue-950 hover:from-blue-700 hover:to-slate-950 transform hover:scale-105 transition duration-200">
             Log in / Sign up
           </button>
         </Link>
@@ -104,7 +104,7 @@ export default function Navbar({ isOpen, setIsOpen }: NavbarProps) {
           >
             <div className="flex flex-col items-center gap-4 my-5">
               <Link href={"/login"}>
-                <button className="text-gray-100 border-2 border-blue-500 p-2 rounded-xl bg-blue-900 hover:bg-blue-800 hover:scale-95 cursor-pointer">
+                <button className="text-white bg-gradient-to-tr from-slate-950  to-blue-700 px-5 py-2 rounded-xl border-2 border-blue-900 shadow-md shadow-blue-950 hover:from-blue-700 hover:to-slate-950 transform hover:scale-105 transition duration-200">
                   Log in / Sign up
                 </button>
               </Link>

@@ -25,37 +25,45 @@ export default function Home() {
     <div className={`${russoOne.className} bg-slate-950 min-h-screen relative`}>
       <div className="max-w-7xl mx-auto">
         <Navbar isOpen={isOpen} setIsOpen={setIsOpen} />
-        <div className="flex flex-col lg:flex-row justify-center items-center gap-20 text-gray-100 py-10 lg:py-30 bg-slate-950 px-5">
-          <div className="flex flex-col text-center">
-            <div className="flex flex-col items-center">
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl">
-                Welcome to the MyTrack!
-              </h1>
-              <p className="text-md sm:text-lg mt-4">
-                The Only Tracking App You&apos;ll Ever Need
-              </p>
-            </div>
-            <div className="mt-10 flex flex-col items-center">
-              <h2 className="text-2xl sm:text-3xl mb-4">Track Your Progress</h2>
-              <p className="text-md sm:text-lg mt-4 max-w-lg ">
-                Track everything from gym workouts to Disc Golf rounds and
-                personal goals. MyTrack helps you stay organized and motivated
-                your progress, your way.
-              </p>
-            </div>
+
+        <div className="flex flex-col  justify-center items-center gap-10  text-gray-100 py-10 lg:py-20 bg-gradient-to-tr from-slate-950 via-slate-950 to-blue-900 rounded-t-xl px-5">
+          <div>
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl text-center">
+              Welcome to the{" "}
+              <span className="px-4 w-fit rounded-md text-left bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+                MyTrack!
+              </span>
+            </h1>
+            <p className="text-md text-gray-100 rounded-md py-2 sm:text-xl text-center">
+              The Only Tracking App You&apos;ll Ever Need
+            </p>
           </div>
-          <div className="">
-            <Image
-              src="/feed.webp"
-              alt="Landing Image"
-              width={300}
-              height={608}
-              className="rounded-lg shadow-lg"
-              priority
-            />
+          <div className="flex flex-col items-center gap-10 lg:flex-row text-center ">
+            <div className="flex flex-col">
+              <div className="flex flex-col items-center">
+                <h2 className="text-2xl sm:text-3xl mb-4">
+                  Track Your Progress
+                </h2>
+                <p className="text-md sm:text-lg mt-4 max-w-lg ">
+                  Track everything from gym workouts to Disc Golf rounds and
+                  personal goals. MyTrack helps you stay organized and motivated
+                  your progress, your way.
+                </p>
+              </div>
+            </div>
+            <div className="">
+              <Image
+                src="/feed.webp"
+                alt="Landing Image"
+                width={300}
+                height={608}
+                priority
+              />
+            </div>
           </div>
         </div>
-        <div className="flex flex-row justify-center px-4 flex-wrap md:gap-x-4 lg:gap-x-10 text-gray-100 py-5 text-lg bg-slate-900">
+
+        <div className="flex flex-row justify-center px-4 flex-wrap md:gap-x-4 lg:gap-x-10 text-gray-100 py-5 text-lg bg-slate-900 rounded-xl">
           <div
             onClick={() => setActiveSection("gym")}
             className={`flex items-center gap-2 px-4 py-2 ${
@@ -110,7 +118,7 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="sm:mt-10">
+        <div className="sm:mt-10 ">
           {activeSection === "gym" && <Gym />}
           {activeSection === "disc-golf" && <DiscGolf />}
           {activeSection === "notes" && <Notes />}

@@ -23,9 +23,9 @@ export default function LoginPage() {
   return (
     <div className="bg-slate-950">
       <div
-        className={` ${russoOne.className} flex flex-col items-center h-[100dvh] w-full bg-blue-950 max-w-3xl mx-auto`}
+        className={` ${russoOne.className} flex flex-col items-center h-[100dvh] w-full bg-gradient-to-tr from-slate-950 via-slate-950 to-blue-900 max-w-3xl mx-auto`}
       >
-        <p className=" text-gray-100 text-5xl p-4 bg-gray-900 w-full text-center">
+        <p className=" text-gray-100 text-5xl p-4  w-full text-center">
           MyTrack
         </p>
         <div className="relative flex flex-grow w-full overflow-hidden max-w-md">
@@ -35,7 +35,7 @@ export default function LoginPage() {
             action={formAction2}
             className={`absolute top-0 left-0 w-full transition-transform duration-500 ease-in-out ${
               activeForm ? "-translate-y-full" : "translate-y-0"
-            } flex flex-col justify-center h-full gap-5 px-5 bg-blue-950`}
+            } flex flex-col justify-center h-full gap-5 px-10`}
           >
             <label
               className="text-gray-100 pointer-events-none"
@@ -67,7 +67,7 @@ export default function LoginPage() {
               autoComplete="current-password"
               required
             />
-            <div className="flex flex-col">
+            <div className="flex flex-col ">
               <LoginButton />
               <p
                 aria-live="polite"
@@ -82,7 +82,7 @@ export default function LoginPage() {
                 {state2.message || "Placeholder for message"}
               </p>
             </div>
-            <div className="flex justify-center items-center mt-4">
+            <div>
               <GuestLogIn />
             </div>
           </form>
@@ -93,7 +93,7 @@ export default function LoginPage() {
             action={formAction}
             className={`absolute top-0 left-0 w-full transition-transform duration-500 ease-in-out ${
               activeForm ? "translate-y-0" : "translate-y-full"
-            } h-full flex flex-col justify-center gap-5 p-10 bg-blue-950 `}
+            } h-full flex flex-col justify-center gap-5 p-10`}
           >
             <label
               className="text-gray-100 pointer-events-none"
@@ -157,7 +157,7 @@ export default function LoginPage() {
             </div>
           </form>
         </div>
-        <div className="flex justify-center items-center w-full bg-blue-950 p-8 pb-20">
+        <div className="flex justify-center items-center w-full  p-8 pb-20">
           <div className="flex flex-col items-center justify-center gap-10">
             <p className=" text-gray-100 text-center text-lg">
               {activeForm
@@ -166,7 +166,7 @@ export default function LoginPage() {
             </p>
             <button>
               <span
-                className="text-gray-100 border-2 border-blue-400 py-4 px-10 rounded-md bg-blue-900 hover:bg-blue-800 hover:scale-95"
+                className="text-gray-100 border-2 border-blue-400 py-4 px-10 rounded-md bg-gradient-to-tr from-slate-950  to-blue-700 hover:from-blue-700 hover:to-slate-950 transform hover:scale-105 transition duration-200"
                 onClick={() => setActiveForm(!activeForm)}
               >
                 {activeForm ? "Log in" : "Sign up"}

@@ -68,7 +68,6 @@ export async function signup(
   );
 
   if (signUpError) {
-    console.error("SignUp error:", signUpError);
     return {
       success: false,
       message: signUpError.message || "Something went wrong. Please try again.",

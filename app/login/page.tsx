@@ -4,9 +4,9 @@ import { useState } from "react";
 import { login, signup } from "@/app/login/actions";
 import { russoOne } from "@/app/ui/fonts";
 import React from "react";
-import LoginButton from "@/app/(app)/ui/login/loginbutton";
-import SignupButton from "@/app/(app)/ui/login/signupbutton";
-import GuestLogIn from "@/app/(app)/components/GuestLogIn";
+import LoginButton from "@/app/login/components/loginbutton";
+import SignupButton from "@/app/login/components/signupbutton";
+import GuestLogIn from "@/app/login/guest-login/quest-login";
 
 export default function LoginPage() {
   const [activeForm, setActiveForm] = useState(false);
@@ -35,7 +35,7 @@ export default function LoginPage() {
             action={formAction2}
             className={`absolute top-0 left-0 w-full transition-transform duration-500 ease-in-out ${
               activeForm ? "-translate-y-full" : "translate-y-0"
-            } flex flex-col justify-center h-full gap-5 p-10 bg-blue-950`}
+            } flex flex-col justify-center h-full gap-5 px-5 bg-blue-950`}
           >
             <label
               className="text-gray-100 pointer-events-none"

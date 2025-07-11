@@ -95,9 +95,9 @@ export default function WeightCard({
 
           {/* Date */}
 
-          <div className=" p-[8px]">
+          <div>
             <p
-              className={` text-sm ${
+              className={`${
                 pinned ? "text-slate-900" : "text-gray-100"
               }`}
             >

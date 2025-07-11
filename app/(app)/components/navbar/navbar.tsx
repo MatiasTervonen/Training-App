@@ -49,11 +49,10 @@ export default function Navbar() {
       <nav className="w-full flex items-center justify-between p-4 bg-slate-950">
         <Link
           href="/dashboard"
-          className={`${russoOne.className} text-gray-100  text-3xl `}
+          className={`${russoOne.className} text-gray-100 text-2xl sm:text-3xl`}        
         >
           MyTrack
         </Link>
-
         <div className="flex gap-3 items-center">
           <NotificationBell />
           <Link
@@ -66,21 +65,12 @@ export default function Navbar() {
             <Image
               src={cacheBustedPicture}
               alt="Profile Picture"
-              width={40}
-              height={40}
+              width={20}
+              height={20}
               className="rounded-full border-2 border-blue-500 w-[40px] h-[40px] cursor-pointer"
             />
           </Link>
-          <button
-            aria-label={isOpen ? "Close menu" : "Open menu"}
-            onClick={toggleMenu}
-          >
-            {isOpen ? (
-              <CircleX className="text-gray-100" size={40} />
-            ) : (
-              <Menu className="text-gray-100" size={40} />
-            )}
-          </button>
+
         </div>
         {isOpen && (
           <div

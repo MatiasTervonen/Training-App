@@ -50,7 +50,7 @@ export default function SignOutButton({
       <button
         aria-label={isLoading ? "Logging out..." : "Log out"}
         onClick={handleSignOut}
-        className={`${russoOne.className} p-2 rounded-md shadow-xl bg-blue-900 border-2 border-blue-500 hover:bg-blue-700 hover:scale-95`}
+        className={`${russoOne.className} py-2 px-6 rounded-md shadow-xl bg-blue-900 border-2 border-blue-500 hover:bg-blue-700 hover:scale-95`}
       >
         {isLoading ? (
           <div className="flex items-center gap-2 justify-center">

@@ -60,7 +60,7 @@ export default function NotificationBell() {
         </div>
       )}
       <DropdownMenu
-        className="mr-[-150px] mt-[10px] bg-slate-950 border-blue-500"
+        className="mr-[-110px] mt-[10px] bg-slate-950 border-blue-500"
         button={
           <div className="text-gray-100 border-2 p-2 rounded-full border-blue-500">
             <Bell size={20} />

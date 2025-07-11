@@ -21,6 +21,7 @@ export default function GymCard({
   onExpand,
   onEdit,
 }: Props) {
+
   const formatDuration = (seconds: number) => {
     const totalMinutes = Math.floor(seconds / 60);
     const hours = Math.floor(totalMinutes / 60);
@@ -98,9 +99,9 @@ export default function GymCard({
 
           {/* Date */}
 
-          <div className=" p-[8px]">
+          <div>
             <p
-              className={` text-sm ${
+              className={`${
                 pinned ? "text-slate-900" : "text-gray-100"
               }`}
             >

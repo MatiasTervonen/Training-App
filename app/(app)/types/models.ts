@@ -20,6 +20,8 @@ export type Friends = Pick<
   >;
 };
 
+export type timers = Database["public"]["Tables"]["timers"]["Row"];
+
 export type users = Database["public"]["Tables"]["users"]["Row"];
 
 export type template = Database["public"]["Tables"]["gym_templates"]["Row"];
@@ -69,16 +71,6 @@ export type full_gym_exercises = gym_session_exercises & {
 
 export type full_gym_session = gym_sessions & {
   gym_session_exercises: full_gym_exercises[];
-};
-
-export const emptyExerciseEntry = {
-  exercise_id: "",
-  name: "",
-  equipment: "",
-  sets: [],
-  notes: "",
-  superset_id: "",
-  muscle_group: "",
 };
 
 export type FeedCardProps =

@@ -1,5 +1,3 @@
-"use client";
-
 import { russoOne } from "@/app/ui/fonts";
 
 type TitleInputProps = {

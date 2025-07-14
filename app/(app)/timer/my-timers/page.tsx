@@ -10,27 +10,19 @@ import useSWR, { mutate } from "swr";
 import toast from "react-hot-toast";
 import TimerCard from "../components/TimerCard";
 import { useTimerStore } from "../../lib/stores/timerStore";
-
-type Timer = {
-  id: string;
-  title: string;
-  time_seconds: number; // in seconds
-  notes: string;
-  created_at: string;
-};
+import { fetcher } from "@/app/(app)/lib/fetcher";
+import { timers } from "@/app/(app)/types/models";
 
 export default function TimersPage() {
-  const [expandedItem, setExpandedItem] = useState<Timer | null>(null);
+  const [expandedItem, setExpandedItem] = useState<timers | null>(null);
 
   const router = useRouter();
-
-  const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
   const {
     data: timer = [],
     error,
     isLoading,
-  } = useSWR("/api/timer/get-timer", fetcher, {
+  } = useSWR<timers[]>("/api/timer/get-timer", fetcher, {
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
   });
@@ -45,7 +37,7 @@ export default function TimersPage() {
 
     mutate(
       "/api/timer/get-timer",
-      (currentTimers: Timer[] = []) => {
+      (currentTimers: timers[] = []) => {
         return currentTimers.filter((t) => t.id !== timerId);
       },
       false
@@ -74,7 +66,7 @@ export default function TimersPage() {
     }
   };
 
-  const startSavedTimer = (timer: Timer) => {
+  const startSavedTimer = (timer: timers) => {
     localStorage.setItem(
       "timer_session_draft",
       JSON.stringify({
@@ -127,7 +119,7 @@ export default function TimersPage() {
           )}
 
           {timer &&
-            timer.map((timer: Timer) => (
+            timer.map((timer: timers) => (
               <div
                 key={timer.id}
                 className={`${russoOne.className} text-gray-100 text-center bg-blue-800 py-2 my-3 rounded-md shadow-xl border-2 border-blue-500 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95`}

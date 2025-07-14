@@ -12,11 +12,19 @@ import { CircleX, RotateCcw } from "lucide-react";
 import { useTimerStore } from "../../lib/stores/timerStore";
 
 export default function TimerPage() {
-  const [timerTitle, setTimerTitle] = useState("");
-  const [hasLoadedDraft, sethasLaoding] = useState(false);
-  const [alarmMinutes, setAlarmMinutes] = useState("");
-  const [alarmSeconds, setAlarmSeconds] = useState("");
-  const [notes, setNotes] = useState("");
+  const draft =
+    typeof window !== "undefined"
+      ? JSON.parse(localStorage.getItem("timer_session_draft") || "null")
+      : null;
+
+  const [timerTitle, setTimerTitle] = useState(draft?.title || "");
+  const [alarmMinutes, setAlarmMinutes] = useState(
+    draft ? Math.floor(draft.durationInSeconds / 60).toString() : ""
+  );
+  const [alarmSeconds, setAlarmSeconds] = useState(
+    draft ? (draft.durationInSeconds % 60).toString() : ""
+  );
+  const [notes, setNotes] = useState(draft?.notes || "");
 
   const router = useRouter();
 
@@ -93,8 +101,6 @@ export default function TimerPage() {
   };
 
   useEffect(() => {
-    if (!hasLoadedDraft) return;
-
     if (
       timerTitle.trim() === "" &&
       alarmMinutes.trim() === "" &&
@@ -114,34 +120,7 @@ export default function TimerPage() {
       durationInSeconds: totalSeconds,
     };
     localStorage.setItem("timer_session_draft", JSON.stringify(sessionDraft));
-  }, [timerTitle, alarmMinutes, alarmSeconds, notes, hasLoadedDraft]);
-
-  useEffect(() => {
-    const draft = localStorage.getItem("timer_session_draft");
-    if (draft) {
-      try {
-        const {
-          title: savedTitle,
-          notes,
-          durationInSeconds,
-        } = JSON.parse(draft);
-        if (savedTitle) {
-          setTimerTitle(savedTitle);
-        }
-        if (notes) {
-          setNotes(notes);
-        }
-        if (typeof durationInSeconds === "number") {
-          setAlarmMinutes(Math.floor(durationInSeconds / 60).toString());
-          setAlarmSeconds((durationInSeconds % 60).toString());
-        }
-      } catch (error) {
-        console.error("Failed to parse timer session draft:", error);
-      }
-    }
-
-    sethasLaoding(true);
-  }, []);
+  }, [timerTitle, alarmMinutes, alarmSeconds, notes]);
 
   const playAlarm = () => {
     if (!audioRef.current) {

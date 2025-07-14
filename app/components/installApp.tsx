@@ -58,7 +58,7 @@ export default function InstallApp({
           {expanded && (
             <div
               onClick={() => setExpanded(false)}
-              className="absolute left-1/2 -translate-x-1/2 bg-slate-800 p-4 rounded-lg mt-2 w-max shadow-lg"
+              className="absolute left-1/2 -translate-x-1/2 md:-left-10 bg-slate-800 p-4 rounded-lg mt-2 w-max shadow-lg"
             >
               <p className="text-gray-300 mb-2">
                 Tap the <span className="">Share</span> button in Safari, then

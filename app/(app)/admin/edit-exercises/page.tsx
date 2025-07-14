@@ -2,7 +2,6 @@
 
 import { russoOne } from "@/app/ui/fonts";
 import ModalPageWrapper from "@/app/(app)/components/modalPageWrapper";
-import { useRouter } from "next/navigation";
 import TitleInput from "@/app/(app)/training/components/TitleInput";
 import { useState, useEffect } from "react";
 import ExerciseTypeSelect from "@/app/(app)/training/components/ExerciseTypeSelect";
@@ -19,12 +18,9 @@ export default function EditExercises() {
   const [muscle_group, setMuscleGroup] = useState("");
   const [main_group, setMainGroup] = useState("");
   const [isSaving, setIsSaving] = useState(false);
-  const [selectedExercise, setSelectedExercise] = useState<gym_exercises | null>(
-    null
-  );
+  const [selectedExercise, setSelectedExercise] =
+    useState<gym_exercises | null>(null);
   const [resetTrigger, setResetTrigger] = useState(0);
-
-  const router = useRouter();
 
   const handleUpdateExercise = async () => {
     if (!name || !equipment || !muscle_group || !main_group) {
@@ -58,7 +54,7 @@ export default function EditExercises() {
       await response.json();
 
       toast.success("Exercise updated successfully!");
-      router.back();
+      resetFields();
     } catch (error) {
       console.error("Error update exercise:", error);
       toast.error("Failed to update exercise. Please try again.");
@@ -98,7 +94,6 @@ export default function EditExercises() {
       setEquipment(selectedExercise.equipment);
       setMuscleGroup(selectedExercise.muscle_group);
       setMainGroup(selectedExercise.main_group);
-      console.log("Selected exercise details:", selectedExercise);
     }
   }, [selectedExercise]);
 
@@ -113,13 +108,7 @@ export default function EditExercises() {
   };
 
   return (
-    <ModalPageWrapper
-      noTopPadding
-      onSwipeRight={() => router.back()}
-      leftLabel="back"
-      onSwipeLeft={() => router.back()}
-      rightLabel="back"
-    >
+    <ModalPageWrapper noTopPadding>
       <div
         className={`${russoOne.className} h-full bg-slate-800 text-gray-100 pt-5 `}
       >

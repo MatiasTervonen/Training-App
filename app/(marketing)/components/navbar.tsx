@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import InstallApp from "@/app/components/installApp";
 import { Menu, CircleX } from "lucide-react";
@@ -11,11 +13,6 @@ interface BeforeInstallPromptEvent extends Event {
 
 interface NavigatorStandalone extends Navigator {
   standalone?: boolean;
-}
-
-interface NavbarProps {
-  isOpen: boolean;
-  setIsOpen: (isOpen: boolean) => void;
 }
 
 function isIosSafari(): boolean {
@@ -33,10 +30,11 @@ function isInStandaloneMode(): boolean {
   );
 }
 
-export default function Navbar({ isOpen, setIsOpen }: NavbarProps) {
+export default function Navbar() {
   const [deferredPromt, setDeferredPrompt] =
     useState<BeforeInstallPromptEvent | null>(null);
   const [showIosPrompt, setShowIosPrompt] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     const handleBeforeInstallPrompt = (e: Event) => {

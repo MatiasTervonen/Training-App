@@ -2,7 +2,6 @@
 
 import { russoOne } from "@/app/ui/fonts";
 import ModalPageWrapper from "@/app/(app)/components/modalPageWrapper";
-import { useRouter } from "next/navigation";
 import TitleInput from "@/app/(app)/training/components/TitleInput";
 import { useState } from "react";
 import ExerciseTypeSelect from "@/app/(app)/training/components/ExerciseTypeSelect";
@@ -17,8 +16,6 @@ export default function EditExercises() {
   const [muscleGroup, setMuscleGroup] = useState("chest");
   const [mainGroup, setMainGroup] = useState("chest");
   const [isSaving, setIsSaving] = useState(false);
-
-  const router = useRouter();
 
   const handleSave = async () => {
     if (!name || !equipment || !muscleGroup || !mainGroup) {
@@ -46,29 +43,29 @@ export default function EditExercises() {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to save exercise");
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to save exercise");
       }
 
       await response.json();
 
       toast.success("Exercise saved successfully!");
-      router.back();
-    } catch (error) {
-      console.error("Error saving exercise:", error);
-      toast.error("Failed to save exercise. Please try again.");
+      setName("");
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        toast.error(
+          error.message || "Failed to save exercise. Please try again."
+        );
+      } else {
+        toast.error("An unexpected error occurred. Please try again.");
+      }
     } finally {
       setIsSaving(false);
     }
   };
 
   return (
-    <ModalPageWrapper
-      noTopPadding
-      onSwipeRight={() => router.back()}
-      leftLabel="back"
-      onSwipeLeft={() => router.back()}
-      rightLabel="back"
-    >
+    <ModalPageWrapper noTopPadding>
       <div
         className={`${russoOne.className} h-full bg-slate-800 text-gray-100 px-5 pt-5 max-w-md mx-auto`}
       >

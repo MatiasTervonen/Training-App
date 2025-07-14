@@ -29,21 +29,10 @@ import { groupTemplateExercises } from "../utils/groupTemplateExercises";
 import ExerciseCard from "../components/ExerciseCard";
 
 export default function TrainingSessionPage() {
-  const draft =
-    typeof window !== "undefined"
-      ? JSON.parse(localStorage.getItem("gym_session_draft") || "null")
-      : null;
-
-  const [sessionTitle, setSessionTitle] = useState(draft?.title || "");
-  const [exercises, setExercises] = useState<ExerciseEntry[]>(
-    draft?.exercises || []
-  );
-  const [notes, setNotes] = useState(draft?.notes || "");
-  const [exerciseInputs, setExerciseInputs] = useState<ExerciseInput[]>(
-    draft?.exercises
-      ? draft.exercises.map(() => ({ weight: "", reps: "", rpe: "Medium" }))
-      : []
-  );
+  const [sessionTitle, setSessionTitle] = useState("");
+  const [exercises, setExercises] = useState<ExerciseEntry[]>([]);
+  const [notes, setNotes] = useState("");
+  const [exerciseInputs, setExerciseInputs] = useState<ExerciseInput[]>([]);
   const router = useRouter();
   const [isSaving, setIsSaving] = useState(false);
   const [exerciseType, setExerciseType] = useState("Normal");
@@ -54,9 +43,15 @@ export default function TrainingSessionPage() {
   const [lastHistory, setLastHistory] = useState<HistoryResult[]>([]);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [isHistoryLoading, setIsHistoryLoading] = useState(false);
+  const [exerciseToChangeIndex, setExerciseToChangeIndex] = useState<
+    number | null
+  >(null);
   const didNavigate = useRef(false);
+  const [hasLoadedDraft, setHasLoadedDraft] = useState(false);
 
   useEffect(() => {
+    if (!hasLoadedDraft) return;
+
     if (
       exercises.length === 0 &&
       notes.trim() === "" &&
@@ -72,7 +67,28 @@ export default function TrainingSessionPage() {
       notes,
     };
     localStorage.setItem("gym_session_draft", JSON.stringify(sessionDraft));
-  }, [exercises, notes, sessionTitle]);
+  }, [exercises, notes, sessionTitle, hasLoadedDraft]);
+
+  useEffect(() => {
+    const draft = localStorage.getItem("gym_session_draft");
+    if (draft) {
+      const parsedDraft = JSON.parse(draft);
+      setSessionTitle(parsedDraft.title || "");
+      setExercises(parsedDraft.exercises || []);
+      setNotes(parsedDraft.notes || "");
+      setExerciseInputs(
+        parsedDraft.exercises
+          ? parsedDraft.exercises.map(() => ({
+              weight: "",
+              reps: "",
+              rpe: "Medium",
+            }))
+          : []
+      );
+    }
+
+    setHasLoadedDraft(true);
+  }, [setSessionTitle, setExercises, setNotes, setExerciseInputs]);
 
   const {
     activeSession,
@@ -119,6 +135,9 @@ export default function TrainingSessionPage() {
   };
 
   const startSession = useCallback(() => {
+    const currentElapsed = useTimerStore.getState().elapsedTime;
+    if (currentElapsed > 0) return;
+
     setActiveSession({
       type: "gym",
       label: sessionTitle,
@@ -140,7 +159,7 @@ export default function TrainingSessionPage() {
     const newSupersetId = generateUUID();
 
     if (exercises.length === 0) {
-      startSession(); // Start the timer/session if not already started
+      startSession();
     }
 
     if (exerciseType === "Super-Set") {
@@ -223,7 +242,7 @@ export default function TrainingSessionPage() {
   };
 
   const saveSession = async () => {
-    if (exercises.length === 0) return;
+    if (elapsedTime === 0 || sessionTitle.trim() === "") return;
 
     const confirmSave = confirm(
       "Are you sure you want to finish this session?"
@@ -313,6 +332,8 @@ export default function TrainingSessionPage() {
 
   const groupedExercises = groupTemplateExercises(exercises);
 
+  if (!hasLoadedDraft) return null;
+
   return (
     <>
       <nav className="flex items-center justify-between bg-gray-700 p-2 fixed px-4 w-full z-40 max-w-3xl left-1/2 -translate-x-1/2">
@@ -378,6 +399,12 @@ export default function TrainingSessionPage() {
                         <ExerciseCard
                           exercise={exercise}
                           lastExerciseHistory={lastExerciseHistory}
+                          onChangeExercise={(index) => {
+                            setExerciseToChangeIndex(index);
+                            setSupersetExercise([emptyExerciseEntry]);
+                            setNormalExercises([emptyExerciseEntry]);
+                            setIsExerciseModalOpen(true);
+                          }}
                           index={index}
                           input={exerciseInputs[index]}
                           onInputChange={(index, field, value) => {
@@ -489,14 +516,29 @@ export default function TrainingSessionPage() {
                                   main_group: selected.main_group || "",
                                   sets: [],
                                   notes: "",
-                                  superset_id: "",
+                                  superset_id:
+                                    exerciseToChangeIndex !== null
+                                      ? exercises[exerciseToChangeIndex]
+                                          ?.superset_id || generateUUID()
+                                      : "",
                                   muscle_group: selected.muscle_group || "",
                                 };
-                                setSupersetExercise((prev) => {
-                                  const updated = [...prev];
-                                  updated[updated.length - 1] = newExercise;
-                                  return [...updated, emptyExerciseEntry]; // Add one more for next
-                                });
+
+                                if (exerciseToChangeIndex !== null) {
+                                  // Update single exercise in session
+                                  const updated = [...exercises];
+                                  updated[exerciseToChangeIndex] = newExercise;
+                                  setExercises(updated);
+                                  setIsExerciseModalOpen(false);
+                                  setExerciseToChangeIndex(null);
+                                } else {
+                                  // Add new exercise to superset draft
+                                  setSupersetExercise((prev) => {
+                                    const updated = [...prev];
+                                    updated[updated.length - 1] = newExercise;
+                                    return [...updated, emptyExerciseEntry]; // allow adding another
+                                  });
+                                }
                               }}
                               resetTrigger={dropdownResetKey}
                             />
@@ -548,14 +590,29 @@ export default function TrainingSessionPage() {
                                   main_group: selected.main_group,
                                   sets: [],
                                   notes: "",
-                                  superset_id: "",
+                                  superset_id:
+                                    exerciseToChangeIndex !== null
+                                      ? exercises[exerciseToChangeIndex]
+                                          ?.superset_id || generateUUID()
+                                      : "",
                                   muscle_group: selected.muscle_group,
                                 };
-                                setNormalExercises((prev) => {
-                                  const updated = [...prev];
-                                  updated[updated.length - 1] = newExercise;
-                                  return [...updated, emptyExerciseEntry]; // Add new empty for next
-                                });
+
+                                if (exerciseToChangeIndex !== null) {
+                                  // Update exercise in exercises array
+                                  const updated = [...exercises];
+                                  updated[exerciseToChangeIndex] = newExercise;
+                                  setExercises(updated);
+                                  setIsExerciseModalOpen(false);
+                                  setExerciseToChangeIndex(null);
+                                } else {
+                                  // Add to draft normal exercises
+                                  setNormalExercises((prev) => {
+                                    const updated = [...prev];
+                                    updated[updated.length - 1] = newExercise;
+                                    return [...updated, emptyExerciseEntry]; // allow adding another
+                                  });
+                                }
                               }}
                               resetTrigger={dropdownResetKey}
                             />

@@ -5,6 +5,7 @@ import Navbar from "@/app/(app)/components/navbar/navbar";
 import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
 import { useEffect } from "react";
 import { createClient } from "@/utils/supabase/client";
+import toast from "react-hot-toast";
 
 const noNavbarPaths = ["/login"];
 
@@ -63,13 +64,12 @@ export default function LayoutWrapper({
 
           const data = await response.json();
           setPreferences(data);
-          console.log("✅ Preferences set to Zustand:", data);
         } catch (error) {
           console.error("Error fetching user preferences:", error);
           console.log("No preferences fetched (likely not logged in yet)");
+          toast.error("Failed to load user preferences. Please try again.");
         }
       } else {
-        console.log("User not logged in, clearing preferences");
         clearPreferences();
         setIsLoggedIn(false);
         setIsGuest(false);

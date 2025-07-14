@@ -23,6 +23,7 @@ type ExerciseCardProps = {
   ) => void;
   onAddSet: (index: number) => void;
   onDeleteSet: (exerciseIndex: number, setIndex: number) => void;
+  onChangeExercise: (index: number) => void;
 };
 
 const isCardioExercise = (exercise: ExerciseEntry) => {
@@ -39,6 +40,7 @@ export default function ExerciseCard({
   onAddSet,
   onDeleteSet,
   lastExerciseHistory,
+  onChangeExercise,
 }: ExerciseCardProps) {
   const weightUnit =
     useUserStore((state) => state.preferences?.weight_unit) || "kg";
@@ -53,8 +55,7 @@ export default function ExerciseCard({
             {index + 1}. {exercise.name}
           </span>
           <span className="text-sm text-gray-400">
-            {exercise.equipment} /{" "}
-            {exercise.muscle_group}
+            {exercise.equipment} / {exercise.muscle_group}
           </span>
         </div>
 
@@ -66,10 +67,13 @@ export default function ExerciseCard({
             Delete
           </button>
           <button
-            className="py-2 px-4"
+            className="py-2 px-4 border-b"
             onClick={() => lastExerciseHistory(index)}
           >
             History
+          </button>
+          <button className="py-2 px-4" onClick={() => onChangeExercise(index)}>
+            Change
           </button>
         </DropdownMenu>
       </div>

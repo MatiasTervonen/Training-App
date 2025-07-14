@@ -1,5 +1,3 @@
-"use client";
-
 import { russoOne } from "@/app/ui/fonts";
 import { SquarePen } from "lucide-react";
 import clsx from "clsx";

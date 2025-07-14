@@ -1,16 +1,9 @@
 import { russoOne } from "@/app/ui/fonts";
 import { formatDate } from "@/app/(app)/lib/formatDate";
-
-type Timer = {
-  id: string;
-  title: string;
-  time_seconds: number; // in seconds
-  notes: string;
-  created_at: string;
-};
+import { timers } from "@/app/(app)/types/models";
 
 type Props = {
-  item: Timer;
+  item: timers;
   onDelete: () => void;
   onExpand: () => void;
   onEdit: () => void;

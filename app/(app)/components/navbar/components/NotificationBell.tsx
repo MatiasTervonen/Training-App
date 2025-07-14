@@ -1,5 +1,5 @@
 import { Bell } from "lucide-react";
-import SWR, { mutate } from "swr";
+import useSWR, { mutate } from "swr";
 import DropdownMenu from "@/app/(app)/components/dropdownMenu";
 import { russoOne } from "@/app/ui/fonts";
 import { formatDate } from "@/app/(app)/lib/formatDate";
@@ -10,7 +10,7 @@ import { FriendRequest } from "@/app/(app)/types/models";
 export default function NotificationBell() {
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
-  const { data: friendRequest } = SWR<FriendRequest[]>(
+  const { data: friendRequest } = useSWR<FriendRequest[]>(
     "/api/friend/get-request",
     fetcher
   );

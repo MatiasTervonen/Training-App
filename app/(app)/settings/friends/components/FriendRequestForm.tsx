@@ -1,3 +1,5 @@
+"use client";
+
 import TitleInput from "@/app/(app)/training/components/TitleInput";
 import { useState } from "react";
 import toast from "react-hot-toast";

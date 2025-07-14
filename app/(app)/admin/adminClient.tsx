@@ -1,21 +1,10 @@
-"use client";
-
 import { russoOne } from "../../ui/fonts";
 import Link from "next/link";
 import ModalPageWrapper from "../components/modalPageWrapper";
-import { useRouter } from "next/navigation";
 
 export default function AdminClient({ isAdmin }: { isAdmin?: boolean }) {
-  const router = useRouter();
-
   return (
-    <ModalPageWrapper
-      noTopPadding
-      onSwipeRight={() => router.back()}
-      leftLabel="back"
-      onSwipeLeft={() => router.push("/dashboard")}
-      rightLabel="home"
-    >
+    <ModalPageWrapper noTopPadding>
       {isAdmin && (
         <div
           className={`${russoOne.className} h-full bg-slate-800 text-gray-100 px-5 pt-5`}

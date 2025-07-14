@@ -2,7 +2,7 @@
 
 import { russoOne } from "@/app/ui/fonts";
 import ModalPageWrapper from "@/app/(app)/components/modalPageWrapper";
-import SWR from "swr";
+import useSWR from "swr";
 import FriendRequestForm from "./components/FriendRequestForm";
 import FriendCard from "./components/FriendCard";
 import { Friends } from "@/app/(app)/types/models";
@@ -14,7 +14,7 @@ export default function FriendsPage() {
     data,
     error: friendsError,
     isLoading,
-  } = SWR<{ friends: Friends[]; currentUserid: string }>(
+  } = useSWR<{ friends: Friends[]; currentUserid: string }>(
     "/api/friend/get-friends",
     fetcher,
     {

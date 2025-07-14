@@ -19,13 +19,12 @@ import EditWeight from "@/app/(app)/ui/editSession/EditWeight";
 import toast from "react-hot-toast";
 import { FeedSkeleton } from "../loadingSkeletons/skeletons";
 import { notes, weight, full_gym_session } from "@/app/(app)/types/models";
+import { fetcher } from "../../lib/fetcher";
 
 type FeedItem =
   | { table: "notes"; item: notes; pinned: boolean }
   | { table: "weight"; item: weight; pinned: boolean }
   | { table: "gym_sessions"; item: full_gym_session; pinned: boolean };
-
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 export default function SessionFeed() {
   const [expandedItem, setExpandedItem] = useState<FeedItem | null>(null);

@@ -15,6 +15,7 @@ import {
   ExerciseEntry,
   emptyExerciseEntry,
   OptimisticTemplate,
+  ExerciseInput,
 } from "@/app/(app)/types/session";
 import ExerciseHistoryModal from "../components/ExerciseHistoryModal";
 import { generateUUID } from "@/app/(app)/lib/generateUUID";
@@ -22,25 +23,36 @@ import { toast } from "react-hot-toast";
 import { mutate } from "swr";
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import { groupTemplateExercises } from "../utils/groupTemplateExercises";
-import TemplateExerciseCard from "../components/ExerciseCard";
+import ExerciseCard from "../components/ExerciseCard";
 
 export default function CreateTemplatePage() {
-  const [workoutName, setWorkoutName] = useState("");
+  const draft =
+    typeof window !== "undefined"
+      ? JSON.parse(localStorage.getItem("gym_template_draft") || "null")
+      : null;
+
+  const [workoutName, setWorkoutName] = useState(draft?.title || "");
+  const [exercises, setExercises] = useState<ExerciseEntry[]>(
+    draft?.exercises || []
+  );
   const [isExerciseModalOpen, setIsExerciseModalOpen] = useState(false);
   const [exerciseType, setExerciseType] = useState("Normal");
   const [supersetExercise, setSupersetExercise] = useState<ExerciseEntry[]>([]);
   const [dropdownResetKey, setDropdownResetKey] = useState(0);
-  const [exercises, setExercises] = useState<ExerciseEntry[]>([]);
   const [isSaving, setIsSaving] = useState(false);
   const [normalExercises, setNormalExercises] = useState<ExerciseEntry[]>([]);
-  const [exerciseInputs, setExerciseInputs] = useState<
-    { weight: string; reps: string; rpe: string }[]
-  >([]);
+  const [exerciseInputs, setExerciseInputs] = useState<ExerciseInput[]>(
+    draft?.exercises
+      ? draft.exercises.map(() => ({ weight: "", reps: "", rpe: "Medium" }))
+      : []
+  );
   const [lastHistory, setLastHistory] = useState<HistoryResult[]>([]);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [isHistoryLoading, setIsHistoryLoading] = useState(false);
-  const [hasLoadedDraft, sethasLaoding] = useState(false);
   const didNavigate = useRef(false);
+  const [exerciseToChangeIndex, setExerciseToChangeIndex] = useState<
+    number | null
+  >(null);
 
   const groupedExercises = groupTemplateExercises(exercises);
 
@@ -82,30 +94,6 @@ export default function CreateTemplatePage() {
     (exercise.main_group || "").toLowerCase() === "cardio";
 
   useEffect(() => {
-    const draft = localStorage.getItem("gym_template_draft");
-    if (draft) {
-      try {
-        const { title: savedWorkoutName, exercises: savedExercises } =
-          JSON.parse(draft);
-
-        if (savedExercises) setExercises(savedExercises);
-        setExerciseInputs(
-          savedExercises.map(() => ({ weight: "", reps: "", rpe: "Medium" }))
-        );
-        if (savedWorkoutName) {
-          setWorkoutName(savedWorkoutName);
-        }
-      } catch (error) {
-        console.error("Failed to parse draft from localStorage:", error);
-      }
-    }
-
-    sethasLaoding(true);
-  }, []);
-
-  useEffect(() => {
-    if (!hasLoadedDraft) return;
-
     if (exercises.length === 0 && workoutName.trim() === "") {
       localStorage.removeItem("gym_template_draft");
       return;
@@ -116,7 +104,7 @@ export default function CreateTemplatePage() {
       exercises,
     };
     localStorage.setItem("gym_template_draft", JSON.stringify(sessionDraft));
-  }, [exercises, workoutName, hasLoadedDraft]);
+  }, [exercises, workoutName]);
 
   const handleAddExercise = () => {
     const newSupersetId = generateUUID();
@@ -291,9 +279,15 @@ export default function CreateTemplatePage() {
               {group.map(({ exercise, index }) => {
                 return (
                   <div key={index}>
-                    <TemplateExerciseCard
+                    <ExerciseCard
                       exercise={exercise}
                       lastExerciseHistory={lastExerciseHistory}
+                      onChangeExercise={(index) => {
+                        setExerciseToChangeIndex(index);
+                        setSupersetExercise([emptyExerciseEntry]);
+                        setNormalExercises([emptyExerciseEntry]);
+                        setIsExerciseModalOpen(true);
+                      }}
                       index={index}
                       input={exerciseInputs[index]}
                       onInputChange={(index, field, value) => {
@@ -403,14 +397,28 @@ export default function CreateTemplatePage() {
                               main_group: selected.main_group,
                               sets: [],
                               notes: "",
-                              superset_id: "",
+                              superset_id:
+                                exerciseToChangeIndex !== null
+                                  ? exercises[exerciseToChangeIndex]
+                                      ?.superset_id || generateUUID()
+                                  : "",
                               muscle_group: selected.muscle_group,
                             };
-                            setSupersetExercise((prev) => {
-                              const updated = [...prev];
-                              updated[updated.length - 1] = newExercise;
-                              return [...updated, emptyExerciseEntry]; // Add one more for next
-                            });
+                            if (exerciseToChangeIndex !== null) {
+                              // Update single exercise in session
+                              const updated = [...exercises];
+                              updated[exerciseToChangeIndex] = newExercise;
+                              setExercises(updated);
+                              setIsExerciseModalOpen(false);
+                              setExerciseToChangeIndex(null);
+                            } else {
+                              // Add new exercise to superset draft
+                              setSupersetExercise((prev) => {
+                                const updated = [...prev];
+                                updated[updated.length - 1] = newExercise;
+                                return [...updated, emptyExerciseEntry]; // allow adding another
+                              });
+                            }
                           }}
                           resetTrigger={dropdownResetKey}
                         />
@@ -462,15 +470,29 @@ export default function CreateTemplatePage() {
                               main_group: selected.main_group,
                               sets: [],
                               notes: "",
-                              superset_id: "",
+                              superset_id:
+                                exerciseToChangeIndex !== null
+                                  ? exercises[exerciseToChangeIndex]
+                                      ?.superset_id || generateUUID()
+                                  : "",
                               muscle_group: selected.muscle_group,
                             };
 
-                            setNormalExercises((prev) => {
-                              const updated = [...prev];
-                              updated[updated.length - 1] = newExercise;
-                              return [...updated, emptyExerciseEntry]; // Add new empty for next
-                            });
+                            if (exerciseToChangeIndex !== null) {
+                              // Update exercise in exercises array
+                              const updated = [...exercises];
+                              updated[exerciseToChangeIndex] = newExercise;
+                              setExercises(updated);
+                              setIsExerciseModalOpen(false);
+                              setExerciseToChangeIndex(null);
+                            } else {
+                              // Add to draft normal exercises
+                              setNormalExercises((prev) => {
+                                const updated = [...prev];
+                                updated[updated.length - 1] = newExercise;
+                                return [...updated, emptyExerciseEntry]; // allow adding another
+                              });
+                            }
                           }}
                           resetTrigger={dropdownResetKey}
                         />

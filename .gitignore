@@ -21,12 +21,25 @@ app/web/.env.local
 app/web/.env.*.local
 app/web/node_modules/
 
-# React Native
+# Ignore build output for mobile app
+app/mobile/.expo/
+app/mobile/dist/
 app/mobile/android/
 app/mobile/ios/
-app/mobile/build/
-*.keystore
-*.gradle
+app/mobile/node_modules/
+app/mobile/web-build/
+app/mobile/expo-env.d.ts
+app/mobile/.expo-shared/
+app/mobile/.cache
+
+# Native
+.kotlin/
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
 
 # production
 /build

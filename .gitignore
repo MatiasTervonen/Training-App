@@ -1,8 +1,9 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+# Node dependencies
+**/node_modules
+
 # dependencies
-/node_modules
-/.pnp
 .pnp.*
 .yarn/*
 !.yarn/patches
@@ -10,27 +11,26 @@
 !.yarn/releases
 !.yarn/versions
 
-# testing
-/coverage
+# web app (next.js)
+web/.next/
+web/out/
+web/.env
+web/.env.local
+web/.env.*.local
+web/next-env.d.ts
 
-# Ignore build output for web app
-app/web/.next/
-app/web/out/
-app/web/.env
-app/web/.env.local
-app/web/.env.*.local
-app/web/node_modules/
+# mobile app (expo)
+mobile/.expo/
+mobile/dist/
+mobile/android/
+mobile/ios/
+mobile/web-build/
+mobile/expo-env.d.ts
+mobile/.expo-shared/
+mobile/.cache
 
-# Ignore build output for mobile app
-app/mobile/.expo/
-app/mobile/dist/
-app/mobile/android/
-app/mobile/ios/
-app/mobile/node_modules/
-app/mobile/web-build/
-app/mobile/expo-env.d.ts
-app/mobile/.expo-shared/
-app/mobile/.cache
+# Testing & Coverage
+coverage/
 
 # Native
 .kotlin/
@@ -48,6 +48,16 @@ app/mobile/.cache
 # misc
 .DS_Store
 *.pem
+*.tsbuildinfo
+
+# Native
+.kotlin/
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
 
 # debug
 npm-debug.log*
@@ -56,14 +66,8 @@ yarn-error.log*
 pnpm-debug.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
-.env*
-
 # vercel
 .vercel
 
-# typescript
-*.tsbuildinfo
-next-env.d.ts
 
-.vercel
+

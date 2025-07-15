@@ -9,7 +9,7 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "lint": "expo lint",
-    "preinstall": "echo ' Run pnpm install from root, not app/web' && exit 1"
+    "preinstall": "node check-install-location.js"
   },
   "dependencies": {
     "@expo/vector-icons": "^14.1.0",

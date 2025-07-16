@@ -1,11 +1,10 @@
-import { russoOne } from "../ui/fonts";
 import Image from "next/image";
 import Navbar from "./components/navbar";
 import InteractiveTab from "./components/interactive-tab";
 
 export default function Home() {
   return (
-    <div className={`${russoOne.className} bg-slate-950 min-h-screen relative`}>
+    <div className="bg-slate-950 min-h-screen relative">
       <div className="max-w-7xl mx-auto">
         <Navbar />
 

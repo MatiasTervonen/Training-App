@@ -1,6 +1,5 @@
 "use client";
 
-import { russoOne } from "@/app/ui/fonts";
 import Modal from "@/app/(app)/components/modal";
 import Spinner from "@/app/(app)/components/spinner";
 import { formatDate } from "@/app/(app)/lib/formatDate";
@@ -25,7 +24,7 @@ export default function ExerciseHistoryModal({
     <Modal noTopPadding={noTopPadding} isOpen={isOpen} onClose={onClose}>
       {isLoading ? (
         <div
-          className={`${russoOne.className} text-lg text-gray-100 flex flex-col justify-center items-center mt-20 gap-5 mx-4`}
+          className="text-lg text-gray-100 flex flex-col justify-center items-center mt-20 gap-5 mx-4"
         >
           <p>Loading history</p>
           <Spinner size="w-[30px] h-[30px]" />
@@ -38,9 +37,7 @@ export default function ExerciseHistoryModal({
         <div className="flex flex-col items-center">
           {history.map((session, sessionIndex) => (
             <div key={sessionIndex} className="mb-4 w-full">
-              <div
-                className={`${russoOne.className} text-gray-100 flex flex-col items-center mt-10 mx-4`}
-              >
+              <div className="text-gray-100 flex flex-col items-center mt-10 mx-4">
                 <p className="text-lg">{formatDate(session.date)}</p>
                 <div className="mt-6 bg-slate-900 rounded-md px-4 py-2 shadow-lg max-w-md w-full mx-auto">
                   <table className="w-full text-left ">

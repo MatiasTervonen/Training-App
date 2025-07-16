@@ -1,6 +1,5 @@
 "use client";
 
-import { russoOne } from "@/app/ui/fonts";
 import ModalPageWrapper from "@/app/(app)/components/modalPageWrapper";
 import useSWR from "swr";
 import FriendRequestForm from "./components/FriendRequestForm";
@@ -27,9 +26,7 @@ export default function FriendsPage() {
   return (
     <ModalPageWrapper noTopPadding>
       <div className="p-5 h-full text-gray-100 max-w-md mx-auto">
-        <h1
-          className={`${russoOne.className} text-gray-100 text-center  my-5 text-2xl `}
-        >
+        <h1 className="text-gray-100 text-center  my-5 text-2xl">
           Friends
         </h1>
         <FriendRequestForm />

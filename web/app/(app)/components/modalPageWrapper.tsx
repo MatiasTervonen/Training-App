@@ -6,7 +6,6 @@ import { SquareArrowLeft } from "lucide-react";
 import { SquareArrowRight } from "lucide-react";
 import { useTransitionDirectionStore } from "@/app/(app)/lib/stores/transitionDirection";
 import { useState } from "react";
-import { russoOne } from "../../ui/fonts";
 import { useRouter } from "next/navigation";
 
 export default function ModalPageWrapper({
@@ -53,9 +52,7 @@ export default function ModalPageWrapper({
 
   return (
     <div
-      className={`${
-        russoOne.className
-      } relative h-[calc(100dvh-72px)] overflow-hidden max-w-3xl mx-auto ${
+      className={`relative h-[calc(100dvh-72px)] overflow-hidden max-w-3xl mx-auto ${
         noTopPadding ? "" : "pt-[40px]"
       }`}
     >

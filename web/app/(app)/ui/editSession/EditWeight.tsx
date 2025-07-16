@@ -5,7 +5,6 @@ import NotesInput from "@/app/(app)/training/components/NotesInput";
 import TitleInput from "@/app/(app)/training/components/TitleInput";
 import SaveButton from "@/app/(app)/ui/save-button";
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
-import { russoOne } from "@/app/ui/fonts";
 import { mutate } from "swr";
 import toast from "react-hot-toast";
 import { weight } from "@/app/(app)/types/models";
@@ -99,10 +98,7 @@ export default function EditWeight({ weight, onClose, onSave }: Props) {
       <div className="h-full bg-slate-800 py-5 px-10">
         <div className="flex flex-col justify-between h-full max-w-md mx-auto">
           <div className="flex flex-col gap-10">
-            <h2
-              className={`${russoOne.className} text-gray-100 text-lg text-center 
-                            `}
-            >
+            <h2 className="text-gray-100 text-lg text-center">
               Edit your weight session
             </h2>
             <TitleInput

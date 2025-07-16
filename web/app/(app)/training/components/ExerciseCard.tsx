@@ -1,6 +1,5 @@
 "use client";
 
-import { russoOne } from "@/app/ui/fonts";
 import NotesInput from "./NotesInput";
 import DropdownMenu from "@/app/(app)/components/dropdownMenu";
 import { Ellipsis, SquareX } from "lucide-react";
@@ -47,9 +46,7 @@ export default function ExerciseCard({
 
   return (
     <div className="py-2 px-4">
-      <div
-        className={`${russoOne.className} flex items-center justify-between`}
-      >
+      <div className="flex items-center justify-between">
         <div className="flex flex-col">
           <span className="text-gray-100 text-lg">
             {index + 1}. {exercise.name}
@@ -91,7 +88,7 @@ export default function ExerciseCard({
         />
       </div>
 
-      <table className={`${russoOne.className} w-full text-left text-gray-100`}>
+      <table className="w-full text-left text-gray-100">
         <thead>
           <tr className="text-gray-300 border-b">
             <th className="p-2 font-normal">Set</th>
@@ -210,7 +207,7 @@ export default function ExerciseCard({
       <div className="flex items-center justify-center gap-4 my-6">
         <button
           onClick={() => onAddSet(index)}
-          className={`${russoOne.className} px-10 bg-blue-900 py-2 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95`}
+          className="px-10 bg-blue-900 py-2 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95"
         >
           Add Set
         </button>

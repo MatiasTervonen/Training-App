@@ -1,5 +1,4 @@
 import { formatDate } from "@/app/(app)/lib/formatDate";
-import { russoOne } from "@/app/ui/fonts";
 import CopyButton from "../CopyButton";
 import { notes } from "@/app/(app)/types/models";
 
@@ -10,7 +9,7 @@ type Props = {
 export default function NotesSession({ notes }: Props) {
   return (
     <div
-      className={`${russoOne.className} text-center p-4 text-gray-100 max-w-md mx-auto`}
+      className="text-center p-4 text-gray-100 max-w-md mx-auto"
     >
       <div className="text-sm text-gray-400">
         {formatDate(notes.created_at)}

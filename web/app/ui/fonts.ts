@@ -4,4 +4,5 @@ export const russoOne = Russo_One({
   subsets: ["latin"],
   weight: "400",
   display: "swap",
+  variable: "--font-primary"
 });

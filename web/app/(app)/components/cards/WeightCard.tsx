@@ -1,4 +1,3 @@
-import { russoOne } from "@/app/ui/fonts";
 import { Scale, Ellipsis, SquareArrowOutUpRight } from "lucide-react";
 import DropdownMenu from "../dropdownMenu";
 import { formatDate } from "@/app/(app)/lib/formatDate";
@@ -27,9 +26,7 @@ export default function WeightCard({
 
   return (
     <div
-      className={`${
-        russoOne.className
-      } border rounded-md flex flex-col justify-center mb-2 transition-colors ${
+      className={`border rounded-md flex flex-col justify-center mb-2 transition-colors ${
         pinned
           ? ` border-yellow-200 bg-yellow-200 text-slate-900`
           : "bg-slate-700"
@@ -96,11 +93,7 @@ export default function WeightCard({
           {/* Date */}
 
           <div>
-            <p
-              className={`${
-                pinned ? "text-slate-900" : "text-gray-100"
-              }`}
-            >
+            <p className={`${pinned ? "text-slate-900" : "text-gray-100"}`}>
               {formatDate(item.created_at)}
             </p>
           </div>

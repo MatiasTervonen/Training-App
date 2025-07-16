@@ -1,6 +1,5 @@
 "use client";
 
-import { russoOne } from "@/app/ui/fonts";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { clearLocalStorage } from "../components/ClearLocalStorage";
@@ -57,7 +56,7 @@ export default function GameFinished() {
 
   return (
     <div className="bg-slate-800 p-5 min-h-[100dvh] relative">
-      <h1 className={`${russoOne.className} text-gray-100 text-center text-xl`}>
+      <h1 className="text-gray-100 text-center text-xl">
         Final Scores
       </h1>
       {holes.length > 0 &&
@@ -159,13 +158,13 @@ export default function GameFinished() {
                           />
                         )}
                         <h2
-                          className={`${russoOne.className} text-gray-100 text-xl `}
+                          className="text-gray-100 text-xl "
                         >
                           {playerName}
                         </h2>
                       </div>
                       <table
-                        className={`${russoOne.className} w-full text-left text-gray-100 `}
+                        className="w-full text-left text-gray-100"
                       >
                         <tbody>
                           <tr className="border-b border-slate-500">
@@ -212,10 +211,10 @@ export default function GameFinished() {
           );
         })()}
       <div className="flex gap-4">
-        <h2 className={`${russoOne.className} text-gray-100 text-lg mb-2`}>
+        <h2 className="text-gray-100 text-lg mb-2">
           Round Time
         </h2>
-        <p className={`${russoOne.className} text-gray-100 text-xl mb-5`}>
+        <p className="text-gray-100 text-xl mb-5">
           {time}
         </p>
       </div>

@@ -1,6 +1,5 @@
 "use client";
 
-import { russoOne } from "@/app/ui/fonts";
 import ModalPageWrapper from "@/app/(app)/components/modalPageWrapper";
 import TitleInput from "@/app/(app)/training/components/TitleInput";
 import { useState, useEffect } from "react";
@@ -109,9 +108,7 @@ export default function EditExercises() {
 
   return (
     <ModalPageWrapper noTopPadding>
-      <div
-        className={`${russoOne.className} h-full bg-slate-800 text-gray-100 pt-5 `}
-      >
+      <div className="h-full bg-slate-800 text-gray-100 pt-5">
         <h1 className="text-2xl my-5 text-center">edit/delete Exercises</h1>
         <div className="h-[calc(100dvh-164px)] pb-5">
           {!selectedExercise && (
@@ -214,7 +211,7 @@ export default function EditExercises() {
                     onClick={() => {
                       resetFields();
                     }}
-                    className={`${russoOne.className} mb-10 bg-red-800 py-2 rounded-md shadow-xl border-2 border-red-500 text-gray-100 text-lg cursor-pointer hover:bg-red-700 hover:scale-95`}
+                    className="mb-10 bg-red-800 py-2 rounded-md shadow-xl border-2 border-red-500 text-gray-100 text-lg cursor-pointer hover:bg-red-700 hover:scale-95"
                   >
                     Cancel
                   </button>

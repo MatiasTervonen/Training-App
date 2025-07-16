@@ -1,4 +1,3 @@
-import { russoOne } from "@/app/ui/fonts";
 import { SquarePen } from "lucide-react";
 import clsx from "clsx";
 
@@ -24,7 +23,7 @@ export default function NotesInput({
   return (
     <div className={`flex flex-col ${shouldGrow ? "flex-1" : ""}`}>
       <div className="flex items-center">
-        <label className={`${russoOne.className} text-sm text-gray-300 mb-1`}>
+        <label className="text-sm text-gray-300 mb-1">
           {label}
         </label>
         <SquarePen size={18} className="text-gray-100 mb-2" />

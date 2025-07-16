@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { russoOne } from "@/app/ui/fonts";
 import { useRouter } from "next/navigation";
 import NotesSession from "@/app/(app)/components/expandSession/notes";
 import Modal from "@/app/(app)/components/modal";
@@ -152,7 +151,7 @@ export default function SessionFeed() {
     <>
       <div
         ref={containerRef}
-        className={` ${russoOne.className} max-w-3xl mx-auto relative bg-gradient-to-b from-slate-950 via-slate-900 to-slate-800  px-5 pt-3 pb-20 text-gray-100 overflow-y-auto touch-pan-y`}
+        className="max-w-3xl mx-auto relative bg-gradient-to-b from-slate-950 via-slate-900 to-slate-800  px-5 pt-3 pb-20 text-gray-100 overflow-y-auto touch-pan-y"
       >
         <div
           className="flex items-center justify-center text-white transition-all"
@@ -190,9 +189,7 @@ export default function SessionFeed() {
                 {isPinned && (
                   <div className="flex items-center gap-2 mb-2">
                     <Pin size={20} />
-                    <p className={`${russoOne.className} text-gray-400`}>
-                      Pinned
-                    </p>
+                    <p className="text-gray-400">Pinned</p>
                   </div>
                 )}
                 {!isPinned && <div className="mt-[32px]"></div>}

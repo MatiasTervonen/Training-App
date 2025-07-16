@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { login, signup } from "@/app/login/actions";
-import { russoOne } from "@/app/ui/fonts";
 import React from "react";
 import LoginButton from "@/app/login/components/loginbutton";
 import SignupButton from "@/app/login/components/signupbutton";
@@ -22,9 +21,7 @@ export default function LoginPage() {
 
   return (
     <div className="bg-slate-950">
-      <div
-        className={` ${russoOne.className} flex flex-col items-center h-[100dvh] w-full bg-gradient-to-tr from-slate-950 via-slate-950 to-blue-900 max-w-3xl mx-auto`}
-      >
+      <div className="flex flex-col items-center h-[100dvh] w-full bg-gradient-to-tr from-slate-950 via-slate-950 to-blue-900 max-w-3xl mx-auto">
         <p className=" text-gray-100 text-5xl p-4  w-full text-center">
           MyTrack
         </p>

@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { russoOne } from "@/app/ui/fonts";
 import { useRef } from "react";
 import { gym_exercises } from "../../types/models";
 import useSWR from "swr";
@@ -106,7 +105,7 @@ export default function ExerciseDropdown({
     <>
       <div className="flex flex-col px-2 w-full h-full gap-3 z-50 ">
         <div className="flex flex-col h-10 justify-center gap-1 mt-5 px-10">
-          <label className={`${russoOne.className} text-gray-100 `}>
+          <label className="text-gray-100 ">
             {label}
           </label>
           <input

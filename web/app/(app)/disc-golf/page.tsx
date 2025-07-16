@@ -1,6 +1,5 @@
 "use client";
 
-import { russoOne } from "../../ui/fonts";
 import { Plus } from "lucide-react";
 import { useState, useEffect } from "react";
 import DeleteSessionBtn from "../ui/deleteSessionBtn";
@@ -113,7 +112,7 @@ export default function DiscGolf() {
   return (
     <ModalPageWrapper noTopPadding>
       <div
-        className={` ${russoOne.className} bg-slate-800 p-5 h-full max-w-md mx-auto`}
+        className="bg-slate-800 p-5 h-full max-w-md mx-auto"
       >
         <div className="flex flex-col h-full w-full justify-between">
           <div>

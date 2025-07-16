@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+@theme {
+  --color-primary: #f3f4f6;
+  --font-primary: "Russo One", sans-serif;
+}
+
 html,
 body {
   overscroll-behavior-y: contain;

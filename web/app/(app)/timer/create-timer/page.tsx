@@ -1,6 +1,5 @@
 "use client";
 
-import { russoOne } from "@/app/ui/fonts";
 import ModalPageWrapper from "@/app/(app)//components/modalPageWrapper";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
@@ -107,9 +106,7 @@ export default function TimerPage() {
 
   return (
     <ModalPageWrapper noTopPadding>
-      <div
-        className={`${russoOne.className} p-5 h-full relative text-gray-100 max-w-md mx-auto`}
-      >
+      <div className="p-5 h-full relative text-gray-100 max-w-md mx-auto">
         <h1 className="text-2xl text-center my-5 ">Create Timer</h1>
         <div className="mb-5">
           <TitleInput

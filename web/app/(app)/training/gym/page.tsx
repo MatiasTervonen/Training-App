@@ -1,6 +1,5 @@
 "use client";
 
-import { russoOne } from "@/app/ui/fonts";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import SaveButton from "@/app/(app)/ui/save-button";
@@ -350,15 +349,10 @@ export default function TrainingSessionPage() {
       </nav>
 
       <ModalPageWrapper>
-        <div
-          className={` ${russoOne.className} flex justify-center relative min-h-[calc(100dvh-72px)] max-w-md mx-auto py-5`}
-        >
+        <div className="flex justify-center relative min-h-[calc(100dvh-72px)] max-w-md mx-auto py-5">
           <div className="flex flex-col justify-between w-full">
             <div className="flex flex-col items-center justify-center gap-5">
-              <p
-                className={`${russoOne.className} text-gray-100 text-xl text-center
-        `}
-              >
+              <p className="text-gray-100 text-xl text-center">
                 Track your training progress
               </p>
               <TitleInput
@@ -464,7 +458,7 @@ export default function TrainingSessionPage() {
                   <div className="flex flex-row gap-2 w-full">
                     <div className="relative w-full">
                       <select
-                        className={`${russoOne.className} appearance-none w-full px-10 bg-blue-800 py-2 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95`}
+                        className="appearance-none w-full px-10 bg-blue-800 py-2 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95"
                         value={exerciseType}
                         onChange={(e) => {
                           const type = e.target.value;
@@ -488,7 +482,7 @@ export default function TrainingSessionPage() {
                         startExercise();
                         setIsExerciseModalOpen(false);
                       }}
-                      className={`${russoOne.className} w-full px-2 bg-blue-800 py-2 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95`}
+                      className="w-full px-2 bg-blue-800 py-2 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95"
                     >
                       {exerciseType === "Super-Set"
                         ? "Add Super-Set"
@@ -663,7 +657,7 @@ export default function TrainingSessionPage() {
                     setNormalExercises([emptyExerciseEntry]);
                     setIsExerciseModalOpen(true);
                   }}
-                  className={`${russoOne.className} w-full px-10 bg-blue-800 py-2 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95`}
+                  className="w-full px-10 bg-blue-800 py-2 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95"
                 >
                   Add Exercise
                   <Plus className=" inline ml-2" size={20} />

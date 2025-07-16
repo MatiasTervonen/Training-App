@@ -1,6 +1,5 @@
 "use client";
 
-import { russoOne } from "@/app/ui/fonts";
 import { useEffect, useState } from "react";
 import ModalPageWrapper from "@/app/(app)/components/modalPageWrapper";
 import { useRouter } from "next/navigation";
@@ -32,9 +31,7 @@ export default function DiscGolfScores() {
     >
       <div className="bg-slate-800 p-5 h-full relative">
         <div className="flex items-center justify-between mb-8 mx-2">
-          <h1
-            className={`${russoOne.className} text-gray-100 text-center text-xl`}
-          >
+          <h1 className="text-gray-100 text-center text-xl">
             Live Scorecard
           </h1>
         </div>
@@ -77,7 +74,7 @@ export default function DiscGolfScores() {
               return (
                 <div key={playerName} className="mb-10">
                   <h2
-                    className={`${russoOne.className} text-gray-100 text-lg mb-2`}
+                    className="text-gray-100 text-lg mb-2"
                   >
                     {playerName}
                   </h2>

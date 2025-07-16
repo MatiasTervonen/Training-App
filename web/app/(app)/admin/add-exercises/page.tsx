@@ -1,6 +1,5 @@
 "use client";
 
-import { russoOne } from "@/app/ui/fonts";
 import ModalPageWrapper from "@/app/(app)/components/modalPageWrapper";
 import TitleInput from "@/app/(app)/training/components/TitleInput";
 import { useState } from "react";
@@ -66,9 +65,7 @@ export default function EditExercises() {
 
   return (
     <ModalPageWrapper noTopPadding>
-      <div
-        className={`${russoOne.className} h-full bg-slate-800 text-gray-100 px-5 pt-5 max-w-md mx-auto`}
-      >
+      <div className="h-full bg-slate-800 text-gray-100 px-5 pt-5 max-w-md mx-auto">
         <h1 className="text-2xl my-5 text-center">Add Exercises</h1>
         <div className="flex flex-col gap-5">
           <TitleInput

@@ -1,4 +1,3 @@
-import { russoOne } from "@/app/ui/fonts";
 import { NotebookPen, Ellipsis, SquareArrowOutUpRight } from "lucide-react";
 import DropdownMenu from "../dropdownMenu";
 import { formatDate } from "@/app/(app)/lib/formatDate";
@@ -23,13 +22,12 @@ export default function NotesCard({
 }: Props) {
   return (
     <div
-      className={`${
-        russoOne.className
-      } border rounded-md flex flex-col justify-center mb-2 transition-colors ${
-        pinned
-          ? ` border-yellow-200 bg-yellow-200 text-slate-900`
-          : "bg-slate-700"
-      }`}
+      className={`
+       border rounded-md flex flex-col justify-center mb-2 transition-colors ${
+         pinned
+           ? ` border-yellow-200 bg-yellow-200 text-slate-900`
+           : "bg-slate-700"
+       }`}
     >
       <div className="flex justify-between items-center mt-2 mb-4 mx-4">
         <div className="line-clamp-1 border-b">{item.title}</div>
@@ -88,11 +86,7 @@ export default function NotesCard({
           {/* Date */}
 
           <div>
-            <p
-              className={`${
-                pinned ? "text-slate-900" : "text-gray-100"
-              }`}
-            >
+            <p className={`${pinned ? "text-slate-900" : "text-gray-100"}`}>
               {formatDate(item.created_at)}
             </p>
           </div>

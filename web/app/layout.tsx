@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { russoOne } from "./ui/fonts";
 
 export const metadata: Metadata = {
   title: "MyTrack",
@@ -30,8 +31,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className="bg-slate-900">{children}</body>
+    <html lang="en" className={russoOne.className}>
+      <body className="bg-slate-900 font-primary">{children}</body>
     </html>
   );
 }

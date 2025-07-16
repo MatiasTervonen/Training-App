@@ -1,4 +1,3 @@
-import { russoOne } from "@/app/ui/fonts";
 import { useState, useRef } from "react";
 import Image from "next/image";
 
@@ -13,7 +12,7 @@ export default function ProfilePicture({ data, onFileSelected }: props) {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   return (
-    <div className={`${russoOne.className} text-gray-100`}>
+    <div className="text-gray-100">
       <label>Profile Picture</label>
       <div className="border rounded-full w-20 h-20 mt-2 mb-4">
         {previewUrl ? (

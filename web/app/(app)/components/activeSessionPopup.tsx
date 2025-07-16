@@ -1,6 +1,5 @@
 "use client";
 
-import { russoOne } from "@/app/ui/fonts";
 import Link from "next/link";
 import Timer from "./timer";
 import { SquareArrowRight } from "lucide-react";
@@ -44,12 +43,8 @@ export default function ActiveSessionPopup() {
       }`}
     >
       <div className="ml-10">
-        <p className={`${russoOne.className} pb-2 text-start ml-2`}>
-          {activeSession.label}
-        </p>
-        <div
-          className={`${russoOne.className} flex  gap-5 text-slate-900 text-start`}
-        >
+        <p className="pb-2 text-start ml-2">{activeSession.label}</p>
+        <div className="flex gap-5 text-slate-900 text-start">
           <Timer />
           <p>{activeSession.type.toUpperCase()}</p>
           {alarmFired && <p className="text-gray-100">ALARM!</p>}

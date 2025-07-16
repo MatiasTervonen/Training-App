@@ -1,6 +1,5 @@
 "use client";
 
-import { russoOne } from "../../ui/fonts";
 import Spinner from "@/app/(app)/components/spinner";
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import { useTransition } from "react";
@@ -12,9 +11,7 @@ export default function GuestLogIn() {
   const [error, setError] = useState<string | null>(null);
 
   return (
-    <div
-      className={`${russoOne.className} flex flex-col items-center justify-center`}
-    >
+    <div className="flex flex-col items-center justify-center">
       <button
         onClick={() =>
           startTransition(async () => {
@@ -25,7 +22,7 @@ export default function GuestLogIn() {
             }
           })
         }
-        className={`${russoOne.className} flex items-center justify-center gap-2 px-10 text-gray-100 border-2 border-blue-500 p-2 rounded-md bg-gradient-to-tr from-slate-950  to-blue-700 hover:from-blue-700 hover:to-slate-950 transform hover:scale-105 transition duration-200`}
+        className="flex items-center justify-center gap-2 px-10 text-gray-100 border-2 border-blue-500 p-2 rounded-md bg-gradient-to-tr from-slate-950  to-blue-700 hover:from-blue-700 hover:to-slate-950 transform hover:scale-105 transition duration-200"
         disabled={isPending}
       >
         {isPending && <Spinner />}

@@ -1,4 +1,3 @@
-import { russoOne } from "@/app/ui/fonts";
 import { Dumbbell, Ellipsis, SquareArrowOutUpRight } from "lucide-react";
 import DropdownMenu from "../dropdownMenu";
 import { formatDate } from "@/app/(app)/lib/formatDate";
@@ -21,7 +20,6 @@ export default function GymCard({
   onExpand,
   onEdit,
 }: Props) {
-
   const formatDuration = (seconds: number) => {
     const totalMinutes = Math.floor(seconds / 60);
     const hours = Math.floor(totalMinutes / 60);
@@ -35,13 +33,12 @@ export default function GymCard({
 
   return (
     <div
-      className={`${
-        russoOne.className
-      } border rounded-md flex flex-col mb-2 justify-center transition-colors ${
-        pinned
-          ? " border-yellow-200 bg-yellow-200 text-slate-900"
-          : "bg-slate-700"
-      }`}
+      className={`
+       border rounded-md flex flex-col mb-2 justify-center transition-colors ${
+         pinned
+           ? " border-yellow-200 bg-yellow-200 text-slate-900"
+           : "bg-slate-700"
+       }`}
     >
       <div className=" flex justify-between items-center mt-2 mb-4 mx-4">
         <div className="line-clamp-1 border-b">{item.title}</div>
@@ -100,11 +97,7 @@ export default function GymCard({
           {/* Date */}
 
           <div>
-            <p
-              className={`${
-                pinned ? "text-slate-900" : "text-gray-100"
-              }`}
-            >
+            <p className={`${pinned ? "text-slate-900" : "text-gray-100"}`}>
               {formatDate(item.created_at)}
             </p>
           </div>

@@ -5,7 +5,6 @@ import NotesInput from "@/app/(app)/training/components/NotesInput";
 import TitleInput from "@/app/(app)/training/components/TitleInput";
 import SaveButton from "@/app/(app)/ui/save-button";
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
-import { russoOne } from "@/app/ui/fonts";
 import { mutate } from "swr";
 import toast from "react-hot-toast";
 import { notes } from "@/app/(app)/types/models";
@@ -86,12 +85,7 @@ export default function EditNotes({ note, onClose, onSave }: Props) {
     <>
       <div className="flex flex-col mx-auto w-full h-full bg-slate-800 max-w-md ">
         <div className="flex flex-col items-center gap-5 mx-6 mt-5 h-full ">
-          <h2
-            className={`${russoOne.className} text-gray-100 text-lg text-center 
-                            `}
-          >
-            Edit your notes
-          </h2>
+          <h2 className="text-gray-100 text-lg text-center">Edit your notes</h2>
           <div>
             <TitleInput
               title={title || ""}

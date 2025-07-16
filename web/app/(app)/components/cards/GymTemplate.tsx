@@ -1,11 +1,9 @@
-import { russoOne } from "@/app/ui/fonts";
 import { formatDate } from "@/app/(app)/lib/formatDate";
 import GroupTemplateExercises from "@/app/(app)/lib/groupTemplateExercises";
 import {
   full_gym_template,
   full_gym_template_exercise,
 } from "@/app/(app)/types/models";
-
 
 type Props = {
   item: full_gym_template;
@@ -16,7 +14,6 @@ type Props = {
 };
 
 export default function GymTemplate({ item, onDelete, onStartWorkout }: Props) {
-
   const groupedExercises = GroupTemplateExercises(
     item.gym_template_exercises || []
   );
@@ -25,7 +22,7 @@ export default function GymTemplate({ item, onDelete, onStartWorkout }: Props) {
     exercise.gym_exercises.main_group.toLowerCase() === "cardio";
 
   return (
-    <div className={`${russoOne.className} mx-4`}>
+    <div className="mx-4">
       <div className="my-5 flex flex-col gap-2 justify-center items-center">
         <h2 className="text-sm text-gray-400">
           Created: {formatDate(item.created_at)}
@@ -82,13 +79,13 @@ export default function GymTemplate({ item, onDelete, onStartWorkout }: Props) {
       ))}
       <button
         onClick={onStartWorkout}
-        className={`${russoOne.className} mb-5 max-w-md mx-auto mt-10  flex items-center justify-center w-full gap-2 bg-blue-800 py-2 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95`}
+        className="mb-5 max-w-md mx-auto mt-10  flex items-center justify-center w-full gap-2 bg-blue-800 py-2 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95"
       >
         Start Workout
       </button>
       <button
         onClick={onDelete}
-        className={`${russoOne.className} mb-5 max-w-md mx-auto mt-5 flex items-center justify-center w-full gap-2 bg-red-800 py-2 rounded-md shadow-xl border-2 border-red-500 text-gray-100 text-lg cursor-pointer hover:bg-red-700 hover:scale-95`}
+        className="mb-5 max-w-md mx-auto mt-5 flex items-center justify-center w-full gap-2 bg-red-800 py-2 rounded-md shadow-xl border-2 border-red-500 text-gray-100 text-lg cursor-pointer hover:bg-red-700 hover:scale-95"
       >
         Delete Workout
       </button>

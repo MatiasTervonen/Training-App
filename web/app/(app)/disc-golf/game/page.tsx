@@ -1,6 +1,5 @@
 "use client";
 
-import { russoOne } from "@/app/ui/fonts";
 import Timer from "@/app/(app)/components/timer";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -348,7 +347,7 @@ export default function DiscGolfGame() {
         </div>
         <Link
           href="/disc-golf/score-summary"
-          className={`${russoOne.className} text-gray-100`}
+          className="text-gray-100"
         >
           Live Scorecard
         </Link>
@@ -468,18 +467,18 @@ export default function DiscGolfGame() {
             <div className="max-w-md mx-auto flex flex-col justify-between w-full h-full">
               <div>
                 <h1
-                  className={`${russoOne.className} text-gray-100 flex justify-center my-2 text-2xl mt-5 `}
+                  className="text-gray-100 flex justify-center my-2 text-2xl mt-5"
                 >
                   Hole {viewingHoleNumber}
                 </h1>
                 <p
-                  className={`${russoOne.className} text-gray-100 flex justify-center my-2  `}
+                  className="text-gray-100 flex justify-center my-2"
                 >
                   {courseName}
                 </p>
                 <div className="border-2 border-gray-100 p-5 rounded-xl mb-10 mx-10">
                   <div
-                    className={`${russoOne.className} flex items-center justify-between gap-2 text-gray-100 `}
+                    className="flex items-center justify-between gap-2 text-gray-100"
                   >
                     <p className="text-xl">Par</p>
                     <div className="flex items-center gap-4">
@@ -503,7 +502,7 @@ export default function DiscGolfGame() {
               {getSortedPlayersByScoreAndLastHole().map((player, index) => (
                 <div key={index} className="flex flex-col gap-2 mt-5 mb-10">
                   <div
-                    className={`${russoOne.className} flex items-center justify-between text-gray-100 text-lg border-b`}
+                    className="flex items-center justify-between text-gray-100 text-lg border-b"
                   >
                     {(() => {
                       const { totalStrokes, formattedDiff } = getPlayerTotals(
@@ -558,7 +557,7 @@ export default function DiscGolfGame() {
                   {trackStats && (
                     <div>
                       <div
-                        className={`${russoOne.className} flex justify-between items-center gap-2 border-b border-gray-100 text-gray-100 mx-10 mt-5`}
+                        className="flex justify-between items-center gap-2 border-b border-gray-100 text-gray-100 mx-10 mt-5"
                       >
                         <label>Fairway Hit</label>
                         <input
@@ -579,7 +578,7 @@ export default function DiscGolfGame() {
                         />
                       </div>
                       <div
-                        className={`${russoOne.className} flex justify-between items-center gap-2 border-b border-gray-100 text-gray-100 mx-10 `}
+                        className="flex justify-between items-center gap-2 border-b border-gray-100 text-gray-100 mx-10"
                       >
                         <label>C1 Made</label>
                         <input
@@ -601,7 +600,7 @@ export default function DiscGolfGame() {
                         />
                       </div>
                       <div
-                        className={`${russoOne.className} flex justify-between items-center gap-2 border-b border-gray-100 text-gray-100 mx-10 `}
+                        className="flex justify-between items-center gap-2 border-b border-gray-100 text-gray-100 mx-10"
                       >
                         <label>C1 Attempted</label>
                         <input
@@ -625,7 +624,7 @@ export default function DiscGolfGame() {
                         />
                       </div>
                       <div
-                        className={`${russoOne.className} flex justify-between items-center gap-2 border-b border-gray-100 text-gray-100 mx-10 `}
+                        className="flex justify-between items-center gap-2 border-b border-gray-100 text-gray-100 mx-10"
                       >
                         <label> C2 Made</label>
                         <input
@@ -647,7 +646,7 @@ export default function DiscGolfGame() {
                         />
                       </div>
                       <div
-                        className={`${russoOne.className} flex justify-between items-center gap-2 border-b border-gray-100 text-gray-100 mx-10 mb-5`}
+                        className="flex justify-between items-center gap-2 border-b border-gray-100 text-gray-100 mx-10 mb-5"
                       >
                         <label> C2 Attempted</label>
                         <input
@@ -680,7 +679,7 @@ export default function DiscGolfGame() {
                   {viewingHoleNumber > 1 && (
                     <button
                       onClick={handlePerviousHole}
-                      className={`${russoOne.className} mb-5 flex items-center justify-center w-full  bg-blue-800 py-2 px-10 mt-10 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95`}
+                      className="mb-5 flex items-center justify-center w-full  bg-blue-800 py-2 px-10 mt-10 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95"
                     >
                       Prev Hole
                     </button>
@@ -688,7 +687,7 @@ export default function DiscGolfGame() {
                   {viewingHoleNumber < totalHoles && (
                     <button
                       onClick={handleNextHole}
-                      className={`${russoOne.className} mb-5 flex items-center justify-center w-full  bg-blue-800 py-2 px-10 mt-10 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95`}
+                      className="mb-5 flex items-center justify-center w-full  bg-blue-800 py-2 px-10 mt-10 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95"
                     >
                       Next Hole
                     </button>

@@ -1,5 +1,4 @@
 import { formatDate } from "@/app/(app)/lib/formatDate";
-import { russoOne } from "@/app/ui/fonts";
 import Link from "next/link";
 import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
 import { weight } from "@/app/(app)/types/models";
@@ -10,7 +9,7 @@ export default function WeightSession(weight: weight) {
 
   return (
     <div
-      className={`${russoOne.className} text-center p-4 text-gray-100 max-w-md mx-auto`}
+      className="text-center p-4 text-gray-100 max-w-md mx-auto"
     >
       <div className="text-sm text-gray-400">
         {formatDate(weight.created_at)}
@@ -29,7 +28,7 @@ export default function WeightSession(weight: weight) {
         </div>
         <Link
           href="/weight/analytics"
-          className={`${russoOne.className} mt-10 flex items-center justify-center w-full gap-2 bg-blue-800 py-2 rounded-md shadow-xl border-2 border-blue-500 text-gray-100  cursor-pointer hover:bg-blue-700 hover:scale-95`}
+          className="mt-10 flex items-center justify-center w-full gap-2 bg-blue-800 py-2 rounded-md shadow-xl border-2 border-blue-500 text-gray-100  cursor-pointer hover:bg-blue-700 hover:scale-95"
         >
           View Full History
         </Link>

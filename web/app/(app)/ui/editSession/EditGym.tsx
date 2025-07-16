@@ -5,7 +5,6 @@ import NotesInput from "@/app/(app)/training/components/NotesInput";
 import TitleInput from "@/app/(app)/training/components/TitleInput";
 import SaveButton from "@/app/(app)/ui/save-button";
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
-import { russoOne } from "@/app/ui/fonts";
 import { mutate } from "swr";
 import toast from "react-hot-toast";
 import SetInput from "@/app/(app)/training/components/SetInput";
@@ -135,9 +134,7 @@ export default function EditGym({
 
   return (
     <>
-      <div
-        className={`${russoOne.className} flex flex-col w-full h-full mb-10 max-w-md mx-auto`}
-      >
+      <div className="flex flex-col w-full h-full mb-10 max-w-md mx-auto">
         <div className="flex flex-col gap-10 mx-10 mt-10">
           <h2 className={` text-gray-100  text-lg text-center `}>
             Edit Your Gym Session

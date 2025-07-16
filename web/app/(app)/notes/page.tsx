@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef, } from "react";
 import { useRouter } from "next/navigation";
-import { russoOne } from "@/app/ui/fonts";
 import SaveButton from "@/app/(app)/ui/save-button";
 import DeleteSessionBtn from "../ui/deleteSessionBtn";
 import ModalPageWrapper from "../components/modalPageWrapper";
@@ -121,9 +120,7 @@ export default function Notes() {
       <ModalPageWrapper noTopPadding>
         <div className="flex flex-col h-full w-full px-6 max-w-md mx-auto pb-10">
           <div className="flex flex-col items-center mt-5 gap-5 flex-grow mb-10 h-full">
-            <p
-              className={`${russoOne.className} text-gray-100 text-lg text-center`}
-            >
+            <p className="text-gray-100 text-lg text-center">
               Add your notes here
             </p>
             <div className="mb-5">

@@ -1,6 +1,5 @@
 "use client";
 
-import { russoOne } from "@/app/ui/fonts";
 import useSWR from "swr";
 import Spinner from "@/app/(app)/components/spinner";
 import ExerciseTypeSelect from "@/app/(app)/training/components/ExerciseTypeSelect";
@@ -49,12 +48,8 @@ export default function Sessions() {
   const userAmouunt = data ? data.length : 0;
 
   return (
-    <div
-      className={`${russoOne.className} relative max-w-7xl mx-auto h-full px-4 mt-5`}
-    >
-      <h1 className={`${russoOne.className} text-gray-100   text-2xl `}>
-        User Analytics
-      </h1>
+    <div className="relative max-w-7xl mx-auto h-full px-4 mt-5">
+      <h1 className="text-gray-100 text-2xl">User Analytics</h1>
 
       <div className="flex items-center justify-between mb-4">
         <div>

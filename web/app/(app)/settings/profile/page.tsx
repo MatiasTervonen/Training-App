@@ -1,6 +1,5 @@
 "use client";
 
-import { russoOne } from "../../../ui/fonts";
 import SaveButton from "../../ui/save-button";
 import { useState, useEffect } from "react";
 import ModalPageWrapper from "../../components/modalPageWrapper";
@@ -153,9 +152,7 @@ export default function Settings() {
       ) : (
         <div className="p-5 min-h-[calc(100dvh-72px)] relative">
           <div className="max-w-md mx-auto">
-            <h1
-              className={`${russoOne.className} text-gray-100 flex justify-center my-5 text-2xl `}
-            >
+            <h1 className="text-gray-100 flex justify-center my-5 text-2xl">
               Profile Settings
             </h1>
             <div className="w-fit">

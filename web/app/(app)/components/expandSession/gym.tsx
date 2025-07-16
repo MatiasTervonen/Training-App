@@ -1,5 +1,4 @@
 import { formatDate } from "@/app/(app)/lib/formatDate";
-import { russoOne } from "@/app/ui/fonts";
 import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
 import { full_gym_session } from "../../types/models";
 import { groupExercises } from "../../training/utils/groupExercises";
@@ -28,7 +27,7 @@ export default function GymSession(gym_session: full_gym_session) {
     exercise.gym_exercises.main_group.toLowerCase() === "cardio";
 
   return (
-    <div className={`${russoOne.className}  max-w-md mx-auto`}>
+    <div className="max-w-md mx-auto">
       <div className="my-5 flex flex-col gap-2 justify-center items-center">
         <div className="text-sm text-gray-400">
           {formatDate(gym_session.created_at)}

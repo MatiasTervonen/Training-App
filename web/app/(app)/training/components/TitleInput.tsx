@@ -1,5 +1,3 @@
-import { russoOne } from "@/app/ui/fonts";
-
 type TitleInputProps = {
   title: string;
   setTitle: (value: string) => void;
@@ -19,7 +17,7 @@ export default function TitleInput({
     <div className="flex flex-col ">
       <label
         htmlFor={id}
-        className={`${russoOne.className} text-gray-300 mb-1`}
+        className="text-gray-300 mb-1"
       >
         {label}
       </label>

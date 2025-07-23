@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { login, signup } from "@/app/login/actions";
+import { login, signup } from "@/app/(app)/login/actions";
 import React from "react";
-import LoginButton from "@/app/login/components/loginbutton";
-import SignupButton from "@/app/login/components/signupbutton";
-import GuestLogIn from "@/app/login/guest-login/quest-login";
+import LoginButton from "@/app/(app)/login/components/loginbutton";
+import SignupButton from "@/app/(app)/login/components/signupbutton";
+import GuestLogIn from "@/app/(app)/login/guest-login/quest-login";
 
 export default function LoginPage() {
   const [activeForm, setActiveForm] = useState(false);

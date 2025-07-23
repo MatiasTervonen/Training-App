@@ -12,10 +12,6 @@ export default function Navbar() {
     (state) => state.preferences?.profile_picture || null
   );
 
-  const cacheBustedPicture = profilePictureRaw
-    ? `${profilePictureRaw}?t=${Date.now()}`
-    : "@/assets/images/default-avatar.png";
-
   if (pathname === "/login" || pathname === "/") return null; // Don't render the navbar on the login page
 
   return (
@@ -42,11 +38,24 @@ export default function Navbar() {
             className="rounded-full border-2 border-blue-500 w-[40px] h-[40px]"
             asChild
           >
-            <Pressable>
+            <Pressable
+              style={{
+                width: 40,
+                height: 40,
+                borderRadius: 20,
+                borderWidth: 2,
+                borderColor: "#3b82f6", // Tailwind's blue-500
+                overflow: "hidden", // ensure Image/Skeleton are clipped
+              }}
+            >
               <Image
-                source={cacheBustedPicture}
+                source={profilePictureRaw || "/default-avatar.png"}
                 alt="Profile Picture"
-                style={{ borderRadius: 9999, width: "100%", height: "100%" }}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  borderRadius: 9999,
+                }}
               />
             </Pressable>
           </Link>

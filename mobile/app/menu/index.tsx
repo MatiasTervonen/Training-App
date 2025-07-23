@@ -8,9 +8,14 @@ export default function SettingsScreen() {
     <View className="px-6 flex-1">
       <AppText className="text-2xl text-center my-5">Menu</AppText>
       <View className="justify-between flex-1">
-        <LinkButton href="/settings">
-          <AppText>Settings</AppText>
-        </LinkButton>
+        <View>
+          <LinkButton href="/menu/friends">
+            <AppText>Friends</AppText>
+          </LinkButton>
+          <LinkButton href="/menu/profile">
+            <AppText>Profile</AppText>
+          </LinkButton>
+        </View>
         <View className="mb-10">
           <LogoutButton />
         </View>

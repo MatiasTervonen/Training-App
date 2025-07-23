@@ -136,7 +136,7 @@ export const useTimerStore = create<TimerState>()(
       setAlarmFired: (fired) => set({ alarmFired: fired }),
     }),
     {
-      name: "timer-storage",
+      name: "timer-store",
     }
   )
 );

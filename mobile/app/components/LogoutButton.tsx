@@ -5,6 +5,7 @@ import { Alert, TouchableOpacity } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import AppText from "./AppText";
 import { LogOut } from "lucide-react-native";
+import { useUserStore } from "@/lib/stores/useUserStore";
 
 type LogoutButtonProps = {
   onLogout?: () => void;
@@ -25,6 +26,10 @@ export default function LogoutButton({ onLogout }: LogoutButtonProps) {
       setIsLoading(false);
       return;
     }
+
+    useUserStore.getState().clearUserPreferences();
+    useUserStore.getState().setIsLoggedIn(false);
+    useUserStore.getState().setIsGuest(false);
   };
 
   return (

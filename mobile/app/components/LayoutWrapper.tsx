@@ -45,18 +45,13 @@ export default function LayoutWrapper({
             const response = await fetch(
               "https://training-app-bay.vercel.app/api/settings/get-settings",
               {
-                method: "GET",
                 headers: {
                   Authorization: `Bearer ${session.access_token}`,
-                  "Content-Type": "application/json",
                 },
               }
             );
 
-            const text = await response.text();
-
             if (!response.ok) {
-              console.error("Raw response body:", text);
               throw new Error("Failed to fetch user preferences");
             }
 
@@ -86,11 +81,16 @@ export default function LayoutWrapper({
     setIsGuest,
   ]);
 
+  console.log("LayoutWrapper rendered with preferences:", preferences);
+
   useEffect(() => {
     const { data: listener } = supabase.auth.onAuthStateChange(
       (_event, session) => {
         if (!session) {
           router.replace("/login");
+          clearPreferences();
+          setIsLoggedIn(false);
+          setIsGuest(false);
         } else {
           router.replace("/dashboard");
         }
@@ -100,7 +100,7 @@ export default function LayoutWrapper({
     return () => {
       listener.subscription.unsubscribe();
     };
-  }, [router]);
+  }, [router, clearPreferences, setIsLoggedIn, setIsGuest]);
 
   return <>{children}</>;
 }

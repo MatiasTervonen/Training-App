@@ -15,10 +15,6 @@ export default function Navbar() {
     (state) => state.preferences?.profile_picture || null
   );
 
-  const cacheBustedPicture = profilePictureRaw
-    ? `${profilePictureRaw}?t=${Date.now()}`
-    : "/default-avatar.png";
-
   if (pathname === "/login" || pathname === "/") return null; // Don't render the navbar on the login page
 
   return (
@@ -40,7 +36,7 @@ export default function Navbar() {
           </Link>
           <Link href={"/settings"}>
             <Image
-              src={cacheBustedPicture}
+              src={profilePictureRaw || "/default-avatar.png"}
               alt="Profile Picture"
               width={20}
               height={20}

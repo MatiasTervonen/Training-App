@@ -1,13 +1,11 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Navbar from "@/app/(app)/components/navbar/navbar";
 import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
 import { useEffect } from "react";
 import { createClient } from "@/utils/supabase/client";
 import toast from "react-hot-toast";
-
-const noNavbarPaths = ["/login"];
 
 const noAuthCheck = ["/login", "/"];
 
@@ -24,13 +22,15 @@ export default function LayoutWrapper({
 
   const setPreferences = useUserStore((state) => state.setUserPreferences);
 
-  const showNavbar = !noNavbarPaths.includes(pathname);
-
   const setIsLoggedIn = useUserStore((state) => state.setIsLoggedIn);
 
   const clearPreferences = useUserStore((state) => state.clearUserPreferences);
 
   const setIsGuest = useUserStore((state) => state.setIsGuest);
+
+  const router = useRouter();
+
+  const loginPage = pathname === "/login";
 
   useEffect(() => {
     if (skipAuthCheck) return;
@@ -50,8 +50,6 @@ export default function LayoutWrapper({
 
       if (user) {
         setIsLoggedIn(true);
-
-        if (noNavbarPaths.includes(pathname)) return;
 
         if (preferences) return;
 
@@ -87,15 +85,33 @@ export default function LayoutWrapper({
     skipAuthCheck,
   ]);
 
+  useEffect(() => {
+    const supabase = createClient();
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      (_event, user) => {
+        if (!user) {
+          router.replace("/login");
+          clearPreferences();
+          setIsLoggedIn(false);
+          setIsGuest(false);
+        } else {
+          router.replace("/dashboard");
+        }
+      }
+    );
+
+    return () => {
+      listener.subscription.unsubscribe();
+    };
+  }, [router, clearPreferences, setIsLoggedIn, setIsGuest]);
+
   return (
     <>
-      {showNavbar && (
-        <div className="fixed top-0 left-0 w-full z-50">
-          <Navbar />
-        </div>
-      )}
+      <div className="fixed top-0 left-0 w-full z-50">
+        <Navbar />
+      </div>
 
-      <main className={showNavbar ? "pt-[72]" : ""}>{children}</main>
+      <main className={`${loginPage ? "pt-0" : "pt-[72]"}`}>{children}</main>
     </>
   );
 }

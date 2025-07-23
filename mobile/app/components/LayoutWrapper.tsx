@@ -45,15 +45,18 @@ export default function LayoutWrapper({
             const response = await fetch(
               "https://training-app-bay.vercel.app/api/settings/get-settings",
               {
+                method: "GET",
                 headers: {
-                  method: "GET",
                   Authorization: `Bearer ${session.access_token}`,
                   "Content-Type": "application/json",
                 },
               }
             );
 
+            const text = await response.text();
+
             if (!response.ok) {
+              console.error("Raw response body:", text);
               throw new Error("Failed to fetch user preferences");
             }
 

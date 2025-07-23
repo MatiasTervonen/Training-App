@@ -7,4 +7,4 @@ Reactotron.setAsyncStorageHandler(AsyncStorage) // controls connection & communi
   .connect(); // let's connect!
 
 console.tron = Reactotron;
-Reactotron.log("🚀 Reactotron connected!");
+Reactotron.log("Reactotron connected!");

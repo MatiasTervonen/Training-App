@@ -1,12 +1,18 @@
 import { createClient } from "@/utils/supabase/server";
+import { headers } from "next/headers";
 
 export async function GET() {
+  const authHeader = (await headers()).get("authorization");
+  const token = authHeader?.replace("Bearer ", "");
+
   const supabase = await createClient();
 
   const {
     data: { user },
     error: authError,
-  } = await supabase.auth.getUser();
+  } = token
+    ? await supabase.auth.getUser(token) // manually pass token
+    : await supabase.auth.getUser(); // fall back to cookie
 
   if (authError || !user) {
     return new Response("Unauthorized", { status: 401 });

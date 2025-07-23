@@ -8,9 +8,12 @@ export async function GET() {
     error: authError,
   } = await supabase.auth.getUser();
 
-  if (authError || !user) {
-    return new Response("Unauthorized", { status: 401 });
-  }
+if (authError || !user) {
+  return new Response(JSON.stringify({ error: "Unauthorized" }), {
+    status: 401,
+    headers: { "Content-Type": "application/json" },
+  });
+}
 
   const { data: friends, error: friendsError } = await supabase
     .from("friends")

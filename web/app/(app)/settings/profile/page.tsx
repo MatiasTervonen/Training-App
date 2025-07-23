@@ -62,8 +62,6 @@ export default function Settings() {
 
       const data = await res.json();
 
-      console.log("Image uploaded successfully:", data);
-
       toast.success("Profile picture updated successfully!");
       mutate("/api/settings/get-settings");
       return data.publicUrl;

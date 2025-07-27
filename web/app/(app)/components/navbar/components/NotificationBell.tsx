@@ -6,13 +6,17 @@ import { formatDate } from "@/app/(app)/lib/formatDate";
 import toast from "react-hot-toast";
 import { FriendRequest } from "@/app/(app)/types/models";
 
-
 export default function NotificationBell() {
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
   const { data: friendRequest } = useSWR<FriendRequest[]>(
     "/api/friend/get-request",
-    fetcher
+    fetcher,
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+      revalidateIfStale: false,
+    }
   );
   const requests = friendRequest ?? [];
 

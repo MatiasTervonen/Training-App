@@ -7,7 +7,7 @@ export async function POST(req: NextRequest) {
   const formData = await req.formData();
   const file = formData.get("file") as File;
 
-  if (!file) {
+  if (!file || typeof file === "string") {
     return new Response(JSON.stringify({ error: "No file provided" }), {
       status: 400,
       headers: { "Content-Type": "application/json" },
@@ -20,7 +20,10 @@ export async function POST(req: NextRequest) {
   } = await supabase.auth.getUser();
 
   if (authError || !user) {
-    return new Response("Unauthorized", { status: 401 });
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 
   const fileText = file.name.split(".").pop();

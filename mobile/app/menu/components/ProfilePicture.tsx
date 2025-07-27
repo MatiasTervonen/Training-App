@@ -1,0 +1,95 @@
+import { View, Pressable, Alert } from "react-native";
+import AppText from "@/app/components/AppText";
+import { Image } from "expo-image";
+import * as ImagePicker from "expo-image-picker";
+import { useState, useEffect } from "react";
+import AppInput from "@/app/components/AppInput";
+
+type UploadFile = {
+  uri: string;
+  name: string;
+  type: string;
+};
+
+type Props = {
+  data?: string | null;
+  onFileSelected?: (file: UploadFile | null) => void;
+};
+
+export default function ProfilePicture({ data, onFileSelected }: Props) {
+  const [imageUri, setImageUri] = useState<string>("");
+  const [fileName, setFileName] = useState<string>("");
+  const [userPickedImage, setUserPickedImage] = useState(false);
+
+  useEffect(() => {
+    if (data) {
+      setImageUri(data);
+      setFileName(data.split("/").pop() || "image.jpg");
+    }
+  }, [data]);
+
+  const pickImage = async () => {
+    const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (!permission.granted) {
+      Alert.alert("Permission Denied", "Please allow access to your photos.");
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ["images"],
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled && result.assets.length > 0) {
+      const asset = result.assets[0];
+      const uri = asset.uri;
+      const name = asset.fileName || uri.split("/").pop() || "profile.jpg";
+      const type = asset.type || "image/jpeg";
+
+      setUserPickedImage(true);
+      setImageUri(uri);
+      setFileName(name);
+
+      if (onFileSelected) {
+        onFileSelected({
+          uri,
+          name,
+          type,
+        });
+      }
+    }
+  };
+
+  return (
+    <View>
+      <AppText>Profile picture</AppText>
+      <View className="mt-4">
+        <Image
+          source={
+            fileName
+              ? { uri: imageUri }
+              : require("@/assets/images/default-avatar.png")
+          }
+          style={{
+            width: 80,
+            height: 80,
+            borderRadius: 40,
+          }}
+          contentFit="cover"
+          alt="Profile Picture"
+        />
+      </View>
+      <Pressable onPress={pickImage}>
+        <AppInput
+          placeholderTextColor={"#f3f4f6"}
+          editable={false}
+          placeholder="Change Profile Picture"
+          value={userPickedImage ? fileName : ""}
+        />
+      </Pressable>
+    </View>
+  );
+}

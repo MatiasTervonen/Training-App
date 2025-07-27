@@ -34,7 +34,7 @@ export default function Navbar() {
           >
             <MessageCircle size={20} />
           </Link>
-          <Link href={"/settings"}>
+          <Link href={"/menu"}>
             <Image
               src={profilePictureRaw || "/default-avatar.png"}
               alt="Profile Picture"

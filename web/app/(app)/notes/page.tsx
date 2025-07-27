@@ -141,7 +141,7 @@ export default function Notes() {
             </div>
           </div>
           <div className="flex flex-col items-center gap-5 mb-10  self-center w-full">
-            <SaveButton isSaving={isSaving} onClick={saveNotes} />
+            <SaveButton onClick={saveNotes} />
             <DeleteSessionBtn
               storageKey={["notes_draft"]}
               onDelete={resetNotes}

@@ -3,11 +3,13 @@ import { StatusBar, View } from "react-native";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import "./global.css";
 import Navbar from "@/app/components/navbar/Navbar";
 import "react-native-url-polyfill/auto";
 import LayoutWrapper from "./components/LayoutWrapper";
+import Toast from "react-native-toast-message";
+import { toastConfig } from "@/toastGonfig";
 
 export default function RootLayout() {
   const [loaded, error] = useFonts({
@@ -39,12 +41,15 @@ export default function RootLayout() {
         backgroundColor="#020617"
         translucent={false}
       />
-      <View className="flex-1 bg-slate-800 font-russo">
-        <Navbar />
-        <LayoutWrapper>
-          <Slot />
-        </LayoutWrapper>
-      </View>
+      <SafeAreaView style={{ flex: 1 }} className="bg-slate-950">
+        <View className="flex-1 bg-slate-800 font-russo">
+          <Navbar />
+          <LayoutWrapper>
+            <Slot />
+          </LayoutWrapper>
+          <Toast config={toastConfig} position="top" />
+        </View>
+      </SafeAreaView>
     </SafeAreaProvider>
   );
 }

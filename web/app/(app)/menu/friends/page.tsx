@@ -19,6 +19,7 @@ export default function FriendsPage() {
     {
       revalidateOnFocus: false,
       revalidateOnReconnect: false,
+      revalidateIfStale: false,
     }
   );
   const friends = data?.friends || [];
@@ -26,9 +27,7 @@ export default function FriendsPage() {
   return (
     <ModalPageWrapper noTopPadding>
       <div className="p-5 h-full text-gray-100 max-w-md mx-auto">
-        <h1 className="text-gray-100 text-center  my-5 text-2xl">
-          Friends
-        </h1>
+        <h1 className="text-gray-100 text-center  my-5 text-2xl">Friends</h1>
         <FriendRequestForm />
         <div className="flex flex-col items-center justify-center mt-5 px-2 rounded-md shadow-xl bg-slate-950">
           <div className="flex items-center justify-center mt-5 mb-10">

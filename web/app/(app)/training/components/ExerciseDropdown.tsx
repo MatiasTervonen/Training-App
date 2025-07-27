@@ -30,6 +30,7 @@ export default function ExerciseDropdown({
   } = useSWR<gym_exercises[]>("/api/gym/exercises", fetcher, {
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
+    revalidateIfStale: false,
   });
 
   const {
@@ -39,6 +40,7 @@ export default function ExerciseDropdown({
   } = useSWR<gym_exercises[]>("/api/gym/recent-exercises", fetcher, {
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
+    revalidateIfStale: false,
   });
 
   const isLoading = isExercisesLoading || isRecentLoading;

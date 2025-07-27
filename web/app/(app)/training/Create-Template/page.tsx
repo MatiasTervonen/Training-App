@@ -543,7 +543,7 @@ export default function CreateTemplatePage() {
             </button>
           </div>
           <div className="flex flex-col justify-center items-center mt-14 gap-5 pb-5">
-            <SaveButton isSaving={isSaving} onClick={handleSaveTemplate} />
+            <SaveButton onClick={handleSaveTemplate} />
             <DeleteSessionBtn onDelete={resetSession} />
           </div>
         </div>

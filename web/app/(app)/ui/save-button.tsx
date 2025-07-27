@@ -1,20 +1,15 @@
 "use client";
 
-import Spinner from "@/app/(app)/components/spinner";
 import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
 
 type SaveButtonProps = {
-  isSaving: boolean;
   onClick: () => void;
   label?: string;
-  savingLabel?: string;
 };
 
 export default function SaveButton({
-  isSaving,
   onClick,
-  label = "Finish",
-  savingLabel = "Saving...",
+  label = "Save",
 }: SaveButtonProps) {
   const isGuest = useUserStore((state) => state.isGuest);
 
@@ -32,14 +27,12 @@ export default function SaveButton({
 
   return (
     <button
-      aria-label={isSaving ? savingLabel : label}
+      aria-label={label}
       type="submit"
       onClick={onClick}
-      disabled={isSaving}
       className="flex items-center justify-center w-full gap-2 bg-blue-800 py-2 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95"
     >
-      {isSaving && <Spinner />}
-      {isSaving ? savingLabel : label}
+      {label}
     </button>
   );
 }

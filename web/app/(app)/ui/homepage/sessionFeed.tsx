@@ -47,6 +47,7 @@ export default function SessionFeed() {
   } = useSWR<FeedItem[]>("/api/feed", fetcher, {
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
+    revalidateIfStale: false,
   });
 
   useEffect(() => {

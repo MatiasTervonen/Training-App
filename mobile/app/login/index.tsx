@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Alert,
   View,
@@ -15,23 +15,53 @@ import { useRouter } from "expo-router";
 import FullScreenLoader from "../components/FullScreenLoader";
 import { LinearGradient } from "expo-linear-gradient";
 import Screen from "../components/Screen";
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+} from "react-native-reanimated";
+import GuestLogIn from "./guest-login/guest-login";
 
 export default function LoginScreen() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [login, setLogin] = useState({ email: "", password: "" });
+  const [signup, setSignup] = useState({
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
   const [loading, setLoading] = useState(false);
   const [activeForm, setActiveForm] = useState(false);
 
   const screenHeight = Dimensions.get("window").height;
+  const translateY = useSharedValue(0);
+
+  useEffect(() => {
+    translateY.value = withTiming(activeForm ? -screenHeight : 0, {
+      duration: 500,
+    });
+  }, [activeForm, screenHeight, translateY]);
+
+  useEffect(() => {
+    if (activeForm) {
+      setLogin({ email: "", password: "" });
+    } else {
+      setSignup({ email: "", password: "", confirmPassword: "" });
+    }
+  }, [activeForm]);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: translateY.value }],
+  }));
 
   const router = useRouter();
 
   async function signInWithEmail() {
-    if (!email || !password) {
+    if (!login.email || !login.password) {
       Alert.alert("Please enter your email and password.");
       return;
     }
+
+    const { email, password } = login;
 
     setLoading(true);
 
@@ -44,22 +74,22 @@ export default function LoginScreen() {
     setLoading(false);
 
     if (!error) {
-      Alert.alert("Login successful!");
-
       router.push("/dashboard");
     }
   }
 
   async function signUpWithEmail() {
-    if (!email || !password) {
+    if (!signup.email || !signup.password) {
       Alert.alert("Please enter your email and password.");
       return;
     }
 
-    if (password !== confirmPassword) {
+    if (signup.password !== signup.confirmPassword) {
       Alert.alert("Passwords do not match.");
       return;
     }
+
+    const { email, password } = signup;
 
     setLoading(true);
     const {
@@ -91,52 +121,53 @@ export default function LoginScreen() {
             end={{ x: 1, y: 0 }}
             className="flex-1"
           >
-            <View
-              style={{ height: screenHeight }}
-              className={`absolute top-0 left-0 w-full transition-transform duration-500 ease-in-out px-6  ${
-                activeForm ? "-translate-y-full" : "translate-y-0"
-              } mt-32`}
+            <Animated.View
+              style={animatedStyle}
+              className={`absolute top-0 left-0 w-full  px-6 mt-32`}
             >
-              <AppInput
-                label="Email"
-                onChangeText={(text) => setEmail(text)}
-                value={email}
-                placeholder="email@address.com"
-                autoCapitalize={"none"}
-              />
-              <View className="mt-4">
-                <AppInput
-                  label="Password"
-                  onChangeText={(text) => setPassword(text)}
-                  value={password}
-                  secureTextEntry={true}
-                  placeholder="Password"
-                  autoCapitalize={"none"}
-                />
-              </View>
-              <View className="mt-10">
-                <AppButton title="Log in" onPress={() => signInWithEmail()} />
-              </View>
-            </View>
-            <View
-              style={{ height: screenHeight }}
-              className={`absolute top-0 left-0 w-full transition-transform duration-500 ease-in-out px-6 ${
-                activeForm ? "translate-y-0" : "translate-y-full"
-              } mt-32`}
-            >
-              <View>
+              <View style={{ height: screenHeight }}>
                 <AppInput
                   label="Email"
-                  onChangeText={(text) => setEmail(text)}
-                  value={email}
+                  onChangeText={(text) => setLogin({ ...login, email: text })}
+                  value={login.email}
                   placeholder="email@address.com"
                   autoCapitalize={"none"}
                 />
                 <View className="mt-4">
                   <AppInput
                     label="Password"
-                    onChangeText={(text) => setPassword(text)}
-                    value={password}
+                    onChangeText={(text) =>
+                      setLogin({ ...login, password: text })
+                    }
+                    value={login.password}
+                    secureTextEntry={true}
+                    placeholder="Password"
+                    autoCapitalize={"none"}
+                  />
+                </View>
+                <View className="mt-10">
+                  <AppButton title="Log in" onPress={() => signInWithEmail()} />
+                </View>
+                <View className="mt-10">
+                  <GuestLogIn />
+                </View>
+              </View>
+
+              <View style={{ height: screenHeight }}>
+                <AppInput
+                  label="Email"
+                  onChangeText={(text) => setSignup({ ...signup, email: text })}
+                  value={signup.email}
+                  placeholder="email@address.com"
+                  autoCapitalize={"none"}
+                />
+                <View className="mt-4">
+                  <AppInput
+                    label="Password"
+                    onChangeText={(text) =>
+                      setSignup({ ...signup, password: text })
+                    }
+                    value={signup.password}
                     secureTextEntry={true}
                     placeholder="Password"
                     autoCapitalize={"none"}
@@ -145,8 +176,10 @@ export default function LoginScreen() {
                 <View className="mt-4">
                   <AppInput
                     label="Confirm Password"
-                    onChangeText={(text) => setConfirmPassword(text)}
-                    value={confirmPassword}
+                    onChangeText={(text) =>
+                      setSignup({ ...signup, confirmPassword: text })
+                    }
+                    value={signup.confirmPassword}
                     secureTextEntry={true}
                     placeholder="Confirm Password"
                     autoCapitalize={"none"}
@@ -159,7 +192,7 @@ export default function LoginScreen() {
                   />
                 </View>
               </View>
-            </View>
+            </Animated.View>
             <View className="absolute bottom-0 left-0 w-full flex flex-col justify-centergap-2 pb-10 px-6">
               <AppText className="text-center mb-5">
                 {activeForm

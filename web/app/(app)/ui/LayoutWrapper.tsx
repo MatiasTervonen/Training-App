@@ -1,13 +1,10 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import Navbar from "@/app/(app)/components/navbar/navbar";
 import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
 import { useEffect } from "react";
-import { createClient } from "@/utils/supabase/client";
 import toast from "react-hot-toast";
-
-const noAuthCheck = ["/login", "/"];
 
 export default function LayoutWrapper({
   children,
@@ -16,94 +13,39 @@ export default function LayoutWrapper({
 }) {
   const pathname = usePathname();
 
-  const skipAuthCheck = noAuthCheck.includes(pathname);
-
-  const preferences = useUserStore((state) => state.preferences);
-
-  const setPreferences = useUserStore((state) => state.setUserPreferences);
-
-  const setIsLoggedIn = useUserStore((state) => state.setIsLoggedIn);
-
-  const clearPreferences = useUserStore((state) => state.clearUserPreferences);
-
-  const setIsGuest = useUserStore((state) => state.setIsGuest);
-
-  const router = useRouter();
+  const loginUser = useUserStore((state) => state.loginUser);
 
   const loginPage = pathname === "/login";
 
   useEffect(() => {
-    if (skipAuthCheck) return;
+    if (loginPage) return;
 
-    // Check if user is logged in
-    const checkUserLoggedIn = async () => {
-      const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+    const preferences = useUserStore.getState().preferences;
 
-      if (user?.app_metadata?.role === "guest") {
-        setIsGuest(true);
-      } else {
-        setIsGuest(false);
-      }
+    if (preferences) return;
 
-      if (user) {
-        setIsLoggedIn(true);
+    const fetchPreferences = async () => {
+      try {
+        const response = await fetch("/api/settings/get-settings");
 
-        if (preferences) return;
-
-        try {
-          const response = await fetch("/api/settings/get-settings");
-
-          if (!response.ok) {
-            throw new Error("Failed to fetch user preferences");
-          }
-
-          const data = await response.json();
-          setPreferences(data);
-        } catch (error) {
-          console.error("Error fetching user preferences:", error);
-          console.log("No preferences fetched (likely not logged in yet)");
-          toast.error("Failed to load user preferences. Please try again.");
+        if (!response.ok) {
+          throw new Error("Failed to fetch user preferences");
         }
-      } else {
-        clearPreferences();
-        setIsLoggedIn(false);
-        setIsGuest(false);
+
+        const data = await response.json();
+
+        const isGuest = data.role === "guest";
+
+        loginUser(data, isGuest);
+      } catch (error) {
+        console.error("Error fetching user preferences:", error);
+        console.log("No preferences fetched (likely not logged in yet)");
+        toast.error("Failed to load user preferences. Please try again.");
       }
     };
 
-    checkUserLoggedIn();
-  }, [
-    pathname,
-    setIsLoggedIn,
-    clearPreferences,
-    preferences,
-    setPreferences,
-    setIsGuest,
-    skipAuthCheck,
-  ]);
-
-  useEffect(() => {
-    const supabase = createClient();
-    const { data: listener } = supabase.auth.onAuthStateChange(
-      (_event, user) => {
-        if (!user) {
-          router.replace("/login");
-          clearPreferences();
-          setIsLoggedIn(false);
-          setIsGuest(false);
-        } else {
-          router.replace("/dashboard");
-        }
-      }
-    );
-
-    return () => {
-      listener.subscription.unsubscribe();
-    };
-  }, [router, clearPreferences, setIsLoggedIn, setIsGuest]);
+    fetchPreferences();
+  }, [loginUser, loginPage]);
 
   return (
     <>

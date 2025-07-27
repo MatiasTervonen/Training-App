@@ -34,7 +34,7 @@ export default function Navbar() {
             </Pressable>
           </Link>
           <Link
-            href="/settings"
+            href="/menu"
             className="rounded-full border-2 border-blue-500 w-[40px] h-[40px]"
             asChild
           >

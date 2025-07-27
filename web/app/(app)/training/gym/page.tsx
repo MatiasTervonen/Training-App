@@ -665,7 +665,7 @@ export default function TrainingSessionPage() {
               </div>
             </>
             <div className="flex flex-col justify-center items-center mt-14 gap-5 mb-10 px-4">
-              <SaveButton isSaving={isSaving} onClick={saveSession} />
+              <SaveButton onClick={saveSession} />
               <DeleteSessionBtn onDelete={resetSession} />
             </div>
           </div>

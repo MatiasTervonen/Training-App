@@ -7,6 +7,7 @@ import ExerciseTypeSelect from "@/app/(app)/training/components/ExerciseTypeSele
 import SaveButton from "@/app/(app)/ui/save-button";
 import toast from "react-hot-toast";
 import { generateUUID } from "@/app/(app)/lib/generateUUID";
+import FullScreenLoader from "../../components/FullScreenLoader";
 
 export default function EditExercises() {
   const [name, setName] = useState("");
@@ -140,13 +141,10 @@ export default function EditExercises() {
           />
         </div>
         <div className="mt-20">
-          <SaveButton
-            isSaving={isSaving}
-            onClick={handleSave}
-            label="Save Exercise"
-          />
+          <SaveButton onClick={handleSave} label="Save Exercise" />
         </div>
       </div>
+      {isSaving && <FullScreenLoader message="Saving exercise..." />}
     </ModalPageWrapper>
   );
 }

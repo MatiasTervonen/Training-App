@@ -5,21 +5,15 @@ import { Alert, TouchableOpacity } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import AppText from "./AppText";
 import { LogOut } from "lucide-react-native";
-import { useUserStore } from "@/lib/stores/useUserStore";
+import { router } from "expo-router";
 
-type LogoutButtonProps = {
-  onLogout?: () => void;
-};
-
-export default function LogoutButton({ onLogout }: LogoutButtonProps) {
+export default function LogoutButton() {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleLogout = async () => {
-    if (onLogout) onLogout();
-
     setIsLoading(true);
 
-    const { error } = await supabase.auth.signOut();
+    const { error } = await supabase.auth.signOut({ scope: "local" });
 
     if (error) {
       Alert.alert("Logout Failed", error.message);
@@ -27,9 +21,9 @@ export default function LogoutButton({ onLogout }: LogoutButtonProps) {
       return;
     }
 
-    useUserStore.getState().clearUserPreferences();
-    useUserStore.getState().setIsLoggedIn(false);
-    useUserStore.getState().setIsGuest(false);
+    
+    setIsLoading(false);
+    router.replace("/");
   };
 
   return (

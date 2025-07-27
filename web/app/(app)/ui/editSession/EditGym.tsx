@@ -315,7 +315,7 @@ export default function EditGym({
           </div>
         ))}
         <div className="my-10 mx-10">
-          <SaveButton isSaving={isSaving} onClick={handleSubmit} />
+          <SaveButton onClick={handleSubmit} />
         </div>
       </div>
       {isSaving && <FullScreenLoader message="Saving..." />}

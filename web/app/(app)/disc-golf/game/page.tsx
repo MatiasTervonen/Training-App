@@ -345,10 +345,7 @@ export default function DiscGolfGame() {
         <div className="flex items-center justify-center gap-2  text-gray-100">
           <Timer buttonsAlwaysVisible />
         </div>
-        <Link
-          href="/disc-golf/score-summary"
-          className="text-gray-100"
-        >
+        <Link href="/disc-golf/score-summary" className="text-gray-100">
           Live Scorecard
         </Link>
       </nav>
@@ -466,20 +463,14 @@ export default function DiscGolfGame() {
           >
             <div className="max-w-md mx-auto flex flex-col justify-between w-full h-full">
               <div>
-                <h1
-                  className="text-gray-100 flex justify-center my-2 text-2xl mt-5"
-                >
+                <h1 className="text-gray-100 flex justify-center my-2 text-2xl mt-5">
                   Hole {viewingHoleNumber}
                 </h1>
-                <p
-                  className="text-gray-100 flex justify-center my-2"
-                >
+                <p className="text-gray-100 flex justify-center my-2">
                   {courseName}
                 </p>
                 <div className="border-2 border-gray-100 p-5 rounded-xl mb-10 mx-10">
-                  <div
-                    className="flex items-center justify-between gap-2 text-gray-100"
-                  >
+                  <div className="flex items-center justify-between gap-2 text-gray-100">
                     <p className="text-xl">Par</p>
                     <div className="flex items-center gap-4">
                       <button
@@ -501,9 +492,7 @@ export default function DiscGolfGame() {
               </div>
               {getSortedPlayersByScoreAndLastHole().map((player, index) => (
                 <div key={index} className="flex flex-col gap-2 mt-5 mb-10">
-                  <div
-                    className="flex items-center justify-between text-gray-100 text-lg border-b"
-                  >
+                  <div className="flex items-center justify-between text-gray-100 text-lg border-b">
                     {(() => {
                       const { totalStrokes, formattedDiff } = getPlayerTotals(
                         player.name
@@ -556,9 +545,7 @@ export default function DiscGolfGame() {
                   </div>
                   {trackStats && (
                     <div>
-                      <div
-                        className="flex justify-between items-center gap-2 border-b border-gray-100 text-gray-100 mx-10 mt-5"
-                      >
+                      <div className="flex justify-between items-center gap-2 border-b border-gray-100 text-gray-100 mx-10 mt-5">
                         <label>Fairway Hit</label>
                         <input
                           className="h-5 w-5"
@@ -577,9 +564,7 @@ export default function DiscGolfGame() {
                           }
                         />
                       </div>
-                      <div
-                        className="flex justify-between items-center gap-2 border-b border-gray-100 text-gray-100 mx-10"
-                      >
+                      <div className="flex justify-between items-center gap-2 border-b border-gray-100 text-gray-100 mx-10">
                         <label>C1 Made</label>
                         <input
                           className="h-5 w-5"
@@ -599,9 +584,7 @@ export default function DiscGolfGame() {
                           }
                         />
                       </div>
-                      <div
-                        className="flex justify-between items-center gap-2 border-b border-gray-100 text-gray-100 mx-10"
-                      >
+                      <div className="flex justify-between items-center gap-2 border-b border-gray-100 text-gray-100 mx-10">
                         <label>C1 Attempted</label>
                         <input
                           className="h-5 w-5"
@@ -623,9 +606,7 @@ export default function DiscGolfGame() {
                           }
                         />
                       </div>
-                      <div
-                        className="flex justify-between items-center gap-2 border-b border-gray-100 text-gray-100 mx-10"
-                      >
+                      <div className="flex justify-between items-center gap-2 border-b border-gray-100 text-gray-100 mx-10">
                         <label> C2 Made</label>
                         <input
                           className="h-5 w-5"
@@ -645,9 +626,7 @@ export default function DiscGolfGame() {
                           }
                         />
                       </div>
-                      <div
-                        className="flex justify-between items-center gap-2 border-b border-gray-100 text-gray-100 mx-10 mb-5"
-                      >
+                      <div className="flex justify-between items-center gap-2 border-b border-gray-100 text-gray-100 mx-10 mb-5">
                         <label> C2 Attempted</label>
                         <input
                           className="h-5 w-5"
@@ -694,7 +673,7 @@ export default function DiscGolfGame() {
                   )}
                 </div>
                 <div className="flex flex-col gap-5 items-center justify-center">
-                  <SaveButton isSaving={isSaving} onClick={handleFinishGame} />
+                  <SaveButton onClick={handleFinishGame} />
                   <DeleteSessionBtn onDelete={deleteSession} />
                 </div>
               </div>

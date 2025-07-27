@@ -21,8 +21,6 @@ export async function GET() {
     .eq("status", "pending")
     .order("created_at", { ascending: false });
 
-    console.log("Friend Requests:", requests);
-
   if (requestsError || !requests) {
     console.error("Supabase Fetch Error:", requestsError);
     return new Response(JSON.stringify({ error: requestsError?.message }), {

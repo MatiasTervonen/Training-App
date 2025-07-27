@@ -27,6 +27,7 @@ export default function Sessions() {
     {
       revalidateOnFocus: false,
       revalidateOnReconnect: false,
+      revalidateIfStale: false,
     }
   );
 

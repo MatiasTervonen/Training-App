@@ -24,7 +24,6 @@ export default function GameFinished() {
   >([]);
   const [time, setTime] = useState("N/A");
   const router = useRouter();
-  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     const dataJSON = localStorage.getItem("holes");
@@ -49,16 +48,13 @@ export default function GameFinished() {
   }, []);
 
   const finishGame = async () => {
-    setIsSaving(true);
     clearLocalStorage();
     router.push("/dashboard");
   };
 
   return (
     <div className="bg-slate-800 p-5 min-h-[100dvh] relative">
-      <h1 className="text-gray-100 text-center text-xl">
-        Final Scores
-      </h1>
+      <h1 className="text-gray-100 text-center text-xl">Final Scores</h1>
       {holes.length > 0 &&
         (() => {
           const playerData: {
@@ -157,15 +153,9 @@ export default function GameFinished() {
                             className="pb-1"
                           />
                         )}
-                        <h2
-                          className="text-gray-100 text-xl "
-                        >
-                          {playerName}
-                        </h2>
+                        <h2 className="text-gray-100 text-xl ">{playerName}</h2>
                       </div>
-                      <table
-                        className="w-full text-left text-gray-100"
-                      >
+                      <table className="w-full text-left text-gray-100">
                         <tbody>
                           <tr className="border-b border-slate-500">
                             <th className="py-2 pr-4">Total Strokes</th>
@@ -211,14 +201,10 @@ export default function GameFinished() {
           );
         })()}
       <div className="flex gap-4">
-        <h2 className="text-gray-100 text-lg mb-2">
-          Round Time
-        </h2>
-        <p className="text-gray-100 text-xl mb-5">
-          {time}
-        </p>
+        <h2 className="text-gray-100 text-lg mb-2">Round Time</h2>
+        <p className="text-gray-100 text-xl mb-5">{time}</p>
       </div>
-      <SaveButton isSaving={isSaving} onClick={finishGame} />
+      <SaveButton onClick={finishGame} />
     </div>
   );
 }

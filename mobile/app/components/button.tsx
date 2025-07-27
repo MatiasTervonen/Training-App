@@ -25,7 +25,7 @@ export default function AppButton({
         style={{ borderRadius:8 }}
         className="px-4 py-2"
       >
-        <AppText className="text-center" style={{ fontSize: 20 }}>{title}</AppText>
+        <AppText className="text-center text-base" style={{ fontSize: 20 }}>{title}</AppText>
       </LinearGradient>
     </TouchableOpacity>
   );

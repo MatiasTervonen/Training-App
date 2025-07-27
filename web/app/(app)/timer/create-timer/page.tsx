@@ -145,12 +145,7 @@ export default function TimerPage() {
           </div>
         </div>
         <div className="flex flex-col gap-5 items-center justify-center mb-5 mt-10">
-          <SaveButton
-            onClick={saveTimer}
-            isSaving={isSaving}
-            label="Save Timer"
-            savingLabel="Saving Timer..."
-          />
+          <SaveButton onClick={saveTimer} label="Save Timer" />
           <button
             className="w-full bg-red-600 border-2 border-red-400 py-2 shadow-xl rounded-md cursor-pointer hover:scale-95 hover:bg-red-500"
             onClick={handleReset}

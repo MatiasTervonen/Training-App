@@ -173,7 +173,7 @@ export default function WorkoutAnalyticsPage() {
             </label>
           </div>
           <div className="flex flex-col items-center gap-5">
-            <SaveButton isSaving={isSaving} onClick={saveWeight} />
+            <SaveButton onClick={saveWeight} />
             <DeleteSessionBtn onDelete={resetWeight} />
           </div>
         </div>

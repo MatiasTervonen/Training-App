@@ -9,6 +9,7 @@ import toast from "react-hot-toast";
 import ExerciseDropdown from "@/app/(app)/training/components/ExerciseDropdown";
 import DeleteSessionBtn from "@/app/(app)/ui/deleteSessionBtn";
 import { gym_exercises } from "../../types/models";
+import FullScreenLoader from "../../components/FullScreenLoader";
 
 export default function EditExercises() {
   const [name, setName] = useState("");
@@ -199,7 +200,6 @@ export default function EditExercises() {
                 />
                 <div className="mt-20 flex flex-col gap-5">
                   <SaveButton
-                    isSaving={isSaving}
                     onClick={handleUpdateExercise}
                     label="Update Exercise"
                   />
@@ -221,6 +221,7 @@ export default function EditExercises() {
           )}
         </div>
       </div>
+      {isSaving && <FullScreenLoader message="Saving exercise..." />}
     </ModalPageWrapper>
   );
 }

@@ -31,7 +31,7 @@ mobile/.cache
 mobile/.env
 mobile/.env.local
 mobile/.env.*.local
-
+mobile/commands.txt
 
 # Testing & Coverage
 coverage/

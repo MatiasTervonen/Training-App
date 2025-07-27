@@ -25,6 +25,7 @@ export default function TimersPage() {
   } = useSWR<timers[]>("/api/timer/get-timer", fetcher, {
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
+    revalidateIfStale: false,
   });
 
   const { startTimer, setActiveSession } = useTimerStore();

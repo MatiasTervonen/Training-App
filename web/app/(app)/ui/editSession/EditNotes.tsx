@@ -8,7 +8,7 @@ import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import { mutate } from "swr";
 import toast from "react-hot-toast";
 import { notes } from "@/app/(app)/types/models";
- 
+
 type Props = {
   note: notes;
   onClose: () => void;
@@ -103,7 +103,7 @@ export default function EditNotes({ note, onClose, onSave }: Props) {
             />
           </div>
           <div className="w-full">
-            <SaveButton isSaving={isSaving} onClick={handleSubmit} />
+            <SaveButton onClick={handleSubmit} />
           </div>
         </div>
       </div>

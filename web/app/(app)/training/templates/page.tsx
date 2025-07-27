@@ -27,6 +27,7 @@ export default function TemplatesPage() {
   } = useSWR<full_gym_template[]>("/api/gym/get-templates", fetcher, {
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
+    revalidateIfStale: false,
   });
 
   const startWorkout = (template: full_gym_template) => {

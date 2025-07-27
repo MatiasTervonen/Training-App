@@ -131,7 +131,7 @@ export default function EditWeight({ weight, onClose, onSave }: Props) {
             </label>
           </div>
           <div className="w-full">
-            <SaveButton isSaving={isSaving} onClick={handleSubmit} />
+            <SaveButton onClick={handleSubmit} />
           </div>
         </div>
       </div>

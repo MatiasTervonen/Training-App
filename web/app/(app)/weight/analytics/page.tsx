@@ -22,6 +22,7 @@ export default function TrainingPage() {
   } = useSWR("/api/weight/get-weight", fetcher, {
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
+    revalidateIfStale: false,
   });
 
   return (

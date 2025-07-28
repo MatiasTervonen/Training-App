@@ -9,17 +9,13 @@ interface UserPreferences {
   display_name: string;
   weight_unit: string;
   profile_picture: string | null;
+  role?: string; // Optional role for guest users
 }
 
 type Store = {
   router: ReturnType<typeof useRouter>;
-  preferences: UserPreferences | null;
   logoutUser: () => void;
-  loginUser: (
-    prefs: UserPreferences,
-    isGuest: boolean,
-    session: Session
-  ) => void;
+  loginUser: (prefs: UserPreferences, session: Session) => void;
 };
 
 const handleSessionChange = async (session: Session | null, store: Store) => {
@@ -31,9 +27,6 @@ const handleSessionChange = async (session: Session | null, store: Store) => {
     return;
   }
 
-  router.replace("/dashboard");
-
-  const isGuest = session?.user?.app_metadata?.role === "guest";
   const preferences = useUserStore.getState().preferences;
 
   if (!preferences) {
@@ -52,7 +45,9 @@ const handleSessionChange = async (session: Session | null, store: Store) => {
       }
 
       const data = await response.json();
-      loginUser(data, isGuest, session);
+
+      loginUser(data, session);
+      router.replace("/dashboard");
     } catch (error) {
       console.error("Error fetching user preferences:", error);
       console.log("No preferences fetched (likely not logged in yet)");
@@ -78,7 +73,6 @@ export default function LayoutWrapper({
     supabase.auth.getSession().then(({ data: { session } }) => {
       handleSessionChange(session, {
         router,
-        preferences,
         loginUser,
         logoutUser,
       });
@@ -93,7 +87,6 @@ export default function LayoutWrapper({
       async (_event, session) => {
         handleSessionChange(session, {
           router,
-          preferences,
           loginUser,
           logoutUser,
         });

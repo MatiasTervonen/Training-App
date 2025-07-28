@@ -11,7 +11,7 @@ export default function SaveButton({
   onPress,
   label = "Save",
 }: SaveButtonProps) {
-  const isGuest = useUserStore((state) => state.isGuest);
+  const isGuest = useUserStore((state) => state.preferences?.role === "guest");
 
   if (isGuest) {
     return (

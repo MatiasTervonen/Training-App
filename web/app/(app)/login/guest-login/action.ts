@@ -1,31 +1,39 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
-import { redirect } from "next/navigation";
-import { revalidatePath } from "next/cache";
 
 type GuestLoginResult = {
   success: boolean;
   message: string;
+  session?: {
+    access_token: string;
+    refresh_token: string;
+  };
 };
 
 export async function guestLogin(): Promise<GuestLoginResult> {
   const supabase = await createClient();
 
-  const data = {
+  const { data, error } = await supabase.auth.signInWithPassword({
     email: process.env.GUEST_EMAIL!,
     password: process.env.GUEST_PASSWORD!,
-  };
+  });
 
-  const { error } = await supabase.auth.signInWithPassword(data);
-
-  if (error) {
+  if (error || !data.session) {
     return {
       success: false,
-      message: `Error logging in as guest: ${error.message}`,
+      message: `Error logging in as guest: ${
+        error?.message ?? "No session returned"
+      }`,
     };
   }
 
-  revalidatePath("/dashboard", "layout");
-  redirect("/dashboard");
+  return {
+    success: true,
+    message: "Guest login successful",
+    session: {
+      access_token: data.session.access_token,
+      refresh_token: data.session.refresh_token,
+    },
+  };
 }

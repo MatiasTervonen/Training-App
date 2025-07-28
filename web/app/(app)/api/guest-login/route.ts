@@ -10,5 +10,9 @@ export async function POST() {
     );
   }
 
-  return NextResponse.json({ success: true });
+  return NextResponse.json({
+    success: true,
+    session: result.session,
+    message: result.message,
+  });
 }

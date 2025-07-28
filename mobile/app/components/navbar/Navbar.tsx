@@ -49,7 +49,11 @@ export default function Navbar() {
               }}
             >
               <Image
-                source={profilePictureRaw || "/default-avatar.png"}
+                source={
+                  profilePictureRaw
+                    ? { uri: profilePictureRaw }
+                    : require("@/assets/images/default-avatar.png")
+                }
                 alt="Profile Picture"
                 style={{
                   width: "100%",

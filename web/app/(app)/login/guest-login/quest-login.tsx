@@ -4,6 +4,7 @@ import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import { useTransition } from "react";
 import { guestLogin } from "./action";
 import { useState } from "react";
+import { redirect } from "next/navigation";
 
 export default function GuestLogIn() {
   const [isPending, startTransition] = useTransition();
@@ -18,6 +19,8 @@ export default function GuestLogIn() {
             const result = await guestLogin();
             if (!result.success) {
               setError(result.message);
+            } else {
+              redirect("/dashboard");
             }
           })
         }

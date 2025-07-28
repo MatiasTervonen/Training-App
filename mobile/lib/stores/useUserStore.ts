@@ -7,6 +7,7 @@ interface UserPreferences {
   display_name: string;
   weight_unit: string;
   profile_picture: string | null;
+  role?: string; // Optional role for guest users
 }
 
 interface UserStore {
@@ -16,14 +17,8 @@ interface UserStore {
   clearUserPreferences: () => void;
   isLoggedIn: boolean;
   setIsLoggedIn: (status: boolean) => void;
-  isGuest: boolean; // Optional property for guest users
-  setIsGuest: (status: boolean) => void; // Optional method for setting guest status
   logoutUser: () => void; // Method to clear user state on logout
-  loginUser: (
-    prefs: UserPreferences,
-    isGuest: boolean,
-    session: Session
-  ) => void; // Method to set user state on login
+  loginUser: (prefs: UserPreferences, session: Session) => void; // Method to set user state on login
 }
 
 export const useUserStore = create<UserStore>()(
@@ -35,26 +30,30 @@ export const useUserStore = create<UserStore>()(
       clearUserPreferences: () => set({ preferences: null }),
       setIsLoggedIn: (status) => set({ isLoggedIn: status }),
       isLoggedIn: false,
-      isGuest: false, // Default to false, can be set later
-      setIsGuest: (status) => set({ isGuest: status }),
       logoutUser: () => {
         set({
           preferences: null,
           isLoggedIn: false,
-          isGuest: false,
           session: null,
         });
       },
-      loginUser: (prefs, isGuest, session) =>
+      loginUser: (prefs, session) =>
         set({
           preferences: prefs,
           isLoggedIn: true,
-          isGuest,
           session,
         }),
     }),
     {
       name: "user-store",
+      version: 2,
+      migrate: async (persistedState, version) => {
+        if (version < 2 && persistedState) {
+          const { isGuest, ...rest } = persistedState as any;
+          return rest;
+        }
+        return persistedState;
+      },
       storage: {
         getItem: async (key) => {
           const value = await AsyncStorage.getItem(key);

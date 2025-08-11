@@ -1,22 +1,26 @@
 "use client";
 
 interface DeleteSessionBtnProps {
-  storageKey?: string[];
-  onDelete?: () => void;
+  onDelete: () => void;
   label?: string;
+  confirm?: boolean;
 }
 
 export default function DeleteSessionBtn({
   onDelete,
   label = "Delete",
+  confirm = true,
 }: DeleteSessionBtnProps) {
   const handleDelete = () => {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this session?"
-    );
-    if (!confirmed) return;
+    if (confirm) {
+      const confirmed = window.confirm(
+        "Are you sure you want to delete this session?"
+      );
 
-    if (onDelete) onDelete();
+      if (!confirmed) return;
+    }
+
+    onDelete();
   };
 
   return (

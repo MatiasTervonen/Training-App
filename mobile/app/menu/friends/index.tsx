@@ -1,5 +1,5 @@
 import { View } from "react-native";
-import AppText from "@/app/components/AppText";
+import AppText from "@/components/AppText";
 
 export default function FriendsScreen() {
   return (

@@ -1,0 +1,174 @@
+import AppText from "./AppText";
+import { View, Dimensions } from "react-native";
+import { SquareArrowLeft, SquareArrowRight } from "lucide-react-native";
+import { ReactNode, useState, useEffect } from "react";
+import { useRouter } from "expo-router";
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  withTiming,
+  runOnJS,
+} from "react-native-reanimated";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import { useTransitionDirectionStore } from "@/lib/stores/transitionDirection";
+
+type Props = {
+  children: ReactNode;
+  onSwipeLeft?: () => void;
+  onSwipeRight?: () => void;
+  leftLabel?: string;
+  rightLabel?: string;
+  initialTranslateX?: number;
+};
+
+export default function ModalPageWrapper({
+  children,
+  onSwipeLeft,
+  onSwipeRight,
+  leftLabel = "back",
+  rightLabel = "home",
+}: Props) {
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [isReady, setIsReady] = useState(false);
+
+  const router = useRouter();
+
+  const direction = useTransitionDirectionStore((state) => state.direction);
+  const setDirection = useTransitionDirectionStore(
+    (state) => state.setDirection
+  );
+
+  const screenWidth = Dimensions.get("window").width;
+
+  const translateX = useSharedValue(0);
+  const entryTranslateX = useSharedValue(0);
+  const fadeOpacity = useSharedValue(0);
+
+  // Slide-in animation on mount
+  useEffect(() => {
+    entryTranslateX.value = direction * screenWidth;
+    fadeOpacity.value = 0;
+    // Defer animation to next frame to avoid visual flash
+    requestAnimationFrame(() => {
+      entryTranslateX.value = withTiming(0, { duration: 300 });
+      fadeOpacity.value = withTiming(1, { duration: 300 });
+      runOnJS(setIsReady)(true); // mark as ready
+      setDirection(0);
+    });
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleSwipeLeft = () => {
+    setDirection(1);
+    if (onSwipeLeft) {
+      onSwipeLeft();
+    } else {
+      router.push("/dashboard");
+    }
+  };
+
+  const handleSwipeRight = () => {
+    setDirection(-1);
+    if (onSwipeRight) {
+      onSwipeRight();
+    } else {
+      router.back();
+    }
+  };
+
+  const dragElastic = 0.2;
+
+  const pan = Gesture.Pan()
+    // Restrict gesture to horizontal swipes only
+    .activeOffsetX([-30, 30]) // Activate only if horizontal movement exceeds 30 pixels
+    .activeOffsetY([-1000, 1000]) // Prevent activation for vertical movements
+    .onUpdate((event) => {
+      translateX.value = withSpring(event.translationX * dragElastic, {
+        stiffness: 150,
+        damping: 20,
+      });
+    })
+    .onStart(() => {
+      runOnJS(setIsTransitioning)(true);
+    })
+    .onEnd((event) => {
+      const dragThreshold = 250;
+      const velocityThreshold = 300;
+
+      if (
+        event.velocityX > velocityThreshold ||
+        event.translationX > dragThreshold
+      ) {
+        runOnJS(handleSwipeRight)();
+        translateX.value = withTiming(300, { duration: 250 });
+      } else if (
+        event.velocityX < -velocityThreshold ||
+        event.translationX < -dragThreshold
+      ) {
+        runOnJS(handleSwipeLeft)();
+        translateX.value = withTiming(-300, { duration: 250 });
+      } else {
+        translateX.value = withSpring(0);
+      }
+      runOnJS(setIsTransitioning)(false);
+    });
+
+  const tap = Gesture.Tap();
+
+  // Allow simultaneous gestures for scrolling and horizontal swipes
+  const swipeGesture = Gesture.Simultaneous(pan, tap);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: entryTranslateX.value + translateX.value }],
+    opacity: fadeOpacity.value,
+  }));
+
+  return (
+    <View className="flex-1">
+      <View className="flex-1 absolute inset-0 flex-row justify-between bg-slate-900 pt-[10px]">
+        <View className="flex-col items-center gap-2 ml-2">
+          {isTransitioning && leftLabel && (
+            <>
+              <View>
+                {leftLabel
+                  ?.toUpperCase()
+                  .split("")
+                  .map((letter, index) => (
+                    <AppText className="text-center text-xl" key={index}>
+                      {letter}
+                    </AppText>
+                  ))}
+              </View>
+              <SquareArrowLeft size={35} color={"#f3f4f6"} />
+            </>
+          )}
+        </View>
+
+        <View className="flex-col items-center gap-2 mr-2">
+          {isTransitioning && rightLabel && (
+            <>
+              <View>
+                {rightLabel
+                  ?.toUpperCase()
+                  .split("")
+                  .map((letter, index) => (
+                    <AppText className="text-center text-xl" key={index}>
+                      {letter}
+                    </AppText>
+                  ))}
+              </View>
+              <SquareArrowRight size={35} color={"#f3f4f6"} />
+            </>
+          )}
+        </View>
+      </View>
+      <GestureDetector gesture={isReady ? swipeGesture : Gesture.Tap()}>
+        <Animated.View className="flex-1 bg-slate-800" style={[animatedStyle]}>
+          {children}
+        </Animated.View>
+      </GestureDetector>
+    </View>
+  );
+}

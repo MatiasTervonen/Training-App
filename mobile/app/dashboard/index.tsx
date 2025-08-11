@@ -1,22 +1,18 @@
-import { View } from "react-native";
-import AppText from "../components/AppText";
-import { supabase } from "@/lib/supabase";
-import { useEffect } from "react";
+import ModalPageWrapper from "@/components/ModalPageWrapper";
+import { useRouter } from "expo-router";
+import SessionFeed from "@/components/SessionFeed";
 
 export default function FeedScreen() {
-  useEffect(() => {
-    const fetchSession = async () => {
-      const { data: session } = await supabase.auth.getSession();
-
-      console.log("FeedScreen session data:", session);
-    };
-
-    fetchSession();
-  }, []);
+  const router = useRouter();
 
   return (
-    <View>
-      <AppText>Feed</AppText>
-    </View>
+    <ModalPageWrapper
+      onSwipeLeft={() => router.push("/sessions")}
+      rightLabel="Sessions"
+      onSwipeRight={() => router.push("/menu")}
+      leftLabel="Menu"
+    >
+      <SessionFeed />
+    </ModalPageWrapper>
   );
 }

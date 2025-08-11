@@ -6,7 +6,6 @@ import { LinearGradient } from "expo-linear-gradient";
 import AppText from "./AppText";
 import { LogOut } from "lucide-react-native";
 import { router } from "expo-router";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useUserStore } from "@/lib/stores/useUserStore";
 
 export default function LogoutButton() {
@@ -18,9 +17,6 @@ export default function LogoutButton() {
     setIsLoading(true);
 
     const { error } = await supabase.auth.signOut({ scope: "local" });
-
-    // Force cleanup of stored  session
-    await AsyncStorage.removeItem("supabase.auth.token");
 
     if (error) {
       Alert.alert("Logout Failed", error.message);

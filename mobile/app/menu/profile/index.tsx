@@ -1,18 +1,20 @@
 import { View } from "react-native";
-import AppText from "@/app/components/AppText";
-import Screen from "@/app/components/Screen";
-import AppInput from "@/app/components/AppInput";
-import ProfilePicture from "../components/ProfilePicture";
-import SelectInput from "@/app/components/Selectinput";
-import SaveButton from "@/app/components/SaveButton";
+import AppText from "@/components/AppText";
+import Screen from "@/components/Screen";
+import AppInput from "@/components/AppInput";
+import ProfilePicture from "@/components/ProfilePicture";
+import SelectInput from "@/components/Selectinput";
+import SaveButton from "@/components/SaveButton";
 import { useUserStore } from "@/lib/stores/useUserStore";
 import { useState, useEffect } from "react";
 import { Session } from "@supabase/supabase-js";
 import Toast from "react-native-toast-message";
-import FullScreenLoader from "@/app/components/FullScreenLoader";
+import FullScreenLoader from "@/components/FullScreenLoader";
 import { fetch as expoFetch } from "expo/fetch";
 import * as FileSystem from "expo-file-system";
-import { isUserNameTaken } from "@/app/utils/isUserNameTaken";
+import { saveSettings } from "@/api/settings/save-settings";
+import { validateUserName } from "@/api/settings/validateUserName";
+import ModalPageWrapper from "@/components/ModalPageWrapper";
 
 type UploadFile = {
   uri: string;
@@ -23,7 +25,7 @@ type UploadFile = {
 export default function ProfileScreen() {
   const [isSaving, setIsSaving] = useState(false);
   const [userName, setUserName] = useState("");
-  const [weightUnit, setWeightUnit] = useState("kg");
+  const [weightUnit, setWeightUnit] = useState("");
   const [selectedProfilePic, setSelectedProfilePic] =
     useState<UploadFile | null>(null);
 
@@ -50,9 +52,7 @@ export default function ProfileScreen() {
     return 0;
   };
 
-  const saveProfilePicture = async (session: Session | null) => {
-    if (!session) return null;
-
+  const saveProfilePicture = async (session: Session) => {
     if (!selectedProfilePic) return profilePicZ || null;
 
     const fileSize = await checkFileSize(selectedProfilePic.uri);
@@ -63,7 +63,7 @@ export default function ProfileScreen() {
         text1: "Error",
         text2: "File size exceeds 5MB limit.",
       });
-      return null;
+      return;
     }
 
     try {
@@ -103,9 +103,7 @@ export default function ProfileScreen() {
     }
   };
 
-  const updateSettings = async (session: Session | null) => {
-    if (!session) return null;
-
+  const updateSettings = async (session: Session) => {
     setIsSaving(true);
 
     const profilePictureUrl = await saveProfilePicture(session);
@@ -115,16 +113,26 @@ export default function ProfileScreen() {
       return;
     }
 
-    const taken = await validateUserName(userName);
+    const isTaken = await validateUserName(userName, session);
 
-    if (taken === true) {
+    if (isTaken === null) {
       Toast.show({
         type: "error",
         text1: "Error",
-        text2: "User name is already taken.",
+        text2: "Error checking user name.",
       });
       setIsSaving(false);
       return;
+    }
+
+    if (isTaken === true) {
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "User name is already taken. Please choose another.",
+      });
+      setIsSaving(false);
+      return; // User name is taken
     }
 
     const payload = {
@@ -133,135 +141,105 @@ export default function ProfileScreen() {
       profile_picture: profilePictureUrl,
     };
 
-    console.log("Updating settings with payload:", payload);
+    const result = await saveSettings(payload, session);
 
-    try {
-      const response = await fetch(
-        "https://training-app-bay.vercel.app/api/settings/save-settings",
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${session.access_token}`,
-          },
-          body: JSON.stringify(payload),
-        }
-      );
+    if (result === null) {
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "Failed to save settings.",
+      });
+      setIsSaving(false);
+      return;
+    }
 
-      if (!response.ok) {
-        throw new Error("Failed to update settings");
-      }
-
+    if (result === true) {
       setPreferences(payload);
       Toast.show({
         type: "success",
-        text1: "Settings updated successfully!",
+        text1: "Success",
+        text2: "Settings saved successfully.",
       });
-    } catch (error) {
-      console.error("Error updating settings:", error);
-      Toast.show({
-        type: "error",
-        text1: "Error",
-        text2: "Failed to update settings",
-      });
-    } finally {
       setIsSaving(false);
+      return;
     }
-  };
-
-  const validateUserName = async (name: string) => {
-    const taken = await isUserNameTaken(name, session);
-
-    if (taken === null) {
-      // means an error happened (in fetch or otherwise)
-      return null;
-    }
-
-    if (taken) {
-      Toast.show({
-        type: "error",
-        text1: "Error",
-        text2: "User name is already taken.",
-      });
-
-      return true;
-    }
-
-    return false;
   };
 
   return (
-    <Screen>
-      <View className="flex-1 justify-between px-10">
-        <View>
+    <ModalPageWrapper>
+      <Screen>
+        <View className="flex-1 justify-between px-10">
           <View>
-            <AppText className="text-2xl text-center my-5">
-              Profile Settings
-            </AppText>
-          </View>
-          <AppInput
-            value={userName}
-            onChangeText={(value) => {
-              setUserName(
-                value
-                  .toLowerCase()
-                  .replace(/[^a-z0-9_]/g, "")
-                  .slice(0, 15)
-              );
-            }}
-            label="User Name"
-          />
-          <AppText className="text-sm text-gray-500 mt-2">
-            Max 15 characters. Only lowercase letters, numbers, &quot;_&quot;
-            allowed.
-          </AppText>
-          <View className="mt-10">
-            <ProfilePicture
-              data={profilePicZ || null}
-              onFileSelected={setSelectedProfilePic}
+            <View>
+              <AppText className="text-2xl text-center my-5">
+                Profile Settings
+              </AppText>
+            </View>
+            <AppInput
+              value={userName}
+              onChangeText={(value) => {
+                setUserName(
+                  value
+                    .toLowerCase()
+                    .replace(/[^a-z0-9_]/g, "")
+                    .slice(0, 15)
+                );
+              }}
+              label="User Name"
             />
             <AppText className="text-sm text-gray-500 mt-2">
-              Max size 5MB.
+              Max 15 characters. Only lowercase letters, numbers, &quot;_&quot;
+              allowed.
             </AppText>
+            <View className="mt-10">
+              <ProfilePicture
+                data={profilePicZ || null}
+                onFileSelected={setSelectedProfilePic}
+              />
+              <AppText className="text-sm text-gray-500 mt-2">
+                Max size 5MB.
+              </AppText>
+            </View>
+            <View className="mt-10">
+              <SelectInput
+                label={"Weight Unit"}
+                value={weightUnit}
+                onChange={setWeightUnit}
+                options={[
+                  { value: "kg", label: "kg" },
+                  { value: "lbs", label: "lbs" },
+                ]}
+              />
+            </View>
           </View>
-          <View className="mt-10">
-            <SelectInput
-              label={"Weight Unit"}
-              value={weightUnit}
-              onChange={setWeightUnit}
-              options={[
-                { value: "kg", label: "kg" },
-                { value: "lbs", label: "lbs" },
-              ]}
+          <View className="mb-10">
+            <SaveButton
+              onPress={async () => {
+                if (!session) {
+                  Toast.show({
+                    type: "error",
+                    text1: "Error",
+                    text2: "No active session. Please log in again.",
+                  });
+                  return;
+                }
+
+                if (!userName.trim()) {
+                  Toast.show({
+                    type: "error",
+                    text1: "Error",
+                    text2: "User name cannot be empty.",
+                  });
+                  return;
+                }
+
+                await updateSettings(session);
+              }}
             />
           </View>
         </View>
-        <View className="mb-10">
-          <SaveButton
-            onPress={async () => {
-              if (!session) {
-                Toast.show({
-                  type: "error",
-                  text1: "Error",
-                  text2: "You must be logged in to save settings.",
-                });
-                return;
-              }
-
-              if (!userName.trim()) {
-                Toast.show({
-                  type: "error",
-                  text1: "Error",
-                  text2: "User name cannot be empty.",
-                });
-                return;
-              }
-
-              await updateSettings(session);
-            }}
-          />
-        </View>
-      </View>
-      <FullScreenLoader visible={isSaving} message="Saving..." />
-    </Screen>
+        <FullScreenLoader visible={isSaving} message="Saving..." />
+      </Screen>
+    </ModalPageWrapper>
   );
 }

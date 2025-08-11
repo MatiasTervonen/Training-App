@@ -21,7 +21,6 @@ export type OptimisticNotes = {
   created_at: string;
 };
 
-
 export type Template = {
   id: string;
   name: string;
@@ -32,7 +31,7 @@ export type Template = {
 export type OptimisticTemplate = {
   id: string;
   name: string;
-}
+};
 
 export type TemplateExercise = {
   id: string;
@@ -66,7 +65,6 @@ export type ExerciseSet = {
   sets?: number;
 };
 
-
 export type ExerciseEntry = {
   exercise_id: string;
   name: string;
@@ -88,7 +86,6 @@ export const emptyExerciseEntry: ExerciseEntry = {
   muscle_group: "",
 };
 
-
 export type ExerciseInput = {
   weight: string;
   reps: string;
@@ -101,3 +98,25 @@ export type FeedItem = {
   pinned: boolean;
 };
 
+export type feed_view = {
+  pinned: boolean;
+  id: string;
+  item_id?: string;
+  type: "notes" | "weight" | "gym_sessions";
+  created_at?: string;
+  notes?: string;
+  title?: string;
+  weight?: number;
+  duration?: number;
+  user_id?: string;
+};
+
+export type FeedCardProps = {
+  table: "notes" | "gym_sessions" | "weight";
+  item: feed_view;
+  pinned: boolean;
+  onTogglePin: () => void;
+  onDelete: () => void;
+  onExpand: () => void;
+  onEdit: () => void;
+};

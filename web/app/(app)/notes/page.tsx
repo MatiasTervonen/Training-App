@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import SaveButton from "@/app/(app)/ui/save-button";
 import DeleteSessionBtn from "../ui/deleteSessionBtn";
@@ -142,10 +142,7 @@ export default function Notes() {
           </div>
           <div className="flex flex-col items-center gap-5 mb-10  self-center w-full">
             <SaveButton onClick={saveNotes} />
-            <DeleteSessionBtn
-              storageKey={["notes_draft"]}
-              onDelete={resetNotes}
-            ></DeleteSessionBtn>
+            <DeleteSessionBtn onDelete={resetNotes} />
           </div>
         </div>
       </ModalPageWrapper>

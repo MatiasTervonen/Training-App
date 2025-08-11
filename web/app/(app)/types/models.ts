@@ -20,6 +20,10 @@ export type Friends = Pick<
   >;
 };
 
+export type pinned_item = Database["public"]["Tables"]["pinned_items"]["Row"];
+
+export type feed_view = Database["public"]["Views"]["feed_view2"]["Row"];
+
 export type timers = Database["public"]["Tables"]["timers"]["Row"];
 
 export type users = Database["public"]["Tables"]["users"]["Row"];
@@ -73,31 +77,4 @@ export type full_gym_session = gym_sessions & {
   gym_session_exercises: full_gym_exercises[];
 };
 
-export type FeedCardProps =
-  | {
-      table: "notes";
-      item: notes;
-      pinned: boolean;
-      onTogglePin: () => void;
-      onDelete: () => void;
-      onExpand: () => void;
-      onEdit: () => void;
-    }
-  | {
-      table: "gym_sessions";
-      item: full_gym_session;
-      pinned: boolean;
-      onTogglePin: () => void;
-      onDelete: () => void;
-      onExpand: () => void;
-      onEdit: () => void;
-    }
-  | {
-      table: "weight";
-      item: weight;
-      pinned: boolean;
-      onTogglePin: () => void;
-      onDelete: () => void;
-      onExpand: () => void;
-      onEdit: () => void;
-    };
+

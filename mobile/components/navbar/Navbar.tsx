@@ -24,30 +24,13 @@ export default function Navbar() {
         </Link>
         <View className="flex-row items-center gap-3">
           <Bell color="white" />
-          <Link
-            href="/chat"
-            className="border-2 p-2 border-blue-500 rounded-full bg-gray-800"
-            asChild
-          >
-            <Pressable>
+          <Link href="/chat" asChild>
+            <Pressable className="w-[40px] h-[40px] rounded-full border-2 border-blue-500 items-center justify-center bg-slate-800">
               <MessageCircle color="white" size={20} />
             </Pressable>
           </Link>
-          <Link
-            href="/menu"
-            className="rounded-full border-2 border-blue-500 w-[40px] h-[40px]"
-            asChild
-          >
-            <Pressable
-              style={{
-                width: 40,
-                height: 40,
-                borderRadius: 20,
-                borderWidth: 2,
-                borderColor: "#3b82f6", // Tailwind's blue-500
-                overflow: "hidden", // ensure Image/Skeleton are clipped
-              }}
-            >
+          <Link href="/menu" asChild>
+            <Pressable className="w-[40px] h-[40px] rounded-full border-2 border-blue-500 items-center justify-center">
               <Image
                 source={
                   profilePictureRaw
@@ -55,11 +38,7 @@ export default function Navbar() {
                     : require("@/assets/images/default-avatar.png")
                 }
                 alt="Profile Picture"
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  borderRadius: 9999,
-                }}
+                className="w-full h-full rounded-full overflow-hidden"
               />
             </Pressable>
           </Link>
@@ -67,43 +46,37 @@ export default function Navbar() {
       </View>
       {["/dashboard", "/menu", "/sessions"].includes(pathname) && (
         <View className="flex-row justify-between bg-slate-600 w-full text-center text-gray-100">
-          <Link
-            href="/menu"
-            className={
-              pathname === "/menu"
-                ? "bg-slate-500 p-2 w-1/3 items-center"
-                : "p-2 w-1/3 items-center"
-            }
-            asChild
-          >
-            <Pressable>
+          <Link href="/menu" asChild>
+            <Pressable
+              className={
+                pathname === "/menu"
+                  ? "bg-slate-500 p-3 w-1/3 items-center"
+                  : "p-3 w-1/3 items-center"
+              }
+            >
               <AppText>Menu</AppText>
             </Pressable>
           </Link>
 
-          <Link
-            href={"/dashboard"}
-            className={
-              pathname === "/dashboard"
-                ? "bg-slate-500 p-2 w-1/3 items-center"
-                : "p-2 w-1/3 items-center"
-            }
-            asChild
-          >
-            <Pressable>
+          <Link href={"/dashboard"} asChild>
+            <Pressable
+              className={
+                pathname === "/dashboard"
+                  ? "bg-slate-500 p-3 w-1/3 items-center"
+                  : "p-3 w-1/3 items-center"
+              }
+            >
               <AppText>Feed</AppText>
             </Pressable>
           </Link>
-          <Link
-            href="/sessions"
-            className={
-              pathname === "/sessions"
-                ? "bg-slate-500 p-2 w-1/3 items-center"
-                : "p-2 w-1/3 items-center"
-            }
-            asChild
-          >
-            <Pressable>
+          <Link href="/sessions" asChild>
+            <Pressable
+              className={
+                pathname === "/sessions"
+                  ? "bg-slate-500 p-3 w-1/3 items-center"
+                  : "p-3 w-1/3 items-center"
+              }
+            >
               <AppText>Sessions</AppText>
             </Pressable>
           </Link>

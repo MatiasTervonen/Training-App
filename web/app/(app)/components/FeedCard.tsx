@@ -1,7 +1,7 @@
 import NotesCard from "./cards/NotesCard";
 import GymCard from "./cards/GymCard";
 import WeightCard from "./cards/WeightCard";
-import { FeedCardProps } from "../types/models";
+import { FeedCardProps } from "../types/session";
 
 export default function FeedCard(props: FeedCardProps) {
   const { pinned, onTogglePin, onDelete, onExpand, onEdit } = props;

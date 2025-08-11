@@ -1,13 +1,14 @@
 import { createClient } from "@/utils/supabase/server";
-import { notes, full_gym_session, weight } from "@/app/(app)/types/models";
+import { feed_view } from "@/app/(app)/types/models";
 
-type FeedItem =
-  | { table: "notes"; item: notes; pinned?: boolean }
-  | { table: "gym_sessions"; item: full_gym_session; pinned?: boolean }
-  | { table: "weight"; item: weight; pinned?: boolean };
-
-export default async function GetSession(): Promise<{
-  feed: FeedItem[];
+export default async function GetSession({
+  limit = 10,
+  page = 1,
+}: {
+  limit?: number;
+  page?: number;
+}): Promise<{
+  feed: feed_view[];
   error: Error | null;
 }> {
   const supabase = await createClient();
@@ -21,35 +22,19 @@ export default async function GetSession(): Promise<{
     return { feed: [], error: authError || new Error("User not found") };
   }
 
-  // Fetch notes, weight, and gym sessions in parallel. Remember to put them in right order!!
+  const offset = (page - 1) * limit;
 
-  const [notes, weight, gym_sessions] = await Promise.all([
-    supabase.from("notes").select("*").eq("user_id", user.id),
-    supabase.from("weight").select("*").eq("user_id", user.id),
-    supabase
-      .from("gym_sessions")
-      .select(`*, gym_session_exercises(*, gym_exercises(*), gym_sets(*))`)
-      .eq("user_id", user.id),
-  ]);
+  const { error, data: feed } = await supabase
+    .from("feed_view2")
+    .select("*")
+    .eq("user_id", user.id)
+    .order("created_at", { ascending: false })
+    .range(offset, offset + limit - 1);
 
-  const feed: FeedItem[] = [];
 
-  if (notes.data)
-    notes.data.forEach((item) => feed.push({ table: "notes", item }));
+  if (error) {
+    return { feed: [], error };
+  }
 
-  if (gym_sessions.data)
-    gym_sessions.data.forEach((item) =>
-      feed.push({ table: "gym_sessions", item })
-    );
-
-  if (weight.data)
-    weight.data.forEach((item) => feed.push({ table: "weight", item }));
-
-  const errors = [notes.error, gym_sessions.error, weight.error].filter(
-    Boolean
-  );
-
-  const error = errors.length > 0 ? errors[0] : null;
-
-  return { feed, error };
+  return { feed, error: null };
 }

@@ -1,10 +1,10 @@
 import { NotebookPen, Ellipsis, SquareArrowOutUpRight } from "lucide-react";
 import DropdownMenu from "../dropdownMenu";
 import { formatDate } from "@/app/(app)/lib/formatDate";
-import { notes } from "@/app/(app)/types/models";
+import { feed_view } from "@/app/(app)/types/session";
 
 type Props = {
-  item: notes;
+  item: feed_view;
   pinned: boolean;
   onTogglePin: () => void;
   onDelete: () => void;
@@ -25,7 +25,7 @@ export default function NotesCard({
       className={`
        border rounded-md flex flex-col justify-center mb-2 transition-colors ${
          pinned
-           ? ` border-yellow-200 bg-yellow-200 text-slate-900`
+           ? `border-yellow-200 bg-yellow-200 text-slate-900`
            : "bg-slate-700"
        }`}
     >
@@ -35,9 +35,7 @@ export default function NotesCard({
           button={
             <div
               aria-label="More options"
-              className={`flex items-center justify-center rounded-tr-md ${
-                pinned ? "text-slate-900" : "text-gray-100"
-              }`}
+              className={`${pinned ? "text-slate-900" : "text-gray-100"}`}
             >
               <Ellipsis size={20} />
             </div>
@@ -78,7 +76,7 @@ export default function NotesCard({
         {/* Icon */}
 
         <div className="flex items-center gap-4">
-          <div className=" p-2 rounded-bl-md">
+          <div className="pl-2">
             <NotebookPen size={20} />
           </div>
           <span>Notes</span>
@@ -87,7 +85,7 @@ export default function NotesCard({
 
           <div>
             <p className={`${pinned ? "text-slate-900" : "text-gray-100"}`}>
-              {formatDate(item.created_at)}
+              {formatDate(item.created_at!)}
             </p>
           </div>
         </div>

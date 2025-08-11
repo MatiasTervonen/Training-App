@@ -1,8 +1,8 @@
-import AppButton from "@/app/components/button";
+import GradientButton from "@/components/GradientButton";
 import { Alert } from "react-native";
 import { router } from "expo-router";
 import { supabase } from "@/lib/supabase";
-import FullScreenLoader from "@/app/components/FullScreenLoader";
+import FullScreenLoader from "@/components/FullScreenLoader";
 import { useState } from "react";
 
 export default function GuestLogIn() {
@@ -13,7 +13,7 @@ export default function GuestLogIn() {
 
     try {
       const response = await fetch(
-        `${process.env.EXPO_PUBLIC_API_URL_DEV}/api/guest-login`,
+        `${process.env.EXPO_PUBLIC_API_URL_PROD}/api/guest-login`,
         {
           method: "POST",
         }
@@ -44,8 +44,8 @@ export default function GuestLogIn() {
 
   return (
     <>
-      <AppButton
-        title="Log in as a Guest"
+      <GradientButton
+        label="Log in as a Guest"
         onPress={() => {
           handleGuestLogin();
         }}

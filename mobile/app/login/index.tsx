@@ -8,19 +8,18 @@ import {
   Dimensions,
 } from "react-native";
 import { supabase } from "@/lib/supabase";
-import AppButton from "../components/button";
-import AppInput from "../components/AppInput";
-import AppText from "../components/AppText";
+import AppInput from "@/components/AppInput";
+import AppText from "@/components/AppText";
 import { useRouter } from "expo-router";
-import FullScreenLoader from "../components/FullScreenLoader";
+import FullScreenLoader from "@/components/FullScreenLoader";
 import { LinearGradient } from "expo-linear-gradient";
-import Screen from "../components/Screen";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
 } from "react-native-reanimated";
-import GuestLogIn from "./guest-login/guest-login";
+import GuestLogIn from "@/components/guest-login";
+import GradientButton from "@/components/GradientButton";
 
 export default function LoginScreen() {
   const [login, setLogin] = useState({ email: "", password: "" });
@@ -37,7 +36,7 @@ export default function LoginScreen() {
 
   useEffect(() => {
     translateY.value = withTiming(activeForm ? -screenHeight : 0, {
-      duration: 500,
+      duration: 400,
     });
   }, [activeForm, screenHeight, translateY]);
 
@@ -109,7 +108,7 @@ export default function LoginScreen() {
   }
 
   return (
-    <Screen>
+    <>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <ScrollView
           className="flex-1"
@@ -123,11 +122,12 @@ export default function LoginScreen() {
             end={{ x: 1, y: 0 }}
             className="flex-1"
           >
+            <AppText className="text-center my-5 text-4xl">MyTrack</AppText>
             <Animated.View
-              style={animatedStyle}
-              className={`absolute top-0 left-0 w-full  px-6 mt-32`}
+              style={[animatedStyle, { height: screenHeight * 2 }]}
+              className={`absolute top-0 left-0 w-full px-6`}
             >
-              <View style={{ height: screenHeight }}>
+              <View style={{ height: screenHeight }} className="justify-center">
                 <AppInput
                   label="Email"
                   onChangeText={(text) => setLogin({ ...login, email: text })}
@@ -148,14 +148,17 @@ export default function LoginScreen() {
                   />
                 </View>
                 <View className="mt-10">
-                  <AppButton title="Log in" onPress={() => signInWithEmail()} />
+                  <GradientButton
+                    label="Log in"
+                    onPress={() => signInWithEmail()}
+                  />
                 </View>
                 <View className="mt-10">
                   <GuestLogIn />
                 </View>
               </View>
 
-              <View style={{ height: screenHeight }}>
+              <View style={{ height: screenHeight }} className="justify-center">
                 <AppInput
                   label="Email"
                   onChangeText={(text) => setSignup({ ...signup, email: text })}
@@ -188,21 +191,21 @@ export default function LoginScreen() {
                   />
                 </View>
                 <View className="mt-10">
-                  <AppButton
-                    title="Sign up"
+                  <GradientButton
+                    label="Sign up"
                     onPress={() => signUpWithEmail()}
                   />
                 </View>
               </View>
             </Animated.View>
             <View className="absolute bottom-0 left-0 w-full flex flex-col justify-centergap-2 pb-10 px-6">
-              <AppText className="text-center mb-5">
+              <AppText className="text-center mb-5 text-xl">
                 {activeForm
                   ? "Already have an account?"
                   : "Don't have an account?"}
               </AppText>
-              <AppButton
-                title={activeForm ? "Log in" : "Sign up"}
+              <GradientButton
+                label={activeForm ? "Log in" : "Sign up"}
                 onPress={() => setActiveForm(!activeForm)}
               />
             </View>
@@ -210,6 +213,6 @@ export default function LoginScreen() {
         </ScrollView>
       </TouchableWithoutFeedback>
       <FullScreenLoader visible={loading} message="Logging in..." />
-    </Screen>
+    </>
   );
 }

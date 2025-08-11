@@ -5,7 +5,6 @@ import NotesInput from "@/app/(app)/training/components/NotesInput";
 import TitleInput from "@/app/(app)/training/components/TitleInput";
 import SaveButton from "@/app/(app)/ui/save-button";
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
-import { mutate } from "swr";
 import toast from "react-hot-toast";
 import SetInput from "@/app/(app)/training/components/SetInput";
 import ExerciseTypeSelect from "@/app/(app)/training/components/ExerciseTypeSelect";
@@ -16,12 +15,6 @@ type EditGymSessionProps = {
   gym_session: full_gym_session;
   onClose: () => void;
   onSave?: () => void;
-};
-
-type FeedItem = {
-  table: "gym_sessions";
-  item: full_gym_session;
-  pinned: boolean;
 };
 
 const isCardioExercise = (exercise: full_gym_exercises) =>
@@ -51,29 +44,6 @@ export default function EditGym({
   const handleSubmit = async () => {
     setIsSaving(true);
 
-    mutate(
-      "/api/feed",
-      (currentFeed: FeedItem[] = []) => {
-        return currentFeed.map((item) => {
-          if (
-            item.table === "gym_sessions" &&
-            item.item.id === gym_session.id
-          ) {
-            return {
-              ...item,
-              item: {
-                ...item.item,
-                title,
-                notes,
-              },
-            };
-          }
-          return item;
-        });
-      },
-      false
-    ); // Optimistically update the feed
-
     try {
       const res = await fetch("/api/gym/edit-session", {
         method: "POST",
@@ -94,14 +64,11 @@ export default function EditGym({
 
       await res.json();
 
-      onSave?.();
+      await onSave?.();
       onClose();
-
-      mutate("/api/feed");
     } catch (error) {
       console.error("Error saving gym session:", error);
       toast.error("Failed to edit gym session");
-      mutate("/api/feed");
     } finally {
       setIsSaving(false);
     }

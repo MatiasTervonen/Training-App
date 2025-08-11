@@ -1,10 +1,10 @@
 import { Dumbbell, Ellipsis, SquareArrowOutUpRight } from "lucide-react";
 import DropdownMenu from "../dropdownMenu";
 import { formatDate } from "@/app/(app)/lib/formatDate";
-import { full_gym_session } from "../../types/models";
+import { feed_view } from "@/app/(app)/types/session";
 
 type Props = {
-  item: full_gym_session;
+  item: feed_view;
   pinned: boolean;
   onTogglePin: () => void;
   onDelete: () => void;
@@ -98,10 +98,10 @@ export default function GymCard({
 
           <div>
             <p className={`${pinned ? "text-slate-900" : "text-gray-100"}`}>
-              {formatDate(item.created_at)}
+              {formatDate(item.created_at!)}
             </p>
           </div>
-          <p>{formatDuration(item.duration)}</p>
+          <p>{formatDuration(item.duration!)}</p>
         </div>
 
         <button

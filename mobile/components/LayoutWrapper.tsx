@@ -1,9 +1,9 @@
-import { useUserStore } from "../../lib/stores/useUserStore";
+import { useUserStore } from "@/lib/stores/useUserStore";
 import { useEffect } from "react";
 import { useRouter } from "expo-router";
 import { supabase } from "@/lib/supabase";
-import { Alert } from "react-native";
 import { Session } from "@supabase/supabase-js";
+import { fetchUserPreferences } from "@/api/settings/get-settings";
 
 interface UserPreferences {
   display_name: string;
@@ -30,30 +30,15 @@ const handleSessionChange = async (session: Session | null, store: Store) => {
   const preferences = useUserStore.getState().preferences;
 
   if (!preferences) {
-    try {
-      const response = await fetch(
-        "https://training-app-bay.vercel.app/api/settings/get-settings",
-        {
-          headers: {
-            Authorization: `Bearer ${session.access_token}`,
-          },
-        }
-      );
+    const data = await fetchUserPreferences(session);
 
-      if (!response.ok) {
-        throw new Error("Failed to fetch user preferences");
-      }
+    console.log("Fetched user preferences:", data);
 
-      const data = await response.json();
-
-      loginUser(data, session);
-      router.replace("/dashboard");
-    } catch (error) {
-      console.error("Error fetching user preferences:", error);
-      console.log("No preferences fetched (likely not logged in yet)");
-      Alert.alert("Failed to load user preferences. Please try again.");
-    }
+    loginUser(data!, session);
+    router.replace("/dashboard");
   }
+
+  router.replace("/dashboard");
 };
 
 export default function LayoutWrapper({
@@ -61,8 +46,6 @@ export default function LayoutWrapper({
 }: {
   children: React.ReactNode;
 }) {
-  const preferences = useUserStore((state) => state.preferences);
-
   const logoutUser = useUserStore((state) => state.logoutUser);
 
   const loginUser = useUserStore((state) => state.loginUser);
@@ -79,8 +62,6 @@ export default function LayoutWrapper({
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router]);
-
-  console.log("LayoutWrapper rendered with preferences:", preferences);
 
   useEffect(() => {
     const { data: listener } = supabase.auth.onAuthStateChange(

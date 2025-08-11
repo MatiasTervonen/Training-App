@@ -1,9 +1,9 @@
 import { View, Pressable, Alert } from "react-native";
-import AppText from "@/app/components/AppText";
+import AppText from "@/components/AppText";
 import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
 import { useState, useEffect } from "react";
-import AppInput from "@/app/components/AppInput";
+import AppInput from "@/components/AppInput";
 
 type UploadFile = {
   uri: string;

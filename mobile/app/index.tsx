@@ -1,11 +1,11 @@
-import AppText from "./components/AppText";
+import AppText from "@/components/AppText";
 import { View, Dimensions } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import GradientColorText from "./components/GradientColorText";
+import GradientColorText from "@/components/GradientColorText";
 import { Image } from "expo-image";
+import GradientButton from "@/components/GradientButton";
+import Screen from "@/components/Screen";
 import { useRouter } from "expo-router";
-import AppButton from "./components/button";
-import Screen from "./components/Screen";
 
 const screenWidth = Dimensions.get("window").width;
 const width = screenWidth - 130; // Adjusting for padding
@@ -22,26 +22,26 @@ export default function Index() {
         start={{ x: 0, y: 1 }}
         end={{ x: 1, y: 0 }}
         style={{ flex: 1, alignItems: "center" }}
-        className="justify-between items-center h-full w-full "
+        className="justify-between items-center h-full w-full"
       >
         <View className="items-center justify-center mt-10">
           <AppText className="text-4xl">Welcome to the</AppText>
           <GradientColorText style={{ width: 200, height: 50 }}>
             MyTrack!
           </GradientColorText>
-          <AppText className="text-lg mt-4">
+          <AppText className="text-xl mt-4">
             The Only Tracking App You&apos;ll Ever Need
           </AppText>
-          <Image
-            source={require("../assets/images/frontpage-new.png")}
-            style={{ width, height }}
-            contentFit="cover"
-          />
         </View>
-        <View className="mb-10">
-          <AppButton
-            title="Log in / Sign up"
-            onPress={() => router.push("./login")}
+        <Image
+          source={require("../assets/images/frontpage-new.png")}
+          style={{ width, height }}
+          contentFit="cover"
+        />
+        <View className="mb-14 w-full px-14">
+          <GradientButton
+            label="Log in / Sign up"
+            onPress={() => router.push("/login")}
           />
         </View>
       </LinearGradient>

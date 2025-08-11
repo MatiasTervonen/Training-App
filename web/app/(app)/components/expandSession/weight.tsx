@@ -1,9 +1,9 @@
 import { formatDate } from "@/app/(app)/lib/formatDate";
 import Link from "next/link";
 import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
-import { weight } from "@/app/(app)/types/models";
+import { feed_view } from "@/app/(app)/types/session";
 
-export default function WeightSession(weight: weight) {
+export default function WeightSession(weight: feed_view) {
   const weightUnit =
     useUserStore((state) => state.preferences?.weight_unit) || "kg";
 
@@ -12,7 +12,7 @@ export default function WeightSession(weight: weight) {
       className="text-center p-4 text-gray-100 max-w-md mx-auto"
     >
       <div className="text-sm text-gray-400">
-        {formatDate(weight.created_at)}
+        {formatDate(weight.created_at!)}
       </div>
       <div id="notes-id">
         <div className="my-5 text-xl">{weight.title}</div>

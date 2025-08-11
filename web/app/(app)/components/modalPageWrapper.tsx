@@ -8,6 +8,15 @@ import { useTransitionDirectionStore } from "@/app/(app)/lib/stores/transitionDi
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
+type Props = {
+  children: ReactNode;
+  noTopPadding?: boolean;
+  onSwipeLeft?: () => void;
+  onSwipeRight?: () => void;
+  leftLabel?: string;
+  rightLabel?: string;
+};
+
 export default function ModalPageWrapper({
   children,
   noTopPadding = false,
@@ -15,18 +24,8 @@ export default function ModalPageWrapper({
   onSwipeRight,
   leftLabel = "back",
   rightLabel = "home",
-}: {
-  children: ReactNode;
-  noTopPadding?: boolean;
-  onSwipeLeft?: () => void;
-  onSwipeRight?: () => void;
-  leftLabel?: string;
-  rightLabel?: string;
-}) {
-  const direction = useTransitionDirectionStore((state) => state.direction);
-  const setDirection = useTransitionDirectionStore(
-    (state) => state.setDirection
-  );
+}: Props) {
+  const { direction, setDirection } = useTransitionDirectionStore();
 
   const [isTransitioning, setIsTransitioning] = useState(false);
 

@@ -621,25 +621,37 @@ export type Database = {
       }
       pinned_items: {
         Row: {
+          created_at: string
+          duration: string | null
           id: string
           item_id: string
-          pinned_at: string
-          table: string
+          notes: string | null
+          title: string | null
+          type: string
           user_id: string
+          weight: number | null
         }
         Insert: {
+          created_at: string
+          duration?: string | null
           id?: string
-          item_id?: string
-          pinned_at?: string
-          table: string
+          item_id: string
+          notes?: string | null
+          title?: string | null
+          type: string
           user_id: string
+          weight?: number | null
         }
         Update: {
+          created_at?: string
+          duration?: string | null
           id?: string
           item_id?: string
-          pinned_at?: string
-          table?: string
+          notes?: string | null
+          title?: string | null
+          type?: string
           user_id?: string
+          weight?: number | null
         }
         Relationships: []
       }
@@ -763,6 +775,31 @@ export type Database = {
         Row: {
           jwt_role: string | null
           user_id: string | null
+        }
+        Relationships: []
+      }
+      feed_view: {
+        Row: {
+          created_at: string | null
+          duration: number | null
+          id: string | null
+          notes: string | null
+          title: string | null
+          type: string | null
+          user_id: string | null
+        }
+        Relationships: []
+      }
+      feed_view2: {
+        Row: {
+          created_at: string | null
+          duration: number | null
+          id: string | null
+          notes: string | null
+          title: string | null
+          type: string | null
+          user_id: string | null
+          weight: number | null
         }
         Relationships: []
       }

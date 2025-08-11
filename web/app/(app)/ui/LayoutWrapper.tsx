@@ -39,7 +39,6 @@ export default function LayoutWrapper({
         loginUser(data, isGuest);
       } catch (error) {
         console.error("Error fetching user preferences:", error);
-        console.log("No preferences fetched (likely not logged in yet)");
         toast.error("Failed to load user preferences. Please try again.");
       }
     };

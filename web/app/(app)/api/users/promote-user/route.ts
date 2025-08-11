@@ -24,7 +24,6 @@ export async function POST(req: NextRequest) {
   const body = await req.json();
   const { userRole, user_id } = body;
 
-  console.log("Promoting user:", user_id, "to role:", userRole);
 
   const { error: adminError } = await adminSupabase.auth.admin.updateUserById(
     user_id,

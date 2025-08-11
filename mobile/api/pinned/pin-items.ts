@@ -6,7 +6,6 @@ export async function pinItems(
   item_id: string,
   table: string
 ) {
-  console.log("Pinning item:", item_id, "in table:", table);
 
   const { data, error } = await supabase
     .from("pinned_items")

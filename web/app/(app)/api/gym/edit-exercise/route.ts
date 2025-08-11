@@ -16,7 +16,6 @@ export async function POST(req: NextRequest) {
   const body = await req.json();
   const { id, ...updateFields } = body;
 
-  console.log("Update Fields:", updateFields);
 
   const { error } = await supabase
     .from("gym_exercises")

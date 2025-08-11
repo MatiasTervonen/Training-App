@@ -116,7 +116,6 @@ export default function EditExercises() {
             <ExerciseDropdown
               onSelect={(exercise) => {
                 setSelectedExercise(exercise);
-                console.log("Selected exercise:", exercise);
               }}
               resetTrigger={resetTrigger}
             />

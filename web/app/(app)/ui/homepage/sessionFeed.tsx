@@ -245,7 +245,7 @@ export default function SessionFeed() {
     }
   );
 
-  console.log("sortedFeed:", sortedFeed);
+
 
   return (
     <>

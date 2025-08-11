@@ -18,8 +18,6 @@ export async function GET() {
     .eq("user_id", user.id)
     .order("created_at", { ascending: true });
 
-  console.log("Weight Data:", weight);
-
   if (weightError || !weight) {
     console.error("Supabase Insert Error:", weightError);
     return new Response(JSON.stringify({ error: weightError?.message }), {

@@ -195,8 +195,6 @@ export default function WeightChart({ range, data }: WeightChartProps) {
       ? new Date(filteredData[filteredData.length - 1].created_at)
       : null;
 
-  console.log("Filtered Data:", startDate, endDate);
-
   function formatDateRange(start: Date | null, end: Date | null) {
     if (!start || !end) return "No data available";
     const startFormatted = start.toLocaleDateString("en-US", {

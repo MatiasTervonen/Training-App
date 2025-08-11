@@ -13,7 +13,6 @@ export async function POST(req: Request) {
     return new Response("Unauthorized", { status: 401 });
   }
 
-  console.log("Unpinning item:", item_id);
 
   const { error } = await supabase
     .from("pinned_items")

@@ -188,13 +188,6 @@ export default function WeightChart({ range, data }: WeightChartProps) {
   const fullDateRange = generateDateRange(start, end);
   const chartData = fillMissingDates(fullDateRange, filteredData);
 
-  const startDate =
-    filteredData.length > 0 ? new Date(filteredData[0].created_at) : null;
-  const endDate =
-    filteredData.length > 0
-      ? new Date(filteredData[filteredData.length - 1].created_at)
-      : null;
-
   function formatDateRange(start: Date | null, end: Date | null) {
     if (!start || !end) return "No data available";
     const startFormatted = start.toLocaleDateString("en-US", {

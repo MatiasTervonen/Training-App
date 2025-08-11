@@ -38,6 +38,8 @@ export default function SessionFeed() {
 
   const loadingMoreRef = useRef(false);
 
+  const hasTriggeredWhileVisibleRef = useRef(false);
+
   const {
     data,
     error,
@@ -61,17 +63,21 @@ export default function SessionFeed() {
 
   // Load more when the bottom of the feed is in view
   useEffect(() => {
-    if (!inView) return;
+    if (!inView) {
+      hasTriggeredWhileVisibleRef.current = false;
+      return;
+    }
+    if (hasTriggeredWhileVisibleRef.current) return;
     if (!hasNextPage) return;
     if (loadingMoreRef.current) return;
-    if (isLoading || isValidating) return;
 
+    hasTriggeredWhileVisibleRef.current = true;
     loadingMoreRef.current = true;
 
     setSize((prev) => prev + 1).finally(() => {
       loadingMoreRef.current = false;
     });
-  }, [inView, hasNextPage, isLoading, isValidating, setSize]);
+  }, [inView, hasNextPage, setSize]);
 
   const { containerRef, pullDistance, refreshing } = usePullToRefresh({
     onRefresh: async () => {
@@ -244,8 +250,6 @@ export default function SessionFeed() {
       revalidateIfStale: false,
     }
   );
-
-
 
   return (
     <>

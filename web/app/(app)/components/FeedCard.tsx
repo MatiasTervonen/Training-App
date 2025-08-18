@@ -1,6 +1,7 @@
 import NotesCard from "./cards/NotesCard";
 import GymCard from "./cards/GymCard";
 import WeightCard from "./cards/WeightCard";
+import TodoCard from "./cards/TodoCard";
 import { FeedCardProps } from "../types/session";
 
 export default function FeedCard(props: FeedCardProps) {
@@ -32,6 +33,17 @@ export default function FeedCard(props: FeedCardProps) {
     case "weight":
       return (
         <WeightCard
+          item={props.item}
+          pinned={pinned}
+          onTogglePin={onTogglePin}
+          onDelete={onDelete}
+          onExpand={onExpand}
+          onEdit={onEdit}
+        />
+      );
+    case "todo_lists":
+      return (
+        <TodoCard
           item={props.item}
           pinned={pinned}
           onTogglePin={onTogglePin}

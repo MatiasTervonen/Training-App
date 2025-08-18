@@ -102,7 +102,7 @@ export default function EditNotes({ note, onClose, onSave }: Props) {
               label="Notes..."
             />
           </div>
-          <div className="w-full">
+          <div className="w-full py-10">
             <SaveButton onClick={handleSubmit} />
           </div>
         </div>

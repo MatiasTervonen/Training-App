@@ -4,6 +4,7 @@ type TitleInputProps = {
   placeholder: string;
   label: string;
   id?: string;
+  maxLength?: number;
 };
 
 export default function TitleInput({
@@ -12,13 +13,11 @@ export default function TitleInput({
   placeholder,
   label,
   id = "title-input",
+  maxLength,
 }: TitleInputProps) {
   return (
     <div className="flex flex-col ">
-      <label
-        htmlFor={id}
-        className="text-gray-300 mb-1"
-      >
+      <label htmlFor={id} className="text-gray-300 mb-1 text-sm">
         {label}
       </label>
       <input
@@ -30,6 +29,7 @@ export default function TitleInput({
         value={title}
         autoComplete="off"
         onChange={(e) => setTitle(e.target.value)}
+        maxLength={maxLength}
       />
     </div>
   );

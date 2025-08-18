@@ -22,7 +22,7 @@ export type Friends = Pick<
 
 export type pinned_item = Database["public"]["Tables"]["pinned_items"]["Row"];
 
-export type feed_view = Database["public"]["Views"]["feed_view2"]["Row"];
+export type feed_view = Database["public"]["Views"]["feed_view4"]["Row"];
 
 export type timers = Database["public"]["Tables"]["timers"]["Row"];
 
@@ -37,6 +37,10 @@ export type weight = Database["public"]["Tables"]["weight"]["Row"];
 export type gym_sessions = Database["public"]["Tables"]["gym_sessions"]["Row"];
 
 export type gym_sets = Database["public"]["Tables"]["gym_sets"]["Row"];
+
+export type todo_lists = Database["public"]["Tables"]["todo_lists"]["Row"];
+
+export type todo_tasks = Database["public"]["Tables"]["todo_tasks"]["Row"];
 
 export type gym_exercises =
   Database["public"]["Tables"]["gym_exercises"]["Row"];
@@ -77,4 +81,6 @@ export type full_gym_session = gym_sessions & {
   gym_session_exercises: full_gym_exercises[];
 };
 
-
+export type full_todo_session = todo_lists & {
+  todo_tasks: todo_tasks[];
+};

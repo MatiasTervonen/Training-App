@@ -331,8 +331,159 @@ export default function CreateTemplatePage() {
             onClose={() => {
               setIsExerciseModalOpen(false);
             }}
-            footerButton={
-              <div className="flex flex-row gap-2 w-full">
+          >
+            <div>
+              {exerciseType === "Super-Set" ? (
+                <>
+                  {supersetExercise.map((exercise, index) => {
+                    const isLast = index === supersetExercise.length - 1;
+                    const isEmpty = !exercise.name?.trim();
+
+                    if (isLast && isEmpty) {
+                      // Show dropdown only for the last, empty item
+                      return (
+                        <div key={index} className="h-full">
+                          <ExerciseDropdown
+                            onSelect={(selected) => {
+                              const newExercise: ExerciseEntry = {
+                                exercise_id: String(selected.id),
+                                name: selected.name,
+                                equipment: selected.equipment,
+                                main_group: selected.main_group,
+                                sets: [],
+                                notes: "",
+                                superset_id:
+                                  exerciseToChangeIndex !== null
+                                    ? exercises[exerciseToChangeIndex]
+                                        ?.superset_id || generateUUID()
+                                    : "",
+                                muscle_group: selected.muscle_group,
+                              };
+                              if (exerciseToChangeIndex !== null) {
+                                // Update single exercise in session
+                                const updated = [...exercises];
+                                updated[exerciseToChangeIndex] = newExercise;
+                                setExercises(updated);
+                                setIsExerciseModalOpen(false);
+                                setExerciseToChangeIndex(null);
+                              } else {
+                                // Add new exercise to superset draft
+                                setSupersetExercise((prev) => {
+                                  const updated = [...prev];
+                                  updated[updated.length - 1] = newExercise;
+                                  return [...updated, emptyExerciseEntry]; // allow adding another
+                                });
+                              }
+                            }}
+                            resetTrigger={dropdownResetKey}
+                            noTopPadding={true}
+                          />
+                        </div>
+                      );
+                    }
+
+                    // All others: just show a summary
+                    return (
+                      <div
+                        key={index}
+                        className="bg-slate-700 text-gray-100 p-2 my-2 px-4 shadow flex justify-between mr-20 ml-0"
+                      >
+                        <div className="flex flex-col ">
+                          <p className="">{exercise.name}</p>
+                          <p className="text-sm text-gray-400">
+                            {exercise.equipment} / {exercise.muscle_group}
+                          </p>
+                        </div>
+                        <button
+                          onClick={() => {
+                            const updated = supersetExercise.filter(
+                              (_, i) => i !== index
+                            );
+                            setSupersetExercise(updated);
+                          }}
+                        >
+                          <CircleX />
+                        </button>
+                      </div>
+                    );
+                  })}
+                </>
+              ) : (
+                <>
+                  {normalExercises.map((exercise, index) => {
+                    const isLast = index === normalExercises.length - 1;
+                    const isEmpty = !exercise.name?.trim();
+
+                    if (isLast && isEmpty) {
+                      return (
+                        <div key={index} className="h-full">
+                          <ExerciseDropdown
+                            onSelect={(selected) => {
+                              const newExercise: ExerciseEntry = {
+                                exercise_id: String(selected.id),
+                                name: selected.name,
+                                equipment: selected.equipment,
+                                main_group: selected.main_group,
+                                sets: [],
+                                notes: "",
+                                superset_id:
+                                  exerciseToChangeIndex !== null
+                                    ? exercises[exerciseToChangeIndex]
+                                        ?.superset_id || generateUUID()
+                                    : "",
+                                muscle_group: selected.muscle_group,
+                              };
+
+                              if (exerciseToChangeIndex !== null) {
+                                // Update exercise in exercises array
+                                const updated = [...exercises];
+                                updated[exerciseToChangeIndex] = newExercise;
+                                setExercises(updated);
+                                setIsExerciseModalOpen(false);
+                                setExerciseToChangeIndex(null);
+                              } else {
+                                // Add to draft normal exercises
+                                setNormalExercises((prev) => {
+                                  const updated = [...prev];
+                                  updated[updated.length - 1] = newExercise;
+                                  return [...updated, emptyExerciseEntry]; // allow adding another
+                                });
+                              }
+                            }}
+                            resetTrigger={dropdownResetKey}
+                            noTopPadding={true}
+                          />
+                        </div>
+                      );
+                    }
+
+                    return (
+                      <div
+                        key={index}
+                        className="bg-slate-700 text-gray-100 p-2 my-2 px-4 shadow flex justify-between mr-20 ml-0"
+                      >
+                        <div className="flex flex-col ">
+                          <p className="">{exercise.name}</p>
+                          <p className="text-sm text-gray-400">
+                            {exercise.equipment} / {exercise.muscle_group}
+                          </p>
+                        </div>
+                        <button
+                          onClick={() => {
+                            const updated = normalExercises.filter(
+                              (_, i) => i !== index
+                            );
+                            setNormalExercises(updated);
+                          }}
+                        >
+                          <CircleX />
+                        </button>
+                      </div>
+                    );
+                  })}
+                </>
+              )}
+              <div className="flex gap-3 w-full px-2 my-5">
                 <div className="relative w-full">
                   <select
                     className="appearance-none w-full px-10 bg-blue-800 py-2 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95"
@@ -368,156 +519,7 @@ export default function CreateTemplatePage() {
                     : "Add Exercise"}
                 </button>
               </div>
-            }
-          >
-            {exerciseType === "Super-Set" ? (
-              <>
-                {supersetExercise.map((exercise, index) => {
-                  const isLast = index === supersetExercise.length - 1;
-                  const isEmpty = !exercise.name?.trim();
-
-                  if (isLast && isEmpty) {
-                    // Show dropdown only for the last, empty item
-                    return (
-                      <div key={index} className="h-full">
-                        <ExerciseDropdown
-                          onSelect={(selected) => {
-                            const newExercise: ExerciseEntry = {
-                              exercise_id: String(selected.id),
-                              name: selected.name,
-                              equipment: selected.equipment,
-                              main_group: selected.main_group,
-                              sets: [],
-                              notes: "",
-                              superset_id:
-                                exerciseToChangeIndex !== null
-                                  ? exercises[exerciseToChangeIndex]
-                                      ?.superset_id || generateUUID()
-                                  : "",
-                              muscle_group: selected.muscle_group,
-                            };
-                            if (exerciseToChangeIndex !== null) {
-                              // Update single exercise in session
-                              const updated = [...exercises];
-                              updated[exerciseToChangeIndex] = newExercise;
-                              setExercises(updated);
-                              setIsExerciseModalOpen(false);
-                              setExerciseToChangeIndex(null);
-                            } else {
-                              // Add new exercise to superset draft
-                              setSupersetExercise((prev) => {
-                                const updated = [...prev];
-                                updated[updated.length - 1] = newExercise;
-                                return [...updated, emptyExerciseEntry]; // allow adding another
-                              });
-                            }
-                          }}
-                          resetTrigger={dropdownResetKey}
-                        />
-                      </div>
-                    );
-                  }
-
-                  // All others: just show a summary
-                  return (
-                    <div
-                      key={index}
-                      className="bg-slate-700 text-gray-100 p-2 my-2 px-4 shadow flex justify-between mr-20 ml-0"
-                    >
-                      <div className="flex flex-col ">
-                        <p className="">{exercise.name}</p>
-                        <p className="text-sm text-gray-400">
-                          {exercise.equipment} / {exercise.muscle_group}
-                        </p>
-                      </div>
-                      <button
-                        onClick={() => {
-                          const updated = supersetExercise.filter(
-                            (_, i) => i !== index
-                          );
-                          setSupersetExercise(updated);
-                        }}
-                      >
-                        <CircleX />
-                      </button>
-                    </div>
-                  );
-                })}
-              </>
-            ) : (
-              <>
-                {normalExercises.map((exercise, index) => {
-                  const isLast = index === normalExercises.length - 1;
-                  const isEmpty = !exercise.name?.trim();
-
-                  if (isLast && isEmpty) {
-                    return (
-                      <div key={index} className="h-full">
-                        <ExerciseDropdown
-                          onSelect={(selected) => {
-                            const newExercise: ExerciseEntry = {
-                              exercise_id: String(selected.id),
-                              name: selected.name,
-                              equipment: selected.equipment,
-                              main_group: selected.main_group,
-                              sets: [],
-                              notes: "",
-                              superset_id:
-                                exerciseToChangeIndex !== null
-                                  ? exercises[exerciseToChangeIndex]
-                                      ?.superset_id || generateUUID()
-                                  : "",
-                              muscle_group: selected.muscle_group,
-                            };
-
-                            if (exerciseToChangeIndex !== null) {
-                              // Update exercise in exercises array
-                              const updated = [...exercises];
-                              updated[exerciseToChangeIndex] = newExercise;
-                              setExercises(updated);
-                              setIsExerciseModalOpen(false);
-                              setExerciseToChangeIndex(null);
-                            } else {
-                              // Add to draft normal exercises
-                              setNormalExercises((prev) => {
-                                const updated = [...prev];
-                                updated[updated.length - 1] = newExercise;
-                                return [...updated, emptyExerciseEntry]; // allow adding another
-                              });
-                            }
-                          }}
-                          resetTrigger={dropdownResetKey}
-                        />
-                      </div>
-                    );
-                  }
-
-                  return (
-                    <div
-                      key={index}
-                      className="bg-slate-700 text-gray-100 p-2 my-2 px-4 shadow flex justify-between mr-20 ml-0"
-                    >
-                      <div className="flex flex-col ">
-                        <p className="">{exercise.name}</p>
-                        <p className="text-sm text-gray-400">
-                          {exercise.equipment} / {exercise.muscle_group}
-                        </p>
-                      </div>
-                      <button
-                        onClick={() => {
-                          const updated = normalExercises.filter(
-                            (_, i) => i !== index
-                          );
-                          setNormalExercises(updated);
-                        }}
-                      >
-                        <CircleX />
-                      </button>
-                    </div>
-                  );
-                })}
-              </>
-            )}
+            </div>
           </Modal>
 
           <ExerciseHistoryModal

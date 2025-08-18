@@ -102,7 +102,7 @@ export type feed_view = {
   pinned: boolean;
   id: string;
   item_id?: string;
-  type: "notes" | "weight" | "gym_sessions";
+  type: "notes" | "weight" | "gym_sessions" | "todo_lists";
   created_at?: string;
   notes?: string;
   title?: string;
@@ -112,7 +112,7 @@ export type feed_view = {
 };
 
 export type FeedCardProps = {
-  table: "notes" | "gym_sessions" | "weight";
+  table: "notes" | "gym_sessions" | "weight" | "todo_lists";
   item: feed_view;
   pinned: boolean;
   onTogglePin: () => void;

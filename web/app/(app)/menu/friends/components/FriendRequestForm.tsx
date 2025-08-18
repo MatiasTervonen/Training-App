@@ -38,7 +38,7 @@ export default function FriendRequestForm() {
       />
       <button
         onClick={() => sendFriendRequest(identifier)}
-        className="w-fit mt-5 bg-blue-800 py-2 px-10 my-3 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95"
+        className="w-fit mt-5 bg-blue-800 py-2 px-10 my-3 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-105"
       >
         Send Request
       </button>

@@ -4,8 +4,8 @@ import { feed_view } from "@/app/(app)/types/session";
 
 export default function NotesSession(notes: feed_view) {
   return (
-    <div className="text-center p-4 text-gray-100 max-w-md mx-auto">
-      <div className="text-sm text-gray-400">
+    <div className="text-center px-4 text-gray-100 max-w-md mx-auto">
+      <div className="text-sm text-gray-400 mt-5">
         {formatDate(notes.created_at!)}
       </div>
       <div id="notes-id">

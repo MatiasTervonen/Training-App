@@ -32,8 +32,6 @@ const handleSessionChange = async (session: Session | null, store: Store) => {
   if (!preferences) {
     const data = await fetchUserPreferences(session);
 
-    console.log("Fetched user preferences:", data);
-
     loginUser(data!, session);
     router.replace("/dashboard");
   }

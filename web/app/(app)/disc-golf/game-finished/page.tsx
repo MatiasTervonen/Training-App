@@ -53,7 +53,7 @@ export default function GameFinished() {
   };
 
   return (
-    <div className="bg-slate-800 p-5 min-h-[100dvh] relative">
+    <div className="bg-slate-800 p-5 relative max-w-3xl mx-auto h-[calc(100dvh-72px)]">
       <h1 className="text-gray-100 text-center text-xl">Final Scores</h1>
       {holes.length > 0 &&
         (() => {
@@ -100,7 +100,7 @@ export default function GameFinished() {
             .sort((a, b) => a.scoreAgainstPar - b.scoreAgainstPar);
 
           return (
-            <div className="flex flex-col mt-4">
+            <div className="flex flex-col mt-4 max-w-md mx-auto">
               {sortedPlayers.map(
                 ({ playerName, scores, total, scoreAgainstPar }, index) => {
                   const formattedScore =
@@ -158,24 +158,30 @@ export default function GameFinished() {
                       <table className="w-full text-left text-gray-100">
                         <tbody>
                           <tr className="border-b border-slate-500">
-                            <th className="py-2 pr-4">Total Strokes</th>
+                            <th className="py-2 pr-4 font-normal">
+                              Total Strokes
+                            </th>
                             <td>
                               {total} ({formattedScore})
                             </td>
                           </tr>
                           <tr className="border-b border-slate-500">
-                            <th className="py-2 pr-4">Birdies</th>
+                            <th className="py-2 pr-4 font-normal">Birdies</th>
                             <td>{birdies}</td>
                           </tr>
                           <tr className="border-b border-slate-500">
-                            <th className="py-2 pr-4">Fairway hits</th>
+                            <th className="py-2 pr-4 font-normal">
+                              Fairway hits
+                            </th>
                             <td>
                               {fairwayHits} / {fairwayTotal} (
                               {pct(fairwayHits, fairwayTotal)}%)
                             </td>
                           </tr>
-                          <tr className="border-b border-slate-500">
-                            <th className="py-2 pr-4">C1 putting</th>
+                          <tr className="border-b border-slate-500 ">
+                            <th className="py-2 pr-4 font-normal">
+                              C1 putting
+                            </th>
                             <td>
                               {c1made} / {c1attempted} (
                               {pct(c1made, c1attempted)}
@@ -183,7 +189,9 @@ export default function GameFinished() {
                             </td>
                           </tr>
                           <tr className="border-b border-slate-500">
-                            <th className="py-2 pr-4">C2 putting</th>
+                            <th className="py-2 pr-4 font-normal">
+                              C2 putting
+                            </th>
                             <td>
                               {c2made} / {c2attempted} (
                               {pct(c2made, c2attempted)}
@@ -196,15 +204,14 @@ export default function GameFinished() {
                   );
                 }
               )}
-              <div></div>
+              <div className="flex gap-4">
+                <h2 className="text-gray-100 text-lg mb-2">Round Time</h2>
+                <p className="text-gray-100 text-xl mb-5">{time}</p>
+              </div>
+              <SaveButton onClick={finishGame} />
             </div>
           );
         })()}
-      <div className="flex gap-4">
-        <h2 className="text-gray-100 text-lg mb-2">Round Time</h2>
-        <p className="text-gray-100 text-xl mb-5">{time}</p>
-      </div>
-      <SaveButton onClick={finishGame} />
     </div>
   );
 }

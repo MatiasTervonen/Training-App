@@ -9,9 +9,9 @@ export default function WeightSession(weight: feed_view) {
 
   return (
     <div
-      className="text-center p-4 text-gray-100 max-w-md mx-auto"
+      className="text-center px-4 text-gray-100 max-w-md mx-auto"
     >
-      <div className="text-sm text-gray-400">
+      <div className="text-sm text-gray-400 mt-5">
         {formatDate(weight.created_at!)}
       </div>
       <div id="notes-id">

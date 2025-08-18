@@ -1,4 +1,11 @@
-import { NotebookPen, Dumbbell, Disc, Timer, Weight } from "lucide-react";
+import {
+  NotebookPen,
+  Dumbbell,
+  Disc,
+  Timer,
+  Weight,
+  ListTodo,
+} from "lucide-react";
 import ModalPageWrapper from "../components/modalPageWrapper";
 import SessionsContext from "./components/SessionContext";
 import LinkButton from "../ui/LinkButton";
@@ -32,6 +39,10 @@ export default function Sessions() {
           <LinkButton href="/weight">
             Weight Tracker
             <Weight />
+          </LinkButton>
+          <LinkButton href="/todo">
+            Todo List
+            <ListTodo />
           </LinkButton>
         </div>
         <SessionsContext />

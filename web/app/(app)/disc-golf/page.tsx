@@ -22,15 +22,6 @@ export default function DiscGolf() {
   const { activeSession, setActiveSession, startTimer } = useTimerStore();
 
   useEffect(() => {
-    if (activeSession) {
-      alert(
-        "You already have an active session. Finish it before starting a new one."
-      );
-      router.back();
-    }
-  }, [router, activeSession]);
-
-  useEffect(() => {
     const fetchDisplayName = async () => {
       const supabase = createClient();
       const {
@@ -111,9 +102,7 @@ export default function DiscGolf() {
 
   return (
     <ModalPageWrapper noTopPadding>
-      <div
-        className="bg-slate-800 p-5 h-full max-w-md mx-auto"
-      >
+      <div className="bg-slate-800 p-5 h-full max-w-md mx-auto">
         <div className="flex flex-col h-full w-full justify-between">
           <div>
             <h1 className="text-gray-100 flex justify-center my-5 text-2xl ">
@@ -132,13 +121,13 @@ export default function DiscGolf() {
             <div className="flex gap-4">
               <button
                 onClick={() => setNumHoles((prev) => Math.max(prev - 1, 1))}
-                className="bg-blue-800  text-gray-100 px-3 py-1 rounded text-lg"
+                className="bg-blue-800  text-gray-100 px-3 py-1 rounded text-lg hover:bg-blue-600 hover:scale-105"
               >
                 -
               </button>
               <button
                 onClick={() => setNumHoles((prev) => Math.min(25, prev + 1))}
-                className="bg-blue-800 text-gray-100 px-3 py-1 rounded text-lg"
+                className="bg-blue-800 text-gray-100 px-3 py-1 rounded text-lg hover:bg-blue-600 hover:scale-105"
               >
                 +
               </button>
@@ -163,7 +152,7 @@ export default function DiscGolf() {
           />
           <button
             onClick={addPlayer}
-            className=" flex items-center justify-center mx-auto  bg-blue-800 py-2 px-10 mt-10 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95"
+            className=" flex items-center justify-center mx-auto  bg-blue-800 py-2 px-10 mt-10 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-105"
           >
             <Plus />
           </button>
@@ -181,8 +170,9 @@ export default function DiscGolf() {
           </div>
           <div className="pb-5">
             <button
+              disabled={!!activeSession}
               onClick={startGame}
-              className=" flex items-center justify-center w-full mb-5  bg-blue-800 py-2 px-10 mt-10 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95"
+              className=" flex items-center justify-center w-full mb-5  bg-blue-800 py-2 px-10 mt-10 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-105"
             >
               Start
             </button>

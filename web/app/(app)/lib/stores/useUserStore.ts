@@ -11,12 +11,13 @@ interface UserStore {
   preferences: UserPreferences | null;
   setUserPreferences: (preferences: UserPreferences) => void;
   clearUserPreferences: () => void;
-  isLoggedIn: boolean;
-  setIsLoggedIn: (status: boolean) => void;
-  isGuest: boolean; // Optional property for guest users
-  setIsGuest: (status: boolean) => void; // Optional method for setting guest status
+  role: "user" | "admin" | "super_admin" | "guest" | null; // keep role separate
+  setRole: (role: UserStore["role"]) => void;
   logoutUser: () => void; // Method to clear user state on logout
-  loginUser: (prefs: UserPreferences, isGuest: boolean) => void; // Method to set user state on login
+  loginUser: (
+    prefs: UserPreferences,
+    role: UserStore["role"],
+  ) => void; // Method to set user state on login
 }
 
 export const useUserStore = create<UserStore>()(
@@ -25,22 +26,18 @@ export const useUserStore = create<UserStore>()(
       preferences: null,
       setUserPreferences: (preferences) => set({ preferences }),
       clearUserPreferences: () => set({ preferences: null }),
-      setIsLoggedIn: (status) => set({ isLoggedIn: status }),
-      isLoggedIn: false,
-      isGuest: false, // Default to false, can be set later
-      setIsGuest: (status) => set({ isGuest: status }),
+      role: null, // Default to null, can be set later
+      setRole: (role) => set({ role }),
       logoutUser: () => {
         set({
           preferences: null,
-          isLoggedIn: false,
-          isGuest: false,
+          role: null,
         });
       },
-      loginUser: (prefs, isGuest) =>
+      loginUser: (prefs, role) =>
         set({
           preferences: prefs,
-          isLoggedIn: true,
-          isGuest,
+          role,
         }),
     }),
     {

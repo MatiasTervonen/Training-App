@@ -4,21 +4,23 @@ import { useState, useEffect } from "react";
 import { useRef } from "react";
 import { gym_exercises } from "../../types/models";
 import useSWR from "swr";
-import { fetcher } from "../../lib/fetcher"; 
+import { fetcher } from "../../lib/fetcher";
 
 type Props = {
   onSelect: (exercise: gym_exercises) => void;
-  label?: string | number;
   resetTrigger?: number;
+  noTopPadding?: boolean;
 };
 
 export default function ExerciseDropdown({
   onSelect,
-  label,
   resetTrigger,
+  noTopPadding,
 }: Props) {
   const [searchQuery, setSearchQuery] = useState("");
-  const [filteredExercises, setFilteredExercises] = useState<gym_exercises[]>([]);
+  const [filteredExercises, setFilteredExercises] = useState<gym_exercises[]>(
+    []
+  );
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
   const [showDropdown, setShowDropdown] = useState(true);
@@ -105,13 +107,10 @@ export default function ExerciseDropdown({
 
   return (
     <>
-      <div className="flex flex-col px-2 w-full h-full gap-3 z-50 ">
-        <div className="flex flex-col h-10 justify-center gap-1 mt-5 px-10">
-          <label className="text-gray-100 ">
-            {label}
-          </label>
+      <div className="flex flex-col px-2 w-full h-full z-50">
+        <div className="flex flex-col mt-8 px-20">
           <input
-            className=" p-2  rounded-md border-2 border-gray-100 z-10 placeholder-gray-500 text-gray-100 bg-gray-900 hover:border-blue-500 focus:outline-none focus:border-green-300"
+            className="p-2 rounded-md border-2 border-gray-100 z-10 placeholder-gray-500 text-gray-100 bg-gray-900 hover:border-blue-500 focus:outline-none focus:border-green-300"
             type="text"
             value={searchQuery}
             placeholder="Search exercises..."
@@ -127,9 +126,9 @@ export default function ExerciseDropdown({
           <>
             <div
               ref={dropdownRef}
-              className={`flex-1 w-full overflow-y-auto border rounded-md shadow-md 
-                    bg-slate-900 border-gray-100 touch-pan-y mt-5 ${
-                      showDropdown ? "h-[calc(100dvh-330px)]" : ""
+              className={`w-full overflow-y-auto border rounded-md shadow-md 
+                    bg-slate-900 border-gray-100 touch-pan-y mt-10 ${
+                      noTopPadding ? "h-[calc(100dvh-276px)]" : "h-[calc(100dvh-316px)]"
                     }`}
             >
               {isLoading || isError ? (
@@ -173,7 +172,7 @@ export default function ExerciseDropdown({
                 )
               )}
 
-              <h2 className="text-gray-100 text-center  bg-slate-600">
+              <h2 className="text-gray-100 text-center bg-slate-600">
                 All Exercises
               </h2>
               {(searchQuery.length > 0 ? filteredExercises : allExercises).map(

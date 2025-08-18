@@ -34,9 +34,7 @@ export default function LayoutWrapper({
 
         const data = await response.json();
 
-        const isGuest = data.role === "guest";
-
-        loginUser(data, isGuest);
+        loginUser(data, data.role);
       } catch (error) {
         console.error("Error fetching user preferences:", error);
         toast.error("Failed to load user preferences. Please try again.");
@@ -52,7 +50,7 @@ export default function LayoutWrapper({
         <Navbar />
       </div>
 
-      <main className={`${loginPage ? "pt-0" : "pt-[72]"}`}>{children}</main>
+      <main className={`${loginPage ? "pt-0" : "pt-[72px]"}`}>{children}</main>
     </>
   );
 }

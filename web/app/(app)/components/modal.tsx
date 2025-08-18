@@ -8,13 +8,11 @@ export default function Modal({
   isOpen,
   onClose,
   children,
-  footerButton,
   noTopPadding = false,
 }: {
   isOpen: boolean;
   onClose: () => void;
   children: ReactNode;
-  footerButton?: ReactNode;
   noTopPadding?: boolean;
 }) {
   if (!isOpen) return null;
@@ -56,19 +54,9 @@ export default function Modal({
               />
             </button>
 
-            <div
-              className={`flex-grow overflow-y-auto touch-pan-y ${
-                !footerButton ? "pb-16" : ""
-              }`}
-            >
+            <div className="flex-grow overflow-y-auto touch-pan-y">
               {children}
             </div>
-
-            {footerButton && (
-              <div className="flex justify-center items-center p-4">
-                {footerButton}
-              </div>
-            )}
           </div>
         </motion.div>
       </div>

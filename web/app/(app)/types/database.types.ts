@@ -7,7 +7,7 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "12.2.3 (519615d)"
@@ -392,6 +392,7 @@ export type Database = {
           position: number
           session_id: string
           superset_id: string
+          user_id: string
         }
         Insert: {
           exercise_id: string
@@ -400,6 +401,7 @@ export type Database = {
           position: number
           session_id: string
           superset_id: string
+          user_id: string
         }
         Update: {
           exercise_id?: string
@@ -408,6 +410,7 @@ export type Database = {
           position?: number
           session_id?: string
           superset_id?: string
+          user_id?: string
         }
         Relationships: [
           {
@@ -460,6 +463,7 @@ export type Database = {
           rpe: string
           session_exercise_id: string
           set_number: number
+          user_id: string
           weight: number
         }
         Insert: {
@@ -468,6 +472,7 @@ export type Database = {
           rpe: string
           session_exercise_id: string
           set_number: number
+          user_id: string
           weight: number
         }
         Update: {
@@ -476,6 +481,7 @@ export type Database = {
           rpe?: string
           session_exercise_id?: string
           set_number?: number
+          user_id?: string
           weight?: number
         }
         Relationships: [
@@ -498,6 +504,7 @@ export type Database = {
           sets: number | null
           superset_id: string
           template_id: string
+          user_id: string | null
         }
         Insert: {
           created_at?: string
@@ -508,6 +515,7 @@ export type Database = {
           sets?: number | null
           superset_id: string
           template_id?: string
+          user_id?: string | null
         }
         Update: {
           created_at?: string
@@ -518,6 +526,7 @@ export type Database = {
           sets?: number | null
           superset_id?: string
           template_id?: string
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -543,6 +552,7 @@ export type Database = {
           rpe: string | null
           set_number: number | null
           template_exercise_id: string
+          user_id: string | null
           weight: number | null
         }
         Insert: {
@@ -551,6 +561,7 @@ export type Database = {
           rpe?: string | null
           set_number?: number | null
           template_exercise_id: string
+          user_id?: string | null
           weight?: number | null
         }
         Update: {
@@ -559,6 +570,7 @@ export type Database = {
           rpe?: string | null
           set_number?: number | null
           template_exercise_id?: string
+          user_id?: string | null
           weight?: number | null
         }
         Relationships: [
@@ -580,7 +592,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
-          created_at: string
+          created_at?: string
           id?: string
           name: string
           updated_at?: string | null
@@ -632,7 +644,7 @@ export type Database = {
           weight: number | null
         }
         Insert: {
-          created_at: string
+          created_at?: string
           duration?: string | null
           id?: string
           item_id: string
@@ -706,6 +718,65 @@ export type Database = {
         }
         Relationships: []
       }
+      todo_lists: {
+        Row: {
+          created_at: string
+          id: string
+          title: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          title?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          title?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      todo_tasks: {
+        Row: {
+          created_at: string
+          id: string
+          is_completed: boolean
+          list_id: string
+          notes: string | null
+          task: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_completed?: boolean
+          list_id: string
+          notes?: string | null
+          task?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_completed?: boolean
+          list_id?: string
+          notes?: string | null
+          task?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "todo_tasks_list_id_fkey"
+            columns: ["list_id"]
+            isOneToOne: false
+            referencedRelation: "todo_lists"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       users: {
         Row: {
           ban_reason: string | null
@@ -752,7 +823,7 @@ export type Database = {
           weight: number
         }
         Insert: {
-          created_at: string
+          created_at?: string
           id?: string
           notes?: string | null
           title?: string | null
@@ -778,19 +849,7 @@ export type Database = {
         }
         Relationships: []
       }
-      feed_view: {
-        Row: {
-          created_at: string | null
-          duration: number | null
-          id: string | null
-          notes: string | null
-          title: string | null
-          type: string | null
-          user_id: string | null
-        }
-        Relationships: []
-      }
-      feed_view2: {
+      feed_view4: {
         Row: {
           created_at: string | null
           duration: number | null

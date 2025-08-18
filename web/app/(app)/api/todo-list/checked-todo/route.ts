@@ -1,6 +1,15 @@
 import { createClient } from "@/utils/supabase/server";
 import { NextRequest } from "next/server";
 
+type TodoTask = {
+  id: string;
+  list_id: string;
+  user_id: string;
+  task: string;
+  notes: string | null;
+  is_completed: boolean;
+};
+
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
 
@@ -14,16 +23,22 @@ export async function POST(req: NextRequest) {
   }
 
   const body = await req.json();
-  const { id, title, notes } = body;
+  const { todo_tasks } = body;
 
-  const { error } = await supabase
-    .from("notes")
-    .update({ title, notes })
-    .eq("id", id)
-    .eq("user_id", user.id);
+  const upsertedTasks = todo_tasks.map((task: TodoTask) => ({
+    id: task.id,
+    list_id: task.list_id,
+    is_completed: task.is_completed,
+    user_id: user.id,
+  }));
 
-  if (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
+  const { error: listError } = await supabase
+    .from("todo_tasks")
+    .upsert(upsertedTasks, { onConflict: "id" });
+
+  if (listError) {
+    console.error("Supabase error:", listError);
+    return new Response(JSON.stringify({ error: listError.message }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
     });

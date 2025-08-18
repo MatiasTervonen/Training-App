@@ -281,7 +281,7 @@ export default function EditGym({
             ))}
           </div>
         ))}
-        <div className="my-10 mx-10">
+        <div className="py-10 mx-10">
           <SaveButton onClick={handleSubmit} />
         </div>
       </div>

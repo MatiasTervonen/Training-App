@@ -11,6 +11,7 @@ export function clearLocalStorage() {
     "viewingHoleNumber",
     "timer_session_draft",
     "weight_draft",
+    "todo_session_draft",
   ];
 
   keysToRemove.forEach((key) => localStorage.removeItem(key));

@@ -36,7 +36,13 @@ export default function DiscGolfGame() {
   );
   const [isSaving, setIsSaving] = useState(false);
 
-  const { stopTimer, elapsedTime } = useTimerStore();
+  const { stopTimer, elapsedTime, activeSession } = useTimerStore();
+
+  useEffect(() => {
+    if (!activeSession) {
+      router.push("/");
+    }
+  }, [activeSession, router]);
 
   useEffect(() => {
     if (viewingHoleNumber) {
@@ -341,7 +347,7 @@ export default function DiscGolfGame() {
 
   return (
     <>
-      <nav className="flex items-center justify-between bg-gray-700 p-2 px-4 fixed w-full z-40 max-w-3xl left-1/2 -translate-x-1/2">
+      <nav className="flex items-center justify-between bg-gray-700 p-2 px-4 w-full z-40 max-w-3xl mx-auto">
         <div className="flex items-center justify-center gap-2  text-gray-100">
           <Timer buttonsAlwaysVisible />
         </div>
@@ -349,14 +355,14 @@ export default function DiscGolfGame() {
           Live Scorecard
         </Link>
       </nav>
-      <div className="pt-[40px] relative h-[calc(100dvh-112px)] max-w-3xl left-1/2 -translate-x-1/2">
+      <div className="relative h-[calc(100dvh-112px)] max-w-3xl mx-auto">
         <div className="absolute inset-0 z-0 h-full flex justify-between bg-slate-950">
           {!isSwiping && (
             <>
-              <div className="flex flex-col items-center pt-[50px] gap-2 mx-2">
+              <div className="flex flex-col items-center pt-[10px] gap-2 mx-2">
                 {viewingHoleNumber > 1 && (
                   <>
-                    <div className="text-gray-100 text-center text-2xl font-bold ">
+                    <div className="text-gray-100 text-center text-2xl">
                       <p>H</p>
                       <p>O</p>
                       <p>L</p>
@@ -371,9 +377,9 @@ export default function DiscGolfGame() {
                 )}
               </div>
 
-              <div className="flex flex-col items-center gap-2 mx-2 pt-[50px]">
+              <div className="flex flex-col items-center gap-2 mx-2 pt-[10px]">
                 {viewingHoleNumber === totalHoles ? (
-                  <div className="text-gray-100 text-center text-2xl font-bold ">
+                  <div className="text-gray-100 text-center text-2xl">
                     <p>F</p>
                     <p>I</p>
                     <p>N</p>
@@ -382,7 +388,7 @@ export default function DiscGolfGame() {
                     <p>H</p>
                   </div>
                 ) : (
-                  <div className="text-gray-100 text-center text-2xl font-bold">
+                  <div className="text-gray-100 text-center text-2xl">
                     <p>H</p>
                     <p>O</p>
                     <p>L</p>
@@ -479,7 +485,7 @@ export default function DiscGolfGame() {
                       >
                         -
                       </button>
-                      <span>{par}</span>
+                      <span className="w-[20px] text-center">{par}</span>
                       <button
                         onClick={() => setPar((prev) => Math.min(5, prev + 1))}
                         className="bg-blue-800 text-gray-100 px-4 py-2 rounded"
@@ -523,7 +529,7 @@ export default function DiscGolfGame() {
                       >
                         -
                       </button>
-                      <span>{playerStats[player.name]?.strokes ?? 0}</span>
+                      <span className="w-[20px] text-center">{playerStats[player.name]?.strokes ?? 0}</span>
                       <button
                         className="bg-blue-800 text-gray-100 px-4 py-2 rounded"
                         onClick={() =>

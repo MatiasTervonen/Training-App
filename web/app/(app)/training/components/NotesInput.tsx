@@ -1,4 +1,3 @@
-import { SquarePen } from "lucide-react";
 import clsx from "clsx";
 
 type NotesInputProps = {
@@ -8,6 +7,7 @@ type NotesInputProps = {
   rows?: number;
   cols?: number;
   label?: string;
+  maxLength?: number;
 };
 
 export default function NotesInput({
@@ -17,16 +17,14 @@ export default function NotesInput({
   rows,
   cols,
   label,
+  maxLength,
 }: NotesInputProps) {
   const shouldGrow = !rows && !cols;
 
   return (
     <div className={`flex flex-col ${shouldGrow ? "flex-1" : ""}`}>
       <div className="flex items-center">
-        <label className="text-sm text-gray-300 mb-1">
-          {label}
-        </label>
-        <SquarePen size={18} className="text-gray-100 mb-2" />
+        <label className="text-sm text-gray-300 mb-1">{label}</label>
       </div>
       <textarea
         className={clsx(
@@ -42,6 +40,7 @@ export default function NotesInput({
         rows={rows}
         cols={cols}
         onChange={(e) => setNotes(e.target.value)}
+        maxLength={maxLength}
       />
     </div>
   );

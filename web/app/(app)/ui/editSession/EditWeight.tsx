@@ -130,7 +130,7 @@ export default function EditWeight({ weight, onClose, onSave }: Props) {
               />
             </label>
           </div>
-          <div className="w-full">
+          <div className="w-full py-10">
             <SaveButton onClick={handleSubmit} />
           </div>
         </div>

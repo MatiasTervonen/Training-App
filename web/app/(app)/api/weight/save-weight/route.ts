@@ -24,7 +24,6 @@ export async function POST(req: NextRequest) {
         title,
         notes,
         weight,
-        created_at: new Date().toISOString(),
       },
     ])
     .select()

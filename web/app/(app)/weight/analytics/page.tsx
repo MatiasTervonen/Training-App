@@ -7,23 +7,33 @@ import WeightChart from "../components/WeightChart";
 import AllDataTable from "../components/AllDataTable";
 import useSWR from "swr";
 import Spinner from "@/app/(app)/components/spinner";
+import { fetcher } from "@/app/(app)/lib/fetcher";
+
+type WeightEntry = {
+  id: string;
+  title: string;
+  user_id: string;
+  weight: number;
+  created_at: string;
+  notes: string;
+};
 
 export default function TrainingPage() {
   const [range, setRange] = useState<"week" | "month" | "year" | "all">(
     "month"
   );
 
-  const fetcher = (url: string) => fetch(url).then((res) => res.json());
-
   const {
     data: weight = [],
     error,
     isLoading,
-  } = useSWR("/api/weight/get-weight", fetcher, {
+  } = useSWR<WeightEntry[]>("/api/weight/get-weight", fetcher, {
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
     revalidateIfStale: false,
   });
+
+
 
   return (
     <ModalPageWrapper noTopPadding>

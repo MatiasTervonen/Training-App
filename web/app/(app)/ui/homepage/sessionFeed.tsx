@@ -16,14 +16,16 @@ import WeightSession from "@/app/(app)/components/expandSession/weight";
 import EditWeight from "@/app/(app)/ui/editSession/EditWeight";
 import toast from "react-hot-toast";
 import { FeedSkeleton } from "../loadingSkeletons/skeletons";
-import { full_gym_session } from "@/app/(app)/types/models";
+import { full_gym_session, full_todo_session } from "@/app/(app)/types/models";
 import { fetcher } from "../../lib/fetcher";
 import { feed_view } from "@/app/(app)/types/session";
 import useSWRInfinite from "swr/infinite";
 import { getFeedKey } from "../../lib/feedKeys";
+import TodoSession from "@/app/(app)/components/expandSession/todo";
+import EditTodo from "@/app/(app)/ui/editSession/EditTodo";
 
 type FeedItem = {
-  table: "notes" | "weight" | "gym_sessions";
+  table: "notes" | "weight" | "gym_sessions" | "todo_lists";
   item: feed_view;
   pinned: boolean;
 };
@@ -61,6 +63,10 @@ export default function SessionFeed() {
     return Boolean(data[data.length - 1]?.nextPage);
   }, [data]);
 
+  function getCanonicalId(item: { id?: string; item_id?: string }) {
+    return item.item_id ?? item.id ?? "";
+  }
+
   // Load more when the bottom of the feed is in view
   useEffect(() => {
     if (!inView) {
@@ -90,14 +96,13 @@ export default function SessionFeed() {
   const feed: FeedItem[] = useMemo(() => {
     if (!data) return [];
     return data.flatMap((page) =>
-      page.feed.map((item) => ({
-        table: item.type as FeedItem["table"],
-        item: {
-          ...item,
-          id: item.pinned && item.item_id ? item.item_id : item.id,
-        },
-        pinned: item.pinned,
-      }))
+      page.feed.map((item) => {
+        return {
+          table: item.type as FeedItem["table"],
+          item: { ...item, id: getCanonicalId(item) },
+          pinned: item.pinned,
+        } as FeedItem;
+      })
     );
   }, [data]);
 
@@ -120,8 +125,7 @@ export default function SessionFeed() {
     notes?: string,
     title?: string,
     weight?: number,
-    duration?: number,
-    created_at?: string
+    duration?: number
   ) => {
     const endpoint = isPinned
       ? "/api/pinned/unpin-items"
@@ -160,7 +164,6 @@ export default function SessionFeed() {
           title,
           weight,
           duration,
-          created_at,
         }),
       });
 
@@ -224,16 +227,23 @@ export default function SessionFeed() {
     }
   };
 
-  // Use item_id for pinned items, id for non-pinned items
-  const id =
+  const getId = (fi: FeedItem | null) => fi?.item.id ?? null;
+
+  const expandedId = getId(expandedItem);
+  const editingId = getId(editingItem);
+
+  const gymId =
     expandedItem?.table === "gym_sessions"
-      ? expandedItem.pinned && expandedItem.item.item_id
-        ? expandedItem.item.item_id
-        : expandedItem.item.id
+      ? expandedId
       : editingItem?.table === "gym_sessions"
-      ? editingItem.pinned && editingItem.item.item_id
-        ? editingItem.item.item_id
-        : editingItem.item.id
+      ? editingId
+      : null;
+
+  const todoId =
+    expandedItem?.table === "todo_lists"
+      ? expandedId
+      : editingItem?.table === "todo_lists"
+      ? editingId
       : null;
 
   const {
@@ -242,7 +252,22 @@ export default function SessionFeed() {
     isLoading: isLoadingGymSession,
     mutate: mutateFullSession,
   } = useSWR<full_gym_session>(
-    id ? `/api/gym/get-full-gym-session?id=${id}` : null,
+    gymId ? `/api/gym/get-full-gym-session?id=${gymId}` : null,
+    fetcher,
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+      revalidateIfStale: false,
+    }
+  );
+
+  const {
+    data: TodoSessionFull,
+    error: TodoSessionError,
+    isLoading: isLoadingTodoSession,
+    mutate: mutateFullTodoSession,
+  } = useSWR<full_todo_session>(
+    todoId ? `/api/todo-list/get-full-todo-session?id=${todoId}` : null,
     fetcher,
     {
       revalidateOnFocus: false,
@@ -306,14 +331,13 @@ export default function SessionFeed() {
                     }}
                     onTogglePin={() =>
                       togglePin(
-                        feedItem.item.id!,
+                        getCanonicalId(feedItem.item),
                         feedItem.table,
                         isPinned,
                         feedItem.item.notes ?? "",
                         feedItem.item.title ?? "",
                         feedItem.item.weight ?? undefined,
-                        feedItem.item.duration ?? undefined,
-                        feedItem.item.created_at ?? ""
+                        feedItem.item.duration ?? undefined
                       )
                     }
                     onDelete={() =>
@@ -340,6 +364,17 @@ export default function SessionFeed() {
 
         {expandedItem && (
           <Modal onClose={() => setExpandedItem(null)} isOpen={true}>
+            {/* <div className="flex justify-end pr-15 pt-2">
+              <button
+                onClick={() => {
+                  setEditingItem(expandedItem);
+                  setExpandedItem(null);
+                }}
+                className="gap-2 px-4 bg-blue-800 py-1 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-105"
+              >
+                Edit
+              </button>
+            </div> */}
             {expandedItem.table === "notes" && (
               <NotesSession {...expandedItem.item} />
             )}
@@ -362,12 +397,34 @@ export default function SessionFeed() {
             {expandedItem.table === "weight" && (
               <WeightSession {...expandedItem.item} />
             )}
+            {expandedItem.table === "todo_lists" && (
+              <>
+                {isLoadingTodoSession ? (
+                  <div className="flex flex-col gap-5 items-center justify-center pt-40">
+                    <p>Loading todo session details...</p>
+                    <Spinner />
+                  </div>
+                ) : TodoSessionError ? (
+                  <p className="text-center text-lg mt-10">
+                    Failed to load todo session details. Please try again later.
+                  </p>
+                ) : (
+                  TodoSessionFull && (
+                    <TodoSession
+                      initialTodo={TodoSessionFull}
+                      mutateFullTodoSession={async () => {
+                        await mutateFullTodoSession();
+                      }}
+                    />
+                  )
+                )}
+              </>
+            )}
           </Modal>
         )}
 
         {editingItem && (
           <Modal
-            footerButton
             isOpen={true}
             onClose={() => {
               setEditingItem(null);
@@ -404,6 +461,35 @@ export default function SessionFeed() {
                         await Promise.all([
                           mutateFeed(),
                           mutateFullSession?.(),
+                        ]);
+
+                        setEditingItem(null);
+                      }}
+                    />
+                  )
+                )}
+              </>
+            )}
+            {editingItem.table === "todo_lists" && (
+              <>
+                {isLoadingTodoSession ? (
+                  <div className="flex flex-col gap-5 items-center justify-center pt-40">
+                    <p>Loading todo session details...</p>
+                    <Spinner />
+                  </div>
+                ) : TodoSessionError ? (
+                  <p className="text-center text-lg mt-10">
+                    Failed to load todo session details. Please try again later.
+                  </p>
+                ) : (
+                  TodoSessionFull && (
+                    <EditTodo
+                      todo_session={TodoSessionFull}
+                      onClose={() => setEditingItem(null)}
+                      onSave={async () => {
+                        await Promise.all([
+                          mutateFeed(),
+                          mutateFullTodoSession(),
                         ]);
 
                         setEditingItem(null);

@@ -24,7 +24,6 @@ export async function POST(req: NextRequest) {
         title,
         notes,
         duration,
-        created_at: new Date().toISOString(),
       },
     ])
     .select()
@@ -50,6 +49,7 @@ export async function POST(req: NextRequest) {
 
     sessionExercises.push({
       id: sessionExerciseId,
+      user_id: user.id,
       session_id: sessionId,
       exercise_id: ex.exercise_id,
       position: index,
@@ -59,6 +59,7 @@ export async function POST(req: NextRequest) {
 
     for (const [setIndex, set] of ex.sets.entries()) {
       sets.push({
+        user_id: user.id,
         session_exercise_id: sessionExerciseId,
         weight: set.weight,
         reps: set.reps,

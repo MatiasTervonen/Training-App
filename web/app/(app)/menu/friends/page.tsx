@@ -38,7 +38,7 @@ export default function FriendsPage() {
           ) : isLoading ? (
             <FriendCardSkeleton count={3} />
           ) : friends.length === 0 ? (
-            <p className="text-gray-400">No friends found</p>
+            <p className="text-gray-400 my-10">No friends found</p>
           ) : (
             friends.map((friend: Friends) => {
               return (

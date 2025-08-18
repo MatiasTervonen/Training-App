@@ -25,12 +25,11 @@ export default async function GetSession({
   const offset = (page - 1) * limit;
 
   const { error, data: feed } = await supabase
-    .from("feed_view2")
+    .from("feed_view4")
     .select("*")
     .eq("user_id", user.id)
     .order("created_at", { ascending: false })
     .range(offset, offset + limit - 1);
-
 
   if (error) {
     return { feed: [], error };

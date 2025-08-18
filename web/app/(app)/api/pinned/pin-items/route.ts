@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
   }
 
   const body = await req.json();
-  const { item_id, table, notes, title, weight, duration, created_at } = body;
+  const { item_id, table, notes, title, weight, duration } = body;
 
   if (!item_id || !table) {
     return new Response("Invalid request", { status: 400 });
@@ -22,18 +22,20 @@ export async function POST(req: NextRequest) {
 
   const { data, error } = await supabase
     .from("pinned_items")
-    .upsert([
-      {
-        user_id: user.id,
-        item_id: item_id,
-        type: table,
-        notes: notes ?? null,
-        title: title ?? null,
-        weight: weight ?? null,
-        duration: duration ?? null,
-        created_at: created_at ?? null,
-      },
-    ])
+    .upsert(
+      [
+        {
+          user_id: user.id,
+          item_id: item_id,
+          type: table,
+          notes: notes ?? null,
+          title: title ?? null,
+          weight: weight ?? null,
+          duration: duration ?? null,
+        },
+      ],
+      { onConflict: "user_id,type,item_id" } // Ensure upsert on user_id, item_id, and type
+    )
     .select()
     .single();
 

@@ -2,7 +2,7 @@ import { createClient } from "@/utils/supabase/server";
 
 export async function POST(req: Request) {
   const supabase = await createClient();
-  const { item_id } = await req.json();
+  const { item_id, table } = await req.json();
 
   const {
     data: { user },
@@ -13,11 +13,11 @@ export async function POST(req: Request) {
     return new Response("Unauthorized", { status: 401 });
   }
 
-
   const { error } = await supabase
     .from("pinned_items")
     .delete()
     .eq("user_id", user.id)
+    .eq("type", table)
     .eq("item_id", item_id);
 
   if (error) return new Response(JSON.stringify({ error }), { status: 500 });

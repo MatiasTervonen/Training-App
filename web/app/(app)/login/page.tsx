@@ -2,10 +2,11 @@
 
 import { useState } from "react";
 import { login, signup } from "@/app/(app)/login/actions";
-import React from "react";
+import React, { useEffect } from "react";
 import LoginButton from "@/app/(app)/login/components/loginbutton";
 import SignupButton from "@/app/(app)/login/components/signupbutton";
 import GuestLogIn from "@/app/(app)/login/guest-login/quest-login";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const [activeForm, setActiveForm] = useState(false);
@@ -18,6 +19,12 @@ export default function LoginPage() {
   const [state, formAction] = React.useActionState(signup, initialState);
 
   const [state2, formAction2] = React.useActionState(login, initialState);
+
+  const router = useRouter();
+
+  useEffect(() => {
+    router.prefetch("/dashboard");
+  }, [router]);
 
   return (
     <div className="bg-slate-950">

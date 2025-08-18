@@ -1,18 +1,21 @@
 import { NextResponse } from "next/server";
-import { guestLogin } from "../../login/guest-login/action";
+import { guestLoginMobile } from "../../login/guest-login/actionMobile";
 
 export async function POST() {
-  const result = await guestLogin();
-  if (!result.success) {
+  try {
+    const result = await guestLoginMobile();
+    if (!result.success) {
+      return NextResponse.json(
+        { success: false, message: result.message },
+        { status: 400 }
+      );
+    }
+
+    return NextResponse.json(result);
+  } catch {
     return NextResponse.json(
-      { success: false, message: result.message },
-      { status: 400 }
+      { success: false, message: "Guest login failed" },
+      { status: 500 }
     );
   }
-
-  return NextResponse.json({
-    success: true,
-    session: result.session,
-    message: result.message,
-  });
 }

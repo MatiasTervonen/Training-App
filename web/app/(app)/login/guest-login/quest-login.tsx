@@ -1,14 +1,20 @@
 "use client";
 
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
-import { useTransition } from "react";
 import { guestLogin } from "./action";
-import { useState } from "react";
-import { redirect } from "next/navigation";
+import { useState, useEffect, useTransition } from "react";
+
+import { useRouter } from "next/navigation";
 
 export default function GuestLogIn() {
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
+
+  const router = useRouter();
+
+  useEffect(() => {
+    router.prefetch("/dashboard");
+  }, [router]);
 
   return (
     <div className="flex flex-col items-center justify-center">
@@ -18,9 +24,7 @@ export default function GuestLogIn() {
             setError(null);
             const result = await guestLogin();
             if (!result.success) {
-              setError(result.message);
-            } else {
-              redirect("/dashboard");
+              setError(result.message ?? "Login failded");
             }
           })
         }

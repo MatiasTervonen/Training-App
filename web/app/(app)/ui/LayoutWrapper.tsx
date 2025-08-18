@@ -34,7 +34,9 @@ export default function LayoutWrapper({
 
         const data = await response.json();
 
-        loginUser(data, data.role);
+        const { role, ...preferences } = data;
+
+        loginUser(preferences, role);
       } catch (error) {
         console.error("Error fetching user preferences:", error);
         toast.error("Failed to load user preferences. Please try again.");

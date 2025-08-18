@@ -1,15 +1,9 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
+import { redirect } from "next/navigation";
 
-type GuestLoginResult = {
-  success: boolean;
-  message: string;
-  session?: {
-    access_token: string;
-    refresh_token: string;
-  };
-};
+type GuestLoginResult = { success: false; message: string } | { success: true };
 
 export async function guestLogin(): Promise<GuestLoginResult> {
   const supabase = await createClient();
@@ -28,12 +22,5 @@ export async function guestLogin(): Promise<GuestLoginResult> {
     };
   }
 
-  return {
-    success: true,
-    message: "Guest login successful",
-    session: {
-      access_token: data.session.access_token,
-      refresh_token: data.session.refresh_token,
-    },
-  };
+  redirect("/dashboard");
 }

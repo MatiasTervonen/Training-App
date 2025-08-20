@@ -59,5 +59,4 @@ pnpm start
 
 ## 📸 Screenshots
 
-<img src="./web/public/readme-feed.png" alt="Dashboard Screenshot" width="600"/>
-```
+<img src="./web/public/readme-feed.png" alt="Dashboard Screenshot" width="300"/>

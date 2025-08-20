@@ -3,9 +3,11 @@
 import TitleInput from "@/app/(app)/training/components/TitleInput";
 import { useState } from "react";
 import toast from "react-hot-toast";
+import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
 
 export default function FriendRequestForm() {
   const [identifier, setIdentifier] = useState("");
+  const { role } = useUserStore();
 
   const sendFriendRequest = async (identifier: string) => {
     const response = await fetch("/api/friend/send-request", {
@@ -36,12 +38,21 @@ export default function FriendRequestForm() {
         title={identifier}
         setTitle={setIdentifier}
       />
-      <button
-        onClick={() => sendFriendRequest(identifier)}
-        className="w-fit mt-5 bg-blue-800 py-2 px-10 my-3 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-105"
-      >
-        Send Request
-      </button>
+      {role === "guest" ? (
+        <button
+          disabled
+          className="mt-5 w-full gap-2 bg-gray-400 py-2 rounded-md shadow-xl border-2 border-gray-300 text-gray-100 text-lg cursor-not-allowed"
+        >
+          Send Request
+        </button>
+      ) : (
+        <button
+          onClick={() => sendFriendRequest(identifier)}
+          className="w-full mt-5 bg-blue-800 py-2 px-10 my-3 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-105"
+        >
+          Send Request
+        </button>
+      )}
     </div>
   );
 }

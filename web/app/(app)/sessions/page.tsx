@@ -14,7 +14,7 @@ export default function Sessions() {
   return (
     <ModalPageWrapper>
       <div className="p-5 h-full">
-        <h1 className=" text-gray-100 text-center  my-5 text-2xl ">
+        <h1 className=" text-gray-100 text-center my-5 text-2xl ">
           Start Session
         </h1>
         <div className="flex flex-col gap-5 max-w-md mx-auto">

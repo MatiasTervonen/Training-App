@@ -26,7 +26,7 @@ export const useUserStore = create<UserStore>()(
       preferences: null,
       setUserPreferences: (preferences) => set({ preferences }),
       clearUserPreferences: () => set({ preferences: null }),
-      role: null, // Default to null, can be set later
+      role: null, 
       setRole: (role) => set({ role }),
       logoutUser: () => {
         set({

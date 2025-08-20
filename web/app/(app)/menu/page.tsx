@@ -6,17 +6,17 @@ import SignOutButton from "../ui/singOutButton";
 export default function MenuPage() {
   return (
     <ModalPageWrapper>
-      <div className="h-full bg-slate-800 text-primary  px-5 pt-10">
-        <h1 className="text-2xl text-center mb-5 text-primary">Menu</h1>
-        <div className="flex flex-col justify-between h-[calc(100vh-240px)]  max-w-md mx-auto ">
+      <div className="h-[calc(100dvh-140px)] bg-slate-800 text-primary px-5 pt-10 max-w-md mx-auto flex flex-col justify-between">
+        <div>
+          <h1 className="text-2xl text-center mb-10 text-primary">Menu</h1>
           <div className="flex flex-col gap-5">
             <LinkButton href={"/menu/friends"}>Friends</LinkButton>
             <LinkButton href={"/menu/profile"}>Profile</LinkButton>
             <MenuContext />
           </div>
-          <div>
-            <SignOutButton />
-          </div>
+        </div>
+        <div>
+          <SignOutButton />
         </div>
       </div>
     </ModalPageWrapper>

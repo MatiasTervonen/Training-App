@@ -29,12 +29,12 @@ export default function SignOutButton() {
       return;
     }
 
-    // ✅ Clear all SWR cache
+    // Clear all SWR cache
     if ("clear" in cache && typeof cache.clear === "function") {
       cache.clear();
     }
 
-    // ✅ Clear localStorage
+    //  Clear localStorage
     clearLocalStorage();
 
     logOutUser();

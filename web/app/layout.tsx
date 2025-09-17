@@ -3,7 +3,10 @@ import "./globals.css";
 import { russoOne } from "./ui/fonts";
 
 export const metadata: Metadata = {
-  title: "MyTrack",
+  title: {
+    template: "%s | MyTrack",
+    default: "MyTrack",
+  },
   description:
     "Track everything from gym workouts to Disc Golf rounds and personal goals. MyTrack helps you stay organized and motivated—your progress, your way.",
   metadataBase: new URL("https://training-app-bay.vercel.app/"),
@@ -31,7 +34,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={russoOne.className}>
+    <html lang="en" className={`${russoOne.className} antialiased`}>
       <body className="bg-slate-900 font-primary">{children}</body>
     </html>
   );

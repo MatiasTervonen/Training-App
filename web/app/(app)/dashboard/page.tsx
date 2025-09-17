@@ -1,5 +1,4 @@
 import SessionFeed from "../ui/homepage/sessionFeed";
-
 import ActiveSessionPopup from "../components/activeSessionPopup";
 import ClientModalWrapper from "../components/ClientModalWrapper";
 

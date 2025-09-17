@@ -53,7 +53,7 @@ export default function LoginPage() {
               name="email"
               type="email"
               placeholder="Enter email..."
-              autoComplete="username"
+              autoComplete="email"
               required
             />
             <label
@@ -171,7 +171,9 @@ export default function LoginPage() {
             <button>
               <span
                 className="text-gray-100 border-2 border-blue-400 py-4 px-10 rounded-md bg-gradient-to-tr from-slate-950  to-blue-700 hover:from-blue-700 hover:to-slate-950 transform hover:scale-105 transition duration-200"
-                onClick={() => setActiveForm(!activeForm)}
+                onClick={() => {
+                  setActiveForm(!activeForm);
+                }}
               >
                 {activeForm ? "Log in" : "Sign up"}
               </span>

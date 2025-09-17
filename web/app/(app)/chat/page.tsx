@@ -2,7 +2,7 @@ import ModalPageWrapper from "../components/modalPageWrapper";
 
 export default function ChatPage() {
   return (
-    <ModalPageWrapper noTopPadding>
+    <ModalPageWrapper>
       <div className="flex flex-col items-center justify-center px-5">
         <h1 className="text-6xl text-center text-gray-100 my-10">
           Chat with AI

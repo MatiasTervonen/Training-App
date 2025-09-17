@@ -96,7 +96,7 @@ export default function TemplatesPage() {
   };
 
   return (
-    <ModalPageWrapper noTopPadding>
+    <ModalPageWrapper>
       <div className="h-full text-gray-100 p-5">
         <div className="flex flex-col max-w-md mx-auto">
           <h1 className="text-gray-100 text-center  my-5 text-2xl">

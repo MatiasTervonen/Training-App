@@ -242,7 +242,7 @@ export default function CreateTemplatePage() {
   };
 
   return (
-    <ModalPageWrapper noTopPadding>
+    <ModalPageWrapper>
       <div className="h-full bg-slate-800 text-gray-100 px-4 pt-5">
         <div className="max-w-md mx-auto flex flex-col justify-between h-full">
           <div className="flex flex-col items-center  gap-5 ">

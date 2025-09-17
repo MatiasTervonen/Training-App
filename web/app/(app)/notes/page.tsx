@@ -117,7 +117,7 @@ export default function Notes() {
 
   return (
     <>
-      <ModalPageWrapper noTopPadding>
+      <ModalPageWrapper>
         <div className="flex flex-col h-full w-full px-6 max-w-md mx-auto pb-10">
           <div className="flex flex-col items-center mt-5 gap-5 flex-grow mb-10 h-full">
             <p className="text-gray-100 text-lg text-center">

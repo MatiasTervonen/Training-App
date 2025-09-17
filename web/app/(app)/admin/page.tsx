@@ -13,7 +13,7 @@ export default async function AdminPage() {
   }
 
   return (
-    <ModalPageWrapper noTopPadding>
+    <ModalPageWrapper>
       <div className="h-full bg-slate-800 text-gray-100 px-5 pt-5">
         <h1 className="text-2xl my-5 text-center">Admin panel</h1>
         <div className="flex flex-col max-w-md mx-auto">

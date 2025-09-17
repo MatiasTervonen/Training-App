@@ -101,7 +101,7 @@ export default function DiscGolf() {
   };
 
   return (
-    <ModalPageWrapper noTopPadding>
+    <ModalPageWrapper>
       <div className="bg-slate-800 p-5 h-full max-w-md mx-auto">
         <div className="flex flex-col h-full w-full justify-between">
           <div>

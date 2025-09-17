@@ -36,7 +36,7 @@ export default function TrainingPage() {
 
 
   return (
-    <ModalPageWrapper noTopPadding>
+    <ModalPageWrapper>
       <div
         className={`${russoOne.className} h-full bg-slate-800 text-gray-100 py-5`}
       >

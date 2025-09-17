@@ -103,7 +103,7 @@ export default function Todo() {
   };
 
   return (
-    <ModalPageWrapper noTopPadding>
+    <ModalPageWrapper>
       <div className="flex flex-col justify-between h-full max-w-lg mx-auto px-4 ">
         <div>
           <div className="flex items-center gap-5 justify-center my-5">

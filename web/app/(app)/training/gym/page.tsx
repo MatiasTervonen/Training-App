@@ -335,7 +335,7 @@ export default function TrainingSessionPage() {
 
   return (
     <>
-      <nav className="flex items-center justify-between bg-gray-700 p-2 fixed px-4 w-full z-40 max-w-3xl left-1/2 -translate-x-1/2">
+      <nav className="flex items-center justify-between bg-gray-700 p-2 px-4 w-full z-40 max-w-3xl mx-auto">
         <div className="flex items-center justify-center gap-2 text-gray-100">
           <Timer
             buttonsAlwaysVisible
@@ -349,7 +349,7 @@ export default function TrainingSessionPage() {
       </nav>
 
       <ModalPageWrapper>
-        <div className="flex justify-center relative min-h-[calc(100dvh-72px)] max-w-md mx-auto py-5">
+        <div className="flex justify-center relative h-full max-w-md mx-auto pt-5">
           <div className="flex flex-col justify-between w-full">
             <div className="flex flex-col items-center justify-center gap-5">
               <p className="text-gray-100 text-xl text-center">
@@ -666,7 +666,7 @@ export default function TrainingSessionPage() {
                 </button>
               </div>
             </>
-            <div className="flex flex-col justify-center items-center mt-14 gap-5 mb-10 px-4">
+            <div className="flex flex-col justify-center items-center mt-14 gap-5 pb-10 px-4">
               <SaveButton onClick={saveSession} />
               <DeleteSessionBtn onDelete={resetSession} />
             </div>

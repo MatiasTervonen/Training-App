@@ -7,10 +7,10 @@ import { SquareArrowRight } from "lucide-react";
 import { useTransitionDirectionStore } from "@/app/(app)/lib/stores/transitionDirection";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 
 type Props = {
   children: ReactNode;
-  noTopPadding?: boolean;
   onSwipeLeft?: () => void;
   onSwipeRight?: () => void;
   leftLabel?: string;
@@ -19,7 +19,6 @@ type Props = {
 
 export default function ModalPageWrapper({
   children,
-  noTopPadding = false,
   onSwipeLeft,
   onSwipeRight,
   leftLabel = "back",
@@ -30,6 +29,7 @@ export default function ModalPageWrapper({
   const [isTransitioning, setIsTransitioning] = useState(false);
 
   const router = useRouter();
+  const pathname = usePathname();
 
   const handleSwipeLeft = () => {
     setDirection(1);
@@ -49,17 +49,20 @@ export default function ModalPageWrapper({
     }
   };
 
+  const EXTRA_NAV_HEIGHT = [
+    "/dashboard",
+    "/menu",
+    "/sessions",
+    "/training/gym",
+  ].includes(pathname)
+    ? 112
+    : 72;
+
   return (
     <div
-      className={`relative h-[calc(100dvh-72px)] overflow-hidden max-w-3xl mx-auto ${
-        noTopPadding ? "" : "pt-[40px]"
-      }`}
+      className={`relative h-[calc(100dvh-${EXTRA_NAV_HEIGHT}px)] overflow-hidden max-w-3xl mx-auto`}
     >
-      <div
-        className={`absolute inset-0 z-0 h-screen flex justify-between bg-slate-900  ${
-          noTopPadding ? "pt-[10px]" : "pt-[50px]"
-        }`}
-      >
+      <div className="absolute inset-0 z-0 h-screen flex justify-between bg-slate-900 mt-3">
         <div className="flex flex-col items-center gap-2 ml-2">
           {isTransitioning && leftLabel && (
             <>

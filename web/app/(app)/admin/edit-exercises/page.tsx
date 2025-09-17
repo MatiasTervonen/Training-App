@@ -108,7 +108,7 @@ export default function EditExercises() {
   };
 
   return (
-    <ModalPageWrapper noTopPadding>
+    <ModalPageWrapper>
       <div className="h-full bg-slate-800 text-gray-100 pt-5">
         <h1 className="text-2xl my-5 text-center">edit/delete Exercises</h1>
         <div className="h-[calc(100dvh-164px)] pb-5">

@@ -101,7 +101,6 @@ export default function Settings() {
 
       setPreferences(payload);
       toast.success("Settings updated successfully!");
-      mutate("/api/settings/get-settings");
     } catch (error) {
       console.error("Error updating settings:", error);
       toast.error("Failed to update settings. Please try again.");
@@ -134,8 +133,8 @@ export default function Settings() {
   };
 
   return (
-    <ModalPageWrapper noTopPadding>
-      <div className="p-5 min-h-[calc(100dvh-72px)] relative">
+    <ModalPageWrapper>
+      <div className="p-5 h-full relative">
         <div className="max-w-md mx-auto">
           <h1 className="text-gray-100 flex justify-center my-5 text-2xl">
             Profile Settings

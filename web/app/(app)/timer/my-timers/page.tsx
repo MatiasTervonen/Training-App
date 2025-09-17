@@ -89,7 +89,6 @@ export default function TimersPage() {
 
   return (
     <ModalPageWrapper
-      noTopPadding
       leftLabel="back"
       rightLabel="home"
       onSwipeRight={() => router.back()}

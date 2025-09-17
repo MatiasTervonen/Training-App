@@ -105,7 +105,7 @@ export default function TimerPage() {
   };
 
   return (
-    <ModalPageWrapper noTopPadding>
+    <ModalPageWrapper>
       <div className="p-5 h-full relative text-gray-100 max-w-md mx-auto">
         <h1 className="text-2xl text-center my-5 ">Create Timer</h1>
         <div className="mb-5">

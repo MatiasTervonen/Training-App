@@ -9,7 +9,7 @@ export default function CalendarPage() {
   const [date, setDate] = useState(new Date());
 
   return (
-    <ModalPageWrapper noTopPadding>
+    <ModalPageWrapper>
       <div className="flex flex-col min-h-[calc(100dvh-72px)] bg-slate-800 text-gray-100">
         <div className="flex flex-col flex-grow items-center  w-full">
           <h1 className="text-2xl font-bold m-4">My Calendar</h1>

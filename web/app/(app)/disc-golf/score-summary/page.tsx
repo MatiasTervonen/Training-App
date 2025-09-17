@@ -23,7 +23,6 @@ export default function DiscGolfScores() {
 
   return (
     <ModalPageWrapper
-      noTopPadding
       onSwipeRight={() => router.back()}
       leftLabel="back"
       onSwipeLeft={() => router.push("/dashboard")}

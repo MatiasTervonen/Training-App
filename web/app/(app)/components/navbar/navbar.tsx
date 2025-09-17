@@ -4,16 +4,14 @@ import { russoOne } from "@/app/ui/fonts";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { MessageCircle } from "lucide-react";
-import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
 import Image from "next/image";
 import NotificationBell from "@/app/(app)/components/navbar/components/NotificationBell";
+import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
 
 export default function Navbar() {
   const pathname = usePathname();
 
-  const profilePictureRaw = useUserStore(
-    (state) => state.preferences?.profile_picture || null
-  );
+  const preferences = useUserStore((state) => state.preferences);
 
   if (pathname === "/login" || pathname === "/") return null; // Don't render the navbar on the login page
 
@@ -36,7 +34,7 @@ export default function Navbar() {
           </Link>
           <Link href={"/menu"}>
             <Image
-              src={profilePictureRaw || "/default-avatar.png"}
+              src={preferences?.profile_picture || "/default-avatar.png"}
               alt="Profile Picture"
               width={20}
               height={20}
@@ -47,7 +45,7 @@ export default function Navbar() {
       </nav>
       {["/dashboard", "/menu", "/sessions"].includes(pathname) && (
         <div
-          className={`${russoOne.className} flex justify-between bg-slate-600 w-full text-center text-gray-100 z-0 `}
+          className={`${russoOne.className}  flex justify-between bg-slate-600 w-full text-center text-gray-100 z-0 `}
         >
           <Link
             href={"/menu"}

@@ -17,20 +17,29 @@ import EditWeight from "@/app/(app)/ui/editSession/EditWeight";
 import toast from "react-hot-toast";
 import { FeedSkeleton } from "../loadingSkeletons/skeletons";
 import { full_gym_session, full_todo_session } from "@/app/(app)/types/models";
-import { fetcher } from "../../lib/fetcher";
-import { feed_view } from "@/app/(app)/types/session";
+import { fetcher } from "@/app/(app)/lib/fetcher";
+import { Feed_item } from "@/app/(app)/types/session";
 import useSWRInfinite from "swr/infinite";
-import { getFeedKey } from "../../lib/feedKeys";
+import { getFeedKey } from "@/app/(app)/lib/feedKeys";
 import TodoSession from "@/app/(app)/components/expandSession/todo";
 import EditTodo from "@/app/(app)/ui/editSession/EditTodo";
 
 type FeedItem = {
   table: "notes" | "weight" | "gym_sessions" | "todo_lists";
-  item: feed_view;
+  item: Feed_item;
   pinned: boolean;
 };
 
-export default function SessionFeed() {
+type FeedResponse = {
+  feed: Feed_item[];
+  nextPage: number | null;
+};
+
+export default function SessionFeed({
+  initialData,
+}: {
+  initialData: FeedResponse;
+}) {
   const [expandedItem, setExpandedItem] = useState<FeedItem | null>(null);
   const { ref, inView } = useInView({
     threshold: 0,
@@ -49,13 +58,12 @@ export default function SessionFeed() {
     mutate: mutateFeed,
     setSize,
     isValidating,
-  } = useSWRInfinite<{
-    feed: feed_view[];
-    nextPage: number | null;
-  }>(getFeedKey, fetcher, {
+  } = useSWRInfinite<FeedResponse>(getFeedKey, fetcher, {
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
     revalidateFirstPage: false, // Prevent revalidating page 1 unnecessarily
+    fallbackData: initialData ? [initialData] : undefined,
+    persistSize: true,
   });
 
   const hasNextPage = useMemo(() => {

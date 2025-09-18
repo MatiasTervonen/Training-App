@@ -7,17 +7,17 @@ import SaveButton from "@/app/(app)/ui/save-button";
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import { mutate } from "swr";
 import toast from "react-hot-toast";
-import { feed_view } from "@/app/(app)/types/session";
+import { Feed_item } from "@/app/(app)/types/session";
 
 type Props = {
-  weight: feed_view;
+  weight: Feed_item;
   onClose: () => void;
   onSave?: () => void;
 };
 
 type FeedItem = {
   table: "weight";
-  item: feed_view;
+  item: Feed_item;
   pinned: boolean;
 };
 

@@ -1,8 +1,8 @@
-import { feed_view } from "@/app/(app)/types/session";
+import { Feed_item } from "@/app/(app)/types/session";
 
 type FeedItem = {
   table: "notes" | "weight" | "gym_sessions";
-  item: feed_view;
+  item: Feed_item;
   pinned: boolean;
 };
 

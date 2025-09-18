@@ -2,10 +2,10 @@ import { Scale, Ellipsis, SquareArrowOutUpRight } from "lucide-react";
 import DropdownMenu from "../dropdownMenu";
 import { formatDate } from "@/app/(app)/lib/formatDate";
 import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
-import { feed_view } from "@/app/(app)/types/session";
+import { Feed_item } from "@/app/(app)/types/session";
 
 type Props = {
-  item: feed_view;
+  item: Feed_item;
   pinned: boolean;
   onTogglePin: () => void;
   onDelete: () => void;

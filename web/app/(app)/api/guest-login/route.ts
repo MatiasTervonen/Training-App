@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { guestLoginMobile } from "../../login/guest-login/actionMobile";
+import { guestLoginMobile } from "@/app/login/guest-login/actionMobile";
 
 export async function POST() {
   try {

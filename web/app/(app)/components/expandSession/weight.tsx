@@ -1,9 +1,9 @@
 import { formatDate } from "@/app/(app)/lib/formatDate";
 import Link from "next/link";
 import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
-import { feed_view } from "@/app/(app)/types/session";
+import { Feed_item } from "@/app/(app)/types/session";
 
-export default function WeightSession(weight: feed_view) {
+export default function WeightSession(weight: Feed_item) {
   const weightUnit =
     useUserStore((state) => state.preferences?.weight_unit) || "kg";
 

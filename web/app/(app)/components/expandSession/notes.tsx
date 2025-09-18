@@ -1,8 +1,8 @@
 import { formatDate } from "@/app/(app)/lib/formatDate";
 import CopyButton from "../CopyButton";
-import { feed_view } from "@/app/(app)/types/session";
+import { Feed_item } from "@/app/(app)/types/session";
 
-export default function NotesSession(notes: feed_view) {
+export default function NotesSession(notes: Feed_item) {
   return (
     <div className="text-center px-4 text-gray-100 max-w-md mx-auto pb-10">
       <div className="text-sm text-gray-400 mt-5">

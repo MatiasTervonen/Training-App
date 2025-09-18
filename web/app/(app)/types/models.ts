@@ -84,3 +84,4 @@ export type full_gym_session = gym_sessions & {
 export type full_todo_session = todo_lists & {
   todo_tasks: todo_tasks[];
 };
+

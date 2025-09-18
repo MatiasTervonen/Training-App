@@ -79,8 +79,6 @@ export async function getFeed(
   page: number,
   limit: number
 ): Promise<FeedResponse> {
-  console.log("📡 [SERVER] Fetching feed page", page, "with limit", limit);
-
   const { feed } = await GetSession({ limit, page });
   const { pinned } = await GetPinned();
 

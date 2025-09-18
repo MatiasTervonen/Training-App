@@ -16,6 +16,7 @@ export default async function appLayout({
   if (!user) {
     redirect("/login");
   }
+
   return (
     <div>
       <Toaster position="top-center" reverseOrder={false} />

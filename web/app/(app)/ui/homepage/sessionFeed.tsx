@@ -35,11 +35,7 @@ type FeedResponse = {
   nextPage: number | null;
 };
 
-export default function SessionFeed({
-  initialData,
-}: {
-  initialData: FeedResponse;
-}) {
+export default function SessionFeed() {
   const [expandedItem, setExpandedItem] = useState<FeedItem | null>(null);
   const { ref, inView } = useInView({
     threshold: 0,
@@ -62,8 +58,6 @@ export default function SessionFeed({
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
     revalidateFirstPage: false, // Prevent revalidating page 1 unnecessarily
-    fallbackData: initialData ? [initialData] : undefined,
-    persistSize: true,
   });
 
   const hasNextPage = useMemo(() => {

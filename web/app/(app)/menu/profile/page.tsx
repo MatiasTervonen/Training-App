@@ -7,7 +7,6 @@ import toast from "react-hot-toast";
 import ExerciseTypeSelect from "../../training/components/ExerciseTypeSelect";
 import TitleInput from "../../training/components/TitleInput";
 import FullScreenLoader from "../../components/FullScreenLoader";
-import { mutate } from "swr";
 import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
 import ProfilePicture from "../components/profile-picture";
 
@@ -61,7 +60,6 @@ export default function Settings() {
 
       const data = await res.json();
 
-      mutate("/api/settings/get-settings");
       return `${data.publicUrl}?v=${Date.now()}`;
     } catch (error) {
       console.error("Error uploading image:", error);

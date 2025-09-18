@@ -175,7 +175,6 @@ export default function Todo() {
                           setEdit(null);
                         }}
                         isOpen={true}
-                        noTopPadding
                       >
                         <div className="flex flex-col justify-center items-center max-w-lg mx-auto px-5">
                           {edit === index ? (

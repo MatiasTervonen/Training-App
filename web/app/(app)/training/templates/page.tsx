@@ -130,7 +130,6 @@ export default function TemplatesPage() {
 
           {expandedItem && (
             <Modal
-              noTopPadding
               isOpen={true}
               onClose={() => setExpandedItem(null)}
             >

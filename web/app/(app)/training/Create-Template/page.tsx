@@ -326,7 +326,6 @@ export default function CreateTemplatePage() {
             </div>
           ))}
           <Modal
-            noTopPadding
             isOpen={isExerciseModalOpen}
             onClose={() => {
               setIsExerciseModalOpen(false);
@@ -483,10 +482,10 @@ export default function CreateTemplatePage() {
                   })}
                 </>
               )}
-              <div className="flex gap-3 w-full px-2 my-5">
+              <div className="sticky bottom-5 flex gap-3 w-full px-2">
                 <div className="relative w-full">
                   <select
-                    className="appearance-none w-full px-10 bg-blue-800 py-2 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95"
+                    className="appearance-none w-full px-10 bg-blue-800 py-2 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700"
                     value={exerciseType}
                     onChange={(e) => {
                       const type = e.target.value;
@@ -512,7 +511,7 @@ export default function CreateTemplatePage() {
                     handleAddExercise();
                     setIsExerciseModalOpen(false);
                   }}
-                  className="w-full px-2 bg-blue-800 py-2 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95"
+                  className="w-full px-2 bg-blue-800 py-2 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700"
                 >
                   {exerciseType === "Super-Set"
                     ? "Add Super-Set"
@@ -527,7 +526,6 @@ export default function CreateTemplatePage() {
             onClose={() => setIsHistoryOpen(false)}
             isLoading={isHistoryLoading}
             history={lastHistory}
-            noTopPadding={true}
           />
 
           <div className="flex items-center gap-5 w-fit mx-auto mt-10">

@@ -5,6 +5,7 @@ import { useRef } from "react";
 import { gym_exercises } from "../../types/models";
 import useSWR from "swr";
 import { fetcher } from "../../lib/fetcher";
+import Spinner from "../../components/spinner";
 
 type Props = {
   onSelect: (exercise: gym_exercises) => void;
@@ -12,11 +13,7 @@ type Props = {
   noTopPadding?: boolean;
 };
 
-export default function ExerciseDropdown({
-  onSelect,
-  resetTrigger,
-  noTopPadding,
-}: Props) {
+export default function ExerciseDropdown({ onSelect, resetTrigger }: Props) {
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredExercises, setFilteredExercises] = useState<gym_exercises[]>(
     []
@@ -107,7 +104,7 @@ export default function ExerciseDropdown({
 
   return (
     <>
-      <div className="flex flex-col px-2 w-full h-full z-50">
+      <div className="flex flex-col px-2 w-full h-[calc(100dvh-74px)] z-50">
         <div className="flex flex-col mt-8 px-20">
           <input
             className="p-2 rounded-md border-2 border-gray-100 z-10 placeholder-gray-500 text-gray-100 bg-gray-900 hover:border-blue-500 focus:outline-none focus:border-green-300"
@@ -126,15 +123,18 @@ export default function ExerciseDropdown({
           <>
             <div
               ref={dropdownRef}
-              className={`w-full overflow-y-auto border rounded-md shadow-md 
-                    bg-slate-900 border-gray-100 touch-pan-y mt-10 ${
-                      noTopPadding ? "h-[calc(100dvh-276px)]" : "h-[calc(100dvh-316px)]"
-                    }`}
+              className="w-full overflow-y-auto border rounded-md shadow-md 
+                    bg-slate-900 border-gray-100 touch-pan-y mt-10"
             >
               {isLoading || isError ? (
-                <div className="absolute left-0 w-full h-full flex items-center justify-center z-50 text-center px-4">
+                <div className="h-[calc(100dvh-74px)] flex flex-col gap-6 items-center justify-center z-50 text-center">
                   {isLoading && (
-                    <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-gray-100"></div>
+                    <>
+                      <p className="text-gray-100 text-xl">
+                        Loading exercises...
+                      </p>
+                      <Spinner size="h-10 w-10" />
+                    </>
                   )}
                   {isError && (
                     <p className="text-red-500">

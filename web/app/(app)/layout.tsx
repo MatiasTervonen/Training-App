@@ -1,6 +1,5 @@
 import { Toaster } from "react-hot-toast";
 import "../globals.css";
-import ChatButton from "./components/ChatButton";
 import Navbar from "@/app/(app)/components/navbar/navbar";
 import { getUserRoleAndPreferences } from "./lib/data";
 import HydrateUser from "./components/HydrateUser";
@@ -22,7 +21,6 @@ export default async function appLayout({
       <Toaster position="top-center" reverseOrder={false} />
       <Navbar />
       {children}
-      <ChatButton />
       <HydrateUser preferences={preferences!} role={role} />
     </div>
   );

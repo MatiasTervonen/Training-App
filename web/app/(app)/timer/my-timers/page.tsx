@@ -131,7 +131,6 @@ export default function TimersPage() {
 
           {expandedItem && (
             <Modal
-              noTopPadding
               isOpen={true}
               onClose={() => setExpandedItem(null)}
             >

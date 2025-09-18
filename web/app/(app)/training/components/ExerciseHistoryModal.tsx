@@ -10,7 +10,6 @@ type ExerciseHistoryModalProps = {
   onClose: () => void;
   isLoading: boolean;
   history: HistoryResult[];
-  noTopPadding?: boolean;
 };
 
 export default function ExerciseHistoryModal({
@@ -18,10 +17,9 @@ export default function ExerciseHistoryModal({
   onClose,
   isLoading,
   history,
-  noTopPadding,
 }: ExerciseHistoryModalProps) {
   return (
-    <Modal noTopPadding={noTopPadding} isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={onClose}>
       {isLoading ? (
         <div
           className="text-lg text-gray-100 flex flex-col justify-center items-center mt-20 gap-5 mx-4"

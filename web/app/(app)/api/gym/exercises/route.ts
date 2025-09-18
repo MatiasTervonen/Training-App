@@ -17,6 +17,7 @@ export async function GET() {
     .select("id, user_id, name, equipment, muscle_group, main_group")
     .order("name", { ascending: true });
 
+
   if (error) {
     console.error("Error fetching exercises:", error);
     return new Response(JSON.stringify({ error: error.message }), {

@@ -10,6 +10,7 @@ export default function ActiveSessionPopup() {
   const activeSession = useTimerStore((state) => state.activeSession);
   const alarmFired = useTimerStore((state) => state.alarmFired);
   const setAlarmFired = useTimerStore((state) => state.setAlarmFired);
+  const totalDuration = useTimerStore((state) => state.totalDuration);
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -48,6 +49,7 @@ export default function ActiveSessionPopup() {
           <Timer />
           <p>{activeSession.type.toUpperCase()}</p>
           {alarmFired && <p className="text-gray-100">ALARM!</p>}
+          {totalDuration && <p>{Math.floor(totalDuration / 60)} min {totalDuration % 60} sec</p>}
         </div>
       </div>
       <div className="mr-5">

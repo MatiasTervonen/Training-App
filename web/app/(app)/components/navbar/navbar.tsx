@@ -7,13 +7,17 @@ import { MessageCircle } from "lucide-react";
 import Image from "next/image";
 import NotificationBell from "@/app/(app)/components/navbar/components/NotificationBell";
 import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
+import { useTimerStore } from "@/app/(app)/lib/stores/timerStore";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 export default function Navbar() {
   const pathname = usePathname();
+  const router = useRouter();
 
   const preferences = useUserStore((state) => state.preferences);
 
-  if (pathname === "/login" || pathname === "/") return null; // Don't render the navbar on the login page
+  const { activeSession } = useTimerStore();
 
   return (
     <div className="relative w-full md:max-w-3xl mx-auto">
@@ -68,8 +72,16 @@ export default function Navbar() {
           >
             Feed
           </Link>
-          <Link
-            href={"/sessions"}
+          <button
+            onClick={() => {
+              if (activeSession) {
+                toast.error(
+                  "You already have an active session. Finish it before starting a new one."
+                );
+                return;
+              }
+              router.push("/sessions");
+            }}
             className={
               pathname === "/sessions"
                 ? "bg-slate-500 p-2 w-1/3"
@@ -77,7 +89,7 @@ export default function Navbar() {
             }
           >
             Sessions
-          </Link>
+          </button>
         </div>
       )}
     </div>

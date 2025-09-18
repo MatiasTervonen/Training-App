@@ -607,10 +607,10 @@ export default function TrainingSessionPage() {
                       })}
                     </>
                   )}
-                  <div className="flex gap-3 w-full px-2 my-5">
+                  <div className="sticky bottom-5 flex gap-3 w-full px-2">
                     <div className="relative w-full">
                       <select
-                        className="appearance-none w-full px-10 bg-blue-800 py-2 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-105"
+                        className="appearance-none w-full px-10 bg-blue-800 py-2 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700"
                         value={exerciseType}
                         onChange={(e) => {
                           const type = e.target.value;
@@ -634,7 +634,7 @@ export default function TrainingSessionPage() {
                         startExercise();
                         setIsExerciseModalOpen(false);
                       }}
-                      className="w-full px-2 bg-blue-800 py-2 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-105"
+                      className="w-full px-2 bg-blue-800 py-2 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700"
                     >
                       {exerciseType === "Super-Set"
                         ? "Add Super-Set"

@@ -8,12 +8,10 @@ export default function Modal({
   isOpen,
   onClose,
   children,
-  noTopPadding = false,
 }: {
   isOpen: boolean;
   onClose: () => void;
   children: ReactNode;
-  noTopPadding?: boolean;
 }) {
   if (!isOpen) return null;
 
@@ -34,13 +32,7 @@ export default function Modal({
           }}
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
         >
-          <div
-            className={`bg-slate-800 relative flex h-[calc(100dvh-72px] flex-col md:max-w-3xl mx-auto ${
-              noTopPadding
-                ? "h-[calc(100dvh-72px)] mt-[72px]"
-                : "h-[calc(100dvh-112px)] mt-[112px]"
-            } `}
-          >
+          <div className="bg-slate-800 relative flex flex-col md:max-w-3xl mx-auto rounded-xl w-[98%] h-[calc(98dvh)] top-[1dvh]">
             <button
               className="absolute top-2 right-2 text-gray-100 hover:text-gray-200 z-[100]"
               onClick={onClose}

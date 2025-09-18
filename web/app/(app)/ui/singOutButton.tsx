@@ -34,10 +34,10 @@ export default function SignOutButton() {
       cache.clear();
     }
 
+    logOutUser();
+
     //  Clear localStorage
     clearLocalStorage();
-
-    logOutUser();
 
     router.replace("/");
   };

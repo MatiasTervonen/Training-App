@@ -77,6 +77,7 @@ export async function getFeed(
   page: number,
   limit: number
 ): Promise<FeedResponse> {
+
   const { feed, error } = await GetSession({ limit, page });
 
   if (error) {
@@ -89,3 +90,4 @@ export async function getFeed(
     nextPage: feed.length === limit ? page + 1 : null,
   };
 }
+

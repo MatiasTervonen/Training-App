@@ -23,7 +23,6 @@ import useSWRInfinite from "swr/infinite";
 import { getFeedKey } from "@/app/(app)/lib/feedKeys";
 import TodoSession from "@/app/(app)/components/expandSession/todo";
 import EditTodo from "@/app/(app)/ui/editSession/EditTodo";
-import { GetSWRCache } from "../../lib/getSWRCache";
 
 type FeedItem = {
   table: "notes" | "weight" | "gym_sessions" | "todo_lists";
@@ -59,7 +58,6 @@ export default function SessionFeed() {
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
     revalidateFirstPage: false, // Prevent revalidating page 1 unnecessarily
-    revalidateOnMount: false,
   });
 
   const hasNextPage = useMemo(() => {
@@ -177,7 +175,6 @@ export default function SessionFeed() {
       toast.success(
         `Item has been ${isPinned ? "unpinned" : "pinned"} successfully.`
       );
-      await mutateFeed();
     } catch (error) {
       console.error("Failed to toggle pin:", error);
       toast.error("Failed to toggle pin");
@@ -227,8 +224,8 @@ export default function SessionFeed() {
       if (!res.ok) {
         throw new Error("Failed to delete session");
       }
+
       toast.success("Item has been deleted successfully.");
-      await mutateFeed();
     } catch (error) {
       toast.error("Failed to delete session");
       console.error("Failed to delete session:", error);
@@ -287,7 +284,6 @@ export default function SessionFeed() {
 
   return (
     <>
-      <GetSWRCache />
       <div
         ref={containerRef}
         className="max-w-3xl mx-auto relative bg-gradient-to-b from-slate-950 via-slate-900 to-slate-800  px-5 pt-3 pb-20 text-gray-100 overflow-y-auto touch-pan-y"
@@ -309,7 +305,7 @@ export default function SessionFeed() {
         </div>
         {isLoading && !data ? (
           <>
-            <FeedSkeleton count={5} />
+            <FeedSkeleton count={6} />
           </>
         ) : error ? (
           <p className="text-center text-lg mt-10 ">

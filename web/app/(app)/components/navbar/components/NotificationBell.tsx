@@ -93,7 +93,8 @@ export default function NotificationBell() {
                       {formatDate(request.created_at)}
                     </p>
                     <p className="text-gray-200">
-                      Friend request from {request.sender.display_name}
+                      Friend request from{" "}
+                      {request.sender?.display_name ?? "Unknown user"}
                     </p>
                   </div>
                   <div className="flex gap-5 mt-4 text-sm text-gray-300">

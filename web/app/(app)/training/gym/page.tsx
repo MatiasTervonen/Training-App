@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import SaveButton from "@/app/(app)/ui/save-button";
 import Timer from "@/app/(app)/components/timer";
@@ -18,14 +18,13 @@ import {
   ExerciseEntry,
   emptyExerciseEntry,
   ExerciseInput,
-  FeedItem,
 } from "@/app/(app)/types/session";
 import { generateUUID } from "@/app/(app)/lib/generateUUID";
 import { toast } from "react-hot-toast";
-import { mutate } from "swr";
 import { useTimerStore } from "@/app/(app)/lib/stores/timerStore";
 import { groupTemplateExercises } from "../utils/groupTemplateExercises";
 import ExerciseCard from "../components/ExerciseCard";
+import { updateFeed } from "@/app/(app)/lib/revalidateFeed";
 
 export default function TrainingSessionPage() {
   const [sessionTitle, setSessionTitle] = useState("");
@@ -45,7 +44,6 @@ export default function TrainingSessionPage() {
   const [exerciseToChangeIndex, setExerciseToChangeIndex] = useState<
     number | null
   >(null);
-  const didNavigate = useRef(false);
   const [hasLoadedDraft, setHasLoadedDraft] = useState(false);
 
   useEffect(() => {
@@ -254,24 +252,6 @@ export default function TrainingSessionPage() {
 
     const duration = elapsedTime;
 
-    const optimisticGymSession: FeedItem = {
-      table: "gym_sessions",
-      pinned: false,
-      item: {
-        id: generateUUID(),
-        title: sessionTitle,
-        notes,
-        duration,
-        created_at: new Date().toISOString(),
-      },
-    };
-
-    mutate(
-      "/api/feed",
-      (prev: FeedItem[] = []) => [optimisticGymSession, ...prev],
-      false
-    );
-
     try {
       const res = await fetch("/api/gym/save-session", {
         method: "POST",
@@ -287,32 +267,18 @@ export default function TrainingSessionPage() {
       });
 
       if (!res.ok) {
+        setIsSaving(false);
         throw new Error("Failed to save session gym session");
       }
 
       await res.json();
-      didNavigate.current = true;
+      updateFeed();
       router.push("/training/training-finished"); // Redirect to the finished page
       resetSession(); // Clear the session data
-      mutate("/api/feed");
     } catch (error) {
       console.error("Error saving gym session:", error);
       toast.error("Failed to save gym session. Please try again.");
-      mutate(
-        "/api/feed",
-        (prev: FeedItem[] = []) => {
-          return prev.filter(
-            (item) => item.item.id !== optimisticGymSession.item.id
-          );
-        },
-        false
-      );
-
-      mutate("/api/feed");
-    } finally {
-      if (!didNavigate.current) {
-        setIsSaving(false); // Stop saving
-      }
+      setIsSaving(false);
     }
   };
 

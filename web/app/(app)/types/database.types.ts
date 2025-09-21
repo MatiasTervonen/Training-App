@@ -634,36 +634,24 @@ export type Database = {
       pinned_items: {
         Row: {
           created_at: string
-          duration: string | null
           id: string
           item_id: string
-          notes: string | null
-          title: string | null
           type: string
           user_id: string
-          weight: number | null
         }
         Insert: {
           created_at?: string
-          duration?: string | null
           id?: string
           item_id: string
-          notes?: string | null
-          title?: string | null
           type: string
           user_id: string
-          weight?: number | null
         }
         Update: {
           created_at?: string
-          duration?: string | null
           id?: string
           item_id?: string
-          notes?: string | null
-          title?: string | null
           type?: string
           user_id?: string
-          weight?: number | null
         }
         Relationships: []
       }
@@ -849,12 +837,53 @@ export type Database = {
         }
         Relationships: []
       }
+      feed_view_no_pinned: {
+        Row: {
+          created_at: string | null
+          duration: number | null
+          id: string | null
+          notes: string | null
+          title: string | null
+          type: string | null
+          user_id: string | null
+          weight: number | null
+        }
+        Relationships: []
+      }
       feed_view4: {
         Row: {
           created_at: string | null
           duration: number | null
           id: string | null
           notes: string | null
+          title: string | null
+          type: string | null
+          user_id: string | null
+          weight: number | null
+        }
+        Relationships: []
+      }
+      feed_with_pins: {
+        Row: {
+          created_at: string | null
+          duration: number | null
+          id: string | null
+          notes: string | null
+          pinned: boolean | null
+          title: string | null
+          type: string | null
+          user_id: string | null
+          weight: number | null
+        }
+        Relationships: []
+      }
+      pinned_feed_view: {
+        Row: {
+          created_at: string | null
+          duration: number | null
+          id: string | null
+          notes: string | null
+          pinned_id: string | null
           title: string | null
           type: string | null
           user_id: string | null

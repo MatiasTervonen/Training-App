@@ -23,6 +23,7 @@ import useSWRInfinite from "swr/infinite";
 import { getFeedKey } from "@/app/(app)/lib/feedKeys";
 import TodoSession from "@/app/(app)/components/expandSession/todo";
 import EditTodo from "@/app/(app)/ui/editSession/EditTodo";
+import { GetSWRCache } from "../../lib/getSWRCache";
 
 type FeedItem = {
   table: "notes" | "weight" | "gym_sessions" | "todo_lists";
@@ -58,6 +59,7 @@ export default function SessionFeed() {
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
     revalidateFirstPage: false, // Prevent revalidating page 1 unnecessarily
+    revalidateOnMount: false,
   });
 
   const hasNextPage = useMemo(() => {
@@ -109,25 +111,24 @@ export default function SessionFeed() {
   }, [data]);
 
   // Pinned items first, then by created_at desc for stable ordering in UI
-  const sortedFeed = useMemo(() => {
-    const arr = [...feed];
-    return arr.sort((a, b) => {
-      if (a.pinned && !b.pinned) return -1;
-      if (!a.pinned && b.pinned) return 1;
-      const ad = a.item.created_at ? new Date(a.item.created_at).getTime() : 0;
-      const bd = b.item.created_at ? new Date(b.item.created_at).getTime() : 0;
-      return bd - ad;
-    });
-  }, [feed]);
+
+  const pinnedFeed = useMemo(() => feed.filter((i) => i.pinned), [feed]);
+  const unpinnedFeed = useMemo(
+    () =>
+      feed
+        .filter((i) => !i.pinned)
+        .sort(
+          (a, b) =>
+            new Date(b.item.created_at).getTime() -
+            new Date(a.item.created_at).getTime()
+        ),
+    [feed]
+  );
 
   const togglePin = async (
     item_id: string,
     table: string,
-    isPinned: boolean,
-    notes?: string,
-    title?: string,
-    weight?: number,
-    duration?: number
+    isPinned: boolean
   ) => {
     const endpoint = isPinned
       ? "/api/pinned/unpin-items"
@@ -141,11 +142,15 @@ export default function SessionFeed() {
       : undefined;
 
     await mutateFeed(
-      (currentPages = []) => {
+      (currentPages) => {
+        if (!currentPages) return currentPages;
+
         return currentPages.map((page) => ({
           ...page,
           feed: page.feed.map((item) => {
             const matches = item.id === item_id || item.item_id === item_id;
+            if (!matches) return item;
+
             return matches ? { ...item, pinned: !isPinned } : item;
           }),
         }));
@@ -162,10 +167,6 @@ export default function SessionFeed() {
         body: JSON.stringify({
           item_id: item_id,
           table,
-          notes,
-          title,
-          weight,
-          duration,
         }),
       });
 
@@ -176,6 +177,7 @@ export default function SessionFeed() {
       toast.success(
         `Item has been ${isPinned ? "unpinned" : "pinned"} successfully.`
       );
+      await mutateFeed();
     } catch (error) {
       console.error("Failed to toggle pin:", error);
       toast.error("Failed to toggle pin");
@@ -197,12 +199,17 @@ export default function SessionFeed() {
       : undefined;
 
     await mutateFeed(
-      (currentPages = []) => {
+      (currentPages) => {
+        if (!currentPages) return currentPages;
+
         return currentPages.map((page) => ({
           ...page,
-          feed: page.feed.filter(
-            (item) => !(item.id === item_id && item.type === table)
-          ),
+          feed: page.feed.filter((item) => {
+            const matches =
+              (item.id === item_id || item.item_id === item_id) &&
+              item.type === table;
+            return !matches;
+          }),
         }));
       },
       { revalidate: false }
@@ -220,8 +227,8 @@ export default function SessionFeed() {
       if (!res.ok) {
         throw new Error("Failed to delete session");
       }
-
       toast.success("Item has been deleted successfully.");
+      await mutateFeed();
     } catch (error) {
       toast.error("Failed to delete session");
       console.error("Failed to delete session:", error);
@@ -280,6 +287,7 @@ export default function SessionFeed() {
 
   return (
     <>
+      <GetSWRCache />
       <div
         ref={containerRef}
         className="max-w-3xl mx-auto relative bg-gradient-to-b from-slate-950 via-slate-900 to-slate-800  px-5 pt-3 pb-20 text-gray-100 overflow-y-auto touch-pan-y"
@@ -313,21 +321,44 @@ export default function SessionFeed() {
           </p>
         ) : (
           <>
-            {sortedFeed.map((feedItem) => {
-              const isPinned = feedItem.pinned;
+            {pinnedFeed.length > 0 && (
+              <div>
+                <div className="flex items-center gap-2 mb-2">
+                  <Pin size={20} />
+                  <p className="text-gray-400">Pinned</p>
+                </div>
+                {pinnedFeed.map((feedItem) => (
+                  <div className="mb-3" key={feedItem.item.id}>
+                    <FeedCard
+                      {...feedItem}
+                      pinned={true}
+                      onExpand={() => {
+                        setExpandedItem(feedItem);
+                      }}
+                      onTogglePin={() =>
+                        togglePin(
+                          getCanonicalId(feedItem.item),
+                          feedItem.table,
+                          true
+                        )
+                      }
+                      onDelete={() =>
+                        handleDelete(feedItem.item.id!, feedItem.table)
+                      }
+                      onEdit={() => {
+                        setEditingItem(feedItem);
+                      }}
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
 
+            {unpinnedFeed.map((feedItem) => {
               return (
-                <div key={feedItem.item.id}>
-                  {isPinned && (
-                    <div className="flex items-center gap-2 mb-2">
-                      <Pin size={20} />
-                      <p className="text-gray-400">Pinned</p>
-                    </div>
-                  )}
-                  {!isPinned && <div className="mt-[32px]"></div>}
+                <div className="mt-[32px]" key={feedItem.item.id}>
                   <FeedCard
                     {...feedItem}
-                    pinned={isPinned}
                     onExpand={() => {
                       setExpandedItem(feedItem);
                     }}
@@ -335,11 +366,7 @@ export default function SessionFeed() {
                       togglePin(
                         getCanonicalId(feedItem.item),
                         feedItem.table,
-                        isPinned,
-                        feedItem.item.notes ?? "",
-                        feedItem.item.title ?? "",
-                        feedItem.item.weight ?? undefined,
-                        feedItem.item.duration ?? undefined
+                        false
                       )
                     }
                     onDelete={() =>

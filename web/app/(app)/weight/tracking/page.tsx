@@ -6,20 +6,12 @@ import NotesInput from "@/app/(app)/training/components/NotesInput";
 import TitleInput from "@/app/(app)/training/components/TitleInput";
 import SaveButton from "@/app/(app)/ui/save-button";
 import DeleteSessionBtn from "@/app/(app)/ui/deleteSessionBtn";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import { useRouter } from "next/navigation";
 import { formatDate } from "@/app/(app)/lib/formatDate";
 import toast from "react-hot-toast";
-import { mutate } from "swr";
-import { OptimisticWeight } from "@/app/(app)/types/session";
-import { generateUUID } from "@/app/(app)/lib/generateUUID";
-
-type FeedItem = {
-  table: "weight";
-  item: OptimisticWeight;
-  pinned: boolean;
-};
+import { updateFeed } from "@/app/(app)/lib/revalidateFeed";
 
 export default function WorkoutAnalyticsPage() {
   const now = formatDate(new Date());
@@ -28,8 +20,6 @@ export default function WorkoutAnalyticsPage() {
   const [weightNotes, setWeightNotes] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [weight, setWeight] = useState("");
-  const didNavigate = useRef(false);
-
   const router = useRouter();
 
   useEffect(() => {
@@ -74,24 +64,6 @@ export default function WorkoutAnalyticsPage() {
     }
     setIsSaving(true); // Start saving
 
-    const optimisticWeight: FeedItem = {
-      table: "weight",
-      pinned: false,
-      item: {
-        id: generateUUID(),
-        title: weightTitle,
-        notes: weightNotes,
-        weight: parsedWeight,
-        created_at: new Date().toISOString(),
-      },
-    };
-
-    mutate(
-      "/api/feed",
-      (prev: FeedItem[] = []) => [optimisticWeight, ...prev],
-      false
-    );
-
     try {
       const res = await fetch("/api/weight/save-weight", {
         method: "POST",
@@ -106,32 +78,19 @@ export default function WorkoutAnalyticsPage() {
       });
 
       if (!res.ok) {
+        setIsSaving(false);
         throw new Error("Failed to save weight session");
       }
 
       await res.json();
-      didNavigate.current = true;
+
+      updateFeed();
       router.push("/dashboard");
       resetWeight();
-      mutate("/api/feed");
     } catch (error) {
       console.error("Error saving weight:", error);
       toast.error("Failed to save weight session. Please try again.");
-      mutate(
-        "/api/feed",
-        (prev: FeedItem[] = []) => {
-          return prev.filter(
-            (item) => item.item.id !== optimisticWeight.item.id
-          );
-        },
-        false
-      );
-
-      mutate("/api/feed");
-    } finally {
-      if (!didNavigate.current) {
-        setIsSaving(false);
-      }
+      setIsSaving(false);
     }
   };
 
@@ -162,11 +121,12 @@ export default function WorkoutAnalyticsPage() {
             >
               Weight...
               <input
+                autoComplete="off"
                 id="weight"
                 type="text"
                 inputMode="numeric"
                 placeholder="Enter your weight here..."
-                className="text-lg p-2 rounded-md border-2 border-gray-100 z-10  placeholder-gray-500  text-gray-100 bg-[linear-gradient(50deg,_#0f172a,_#1e293b,_#333333)] hover:border-blue-500 focus:outline-none focus:border-green-300"
+                className="custom-input text-lg p-2 rounded-md border-2 border-gray-100 z-10  placeholder-gray-500  text-gray-100 bg-[linear-gradient(50deg,_#0f172a,_#1e293b,_#333333)] hover:border-blue-500 focus:outline-none focus:border-green-300"
                 value={weight}
                 onChange={(e) => setWeight(e.target.value)}
               />

@@ -26,7 +26,7 @@ export default function WeightCard({
 
   return (
     <div
-      className={`border rounded-md flex flex-col justify-center mb-2 transition-colors ${
+      className={`border rounded-md flex flex-col justify-center transition-colors ${
         pinned
           ? ` border-yellow-200 bg-yellow-200 text-slate-900`
           : "bg-slate-700"

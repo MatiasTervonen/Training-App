@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { getFeed } from "../../lib/data";
 
-
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);

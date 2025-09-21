@@ -15,12 +15,13 @@ import Modal from "../components/modal";
 import SaveButton from "../ui/save-button";
 import FullScreenLoader from "../components/FullScreenLoader";
 import toast from "react-hot-toast";
+import { updateFeed } from "@/app/(app)/lib/revalidateFeed";
+import { useRouter } from "next/navigation";
 
 type TodoItem = {
   task: string;
   notes?: string;
 };
-
 
 export default function Todo() {
   const draft =
@@ -41,6 +42,7 @@ export default function Todo() {
       notes: "",
     }
   );
+  const router = useRouter();
 
   useEffect(() => {
     if (title.trim() === "" && todoList.length === 0) {
@@ -88,17 +90,21 @@ export default function Todo() {
       });
 
       if (!response.ok) {
+        setLoading(false);
         throw new Error("Failed to save todo");
       }
 
       await response.json();
+
+      updateFeed();
+
       toast.success("Todo saved successfully");
+      router.push("/dashboard");
+      handleDeleteAll();
     } catch (error) {
       console.error("Error saving todo:", error);
       toast.error("Failed to save todo");
-    } finally {
       setLoading(false);
-      handleDeleteAll();
     }
   };
 

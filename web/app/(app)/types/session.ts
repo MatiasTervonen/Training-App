@@ -99,8 +99,8 @@ export type FeedItem = {
 };
 
 export type Feed_item = {
-  id: string; 
-  item_id: string; 
+  id: string;
+  item_id?: string;
   type: "notes" | "weight" | "gym_sessions" | "todo_lists";
   created_at: string;
   notes?: string | null;
@@ -108,7 +108,8 @@ export type Feed_item = {
   weight?: number | null;
   duration?: number | null;
   user_id: string;
-  pinned: boolean; 
+  pinned: boolean;
+  pinned_at?: string | null;
 };
 
 export type FeedResponse = {

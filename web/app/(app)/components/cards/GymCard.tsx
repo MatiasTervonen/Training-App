@@ -34,7 +34,7 @@ export default function GymCard({
   return (
     <div
       className={`
-       border rounded-md flex flex-col mb-2 justify-center transition-colors ${
+       border rounded-md flex flex-col justify-center transition-colors ${
          pinned
            ? " border-yellow-200 bg-yellow-200 text-slate-900"
            : "bg-slate-700"

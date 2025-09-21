@@ -16,15 +16,27 @@ export async function POST(req: NextRequest) {
   const body = await req.json();
   const { item_id, table } = body;
 
-  const { error } = await supabase
+  const { error: tableError } = await supabase
     .from(table)
     .delete()
     .eq("id", item_id)
     .eq("user_id", user.id);
 
-  if (error) {
-    console.error("Error deleting session:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  if (tableError) {
+    console.error("Error deleting session:", tableError);
+    return NextResponse.json({ error: tableError.message }, { status: 500 });
+  }
+
+  const { error: pinnedError } = await supabase
+    .from("pinned_items")
+    .delete()
+    .eq("item_id", item_id)
+    .eq("type", table)
+    .eq("user_id", user.id);
+
+  if (pinnedError) {
+    console.error("Error deleting pinned item:", pinnedError);
+    return NextResponse.json({ error: pinnedError.message }, { status: 500 });
   }
 
   return new Response(JSON.stringify({ success: true }), {

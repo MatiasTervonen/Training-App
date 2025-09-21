@@ -68,7 +68,7 @@ export default function EditNotes({ note, onClose, onSave }: Props) {
 
       await res.json();
 
-      onSave?.();
+      await onSave?.();
       onClose();
 
       mutate("/api/feed");

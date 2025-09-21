@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import SaveButton from "@/app/(app)/ui/save-button";
 import DeleteSessionBtn from "../ui/deleteSessionBtn";
@@ -8,17 +8,9 @@ import ModalPageWrapper from "../components/modalPageWrapper";
 import NotesInput from "../training/components/NotesInput";
 import TitleInput from "../training/components/TitleInput";
 import FullScreenLoader from "../components/FullScreenLoader";
-import { mutate } from "swr";
 import toast from "react-hot-toast";
-import { generateUUID } from "@/app/(app)/lib/generateUUID";
-import { OptimisticNotes } from "@/app/(app)/types/session";
 import { useDebouncedCallback } from "use-debounce";
-
-type FeedItem = {
-  table: "notes";
-  item: OptimisticNotes;
-  pinned: boolean;
-};
+import { updateFeed } from "../lib/revalidateFeed";
 
 export default function Notes() {
   const draft =
@@ -30,28 +22,10 @@ export default function Notes() {
   const [notesTitle, setNotesTitle] = useState(draft?.title || "");
   const [isSaving, setIsSaving] = useState(false);
   const router = useRouter();
-  const didNavigate = useRef(false);
 
   const saveNotes = async () => {
     if (notes.length === 0) return;
-    setIsSaving(true); // Start saving
-
-    const optimisticNotes: FeedItem = {
-      table: "notes",
-      pinned: false,
-      item: {
-        id: generateUUID(),
-        title: notesTitle,
-        notes,
-        created_at: new Date().toISOString(),
-      },
-    };
-
-    mutate(
-      "/api/feed",
-      (prev: FeedItem[] = []) => [optimisticNotes, ...prev],
-      false
-    );
+    setIsSaving(true);
 
     try {
       const res = await fetch("/api/notes/save-notes", {
@@ -66,30 +40,19 @@ export default function Notes() {
       });
 
       if (!res.ok) {
+        setIsSaving(false);
         throw new Error("Failed to save notes");
       }
 
       await res.json();
-      didNavigate.current = true;
+
+      updateFeed();
       router.push("/dashboard");
       resetNotes();
-      mutate("/api/feed");
     } catch (error) {
       console.error("Error saving notes:", error);
       toast.error("Failed to save notes. Please try again.");
-      mutate(
-        "/api/feed",
-        (prev: FeedItem[] = []) => {
-          return prev.filter(
-            (item) => item.item.id !== optimisticNotes.item.id
-          );
-        },
-        false
-      );
-    } finally {
-      if (!didNavigate.current) {
-        setIsSaving(false);
-      }
+      setIsSaving(false);
     }
   };
 

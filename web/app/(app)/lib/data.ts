@@ -1,8 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 import GetSession from "./getSession";
-import GetPinned from "./getPinned";
-import { pinned_item } from "../types/models";
 import { Feed_item, FeedResponse } from "../types/session";
 
 type Role = "user" | "admin" | "super_admin" | "guest" | null;
@@ -79,30 +77,15 @@ export async function getFeed(
   page: number,
   limit: number
 ): Promise<FeedResponse> {
-  const { feed } = await GetSession({ limit, page });
-  const { pinned } = await GetPinned();
+  const { feed, error } = await GetSession({ limit, page });
 
-  // Filter out feed items that are pinned to avoid duplicates
-  const pinnedItemIds = new Set(pinned.map((p: pinned_item) => p.item_id));
-  const filteredFeed = feed.filter((item) => !pinnedItemIds.has(item.id!));
-
-  // Ensure pinned items use pinned: true and convert duration to number
-  const pinnedItems = pinned.map((item: pinned_item) => ({
-    ...item,
-    duration: item.duration !== null ? Number(item.duration) : null,
-    pinned: true, // Use pinned
-  }));
-
-  const feedItems = filteredFeed.map((item) => ({
-    ...item,
-    pinned: false,
-  }));
-
-  const feedWithPinned =
-    page === 1 ? [...pinnedItems, ...feedItems] : feedItems;
+  if (error) {
+    console.error("Error fetching feed:", error);
+    return { feed: [], nextPage: null };
+  }
 
   return {
-    feed: feedWithPinned as Feed_item[],
+    feed: feed as Feed_item[],
     nextPage: feed.length === limit ? page + 1 : null,
   };
 }

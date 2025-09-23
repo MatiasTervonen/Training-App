@@ -1,7 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
 
 export async function GET(req: Request) {
-  console.log("Received GET request for full template");
   const supabase = await createClient();
 
   const {

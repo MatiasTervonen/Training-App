@@ -1,5 +1,5 @@
-import CreateTemplatePage from "@/app/(app)/training/create-template/page";
+import TemplateForm from "@/app/(app)/training/components/TemplateForm";
 
 export default function EditTemplatePage() {
-  return <CreateTemplatePage />;
+  return <TemplateForm />;
 }

@@ -1,6 +1,7 @@
 import { createClient } from "@/utils/supabase/server";
 
-export async function GET() {
+export async function GET(req: Request) {
+  console.log("Received GET request for full template");
   const supabase = await createClient();
 
   const {
@@ -12,11 +13,21 @@ export async function GET() {
     return new Response("Unauthorized", { status: 401 });
   }
 
+  const { searchParams } = new URL(req.url);
+  const sessionId = searchParams.get("id");
+
+  if (!sessionId) {
+    return new Response("Missing session ID", { status: 400 });
+  }
+
   const { data: template, error: templateError } = await supabase
     .from("gym_templates")
-    .select("id, name, created_at")
+    .select(
+      "id, name, created_at, gym_template_exercises(id, exercise_id, sets, reps, superset_id, gym_exercises:exercise_id(name, equipment, muscle_group, main_group))"
+    )
     .eq("user_id", user.id)
-    .order("created_at", { ascending: false });
+    .eq("id", sessionId)
+    .single();
 
   if (templateError || !template) {
     console.error("Supabase Insert Error:", templateError);

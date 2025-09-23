@@ -51,7 +51,7 @@ export default function WeightCard({
             onClick={() => {
               onEdit();
             }}
-            className="border-b py-2 px-4"
+            className="border-b py-2 px-4 hover:bg-gray-600"
           >
             Edit
           </button>
@@ -60,7 +60,7 @@ export default function WeightCard({
             onClick={() => {
               onTogglePin();
             }}
-            className="border-b py-2 px-4"
+            className="border-b py-2 px-4 hover:bg-gray-600"
           >
             {pinned ? "Unpin" : "Pin"}
           </button>
@@ -69,7 +69,7 @@ export default function WeightCard({
             onClick={() => {
               onDelete();
             }}
-            className="py-2 px-4"
+            className="py-2 px-4 hover:bg-gray-600"
           >
             Delete
           </button>

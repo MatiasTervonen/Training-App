@@ -11,19 +11,11 @@ import {
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
-
-type WeightEntry = {
-  id: string;
-  title: string;
-  user_id: string;
-  weight: number;
-  created_at: string;
-  notes: string;
-};
+import { weight } from "@/app/(app)/types/models";
 
 type WeightChartProps = {
   range: "week" | "month" | "year" | "all";
-  data: WeightEntry[];
+  data: weight[];
 };
 
 function addOffsetToDate(
@@ -60,7 +52,7 @@ function addOffsetToDate(
 
 // This function retrieves the latest date from the weight data entries.
 
-function getLatestDate(data: WeightEntry[]) {
+function getLatestDate(data: weight[]) {
   return new Date(
     Math.max(...data.map((entry) => new Date(entry.created_at).getTime()))
   );
@@ -106,7 +98,7 @@ function generateDateRange(start: Date, end: Date): string[] {
 
 function fillMissingDates(
   fullDates: string[],
-  entries: WeightEntry[]
+  entries: weight[]
 ): { date: string; weight: number | null }[] {
   const weightMap = new Map(
     entries.map((entry) => [entry.created_at.split("T")[0], entry.weight])
@@ -118,7 +110,7 @@ function fillMissingDates(
   }));
 }
 
-function getEarliestDate(data: WeightEntry[]) {
+function getEarliestDate(data: weight[]) {
   return new Date(
     Math.min(...data.map((entry) => new Date(entry.created_at).getTime()))
   );

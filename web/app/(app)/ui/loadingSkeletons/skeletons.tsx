@@ -5,8 +5,10 @@ export const TemplateSkeleton = ({ count = 3 }: { count?: number }) => (
     {[...Array(count)].map((_, i) => (
       <div
         key={i}
-        className="animate-pulse bg-blue-700 py-2 my-3 rounded-md shadow-xl border-2 border-blue-500 text-lg h-[48px]"
-      ></div>
+        className="flex items-center justify-center animate-pulse bg-gray-700 py-2 mb-10 rounded-md shadow border border-gray-800 h-[130px]"
+      >
+        <Spinner className="border-gray-500" />
+      </div>
     ))}
   </>
 );
@@ -16,7 +18,7 @@ export const FeedSkeleton = ({ count = 3 }: { count?: number }) => (
     {[...Array(count)].map((_, i) => (
       <div
         key={i}
-        className="flex items-center justify-center animate-pulse bg-gray-700 py-2 mt-[32px] rounded-md shadow border border-gray-700 h-[150px]"
+        className="flex items-center justify-center animate-pulse bg-gray-700 py-2 mt-[32px] rounded-md shadow border border-gray-800 h-[150px]"
       >
         <Spinner className="border-gray-500" />
       </div>

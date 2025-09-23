@@ -389,17 +389,6 @@ export default function SessionFeed() {
 
         {expandedItem && (
           <Modal onClose={() => setExpandedItem(null)} isOpen={true}>
-            {/* <div className="flex justify-end pr-15 pt-2">
-              <button
-                onClick={() => {
-                  setEditingItem(expandedItem);
-                  setExpandedItem(null);
-                }}
-                className="gap-2 px-4 bg-blue-800 py-1 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-105"
-              >
-                Edit
-              </button>
-            </div> */}
             {expandedItem.table === "notes" && (
               <NotesSession {...expandedItem.item} />
             )}

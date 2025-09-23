@@ -49,7 +49,11 @@ export default function ActiveSessionPopup() {
           <Timer />
           <p>{activeSession.type.toUpperCase()}</p>
           {alarmFired && <p className="text-gray-100">ALARM!</p>}
-          {totalDuration && <p>{Math.floor(totalDuration / 60)} min {totalDuration % 60} sec</p>}
+          {activeSession.type === "timer" && totalDuration && (
+            <p>
+              {Math.floor(totalDuration / 60)} min {totalDuration % 60} sec
+            </p>
+          )}
         </div>
       </div>
       <div className="mr-5">

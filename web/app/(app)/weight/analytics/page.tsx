@@ -8,15 +8,7 @@ import AllDataTable from "../components/AllDataTable";
 import useSWR from "swr";
 import Spinner from "@/app/(app)/components/spinner";
 import { fetcher } from "@/app/(app)/lib/fetcher";
-
-type WeightEntry = {
-  id: string;
-  title: string;
-  user_id: string;
-  weight: number;
-  created_at: string;
-  notes: string;
-};
+import { weight } from "@/app/(app)/types/models";
 
 export default function TrainingPage() {
   const [range, setRange] = useState<"week" | "month" | "year" | "all">(
@@ -27,13 +19,10 @@ export default function TrainingPage() {
     data: weight = [],
     error,
     isLoading,
-  } = useSWR<WeightEntry[]>("/api/weight/get-weight", fetcher, {
+  } = useSWR<weight[]>("/api/weight/get-weight", fetcher, {
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
-    revalidateIfStale: false,
   });
-
-
 
   return (
     <ModalPageWrapper>
@@ -76,7 +65,7 @@ export default function TrainingPage() {
               <WeightChart range={range} data={weight} />
             )}
           </div>
-          <div className="mt-10">
+          <div>
             <AllDataTable data={weight} />
           </div>
         </div>

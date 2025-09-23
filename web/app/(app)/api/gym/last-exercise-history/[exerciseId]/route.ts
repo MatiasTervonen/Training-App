@@ -15,7 +15,6 @@ export async function GET(
 
   const { exerciseId } = await params;
 
-
   const {
     data: { user },
     error: authError,
@@ -46,13 +45,11 @@ export async function GET(
     );
   }
 
-  const sorted = sessions
-    .sort(
-      (a, b) =>
-        new Date(b.gym_sessions?.created_at).getTime() -
-        new Date(a.gym_sessions?.created_at).getTime()
-    )
-    .slice(0, 5);
+  const sorted = sessions.sort(
+    (a, b) =>
+      new Date(b.gym_sessions?.created_at).getTime() -
+      new Date(a.gym_sessions?.created_at).getTime()
+  );
 
   const allSorted = await Promise.all(
     sorted.map(async (session) => {

@@ -8,9 +8,8 @@ import DeleteSessionBtn from "@/app/(app)/ui/deleteSessionBtn";
 import ModalPageWrapper from "@/app/(app)/components/modalPageWrapper";
 import TitleInput from "../components/TitleInput";
 import NotesInput from "../components/NotesInput";
-import { ChevronDown, Plus, CircleX } from "lucide-react";
+import { ChevronDown, Plus } from "lucide-react";
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
-import ExerciseDropdown from "../components/ExerciseDropdown";
 import Modal from "@/app/(app)/components/modal";
 import ExerciseHistoryModal from "../components/ExerciseHistoryModal";
 import {
@@ -25,6 +24,7 @@ import { useTimerStore } from "@/app/(app)/lib/stores/timerStore";
 import { groupTemplateExercises } from "../utils/groupTemplateExercises";
 import ExerciseCard from "../components/ExerciseCard";
 import { updateFeed } from "@/app/(app)/lib/revalidateFeed";
+import ExerciseSelectorList from "../components/ExerciseSelectorList";
 
 export default function TrainingSessionPage() {
   const [sessionTitle, setSessionTitle] = useState("");
@@ -357,6 +357,7 @@ export default function TrainingSessionPage() {
                     return (
                       <div key={index}>
                         <ExerciseCard
+                          mode="session"
                           exercise={exercise}
                           lastExerciseHistory={lastExerciseHistory}
                           onChangeExercise={(index) => {
@@ -421,192 +422,58 @@ export default function TrainingSessionPage() {
                   setExerciseType("Normal");
                 }}
               >
-                <div>
-                  {exerciseType === "Super-Set" ? (
-                    <>
-                      {supersetExercise.map((exercise, index) => {
-                        const isLast = index === supersetExercise.length - 1;
-                        const isEmpty = !exercise.name?.trim();
+                <ExerciseSelectorList
+                  draftExercises={
+                    exerciseType === "Super-Set"
+                      ? supersetExercise
+                      : normalExercises
+                  }
+                  setDraftExercises={
+                    exerciseType === "Super-Set"
+                      ? setSupersetExercise
+                      : setNormalExercises
+                  }
+                  exerciseToChangeIndex={exerciseToChangeIndex}
+                  setExerciseToChangeIndex={setExerciseToChangeIndex}
+                  exercises={exercises}
+                  setExercises={setExercises}
+                  resetTrigger={dropdownResetKey}
+                  setIsExerciseModalOpen={setIsExerciseModalOpen}
+                />
 
-                        if (isLast && isEmpty) {
-                          // Show dropdown only for the last, empty item
-                          return (
-                            <div key={index} className="h-full">
-                              <ExerciseDropdown
-                                onSelect={(selected) => {
-                                  const newExercise: ExerciseEntry = {
-                                    exercise_id: String(selected.id),
-                                    name: selected.name,
-                                    equipment: selected.equipment,
-                                    main_group: selected.main_group || "",
-                                    sets: [],
-                                    notes: "",
-                                    superset_id:
-                                      exerciseToChangeIndex !== null
-                                        ? exercises[exerciseToChangeIndex]
-                                            ?.superset_id || generateUUID()
-                                        : "",
-                                    muscle_group: selected.muscle_group || "",
-                                  };
-
-                                  if (exerciseToChangeIndex !== null) {
-                                    // Update single exercise in session
-                                    const updated = [...exercises];
-                                    updated[exerciseToChangeIndex] =
-                                      newExercise;
-                                    setExercises(updated);
-                                    setIsExerciseModalOpen(false);
-                                    setExerciseToChangeIndex(null);
-                                  } else {
-                                    // Add new exercise to superset draft
-                                    setSupersetExercise((prev) => {
-                                      const updated = [...prev];
-                                      updated[updated.length - 1] = newExercise;
-                                      return [...updated, emptyExerciseEntry]; // allow adding another
-                                    });
-                                  }
-                                }}
-                                resetTrigger={dropdownResetKey}
-                              />
-                            </div>
-                          );
+                <div className="sticky bottom-5 flex gap-3 w-full px-2">
+                  <div className="relative w-full">
+                    <select
+                      className="appearance-none w-full px-10 bg-blue-800 py-2 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700"
+                      value={exerciseType}
+                      onChange={(e) => {
+                        const type = e.target.value;
+                        setExerciseType(type);
+                        if (type === "Normal") {
+                          setSupersetExercise([]);
+                        } else if (type === "Super-Set") {
+                          setSupersetExercise([emptyExerciseEntry]);
                         }
-
-                        // All others: just show a summary
-                        return (
-                          <div
-                            key={index}
-                            className="bg-slate-700 text-gray-100 p-2 my-2 px-4 shadow flex justify-between mr-20 ml-0"
-                          >
-                            <div className="flex flex-col ">
-                              <p className="">{exercise.name}</p>
-                              <p className="text-sm text-gray-400">
-                                {exercise.equipment} / {exercise.muscle_group}
-                              </p>
-                            </div>
-                            <button
-                              onClick={() => {
-                                const updated = supersetExercise.filter(
-                                  (_, i) => i !== index
-                                );
-                                setSupersetExercise(updated);
-                              }}
-                            >
-                              <CircleX />
-                            </button>
-                          </div>
-                        );
-                      })}
-                    </>
-                  ) : (
-                    <>
-                      {normalExercises.map((exercise, index) => {
-                        const isLast = index === normalExercises.length - 1;
-                        const isEmpty = !exercise.name?.trim();
-
-                        if (isLast && isEmpty) {
-                          return (
-                            <div key={index} className="h-full">
-                              <ExerciseDropdown
-                                onSelect={(selected) => {
-                                  const newExercise: ExerciseEntry = {
-                                    exercise_id: String(selected.id),
-                                    name: selected.name,
-                                    equipment: selected.equipment,
-                                    main_group: selected.main_group,
-                                    sets: [],
-                                    notes: "",
-                                    superset_id:
-                                      exerciseToChangeIndex !== null
-                                        ? exercises[exerciseToChangeIndex]
-                                            ?.superset_id || generateUUID()
-                                        : "",
-                                    muscle_group: selected.muscle_group,
-                                  };
-
-                                  if (exerciseToChangeIndex !== null) {
-                                    // Update exercise in exercises array
-                                    const updated = [...exercises];
-                                    updated[exerciseToChangeIndex] =
-                                      newExercise;
-                                    setExercises(updated);
-                                    setIsExerciseModalOpen(false);
-                                    setExerciseToChangeIndex(null);
-                                  } else {
-                                    // Add to draft normal exercises
-                                    setNormalExercises((prev) => {
-                                      const updated = [...prev];
-                                      updated[updated.length - 1] = newExercise;
-                                      return [...updated, emptyExerciseEntry]; // allow adding another
-                                    });
-                                  }
-                                }}
-                                resetTrigger={dropdownResetKey}
-                              />
-                            </div>
-                          );
-                        }
-
-                        return (
-                          <div
-                            key={index}
-                            className="bg-slate-700 text-gray-100 p-2 my-2 px-4 shadow flex justify-between mr-20 ml-0"
-                          >
-                            <div className="flex flex-col ">
-                              <p className="">{exercise.name}</p>
-                              <p className="text-sm text-gray-400">
-                                {exercise.equipment} / {exercise.muscle_group}
-                              </p>
-                            </div>
-                            <button
-                              onClick={() => {
-                                const updated = normalExercises.filter(
-                                  (_, i) => i !== index
-                                );
-                                setNormalExercises(updated);
-                              }}
-                            >
-                              <CircleX />
-                            </button>
-                          </div>
-                        );
-                      })}
-                    </>
-                  )}
-                  <div className="sticky bottom-5 flex gap-3 w-full px-2">
-                    <div className="relative w-full">
-                      <select
-                        className="appearance-none w-full px-10 bg-blue-800 py-2 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700"
-                        value={exerciseType}
-                        onChange={(e) => {
-                          const type = e.target.value;
-                          setExerciseType(type);
-                          if (type === "Normal") {
-                            setSupersetExercise([]);
-                          } else if (type === "Super-Set") {
-                            setSupersetExercise([emptyExerciseEntry]);
-                          }
-                        }}
-                      >
-                        <option value="Normal">Normal</option>
-                        <option value="Super-Set">Super-Set</option>
-                      </select>
-                      <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none">
-                        <ChevronDown className="text-gray-100" />
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => {
-                        startExercise();
-                        setIsExerciseModalOpen(false);
                       }}
-                      className="w-full px-2 bg-blue-800 py-2 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700"
                     >
-                      {exerciseType === "Super-Set"
-                        ? "Add Super-Set"
-                        : "Add Exercise"}
-                    </button>
+                      <option value="Normal">Normal</option>
+                      <option value="Super-Set">Super-Set</option>
+                    </select>
+                    <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none">
+                      <ChevronDown className="text-gray-100" />
+                    </div>
                   </div>
+                  <button
+                    onClick={() => {
+                      startExercise();
+                      setIsExerciseModalOpen(false);
+                    }}
+                    className="w-full px-2 bg-blue-800 py-2 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700"
+                  >
+                    {exerciseType === "Super-Set"
+                      ? "Add Super-Set"
+                      : "Add Exercise"}
+                  </button>
                 </div>
               </Modal>
 

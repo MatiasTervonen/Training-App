@@ -15,7 +15,7 @@ export default function TrainingPage() {
           </Link>
           <Link
             className="text-center bg-blue-800 py-2 my-3 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95"
-            href={"/training/Create-Template"}
+            href={"/training/create-template"}
           >
             Create template
           </Link>

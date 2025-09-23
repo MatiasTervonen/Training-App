@@ -21,9 +21,7 @@ export default function ExerciseHistoryModal({
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       {isLoading ? (
-        <div
-          className="text-lg text-gray-100 flex flex-col justify-center items-center mt-20 gap-5 mx-4"
-        >
+        <div className="text-lg text-gray-100 flex flex-col justify-center items-center mt-20 gap-5 mx-4">
           <p>Loading history</p>
           <Spinner size="w-[30px] h-[30px]" />
         </div>
@@ -32,7 +30,7 @@ export default function ExerciseHistoryModal({
           No history available for this exercise.
         </p>
       ) : history ? (
-        <div className="flex flex-col items-center">
+        <div className="flex flex-col items-center mb-20">
           {history.map((session, sessionIndex) => (
             <div key={sessionIndex} className="mb-4 w-full">
               <div className="text-gray-100 flex flex-col items-center mt-10 mx-4">

@@ -19,15 +19,15 @@ export default async function appLayout({
   return (
     <div>
       <Toaster position="top-center" reverseOrder={false} />
-      <div id="splash-container">
+      <div id="splash-container" style={{ display: "none" }}>
         <SplashScreen />
       </div>
       <script
         dangerouslySetInnerHTML={{
           __html: `
-      if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
+      if (!(window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone)) {
         const el = document.getElementById('splash-container');
-        if (el) el.remove();
+        if (el) el.style.display = "block";
       }
     `,
         }}

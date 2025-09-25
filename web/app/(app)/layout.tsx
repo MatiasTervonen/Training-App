@@ -22,6 +22,16 @@ export default async function appLayout({
       <div id="splash-container">
         <SplashScreen />
       </div>
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `
+      if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
+        const el = document.getElementById('splash-container');
+        if (el) el.remove();
+      }
+    `,
+        }}
+      />
       <RootClientWrapper initialUser={user}>{children}</RootClientWrapper>
       <Suspense fallback={null}>
         <UserLoader />

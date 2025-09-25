@@ -4,13 +4,6 @@ import { useEffect } from "react";
 import type { User } from "@supabase/supabase-js";
 import Navbar from "@/app/(app)/components/navbar/navbar";
 
-function isRunningAsPWA() {
-  if (typeof window === "undefined") return false;
-  return (
-    window.matchMedia("(display-mode: standalone)").matches ||
-    (navigator as { standalone?: boolean }).standalone === true
-  );
-}
 
 export default function RootClientWrapper({
   children,
@@ -24,7 +17,7 @@ export default function RootClientWrapper({
 
     if (!el) return;
 
-    if (initialUser && !isRunningAsPWA()) {
+    if (initialUser) {
       const timer = setTimeout(() => {
         if (el) {
           el.classList.add("fade-out");

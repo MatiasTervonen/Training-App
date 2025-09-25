@@ -83,7 +83,7 @@ export default function EditNotes({ note, onClose, onSave }: Props) {
 
   return (
     <>
-      <div className="flex flex-col mx-auto w-full h-full bg-slate-800 max-w-md ">
+      <div className="flex flex-col mx-auto w-full h-full bg-slate-800 max-w-lg">
         <div className="flex flex-col items-center gap-5 mx-6 mt-5 h-full ">
           <h2 className="text-gray-100 text-lg text-center">Edit your notes</h2>
           <div>

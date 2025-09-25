@@ -10,6 +10,7 @@ import SetInput from "@/app/(app)/training/components/SetInput";
 import ExerciseTypeSelect from "@/app/(app)/training/components/ExerciseTypeSelect";
 import { full_gym_exercises, full_gym_session } from "../../types/models";
 import { groupExercises } from "../../training/utils/groupExercises";
+import CustomInput from "../input";
 
 type EditGymSessionProps = {
   gym_session: full_gym_session;
@@ -27,6 +28,7 @@ export default function EditGym({
 }: EditGymSessionProps) {
   const [title, setTitle] = useState(gym_session.title);
   const [notes, setNotes] = useState(gym_session.notes);
+  const [duration, setDuration] = useState(gym_session.duration);
   const [exercises, setExercises] = useState(gym_session.gym_session_exercises);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -54,6 +56,7 @@ export default function EditGym({
           id: gym_session.id,
           title,
           notes,
+          duration,
           exercises: formattedExercises,
         }),
       });
@@ -112,6 +115,15 @@ export default function EditGym({
               setTitle={setTitle}
               placeholder="Session title..."
               label="Session Title..."
+            />
+          </div>
+          <div>
+            <CustomInput
+              value={duration.toString()}
+              setValue={(val) => setDuration(Number(val))}
+              placeholder="Duration in seconds..."
+              label="Duration (seconds)..."
+              type="number"
             />
           </div>
           <div>

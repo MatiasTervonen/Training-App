@@ -95,44 +95,39 @@ export default function EditWeight({ weight, onClose, onSave }: Props) {
 
   return (
     <>
-      <div className="h-full bg-slate-800 py-5 px-10">
-        <div className="flex flex-col justify-between h-full max-w-md mx-auto">
-          <div className="flex flex-col gap-10">
-            <h2 className="text-gray-100 text-lg text-center">
-              Edit your weight session
-            </h2>
-            <TitleInput
-              title={title || ""}
-              setTitle={setTitle}
-              placeholder="Weight title..."
-              label="Title..."
-            />
-            <NotesInput
-              notes={notes || ""}
-              setNotes={setNotes}
-              placeholder="Write your notes here..."
-              label="Notes..."
-            />
+      <div className="flex flex-col w-full h-full mb-10 max-w-md mx-auto pt-15">
+        <div className="flex flex-col gap-10">
+          <h2 className="text-gray-100 text-lg text-center">
+            Edit your weight session
+          </h2>
+          <TitleInput
+            title={title || ""}
+            setTitle={setTitle}
+            placeholder="Weight title..."
+            label="Title..."
+          />
+          <NotesInput
+            notes={notes || ""}
+            setNotes={setNotes}
+            placeholder="Write your notes here..."
+            label="Notes..."
+          />
 
-            <label
-              htmlFor="weight"
-              className="flex flex-col gap-1 text-gray-300"
-            >
-              Weight...
-              <input
-                id="weight"
-                type="text"
-                inputMode="decimal"
-                value={weightValue}
-                onChange={(e) => setWeightValue(e.target.value)}
-                placeholder="Enter your weight..."
-                className="text-lg p-2 rounded-md border-2 border-gray-100 z-10  placeholder-gray-500  text-gray-100 bg-gray-900 hover:border-blue-500 focus:outline-none focus:border-green-300"
-              />
-            </label>
-          </div>
-          <div className="w-full py-10">
-            <SaveButton onClick={handleSubmit} />
-          </div>
+          <label htmlFor="weight" className="flex flex-col gap-1 text-gray-300">
+            Weight...
+            <input
+              id="weight"
+              type="text"
+              inputMode="decimal"
+              value={weightValue}
+              onChange={(e) => setWeightValue(e.target.value)}
+              placeholder="Enter your weight..."
+              className="text-lg p-2 rounded-md border-2 border-gray-100 z-10  placeholder-gray-500  text-gray-100 bg-gray-900 hover:border-blue-500 focus:outline-none focus:border-green-300"
+            />
+          </label>
+        </div>
+        <div className="w-full py-10">
+          <SaveButton onClick={handleSubmit} />
         </div>
       </div>
 

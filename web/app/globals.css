@@ -28,11 +28,16 @@ body {
 .my-heatmap .w-heatmap-week {
   fill: #ffffffea !important; /* green weekdays */
   font-size: 13px !important;
-
 }
 
 /* Month labels (no class, so target data-size attr) */
 .my-heatmap text[data-size="11"] {
   fill: #ffffffea !important;
   font-size: 13px !important;
+}
+
+/* globals.css */
+.fade-out {
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }

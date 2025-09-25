@@ -1,7 +1,6 @@
 "use client";
 
-import SplashScreen from "./splashScreen";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import type { User } from "@supabase/supabase-js";
 import Navbar from "@/app/(app)/components/navbar/navbar";
 
@@ -20,22 +19,25 @@ export default function RootClientWrapper({
   children: React.ReactNode;
   initialUser: User | null;
 }) {
-  const [showSplash, setShowSplash] = useState(
-    !!initialUser && !isRunningAsPWA()
-  );
-
   useEffect(() => {
-    if (initialUser) {
+    const el = document.getElementById("splash-container");
+
+    if (!el) return;
+
+    if (initialUser && !isRunningAsPWA()) {
       const timer = setTimeout(() => {
-        setShowSplash(false);
-      }, 800);
+        if (el) {
+          el.classList.add("fade-out");
+          setTimeout(() => el.remove(), 300);
+        }
+      }, 500);
+
       return () => clearTimeout(timer);
+    } else {
+      // no splash needed, remove immediately
+      if (el) el.remove();
     }
   }, [initialUser]);
-
-  if (showSplash) {
-    return <SplashScreen />;
-  }
 
   return (
     <>

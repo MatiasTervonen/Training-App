@@ -4,6 +4,7 @@ import UserLoader from "./components/UserLoader";
 import { Suspense } from "react";
 import RootClientWrapper from "./components/rootClientWrapper";
 import { createClient } from "@/utils/supabase/server";
+import SplashScreen from "./components/splashScreen";
 
 export default async function appLayout({
   children,
@@ -11,12 +12,16 @@ export default async function appLayout({
   children: React.ReactNode;
 }) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   return (
     <div>
       <Toaster position="top-center" reverseOrder={false} />
+      <div id="splash-container">
+        <SplashScreen />
+      </div>
       <RootClientWrapper initialUser={user}>{children}</RootClientWrapper>
       <Suspense fallback={null}>
         <UserLoader />

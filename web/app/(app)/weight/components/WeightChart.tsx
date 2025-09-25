@@ -174,7 +174,15 @@ export default function WeightChart({ range, data }: WeightChartProps) {
   let weightDifference: string | number = "N/A";
 
   if (firstEntry && lastEntry) {
-    weightDifference = (lastEntry.weight - firstEntry.weight).toFixed(1);
+    const diff = lastEntry.weight - firstEntry.weight;
+    const rounded = Math.round(diff * 10) / 10;
+
+    weightDifference =
+      rounded > 0
+        ? `+ ${rounded}`
+        : rounded < 0
+        ? `- ${Math.abs(rounded)}`
+        : `${rounded}`;
   }
 
   const fullDateRange = generateDateRange(start, end);

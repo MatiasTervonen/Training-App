@@ -2,27 +2,14 @@ import { Toaster } from "react-hot-toast";
 import "../globals.css";
 import UserLoader from "./components/UserLoader";
 import { Suspense } from "react";
-import RootClientWrapper from "./components/rootClientWrapper";
-import { createClient } from "@/utils/supabase/server";
-import SplashScreen from "./components/splashScreen";
+import Navbar from "@/app/(app)/components/navbar/navbar";
 
-export default async function appLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
+export default function appLayout({ children }: { children: React.ReactNode }) {
   return (
     <div>
       <Toaster position="top-center" reverseOrder={false} />
-      <div id="splash-container">
-        <SplashScreen />
-      </div>
-      <RootClientWrapper initialUser={user}>{children}</RootClientWrapper>
+      <Navbar />
+      {children}
       <Suspense fallback={null}>
         <UserLoader />
       </Suspense>

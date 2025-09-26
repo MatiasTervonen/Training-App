@@ -36,26 +36,3 @@ body {
   font-size: 13px !important;
 }
 
-#splash-container {
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  transition: opacity 0.3s ease;
-}
-
-#splash-container.fade-out {
-  opacity: 0;
-  pointer-events: none;
-}
-
-/* Hide splash if standalone PWA */
-
-@media all and (display-mode: standalone) {
-  #splash-container {
-    display: none !important;
-  }
-}
-
-html[apple-mobile-web-app-capable="yes"] #splash-container {
-  display: none !important;
-}

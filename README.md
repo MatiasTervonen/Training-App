@@ -4,14 +4,14 @@ Your personal tracker — track **gym workouts, disc golf rounds, notes, to-do l
 
 MyTrack includes a **web app (Next.js)** and a **mobile app (React Native / Expo)**.
 
-## 🚀 Live Demo
+## Live Demo
 
 - 🌐 [Web App (Vercel)](https://training-app-bay.vercel.app/)
 - 📱 Mobile App: Coming soon on Expo Go
 
 > You can try the app with a **guest account**. From the login page, click “Guest Login” to explore the demo environment.
 
-## 🌐 Web App
+## Web App
 
 **Tech Stack**
 
@@ -22,6 +22,7 @@ MyTrack includes a **web app (Next.js)** and a **mobile app (React Native / Expo
 - **Styling:** Tailwind CSS
 - **Data Fetching:** SWR (caching, optimistic updates, infinite scrolling)
 - **Animations:** Framer Motion (swipe-based navigation)
+- **Security** Vercel Bot Protection (BotID) on login & signup
 
 ## 📱 Mobile App
 
@@ -34,7 +35,7 @@ MyTrack includes a **web app (Next.js)** and a **mobile app (React Native / Expo
 - **Data Fetching:** TanStack Query (caching, optimistic updates)
 - **Navigation:** React Native Reanimated + Gesture Handler (swipe-based navigation)
 
-## 📦 Installation
+## Installation
 
 ```bash
 git clone https://github.com/MatiasTervonen/Training-App.git

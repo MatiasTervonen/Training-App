@@ -28,8 +28,8 @@ export default function LoginPage() {
 
   return (
     <div className="bg-slate-950">
-      <div className="flex flex-col items-center h-[100dvh] w-full bg-gradient-to-tr from-slate-950 via-slate-950 to-blue-900 max-w-3xl mx-auto">
-        <p className=" text-gray-100 text-5xl p-4  w-full text-center">
+      <div className="flex flex-col items-center h-[100dvh] w-full bg-gradient-to-tr from-slate-950 via-slate-950 to-blue-900 max-w-7xl mx-auto">
+        <p className=" text-gray-100 text-5xl p-4 w-full text-center">
           MyTrack
         </p>
         <div className="relative flex flex-grow w-full overflow-hidden max-w-md">
@@ -168,15 +168,13 @@ export default function LoginPage() {
                 ? "Already have an account?"
                 : "Don't have an account?"}
             </p>
-            <button>
-              <span
-                className="text-gray-100 border-2 border-blue-400 py-4 px-10 rounded-md bg-gradient-to-tr from-slate-950  to-blue-700 hover:from-blue-700 hover:to-slate-950 transform hover:scale-105 transition duration-200"
-                onClick={() => {
-                  setActiveForm(!activeForm);
-                }}
-              >
-                {activeForm ? "Log in" : "Sign up"}
-              </span>
+            <button
+              onClick={() => {
+                setActiveForm(!activeForm);
+              }}
+              className="text-gray-100 border-2 border-blue-400 py-4 px-10 rounded-md bg-gradient-to-tr from-slate-950  to-blue-700 hover:from-blue-700 hover:to-slate-950 transform hover:scale-105 transition duration-200"
+            >
+              {activeForm ? "Log in" : "Sign up"}
             </button>
           </div>
         </div>

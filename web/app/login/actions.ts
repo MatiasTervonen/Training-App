@@ -3,6 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
+import { createAdminClient } from "@/utils/supabase/admin";
+import { checkBotId } from "botid/server";
 
 type AuthActionState = {
   success: boolean;
@@ -22,6 +24,15 @@ export async function login(
   prevState: AuthActionState | undefined,
   formData: FormData
 ): Promise<AuthActionState> {
+  const verification = await checkBotId();
+
+  if (verification.isBot) {
+    return {
+      success: false,
+      message: "Login failed. Please try again.",
+    };
+  }
+
   const supabase = await createClient();
 
   const data = {
@@ -46,6 +57,15 @@ export async function signup(
   prevState: AuthActionState | undefined,
   formData: FormData
 ): Promise<AuthActionState> {
+  const verification = await checkBotId();
+
+  if (verification.isBot) {
+    return {
+      success: false,
+      message: "Signup failed. Please try again.",
+    };
+  }
+
   const supabase = await createClient();
 
   const data = {
@@ -83,12 +103,19 @@ export async function signup(
     };
   }
 
-  await supabase.from("users").insert({
+  // Create user profile in the database
+  const adminSupabase = createAdminClient();
+
+  const { error } = await adminSupabase.from("users").insert({
     id: signUpData.user!.id,
     email: data.email,
     display_name: generateRandomUserName(data.email), // Default display name
     role: "user",
   });
+
+  if (error) {
+    console.error("Error creating user profile:", error);
+  }
 
   return {
     success: true,

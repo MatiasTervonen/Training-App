@@ -25,9 +25,9 @@ export default function HydrateUser({
     if (preferences) {
       loginUser(preferences, role);
     } else {
-      toast.error("Failed to load user preferences.");
+      toast.error("Failed to load user preferences. Using default values.");
       loginUser(
-        { display_name: "Guest", weight_unit: "kg", profile_picture: null },
+        { display_name: "guest", weight_unit: "kg", profile_picture: null },
         role
       );
     }

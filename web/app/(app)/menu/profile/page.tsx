@@ -36,7 +36,7 @@ export default function Settings() {
   }, [userNameZ, weightUnitZ, profilePicZ]);
 
   const saveProfilePicture = async () => {
-    if (!selectedProfilePic) return profilePicZ || null;
+    if (!selectedProfilePic) return null;
 
     const fileSize = selectedProfilePic.size;
 
@@ -71,12 +71,9 @@ export default function Settings() {
   const updateSettings = async () => {
     setIsSaving(true);
 
-    const profilePictureUrl = await saveProfilePicture();
+    const uploadedProfilePic = await saveProfilePicture();
 
-    if (!profilePictureUrl) {
-      setIsSaving(false);
-      return;
-    }
+    const profilePictureUrl = uploadedProfilePic ?? profilePicZ;
 
     const payload = {
       display_name: userName,

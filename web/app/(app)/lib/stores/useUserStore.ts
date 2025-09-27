@@ -4,7 +4,7 @@ import { persist, createJSONStorage } from "zustand/middleware";
 interface UserPreferences {
   display_name: string;
   weight_unit: string;
-  profile_picture: string | null;
+  profile_picture: string | null | undefined;
 }
 
 interface UserStore {

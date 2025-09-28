@@ -27,6 +27,7 @@ export async function login(
   const verification = await checkBotId();
 
   if (verification.isBot) {
+    console.error("[BotID] Blocked request:", verification);
     return {
       success: false,
       message: "Login failed. Please try again.",

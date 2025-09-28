@@ -2,11 +2,10 @@
 
 import { useState } from "react";
 import { login, signup } from "@/app/login/actions";
-import React, { useEffect } from "react";
+import React from "react";
 import LoginButton from "@/app/login/components/loginbutton";
 import SignupButton from "@/app/login/components/signupbutton";
 import GuestLogIn from "@/app/login/guest-login/quest-login";
-import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const [activeForm, setActiveForm] = useState(false);
@@ -20,11 +19,6 @@ export default function LoginPage() {
 
   const [state2, formAction2] = React.useActionState(login, initialState);
 
-  const router = useRouter();
-
-  useEffect(() => {
-    router.prefetch("/dashboard");
-  }, [router]);
 
   return (
     <div className="bg-slate-950">
@@ -91,7 +85,7 @@ export default function LoginPage() {
             </div>
           </form>
 
-          {/* Sing Up Form */}
+          {/* Sign Up Form */}
 
           <form
             action={formAction}
@@ -161,8 +155,8 @@ export default function LoginPage() {
             </div>
           </form>
         </div>
-        <div className="flex justify-center items-center w-full  p-8 pb-20">
-          <div className="flex flex-col items-center justify-center gap-10">
+        <div className="flex justify-center items-center w-full  pb-10">
+          <div className="flex flex-col items-center justify-center gap-5">
             <p className=" text-gray-100 text-center text-lg">
               {activeForm
                 ? "Already have an account?"
@@ -172,7 +166,7 @@ export default function LoginPage() {
               onClick={() => {
                 setActiveForm(!activeForm);
               }}
-              className="text-gray-100 border-2 border-blue-400 py-4 px-10 rounded-md bg-gradient-to-tr from-slate-950  to-blue-700 hover:from-blue-700 hover:to-slate-950 transform hover:scale-105 transition duration-200"
+              className="text-gray-100 border-2 border-blue-400 py-2 px-10 rounded-md bg-gradient-to-tr from-slate-950  to-blue-700 hover:from-blue-700 hover:to-slate-950 transform hover:scale-105 transition duration-200"
             >
               {activeForm ? "Log in" : "Sign up"}
             </button>

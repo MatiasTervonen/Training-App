@@ -2,19 +2,11 @@
 
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import { guestLogin } from "./action";
-import { useState, useEffect, useTransition } from "react";
-
-import { useRouter } from "next/navigation";
+import { useState, useTransition } from "react";
 
 export default function GuestLogIn() {
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
-
-  const router = useRouter();
-
-  useEffect(() => {
-    router.prefetch("/dashboard");
-  }, [router]);
 
   return (
     <div className="flex flex-col items-center justify-center">

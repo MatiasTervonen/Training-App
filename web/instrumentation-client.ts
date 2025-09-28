@@ -13,5 +13,9 @@ initBotId({
       path: "/login",
       method: "POST",
     },
+    {
+      path: "/signup",
+      method: "POST",
+    },
   ],
 });

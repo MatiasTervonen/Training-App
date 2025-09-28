@@ -74,7 +74,13 @@ export default function InstallApp({
             onClick={() => setExpanded((prev) => !prev)}
           >
             <div className="flex gap-2 items-center">
-              <Image src="/Mobile.png" alt="Mobile" width={23} height={23} />
+              <Image
+                src="/Mobile.png"
+                alt="Mobile"
+                width={23}
+                height={23}
+                priority
+              />
               <p>Download app</p>
             </div>
           </button>

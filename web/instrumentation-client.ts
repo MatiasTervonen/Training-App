@@ -13,7 +13,9 @@ initBotId({
       path: "/login",
       method: "POST",
     },
+    {
+      path: "/signup",
+      method: "POST",
+    },
   ],
 });
-
-console.log("BotId initialized");

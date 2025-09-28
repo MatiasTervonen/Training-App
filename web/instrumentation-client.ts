@@ -19,3 +19,5 @@ initBotId({
     },
   ],
 });
+
+console.log("[BotID] Client initialized");

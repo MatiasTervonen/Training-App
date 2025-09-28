@@ -18,7 +18,4 @@ initBotId({
       method: "POST",
     },
   ],
-  scriptOrigin: "https://botid.vercel.app",
-} as any);
-
-console.log("[BotID] Client initialized");
+});

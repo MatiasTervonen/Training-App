@@ -1,22 +1,9 @@
-import { NextResponse, type NextRequest } from "next/server";
+import {  type NextRequest } from "next/server";
 import { updateSession } from "@/utils/supabase/middleware";
 
 export async function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
-
-  console.log("[Middleware] Path:", pathname);
-
-  // ✅ Skip BotID challenge scripts & assets
-  if (
-    pathname.startsWith("/__botid") ||
-    pathname.includes("/a-4-a/") ||
-    (pathname.endsWith(".js") && pathname.includes("__botid"))
-  ) {
-    return NextResponse.next();
-  }
-
-  // Everything else goes through Supabase session
   return await updateSession(request);
+
 }
 
 export const config = {
@@ -28,6 +15,6 @@ export const config = {
      * - favicon.ico (favicon file)
      * Feel free to modify this pattern to include more paths.
      */
-    "/((?!api|_next/static|_next/image|favicon.ico|manifest|__botid|a-4-a|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    "/((?!api|_next/static|_next/image|favicon.ico|manifest|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };

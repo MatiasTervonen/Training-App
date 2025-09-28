@@ -1,7 +1,20 @@
-import { type NextRequest } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 import { updateSession } from "@/utils/supabase/middleware";
 
 export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+  // Allow BotID challenge requests to bypass Supabase session middleware
+  if (
+    pathname.startsWith("/__botid") ||
+    pathname.includes("/a-4-a/") ||
+    pathname === "/mfc" ||
+    pathname === "/tl"
+  ) {
+    return NextResponse.next();
+  }
+
+  // Everything else goes through Supabase session
   return await updateSession(request);
 }
 

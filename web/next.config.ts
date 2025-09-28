@@ -32,10 +32,6 @@ const nextConfig: NextConfig = {
             key: "Cache-Control",
             value: "no-cache, no-store, must-revalidate",
           },
-          {
-            key: "Content-Security-Policy",
-            value: "default-src 'self'; script-src 'self'",
-          },
         ],
       },
     ];
@@ -53,5 +49,3 @@ const nextConfig: NextConfig = {
 };
 
 export default withBotId(nextConfig);
-
-

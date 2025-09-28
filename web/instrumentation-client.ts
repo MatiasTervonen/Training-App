@@ -15,3 +15,5 @@ initBotId({
     },
   ],
 });
+
+console.log("BotId initialized");

@@ -12,16 +12,10 @@ initBotId({
     {
       path: "/login",
       method: "POST",
-      advancedOptions: {
-        checkLevel: "deepAnalysis",
-      },
     },
     {
       path: "/signup",
       method: "POST",
-      advancedOptions: {
-        checkLevel: "deepAnalysis",
-      },
     },
   ],
 });

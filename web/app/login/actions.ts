@@ -24,11 +24,7 @@ export async function login(
   prevState: AuthActionState | undefined,
   formData: FormData
 ): Promise<AuthActionState> {
-  const verification = await checkBotId({
-    advancedOptions: {
-      checkLevel: "deepAnalysis",
-    },
-  });
+  const verification = await checkBotId();
 
   if (verification.isBot) {
     console.error("[BotID] Blocked request:", verification);
@@ -62,11 +58,7 @@ export async function signup(
   prevState: AuthActionState | undefined,
   formData: FormData
 ): Promise<AuthActionState> {
-  const verification = await checkBotId({
-    advancedOptions: {
-      checkLevel: "deepAnalysis",
-    },
-  });
+  const verification = await checkBotId();
 
   if (verification.isBot) {
     return {

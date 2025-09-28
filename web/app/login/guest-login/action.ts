@@ -7,11 +7,7 @@ import { checkBotId } from "botid/server";
 type GuestLoginResult = { success: false; message: string } | { success: true };
 
 export async function guestLogin(): Promise<GuestLoginResult> {
-  const verification = await checkBotId({
-    advancedOptions: {
-      checkLevel: "deepAnalysis",
-    },
-  });
+  const verification = await checkBotId();
 
   if (verification.isBot) {
     return {

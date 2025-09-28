@@ -25,8 +25,12 @@ export const config = {
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
+     * - api routes
+     * - botid (BotID challenge and related files)
+     * - a-4-a (BotID verification files)
+     * - mfc (BotID verification files)
      * Feel free to modify this pattern to include more paths.
      */
-    "/((?!api|_next/static|_next/image|favicon.ico|manifest|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    "/((?!api|_next/static|_next/image|favicon.ico|manifest|__botid|a-4-a|mfc|tl|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };

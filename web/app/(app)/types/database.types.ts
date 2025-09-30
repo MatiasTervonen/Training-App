@@ -765,6 +765,42 @@ export type Database = {
           },
         ]
       }
+      user_push_subscriptions: {
+        Row: {
+          auth: string | null
+          created_at: string
+          device_type: string
+          endpoint: string
+          id: string
+          is_active: boolean
+          p256dh: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          auth?: string | null
+          created_at?: string
+          device_type: string
+          endpoint: string
+          id?: string
+          is_active?: boolean
+          p256dh?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          auth?: string | null
+          created_at?: string
+          device_type?: string
+          endpoint?: string
+          id?: string
+          is_active?: boolean
+          p256dh?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       users: {
         Row: {
           ban_reason: string | null
@@ -837,19 +873,6 @@ export type Database = {
         }
         Relationships: []
       }
-      feed_view_no_pinned: {
-        Row: {
-          created_at: string | null
-          duration: number | null
-          id: string | null
-          notes: string | null
-          title: string | null
-          type: string | null
-          user_id: string | null
-          weight: number | null
-        }
-        Relationships: []
-      }
       feed_view4: {
         Row: {
           created_at: string | null
@@ -870,20 +893,6 @@ export type Database = {
           id: string | null
           notes: string | null
           pinned: boolean | null
-          title: string | null
-          type: string | null
-          user_id: string | null
-          weight: number | null
-        }
-        Relationships: []
-      }
-      pinned_feed_view: {
-        Row: {
-          created_at: string | null
-          duration: number | null
-          id: string | null
-          notes: string | null
-          pinned_id: string | null
           title: string | null
           type: string | null
           user_id: string | null

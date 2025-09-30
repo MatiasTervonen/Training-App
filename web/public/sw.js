@@ -1,5 +1,7 @@
 self.addEventListener("push", function (event) {
+  console.log("[Service Worker] Push Received:", event);
   if (event.data) {
+    console.log("[Service Worker] Push data:", event.data.text());
     const data = event.data.json();
     const options = {
       body: data.body,
@@ -18,5 +20,5 @@ self.addEventListener("push", function (event) {
 self.addEventListener("notificationclick", function (event) {
   console.log("Notification click received.");
   event.notification.close();
-  event.waitUntil(clients.openWindow("<https://training-app-bay.vercel.app/>"));
+  event.waitUntil(clients.openWindow(self.location.origin));
 });

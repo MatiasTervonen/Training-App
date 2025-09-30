@@ -3,7 +3,7 @@ import MenuContext from "./components/MenuContext";
 import LinkButton from "../ui/LinkButton";
 import SignOutButton from "../ui/singOutButton";
 import InstallAppClient from "./components/installAppClient";
-// import { PushNotificationManager } from "../components/pushnotificartions/pushnotifications";
+import { PushNotificationManager } from "../components/pushnotifications/pushnotifications";
 
 export default function MenuPage() {
   return (
@@ -17,7 +17,7 @@ export default function MenuPage() {
             <MenuContext />
           </div>
         </div>
-        {/* <PushNotificationManager /> */}
+        <PushNotificationManager />
         <div className="flex flex-col gap-5 pb-10 items-center">
           <InstallAppClient />
           <SignOutButton />

@@ -110,6 +110,8 @@ export type Feed_item = {
   user_id: string;
   pinned: boolean;
   pinned_at?: string | null;
+  notify_at?: string | null;
+  delivered?: string | null;
 };
 
 export type FeedResponse = {

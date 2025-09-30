@@ -23,6 +23,7 @@ MyTrack includes a **web app (Next.js)** and a **mobile app (React Native / Expo
 - **Data Fetching:** SWR (caching, optimistic updates, infinite scrolling)
 - **Animations:** Framer Motion (swipe-based navigation)
 - **Security** Vercel Bot Protection (BotID) on login & signup
+- **Notifications:** Web Push Notifications (browser-based, Service Worker)
 
 ## 📱 Mobile App
 

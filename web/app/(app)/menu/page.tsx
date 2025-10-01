@@ -15,9 +15,9 @@ export default function MenuPage() {
             <LinkButton href={"/menu/friends"}>Friends</LinkButton>
             <LinkButton href={"/menu/profile"}>Profile</LinkButton>
             <MenuContext />
+            <PushNotificationManager />
           </div>
         </div>
-        <PushNotificationManager />
         <div className="flex flex-col gap-5 pb-10 items-center">
           <InstallAppClient />
           <SignOutButton />

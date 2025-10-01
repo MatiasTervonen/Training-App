@@ -57,8 +57,8 @@ export async function POST(request: NextRequest) {
             },
           },
           JSON.stringify({
-            title: "Test Notification",
-            body: item.title,
+            title: item.title,
+            body: item.notes,
             icon: "/android-chrome-192x192.png",
           })
         );

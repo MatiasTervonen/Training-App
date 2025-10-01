@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { subscribeUser, unsubscribeUser, sendNotification } from "./actions";
 import Toggle from "../toggle";
+import { useUserStore } from "../../lib/stores/useUserStore";
 
 function urlBase64ToUint8Array(base64String: string) {
   const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
@@ -37,6 +38,8 @@ export function PushNotificationManager() {
   );
   const [message, setMessage] = useState("");
   const [toggleState, setToggleState] = useState(false);
+
+  const role = useUserStore.getState().role;
 
   useEffect(() => {
     if ("serviceWorker" in navigator && "PushManager" in window) {
@@ -125,9 +128,9 @@ export function PushNotificationManager() {
   }
 
   return (
-    <div>
+    <div className="my-5 relative">
       <h2 className="mb-6 underline">Push Notifications</h2>
-      <div className="flex items-center gap-5">
+      <div className="flex items-center justify-between">
         <p>
           {subscription
             ? "Push notifications enabled"
@@ -135,8 +138,8 @@ export function PushNotificationManager() {
         </p>
         <Toggle isOn={toggleState} onToggle={handleToggle} />
       </div>
-      {subscription && (
-        <div className="mt-4 absolute">
+      {subscription && role === "guest" && (
+        <div className=" mt-5">
           <input
             type="text"
             value={message}

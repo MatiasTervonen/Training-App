@@ -6,7 +6,7 @@ self.addEventListener("push", function (event) {
     const options = {
       body: data.body,
       icon: data.icon || "/icon.png",
-      badge: "/android-chrome-92x92.png",
+      badge: "/small-notification-icon.png",
       vibrate: [200, 100, 200, 100, 400],
       requireInteraction: true,
       data: {

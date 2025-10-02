@@ -72,8 +72,6 @@ export function PushNotificationManager() {
         ),
       });
 
-      console.log("Push subscription:", sub);
-
       setSubscription(sub);
       await subscribeUser(serializeSubscription(sub));
     } catch (error) {

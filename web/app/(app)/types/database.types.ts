@@ -610,22 +610,28 @@ export type Database = {
       notes: {
         Row: {
           created_at: string
+          delivered: boolean
           id: string
           notes: string | null
+          notify_at: string | null
           title: string | null
           user_id: string
         }
         Insert: {
           created_at?: string
+          delivered?: boolean
           id?: string
           notes?: string | null
+          notify_at?: string | null
           title?: string | null
           user_id: string
         }
         Update: {
           created_at?: string
+          delivered?: boolean
           id?: string
           notes?: string | null
+          notify_at?: string | null
           title?: string | null
           user_id?: string
         }
@@ -676,6 +682,36 @@ export type Database = {
           is_quest?: boolean | null
           name?: string | null
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      reminders: {
+        Row: {
+          created_at: string
+          delivered: boolean
+          id: string
+          notes: string | null
+          notify_at: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          delivered?: boolean
+          id?: string
+          notes?: string | null
+          notify_at: string
+          title: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          delivered?: boolean
+          id?: string
+          notes?: string | null
+          notify_at?: string
+          title?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -810,6 +846,7 @@ export type Database = {
           email: string
           id: string
           profile_picture: string | null
+          push_enabled: boolean
           role: string
           weight_unit: string
         }
@@ -821,6 +858,7 @@ export type Database = {
           email: string
           id: string
           profile_picture?: string | null
+          push_enabled?: boolean
           role?: string
           weight_unit?: string
         }
@@ -832,6 +870,7 @@ export type Database = {
           email?: string
           id?: string
           profile_picture?: string | null
+          push_enabled?: boolean
           role?: string
           weight_unit?: string
         }
@@ -873,12 +912,14 @@ export type Database = {
         }
         Relationships: []
       }
-      feed_view4: {
+      feed_view6: {
         Row: {
           created_at: string | null
+          delivered: boolean | null
           duration: number | null
           id: string | null
           notes: string | null
+          notify_at: string | null
           title: string | null
           type: string | null
           user_id: string | null
@@ -889,9 +930,11 @@ export type Database = {
       feed_with_pins: {
         Row: {
           created_at: string | null
+          delivered: boolean | null
           duration: number | null
           id: string | null
           notes: string | null
+          notify_at: string | null
           pinned: boolean | null
           title: string | null
           type: string | null

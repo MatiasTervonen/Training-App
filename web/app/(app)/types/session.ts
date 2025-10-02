@@ -110,7 +110,7 @@ export type Feed_item = {
   user_id: string;
   pinned: boolean;
   pinned_at?: string | null;
-  notify_at?: string | null;
+  notify_at?: string | Date | null;
   delivered?: string | null;
 };
 
@@ -120,7 +120,7 @@ export type FeedResponse = {
 };
 
 export type FeedCardProps = {
-  table: "notes" | "gym_sessions" | "weight" | "todo_lists";
+  table: "notes" | "gym_sessions" | "weight" | "todo_lists" | "reminders";
   item: Feed_item;
   pinned: boolean;
   onTogglePin: () => void;

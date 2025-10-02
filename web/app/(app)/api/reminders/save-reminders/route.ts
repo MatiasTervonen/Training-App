@@ -16,8 +16,8 @@ export async function POST(req: NextRequest) {
   const body = await req.json();
   const { notes, title, notify_at } = body;
 
-  const { data: notesData, error: notesError } = await supabase
-    .from("notes")
+  const { data: remindersData, error: remindersError } = await supabase
+    .from("reminders")
     .insert([
       {
         user_id: user.id,
@@ -29,15 +29,15 @@ export async function POST(req: NextRequest) {
     .select()
     .single();
 
-  if (notesError || !notesData) {
-    console.error("Supabase Insert Error:", notesError);
-    return new Response(JSON.stringify({ error: notesError?.message }), {
+  if (remindersError || !remindersData) {
+    console.error("Supabase Insert Error:", remindersError);
+    return new Response(JSON.stringify({ error: remindersError?.message }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
     });
   }
 
-  return new Response(JSON.stringify({ success: true, notes: notesData }), {
+  return new Response(JSON.stringify({ success: true, reminders: remindersData }), {
     status: 200,
     headers: { "Content-Type": "application/json" },
   });

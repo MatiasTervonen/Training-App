@@ -23,9 +23,11 @@ import useSWRInfinite from "swr/infinite";
 import { getFeedKey } from "@/app/(app)/lib/feedKeys";
 import TodoSession from "@/app/(app)/components/expandSession/todo";
 import EditTodo from "@/app/(app)/ui/editSession/EditTodo";
+import ReminderSession from "../../components/expandSession/reminder";
+import EditReminder from "@/app/(app)/ui/editSession/EditReminder";
 
 type FeedItem = {
-  table: "notes" | "weight" | "gym_sessions" | "todo_lists";
+  table: "notes" | "weight" | "gym_sessions" | "todo_lists" | "reminders";
   item: Feed_item;
   pinned: boolean;
 };
@@ -392,6 +394,9 @@ export default function SessionFeed() {
             {expandedItem.table === "notes" && (
               <NotesSession {...expandedItem.item} />
             )}
+            {expandedItem.table === "reminders" && (
+              <ReminderSession {...expandedItem.item} />
+            )}
             {expandedItem.table === "gym_sessions" && (
               <>
                 {isLoadingGymSession ? (
@@ -447,6 +452,17 @@ export default function SessionFeed() {
             {editingItem.table === "notes" && (
               <EditNote
                 note={editingItem.item}
+                onClose={() => setEditingItem(null)}
+                onSave={async () => {
+                  await mutateFeed();
+
+                  setEditingItem(null);
+                }}
+              />
+            )}
+            {editingItem.table === "reminders" && (
+              <EditReminder
+                reminder={editingItem.item}
                 onClose={() => setEditingItem(null)}
                 onSave={async () => {
                   await mutateFeed();

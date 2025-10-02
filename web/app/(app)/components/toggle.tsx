@@ -7,6 +7,7 @@ export default function Toggle({
   isOn: boolean;
   onToggle: () => void;
 }) {
+  
   function handleToggle() {
     onToggle();
   }

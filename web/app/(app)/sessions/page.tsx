@@ -5,6 +5,7 @@ import {
   Timer,
   Weight,
   ListTodo,
+  Bell,
 } from "lucide-react";
 import ModalPageWrapper from "../components/modalPageWrapper";
 import SessionsContext from "./components/SessionContext";
@@ -44,6 +45,10 @@ export default function Sessions() {
             <LinkButton href="/todo">
               Todo List
               <ListTodo />
+            </LinkButton>
+            <LinkButton href="/reminders">
+              Reminders
+              <Bell />
             </LinkButton>
           </div>
         </div>

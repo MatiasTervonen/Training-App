@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
   );
 
   const { data: items, error: itemsError } = await supabase
-    .from("notes")
+    .from("reminders")
     .select("*")
     .lte("notify_at", new Date().toISOString())
     .eq("delivered", false);
@@ -81,12 +81,12 @@ export async function POST(request: NextRequest) {
     }
 
     const { error: updateError } = await supabase
-      .from("notes")
+      .from("reminders")
       .update({ delivered: true })
       .eq("id", item.id);
 
     if (updateError) {
-      console.error("Error marking note as delivered:", updateError);
+      console.error("Error marking reminder as delivered:", updateError);
     }
   }
 

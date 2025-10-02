@@ -1,5 +1,4 @@
 import {
-  NotebookPen,
   Ellipsis,
   SquareArrowOutUpRight,
   Bell,
@@ -18,7 +17,7 @@ type Props = {
   onEdit: () => void;
 };
 
-export default function NotesCard({
+export default function ReminderCard({
   item,
   pinned,
   onTogglePin,
@@ -78,26 +77,24 @@ export default function NotesCard({
       </div>
 
       <div className="ml-4 mb-4 mr-5 line-clamp-2">{item.notes}</div>
-      {item.notify_at && (
-        <>
-          <div className="ml-4 mb-4 mr-5 flex items-center">
-            <p>{formatDateTime(item.notify_at)}</p>
-            {item.delivered ? (
-              <Check size={30} className="ml-2 text-green-400" />
-            ) : (
-              <Bell size={20} className="ml-2" />
-            )}
-          </div>
-        </>
-      )}
+
+      <div className="ml-4 mb-4 mr-5 flex items-center">
+        <p>{formatDateTime(item.notify_at!)}</p>
+        {item.delivered ? (
+          <Check size={30} className="ml-2 text-green-400" />
+        ) : (
+          <Bell size={20} className="ml-2" />
+        )}
+      </div>
+
       <div className="flex justify-between items-center mt-2 bg-black/40 rounded-b-md">
         {/* Icon */}
 
         <div className="flex items-center gap-4">
           <div className="pl-2">
-            <NotebookPen size={20} />
+            <Bell size={20} />
           </div>
-          <span>Notes</span>
+          <span>Reminders</span>
 
           {/* Date */}
 

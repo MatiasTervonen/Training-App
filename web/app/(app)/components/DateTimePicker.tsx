@@ -2,6 +2,7 @@
 
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import "../ui/datepicker-custom.css";
 
 type Props = {
   value: Date | null;

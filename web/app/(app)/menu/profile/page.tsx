@@ -1,14 +1,14 @@
 "use client";
 
-import SaveButton from "../../ui/save-button";
+import SaveButton from "@/app/(app)/ui/save-button";
 import { useState, useEffect } from "react";
-import ModalPageWrapper from "../../components/modalPageWrapper";
+import ModalPageWrapper from "@/app/(app)/components/modalPageWrapper";
 import toast from "react-hot-toast";
-import ExerciseTypeSelect from "../../training/components/ExerciseTypeSelect";
-import TitleInput from "../../training/components/TitleInput";
-import FullScreenLoader from "../../components/FullScreenLoader";
+import ExerciseTypeSelect from "@/app/(app)/training/components/ExerciseTypeSelect";
+import TitleInput from "@/app/(app)/training/components/TitleInput";
+import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
-import ProfilePicture from "../components/profile-picture";
+import ProfilePicture from "@/app/(app)/menu/components/profile-picture";
 
 export default function Settings() {
   const [isSaving, setIsSaving] = useState(false);

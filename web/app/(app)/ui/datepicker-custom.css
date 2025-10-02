@@ -1,0 +1,52 @@
+.react-datepicker {
+  background-color: #0f1f38 !important; /* your custom dark bg */
+  border: 1px solid #334155;
+}
+
+.react-datepicker__header {
+  background-color: #0f1f38 !important; /* your custom dark header bg */
+  border-bottom: 1px solid #334155;
+}
+
+.react-datepicker__day {
+  color: rgb(230, 230, 230) !important; /* white text for days */
+}
+
+.react-datepicker__day-name {
+  color: rgb(230, 230, 230) !important; /* white text for days */
+}
+
+.react-datepicker__day:hover {
+  background-color: #1a345e !important; /* your custom dark bg */
+}
+
+.react-datepicker__weekday {
+  color: rgb(230, 230, 230) !important; /* white text for days */
+}
+
+.react-datepicker__day--selected,
+.react-datepicker__day--keyboard-selected {
+  background-color: #22c55e !important; /* green highlight */
+  color: black;
+}
+
+.react-datepicker__time-list {
+  background-color: #0f1f38 !important; /* your custom dark bg */
+  color: rgb(230, 230, 230) !important; /* white text for time list */
+}
+
+.react-datepicker__time-list-item:hover {
+  background-color: #1a345e !important; /* your custom dark bg */
+}
+
+.react-datepicker__current-month {
+  color: rgb(230, 230, 230) !important;
+}
+
+.react-datepicker-time__header {
+  color: rgb(230, 230, 230) !important;
+}
+
+.react-datepicker__triangle {
+  fill: #0f1f38 !important; /* your custom dark bg */
+}

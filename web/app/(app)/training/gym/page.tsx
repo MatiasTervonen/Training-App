@@ -25,6 +25,8 @@ import { groupTemplateExercises } from "../utils/groupTemplateExercises";
 import ExerciseCard from "../components/ExerciseCard";
 import { updateFeed } from "@/app/(app)/lib/revalidateFeed";
 import ExerciseSelectorList from "../components/ExerciseSelectorList";
+import useSWR from "swr";
+import { fetcher } from "@/app/(app)/lib/fetcher";
 
 export default function TrainingSessionPage() {
   const [sessionTitle, setSessionTitle] = useState("");
@@ -38,13 +40,14 @@ export default function TrainingSessionPage() {
   const [dropdownResetKey, setDropdownResetKey] = useState(0);
   const [isExerciseModalOpen, setIsExerciseModalOpen] = useState(false);
   const [normalExercises, setNormalExercises] = useState<ExerciseEntry[]>([]);
-  const [lastHistory, setLastHistory] = useState<HistoryResult[]>([]);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
-  const [isHistoryLoading, setIsHistoryLoading] = useState(false);
   const [exerciseToChangeIndex, setExerciseToChangeIndex] = useState<
     number | null
   >(null);
   const [hasLoadedDraft, setHasLoadedDraft] = useState(false);
+  const [exerciseHistoryId, setExerciseHistoryId] = useState<string | null>(
+    null
+  );
 
   useEffect(() => {
     if (!hasLoadedDraft) return;
@@ -95,36 +98,25 @@ export default function TrainingSessionPage() {
     elapsedTime,
   } = useTimerStore();
 
-  const lastExerciseHistory = async (index: number) => {
-    const exercise = exercises[index];
-    if (!exercise || !exercise.exercise_id) return;
-
-    setIsHistoryOpen(true);
-    setIsHistoryLoading(true);
-
-    try {
-      const response = await fetch(
-        `/api/gym/last-exercise-history/${exercise.exercise_id}`
-      );
-
-      if (!response.ok) {
-        throw new Error(`Failed to fetch: ${response.statusText}`);
-      }
-
-      const data = await response.json();
-
-      if (!Array.isArray(data)) {
-        console.warn("Unexpected data format:", data);
-        setLastHistory([]);
-      } else {
-        setLastHistory(data);
-      }
-    } catch (error) {
-      console.error("Error fetching last exercise history:", error);
-      setLastHistory([]);
-    } finally {
-      setIsHistoryLoading(false);
+  const {
+    data: history,
+    error: historyError,
+    isLoading,
+  } = useSWR<HistoryResult[]>(
+    isHistoryOpen && exerciseHistoryId
+      ? `/api/gym/last-exercise-history/${exerciseHistoryId}`
+      : null,
+    fetcher,
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+      revalidateIfStale: false,
     }
+  );
+
+  const openHistory = (exerciseId: string) => {
+    setExerciseHistoryId(exerciseId);
+    setIsHistoryOpen(true);
   };
 
   const isCardioExercise = (exercise: ExerciseEntry) => {
@@ -235,7 +227,6 @@ export default function TrainingSessionPage() {
     setSessionTitle("");
     setNormalExercises([]);
     setExerciseInputs([]);
-    setLastHistory([]);
   };
 
   const saveSession = async () => {
@@ -359,7 +350,12 @@ export default function TrainingSessionPage() {
                         <ExerciseCard
                           mode="session"
                           exercise={exercise}
-                          lastExerciseHistory={lastExerciseHistory}
+                          lastExerciseHistory={(index) => {
+                            const ex = exercises[index];
+                            if (ex.exercise_id) {
+                              openHistory(ex.exercise_id);
+                            }
+                          }}
                           onChangeExercise={(index) => {
                             setExerciseToChangeIndex(index);
                             setSupersetExercise([emptyExerciseEntry]);
@@ -480,8 +476,9 @@ export default function TrainingSessionPage() {
               <ExerciseHistoryModal
                 isOpen={isHistoryOpen}
                 onClose={() => setIsHistoryOpen(false)}
-                isLoading={isHistoryLoading}
-                history={lastHistory}
+                isLoading={isLoading}
+                history={Array.isArray(history) ? history : []}
+                error={historyError ? historyError.message : null}
               />
 
               <div className="flex items-center gap-5 w-fit mx-auto mt-10">

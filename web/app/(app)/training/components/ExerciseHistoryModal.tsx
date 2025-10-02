@@ -10,6 +10,7 @@ type ExerciseHistoryModalProps = {
   onClose: () => void;
   isLoading: boolean;
   history: HistoryResult[];
+  error?: string | null;
 };
 
 export default function ExerciseHistoryModal({
@@ -17,6 +18,7 @@ export default function ExerciseHistoryModal({
   onClose,
   isLoading,
   history,
+  error,
 }: ExerciseHistoryModalProps) {
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
@@ -25,6 +27,10 @@ export default function ExerciseHistoryModal({
           <p>Loading history</p>
           <Spinner size="w-[30px] h-[30px]" />
         </div>
+      ) : error ? (
+        <p className="text-gray-100 text-center mt-20 mx-4">
+          Could not load exercise history. Please try again.
+        </p>
       ) : history.length === 0 ? (
         <p className="text-center mt-20 text-lg mx-4 text-gray-100">
           No history available for this exercise.

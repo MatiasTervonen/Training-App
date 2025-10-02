@@ -34,15 +34,19 @@ export async function GET(
 
   const sessions = data as SessionExercise[] | null;
 
-  if (exerciseError || !sessions || sessions.length === 0) {
+  if (!sessions || sessions.length === 0) {
+    return new Response(JSON.stringify([]), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  if (exerciseError) {
     console.error("Error fetching exercises:", exerciseError?.message);
-    return new Response(
-      JSON.stringify({ message: "No pervious session found" }),
-      {
-        status: 404,
-        headers: { "Content-Type": "application/json" },
-      }
-    );
+    return new Response(JSON.stringify({ error: exerciseError.message }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 
   const sorted = sessions.sort(
@@ -61,10 +65,7 @@ export async function GET(
 
       if (setsError) {
         console.error("Error fetching sets:", setsError.message);
-        return new Response(JSON.stringify({ error: setsError.message }), {
-          status: 500,
-          headers: { "Content-Type": "application/json" },
-        });
+        return null;
       }
 
       return {

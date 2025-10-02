@@ -47,7 +47,12 @@ export default function ExerciseHistoryModal({
                     </thead>
                     <tbody>
                       {session.sets.map((set, setIndex) => (
-                        <tr key={setIndex} className="mb-2">
+                        <tr
+                          key={setIndex}
+                          className={`mb-2 ${
+                            set.rpe === "Failure" ? "bg-red-500" : ""
+                          } ${set.rpe === "Warm-up" ? "bg-blue-500" : ""}`}
+                        >
                           <td className="p-2">{setIndex + 1}</td>
                           <td className="p-2">{set.weight}</td>
                           <td className="p-2">{set.reps}</td>

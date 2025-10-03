@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { motion } from "framer-motion";
 
 export default function Notes() {
   return (
@@ -9,12 +10,17 @@ export default function Notes() {
       <div className="flex flex-col lg:flex-row items-center justify-center gap-20 pt-10 px-5">
         <div className="flex flex-col  max-w-lg bg-slate-900 py-4 px-6 rounded-lg shadow-lg ">
           <p className="text-center rounded-xl lg:text-left text-md sm:text-lg">
-            Keep track of your thoughts, ideas, and reminders with MyTrack&apos;s
-            Notes feature. Whether it&apos;s workout tips, personal goals, or daily
-            reminders, MyTrack helps you stay organized and focused.
+            Keep track of your thoughts, ideas, and reminders with
+            MyTrack&apos;s Notes feature. Whether it&apos;s workout tips,
+            personal goals, or daily reminders, MyTrack helps you stay organized
+            and focused.
           </p>
         </div>
-        <div>
+        <motion.div
+          initial={{ opacity: 0, x: 300 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+        >
           <Image
             src="/notes.webp"
             alt="Gym Image"
@@ -23,7 +29,7 @@ export default function Notes() {
             className="rounded-lg shadow-lg"
             priority
           />
-        </div>
+        </motion.div>
       </div>
     </div>
   );

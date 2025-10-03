@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { motion } from "framer-motion";
 
 export default function Weight() {
   return (
@@ -20,7 +21,11 @@ export default function Weight() {
             <p>- Set personal goals</p>
           </div>
         </div>
-        <div>
+        <motion.div
+          initial={{ opacity: 0, x: 300 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+        >
           <Image
             src="/weight-portrait.webp"
             alt="Gym Image"
@@ -29,7 +34,7 @@ export default function Weight() {
             className="rounded-lg shadow-lg"
             priority
           />
-        </div>
+        </motion.div>
       </div>
     </div>
   );

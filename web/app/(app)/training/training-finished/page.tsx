@@ -5,7 +5,7 @@ import LinkButton from "../../ui/LinkButton";
 export default function TrainingFinished() {
   return (
     <ModalPageWrapper>
-      <div className="flex w-full px-10 bg-slate-900">
+      <div className="h-full flex w-full px-10 bg-slate-900">
         <div className="flex flex-col items-center justify-center gap-10 max-w-md mx-auto">
           <Image
             src="/Confetti.png"

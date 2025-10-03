@@ -312,12 +312,14 @@ export default function TrainingSessionPage() {
               <p className="text-gray-100 text-xl text-center">
                 Track your training progress
               </p>
-              <TitleInput
-                title={sessionTitle}
-                setTitle={setSessionTitle}
-                placeholder="Session Title..."
-                label="Session Title..."
-              />
+              <div className="w-full px-6">
+                <TitleInput
+                  title={sessionTitle}
+                  setTitle={setSessionTitle}
+                  placeholder="Session Title..."
+                  label="Session Title..."
+                />
+              </div>
               <div className="w-full px-6 ">
                 <NotesInput
                   notes={notes}
@@ -327,7 +329,6 @@ export default function TrainingSessionPage() {
                 />
               </div>
             </div>
-
             <>
               {Object.entries(groupedExercises).map(([superset_id, group]) => (
                 <div

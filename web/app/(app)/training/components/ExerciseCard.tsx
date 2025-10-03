@@ -179,7 +179,7 @@ export default function ExerciseCard({
               </>
             ) : (
               <>
-                <div className="flex items-center gap-5 w-2/3">
+                <div className="flex items-center gap-2 w-2/3">
                   <SetInput
                     placeholder="Weight..."
                     type="number"

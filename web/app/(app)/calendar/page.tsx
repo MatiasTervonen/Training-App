@@ -12,7 +12,7 @@ export default function CalendarPage() {
     <ModalPageWrapper>
       <div className="flex flex-col min-h-[calc(100dvh-72px)] bg-slate-800 text-gray-100">
         <div className="flex flex-col flex-grow items-center  w-full">
-          <h1 className="text-2xl font-bold m-4">My Calendar</h1>
+          <h1 className="text-2xl m-4">My Calendar</h1>
           <div className="bg-slate-900 p-4 rounded-md shadow-md">
             <Calendar
               onChange={(value) => setDate(value as Date)}

@@ -153,7 +153,7 @@ export default function DiscGolfScores() {
                     </tbody>
                   </table>
 
-                  <p className="text-gray-200 mt-2 font-semibold">
+                  <p className="text-gray-200 mt-2">
                     Total: {totalStrokes} ({formattedScore})
                   </p>
                 </div>

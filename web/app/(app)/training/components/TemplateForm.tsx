@@ -56,12 +56,13 @@ export default function TemplateForm() {
       ? draft.exercises.map(() => ({ weight: "", reps: "", rpe: "Medium" }))
       : []
   );
-  const [lastHistory, setLastHistory] = useState<HistoryResult[]>([]);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
-  const [isHistoryLoading, setIsHistoryLoading] = useState(false);
   const [exerciseToChangeIndex, setExerciseToChangeIndex] = useState<
     number | null
   >(null);
+  const [exerciseHistoryId, setExerciseHistoryId] = useState<string | null>(
+    null
+  );
 
   const groupedExercises = groupTemplateExercises(exercises);
 
@@ -116,36 +117,25 @@ export default function TemplateForm() {
     }
   }, [existingTemplate]);
 
-  const lastExerciseHistory = async (index: number) => {
-    const exercise = exercises[index];
-    if (!exercise || !exercise.exercise_id) return;
-
-    setIsHistoryOpen(true);
-    setIsHistoryLoading(true);
-
-    try {
-      const response = await fetch(
-        `/api/gym/last-exercise-history/${exercise.exercise_id}`
-      );
-
-      if (!response.ok) {
-        throw new Error(`Failed to fetch: ${response.statusText}`);
-      }
-
-      const data = await response.json();
-
-      if (!Array.isArray(data)) {
-        console.warn("Unexpected data format:", data);
-        setLastHistory([]);
-      } else {
-        setLastHistory(data);
-      }
-    } catch (error) {
-      console.error("Error fetching last exercise history:", error);
-      setLastHistory([]);
-    } finally {
-      setIsHistoryLoading(false);
+  const {
+    data: history,
+    error: historyError,
+    isLoading: isHistoryLoading,
+  } = useSWR<HistoryResult[]>(
+    isHistoryOpen && exerciseHistoryId
+      ? `/api/gym/last-exercise-history/${exerciseHistoryId}`
+      : null,
+    fetcher,
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+      revalidateIfStale: false,
     }
+  );
+
+  const openHistory = (exerciseId: string) => {
+    setExerciseHistoryId(exerciseId);
+    setIsHistoryOpen(true);
   };
 
   const isCardioExercise = (exercise: ExerciseEntry) =>
@@ -348,12 +338,14 @@ export default function TemplateForm() {
             <h2 className="text-gray-100 text-lg">
               {templateId ? "Edit your template" : "Create your template"}
             </h2>
-            <TitleInput
-              title={workoutName}
-              setTitle={setWorkoutName}
-              placeholder="Workout Name..."
-              label="Workout Name..."
-            />
+            <div className="w-full px-6">
+              <TitleInput
+                title={workoutName}
+                setTitle={setWorkoutName}
+                placeholder="Workout Name..."
+                label="Workout Name..."
+              />
+            </div>
           </div>
           <div>
             {Object.entries(groupedExercises).map(([superset_id, group]) => (
@@ -375,7 +367,12 @@ export default function TemplateForm() {
                     <div key={index}>
                       <ExerciseCard
                         exercise={exercise}
-                        lastExerciseHistory={lastExerciseHistory}
+                        lastExerciseHistory={(index) => {
+                          const ex = exercises[index];
+                          if (ex.exercise_id) {
+                            openHistory(ex.exercise_id);
+                          }
+                        }}
                         onChangeExercise={(index) => {
                           setExerciseToChangeIndex(index);
                           setSupersetExercise([emptyExerciseEntry]);
@@ -496,7 +493,8 @@ export default function TemplateForm() {
             isOpen={isHistoryOpen}
             onClose={() => setIsHistoryOpen(false)}
             isLoading={isHistoryLoading}
-            history={lastHistory}
+            history={Array.isArray(history) ? history : []}
+            error={historyError ? historyError.message : null}
           />
 
           <div className="flex items-center gap-5 w-fit mx-auto mt-10">

@@ -2,7 +2,6 @@
 
 import SaveButton from "@/app/(app)/ui/save-button";
 import { useState, useEffect } from "react";
-import ModalPageWrapper from "@/app/(app)/components/modalPageWrapper";
 import toast from "react-hot-toast";
 import ExerciseTypeSelect from "@/app/(app)/training/components/ExerciseTypeSelect";
 import TitleInput from "@/app/(app)/training/components/TitleInput";
@@ -128,79 +127,76 @@ export default function Settings() {
   };
 
   return (
-    <ModalPageWrapper>
-      <div className="p-5 h-full relative">
-        <div className="max-w-md mx-auto">
-          <h1 className="text-gray-100 flex justify-center my-5 text-2xl">
-            Profile Settings
-          </h1>
-          <div>
-            <TitleInput
-              label="User Name"
-              placeholder="Enter your user name..."
-              title={userName}
-              setTitle={(value) =>
-                setUserName(
-                  value
-                    .toLowerCase()
-                    .replace(/[^a-z0-9_]/g, "")
-                    .slice(0, 15)
-                )
+    <div className="p-5 h-full relative">
+      <div className="max-w-md mx-auto">
+        <h1 className="text-gray-100 flex justify-center my-5 text-2xl">
+          Profile Settings
+        </h1>
+        <div>
+          <TitleInput
+            label="User Name"
+            placeholder="Enter your user name..."
+            title={userName}
+            setTitle={(value) =>
+              setUserName(
+                value
+                  .toLowerCase()
+                  .replace(/[^a-z0-9_]/g, "")
+                  .slice(0, 15)
+              )
+            }
+          />
+          <p className="text-sm text-gray-500 mt-2">
+            Max 15 characters. Only lowercase letters, numbers, and
+            &quot;_&quot; allowed.
+          </p>
+        </div>
+        <div className="mt-5">
+          <ProfilePicture
+            data={
+              profilePicPreview
+                ? `${profilePicPreview}?t=${Date.now()}`
+                : "/default-avatar.png"
+            }
+            onFileSelected={(file, previewUrl) => {
+              setSelectedProfilePic(file);
+              setProfilePicPreview(previewUrl);
+            }}
+          />
+          <p className="text-sm text-gray-500 mt-2">Max size 5MB.</p>
+        </div>
+        <div className="mt-5 w-fit">
+          <ExerciseTypeSelect
+            onChange={(value) => setWeightUnit(value)}
+            value={weightUnit}
+            label="Weight Unit"
+            options={[
+              { value: "kg", label: "kg" },
+              { value: "lbs", label: "lbs" },
+            ]}
+          />
+        </div>
+        <div className="mt-10">
+          <SaveButton
+            onClick={async () => {
+              if (!userName.trim()) {
+                toast.error("User name cannot be empty.");
+                return;
               }
-            />
-            <p className="text-sm text-gray-500 mt-2">
-              Max 15 characters. Only lowercase letters, numbers, and
-              &quot;_&quot; allowed.
-            </p>
-          </div>
-          <div className="mt-5">
-            <ProfilePicture
-              data={
-                profilePicPreview
-                  ? `${profilePicPreview}?t=${Date.now()}`
-                  : "/default-avatar.png"
+              const isTaken = await isUserNameTaken(userName);
+              if (isTaken) {
+                toast.error(
+                  "User name is already taken. Please choose another."
+                );
+                return;
               }
-              onFileSelected={(file, previewUrl) => {
-                setSelectedProfilePic(file);
-                setProfilePicPreview(previewUrl);
-              }}
-            />
-            <p className="text-sm text-gray-500 mt-2">Max size 5MB.</p>
-          </div>
-          <div className="mt-5 w-fit">
-            <ExerciseTypeSelect
-              onChange={(value) => setWeightUnit(value)}
-              value={weightUnit}
-              label="Weight Unit"
-              options={[
-                { value: "kg", label: "kg" },
-                { value: "lbs", label: "lbs" },
-              ]}
-            />
-          </div>
-          <div className="mt-10">
-            <SaveButton
-              onClick={async () => {
-                if (!userName.trim()) {
-                  toast.error("User name cannot be empty.");
-                  return;
-                }
-                const isTaken = await isUserNameTaken(userName);
-                if (isTaken) {
-                  toast.error(
-                    "User name is already taken. Please choose another."
-                  );
-                  return;
-                }
-                updateSettings();
-              }}
-              label="Save Changes"
-            />
-          </div>
+              updateSettings();
+            }}
+            label="Save Changes"
+          />
         </div>
       </div>
-
       {isSaving && <FullScreenLoader message="Saving settings..." />}
-    </ModalPageWrapper>
+    </div>
   );
 }

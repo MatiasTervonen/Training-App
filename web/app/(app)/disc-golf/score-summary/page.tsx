@@ -1,8 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import ModalPageWrapper from "@/app/(app)/components/modalPageWrapper";
-import { useRouter } from "next/navigation";
 
 export default function DiscGolfScores() {
   const [holes, setHoles] = useState<
@@ -12,7 +10,6 @@ export default function DiscGolfScores() {
       scores: { playerName: string; strokes: number }[];
     }[]
   >([]);
-  const router = useRouter();
 
   useEffect(() => {
     const dataJSON = localStorage.getItem("holes");
@@ -22,12 +19,6 @@ export default function DiscGolfScores() {
   }, []);
 
   return (
-    <ModalPageWrapper
-      onSwipeRight={() => router.back()}
-      leftLabel="back"
-      onSwipeLeft={() => router.push("/dashboard")}
-      rightLabel="home"
-    >
       <div className="bg-slate-800 p-5 h-full relative">
         <div className="flex items-center justify-between mb-8 mx-2">
           <h1 className="text-gray-100 text-center text-xl">
@@ -161,6 +152,5 @@ export default function DiscGolfScores() {
             });
           })()}
       </div>
-    </ModalPageWrapper>
   );
 }

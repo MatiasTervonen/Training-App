@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import SaveButton from "@/app/(app)/ui/save-button";
 import DeleteSessionBtn from "@/app/(app)/ui/deleteSessionBtn";
-import ModalPageWrapper from "@/app/(app)/components/modalPageWrapper";
 import NotesInput from "@/app/(app)/training/components/NotesInput";
 import TitleInput from "@/app/(app)/training/components/TitleInput";
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
@@ -95,7 +94,6 @@ export default function Notes() {
 
   return (
     <>
-      <ModalPageWrapper>
         <div className="flex flex-col h-full w-full px-6 max-w-md mx-auto">
           <div className="flex flex-col items-center mt-5 gap-5 flex-grow mb-10 h-full">
             <p className="text-gray-100 text-lg text-center">
@@ -131,7 +129,6 @@ export default function Notes() {
             <DeleteSessionBtn onDelete={resetReminder} />
           </div>
         </div>
-      </ModalPageWrapper>
       {isSaving && <FullScreenLoader message="Saving reminder..." />}
     </>
   );

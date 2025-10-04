@@ -1,6 +1,5 @@
 "use client";
 
-import ModalPageWrapper from "@/app/(app)/components/modalPageWrapper";
 import { useRouter } from "next/navigation";
 import TitleInput from "../components/TitleInput";
 import { useState, useEffect } from "react";
@@ -321,203 +320,193 @@ export default function TemplateForm() {
 
   if (templateId && (isLoading || !existingTemplate)) {
     return (
-      <ModalPageWrapper>
-        <div className="h-full flex flex-col items-center justify-center bg-slate-800 text-gray-100">
-          <p className="mb-4 text-xl">Loading template details...</p>
-          <Spinner />
-        </div>
-      </ModalPageWrapper>
+      <div className="h-full flex flex-col items-center justify-center bg-slate-800 text-gray-100">
+        <p className="mb-4 text-xl">Loading template details...</p>
+        <Spinner />
+      </div>
     );
   }
 
   return (
-    <ModalPageWrapper>
-      <div className="h-full bg-slate-800 text-gray-100 px-4 pt-5">
-        <div className="max-w-md mx-auto flex flex-col justify-between h-full">
-          <div className="flex flex-col items-center  gap-5 ">
-            <h2 className="text-gray-100 text-lg">
-              {templateId ? "Edit your template" : "Create your template"}
-            </h2>
-            <div className="w-full px-6">
-              <TitleInput
-                title={workoutName}
-                setTitle={setWorkoutName}
-                placeholder="Workout Name..."
-                label="Workout Name..."
-              />
-            </div>
-          </div>
-          <div>
-            {Object.entries(groupedExercises).map(([superset_id, group]) => (
-              <div
-                key={superset_id}
-                className={`mt-5 bg-gradient-to-tr from-gray-900 via-slate-800 to-blue-900  rounded-md mx-2 ${
-                  group.length > 1
-                    ? "border-2 border-blue-700"
-                    : "border-2 border-gray-600"
-                }`}
-              >
-                {group.length > 1 && (
-                  <h2 className="text-lg text-gray-100 my-2 text-center">
-                    Super-Set
-                  </h2>
-                )}
-                {group.map(({ exercise, index }) => {
-                  return (
-                    <div key={index}>
-                      <ExerciseCard
-                        exercise={exercise}
-                        lastExerciseHistory={(index) => {
-                          const ex = exercises[index];
-                          if (ex.exercise_id) {
-                            openHistory(ex.exercise_id);
-                          }
-                        }}
-                        onChangeExercise={(index) => {
-                          setExerciseToChangeIndex(index);
-                          setSupersetExercise([emptyExerciseEntry]);
-                          setNormalExercises([emptyExerciseEntry]);
-                          setIsExerciseModalOpen(true);
-                        }}
-                        index={index}
-                        input={exerciseInputs[index]}
-                        onInputChange={(index, field, value) => {
-                          const updatedInputs = [...exerciseInputs];
-                          updatedInputs[index] = {
-                            ...updatedInputs[index],
-                            [field]: value,
-                          };
-                          setExerciseInputs(updatedInputs);
-                        }}
-                        onAddSet={(index) => logSetForExercise(index)}
-                        onDeleteSet={(index, setIndex) => {
-                          const updated = [...exercises];
-                          updated[index].sets.splice(setIndex, 1);
-                          setExercises(updated);
-                        }}
-                        onUpdateExercise={(index, updatedExercise) => {
-                          const updated = [...exercises];
-                          updated[index] = updatedExercise;
-                          setExercises(updated);
-                        }}
-                        onDeleteExercise={(index) => {
-                          const confirmDelete = confirm(
-                            "Are you sure you want to delete this exercise?"
-                          );
-                          if (!confirmDelete) return;
-
-                          const updated = exercises.filter(
-                            (_, i) => i !== index
-                          );
-                          setExercises(updated);
-
-                          const sessionDraft = {
-                            title: workoutName,
-                            exercises: updated,
-                          };
-                          localStorage.setItem(
-                            storageKey,
-                            JSON.stringify(sessionDraft)
-                          );
-                        }}
-                      />
-                    </div>
-                  );
-                })}
-              </div>
-            ))}
-          </div>
-          <Modal
-            isOpen={isExerciseModalOpen}
-            onClose={() => {
-              setIsExerciseModalOpen(false);
-            }}
-          >
-            <ExerciseSelectorList
-              draftExercises={
-                exerciseType === "Super-Set"
-                  ? supersetExercise
-                  : normalExercises
-              }
-              setDraftExercises={
-                exerciseType === "Super-Set"
-                  ? setSupersetExercise
-                  : setNormalExercises
-              }
-              exerciseToChangeIndex={exerciseToChangeIndex}
-              setExerciseToChangeIndex={setExerciseToChangeIndex}
-              exercises={exercises}
-              setExercises={setExercises}
-              resetTrigger={dropdownResetKey}
-              setIsExerciseModalOpen={setIsExerciseModalOpen}
+    <div className="h-full bg-slate-800 text-gray-100 px-4 pt-5">
+      <div className="max-w-md mx-auto flex flex-col justify-between h-full">
+        <div className="flex flex-col items-center  gap-5 ">
+          <h2 className="text-gray-100 text-lg">
+            {templateId ? "Edit your template" : "Create your template"}
+          </h2>
+          <div className="w-full px-6">
+            <TitleInput
+              title={workoutName}
+              setTitle={setWorkoutName}
+              placeholder="Workout Name..."
+              label="Workout Name..."
             />
-            <div className="sticky bottom-5 flex gap-3 w-full px-2">
-              <div className="relative w-full">
-                <select
-                  className="appearance-none w-full px-10 bg-blue-800 py-2 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700"
-                  value={exerciseType}
-                  onChange={(e) => {
-                    const type = e.target.value;
-                    setExerciseType(type);
-                    if (type === "Normal") {
-                      setSupersetExercise([]);
-                      setNormalExercises([emptyExerciseEntry]);
-                    } else if (type === "Super-Set") {
-                      setNormalExercises([]);
-                      setSupersetExercise([emptyExerciseEntry]);
-                    }
-                  }}
-                >
-                  <option value="Normal">Normal</option>
-                  <option value="Super-Set">Super-Set</option>
-                </select>
-                <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none">
-                  <ChevronDown className="text-gray-100" />
-                </div>
-              </div>
-              <button
-                onClick={() => {
-                  handleAddExercise();
-                  setIsExerciseModalOpen(false);
-                }}
-                className="w-full px-2 bg-blue-800 py-2 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700"
-              >
-                {exerciseType === "Super-Set"
-                  ? "Add Super-Set"
-                  : "Add Exercise"}
-              </button>
+          </div>
+        </div>
+        <div>
+          {Object.entries(groupedExercises).map(([superset_id, group]) => (
+            <div
+              key={superset_id}
+              className={`mt-5 bg-gradient-to-tr from-gray-900 via-slate-800 to-blue-900  rounded-md mx-2 ${
+                group.length > 1
+                  ? "border-2 border-blue-700"
+                  : "border-2 border-gray-600"
+              }`}
+            >
+              {group.length > 1 && (
+                <h2 className="text-lg text-gray-100 my-2 text-center">
+                  Super-Set
+                </h2>
+              )}
+              {group.map(({ exercise, index }) => {
+                return (
+                  <div key={index}>
+                    <ExerciseCard
+                      exercise={exercise}
+                      lastExerciseHistory={(index) => {
+                        const ex = exercises[index];
+                        if (ex.exercise_id) {
+                          openHistory(ex.exercise_id);
+                        }
+                      }}
+                      onChangeExercise={(index) => {
+                        setExerciseToChangeIndex(index);
+                        setSupersetExercise([emptyExerciseEntry]);
+                        setNormalExercises([emptyExerciseEntry]);
+                        setIsExerciseModalOpen(true);
+                      }}
+                      index={index}
+                      input={exerciseInputs[index]}
+                      onInputChange={(index, field, value) => {
+                        const updatedInputs = [...exerciseInputs];
+                        updatedInputs[index] = {
+                          ...updatedInputs[index],
+                          [field]: value,
+                        };
+                        setExerciseInputs(updatedInputs);
+                      }}
+                      onAddSet={(index) => logSetForExercise(index)}
+                      onDeleteSet={(index, setIndex) => {
+                        const updated = [...exercises];
+                        updated[index].sets.splice(setIndex, 1);
+                        setExercises(updated);
+                      }}
+                      onUpdateExercise={(index, updatedExercise) => {
+                        const updated = [...exercises];
+                        updated[index] = updatedExercise;
+                        setExercises(updated);
+                      }}
+                      onDeleteExercise={(index) => {
+                        const confirmDelete = confirm(
+                          "Are you sure you want to delete this exercise?"
+                        );
+                        if (!confirmDelete) return;
+
+                        const updated = exercises.filter((_, i) => i !== index);
+                        setExercises(updated);
+
+                        const sessionDraft = {
+                          title: workoutName,
+                          exercises: updated,
+                        };
+                        localStorage.setItem(
+                          storageKey,
+                          JSON.stringify(sessionDraft)
+                        );
+                      }}
+                    />
+                  </div>
+                );
+              })}
             </div>
-          </Modal>
-
-          <ExerciseHistoryModal
-            isOpen={isHistoryOpen}
-            onClose={() => setIsHistoryOpen(false)}
-            isLoading={isHistoryLoading}
-            history={Array.isArray(history) ? history : []}
-            error={historyError ? historyError.message : null}
+          ))}
+        </div>
+        <Modal
+          isOpen={isExerciseModalOpen}
+          onClose={() => {
+            setIsExerciseModalOpen(false);
+          }}
+        >
+          <ExerciseSelectorList
+            draftExercises={
+              exerciseType === "Super-Set" ? supersetExercise : normalExercises
+            }
+            setDraftExercises={
+              exerciseType === "Super-Set"
+                ? setSupersetExercise
+                : setNormalExercises
+            }
+            exerciseToChangeIndex={exerciseToChangeIndex}
+            setExerciseToChangeIndex={setExerciseToChangeIndex}
+            exercises={exercises}
+            setExercises={setExercises}
+            resetTrigger={dropdownResetKey}
+            setIsExerciseModalOpen={setIsExerciseModalOpen}
           />
-
-          <div className="flex items-center gap-5 w-fit mx-auto mt-10">
+          <div className="sticky bottom-5 flex gap-3 w-full px-2">
+            <div className="relative w-full">
+              <select
+                className="appearance-none w-full px-10 bg-blue-800 py-2 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700"
+                value={exerciseType}
+                onChange={(e) => {
+                  const type = e.target.value;
+                  setExerciseType(type);
+                  if (type === "Normal") {
+                    setSupersetExercise([]);
+                    setNormalExercises([emptyExerciseEntry]);
+                  } else if (type === "Super-Set") {
+                    setNormalExercises([]);
+                    setSupersetExercise([emptyExerciseEntry]);
+                  }
+                }}
+              >
+                <option value="Normal">Normal</option>
+                <option value="Super-Set">Super-Set</option>
+              </select>
+              <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none">
+                <ChevronDown className="text-gray-100" />
+              </div>
+            </div>
             <button
               onClick={() => {
-                setExerciseType("Normal");
-                setSupersetExercise([emptyExerciseEntry]);
-                setNormalExercises([emptyExerciseEntry]);
-                setIsExerciseModalOpen(true);
+                handleAddExercise();
+                setIsExerciseModalOpen(false);
               }}
-              className="w-full px-10 bg-blue-800 py-2 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95"
+              className="w-full px-2 bg-blue-800 py-2 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700"
             >
-              Add Exercise
-              <Plus className=" inline ml-2" size={20} />
+              {exerciseType === "Super-Set" ? "Add Super-Set" : "Add Exercise"}
             </button>
           </div>
-          <div className="flex flex-col justify-center items-center mt-14 gap-5 pb-5">
-            <SaveButton onClick={handleSaveTemplate} />
-            <DeleteSessionBtn onDelete={resetSession} />
-          </div>
+        </Modal>
+
+        <ExerciseHistoryModal
+          isOpen={isHistoryOpen}
+          onClose={() => setIsHistoryOpen(false)}
+          isLoading={isHistoryLoading}
+          history={Array.isArray(history) ? history : []}
+          error={historyError ? historyError.message : null}
+        />
+
+        <div className="flex items-center gap-5 w-fit mx-auto mt-10">
+          <button
+            onClick={() => {
+              setExerciseType("Normal");
+              setSupersetExercise([emptyExerciseEntry]);
+              setNormalExercises([emptyExerciseEntry]);
+              setIsExerciseModalOpen(true);
+            }}
+            className="w-full px-10 bg-blue-800 py-2 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95"
+          >
+            Add Exercise
+            <Plus className=" inline ml-2" size={20} />
+          </button>
+        </div>
+        <div className="flex flex-col justify-center items-center mt-14 gap-5 pb-5">
+          <SaveButton onClick={handleSaveTemplate} />
+          <DeleteSessionBtn onDelete={resetSession} />
         </div>
       </div>
       {isSaving && <FullScreenLoader message="Saving template..." />}
-    </ModalPageWrapper>
+    </div>
   );
 }

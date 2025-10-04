@@ -1,7 +1,6 @@
 "use client";
 
 import { russoOne } from "@/app/ui/fonts";
-import ModalPageWrapper from "@/app/(app)/components/modalPageWrapper";
 import { useState } from "react";
 import WeightChart from "../components/WeightChart";
 import AllDataTable from "../components/AllDataTable";
@@ -25,7 +24,6 @@ export default function TrainingPage() {
   });
 
   return (
-    <ModalPageWrapper>
       <div
         className={`${russoOne.className} h-full bg-slate-800 text-gray-100 py-5`}
       >
@@ -70,6 +68,5 @@ export default function TrainingPage() {
           </div>
         </div>
       </div>
-    </ModalPageWrapper>
   );
 }

@@ -1,6 +1,5 @@
 "use client";
 
-import ModalPageWrapper from "@/app/(app)//components/modalPageWrapper";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import TitleInput from "@/app/(app)/training/components/TitleInput";
@@ -105,56 +104,54 @@ export default function TimerPage() {
   };
 
   return (
-    <ModalPageWrapper>
-      <div className="p-5 h-full relative text-gray-100 max-w-md mx-auto">
-        <h1 className="text-2xl text-center my-5 ">Create Timer</h1>
-        <div className="mb-5">
-          <TitleInput
-            title={timerTitle}
-            setTitle={setTimerTitle}
-            placeholder="Enter timer title"
-            label="Timer Title"
+    <div className="p-5 h-full relative text-gray-100 max-w-md mx-auto">
+      <h1 className="text-2xl text-center my-5 ">Create Timer</h1>
+      <div className="mb-5">
+        <TitleInput
+          title={timerTitle}
+          setTitle={setTimerTitle}
+          placeholder="Enter timer title"
+          label="Timer Title"
+        />
+      </div>
+      <div className="mb-5">
+        <NotesInput
+          placeholder="Enter notes (optional)"
+          label="Notes"
+          notes={notes}
+          setNotes={setNotes}
+        />
+      </div>
+      <div className="flex items-center justify-center gap-4 mb-5">
+        <div>
+          <SetInput
+            label="Minutes"
+            placeholder="0 min"
+            value={alarmMinutes}
+            type="number"
+            onChange={(value) => setAlarmMinutes(value)}
           />
         </div>
-        <div className="mb-5">
-          <NotesInput
-            placeholder="Enter notes (optional)"
-            label="Notes"
-            notes={notes}
-            setNotes={setNotes}
+        <div>
+          <SetInput
+            label="Seconds"
+            placeholder="0 sec"
+            value={alarmSeconds}
+            type="number"
+            onChange={(value) => setAlarmSeconds(value)}
           />
-        </div>
-        <div className="flex items-center justify-center gap-4 mb-5">
-          <div>
-            <SetInput
-              label="Minutes"
-              placeholder="0 min"
-              value={alarmMinutes}
-              type="number"
-              onChange={(value) => setAlarmMinutes(value)}
-            />
-          </div>
-          <div>
-            <SetInput
-              label="Seconds"
-              placeholder="0 sec"
-              value={alarmSeconds}
-              type="number"
-              onChange={(value) => setAlarmSeconds(value)}
-            />
-          </div>
-        </div>
-        <div className="flex flex-col gap-5 items-center justify-center mb-5 mt-10">
-          <SaveButton onClick={saveTimer} label="Save Timer" />
-          <button
-            className="w-full bg-red-600 border-2 border-red-400 py-2 shadow-xl rounded-md cursor-pointer hover:scale-95 hover:bg-red-500"
-            onClick={handleReset}
-          >
-            Cancel
-          </button>
         </div>
       </div>
+      <div className="flex flex-col gap-5 items-center justify-center mb-5 mt-10">
+        <SaveButton onClick={saveTimer} label="Save Timer" />
+        <button
+          className="w-full bg-red-600 border-2 border-red-400 py-2 shadow-xl rounded-md cursor-pointer hover:scale-95 hover:bg-red-500"
+          onClick={handleReset}
+        >
+          Cancel
+        </button>
+      </div>
       {isSaving && <FullScreenLoader message="Saving Timer..." />}
-    </ModalPageWrapper>
+    </div>
   );
 }

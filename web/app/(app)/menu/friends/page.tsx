@@ -1,6 +1,5 @@
 "use client";
 
-import ModalPageWrapper from "@/app/(app)/components/modalPageWrapper";
 import useSWR from "swr";
 import FriendRequestForm from "./components/FriendRequestForm";
 import FriendCard from "./components/FriendCard";
@@ -25,7 +24,7 @@ export default function FriendsPage() {
   const friends = data?.friends || [];
 
   return (
-    <ModalPageWrapper>
+
       <div className="p-5 h-full text-gray-100 max-w-md mx-auto">
         <h1 className="text-gray-100 text-center  my-5 text-2xl">Friends</h1>
         <FriendRequestForm />
@@ -50,6 +49,5 @@ export default function FriendsPage() {
           )}
         </div>
       </div>
-    </ModalPageWrapper>
   );
 }

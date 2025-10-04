@@ -1,7 +1,6 @@
 "use client";
 
 import { russoOne } from "@/app/ui/fonts";
-import ModalPageWrapper from "@/app/(app)/components/modalPageWrapper";
 import { useRouter } from "next/navigation";
 import { TemplateSkeleton } from "@/app/(app)/ui/loadingSkeletons/skeletons";
 import Modal from "@/app/(app)/components/modal";
@@ -88,12 +87,6 @@ export default function TimersPage() {
   };
 
   return (
-    <ModalPageWrapper
-      leftLabel="back"
-      rightLabel="home"
-      onSwipeRight={() => router.back()}
-      onSwipeLeft={() => router.push("/dashboard")}
-    >
       <div
         className={`${russoOne.className} h-full bg-slate-800 text-gray-100 p-5`}
       >
@@ -154,6 +147,6 @@ export default function TimersPage() {
           )}
         </div>
       </div>
-    </ModalPageWrapper>
+
   );
 }

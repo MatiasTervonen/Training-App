@@ -127,7 +127,7 @@ export default function EditTodo({ todo_session, onClose, onSave }: Props) {
                   <p className="mb-2">{index + 1}.</p>
                   <button
                     onClick={() => handleDeleteItem(index)}
-                    className="text-red-500 hover:scale-105"
+                    className="text-red-500 hover:scale-105 cursor-pointer"
                   >
                     Delete
                   </button>
@@ -161,7 +161,7 @@ export default function EditTodo({ todo_session, onClose, onSave }: Props) {
         </div>
       </div>
 
-      {isSaving && <FullScreenLoader message="Saving notes..." />}
+      {isSaving && <FullScreenLoader message="Saving todo list..." />}
     </>
   );
 }

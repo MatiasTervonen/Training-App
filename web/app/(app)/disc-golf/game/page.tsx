@@ -5,13 +5,13 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import DeleteSessionBtn from "@/app/(app)/ui/deleteSessionBtn";
-import { motion, AnimatePresence } from "framer-motion";
-import { SquareArrowLeft, SquareArrowRight } from "lucide-react";
 import { HoleData, Player, PlayerStats } from "../Types/disc-golf";
 import SaveButton from "@/app/(app)/ui/save-button";
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import { clearLocalStorage } from "../components/ClearLocalStorage";
 import { useTimerStore } from "@/app/(app)/lib/stores/timerStore";
+import SwipeWrapper from "../components/SwipeWrapper";
+import StatsTracker from "../components/StatsTracker";
 
 export default function DiscGolfGame() {
   const [length, setLength] = useState(""); // input value
@@ -28,8 +28,6 @@ export default function DiscGolfGame() {
     const saved = localStorage.getItem("viewingHoleNumber");
     return saved ? parseInt(saved) : 1;
   });
-  const [direction, setDirection] = useState(0);
-  const [isSwiping, setIsSwiping] = useState(false);
 
   const [previousHoleNumber, setPreviousHoleNumber] = useState<number | null>(
     null
@@ -315,9 +313,6 @@ export default function DiscGolfGame() {
 
   const handleNextHole = () => {
     window.scrollTo(0, 0); // Scroll to top of the page
-    setDirection(1);
-    setIsSwiping(true);
-
     // This triggers the same animation path as a swipe
     setViewingHoleNumber((prev) => {
       const nextHole = prev + 1;
@@ -328,9 +323,6 @@ export default function DiscGolfGame() {
 
   const handlePerviousHole = () => {
     window.scrollTo(0, 0); // Scroll to top of the page
-    setDirection(-1);
-    setIsSwiping(true);
-
     // This triggers the same animation path as a swipe
     setViewingHoleNumber((prev) => {
       const perviousHole = prev - 1;
@@ -355,337 +347,134 @@ export default function DiscGolfGame() {
           Live Scorecard
         </Link>
       </nav>
-      <div className="relative h-[calc(100dvh-112px)] max-w-3xl mx-auto">
-        <div className="absolute inset-0 z-0 h-full flex justify-between bg-slate-950">
-          {!isSwiping && (
-            <>
-              <div className="flex flex-col items-center pt-[10px] gap-2 mx-2">
-                {viewingHoleNumber > 1 && (
-                  <>
-                    <div className="text-gray-100 text-center text-2xl">
-                      <p>H</p>
-                      <p>O</p>
-                      <p>L</p>
-                      <p>E</p>
-                      <p>{viewingHoleNumber - 1}</p>
-                    </div>
-                    <SquareArrowLeft
-                      size={35}
-                      className="text-gray-100 animate-pulse"
-                    />
-                  </>
-                )}
-              </div>
-
-              <div className="flex flex-col items-center gap-2 mx-2 pt-[10px]">
-                {viewingHoleNumber === totalHoles ? (
-                  <div className="text-gray-100 text-center text-2xl">
-                    <p>F</p>
-                    <p>I</p>
-                    <p>N</p>
-                    <p>I</p>
-                    <p>S</p>
-                    <p>H</p>
-                  </div>
-                ) : (
-                  <div className="text-gray-100 text-center text-2xl">
-                    <p>H</p>
-                    <p>O</p>
-                    <p>L</p>
-                    <p>E</p>
-                    <p>{viewingHoleNumber + 1}</p>
-                  </div>
-                )}
-
-                <SquareArrowRight
-                  size={35}
-                  className="text-gray-100 animate-pulse"
-                />
-              </div>
-            </>
-          )}
-        </div>
-
-        <AnimatePresence initial={false} custom={direction}>
-          <motion.div
-            key={viewingHoleNumber}
-            className="absolute w-full z-30 bg-slate-900 px-5 h-full overflow-y-auto flex flex-col justify-between"
-            custom={direction}
-            initial="enter"
-            animate="center"
-            exit="exit"
-            onAnimationComplete={() => {
-              setIsSwiping(false);
-            }}
-            variants={{
-              enter: (direction: number) => ({
-                x: direction > 0 ? 300 : -300,
-                opacity: 0,
-              }),
-              center: {
-                x: 0,
-                opacity: 1,
-              },
-              exit: (direction: number) => ({
-                x: direction > 0 ? -300 : 300,
-                opacity: 0,
-              }),
-            }}
-            transition={{
-              x: { type: "spring", stiffness: 300, damping: 30 },
-              opacity: { duration: 0.3 },
-            }}
-            drag="x"
-            dragConstraints={{ left: 0, right: 0 }}
-            dragElastic={0.2}
-            onDragEnd={(_, info) => {
-              const swipeDistance = info.offset.x;
-              const threshold = 100;
-
-              if (swipeDistance > threshold) {
-                // Swipe right
-                if (viewingHoleNumber > 1) {
-                  setIsSwiping(true);
-                  setDirection(-1);
-                  setViewingHoleNumber((prev) => prev - 1);
-                } else {
-                  // At Hole 1: do nothing — Framer Motion will snap it back
-                }
-              } else if (swipeDistance < -threshold) {
-                // Swipe left
-                if (viewingHoleNumber < totalHoles) {
-                  setIsSwiping(true);
-                  setDirection(1);
-                  setViewingHoleNumber((prev) => prev + 1);
-                } else {
-                  const confirmed = confirm("Finish the game?");
-                  if (confirmed) {
-                    setIsSwiping(true);
-                    handleFinishGame();
-                  }
-                }
-              }
-            }}
-          >
-            <div className="max-w-md mx-auto flex flex-col justify-between w-full h-full">
-              <div>
-                <h1 className="text-gray-100 flex justify-center my-2 text-2xl mt-5">
-                  Hole {viewingHoleNumber}
-                </h1>
-                <p className="text-gray-100 flex justify-center my-2">
-                  {courseName}
-                </p>
-                <div className="border-2 border-gray-100 p-5 rounded-xl mb-10 mx-10">
-                  <div className="flex items-center justify-between gap-2 text-gray-100">
-                    <p className="text-xl">Par</p>
-                    <div className="flex items-center gap-4">
-                      <button
-                        onClick={() => setPar((prev) => Math.max(3, prev - 1))}
-                        className="bg-blue-800 text-gray-100 px-4 py-2 rounded"
-                      >
-                        -
-                      </button>
-                      <span className="w-[20px] text-center">{par}</span>
-                      <button
-                        onClick={() => setPar((prev) => Math.min(5, prev + 1))}
-                        className="bg-blue-800 text-gray-100 px-4 py-2 rounded"
-                      >
-                        +
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              {getSortedPlayersByScoreAndLastHole().map((player, index) => (
-                <div key={index} className="flex flex-col gap-2 mt-5 mb-10">
-                  <div className="flex items-center justify-between text-gray-100 text-lg border-b">
-                    {(() => {
-                      const { totalStrokes, formattedDiff } = getPlayerTotals(
-                        player.name
-                      );
-                      return (
-                        <p className="flex items-center gap-2">
-                          {index === 0 && <span>🥏</span>}
-                          {player.name} - {totalStrokes} ({formattedDiff})
-                        </p>
-                      );
-                    })()}
-
-                    <div className="flex items-center gap-6">
-                      <button
-                        className="bg-blue-800 text-gray-100 px-4 py-2 rounded"
-                        onClick={() =>
-                          setPlayerStats((prev) => ({
-                            ...prev,
-                            [player.name]: {
-                              ...prev[player.name],
-                              strokes: Math.max(
-                                (prev[player.name]?.strokes || 0) - 1,
-                                0
-                              ),
-                            },
-                          }))
-                        }
-                      >
-                        -
-                      </button>
-                      <span className="w-[20px] text-center">{playerStats[player.name]?.strokes ?? 0}</span>
-                      <button
-                        className="bg-blue-800 text-gray-100 px-4 py-2 rounded"
-                        onClick={() =>
-                          setPlayerStats((prev) => ({
-                            ...prev,
-                            [player.name]: {
-                              ...prev[player.name],
-                              strokes: Math.min(
-                                (prev[player.name]?.strokes || 0) + 1,
-                                12
-                              ),
-                            },
-                          }))
-                        }
-                      >
-                        +
-                      </button>
-                    </div>
-                  </div>
-                  {trackStats && (
-                    <div>
-                      <div className="flex justify-between items-center gap-2 border-b border-gray-100 text-gray-100 mx-10 mt-5">
-                        <label>Fairway Hit</label>
-                        <input
-                          className="h-5 w-5"
-                          type="checkbox"
-                          checked={
-                            playerStats[player.name]?.fairwayHit ?? false
-                          }
-                          onChange={(e) =>
-                            setPlayerStats((prev) => ({
-                              ...prev,
-                              [player.name]: {
-                                ...prev[player.name],
-                                fairwayHit: e.target.checked,
-                              },
-                            }))
-                          }
-                        />
-                      </div>
-                      <div className="flex justify-between items-center gap-2 border-b border-gray-100 text-gray-100 mx-10">
-                        <label>C1 Made</label>
-                        <input
-                          className="h-5 w-5"
-                          type="checkbox"
-                          checked={playerStats[player.name]?.c1made ?? false}
-                          onChange={(e) =>
-                            setPlayerStats((prev) => ({
-                              ...prev,
-                              [player.name]: {
-                                ...prev[player.name],
-                                c1made: e.target.checked,
-                                c1attempted: e.target.checked
-                                  ? true
-                                  : prev[player.name]?.c1attempted,
-                              },
-                            }))
-                          }
-                        />
-                      </div>
-                      <div className="flex justify-between items-center gap-2 border-b border-gray-100 text-gray-100 mx-10">
-                        <label>C1 Attempted</label>
-                        <input
-                          className="h-5 w-5"
-                          type="checkbox"
-                          checked={
-                            playerStats[player.name]?.c1attempted ?? false
-                          }
-                          onChange={(e) =>
-                            setPlayerStats((prev) => ({
-                              ...prev,
-                              [player.name]: {
-                                ...prev[player.name],
-                                c1attempted: e.target.checked,
-                                c1made: e.target.checked
-                                  ? prev[player.name]?.c1made
-                                  : false,
-                              },
-                            }))
-                          }
-                        />
-                      </div>
-                      <div className="flex justify-between items-center gap-2 border-b border-gray-100 text-gray-100 mx-10">
-                        <label> C2 Made</label>
-                        <input
-                          className="h-5 w-5"
-                          type="checkbox"
-                          checked={playerStats[player.name]?.c2made ?? false}
-                          onChange={(e) =>
-                            setPlayerStats((prev) => ({
-                              ...prev,
-                              [player.name]: {
-                                ...prev[player.name],
-                                c2made: e.target.checked,
-                                c2attempted: e.target.checked
-                                  ? true
-                                  : prev[player.name]?.c2attempted,
-                              },
-                            }))
-                          }
-                        />
-                      </div>
-                      <div className="flex justify-between items-center gap-2 border-b border-gray-100 text-gray-100 mx-10 mb-5">
-                        <label> C2 Attempted</label>
-                        <input
-                          className="h-5 w-5"
-                          type="checkbox"
-                          checked={
-                            playerStats[player.name]?.c2attempted ?? false
-                          }
-                          onChange={(e) =>
-                            setPlayerStats((prev) => ({
-                              ...prev,
-                              [player.name]: {
-                                ...prev[player.name],
-                                c2attempted: e.target.checked,
-                                c2made: e.target.checked
-                                  ? prev[player.name]?.c2made
-                                  : false,
-                              },
-                            }))
-                          }
-                        />
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ))}
-
-              <div className="mb-5">
-                <div className="flex gap-4 items-center  ">
-                  {viewingHoleNumber > 1 && (
+      <div className="relative h-[calc(100dvh-112px)] max-w-3xl mx-auto overflow-hidden">
+        <SwipeWrapper
+          viewingHoleNumber={viewingHoleNumber}
+          totalHoles={totalHoles}
+          onNextHole={handleNextHole}
+          onPreviousHole={handlePerviousHole}
+          onFinishGame={handleFinishGame}
+        >
+          <div className="max-w-md mx-auto flex flex-col justify-between w-full h-full">
+            <div>
+              <h1 className="text-gray-100 flex justify-center my-2 text-2xl mt-5">
+                Hole {viewingHoleNumber}
+              </h1>
+              <p className="text-gray-100 flex justify-center my-2">
+                {courseName}
+              </p>
+              <div className="border-2 border-gray-100 p-5 rounded-xl mb-10 mx-10">
+                <div className="flex items-center justify-between gap-2 text-gray-100">
+                  <p className="text-xl">Par</p>
+                  <div className="flex items-center gap-4">
                     <button
-                      onClick={handlePerviousHole}
-                      className="mb-5 flex items-center justify-center w-full  bg-blue-800 py-2 px-10 mt-10 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95"
+                      onClick={() => setPar((prev) => Math.max(3, prev - 1))}
+                      className="bg-blue-800 text-gray-100 px-4 py-2 rounded"
                     >
-                      Prev Hole
+                      -
                     </button>
-                  )}
-                  {viewingHoleNumber < totalHoles && (
+                    <span className="w-[20px] text-center">{par}</span>
                     <button
-                      onClick={handleNextHole}
-                      className="mb-5 flex items-center justify-center w-full  bg-blue-800 py-2 px-10 mt-10 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95"
+                      onClick={() => setPar((prev) => Math.min(5, prev + 1))}
+                      className="bg-blue-800 text-gray-100 px-4 py-2 rounded"
                     >
-                      Next Hole
+                      +
                     </button>
-                  )}
-                </div>
-                <div className="flex flex-col gap-5 items-center justify-center">
-                  <SaveButton onClick={handleFinishGame} />
-                  <DeleteSessionBtn onDelete={deleteSession} />
+                  </div>
                 </div>
               </div>
             </div>
-          </motion.div>
-        </AnimatePresence>
+            {getSortedPlayersByScoreAndLastHole().map((player, index) => (
+              <div key={index} className="flex flex-col gap-2 mt-5 mb-10">
+                <div className="flex items-center justify-between text-gray-100 text-lg border-b">
+                  {(() => {
+                    const { totalStrokes, formattedDiff } = getPlayerTotals(
+                      player.name
+                    );
+                    return (
+                      <p className="flex items-center gap-2">
+                        {index === 0 && <span>🥏</span>}
+                        {player.name} - {totalStrokes} ({formattedDiff})
+                      </p>
+                    );
+                  })()}
+
+                  <div className="flex items-center gap-6">
+                    <button
+                      className="bg-blue-800 text-gray-100 px-4 py-2 rounded"
+                      onClick={() =>
+                        setPlayerStats((prev) => ({
+                          ...prev,
+                          [player.name]: {
+                            ...prev[player.name],
+                            strokes: Math.max(
+                              (prev[player.name]?.strokes || 0) - 1,
+                              0
+                            ),
+                          },
+                        }))
+                      }
+                    >
+                      -
+                    </button>
+                    <span className="w-[20px] text-center">
+                      {playerStats[player.name]?.strokes ?? 0}
+                    </span>
+                    <button
+                      className="bg-blue-800 text-gray-100 px-4 py-2 rounded"
+                      onClick={() =>
+                        setPlayerStats((prev) => ({
+                          ...prev,
+                          [player.name]: {
+                            ...prev[player.name],
+                            strokes: Math.min(
+                              (prev[player.name]?.strokes || 0) + 1,
+                              12
+                            ),
+                          },
+                        }))
+                      }
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+                {trackStats && (
+                  <StatsTracker
+                    playerName={player.name}
+                    playerStats={playerStats}
+                    setPlayerStats={setPlayerStats}
+                  />
+                )}
+              </div>
+            ))}
+
+            <div className="mb-5">
+              <div className="flex gap-4 items-center  ">
+                {viewingHoleNumber > 1 && (
+                  <button
+                    onClick={handlePerviousHole}
+                    className="mb-5 flex items-center justify-center w-full  bg-blue-800 py-2 px-10 mt-10 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95"
+                  >
+                    Prev Hole
+                  </button>
+                )}
+                {viewingHoleNumber < totalHoles && (
+                  <button
+                    onClick={handleNextHole}
+                    className="mb-5 flex items-center justify-center w-full  bg-blue-800 py-2 px-10 mt-10 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95"
+                  >
+                    Next Hole
+                  </button>
+                )}
+              </div>
+              <div className="flex flex-col gap-5 items-center justify-center">
+                <SaveButton onClick={handleFinishGame} />
+                <DeleteSessionBtn onDelete={deleteSession} />
+              </div>
+            </div>
+          </div>
+        </SwipeWrapper>
         {isSaving && <FullScreenLoader message="Saving your game..." />}
       </div>
     </>

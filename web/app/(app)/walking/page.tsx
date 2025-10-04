@@ -1,10 +1,7 @@
-"use client";
 
-import ModalPageWrapper from "../components/modalPageWrapper";
 
 export default function Walking() {
   return (
-    <ModalPageWrapper>
       <div className="bg-slate-800 p-5 min-h-(calc(100dvh-72px) relative">
         <h1
           className="text-gray-100 flex justify-center my-5 text-2xl "
@@ -17,6 +14,5 @@ export default function Walking() {
           </p>
         </div>
       </div>
-    </ModalPageWrapper>
   );
 }

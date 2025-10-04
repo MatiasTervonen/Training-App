@@ -4,7 +4,6 @@ import { Plus } from "lucide-react";
 import { useState, useEffect } from "react";
 import DeleteSessionBtn from "../ui/deleteSessionBtn";
 import { createClient } from "@/utils/supabase/client";
-import ModalPageWrapper from "../components/modalPageWrapper";
 import { useRouter } from "next/navigation";
 import { clearLocalStorage } from "./components/ClearLocalStorage";
 import TitleInput from "../training/components/TitleInput";
@@ -101,7 +100,6 @@ export default function DiscGolf() {
   };
 
   return (
-    <ModalPageWrapper>
       <div className="bg-slate-800 p-5 h-full max-w-md mx-auto">
         <div className="flex flex-col h-full w-full justify-between">
           <div>
@@ -180,6 +178,5 @@ export default function DiscGolf() {
           </div>
         </div>
       </div>
-    </ModalPageWrapper>
   );
 }

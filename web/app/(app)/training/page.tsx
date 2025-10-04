@@ -1,9 +1,7 @@
 import Link from "next/link";
-import ModalPageWrapper from "../components/modalPageWrapper";
 
 export default function TrainingPage() {
   return (
-    <ModalPageWrapper>
       <div className="h-full bg-slate-800 text-gray-100 p-5">
         <h1 className="text-2xl my-5 text-center">Gym Session</h1>
         <div className="flex flex-col max-w-md mx-auto">
@@ -33,6 +31,5 @@ export default function TrainingPage() {
           </Link>
         </div>
       </div>
-    </ModalPageWrapper>
   );
 }

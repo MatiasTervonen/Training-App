@@ -1,6 +1,5 @@
 "use client";
 
-import ModalPageWrapper from "@/app/(app)/components/modalPageWrapper";
 import { useRouter } from "next/navigation";
 import { TemplateSkeleton } from "@/app/(app)/ui/loadingSkeletons/skeletons";
 import Modal from "@/app/(app)/components/modal";
@@ -114,7 +113,6 @@ export default function TemplatesPage() {
   );
 
   return (
-    <ModalPageWrapper>
       <div className="h-full text-gray-100 p-5">
         <div className="flex flex-col max-w-md mx-auto">
           <h1 className="text-gray-100 text-center  mt-5 mb-10 text-2xl">
@@ -173,6 +171,5 @@ export default function TemplatesPage() {
           )}
         </div>
       </div>
-    </ModalPageWrapper>
   );
 }

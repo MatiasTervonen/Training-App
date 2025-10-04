@@ -1,7 +1,6 @@
 "use client";
 
 import { russoOne } from "@/app/ui/fonts";
-import ModalPageWrapper from "@/app/(app)/components/modalPageWrapper";
 import NotesInput from "@/app/(app)/training/components/NotesInput";
 import TitleInput from "@/app/(app)/training/components/TitleInput";
 import SaveButton from "@/app/(app)/ui/save-button";
@@ -95,50 +94,45 @@ export default function WorkoutAnalyticsPage() {
   };
 
   return (
-    <ModalPageWrapper>
-      <div
-        className={`${russoOne.className} h-full bg-slate-800 text-gray-100 py-5 px-10`}
-      >
-        <div className="flex flex-col justify-between h-full max-w-md mx-auto">
-          <div className="flex flex-col gap-10">
-            <h1 className="text-2xl text-center">Track your body weight</h1>
+    <div
+      className={`${russoOne.className} h-full bg-slate-800 text-gray-100 py-5 px-10`}
+    >
+      <div className="flex flex-col justify-between h-full max-w-md mx-auto">
+        <div className="flex flex-col gap-10">
+          <h1 className="text-2xl text-center">Track your body weight</h1>
 
-            <TitleInput
-              title={weightTitle}
-              setTitle={setWeightTitle}
-              placeholder="Weight entry title..."
-              label="Title for Weight..."
+          <TitleInput
+            title={weightTitle}
+            setTitle={setWeightTitle}
+            placeholder="Weight entry title..."
+            label="Title for Weight..."
+          />
+          <NotesInput
+            notes={weightNotes}
+            setNotes={setWeightNotes}
+            placeholder="Enter your notes here..."
+            label="Notes for Weight..."
+          />
+          <label htmlFor="weight" className="flex flex-col gap-1 text-gray-400">
+            Weight...
+            <input
+              autoComplete="off"
+              id="weight"
+              type="text"
+              inputMode="numeric"
+              placeholder="Enter your weight here..."
+              className="custom-input text-lg p-2 rounded-md border-2 border-gray-100 z-10  placeholder-gray-500  text-gray-100 bg-[linear-gradient(50deg,_#0f172a,_#1e293b,_#333333)] hover:border-blue-500 focus:outline-none focus:border-green-300"
+              value={weight}
+              onChange={(e) => setWeight(e.target.value)}
             />
-            <NotesInput
-              notes={weightNotes}
-              setNotes={setWeightNotes}
-              placeholder="Enter your notes here..."
-              label="Notes for Weight..."
-            />
-            <label
-              htmlFor="weight"
-              className="flex flex-col gap-1 text-gray-400"
-            >
-              Weight...
-              <input
-                autoComplete="off"
-                id="weight"
-                type="text"
-                inputMode="numeric"
-                placeholder="Enter your weight here..."
-                className="custom-input text-lg p-2 rounded-md border-2 border-gray-100 z-10  placeholder-gray-500  text-gray-100 bg-[linear-gradient(50deg,_#0f172a,_#1e293b,_#333333)] hover:border-blue-500 focus:outline-none focus:border-green-300"
-                value={weight}
-                onChange={(e) => setWeight(e.target.value)}
-              />
-            </label>
-          </div>
-          <div className="flex flex-col items-center gap-5">
-            <SaveButton onClick={saveWeight} />
-            <DeleteSessionBtn onDelete={resetWeight} />
-          </div>
+          </label>
+        </div>
+        <div className="flex flex-col items-center gap-5">
+          <SaveButton onClick={saveWeight} />
+          <DeleteSessionBtn onDelete={resetWeight} />
         </div>
       </div>
       {isSaving && <FullScreenLoader message="Saving weight..." />}
-    </ModalPageWrapper>
+    </div>
   );
 }

@@ -1,6 +1,5 @@
 "use client";
 
-import ModalPageWrapper from "@/app/(app)//components/modalPageWrapper";
 import { useRouter } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import TitleInput from "@/app/(app)/training/components/TitleInput";
@@ -146,12 +145,6 @@ export default function TimerPage() {
   const showTimerUI = totalDuration > 0;
 
   return (
-    <ModalPageWrapper
-      onSwipeRight={() => router.back()}
-      leftLabel="back"
-      onSwipeLeft={() => router.push("/dashboard")}
-      rightLabel="home"
-    >
       <div
         onClick={() => {
           if (alarmFired) {
@@ -266,6 +259,5 @@ export default function TimerPage() {
           </div>
         )}
       </div>
-    </ModalPageWrapper>
   );
 }

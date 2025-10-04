@@ -49,12 +49,9 @@ export default function ModalPageWrapper({
     }
   };
 
-  const EXTRA_NAV_HEIGHT = [
-    "/dashboard",
-    "/menu",
-    "/sessions",
-    "/training/gym",
-  ].includes(pathname)
+  const EXTRA_NAV_HEIGHT = ["/dashboard", "/menu", "/sessions"].includes(
+    pathname
+  )
     ? 112
     : 72;
 
@@ -102,8 +99,9 @@ export default function ModalPageWrapper({
         </div>
       </div>
 
-      <AnimatePresence>
+      <AnimatePresence mode="sync">
         <motion.div
+          key={pathname}
           className="absolute z-30 w-full h-full overflow-y-auto bg-slate-800"
           initial="enter"
           animate="center"
@@ -122,23 +120,27 @@ export default function ModalPageWrapper({
             enter: (direction: number) =>
               direction === 0
                 ? { x: 0, opacity: 1 }
-                : { x: direction > 0 ? 300 : -300, opacity: 0 },
+                : { x: direction > 0 ? 250 : -250, opacity: 0 },
             center: {
               x: 0,
               opacity: 1,
             },
             exit: (direction: number) =>
               direction === 0
-                ? { x: 0, opacity: 1 }
-                : { x: direction > 0 ? -300 : 300, opacity: 0 },
+                ? { x: 0, opacity: 1, scale: 1 }
+                : { x: direction > 0 ? -250 : 250, opacity: 0 },
           }}
           transition={{
-            x: { type: "spring", stiffness: 300, damping: 30 },
-            opacity: { duration: 0.2 },
+            x: { type: "spring", stiffness: 220, damping: 26 },
+            opacity: { duration: 0.25, ease: "easeOut" },
           }}
           onDragEnd={(_, info) => {
             const swipedLeft = info.offset.x < -200;
             const swipedRight = info.offset.x > 200;
+
+            if (swipedLeft || swipedRight) {
+              setIsTransitioning(false);
+            }
 
             if (swipedLeft) {
               handleSwipeLeft();

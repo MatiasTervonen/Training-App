@@ -13,10 +13,9 @@ export default async function GetSession({
 }> {
   const supabase = await createClient();
 
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
+  const { data, error: authError } = await supabase.auth.getClaims();
+
+  const user = data?.claims;
 
   if (authError || !user) {
     return { feed: [], error: authError || new Error("User not found") };
@@ -27,7 +26,7 @@ export default async function GetSession({
   const { error, data: feed } = await supabase
     .from("feed_with_pins")
     .select("*")
-    .eq("user_id", user.id)
+    .eq("user_id", user.sub)
     .order("created_at", { ascending: false })
     .range(offset, offset + limit - 1);
 

@@ -14,10 +14,8 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
+  const { data, error: authError } = await supabase.auth.getClaims();
+  const user = data?.claims;
 
   if (authError || !user) {
     return new Response(JSON.stringify({ error: "Unauthorized" }), {
@@ -27,7 +25,7 @@ export async function POST(req: NextRequest) {
   }
 
   const fileText = file.name.split(".").pop();
-  const filePath = `${user.id}.${fileText}`;
+  const filePath = `${user.sub}.${fileText}`;
 
   const { error: uploadError } = await supabase.storage
     .from("profile-pictures")
@@ -52,7 +50,7 @@ export async function POST(req: NextRequest) {
   const { error: updateError } = await supabase
     .from("users")
     .update({ profile_picture: publicUrl })
-    .eq("id", user.id);
+    .eq("id", user.sub);
 
   if (updateError) {
     console.error("Error updating user profile picture:", updateError);

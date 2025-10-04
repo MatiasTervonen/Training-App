@@ -4,10 +4,8 @@ import { createClient } from "@/utils/supabase/server";
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
 
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
+  const { data, error: authError } = await supabase.auth.getClaims();
+  const user = data?.claims;
 
   if (authError || !user) {
     return new Response("Unauthorized", { status: 401 });
@@ -22,7 +20,7 @@ export async function POST(req: NextRequest) {
       status: "accepted",
     })
     .eq("sender_id", sender_id)
-    .eq("receiver_id", user.id)
+    .eq("receiver_id", user.sub)
     .select()
     .single();
 
@@ -35,7 +33,7 @@ export async function POST(req: NextRequest) {
   }
 
   const [user1_id, user2_id] =
-    sender_id < user.id ? [sender_id, user.id] : [user.id, sender_id];
+    sender_id < user.sub ? [sender_id, user.sub] : [user.sub, sender_id];
 
   const { error: insertError } = await supabase.from("friends").insert([
     {

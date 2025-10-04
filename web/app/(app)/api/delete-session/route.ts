@@ -4,10 +4,8 @@ import { createClient } from "@/utils/supabase/server";
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
 
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
+  const { data, error: authError } = await supabase.auth.getClaims();
+  const user = data?.claims;
 
   if (authError || !user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -20,7 +18,7 @@ export async function POST(req: NextRequest) {
     .from(table)
     .delete()
     .eq("id", item_id)
-    .eq("user_id", user.id);
+    .eq("user_id", user.sub);
 
   if (tableError) {
     console.error("Error deleting session:", tableError);
@@ -32,7 +30,7 @@ export async function POST(req: NextRequest) {
     .delete()
     .eq("item_id", item_id)
     .eq("type", table)
-    .eq("user_id", user.id);
+    .eq("user_id", user.sub);
 
   if (pinnedError) {
     console.error("Error deleting pinned item:", pinnedError);

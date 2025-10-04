@@ -4,10 +4,8 @@ import { NextRequest } from "next/server";
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
 
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
+  const { data, error: authError } = await supabase.auth.getClaims();
+  const user = data?.claims;
 
   if (authError || !user) {
     return new Response("Unauthorized", { status: 401 });
@@ -20,7 +18,7 @@ export async function POST(req: NextRequest) {
     .from("reminders")
     .update({ title, notes, notify_at })
     .eq("id", id)
-    .eq("user_id", user.id);
+    .eq("user_id", user.sub);
 
   if (error) {
     return new Response(JSON.stringify({ error: error.message }), {

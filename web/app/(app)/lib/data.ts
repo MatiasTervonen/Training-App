@@ -1,5 +1,4 @@
 import { createClient } from "@/utils/supabase/server";
-import type { User as SupabaseUser } from "@supabase/supabase-js";
 import GetSession from "./getSession";
 import { Feed_item, FeedResponse } from "../types/session";
 
@@ -16,10 +15,9 @@ interface UserPreferences {
 export async function checkAdmin() {
   const supabase = await createClient();
 
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
+  const { data, error: authError } = await supabase.auth.getClaims();
+
+  const user = data?.claims;
 
   if (authError || !user) {
     return { user: null, role: null };
@@ -28,7 +26,7 @@ export async function checkAdmin() {
   const { data: profile, error: profileError } = await supabase
     .from("users")
     .select("role")
-    .eq("id", user.id)
+    .eq("id", user.sub)
     .single();
 
   if (profileError || !profile) {
@@ -41,16 +39,15 @@ export async function checkAdmin() {
 // get user role and preferences
 
 export async function getUserRoleAndPreferences(): Promise<{
-  user: SupabaseUser | null;
+  user: string | null;
   preferences: UserPreferences | null;
   role: Role;
 }> {
   const supabase = await createClient();
 
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
+  const { data, error: authError } = await supabase.auth.getClaims();
+
+  const user = data?.claims;
 
   if (authError || !user) {
     return { user: null, preferences: null, role: null };
@@ -59,16 +56,16 @@ export async function getUserRoleAndPreferences(): Promise<{
   const { data: profile, error: profileError } = await supabase
     .from("users")
     .select("display_name, weight_unit, profile_picture, role")
-    .eq("id", user.id)
+    .eq("id", user.sub)
     .single();
 
   if (!profile || profileError) {
-    return { user, preferences: null, role: null };
+    return { user: user.sub, preferences: null, role: null };
   }
 
   const { role, ...preferences } = profile;
 
-  return { user, preferences, role: role as Role };
+  return { user: user.sub, preferences, role: role as Role };
 }
 
 // Get Feed
@@ -100,10 +97,9 @@ export async function savePushSubscription(subscription: {
 }) {
   const supabase = await createClient();
 
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
+  const { data, error: authError } = await supabase.auth.getClaims();
+
+  const user = data?.claims;
 
   if (authError || !user) {
     return { user: null, preferences: null, role: null };
@@ -111,7 +107,7 @@ export async function savePushSubscription(subscription: {
 
   const { error } = await supabase.from("user_push_subscriptions").upsert(
     {
-      user_id: user.id,
+      user_id: user.sub,
       endpoint: subscription.endpoint,
       p256dh: subscription.p256dh,
       auth: subscription.auth,
@@ -135,10 +131,9 @@ export async function savePushSubscription(subscription: {
 export async function deletePushSubscription(endpoint: string) {
   const supabase = await createClient();
 
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
+  const { data, error: authError } = await supabase.auth.getClaims();
+
+  const user = data?.claims;
 
   if (authError || !user) {
     return { user: null, preferences: null, role: null };
@@ -147,7 +142,7 @@ export async function deletePushSubscription(endpoint: string) {
   const { error } = await supabase
     .from("user_push_subscriptions")
     .delete()
-    .eq("user_id", user.id)
+    .eq("user_id", user.sub)
     .eq("endpoint", endpoint);
 
   if (error) {
@@ -163,20 +158,19 @@ export async function deletePushSubscription(endpoint: string) {
 export async function getAllActivePushSubscriptions() {
   const supabase = await createClient();
 
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
+  const { data, error: authError } = await supabase.auth.getClaims();
+
+  const user = data?.claims;
 
   if (authError || !user) {
     return { user: null, preferences: null, role: null };
   }
 
-  const { data, error } = await supabase
+  const { data: subscriptions, error } = await supabase
     .from("user_push_subscriptions")
     .select("*")
     .eq("is_active", true)
-    .eq("user_id", user.id);
+    .eq("user_id", user.sub);
 
   if (error) {
     console.error("Error fetching active push subscriptions:", error);
@@ -186,5 +180,5 @@ export async function getAllActivePushSubscriptions() {
     };
   }
 
-  return { subscriptions: data || [] };
+  return { subscriptions: subscriptions || [] };
 }

@@ -4,10 +4,8 @@ import { createClient } from "@/utils/supabase/server";
 export async function DELETE(req: NextRequest) {
   const supabase = await createClient();
 
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
+  const { data, error: authError } = await supabase.auth.getClaims();
+  const user = data?.claims;
 
   if (authError || !user) {
     return new Response("Unauthorized", { status: 401 });
@@ -40,12 +38,12 @@ export async function DELETE(req: NextRequest) {
 
   // Determine the other user's ID
   const otherUserId =
-    friendData.user1_id === user.id ? friendData.user2_id : friendData.user1_id;
+    friendData.user1_id === user.sub ? friendData.user2_id : friendData.user1_id;
 
   const { error: deleteError } = await supabase
     .from("friends")
     .delete()
-    .or(`user1_id.eq.${user.id},user2_id.eq.${user.id}`)
+    .or(`user1_id.eq.${user.sub},user2_id.eq.${user.sub}`)
     .eq("id", friendId);
 
   if (deleteError) {
@@ -61,7 +59,7 @@ export async function DELETE(req: NextRequest) {
     .from("friend_requests")
     .delete()
     .or(
-      `and(sender_id.eq.${user.id},receiver_id.eq.${otherUserId}),and(sender_id.eq.${otherUserId},receiver_id.eq.${user.id})`
+      `and(sender_id.eq.${user.sub},receiver_id.eq.${otherUserId}),and(sender_id.eq.${otherUserId},receiver_id.eq.${user.sub})`
     )
     .eq("status", "accepted");
 

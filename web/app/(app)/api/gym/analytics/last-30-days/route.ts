@@ -3,10 +3,8 @@ import { createClient } from "@/utils/supabase/server";
 export async function GET() {
   const supabase = await createClient();
 
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
+  const { data, error: authError } = await supabase.auth.getClaims();
+  const user = data?.claims;
 
   if (authError || !user) {
     return new Response("Unauthorized", { status: 401 });
@@ -19,7 +17,7 @@ export async function GET() {
       "created_at",
       new Date(new Date().setDate(new Date().getDate() - 30)).toISOString()
     )
-    .eq("user_id", user.id);
+    .eq("user_id", user.sub);
 
   if (gymSessionError || !gymSession) {
     console.error("Supabase Insert Error:", gymSessionError);

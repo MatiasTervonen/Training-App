@@ -6,10 +6,8 @@ export async function DELETE(req: NextRequest) {
   const supabase = await createClient();
   const adminSupabase = createAdminClient();
 
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
+  const { data, error: authError } = await supabase.auth.getClaims();
+  const user = data?.claims;
 
   if (authError || !user) {
     return new Response("Unauthorized", { status: 401 });

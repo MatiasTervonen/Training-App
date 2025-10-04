@@ -4,10 +4,8 @@ import { NextRequest } from "next/server";
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
 
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
+  const { data, error: authError } = await supabase.auth.getClaims();
+  const user = data?.claims;
 
   if (authError || !user) {
     return new Response("Unauthorized", { status: 401 });
@@ -20,12 +18,12 @@ export async function POST(req: NextRequest) {
     return new Response("Invalid request", { status: 400 });
   }
 
-  const { data, error } = await supabase
+  const { data: pinnedItem, error } = await supabase
     .from("pinned_items")
     .upsert(
       [
         {
-          user_id: user.id,
+          user_id: user.sub,
           item_id: item_id,
           type: table,
         },
@@ -35,7 +33,7 @@ export async function POST(req: NextRequest) {
     .select()
     .single();
 
-  if (error || !data) {
+  if (error || !pinnedItem) {
     console.error("Supabase Insert Error:", error);
     return new Response(JSON.stringify({ error: error?.message }), {
       status: 500,
@@ -43,8 +41,11 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  return new Response(JSON.stringify({ success: true, pinnedItem: data }), {
-    status: 200,
-    headers: { "Content-Type": "application/json" },
-  });
+  return new Response(
+    JSON.stringify({ success: true, pinnedItem: pinnedItem }),
+    {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    }
+  );
 }

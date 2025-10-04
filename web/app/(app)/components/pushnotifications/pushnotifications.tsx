@@ -63,8 +63,6 @@ export function PushNotificationManager() {
     try {
       const registration = await navigator.serviceWorker.ready;
 
-      console.log("Service Worker registration:", registration);
-
       const sub = await registration.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: urlBase64ToUint8Array(

@@ -4,10 +4,8 @@ import { createClient } from "@/utils/supabase/server";
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
 
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
+  const { data, error: authError } = await supabase.auth.getClaims();
+  const user = data?.claims;
 
   if (authError || !user) {
     return new Response("Unauthorized", { status: 401 });
@@ -63,7 +61,7 @@ export async function POST(req: NextRequest) {
 
   // Check if the receiverId is the same as the user's id
 
-  if (receiverId === user.id) {
+  if (receiverId === user.sub) {
     return new Response(
       JSON.stringify({ error: "You cannot send a friend request to yourself" }),
       {
@@ -78,7 +76,7 @@ export async function POST(req: NextRequest) {
     .from("friend_requests")
     .select("*")
     .or(
-      `and(sender_id.eq.${user.id},receiver_id.eq.${receiverId},status.eq.pending),and(sender_id.eq.${receiverId},receiver_id.eq.${user.id},status.eq.pending)`
+      `and(sender_id.eq.${user.sub},receiver_id.eq.${receiverId},status.eq.pending),and(sender_id.eq.${receiverId},receiver_id.eq.${user.sub},status.eq.pending)`
     )
     .maybeSingle();
 
@@ -106,7 +104,7 @@ export async function POST(req: NextRequest) {
     .from("friend_requests")
     .select("*")
     .or(
-      `and(sender_id.eq.${user.id},receiver_id.eq.${receiverId},status.eq.accepted),and(sender_id.eq.${receiverId},receiver_id.eq.${user.id},status.eq.accepted)`
+      `and(sender_id.eq.${user.sub},receiver_id.eq.${receiverId},status.eq.accepted),and(sender_id.eq.${receiverId},receiver_id.eq.${user.sub},status.eq.accepted)`
     )
     .maybeSingle();
 
@@ -125,11 +123,11 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  const { data, error } = await supabase
+  const { data: request, error } = await supabase
     .from("friend_requests")
     .insert([
       {
-        sender_id: user.id,
+        sender_id: user.sub,
         receiver_id: receiverId,
         status: "pending",
       },
@@ -137,7 +135,7 @@ export async function POST(req: NextRequest) {
     .select()
     .maybeSingle();
 
-  if (error || !data) {
+  if (error || !request) {
     console.error("Supabase Insert Error:", error);
     return new Response(JSON.stringify({ error: error?.message }), {
       status: 500,

@@ -13,10 +13,8 @@ type gym_template_exercises = {
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
 
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
+  const { data, error: authError } = await supabase.auth.getClaims();
+  const user = data?.claims;
 
   if (authError || !user) {
     return new Response("Unauthorized", { status: 401 });
@@ -29,7 +27,7 @@ export async function POST(req: NextRequest) {
     .from("gym_templates")
     .insert([
       {
-        user_id: user.id,
+        user_id: user.sub,
         name,
       },
     ])
@@ -47,7 +45,7 @@ export async function POST(req: NextRequest) {
   const templateExercises = exercises.map(
     (ex: gym_template_exercises, index: number) => ({
       template_id: template.id,
-      user_id: user.id,
+      user_id: user.sub,
       exercise_id: ex.exercise_id,
       sets: ex.sets,
       reps: ex.reps,

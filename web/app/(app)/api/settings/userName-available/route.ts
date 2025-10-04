@@ -4,10 +4,8 @@ import { NextRequest } from "next/server";
 export async function GET(req: NextRequest) {
   const supabase = await createClient();
 
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
+  const { data, error: authError } = await supabase.auth.getClaims();
+  const user = data?.claims;
 
   if (authError || !user) {
     return new Response(JSON.stringify({ error: "Unauthorized" }), {
@@ -29,11 +27,11 @@ export async function GET(req: NextRequest) {
     );
   }
 
-  const { data, error } = await supabase
+  const { data: userData, error } = await supabase
     .from("users")
     .select("display_name")
     .ilike("display_name", userName)
-    .neq("id", user.id) // Ensure we don't check against the current user's name
+    .neq("id", user.sub) // Ensure we don't check against the current user's name
     .single();
 
   if (error && error.code !== "PGRST116") {
@@ -44,7 +42,7 @@ export async function GET(req: NextRequest) {
     });
   }
 
-  const isTaken = !!data;
+  const isTaken = !!userData;
 
   return new Response(JSON.stringify({ isTaken }), {
     status: 200,

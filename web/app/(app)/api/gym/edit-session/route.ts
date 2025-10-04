@@ -4,10 +4,8 @@ import { createClient } from "@/utils/supabase/server";
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
 
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
+  const { data, error: authError } = await supabase.auth.getClaims();
+  const user = data?.claims;
 
   if (authError || !user) {
     return new Response("Unauthorized", { status: 401 });
@@ -24,7 +22,7 @@ export async function POST(req: NextRequest) {
       duration,
     })
     .eq("id", sessionId)
-    .eq("user_id", user.id);
+    .eq("user_id", user.sub);
 
   if (sessionError) {
     console.error("Supabase Insert Error:", sessionError);
@@ -62,7 +60,7 @@ export async function POST(req: NextRequest) {
 
     sessionExercises.push({
       id: sessionExerciseId,
-      user_id: user.id,
+      user_id: user.sub,
       session_id: sessionId,
       exercise_id: ex.exercise_id,
       position: index,
@@ -73,7 +71,7 @@ export async function POST(req: NextRequest) {
     for (const [setIndex, set] of ex.sets.entries()) {
       sets.push({
         session_exercise_id: sessionExerciseId,
-        user_id: user.id,
+        user_id: user.sub,
         weight: set.weight,
         reps: set.reps,
         rpe: set.rpe,

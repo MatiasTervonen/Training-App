@@ -4,10 +4,8 @@ import { createClient } from "@/utils/supabase/server";
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
 
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
+  const { data, error: authError } = await supabase.auth.getClaims();
+  const user = data?.claims;
 
   if (authError || !user) {
     return new Response("Unauthorized", { status: 401 });
@@ -16,12 +14,14 @@ export async function POST(req: NextRequest) {
   const body = await req.json();
   const { name } = body;
 
-  const { data, error } = await supabase.from("disc_golf_courses").insert([
-    {
-      name,
-      created_at: new Date().toISOString(),
-    },
-  ]);
+  const { data: course, error } = await supabase
+    .from("disc_golf_courses")
+    .insert([
+      {
+        name,
+        created_at: new Date().toISOString(),
+      },
+    ]);
 
   if (error) {
     console.error("Supabase Insert Error:", error);
@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  return new Response(JSON.stringify({ data }), {
+  return new Response(JSON.stringify({ course }), {
     status: 200,
     headers: { "Content-Type": "application/json" },
   });

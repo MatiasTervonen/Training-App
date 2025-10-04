@@ -4,10 +4,8 @@ import { createClient } from "@/utils/supabase/server";
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
 
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
+  const { data, error: authError } = await supabase.auth.getClaims();
+  const user = data?.claims;
 
   if (authError || !user) {
     return new Response("Unauthorized", { status: 401 });
@@ -20,7 +18,7 @@ export async function POST(req: NextRequest) {
     .from("weight")
     .insert([
       {
-        user_id: user.id,
+        user_id: user.sub,
         title,
         notes,
         weight,

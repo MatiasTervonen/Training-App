@@ -27,6 +27,7 @@ export async function login(
   const verification = await checkBotId();
 
   if (verification.isBot) {
+    console.log("Bot detected");
     return {
       success: false,
       message: "Login failed. Please try again.",

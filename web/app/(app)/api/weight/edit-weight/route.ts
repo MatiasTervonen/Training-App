@@ -6,10 +6,8 @@ export async function POST(req: NextRequest) {
 
   const { id, title, notes, weight } = await req.json();
 
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
+  const { data, error: authError } = await supabase.auth.getClaims();
+  const user = data?.claims;
 
   if (authError || !user) {
     return new Response("Unauthorized", { status: 401 });
@@ -19,7 +17,7 @@ export async function POST(req: NextRequest) {
     .from("weight")
     .update({ title, notes, weight })
     .eq("id", id)
-    .eq("user_id", user.id);
+    .eq("user_id", user.sub);
 
   if (error) {
     return new Response(JSON.stringify({ error: error.message }), {

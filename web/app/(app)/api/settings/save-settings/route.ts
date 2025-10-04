@@ -4,10 +4,8 @@ import { createClient } from "@/utils/supabase/server";
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
 
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
+  const { data, error: authError } = await supabase.auth.getClaims();
+  const user = data?.claims;
 
   if (authError || !user) {
     return new Response(JSON.stringify({ error: "Unauthorized" }), {
@@ -21,7 +19,7 @@ export async function POST(req: NextRequest) {
   const { error } = await supabase
     .from("users")
     .update(updates)
-    .eq("id", user.id);
+    .eq("id", user.sub);
 
   if (error) {
     console.error("Error saving settings:", error);

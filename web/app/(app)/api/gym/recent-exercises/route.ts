@@ -4,16 +4,14 @@ import { ExercisePreview } from "@/app/(app)/types/models";
 export async function GET() {
   const supabase = await createClient();
 
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
+  const { data, error: authError } = await supabase.auth.getClaims();
+  const user = data?.claims;
 
   if (authError || !user) {
     return new Response("Unauthorized", { status: 401 });
   }
 
-  const { data, error } = await supabase
+  const { data: exercises, error } = await supabase
     .from("gym_session_exercises")
     .select(
       `exercise:exercise_id ( id, user_id, name, equipment, muscle_group, main_group, language)`
@@ -32,7 +30,7 @@ export async function GET() {
   const uniqueExercises: ExercisePreview[] = [];
   const seen = new Set<number>();
 
-  for (const row of data) {
+  for (const row of exercises) {
     const ex = Array.isArray(row.exercise) ? row.exercise[0] : row.exercise;
     if (ex && !seen.has(ex.id)) {
       seen.add(ex.id);

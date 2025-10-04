@@ -3,10 +3,8 @@ import { createClient } from "@/utils/supabase/server";
 export async function GET() {
   const supabase = await createClient();
 
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
+  const { data, error: authError } = await supabase.auth.getClaims();
+  const user = data?.claims;
 
   if (authError || !user) {
     return new Response(JSON.stringify({ error: "Unauthorized" }), {
@@ -15,10 +13,10 @@ export async function GET() {
     });
   }
 
-  const { data, error } = await supabase
+  const { data: userData, error } = await supabase
     .from("users")
     .select("display_name, weight_unit, profile_picture, role")
-    .eq("id", user.id)
+    .eq("id", user.sub)
     .single();
 
   if (error) {
@@ -29,7 +27,7 @@ export async function GET() {
     });
   }
 
-  return new Response(JSON.stringify(data), {
+  return new Response(JSON.stringify(userData), {
     status: 200,
     headers: { "Content-Type": "application/json" },
   });

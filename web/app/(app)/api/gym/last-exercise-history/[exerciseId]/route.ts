@@ -15,24 +15,22 @@ export async function GET(
 
   const { exerciseId } = await params;
 
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
+  const { data, error: authError } = await supabase.auth.getClaims();
+  const user = data?.claims;
 
   if (authError || !user) {
     return new Response("Unauthorized", { status: 401 });
   }
 
-  const { data, error: exerciseError } = await supabase
+  const { data: exercises, error: exerciseError } = await supabase
     .from("gym_session_exercises")
     .select(
       "id, session_id, exercise_id, gym_sessions:session_id(created_at, user_id)"
     )
     .eq("exercise_id", exerciseId)
-    .eq("gym_sessions.user_id", user.id);
+    .eq("gym_sessions.user_id", user.sub);
 
-  const sessions = data as SessionExercise[] | null;
+  const sessions = exercises as SessionExercise[] | null;
 
   if (!sessions || sessions.length === 0) {
     return new Response(JSON.stringify([]), {

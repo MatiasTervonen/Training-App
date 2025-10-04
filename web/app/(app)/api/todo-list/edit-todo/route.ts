@@ -13,10 +13,8 @@ type TodoTask = {
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
 
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
+  const { data, error: authError } = await supabase.auth.getClaims();
+  const user = data?.claims;
 
   if (authError || !user) {
     return new Response("Unauthorized", { status: 401 });
@@ -29,7 +27,7 @@ export async function POST(req: NextRequest) {
     .from("todo_lists")
     .update({ title })
     .eq("id", listId)
-    .eq("user_id", user.id);
+    .eq("user_id", user.sub);
 
   if (listError) {
     return new Response(JSON.stringify({ error: listError.message }), {
@@ -41,7 +39,7 @@ export async function POST(req: NextRequest) {
   const upsertedTasks = tasks.map((task: TodoTask) => ({
     id: task.id,
     list_id: listId,
-    user_id: user.id,
+    user_id: user.sub,
     task: task.task,
     notes: task.notes ?? null,
   }));
@@ -63,7 +61,7 @@ export async function POST(req: NextRequest) {
       .delete()
       .in("id", deletedIds)
       .eq("list_id", listId)
-      .eq("user_id", user.id);
+      .eq("user_id", user.sub);
 
     if (deleteError) {
       return new Response(JSON.stringify({ error: deleteError.message }), {

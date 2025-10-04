@@ -1,11 +1,11 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
-import { ReactNode } from "react";
+import { motion } from "framer-motion";
+import { ReactNode, useRef } from "react";
 import { SquareArrowLeft } from "lucide-react";
 import { SquareArrowRight } from "lucide-react";
 import { useTransitionDirectionStore } from "@/app/(app)/lib/stores/transitionDirection";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
 
@@ -27,9 +27,13 @@ export default function ModalPageWrapper({
   const { direction, setDirection } = useTransitionDirectionStore();
 
   const [isTransitioning, setIsTransitioning] = useState(false);
-
   const router = useRouter();
   const pathname = usePathname();
+  const firstRender = useRef(true); // 👈 add this
+
+  useEffect(() => {
+    firstRender.current = false;
+  }, []);
 
   const handleSwipeLeft = () => {
     setDirection(1);
@@ -99,61 +103,48 @@ export default function ModalPageWrapper({
         </div>
       </div>
 
-      <AnimatePresence mode="sync">
-        <motion.div
-          key={pathname}
-          className="absolute z-30 w-full h-full overflow-y-auto bg-slate-800"
-          initial="enter"
-          animate="center"
-          custom={direction}
-          exit="exit"
-          drag="x"
-          onAnimationComplete={() => {
-            setDirection(0);
-          }}
-          onDragStart={() => {
-            setIsTransitioning(true);
-          }}
-          dragElastic={0.2}
-          dragConstraints={{ left: 0, right: 0 }}
-          variants={{
-            enter: (direction: number) =>
-              direction === 0
-                ? { x: 0, opacity: 1 }
-                : { x: direction > 0 ? 250 : -250, opacity: 0 },
-            center: {
-              x: 0,
-              opacity: 1,
-            },
-            exit: (direction: number) =>
-              direction === 0
-                ? { x: 0, opacity: 1, scale: 1 }
-                : { x: direction > 0 ? -250 : 250, opacity: 0 },
-          }}
-          transition={{
-            x: { type: "spring", stiffness: 220, damping: 26 },
-            opacity: { duration: 0.25, ease: "easeOut" },
-          }}
-          onDragEnd={(_, info) => {
-            const swipedLeft = info.offset.x < -200;
-            const swipedRight = info.offset.x > 200;
+      <motion.div
+        key={pathname}
+        className="absolute z-30 w-full h-full overflow-y-auto bg-slate-800"
+        custom={direction}
+        drag="x"
+        onAnimationComplete={() => {
+          setDirection(0);
+        }}
+        onDragStart={() => {
+          setIsTransitioning(true);
+        }}
+        dragElastic={0.2}
+        dragConstraints={{ left: 0, right: 0 }}
+        initial={
+          firstRender.current || direction === 0
+            ? { x: 0, opacity: 1 }
+            : { x: direction > 0 ? 300 : -300, opacity: 0 }
+        }
+        animate={{ x: 0, opacity: 1 }}
+        transition={{
+          x: { type: "spring", stiffness: 220, damping: 26 },
+          opacity: { duration: 0.25, ease: "easeOut" },
+        }}
+        onDragEnd={(_, info) => {
+          const swipedLeft = info.offset.x < -200;
+          const swipedRight = info.offset.x > 200;
 
-            if (swipedLeft || swipedRight) {
-              setIsTransitioning(false);
-            }
+          if (swipedLeft || swipedRight) {
+            setIsTransitioning(false);
+          }
 
-            if (swipedLeft) {
-              handleSwipeLeft();
-            }
+          if (swipedLeft) {
+            handleSwipeLeft();
+          }
 
-            if (swipedRight) {
-              handleSwipeRight();
-            }
-          }}
-        >
-          {children}
-        </motion.div>
-      </AnimatePresence>
+          if (swipedRight) {
+            handleSwipeRight();
+          }
+        }}
+      >
+        {children}
+      </motion.div>
     </div>
   );
 }

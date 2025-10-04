@@ -108,17 +108,15 @@ export default function EditExercises() {
 
   return (
     <div className="h-full bg-slate-800 text-gray-100">
-      <h1 className="text-2xl pt-10 text-center">edit/delete Exercises</h1>
+      {!selectedExercise && (
+        <ExerciseDropdown
+          onSelect={(exercise) => {
+            setSelectedExercise(exercise);
+          }}
+          resetTrigger={resetTrigger}
+        />
+      )}
       <div>
-        {!selectedExercise && (
-          <ExerciseDropdown
-            onSelect={(exercise) => {
-              setSelectedExercise(exercise);
-            }}
-            resetTrigger={resetTrigger}
-          />
-        )}
-
         {selectedExercise && (
           <>
             <div className="flex flex-col px-4 gap-5 mt-10 max-w-md mx-auto">

@@ -3,6 +3,7 @@ import LinkButton from "../ui/LinkButton";
 import SignOutButton from "../ui/singOutButton";
 import InstallAppClient from "./components/installAppClient";
 import { PushNotificationManager } from "../components/pushnotifications/pushnotifications";
+import { ShieldUser, UserPen, ContactRound } from "lucide-react";
 
 export default function MenuPage() {
   return (
@@ -10,8 +11,18 @@ export default function MenuPage() {
       <div>
         <h1 className="text-2xl text-center mb-10 text-primary">Menu</h1>
         <div className="flex flex-col gap-5">
-          <LinkButton href={"/menu/friends"}>Friends</LinkButton>
-          <LinkButton href={"/menu/profile"}>Profile</LinkButton>
+          <LinkButton href={"/menu/friends"}>
+            <p>Friends</p>
+            <ContactRound />
+          </LinkButton>
+          <LinkButton href={"/menu/profile"}>
+            <p>Profile</p>
+            <UserPen />
+          </LinkButton>
+          <LinkButton href={"/menu/security"}>
+            <p>Security</p>
+            <ShieldUser />
+          </LinkButton>
           <MenuContext />
           <PushNotificationManager />
         </div>

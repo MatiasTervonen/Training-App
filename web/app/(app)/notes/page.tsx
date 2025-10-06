@@ -28,7 +28,7 @@ export default function Notes() {
     setIsSaving(true);
 
     try {
-      const res = await fetch("/api/notes/save-notess", {
+      const res = await fetch("/api/notes/save-notes", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -120,6 +120,15 @@ export default function Notes() {
           >
             Send Sentry Error
           </button>
+          <button
+            type="button"
+            onClick={() => {
+              throw new Error("Sentry Test Error");
+            }}
+          >
+            Break the world
+          </button>
+          ;
           <SaveButton onClick={saveNotes} />
           <DeleteSessionBtn onDelete={resetNotes} />
         </div>

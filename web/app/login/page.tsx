@@ -6,9 +6,11 @@ import React from "react";
 import LoginButton from "@/app/login/components/loginbutton";
 import SignupButton from "@/app/login/components/signupbutton";
 import GuestLogIn from "@/app/login/guest-login/quest-login";
+import ModalForgotPassword from "../(app)/components/modalForgotPasword";
 
 export default function LoginPage() {
   const [activeForm, setActiveForm] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
 
   const initialState = {
     success: false,
@@ -18,7 +20,6 @@ export default function LoginPage() {
   const [state, formAction] = React.useActionState(signup, initialState);
 
   const [state2, formAction2] = React.useActionState(login, initialState);
-
 
   return (
     <div className="bg-slate-950">
@@ -83,10 +84,22 @@ export default function LoginPage() {
             <div>
               <GuestLogIn />
             </div>
+            <p
+              onClick={() => setModalOpen(true)}
+              className="text-gray-100 cursor-pointer text-center hover:underline"
+            >
+              Forgot password?
+            </p>
           </form>
 
-          {/* Sign Up Form */}
+          <ModalForgotPassword
+            isOpen={modalOpen}
+            onClose={() => setModalOpen(false)}
+          >
+            <p>{state2.message}</p>
+          </ModalForgotPassword>
 
+          {/* Sign Up Form */}
           <form
             action={formAction}
             className={`absolute top-0 left-0 w-full transition-transform duration-500 ease-in-out ${

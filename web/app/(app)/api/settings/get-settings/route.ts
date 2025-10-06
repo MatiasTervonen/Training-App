@@ -1,3 +1,4 @@
+import { handleError } from "@/app/(app)/utils/handleError";
 import { createClient } from "@/utils/supabase/server";
 
 export async function GET() {
@@ -20,7 +21,11 @@ export async function GET() {
     .single();
 
   if (error) {
-    console.error("Error fetching settings:", error);
+    handleError(error, {
+      message: "Error fetching user settings",
+      route: "/api/settings/get-settings",
+      method: "GET",
+    });
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
       headers: { "Content-Type": "application/json" },

@@ -9,6 +9,7 @@ import ExerciseDropdown from "@/app/(app)/training/components/ExerciseDropdown";
 import DeleteSessionBtn from "@/app/(app)/ui/deleteSessionBtn";
 import { gym_exercises } from "../../types/models";
 import FullScreenLoader from "../../components/FullScreenLoader";
+import { handleError } from "../../utils/handleError";
 
 export default function EditExercises() {
   const [name, setName] = useState("");
@@ -55,7 +56,11 @@ export default function EditExercises() {
       toast.success("Exercise updated successfully!");
       resetFields();
     } catch (error) {
-      console.error("Error update exercise:", error);
+      handleError(error, {
+        message: "Error updating exercise",
+        route: "/api/gym/edit-exercise",
+        method: "POST",
+      });
       toast.error("Failed to update exercise. Please try again.");
     } finally {
       setIsSaving(false);
@@ -81,7 +86,11 @@ export default function EditExercises() {
       setSelectedExercise(null);
       setResetTrigger((prev) => prev + 1);
     } catch (error) {
-      console.error("Error deleting exercise:", error);
+      handleError(error, {
+        message: "Error deleting exercise",
+        route: "/api/gym/delete-exercise",
+        method: "DELETE",
+      });
       toast.error("Failed to delete exercise. Please try again.");
     }
   };

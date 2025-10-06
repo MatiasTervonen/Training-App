@@ -11,6 +11,7 @@ import ExerciseTypeSelect from "@/app/(app)/training/components/ExerciseTypeSele
 import { full_gym_exercises, full_gym_session } from "../../types/models";
 import { groupExercises } from "../../training/utils/groupExercises";
 import CustomInput from "../input";
+import { handleError } from "../../utils/handleError";
 
 type EditGymSessionProps = {
   gym_session: full_gym_session;
@@ -70,7 +71,11 @@ export default function EditGym({
       await onSave?.();
       onClose();
     } catch (error) {
-      console.error("Error saving gym session:", error);
+      handleError(error, {
+        message: "Error editing gym session",
+        route: "/api/gym/edit-session",
+        method: "POST",
+      });
       toast.error("Failed to edit gym session");
     } finally {
       setIsSaving(false);

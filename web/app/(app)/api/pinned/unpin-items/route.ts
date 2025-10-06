@@ -1,6 +1,8 @@
 import { createClient } from "@/utils/supabase/server";
+import { NextRequest } from "next/server";
+import { handleError } from "@/app/(app)/utils/handleError";
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   const supabase = await createClient();
   const { item_id, table } = await req.json();
 
@@ -18,7 +20,14 @@ export async function POST(req: Request) {
     .eq("type", table)
     .eq("item_id", item_id);
 
-  if (error) return new Response(JSON.stringify({ error }), { status: 500 });
+  if (error) {
+    handleError(error, {
+      message: "Error unpinning item",
+      route: "/api/pinned/unpin-items",
+      method: "POST",
+    });
+    return new Response(JSON.stringify({ error }), { status: 500 });
+  }
 
   return new Response("Unpinned", { status: 200 });
 }

@@ -1,3 +1,4 @@
+import { handleError } from "@/app/(app)/utils/handleError";
 import { createClient } from "@/utils/supabase/server";
 import { NextRequest } from "next/server";
 
@@ -34,7 +35,11 @@ export async function POST(req: NextRequest) {
     });
 
   if (uploadError) {
-    console.error("Error uploading image:", uploadError);
+    handleError(uploadError, {
+      message: "Error uploading profile picture",
+      route: "/api/settings/save-profilePic",
+      method: "POST",
+    });
     return new Response(JSON.stringify({ error: uploadError.message }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
@@ -53,7 +58,11 @@ export async function POST(req: NextRequest) {
     .eq("id", user.sub);
 
   if (updateError) {
-    console.error("Error updating user profile picture:", updateError);
+    handleError(updateError, {
+      message: "Error updating user profile picture",
+      route: "/api/settings/save-profilePic",
+      method: "POST",
+    });
     return new Response(JSON.stringify({ error: updateError.message }), {
       status: 500,
       headers: { "Content-Type": "application/json" },

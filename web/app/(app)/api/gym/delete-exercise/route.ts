@@ -1,5 +1,6 @@
 import { NextResponse, NextRequest } from "next/server";
 import { createClient } from "@/utils/supabase/server";
+import { handleError } from "@/app/(app)/utils/handleError";
 
 export async function DELETE(req: NextRequest) {
   const supabase = await createClient();
@@ -20,7 +21,11 @@ export async function DELETE(req: NextRequest) {
     .eq("id", item_id);
 
   if (error) {
-    console.error("Error deleting session:", error);
+    handleError(error, {
+      message: "Error deleting exercise",
+      route: "/api/gym/delete-exercise",
+      method: "DELETE",
+    });
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 

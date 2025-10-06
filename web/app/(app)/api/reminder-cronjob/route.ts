@@ -1,6 +1,7 @@
 import { NextResponse, NextRequest } from "next/server";
 import { createAdminClient } from "@/utils/supabase/admin";
 import webpush from "web-push";
+import { handleError } from "@/app/(app)/utils/handleError";
 
 export async function POST(request: NextRequest) {
   const authHeader = request.headers.get("authorization");
@@ -25,7 +26,11 @@ export async function POST(request: NextRequest) {
     .eq("delivered", false);
 
   if (itemsError) {
-    console.error(itemsError);
+    handleError(itemsError, {
+      message: "Error fetching reminders",
+      route: "/api/reminder-cronjob",
+      method: "POST",
+    });
     return new NextResponse("Error", {
       status: 500,
     });
@@ -42,7 +47,11 @@ export async function POST(request: NextRequest) {
       .eq("user_id", item.user_id);
 
     if (subError) {
-      console.error("Error fetching subscriptions", subError);
+      handleError(subError, {
+        message: "Error fetching subscriptions",
+        route: "/api/reminder-cronjob",
+        method: "POST",
+      });
       continue;
     }
 
@@ -65,7 +74,11 @@ export async function POST(request: NextRequest) {
       } catch (error: unknown) {
         const e = error as webpush.WebPushError;
 
-        console.error("Error sending notification:", error);
+        handleError(e, {
+          message: "Error sending notification",
+          route: "/api/reminder-cronjob",
+          method: "POST",
+        });
 
         if (e.statusCode === 410 || e.statusCode === 404) {
           const { error: deleteError } = await supabase
@@ -74,7 +87,11 @@ export async function POST(request: NextRequest) {
             .eq("id", sub.id);
 
           if (deleteError) {
-            console.error("Error deleting subscription:", deleteError);
+            handleError(deleteError, {
+              message: "Error deleting subscription",
+              route: "/api/reminder-cronjob",
+              method: "POST",
+            });
           }
         }
       }
@@ -86,7 +103,11 @@ export async function POST(request: NextRequest) {
       .eq("id", item.id);
 
     if (updateError) {
-      console.error("Error marking reminder as delivered:", updateError);
+      handleError(updateError, {
+        message: "Error marking reminder as delivered",
+        route: "/api/reminder-cronjob",
+        method: "POST",
+      });
     }
   }
 

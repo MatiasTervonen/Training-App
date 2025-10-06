@@ -27,6 +27,7 @@ import { fetcher } from "@/app/(app)/lib/fetcher";
 import { full_gym_template } from "@/app/(app)/types/models";
 import ExerciseSelectorList from "../components/ExerciseSelectorList";
 import Spinner from "../../components/spinner";
+import { handleError } from "../../utils/handleError";
 
 export default function TemplateForm() {
   const params = useParams<{ id: string }>();
@@ -283,8 +284,8 @@ export default function TemplateForm() {
       resetSession();
       router.push("/training/templates");
     } catch (error) {
+      handleError(error);
       toast.error("Failed to save template. Try again later.");
-      console.error("Error saving template:", error);
       setIsSaving(false);
     }
   };

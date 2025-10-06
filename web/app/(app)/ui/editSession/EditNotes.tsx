@@ -8,6 +8,7 @@ import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import { mutate } from "swr";
 import toast from "react-hot-toast";
 import { Feed_item } from "@/app/(app)/types/session";
+import { handleError } from "../../utils/handleError";
 
 type Props = {
   note: Feed_item;
@@ -73,7 +74,11 @@ export default function EditNotes({ note, onClose, onSave }: Props) {
 
       mutate("/api/feed");
     } catch (error) {
-      console.error("Error updating notes:", error);
+      handleError(error, {
+        message: "Error editing notes",
+        route: "/api/notes/edit-notes",
+        method: "POST",
+      });
       toast.error("Failed to update notes");
       mutate("/api/feed");
     } finally {

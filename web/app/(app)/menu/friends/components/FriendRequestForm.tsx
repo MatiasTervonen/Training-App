@@ -4,29 +4,39 @@ import TitleInput from "@/app/(app)/training/components/TitleInput";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
+import { handleError } from "@/app/(app)/utils/handleError";
 
 export default function FriendRequestForm() {
   const [identifier, setIdentifier] = useState("");
   const { role } = useUserStore();
 
   const sendFriendRequest = async (identifier: string) => {
-    const response = await fetch("/api/friend/send-request", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ identifier }),
-    });
+    try {
+      const response = await fetch("/api/friend/send-request", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ identifier }),
+      });
 
-    const data = await response.json();
+      const data = await response.json();
 
-    if (!response.ok) {
-      toast.error(data.error || "Failed to send friend request");
-      return;
+      if (!response.ok) {
+        toast.error(data.error || "Failed to send friend request");
+        return;
+      }
+
+      toast.success("Friend request sent successfully!");
+      setIdentifier(""); // Clear the input field after sending the request
+    } catch (error) {
+      handleError(error, {
+        message: "Error sending friend request",
+        route: "/api/friend/send-request",
+        method: "POST",
+      });
+      toast.error("Failed to send friend request. Please try again.");
     }
-
-    toast.success("Friend request sent successfully!");
-    setIdentifier(""); // Clear the input field after sending the request
   };
 
   return (

@@ -3,6 +3,7 @@ import { Trash2 } from "lucide-react";
 import { mutate } from "swr";
 import toast from "react-hot-toast";
 import { Friends } from "@/app/(app)/types/models";
+import { handleError } from "@/app/(app)/utils/handleError";
 
 type FriendCardProps = {
   friend: Friends;
@@ -45,9 +46,13 @@ export default function FriendCard({ friend }: FriendCardProps) {
       mutate("/api/friend/get-friends"); // Revalidate the friends list
       toast.success("Friend deleted successfully!");
     } catch (error) {
+      handleError(error, {
+        message: "Error deleting friend",
+        route: "/api/friend/delete-friend",
+        method: "DELETE",
+      });
       mutate("/api/friend/get-friends"); // Revalidate the friends list in case of error
       toast.error("Failed to delete friend");
-      console.error("Error deleting friend:", error);
     }
   };
 

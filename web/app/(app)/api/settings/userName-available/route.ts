@@ -1,5 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
 import { NextRequest } from "next/server";
+import { handleError } from "@/app/(app)/utils/handleError";
 
 export async function GET(req: NextRequest) {
   const supabase = await createClient();
@@ -35,7 +36,11 @@ export async function GET(req: NextRequest) {
     .single();
 
   if (error && error.code !== "PGRST116") {
-    console.error("Error cheking username:", error);
+    handleError(error, {
+      message: "Error checking username availability",
+      route: "/api/settings/userName-available",
+      method: "GET",
+    });
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
       headers: { "Content-Type": "application/json" },

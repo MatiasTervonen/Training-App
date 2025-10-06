@@ -1,5 +1,6 @@
 import { NextRequest } from "next/server";
 import { createClient } from "@/utils/supabase/server";
+import { handleError } from "@/app/(app)/utils/handleError";
 
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
@@ -29,7 +30,11 @@ export async function POST(req: NextRequest) {
     .single();
 
   if (timerError || !timer) {
-    console.error("Supabase Insert Error:", timerError);
+    handleError(timerError, {
+      message: "Error saving timer",
+      route: "/api/timer/save-timer",
+      method: "POST",
+    });
     return new Response(JSON.stringify({ error: timerError?.message }), {
       status: 500,
       headers: { "Content-Type": "application/json" },

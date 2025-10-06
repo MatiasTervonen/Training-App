@@ -1,5 +1,6 @@
 import { NextRequest } from "next/server";
 import { createClient } from "@/utils/supabase/server";
+import { handleError } from "@/app/(app)/utils/handleError";
 
 export async function DELETE(req: NextRequest) {
   const supabase = await createClient();
@@ -29,7 +30,11 @@ export async function DELETE(req: NextRequest) {
     .single();
 
   if (friendError || !friendData) {
-    console.error("Supabase Friend Lookup Error:", friendError);
+    handleError(friendError, {
+      message: "Error fetching friend data",
+      route: "/api/friend/delete-friend",
+      method: "DELETE",
+    });
     return new Response(JSON.stringify({ error: "Friend not found" }), {
       status: 404,
       headers: { "Content-Type": "application/json" },
@@ -38,7 +43,9 @@ export async function DELETE(req: NextRequest) {
 
   // Determine the other user's ID
   const otherUserId =
-    friendData.user1_id === user.sub ? friendData.user2_id : friendData.user1_id;
+    friendData.user1_id === user.sub
+      ? friendData.user2_id
+      : friendData.user1_id;
 
   const { error: deleteError } = await supabase
     .from("friends")
@@ -47,10 +54,10 @@ export async function DELETE(req: NextRequest) {
     .eq("id", friendId);
 
   if (deleteError) {
-    console.error("Supabase Delete Error:", deleteError);
-    return new Response(JSON.stringify({ error: deleteError.message }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
+    handleError(deleteError, {
+      message: "Error deleting friendship",
+      route: "/api/friend/delete-friend",
+      method: "DELETE",
     });
   }
 
@@ -64,7 +71,11 @@ export async function DELETE(req: NextRequest) {
     .eq("status", "accepted");
 
   if (requestDeleteError) {
-    console.error("Supabase Friend Request Delete Error:", requestDeleteError);
+    handleError(requestDeleteError, {
+      message: "Error deleting related friend requests",
+      route: "/api/friend/delete-friend",
+      method: "DELETE",
+    });
     return new Response(
       JSON.stringify({ error: requestDeleteError?.message }),
       {

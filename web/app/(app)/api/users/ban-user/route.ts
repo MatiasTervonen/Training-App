@@ -1,5 +1,6 @@
 import { NextRequest } from "next/server";
 import { createClient } from "@/utils/supabase/server";
+import { handleError } from "@/app/(app)/utils/handleError";
 
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
@@ -31,6 +32,11 @@ export async function POST(req: NextRequest) {
       .eq("id", user_id);
 
     if (unbanError) {
+      handleError(unbanError, {
+        message: "Error unbanning user",
+        route: "/api/users/ban-user",
+        method: "POST",
+      });
       console.error("Error unbanning user:", unbanError);
       return new Response(JSON.stringify({ error: unbanError.message }), {
         status: 500,
@@ -70,7 +76,11 @@ export async function POST(req: NextRequest) {
     .eq("id", user_id);
 
   if (dbError) {
-    console.error("Error updating user ban status:", dbError);
+    handleError(dbError, {
+      message: "Error banning user",
+      route: "/api/users/ban-user",
+      method: "POST",
+    });
     return new Response(JSON.stringify({ error: dbError.message }), {
       status: 500,
       headers: { "Content-Type": "application/json" },

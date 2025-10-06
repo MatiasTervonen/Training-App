@@ -1,5 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
 import { NextRequest } from "next/server";
+import { handleError } from "@/app/(app)/utils/handleError";
 
 type TodoTask = {
   id: string;
@@ -35,7 +36,11 @@ export async function POST(req: NextRequest) {
     .single();
 
   if (listError || !list) {
-    console.error("Supabase Insert Error:", listError);
+    handleError(listError, {
+      message: "Error creating todo list",
+      route: "/api/todo-list/save-todo",
+      method: "POST",
+    });
     return new Response(JSON.stringify({ error: listError?.message }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
@@ -55,7 +60,11 @@ export async function POST(req: NextRequest) {
     .select();
 
   if (tasksError || !tasks) {
-    console.error("Supabase Insert Error:", tasksError);
+    handleError(tasksError, {
+      message: "Error saving todo tasks",
+      route: "/api/todo-list/save-todo",
+      method: "POST",
+    });
     return new Response(JSON.stringify({ error: tasksError?.message }), {
       status: 500,
       headers: { "Content-Type": "application/json" },

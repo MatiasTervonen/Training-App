@@ -12,6 +12,7 @@ import { full_gym_template } from "../../types/models";
 import TemplateCard from "@/app/(app)/components/cards/TemplateCard";
 import Spinner from "../../components/spinner";
 import GymTemplate from "@/app/(app)/components/expandSession/template";
+import { handleError } from "../../utils/handleError";
 
 type templateSummary = {
   id: string;
@@ -91,9 +92,13 @@ export default function TemplatesPage() {
 
       await res.json();
     } catch (error) {
+      handleError(error, {
+        message: "Error deleting template",
+        route: "/api/gym/delete-template",
+        method: "POST",
+      });
       toast.error("Failed to delete template. Please try again.");
       mutate("/api/gym/get-templates");
-      console.error("Failed to delete template:", error);
     }
   };
   const templateId = expandedItem?.id;

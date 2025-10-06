@@ -1,5 +1,6 @@
 import { NextResponse, NextRequest } from "next/server";
 import { createClient } from "@/utils/supabase/server";
+import { handleError } from "@/app/(app)/utils/handleError";
 
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
@@ -21,7 +22,11 @@ export async function POST(req: NextRequest) {
     .eq("user_id", user.sub);
 
   if (tableError) {
-    console.error("Error deleting session:", tableError);
+    handleError(tableError, {
+      message: "Error deleting session",
+      route: "/api/auth/delete-session",
+      method: "POST",
+    });
     return NextResponse.json({ error: tableError.message }, { status: 500 });
   }
 
@@ -33,7 +38,11 @@ export async function POST(req: NextRequest) {
     .eq("user_id", user.sub);
 
   if (pinnedError) {
-    console.error("Error deleting pinned item:", pinnedError);
+    handleError(pinnedError, {
+      message: "Error deleting pinned item",
+      route: "/api/auth/delete-session",
+      method: "POST",
+    });
     return NextResponse.json({ error: pinnedError.message }, { status: 500 });
   }
 

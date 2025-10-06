@@ -26,6 +26,7 @@ import { updateFeed } from "@/app/(app)/lib/revalidateFeed";
 import ExerciseSelectorList from "../components/ExerciseSelectorList";
 import useSWR from "swr";
 import { fetcher } from "@/app/(app)/lib/fetcher";
+import { handleError } from "../../utils/handleError";
 
 export default function TrainingSessionPage() {
   const [sessionTitle, setSessionTitle] = useState("");
@@ -266,7 +267,11 @@ export default function TrainingSessionPage() {
       router.push("/training/training-finished"); // Redirect to the finished page
       resetSession(); // Clear the session data
     } catch (error) {
-      console.error("Error saving gym session:", error);
+      handleError(error, {
+        message: "Error saving gym session",
+        route: "/api/gym/save-session",
+        method: "POST",
+      });
       toast.error("Failed to save gym session. Please try again.");
       setIsSaving(false);
     }

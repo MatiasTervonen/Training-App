@@ -1,4 +1,5 @@
 import { createClient } from "@/utils/supabase/server";
+import { handleError } from "@/app/(app)/utils/handleError";
 
 export async function GET(req: Request) {
   const supabase = await createClient();
@@ -25,7 +26,12 @@ export async function GET(req: Request) {
     .single();
 
   if (todoListError || !todoList) {
-    console.error("Supabase Insert Error:", todoListError);
+    handleError(todoListError, {
+      message: "Error fetching todo session",
+      route: "/api/todo-list/get-full-todo-session",
+      method: "GET",
+    });
+
     return new Response(JSON.stringify({ error: todoListError?.message }), {
       status: 500,
       headers: { "Content-Type": "application/json" },

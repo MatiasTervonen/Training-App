@@ -1,5 +1,6 @@
 import { NextRequest } from "next/server";
 import { createClient } from "@/utils/supabase/server";
+import { handleError } from "@/app/(app)/utils/handleError";
 
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
@@ -27,7 +28,11 @@ export async function POST(req: NextRequest) {
     .single();
 
   if (notesError || !notesData) {
-    console.error("Supabase Insert Error:", notesError);
+    handleError(notesError, {
+      message: "Error saving notes",
+      route: "/api/notes/save-notes",
+      method: "POST",
+    });
     return new Response(JSON.stringify({ error: notesError?.message }), {
       status: 500,
       headers: { "Content-Type": "application/json" },

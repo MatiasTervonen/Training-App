@@ -1,3 +1,4 @@
+import { handleError } from "@/app/(app)/utils/handleError";
 import { createClient } from "@/utils/supabase/server";
 
 export async function GET() {
@@ -16,7 +17,11 @@ export async function GET() {
     .order("created_at", { ascending: true });
 
   if (weightError || !weight) {
-    console.error("Supabase Insert Error:", weightError);
+    handleError(weightError, {
+      message: "Error fetching weight entries",
+      route: "/api/weight/get-weight",
+      method: "GET",
+    });
     return new Response(JSON.stringify({ error: weightError?.message }), {
       status: 500,
       headers: { "Content-Type": "application/json" },

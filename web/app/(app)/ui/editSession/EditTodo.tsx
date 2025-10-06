@@ -8,6 +8,8 @@ import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import toast from "react-hot-toast";
 import { full_todo_session } from "../../types/models";
 import { generateUUID } from "../../lib/generateUUID";
+import { handleError } from "../../utils/handleError";
+
 
 type Props = {
   todo_session: full_todo_session;
@@ -95,7 +97,11 @@ export default function EditTodo({ todo_session, onClose, onSave }: Props) {
       onSave?.();
       onClose();
     } catch (error) {
-      console.error(error);
+      handleError(error, {
+        message: "Error editing todo session",
+        route: "/api/todo-list/edit-todo",
+        method: "POST",
+      });
       toast.error("Failed to update session");
     } finally {
       setIsSaving(false);

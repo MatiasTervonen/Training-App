@@ -1,5 +1,6 @@
 import { NextResponse, NextRequest } from "next/server";
 import { createClient } from "@/utils/supabase/server";
+import { handleError } from "@/app/(app)/utils/handleError";
 
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
@@ -21,7 +22,11 @@ export async function POST(req: NextRequest) {
     .eq("user_id", user.sub);
 
   if (error) {
-    console.error("Error deleting session:", error);
+    handleError(error, {
+      message: "Error deleting template",
+      route: "/api/gym/delete-template",
+      method: "POST",
+    });
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 

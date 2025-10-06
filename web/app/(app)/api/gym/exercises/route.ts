@@ -1,3 +1,4 @@
+import { handleError } from "@/app/(app)/utils/handleError";
 import { createClient } from "@/utils/supabase/server";
 
 export async function GET() {
@@ -16,7 +17,11 @@ export async function GET() {
     .order("name", { ascending: true });
 
   if (error) {
-    console.error("Error fetching exercises:", error);
+    handleError(error, {
+      message: "Error fetching exercises",
+      route: "/api/gym/exercises",
+      method: "GET",
+    });
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
       headers: { "Content-Type": "application/json" },

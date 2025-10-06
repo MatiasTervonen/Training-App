@@ -1,3 +1,4 @@
+import { handleError } from "@/app/(app)/utils/handleError";
 import { createClient } from "@/utils/supabase/server";
 import { NextRequest } from "next/server";
 
@@ -35,7 +36,11 @@ export async function POST(req: NextRequest) {
     .upsert(upsertedTasks, { onConflict: "id" });
 
   if (listError) {
-    console.error("Supabase error:", listError);
+    handleError(listError, {
+      message: "Error updating todo tasks",
+      route: "/api/todo-list/checked-todo",
+      method: "POST",
+    });
     return new Response(JSON.stringify({ error: listError.message }), {
       status: 500,
       headers: { "Content-Type": "application/json" },

@@ -12,6 +12,7 @@ import { useDebouncedCallback } from "use-debounce";
 import { updateFeed } from "@/app/(app)/lib/revalidateFeed";
 import DateTimePicker from "@/app/(app)/components/DateTimePicker";
 import CheckNotifications from "@/app/(app)/lib/CheckNotifications";
+import { handleError } from "../utils/handleError";
 
 export default function Notes() {
   CheckNotifications();
@@ -63,8 +64,12 @@ export default function Notes() {
       router.push("/dashboard");
       resetReminder();
     } catch (error) {
-      console.error("Error saving notes:", error);
-      toast.error("Failed to save notes. Please try again.");
+      handleError(error, {
+        message: "Error saving reminders",
+        route: "/api/reminders/save-reminders",
+        method: "POST",
+      });
+      toast.error("Failed to save reminder. Please try again.");
       setIsSaving(false);
     }
   };

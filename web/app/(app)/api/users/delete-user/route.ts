@@ -1,6 +1,7 @@
 import { createAdminClient } from "@/utils/supabase/admin";
 import { NextRequest } from "next/server";
 import { createClient } from "@/utils/supabase/server";
+import { handleError } from "@/app/(app)/utils/handleError";
 
 export async function DELETE(req: NextRequest) {
   const supabase = await createClient();
@@ -25,7 +26,11 @@ export async function DELETE(req: NextRequest) {
   const { error } = await adminSupabase.auth.admin.deleteUser(user_id);
 
   if (error) {
-    console.error("Error deleting user:", error);
+    handleError(error, {
+      message: "Error deleting user",
+      route: "/api/users/delete-user",
+      method: "DELETE",
+    });
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
       headers: { "Content-Type": "application/json" },

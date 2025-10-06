@@ -9,13 +9,11 @@ import GuestLogIn from "@/app/login/guest-login/quest-login";
 import ModalForgotPassword from "../(app)/components/modalForgotPasword";
 import TitleInput from "../(app)/training/components/TitleInput";
 import ResetPasswordButton from "./components/resetPasswordButton";
-import { useFormStatus } from "react-dom";
 
 export default function LoginPage() {
   const [activeForm, setActiveForm] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [email, setEmail] = useState("");
-  const { pending } = useFormStatus();
 
   const initialState = {
     success: false,
@@ -110,8 +108,7 @@ export default function LoginPage() {
               state3.message = "";
             }}
           >
-            
-          {/* Forgot Password Form */}
+            {/* Forgot Password Form */}
 
             <form
               action={formAction3}
@@ -122,7 +119,7 @@ export default function LoginPage() {
                   Reset your password
                 </h3>
                 <p className="text-gray-300">
-                  Enter your email and we'll send you a link to reset your
+                  Enter your email and we&apos;ll send you a link to reset your
                   password.
                 </p>
                 <div className="w-full">

@@ -8,7 +8,7 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const token_hash = searchParams.get("token_hash");
   const type = searchParams.get("type") as EmailOtpType | null;
-  const next = searchParams.get("next") ?? "/email-verified";
+  const next = searchParams.get("next") ?? "/";
 
   if (token_hash && type) {
     const supabase = await createClient();
@@ -19,9 +19,12 @@ export async function GET(request: NextRequest) {
     });
 
     if (!error) {
-      await supabase.auth.signOut();
-
-      redirect(next);
+      if (type === "recovery") {
+        redirect(next || "/menu/security");
+      } else {
+        await supabase.auth.signOut();
+        redirect(next || "/email-verified");
+      }
     }
   }
 

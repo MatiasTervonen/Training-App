@@ -1,16 +1,21 @@
 "use client";
 
 import { useState } from "react";
-import { login, signup } from "@/app/login/actions";
+import { login, signup, sendPasswordResetEmail } from "@/app/login/actions";
 import React from "react";
 import LoginButton from "@/app/login/components/loginbutton";
 import SignupButton from "@/app/login/components/signupbutton";
 import GuestLogIn from "@/app/login/guest-login/quest-login";
 import ModalForgotPassword from "../(app)/components/modalForgotPasword";
+import TitleInput from "../(app)/training/components/TitleInput";
+import ResetPasswordButton from "./components/resetPasswordButton";
+import { useFormStatus } from "react-dom";
 
 export default function LoginPage() {
   const [activeForm, setActiveForm] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
+  const [email, setEmail] = useState("");
+  const { pending } = useFormStatus();
 
   const initialState = {
     success: false,
@@ -20,6 +25,11 @@ export default function LoginPage() {
   const [state, formAction] = React.useActionState(signup, initialState);
 
   const [state2, formAction2] = React.useActionState(login, initialState);
+
+  const [state3, formAction3] = React.useActionState(
+    sendPasswordResetEmail,
+    initialState
+  );
 
   return (
     <div className="bg-slate-950">
@@ -94,9 +104,54 @@ export default function LoginPage() {
 
           <ModalForgotPassword
             isOpen={modalOpen}
-            onClose={() => setModalOpen(false)}
+            onClose={() => {
+              setModalOpen(false);
+              setEmail("");
+              state3.message = "";
+            }}
           >
-            <p>{state2.message}</p>
+            
+          {/* Forgot Password Form */}
+
+            <form
+              action={formAction3}
+              className="flex flex-col justify-between items-center p-10 text-center gap-5 h-full"
+            >
+              <div className="flex flex-col gap-5">
+                <h3 className="text-xl underline mt-5 text-gray-100">
+                  Reset your password
+                </h3>
+                <p className="text-gray-300">
+                  Enter your email and we'll send you a link to reset your
+                  password.
+                </p>
+                <div className="w-full">
+                  <TitleInput
+                    className="custom-login-input"
+                    title={email}
+                    setTitle={setEmail}
+                    id="email-forgot-password"
+                    name="email"
+                    type="email"
+                    placeholder="Enter email..."
+                    required
+                  />
+                  <p
+                    aria-live="polite"
+                    className={`mt-4 text-sm text-center ${
+                      state3.message
+                        ? state3.success
+                          ? "text-green-500"
+                          : "text-red-500"
+                        : "text-transparent"
+                    }`}
+                  >
+                    {state3.message || "Placeholder for message"}
+                  </p>
+                </div>
+              </div>
+              <ResetPasswordButton />
+            </form>
           </ModalForgotPassword>
 
           {/* Sign Up Form */}

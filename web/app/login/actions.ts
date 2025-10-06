@@ -123,3 +123,38 @@ export async function signup(
     message: "Confirmation email sent. Please check your inbox.",
   };
 }
+
+
+export async function sendPasswordResetEmail(
+  prevState: AuthActionState | undefined,
+  formData: FormData
+): Promise<AuthActionState> {
+  const verification = await checkBotId();
+
+  if (verification.isBot) {
+    return {
+      success: false,
+      message: "Request failed. Please try again.",
+    };
+  }
+
+  const supabase = await createClient();
+
+  const data = {
+    email: formData.get("email") as string,
+  };
+
+  const { error } = await supabase.auth.resetPasswordForEmail(data.email);
+
+  if (error) {
+    return {
+      success: false,
+      message: error.message || "Something went wrong. Please try again.",
+    };
+  }
+
+  return {
+    success: true,
+    message: "Password reset email sent. Please check your inbox.",
+  };
+}

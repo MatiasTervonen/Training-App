@@ -35,7 +35,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${russoOne.className} antialiased`}>
-      <body className="bg-slate-900 font-primary">{children}</body>
+      <body className="bg-slate-900 font-primary text-gray-100">{children}</body>
     </html>
   );
 }

@@ -1,6 +1,6 @@
 import { toast } from "react-hot-toast";
-
 import { mutate } from "swr";
+import { handleError } from "@/app/(app)/utils/handleError";
  
  export const banUser = async (userId: string, duration: string, reason: string) => {
     if (!duration) return;
@@ -29,7 +29,7 @@ import { mutate } from "swr";
       }
       mutate("/api/users/get-users"); // Revalidate the user list
     } catch (error) {
-      console.error("Error banning user:", error);
+      handleError(error);
 
       toast.error("Failed to ban user. Please try again.");
       // Revert the optimistic update

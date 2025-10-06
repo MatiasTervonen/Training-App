@@ -1,5 +1,6 @@
 import { NextRequest } from "next/server";
 import { createClient } from "@/utils/supabase/server";
+import { handleError } from "@/app/(app)/utils/handleError";
 
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
@@ -21,7 +22,11 @@ export async function POST(req: NextRequest) {
     .eq("id", id);
 
   if (error) {
-    console.error("Supabase Update Error:", error);
+    handleError(error, {
+      message: "Error updating exercise",
+      route: "/api/gym/edit-exercise",
+      method: "POST",
+    });
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
       headers: { "Content-Type": "application/json" },

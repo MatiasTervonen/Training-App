@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import { formatDate } from "@/app/(app)/lib/formatDate";
 import toast from "react-hot-toast";
 import { updateFeed } from "@/app/(app)/lib/revalidateFeed";
+import { handleError } from "@/app/(app)/utils/handleError";
 
 export default function WorkoutAnalyticsPage() {
   const now = formatDate(new Date());
@@ -87,7 +88,7 @@ export default function WorkoutAnalyticsPage() {
       router.push("/dashboard");
       resetWeight();
     } catch (error) {
-      console.error("Error saving weight:", error);
+      handleError(error);
       toast.error("Failed to save weight session. Please try again.");
       setIsSaving(false);
     }

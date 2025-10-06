@@ -10,6 +10,7 @@ import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import toast from "react-hot-toast";
 import { useDebouncedCallback } from "use-debounce";
 import { updateFeed } from "@/app/(app)/lib/revalidateFeed";
+import { handleError } from "../utils/handleError";
 
 export default function Notes() {
   const draft =
@@ -27,7 +28,7 @@ export default function Notes() {
     setIsSaving(true);
 
     try {
-      const res = await fetch("/api/notes/save-notes", {
+      const res = await fetch("/api/notes/save-notess", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -50,6 +51,11 @@ export default function Notes() {
       resetNotes();
     } catch (error) {
       console.error("Error saving notes:", error);
+      handleError(error, {
+        message: "Error saving notes",
+        route: "/api/notes/save-notes",
+        method: "POST",
+      });
       toast.error("Failed to save notes. Please try again.");
       setIsSaving(false);
     }
@@ -79,33 +85,45 @@ export default function Notes() {
 
   return (
     <>
-        <div className="flex flex-col h-full w-full px-6 max-w-md mx-auto">
-          <div className="flex flex-col items-center mt-5 gap-5 flex-grow mb-10 h-full">
-            <p className="text-gray-100 text-lg text-center">
-              Add your notes here
-            </p>
-            <div className="mb-5 w-full">
-              <TitleInput
-                title={notesTitle}
-                setTitle={setNotesTitle}
-                placeholder="Notes title..."
-                label="Title..."
-              />
-            </div>
-            <div className="flex w-full flex-grow">
-              <NotesInput
-                notes={notes}
-                setNotes={setNotes}
-                placeholder="Write your notes here..."
-                label="Notes..."
-              />
-            </div>
+      <div className="flex flex-col h-full w-full px-6 max-w-md mx-auto">
+        <div className="flex flex-col items-center mt-5 gap-5 flex-grow mb-10 h-full">
+          <p className="text-gray-100 text-lg text-center">
+            Add your notes here
+          </p>
+          <div className="mb-5 w-full">
+            <TitleInput
+              title={notesTitle}
+              setTitle={setNotesTitle}
+              placeholder="Notes title..."
+              label="Title..."
+            />
           </div>
-          <div className="flex flex-col items-center gap-5 mb-10  self-center w-full">
-            <SaveButton onClick={saveNotes} />
-            <DeleteSessionBtn onDelete={resetNotes} />
+          <div className="flex w-full flex-grow">
+            <NotesInput
+              notes={notes}
+              setNotes={setNotes}
+              placeholder="Write your notes here..."
+              label="Notes..."
+            />
           </div>
         </div>
+        <div className="flex flex-col items-center gap-5 mb-10  self-center w-full">
+          <button
+            type="button"
+            onClick={() => {
+              import("@sentry/nextjs").then((Sentry) => {
+                Sentry.captureException(
+                  new Error("🔥 Client manual capture test")
+                );
+              });
+            }}
+          >
+            Send Sentry Error
+          </button>
+          <SaveButton onClick={saveNotes} />
+          <DeleteSessionBtn onDelete={resetNotes} />
+        </div>
+      </div>
       {isSaving && <FullScreenLoader message="Saving notes..." />}
     </>
   );

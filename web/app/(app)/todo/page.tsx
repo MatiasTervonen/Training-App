@@ -16,6 +16,7 @@ import FullScreenLoader from "../components/FullScreenLoader";
 import toast from "react-hot-toast";
 import { updateFeed } from "@/app/(app)/lib/revalidateFeed";
 import { useRouter } from "next/navigation";
+import { handleError } from "../utils/handleError";
 
 type TodoItem = {
   task: string;
@@ -101,7 +102,11 @@ export default function Todo() {
       router.push("/dashboard");
       handleDeleteAll();
     } catch (error) {
-      console.error("Error saving todo:", error);
+      handleError(error, {
+        message: "Error saving todo",
+        route: "/api/todo-list/save-todo",
+        method: "POST",
+      });
       toast.error("Failed to save todo");
       setLoading(false);
     }

@@ -1,5 +1,6 @@
 import { NextRequest } from "next/server";
 import { createClient } from "@/utils/supabase/server";
+import { handleError } from "@/app/(app)/utils/handleError";
 
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
@@ -50,7 +51,11 @@ export async function POST(req: NextRequest) {
   }
 
   if (lookUpError || !targetuser) {
-    console.error("Supabase Lookup Error:", lookUpError);
+    handleError(lookUpError, {
+      message: "Error fetching user",
+      route: "/api/friend/send-request",
+      method: "POST",
+    });
     return new Response(JSON.stringify({ error: "User not found" }), {
       status: 404,
       headers: { "Content-Type": "application/json" },
@@ -81,10 +86,10 @@ export async function POST(req: NextRequest) {
     .maybeSingle();
 
   if (existingError) {
-    console.error("Supabase Check Error:", existingError);
-    return new Response(JSON.stringify({ error: existingError.message }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
+    handleError(existingError, {
+      message: "Error checking existing friend request",
+      route: "/api/friend/send-request",
+      method: "POST",
     });
   }
 
@@ -109,13 +114,12 @@ export async function POST(req: NextRequest) {
     .maybeSingle();
 
   if (friendshipError) {
-    console.error("Supabase Friendship Check Error:", friendshipError);
-    return new Response(JSON.stringify({ error: friendshipError.message }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
+    handleError(friendshipError, {
+      message: "Error checking friendship",
+      route: "/api/friend/send-request",
+      method: "POST",
     });
   }
-
   if (friendship) {
     return new Response(JSON.stringify({ error: "You are already friends" }), {
       status: 400,
@@ -136,7 +140,11 @@ export async function POST(req: NextRequest) {
     .maybeSingle();
 
   if (error || !request) {
-    console.error("Supabase Insert Error:", error);
+    handleError(error, {
+      message: "Error creating friend request",
+      route: "/api/friend/send-request",
+      method: "POST",
+    });
     return new Response(JSON.stringify({ error: error?.message }), {
       status: 500,
       headers: { "Content-Type": "application/json" },

@@ -25,6 +25,7 @@ import TodoSession from "@/app/(app)/components/expandSession/todo";
 import EditTodo from "@/app/(app)/ui/editSession/EditTodo";
 import ReminderSession from "../../components/expandSession/reminder";
 import EditReminder from "@/app/(app)/ui/editSession/EditReminder";
+import { handleError } from "../../utils/handleError";
 
 type FeedItem = {
   table: "notes" | "weight" | "gym_sessions" | "todo_lists" | "reminders";
@@ -178,7 +179,11 @@ export default function SessionFeed() {
         `Item has been ${isPinned ? "unpinned" : "pinned"} successfully.`
       );
     } catch (error) {
-      console.error("Failed to toggle pin:", error);
+      handleError(error, {
+        message: "Failed to toggle pin",
+        route: "/api/pinned/toggle-pin",
+        method: "POST",
+      });
       toast.error("Failed to toggle pin");
       mutateFeed(snapshot, { revalidate: false });
     }
@@ -229,8 +234,12 @@ export default function SessionFeed() {
 
       toast.success("Item has been deleted successfully.");
     } catch (error) {
+      handleError(error, {
+        message: "Failed to delete session",
+        route: "/api/delete-session",
+        method: "POST",
+      }); 
       toast.error("Failed to delete session");
-      console.error("Failed to delete session:", error);
       mutateFeed(snapshot, { revalidate: false });
     }
   };

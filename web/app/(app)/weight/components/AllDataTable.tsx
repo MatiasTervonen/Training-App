@@ -5,6 +5,7 @@ import { mutate } from "swr";
 import toast from "react-hot-toast";
 import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
 import { weight } from "@/app/(app)/types/models";
+import { handleError } from "../../utils/handleError";
 
 type AllDataProps = {
   data: weight[];
@@ -64,8 +65,12 @@ export default function AllDataTable({ data }: AllDataProps) {
 
       await res.json();
     } catch (error) {
+      handleError(error, {
+        message: "Failed to delete weight entry",
+        route: "/api/delete-session",
+        method: "POST",
+      });
       toast.error("Failed to delete weight entry");
-      console.error("Failed to delete weight entry:", error);
       mutate("/api/weight/get-weight", previousData, false);
     } finally {
       setExpanded(null); // Collapse any expanded row after deletion}

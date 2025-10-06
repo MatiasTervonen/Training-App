@@ -8,6 +8,7 @@ import TitleInput from "@/app/(app)/training/components/TitleInput";
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
 import ProfilePicture from "@/app/(app)/menu/components/profile-picture";
+import { handleError } from "@/app/(app)/utils/handleError";
 
 export default function Settings() {
   const [isSaving, setIsSaving] = useState(false);
@@ -61,7 +62,11 @@ export default function Settings() {
 
       return `${data.publicUrl}?v=${Date.now()}`;
     } catch (error) {
-      console.error("Error uploading image:", error);
+      handleError(error, {
+        message: "Error uploading image",
+        route: "/api/settings/save-profilePic",
+        method: "POST",
+      });
       toast.error("Failed to upload image");
       return profilePicZ || null;
     }
@@ -96,7 +101,11 @@ export default function Settings() {
       setPreferences(payload);
       toast.success("Settings updated successfully!");
     } catch (error) {
-      console.error("Error updating settings:", error);
+      handleError(error, {
+        message: "Error updating settings",
+        route: "/api/settings/save-settings",
+        method: "POST",
+      });
       toast.error("Failed to update settings. Please try again.");
     } finally {
       setIsSaving(false);
@@ -121,7 +130,11 @@ export default function Settings() {
       const data = await res.json();
       return data.isTaken;
     } catch (error) {
-      console.error("Error checking username availability:", error);
+      handleError(error, {
+        message: "Error checking username availability",
+        route: "/api/settings/userName-available",
+        method: "GET",
+      });
       return false;
     }
   };

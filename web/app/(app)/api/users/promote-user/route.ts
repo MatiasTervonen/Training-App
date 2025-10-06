@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 import { createAdminClient } from "@/utils/supabase/admin";
+import { handleError } from "@/app/(app)/utils/handleError";
 
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
@@ -22,7 +23,6 @@ export async function POST(req: NextRequest) {
   const body = await req.json();
   const { userRole, user_id } = body;
 
-
   const { error: adminError } = await adminSupabase.auth.admin.updateUserById(
     user_id,
     {
@@ -31,7 +31,11 @@ export async function POST(req: NextRequest) {
   );
 
   if (adminError) {
-    console.error("Error updating user role:", adminError);
+    handleError(adminError, {
+      message: "Error promoting user",
+      route: "/api/users/promote-user",
+      method: "POST",
+    });
     return new Response(JSON.stringify({ error: adminError.message }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
@@ -44,7 +48,11 @@ export async function POST(req: NextRequest) {
     .eq("id", user_id);
 
   if (dbError) {
-    console.error("Error updating user ban status:", dbError);
+    handleError(dbError, {
+      message: "Error updating user role in database",
+      route: "/api/users/promote-user",
+      method: "POST",
+    });
     return new Response(JSON.stringify({ error: dbError.message }), {
       status: 500,
       headers: { "Content-Type": "application/json" },

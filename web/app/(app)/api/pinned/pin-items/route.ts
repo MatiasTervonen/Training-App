@@ -1,5 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
 import { NextRequest } from "next/server";
+import { handleError } from "@/app/(app)/utils/handleError";
 
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
@@ -34,7 +35,11 @@ export async function POST(req: NextRequest) {
     .single();
 
   if (error || !pinnedItem) {
-    console.error("Supabase Insert Error:", error);
+    handleError(error, {
+      message: "Error pinning item",
+      route: "/api/pinned/pin-items",
+      method: "POST",
+    });
     return new Response(JSON.stringify({ error: error?.message }), {
       status: 500,
       headers: { "Content-Type": "application/json" },

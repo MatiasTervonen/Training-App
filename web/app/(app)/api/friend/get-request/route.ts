@@ -1,3 +1,4 @@
+import { handleError } from "@/app/(app)/utils/handleError";
 import { createClient } from "@/utils/supabase/server";
 
 export async function GET() {
@@ -20,7 +21,11 @@ export async function GET() {
     .order("created_at", { ascending: false });
 
   if (requestsError || !requests) {
-    console.error("Supabase Fetch Error:", requestsError);
+    handleError(requestsError, {
+      message: "Error fetching friend requests",
+      route: "/api/friend/get-request",
+      method: "GET",
+    });
     return new Response(JSON.stringify({ error: requestsError?.message }), {
       status: 500,
       headers: { "Content-Type": "application/json" },

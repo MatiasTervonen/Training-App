@@ -1,5 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
 import { ExercisePreview } from "@/app/(app)/types/models";
+import { handleError } from "@/app/(app)/utils/handleError";
 
 export async function GET() {
   const supabase = await createClient();
@@ -20,7 +21,11 @@ export async function GET() {
     .limit(10);
 
   if (error) {
-    console.error("Error fetching recent exercises:", error);
+    handleError(error, {
+      message: "Error fetching recent exercises",
+      route: "/api/gym/recent-exercises",
+      method: "GET",
+    });
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
       headers: { "Content-Type": "application/json" },

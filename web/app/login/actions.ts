@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 import { createAdminClient } from "@/utils/supabase/admin";
 import { checkBotId } from "botid/server";
+import { handleError } from "@/app/(app)/utils/handleError";
 
 type AuthActionState = {
   success: boolean;
@@ -27,7 +28,6 @@ export async function login(
   const verification = await checkBotId();
 
   if (verification.isBot) {
-    console.log("Bot detected");
     return {
       success: false,
       message: "Login failed. Please try again.",
@@ -115,7 +115,11 @@ export async function signup(
   });
 
   if (error) {
-    console.error("Error creating user profile:", error);
+    handleError(error, {
+      message: "Failed to create user profile",
+      route: "/api/auth/signup",
+      method: "POST",
+    });
   }
 
   return {
@@ -123,7 +127,6 @@ export async function signup(
     message: "Confirmation email sent. Please check your inbox.",
   };
 }
-
 
 export async function sendPasswordResetEmail(
   prevState: AuthActionState | undefined,

@@ -1,3 +1,4 @@
+import { handleError } from "@/app/(app)/utils/handleError";
 import { createClient } from "@/utils/supabase/server";
 
 export async function GET(req: Request) {
@@ -25,7 +26,11 @@ export async function GET(req: Request) {
     .single();
 
   if (gymSessionError || !gymSession) {
-    console.error("Supabase Insert Error:", gymSessionError);
+    handleError(gymSessionError, {
+      message: "Error fetching gym session",
+      route: "/api/gym/get-full-gym-session",
+      method: "GET",
+    });
     return new Response(JSON.stringify({ error: gymSessionError?.message }), {
       status: 500,
       headers: { "Content-Type": "application/json" },

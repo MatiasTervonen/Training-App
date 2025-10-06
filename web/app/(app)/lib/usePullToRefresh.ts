@@ -1,4 +1,5 @@
 import { useRef, useState, useEffect } from "react";
+import { handleError } from "../utils/handleError";
 
 export default function usePullToRefresh({
   onRefresh,
@@ -67,7 +68,10 @@ export default function usePullToRefresh({
         try {
           await onRefresh();
         } catch (error) {
-          console.error("Error during refresh:", error);
+          handleError(error, {
+            message: "Error during pull-to-refresh",
+            method: "POST",
+          });
         }
         setRefreshing(false);
         setPullDistance(0);

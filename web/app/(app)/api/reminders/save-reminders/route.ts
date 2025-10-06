@@ -1,5 +1,6 @@
 import { NextRequest } from "next/server";
 import { createClient } from "@/utils/supabase/server";
+import { handleError } from "@/app/(app)/utils/handleError";
 
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
@@ -28,7 +29,11 @@ export async function POST(req: NextRequest) {
     .single();
 
   if (remindersError || !remindersData) {
-    console.error("Supabase Insert Error:", remindersError);
+    handleError(remindersError, {
+      message: "Error saving reminders",
+      route: "/api/reminders/save-reminders",
+      method: "POST",
+    });
     return new Response(JSON.stringify({ error: remindersError?.message }), {
       status: 500,
       headers: { "Content-Type": "application/json" },

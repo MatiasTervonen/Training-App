@@ -9,6 +9,7 @@ import toast from "react-hot-toast";
 import FullScreenLoader from "../../components/FullScreenLoader";
 import NotesInput from "../../training/components/NotesInput";
 import { mutate } from "swr";
+import { handleError } from "@/app/(app)/utils/handleError";
 
 export default function TimerPage() {
   const draft =
@@ -97,7 +98,11 @@ export default function TimerPage() {
 
       router.push("/timer/my-timers");
     } catch (error) {
-      console.error("Error saving timer:", error);
+      handleError(error, {
+        message: "Error saving timer",
+        route: "/api/timer/save-timer",
+        method: "POST",
+      });
       toast.error("Failed to save timer. Please try again.");
       setIsSaving(false);
     }

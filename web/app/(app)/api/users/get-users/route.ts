@@ -1,4 +1,5 @@
 import { createClient } from "@/utils/supabase/server";
+import { handleError } from "@/app/(app)/utils/handleError";
 
 export async function GET() {
   const supabase = await createClient();
@@ -16,7 +17,11 @@ export async function GET() {
     .order("created_at", { ascending: false });
 
   if (usersError || !users) {
-    console.error("Supabase Fetch Error:", usersError);
+    handleError(usersError, {
+      message: "Error fetching users",
+      route: "/api/users/get-users",
+      method: "GET",
+    });
     return new Response(JSON.stringify({ error: usersError?.message }), {
       status: 500,
       headers: { "Content-Type": "application/json" },

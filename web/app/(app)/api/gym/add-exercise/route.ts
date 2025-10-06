@@ -1,5 +1,6 @@
 import { NextRequest } from "next/server";
 import { createClient } from "@/utils/supabase/server";
+import { handleError } from "@/app/(app)/utils/handleError";
 
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
@@ -22,7 +23,11 @@ export async function POST(req: NextRequest) {
     .maybeSingle();
 
   if (fetchError) {
-    console.error("Supabase Fetch Error:", fetchError);
+    handleError(fetchError, {
+      message: "Error checking existing exercise",
+      route: "/api/gym/add-exercise",
+      method: "POST",
+    });
     return new Response(JSON.stringify({ error: fetchError.message }), {
       status: 409,
       headers: { "Content-Type": "application/json" },
@@ -52,7 +57,11 @@ export async function POST(req: NextRequest) {
     .single();
 
   if (exerciseError || !exerciseData) {
-    console.error("Supabase Insert Error:", exerciseError);
+    handleError(exerciseError, {
+      message: "Error adding new exercise",
+      route: "/api/gym/add-exercise",
+      method: "POST",
+    });
     return new Response(JSON.stringify({ error: exerciseError?.message }), {
       status: 500,
       headers: { "Content-Type": "application/json" },

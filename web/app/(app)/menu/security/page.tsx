@@ -5,6 +5,7 @@ import { useState } from "react";
 import SaveButtonSpinner from "@/app/(app)/ui/save-button-spinner";
 import { createClient } from "@/utils/supabase/client";
 import { useSignOut } from "@/app/(app)/lib/handleSignOut";
+import { handleError } from "@/app/(app)/utils/handleError";
 
 export default function Page() {
   const [password, setPassword] = useState("");
@@ -35,6 +36,11 @@ export default function Page() {
       });
 
       if (error) {
+        handleError(error, {
+          message: "Error updating password",
+          route: "/api/auth/update-password",
+          method: "POST",
+        });
         setErrorMessage(
           error.message || "Failed to update password. Please try again."
         );
@@ -49,10 +55,15 @@ export default function Page() {
       setTimeout(() => {
         signOut();
       }, 3000);
-    } catch {
+    } catch (error) {
+      handleError(error, {
+        message: "Unexpected error updating password",
+        route: "/api/auth/update-password",
+        method: "POST",
+      });
       setErrorMessage("An unexpected error occurred. Please try again.");
       setLoading(false);
-    } 
+    }
   };
 
   return (

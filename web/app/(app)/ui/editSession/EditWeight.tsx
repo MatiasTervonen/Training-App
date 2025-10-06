@@ -8,6 +8,7 @@ import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import { mutate } from "swr";
 import toast from "react-hot-toast";
 import { Feed_item } from "@/app/(app)/types/session";
+import { handleError } from "../../utils/handleError";
 
 type Props = {
   weight: Feed_item;
@@ -85,9 +86,13 @@ export default function EditWeight({ weight, onClose, onSave }: Props) {
 
       mutate("/api/feed");
     } catch (error) {
+      handleError(error, {
+        message: "Error editing weight session",
+        route: "/api/weight/edit-weight",
+        method: "POST",
+      });
       toast.error("Failed to update weight session");
       mutate("/api/feed");
-      console.error("Failed to save weight session:", error);
     } finally {
       setIsSaving(false);
     }

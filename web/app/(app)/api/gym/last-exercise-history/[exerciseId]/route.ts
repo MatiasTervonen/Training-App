@@ -1,3 +1,4 @@
+import { handleError } from "@/app/(app)/utils/handleError";
 import { createClient } from "@/utils/supabase/server";
 
 type SessionExercise = {
@@ -40,7 +41,11 @@ export async function GET(
   }
 
   if (exerciseError) {
-    console.error("Error fetching exercises:", exerciseError?.message);
+    handleError(exerciseError, {
+      message: "Error fetching exercise history",
+      route: "/api/gym/last-exercise-history/[exerciseId]",
+      method: "GET",
+    });
     return new Response(JSON.stringify({ error: exerciseError.message }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
@@ -62,7 +67,11 @@ export async function GET(
         .order("set_number", { ascending: true });
 
       if (setsError) {
-        console.error("Error fetching sets:", setsError.message);
+        handleError(setsError, {
+          message: "Error fetching sets",
+          route: "/api/gym/last-exercise-history/[exerciseId]",
+          method: "GET",
+        });
         return null;
       }
 

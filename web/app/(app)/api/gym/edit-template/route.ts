@@ -1,5 +1,6 @@
 import { NextRequest } from "next/server";
 import { createClient } from "@/utils/supabase/server";
+import { handleError } from "@/app/(app)/utils/handleError";
 
 type gym_template_exercises = {
   exercise_id: string;
@@ -33,7 +34,11 @@ export async function POST(req: NextRequest) {
     .eq("user_id", user.sub);
 
   if (templateError) {
-    console.error("Supabase Insert Error:", templateError);
+    handleError(templateError, {
+      message: "Error updating template",
+      route: "/api/gym/edit-template",
+      method: "POST",
+    });
     return new Response(JSON.stringify({ error: templateError?.message }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
@@ -64,7 +69,11 @@ export async function POST(req: NextRequest) {
     .insert(templateExercises);
 
   if (templateExerciseError) {
-    console.error("Supabase Insert Error:", templateError);
+    handleError(templateExerciseError, {
+      message: "Error inserting template exercises",
+      route: "/api/gym/edit-template",
+      method: "POST",
+    });
     return new Response(
       JSON.stringify({ error: templateExerciseError?.message }),
       {

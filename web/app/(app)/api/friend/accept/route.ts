@@ -1,5 +1,6 @@
 import { NextRequest } from "next/server";
 import { createClient } from "@/utils/supabase/server";
+import { handleError } from "@/app/(app)/utils/handleError";
 
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
@@ -25,7 +26,11 @@ export async function POST(req: NextRequest) {
     .single();
 
   if (updateError || !request) {
-    console.error("Supabase Insert Error:", updateError);
+    handleError(updateError, {
+      message: "Error updating friend request",
+      route: "/api/friend/accept",
+      method: "POST",
+    });
     return new Response(JSON.stringify({ error: updateError?.message }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
@@ -43,7 +48,11 @@ export async function POST(req: NextRequest) {
   ]);
 
   if (insertError) {
-    console.error("Supabase Insert Error:", insertError);
+    handleError(insertError, {
+      message: "Error creating friendship",
+      route: "/api/friend/accept",
+      method: "POST",
+    });
     return new Response(
       JSON.stringify({ error: "Friendship creation failed." }),
       {

@@ -1,6 +1,7 @@
 import { mutate } from "swr";
 import { toast } from "react-hot-toast";
 import { users } from "@/app/(app)/types/models";
+import { handleError } from "@/app/(app)/utils/handleError";
 
 export const deleteUser = async (userId: string) => {
   const confirmDelete = confirm(
@@ -33,7 +34,7 @@ export const deleteUser = async (userId: string) => {
     toast.success("User deleted successfully.");
     mutate("/api/users/get-users"); // Revalidate the user list
   } catch (error) {
-    console.error("Error deleting user:", error);
+    handleError(error);
 
     toast.error("Failed to delete user. Please try again.");
     // Revert the optimistic update

@@ -1,5 +1,6 @@
 import { NextRequest } from "next/server";
 import { createClient } from "@/utils/supabase/server";
+import { handleError } from "@/app/(app)/utils/handleError";
 
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
@@ -25,7 +26,11 @@ export async function POST(req: NextRequest) {
     .eq("user_id", user.sub);
 
   if (sessionError) {
-    console.error("Supabase Insert Error:", sessionError);
+    handleError(sessionError, {
+      message: "Error updating session",
+      route: "/api/gym/edit-session",
+      method: "POST",
+    });
     return new Response(JSON.stringify({ error: sessionError?.message }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
@@ -85,7 +90,11 @@ export async function POST(req: NextRequest) {
     .insert(sessionExercises);
 
   if (seError) {
-    console.error("Supabase Session Exercises Insert Error:", seError);
+    handleError(seError, {
+      message: "Error inserting session exercises",
+      route: "/api/gym/edit-session",
+      method: "POST",
+    });
     return new Response(JSON.stringify({ error: seError.message }), {
       status: 500,
       headers: { "Content-Type": "application/json" },

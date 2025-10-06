@@ -1,3 +1,4 @@
+import { handleError } from "@/app/(app)/utils/handleError";
 import { createClient } from "@/utils/supabase/server";
 import { NextRequest } from "next/server";
 
@@ -49,6 +50,11 @@ export async function POST(req: NextRequest) {
     .upsert(upsertedTasks, { onConflict: "id" });
 
   if (taskError) {
+    handleError(taskError, {
+      message: "Error updating todo tasks",
+      route: "/api/todo-list/edit-todo",
+      method: "POST",
+    });
     return new Response(JSON.stringify({ error: taskError.message }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
@@ -64,6 +70,11 @@ export async function POST(req: NextRequest) {
       .eq("user_id", user.sub);
 
     if (deleteError) {
+      handleError(deleteError, {
+        message: "Error deleting todo tasks",
+        route: "/api/todo-list/edit-todo",
+        method: "POST",
+      });
       return new Response(JSON.stringify({ error: deleteError.message }), {
         status: 500,
         headers: { "Content-Type": "application/json" },

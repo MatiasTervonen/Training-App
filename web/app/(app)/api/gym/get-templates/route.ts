@@ -1,3 +1,4 @@
+import { handleError } from "@/app/(app)/utils/handleError";
 import { createClient } from "@/utils/supabase/server";
 
 export async function GET() {
@@ -17,7 +18,11 @@ export async function GET() {
     .order("created_at", { ascending: false });
 
   if (templateError || !template) {
-    console.error("Supabase Insert Error:", templateError);
+    handleError(templateError, {
+      message: "Error fetching templates",
+      route: "/api/gym/get-templates",
+      method: "GET",
+    });
     return new Response(JSON.stringify({ error: templateError?.message }), {
       status: 500,
       headers: { "Content-Type": "application/json" },

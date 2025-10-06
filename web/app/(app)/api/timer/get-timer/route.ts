@@ -1,3 +1,4 @@
+import { handleError } from "@/app/(app)/utils/handleError";
 import { createClient } from "@/utils/supabase/server";
 
 export async function GET() {
@@ -17,7 +18,11 @@ export async function GET() {
     .order("created_at", { ascending: false });
 
   if (timerError || !timers) {
-    console.error("Supabase Insert Error:", timerError);
+    handleError(timerError, {
+      message: "Error fetching timers",
+      route: "/api/timer/get-timer",
+      method: "GET",
+    });
     return new Response(JSON.stringify({ error: timerError?.message }), {
       status: 500,
       headers: { "Content-Type": "application/json" },

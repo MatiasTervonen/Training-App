@@ -1,6 +1,7 @@
 import { createClient } from "@/utils/supabase/server";
 import GetSession from "./getSession";
 import { Feed_item, FeedResponse } from "../types/session";
+import { handleError } from "@/app/(app)/utils/handleError";
 
 type Role = "user" | "admin" | "super_admin" | "guest" | null;
 
@@ -30,6 +31,10 @@ export async function checkAdmin() {
     .single();
 
   if (profileError || !profile) {
+    handleError(profileError, {
+      message: "Error fetching user role",
+      method: "GET",
+    });
     return { user: null, role: null };
   }
 
@@ -60,6 +65,10 @@ export async function getUserRoleAndPreferences(): Promise<{
     .single();
 
   if (!profile || profileError) {
+    handleError(profileError, {
+      message: "Error fetching user preferences",
+      method: "GET",
+    });
     return { user: user.sub, preferences: null, role: null };
   }
 
@@ -77,7 +86,10 @@ export async function getFeed(
   const { feed, error } = await GetSession({ limit, page });
 
   if (error) {
-    console.error("Error fetching feed:", error);
+    handleError(error, {
+      message: "Error fetching feed",
+      method: "GET",
+    });
     return { feed: [], nextPage: null };
   }
 
@@ -119,7 +131,10 @@ export async function savePushSubscription(subscription: {
   );
 
   if (error) {
-    console.error("Error saving push subscription:", error);
+    handleError(error, {
+      message: "Error saving push subscription",
+      method: "POST",
+    });
     return { success: false, error: "Failed to save push subscription" };
   }
 
@@ -146,7 +161,10 @@ export async function deletePushSubscription(endpoint: string) {
     .eq("endpoint", endpoint);
 
   if (error) {
-    console.error("Error deleting push subscription:", error);
+    handleError(error, {
+      message: "Error deleting push subscription",
+      method: "POST",
+    });
     return { success: false, error: "Failed to delete push subscription" };
   }
 
@@ -173,7 +191,10 @@ export async function getAllActivePushSubscriptions() {
     .eq("user_id", user.sub);
 
   if (error) {
-    console.error("Error fetching active push subscriptions:", error);
+    handleError(error, {
+      message: "Error fetching active push subscriptions",
+      method: "GET",
+    });
     return {
       subscriptions: [],
       error: "Failed to fetch active push subscriptions",

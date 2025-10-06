@@ -10,6 +10,7 @@ import toast from "react-hot-toast";
 import { Feed_item } from "@/app/(app)/types/session";
 import DateTimePicker from "@/app/(app)/components/DateTimePicker";
 import { Bell } from "lucide-react";
+import { handleError } from "../../utils/handleError";
 
 type Props = {
   reminder: Feed_item;
@@ -80,8 +81,12 @@ export default function EditReminder({ reminder, onClose, onSave }: Props) {
 
       mutate("/api/feed");
     } catch (error) {
-      console.error("Error updating notes:", error);
-      toast.error("Failed to update notes");
+      handleError(error, {
+        message: "Error editing reminder",
+        route: "/api/reminders/edit-reminders",
+        method: "POST",
+      });
+      toast.error("Failed to update reminder");
       mutate("/api/feed");
     } finally {
       setIsSaving(false);

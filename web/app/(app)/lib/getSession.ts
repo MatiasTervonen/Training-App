@@ -1,5 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
 import { feed_view } from "@/app/(app)/types/models";
+import { handleError } from "../utils/handleError";
 
 export default async function GetSession({
   limit = 10,
@@ -31,6 +32,10 @@ export default async function GetSession({
     .range(offset, offset + limit - 1);
 
   if (error) {
+    handleError(error, {
+      message: "Error fetching feed",
+      method: "GET",
+    });
     return { feed: [], error };
   }
 

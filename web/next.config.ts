@@ -1,4 +1,4 @@
-import {withSentryConfig} from "@sentry/nextjs";
+import { withSentryConfig } from "@sentry/nextjs";
 import { NextConfig } from "next";
 import { withBotId } from "botid/next/config";
 
@@ -46,4 +46,6 @@ export default withSentryConfig(withBotId(nextConfig), {
   // https://docs.sentry.io/product/crons/
   // https://vercel.com/docs/cron-jobs
   automaticVercelMonitors: true,
+
+  tunnelRoute: true,
 });

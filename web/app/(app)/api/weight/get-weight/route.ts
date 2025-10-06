@@ -16,9 +16,6 @@ export async function GET() {
     .eq("user_id", user.sub)
     .order("created_at", { ascending: true });
 
-    throw new Error("Test Sentry error from get-weight API route");
-
-
   if (weightError || !weight) {
     handleError(weightError, {
       message: "Error fetching weight entries",

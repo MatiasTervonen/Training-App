@@ -108,27 +108,6 @@ export default function Notes() {
           </div>
         </div>
         <div className="flex flex-col items-center gap-5 mb-10  self-center w-full">
-          <button
-            type="button"
-            onClick={() => {
-              import("@sentry/nextjs").then((Sentry) => {
-                Sentry.captureException(
-                  new Error("🔥 Client manual capture test")
-                );
-              });
-            }}
-          >
-            Send Sentry Error
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              throw new Error("Sentry Test Error");
-            }}
-          >
-            Break the world
-          </button>
-          ;
           <SaveButton onClick={saveNotes} />
           <DeleteSessionBtn onDelete={resetNotes} />
         </div>

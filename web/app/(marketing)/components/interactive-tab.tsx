@@ -74,10 +74,19 @@ export default function InteractiveTab() {
         </div>
       </div>
       <div className="sm:mt-10 ">
-        {activeSection === "gym" && <Gym />}
-        {activeSection === "disc-golf" && <DiscGolf />}
-        {activeSection === "notes" && <Notes />}
-        {activeSection === "weight" && <Weight />}
+        <div className={activeSection === "gym" ? "block" : "hidden"}>
+          <Gym isActive={activeSection === "gym"} />
+        </div>
+
+        <div className={activeSection === "disc-golf" ? "block" : "hidden"}>
+          <DiscGolf isActive={activeSection === "disc-golf"} />
+        </div>
+        <div className={activeSection === "notes" ? "block" : "hidden"}>
+          <Notes isActive={activeSection === "notes"} />
+        </div>
+        <div className={activeSection === "weight" ? "block" : "hidden"}>
+          <Weight isActive={activeSection === "weight"} />
+        </div>
       </div>
     </>
   );

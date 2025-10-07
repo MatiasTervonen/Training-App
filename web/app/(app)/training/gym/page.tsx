@@ -296,17 +296,15 @@ export default function TrainingSessionPage() {
 
   return (
     <>
-      <nav className="flex items-center justify-between bg-gray-700 p-2 px-4 w-full z-40 max-w-3xl mx-auto fixed">
-        <div className="flex items-center justify-center gap-2 text-gray-100">
-          <Timer
-            buttonsAlwaysVisible
-            manualSession={{
-              label: sessionTitle,
-              path: "/training/gym",
-              type: "gym",
-            }}
-          />
-        </div>
+      <nav className="flex items-center bg-gray-700 p-2 px-4 w-full z-40 max-w-3xl mx-auto sticky top-0">
+        <Timer
+          buttonsAlwaysVisible
+          manualSession={{
+            label: sessionTitle,
+            path: "/training/gym",
+            type: "gym",
+          }}
+        />
       </nav>
 
       <div className="flex justify-center relative h-full max-w-md mx-auto pt-15">

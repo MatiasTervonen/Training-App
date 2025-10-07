@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { motion } from "framer-motion";
 
-export default function Gym() {
+export default function Gym({ isActive }: { isActive: boolean }) {
   return (
     <div className="text-gray-100  pb-20">
       <h2 className="text-3xl sm:text-4xl text-center pt-10">Gym workouts</h2>
@@ -20,8 +20,8 @@ export default function Gym() {
           </div>
         </div>
         <motion.div
-          initial={{ opacity: 0, x: 300 }}
-          animate={{ opacity: 1, x: 0 }}
+          initial={false}
+          animate={{ opacity: isActive ? 1 : 0, x: isActive ? 0 : 300 }}
           transition={{ duration: 0.5, ease: "easeOut" }}
         >
           <Image

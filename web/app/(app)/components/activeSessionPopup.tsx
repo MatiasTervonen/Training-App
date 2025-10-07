@@ -44,7 +44,7 @@ export default function ActiveSessionPopup() {
       }`}
     >
       <div className="ml-10">
-        <p className="pb-2 text-start ml-2">{activeSession.label}</p>
+        <p className="pb-2 text-start text-slate-900">{activeSession.label}</p>
         <div className="flex gap-5 text-slate-900 text-start">
           <Timer />
           <p>{activeSession.type.toUpperCase()}</p>
@@ -58,7 +58,7 @@ export default function ActiveSessionPopup() {
       </div>
       <div className="mr-5">
         <Link onClick={stopAlarm} href={activeSession.path}>
-          <SquareArrowRight size={40} />
+          <SquareArrowRight size={40} color="#0f172b" />
         </Link>
       </div>
     </div>

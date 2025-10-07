@@ -66,9 +66,12 @@ export async function POST(request: NextRequest) {
             },
           },
           JSON.stringify({
-            title: item.title,
-            body: item.notes,
-            icon: "/android-chrome-192x192.png",
+            notification: {
+              title: item.title,
+              body: item.notes,
+              icon: "/android-chrome-192x192.png",
+              vibrate: [100, 50, 100],
+            },
           })
         );
       } catch (error: unknown) {

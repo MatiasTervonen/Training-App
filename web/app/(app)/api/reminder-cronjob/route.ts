@@ -70,7 +70,7 @@ export async function POST(request: NextRequest) {
               title: item.title,
               body: item.notes,
               icon: "/android-chrome-192x192.png",
-              vibrate: [100, 50, 100],
+        
             },
           })
         );

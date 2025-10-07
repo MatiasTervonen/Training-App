@@ -2,7 +2,10 @@ self.addEventListener("push", function (event) {
   console.log("[Service Worker] Push Received:", event);
   if (event.data) {
     console.log("[Service Worker] Push data:", event.data.text());
-    const data = event.data.json();
+    const payload = event.data.json();
+
+    const data = payload.notification || payload;
+
     const options = {
       body: data.body,
       icon: data.icon || "/icon.png",

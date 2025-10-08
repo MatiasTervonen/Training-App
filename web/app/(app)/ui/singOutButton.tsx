@@ -47,7 +47,7 @@ export default function SignOutButton() {
       <button
         aria-label="Log out"
         onClick={handleSignOut}
-        className="w-full py-2 px-6 rounded-md shadow-xl bg-blue-900 border-2 border-blue-500 hover:bg-blue-700 hover:scale-105"
+        className="w-full py-2 px-6 rounded-md shadow-xl bg-blue-900 border-2 border-blue-500 hover:bg-blue-700 hover:scale-105 transition-all duration-200"
       >
         <div className="flex items-center gap-2 justify-center">
           <LogOut />

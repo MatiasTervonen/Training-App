@@ -206,7 +206,7 @@ export default function LoginPage() {
               onClick={() => {
                 setActiveForm(!activeForm);
               }}
-              className="text-gray-100 border-2 border-blue-400 py-2 px-10 rounded-md bg-gradient-to-tr from-slate-950  to-blue-700 hover:from-blue-700 hover:to-slate-950 transform hover:scale-105 transition-all duration-200"
+              className="text-gray-100 border-2 border-blue-400 py-2 px-10 rounded-md bg-gradient-to-tr from-slate-950  to-blue-700 hover:from-blue-700 hover:to-slate-950 transform hover:scale-105 transition-all duration-200 cursor-pointer"
             >
               {activeForm ? "Log in" : "Sign up"}
             </button>

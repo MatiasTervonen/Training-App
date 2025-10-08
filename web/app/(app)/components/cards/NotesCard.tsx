@@ -39,7 +39,7 @@ export default function NotesCard({
           button={
             <div
               aria-label="More options"
-              className={`${pinned ? "text-slate-900" : "text-gray-100"}`}
+              className={`cursor-pointer ${pinned ? "text-slate-900" : "text-gray-100"}`}
             >
               <Ellipsis size={20} />
             </div>
@@ -97,7 +97,7 @@ export default function NotesCard({
         <button
           aria-label="Expand note"
           onClick={onExpand}
-          className="bg-blue-500 text-gray-100 p-2 rounded-br-md hover:bg-blue-400"
+          className="bg-blue-500 text-gray-100 p-2 rounded-br-md hover:bg-blue-400 cursor-pointer"
         >
           <span>
             <SquareArrowOutUpRight size={20} />

@@ -55,8 +55,8 @@ export default function InstallApp({
         <button
           className={`${
             pathname === "/menu"
-              ? "w-full py-2 px-6 rounded-md shadow-xl bg-blue-900 border-2 border-blue-500 hover:bg-blue-700 hover:scale-105"
-              : "w-[183px] bg-gradient-to-tr from-slate-950  to-blue-700 py-2 px-4 rounded-xl border-2 border-blue-900 shadow-md shadow-blue-950 hover:from-blue-700 hover:to-slate-950 transform hover:scale-105 transition duration-200 cursor-pointer"
+              ? "w-full py-2 px-6 rounded-md shadow-xl bg-blue-900 border-2 border-blue-500 hover:bg-blue-700 hover:scale-105 transition-all duration-200 cursor-pointer"
+              : "w-[183px] bg-gradient-to-tr from-slate-950  to-blue-700 py-2 px-4 rounded-xl border-2 border-blue-900 shadow-md shadow-blue-950 hover:from-blue-700 hover:to-slate-950 transform hover:scale-105 transition-all duration-200 cursor-pointer"
           } `}
           onClick={handleInstallClick}
         >

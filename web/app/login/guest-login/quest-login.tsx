@@ -20,7 +20,7 @@ export default function GuestLogIn() {
             }
           })
         }
-        className="flex items-center justify-center gap-2 px-10 text-gray-100 border-2 border-blue-500 p-2 rounded-md bg-gradient-to-tr from-slate-950  to-blue-700 hover:from-blue-700 hover:to-slate-950 transform hover:scale-105 transition duration-200"
+        className="flex items-center justify-center gap-2 px-10 text-gray-100 border-2 border-blue-500 p-2 rounded-md bg-gradient-to-tr from-slate-950  to-blue-700 hover:from-blue-700 hover:to-slate-950 transform hover:scale-105 transition duration-200 cursor-pointer"
         disabled={isPending}
       >
         <span>Log in as a Guest</span>

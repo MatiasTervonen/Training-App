@@ -1,6 +1,6 @@
 "use client";
 
-import TitleInput from "@/app/(app)/training/components/TitleInput";
+import CustomInput from "@/app/(app)/ui/CustomInput";
 import { useState } from "react";
 import SaveButtonSpinner from "@/app/(app)/ui/save-button-spinner";
 import { createClient } from "@/utils/supabase/client";
@@ -74,22 +74,22 @@ export default function Page() {
         </h1>
         <h2 className="my-5 text-gray-100">Reset Password</h2>
         <div className="mb-5">
-          <TitleInput
+          <CustomInput
             type="password"
             label="New Password"
             placeholder="Enter your new password..."
-            title={password}
-            setTitle={setPassword}
+            value={password}
+            setValue={setPassword}
             disabled={loading}
           />
         </div>
         <div className="mb-5">
-          <TitleInput
+          <CustomInput
             type="password"
             label="Confirm New Password"
             placeholder="Confirm your new password..."
-            title={confirmPassword}
-            setTitle={setConfirmPassword}
+            value={confirmPassword}
+            setValue={setConfirmPassword}
             disabled={loading}
           />
         </div>

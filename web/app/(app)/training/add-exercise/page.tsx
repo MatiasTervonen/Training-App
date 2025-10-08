@@ -18,8 +18,8 @@ export default function EditExercises() {
   const [isSaving, setIsSaving] = useState(false);
 
   const handleSave = async () => {
-    if (!name || !equipment || !muscleGroup || !mainGroup) {
-      toast.error("Please fill in all fields.");
+    if (!name) {
+      toast.error("Please enter an exercise name");
       return;
     }
     setIsSaving(true);
@@ -34,7 +34,7 @@ export default function EditExercises() {
     };
 
     try {
-      const response = await fetch("/api/admin/add-exercise", {
+      const response = await fetch("/api/gym/add-exercise", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

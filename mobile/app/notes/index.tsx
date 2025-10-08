@@ -15,7 +15,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDebouncedCallback } from "use-debounce";
 
 export default function NotesScreen() {
-  const [title, setTitle] = useState("");
+  const [title, setValue] = useState("");
   const [notes, setNotes] = useState("");
   const [isSaving, setIsSaving] = useState(false);
 
@@ -27,7 +27,7 @@ export default function NotesScreen() {
         const loadDraft = await AsyncStorage.getItem("notes_draft");
         if (loadDraft) {
           const draft = JSON.parse(loadDraft);
-          setTitle(draft.title || "");
+          setValue(draft.title || "");
           setNotes(draft.notes || "");
         }
       } catch (error) {
@@ -38,14 +38,13 @@ export default function NotesScreen() {
     loadDraft();
   }, []);
 
-
-    const saveNotesDraft = useDebouncedCallback(() => {
-        if(title.trim().length === 0 && notes.trim().length === 0 ) {
-          AsyncStorage.removeItem("notes_draft")
-        }
-        const draft = { title, notes };
-        AsyncStorage.setItem("notes_draft", JSON.stringify(draft));
-    }, 1000);
+  const saveNotesDraft = useDebouncedCallback(() => {
+    if (title.trim().length === 0 && notes.trim().length === 0) {
+      AsyncStorage.removeItem("notes_draft");
+    }
+    const draft = { title, notes };
+    AsyncStorage.setItem("notes_draft", JSON.stringify(draft));
+  }, 1000);
 
   useEffect(() => {
     saveNotesDraft();
@@ -69,7 +68,7 @@ export default function NotesScreen() {
           text1: "Success",
           text2: "Note saved successfully!",
         });
-        setTitle("");
+        setValue("");
         setNotes("");
         await AsyncStorage.removeItem("notes_draft");
       }
@@ -86,7 +85,7 @@ export default function NotesScreen() {
   };
 
   const handleDeleteNote = () => {
-    setTitle("");
+    setValue("");
     setNotes("");
     AsyncStorage.removeItem("notes_draft");
   };
@@ -100,7 +99,7 @@ export default function NotesScreen() {
               Add your notes here
             </AppText>
             <AppInput
-              onChangeText={setTitle}
+              onChangeText={setValue}
               value={title}
               label="Title.."
               placeholder="Notes title..."

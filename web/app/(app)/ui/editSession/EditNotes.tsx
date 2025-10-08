@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import NotesInput from "@/app/(app)/training/components/NotesInput";
-import TitleInput from "@/app/(app)/training/components/TitleInput";
+import NotesInput from "@/app/(app)/ui/NotesInput";
+import CustomInput from "@/app/(app)/ui/CustomInput";
 import SaveButton from "@/app/(app)/ui/save-button";
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import { mutate } from "swr";
@@ -23,7 +23,7 @@ type FeedItem = {
 };
 
 export default function EditNotes({ note, onClose, onSave }: Props) {
-  const [title, setTitle] = useState(note.title);
+  const [title, setValue] = useState(note.title);
   const [notes, setNotes] = useState(note.notes);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -92,9 +92,9 @@ export default function EditNotes({ note, onClose, onSave }: Props) {
         <div className="flex flex-col items-center gap-5 mx-6 mt-5 h-full ">
           <h2 className="text-gray-100 text-lg text-center">Edit your notes</h2>
           <div>
-            <TitleInput
-              title={title || ""}
-              setTitle={setTitle}
+            <CustomInput
+              value={title || ""}
+              setValue={setValue}
               placeholder="Notes title..."
               label="Title..."
             />

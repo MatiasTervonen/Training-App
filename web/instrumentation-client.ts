@@ -20,6 +20,10 @@ initBotId({
       path: "/signup",
       method: "POST",
     },
+    {
+      path: "/sendPasswordResetEmail",
+      method: "POST",
+    },
   ],
 });
 

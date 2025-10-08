@@ -4,7 +4,7 @@ import SaveButton from "@/app/(app)/ui/save-button";
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import ExerciseTypeSelect from "@/app/(app)/training/components/ExerciseTypeSelect";
-import TitleInput from "@/app/(app)/training/components/TitleInput";
+import CustomInput from "@/app/(app)/ui/CustomInput";
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
 import ProfilePicture from "@/app/(app)/menu/components/profile-picture";
@@ -146,11 +146,11 @@ export default function Settings() {
           Profile Settings
         </h1>
         <div>
-          <TitleInput
+          <CustomInput
             label="User Name"
             placeholder="Enter your user name..."
-            title={userName}
-            setTitle={(value) =>
+            value={userName}
+            setValue={(value) =>
               setUserName(
                 value
                   .toLowerCase()

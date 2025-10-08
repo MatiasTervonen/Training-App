@@ -10,6 +10,8 @@ export default function TrainingPage() {
           Create template
         </LinkButton>
         <LinkButton href={"/training/templates"}>Templates</LinkButton>
+        <LinkButton href={"/training/add-exercise"}>Add Exercise</LinkButton>
+        <LinkButton href={"/training/edit-exercises"}>Edit Exercise</LinkButton>
         <LinkButton href={"/training/workout-analytics"}>
           Workout Analytics
         </LinkButton>

@@ -1,6 +1,6 @@
 "use client";
 
-import NotesInput from "./NotesInput";
+import NotesInput from "../../ui/NotesInput";
 import DropdownMenu from "@/app/(app)/components/dropdownMenu";
 import { Ellipsis, SquareX } from "lucide-react";
 import SetInput from "./SetInput";

@@ -1,8 +1,8 @@
 "use client";
 
 import { russoOne } from "@/app/ui/fonts";
-import NotesInput from "@/app/(app)/training/components/NotesInput";
-import TitleInput from "@/app/(app)/training/components/TitleInput";
+import NotesInput from "@/app/(app)/ui/NotesInput";
+import CustomInput from "@/app/(app)/ui/CustomInput";
 import SaveButton from "@/app/(app)/ui/save-button";
 import DeleteSessionBtn from "@/app/(app)/ui/deleteSessionBtn";
 import { useState, useEffect } from "react";
@@ -102,9 +102,9 @@ export default function WorkoutAnalyticsPage() {
         <div className="flex flex-col gap-10">
           <h1 className="text-2xl text-center">Track your body weight</h1>
 
-          <TitleInput
-            title={weightTitle}
-            setTitle={setWeightTitle}
+          <CustomInput
+            value={weightTitle}
+            setValue={setWeightTitle}
             placeholder="Weight entry title..."
             label="Title for Weight..."
           />

@@ -32,7 +32,7 @@ export default function ReminderCard({
          pinned
            ? `border-yellow-200 bg-yellow-200 text-slate-900`
            : "bg-slate-700"
-       } ${item.delivered ? "border-green-400 border-2" : ""}`}
+       }`}
     >
       <div className="flex justify-between items-center mt-2 mb-4 mx-4">
         <div className="line-clamp-1 border-b">{item.title}</div>

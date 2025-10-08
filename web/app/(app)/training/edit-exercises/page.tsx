@@ -5,11 +5,11 @@ import { useState, useEffect } from "react";
 import ExerciseTypeSelect from "@/app/(app)/training/components/ExerciseTypeSelect";
 import SaveButton from "@/app/(app)/ui/save-button";
 import toast from "react-hot-toast";
-import ExerciseDropdown from "@/app/(app)/training/components/ExerciseDropdown";
+import ExerciseDropdownEdit from "@/app/(app)/training/components/ExerciseDropdownEdit";
 import DeleteSessionBtn from "@/app/(app)/ui/deleteSessionBtn";
 import { gym_exercises } from "../../types/models";
-import FullScreenLoader from "../../components/FullScreenLoader";
-import { handleError } from "../../utils/handleError";
+import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
+import { handleError } from "@/app/(app)/utils/handleError";
 
 export default function EditExercises() {
   const [name, setName] = useState("");
@@ -118,7 +118,7 @@ export default function EditExercises() {
   return (
     <div className="h-full bg-slate-800 text-gray-100">
       {!selectedExercise && (
-        <ExerciseDropdown
+        <ExerciseDropdownEdit
           onSelect={(exercise) => {
             setSelectedExercise(exercise);
           }}
@@ -128,12 +128,13 @@ export default function EditExercises() {
       <div>
         {selectedExercise && (
           <>
-            <div className="flex flex-col px-4 gap-5 mt-10 max-w-md mx-auto">
+            <div className="flex flex-col p-5 gap-5 max-w-md  mx-auto">
+              <h1 className="text-2xl text-center my-5">Edit exercise</h1>
               <CustomInput
-                placeholder="Exercise name"
-                label="Exercise Name"
                 value={name}
                 setValue={setName}
+                placeholder="Exercise name"
+                label="Exercise Name"
               />
               <ExerciseTypeSelect
                 value={language}
@@ -210,12 +211,13 @@ export default function EditExercises() {
                 <DeleteSessionBtn
                   onDelete={() => handleDeleteExercise(selectedExercise.id)}
                   label="Delete Exercise"
+                  confirmMessage="Are you sure you want to delete this exercise?"
                 />
                 <button
                   onClick={() => {
                     resetFields();
                   }}
-                  className="mb-10 bg-red-800 py-2 rounded-md shadow-xl border-2 border-red-500 text-gray-100 text-lg cursor-pointer hover:bg-red-700 hover:scale-95"
+                  className="mb-10 bg-red-800 py-2 rounded-md shadow-xl border-2 border-red-500 text-gray-100 text-lg cursor-pointer hover:bg-red-700 hover:scale-105 transition-all duration-200"
                 >
                   Cancel
                 </button>

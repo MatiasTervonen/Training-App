@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import TitleInput from "../components/TitleInput";
+import CustomInput from "../../ui/CustomInput";
 import { useState, useEffect } from "react";
 import { ChevronDown, Plus } from "lucide-react";
 import Modal from "@/app/(app)/components/modal";
@@ -336,9 +336,9 @@ export default function TemplateForm() {
             {templateId ? "Edit your template" : "Create your template"}
           </h2>
           <div className="w-full px-6">
-            <TitleInput
-              title={workoutName}
-              setTitle={setWorkoutName}
+            <CustomInput
+              value={workoutName}
+              setValue={setWorkoutName}
               placeholder="Workout Name..."
               label="Workout Name..."
             />

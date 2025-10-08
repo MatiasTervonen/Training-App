@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 import SaveButton from "@/app/(app)/ui/save-button";
 import Timer from "@/app/(app)/components/timer";
 import DeleteSessionBtn from "@/app/(app)/ui/deleteSessionBtn";
-import TitleInput from "../components/TitleInput";
-import NotesInput from "../components/NotesInput";
+import CustomInput from "@/app/(app)/ui/CustomInput";
+import NotesInput from "../../ui/NotesInput";
 import { ChevronDown, Plus } from "lucide-react";
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import Modal from "@/app/(app)/components/modal";
@@ -307,16 +307,16 @@ export default function TrainingSessionPage() {
         />
       </nav>
 
-      <div className="flex justify-center relative h-full max-w-md mx-auto pt-15">
+      <div className="flex justify-center relative h-[calc(100%-40px)] max-w-md mx-auto pt-5">
         <div className="flex flex-col justify-between w-full">
           <div className="flex flex-col items-center justify-center gap-5">
             <p className="text-gray-100 text-xl text-center">
               Track your training progress
             </p>
             <div className="w-full px-6">
-              <TitleInput
-                title={sessionTitle}
-                setTitle={setSessionTitle}
+              <CustomInput
+                value={sessionTitle}
+                setValue={setSessionTitle}
                 placeholder="Session Title..."
                 label="Session Title..."
               />

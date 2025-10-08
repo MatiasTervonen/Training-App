@@ -6,7 +6,7 @@ import DeleteSessionBtn from "../ui/deleteSessionBtn";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 import { clearLocalStorage } from "./components/ClearLocalStorage";
-import TitleInput from "../training/components/TitleInput";
+import CustomInput from "../ui/CustomInput";
 import { useTimerStore } from "../lib/stores/timerStore";
 
 export default function DiscGolf() {
@@ -100,83 +100,83 @@ export default function DiscGolf() {
   };
 
   return (
-      <div className="bg-slate-800 p-5 h-full max-w-md mx-auto">
-        <div className="flex flex-col h-full w-full justify-between">
-          <div>
-            <h1 className="text-gray-100 flex justify-center my-5 text-2xl ">
-              Disc Golf
-            </h1>
-          </div>
-          <TitleInput
-            title={courseName}
-            placeholder="Course Name"
-            setTitle={setCourseName}
-            label="Course Name"
-          />
+    <div className="bg-slate-800 p-5 h-full max-w-md mx-auto">
+      <div className="flex flex-col h-full w-full justify-between">
+        <div>
+          <h1 className="text-gray-100 flex justify-center my-5 text-2xl ">
+            Disc Golf
+          </h1>
+        </div>
+        <CustomInput
+          value={courseName}
+          placeholder="Course Name"
+          setValue={setCourseName}
+          label="Course Name"
+        />
 
-          <div className=" text-gray-100 flex flex-col gap-2 items-center mt-10">
-            <p> Number of Holes {numHoles}</p>
-            <div className="flex gap-4">
-              <button
-                onClick={() => setNumHoles((prev) => Math.max(prev - 1, 1))}
-                className="bg-blue-800  text-gray-100 px-3 py-1 rounded text-lg hover:bg-blue-600 hover:scale-105"
-              >
-                -
-              </button>
-              <button
-                onClick={() => setNumHoles((prev) => Math.min(25, prev + 1))}
-                className="bg-blue-800 text-gray-100 px-3 py-1 rounded text-lg hover:bg-blue-600 hover:scale-105"
-              >
-                +
-              </button>
-            </div>
-          </div>
-          <div className="mt-10 mb-5">
-            <label className=" text-gray-100 flex flex-col gap-2 items-center">
-              <input
-                type="checkbox"
-                checked={trackStats}
-                onChange={(e) => setTrackStats(e.target.checked)}
-                className="h-5 w-5 bg-gray-900"
-              />
-              Track Fairway Hits, C1 and C2 Putting
-            </label>
-          </div>
-          <TitleInput
-            title={newPlayer}
-            setTitle={setNewPlayer}
-            label="Add Players"
-            placeholder={`Player ${players.length + 1}`}
-          />
-          <button
-            onClick={addPlayer}
-            className=" flex items-center justify-center mx-auto  bg-blue-800 py-2 px-10 mt-10 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-105"
-          >
-            <Plus />
-          </button>
-          <div className="flex flex-col justify-center items-center text-center mt-10 ">
-            {players.length > 0 && (
-              <p className="text-gray-100 text-xl border-b mb-5">Players</p>
-            )}
-            {players.map((player, index) => (
-              <div key={index}>
-                <p className="text-gray-100 text-xl mb-5">
-                  {player === userDisplayName ? `${player} (you)` : player}
-                </p>
-              </div>
-            ))}
-          </div>
-          <div className="pb-5">
+        <div className=" text-gray-100 flex flex-col gap-2 items-center mt-10">
+          <p> Number of Holes {numHoles}</p>
+          <div className="flex gap-4">
             <button
-              disabled={!!activeSession}
-              onClick={startGame}
-              className=" flex items-center justify-center w-full mb-5  bg-blue-800 py-2 px-10 mt-10 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-105"
+              onClick={() => setNumHoles((prev) => Math.max(prev - 1, 1))}
+              className="bg-blue-800  text-gray-100 px-3 py-1 rounded text-lg hover:bg-blue-600 hover:scale-105"
             >
-              Start
+              -
             </button>
-            <DeleteSessionBtn onDelete={resetSessionState} />
+            <button
+              onClick={() => setNumHoles((prev) => Math.min(25, prev + 1))}
+              className="bg-blue-800 text-gray-100 px-3 py-1 rounded text-lg hover:bg-blue-600 hover:scale-105"
+            >
+              +
+            </button>
           </div>
         </div>
+        <div className="mt-10 mb-5">
+          <label className=" text-gray-100 flex flex-col gap-2 items-center">
+            <input
+              type="checkbox"
+              checked={trackStats}
+              onChange={(e) => setTrackStats(e.target.checked)}
+              className="h-5 w-5 bg-gray-900"
+            />
+            Track Fairway Hits, C1 and C2 Putting
+          </label>
+        </div>
+        <CustomInput
+          value={newPlayer}
+          setValue={setNewPlayer}
+          label="Add Players"
+          placeholder={`Player ${players.length + 1}`}
+        />
+        <button
+          onClick={addPlayer}
+          className=" flex items-center justify-center mx-auto  bg-blue-800 py-2 px-10 mt-10 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-105"
+        >
+          <Plus />
+        </button>
+        <div className="flex flex-col justify-center items-center text-center mt-10 ">
+          {players.length > 0 && (
+            <p className="text-gray-100 text-xl border-b mb-5">Players</p>
+          )}
+          {players.map((player, index) => (
+            <div key={index}>
+              <p className="text-gray-100 text-xl mb-5">
+                {player === userDisplayName ? `${player} (you)` : player}
+              </p>
+            </div>
+          ))}
+        </div>
+        <div className="pb-5">
+          <button
+            disabled={!!activeSession}
+            onClick={startGame}
+            className=" flex items-center justify-center w-full mb-5  bg-blue-800 py-2 px-10 mt-10 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-105"
+          >
+            Start
+          </button>
+          <DeleteSessionBtn onDelete={resetSessionState} />
+        </div>
       </div>
+    </div>
   );
 }

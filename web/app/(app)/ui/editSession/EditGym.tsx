@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import NotesInput from "@/app/(app)/training/components/NotesInput";
-import TitleInput from "@/app/(app)/training/components/TitleInput";
+import NotesInput from "@/app/(app)/ui/NotesInput";
+import CustomInput from "@/app/(app)/ui/CustomInput";
 import SaveButton from "@/app/(app)/ui/save-button";
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import toast from "react-hot-toast";
@@ -10,7 +10,6 @@ import SetInput from "@/app/(app)/training/components/SetInput";
 import ExerciseTypeSelect from "@/app/(app)/training/components/ExerciseTypeSelect";
 import { full_gym_exercises, full_gym_session } from "../../types/models";
 import { groupExercises } from "../../training/utils/groupExercises";
-import CustomInput from "../input";
 import { handleError } from "../../utils/handleError";
 
 type EditGymSessionProps = {
@@ -27,7 +26,7 @@ export default function EditGym({
   onClose,
   onSave,
 }: EditGymSessionProps) {
-  const [title, setTitle] = useState(gym_session.title);
+  const [title, setValue] = useState(gym_session.title);
   const [notes, setNotes] = useState(gym_session.notes);
   const [duration, setDuration] = useState(gym_session.duration);
   const [exercises, setExercises] = useState(gym_session.gym_session_exercises);
@@ -115,9 +114,9 @@ export default function EditGym({
             Edit Your Gym Session
           </h2>
           <div>
-            <TitleInput
-              title={title || ""}
-              setTitle={setTitle}
+            <CustomInput
+              value={title || ""}
+              setValue={setValue}
               placeholder="Session title..."
               label="Session Title..."
             />

@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import NotesInput from "@/app/(app)/training/components/NotesInput";
-import TitleInput from "@/app/(app)/training/components/TitleInput";
+import NotesInput from "@/app/(app)/ui/NotesInput";
+import CustomInput from "@/app/(app)/ui/CustomInput";
 import SaveButton from "@/app/(app)/ui/save-button";
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import { mutate } from "swr";
@@ -25,7 +25,7 @@ type FeedItem = {
 };
 
 export default function EditReminder({ reminder, onClose, onSave }: Props) {
-  const [title, setTitle] = useState(reminder.title);
+  const [title, setValue] = useState(reminder.title);
   const [notes, setNotes] = useState(reminder.notes);
   const [notify_at, setNotify_at] = useState(
     reminder.notify_at ? new Date(reminder.notify_at) : null
@@ -102,9 +102,9 @@ export default function EditReminder({ reminder, onClose, onSave }: Props) {
             <Bell />
           </h2>
           <div className="w-full">
-            <TitleInput
-              title={title || ""}
-              setTitle={setTitle}
+            <CustomInput
+              value={title || ""}
+              setValue={setValue}
               placeholder="Reminder title..."
               label="Title..."
             />

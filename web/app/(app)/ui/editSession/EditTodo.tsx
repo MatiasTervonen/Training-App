@@ -1,15 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import NotesInput from "@/app/(app)/training/components/NotesInput";
-import TitleInput from "@/app/(app)/training/components/TitleInput";
+import NotesInput from "@/app/(app)/ui/NotesInput";
+import CustomInput from "@/app/(app)/ui/CustomInput";
 import SaveButton from "@/app/(app)/ui/save-button";
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import toast from "react-hot-toast";
 import { full_todo_session } from "../../types/models";
 import { generateUUID } from "../../lib/generateUUID";
 import { handleError } from "../../utils/handleError";
-
 
 type Props = {
   todo_session: full_todo_session;
@@ -116,9 +115,9 @@ export default function EditTodo({ todo_session, onClose, onSave }: Props) {
             Edit your todo lists
           </h2>
           <div className="w-full">
-            <TitleInput
-              title={sessionData.title || ""}
-              setTitle={handleTitleChange}
+            <CustomInput
+              value={sessionData.title || ""}
+              setValue={handleTitleChange}
               placeholder="Todo title..."
               label="Title..."
             />
@@ -138,9 +137,9 @@ export default function EditTodo({ todo_session, onClose, onSave }: Props) {
                     Delete
                   </button>
                 </div>
-                <TitleInput
-                  title={task.task || ""}
-                  setTitle={(value) => updateTask(index, { task: value })}
+                <CustomInput
+                  value={task.task || ""}
+                  setValue={(value) => updateTask(index, { task: value })}
                   placeholder="Todo title..."
                   label="Task..."
                 />

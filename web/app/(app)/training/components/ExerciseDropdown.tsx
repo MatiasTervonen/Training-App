@@ -10,7 +10,6 @@ import Spinner from "../../components/spinner";
 type Props = {
   onSelect: (exercise: gym_exercises) => void;
   resetTrigger?: number;
-  noTopPadding?: boolean;
 };
 
 export default function ExerciseDropdown({ onSelect, resetTrigger }: Props) {
@@ -29,7 +28,6 @@ export default function ExerciseDropdown({ onSelect, resetTrigger }: Props) {
   } = useSWR<gym_exercises[]>("/api/gym/exercises", fetcher, {
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
-    revalidateIfStale: false,
   });
 
   const {
@@ -95,11 +93,8 @@ export default function ExerciseDropdown({ onSelect, resetTrigger }: Props) {
   };
 
   useEffect(() => {
-    setSearchQuery("");
-  }, [resetTrigger]);
-
-  useEffect(() => {
     setShowDropdown(true);
+    setSearchQuery("");
   }, [resetTrigger]);
 
   return (

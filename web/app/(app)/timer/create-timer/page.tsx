@@ -2,12 +2,12 @@
 
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import TitleInput from "@/app/(app)/training/components/TitleInput";
+import CustomInput from "@/app/(app)/ui/CustomInput";
 import SetInput from "@/app/(app)/training/components/SetInput";
 import SaveButton from "../../ui/save-button";
 import toast from "react-hot-toast";
 import FullScreenLoader from "../../components/FullScreenLoader";
-import NotesInput from "../../training/components/NotesInput";
+import NotesInput from "../../ui/NotesInput";
 import { mutate } from "swr";
 import { handleError } from "@/app/(app)/utils/handleError";
 
@@ -112,9 +112,9 @@ export default function TimerPage() {
     <div className="p-5 h-full relative text-gray-100 max-w-md mx-auto">
       <h1 className="text-2xl text-center my-5 ">Create Timer</h1>
       <div className="mb-5">
-        <TitleInput
-          title={timerTitle}
-          setTitle={setTimerTitle}
+        <CustomInput
+          value={timerTitle}
+          setValue={setTimerTitle}
           placeholder="Enter timer title"
           label="Timer Title"
         />

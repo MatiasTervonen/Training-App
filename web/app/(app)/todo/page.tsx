@@ -6,10 +6,10 @@ import {
   Trash2,
   SquareArrowOutUpRight,
 } from "lucide-react";
-import TitleInput from "../training/components/TitleInput";
+import CustomInput from "../ui/CustomInput";
 import { useState, useEffect } from "react";
 import DeleteSessionBtn from "../ui/deleteSessionBtn";
-import NotesInput from "../training/components/NotesInput";
+import NotesInput from "../ui/NotesInput";
 import Modal from "../components/modal";
 import SaveButton from "../ui/save-button";
 import FullScreenLoader from "../components/FullScreenLoader";
@@ -30,7 +30,7 @@ export default function Todo() {
       : null;
 
   const [loading, setLoading] = useState(false);
-  const [title, setTitle] = useState(draft?.title || "");
+  const [title, setValue] = useState(draft?.title || "");
   const [task, setTask] = useState(draft?.task || "");
   const [notes, setNotes] = useState(draft?.notes || "");
   const [todoList, setTodoList] = useState<TodoItem[]>(draft?.todoList || []);
@@ -72,7 +72,7 @@ export default function Todo() {
     setTodoList([]);
     setTask("");
     setNotes("");
-    setTitle("");
+    setValue("");
   };
 
   const handleSaveTodo = async () => {
@@ -119,19 +119,19 @@ export default function Todo() {
           <h1 className="text-2xl text-gray-100">Todo List </h1>
           <ListTodo color="#f3f4f6" size={30} />
         </div>
-        <TitleInput
+        <CustomInput
           placeholder="Title"
           label="Add title to your todo list"
-          title={title}
-          setTitle={setTitle}
+          value={title}
+          setValue={setValue}
           maxLength={50}
         />
         <div className="mt-5">
-          <TitleInput
+          <CustomInput
             placeholder="Enter task..."
             label="Add task to your todo list"
-            title={task}
-            setTitle={setTask}
+            value={task}
+            setValue={setTask}
             maxLength={150}
           />
         </div>
@@ -190,11 +190,11 @@ export default function Todo() {
                           <>
                             <h3 className="my-5 text-2xl">Edit Task</h3>
                             <div className="my-10 w-full">
-                              <TitleInput
+                              <CustomInput
                                 placeholder="Edit task..."
                                 label="Edit your task"
-                                title={modalDraft.task}
-                                setTitle={(newTask) => {
+                                value={modalDraft.task}
+                                setValue={(newTask) => {
                                   setModalDraft({
                                     ...modalDraft,
                                     task: newTask,

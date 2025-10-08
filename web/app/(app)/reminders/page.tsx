@@ -4,8 +4,8 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import SaveButton from "@/app/(app)/ui/save-button";
 import DeleteSessionBtn from "@/app/(app)/ui/deleteSessionBtn";
-import NotesInput from "@/app/(app)/training/components/NotesInput";
-import TitleInput from "@/app/(app)/training/components/TitleInput";
+import NotesInput from "@/app/(app)/ui/NotesInput";
+import CustomInput from "@/app/(app)/ui/CustomInput";
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import toast from "react-hot-toast";
 import { useDebouncedCallback } from "use-debounce";
@@ -23,7 +23,7 @@ export default function Notes() {
       : null;
 
   const [notes, setNotes] = useState(draft?.notes || "");
-  const [title, setTitle] = useState(draft?.title || "");
+  const [title, setValue] = useState(draft?.title || "");
   const [isSaving, setIsSaving] = useState(false);
   const [notifyAt, setNotifyAt] = useState<Date | null>(null);
   const router = useRouter();
@@ -92,48 +92,48 @@ export default function Notes() {
 
   const resetReminder = () => {
     localStorage.removeItem("reminder_draft");
-    setTitle("");
+    setValue("");
     setNotes("");
     setNotifyAt(null);
   };
 
   return (
     <>
-        <div className="flex flex-col h-full w-full px-6 max-w-md mx-auto">
-          <div className="flex flex-col items-center mt-5 gap-5 flex-grow mb-10 h-full">
-            <p className="text-gray-100 text-lg text-center">
-              Add your reminders here
-            </p>
-            <div className="w-full">
-              <TitleInput
-                title={title}
-                setTitle={setTitle}
-                placeholder="Reminder title... (required)"
-                label="Title..."
-              />
-            </div>
-            <div className="z-50 w-full">
-              <DateTimePicker
-                value={notifyAt}
-                onChange={setNotifyAt}
-                label="Notify at:"
-                placeholder="Select date and time (required)"
-              />
-            </div>
-            <div className="flex w-full flex-grow z-0">
-              <NotesInput
-                notes={notes}
-                setNotes={setNotes}
-                placeholder="Write your notes here... (optional)"
-                label="Notes..."
-              />
-            </div>
+      <div className="flex flex-col h-full w-full px-6 max-w-md mx-auto">
+        <div className="flex flex-col items-center mt-5 gap-5 flex-grow mb-10 h-full">
+          <p className="text-gray-100 text-lg text-center">
+            Add your reminders here
+          </p>
+          <div className="w-full">
+            <CustomInput
+              value={title}
+              setValue={setValue}
+              placeholder="Reminder title... (required)"
+              label="Title..."
+            />
           </div>
-          <div className="flex flex-col items-center gap-5 mb-10  self-center w-full">
-            <SaveButton onClick={saveReminder} />
-            <DeleteSessionBtn onDelete={resetReminder} />
+          <div className="z-50 w-full">
+            <DateTimePicker
+              value={notifyAt}
+              onChange={setNotifyAt}
+              label="Notify at:"
+              placeholder="Select date and time (required)"
+            />
+          </div>
+          <div className="flex w-full flex-grow z-0">
+            <NotesInput
+              notes={notes}
+              setNotes={setNotes}
+              placeholder="Write your notes here... (optional)"
+              label="Notes..."
+            />
           </div>
         </div>
+        <div className="flex flex-col items-center gap-5 mb-10  self-center w-full">
+          <SaveButton onClick={saveReminder} />
+          <DeleteSessionBtn onDelete={resetReminder} />
+        </div>
+      </div>
       {isSaving && <FullScreenLoader message="Saving reminder..." />}
     </>
   );

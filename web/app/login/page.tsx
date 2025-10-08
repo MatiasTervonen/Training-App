@@ -7,7 +7,7 @@ import LoginButton from "@/app/login/components/loginbutton";
 import SignupButton from "@/app/login/components/signupbutton";
 import GuestLogIn from "@/app/login/guest-login/quest-login";
 import ModalForgotPassword from "../(app)/components/modalForgotPasword";
-import TitleInput from "../(app)/training/components/TitleInput";
+import CustomInput from "../(app)/ui/CustomInput";
 import ResetPasswordButton from "./components/resetPasswordButton";
 
 export default function LoginPage() {
@@ -44,35 +44,25 @@ export default function LoginPage() {
               activeForm ? "-translate-y-full" : "translate-y-0"
             } flex flex-col justify-center h-full gap-5 px-10`}
           >
-            <label
-              className="text-gray-100 pointer-events-none"
-              htmlFor="email-login"
-            >
-              Email:
-            </label>
-            <input
-              className="custom-login-input border-2 rounded-md text-gray-100 p-2 bg-slate-900 hover:border-blue-500 focus:outline-none focus:border-green-300"
+            <CustomInput
+              className="custom-login-input"
               id="email-login"
               name="email"
               type="email"
               placeholder="Enter email..."
               autoComplete="email"
               required
+              label="Email:"
             />
-            <label
-              className="text-gray-100 pointer-events-none"
-              htmlFor="password-login"
-            >
-              Password:
-            </label>
-            <input
-              className="custom-login-input border-2 rounded-md text-gray-100 p-2 bg-slate-900 hover:border-blue-500 focus:outline-none focus:border-green-300"
+            <CustomInput
+              className="custom-login-input"
               id="password-login"
               name="password"
               type="password"
               placeholder="Enter password..."
               autoComplete="current-password"
               required
+              label="Password:"
             />
             <div className="flex flex-col ">
               <LoginButton />
@@ -123,10 +113,10 @@ export default function LoginPage() {
                   password.
                 </p>
                 <div className="w-full">
-                  <TitleInput
+                  <CustomInput
                     className="custom-login-input"
-                    title={email}
-                    setTitle={setEmail}
+                    value={email}
+                    setValue={setEmail}
                     id="email-forgot-password"
                     name="email"
                     type="email"
@@ -158,50 +148,35 @@ export default function LoginPage() {
               activeForm ? "translate-y-0" : "translate-y-full"
             } h-full flex flex-col justify-center gap-5 p-10`}
           >
-            <label
-              className="text-gray-100 pointer-events-none"
-              htmlFor="email-signup"
-            >
-              Email:
-            </label>
-            <input
-              className="custom-login-input border-2 rounded-md text-gray-100 p-2 bg-slate-900 hover:border-blue-500 focus:outline-none focus:border-green-300"
+            <CustomInput
+              className="custom-login-input"
               id="email-signup"
               name="email"
               type="email"
               placeholder="Enter email..."
               autoComplete="email"
               required
+              label="Email:"
             />
-            <label
-              className="text-gray-100 pointer-events-none"
-              htmlFor="password-signup"
-            >
-              Password:
-            </label>
-            <input
-              className="custom-login-input border-2 rounded-md text-gray-100 p-2 bg-slate-900 hover:border-blue-500 focus:outline-none focus:border-green-300"
+            <CustomInput
+              className="custom-login-input"
               id="password-signup"
               name="password"
               type="password"
               placeholder="Enter password..."
               autoComplete="new-password"
               required
+              label="Password:"
             />
-            <label
-              className="text-gray-100 pointer-events-none"
-              htmlFor="confirmPassword"
-            >
-              Confirm Password:
-            </label>
-            <input
-              className="custom-login-input border-2 rounded-md text-gray-100 p-2 bg-slate-900 hover:border-blue-500 focus:outline-none focus:border-green-300"
+            <CustomInput
+              className="custom-login-input"
               id="confirmPassword"
               name="confirmPassword"
               type="password"
               placeholder="Confirm password..."
               autoComplete="new-password"
               required
+              label="Confirm Password:"
             />
             <div className="flex flex-col gap-4">
               <SignupButton />
@@ -231,7 +206,7 @@ export default function LoginPage() {
               onClick={() => {
                 setActiveForm(!activeForm);
               }}
-              className="text-gray-100 border-2 border-blue-400 py-2 px-10 rounded-md bg-gradient-to-tr from-slate-950  to-blue-700 hover:from-blue-700 hover:to-slate-950 transform hover:scale-105 transition duration-200"
+              className="text-gray-100 border-2 border-blue-400 py-2 px-10 rounded-md bg-gradient-to-tr from-slate-950  to-blue-700 hover:from-blue-700 hover:to-slate-950 transform hover:scale-105 transition-all duration-200"
             >
               {activeForm ? "Log in" : "Sign up"}
             </button>

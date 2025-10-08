@@ -1,6 +1,6 @@
 "use client";
 
-import TitleInput from "@/app/(app)/training/components/TitleInput";
+import CustomInput from "@/app/(app)/ui/CustomInput";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
@@ -41,12 +41,12 @@ export default function FriendRequestForm() {
 
   return (
     <div className="flex flex-col max-w-md mx-auto bg-slate-950 p-5 rounded-md shadow-xl">
-      <TitleInput
+      <CustomInput
         id="friend-identifier"
         label="Send Friend Request"
         placeholder="Enter friend's username or id"
-        title={identifier}
-        setTitle={setIdentifier}
+        value={identifier}
+        setValue={setIdentifier}
       />
       {role === "guest" ? (
         <button

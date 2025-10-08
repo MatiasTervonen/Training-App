@@ -51,7 +51,6 @@ export async function POST(req: NextRequest) {
         equipment,
         muscle_group,
         main_group,
-        user_id: user.sub,
       },
     ])
     .select()

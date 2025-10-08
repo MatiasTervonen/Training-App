@@ -13,11 +13,15 @@ body {
 
 @layer utilities {
   .custom-login-input:-webkit-autofill {
-    border-color: #f3f4f6 !important; /* same as border-gray-100 */
-    background-color: #1e3a8a !important; /* same as bg-blue-950 */
-    color: #f3f4f6 !important; /* same as text-gray-100 */
-    -webkit-text-fill-color: #f3f4f6 !important; /* force override autofill text */
-    transition: background-color 9999s ease-in-out 0s;
+    /* Paint a solid dark background over Chrome's autofill color */
+    -webkit-box-shadow: 0 0 0px 1000px #0f172a inset !important;
+
+    /* Set text color */
+    -webkit-text-fill-color: #f3f4f6 !important;
+
+    /* Border + transitions */
+    border-color: #f3f4f6 !important;
+    transition: background-color 9999s ease-in-out 0s !important;
   }
 
   .custom-login-input:-webkit-autofill::first-line {
@@ -35,4 +39,3 @@ body {
   fill: #ffffffea !important;
   font-size: 13px !important;
 }
-

@@ -33,7 +33,7 @@ export default function ExerciseSelectorList({
         if (isLast && isEmpty) {
           // Show dropdown only for the last, empty item
           return (
-            <div key={index} className="h-full">
+            <div key={index}>
               <ExerciseDropdown
                 onSelect={(selected) => {
                   const newExercise: ExerciseEntry = {
@@ -86,6 +86,7 @@ export default function ExerciseSelectorList({
               </p>
             </div>
             <button
+              className="hover:text-red-500 cursor-pointer"
               onClick={() =>
                 setDraftExercises((prev) => prev.filter((_, i) => i !== index))
               }

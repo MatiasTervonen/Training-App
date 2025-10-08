@@ -2,11 +2,9 @@ import {
   NotebookPen,
   Ellipsis,
   SquareArrowOutUpRight,
-  Bell,
-  Check,
 } from "lucide-react";
 import DropdownMenu from "../dropdownMenu";
-import { formatDate, formatDateTime } from "@/app/(app)/lib/formatDate";
+import { formatDate } from "@/app/(app)/lib/formatDate";
 import { Feed_item } from "@/app/(app)/types/session";
 
 type Props = {
@@ -33,7 +31,7 @@ export default function NotesCard({
          pinned
            ? `border-yellow-200 bg-yellow-200 text-slate-900`
            : "bg-slate-700"
-       } ${item.delivered ? "border-green-400 border-2" : ""}`}
+       }`}
     >
       <div className="flex justify-between items-center mt-2 mb-4 mx-4">
         <div className="line-clamp-1 border-b">{item.title}</div>
@@ -78,18 +76,6 @@ export default function NotesCard({
       </div>
 
       <div className="ml-4 mb-4 mr-5 line-clamp-2">{item.notes}</div>
-      {item.notify_at && (
-        <>
-          <div className="ml-4 mb-4 mr-5 flex items-center">
-            <p>{formatDateTime(item.notify_at)}</p>
-            {item.delivered ? (
-              <Check size={30} className="ml-2 text-green-400" />
-            ) : (
-              <Bell size={20} className="ml-2" />
-            )}
-          </div>
-        </>
-      )}
       <div className="flex justify-between items-center mt-2 bg-black/40 rounded-b-md">
         {/* Icon */}
 

@@ -4,8 +4,8 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import SaveButton from "@/app/(app)/ui/save-button";
 import DeleteSessionBtn from "@/app/(app)/ui/deleteSessionBtn";
-import NotesInput from "@/app/(app)/training/components/NotesInput";
-import TitleInput from "@/app/(app)/training/components/TitleInput";
+import NotesInput from "@/app/(app)/ui/NotesInput";
+import CustomInput from "@/app/(app)/ui/CustomInput";
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import toast from "react-hot-toast";
 import { useDebouncedCallback } from "use-debounce";
@@ -91,9 +91,9 @@ export default function Notes() {
             Add your notes here
           </p>
           <div className="mb-5 w-full">
-            <TitleInput
-              title={notesTitle}
-              setTitle={setNotesTitle}
+            <CustomInput
+              value={notesTitle}
+              setValue={setNotesTitle}
               placeholder="Notes title..."
               label="Title..."
             />

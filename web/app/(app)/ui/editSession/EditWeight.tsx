@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import NotesInput from "@/app/(app)/training/components/NotesInput";
-import TitleInput from "@/app/(app)/training/components/TitleInput";
+import NotesInput from "@/app/(app)/ui/NotesInput";
+import CustomInput from "@/app/(app)/ui/CustomInput";
 import SaveButton from "@/app/(app)/ui/save-button";
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import { mutate } from "swr";
@@ -23,7 +23,7 @@ type FeedItem = {
 };
 
 export default function EditWeight({ weight, onClose, onSave }: Props) {
-  const [title, setTitle] = useState(weight.title);
+  const [title, setValue] = useState(weight.title);
   const [notes, setNotes] = useState(weight.notes);
   const [weightValue, setWeightValue] = useState(
     weight.weight != null ? weight.weight.toString() : ""
@@ -105,9 +105,9 @@ export default function EditWeight({ weight, onClose, onSave }: Props) {
           <h2 className="text-gray-100 text-lg text-center">
             Edit your weight session
           </h2>
-          <TitleInput
-            title={title || ""}
-            setTitle={setTitle}
+          <CustomInput
+            value={title || ""}
+            setValue={setValue}
             placeholder="Weight title..."
             label="Title..."
           />

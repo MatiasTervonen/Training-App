@@ -5,6 +5,7 @@ import LogoutButton from "@/components/login-signup/LogoutButton";
 import ModalPageWrapper from "@/components/ModalPageWrapper";
 import { ShieldUser, UserPen, ContactRound } from "lucide-react-native";
 
+
 export default function SettingsScreen() {
   return (
     <ModalPageWrapper leftLabel="feed" rightLabel="feed">

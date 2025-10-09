@@ -38,7 +38,15 @@
           "backgroundColor": "#0f172a"
         }
       ],
-      "expo-font"
+      "expo-font",
+      [
+        "@sentry/react-native/expo",
+        {
+          "url": "https://sentry.io/",
+          "project": "mytrack-mobile",
+          "organization": "matias-tervonen"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

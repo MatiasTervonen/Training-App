@@ -22,7 +22,6 @@ export default function SettingsScreen() {
             <LinkButton label="Security" href="/menu/security">
               <ShieldUser color="white" />
             </LinkButton>
-            
           </View>
           <View className="mb-10">
             <LogoutButton />

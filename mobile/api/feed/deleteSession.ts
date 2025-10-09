@@ -1,5 +1,6 @@
 import { Session } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase";
+import { handleError } from "@/utils/handleError";
 
 export async function DeleteSession(
   session: Session,

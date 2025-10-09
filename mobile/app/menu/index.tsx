@@ -1,9 +1,10 @@
-import { View } from "react-native";
+import { View, Button } from "react-native";
 import AppText from "@/components/AppText";
 import LinkButton from "@/components/LinkButton";
 import LogoutButton from "@/components/login-signup/LogoutButton";
 import ModalPageWrapper from "@/components/ModalPageWrapper";
 import { ShieldUser, UserPen, ContactRound } from "lucide-react-native";
+import * as Sentry from "@sentry/react-native";
 
 export default function SettingsScreen() {
   return (
@@ -21,6 +22,12 @@ export default function SettingsScreen() {
             <LinkButton label="Security" href="/menu/security">
               <ShieldUser color="white" />
             </LinkButton>
+            <Button
+              title="Try!"
+              onPress={() => {
+                Sentry.captureException(new Error("First error"));
+              }}
+            />
           </View>
           <View className="mb-10">
             <LogoutButton />

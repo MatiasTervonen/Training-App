@@ -1,4 +1,4 @@
-import GradientButton from "@/components/GradientButton";
+import AppText from "../AppText";
 import { Alert } from "react-native";
 import { router } from "expo-router";
 import { supabase } from "@/lib/supabase";
@@ -44,12 +44,12 @@ export default function GuestLogIn() {
 
   return (
     <>
-      <GradientButton
-        label="Log in as a Guest"
-        onPress={() => {
-          handleGuestLogin();
-        }}
-      />
+      <AppText
+        onPress={handleGuestLogin}
+        className="text-center text-lg mb-4 underline"
+      >
+        Log in as a Guest
+      </AppText>
       <FullScreenLoader visible={isLoading} message="Logging in as guest..." />
     </>
   );

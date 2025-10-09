@@ -1,9 +1,9 @@
 import { useState } from "react";
-import FullScreenLoader from "./FullScreenLoader";
+import FullScreenLoader from "../FullScreenLoader";
 import { supabase } from "@/lib/supabase";
 import { Alert, TouchableOpacity } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import AppText from "./AppText";
+import AppText from "../AppText";
 import { LogOut } from "lucide-react-native";
 import { router } from "expo-router";
 import { useUserStore } from "@/lib/stores/useUserStore";

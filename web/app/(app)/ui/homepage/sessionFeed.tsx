@@ -238,7 +238,7 @@ export default function SessionFeed() {
         message: "Failed to delete session",
         route: "/api/delete-session",
         method: "POST",
-      }); 
+      });
       toast.error("Failed to delete session");
       mutateFeed(snapshot, { revalidate: false });
     }

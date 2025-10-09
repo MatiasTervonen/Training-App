@@ -1,6 +1,4 @@
 import { createClient } from "@/utils/supabase/server";
-import GetSession from "./getSession";
-import { Feed_item, FeedResponse } from "../types/session";
 import { handleError } from "@/app/(app)/utils/handleError";
 
 type Role = "user" | "admin" | "super_admin" | "guest" | null;
@@ -75,28 +73,6 @@ export async function getUserRoleAndPreferences(): Promise<{
   const { role, ...preferences } = profile;
 
   return { user: user.sub, preferences, role: role as Role };
-}
-
-// Get Feed
-
-export async function getFeed(
-  page: number,
-  limit: number
-): Promise<FeedResponse> {
-  const { feed, error } = await GetSession({ limit, page });
-
-  if (error) {
-    handleError(error, {
-      message: "Error fetching feed",
-      method: "GET",
-    });
-    return { feed: [], nextPage: null };
-  }
-
-  return {
-    feed: feed as Feed_item[],
-    nextPage: feed.length === limit ? page + 1 : null,
-  };
 }
 
 // Save push notification subscription to the database

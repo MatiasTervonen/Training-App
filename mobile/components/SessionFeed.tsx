@@ -162,7 +162,7 @@ export default function SessionFeed() {
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
     >
-      <View className="flex-1 px-5 z-0">
+      <View className="flex-1 items-center px-5 z-0">
         {isLoading ? (
           <>
             <FeedSkeleton count={5} />

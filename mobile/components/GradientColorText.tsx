@@ -27,7 +27,7 @@ export default function GradientColorText({
       style={style} // Set width & height for mask container
     >
       <LinearGradient
-        colors={colors || ["#3b82f6", "#8b5cf6", "#ec4899"]}
+        colors={colors || ["#2BC0E4", "#EAECC6"]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}
         style={{ flex: 1 }}

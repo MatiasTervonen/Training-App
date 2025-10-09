@@ -18,10 +18,10 @@ export default function GradientButton({
       colors={["#020618", "#1447e6"]}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
-      className={`rounded-xl overflow-hidden ${className}`}
+      className={`rounded-md overflow-hidden ${className}`}
     >
       <Pressable
-        className="py-2 border-2 border-blue-700 rounded-xl"
+        className="py-2 border-2 border-blue-700 rounded-md"
         onPress={onPress}
         android_ripple={{ color: "#666" }}
       >

@@ -5,7 +5,7 @@ import { handleError } from "@/app/(app)/utils/handleError";
 import { createClient } from "@/utils/supabase/server";
 
 export async function GET(request: NextRequest) {
-  const { searchParams } = new URL(request.url);
+  const { searchParams } = request.nextUrl;
   const token_hash = searchParams.get("token_hash");
   const type = searchParams.get("type") as EmailOtpType | null;
   const next = searchParams.get("next") ?? "/";
@@ -17,7 +17,6 @@ export async function GET(request: NextRequest) {
       type,
       token_hash,
     });
-
 
     if (error) {
       handleError(error, {

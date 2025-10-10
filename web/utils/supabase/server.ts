@@ -29,6 +29,7 @@ export async function createClient() {
       global: {
         headers: {
           // Forward the Authorization header if present (for mobile/API clients)
+          Authorization: `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY}`,
           ...(headerStore.get("authorization")
             ? { Authorization: headerStore.get("authorization") as string }
             : {}),

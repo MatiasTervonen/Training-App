@@ -1,5 +1,6 @@
 import { type EmailOtpType } from "@supabase/supabase-js";
 import { type NextRequest, NextResponse } from "next/server";
+import { handleError } from "@/app/(app)/utils/handleError";
 
 import { createClient } from "@/utils/supabase/server";
 
@@ -16,6 +17,14 @@ export async function GET(request: NextRequest) {
       type,
       token_hash,
     });
+
+    if (error) {
+      handleError(error, {
+        message: "Error verifying email",
+        route: "/api/auth/confirm",
+        method: "GET",
+      });
+    }
 
     if (!error) {
       if (type === "recovery") {

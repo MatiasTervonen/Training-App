@@ -10,7 +10,8 @@ export async function middleware(request: NextRequest) {
     pathname.includes("/a-4-a/") ||
     pathname === "/mfc" ||
     pathname === "/tl" ||
-    pathname.startsWith("/auth/confirm")
+    pathname.startsWith("/auth/confirm") ||
+    pathname.startsWith("/menu/security")
   ) {
     return NextResponse.next();
   }

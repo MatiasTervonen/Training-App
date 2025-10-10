@@ -6,6 +6,7 @@ import SaveButtonSpinner from "@/app/(app)/ui/save-button-spinner";
 import { createClient } from "@/utils/supabase/client";
 import { useSignOut } from "@/app/(app)/lib/handleSignOut";
 import { handleError } from "@/app/(app)/utils/handleError";
+import { useRouter } from "next/navigation";
 
 export default function Page() {
   const [password, setPassword] = useState("");
@@ -13,6 +14,7 @@ export default function Page() {
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const router = useRouter();
 
   const { signOut } = useSignOut();
 
@@ -52,8 +54,20 @@ export default function Page() {
       setErrorMessage("");
       setPassword("");
       setConfirmPassword("");
-      setTimeout(() => {
-        signOut();
+
+      setTimeout(async () => {
+        await signOut();
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+        if (isMobile) {
+          window.location.href = "mytrack://";
+
+          setTimeout(() => {
+            router.push("/login");
+          }, 2000);
+        } else {
+          router.push("/login");
+        }
       }, 3000);
     } catch (error) {
       handleError(error, {
@@ -81,6 +95,7 @@ export default function Page() {
             value={password}
             setValue={setPassword}
             disabled={loading}
+            id="new-password-input"
           />
         </div>
         <div className="mb-5">
@@ -91,6 +106,7 @@ export default function Page() {
             value={confirmPassword}
             setValue={setConfirmPassword}
             disabled={loading}
+            id="confirm-password-input"
           />
         </div>
         {successMessage ? (

@@ -129,8 +129,7 @@ export default function LoginScreen() {
     setLoading(true);
 
     const { error } = await supabase.auth.resetPasswordForEmail(
-      forgotPasswordEmail,
-      { redirectTo: "mytrack://email-verified" }
+      forgotPasswordEmail
     );
 
     if (error) Alert.alert(error.message);
@@ -166,6 +165,9 @@ export default function LoginScreen() {
                   value={login.email}
                   placeholder="Enter email..."
                   autoCapitalize={"none"}
+                  autoComplete="email"
+                  textContentType="emailAddress"
+                  keyboardType="email-address"
                 />
                 <View className="mt-4">
                   <AppInput
@@ -177,6 +179,9 @@ export default function LoginScreen() {
                     secureTextEntry={true}
                     placeholder="Enter password..."
                     autoCapitalize={"none"}
+                    autoComplete="password"
+                    textContentType="password"
+                    keyboardType="default"
                   />
                 </View>
                 <View className="mt-10">
@@ -193,6 +198,8 @@ export default function LoginScreen() {
                 </View>
               </View>
 
+              {/* Sign Up Form */}
+
               <View style={{ height: screenHeight }} className="justify-center">
                 <AppInput
                   label="Email"
@@ -200,6 +207,9 @@ export default function LoginScreen() {
                   value={signup.email}
                   placeholder="Enter email..."
                   autoCapitalize={"none"}
+                  autoComplete="email"
+                  textContentType="emailAddress"
+                  keyboardType="email-address"
                 />
                 <View className="mt-4">
                   <AppInput
@@ -211,6 +221,9 @@ export default function LoginScreen() {
                     secureTextEntry={true}
                     placeholder="Enter password..."
                     autoCapitalize={"none"}
+                    autoComplete="password"
+                    textContentType="password"
+                    keyboardType="default"
                   />
                 </View>
                 <View className="mt-4">
@@ -270,6 +283,9 @@ export default function LoginScreen() {
               onChangeText={(text) => setForgotPasswordEmail(text)}
               value={forgotPasswordEmail}
               placeholder="Enter email..."
+              autoComplete="email"
+              textContentType="emailAddress"
+              keyboardType="email-address"
             />
           </View>
           <View className="w-full">

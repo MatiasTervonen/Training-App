@@ -4,13 +4,14 @@ import { useState } from "react";
 import { useSignOut } from "@/lib/handleSignout";
 import { supabase } from "@/lib/supabase";
 import AppInput from "@/components/AppInput";
+import { handleError } from "@/utils/handleError";
+import SaveButtonSpinner from "@/components/SaveButtonSpinner";
+import Toast from "react-native-toast-message";
 
 export default function SecurityPage() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [successMessage, setSuccessMessage] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
 
   const { signOut } = useSignOut();
 
@@ -39,12 +40,23 @@ export default function SecurityPage() {
         setLoading(false);
       }
 
+      Toast.show({
+        type: "success",
+        text1: "Password updated successfully! Logging you out...",
+        position: "top",
+        visibilityTime: 3000,
+      });
       setPassword("");
       setConfirmPassword("");
       setTimeout(() => {
         signOut();
       }, 3000);
     } catch (error) {
+      handleError(error, {
+        message: "Unexpected error updating password",
+        route: "security settings",
+        method: "POST",
+      });
       Alert.alert("An unexpected error occurred. Please try again.");
       setLoading(false);
     }
@@ -52,10 +64,10 @@ export default function SecurityPage() {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <View className="flex-1 items-center">
+      <View className="flex-1 items-center max-w-md px-5">
         <AppText className="text-2xl my-5">Security Settings</AppText>
         <AppText className="text-xl my-5">Reset Password</AppText>
-        <View className="w-full max-w-md px-5 mb-5">
+        <View className="w-full mb-5">
           <AppInput
             label="New Password"
             value={password}
@@ -64,13 +76,21 @@ export default function SecurityPage() {
             secureTextEntry
           />
         </View>
-        <View className="w-full max-w-md px-5">
+        <View className="w-full">
           <AppInput
             label="Confirm Password"
             value={confirmPassword}
             onChangeText={setConfirmPassword}
             placeholder="Confirm new password"
             secureTextEntry
+          />
+        </View>
+        <View className="w-full mt-10">
+          <SaveButtonSpinner
+            onPress={handleSavePassword}
+            label={loading ? "Saving..." : "Save"}
+            disabled={loading}
+            loading={loading}
           />
         </View>
       </View>

@@ -7,4 +7,4 @@ export default function (api) {
     ],
     plugins: ["react-native-reanimated/plugin"],
   };
-};
+}

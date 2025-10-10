@@ -3,9 +3,13 @@ import { View, TextInput, TextInputProps } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import AppText from "./AppText";
 
-type AppInputProps = TextInputProps & { label?: string };
+type AppInputProps = TextInputProps & { label?: string;  };
 
-export default function AppInput({ label, ...props }: AppInputProps) {
+export default function AppInput({
+  label,
+
+  ...props
+}: AppInputProps) {
   const [focused, setFocused] = useState(false);
 
   return (
@@ -26,9 +30,7 @@ export default function AppInput({ label, ...props }: AppInputProps) {
         />
         <TextInput
           placeholderTextColor="#9ca3af"
-          autoComplete="off"
           autoCorrect={false}
-          textContentType="none"
           allowFontScaling={false}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}

@@ -1,8 +1,7 @@
 import { type EmailOtpType } from "@supabase/supabase-js";
-import { type NextRequest } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 
 import { createClient } from "@/utils/supabase/server";
-import { redirect } from "next/navigation";
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -20,14 +19,14 @@ export async function GET(request: NextRequest) {
 
     if (!error) {
       if (type === "recovery") {
-        redirect(next || "/menu/security");
+        return NextResponse.redirect(new URL(next, request.url));
       } else {
         await supabase.auth.signOut();
-        redirect(next || "/email-verified");
+        return NextResponse.redirect(new URL("/email-verified", request.url));
       }
     }
   }
 
   // redirect the user to an error page with some instructions
-  redirect("/error");
+  return NextResponse.redirect(new URL("/error", request.url));
 }

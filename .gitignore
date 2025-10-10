@@ -73,5 +73,7 @@ pnpm-debug.log*
 # vercel
 .vercel
 
+setup.txt
 
 
+mobile/.idea

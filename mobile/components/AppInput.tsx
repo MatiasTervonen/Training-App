@@ -3,7 +3,7 @@ import { View, TextInput, TextInputProps } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import AppText from "./AppText";
 
-type AppInputProps = TextInputProps & { label?: string;  };
+type AppInputProps = TextInputProps & { label?: string };
 
 export default function AppInput({
   label,
@@ -34,7 +34,7 @@ export default function AppInput({
           allowFontScaling={false}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
-          className="h-12 font-russo bg-transparent text-gray-100 text-lg px-4"
+          className=" font-russo bg-transparent text-gray-100 text-lg px-4 py-2 h-12"
           {...props}
         />
       </View>

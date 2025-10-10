@@ -1,6 +1,7 @@
 import ModalPageWrapper from "@/components/ModalPageWrapper";
 import { useRouter } from "expo-router";
 import SessionFeed from "@/components/SessionFeed";
+import React from "react";
 
 export default function FeedScreen() {
   const router = useRouter();

@@ -64,7 +64,7 @@ export default function SecurityPage() {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <View className="flex-1 items-center max-w-md px-5">
+      <View className="flex-1 items-center max-w-md mx-auto w-full px-5">
         <AppText className="text-2xl my-5">Security Settings</AppText>
         <AppText className="text-xl my-5">Reset Password</AppText>
         <View className="w-full mb-5">

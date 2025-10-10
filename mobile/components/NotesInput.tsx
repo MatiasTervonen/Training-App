@@ -2,6 +2,7 @@ import { View } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
 import AppText from "./AppText";
 import { SquarePen } from "lucide-react-native";
+import React from "react";
 
 type NotesInputProps = {
   notes: string;

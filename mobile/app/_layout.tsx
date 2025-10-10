@@ -1,9 +1,9 @@
 import "@/lib/nativewindInterop";
 import { Slot } from "expo-router";
-import { StatusBar, View, } from "react-native";
+import { StatusBar, View } from "react-native";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import "./global.css";
 import Navbar from "@/components/navbar/Navbar";
@@ -14,10 +14,10 @@ import { toastConfig } from "@/toastGonfig";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "@/lib/queryClient";
-import * as Sentry from '@sentry/react-native';
+import * as Sentry from "@sentry/react-native";
 
 Sentry.init({
-  dsn: 'https://cf3db79ed11dbd657e73bb68617c6a34@o4510142810619904.ingest.de.sentry.io/4510160894361680',
+  dsn: "https://cf3db79ed11dbd657e73bb68617c6a34@o4510142810619904.ingest.de.sentry.io/4510160894361680",
 
   // Adds more context data to events (IP address, cookies, user, etc.)
   // For more information, visit: https://docs.sentry.io/platforms/react-native/data-management/data-collected/

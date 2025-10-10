@@ -18,9 +18,10 @@ export async function GET(request: NextRequest) {
       token_hash,
     });
 
+
     if (error) {
       handleError(error, {
-        message: "Error verifying email",
+        message: "Error confirming email",
         route: "/api/auth/confirm",
         method: "GET",
       });

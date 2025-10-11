@@ -1,5 +1,3 @@
-export const runtime = "nodejs";
-
 import { type EmailOtpType } from "@supabase/supabase-js";
 import { type NextRequest, NextResponse } from "next/server";
 import { handleError } from "@/app/(app)/utils/handleError";

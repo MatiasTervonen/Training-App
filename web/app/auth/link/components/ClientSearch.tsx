@@ -32,9 +32,9 @@ export default function ClientSearch() {
         break;
       case "email":
         setMessage(
-          "Your email has been successfully verified. You can now log in to your account."
+          "To complete your sign-in, please click the button below to verify your email address."
         );
-        setTitle("Email Verified");
+        setTitle("Verify Email");
         setButtonText("Log in");
         break;
       default:

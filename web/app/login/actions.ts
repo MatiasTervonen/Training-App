@@ -46,7 +46,10 @@ export async function login(
   if (error) {
     return {
       success: false,
-      message: "Invalid email or password.",
+      message:
+        error.message === "Email not confirmed"
+          ? "Please verify your email before logging in."
+          : "Invalid email or password.",
     };
   }
 
@@ -124,7 +127,8 @@ export async function signup(
 
   return {
     success: true,
-    message: "Confirmation email sent. Please check your inbox.",
+    message:
+      "Verification email sent! Please verify your email before logging in.",
   };
 }
 

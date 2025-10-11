@@ -80,7 +80,7 @@ export default function LoginPage() {
               <LoginButton />
               <p
                 aria-live="polite"
-                className={`mt-4 text-sm text-center ${
+                className={`mt-4 text-sm text-center min-h-[1.25rem]  ${
                   state2.message
                     ? state2.success
                       ? "text-green-500"
@@ -88,8 +88,17 @@ export default function LoginPage() {
                     : "text-transparent"
                 }`}
               >
-                {state2.message || "Placeholder for message"}
+                {state2.message}
               </p>
+              {state2.message ===
+                "Please verify your email before logging in." && (
+                <p
+                  onClick={() => setModal2Open(true)}
+                  className="text-gray-100 cursor-pointer text-center hover:underline mt-2"
+                >
+                  Didn&apos;t get an email?
+                </p>
+              )}
             </div>
             <div>
               <GuestLogIn />
@@ -114,9 +123,9 @@ export default function LoginPage() {
 
             <form
               action={formAction3}
-              className="flex flex-col justify-between items-center p-10 text-center gap-5 h-full"
+              className="flex flex-col justify-between items-center p-8 text-center gap-5 h-full"
             >
-              <div className="flex flex-col gap-5">
+              <div className="flex flex-col gap-5 ">
                 <h3 className="text-xl underline mt-5 text-gray-100">
                   Reset Password
                 </h3>
@@ -137,7 +146,7 @@ export default function LoginPage() {
                   />
                   <p
                     aria-live="polite"
-                    className={`mt-4 text-sm text-center ${
+                    className={`mt-4 text-sm text-center min-h-[1.25rem] ${
                       state3.message
                         ? state3.success
                           ? "text-green-500"
@@ -145,10 +154,11 @@ export default function LoginPage() {
                         : "text-transparent"
                     }`}
                   >
-                    {state3.message || "Placeholder for message"}
+                    {state3.message}
                   </p>
                 </div>
               </div>
+
               <ResetPasswordButton />
             </form>
           </ModalLogin>
@@ -194,7 +204,7 @@ export default function LoginPage() {
               <SignupButton />
               <p
                 aria-live="polite"
-                className={`my-2 text-sm text-center  ${
+                className={`my-2 text-sm text-center min-h-[1.25rem] ${
                   state.message
                     ? state.success
                       ? "text-green-500"
@@ -202,7 +212,7 @@ export default function LoginPage() {
                     : "text-transparent"
                 }`}
               >
-                {state.message || "Placeholder for message"}
+                {state.message}
               </p>
               {state.success && (
                 <p

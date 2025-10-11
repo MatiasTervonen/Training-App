@@ -161,3 +161,43 @@ export async function sendPasswordResetEmail(
     message: "Password reset email sent. Please check your inbox.",
   };
 }
+
+export async function resendEmailVerification(
+  prevState: AuthActionState | undefined,
+  formData: FormData
+) {
+  const verification = await checkBotId();
+
+  if (verification.isBot) {
+    return {
+      success: false,
+      message: "Request failed. Please try again.",
+    };
+  }
+
+  const supabase = await createClient();
+
+  const data = {
+    email: formData.get("email") as string,
+  };
+
+  const { error } = await supabase.auth.resend({
+    type: "signup",
+    email: data.email,
+  });
+
+  console.log("Resend result:", { error, data });
+
+  if (error) {
+    return {
+      success: false,
+      message:
+        error.message || "Could not resend verification email. Try again.",
+    };
+  }
+
+  return {
+    success: true,
+    message: "Verification email resent. Please check your inbox.",
+  };
+}

@@ -7,8 +7,8 @@ export default function ErrorPage() {
         <h1 className="text-2xl ">MyTrack</h1>
         <h2 className="text-red-400">This Link is No Longer Valid</h2>
         <p className="text-center">
-          This link is no longer valid. If you&apos;ve already verified your
-          email, you can log in now.
+          If you were trying to verify your email or reset your password, please
+          request a new link
         </p>
         <div className="flex flex-col gap-5 w-full justify-center">
           <LinkButton href="/login">Log in</LinkButton>

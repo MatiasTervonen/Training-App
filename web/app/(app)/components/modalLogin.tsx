@@ -5,7 +5,7 @@ import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { useClickOutside } from "./clickOutside";
 
-export default function ModalForgotPassword({
+export default function ModalLogin({
   isOpen,
   onClose,
   children,
@@ -51,7 +51,6 @@ export default function ModalForgotPassword({
               className="hover:cursor-pointer"
             />
           </button>
-
           <div className="flex-grow overflow-y-auto touch-pan-y">
             {children}
           </div>

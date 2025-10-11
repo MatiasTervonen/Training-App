@@ -9,7 +9,10 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith("/__botid") ||
     pathname.includes("/a-4-a/") ||
     pathname === "/mfc" ||
-    pathname === "/tl"
+    pathname === "/tl" ||
+    pathname === "/auth/link" ||
+    pathname === "/auth/confirm" ||
+    pathname === "/menu/security"
   ) {
     return NextResponse.next();
   }

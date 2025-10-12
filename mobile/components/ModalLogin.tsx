@@ -15,7 +15,7 @@ import {
   Keyboard,
 } from "react-native";
 
-export default function ModalForgotPassword({
+export default function ModalLogin({
   isOpen,
   onClose,
   children,

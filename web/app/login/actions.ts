@@ -190,8 +190,6 @@ export async function resendEmailVerification(
     email: data.email,
   });
 
-  console.log("Resend result:", { error, data });
-
   if (error) {
     return {
       success: false,

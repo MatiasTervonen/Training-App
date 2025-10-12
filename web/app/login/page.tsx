@@ -261,7 +261,7 @@ export default function LoginPage() {
                   />
                   <p
                     aria-live="polite"
-                    className={`mt-4 text-sm text-center ${
+                    className={`mt-4 text-sm text-center min-h-[1.25rem] ${
                       state4.message
                         ? state4.success
                           ? "text-green-500"
@@ -269,7 +269,7 @@ export default function LoginPage() {
                         : "text-transparent"
                     }`}
                   >
-                    {state4.message || "Placeholder for message"}
+                    {state4.message}
                   </p>
                 </div>
               </div>

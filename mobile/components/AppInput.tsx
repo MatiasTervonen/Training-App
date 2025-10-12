@@ -13,9 +13,8 @@ export default function AppInput({
   const [focused, setFocused] = useState(false);
 
   return (
-    <>
+    <View>
       {label && <AppText className="mb-2">{label}</AppText>}
-
       <View
         style={{
           borderColor: focused ? "#22c55e" : "#d1d5db", // green-500 / gray-300
@@ -38,6 +37,6 @@ export default function AppInput({
           {...props}
         />
       </View>
-    </>
+    </View>
   );
 }

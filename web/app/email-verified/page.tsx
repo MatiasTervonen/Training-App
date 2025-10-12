@@ -10,8 +10,14 @@ export default function EmailVerified() {
   const [cooldown, setCooldown] = useState(10);
 
   useEffect(() => {
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
     if (cooldown <= 0) {
-      router.replace("/login");
+      if (isMobile) {
+        window.location.href = "mytrack://";
+      } else {
+        router.replace("/login");
+      }
       return;
     }
 

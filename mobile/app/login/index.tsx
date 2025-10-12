@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Alert,
   View,
@@ -16,12 +16,24 @@ import { LinearGradient } from "expo-linear-gradient";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
-  withTiming,
+  withSpring,
 } from "react-native-reanimated";
+
 import GuestLogIn from "@/components/login-signup/guest-login";
 import GradientButton from "@/components/GradientButton";
-import ForgotPassword from "@/components/login-signup/forgotPassword";
-import ModalForgotPassword from "@/components/ForgotPasswordModal";
+import ForgotPasswordText from "@/components/login-signup/forgotPassword";
+import ModalLogin from "@/components/ModalLogin";
+import ResendEmailText from "@/components/login-signup/resendEmail";
+import { handleError } from "@/utils/handleError";
+
+const generateRandomUserName = (email: string) => {
+  const prefix = email
+    .split("@")[0]
+    .replace(/[^a-zA-Z0-9]/g, "")
+    .toLowerCase();
+  const randomNumber = Math.floor(1000 + Math.random() * 9000);
+  return `${prefix}${randomNumber}`;
+};
 
 export default function LoginScreen() {
   const [login, setLogin] = useState({ email: "", password: "" });
@@ -35,13 +47,30 @@ export default function LoginScreen() {
   const [activeForm, setActiveForm] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [forgotPasswordEmail, setForgotPasswordEmail] = useState("");
+  const [modal2Open, setModal2Open] = useState(false);
+  const [resendEmail, setResendEmail] = useState("");
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState("");
 
   const screenHeight = Dimensions.get("window").height;
   const translateY = useSharedValue(0);
 
+  const resetFields = () => {
+    setLogin({ email: "", password: "" });
+    setSignup({ email: "", password: "", confirmPassword: "" });
+    setForgotPasswordEmail("");
+    setResendEmail("");
+    setError("");
+    setSuccess(false);
+  };
+
   useEffect(() => {
-    translateY.value = withTiming(activeForm ? -screenHeight : 0, {
-      duration: 400,
+    translateY.value = withSpring(activeForm ? -screenHeight : 0, {
+      damping: 15,
+      stiffness: 120,
+      mass: 1,
+      overshootClamping: false,
+      velocity: 0,
     });
   }, [activeForm, screenHeight, translateY]);
 
@@ -75,6 +104,11 @@ export default function LoginScreen() {
       password: password,
     });
 
+    if (error && error.message === "Email not confirmed") {
+      setError("Please verify your email before logging in.");
+      Alert.alert("Please verify your email before logging in.");
+    }
+
     if (error) Alert.alert(error.message);
     setLoading(false);
 
@@ -103,20 +137,48 @@ export default function LoginScreen() {
 
     setLoadingMessage("Signing up...");
     setLoading(true);
-    const {
-      data: { session },
-      error,
-    } = await supabase.auth.signUp({
+    const { data: signUpData, error: signupError } = await supabase.auth.signUp(
+      {
+        email: email,
+        password: password,
+      }
+    );
+
+    if (signupError) {
+      Alert.alert(
+        signupError.message || "Something went wrong. Please try again."
+      );
+      setSignup({ email: "", password: "", confirmPassword: "" });
+    }
+
+    const userExists = (signUpData?.user?.identities?.length ?? 0) === 0;
+
+    if (userExists) {
+      Alert.alert("Email already registered. Please log in.");
+      setSignup({ email: "", password: "", confirmPassword: "" });
+    }
+
+    const { error } = await supabase.from("users").insert({
+      id: signUpData.user!.id,
       email: email,
-      password: password,
+      display_name: generateRandomUserName(email), // Default display name
+      role: "user",
     });
 
-    if (error) Alert.alert(error.message);
-
-    if (!session)
-      Alert.alert("Please check your inbox for email verification!");
+    if (error) {
+      handleError(error, {
+        message: "Failed to create user profile",
+        route: "/api/auth/signup",
+        method: "POST",
+      });
+    }
 
     setLoading(false);
+    setSignup({ email: "", password: "", confirmPassword: "" });
+    Alert.alert(
+      "Verification email sent! Please verify your email before logging in."
+    );
+    setSuccess(true);
   }
 
   async function sendPasswordResetEmail() {
@@ -132,10 +194,35 @@ export default function LoginScreen() {
       forgotPasswordEmail
     );
 
-    if (error) Alert.alert(error.message);
+    if (error)
+      Alert.alert(error.message || "Something went wrong. Please try again.");
     else Alert.alert("Password reset email sent!");
 
     setLoading(false);
+  }
+
+  async function resendEmailVerification() {
+    if (!resendEmail) {
+      Alert.alert("Please enter your email.");
+      return;
+    }
+
+    setLoadingMessage("Resending verification email...");
+    setLoading(true);
+
+    const { error } = await supabase.auth.resend({
+      type: "signup",
+      email: resendEmail,
+    });
+
+    if (error)
+      Alert.alert(
+        error.message || "Could not resend verification email. Try again."
+      );
+
+    setLoading(false);
+    setSuccess(true);
+    Alert.alert("Verification email resent. Please check your inbox.");
   }
 
   return (
@@ -158,10 +245,15 @@ export default function LoginScreen() {
               style={[animatedStyle]}
               className={`absolute top-0 left-0 w-full px-6 h-[200%]`}
             >
+              {/* Login Form */}
+
               <View style={{ height: screenHeight }} className="justify-center">
                 <AppInput
                   label="Email"
-                  onChangeText={(text) => setLogin({ ...login, email: text })}
+                  onChangeText={(text) => {
+                    setLogin({ ...login, email: text });
+                    setSignup({ ...signup, email: "" });
+                  }}
                   value={login.email}
                   placeholder="Enter email..."
                   autoCapitalize={"none"}
@@ -194,8 +286,13 @@ export default function LoginScreen() {
                   <GuestLogIn />
                 </View>
                 <View className="mt-6 items-center">
-                  <ForgotPassword onPress={() => setModalOpen(true)} />
+                  <ForgotPasswordText onPress={() => setModalOpen(true)} />
                 </View>
+                {error && (
+                  <View className="mt-6 items-center">
+                    <ResendEmailText onPress={() => setModal2Open(true)} />
+                  </View>
+                )}
               </View>
 
               {/* Sign Up Form */}
@@ -203,7 +300,10 @@ export default function LoginScreen() {
               <View style={{ height: screenHeight }} className="justify-center">
                 <AppInput
                   label="Email"
-                  onChangeText={(text) => setSignup({ ...signup, email: text })}
+                  onChangeText={(text) => {
+                    setSignup({ ...signup, email: text });
+                    setLogin({ ...login, email: "" });
+                  }}
                   value={signup.email}
                   placeholder="Enter email..."
                   autoCapitalize={"none"}
@@ -244,6 +344,12 @@ export default function LoginScreen() {
                     onPress={() => signUpWithEmail()}
                   />
                 </View>
+
+                {success && (
+                  <View className="mt-6 items-center">
+                    <ResendEmailText onPress={() => setModal2Open(true)} />
+                  </View>
+                )}
               </View>
             </Animated.View>
             <View className="absolute bottom-0 left-0 w-full flex flex-col justify-centergap-2 pb-10 px-6">
@@ -261,45 +367,99 @@ export default function LoginScreen() {
         </ScrollView>
       </TouchableWithoutFeedback>
 
+      {/* Modal for Resend email verification */}
+
+      {modal2Open && (
+        <ModalLogin
+          isOpen={modal2Open}
+          onClose={() => {
+            setModal2Open(false);
+            resetFields();
+          }}
+        >
+          <View className="flex-1 justify-between items-center p-6">
+            <View className="gap-5">
+              <AppText className="text-xl underline mt-5 text-gray-100 text-center">
+                Resend Verification Email
+              </AppText>
+              <AppText className="text-gray-300 text-center">
+                Enter your email and we&apos;ll send you a link to verify your
+                email.
+              </AppText>
+              <AppInput
+                label="Email"
+                onChangeText={(text) => {
+                  setResendEmail(text);
+                  setLogin({ ...login, email: "" });
+                  setSignup({ ...signup, email: "" });
+                }}
+                value={resendEmail}
+                placeholder="Enter email..."
+                autoComplete="email"
+                textContentType="emailAddress"
+                keyboardType="email-address"
+              />
+            </View>
+            <View className="w-full">
+              <GradientButton
+                label="Resend Verification Email"
+                onPress={async () => {
+                  await resendEmailVerification();
+                  setModal2Open(false);
+                  resetFields();
+                }}
+              />
+            </View>
+          </View>
+        </ModalLogin>
+      )}
+
       {/* Modal for Forgot Password */}
 
-      <ModalForgotPassword
-        isOpen={modalOpen}
-        onClose={() => {
-          setModalOpen(false);
-        }}
-      >
-        <View className="flex-1 justify-between items-center p-6 text-center gap-5">
-          <View className="gap-5">
-            <AppText className="text-xl underline mt-5 text-gray-100">
-              Reset your password
-            </AppText>
-            <AppText className="text-gray-300">
-              Enter your email and we&apos;ll send you a link to reset your
-              password.
-            </AppText>
-            <AppInput
-              label="Email"
-              onChangeText={(text) => setForgotPasswordEmail(text)}
-              value={forgotPasswordEmail}
-              placeholder="Enter email..."
-              autoComplete="email"
-              textContentType="emailAddress"
-              keyboardType="email-address"
-            />
+      {modalOpen && (
+        <ModalLogin
+          isOpen={modalOpen}
+          onClose={() => {
+            setModalOpen(false);
+            resetFields();
+          }}
+        >
+          <View className="flex-1 justify-between items-center p-6">
+            <View className="gap-5">
+              <AppText className="text-xl underline mt-5 text-gray-100 text-center">
+                Reset your password
+              </AppText>
+              <AppText className="text-gray-300 text-center">
+                Enter your email and we&apos;ll send you a link to reset your
+                password.
+              </AppText>
+              <AppInput
+                label="Email"
+                onChangeText={(text) => {
+                  setForgotPasswordEmail(text);
+                  setLogin({ ...login, email: "" });
+                  setSignup({ ...signup, email: "" });
+                }}
+                value={forgotPasswordEmail}
+                placeholder="Enter email..."
+                autoComplete="email"
+                textContentType="emailAddress"
+                keyboardType="email-address"
+              />
+            </View>
+            <View className="w-full">
+              <GradientButton
+                label="Send Reset Link"
+                onPress={async () => {
+                  await sendPasswordResetEmail();
+                  setModalOpen(false);
+                  resetFields();
+                }}
+              />
+            </View>
           </View>
-          <View className="w-full">
-            <GradientButton
-              label="Send Reset Link"
-              onPress={async () => {
-                await sendPasswordResetEmail();
-                setModalOpen(false);
-                setForgotPasswordEmail("");
-              }}
-            />
-          </View>
-        </View>
-      </ModalForgotPassword>
+        </ModalLogin>
+      )}
 
       <FullScreenLoader visible={loading} message={loadingMessage} />
     </>

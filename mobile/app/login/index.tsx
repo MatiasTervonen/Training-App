@@ -61,7 +61,6 @@ export default function LoginScreen() {
     setForgotPasswordEmail("");
     setResendEmail("");
     setError("");
-    setSuccess(false);
   };
 
   useEffect(() => {

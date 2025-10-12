@@ -2,43 +2,20 @@
 
 import { useFormStatus } from "react-dom";
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
-import { useState, useEffect } from "react";
+import Spinner from "@/app/(app)/components/spinner";
 
 export default function ResendButton() {
   const { pending } = useFormStatus();
-  const [cooldown, setCooldown] = useState(0);
-
-  useEffect(() => {
-    if (cooldown <= 0) return;
-    const timer = setInterval(() => {
-      setCooldown((prev) => prev - 1);
-    }, 1000);
-    return () => clearInterval(timer);
-  }, [cooldown]);
-
-  useEffect(() => {
-    if (pending) {
-      setCooldown(30);
-    }
-  }, [pending]);
 
   return (
     <>
       <button
         type="submit"
-        className="w-full cursor-pointer text-gray-100 border-2 border-blue-500 p-2 rounded-md bg-gradient-to-tr from-slate-950  to-blue-700 hover:from-blue-700 hover:to-slate-950 transform hover:scale-105 transition-all duration-200"
-        disabled={pending || cooldown > 0}
+        className="flex items-center justify-center gap-2 w-full cursor-pointer text-gray-100 border-2 border-blue-500 p-2 rounded-md bg-gradient-to-tr from-slate-950  to-blue-700 hover:from-blue-700 hover:to-slate-950 transform hover:scale-105 transition-all duration-200"
+        disabled={pending}
       >
-        {pending ? (
-          "Sending..."
-        ) : cooldown > 0 ? (
-          <>
-            Resend in
-            <span className="inline-block w-8 text-center">{cooldown}</span>s
-          </>
-        ) : (
-          "Resend Verification Email"
-        )}
+        {pending ? "Resending..." : "Resend Verification Email"}
+        {pending && <Spinner />}
       </button>
       {pending && (
         <FullScreenLoader message="Resending verification email..." />

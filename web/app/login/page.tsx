@@ -11,7 +11,7 @@ import React from "react";
 import LoginButton from "@/app/login/components/loginbutton";
 import SignupButton from "@/app/login/components/signupbutton";
 import GuestLogIn from "@/app/login/guest-login/quest-login";
-import ModalLogin from "../(app)/components/modalLogin";
+import ModalLogin from "./components/modalLogin";
 import CustomInput from "../(app)/ui/CustomInput";
 import ResetPasswordButton from "./components/resetPasswordButton";
 import ResendButton from "./components/resendButton";

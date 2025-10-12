@@ -3,7 +3,7 @@
 import { ReactNode, useRef } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { useClickOutside } from "./clickOutside";
+import { useClickOutside } from "../../(app)/components/clickOutside";
 
 export default function ModalLogin({
   isOpen,

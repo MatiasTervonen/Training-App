@@ -24,12 +24,12 @@ export default function ModalPageWrapper({
   leftLabel = "back",
   rightLabel = "home",
 }: Props) {
+  
   const { direction, setDirection } = useTransitionDirectionStore();
-
   const [isTransitioning, setIsTransitioning] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
-  const firstRender = useRef(true); // 👈 add this
+  const firstRender = useRef(true);
 
   useEffect(() => {
     firstRender.current = false;

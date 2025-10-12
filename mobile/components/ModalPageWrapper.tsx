@@ -9,6 +9,7 @@ import Animated, {
   withSpring,
   withTiming,
   runOnJS,
+  Easing,
 } from "react-native-reanimated";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { useTransitionDirectionStore } from "@/lib/stores/transitionDirection";
@@ -33,7 +34,6 @@ export default function ModalPageWrapper({
   const [isReady, setIsReady] = useState(false);
 
   const router = useRouter();
-
   const direction = useTransitionDirectionStore((state) => state.direction);
   const setDirection = useTransitionDirectionStore(
     (state) => state.setDirection
@@ -49,14 +49,20 @@ export default function ModalPageWrapper({
   useEffect(() => {
     entryTranslateX.value = direction * screenWidth;
     fadeOpacity.value = 0;
-    // Defer animation to next frame to avoid visual flash
+
     requestAnimationFrame(() => {
-      entryTranslateX.value = withTiming(0, { duration: 300 });
-      fadeOpacity.value = withTiming(1, { duration: 300 });
+      entryTranslateX.value = withSpring(0, {
+        damping: 15,
+        stiffness: 120,
+        mass: 0.5,
+      });
+      fadeOpacity.value = withTiming(1, {
+        duration: 350,
+        easing: Easing.out(Easing.cubic),
+      });
       runOnJS(setIsReady)(true); // mark as ready
       setDirection(0);
     });
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -78,40 +84,39 @@ export default function ModalPageWrapper({
     }
   };
 
-  const dragElastic = 0.2;
+  const dragThreshold = screenWidth * 0.5;
+  const velocityThreshold = 700;
 
   const pan = Gesture.Pan()
     // Restrict gesture to horizontal swipes only
     .activeOffsetX([-30, 30]) // Activate only if horizontal movement exceeds 30 pixels
     .activeOffsetY([-1000, 1000]) // Prevent activation for vertical movements
-    .onUpdate((event) => {
-      translateX.value = withSpring(event.translationX * dragElastic, {
-        stiffness: 150,
-        damping: 20,
-      });
-    })
     .onStart(() => {
       runOnJS(setIsTransitioning)(true);
     })
+    .onUpdate((e) => {
+      translateX.value = e.translationX * 0.2; // follow finger a bit
+    })
     .onEnd((event) => {
-      const dragThreshold = 250;
-      const velocityThreshold = 300;
-
-      if (
+      const swipedRight =
         event.velocityX > velocityThreshold ||
-        event.translationX > dragThreshold
-      ) {
-        runOnJS(handleSwipeRight)();
-        translateX.value = withTiming(300, { duration: 250 });
-      } else if (
+        event.translationX > dragThreshold;
+      const swipedLeft =
         event.velocityX < -velocityThreshold ||
-        event.translationX < -dragThreshold
-      ) {
+        event.translationX < -dragThreshold;
+
+      translateX.value = withSpring(0, {
+        damping: 20,
+        stiffness: 150,
+        mass: 0.5,
+      });
+
+      if (swipedRight) {
+        runOnJS(handleSwipeRight)();
+      } else if (swipedLeft) {
         runOnJS(handleSwipeLeft)();
-        translateX.value = withTiming(-300, { duration: 250 });
-      } else {
-        translateX.value = withSpring(0);
       }
+
       runOnJS(setIsTransitioning)(false);
     });
 

@@ -1,9 +1,11 @@
 import { useUserStore } from "@/lib/stores/useUserStore";
 import { useEffect } from "react";
-import { useRouter } from "expo-router";
+import { useRouter, usePathname } from "expo-router";
 import { supabase } from "@/lib/supabase";
 import { Session } from "@supabase/supabase-js";
 import { fetchUserPreferences } from "@/api/settings/get-settings";
+import ModalPageWrapper from "./ModalPageWrapper";
+import { useModalPageConfig } from "@/lib/stores/modalPageConfig";
 
 interface UserPreferences {
   display_name: string;
@@ -48,7 +50,16 @@ export default function LayoutWrapper({
 
   const loginUser = useUserStore((state) => state.loginUser);
 
+  const { modalPageConfig, setModalPageConfig } = useModalPageConfig();
+
   const router = useRouter();
+  const pathname = usePathname();
+
+  useEffect(() => {
+    if (pathname !== "/dashboard") {
+      setModalPageConfig(null);
+    }
+  }, [pathname, setModalPageConfig]);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -78,5 +89,7 @@ export default function LayoutWrapper({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router]);
 
-  return <>{children}</>;
+  return (
+    <ModalPageWrapper key={pathname} {...(modalPageConfig || {})}>{children}</ModalPageWrapper>
+  );
 }

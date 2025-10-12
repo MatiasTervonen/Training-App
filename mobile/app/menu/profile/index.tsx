@@ -1,6 +1,5 @@
 import { View } from "react-native";
 import AppText from "@/components/AppText";
-import Screen from "@/components/Screen";
 import AppInput from "@/components/AppInput";
 import ProfilePicture from "@/components/ProfilePicture";
 import SelectInput from "@/components/Selectinput";
@@ -14,7 +13,6 @@ import { fetch as expoFetch } from "expo/fetch";
 import * as FileSystem from "expo-file-system";
 import { saveSettings } from "@/api/settings/save-settings";
 import { validateUserName } from "@/api/settings/validateUserName";
-import ModalPageWrapper from "@/components/ModalPageWrapper";
 
 type UploadFile = {
   uri: string;
@@ -166,80 +164,78 @@ export default function ProfileScreen() {
   };
 
   return (
-    <ModalPageWrapper>
-      <Screen>
-        <View className="flex-1 justify-between px-10">
+    <>
+      <View className="flex-1 justify-between px-10">
+        <View>
           <View>
-            <View>
-              <AppText className="text-2xl text-center my-5">
-                Profile Settings
-              </AppText>
-            </View>
-            <AppInput
-              value={userName}
-              onChangeText={(value) => {
-                setUserName(
-                  value
-                    .toLowerCase()
-                    .replace(/[^a-z0-9_]/g, "")
-                    .slice(0, 15)
-                );
-              }}
-              label="User Name"
+            <AppText className="text-2xl text-center my-5">
+              Profile Settings
+            </AppText>
+          </View>
+          <AppInput
+            value={userName}
+            onChangeText={(value) => {
+              setUserName(
+                value
+                  .toLowerCase()
+                  .replace(/[^a-z0-9_]/g, "")
+                  .slice(0, 15)
+              );
+            }}
+            label="User Name"
+          />
+          <AppText className="text-sm text-gray-500 mt-2">
+            Max 15 characters. Only lowercase letters, numbers, &quot;_&quot;
+            allowed.
+          </AppText>
+          <View className="mt-10">
+            <ProfilePicture
+              data={profilePicZ || null}
+              onFileSelected={setSelectedProfilePic}
             />
             <AppText className="text-sm text-gray-500 mt-2">
-              Max 15 characters. Only lowercase letters, numbers, &quot;_&quot;
-              allowed.
+              Max size 5MB.
             </AppText>
-            <View className="mt-10">
-              <ProfilePicture
-                data={profilePicZ || null}
-                onFileSelected={setSelectedProfilePic}
-              />
-              <AppText className="text-sm text-gray-500 mt-2">
-                Max size 5MB.
-              </AppText>
-            </View>
-            <View className="mt-10">
-              <SelectInput
-                label={"Weight Unit"}
-                value={weightUnit}
-                onChange={setWeightUnit}
-                options={[
-                  { value: "kg", label: "kg" },
-                  { value: "lbs", label: "lbs" },
-                ]}
-              />
-            </View>
           </View>
-          <View className="mb-10">
-            <SaveButton
-              onPress={async () => {
-                if (!session) {
-                  Toast.show({
-                    type: "error",
-                    text1: "Error",
-                    text2: "No active session. Please log in again.",
-                  });
-                  return;
-                }
-
-                if (!userName.trim()) {
-                  Toast.show({
-                    type: "error",
-                    text1: "Error",
-                    text2: "User name cannot be empty.",
-                  });
-                  return;
-                }
-
-                await updateSettings(session);
-              }}
+          <View className="mt-10">
+            <SelectInput
+              label={"Weight Unit"}
+              value={weightUnit}
+              onChange={setWeightUnit}
+              options={[
+                { value: "kg", label: "kg" },
+                { value: "lbs", label: "lbs" },
+              ]}
             />
           </View>
         </View>
-        <FullScreenLoader visible={isSaving} message="Saving..." />
-      </Screen>
-    </ModalPageWrapper>
+        <View className="mb-10">
+          <SaveButton
+            onPress={async () => {
+              if (!session) {
+                Toast.show({
+                  type: "error",
+                  text1: "Error",
+                  text2: "No active session. Please log in again.",
+                });
+                return;
+              }
+
+              if (!userName.trim()) {
+                Toast.show({
+                  type: "error",
+                  text1: "Error",
+                  text2: "User name cannot be empty.",
+                });
+                return;
+              }
+
+              await updateSettings(session);
+            }}
+          />
+        </View>
+      </View>
+      <FullScreenLoader visible={isSaving} message="Saving..." />
+    </>
   );
 }

@@ -1,19 +1,31 @@
-import ModalPageWrapper from "@/components/ModalPageWrapper";
-import { useRouter } from "expo-router";
 import SessionFeed from "@/components/SessionFeed";
-import React from "react";
+import { useModalPageConfig } from "@/lib/stores/modalPageConfig";
+import { useTimerStore } from "@/lib/stores/timerStore";
+import { useEffect } from "react";
+import { Alert } from "react-native";
+import { useRouter } from "expo-router";
 
 export default function FeedScreen() {
   const router = useRouter();
+  const { setModalPageConfig } = useModalPageConfig();
+  const { activeSession } = useTimerStore();
 
-  return (
-    <ModalPageWrapper
-      onSwipeLeft={() => router.push("/sessions")}
-      rightLabel="Sessions"
-      onSwipeRight={() => router.push("/menu")}
-      leftLabel="Menu"
-    >
-      <SessionFeed />
-    </ModalPageWrapper>
-  );
+  useEffect(() => {
+    setModalPageConfig({
+      leftLabel: "Menu",
+      rightLabel: "Sessions",
+      onSwipeLeft: () => {
+        if (activeSession) {
+          Alert.alert(
+            "You already have an active session. Finish it before starting a new one."
+          );
+          return;
+        }
+        router.push("/sessions");
+      },
+      onSwipeRight: () => router.push("/menu"),
+    });
+  }, [router, setModalPageConfig, activeSession]);
+
+  return <SessionFeed />;
 }

@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 import NotesInput from "@/components/NotesInput";
 import SaveButton from "@/components/SaveButton";
 import DeleteButton from "@/components/DeleteButton";
-import ModalPageWrapper from "@/components/ModalPageWrapper";
 import { useUserStore } from "@/lib/stores/useUserStore";
 import { Session } from "@supabase/supabase-js";
 import { saveNote } from "@/api/notes/save-note";
@@ -91,7 +90,7 @@ export default function NotesScreen() {
   };
 
   return (
-    <ModalPageWrapper leftLabel="Back" rightLabel="Home">
+    <>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <View className="flex-col flex-1 items-center px-5">
           <View>
@@ -137,6 +136,6 @@ export default function NotesScreen() {
         </View>
       </TouchableWithoutFeedback>
       <FullScreenLoader visible={isSaving} />
-    </ModalPageWrapper>
+    </>
   );
 }

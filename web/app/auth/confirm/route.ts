@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
         return NextResponse.redirect(new URL(next, request.url));
       } else {
         await supabase.auth.signOut();
-        return NextResponse.redirect(new URL("/login", request.url));
+        return NextResponse.redirect(new URL(next, request.url));
       }
     }
   }

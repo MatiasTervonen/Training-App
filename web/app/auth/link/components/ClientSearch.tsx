@@ -34,8 +34,8 @@ export default function ClientSearch() {
         setMessage(
           "To complete your sign-in, please click the button below to verify your email address."
         );
-        setTitle("Verify Email");
-        setButtonText("Log in");
+        setTitle("Verify Your Email Address");
+        setButtonText("Continue to verify email");
         break;
       default:
         router.replace("/error");

@@ -6,10 +6,10 @@ export async function POST(req: NextRequest) {
   const supabase = await createClient();
 
   const authHeader = req.headers.get("authorization");
+  const token = authHeader?.replace("Bearer ", "");
 
-  const { data, error: authError } = await supabase.auth.getClaims(
-    authHeader ?? undefined
-  );
+  const { data, error: authError } = await supabase.auth.getClaims(token);
+
   const user = data?.claims;
 
   if (authError || !user) {

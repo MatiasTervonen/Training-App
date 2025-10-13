@@ -84,14 +84,7 @@ export default function ProfileScreen() {
 
       const formData = new FormData();
 
-      console.log("Selected:", selectedProfilePic);
-
       formData.append("file", selectedProfilePic as unknown as Blob);
-
-      console.log("Uploading file:", formData);
-
-      console.log("Access token:", session.access_token);
-
 
       const response = await fetch(
         "https://training-app-bay.vercel.app/api/settings/save-profilePic",

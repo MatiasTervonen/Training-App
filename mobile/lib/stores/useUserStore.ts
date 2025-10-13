@@ -1,7 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { Session } from "@supabase/supabase-js";
 
 interface UserPreferences {
   display_name: string;
@@ -11,14 +10,11 @@ interface UserPreferences {
 }
 
 interface UserStore {
-  session: Session | null;
   preferences: UserPreferences | null;
   setUserPreferences: (preferences: UserPreferences) => void;
   clearUserPreferences: () => void;
-  isLoggedIn: boolean;
-  setIsLoggedIn: (status: boolean) => void;
   logoutUser: () => void; // Method to clear user state on logout
-  loginUser: (prefs: UserPreferences, session: Session) => void; // Method to set user state on login
+  loginUser: (prefs: UserPreferences) => void; // Method to set user state on login
 }
 
 export const useUserStore = create<UserStore>()(
@@ -28,20 +24,14 @@ export const useUserStore = create<UserStore>()(
       preferences: null,
       setUserPreferences: (preferences) => set({ preferences }),
       clearUserPreferences: () => set({ preferences: null }),
-      setIsLoggedIn: (status) => set({ isLoggedIn: status }),
-      isLoggedIn: false,
       logoutUser: () => {
         set({
           preferences: null,
-          isLoggedIn: false,
-          session: null,
         });
       },
-      loginUser: (prefs, session) =>
+      loginUser: (prefs) =>
         set({
           preferences: prefs,
-          isLoggedIn: true,
-          session,
         }),
     }),
     {

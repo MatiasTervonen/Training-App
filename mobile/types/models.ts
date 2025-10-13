@@ -72,32 +72,3 @@ export type full_gym_exercises = gym_session_exercises & {
 export type full_gym_session = gym_sessions & {
   gym_session_exercises: full_gym_exercises[];
 };
-
-export type FeedCardProps =
-  | {
-      table: "notes";
-      item: notes;
-      pinned: boolean;
-      onTogglePin: () => void;
-      onDelete: () => void;
-      onExpand: () => void;
-      onEdit: () => void;
-    }
-  | {
-      table: "gym_sessions";
-      item: full_gym_session;
-      pinned: boolean;
-      onTogglePin: () => void;
-      onDelete: () => void;
-      onExpand: () => void;
-      onEdit: () => void;
-    }
-  | {
-      table: "weight";
-      item: weight;
-      pinned: boolean;
-      onTogglePin: () => void;
-      onDelete: () => void;
-      onExpand: () => void;
-      onEdit: () => void;
-    };

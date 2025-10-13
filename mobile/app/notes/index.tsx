@@ -5,8 +5,6 @@ import { useEffect, useState } from "react";
 import NotesInput from "@/components/NotesInput";
 import SaveButton from "@/components/SaveButton";
 import DeleteButton from "@/components/DeleteButton";
-import { useUserStore } from "@/lib/stores/useUserStore";
-import { Session } from "@supabase/supabase-js";
 import { saveNote } from "@/api/notes/save-note";
 import Toast from "react-native-toast-message";
 import FullScreenLoader from "@/components/FullScreenLoader";
@@ -17,8 +15,6 @@ export default function NotesScreen() {
   const [title, setValue] = useState("");
   const [notes, setNotes] = useState("");
   const [isSaving, setIsSaving] = useState(false);
-
-  const session = useUserStore((state) => state.session);
 
   useEffect(() => {
     const loadDraft = async () => {
@@ -49,13 +45,13 @@ export default function NotesScreen() {
     saveNotesDraft();
   }, [notes, title, saveNotesDraft]);
 
-  const handleSaveNotes = async (session: Session) => {
+  const handleSaveNotes = async () => {
     setIsSaving(true);
 
     try {
       if (!title.trim() || !notes.trim()) return;
 
-      const result = await saveNote({ title, notes, session });
+      const result = await saveNote({ title, notes });
 
       if (result === null) {
         throw new Error("Failed to save note");
@@ -92,8 +88,8 @@ export default function NotesScreen() {
   return (
     <>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-        <View className="flex-col flex-1 items-center px-5">
-          <View>
+        <View className="flex-col flex-1 items-center px-6">
+          <View className="w-full">
             <AppText className="text-2xl text-center my-5">
               Add your notes here
             </AppText>
@@ -113,20 +109,7 @@ export default function NotesScreen() {
             />
           </View>
           <View className="my-10 w-full flex-col gap-4">
-            <SaveButton
-              onPress={async () => {
-                if (!session) {
-                  Toast.show({
-                    type: "error",
-                    text1: "Error",
-                    text2: "You must be logged in to save notes.",
-                  });
-                  return;
-                }
-
-                handleSaveNotes(session);
-              }}
-            />
+            <SaveButton onPress={() => handleSaveNotes()} />
             <DeleteButton
               onPress={() => {
                 handleDeleteNote();
@@ -135,7 +118,7 @@ export default function NotesScreen() {
           </View>
         </View>
       </TouchableWithoutFeedback>
-      <FullScreenLoader visible={isSaving} />
+      <FullScreenLoader visible={isSaving} message="Saving your notes..." />
     </>
   );
 }

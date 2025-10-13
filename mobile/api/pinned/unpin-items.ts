@@ -1,11 +1,16 @@
 import { supabase } from "@/lib/supabase";
-import { Session } from "@supabase/supabase-js";
+import { handleError } from "@/utils/handleError";
 
-export async function unpinItems(
-  session: Session,
-  item_id: string,
-  table: string
-) {
+export async function unpinItems(item_id: string, table: string) {
+  const {
+    data: { session },
+    error: sessionError,
+  } = await supabase.auth.getSession();
+
+  if (sessionError || !session || !session.user) {
+    return { error: true, message: "No session" };
+  }
+
   const { error } = await supabase
     .from("pinned_items")
     .delete()
@@ -14,11 +19,12 @@ export async function unpinItems(
     .eq("table", table);
 
   if (error) {
-    console.error("Supabase Delete Error:", error);
-    return {
-      success: false,
-      error: error.message || "Unknown error",
-    };
+    handleError(error, {
+      message: "Error unpinning item",
+      route: "/api/pinned/unpin-items",
+      method: "DELETE",
+    });
+    return { error: true, message: "Error unpinning item" };
   }
 
   return {

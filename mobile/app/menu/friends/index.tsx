@@ -1,10 +1,24 @@
 import { View } from "react-native";
 import AppText from "@/components/AppText";
+import FriendRequestForm from "@/components/friends-screen/FriendRequestForm";
+import FriendCard from "@/components/friends-screen/FriendCard";
+import { Friends } from "@/types/models";
 
 export default function FriendsScreen() {
+
+  // Tankstak query  to fetch friends from the backend like SWR in web/ use persistence  ????? 
+ 
+
+
   return (
-      <View className="flex flex-col items-center justify-center h-screen">
-        <AppText className="text-6xl text-center">Menu</AppText>
+    <View className="flex flex-col items-center justify-center h-screen">
+      <AppText className="text-6xl text-center">Friends</AppText>
+      <FriendRequestForm />
+      <View className="flex flex-col w-full">
+        {Friends.map((friend) => (
+          <FriendCard key={friend.id} friend={friend} />
+        ))}
       </View>
+    </View>
   );
 }

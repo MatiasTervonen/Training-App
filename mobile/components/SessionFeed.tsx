@@ -1,10 +1,7 @@
 import { notes, weight, full_gym_session } from "@/types/models";
-import React, { useState } from "react";
-import { Session } from "@supabase/supabase-js";
-import { GetFeed } from "@/api/feed/getFeed";
+import React, { useCallback, useState, useMemo } from "react";
 import Toast from "react-native-toast-message";
 import AppText from "@/components/AppText";
-import { useUserStore } from "@/lib/stores/useUserStore";
 import { unpinItems } from "@/api/pinned/unpin-items";
 import { pinItems } from "@/api/pinned/pin-items";
 import { FlatList, RefreshControl, View } from "react-native";
@@ -13,12 +10,16 @@ import { DeleteSession } from "@/api/feed/deleteSession";
 import { FeedSkeleton } from "@/components/skeletetons";
 import { Pin } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
+import { handleError } from "@/utils/handleError";
+import { useFeed } from "@/api/feed/getFeed";
+import { Feed_item } from "@/types/session";
 
-type FeedItem =
-  | { table: "notes"; item: notes; pinned: boolean }
-  | { table: "weight"; item: weight; pinned: boolean }
-  | { table: "gym_sessions"; item: full_gym_session; pinned: boolean };
+type FeedItem = {
+  table: "notes" | "weight" | "gym_sessions" | "todo_lists" | "reminders";
+  item: Feed_item;
+  pinned: boolean;
+};
 
 export default function SessionFeed() {
   const [expandedItem, setExpandedItem] = useState<FeedItem | null>(null);
@@ -29,23 +30,52 @@ export default function SessionFeed() {
 
   const queryClient = useQueryClient();
 
-  const session = useUserStore((state) => state.session);
+  function getCanonicalId(item: { id?: string; item_id?: string }) {
+    return item.item_id ?? item.id ?? "";
+  }
 
   const {
     error,
-    data: feed = [],
+    data,
     isLoading,
     refetch,
-  } = useQuery<FeedItem[]>({
-    queryKey: ["feed"],
-    queryFn: () => GetFeed(session!),
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    refetchOnMount: false,
-  });
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isRefetching,
+  } = useFeed();
+
+  console.log("Feed data:", data);
+
+  const feed: FeedItem[] = useMemo(() => {
+    if (!data) return [];
+    return data.pages.flatMap((page) =>
+      page.feed.map((item: Feed_item) => ({
+        table: item.type as FeedItem["table"],
+        item: { ...item, id: getCanonicalId(item) },
+        pinned: item.pinned,
+      }))
+    );
+  }, [data]);
+
+  console.log("Flattened feed:", feed);
+
+  // Pinned items first, then by created_at desc for stable ordering in UI
+
+  const pinnedFeed = useMemo(() => feed.filter((i) => i.pinned), [feed]);
+  const unpinnedFeed = useMemo(
+    () =>
+      feed
+        .filter((i) => !i.pinned)
+        .sort(
+          (a, b) =>
+            new Date(b.item.created_at).getTime() -
+            new Date(a.item.created_at).getTime()
+        ),
+    [feed]
+  );
 
   const togglePin = async (
-    session: Session,
     item_id: string,
     table: string,
     isPinned: boolean
@@ -63,12 +93,16 @@ export default function SessionFeed() {
 
     try {
       const result = isPinned
-        ? await unpinItems(session, item_id, table)
-        : await pinItems(session, item_id, table);
+        ? await unpinItems(item_id, table)
+        : await pinItems(item_id, table);
 
       if (!result.success) {
-        console.error("Error toggling pin:", result.error);
-        throw new Error(result.error);
+        handleError(result.error, {
+          message: "Error toggling pin",
+          route: "/api/feed/togglePin",
+          method: "POST",
+        });
+        throw new Error("Failed to toggle pin status.");
       }
 
       Toast.show({
@@ -92,11 +126,7 @@ export default function SessionFeed() {
     }
   };
 
-  const handleDelete = async (
-    session: Session,
-    item_id: string,
-    table: string
-  ) => {
+  const handleDelete = async (item_id: string, table: string) => {
     const previousFeed = queryClient.getQueryData<FeedItem[]>(["feed"]);
 
     const newFeed = previousFeed?.filter((item) => {
@@ -106,7 +136,7 @@ export default function SessionFeed() {
     queryClient.setQueryData(["feed"], newFeed);
 
     try {
-      const result = await DeleteSession(session, item_id, table);
+      const result = await DeleteSession(item_id, table);
 
       if (!result.success) {
         throw new Error();
@@ -131,30 +161,6 @@ export default function SessionFeed() {
     }
   };
 
-  // Infinite scroll handler
-  const loadMore = () => {
-    if (visibleCount >= feed.length) return;
-    setVisibleCount((prev) => prev + 10);
-  };
-
-  const sortedFeed = [...feed].sort((a, b) => {
-    const aIsPinned = a.pinned;
-    const bIsPinned = b.pinned;
-
-    if (aIsPinned && !bIsPinned) return -1;
-    if (!aIsPinned && bIsPinned) return 1;
-    return (
-      new Date(b.item.created_at).getTime() -
-      new Date(a.item.created_at).getTime()
-    );
-  });
-
-  const onRefresh = React.useCallback(async () => {
-    setRefreshing(true);
-    await refetch();
-    setRefreshing(false);
-  }, [refetch]);
-
   return (
     <LinearGradient
       className="flex-1"
@@ -162,60 +168,80 @@ export default function SessionFeed() {
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
     >
-      <View className="flex-1 items-center px-5 z-0">
+      <View className="px-5 z-0">
         {isLoading ? (
           <>
             <FeedSkeleton count={5} />
           </>
         ) : error ? (
-          <AppText className="text-center text-lg mt-10">
+          <AppText className="text-center text-lg mt-10 mx-auto">
             Failed to load sessions. Please try again later.
           </AppText>
         ) : feed.length === 0 ? (
-          <View className="text-center text-lg mt-10">
-            <AppText>No sessions yet. Let&apos;s get started!</AppText>
-          </View>
+          <AppText className="text-center text-lg mt-10">
+            No sessions yet. Let&apos;s get started!
+          </AppText>
         ) : (
-          <FlatList
-            data={sortedFeed.slice(0, visibleCount)}
-            keyExtractor={(item) => item.item.id}
-            initialNumToRender={10}
-            showsVerticalScrollIndicator={false}
-            renderItem={({ item }) => (
-              <View className="mt-3">
-                {item.pinned && (
-                  <View className="flex-row items-center gap-2 mb-2">
-                    <Pin size={20} color="#9ca3af" />
-                    <AppText className="text-sm text-gray-400">Pinned</AppText>
+          <>
+            {pinnedFeed.length > 0 && (
+              <View>
+                <View>
+                  <Pin size={20} />
+                  <AppText className="text-gray-400">Pinned</AppText>
+                </View>
+                {pinnedFeed.map((feedItem) => (
+                  <View key={feedItem.item.id} className="mb-3">
+                    <FeedCard
+                      {...feedItem}
+                      pinned={true}
+                      onExpand={() => {
+                        setExpandedItem(feedItem);
+                      }}
+                      onTogglePin={() =>
+                        togglePin(
+                          getCanonicalId(feedItem.item),
+                          feedItem.table,
+                          true
+                        )
+                      }
+                      onDelete={() =>
+                        handleDelete(feedItem.item.id!, feedItem.table)
+                      }
+                      onEdit={() => {
+                        setEditingItem(feedItem);
+                      }}
+                    />
                   </View>
-                )}
-                <FeedCard
-                  {...item}
-                  pinned={item.pinned}
-                  onExpand={() => setExpandedItem(item)}
-                  onTogglePin={() => {
-                    if (!session) return;
-                    togglePin(session, item.item.id, item.table, item.pinned);
-                  }}
-                  onDelete={() => {
-                    if (!session) return;
-                    handleDelete(session, item.item.id, item.table);
-                  }}
-                  onEdit={() => setEditingItem(item)}
-                />
+                ))}
               </View>
             )}
-            onEndReached={loadMore}
-            onEndReachedThreshold={0.3}
-            refreshControl={
-              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-            }
-            ListEmptyComponent={() => (
-              <View className="text-center text-lg mt-10">
-                <AppText>No sessions yet. Let&apos;s get started!</AppText>
-              </View>
-            )}
-          />
+
+            {unpinnedFeed.map((feedItem) => {
+              return (
+                <View className="mt-[32px]" key={feedItem.item.id}>
+                  <FeedCard
+                    {...feedItem}
+                    onExpand={() => {
+                      setExpandedItem(feedItem);
+                    }}
+                    onTogglePin={() =>
+                      togglePin(
+                        getCanonicalId(feedItem.item),
+                        feedItem.table,
+                        false
+                      )
+                    }
+                    onDelete={() =>
+                      handleDelete(feedItem.item.id!, feedItem.table)
+                    }
+                    onEdit={() => {
+                      setEditingItem(feedItem);
+                    }}
+                  />
+                </View>
+              );
+            })}
+          </>
         )}
       </View>
     </LinearGradient>

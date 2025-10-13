@@ -40,7 +40,7 @@ export default function DeleteButton({
       onPress={handleDelete}
       className="bg-red-800 py-2 rounded-md shadow-md border-2 border-red-500"
     >
-      <AppText className="text-center">{label || "Delete"}</AppText>
+      <AppText className="text-center text-lg">{label || "Delete"}</AppText>
     </Pressable>
   );
 }

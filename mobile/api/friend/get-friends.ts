@@ -1,7 +1,7 @@
 import { supabase } from "@/lib/supabase";
 import { handleError } from "@/utils/handleError";
 
-export async function fetchUserPreferences() {
+export async function GET() {
   const {
     data: { session },
     error: sessionError,
@@ -12,18 +12,17 @@ export async function fetchUserPreferences() {
   }
 
   const { data, error } = await supabase
-    .from("users")
-    .select("display_name, weight_unit, profile_picture, role")
-    .eq("id", session.user.id)
-    .single();
+    .from("friends")
+    .select("id, user1_id, user2_id")
+    .or(`user1_id.eq.${session.user.id},user2_id.eq.${session.user.id}`);
 
   if (error) {
     handleError(error, {
-      message: "Error fetching user preferences",
-      route: "/api/settings/get-settings",
+      message: "Error fetching friends",
+      route: "/api/friend/get-friends",
       method: "GET",
     });
-    return { error: true, message: "Error fetching user preferences" };
+    return { error: true, message: "Error fetching friends" };
   }
 
   return data;

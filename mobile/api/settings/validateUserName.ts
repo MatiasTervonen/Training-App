@@ -1,7 +1,16 @@
 import { supabase } from "@/lib/supabase";
-import { Session } from "@supabase/supabase-js";
+import { handleError } from "@/utils/handleError";
 
-export async function validateUserName(name: string, session: Session) {
+export async function validateUserName(name: string) {
+  const {
+    data: { session },
+    error: sessionError,
+  } = await supabase.auth.getSession();
+
+  if (sessionError || !session || !session.user) {
+    return { error: true, message: "No session" };
+  }
+
   const { data, error } = await supabase
     .from("users")
     .select("display_name")
@@ -10,8 +19,12 @@ export async function validateUserName(name: string, session: Session) {
     .single();
 
   if (error && error.code !== "PGRST116") {
-    console.error("Error fetching user preferences:", error);
-    return null;
+    handleError(error, {
+      message: "Error validating user name",
+      route: "/api/settings/validateUserName",
+      method: "POST",
+    });
+    return { error: true, message: "Error validating user name" };
   }
 
   const isTaken = !!data;

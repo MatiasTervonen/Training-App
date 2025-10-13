@@ -3,14 +3,15 @@ import {
   Ellipsis,
   SquareArrowOutUpRight,
 } from "lucide-react-native";
-import { notes } from "@/types/models";
 import { View, TouchableOpacity } from "react-native";
 import AppText from "../AppText";
 import DropdownMenu from "../DropdownMenu";
 import { formatDate } from "@/lib/formatDate";
+import { Feed_item } from "@/types/session";
+
 
 type Props = {
-  item: notes;
+  item: Feed_item;
   pinned: boolean;
   onTogglePin: () => void;
   onDelete: () => void;

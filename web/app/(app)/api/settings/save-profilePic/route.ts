@@ -5,22 +5,26 @@ import { NextRequest } from "next/server";
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
 
+  const authHeader = req.headers.get("authorization");
+
+  const { data, error: authError } = await supabase.auth.getClaims(
+    authHeader ?? undefined
+  );
+  const user = data?.claims;
+
+  if (authError || !user) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
   const formData = await req.formData();
   const file = formData.get("file") as File;
 
   if (!file || typeof file === "string") {
     return new Response(JSON.stringify({ error: "No file provided" }), {
       status: 400,
-      headers: { "Content-Type": "application/json" },
-    });
-  }
-
-  const { data, error: authError } = await supabase.auth.getClaims();
-  const user = data?.claims;
-
-  if (authError || !user) {
-    return new Response(JSON.stringify({ error: "Unauthorized" }), {
-      status: 401,
       headers: { "Content-Type": "application/json" },
     });
   }

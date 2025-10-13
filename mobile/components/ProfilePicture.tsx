@@ -47,7 +47,14 @@ export default function ProfilePicture({ data, onFileSelected }: Props) {
       const asset = result.assets[0];
       const uri = asset.uri;
       const name = asset.fileName || uri.split("/").pop() || "profile.jpg";
-      const type = asset.type || "image/jpeg";
+      const extension = uri.split(".").pop()?.toLowerCase();
+      const type =
+        asset.mimeType ??
+        (extension === "png"
+          ? "image/png"
+          : extension === "jpg" || extension === "jpeg"
+          ? "image/jpeg"
+          : "application/octet-stream");
 
       setUserPickedImage(true);
       setImageUri(uri);

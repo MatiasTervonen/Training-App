@@ -1,13 +1,21 @@
 import { supabase } from "@/lib/supabase";
-import { Session } from "@supabase/supabase-js";
+import { handleError } from "@/utils/handleError";
 
 type props = {
   title: string;
   notes: string;
-  session: Session;
 };
 
-export async function saveNote({ title, notes, session }: props) {
+export async function saveNote({ title, notes }: props) {
+  const {
+    data: { session },
+    error: sessionError,
+  } = await supabase.auth.getSession();
+
+  if (sessionError || !session || !session.user) {
+    return { error: true, message: "No session" };
+  }
+
   const { error } = await supabase
     .from("notes")
     .insert({ title, notes, user_id: session.user.id })
@@ -15,8 +23,12 @@ export async function saveNote({ title, notes, session }: props) {
     .single();
 
   if (error) {
-    console.error("Error saving note:", error);
-    return null;
+    handleError(error, {
+      message: "Error saving note",
+      route: "/api/notes/save-note",
+      method: "POST",
+    });
+    return { error: true, message: "Error saving note" };
   }
 
   return true;

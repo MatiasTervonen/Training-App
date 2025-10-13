@@ -17,28 +17,7 @@ interface UserPreferences {
 type Store = {
   router: ReturnType<typeof useRouter>;
   logoutUser: () => void;
-  loginUser: (prefs: UserPreferences, session: Session) => void;
-};
-
-const handleSessionChange = async (session: Session | null, store: Store) => {
-  const { router, loginUser, logoutUser } = store;
-
-  if (!session) {
-    logoutUser();
-    router.replace("/");
-    return;
-  }
-
-  const preferences = useUserStore.getState().preferences;
-
-  if (!preferences) {
-    const data = await fetchUserPreferences(session);
-
-    loginUser(data!, session);
-    router.replace("/dashboard");
-  }
-
-  router.replace("/dashboard");
+  loginUser: (prefs: UserPreferences) => void;
 };
 
 export default function LayoutWrapper({
@@ -54,6 +33,27 @@ export default function LayoutWrapper({
 
   const router = useRouter();
   const pathname = usePathname();
+
+  const handleSessionChange = async (session: Session | null, store: Store) => {
+    const { router, loginUser, logoutUser } = store;
+
+    if (!session) {
+      logoutUser();
+      router.replace("/");
+      return;
+    }
+
+    const preferences = useUserStore.getState().preferences;
+
+    if (!preferences) {
+      const data = await fetchUserPreferences();
+      loginUser(data as UserPreferences);
+      router.replace("/dashboard");
+      return;
+    }
+
+    router.replace("/dashboard");
+  };
 
   useEffect(() => {
     if (pathname !== "/dashboard") {
@@ -90,6 +90,8 @@ export default function LayoutWrapper({
   }, [router]);
 
   return (
-    <ModalPageWrapper key={pathname} {...(modalPageConfig || {})}>{children}</ModalPageWrapper>
+    <ModalPageWrapper key={pathname} {...(modalPageConfig || {})}>
+      {children}
+    </ModalPageWrapper>
   );
 }

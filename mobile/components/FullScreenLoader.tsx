@@ -17,10 +17,10 @@ export default function FullScreenLoader({
       visible={visible}
       statusBarTranslucent
     >
-      <View className="flex-1 bg-[#f3f4f657] justify-center items-center">
-        <View className="p-6 bg-[#314158] rounded-xl">
+      <View className="flex-1 bg-slate-500/30 justify-center items-center">
+        <View className="p-6 bg-slate-800 rounded-xl">
           <ActivityIndicator size="large" color="#0000ff" />
-          <AppText className="mt-4">{message}</AppText>
+          <AppText className="mt-4 text-lg">{message}</AppText>
         </View>
       </View>
     </Modal>

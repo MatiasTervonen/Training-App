@@ -19,7 +19,7 @@ export default function SaveButton({
         disabled
         className="bg-gray-400 py-2 rounded-md shadow-md border-2 border-gray-300"
       >
-        <AppText className="text-gray-100 text-center">
+        <AppText className="text-gray-100 text-center text-lg">
           Save (not allowed)
         </AppText>
       </Pressable>
@@ -28,10 +28,10 @@ export default function SaveButton({
 
   return (
     <Pressable
-      className="bg-blue-800 py-2 rounded-md shadow-md border-2 border-blue-500"
+      className="bg-blue-800 py-2 rounded-md shadow-md border-2 border-blue-500 "
       onPress={onPress}
     >
-      <AppText className="text-gray-100 text-center">{label}</AppText>
+      <AppText className="text-gray-100 text-center text-lg">{label}</AppText>
     </Pressable>
   );
 }

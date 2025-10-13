@@ -1,22 +1,45 @@
-import GetPinned from "./getPinned";
-import GetSession from "./getSession";
-import { Session } from "@supabase/supabase-js";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { handleError } from "@/utils/handleError";
+import { supabase } from "@/lib/supabase";
 
-export async function GetFeed(session: Session) {
-  try {
-    const { feed } = await GetSession(session);
-    const { pinned } = await GetPinned(session);
+const PAGE_SIZE = 15;
 
-    const pinnedItems = new Set(
-      pinned.map((item) => `${item.table}:${item.item_id}`)
-    );
+async function fetchFeed({ pageParam = 1 }: { pageParam?: number }) {
+  const {
+    data: { session },
+    error: sessionError,
+  } = await supabase.auth.getSession();
 
-    return feed.map((item) => ({
-      ...item,
-      pinned: pinnedItems.has(`${item.table}:${item.item.id}`),
-    }));
-  } catch (error) {
-    console.error("Error fetching feed:", error);
-    return [];
+  if (sessionError || !session || !session.user) {
+    throw new Error("No active Supabase session");
   }
+
+  const token = session.access_token;
+
+  const url = `https://training-app-bay.vercel.app/api/feed?limit=${PAGE_SIZE}&page=${pageParam}`;
+
+  const res = await fetch(url, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  if (!res.ok) {
+    handleError(new Error("Error fetching feed"), {
+      message: "Error fetching feed",
+      route: "/api/feed",
+      method: "GET",
+    });
+    throw new Error("Error fetching feed");
+  }
+
+  const data = await res.json();
+  return data;
+}
+
+export function useFeed() {
+  return useInfiniteQuery({
+    queryKey: ["feed"],
+    queryFn: ({ pageParam }) => fetchFeed({ pageParam }),
+    getNextPageParam: (lastPage) => lastPage.nextPage ?? undefined,
+    initialPageParam: 1,
+  });
 }

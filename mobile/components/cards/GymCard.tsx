@@ -1,12 +1,12 @@
 import { Dumbbell, Ellipsis, SquareArrowOutUpRight } from "lucide-react-native";
-import { full_gym_session } from "@/types/models";
 import { View, TouchableOpacity } from "react-native";
 import AppText from "../AppText";
 import DropdownMenu from "../DropdownMenu";
 import { formatDate } from "@/lib/formatDate";
+import { Feed_item } from "@/types/session";
 
 type Props = {
-  item: full_gym_session;
+  item: Feed_item;
   pinned: boolean;
   onTogglePin: () => void;
   onDelete: () => void;
@@ -119,7 +119,7 @@ export default function NotesCard({
             </AppText>
           </View>
           <AppText className={`${pinned ? "text-slate-900" : "text-gray-100"}`}>
-            {formatDuration(item.duration)}
+            {formatDuration(item.duration!)}
           </AppText>
         </View>
         <TouchableOpacity className="bg-blue-500 p-2 rounded-br-md">

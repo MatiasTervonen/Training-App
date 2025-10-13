@@ -1,11 +1,15 @@
 import { supabase } from "@/lib/supabase";
-import { Session } from "@supabase/supabase-js";
+import { handleError } from "@/utils/handleError";
 
-export async function pinItems(
-  session: Session,
-  item_id: string,
-  table: string
-) {
+export async function pinItems(item_id: string, table: string) {
+  const {
+    data: { session },
+    error: sessionError,
+  } = await supabase.auth.getSession();
+
+  if (sessionError || !session || !session.user) {
+    return { error: true, message: "No session" };
+  }
 
   const { data, error } = await supabase
     .from("pinned_items")
@@ -14,11 +18,12 @@ export async function pinItems(
     .single();
 
   if (error || !data) {
-    console.error("Supabase Insert Error:", error);
-    return {
-      success: false,
-      error: error?.message || "Unknown error",
-    };
+    handleError(error, {
+      message: "Error fetching user preferences",
+      route: "/api/settings/get-settings",
+      method: "GET",
+    });
+    return { error: true, message: "Error fetching pinned item" };
   }
 
   return {

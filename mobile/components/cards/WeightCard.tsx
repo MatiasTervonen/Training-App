@@ -1,13 +1,15 @@
 import { Scale, Ellipsis, SquareArrowOutUpRight } from "lucide-react-native";
-import { weight } from "@/types/models";
+
 import { View, TouchableOpacity } from "react-native";
 import AppText from "../AppText";
 import DropdownMenu from "../DropdownMenu";
 import { formatDate } from "@/lib/formatDate";
 import { useUserStore } from "@/lib/stores/useUserStore";
+import { Feed_item } from "@/types/session";
+
 
 type Props = {
-  item: weight;
+  item: Feed_item;
   pinned: boolean;
   onTogglePin: () => void;
   onDelete: () => void;

@@ -10,11 +10,20 @@ import Toast from "react-native-toast-message";
 import FullScreenLoader from "@/components/FullScreenLoader";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDebouncedCallback } from "use-debounce";
+import { handleError } from "@/utils/handleError";
+import { useRouter } from "expo-router";
+import { useQueryClient } from "@tanstack/react-query";
+import { FeedData, Feed_item } from "@/types/session";
+import { generateUUID } from "@/utils/generateUUID";
 
 export default function NotesScreen() {
   const [title, setValue] = useState("");
   const [notes, setNotes] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+
+  const router = useRouter();
+
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     const loadDraft = async () => {
@@ -48,6 +57,35 @@ export default function NotesScreen() {
   const handleSaveNotes = async () => {
     setIsSaving(true);
 
+    const queryKey = ["feed"];
+
+    await queryClient.cancelQueries({ queryKey });
+
+    const previousFeed = queryClient.getQueryData(queryKey);
+
+    const optimisticNote: Feed_item = {
+      id: generateUUID(),
+      title,
+      notes,
+      created_at: new Date().toISOString(),
+      type: "notes",
+      pinned: false,
+      user_id: "temp-user-id",
+    };
+
+    queryClient.setQueryData<FeedData>(queryKey, (oldData) => {
+      if (!oldData) return oldData;
+
+      const updatedPages = oldData.pages.map((page, index) => {
+        if (index === 0) {
+          return { ...page, feed: [optimisticNote, ...page.feed] };
+        }
+        return page;
+      });
+
+      return { ...oldData, pages: updatedPages };
+    });
+
     try {
       if (!title.trim() || !notes.trim()) return;
 
@@ -58,6 +96,8 @@ export default function NotesScreen() {
       }
 
       if (result === true) {
+        queryClient.invalidateQueries({ queryKey });
+        router.push("/dashboard");
         Toast.show({
           type: "success",
           text1: "Success",
@@ -68,13 +108,17 @@ export default function NotesScreen() {
         await AsyncStorage.removeItem("notes_draft");
       }
     } catch (error) {
-      console.error("Error saving notes:", error);
+      queryClient.setQueryData(queryKey, previousFeed);
+      handleError(error, {
+        message: "Error saving notes",
+        route: "/api/notes/save-note",
+        method: "POST",
+      });
       Toast.show({
         type: "error",
         text1: "Error",
         text2: "Failed to save notes. Please try again.",
       });
-    } finally {
       setIsSaving(false);
     }
   };

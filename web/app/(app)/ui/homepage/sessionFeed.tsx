@@ -27,6 +27,7 @@ import ReminderSession from "../../components/expandSession/reminder";
 import EditReminder from "@/app/(app)/ui/editSession/EditReminder";
 import { handleError } from "../../utils/handleError";
 
+
 type FeedItem = {
   table: "notes" | "weight" | "gym_sessions" | "todo_lists" | "reminders";
   item: Feed_item;

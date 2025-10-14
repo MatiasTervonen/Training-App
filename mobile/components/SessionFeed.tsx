@@ -12,9 +12,10 @@ import { Pin } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { handleError } from "@/utils/handleError";
 import { useFeed } from "@/api/feed/getFeed";
-import { Feed_item } from "@/types/session";
+import { Feed_item, FeedData } from "@/types/session";
 import { confirmDeletion } from "@/lib/confirmDeletetion";
 import { useQueryClient } from "@tanstack/react-query";
+import { ActivityIndicator } from "react-native";
 
 type FeedItem = {
   table: "notes" | "weight" | "gym_sessions" | "todo_lists" | "reminders";
@@ -70,14 +71,6 @@ export default function SessionFeed() {
     [feed]
   );
 
-  type FeedData = {
-    pageParams: any[];
-    pages: {
-      feed: Feed_item[];
-      nextPage?: number;
-    }[];
-  };
-
   const togglePin = async (
     item_id: string,
     table: string,
@@ -89,24 +82,21 @@ export default function SessionFeed() {
 
     const previousFeed = queryClient.getQueryData(queryKey);
 
-    queryClient.setQueryData<FeedData>(
-      queryKey,
-      (oldData: FeedData | undefined) => {
-        if (!oldData) return oldData;
+    queryClient.setQueryData<FeedData>(queryKey, (oldData) => {
+      if (!oldData) return oldData;
 
-        const newPages = oldData.pages.map((page) => {
-          const newFeed = page.feed.map((feedItem) => {
-            if (getCanonicalId(feedItem) === item_id) {
-              return { ...feedItem, pinned: !isPinned };
-            }
-            return feedItem;
-          });
-          return { ...page, feed: newFeed };
+      const newPages = oldData.pages.map((page) => {
+        const newFeed = page.feed.map((feedItem) => {
+          if (getCanonicalId(feedItem) === item_id) {
+            return { ...feedItem, pinned: !isPinned };
+          }
+          return feedItem;
         });
+        return { ...page, feed: newFeed };
+      });
 
-        return { ...oldData, pages: newPages };
-      }
-    );
+      return { ...oldData, pages: newPages };
+    });
 
     try {
       const result = isPinned
@@ -156,20 +146,17 @@ export default function SessionFeed() {
 
     const previousFeed = queryClient.getQueryData(queryKey);
 
-    queryClient.setQueryData<FeedData>(
-      queryKey,
-      (oldData: FeedData | undefined) => {
-        if (!oldData) return oldData;
+    queryClient.setQueryData<FeedData>(queryKey, (oldData) => {
+      if (!oldData) return oldData;
 
-        const newPages = oldData.pages.map((page) => {
-          const newFeed = page.feed.filter(
-            (feedItem) => getCanonicalId(feedItem) !== item_id
-          );
-          return { ...page, feed: newFeed };
-        });
-        return { ...oldData, pages: newPages };
-      }
-    );
+      const newPages = oldData.pages.map((page) => {
+        const newFeed = page.feed.filter(
+          (feedItem) => getCanonicalId(feedItem) !== item_id
+        );
+        return { ...page, feed: newFeed };
+      });
+      return { ...oldData, pages: newPages };
+    });
 
     try {
       const result = await DeleteSession(item_id, table);
@@ -233,6 +220,7 @@ export default function SessionFeed() {
                 refreshing={isRefetching || refreshing}
                 onRefresh={async () => {
                   setRefreshing(true);
+                  await queryClient.removeQueries({ queryKey: ["feed"] });
                   await refetch();
                   setRefreshing(false);
                 }}
@@ -275,6 +263,26 @@ export default function SessionFeed() {
                 </View>
               ) : (
                 <View className="mb-4" />
+              )
+            }
+            ListFooterComponent={
+              isFetchingNextPage ? (
+                <View className="items-center justify-center gap-2">
+                  <AppText className="text-center text-gray-300">
+                    Loading more...
+                  </AppText>
+                  <ActivityIndicator
+                    size="large"
+                    color="#193cb8"
+                    className="my-5"
+                  />
+                </View>
+              ) : hasNextPage ? (
+                <View className="h-20" />
+              ) : (
+                <AppText className="text-center justify-center mt-10 text-gray-300">
+                  No more sessions
+                </AppText>
               )
             }
           />

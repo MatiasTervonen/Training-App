@@ -29,3 +29,19 @@ export type FeedResponse = {
   feed: Feed_item[];
   nextPage: number | null;
 };
+
+ export type FeedData = {
+    pageParams: any[];
+    pages: {
+      feed: Feed_item[];
+      nextPage?: number;
+    }[];
+  };
+
+  export type optimisticNote = {
+    id: string;
+    type: "notes";
+    title: string;
+    notes: string;
+    created_at: string;
+  }

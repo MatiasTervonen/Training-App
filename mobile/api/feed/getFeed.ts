@@ -41,5 +41,9 @@ export function useFeed() {
     queryFn: ({ pageParam }) => fetchFeed({ pageParam }),
     getNextPageParam: (lastPage) => lastPage.nextPage ?? undefined,
     initialPageParam: 1,
+
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
 }

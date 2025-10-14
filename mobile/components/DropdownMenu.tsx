@@ -1,71 +1,81 @@
+import { View } from "react-native";
+import React from "react";
 import {
-  View,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  Modal,
-} from "react-native";
-import React, { useState, useRef, isValidElement, cloneElement } from "react";
+  Menu,
+  MenuOptions,
+  MenuTrigger,
+  MenuOption,
+} from "react-native-popup-menu";
+import AppText from "./AppText";
 
 type DropdownMenuProps = {
   button: React.ReactNode;
-  children: React.ReactNode;
+  pinned?: boolean;
+  onEdit?: () => void;
+  onTogglePin?: () => void;
+  onDelete?: () => void;
 };
 
-export default function DropdownMenu({ button, children }: DropdownMenuProps) {
-  const [open, setOpen] = useState(false);
-  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
-  const buttonRef = useRef<View>(null);
-
-  const openDropdown = () => {
-    if (!open && buttonRef.current) {
-      buttonRef.current.measureInWindow((x, y, _width, height) => {
-        setDropdownPosition({ top: y + height, left: x - 50 });
-        setOpen(true);
-      });
-    } else {
-      setOpen(false);
-    }
-  };
-
-  const enhancedChildren = React.Children.map(children, (child) => {
-    if (isValidElement(child)) {
-      const element = child as React.ReactElement<any>;
-      const originalOnPress = element.props.onPress;
-      return cloneElement(element, {
-        onPress: (...args: any[]) => {
-          if (typeof originalOnPress === "function") {
-            originalOnPress(...args);
-          }
-          setOpen(false); // <== Auto close
-        },
-      });
-    }
-    return child;
-  });
-
+export default function DropdownMenu({
+  button,
+  pinned,
+  onEdit,
+  onTogglePin,
+  onDelete,
+}: DropdownMenuProps) {
   return (
-    <>
-      <TouchableOpacity onPress={openDropdown}>
-        <View ref={buttonRef}>{button}</View>
-      </TouchableOpacity>
+    <View>
+      <Menu>
+        <MenuTrigger>
+          <View>{button}</View>
+        </MenuTrigger>
+        <MenuOptions customStyles={optionsStyles}>
+          {onEdit && (
+            <View className="border-b border-gray-300">
+              <MenuOption onSelect={onEdit}>
+                <AppText className="text-center">Edit</AppText>
+              </MenuOption>
+            </View>
+          )}
 
-      {open && (
-        <Modal visible={open} transparent animationType="fade">
-          <TouchableWithoutFeedback onPress={() => setOpen(false)}>
-            <View className="flex-1" />
-          </TouchableWithoutFeedback>
+          {onTogglePin && (
+            <View className="border-b border-gray-300">
+              <MenuOption onSelect={onTogglePin}>
+                <AppText className="text-center">
+                  {pinned ? "Unpin" : "Pin"}
+                </AppText>
+              </MenuOption>
+            </View>
+          )}
 
-          <View
-            className="absolute border-2 border-gray-400 shadow-md rounded-md bg-gray-800 z-50"
-            style={{
-              top: dropdownPosition.top,
-              left: dropdownPosition.left,
-            }}
-          >
-            {enhancedChildren}
-          </View>
-        </Modal>
-      )}
-    </>
+          {onDelete && (
+            <MenuOption onSelect={onDelete}>
+              <AppText className="text-center">Delete</AppText>
+            </MenuOption>
+          )}
+        </MenuOptions>
+      </Menu>
+    </View>
   );
 }
+
+const optionsStyles = {
+  optionsContainer: {
+    backgroundColor: "#f3f4f6",
+    padding: 2,
+    borderRadius: 8,
+    borderWidth: 1,
+    marginTop: 20,
+  },
+  optionsWrapper: {
+    backgroundColor: "#1e2939",
+    borderRadius: 8,
+  },
+  optionWrapper: {
+    margin: 5,
+  },
+  optionTouchable: {
+    underlayColor: "gold",
+    activeOpacity: 70,
+  },
+};

@@ -24,3 +24,8 @@ export type FeedCardProps = {
   onExpand: () => void;
   onEdit: () => void;
 };
+
+export type FeedResponse = {
+  feed: Feed_item[];
+  nextPage: number | null;
+};

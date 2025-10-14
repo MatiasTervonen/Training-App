@@ -5,9 +5,11 @@ import { handleError } from "@/app/(app)/utils/handleError";
 export default async function GetSession({
   limit = 10,
   page = 1,
+  req
 }: {
   limit?: number;
   page?: number;
+  req: Request;
 }): Promise<{
   feed: feed_view[];
   nextPage: number | null;
@@ -15,7 +17,10 @@ export default async function GetSession({
 }> {
   const supabase = await createClient();
 
-  const { data, error: authError } = await supabase.auth.getClaims();
+  const authHeader = req.headers.get("authorization");
+  const token = authHeader?.replace("Bearer ", "");
+
+  const { data, error: authError } = await supabase.auth.getClaims(token);
 
   const user = data?.claims;
 

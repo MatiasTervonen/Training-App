@@ -15,8 +15,8 @@ export async function unpinItems(item_id: string, table: string) {
     .from("pinned_items")
     .delete()
     .eq("user_id", session.user.id)
-    .eq("item_id", item_id)
-    .eq("table", table);
+    .eq("type", table)
+    .eq("item_id", item_id);
 
   if (error) {
     handleError(error, {

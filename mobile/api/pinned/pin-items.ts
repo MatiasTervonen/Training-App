@@ -13,7 +13,7 @@ export async function pinItems(item_id: string, table: string) {
 
   const { data, error } = await supabase
     .from("pinned_items")
-    .upsert([{ user_id: session.user.id, item_id, table }])
+    .upsert([{ user_id: session.user.id, item_id, type: table }])
     .select()
     .single();
 

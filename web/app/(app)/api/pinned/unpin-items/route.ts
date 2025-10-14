@@ -4,7 +4,6 @@ import { handleError } from "@/app/(app)/utils/handleError";
 
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
-  const { item_id, table } = await req.json();
 
   const { data, error: authError } = await supabase.auth.getClaims();
   const user = data?.claims;
@@ -12,6 +11,8 @@ export async function POST(req: NextRequest) {
   if (authError || !user) {
     return new Response("Unauthorized", { status: 401 });
   }
+
+  const { item_id, table } = await req.json();
 
   const { error } = await supabase
     .from("pinned_items")

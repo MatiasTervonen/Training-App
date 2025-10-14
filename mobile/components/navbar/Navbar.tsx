@@ -4,6 +4,7 @@ import AppText from "../AppText";
 import { Bell, MessageCircle } from "lucide-react-native";
 import { Image } from "expo-image";
 import { useUserStore } from "@/lib/stores/useUserStore";
+import NotificationBell from "./components/notificationBell";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -23,7 +24,7 @@ export default function Navbar() {
           </Pressable>
         </Link>
         <View className="flex-row items-center gap-3">
-          <Bell color="white" />
+          <NotificationBell />
           <Link href="/chat" asChild>
             <Pressable className="w-[40px] h-[40px] rounded-full border-2 border-blue-500 items-center justify-center bg-slate-800">
               <MessageCircle color="white" size={20} />

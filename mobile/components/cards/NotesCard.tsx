@@ -8,7 +8,7 @@ import AppText from "../AppText";
 import DropdownMenu from "../DropdownMenu";
 import { formatDate } from "@/lib/formatDate";
 import { Feed_item } from "@/types/session";
-
+import { MenuOption } from "react-native-popup-menu";
 
 type Props = {
   item: Feed_item;
@@ -31,7 +31,9 @@ export default function NotesCard({
     <View
       className={`
        border rounded-md flex-col justify-center mb-5 transition-colors ${
-         pinned ? `border-yellow-200 bg-yellow-200` : "bg-slate-700 border-gray-100"
+         pinned
+           ? `border-yellow-200 bg-yellow-200`
+           : "bg-slate-700 border-gray-100"
        }`}
     >
       <View className="flex-row justify-between mt-2 mb-4 mx-4">
@@ -53,35 +55,11 @@ export default function NotesCard({
               <Ellipsis size={20} color={pinned ? "#0f172a" : "#f3f4f6"} />
             </View>
           }
-        >
-          <TouchableOpacity
-            aria-label="Edit note"
-            onPress={() => {
-              onEdit();
-            }}
-            className="border-b border-gray-600 py-2 px-4"
-          >
-            <AppText className="text-center">Edit</AppText>
-          </TouchableOpacity>
-          <TouchableOpacity
-            aria-label="Pin or unpin note"
-            onPress={() => {
-              onTogglePin();
-            }}
-            className="border-b border-gray-600 py-2 px-4"
-          >
-            <AppText className="text-center">{pinned ? "Unpin" : "Pin"}</AppText>
-          </TouchableOpacity>
-          <TouchableOpacity
-            aria-label="Delete note"
-            onPress={() => {
-              onDelete();
-            }}
-            className="py-2 px-4"
-          >
-            <AppText className="text-center">Delete</AppText>
-          </TouchableOpacity>
-        </DropdownMenu>
+          pinned={pinned}
+          onEdit={onEdit}
+          onTogglePin={onTogglePin}
+          onDelete={onDelete}
+        />
       </View>
 
       <AppText
@@ -110,10 +88,7 @@ export default function NotesCard({
           </View>
         </View>
         <TouchableOpacity className="bg-blue-500 p-2 rounded-br-md">
-          <SquareArrowOutUpRight
-            size={20}
-            color="#f3f4f6"
-          />
+          <SquareArrowOutUpRight size={20} color="#f3f4f6" />
         </TouchableOpacity>
       </View>
     </View>

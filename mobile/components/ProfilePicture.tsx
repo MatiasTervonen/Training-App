@@ -71,20 +71,16 @@ export default function ProfilePicture({ data, onFileSelected }: Props) {
   };
 
   return (
-    <View>
+    <>
       <AppText>Profile picture</AppText>
-      <View className="mt-4">
+      <View className="w-[80px] h-[80px] rounded-full border-2 border-blue-500 items-center justify-center my-4">
         <Image
           source={
             fileName
               ? { uri: imageUri }
               : require("@/assets/images/default-avatar.png")
           }
-          style={{
-            width: 80,
-            height: 80,
-            borderRadius: 40,
-          }}
+          className="w-full h-full rounded-full overflow-hidden"
           contentFit="cover"
           alt="Profile Picture"
         />
@@ -97,6 +93,6 @@ export default function ProfilePicture({ data, onFileSelected }: Props) {
           value={userPickedImage ? fileName : ""}
         />
       </Pressable>
-    </View>
+    </>
   );
 }

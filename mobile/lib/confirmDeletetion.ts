@@ -14,22 +14,24 @@ export function confirmDeletion({
   cancelText?: string;
   onConfirm?: () => void;
   cancelable?: boolean;
-}) {
-  Alert.alert(
-    title,
-    message,
-    [
-      {
-        text: cancelText,
-        style: "cancel",
-        onPress: () => {},
-      },
-      {
-        text: confirmText,
-        style: "destructive",
-        onPress: onConfirm,
-      },
-    ],
-    { cancelable }
-  );
+}): Promise<boolean> {
+  return new Promise((resolve) => {
+    Alert.alert(
+      title,
+      message,
+      [
+        {
+          text: cancelText,
+          style: "cancel",
+          onPress: () => resolve(false),
+        },
+        {
+          text: confirmText,
+          style: "destructive",
+          onPress: () => resolve(true),
+        },
+      ],
+      { cancelable }
+    );
+  });
 }

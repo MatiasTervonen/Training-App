@@ -6,7 +6,7 @@ import DropdownMenu from "../DropdownMenu";
 import { formatDate } from "@/lib/formatDate";
 import { useUserStore } from "@/lib/stores/useUserStore";
 import { Feed_item } from "@/types/session";
-
+import { MenuOption } from "react-native-popup-menu";
 
 type Props = {
   item: Feed_item;
@@ -56,37 +56,11 @@ export default function NotesCard({
               <Ellipsis size={20} color={pinned ? "#0f172a" : "#f3f4f6"} />
             </View>
           }
-        >
-          <TouchableOpacity
-            aria-label="Edit note"
-            onPress={() => {
-              onEdit();
-            }}
-            className="border-b border-gray-600 py-2 px-4"
-          >
-            <AppText className="text-center">Edit</AppText>
-          </TouchableOpacity>
-          <TouchableOpacity
-            aria-label="Pin or unpin note"
-            onPress={() => {
-              onTogglePin();
-            }}
-            className="border-b border-gray-600 py-2 px-4"
-          >
-            <AppText className="text-center">
-              {pinned ? "Unpin" : "Pin"}
-            </AppText>
-          </TouchableOpacity>
-          <TouchableOpacity
-            aria-label="Delete note"
-            onPress={() => {
-              onDelete();
-            }}
-            className="py-2 px-4"
-          >
-            <AppText className="text-center">Delete</AppText>
-          </TouchableOpacity>
-        </DropdownMenu>
+          pinned={pinned}
+          onEdit={onEdit}
+          onTogglePin={onTogglePin}
+          onDelete={onDelete}
+        />
       </View>
 
       <AppText

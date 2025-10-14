@@ -14,7 +14,7 @@ async function fetchFeed({ pageParam = 1 }: { pageParam?: number }) {
     throw new Error("No active Supabase session");
   }
 
-  const url = `http://10.167.221.252:3000/api/feed?limit=${PAGE_SIZE}&page=${pageParam}`;
+  const url = `https://training-app-bay.vercel.app/api/feed?limit=${PAGE_SIZE}&page=${pageParam}`;
 
   const res = await fetch(url, {
     method: "GET",

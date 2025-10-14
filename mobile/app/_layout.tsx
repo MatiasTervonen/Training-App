@@ -12,11 +12,9 @@ import LayoutWrapper from "@/components/LayoutWrapper";
 import Toast from "react-native-toast-message";
 import { toastConfig } from "@/toastGonfig";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { QueryClientProvider } from "@tanstack/react-query";
-import { queryClient } from "@/lib/queryClient";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import * as Sentry from "@sentry/react-native";
 import { MenuProvider } from "react-native-popup-menu";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 Sentry.init({
   dsn: "https://cf3db79ed11dbd657e73bb68617c6a34@o4510142810619904.ingest.de.sentry.io/4510160894361680",
@@ -36,6 +34,7 @@ Sentry.init({
   // uncomment the line below to enable Spotlight (https://spotlightjs.com)
   // spotlight: __DEV__,
 });
+
 
 export default Sentry.wrap(function RootLayout() {
   const [loaded, error] = useFonts({
@@ -62,6 +61,8 @@ export default Sentry.wrap(function RootLayout() {
   if (!loaded && !error) {
     return null;
   }
+
+  const queryClient = new QueryClient();
 
   return (
     <MenuProvider>

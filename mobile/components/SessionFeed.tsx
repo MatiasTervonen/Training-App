@@ -70,6 +70,14 @@ export default function SessionFeed() {
     [feed]
   );
 
+  type FeedData = {
+    pageParams: any[];
+    pages: {
+      feed: Feed_item[];
+      nextPage?: number;
+    }[];
+  };
+
   const togglePin = async (
     item_id: string,
     table: string,
@@ -81,7 +89,25 @@ export default function SessionFeed() {
 
     const previousFeed = queryClient.getQueryData(queryKey);
 
-   
+    queryClient.setQueryData<FeedData>(
+      queryKey,
+      (oldData: FeedData | undefined) => {
+        if (!oldData) return oldData;
+
+        const newPages = oldData.pages.map((page) => {
+          const newFeed = page.feed.map((feedItem) => {
+            if (getCanonicalId(feedItem) === item_id) {
+              return { ...feedItem, pinned: !isPinned };
+            }
+            return feedItem;
+          });
+          return { ...page, feed: newFeed };
+        });
+
+        return { ...oldData, pages: newPages };
+      }
+    );
+
     try {
       const result = isPinned
         ? await unpinItems(item_id, table)
@@ -104,7 +130,12 @@ export default function SessionFeed() {
         } successfully.`,
       });
     } catch (error) {
-      console.error("Error toggling pin:", error);
+      queryClient.setQueryData(queryKey, previousFeed);
+      handleError(error, {
+        message: "Unexpected Error toggling pin",
+        route: "/api/feed/togglePin",
+        method: "POST",
+      });
       Toast.show({
         type: "error",
         text1: "Error",
@@ -119,6 +150,27 @@ export default function SessionFeed() {
     });
     if (!confirmed) return;
 
+    const queryKey = ["feed"];
+
+    await queryClient.cancelQueries({ queryKey });
+
+    const previousFeed = queryClient.getQueryData(queryKey);
+
+    queryClient.setQueryData<FeedData>(
+      queryKey,
+      (oldData: FeedData | undefined) => {
+        if (!oldData) return oldData;
+
+        const newPages = oldData.pages.map((page) => {
+          const newFeed = page.feed.filter(
+            (feedItem) => getCanonicalId(feedItem) !== item_id
+          );
+          return { ...page, feed: newFeed };
+        });
+        return { ...oldData, pages: newPages };
+      }
+    );
+
     try {
       const result = await DeleteSession(item_id, table);
 
@@ -132,7 +184,13 @@ export default function SessionFeed() {
         text2: "Item has been deleted successfully.",
       });
     } catch (error) {
-      console.error("Error deleting item:", error);
+      queryClient.setQueryData(queryKey, previousFeed);
+      handleError(error, {
+        message: "Unexpected Error deleting item",
+        route: "/api/feed/deleteSession",
+        method: "DELETE",
+      });
+      queryClient.setQueryData(queryKey, previousFeed);
       Toast.show({
         type: "error",
         text1: "Error",

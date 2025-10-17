@@ -20,6 +20,7 @@ export default function NotesScreen() {
   const [title, setValue] = useState("");
   const [notes, setNotes] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   const router = useRouter();
 
@@ -28,31 +29,38 @@ export default function NotesScreen() {
   useEffect(() => {
     const loadDraft = async () => {
       try {
-        const loadDraft = await AsyncStorage.getItem("notes_draft");
-        if (loadDraft) {
-          const draft = JSON.parse(loadDraft);
+        const storeDraft = await AsyncStorage.getItem("notes_draft");
+        if (storeDraft) {
+          const draft = JSON.parse(storeDraft);
           setValue(draft.title || "");
           setNotes(draft.notes || "");
         }
       } catch (error) {
-        console.error("Error loading draft:", error);
+        handleError(error, {
+          message: "Error loading notes draft",
+          route: "notes/index.tsx",
+          method: "loadDraft",
+        });
+      } finally {
+        setIsLoaded(true);
       }
     };
-
     loadDraft();
   }, []);
 
-  const saveNotesDraft = useDebouncedCallback(() => {
+  const saveNotesDraft = useDebouncedCallback(async () => {
     if (title.trim().length === 0 && notes.trim().length === 0) {
-      AsyncStorage.removeItem("notes_draft");
+      await AsyncStorage.removeItem("notes_draft");
+    } else {
+      const draft = { title, notes };
+      await AsyncStorage.setItem("notes_draft", JSON.stringify(draft));
     }
-    const draft = { title, notes };
-    AsyncStorage.setItem("notes_draft", JSON.stringify(draft));
   }, 1000);
 
   useEffect(() => {
+    if (!isLoaded) return;
     saveNotesDraft();
-  }, [notes, title, saveNotesDraft]);
+  }, [notes, title, saveNotesDraft, isLoaded]);
 
   const handleSaveNotes = async () => {
     setIsSaving(true);
@@ -96,16 +104,18 @@ export default function NotesScreen() {
       }
 
       if (result === true) {
-        queryClient.invalidateQueries({ queryKey });
         router.push("/dashboard");
-        Toast.show({
-          type: "success",
-          text1: "Success",
-          text2: "Note saved successfully!",
-        });
+        queryClient.invalidateQueries({ queryKey });
         setValue("");
         setNotes("");
         await AsyncStorage.removeItem("notes_draft");
+        setTimeout(() => {
+          Toast.show({
+            type: "success",
+            text1: "Success",
+            text2: "Note saved successfully!",
+          });
+        }, 500);
       }
     } catch (error) {
       queryClient.setQueryData(queryKey, previousFeed);
@@ -132,8 +142,8 @@ export default function NotesScreen() {
   return (
     <>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-        <View className="flex-col flex-1 items-center px-6">
-          <View className="w-full">
+        <View className="flex-col flex-1 px-6 w-full max-w-md mx-auto justify-between">
+          <View className="">
             <AppText className="text-2xl text-center my-5">
               Add your notes here
             </AppText>
@@ -144,15 +154,15 @@ export default function NotesScreen() {
               placeholder="Notes title..."
             />
           </View>
-          <View className="w-full mt-10 flex-1">
+          <View className="flex-1 mt-10">
             <NotesInput
-              notes={notes}
-              setNotes={setNotes}
+              value={notes}
+              onChangeText={setNotes}
               placeholder="Write your notes here..."
               label="Notes..."
             />
           </View>
-          <View className="my-10 w-full flex-col gap-4">
+          <View className="my-10 flex-col gap-4">
             <SaveButton onPress={() => handleSaveNotes()} />
             <DeleteButton
               onPress={() => {

@@ -77,7 +77,7 @@ export default function TodoSession({
         </div>
         <div className="bg-slate-950 px-4 rounded-xl pb-5 w-full">
           <div>
-            <div className="my-5 text-xl">{sessionData.title}</div>
+            <div className="my-5 text-xl break-words">{sessionData.title}</div>
           </div>
           <ul className="flex flex-col gap-5">
             {sessionData.todo_tasks.map((task, index) => {

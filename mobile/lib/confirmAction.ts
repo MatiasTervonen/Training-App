@@ -1,6 +1,6 @@
 import { Alert } from "react-native";
 
-export function confirmDeletion({
+export function confirmAction({
   title = "Are you sure?",
   message = "This action cannot be undone.",
   confirmText = "Yes",

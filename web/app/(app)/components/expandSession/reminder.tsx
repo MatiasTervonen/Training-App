@@ -10,7 +10,7 @@ export default function ReminderSession(reminder: Feed_item) {
         {formatDate(reminder.created_at!)}
       </div>
       <div id="notes-id">
-        <div className="my-5 text-xl">{reminder.title}</div>
+        <div className="my-5 text-xl break-words">{reminder.title}</div>
         <div className="flex items-center justify-center gap-2 my-5 text-xl">
           <p>{reminder.notify_at && formatDateTime(reminder.notify_at)}</p>
           <Bell className="inline ml-2" />

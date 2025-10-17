@@ -1,8 +1,4 @@
-import {
-  NotebookPen,
-  Ellipsis,
-  SquareArrowOutUpRight,
-} from "lucide-react";
+import { NotebookPen, Ellipsis, SquareArrowOutUpRight } from "lucide-react";
 import DropdownMenu from "../dropdownMenu";
 import { formatDate } from "@/app/(app)/lib/formatDate";
 import { Feed_item } from "@/app/(app)/types/session";
@@ -34,12 +30,14 @@ export default function NotesCard({
        }`}
     >
       <div className="flex justify-between items-center mt-2 mb-4 mx-4">
-        <div className="line-clamp-1 border-b">{item.title}</div>
+        <div className="mr-8 line-clamp-1 border-b">{item.title}</div>
         <DropdownMenu
           button={
             <div
               aria-label="More options"
-              className={`cursor-pointer ${pinned ? "text-slate-900" : "text-gray-100"}`}
+              className={`cursor-pointer ${
+                pinned ? "text-slate-900" : "text-gray-100"
+              }`}
             >
               <Ellipsis size={20} />
             </div>

@@ -45,7 +45,8 @@
           "project": "mytrack-mobile",
           "organization": "matias-tervonen"
         }
-      ]
+      ],
+      "expo-audio"
     ],
     "experiments": {
       "typedRoutes": true

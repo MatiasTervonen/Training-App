@@ -49,6 +49,7 @@ export type ExercisePreview = Pick<
   | "muscle_group"
   | "main_group"
   | "language"
+  | "created_at"
 >;
 
 export type full_gym_template = template & {

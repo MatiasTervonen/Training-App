@@ -14,6 +14,8 @@ type DropdownMenuProps = {
   onEdit?: () => void;
   onTogglePin?: () => void;
   onDelete?: () => void;
+  onHistory?: () => void;
+  onChange?: () => void;
 };
 
 export default function DropdownMenu({
@@ -22,12 +24,20 @@ export default function DropdownMenu({
   onEdit,
   onTogglePin,
   onDelete,
+  onHistory,
+  onChange,
 }: DropdownMenuProps) {
   return (
     <View>
       <Menu>
-        <MenuTrigger>
-          <View>{button}</View>
+        <MenuTrigger
+          customStyles={{
+            triggerWrapper: {
+              padding: 8,
+            },
+          }}
+        >
+          {button}
         </MenuTrigger>
         <MenuOptions customStyles={optionsStyles}>
           {onEdit && (
@@ -51,6 +61,17 @@ export default function DropdownMenu({
           {onDelete && (
             <MenuOption onSelect={onDelete}>
               <AppText className="text-center">Delete</AppText>
+            </MenuOption>
+          )}
+
+          {onHistory && (
+            <MenuOption onSelect={onHistory}>
+              <AppText className="text-center">History</AppText>
+            </MenuOption>
+          )}
+          {onChange && (
+            <MenuOption onSelect={onChange}>
+              <AppText className="text-center">Change</AppText>
             </MenuOption>
           )}
         </MenuOptions>

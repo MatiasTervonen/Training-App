@@ -5,11 +5,7 @@ import AppText from "./AppText";
 
 type AppInputProps = TextInputProps & { label?: string };
 
-export default function AppInput({
-  label,
-
-  ...props
-}: AppInputProps) {
+export default function AppInput({ label, ...props }: AppInputProps) {
   const [focused, setFocused] = useState(false);
 
   return (
@@ -30,10 +26,11 @@ export default function AppInput({
         <TextInput
           placeholderTextColor="#9ca3af"
           autoCorrect={false}
+          spellCheck={false}
           allowFontScaling={false}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
-          className=" font-russo bg-transparent text-gray-100 text-lg px-4 py-2 h-12"
+          className="bg-transparent text-gray-100 text-lg px-4 py-2 h-12 font-russo"
           {...props}
         />
       </View>

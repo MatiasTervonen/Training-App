@@ -1,6 +1,5 @@
 import { ChevronRight, Trash2 } from "lucide-react";
-import { useState } from "react";
-import React from "react";
+import React, { useState } from "react";
 import { mutate } from "swr";
 import toast from "react-hot-toast";
 import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";

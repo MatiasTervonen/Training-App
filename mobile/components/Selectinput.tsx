@@ -4,7 +4,7 @@ import { useState } from "react";
 import { LinearGradient } from "expo-linear-gradient";
 
 type SelectInputProps = {
-  label: string;
+  label?: string;
   placeholder?: string;
   options: { value: string; label: string }[];
   value?: string;
@@ -22,7 +22,7 @@ export default function SelectInput({
 
   return (
     <View>
-      <AppText className="mb-2">{label}</AppText>
+      {label && <AppText className="mb-2">{label}</AppText>}
 
       <Pressable
         onPressIn={() => setIsOpen(true)}
@@ -48,7 +48,7 @@ export default function SelectInput({
           className="flex-1 justify-center items-center bg-black/50"
           onPress={() => setIsOpen(false)}
         >
-          <View className="border-2 border-gray-100 rounded-bd bg-slate-800 w-3/4 py-5">
+          <View className="border-2 border-gray-100 rounded-xl bg-slate-800 w-3/4 py-5">
             {options.map((option) => (
               <Pressable
                 key={option.value}
@@ -57,7 +57,7 @@ export default function SelectInput({
                   setIsOpen(false);
                 }}
               >
-                <AppText className="text-gray-100 my-5 text-center text-2xl">
+                <AppText className="text-gray-100  text-center text-2xl border p-4 bg-slate-700 my-2 border-gray-900 rounded-xl mx-6">
                   {option.label}
                 </AppText>
               </Pressable>

@@ -33,7 +33,7 @@ export default function WeightCard({
       }`}
     >
       <div className="flex justify-between items-center mt-2 mb-4 mx-4">
-        <div className="line-clamp-1 border-b">{item.title}</div>
+        <div className="mr-8 line-clamp-1 border-b">{item.title}</div>
         <DropdownMenu
           button={
             <div

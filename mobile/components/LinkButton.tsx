@@ -12,10 +12,7 @@ interface LinkButtonProps {
 
 export default function LinkButton({ href, label, children }: LinkButtonProps) {
   return (
-    <Link
-      href={href}
-      asChild
-    >
+    <Link href={href} asChild>
       <Pressable
         android_ripple={{ color: "#666" }}
         className="flex-row items-center justify-center gap-2 bg-blue-800 py-2 w-full my-3 rounded-md shadow-md border-2 border-blue-500 text-gray-100 text-lg"

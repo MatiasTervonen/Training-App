@@ -1,3 +1,99 @@
+export type OptimisticWeight = {
+  id: string;
+  title: string;
+  weight: number;
+  notes: string;
+  created_at: string;
+};
+
+export type OptimisticGymSession = {
+  id: string;
+  title: string;
+  notes: string;
+  created_at: string;
+  duration: number;
+};
+
+export type OptimisticNotes = {
+  id: string;
+  title: string;
+  notes: string;
+  created_at: string;
+};
+
+export type Template = {
+  id: string;
+  name: string;
+  created_at: string;
+  gym_template_exercises: TemplateExercise[];
+};
+
+export type OptimisticTemplate = {
+  id: string;
+  name: string;
+};
+
+export type TemplateExercise = {
+  id: string;
+  sets: number;
+  reps: number;
+  superset_id: string;
+  gym_exercise: {
+    name: string;
+    equipment: string;
+    muscle_group: string;
+    main_group?: string;
+  };
+};
+
+export type SessionSet = {
+  weight?: number;
+  reps?: number;
+  rpe?: string;
+};
+
+export type HistoryResult = ({
+  date: string;
+  sets: {
+    weight: number;
+    reps: number;
+    rpe: string;
+  }[];
+} | null)[];
+
+export type ExerciseSet = {
+  weight?: number;
+  reps?: number;
+  rpe?: string;
+};
+
+export type ExerciseEntry = {
+  exercise_id: string;
+  name: string;
+  equipment: string; // Optional, can be used to display equipment type
+  main_group?: string; // Optional, can be used to display main muscle group
+  sets: ExerciseSet[];
+  notes?: string;
+  superset_id?: string; // For super-sets
+  muscle_group?: string; // Optional, can be used to display muscle group
+};
+
+export const emptyExerciseEntry: ExerciseEntry = {
+  exercise_id: "",
+  name: "",
+  equipment: "",
+  sets: [],
+  notes: "",
+  superset_id: "",
+  muscle_group: "",
+};
+
+export type ExerciseInput = {
+  weight: string;
+  reps: string;
+  rpe: string;
+};
+
 export type Feed_item = {
   id: string;
   item_id?: string;
@@ -14,7 +110,6 @@ export type Feed_item = {
   delivered?: string | null;
 };
 
-
 export type FeedCardProps = {
   table: "notes" | "gym_sessions" | "weight" | "todo_lists" | "reminders";
   item: Feed_item;
@@ -30,18 +125,18 @@ export type FeedResponse = {
   nextPage: number | null;
 };
 
- export type FeedData = {
-    pageParams: any[];
-    pages: {
-      feed: Feed_item[];
-      nextPage?: number;
-    }[];
-  };
+export type FeedData = {
+  pageParams: any[];
+  pages: {
+    feed: Feed_item[];
+    nextPage?: number;
+  }[];
+};
 
-  export type optimisticNote = {
-    id: string;
-    type: "notes";
-    title: string;
-    notes: string;
-    created_at: string;
-  }
+export type optimisticNote = {
+  id: string;
+  type: "notes";
+  title: string;
+  notes: string;
+  created_at: string;
+};

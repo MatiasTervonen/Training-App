@@ -218,64 +218,59 @@ export default function WeightChart({ range, data }: WeightChartProps) {
   ];
 
   return (
-    <>
-      <div className="bg-slate-700  shadow-md">
-        <div className="flex justify-center items-center mb-4 px-10 pt-4">
-          <button
-            onClick={() => setOffset((prev) => prev + 1)}
-            className="mr-4"
-          >
-            <ChevronLeft />
-          </button>
-          <h2>{formatDateRange(start, end)}</h2>
-          <button
-            onClick={() => setOffset((prev) => Math.max(prev - 1, 0))}
-            disabled={offset === 0}
-            className="ml-4"
-          >
-            <ChevronRight />
-          </button>
-        </div>
-        <div className="flex justify-center items-center mb-4 px-10">
-          <h3>
-            {range}: {weightDifference} {weightUnit}
-          </h3>
-        </div>
-        <ResponsiveContainer width="100%" height={300}>
-          <LineChart
-            data={chartData}
-            margin={{ top: 10, right: 20, left: -20, bottom: 10 }}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis
-              dataKey="date"
-              ticks={xTicks}
-              tickFormatter={(value) => formatDatelabel(value, range)}
-              tick={{ fill: "#f9fafb", fontSize: 14 }}
-            />
-            <YAxis
-              tick={{ fill: "#f9fafb", fontSize: 14 }}
-              domain={yAxisDomain}
-            />
-            <Tooltip
-              contentStyle={{
-                backgroundColor: "#0f172a",
-                borderColor: "#8884d8",
-                color: "#f9fafb",
-              }}
-            />
-            <Legend />
-            <Line
-              type="linear"
-              dataKey="weight"
-              stroke="#f5d163"
-              connectNulls={true}
-              strokeWidth={3}
-              activeDot={{ r: 10 }}
-            />
-          </LineChart>
-        </ResponsiveContainer>
+    <div className="bg-slate-700  shadow-md">
+      <div className="flex justify-center items-center mb-4 px-10 pt-4">
+        <button onClick={() => setOffset((prev) => prev + 1)} className="mr-4">
+          <ChevronLeft />
+        </button>
+        <h2>{formatDateRange(start, end)}</h2>
+        <button
+          onClick={() => setOffset((prev) => Math.max(prev - 1, 0))}
+          disabled={offset === 0}
+          className="ml-4"
+        >
+          <ChevronRight />
+        </button>
       </div>
-    </>
+      <div className="flex justify-center items-center mb-4 px-10">
+        <h3>
+          {range}: {weightDifference} {weightUnit}
+        </h3>
+      </div>
+      <ResponsiveContainer width="100%" height={300}>
+        <LineChart
+          data={chartData}
+          margin={{ top: 10, right: 20, left: -20, bottom: 10 }}
+        >
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis
+            dataKey="date"
+            ticks={xTicks}
+            tickFormatter={(value) => formatDatelabel(value, range)}
+            tick={{ fill: "#f9fafb", fontSize: 14 }}
+          />
+          <YAxis
+            tick={{ fill: "#f9fafb", fontSize: 14 }}
+            domain={yAxisDomain}
+          />
+          <Tooltip
+            contentStyle={{
+              backgroundColor: "#0f172a",
+              borderColor: "#8884d8",
+              color: "#f9fafb",
+            }}
+          />
+          <Legend />
+          <Line
+            type="linear"
+            dataKey="weight"
+            stroke="#f5d163"
+            connectNulls={true}
+            strokeWidth={3}
+            activeDot={{ r: 10 }}
+          />
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
   );
 }

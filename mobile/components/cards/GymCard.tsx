@@ -4,7 +4,6 @@ import AppText from "../AppText";
 import DropdownMenu from "../DropdownMenu";
 import { formatDate } from "@/lib/formatDate";
 import { Feed_item } from "@/types/session";
-import { MenuOption } from "react-native-popup-menu";
 
 type Props = {
   item: Feed_item;
@@ -37,15 +36,15 @@ export default function NotesCard({
   return (
     <View
       className={`
-       border rounded-md flex-col justify-center mb-5 transition-colors ${
+       border rounded-md flex-col justify-center mb-10 transition-colors ${
          pinned
            ? `border-yellow-200 bg-yellow-200`
            : "bg-slate-700 border-gray-100"
        }`}
     >
-      <View className="flex-row justify-between mt-2 mb-4 mx-4">
+      <View className="flex-row justify-between items-center mt-2 mb-4 mx-4">
         <AppText
-          className={`line-clamp-1 border-b ${
+          className={`flex-1 mr-8 underline text-lg  ${
             pinned
               ? "text-slate-900 border-slate-900"
               : "text-gray-100 border-gray-100"
@@ -54,14 +53,7 @@ export default function NotesCard({
           {item.title}
         </AppText>
         <DropdownMenu
-          button={
-            <View
-              aria-label="More options"
-              className={`${pinned ? "text-slate-900" : "text-gray-100"}`}
-            >
-              <Ellipsis size={20} color={pinned ? "#0f172a" : "#f3f4f6"} />
-            </View>
-          }
+          button={<Ellipsis size={20} color={pinned ? "#0f172a" : "#f3f4f6"} />}
           pinned={pinned}
           onEdit={onEdit}
           onTogglePin={onTogglePin}
@@ -69,13 +61,15 @@ export default function NotesCard({
         />
       </View>
 
-      <AppText
-        className={`ml-4 mb-4 mr-5 line-clamp-2  ${
-          pinned ? "text-slate-900" : "text-gray-100"
-        }`}
-      >
-        {item.notes}
-      </AppText>
+      {item.notes && (
+        <AppText
+          className={`ml-4 mb-4 mr-5 line-clamp-2  ${
+            pinned ? "text-slate-900" : "text-gray-100"
+          }`}
+        >
+          {item.notes}
+        </AppText>
+      )}
 
       <View className="flex-row justify-between items-center mt-2 bg-black/40 rounded-b-md">
         <View className="flex-row items-center gap-4">

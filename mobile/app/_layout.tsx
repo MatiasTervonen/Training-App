@@ -3,7 +3,7 @@ import { Slot } from "expo-router";
 import { StatusBar, View } from "react-native";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import "./global.css";
 import Navbar from "@/components/navbar/Navbar";
@@ -15,6 +15,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import * as Sentry from "@sentry/react-native";
 import { MenuProvider } from "react-native-popup-menu";
+import { Provider as PaperProvider } from "react-native-paper";
 
 Sentry.init({
   dsn: "https://cf3db79ed11dbd657e73bb68617c6a34@o4510142810619904.ingest.de.sentry.io/4510160894361680",
@@ -35,6 +36,7 @@ Sentry.init({
   // spotlight: __DEV__,
 });
 
+const queryClient = new QueryClient();
 
 export default Sentry.wrap(function RootLayout() {
   const [loaded, error] = useFonts({
@@ -62,30 +64,30 @@ export default Sentry.wrap(function RootLayout() {
     return null;
   }
 
-  const queryClient = new QueryClient();
-
   return (
-    <MenuProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
       <QueryClientProvider client={queryClient}>
-        <GestureHandlerRootView style={{ flex: 1 }}>
-          <SafeAreaProvider>
-            <StatusBar
-              barStyle="light-content"
-              backgroundColor="#020617"
-              translucent={false}
-            />
-            <SafeAreaView style={{ flex: 1 }} className="bg-slate-950">
-              <View className="flex-1 bg-slate-800 font-russo">
-                <Navbar />
-                <LayoutWrapper>
-                  <Slot />
-                </LayoutWrapper>
-                <Toast config={toastConfig} position="top" />
-              </View>
-            </SafeAreaView>
-          </SafeAreaProvider>
-        </GestureHandlerRootView>
+        <MenuProvider>
+          <PaperProvider>
+            <SafeAreaProvider>
+              <StatusBar
+                barStyle="light-content"
+                backgroundColor="#020617"
+                translucent={false}
+              />
+              <SafeAreaView style={{ flex: 1 }} className="bg-slate-950">
+                <View className="flex-1 bg-slate-800 font-russo">
+                  <Navbar />
+                  <LayoutWrapper>
+                    <Slot />
+                  </LayoutWrapper>
+                  <Toast config={toastConfig} position="top" />
+                </View>
+              </SafeAreaView>
+            </SafeAreaProvider>
+          </PaperProvider>
+        </MenuProvider>
       </QueryClientProvider>
-    </MenuProvider>
+    </GestureHandlerRootView>
   );
 });

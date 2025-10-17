@@ -24,7 +24,7 @@ export default function TemplateCard({
   return (
     <div className="border rounded-md flex flex-col justify-center transition-colors bg-slate-900 mb-10">
       <div className=" flex justify-between items-center my-4 mx-4">
-        <div className="line-clamp-1 text-lg">{item.name}</div>
+        <div className="mr-8 line-clamp-1 text-lg">{item.name}</div>
         <DropdownMenu
           button={
             <div

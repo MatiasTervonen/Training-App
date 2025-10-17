@@ -15,7 +15,7 @@ export default function WeightSession(weight: Feed_item) {
         {formatDate(weight.created_at!)}
       </div>
       <div id="notes-id">
-        <div className="my-5 text-xl">{weight.title}</div>
+        <div className="my-5 text-xl break-words">{weight.title}</div>
         <div className="whitespace-pre-wrap break-words overflow-hidden max-w-full text-left bg-slate-900 p-4 rounded-md shadow-lg">
           <div className="flex flex-col">
             {weight.notes && (

@@ -2,7 +2,7 @@ import { Image } from "expo-image";
 import { Trash2 } from "lucide-react-native";
 import Toast from "react-native-toast-message";
 import { Friends } from "@/types/models";
-import { confirmDeletion } from "@/lib/confirmDeletetion";
+import { confirmAction } from "@/lib/confirmAction";
 import { handleError } from "@/utils/handleError";
 import { deleteFriend } from "@/api/friend/delete-friend";
 import { View } from "react-native";
@@ -14,7 +14,7 @@ type FriendCardProps = {
 
 export default function FriendCard({ friend }: FriendCardProps) {
   const handleDeleteFriend = async () => {
-    confirmDeletion({
+    await confirmAction({
       title: "Are you sure you want to delete this friend?",
       message: "This action cannot be undone.",
       confirmText: "Delete",

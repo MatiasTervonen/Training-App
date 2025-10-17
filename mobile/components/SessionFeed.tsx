@@ -4,7 +4,12 @@ import Toast from "react-native-toast-message";
 import AppText from "@/components/AppText";
 import { unpinItems } from "@/api/pinned/unpin-items";
 import { pinItems } from "@/api/pinned/pin-items";
-import { FlatList, RefreshControl, View } from "react-native";
+import {
+  FlatList,
+  RefreshControl,
+  View,
+  ActivityIndicator,
+} from "react-native";
 import FeedCard from "@/components/cards/FeedCard";
 import { DeleteSession } from "@/api/feed/deleteSession";
 import { FeedSkeleton } from "@/components/skeletetons";
@@ -13,9 +18,8 @@ import { LinearGradient } from "expo-linear-gradient";
 import { handleError } from "@/utils/handleError";
 import { useFeed } from "@/api/feed/getFeed";
 import { Feed_item, FeedData } from "@/types/session";
-import { confirmDeletion } from "@/lib/confirmDeletetion";
+import { confirmAction } from "@/lib/confirmAction";
 import { useQueryClient } from "@tanstack/react-query";
-import { ActivityIndicator } from "react-native";
 
 type FeedItem = {
   table: "notes" | "weight" | "gym_sessions" | "todo_lists" | "reminders";
@@ -135,7 +139,7 @@ export default function SessionFeed() {
   };
 
   const handleDelete = async (item_id: string, table: string) => {
-    const confirmed = await confirmDeletion({
+    const confirmed = await confirmAction({
       title: "Are you sure you want to delete this session?",
     });
     if (!confirmed) return;
@@ -268,7 +272,7 @@ export default function SessionFeed() {
             ListFooterComponent={
               isFetchingNextPage ? (
                 <View className="items-center justify-center gap-2">
-                  <AppText className="text-center text-gray-300">
+                  <AppText className="text-center text-gray-300 text-lg">
                     Loading more...
                   </AppText>
                   <ActivityIndicator

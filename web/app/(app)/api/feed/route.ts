@@ -8,8 +8,6 @@ export async function GET(req: Request) {
     const limit = parseInt(searchParams.get("limit") || "10", 10);
     const page = parseInt(searchParams.get("page") || "1", 10);
 
-    console.log("API feed called with limit:", limit, "page:", page);
-
     const { feed, nextPage, error } = await getSession({ req, page, limit });
 
     if (error) {

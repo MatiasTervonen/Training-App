@@ -9,7 +9,9 @@ export default function NotesSession(notes: Feed_item) {
         {formatDate(notes.created_at!)}
       </div>
       <div id="notes-id">
-        <div className="my-5 text-xl">{notes.title}</div>
+        <div className="my-5 text-xl break-words">
+          {notes.title}
+        </div>
         <div className="whitespace-pre-wrap break-words overflow-hidden max-w-full text-left bg-slate-900 p-4 rounded-md shadow-lg">
           {notes.notes}
         </div>

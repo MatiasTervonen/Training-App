@@ -28,6 +28,7 @@ import useSWR from "swr";
 import { fetcher } from "@/app/(app)/lib/fetcher";
 import { handleError } from "../../utils/handleError";
 
+
 export default function TrainingSessionPage() {
   const [sessionTitle, setSessionTitle] = useState("");
   const [exercises, setExercises] = useState<ExerciseEntry[]>([]);

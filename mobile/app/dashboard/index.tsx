@@ -4,6 +4,7 @@ import { useTimerStore } from "@/lib/stores/timerStore";
 import { useEffect } from "react";
 import { Alert } from "react-native";
 import { useRouter } from "expo-router";
+import ActiveSessionPopup from "@/components/ActiveSessionPopup";
 
 export default function FeedScreen() {
   const router = useRouter();
@@ -27,5 +28,10 @@ export default function FeedScreen() {
     });
   }, [router, setModalPageConfig, activeSession]);
 
-  return <SessionFeed />;
+  return (
+    <>
+      <ActiveSessionPopup />
+      <SessionFeed />
+    </>
+  );
 }

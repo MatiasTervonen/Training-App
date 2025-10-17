@@ -130,6 +130,8 @@ export default function ModalPageWrapper({
     opacity: fadeOpacity.value,
   }));
 
+
+
   return (
     <View className="flex-1">
       <View className="flex-1 absolute inset-0 flex-row justify-between bg-slate-900 pt-[10px]">

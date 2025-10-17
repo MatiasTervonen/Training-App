@@ -89,6 +89,14 @@ export default function LayoutWrapper({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router]);
 
+  const noModalRoutes = ["/", "/login"];
+
+  const shouldRenderModal = !noModalRoutes.includes(pathname);
+
+  if (!shouldRenderModal) {
+    return <>{children}</>;
+  }
+
   return (
     <ModalPageWrapper key={pathname} {...(modalPageConfig || {})}>
       {children}

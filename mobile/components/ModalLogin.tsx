@@ -76,7 +76,7 @@ export default function ModalLogin({
             <Pressable onPress={onClose} className="absolute top-4 right-4">
               <CircleX size={30} color="#f3f4f6" />
             </Pressable>
-            <View className="flex-grow overflow-y-auto touch-pan-y">
+            <View className="flex-1">
               {children}
             </View>
           </Animated.View>

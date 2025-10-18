@@ -1,5 +1,5 @@
 import { formatDate } from "@/app/(app)/lib/formatDate";
-import GroupTemplateExercises from "@/app/(app)/training/utils/GroupTemplateExercises";
+import { GroupTemplateExercises } from "@/app/(app)/training/utils/GroupTemplateExercises";
 import { full_gym_template } from "@/app/(app)/types/models";
 
 type Props = {

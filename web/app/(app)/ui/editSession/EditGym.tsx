@@ -9,7 +9,7 @@ import toast from "react-hot-toast";
 import SetInput from "@/app/(app)/training/components/SetInput";
 import ExerciseTypeSelect from "@/app/(app)/training/components/ExerciseTypeSelect";
 import { full_gym_exercises, full_gym_session } from "../../types/models";
-import GroupExercises from "@/app/(app)/training/utils/GroupExercises";
+import  { GroupExercises }  from "@/app/(app)/training/utils/GroupExercises";
 import { handleError } from "../../utils/handleError";
 
 type EditGymSessionProps = {

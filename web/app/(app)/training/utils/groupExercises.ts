@@ -1,6 +1,6 @@
 import { full_gym_exercises } from "../../types/models";
 
-export default function GroupExercises(
+export function GroupExercises(
   exercises: full_gym_exercises[]
 ): Record<string, { exercise: full_gym_exercises; index: number }[]> {
   return exercises.reduce((acc, exercise, index) => {

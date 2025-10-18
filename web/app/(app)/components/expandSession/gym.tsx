@@ -1,7 +1,7 @@
 import { formatDate } from "@/app/(app)/lib/formatDate";
 import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
 import { full_gym_session } from "../../types/models";
-import GroupExercises from "@/app/(app)/training/utils/GroupExercises";
+import { GroupExercises } from "@/app/(app)/training/utils/GroupExercises";
 import { full_gym_exercises } from "../../types/models";
 
 const formatDuration = (seconds: number) => {

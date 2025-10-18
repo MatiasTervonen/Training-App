@@ -1,6 +1,6 @@
 import { ExerciseEntry } from "@/app/(app)/types/session";
 
-export default function GroupGymExercises(
+export function GroupGymExercises(
   exercises: ExerciseEntry[]
 ): Record<string, { exercise: ExerciseEntry; index: number }[]> {
   return exercises.reduce((acc, exercise, index) => {

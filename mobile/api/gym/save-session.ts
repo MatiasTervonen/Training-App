@@ -102,9 +102,6 @@ export async function saveSession({
     throw new Error("Error inserting session exercises");
   }
 
-  console.log(seError, "seError");
-  console.log("sessionExercises", sessionExercises);
-
   const { error: setsError } = await supabase.from("gym_sets").insert(sets);
 
   if (setsError) {

@@ -1,6 +1,6 @@
 import { full_gym_template_exercise } from "@/app/(app)/types/models";
 
-export default function GroupTemplateExercises(
+export function GroupTemplateExercises(
   exercises: full_gym_template_exercise[]
 ): Record<string, full_gym_template_exercise[]> {
   return exercises.reduce((acc, exercise) => {

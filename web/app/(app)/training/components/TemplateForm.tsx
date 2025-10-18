@@ -19,7 +19,7 @@ import { generateUUID } from "@/app/(app)/lib/generateUUID";
 import { toast } from "react-hot-toast";
 import { mutate } from "swr";
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
-import { GroupGymExercises } from "@/app/(app)/training/utils/GroupGymExercises";
+import { GroupGymExercises } from "@/app/(app)/utils/GroupGymExercises";
 import ExerciseCard from "../components/ExerciseCard";
 import { useParams } from "next/navigation";
 import useSWR from "swr";

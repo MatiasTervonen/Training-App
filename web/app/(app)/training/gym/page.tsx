@@ -20,7 +20,7 @@ import {
 import { generateUUID } from "@/app/(app)/lib/generateUUID";
 import { toast } from "react-hot-toast";
 import { useTimerStore } from "@/app/(app)/lib/stores/timerStore";
-import { GroupGymExercises } from "@/app/(app)/training/utils/GroupGymExercises";
+import { GroupGymExercises } from "@/app/(app)/utils/GroupGymExercises";
 import ExerciseCard from "../components/ExerciseCard";
 import { updateFeed } from "@/app/(app)/lib/revalidateFeed";
 import ExerciseSelectorList from "../components/ExerciseSelectorList";

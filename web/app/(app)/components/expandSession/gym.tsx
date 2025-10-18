@@ -1,7 +1,7 @@
 import { formatDate } from "@/app/(app)/lib/formatDate";
 import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
 import { full_gym_session } from "../../types/models";
-import { GroupExercises } from "@/app/(app)/training/utils/GroupExercises";
+import { GroupExercises } from "@/app/(app)/utils/GroupExercises";
 import { full_gym_exercises } from "../../types/models";
 
 const formatDuration = (seconds: number) => {
@@ -16,7 +16,6 @@ const formatDuration = (seconds: number) => {
 };
 
 export default function GymSession(gym_session: full_gym_session) {
-  
   const groupedExercises = GroupExercises(
     gym_session.gym_session_exercises || []
   );

@@ -1,5 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import { handleError } from "@/utils/handleError";
+import * as Crypto from "expo-crypto";
 
 type props = {
   title: string;
@@ -12,7 +13,7 @@ type props = {
     sets: {
       weight?: number;
       reps?: number;
-      rpe?: number;
+      rpe?: string;
     }[];
   }[];
 };
@@ -45,13 +46,15 @@ export async function saveSession({
     .select()
     .single();
 
+  console.log("sessionData", sessionData);
+
   if (sessionError || !sessionData) {
     handleError(sessionError, {
       message: "Error creating session",
       route: "/api/gym/save-session",
       method: "POST",
     });
-    return { error: true, message: "Error creating session" };
+    throw new Error("Error creating session");
   }
 
   const sessionId = sessionData.id;
@@ -62,7 +65,7 @@ export async function saveSession({
   for (const [index, ex] of exercises.entries()) {
     const supersetId = ex.superset_id ?? null;
 
-    const sessionExerciseId = crypto.randomUUID();
+    const sessionExerciseId = Crypto.randomUUID();
 
     sessionExercises.push({
       id: sessionExerciseId,
@@ -96,8 +99,11 @@ export async function saveSession({
       route: "/api/gym/save-session",
       method: "POST",
     });
-    return { error: true, message: "Error inserting session exercises" };
+    throw new Error("Error inserting session exercises");
   }
+
+  console.log(seError, "seError");
+  console.log("sessionExercises", sessionExercises);
 
   const { error: setsError } = await supabase.from("gym_sets").insert(sets);
 
@@ -107,7 +113,7 @@ export async function saveSession({
       route: "/api/gym/save-session",
       method: "POST",
     });
-    return { error: true, message: "Error inserting sets" };
+    throw new Error("Error inserting sets");
   }
 
   return { error: false, message: "Session saved successfully" };

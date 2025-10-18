@@ -19,7 +19,12 @@ import { handleError } from "@/utils/handleError";
 import { useFeed } from "@/api/feed/getFeed";
 import { Feed_item, FeedData } from "@/types/session";
 import { confirmAction } from "@/lib/confirmAction";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQueryClient, useQuery } from "@tanstack/react-query";
+import FullScreenModal from "./FullScreenModal";
+import GymSession from "./expandSession/gym";
+import { getFullGymSession } from "@/api/gym/get-full-gym-session";
+import NotesSession from "./expandSession/notes";
+import WeightSession from "./expandSession/weight";
 
 type FeedItem = {
   table: "notes" | "weight" | "gym_sessions" | "todo_lists" | "reminders";
@@ -181,7 +186,6 @@ export default function SessionFeed() {
         route: "/api/feed/deleteSession",
         method: "DELETE",
       });
-      queryClient.setQueryData(queryKey, previousFeed);
       Toast.show({
         type: "error",
         text1: "Error",
@@ -189,6 +193,19 @@ export default function SessionFeed() {
       });
     }
   };
+
+  const {
+    data: GymSessionFull,
+    error: GymSessionError,
+    isLoading: isLoadingGymSession,
+  } = useQuery<full_gym_session>({
+    queryKey: ["fullGymSession"],
+    queryFn: () => getFullGymSession(expandedItem!.item.id),
+    enabled: !!expandedItem?.item.id && expandedItem.table === "gym_sessions",
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+  });
 
   const allFeed = [...pinnedFeed, ...unpinnedFeed];
 
@@ -241,6 +258,7 @@ export default function SessionFeed() {
                 <FeedCard
                   {...feedItem}
                   onExpand={() => {
+                    console.log("Expanding item with ID:", feedItem.item.id);
                     setExpandedItem(feedItem);
                   }}
                   onTogglePin={() =>
@@ -290,6 +308,37 @@ export default function SessionFeed() {
               )
             }
           />
+        )}
+
+        {expandedItem && (
+          <FullScreenModal
+            isOpen={!!expandedItem}
+            onClose={() => setExpandedItem(null)}
+          >
+            {expandedItem.table === "notes" && (
+              <NotesSession {...expandedItem.item} />
+            )}
+            {expandedItem.table === "weight" && (
+              <WeightSession {...expandedItem.item} />
+            )}
+
+            {expandedItem.table === "gym_sessions" && (
+              <View>
+                {isLoadingGymSession ? (
+                  <View className="flex flex-col gap-5 items-center justify-center pt-40">
+                    <AppText>Loading gym session details...</AppText>
+                    <ActivityIndicator />
+                  </View>
+                ) : GymSessionError ? (
+                  <AppText className="text-center text-lg mt-10">
+                    Failed to load gym session details. Please try again later.
+                  </AppText>
+                ) : (
+                  GymSessionFull && <GymSession {...GymSessionFull} />
+                )}
+              </View>
+            )}
+          </FullScreenModal>
         )}
       </View>
     </LinearGradient>

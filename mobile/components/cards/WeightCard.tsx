@@ -16,7 +16,7 @@ type Props = {
   onEdit: () => void;
 };
 
-export default function NotesCard({
+export default function WeightCard({
   item,
   pinned,
   onTogglePin,
@@ -43,6 +43,8 @@ export default function NotesCard({
               ? "text-slate-900 border-slate-900"
               : "text-gray-100 border-gray-100"
           }`}
+          numberOfLines={1}
+          ellipsizeMode="tail"
         >
           {item.title}
         </AppText>
@@ -91,7 +93,10 @@ export default function NotesCard({
             </AppText>
           </View>
         </View>
-        <TouchableOpacity className="bg-blue-500 p-2 rounded-br-md">
+        <TouchableOpacity
+          onPress={onExpand}
+          className="bg-blue-500 p-2 rounded-br-md"
+        >
           <SquareArrowOutUpRight size={20} color="#f3f4f6" />
         </TouchableOpacity>
       </View>

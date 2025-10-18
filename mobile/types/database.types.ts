@@ -7,7 +7,7 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "12.2.3 (519615d)"
@@ -386,28 +386,34 @@ export type Database = {
       }
       gym_session_exercises: {
         Row: {
+          created_at: string | null
           exercise_id: string
           id: string
           notes: string | null
           position: number
           session_id: string
           superset_id: string
+          user_id: string
         }
         Insert: {
+          created_at?: string | null
           exercise_id: string
           id?: string
           notes?: string | null
           position: number
           session_id: string
           superset_id: string
+          user_id: string
         }
         Update: {
+          created_at?: string | null
           exercise_id?: string
           id?: string
           notes?: string | null
           position?: number
           session_id?: string
           superset_id?: string
+          user_id?: string
         }
         Relationships: [
           {
@@ -455,27 +461,33 @@ export type Database = {
       }
       gym_sets: {
         Row: {
+          created_at: string | null
           id: string
           reps: number
           rpe: string
           session_exercise_id: string
           set_number: number
+          user_id: string
           weight: number
         }
         Insert: {
+          created_at?: string | null
           id?: string
           reps: number
           rpe: string
           session_exercise_id: string
           set_number: number
+          user_id: string
           weight: number
         }
         Update: {
+          created_at?: string | null
           id?: string
           reps?: number
           rpe?: string
           session_exercise_id?: string
           set_number?: number
+          user_id?: string
           weight?: number
         }
         Relationships: [
@@ -498,6 +510,7 @@ export type Database = {
           sets: number | null
           superset_id: string
           template_id: string
+          user_id: string
         }
         Insert: {
           created_at?: string
@@ -508,6 +521,7 @@ export type Database = {
           sets?: number | null
           superset_id: string
           template_id?: string
+          user_id: string
         }
         Update: {
           created_at?: string
@@ -518,6 +532,7 @@ export type Database = {
           sets?: number | null
           superset_id?: string
           template_id?: string
+          user_id?: string
         }
         Relationships: [
           {
@@ -543,6 +558,7 @@ export type Database = {
           rpe: string | null
           set_number: number | null
           template_exercise_id: string
+          user_id: string | null
           weight: number | null
         }
         Insert: {
@@ -551,6 +567,7 @@ export type Database = {
           rpe?: string | null
           set_number?: number | null
           template_exercise_id: string
+          user_id?: string | null
           weight?: number | null
         }
         Update: {
@@ -559,6 +576,7 @@ export type Database = {
           rpe?: string | null
           set_number?: number | null
           template_exercise_id?: string
+          user_id?: string | null
           weight?: number | null
         }
         Relationships: [
@@ -580,7 +598,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
-          created_at: string
+          created_at?: string
           id?: string
           name: string
           updated_at?: string | null
@@ -621,24 +639,24 @@ export type Database = {
       }
       pinned_items: {
         Row: {
+          created_at: string
           id: string
           item_id: string
-          pinned_at: string
-          table: string
+          type: string
           user_id: string
         }
         Insert: {
+          created_at?: string
           id?: string
-          item_id?: string
-          pinned_at?: string
-          table: string
+          item_id: string
+          type: string
           user_id: string
         }
         Update: {
+          created_at?: string
           id?: string
           item_id?: string
-          pinned_at?: string
-          table?: string
+          type?: string
           user_id?: string
         }
         Relationships: []
@@ -664,6 +682,36 @@ export type Database = {
           is_quest?: boolean | null
           name?: string | null
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      reminders: {
+        Row: {
+          created_at: string
+          delivered: boolean
+          id: string
+          notes: string | null
+          notify_at: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          delivered?: boolean
+          id?: string
+          notes?: string | null
+          notify_at: string
+          title: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          delivered?: boolean
+          id?: string
+          notes?: string | null
+          notify_at?: string
+          title?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -694,6 +742,101 @@ export type Database = {
         }
         Relationships: []
       }
+      todo_lists: {
+        Row: {
+          created_at: string
+          id: string
+          title: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          title?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          title?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      todo_tasks: {
+        Row: {
+          created_at: string
+          id: string
+          is_completed: boolean
+          list_id: string
+          notes: string | null
+          task: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_completed?: boolean
+          list_id: string
+          notes?: string | null
+          task?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_completed?: boolean
+          list_id?: string
+          notes?: string | null
+          task?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "todo_tasks_list_id_fkey"
+            columns: ["list_id"]
+            isOneToOne: false
+            referencedRelation: "todo_lists"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_push_subscriptions: {
+        Row: {
+          auth: string | null
+          created_at: string
+          device_type: string
+          endpoint: string
+          id: string
+          is_active: boolean
+          p256dh: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          auth?: string | null
+          created_at?: string
+          device_type: string
+          endpoint: string
+          id?: string
+          is_active?: boolean
+          p256dh?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          auth?: string | null
+          created_at?: string
+          device_type?: string
+          endpoint?: string
+          id?: string
+          is_active?: boolean
+          p256dh?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       users: {
         Row: {
           ban_reason: string | null
@@ -703,6 +846,7 @@ export type Database = {
           email: string
           id: string
           profile_picture: string | null
+          push_enabled: boolean
           role: string
           weight_unit: string
         }
@@ -714,6 +858,7 @@ export type Database = {
           email: string
           id: string
           profile_picture?: string | null
+          push_enabled?: boolean
           role?: string
           weight_unit?: string
         }
@@ -725,6 +870,7 @@ export type Database = {
           email?: string
           id?: string
           profile_picture?: string | null
+          push_enabled?: boolean
           role?: string
           weight_unit?: string
         }
@@ -740,7 +886,7 @@ export type Database = {
           weight: number
         }
         Insert: {
-          created_at: string
+          created_at?: string
           id?: string
           notes?: string | null
           title?: string | null
@@ -763,6 +909,37 @@ export type Database = {
         Row: {
           jwt_role: string | null
           user_id: string | null
+        }
+        Relationships: []
+      }
+      feed_view7: {
+        Row: {
+          created_at: string | null
+          delivered: boolean | null
+          duration: number | null
+          id: string | null
+          notes: string | null
+          notify_at: string | null
+          title: string | null
+          type: string | null
+          user_id: string | null
+          weight: number | null
+        }
+        Relationships: []
+      }
+      feed_with_pins: {
+        Row: {
+          created_at: string | null
+          delivered: boolean | null
+          duration: number | null
+          id: string | null
+          notes: string | null
+          notify_at: string | null
+          pinned: boolean | null
+          title: string | null
+          type: string | null
+          user_id: string | null
+          weight: number | null
         }
         Relationships: []
       }

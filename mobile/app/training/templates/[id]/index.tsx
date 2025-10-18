@@ -1,6 +1,5 @@
 import TemplateForm from "@/components/gym/TemplateForm";
 
-
-export default function CreateTemplateScreen() {
+export default function EditTemplateScreen() {
   return <TemplateForm />;
 }

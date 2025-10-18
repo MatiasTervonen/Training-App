@@ -53,9 +53,7 @@ export type ExercisePreview = Pick<
 >;
 
 export type full_gym_template = template & {
-  gym_template_exercises: (gym_template_exercises & {
-    gym_exercises: gym_exercises;
-  })[];
+  gym_template_exercises: full_gym_template_exercise[];
 };
 
 export type full_gym_template_exercise = gym_template_exercises & {

@@ -1,4 +1,4 @@
-import { full_gym_exercises } from "../../types/models";
+import { full_gym_exercises } from "@/types/models";
 
 export default function GroupExercises(
   exercises: full_gym_exercises[]

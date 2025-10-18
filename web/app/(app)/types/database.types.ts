@@ -386,6 +386,7 @@ export type Database = {
       }
       gym_session_exercises: {
         Row: {
+          created_at: string | null
           exercise_id: string
           id: string
           notes: string | null
@@ -395,6 +396,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          created_at?: string | null
           exercise_id: string
           id?: string
           notes?: string | null
@@ -404,6 +406,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          created_at?: string | null
           exercise_id?: string
           id?: string
           notes?: string | null
@@ -458,6 +461,7 @@ export type Database = {
       }
       gym_sets: {
         Row: {
+          created_at: string | null
           id: string
           reps: number
           rpe: string
@@ -467,6 +471,7 @@ export type Database = {
           weight: number
         }
         Insert: {
+          created_at?: string | null
           id?: string
           reps: number
           rpe: string
@@ -476,6 +481,7 @@ export type Database = {
           weight: number
         }
         Update: {
+          created_at?: string | null
           id?: string
           reps?: number
           rpe?: string
@@ -504,7 +510,7 @@ export type Database = {
           sets: number | null
           superset_id: string
           template_id: string
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           created_at?: string
@@ -515,7 +521,7 @@ export type Database = {
           sets?: number | null
           superset_id: string
           template_id?: string
-          user_id?: string | null
+          user_id: string
         }
         Update: {
           created_at?: string
@@ -526,7 +532,7 @@ export type Database = {
           sets?: number | null
           superset_id?: string
           template_id?: string
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: [
           {
@@ -610,28 +616,22 @@ export type Database = {
       notes: {
         Row: {
           created_at: string
-          delivered: boolean
           id: string
           notes: string | null
-          notify_at: string | null
           title: string | null
           user_id: string
         }
         Insert: {
           created_at?: string
-          delivered?: boolean
           id?: string
           notes?: string | null
-          notify_at?: string | null
           title?: string | null
           user_id: string
         }
         Update: {
           created_at?: string
-          delivered?: boolean
           id?: string
           notes?: string | null
-          notify_at?: string | null
           title?: string | null
           user_id?: string
         }
@@ -912,7 +912,7 @@ export type Database = {
         }
         Relationships: []
       }
-      feed_view6: {
+      feed_view7: {
         Row: {
           created_at: string | null
           delivered: boolean | null

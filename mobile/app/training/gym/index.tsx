@@ -21,11 +21,11 @@ import { useDebouncedCallback } from "use-debounce";
 import { useQuery } from "@tanstack/react-query";
 import { getLastExerciseHistory } from "@/api/gym/last-exercise-history";
 import { useTimerStore } from "@/lib/stores/timerStore";
-import { generateUUID } from "@/utils/generateUUID";
+import * as Crypto from "expo-crypto";
 import { confirmAction } from "@/lib/confirmAction";
 import { saveSession } from "@/api/gym/save-session";
 import Toast from "react-native-toast-message";
-import { groupTemplateExercises } from "@/lib/groupTemplateExercises";
+import GroupGymExercises from "@/components/gym/lib/GroupGymExercises";
 import ExerciseCard from "@/components/gym/ExerciseCard";
 import FullScreenModal from "@/components/FullScreenModal";
 import ExerciseSelectorList from "@/components/gym/ExerciseSelectorList";
@@ -36,6 +36,7 @@ import SaveButton from "@/components/SaveButton";
 import DeleteButton from "@/components/DeleteButton";
 import FullScreenLoader from "@/components/FullScreenLoader";
 import { LinearGradient } from "expo-linear-gradient";
+import Timer from "@/components/timer";
 
 export default function GymScreen() {
   const [title, setTitle] = useState("");
@@ -84,7 +85,7 @@ export default function GymScreen() {
           method: "loadDraft",
         });
       } finally {
-        setIsLoadedDraft(false);
+        setIsLoadedDraft(true);
       }
     };
     loadDraft();
@@ -100,6 +101,8 @@ export default function GymScreen() {
         exercises,
         notes,
       };
+
+      console.log("Rendering GymScreen with exercises:", sessionDraft);
       await AsyncStorage.setItem(
         "gym_session_draft",
         JSON.stringify(sessionDraft)
@@ -110,7 +113,7 @@ export default function GymScreen() {
   useEffect(() => {
     if (!isLoadedDraft) return;
     saveGymDraft();
-  }, [notes, title, saveGymDraft, isLoadedDraft]);
+  }, [notes, title, saveGymDraft, exercises, isLoadedDraft]);
 
   const {
     activeSession,
@@ -169,7 +172,7 @@ export default function GymScreen() {
   }, [startSession]);
 
   const startExercise = () => {
-    const newSupersetId = generateUUID();
+    const newSupersetId = Crypto.randomUUID();
 
     if (exercises.length === 0) {
       startSession();
@@ -204,7 +207,7 @@ export default function GymScreen() {
       // Assign new superset_id to each normal exercise (so they're grouped individually)
       const updated = validNormal.map((ex) => ({
         ...ex,
-        superset_id: generateUUID(),
+        superset_id: Crypto.randomUUID(),
       }));
 
       setExercises((prev) => [...prev, ...updated]);
@@ -254,7 +257,16 @@ export default function GymScreen() {
   };
 
   const handleSaveSession = async () => {
-    if (elapsedTime === 0 || title.trim() === "") return;
+    if (elapsedTime === 0) return;
+
+    if (title.trim() === "") {
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "Title is required.",
+      });
+      return;
+    }
 
     const confirmSave = await confirmAction({
       title: "Confirm Finish Session",
@@ -279,6 +291,7 @@ export default function GymScreen() {
       router.push("/training/training-finished"); // Redirect to the finished page
       resetSession(); // Clear the session data
     } catch (error) {
+      console.log("Error saving session:", error);
       handleError(error, {
         message: "Error saving gym session",
         route: "/api/gym/save-session",
@@ -306,10 +319,21 @@ export default function GymScreen() {
     }
   }, [title, activeSession, setActiveSession]);
 
-  const groupedExercises = groupTemplateExercises(exercises);
+  const groupedExercises = GroupGymExercises(exercises);
 
   return (
     <>
+      <View className="flex items-center bg-gray-600 p-2 px-4 w-full z-40 max-w-3xl mx-auto sticky top-0">
+        <Timer
+          buttonsAlwaysVisible
+          manualSession={{
+            label: title,
+            path: "/training/gym",
+            type: "gym",
+          }}
+        />
+      </View>
+
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
         <ScrollView
           keyboardShouldPersistTaps="handled"
@@ -322,11 +346,15 @@ export default function GymScreen() {
               </AppText>
               <View className="gap-5">
                 <AppInput
+                  value={title}
+                  onChangeText={setTitle}
                   placeholder="Session Title..."
                   label="Session Title..."
                 />
                 <View className="min-h-[80px]">
                   <NotesInput
+                    value={notes}
+                    onChangeText={setNotes}
                     placeholder="Session Notes..."
                     label="Session Notes..."
                   />
@@ -515,7 +543,7 @@ export default function GymScreen() {
           </View>
         </ScrollView>
       </TouchableWithoutFeedback>
-      {isSaving && <FullScreenLoader message="Saving session..." />}
+      <FullScreenLoader visible={isSaving} message="Saving session..." />
     </>
   );
 }

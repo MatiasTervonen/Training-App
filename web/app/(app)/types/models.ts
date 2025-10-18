@@ -22,7 +22,7 @@ export type Friends = Pick<
 
 export type pinned_item = Database["public"]["Tables"]["pinned_items"]["Row"];
 
-export type feed_view = Database["public"]["Views"]["feed_view6"]["Row"];
+export type feed_view = Database["public"]["Views"]["feed_view7"]["Row"];
 
 export type timers = Database["public"]["Tables"]["timers"]["Row"];
 
@@ -60,9 +60,7 @@ export type ExercisePreview = Pick<
 >;
 
 export type full_gym_template = template & {
-  gym_template_exercises: (gym_template_exercises & {
-    gym_exercises: gym_exercises;
-  })[];
+  gym_template_exercises: full_gym_template_exercise[];
 };
 
 export type full_gym_template_exercise = gym_template_exercises & {
@@ -78,34 +76,7 @@ export type full_gym_exercises = gym_session_exercises & {
 };
 
 export type full_gym_session = gym_sessions & {
-  gym_session_exercises: {
-    exercise_id: string;
-    id: string;
-    notes: string | null;
-    position: number;
-    session_id: string;
-    superset_id: string;
-    user_id: string;
-    gym_exercises: {
-      created_at: string;
-      equipment: string;
-      id: string;
-      language: string;
-      main_group: string;
-      muscle_group: string;
-      name: string;
-      user_id: string | null;
-    };
-    gym_sets: {
-      id: string;
-      reps: number;
-      rpe: string;
-      session_exercise_id: string;
-      set_number: number;
-      user_id: string;
-      weight: number;
-    }[];
-  }[];
+  gym_session_exercises: full_gym_exercises[];
 };
 
 export type full_todo_session = todo_lists & {

@@ -35,8 +35,6 @@ export type OptimisticTemplate = {
 
 export type TemplateExercise = {
   id: string;
-  sets: number;
-  reps: number;
   superset_id: string;
   gym_exercise: {
     name: string;

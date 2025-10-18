@@ -20,14 +20,13 @@ import {
 import { generateUUID } from "@/app/(app)/lib/generateUUID";
 import { toast } from "react-hot-toast";
 import { useTimerStore } from "@/app/(app)/lib/stores/timerStore";
-import { groupTemplateExercises } from "../utils/groupTemplateExercises";
+import GroupGymExercises from "@/app/(app)/training/utils/GroupGymExercises";
 import ExerciseCard from "../components/ExerciseCard";
 import { updateFeed } from "@/app/(app)/lib/revalidateFeed";
 import ExerciseSelectorList from "../components/ExerciseSelectorList";
 import useSWR from "swr";
 import { fetcher } from "@/app/(app)/lib/fetcher";
 import { handleError } from "../../utils/handleError";
-
 
 export default function TrainingSessionPage() {
   const [sessionTitle, setSessionTitle] = useState("");
@@ -291,7 +290,7 @@ export default function TrainingSessionPage() {
     }
   }, [sessionTitle, activeSession, setActiveSession]);
 
-  const groupedExercises = groupTemplateExercises(exercises);
+  const groupedExercises = GroupGymExercises(exercises);
 
   if (!hasLoadedDraft) return null;
 

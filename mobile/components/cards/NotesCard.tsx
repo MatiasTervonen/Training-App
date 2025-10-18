@@ -84,7 +84,7 @@ export default function NotesCard({
             </AppText>
           </View>
         </View>
-        <TouchableOpacity className="bg-blue-500 p-2 rounded-br-md">
+        <TouchableOpacity onPress={onExpand} className="bg-blue-500 p-2 rounded-br-md">
           <SquareArrowOutUpRight size={20} color="#f3f4f6" />
         </TouchableOpacity>
       </View>

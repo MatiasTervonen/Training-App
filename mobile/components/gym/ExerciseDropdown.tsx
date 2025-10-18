@@ -1,7 +1,15 @@
 import { useState, useEffect, useRef } from "react";
 import { gym_exercises } from "@/types/models";
 import { useQuery } from "@tanstack/react-query";
-import { ActivityIndicator, Pressable, View, SectionList } from "react-native";
+import {
+  ActivityIndicator,
+  Pressable,
+  View,
+  SectionList,
+  TouchableWithoutFeedback,
+  Keyboard,
+  ScrollView,
+} from "react-native";
 import { getExercises } from "@/api/gym/get-exercises";
 import { getRecentExercises } from "@/api/gym/recent-exercises";
 import AppInput from "../AppInput";
@@ -94,72 +102,74 @@ export default function ExerciseDropdown({ onSelect, resetTrigger }: Props) {
   }
 
   return (
-    <View className="px-2 w-full z-50">
-      <View className="mt-10 w-full px-14">
-        <AppInput
-          value={searchQuery}
-          placeholder="Search exercises..."
-          autoComplete="off"
-          onChangeText={handleSearchChange}
-          spellCheck={false}
-        />
-      </View>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <View className="px-2 w-full z-50">
+        <View className="mt-10 w-full px-14">
+          <AppInput
+            value={searchQuery}
+            placeholder="Search exercises..."
+            autoComplete="off"
+            onChangeText={handleSearchChange}
+            spellCheck={false}
+          />
+        </View>
 
-      {showDropdown && (
-        <View
-          ref={dropdownRef}
-          className="w-full border rounded-md 
-                    bg-slate-900 border-gray-100 touch-pan-y mt-10 h-[83%]"
-        >
-          {isLoading || isError ? (
-            <View className="gap-6 items-center justify-center z-50 text-center mt-10">
-              {isLoading && (
-                <>
-                  <AppText className="text-gray-100 text-xl">
-                    Loading exercises...
+        {showDropdown && (
+          <View
+            ref={dropdownRef}
+            className="w-full border rounded-md 
+                    bg-slate-900 border-gray-100  mt-10 h-[83%]"
+          >
+            {isLoading || isError ? (
+              <View className="gap-6 items-center justify-center z-50 text-center mt-10">
+                {isLoading && (
+                  <>
+                    <AppText className="text-gray-100 text-xl">
+                      Loading exercises...
+                    </AppText>
+                    <ActivityIndicator />
+                  </>
+                )}
+                {isError && (
+                  <AppText className="text-red-500">
+                    Failed to load exercises. Try again!
                   </AppText>
-                  <ActivityIndicator />
-                </>
-              )}
-              {isError && (
-                <AppText className="text-red-500">
-                  Failed to load exercises. Try again!
-                </AppText>
-              )}
-            </View>
-          ) : (
-            <SectionList
-              sections={sections}
-              keyExtractor={(item) => item.id}
-              renderItem={({ item }) => {
-                return (
-                  <Pressable
-                    className="w-full text-left px-4 py-2 z-40 text-gray-100 border-b"
-                    onPress={() => handleSelectExercise(item)}
-                  >
-                    <View className="justify-between">
-                      <View className="flex-row justify-between items-center">
-                        <AppText>{item.name} </AppText>
-                        <AppText className="text-sm text-gray-300">
-                          {item.muscle_group}
+                )}
+              </View>
+            ) : (
+              <SectionList
+                sections={sections}
+                keyExtractor={(item) => item.id}
+                renderItem={({ item }) => {
+                  return (
+                    <Pressable
+                      className="w-full text-left px-4 py-2 z-40 text-gray-100 border-b"
+                      onPress={() => handleSelectExercise(item)}
+                    >
+                      <View className="justify-between">
+                        <View className="flex-row justify-between items-center">
+                          <AppText>{item.name} </AppText>
+                          <AppText className="text-sm text-gray-300">
+                            {item.muscle_group}
+                          </AppText>
+                        </View>
+                        <AppText className="text-sm text-gray-400">
+                          {item.equipment}
                         </AppText>
                       </View>
-                      <AppText className="text-sm text-gray-400">
-                        {item.equipment}
-                      </AppText>
-                    </View>
-                  </Pressable>
-                );
-              }}
-              renderSectionHeader={({ section: { title } }) => (
-                <AppText className="text-gray-100 text-center bg-slate-600 rounded-t-md">
-                  {title}
-                </AppText>
-              )}
-            />
-          )}
-        </View>
-      )}
-    </View>
+                    </Pressable>
+                  );
+                }}
+                renderSectionHeader={({ section: { title } }) => (
+                  <AppText className="text-gray-100 text-center bg-slate-600 rounded-t-md">
+                    {title}
+                  </AppText>
+                )}
+              />
+            )}
+          </View>
+        )}
+      </View>
+    </TouchableWithoutFeedback>
   );
 }

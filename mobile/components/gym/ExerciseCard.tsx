@@ -80,8 +80,7 @@ export default function ExerciseCard({
           </View>
 
           <View className="w-full  text-gray-100">
-            <View className="text-gray-300 border-b border-gray-300 flex-row justify-between px-4">
-              <AppText className="p-2">Set</AppText>
+            <View className="text-gray-300 border-b border-gray-300 flex-row">
               {isCardioExercise(exercise) ? (
                 <>
                   <AppText className="p-2">Time (min)</AppText>
@@ -89,9 +88,21 @@ export default function ExerciseCard({
                 </>
               ) : (
                 <>
-                  <AppText className="p-2">Weight</AppText>
-                  <AppText className="p-2">Reps</AppText>
-                  <AppText className="p-2">RPE</AppText>
+                  <View className="w-[17%] text-center">
+                    <AppText className="p-2">Set</AppText>
+                  </View>
+                  <View className="w-[28%] text-center">
+                    <AppText className="p-2">Weight</AppText>
+                  </View>
+                  <View className="w-[20%] text-center">
+                    <AppText className="p-2">Reps</AppText>
+                  </View>
+                  <View className="w-[30%] text-center">
+                    <AppText className="p-2">RPE</AppText>
+                  </View>
+                  <View className="w-[5%] text-center">
+                    <AppText className="p-2"></AppText>
+                  </View>
                 </>
               )}
             </View>
@@ -101,27 +112,35 @@ export default function ExerciseCard({
             {exercise.sets.map((set, setIndex) => (
               <View
                 key={setIndex}
-                className={`border-b ${
+                className={`border-b border-gray-300 flex-row  items-center  ${
                   set.rpe === "Failure" ? "bg-red-800" : ""
                 } ${set.rpe === "Warm-up" ? "bg-blue-500" : ""}`}
               >
                 {isCardioExercise(exercise) ? (
                   <>
-                    <View className="p-2">{setIndex + 1}</View>
-                    <View className="p-2">{set.weight} min</View>
-                    <View className="p-2">{set.rpe}</View>
+                    <AppText className="p-2">{setIndex + 1}</AppText>
+                    <AppText className="p-2">{set.weight} min</AppText>
+                    <AppText className="p-2">{set.rpe}</AppText>
                   </>
                 ) : (
                   <>
-                    <View className="p-2">{setIndex + 1}</View>
-                    <View className="p-2">
-                      {set.weight} {weightUnit}
+                    <View className="w-[17%] text-center">
+                      <AppText className="p-2">{setIndex + 1}</AppText>
                     </View>
-                    <View className="p-2">{set.reps}</View>
-                    <View className="p-2">{set.rpe}</View>
+                    <View className="w-[28%] text-center">
+                      <AppText className="p-2">
+                        {set.weight} {weightUnit}
+                      </AppText>
+                    </View>
+                    <View className="w-[20%] text-center">
+                      <AppText className="p-2">{set.reps}</AppText>
+                    </View>
+                    <View className="w-[30%] text-center">
+                      <AppText className="p-2">{set.rpe}</AppText>
+                    </View>
                   </>
                 )}
-                <View>
+                <View className="w-[5%] items-end">
                   <Pressable
                     onPress={async () => {
                       const confirmed = await confirmAction({
@@ -133,7 +152,7 @@ export default function ExerciseCard({
                       onDeleteSet(index, setIndex);
                     }}
                   >
-                    <SquareX />
+                    <SquareX color="#dc2626" />
                   </Pressable>
                 </View>
               </View>
@@ -148,9 +167,7 @@ export default function ExerciseCard({
                     placeholder="Time in min..."
                     keyboardType="numeric"
                     value={input.weight}
-                    onChange={(val) =>
-                      onInputChange(index, "weight", Number(val))
-                    }
+                    onChangeText={(val) => onInputChange(index, "weight", val)}
                   />
                 </View>
                 <SelectInput
@@ -172,9 +189,7 @@ export default function ExerciseCard({
                     placeholder="Weight..."
                     keyboardType="numeric"
                     value={input.weight}
-                    onChange={(val) =>
-                      onInputChange(index, "weight", Number(val))
-                    }
+                    onChangeText={(val) => onInputChange(index, "weight", val)}
                   />
                 </View>
                 <View className="w-1/3">
@@ -182,9 +197,7 @@ export default function ExerciseCard({
                     placeholder="Reps..."
                     keyboardType="numeric"
                     value={input.reps}
-                    onChange={(val) =>
-                      onInputChange(index, "reps", Number(val))
-                    }
+                    onChangeText={(val) => onInputChange(index, "reps", val)}
                   />
                 </View>
                 <View className="w-1/3">

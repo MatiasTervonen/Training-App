@@ -19,7 +19,7 @@ import { generateUUID } from "@/app/(app)/lib/generateUUID";
 import { toast } from "react-hot-toast";
 import { mutate } from "swr";
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
-import { groupTemplateExercises } from "../utils/groupTemplateExercises";
+import GroupGymExercises from "@/app/(app)/training/utils/GroupGymExercises";
 import ExerciseCard from "../components/ExerciseCard";
 import { useParams } from "next/navigation";
 import useSWR from "swr";
@@ -64,7 +64,7 @@ export default function TemplateForm() {
     null
   );
 
-  const groupedExercises = groupTemplateExercises(exercises);
+  const groupedExercises = GroupGymExercises(exercises);
 
   const router = useRouter();
 
@@ -97,7 +97,7 @@ export default function TemplateForm() {
           main_group: ex.gym_exercises.main_group,
           muscle_group: ex.gym_exercises.muscle_group,
           sets: Array.from({ length: ex.sets ?? 0 }).map(() => ({
-            reps: ex.reps ?? undefined,
+            reps: undefined,
             weight: undefined,
             rpe: undefined,
           })),

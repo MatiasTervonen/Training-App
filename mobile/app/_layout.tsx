@@ -81,11 +81,11 @@ export default Sentry.wrap(function RootLayout() {
                   <LayoutWrapper>
                     <Slot />
                   </LayoutWrapper>
-                  <Toast config={toastConfig} position="top" />
                 </View>
               </SafeAreaView>
             </SafeAreaProvider>
           </PaperProvider>
+          <Toast config={toastConfig} position="top" />
         </MenuProvider>
       </QueryClientProvider>
     </GestureHandlerRootView>

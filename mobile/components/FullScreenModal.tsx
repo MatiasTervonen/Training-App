@@ -11,8 +11,6 @@ import { CircleX } from "lucide-react-native";
 import {
   View,
   Pressable,
-  TouchableWithoutFeedback,
-  Keyboard,
 } from "react-native";
 import { Portal } from "react-native-paper";
 
@@ -71,10 +69,9 @@ export default function FullScreenModal({
   return (
     <Portal>
       <GestureDetector gesture={pan}>
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
           <View className="absolute inset-0 bg-black/50 flex-1 z-50 justify-center">
             <Animated.View
-              className="bg-slate-800 absolute rounded-2xl h-[98vh] w-full z-50 bottom-0"
+              className="bg-slate-800 absolute rounded-2xl h-[90%] w-full z-50 bottom-0"
               style={animatedStyle}
             >
               <Pressable
@@ -87,7 +84,6 @@ export default function FullScreenModal({
               <View className="flex-1">{children}</View>
             </Animated.View>
           </View>
-        </TouchableWithoutFeedback>
       </GestureDetector>
     </Portal>
   );

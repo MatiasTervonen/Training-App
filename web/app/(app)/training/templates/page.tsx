@@ -46,7 +46,7 @@ export default function TemplatesPage() {
         muscle_group: ex.gym_exercises.muscle_group ?? undefined,
         main_group: ex.gym_exercises.main_group,
         sets: Array.from({ length: ex.sets ?? 0 }).map(() => ({
-          reps: ex.reps ?? undefined,
+          reps: undefined,
           weight: undefined,
           rpe: undefined, // Default RPE
         })),
@@ -118,63 +118,63 @@ export default function TemplatesPage() {
   );
 
   return (
-      <div className="h-full text-gray-100 p-5">
-        <div className="flex flex-col max-w-md mx-auto">
-          <h1 className="text-gray-100 text-center  mt-5 mb-10 text-2xl">
-            My Templates
-          </h1>
+    <div className="h-full text-gray-100 p-5">
+      <div className="flex flex-col max-w-md mx-auto">
+        <h1 className="text-gray-100 text-center  mt-5 mb-10 text-2xl">
+          My Templates
+        </h1>
 
-          {!error && isLoading && <TemplateSkeleton count={6} />}
+        {!error && isLoading && <TemplateSkeleton count={6} />}
 
-          {error && (
-            <p className="text-red-500 text-center">
-              Error loading templates. Try again!
-            </p>
-          )}
+        {error && (
+          <p className="text-red-500 text-center">
+            Error loading templates. Try again!
+          </p>
+        )}
 
-          {!isLoading && templates.length === 0 && (
-            <p className="text-gray-300 text-center">
-              No templates found. Create a new template to get started!
-            </p>
-          )}
+        {!isLoading && templates.length === 0 && (
+          <p className="text-gray-300 text-center">
+            No templates found. Create a new template to get started!
+          </p>
+        )}
 
-          {templates &&
-            templates.map((template: templateSummary) => (
-              <TemplateCard
-                key={template.id}
-                item={template}
-                onDelete={() => handleDeleteTemplate(template.id)}
-                onExpand={() => setExpandedItem(template as full_gym_template)}
-                onEdit={() => {
-                  router.push(`/training/templates/${template.id}/edit`);
-                }}
-              />
-            ))}
+        {templates &&
+          templates.map((template: templateSummary) => (
+            <TemplateCard
+              key={template.id}
+              item={template}
+              onDelete={() => handleDeleteTemplate(template.id)}
+              onExpand={() => setExpandedItem(template as full_gym_template)}
+              onEdit={() => {
+                router.push(`/training/templates/${template.id}/edit`);
+              }}
+            />
+          ))}
 
-          {expandedItem && (
-            <Modal isOpen={true} onClose={() => setExpandedItem(null)}>
-              <>
-                {isLoadingTemplateSession ? (
-                  <div className="flex flex-col gap-5 items-center justify-center pt-40">
-                    <p>Loading template details...</p>
-                    <Spinner />
-                  </div>
-                ) : TemplateSessionError ? (
-                  <p className="text-center text-lg mt-10">
-                    Failed to load template details. Please try again later.
-                  </p>
-                ) : (
-                  TemplateSessionFull && (
-                    <GymTemplate
-                      item={TemplateSessionFull}
-                      onStartWorkout={() => startWorkout(TemplateSessionFull)}
-                    />
-                  )
-                )}
-              </>
-            </Modal>
-          )}
-        </div>
+        {expandedItem && (
+          <Modal isOpen={true} onClose={() => setExpandedItem(null)}>
+            <>
+              {isLoadingTemplateSession ? (
+                <div className="flex flex-col gap-5 items-center justify-center pt-40">
+                  <p>Loading template details...</p>
+                  <Spinner />
+                </div>
+              ) : TemplateSessionError ? (
+                <p className="text-center text-lg mt-10">
+                  Failed to load template details. Please try again later.
+                </p>
+              ) : (
+                TemplateSessionFull && (
+                  <GymTemplate
+                    item={TemplateSessionFull}
+                    onStartWorkout={() => startWorkout(TemplateSessionFull)}
+                  />
+                )
+              )}
+            </>
+          </Modal>
+        )}
       </div>
+    </div>
   );
 }

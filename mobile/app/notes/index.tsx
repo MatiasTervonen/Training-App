@@ -63,6 +63,14 @@ export default function NotesScreen() {
   }, [notes, title, saveNotesDraft, isLoaded]);
 
   const handleSaveNotes = async () => {
+    if (!notes.trim()) {
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "Notes cannot be empty.",
+      });
+      return;
+    }
     setIsSaving(true);
 
     const queryKey = ["feed"];
@@ -95,8 +103,6 @@ export default function NotesScreen() {
     });
 
     try {
-      if (!title.trim() || !notes.trim()) return;
-
       const result = await saveNote({ title, notes });
 
       if (result === null) {
@@ -151,7 +157,7 @@ export default function NotesScreen() {
               onChangeText={setValue}
               value={title}
               label="Title.."
-              placeholder="Notes title..."
+              placeholder="Notes title...(optional)"
             />
           </View>
           <View className="flex-1 mt-10">

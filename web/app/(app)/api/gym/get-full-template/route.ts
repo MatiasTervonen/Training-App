@@ -1,6 +1,7 @@
 import { handleError } from "@/app/(app)/utils/handleError";
 import { createClient } from "@/utils/supabase/server";
 
+
 export async function GET(req: Request) {
   const supabase = await createClient();
 
@@ -21,14 +22,14 @@ export async function GET(req: Request) {
   const { data: template, error: templateError } = await supabase
     .from("gym_templates")
     .select(
-      "id, name, created_at, gym_template_exercises(id, exercise_id, sets, reps, superset_id, gym_exercises:exercise_id(name, equipment, muscle_group, main_group))"
+      "id, name, created_at, gym_template_exercises(id, exercise_id, superset_id, gym_exercises:exercise_id(name, equipment, muscle_group, main_group))"
     )
     .eq("user_id", user.sub)
     .eq("id", sessionId)
     .single();
 
   if (templateError || !template) {
-      handleError(templateError, {
+    handleError(templateError, {
       message: "Error fetching template",
       route: "/api/gym/get-full-template",
       method: "GET",

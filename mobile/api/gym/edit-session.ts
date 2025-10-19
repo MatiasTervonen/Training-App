@@ -1,21 +1,43 @@
-import { NextRequest } from "next/server";
-import { createClient } from "@/utils/supabase/server";
-import { handleError } from "@/app/(app)/utils/handleError";
+import { supabase } from "@/lib/supabase";
+import { handleError } from "@/utils/handleError";
+import * as crypto from "expo-crypto";
 
-export async function POST(req: NextRequest) {
-  const supabase = await createClient();
+type editSessionProps = {
+  id: string;
+  exercises: {
+    exercise_id: string;
+    superset_id: string | null;
+    notes: string | null;
+    sets: {
+      weight: number | null;
+      reps: number | null;
+      rpe: string | null;
+      time_min: number | null;
+      distance_meters: number | null;
+    }[];
+  }[];
+  notes: string | null;
+  duration: number;
+  title: string | null;
+};
 
-  const { data, error: authError } = await supabase.auth.getClaims();
-  const user = data?.claims;
+export async function editSession({
+  exercises,
+  notes,
+  duration,
+  title,
+  id: sessionId,
+}: editSessionProps) {
+  const {
+    data: { session },
+    error: sessionError,
+  } = await supabase.auth.getSession();
 
-  if (authError || !user) {
-    return new Response("Unauthorized", { status: 401 });
+  if (sessionError || !session || !session.user) {
+    throw new Error("No session");
   }
 
-  const body = await req.json();
-  const { exercises, notes, duration, title, id: sessionId } = body;
-
-  const { error: sessionError } = await supabase
+  const { error: editError } = await supabase
     .from("gym_sessions")
     .update({
       title,
@@ -23,18 +45,15 @@ export async function POST(req: NextRequest) {
       duration,
     })
     .eq("id", sessionId)
-    .eq("user_id", user.sub);
+    .eq("user_id", session.user.id);
 
-  if (sessionError) {
-    handleError(sessionError, {
+  if (editError) {
+    handleError(editError, {
       message: "Error updating session",
       route: "/api/gym/edit-session",
       method: "POST",
     });
-    return new Response(JSON.stringify({ error: sessionError?.message }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
+    throw new Error(editError.message);
   }
 
   const { data: existingExercises } = await supabase
@@ -65,7 +84,7 @@ export async function POST(req: NextRequest) {
 
     sessionExercises.push({
       id: sessionExerciseId,
-      user_id: user.sub,
+      user_id: session.user.id,
       session_id: sessionId,
       exercise_id: ex.exercise_id,
       position: index,
@@ -76,7 +95,7 @@ export async function POST(req: NextRequest) {
     for (const [setIndex, set] of ex.sets.entries()) {
       sets.push({
         session_exercise_id: sessionExerciseId,
-        user_id: user.sub,
+        user_id: session.user.id,
         weight: set.weight ?? null,
         reps: set.reps ?? null,
         rpe: set.rpe ?? null,
@@ -97,24 +116,19 @@ export async function POST(req: NextRequest) {
       route: "/api/gym/edit-session",
       method: "POST",
     });
-    return new Response(JSON.stringify({ error: seError.message }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
+    throw new Error(seError.message);
   }
 
   const { error: setsError } = await supabase.from("gym_sets").insert(sets);
 
   if (setsError) {
-    console.error("Supabase Sets Insert Error:", setsError);
-    return new Response(JSON.stringify({ error: setsError.message }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
+    handleError(setsError, {
+      message: "Error inserting sets",
+      route: "/api/gym/edit-session",
+      method: "POST",
     });
+    throw new Error(setsError.message);
   }
 
-  return new Response(JSON.stringify({ succes: true }), {
-    status: 200,
-    headers: { "Content-Type": "application/json" },
-  });
+  return { success: true };
 }

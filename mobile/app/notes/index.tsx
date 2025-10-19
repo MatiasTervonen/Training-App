@@ -148,7 +148,7 @@ export default function NotesScreen() {
   return (
     <>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-        <View className="flex-col flex-1 px-6 w-full max-w-md mx-auto justify-between">
+        <View className="flex-col flex-1 px-6 w-full max-w-lg mx-auto justify-between">
           <View className="">
             <AppText className="text-2xl text-center my-5">
               Add your notes here

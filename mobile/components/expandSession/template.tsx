@@ -1,9 +1,9 @@
 import { formatDate } from "@/lib/formatDate";
 import GroupTemplateExercise from "@/components/gym/lib/GroupTemplateExercises";
 import { full_gym_template } from "@/types/models";
-import { Pressable, ScrollView, View } from "react-native";
+import {  ScrollView, View } from "react-native";
 import AppText from "../AppText";
-import { Scroll } from "lucide-react-native";
+import AppButton from "../AppButton";
 
 type Props = {
   item: full_gym_template;
@@ -19,10 +19,10 @@ export default function GymTemplate({ item, onStartWorkout }: Props) {
     <ScrollView>
       <View className="flex-1 w-full px-6">
         <View className="my-5 gap-2 justify-center items-center">
-          <AppText className="text-sm text-gray-400">
+          <AppText className="text-lg text-gray-400">
             Created: {formatDate(item.created_at)}
           </AppText>
-          <AppText className="text-lg text-gray-100">{item.name}</AppText>
+          <AppText className="text-xl text-gray-100">{item.name}</AppText>
         </View>
         {Object.entries(groupedExercises).map(([superset_id, group]) => (
           <View
@@ -44,23 +44,20 @@ export default function GymTemplate({ item, onStartWorkout }: Props) {
                   >
                     {exercise.gym_exercises.name}
                   </AppText>
-                  <AppText className="text-sm text-gray-300">
+                  <AppText className="text-gray-300">
                     {exercise.gym_exercises.muscle_group}
                   </AppText>
                 </View>
-                <AppText className="text-sm text-gray-400 mt-2">
+                <AppText className="text-lg text-gray-400 mt-2">
                   {exercise.gym_exercises.equipment}
                 </AppText>
               </View>
             ))}
           </View>
         ))}
-        <Pressable
-          onPress={onStartWorkout}
-          className="mb-20 mt-10 gap-2 items-center bg-blue-800 py-2 rounded-md shadow-md border-2 border-blue-500 text-gray-100 text-lg "
-        >
-          <AppText>Start Workout</AppText>
-        </Pressable>
+        <View className="mt-10 mb-20">
+          <AppButton onPress={onStartWorkout} label="Start Workout" />
+        </View>
       </View>
     </ScrollView>
   );

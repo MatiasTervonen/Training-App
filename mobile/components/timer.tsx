@@ -100,11 +100,11 @@ export default function Timer({
       {(buttonsAlwaysVisible ||
         !(alarmFired || (totalDuration > 0 && elapsedTime >= totalDuration))) &&
         (isRunning ? (
-          <TouchableOpacity onPress={handlePause}>
+          <TouchableOpacity onPress={handlePause} hitSlop={10}>
             <CirclePause color="#f3f4f6" />
           </TouchableOpacity>
         ) : (
-          <TouchableOpacity onPress={handleStart}>
+          <TouchableOpacity onPress={handleStart} hitSlop={10}>
             <CirclePlay color="#f3f4f6" />
           </TouchableOpacity>
         ))}

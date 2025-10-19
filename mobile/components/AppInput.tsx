@@ -10,7 +10,7 @@ export default function AppInput({ label, ...props }: AppInputProps) {
 
   return (
     <View>
-      {label && <AppText className="mb-2">{label}</AppText>}
+      {label && <AppText className="mb-1">{label}</AppText>}
       <View
         style={{
           borderColor: focused ? "#22c55e" : "#d1d5db", // green-500 / gray-300
@@ -30,7 +30,7 @@ export default function AppInput({ label, ...props }: AppInputProps) {
           allowFontScaling={false}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
-          className="bg-transparent text-gray-100 text-lg px-4 py-2 h-12 font-russo"
+          className="bg-transparent text-gray-100 text-xl px-4 py-2 h-12 font-russo"
           {...props}
         />
       </View>

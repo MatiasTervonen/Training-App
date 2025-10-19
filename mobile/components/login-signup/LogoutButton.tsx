@@ -4,9 +4,13 @@ import { supabase } from "@/lib/supabase";
 import { Alert, TouchableOpacity } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import AppText from "../AppText";
-import { LogOut } from "lucide-react-native";
+import { LogOut, View } from "lucide-react-native";
 import { router } from "expo-router";
 import { useUserStore } from "@/lib/stores/useUserStore";
+import { queryClient } from "@/lib/queryClient";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { handleError } from "@/utils/handleError";
+import AppButton from "../AppButton";
 
 export default function LogoutButton() {
   const [isLoading, setIsLoading] = useState(false);
@@ -14,38 +18,43 @@ export default function LogoutButton() {
   const logoutUser = useUserStore((state) => state.logoutUser);
 
   const handleLogout = async () => {
-    setIsLoading(true);
+    try {
+      setIsLoading(true);
 
-    const { error } = await supabase.auth.signOut({ scope: "local" });
+      const { error } = await supabase.auth.signOut({ scope: "local" });
 
-    if (error) {
-      Alert.alert("Logout Failed", error.message);
+      if (error) {
+        Alert.alert("Logout Failed", error.message);
+        setIsLoading(false);
+        return;
+      }
+
+      // Clear TanStack Query cache
+      queryClient.clear();
+
+      await AsyncStorage.clear();
+
+      logoutUser();
       setIsLoading(false);
-      return;
+      router.replace("/");
+    } catch (error) {
+      Alert.alert("Logout Failed", "An unexpected error occurred.");
+      handleError(error, {
+        message: "Error during logout",
+        route: "LogoutButton.tsx",
+        method: "POST",
+      });
+      setIsLoading(false);
+    } finally {
+      setIsLoading(false);
     }
-
-    logoutUser();
-    setIsLoading(false);
-    router.replace("/");
   };
 
   return (
     <>
-      <TouchableOpacity
-        className="border-2 border-blue-700 rounded-xl"
-        onPress={handleLogout}
-      >
-        <LinearGradient
-          colors={["#020618", "#1447e6"]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={{ borderRadius: 8 }}
-          className="px-4 py-2 flex-row items-center justify-center  gap-2"
-        >
-          <LogOut size={20} color="#f3f4f6" />
-          <AppText className="text-center">Log out</AppText>
-        </LinearGradient>
-      </TouchableOpacity>
+      <AppButton onPress={handleLogout} label="Log Out">
+        <LogOut size={20} color="#f3f4f6" />
+      </AppButton>
       <FullScreenLoader visible={isLoading} message="Logging out..." />
     </>
   );

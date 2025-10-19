@@ -1,8 +1,8 @@
 import AppText from "./AppText";
-import { View, Pressable, Modal } from "react-native";
+import { View, Pressable, Modal, TouchableOpacity } from "react-native";
 import { useState } from "react";
-import { LinearGradient } from "expo-linear-gradient";
 import AnimatedButton from "./animatedButton";
+import { Menu } from "lucide-react-native";
 
 type SelectInputProps = {
   label?: string;
@@ -10,18 +10,17 @@ type SelectInputProps = {
   options: { value: string; label: string }[];
   value?: string;
   onChange?: (value: string) => void;
+
   disabled?: boolean;
 };
 
-export default function SelectInput({
+export default function DropDownModal({
   label,
   options,
-  value,
   onChange,
   disabled,
 }: SelectInputProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const selectedlabel = options.find((option) => option.value === value)?.label;
 
   const handlePress = () => {
     if (disabled) return; // prevent accidental opens
@@ -30,19 +29,9 @@ export default function SelectInput({
 
   return (
     <View>
-      <Pressable
-        onPressIn={handlePress}
-        className="border-2 border-gray-100 p-2 rounded-md px-4 py-2 h-12 overflow-hidden"
-      >
-        <LinearGradient
-          colors={["#0f172a", "#1e293b", "#333333"]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          className="absolute inset-0 items-center justify-center"
-        >
-          <AppText className="text-gray-100 text-lg ">{selectedlabel}</AppText>
-        </LinearGradient>
-      </Pressable>
+      <TouchableOpacity onPressIn={handlePress} hitSlop={12}>
+        <Menu color="#f3f4f6" />
+      </TouchableOpacity>
 
       <Modal
         visible={isOpen}

@@ -38,6 +38,7 @@ import Toast from "react-native-toast-message";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { LinearGradient } from "expo-linear-gradient";
 import { confirmAction } from "@/lib/confirmAction";
+import AppButton from "../AppButton";
 
 export default function TemplateForm() {
   const [workoutName, setWorkoutName] = useState("");
@@ -103,8 +104,6 @@ export default function TemplateForm() {
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
   });
-
-  console.log("Existing Template:", existingTemplate);
 
   useEffect(() => {
     if (existingTemplate) {
@@ -281,9 +280,9 @@ export default function TemplateForm() {
 
   if (templateId && (isLoading || !existingTemplate)) {
     return (
-      <View className="flex-1 items-center justify-center bg-slate-800 text-gray-100">
-        <AppText className="mb-4 text-xl">Loading template details...</AppText>
-        <ActivityIndicator />
+      <View className="flex-1 items-center justify-center">
+        <AppText className="mb-4 text-2xl">Loading template details...</AppText>
+        <ActivityIndicator size="large" />
       </View>
     );
   }
@@ -297,15 +296,17 @@ export default function TemplateForm() {
         >
           <View className="mx-auto flex-1 justify-between w-full px-6">
             <View>
-              <AppText className="text-gray-100 text-lg text-center my-5">
+              <AppText className="text-gray-100 text-2xl text-center my-5">
                 {templateId ? "Edit your template" : "Create your template"}
               </AppText>
-              <AppInput
-                value={workoutName}
-                onChangeText={setWorkoutName}
-                placeholder="Workout Name..."
-                label="Workout Name..."
-              />
+              <View className="mb-10">
+                <AppInput
+                  value={workoutName}
+                  onChangeText={setWorkoutName}
+                  placeholder="Workout Name..."
+                  label="Workout Name..."
+                />
+              </View>
             </View>
             <View>
               {Object.entries(groupedExercises).map(([superset_id, group]) => (
@@ -462,19 +463,18 @@ export default function TemplateForm() {
               error={historyError ? historyError.message : null}
             />
 
-            <View className="flex items-center gap-5 w-fit mx-auto mt-10">
-              <Pressable
+            <View className="flex-row items-center justify-center gap-5 mt-10">
+              <AppButton
                 onPress={() => {
                   setExerciseType("Normal");
                   setSupersetExercise([emptyExerciseEntry]);
                   setNormalExercises([emptyExerciseEntry]);
                   setIsExerciseModalOpen(true);
                 }}
-                className="flex-row items-center gap-2 px-10 bg-blue-800 py-2 rounded-md shadow-md border-2 border-blue-500 text-gray-100 text-lg "
+                label="Add Exercise"
               >
-                <AppText>Add Exercise</AppText>
                 <Plus size={20} color="#f3f4f6" />
-              </Pressable>
+              </AppButton>
             </View>
             <View className="justify-center mt-14 gap-5 pb-10">
               <SaveButton onPress={handleSaveTemplate} />

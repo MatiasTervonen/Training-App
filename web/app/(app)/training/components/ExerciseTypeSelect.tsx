@@ -7,7 +7,7 @@ type Option = {
 };
 
 type SelectProps = {
-  value: string | undefined;
+  value: string | undefined | null;
   label?: string;
   onChange: (value: string) => void;
   options: Option[];

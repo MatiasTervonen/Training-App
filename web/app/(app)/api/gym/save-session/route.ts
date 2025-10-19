@@ -68,6 +68,8 @@ export async function POST(req: NextRequest) {
         reps: set.reps,
         rpe: set.rpe,
         set_number: setIndex,
+        time_min: set.time_min,
+        distance_meters: set.distance_meters,
       });
     }
   }

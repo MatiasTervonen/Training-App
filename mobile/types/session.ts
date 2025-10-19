@@ -52,6 +52,7 @@ export type SessionSet = {
 
 export type HistoryResult = ({
   date: string;
+  main_group?: string;
   sets: {
     weight: number;
     reps: number;
@@ -63,6 +64,8 @@ export type ExerciseSet = {
   weight?: number;
   reps?: number;
   rpe?: string;
+  time_min?: number;
+  distance_meters?: number;
 };
 
 export type ExerciseEntry = {
@@ -87,9 +90,11 @@ export const emptyExerciseEntry: ExerciseEntry = {
 };
 
 export type ExerciseInput = {
-  weight: string;
-  reps: string;
-  rpe: string;
+  weight?: string;
+  reps?: string;
+  rpe?: string;
+  time_min?: string;
+  distance_meters?: string;
 };
 
 export type Feed_item = {

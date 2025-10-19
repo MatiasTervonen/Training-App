@@ -1,10 +1,12 @@
-"use client";
-
 import FullScreenModal from "@/components/FullScreenModal";
 import { ActivityIndicator, View } from "react-native";
 import { formatDate } from "@/lib/formatDate";
 import AppText from "../AppText";
 import { HistoryResult } from "@/types/session";
+import { FlatList } from "react-native-gesture-handler";
+import { LinearGradient } from "expo-linear-gradient";
+import { full_gym_exercises } from "@/types/models";
+import { useUserStore } from "@/lib/stores/useUserStore";
 
 type ExerciseHistoryModalProps = {
   isOpen: boolean;
@@ -21,6 +23,9 @@ export default function ExerciseHistoryModal({
   history,
   error,
 }: ExerciseHistoryModalProps) {
+  const weightUnit =
+    useUserStore((state) => state.preferences?.weight_unit) || "kg";
+
   return (
     <FullScreenModal isOpen={isOpen} onClose={onClose}>
       {isLoading ? (
@@ -36,47 +41,108 @@ export default function ExerciseHistoryModal({
         <AppText className="text-center mt-20 text-lg mx-4 text-gray-100">
           No history available for this exercise.
         </AppText>
-      ) : history ? (
-        <View className="items-center mb-20">
-          {history.map((session, sessionIndex) => (
-            <View key={sessionIndex} className="mb-4 w-full">
-              <View className="text-gray-100 items-center mt-10 mx-4">
+      ) : (
+        <FlatList
+          data={history}
+          keyExtractor={(item, index) => `${item!.date}-${index}`}
+          contentContainerStyle={{
+            paddingBottom: 80,
+            paddingHorizontal: 12,
+            paddingTop: 30,
+          }}
+          showsVerticalScrollIndicator={false}
+          renderItem={({ item: session }) => (
+            <>
+              <View className="text-gray-100 items-center my-5 mx-4">
                 <AppText className="text-lg">
                   {formatDate(session!.date)}
                 </AppText>
-                <View className="mt-6 bg-slate-900 rounded-md px-4 py-2 shadow-lg max-w-md w-full mx-auto">
-                  <View className="w-full text-left ">
-                    <View>
-                      <View className="text-gray-100 border-b">
-                        <AppText className="p-2">Set</AppText>
-                        <AppText className="p-2">Weight</AppText>
-                        <AppText className="p-2">Reps</AppText>
-                        <AppText className="p-2">Rpe</AppText>
-                      </View>
-                    </View>
-                    <View>
-                      {session!.sets.map((set, setIndex) => (
-                        <View
-                          key={setIndex}
-                          className={`mb-2 ${
-                            set.rpe === "Failure" ? "bg-red-500" : ""
-                          } ${set.rpe === "Warm-up" ? "bg-blue-500" : ""}`}
-                        >
-                          <AppText className="p-2">{setIndex + 1}</AppText>
-                          <AppText className="p-2">{set.weight}</AppText>
-                          <AppText className="p-2">{set.reps}</AppText>
-                          <AppText className="p-2">{set.rpe}</AppText>
-                        </View>
-                      ))}
+              </View>
+              <LinearGradient
+                colors={["#1e3a8a", "#0f172a", "#0f172a"]}
+                start={{ x: 1, y: 0 }} // bottom-left
+                end={{ x: 0, y: 1 }} // top-right
+                className="py-5 px-4 rounded-md overflow-hidden mb-10 border-2 border-gray-600"
+              >
+                <View className="w-full text-left ">
+                  <View className="w-full">
+                    <View className="text-gray-300 border-b border-gray-300 flex-row">
+                      {session!.main_group === "cardio" ? (
+                        <>
+                          <AppText className="p-2">Time (min)</AppText>
+                          <AppText className="p-2">Duration (km)</AppText>
+                        </>
+                      ) : (
+                        <>
+                          <View className="w-[17%] text-center">
+                            <AppText className="p-2 text-lg">Set</AppText>
+                          </View>
+                          <View className="w-[28%] text-center">
+                            <AppText className="p-2 text-lg">Weight</AppText>
+                          </View>
+                          <View className="w-[20%] text-center">
+                            <AppText className="p-2 text-lg">Reps</AppText>
+                          </View>
+                          <View className="w-[30%] text-center">
+                            <AppText className="p-2 text-lg">RPE</AppText>
+                          </View>
+                          <View className="w-[5%] text-center">
+                            <AppText className="p-2"></AppText>
+                          </View>
+                        </>
+                      )}
                     </View>
                   </View>
+                  <View>
+                    {session!.sets.map((set, setIndex) => (
+                      <View
+                        key={setIndex}
+                        className={`border-b border-gray-300 flex-row  items-center ${
+                          set.rpe === "Failure" ? "bg-red-500" : ""
+                        } ${set.rpe === "Warm-up" ? "bg-blue-500" : ""}`}
+                      >
+                        {session!.main_group === "cardio" ? (
+                          <>
+                            <AppText className="p-2 text-lg">
+                              {setIndex + 1}
+                            </AppText>
+                            <AppText className="p-2 text-lg">
+                              {set.weight} min
+                            </AppText>
+                            <AppText className="p-2 text-lg">{set.rpe}</AppText>
+                          </>
+                        ) : (
+                          <>
+                            <View className="w-[17%] text-center">
+                              <AppText className="p-2 text-lg">
+                                {setIndex + 1}
+                              </AppText>
+                            </View>
+                            <View className="w-[28%] text-center">
+                              <AppText className="p-2 text-lg">
+                                {set.weight} {weightUnit}
+                              </AppText>
+                            </View>
+                            <View className="w-[20%] text-center">
+                              <AppText className="p-2 text-lg">
+                                {set.reps}
+                              </AppText>
+                            </View>
+                            <View className="w-[30%] text-center">
+                              <AppText className="p-2 text-lg">
+                                {set.rpe}
+                              </AppText>
+                            </View>
+                          </>
+                        )}
+                      </View>
+                    ))}
+                  </View>
                 </View>
-              </View>
-            </View>
-          ))}
-        </View>
-      ) : (
-        <AppText className="text-gray-100 text-center">No data found</AppText>
+              </LinearGradient>
+            </>
+          )}
+        />
       )}
     </FullScreenModal>
   );

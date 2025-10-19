@@ -3,9 +3,9 @@ import { handleError } from "@/utils/handleError";
 
 type props = {
   id: string;
-  title: string;
-  notes: string;
-  weight: number | undefined;
+  title: string | null | undefined;
+  notes: string | null | undefined;
+  weight: number | null | undefined;
 };
 
 export async function editWeight({ title, notes, weight, id }: props) {
@@ -15,7 +15,7 @@ export async function editWeight({ title, notes, weight, id }: props) {
   } = await supabase.auth.getSession();
 
   if (sessionError || !session || !session.user) {
-    return { error: true, message: "No session" };
+    throw new Error("No session");
   }
 
   const { error: weightError, data: weightData } = await supabase
@@ -24,14 +24,16 @@ export async function editWeight({ title, notes, weight, id }: props) {
     .eq("id", id)
     .eq("user_id", session.user.id);
 
-  if (weightError || !weightData) {
+  if (weightError) console.error("Supabase update error", weightError);
+
+  if (weightError) {
     handleError(weightError, {
       message: "Error editing weight entry",
       route: "/api/weight/edit-weight",
       method: "GET",
     });
-    return { error: true, message: "Error editing weight entry" };
+    throw new Error("Error editing weight entry");
   }
 
-  return weightData;
+  return { success: true };
 }

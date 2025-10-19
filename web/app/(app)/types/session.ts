@@ -61,6 +61,8 @@ export type ExerciseSet = {
   reps?: number;
   rpe?: string;
   sets?: number;
+  time_min?: number;
+  distance_meters?: number;
 };
 
 export type ExerciseEntry = {
@@ -85,9 +87,11 @@ export const emptyExerciseEntry: ExerciseEntry = {
 };
 
 export type ExerciseInput = {
-  weight: string;
-  reps: string;
-  rpe: string;
+  weight?: string;
+  reps?: string;
+  rpe?: string;
+  time_min?: string;
+  distance_meters?: string;
 };
 
 export type FeedItem = {

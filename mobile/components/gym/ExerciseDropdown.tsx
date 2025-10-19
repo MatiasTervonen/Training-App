@@ -8,7 +8,6 @@ import {
   SectionList,
   TouchableWithoutFeedback,
   Keyboard,
-  ScrollView,
 } from "react-native";
 import { getExercises } from "@/api/gym/get-exercises";
 import { getRecentExercises } from "@/api/gym/recent-exercises";
@@ -131,7 +130,7 @@ export default function ExerciseDropdown({ onSelect, resetTrigger }: Props) {
                   </>
                 )}
                 {isError && (
-                  <AppText className="text-red-500">
+                  <AppText className="text-red-500 text-xl">
                     Failed to load exercises. Try again!
                   </AppText>
                 )}
@@ -148,12 +147,18 @@ export default function ExerciseDropdown({ onSelect, resetTrigger }: Props) {
                     >
                       <View className="justify-between">
                         <View className="flex-row justify-between items-center">
-                          <AppText>{item.name} </AppText>
-                          <AppText className="text-sm text-gray-300">
+                          <AppText
+                            className="text-lg mb-1 mr-4 flex-1"
+                            numberOfLines={1}
+                            ellipsizeMode="tail"
+                          >
+                            {item.name}
+                          </AppText>
+                          <AppText className="text-md text-gray-300 shrink-0">
                             {item.muscle_group}
                           </AppText>
                         </View>
-                        <AppText className="text-sm text-gray-400">
+                        <AppText className="text-md text-gray-400">
                           {item.equipment}
                         </AppText>
                       </View>
@@ -161,7 +166,7 @@ export default function ExerciseDropdown({ onSelect, resetTrigger }: Props) {
                   );
                 }}
                 renderSectionHeader={({ section: { title } }) => (
-                  <AppText className="text-gray-100 text-center bg-slate-600 rounded-t-md">
+                  <AppText className="text-gray-100 text-center bg-slate-600 rounded-t-md text-lg">
                     {title}
                   </AppText>
                 )}

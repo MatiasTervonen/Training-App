@@ -6,18 +6,18 @@ import { Ellipsis, SquareX } from "lucide-react";
 import SetInput from "./SetInput";
 import ExerciseTypeSelect from "./ExerciseTypeSelect";
 import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
-import { ExerciseEntry } from "../../types/session";
+import { ExerciseEntry, ExerciseInput } from "../../types/session";
 
 type ExerciseCardProps = {
   index: number;
   exercise: ExerciseEntry;
-  input: { weight: string; reps: string; rpe: string };
+  input: ExerciseInput;
   onUpdateExercise: (index: number, updated: ExerciseEntry) => void;
   onDeleteExercise: (index: number) => void;
   lastExerciseHistory: (index: number) => void;
   onInputChange: (
     index: number,
-    field: "weight" | "reps" | "rpe",
+    field: "weight" | "reps" | "rpe" | "time_min" | "distance_meters",
     value: number | string
   ) => void;
   onAddSet: (index: number) => void;
@@ -99,7 +99,7 @@ export default function ExerciseCard({
                 {isCardioExercise(exercise) ? (
                   <>
                     <th className="p-2 font-normal">Time (min)</th>
-                    <th className="p-2 font-normal">Rpe</th>
+                    <th className="p-2 font-normal">Length (meters)</th>
                   </>
                 ) : (
                   <>
@@ -121,8 +121,8 @@ export default function ExerciseCard({
                   {isCardioExercise(exercise) ? (
                     <>
                       <td className="p-2">{i + 1}</td>
-                      <td className="p-2">{set.weight} min</td>
-                      <td className="p-2">{set.rpe}</td>
+                      <td className="p-2">{set.time_min}</td>
+                      <td className="p-2">{set.distance_meters}</td>
                     </>
                   ) : (
                     <>
@@ -157,25 +157,22 @@ export default function ExerciseCard({
           <div className="flex items-center justify-center gap-4 mt-6">
             {isCardioExercise(exercise) ? (
               <>
-                <div className="flex items-center gap-5">
+                <div className="flex items-center gap-2 w-2/4">
                   <SetInput
                     placeholder="Time in min..."
                     type="number"
-                    value={input.weight}
-                    onChange={(val) => onInputChange(index, "weight", val)}
+                    value={input.time_min}
+                    onChange={(val) => onInputChange(index, "time_min", val)}
                   />
                 </div>
-                <ExerciseTypeSelect
-                  value={input.rpe}
-                  onChange={(val) => onInputChange(index, "rpe", val)}
-                  options={[
-                    { value: "Warm-up", label: "Warm-up" },
-                    { value: "Easy", label: "Easy" },
-                    { value: "Medium", label: "Medium" },
-                    { value: "Hard", label: "Hard" },
-                    { value: "Failure", label: "Failure" },
-                  ]}
-                />
+                <div className="flex items-center gap-5 w-2/4">
+                  <SetInput
+                    placeholder="Length (meters)"
+                    type="number"
+                    value={input.distance_meters}
+                    onChange={(val) => onInputChange(index, "distance_meters", val)}
+                  />
+                </div>
               </>
             ) : (
               <>

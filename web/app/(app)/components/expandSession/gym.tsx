@@ -80,7 +80,7 @@ export default function GymSession(gym_session: full_gym_session) {
                     {isCardioExercise(exercise) ? (
                       <>
                         <th className="p-2 font-normal">Time (min)</th>
-                        <th className="p-2 font-normal">Rpe</th>
+                        <th className="p-2 font-normal">Length (meters)</th>
                       </>
                     ) : (
                       <>
@@ -104,8 +104,8 @@ export default function GymSession(gym_session: full_gym_session) {
                       {isCardioExercise(exercise) ? (
                         <>
                           <td className="p-2">{setIndex + 1}</td>
-                          <td className="p-2">{set.weight} min</td>
-                          <td className="p-2">{set.rpe}</td>
+                          <td className="p-2">{set.time_min}</td>
+                          <td className="p-2">{set.distance_meters}</td>
                         </>
                       ) : (
                         <>

@@ -14,6 +14,8 @@ type props = {
       weight?: number;
       reps?: number;
       rpe?: string;
+      time_min?: number;
+      distance_meters?: number;
     }[];
   }[];
 };
@@ -46,7 +48,6 @@ export async function saveSession({
     .select()
     .single();
 
-  console.log("sessionData", sessionData);
 
   if (sessionError || !sessionData) {
     handleError(sessionError, {
@@ -85,6 +86,8 @@ export async function saveSession({
         reps: set.reps,
         rpe: set.rpe,
         set_number: setIndex,
+        time_min: set.time_min,
+        distance_meters: set.distance_meters,
       });
     }
   }

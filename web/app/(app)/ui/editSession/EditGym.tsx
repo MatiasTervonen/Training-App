@@ -40,6 +40,8 @@ export default function EditGym({
       weight: set.weight,
       reps: set.reps,
       rpe: set.rpe,
+      time_min: set.time_min,
+      distance_meters: set.distance_meters,
     })),
   }));
 
@@ -188,7 +190,7 @@ export default function EditGym({
                       {isCardioExercise(exercise) ? (
                         <>
                           <th className="p-2 font-normal">Time (min)</th>
-                          <th className="p-2 font-normal">Rpe</th>
+                          <th className="p-2 font-normal">Distance (m)</th>
                         </>
                       ) : (
                         <>
@@ -216,30 +218,30 @@ export default function EditGym({
                               <SetInput
                                 type="number"
                                 placeholder="Time (min)"
-                                value={set.weight}
+                                value={set.time_min}
                                 onChange={(val) =>
                                   handleUpdateSet(
                                     index,
                                     setIndex,
-                                    "weight",
+                                    "time_min",
                                     val
                                   )
                                 }
                               />
                             </td>
                             <td className="p-2 border-b w-2/4 relative">
-                              <ExerciseTypeSelect
-                                value={set.rpe}
+                              <SetInput
+                                type="number"
+                                placeholder="distance (meters)..."
+                                value={set.distance_meters}
                                 onChange={(val) =>
-                                  handleUpdateSet(index, setIndex, "rpe", val)
+                                  handleUpdateSet(
+                                    index,
+                                    setIndex,
+                                    "distance_meters",
+                                    val
+                                  )
                                 }
-                                options={[
-                                  { value: "Warm-up", label: "Warm-up" },
-                                  { value: "Easy", label: "Easy" },
-                                  { value: "Medium", label: "Medium" },
-                                  { value: "Hard", label: "Hard" },
-                                  { value: "Failure", label: "Failure" },
-                                ]}
                               />
                             </td>
                           </>

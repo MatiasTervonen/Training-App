@@ -45,7 +45,7 @@ export default function ActiveSessionPopup() {
         <AppText
           numberOfLines={1}
           ellipsizeMode="tail"
-          className="pb-2 text-start text-gray-100 mr-8"
+          className="pb-2 text-start text-gray-100 mr-8 text-lg"
         >
           {activeSession.label}
         </AppText>

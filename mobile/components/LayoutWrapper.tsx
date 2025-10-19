@@ -8,6 +8,7 @@ import ModalPageWrapper from "./ModalPageWrapper";
 import { useModalPageConfig } from "@/lib/stores/modalPageConfig";
 
 interface UserPreferences {
+  id: string;
   display_name: string;
   weight_unit: string;
   profile_picture: string | null;

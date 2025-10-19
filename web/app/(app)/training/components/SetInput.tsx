@@ -2,7 +2,7 @@ import React from "react";
 
 type SetInputProps = {
   placeholder: string;
-  value: string | number | undefined;
+  value: string | number | undefined | null;
   type: string;
   onChange: (value: string) => void;
   label?: string; // Optional label prop

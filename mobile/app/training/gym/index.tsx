@@ -18,7 +18,7 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { handleError } from "@/utils/handleError";
 import { useDebouncedCallback } from "use-debounce";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getLastExerciseHistory } from "@/api/gym/last-exercise-history";
 import { useTimerStore } from "@/lib/stores/timerStore";
 import * as Crypto from "expo-crypto";
@@ -58,6 +58,9 @@ export default function GymScreen() {
   const [exerciseHistoryId, setExerciseHistoryId] = useState<string | null>(
     null
   );
+  const [isScrolling, setIsScrolling] = useState(false);
+
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     const loadDraft = async () => {
@@ -74,6 +77,8 @@ export default function GymScreen() {
                   weight: "",
                   reps: "",
                   rpe: "Medium",
+                  time_min: "",
+                  distance_meters: "",
                 }))
               : []
           );
@@ -102,7 +107,6 @@ export default function GymScreen() {
         notes,
       };
 
-      console.log("Rendering GymScreen with exercises:", sessionDraft);
       await AsyncStorage.setItem(
         "gym_session_draft",
         JSON.stringify(sessionDraft)
@@ -128,23 +132,17 @@ export default function GymScreen() {
     error: historyError,
     isLoading,
   } = useQuery({
-    queryKey: ["last-exercise-history"],
-    queryFn: async () => {
-      if (isHistoryOpen && exerciseHistoryId) {
-        return await getLastExerciseHistory({ exerciseId: exerciseHistoryId });
-      } else {
-        return [];
-      }
-    },
+    queryKey: ["last-exercise-history", exerciseHistoryId],
+    queryFn: () => getLastExerciseHistory({ exerciseId: exerciseHistoryId! }),
+    enabled: isHistoryOpen && !!exerciseHistoryId,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
 
   const openHistory = (exerciseId: string) => {
     setExerciseHistoryId(exerciseId);
     setIsHistoryOpen(true);
-  };
-
-  const isCardioExercise = (exercise: ExerciseEntry) => {
-    return (exercise.main_group || "").toLowerCase() === "cardio";
   };
 
   const startSession = useCallback(() => {
@@ -213,10 +211,12 @@ export default function GymScreen() {
       setExercises((prev) => [...prev, ...updated]);
       setExerciseInputs((prev) => [
         ...prev,
-        ...updated.map((ex) => ({
+        ...updated.map(() => ({
           weight: "",
           reps: "",
-          rpe: isCardioExercise(ex) ? "Warm-up" : "Medium",
+          rpe: "Medium",
+          time_min: "",
+          distance_meters: "",
         })),
       ]);
       setNormalExercises([]);
@@ -225,22 +225,41 @@ export default function GymScreen() {
   };
 
   const logSetForExercise = (index: number) => {
-    const { weight, reps, rpe } = exerciseInputs[index];
-
-    const safeWeight = weight === "" ? 0 : Number(weight);
-    const safeReps = reps === "" ? 0 : Number(reps);
-
+    const input = exerciseInputs[index];
+    const exercise = exercises[index];
     const updated = [...exercises];
-    updated[index].sets.push({
-      weight: safeWeight,
-      reps: safeReps,
-      rpe: rpe,
-    });
-    setExercises(updated);
 
-    const updatedInputs = [...exerciseInputs];
-    updatedInputs[index] = { weight: "", reps: "", rpe: "Medium" };
-    setExerciseInputs(updatedInputs);
+    const isCardio = (exercise.main_group || "").toLowerCase() === "cardio";
+
+    if (isCardio) {
+      const safeTime = input.time_min === "" ? 0 : Number(input.time_min);
+      const safeDistance =
+        input.distance_meters === "" ? 0 : Number(input.distance_meters);
+
+      updated[index].sets.push({
+        time_min: safeDistance,
+        distance_meters: safeTime,
+      });
+
+      const updatedInputs = [...exerciseInputs];
+      updatedInputs[index] = { ...input, time_min: "", distance_meters: "" };
+      setExerciseInputs(updatedInputs);
+    } else {
+      const safeWeight = input.weight === "" ? 0 : Number(input.weight);
+      const safeReps = input.reps === "" ? 0 : Number(input.reps);
+
+      updated[index].sets.push({
+        weight: safeWeight,
+        reps: safeReps,
+        rpe: input.rpe,
+      });
+
+      const updatedInputs = [...exerciseInputs];
+      updatedInputs[index] = { weight: "", reps: "", rpe: "Medium" };
+      setExerciseInputs(updatedInputs);
+    }
+
+    setExercises(updated);
   };
 
   const resetSession = () => {
@@ -287,6 +306,8 @@ export default function GymScreen() {
         setIsSaving(false);
         throw new Error("Failed to save session gym session");
       }
+
+      queryClient.refetchQueries({ queryKey: ["feed"], exact: true });
 
       router.push("/training/training-finished"); // Redirect to the finished page
       resetSession(); // Clear the session data
@@ -336,6 +357,8 @@ export default function GymScreen() {
 
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
         <ScrollView
+          onScrollBeginDrag={() => setIsScrolling(true)}
+          onScrollEndDrag={() => setTimeout(() => setIsScrolling(false), 150)}
           keyboardShouldPersistTaps="handled"
           contentContainerStyle={{ flexGrow: 1 }}
         >
@@ -385,6 +408,7 @@ export default function GymScreen() {
                     return (
                       <View key={index}>
                         <ExerciseCard
+                          disabled={isScrolling}
                           mode="session"
                           exercise={exercise}
                           lastExerciseHistory={(index) => {

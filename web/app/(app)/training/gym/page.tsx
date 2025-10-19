@@ -82,6 +82,8 @@ export default function TrainingSessionPage() {
               weight: "",
               reps: "",
               rpe: "Medium",
+              time_min: "",
+              distance_meters: "",
             }))
           : []
       );
@@ -117,10 +119,6 @@ export default function TrainingSessionPage() {
   const openHistory = (exerciseId: string) => {
     setExerciseHistoryId(exerciseId);
     setIsHistoryOpen(true);
-  };
-
-  const isCardioExercise = (exercise: ExerciseEntry) => {
-    return (exercise.main_group || "").toLowerCase() === "cardio";
   };
 
   const startSession = useCallback(() => {
@@ -186,10 +184,12 @@ export default function TrainingSessionPage() {
       setExercises((prev) => [...prev, ...updated]);
       setExerciseInputs((prev) => [
         ...prev,
-        ...updated.map((ex) => ({
+        ...updated.map(() => ({
           weight: "",
           reps: "",
-          rpe: isCardioExercise(ex) ? "Warm-up" : "Medium",
+          rpe: "Medium",
+          time_min: "",
+          distance_meters: "",
         })),
       ]);
       setNormalExercises([]);
@@ -198,22 +198,41 @@ export default function TrainingSessionPage() {
   };
 
   const logSetForExercise = (index: number) => {
-    const { weight, reps, rpe } = exerciseInputs[index];
-
-    const safeWeight = weight === "" ? 0 : Number(weight);
-    const safeReps = reps === "" ? 0 : Number(reps);
-
+    const input = exerciseInputs[index];
+    const exercise = exercises[index];
     const updated = [...exercises];
-    updated[index].sets.push({
-      weight: safeWeight,
-      reps: safeReps,
-      rpe: rpe,
-    });
-    setExercises(updated);
 
-    const updatedInputs = [...exerciseInputs];
-    updatedInputs[index] = { weight: "", reps: "", rpe: "Medium" };
-    setExerciseInputs(updatedInputs);
+    const isCardio = (exercise.main_group || "").toLowerCase() === "cardio";
+
+    if (isCardio) {
+      const safeTime = input.time_min === "" ? 0 : Number(input.time_min);
+      const safeDistance =
+        input.distance_meters === "" ? 0 : Number(input.distance_meters);
+
+      updated[index].sets.push({
+        time_min: safeTime,
+        distance_meters: safeDistance,
+      });
+
+      const updatedInputs = [...exerciseInputs];
+      updatedInputs[index] = { ...input, time_min: "", distance_meters: "" };
+      setExerciseInputs(updatedInputs);
+    } else {
+      const safeWeight = input.weight === "" ? 0 : Number(input.weight);
+      const safeReps = input.reps === "" ? 0 : Number(input.reps);
+
+      updated[index].sets.push({
+        weight: safeWeight,
+        reps: safeReps,
+        rpe: input.rpe,
+      });
+
+      const updatedInputs = [...exerciseInputs];
+      updatedInputs[index] = { weight: "", reps: "", rpe: "Medium" };
+      setExerciseInputs(updatedInputs);
+    }
+
+    setExercises(updated);
   };
 
   const resetSession = () => {
@@ -230,7 +249,12 @@ export default function TrainingSessionPage() {
   };
 
   const saveSession = async () => {
-    if (elapsedTime === 0 || sessionTitle.trim() === "") return;
+    if (elapsedTime === 0) return;
+
+    if (sessionTitle.trim() === "") {
+      toast.error("Please enter a session title before saving.");
+      return;
+    }
 
     const confirmSave = confirm(
       "Are you sure you want to finish this session?"

@@ -5,7 +5,8 @@ type SessionExercise = {
   id: string;
   session_id: string;
   exercise_id: string;
-  gym_sessions: { created_at: string; user_id: string }[];
+  gym_exercises: { main_group: string };
+  gym_sessions: { created_at: string; user_id: string };
 };
 
 export async function getLastExerciseHistory({
@@ -25,7 +26,7 @@ export async function getLastExerciseHistory({
   const { data: exercises, error: exerciseError } = await supabase
     .from("gym_session_exercises")
     .select(
-      "id, session_id, exercise_id, gym_sessions:session_id(created_at, user_id)"
+      "id, session_id, exercise_id, gym_exercises(main_group), gym_sessions(created_at, user_id)"
     )
     .eq("exercise_id", exerciseId)
     .eq("gym_sessions.user_id", session.user.id);
@@ -39,7 +40,7 @@ export async function getLastExerciseHistory({
     throw new Error("Error fetching exercise history");
   }
 
-  const sessions = exercises as SessionExercise[] | null;
+  const sessions = exercises as unknown as SessionExercise[] | null;
 
   if (!sessions || sessions.length === 0) {
     return [];
@@ -56,8 +57,8 @@ export async function getLastExerciseHistory({
 
   const sorted = sessions.sort(
     (a, b) =>
-      new Date(b.gym_sessions?.[0]?.created_at || 0).getTime() -
-      new Date(a.gym_sessions?.[0]?.created_at || 0).getTime()
+      new Date(b.gym_sessions.created_at || 0).getTime() -
+      new Date(a.gym_sessions.created_at || 0).getTime()
   );
 
   const allSorted = await Promise.all(
@@ -78,7 +79,8 @@ export async function getLastExerciseHistory({
       }
 
       return {
-        date: session.gym_sessions?.[0]?.created_at,
+        date: session.gym_sessions.created_at,
+        main_group: session.gym_exercises.main_group,
         sets,
       };
     })

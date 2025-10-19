@@ -1,6 +1,7 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { handleError } from "@/utils/handleError";
 import { supabase } from "@/lib/supabase";
+import { useUserStore } from "@/lib/stores/useUserStore";
 
 const PAGE_SIZE = 15;
 
@@ -36,12 +37,12 @@ async function fetchFeed({ pageParam = 1 }: { pageParam?: number }) {
 }
 
 export function useFeed() {
+
   return useInfiniteQuery({
     queryKey: ["feed"],
     queryFn: ({ pageParam }) => fetchFeed({ pageParam }),
     getNextPageParam: (lastPage) => lastPage.nextPage ?? undefined,
     initialPageParam: 1,
-
     refetchOnMount: false,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,

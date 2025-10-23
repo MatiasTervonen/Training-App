@@ -3,11 +3,11 @@
     "name": "MyTrack",
     "slug": "MyTrack",
     "version": "1.0.0",
-    "orientation": "portrait",
+    "orientation": "default",
     "icon": "./assets/images/ios-tinted-icon.png",
     "scheme": "mytrack",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": false,
+    "newArchEnabled": true,
     "ios": {
       "supportsTablet": true
     },
@@ -26,8 +26,6 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
-      "expo-router",
-      "expo-dev-client",
       "expo-router",
       "expo-dev-client",
       [

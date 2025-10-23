@@ -9,13 +9,18 @@ import "./global.css";
 import Navbar from "@/components/navbar/Navbar";
 import "react-native-url-polyfill/auto";
 import LayoutWrapper from "@/components/LayoutWrapper";
-import Toast, { BaseToast, BaseToastProps, ErrorToast } from "react-native-toast-message";
+import Toast, {
+  BaseToast,
+  BaseToastProps,
+  ErrorToast,
+} from "react-native-toast-message";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
 import * as Sentry from "@sentry/react-native";
 import { MenuProvider } from "react-native-popup-menu";
 import { Provider as PaperProvider } from "react-native-paper";
 import { JSX } from "react/jsx-runtime";
+import { appQueryClient } from "@/lib/reactQueryClient";
 
 // Custom Toast Configuration
 
@@ -82,8 +87,6 @@ Sentry.init({
   // spotlight: __DEV__,
 });
 
-const queryClient = new QueryClient();
-
 export default Sentry.wrap(function RootLayout() {
   const [loaded, error] = useFonts({
     "Russo-One": require("../assets/fonts/RussoOne-Regular.ttf"),
@@ -112,7 +115,7 @@ export default Sentry.wrap(function RootLayout() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <QueryClientProvider client={queryClient}>
+      <QueryClientProvider client={appQueryClient}>
         <MenuProvider>
           <PaperProvider>
             <SafeAreaProvider>
@@ -122,7 +125,7 @@ export default Sentry.wrap(function RootLayout() {
                 translucent={false}
               />
               <SafeAreaView style={{ flex: 1 }} className="bg-slate-950">
-                <View className="flex-1 bg-slate-800 font-russo text-red-500">
+                <View className="flex-1 bg-slate-800 font-russo text-red-500 max-w-3xl mx-auto w-full">
                   <Navbar />
                   <LayoutWrapper>
                     <Slot />

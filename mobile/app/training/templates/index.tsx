@@ -9,15 +9,15 @@ import TemplateCard from "@/components/cards/TemplateCard";
 import { ActivityIndicator, ScrollView, View } from "react-native";
 import GymTemplate from "@/components/expandSession/template";
 import { handleError } from "@/utils/handleError";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import GetTemplate from "@/api/gym/get-templates";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import DeleteTemplate from "@/api/gym/delete-template";
-import { queryClient } from "@/lib/queryClient";
 import { confirmAction } from "@/lib/confirmAction";
 import GetFullTemplate from "@/api/gym/get-full-template";
 import { TemplateSkeleton } from "@/components/skeletetons";
 import AppText from "@/components/AppText";
+import PageContainer from "@/components/PageContainer";
 
 type templateSummary = {
   id: string;
@@ -29,6 +29,8 @@ export default function TemplatesPage() {
   const [expandedItem, setExpandedItem] = useState<full_gym_template | null>(
     null
   );
+
+  const queryClient = useQueryClient();
 
   const router = useRouter();
 
@@ -71,7 +73,7 @@ export default function TemplatesPage() {
   };
 
   const handleDeleteTemplate = async (templateId: string) => {
-    const confirmDelete = confirmAction({
+    const confirmDelete = await confirmAction({
       message: "Delete Template",
       title:
         "Are you sure you want to delete this template? This action cannot be undone.",
@@ -126,10 +128,10 @@ export default function TemplatesPage() {
 
   return (
     <ScrollView
-      showsHorizontalScrollIndicator={false}
+      showsVerticalScrollIndicator={false}
       keyboardShouldPersistTaps="handled"
     >
-      <View className="flex-1 text-gray-100 px-6">
+      <PageContainer>
         <AppText className="text-gray-100 text-center  mt-5 mb-10 text-2xl">
           My Templates
         </AppText>
@@ -149,8 +151,9 @@ export default function TemplatesPage() {
         )}
 
         {templates &&
-          templates.map((template: templateSummary) => (
+          templates.map((template: templateSummary, index: number) => (
             <TemplateCard
+              index={index}
               key={template.id}
               item={template}
               onDelete={() => handleDeleteTemplate(template.id)}
@@ -163,26 +166,26 @@ export default function TemplatesPage() {
 
         {expandedItem && (
           <FullScreenModal isOpen={true} onClose={() => setExpandedItem(null)}>
-              {isLoadingTemplateSession ? (
-                <View className="gap-5 items-center justify-center pt-40">
-                  <AppText>Loading template details...</AppText>
-                  <ActivityIndicator />
-                </View>
-              ) : TemplateSessionError ? (
-                <AppText className="text-center text-lg mt-10">
-                  Failed to load template details. Please try again later.
-                </AppText>
-              ) : (
-                TemplateSessionFull && (
-                  <GymTemplate
-                    item={TemplateSessionFull}
-                    onStartWorkout={() => startWorkout(TemplateSessionFull)}
-                  />
-                )
-              )}       
+            {isLoadingTemplateSession ? (
+              <View className="gap-5 items-center justify-center pt-40">
+                <AppText>Loading template details...</AppText>
+                <ActivityIndicator />
+              </View>
+            ) : TemplateSessionError ? (
+              <AppText className="text-center text-lg mt-10">
+                Failed to load template details. Please try again later.
+              </AppText>
+            ) : (
+              TemplateSessionFull && (
+                <GymTemplate
+                  item={TemplateSessionFull}
+                  onStartWorkout={() => startWorkout(TemplateSessionFull)}
+                />
+              )
+            )}
           </FullScreenModal>
         )}
-      </View>
+      </PageContainer>
     </ScrollView>
   );
 }

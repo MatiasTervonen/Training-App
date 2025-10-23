@@ -19,7 +19,9 @@ export async function POST(req: NextRequest) {
   const { error } = await supabase
     .from("gym_exercises")
     .update(updateFields)
-    .eq("id", id);
+    .eq("id", id)
+    .eq("user_id", user.sub);
+
 
   if (error) {
     handleError(error, {

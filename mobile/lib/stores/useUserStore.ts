@@ -3,7 +3,6 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 interface UserPreferences {
-  id: string;
   display_name: string;
   weight_unit: string;
   profile_picture: string | null;

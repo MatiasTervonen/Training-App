@@ -15,12 +15,16 @@ import ModalLogin from "./components/modalLogin";
 import CustomInput from "../(app)/ui/CustomInput";
 import ResetPasswordButton from "./components/resetPasswordButton";
 import ResendButton from "./components/resendButton";
+import { ArrowLeft } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const [activeForm, setActiveForm] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [modal2Open, setModal2Open] = useState(false);
+
+  const router = useRouter();
 
   const initialState = {
     success: false,
@@ -44,9 +48,19 @@ export default function LoginPage() {
   return (
     <div className="bg-slate-950">
       <div className="flex flex-col items-center h-[100dvh] w-full bg-gradient-to-tr from-slate-950 via-slate-950 to-blue-900 max-w-7xl mx-auto">
-        <p className=" text-gray-100 text-5xl p-4 w-full text-center">
-          MyTrack
-        </p>
+        <nav className="flex items-center justify-between w-full py-4 px-2">
+          <button
+            className="flex items-center gap-2 hover:scale-105 hover:text-teal-500 transition-transform duration-200 cursor-pointer"
+            onClick={() => router.push("/")}
+          >
+            <ArrowLeft size={30} />
+            <p>back</p>
+          </button>
+          <p className="text-3xl sm:text-4xl lg:text-5xl text-center bg-gradient-to-tr from-[#27aee4] via-[#66ece1] to-[#f3f18d] text-transparent bg-clip-text">
+            MyTrack
+          </p>
+          <p className="min-w-[76px]"></p>
+        </nav>
         <div className="relative flex flex-grow w-full overflow-hidden max-w-md">
           {/* Log in Form */}
 

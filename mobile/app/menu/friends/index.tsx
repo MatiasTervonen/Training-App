@@ -3,15 +3,13 @@ import AppText from "@/components/AppText";
 import FriendRequestForm from "@/components/friends-screen/FriendRequestForm";
 import FriendCard from "@/components/friends-screen/FriendCard";
 import { Friends } from "@/types/models";
+import PageContainer from "@/components/PageContainer";
 
 export default function FriendsScreen() {
-
-  // Tankstak query  to fetch friends from the backend like SWR in web/ use persistence  ????? 
- 
-
+  // Tankstak query  to fetch friends from the backend like SWR in web/ use persistence  ?????
 
   return (
-    <View className="flex flex-col items-center justify-center h-screen">
+    <PageContainer>
       <AppText className="text-6xl text-center">Friends</AppText>
       <FriendRequestForm />
       <View className="flex flex-col w-full">
@@ -19,6 +17,6 @@ export default function FriendsScreen() {
           <FriendCard key={friend.id} friend={friend} />
         ))}
       </View>
-    </View>
+    </PageContainer>
   );
 }

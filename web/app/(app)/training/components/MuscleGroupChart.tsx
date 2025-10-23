@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { full_gym_session } from "../../types/models";
 import {
   BarChart,
@@ -31,17 +32,21 @@ export default function MuscleGroupChart({
     return muscleGroupCount;
   }
 
-  const chartData = Object.entries(muscle_groupData(data)).map(
-    ([name, value]) => ({ name, exercises: value })
-  );
-
-  const shortedData = chartData.sort((a, b) => b.exercises - a.exercises);
+  const chartData = useMemo(() => {
+    const entries = Object.entries(muscle_groupData(data)).map(
+      ([name, value]) => ({
+        name,
+        exercises: value,
+      })
+    );
+    return entries.sort((a, b) => b.exercises - a.exercises);
+  }, [data]);
 
   return (
     <div>
       <ResponsiveContainer width="100%" height={600}>
         <BarChart
-          data={shortedData}
+          data={chartData}
           layout="vertical"
           margin={{
             top: 5,

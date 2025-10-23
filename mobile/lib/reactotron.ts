@@ -3,11 +3,10 @@ import {
   QueryClientManager,
   reactotronReactQuery,
 } from "reactotron-react-query";
-import { queryClient } from "./queryClient";
+import { appQueryClient } from "./reactQueryClient";
 
 const queryClientManager = new QueryClientManager({
-  // @ts-ignore
-  queryClient,
+  queryClient: appQueryClient,
 });
 
 Reactotron.configure({

@@ -54,7 +54,7 @@ export default function LinkButton({ href, label, children }: LinkButtonProps) {
       <Pressable onPressIn={handlePressIn} onPressOut={handlePressOut}>
         <Animated.View
           style={animatedStyle}
-          className="flex-row items-center justify-center gap-2 bg-blue-800 py-2 w-full my-3 rounded-md shadow-md border-2 border-blue-500 text-gray-100 text-lg"
+          className="flex-row items-center justify-center gap-2 bg-blue-800 py-2 w-full rounded-md shadow-md border-2 border-blue-500 text-lg"
         >
           {/* Light sweep gradient */}
           <Animated.View

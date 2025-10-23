@@ -16,31 +16,6 @@ export async function POST(req: NextRequest) {
 
   const { id, name, language, equipment, muscle_group, main_group } = body;
 
-  const { data: existingExercise, error: fetchError } = await supabase
-    .from("gym_exercises")
-    .select("*")
-    .eq("name", name)
-    .maybeSingle();
-
-  if (fetchError) {
-    handleError(fetchError, {
-      message: "Error checking existing exercise",
-      route: "/api/gym/add-exercise",
-      method: "POST",
-    });
-    return new Response(JSON.stringify({ error: fetchError.message }), {
-      status: 409,
-      headers: { "Content-Type": "application/json" },
-    });
-  }
-
-  if (existingExercise) {
-    return new Response(
-      JSON.stringify({ error: "Exercise with this name already exists." }),
-      { status: 400, headers: { "Content-Type": "application/json" } }
-    );
-  }
-
   const { data: exerciseData, error: exerciseError } = await supabase
     .from("gym_exercises")
     .insert([

@@ -15,10 +15,8 @@ import FullScreenModal from "@/components/FullScreenModal";
 import SaveButton from "@/components/SaveButton";
 import DeleteButton from "@/components/DeleteButton";
 import {
-  HistoryResult,
   ExerciseEntry,
   emptyExerciseEntry,
-  OptimisticTemplate,
   ExerciseInput,
 } from "@/types/session";
 import ExerciseHistoryModal from "@/components/gym/ExerciseHistoryModal";
@@ -39,6 +37,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { LinearGradient } from "expo-linear-gradient";
 import { confirmAction } from "@/lib/confirmAction";
 import AppButton from "../AppButton";
+import PageContainer from "../PageContainer";
 
 export default function TemplateForm() {
   const [workoutName, setWorkoutName] = useState("");
@@ -236,9 +235,15 @@ export default function TemplateForm() {
         });
       }
 
-      resetSession();
       router.push("/training/templates");
+      resetSession();
+      Toast.show({
+        type: "success",
+        text1: "Template saved",
+        text2: "Template has been saved successfully.",
+      });
     } catch (error) {
+      setIsSaving(false);
       handleError(error);
       Toast.show({
         type: "error",
@@ -246,7 +251,6 @@ export default function TemplateForm() {
         text2: "Please try again later.",
       });
     }
-    setIsSaving(false);
   };
 
   const resetSession = () => {
@@ -256,7 +260,7 @@ export default function TemplateForm() {
     setExercises([]);
     setWorkoutName("");
     setNormalExercises([]);
-    localStorage.removeItem(storageKey);
+    AsyncStorage.removeItem(storageKey);
   };
 
   const logSetForExercise = (index: number) => {
@@ -294,7 +298,7 @@ export default function TemplateForm() {
           keyboardShouldPersistTaps="handled"
           contentContainerStyle={{ flexGrow: 1 }}
         >
-          <View className="mx-auto flex-1 justify-between w-full px-6">
+          <PageContainer className="justify-between">
             <View>
               <AppText className="text-gray-100 text-2xl text-center my-5">
                 {templateId ? "Edit your template" : "Create your template"}
@@ -480,7 +484,7 @@ export default function TemplateForm() {
               <SaveButton onPress={handleSaveTemplate} />
               <DeleteButton onPress={resetSession} />
             </View>
-          </View>
+          </PageContainer>
         </ScrollView>
       </TouchableWithoutFeedback>
       <FullScreenLoader visible={isSaving} message="Saving template..." />

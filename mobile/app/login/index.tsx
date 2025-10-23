@@ -4,7 +4,6 @@ import {
   View,
   Keyboard,
   TouchableWithoutFeedback,
-  ScrollView,
   Dimensions,
 } from "react-native";
 import { supabase } from "@/lib/supabase";
@@ -25,6 +24,10 @@ import ForgotPasswordText from "@/components/login-signup/forgotPassword";
 import ModalLogin from "@/components/ModalLogin";
 import ResendEmailText from "@/components/login-signup/resendEmail";
 import { handleError } from "@/utils/handleError";
+import AnimatedButton from "@/components/animatedButton";
+import { ArrowLeft } from "lucide-react-native";
+import GradientColorText from "@/components/GradientColorText";
+import PageContainer from "@/components/PageContainer";
 
 const generateRandomUserName = (email: string) => {
   const prefix = email
@@ -227,26 +230,49 @@ export default function LoginScreen() {
   return (
     <>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-        <ScrollView
+        <LinearGradient
+          colors={["#0f172a", "#0f172a", "#1e3a8a"]}
+          start={{ x: 0, y: 1 }}
+          end={{ x: 1, y: 0 }}
           className="flex-1"
-          contentContainerClassName="flex-grow"
-          keyboardShouldPersistTaps="handled"
-          keyboardDismissMode="on-drag"
         >
-          <LinearGradient
-            colors={["#0f172a", "#0f172a", "#1e3a8a"]}
-            start={{ x: 0, y: 1 }}
-            end={{ x: 1, y: 0 }}
-            className="flex-1"
-          >
-            <AppText className="text-center my-5 text-4xl">MyTrack</AppText>
+          <PageContainer>
+            <View className="flex-row items-center justify-between px-6 pt-2 z-50">
+              <AnimatedButton
+                onPress={() => {
+                  console.log("Back pressed");
+                  router.push("/");
+                }}
+                hitSlop={10}
+              >
+                <View className="flex-row gap-2 items-center">
+                  <ArrowLeft color="#f3f4f6" />
+                  <AppText>Back</AppText>
+                </View>
+              </AnimatedButton>
+
+              <GradientColorText style={{ width: 140, height: 36 }}>
+                MyTrack
+              </GradientColorText>
+
+              <AppText className="min-w-[65.5px]"></AppText>
+            </View>
             <Animated.View
-              style={[animatedStyle]}
-              className={`absolute top-0 left-0 w-full px-6 h-[200%]`}
+              style={[
+                animatedStyle,
+                {
+                  height: screenHeight * 2,
+                  position: "absolute",
+                  width: "100%",
+                },
+              ]}
             >
               {/* Login Form */}
 
-              <View style={{ height: screenHeight }} className="justify-center">
+              <View
+                style={{ height: screenHeight }}
+                className="justify-center max-w-md mx-auto w-full"
+              >
                 <AppInput
                   label="Email"
                   onChangeText={(text) => {
@@ -296,7 +322,10 @@ export default function LoginScreen() {
 
               {/* Sign Up Form */}
 
-              <View style={{ height: screenHeight }} className="justify-center">
+              <View
+                style={{ height: screenHeight }}
+                className="justify-center max-w-md mx-auto w-full"
+              >
                 <AppInput
                   label="Email"
                   onChangeText={(text) => {
@@ -351,19 +380,22 @@ export default function LoginScreen() {
                 )}
               </View>
             </Animated.View>
-            <View className="absolute bottom-0 left-0 w-full flex flex-col justify-centergap-2 pb-10 px-6">
+
+            <View className="absolute bottom-0 left-0 w-full flex flex-col justify-center gap-2 pb-10 px-6">
               <AppText className="text-center mb-5 text-xl">
                 {activeForm
                   ? "Already have an account?"
                   : "Don't have an account?"}
               </AppText>
-              <GradientButton
-                label={activeForm ? "Log in" : "Sign up"}
-                onPress={() => setActiveForm(!activeForm)}
-              />
+              <View className="max-w-md mx-auto w-full">
+                <GradientButton
+                  label={activeForm ? "Log in" : "Sign up"}
+                  onPress={() => setActiveForm(!activeForm)}
+                />
+              </View>
             </View>
-          </LinearGradient>
-        </ScrollView>
+          </PageContainer>
+        </LinearGradient>
       </TouchableWithoutFeedback>
 
       {/* Modal for Resend email verification */}

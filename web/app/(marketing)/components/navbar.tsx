@@ -24,7 +24,7 @@ export default function Navbar() {
         </div>
         <div className="hidden md:flex items-center gap-4">
           <Link href={"/login"}>
-            <button className="w-[183px] text-white bg-gradient-to-tr from-slate-950  to-blue-700 px-5 py-2 rounded-xl border-2 border-blue-900 shadow-md shadow-blue-950 hover:from-blue-700 hover:to-slate-950 transform hover:scale-105 transition-all duration-200">
+            <button className="w-[183px] text-white bg-gradient-to-tr from-slate-950  to-blue-700 px-5 py-2 rounded-xl border-2 border-blue-900 shadow-md shadow-blue-950 hover:from-blue-700 hover:to-slate-950 transform hover:scale-105 transition-all duration-200 cursor-pointer">
               Log in / Sign up
             </button>
           </Link>

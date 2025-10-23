@@ -7,6 +7,7 @@ import AppInput from "@/components/AppInput";
 import { handleError } from "@/utils/handleError";
 import SaveButtonSpinner from "@/components/SaveButtonSpinner";
 import Toast from "react-native-toast-message";
+import PageContainer from "@/components/PageContainer";
 
 export default function SecurityPage() {
   const [password, setPassword] = useState("");
@@ -64,7 +65,7 @@ export default function SecurityPage() {
 
   return (
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-        <View className="flex-1 items-center max-w-md mx-auto w-full px-5">
+        <PageContainer className="items-center">
           <AppText className="text-2xl my-5">Security Settings</AppText>
           <AppText className="text-xl my-5">Reset Password</AppText>
           <View className="w-full mb-5">
@@ -93,7 +94,7 @@ export default function SecurityPage() {
               loading={loading}
             />
           </View>
-        </View>
+        </PageContainer>
       </TouchableWithoutFeedback>
   );
 }

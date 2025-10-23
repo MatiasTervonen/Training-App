@@ -13,6 +13,7 @@ import { saveSettings } from "@/api/settings/save-settings";
 import { validateUserName } from "@/api/settings/validateUserName";
 import { handleError } from "@/utils/handleError";
 import { supabase } from "@/lib/supabase";
+import PageContainer from "@/components/PageContainer";
 
 type UploadFile = {
   uri: string;
@@ -194,7 +195,7 @@ export default function ProfileScreen() {
   return (
     <>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-        <View className="flex-1 justify-between px-10">
+        <PageContainer className="justify-between">
           <View>
             <View>
               <AppText className="text-2xl text-center my-5">
@@ -228,6 +229,7 @@ export default function ProfileScreen() {
             </View>
             <View className="mt-10">
               <SelectInput
+                topLabel="Weight unit"
                 label={"Weight Unit"}
                 value={weightUnit}
                 onChange={setWeightUnit}
@@ -254,7 +256,7 @@ export default function ProfileScreen() {
               }}
             />
           </View>
-        </View>
+        </PageContainer>
       </TouchableWithoutFeedback>
       <FullScreenLoader visible={isSaving} message="Saving..." />
     </>

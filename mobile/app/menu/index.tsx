@@ -2,17 +2,15 @@ import { View } from "react-native";
 import AppText from "@/components/AppText";
 import LinkButton from "@/components/LinkButton";
 import LogoutButton from "@/components/login-signup/LogoutButton";
-import ModalPageWrapper from "@/components/ModalPageWrapper";
 import { ShieldUser, UserPen, ContactRound } from "lucide-react-native";
-
+import PageContainer from "@/components/PageContainer";
 
 export default function SettingsScreen() {
   return (
-    <ModalPageWrapper leftLabel="feed" rightLabel="feed">
-      <View className="px-6 flex-1">
+      <PageContainer>
         <AppText className="text-2xl text-center my-5">Menu</AppText>
         <View className="justify-between flex-1">
-          <View>
+          <View className="gap-4">
             <LinkButton label="Friends" href="/menu/friends">
               <ContactRound color="white" />
             </LinkButton>
@@ -27,7 +25,6 @@ export default function SettingsScreen() {
             <LogoutButton />
           </View>
         </View>
-      </View>
-    </ModalPageWrapper>
+      </PageContainer>
   );
 }

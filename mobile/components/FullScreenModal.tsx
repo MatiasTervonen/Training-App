@@ -10,6 +10,7 @@ import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { CircleX } from "lucide-react-native";
 import { View, Pressable, Dimensions } from "react-native";
 import { Portal } from "react-native-paper";
+import PageContainer from "@/components/PageContainer";
 
 export default function FullScreenModal({
   isOpen,
@@ -22,7 +23,10 @@ export default function FullScreenModal({
 }) {
   const translateX = useSharedValue(0);
 
-  const screenWidth = Dimensions.get("window").width;
+  // Max width == max-w-3xl (768px) for the count of swipe dinstance to navigation
+
+  const rawScreenWidth = Dimensions.get("window").width;
+  const screenWidth = Math.min(rawScreenWidth, 768);
 
   useEffect(() => {
     if (isOpen) {
@@ -32,8 +36,7 @@ export default function FullScreenModal({
   }, [isOpen, translateX]);
 
   const pan = Gesture.Pan()
-    .activeOffsetX([-10, 10])
-    .activeOffsetY([-20, 20])
+    .activeOffsetX([-30, 30])
     .onChange((event) => {
       translateX.value = event.translationX * 0.7;
     })
@@ -69,10 +72,10 @@ export default function FullScreenModal({
   return (
     <Portal>
       <GestureDetector gesture={pan}>
-        <View className="absolute inset-0 bg-black/50 flex-1 z-50 justify-center">
+        <View className="absolute inset-0 bg-black/50 flex-1 z-50 justify-end items-center">
           <Animated.View
-            className="bg-slate-800 absolute rounded-2xl h-[90%] w-full z-50 bottom-0"
-            style={animatedStyle}
+            className="bg-slate-800 rounded-t-2xl h-[95%] w-full z-50 max-w-3xl "
+            style={[animatedStyle]}
           >
             <Pressable
               onPress={onClose}
@@ -81,7 +84,9 @@ export default function FullScreenModal({
             >
               <CircleX size={30} color="#f3f4f6" />
             </Pressable>
-            <View className="flex-1">{children}</View>
+            <PageContainer className="flex-1 max-w-xl">
+              {children}
+            </PageContainer>
           </Animated.View>
         </View>
       </GestureDetector>

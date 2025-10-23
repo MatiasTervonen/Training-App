@@ -1,5 +1,5 @@
 import AppText from "./AppText";
-import { View, Pressable, Modal } from "react-native";
+import { View, Pressable, Modal, ScrollView, Dimensions } from "react-native";
 import { useState } from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import AnimatedButton from "./animatedButton";
@@ -11,6 +11,7 @@ type SelectInputProps = {
   value?: string;
   onChange?: (value: string) => void;
   disabled?: boolean;
+  topLabel?: string;
 };
 
 export default function SelectInput({
@@ -19,6 +20,7 @@ export default function SelectInput({
   value,
   onChange,
   disabled,
+  topLabel,
 }: SelectInputProps) {
   const [isOpen, setIsOpen] = useState(false);
   const selectedlabel = options.find((option) => option.value === value)?.label;
@@ -28,8 +30,13 @@ export default function SelectInput({
     setIsOpen(true);
   };
 
+  const rawScreenWidth = Dimensions.get("window").width;
+  const screenWidth = Math.min(rawScreenWidth, 768);
+
   return (
     <View>
+      {topLabel && <AppText className="mb-1">{topLabel}</AppText>}
+
       <Pressable
         onPressIn={handlePress}
         className="border-2 border-gray-100 p-2 rounded-md px-4 py-2 h-12 overflow-hidden"
@@ -40,7 +47,7 @@ export default function SelectInput({
           end={{ x: 1, y: 1 }}
           className="absolute inset-0 items-center justify-center"
         >
-          <AppText className="text-gray-100 text-lg ">{selectedlabel}</AppText>
+          <AppText className="text-lg ">{selectedlabel}</AppText>
         </LinearGradient>
       </Pressable>
 
@@ -54,25 +61,30 @@ export default function SelectInput({
           className="flex-1 justify-center items-center bg-black/50"
           onPress={() => setIsOpen(false)}
         >
-          <View className="border-2 border-gray-100 rounded-xl bg-slate-800 w-3/4 py-5">
+          <View
+            style={{ maxHeight: "75%", width: screenWidth * 0.6 }}
+            className="border-2 border-gray-100 rounded-xl bg-slate-800  py-5 justify-center"
+          >
             {label && (
-              <AppText className="mb-6 text-center text-gray-100 text-xl px-4">
+              <AppText className="mb-6 text-center  text-xl px-4">
                 {label}
               </AppText>
             )}
-            {options.map((option) => (
-              <AnimatedButton
-                key={option.value}
-                onPress={() => {
-                  onChange?.(option.value);
-                  setIsOpen(false);
-                }}
-              >
-                <AppText className="text-gray-100  text-center text-2xl border p-4 bg-slate-700 my-2 border-gray-100 rounded-xl mx-6">
-                  {option.label}
-                </AppText>
-              </AnimatedButton>
-            ))}
+            <ScrollView>
+              {options.map((option) => (
+                <AnimatedButton
+                  key={option.value}
+                  onPress={() => {
+                    onChange?.(option.value);
+                    setIsOpen(false);
+                  }}
+                >
+                  <AppText className="text-center text-2xl border p-4 bg-slate-700 my-2 border-gray-100 rounded-xl mx-6">
+                    {option.label}
+                  </AppText>
+                </AnimatedButton>
+              ))}
+            </ScrollView>
           </View>
         </Pressable>
       </Modal>

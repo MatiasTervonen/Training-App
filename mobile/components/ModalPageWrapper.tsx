@@ -39,7 +39,10 @@ export default function ModalPageWrapper({
     (state) => state.setDirection
   );
 
-  const screenWidth = Dimensions.get("window").width;
+  // Max width == max-w-3xl (768px) for the count of swipe dinstance to navigation
+
+  const rawScreenWidth = Dimensions.get("window").width;
+  const screenWidth = Math.min(rawScreenWidth, 768);
 
   const translateX = useSharedValue(0);
   const entryTranslateX = useSharedValue(0);
@@ -84,7 +87,7 @@ export default function ModalPageWrapper({
     }
   };
 
-  const dragThreshold = screenWidth * 0.5;
+  const dragThreshold = screenWidth * 0.4;
   const velocityThreshold = 700;
 
   const pan = Gesture.Pan()
@@ -129,8 +132,6 @@ export default function ModalPageWrapper({
     transform: [{ translateX: entryTranslateX.value + translateX.value }],
     opacity: fadeOpacity.value,
   }));
-
-
 
   return (
     <View className="flex-1">

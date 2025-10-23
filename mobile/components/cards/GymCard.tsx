@@ -95,8 +95,6 @@ export default function GymCard({
         </View>
         <TouchableOpacity
           onPress={() => {
-            console.log("Expanding gym session:", item.id);
-
             onExpand();
           }}
           className="bg-blue-500 p-2 rounded-br-md"

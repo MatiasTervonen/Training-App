@@ -274,7 +274,7 @@ export default function ExerciseCard({
               </View>
             )}
           </View>
-          <View className="w-2/3  mx-auto mt-2">
+          <View className="mx-auto mt-2">
             <AppButton
               onPress={() => {
                 if (isCardioExercise(exercise)) {

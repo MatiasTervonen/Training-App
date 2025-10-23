@@ -1,4 +1,3 @@
-import { View } from "react-native";
 import AppText from "@/components/AppText";
 import {
   NotebookPen,
@@ -6,12 +5,14 @@ import {
   Disc,
   Timer,
   Weight,
+  Bell,
 } from "lucide-react-native";
 import LinkButton from "@/components/LinkButton";
+import PageContainer from "@/components/PageContainer";
 
 export default function SessionsScreen() {
   return (
-    <View className="px-5 max-w-md mx-auto w-full">
+    <PageContainer className="gap-4">
       <AppText className="text-2xl text-center my-5">Start Sessions</AppText>
       <LinkButton label="Gym" href="/training">
         <Dumbbell color="#f3f4f6" />
@@ -25,9 +26,12 @@ export default function SessionsScreen() {
       <LinkButton label="Timer" href="/timer">
         <Timer color="#f3f4f6" />
       </LinkButton>
-      <LinkButton label="Weight Tracker" href="/weight">
+      <LinkButton label="Body Weight" href="/weight">
         <Weight color="#f3f4f6" />
       </LinkButton>
-    </View>
+      <LinkButton label="Reminders" href="/reminders">
+        <Bell color="#f3f4f6" />
+      </LinkButton>
+    </PageContainer>
   );
 }

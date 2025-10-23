@@ -1,4 +1,4 @@
-import { Pressable } from "react-native";
+import { Pressable, PressableProps } from "react-native";
 import AppText from "./AppText";
 import Animated, {
   useSharedValue,
@@ -6,17 +6,21 @@ import Animated, {
   withSpring,
 } from "react-native-reanimated";
 
-
-interface AppButtonProps {
+interface AppButtonProps extends PressableProps {
   label?: string;
   children?: React.ReactNode;
   onPress: () => void;
+  className?: string;
+  textClassName?: string;
 }
 
 export default function AnimatedButton({
   label,
   children,
   onPress,
+  className,
+  textClassName,
+  ...props
 }: AppButtonProps) {
   const scale = useSharedValue(1);
   const opacity = useSharedValue(1);
@@ -25,7 +29,6 @@ export default function AnimatedButton({
     transform: [{ scale: scale.value }],
     opacity: opacity.value,
   }));
-
 
   const handlePressIn = () => {
     scale.value = withSpring(0.95);
@@ -38,17 +41,19 @@ export default function AnimatedButton({
   };
 
   return (
-    <Pressable
-      onPress={onPress}
-      onPressIn={handlePressIn}
-      onPressOut={handlePressOut}
-    >
-      <Animated.View
-        style={animatedStyle}
+    <Animated.View style={animatedStyle}>
+      <Pressable
+        onPress={onPress}
+        onPressIn={handlePressIn}
+        onPressOut={handlePressOut}
+        className={`${className}`}
+        {...props}
       >
-        {label && <AppText className="text-lg">{label}</AppText>}
+        {label && (
+          <AppText className={`text-lg ${textClassName}`}>{label}</AppText>
+        )}
         {children}
-      </Animated.View>
-    </Pressable>
+      </Pressable>
+    </Animated.View>
   );
 }

@@ -16,6 +16,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { handleError } from "@/utils/handleError";
 import Toast from "react-native-toast-message";
 import { saveWeight } from "@/api/weight/save-weight";
+import PageContainer from "@/components/PageContainer";
 
 export default function SettingsScreen() {
   const now = formatDate(new Date());
@@ -169,7 +170,7 @@ export default function SettingsScreen() {
   return (
     <>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-        <View className="flex-col justify-between max-w-md mx-auto w-full flex-1 px-6 pb-10">
+        <PageContainer className="flex-col justify-between pb-10">
           <View className="gap-5">
             <AppText className="text-2xl text-center my-5">
               Weight Tracker
@@ -201,7 +202,7 @@ export default function SettingsScreen() {
             <SaveButton onPress={handleSaveWeight} />
             <DeleteButton onPress={handleDelete} />
           </View>
-        </View>
+        </PageContainer>
       </TouchableWithoutFeedback>
       <FullScreenLoader visible={isSaving} message="Saving weight..." />
     </>

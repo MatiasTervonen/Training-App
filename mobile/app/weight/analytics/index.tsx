@@ -4,6 +4,7 @@ import AllDataTable from "@/components/weight-screen/AllDataTable";
 import { getWeight } from "@/api/weight/get-weight";
 import { weight } from "@/types/models";
 
+
 export default function AnalyticsScreen() {
   const {
     data: weightData = [],
@@ -27,7 +28,7 @@ export default function AnalyticsScreen() {
   });
 
   return (
-    <View className="max-w-xl mx-auto w-full">
+    <View>
       <AllDataTable data={weightData} isLoading={isLoading} error={error} />
     </View>
   );

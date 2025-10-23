@@ -15,20 +15,16 @@ export async function POST(req: NextRequest) {
   const body = await req.json();
   const { notes, title, notify_at } = body;
 
-  const { data: remindersData, error: remindersError } = await supabase
-    .from("reminders")
-    .insert([
-      {
-        user_id: user.sub,
-        title,
-        notes,
-        notify_at,
-      },
-    ])
-    .select()
-    .single();
+  const { error: remindersError } = await supabase.from("reminders").insert([
+    {
+      user_id: user.sub,
+      title,
+      notes,
+      notify_at,
+    },
+  ]);
 
-  if (remindersError || !remindersData) {
+  if (remindersError) {
     handleError(remindersError, {
       message: "Error saving reminders",
       route: "/api/reminders/save-reminders",
@@ -40,7 +36,7 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  return new Response(JSON.stringify({ success: true, reminders: remindersData }), {
+  return new Response(JSON.stringify({ success: true }), {
     status: 200,
     headers: { "Content-Type": "application/json" },
   });

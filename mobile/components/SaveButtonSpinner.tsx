@@ -35,7 +35,7 @@ export default function SaveButton({
       onPress={onPress}
       disabled={disabled}
     >
-      <AppText text-lg>{label}</AppText>
+      <AppText className="text-lg">{label}</AppText>
       {loading && <ActivityIndicator size="small" color="#fff" />}
     </Pressable>
   );

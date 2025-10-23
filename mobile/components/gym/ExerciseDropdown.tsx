@@ -3,7 +3,6 @@ import { gym_exercises } from "@/types/models";
 import { useQuery } from "@tanstack/react-query";
 import {
   ActivityIndicator,
-  Pressable,
   View,
   SectionList,
   TouchableWithoutFeedback,
@@ -13,6 +12,7 @@ import { getExercises } from "@/api/gym/get-exercises";
 import { getRecentExercises } from "@/api/gym/recent-exercises";
 import AppInput from "../AppInput";
 import AppText from "../AppText";
+import AnimatedButton from "../animatedButton";
 
 type Props = {
   onSelect: (exercise: gym_exercises) => void;
@@ -102,8 +102,8 @@ export default function ExerciseDropdown({ onSelect, resetTrigger }: Props) {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <View className="px-2 w-full z-50">
-        <View className="mt-10 w-full px-14">
+      <View className="w-full z-50">
+        <View className="mt-10 w-full px-8">
           <AppInput
             value={searchQuery}
             placeholder="Search exercises..."
@@ -117,15 +117,13 @@ export default function ExerciseDropdown({ onSelect, resetTrigger }: Props) {
           <View
             ref={dropdownRef}
             className="w-full border rounded-md 
-                    bg-slate-900 border-gray-100  mt-10 h-[83%]"
+                    bg-slate-900 border-gray-100 mt-10 h-[83%]"
           >
             {isLoading || isError ? (
               <View className="gap-6 items-center justify-center z-50 text-center mt-10">
                 {isLoading && (
                   <>
-                    <AppText className="text-gray-100 text-xl">
-                      Loading exercises...
-                    </AppText>
+                    <AppText className="text-xl">Loading exercises...</AppText>
                     <ActivityIndicator />
                   </>
                 )}
@@ -141,8 +139,8 @@ export default function ExerciseDropdown({ onSelect, resetTrigger }: Props) {
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => {
                   return (
-                    <Pressable
-                      className="w-full text-left px-4 py-2 z-40 text-gray-100 border-b"
+                    <AnimatedButton
+                      className="w-full text-left px-4 py-2 z-40 border-b border-gray-400"
                       onPress={() => handleSelectExercise(item)}
                     >
                       <View className="justify-between">
@@ -162,11 +160,11 @@ export default function ExerciseDropdown({ onSelect, resetTrigger }: Props) {
                           {item.equipment}
                         </AppText>
                       </View>
-                    </Pressable>
+                    </AnimatedButton>
                   );
                 }}
                 renderSectionHeader={({ section: { title } }) => (
-                  <AppText className="text-gray-100 text-center bg-slate-600 rounded-t-md text-lg">
+                  <AppText className="text-center bg-slate-600 rounded-t-md text-lg">
                     {title}
                   </AppText>
                 )}

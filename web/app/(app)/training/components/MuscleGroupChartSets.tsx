@@ -9,6 +9,7 @@ import {
   ResponsiveContainer,
   LabelList,
 } from "recharts";
+import { useMemo } from "react";
 
 export default function MuscleGroupChart({
   data,
@@ -29,17 +30,21 @@ export default function MuscleGroupChart({
     return muscleGroupSetCount;
   }
 
-  const chartDataSets = Object.entries(muscle_groupDataSets(data)).map(
-    ([name, value]) => ({ name, sets: value })
-  );
-
-  const shortedData = chartDataSets.sort((a, b) => b.sets - a.sets);
+  const chartDataSets = useMemo(() => {
+    const entries = Object.entries(muscle_groupDataSets(data)).map(
+      ([name, value]) => ({
+        name,
+        sets: value,
+      })
+    );
+    return entries.sort((a, b) => b.sets - a.sets);
+  }, [data]);
 
   return (
     <div>
       <ResponsiveContainer width="100%" height={600}>
         <BarChart
-          data={shortedData}
+          data={chartDataSets}
           layout="vertical"
           margin={{
             top: 5,

@@ -29,13 +29,13 @@ export default function GymSession(gym_session: full_gym_session) {
     exercise.gym_exercises.main_group.toLowerCase() === "cardio";
 
   return (
-    <ScrollView className="px-4">
+    <ScrollView className="px-4" showsVerticalScrollIndicator={false}>
       <View className="mb-32">
         <View className="gap-2 justify-center items-center">
-          <AppText className="text-lg text-gray-400 mt-5">
+          <AppText className="text-lg text-gray-400 mt-10">
             {formatDate(gym_session.created_at)}
           </AppText>
-          <AppText className="text-2xl mt-2">{gym_session.title}</AppText>
+          <AppText className="text-2xl mt-2 text-center">{gym_session.title}</AppText>
           <AppText className="text-lg mt-2">
             Duration: {formatDuration(gym_session.duration)}
           </AppText>
@@ -68,7 +68,7 @@ export default function GymSession(gym_session: full_gym_session) {
                 <View className="justify-between flex-col mb-2">
                   <View className="flex-row items-center justify-between">
                     <AppText
-                      className="text-xl text-gray-100"
+                      className="text-xl text-gray-100 flex-1 mr-4"
                       numberOfLines={1}
                       ellipsizeMode="tail"
                     >
@@ -82,9 +82,9 @@ export default function GymSession(gym_session: full_gym_session) {
                     {exercise.gym_exercises.equipment}
                   </AppText>
                 </View>
-                <View className="py-2 whitespace-pre-wrap break-words overflow-hidden">
+                <AppText className="py-2 whitespace-pre-wrap break-words overflow-hidden">
                   {exercise.notes || ""}
-                </View>
+                </AppText>
 
                 <View className="w-full">
                   <View className="text-gray-300 border-b border-gray-300 flex-row">

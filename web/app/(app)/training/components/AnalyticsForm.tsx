@@ -5,16 +5,17 @@ import Spinner from "../../components/spinner";
 import ChartTabSwitcher from "./AnalyticsChartTabSwitcher";
 import AnalyticsHeatMap from "./AnalyticsHeatMap";
 
+type AnalyticsFormProps = {
+  data: full_gym_session[];
+  isLoading: boolean;
+  error: Error | null;
+};
+
 export default function AnalyticsForm({
   data,
   isLoading,
   error,
-  
-}: {
-  data: full_gym_session[];
-  isLoading: boolean;
-  error: Error | null;
-}) {
+}: AnalyticsFormProps) {
   function totalSessions30Days(data: full_gym_session[]) {
     return data.length;
   }
@@ -28,7 +29,7 @@ export default function AnalyticsForm({
   }
 
   return (
-    <div className="h-full bg-slate-800 text-gray-100 rounded-xl">
+    <div className="h-full bg-slate-800  rounded-xl">
       {!error && isLoading && (
         <div className="flex flex-col  items-center gap-2 mt-20">
           <p className="text-gray-300 text-center text-xl">Loading...</p>

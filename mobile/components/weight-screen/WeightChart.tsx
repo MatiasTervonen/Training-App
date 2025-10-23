@@ -1,15 +1,18 @@
-import { LineChart } from "react-native-gifted-charts";
 import { ChevronLeft, ChevronRight } from "lucide-react-native";
 import { useState, useEffect } from "react";
 import { weight } from "@/types/models";
-import { View, Pressable, Dimensions } from "react-native";
+import { View, Pressable } from "react-native";
 import AppText from "@/components/AppText";
 import { useUserStore } from "@/lib/stores/useUserStore";
+import { CartesianChart, Line } from "victory-native";
+import { useFont } from "@shopify/react-native-skia";
 
 type WeightChartProps = {
   range: "week" | "month" | "year";
   data: weight[];
 };
+
+const russoFont = require("@/assets/fonts/RussoOne-Regular.ttf");
 
 function addOffsetToDate(
   base: Date,
@@ -92,35 +95,13 @@ function generateDateRange(start: Date, end: Date): string[] {
 //   }));
 // }
 
-
-function getChartConfig(range: "week" | "month" | "year", dataLength: number) {
-  switch (range) {
-    case "week":
-      return {
-        spacing: 70,
-        noOfSections: 3,
-        stepValue: 1,
-      };
-    case "month":
-      return {
-        spacing: 15,
-        noOfSections: 5,
-        stepValue: 1,
-      };
-    case "year":
-      return {
-        spacing: 20,
-        noOfSections: 5,
-        stepValue: 2,
-      };
-  }
-}
-
 export default function WeightChart({ range, data }: WeightChartProps) {
   const [offset, setOffset] = useState(0);
   const latestDate = getLatestDate(data); // Hakee viiemeissimmän päivämäärän datasta
 
   const [start, end] = addOffsetToDate(latestDate, range, offset);
+
+  const font = useFont(russoFont, 14);
 
   const weightUnit = useUserStore(
     (state) => state.preferences?.weight_unit || "kg"
@@ -199,24 +180,9 @@ export default function WeightChart({ range, data }: WeightChartProps) {
     return `${startFormatted} - ${endFormatted}`;
   }
 
-  const weights = chartData
-    .map((d) => d.value)
-    .filter((w): w is number => w !== null);
-
-  const minWeight = Math.min(...weights);
-
-  const padding = 1;
-
-  const minValue = Math.floor(minWeight - padding);
-
-  const { spacing, noOfSections, stepValue } = getChartConfig(
-    range,
-    chartData.length
-  );
-
   return (
-    <View className="bg-slate-700 shadow-md">
-      <View className="flex-row justify-center items-center mb-4 px-10 mt-4">
+    <View className="bg-slate-700 shadow-md w-full px-2">
+      <View className="flex-row justify-center items-center my-4">
         <Pressable
           onPress={() => {
             setOffset((prev) => prev + 1);
@@ -244,26 +210,23 @@ export default function WeightChart({ range, data }: WeightChartProps) {
           {range}: {weightDifference} {weightUnit}
         </AppText>
       </View>
-      <LineChart
-        data={chartData}
-        width={Math.max(Dimensions.get("window").width)}
-        spacing={spacing}
-        color="#f5d163"
-        isAnimated
-        hideDataPoints
-        noOfSections={noOfSections} // controls how many horizontal lines
-        stepValue={stepValue}
-        thickness={3}
-        initialSpacing={10}
-        endSpacing={10}
-        yAxisOffset={minValue}
-        xAxisLabelTextStyle={{
-          color: "#f3f4f6",
-          fontSize: 10,
-        }}
-        yAxisTextStyle={{ color: "#f3f4f6", fontSize: 10 }}
-        formatYLabel={(value) => parseFloat(value).toFixed(0)}
-      />
+      <View className="h-[300px]">
+        <CartesianChart
+          data={chartData}
+          xKey="label"
+          yKeys={["value"]}
+          padding={{ left: 0, right: 0, top: 0, bottom: 0 }}
+          domainPadding={{ left: 0, right: 0 }}
+          axisOptions={{
+            font,
+            labelColor: "#f3f4f6",
+          }}
+        >
+          {({ points }) => (
+            <Line points={points.value} color="#3b82f6" strokeWidth={2} />
+          )}
+        </CartesianChart>
+      </View>
     </View>
   );
 }

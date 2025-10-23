@@ -13,7 +13,7 @@ export async function GET() {
 
   const { data: exercises, error } = await supabase
     .from("gym_exercises")
-    .select("id, user_id, name, equipment, muscle_group, main_group")
+    .select("id, user_id, name, equipment, muscle_group, main_group, language")
     .order("name", { ascending: true })
     .eq("user_id", user.sub);
 

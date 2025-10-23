@@ -83,7 +83,7 @@ export default function AppButton({
             style={{ flex: 1 }}
           />
         </Animated.View>
-        {label && <AppText className="text-lg">{label}</AppText>}
+        {label && <AppText className="text-lg" numberOfLines={1}>{label}</AppText>}
         {children}
       </Animated.View>
     </Pressable>

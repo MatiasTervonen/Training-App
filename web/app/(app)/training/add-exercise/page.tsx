@@ -1,4 +1,3 @@
-"use client";
 
 import CustomInput from "@/app/(app)/ui/CustomInput";
 import { useState } from "react";

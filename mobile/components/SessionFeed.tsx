@@ -25,10 +25,10 @@ import GymSession from "./expandSession/gym";
 import { getFullGymSession } from "@/api/gym/get-full-gym-session";
 import NotesSession from "./expandSession/notes";
 import WeightSession from "./expandSession/weight";
-import { useUserStore } from "@/lib/stores/useUserStore";
 import EditGym from "./editSession/editGym";
 import EditNotes from "./editSession/editNotes";
 import EditWeight from "./editSession/editWeight";
+import PageContainer from "@/components/PageContainer";
 
 type FeedItem = {
   table: "notes" | "weight" | "gym_sessions" | "todo_lists" | "reminders";
@@ -42,8 +42,6 @@ export default function SessionFeed() {
   const [refreshing, setRefreshing] = useState(false);
 
   const queryClient = useQueryClient();
-
-  const userId = useUserStore((state) => state.preferences?.id);
 
   function getCanonicalId(item: { id?: string; item_id?: string }) {
     return item.item_id ?? item.id ?? "";
@@ -234,8 +232,8 @@ export default function SessionFeed() {
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
     >
-      <View className="px-5 z-0">
-        {!userId || isLoading || isRefetching ? (
+      <PageContainer className="max-w-3xl z-0">
+        {isLoading || isRefetching ? (
           <>
             <FeedSkeleton count={5} />
           </>
@@ -276,7 +274,6 @@ export default function SessionFeed() {
                 <FeedCard
                   {...feedItem}
                   onExpand={() => {
-                    console.log("Expanding item with ID:", feedItem.item.id);
                     setExpandedItem(feedItem);
                   }}
                   onTogglePin={() =>
@@ -343,12 +340,14 @@ export default function SessionFeed() {
             {expandedItem.table === "gym_sessions" && (
               <View>
                 {isLoadingGymSession ? (
-                  <View className="flex flex-col gap-5 items-center justify-center pt-40">
-                    <AppText>Loading gym session details...</AppText>
-                    <ActivityIndicator />
+                  <View className="gap-5 items-center justify-center mt-40">
+                    <AppText className="text-xl">
+                      Loading gym session details...
+                    </AppText>
+                    <ActivityIndicator size="large" />
                   </View>
                 ) : GymSessionError ? (
-                  <AppText className="text-center text-lg mt-10">
+                  <AppText className="text-center text-xl mt-10">
                     Failed to load gym session details. Please try again later.
                   </AppText>
                 ) : (
@@ -413,7 +412,7 @@ export default function SessionFeed() {
             )}
           </FullScreenModal>
         )}
-      </View>
+      </PageContainer>
     </LinearGradient>
   );
 }

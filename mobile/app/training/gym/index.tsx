@@ -37,6 +37,7 @@ import DeleteButton from "@/components/DeleteButton";
 import FullScreenLoader from "@/components/FullScreenLoader";
 import { LinearGradient } from "expo-linear-gradient";
 import Timer from "@/components/timer";
+import PageContainer from "@/components/PageContainer";
 
 export default function GymScreen() {
   const [title, setTitle] = useState("");
@@ -344,7 +345,7 @@ export default function GymScreen() {
 
   return (
     <>
-      <View className="flex items-center bg-gray-600 p-2 px-4 w-full z-40 max-w-3xl mx-auto sticky top-0">
+      <View className="flex items-center bg-gray-600 p-2 px-4 w-full z-40  sticky top-0">
         <Timer
           buttonsAlwaysVisible
           manualSession={{
@@ -362,7 +363,7 @@ export default function GymScreen() {
           keyboardShouldPersistTaps="handled"
           contentContainerStyle={{ flexGrow: 1 }}
         >
-          <View className="px-5 max-w-md mx-auto w-full justify-between flex-1 mb-10">
+          <PageContainer className="justify-between flex-1 mb-10">
             <View>
               <AppText className="text-2xl my-5 text-center">
                 Track your training progress
@@ -564,7 +565,7 @@ export default function GymScreen() {
                 <DeleteButton onPress={resetSession} />
               </View>
             </>
-          </View>
+          </PageContainer>
         </ScrollView>
       </TouchableWithoutFeedback>
       <FullScreenLoader visible={isSaving} message="Saving session..." />

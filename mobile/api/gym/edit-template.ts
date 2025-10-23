@@ -63,7 +63,9 @@ export async function editTemplate({
 
   const { error: templateExerciseError } = await supabase
     .from("gym_template_exercises")
-    .insert(templateExercises);
+    .insert(templateExercises)
+    .select();
+
 
   if (templateExerciseError) {
     handleError(templateExerciseError, {
@@ -76,5 +78,5 @@ export async function editTemplate({
     );
   }
 
-  return id;
+  return { success: true };
 }

@@ -1,21 +1,21 @@
 import { useState } from "react";
 import FullScreenLoader from "../FullScreenLoader";
 import { supabase } from "@/lib/supabase";
-import { Alert, TouchableOpacity } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
-import AppText from "../AppText";
-import { LogOut, View } from "lucide-react-native";
+import { Alert } from "react-native";
+import { LogOut } from "lucide-react-native";
 import { router } from "expo-router";
 import { useUserStore } from "@/lib/stores/useUserStore";
-import { queryClient } from "@/lib/queryClient";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { handleError } from "@/utils/handleError";
 import AppButton from "../AppButton";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function LogoutButton() {
   const [isLoading, setIsLoading] = useState(false);
 
   const logoutUser = useUserStore((state) => state.logoutUser);
+
+  const queryClient = useQueryClient();
 
   const handleLogout = async () => {
     try {

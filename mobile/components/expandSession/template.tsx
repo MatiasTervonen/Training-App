@@ -22,7 +22,7 @@ export default function GymTemplate({ item, onStartWorkout }: Props) {
           <AppText className="text-lg text-gray-400">
             Created: {formatDate(item.created_at)}
           </AppText>
-          <AppText className="text-xl text-gray-100">{item.name}</AppText>
+          <AppText className="text-xl text-gray-100 text-center">{item.name}</AppText>
         </View>
         {Object.entries(groupedExercises).map(([superset_id, group]) => (
           <View

@@ -15,6 +15,7 @@ import { useRouter } from "expo-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { FeedData, Feed_item } from "@/types/session";
 import { generateUUID } from "@/utils/generateUUID";
+import PageContainer from "@/components/PageContainer";
 
 export default function NotesScreen() {
   const [title, setValue] = useState("");
@@ -148,7 +149,7 @@ export default function NotesScreen() {
   return (
     <>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-        <View className="flex-col flex-1 px-6 w-full max-w-lg mx-auto justify-between">
+        <PageContainer className="flex-col justify-between">
           <View className="">
             <AppText className="text-2xl text-center my-5">
               Add your notes here
@@ -176,7 +177,7 @@ export default function NotesScreen() {
               }}
             />
           </View>
-        </View>
+        </PageContainer>
       </TouchableWithoutFeedback>
       <FullScreenLoader visible={isSaving} message="Saving your notes..." />
     </>

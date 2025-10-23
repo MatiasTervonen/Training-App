@@ -50,6 +50,7 @@ export default function WeightRow({
               onExpand(item.id);
               rotation.value = withSpring(rotation.value === 0 ? 90 : 0);
             }}
+            hitSlop={10}
           >
             <Animated.View style={[chevronStyle]}>
               <ChevronRight size={20} color="white" />

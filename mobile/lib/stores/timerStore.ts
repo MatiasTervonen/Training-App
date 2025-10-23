@@ -140,16 +140,16 @@ export const useTimerStore = create<TimerState>()(
       name: "timer-store",
       storage: {
         getItem: async (key) => {
-            const value = await AsyncStorage.getItem(key);
-            return value ? JSON.parse(value) : null;
+          const value = await AsyncStorage.getItem(key);
+          return value ? JSON.parse(value) : null;
         },
         setItem: async (key, value) => {
-            await AsyncStorage.setItem(key, JSON.stringify(value));
+          await AsyncStorage.setItem(key, JSON.stringify(value));
         },
         removeItem: async (key) => {
-            await AsyncStorage.removeItem(key);
-        }
-      }
+          await AsyncStorage.removeItem(key);
+        },
+      },
     }
   )
 );

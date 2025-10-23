@@ -29,16 +29,16 @@ export default function ExerciseHistoryModal({
   return (
     <FullScreenModal isOpen={isOpen} onClose={onClose}>
       {isLoading ? (
-        <View className="text-lg text-gray-100 justify-center items-center mt-20 gap-5 mx-4">
-          <AppText>Loading history</AppText>
-          <ActivityIndicator />
+        <View className="justify-center items-center mt-20 gap-5 mx-4">
+          <AppText className="text-lg">Loading history</AppText>
+          <ActivityIndicator size="large" />
         </View>
       ) : error ? (
-        <AppText className="text-gray-100 text-center mt-20 mx-4">
+        <AppText className="text-center mt-20 mx-4 text-lg">
           Could not load exercise history. Please try again.
         </AppText>
       ) : history.length === 0 ? (
-        <AppText className="text-center mt-20 text-lg mx-4 text-gray-100">
+        <AppText className="text-center mt-20 mx-4 text-lg">
           No history available for this exercise.
         </AppText>
       ) : (
@@ -53,7 +53,7 @@ export default function ExerciseHistoryModal({
           showsVerticalScrollIndicator={false}
           renderItem={({ item: session }) => (
             <>
-              <View className="text-gray-100 items-center my-5 mx-4">
+              <View className="items-center my-5 mx-4">
                 <AppText className="text-lg">
                   {formatDate(session!.date)}
                 </AppText>
@@ -62,7 +62,7 @@ export default function ExerciseHistoryModal({
                 colors={["#1e3a8a", "#0f172a", "#0f172a"]}
                 start={{ x: 1, y: 0 }} // bottom-left
                 end={{ x: 0, y: 1 }} // top-right
-                className="py-5 px-4 rounded-md overflow-hidden mb-10 border-2 border-gray-600"
+                className="py-5 px-4 rounded-md overflow-hidden mb-10 border-2 border-gray-600 max-w-md mx-auto"
               >
                 <View className="w-full text-left ">
                   <View className="w-full">

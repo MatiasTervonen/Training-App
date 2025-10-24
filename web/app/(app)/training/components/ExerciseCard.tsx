@@ -192,7 +192,7 @@ export default function ExerciseCard({
                 </div>
                 <div className="w-1/3">
                   <ExerciseTypeSelect
-                    value={input.rpe}
+                    value={input.rpe!}
                     onChange={(val) => onInputChange(index, "rpe", val)}
                     options={[
                       { value: "Warm-up", label: "Warm-up" },

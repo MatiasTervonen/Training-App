@@ -133,3 +133,11 @@ export async function deleteTokenFromServer(token: string, platform: string) {
 
   return true;
 }
+
+export async function configureNotificationChannels() {
+  await Notifications.setNotificationChannelAsync("reminders", {
+    name: "Reminders",
+    importance: Notifications.AndroidImportance.HIGH,
+    sound: "default",
+  });
+}

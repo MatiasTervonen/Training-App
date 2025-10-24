@@ -128,8 +128,7 @@ export async function POST(request: NextRequest) {
             sound: "default",
             title: item.title,
             body: item.notes,
-            image:
-              "https://training-app-bay.vercel.app/android-chrome-192x192.png",
+            channelId: "reminders",
           }),
         });
 

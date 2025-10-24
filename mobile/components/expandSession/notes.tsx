@@ -12,7 +12,7 @@ export default function NotesSession(notes: Feed_item) {
       </AppText>
       <View className="items-center">
         <AppText className="my-5 text-xl break-words text-center">{notes.title}</AppText>
-        <AppText className="text-lg whitespace-pre-wrap break-words overflow-hidden max-w-full text-left bg-slate-900 p-4 rounded-md shadow-md mt-5">
+        <AppText className="text-lg whitespace-pre-wrap break-words bg-slate-900 p-4 rounded-md shadow-md mt-5 text-center">
           {notes.notes}
         </AppText>
       </View>

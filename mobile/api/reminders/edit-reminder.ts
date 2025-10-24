@@ -3,12 +3,12 @@ import { supabase } from "@/lib/supabase";
 
 type EditReminderParams = {
   id: string;
-  title: string;
-  notes: string;
+  title: string | null | undefined;
+  notes: string | null | undefined;
   notify_at: string | null;
 };
 
-export default async function EditReminder({
+export default async function EditReminderData({
   id,
   title,
   notes,

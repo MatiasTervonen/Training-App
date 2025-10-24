@@ -11,6 +11,7 @@ import { Feed_item } from "@/app/(app)/types/session";
 import DateTimePicker from "@/app/(app)/components/DateTimePicker";
 import { Bell } from "lucide-react";
 import { handleError } from "../../utils/handleError";
+import { formatDateTime } from "../../lib/formatDate";
 
 type Props = {
   reminder: Feed_item;
@@ -31,6 +32,8 @@ export default function EditReminder({ reminder, onClose, onSave }: Props) {
     reminder.notify_at ? new Date(reminder.notify_at) : null
   );
   const [isSaving, setIsSaving] = useState(false);
+
+  const formattedNotifyAt = formatDateTime(reminder.notify_at!);
 
   const handleSubmit = async () => {
     setIsSaving(true);
@@ -114,7 +117,11 @@ export default function EditReminder({ reminder, onClose, onSave }: Props) {
               value={notify_at}
               onChange={setNotify_at}
               label="Notify at:"
-              placeholder="Select date and time (required)"
+              placeholder={
+                notify_at
+                  ? formattedNotifyAt
+                  : "Select date and time (required)"
+              }
             />
           </div>
           <div className="flex w-full flex-grow">

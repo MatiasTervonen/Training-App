@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "695214713327",
+    "project_id": "mytrack-d267a",
+    "storage_bucket": "mytrack-d267a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:695214713327:android:bff40e5d15c2f24c162e1a",
+        "android_client_info": {
+          "package_name": "com.layer100crypto.MyTrack"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBZ5bMhO9RwWW3r1BhDwLfZc6tEmlbHhew"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -29,6 +29,8 @@ import EditGym from "./editSession/editGym";
 import EditNotes from "./editSession/editNotes";
 import EditWeight from "./editSession/editWeight";
 import PageContainer from "@/components/PageContainer";
+import ReminderSession from "./expandSession/reminder";
+import EditReminder from "./editSession/editReminder";
 
 type FeedItem = {
   table: "notes" | "weight" | "gym_sessions" | "todo_lists" | "reminders";
@@ -336,6 +338,9 @@ export default function SessionFeed() {
             {expandedItem.table === "weight" && (
               <WeightSession {...expandedItem.item} />
             )}
+            {expandedItem.table === "reminders" && (
+              <ReminderSession {...expandedItem.item} />
+            )}
 
             {expandedItem.table === "gym_sessions" && (
               <View>
@@ -366,6 +371,17 @@ export default function SessionFeed() {
             {editingItem.table === "notes" && (
               <EditNotes
                 note={editingItem.item}
+                onClose={() => setEditingItem(null)}
+                onSave={() => {
+                  queryClient.invalidateQueries({ queryKey: ["feed"] });
+                  setEditingItem(null);
+                }}
+              />
+            )}
+
+            {editingItem.table === "reminders" && (
+              <EditReminder
+                reminder={editingItem.item}
                 onClose={() => setEditingItem(null)}
                 onSave={() => {
                   queryClient.invalidateQueries({ queryKey: ["feed"] });

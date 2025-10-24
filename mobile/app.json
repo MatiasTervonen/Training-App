@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "MyTrack",
-    "slug": "MyTrack",
+    "slug": "mytrack",
     "version": "1.0.0",
     "orientation": "default",
     "icon": "./assets/images/ios-tinted-icon.png",
@@ -12,13 +12,18 @@
       "supportsTablet": true
     },
     "android": {
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
       "package": "com.layer100crypto.MyTrack",
-      "softwareKeyboardLayoutMode": "pan"
+      "softwareKeyboardLayoutMode": "pan",
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -46,10 +51,18 @@
           "organization": "matias-tervonen"
         }
       ],
-      "expo-audio"
+      "expo-audio",
+      "expo-notifications"
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "0eb5a9f8-44ed-470e-be70-717758c923f0"
+      }
+    },
+    "owner": "matiastervonen"
   }
 }

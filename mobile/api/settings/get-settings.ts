@@ -13,7 +13,9 @@ export async function fetchUserPreferences() {
 
   const { data, error } = await supabase
     .from("users")
-    .select("id, display_name, weight_unit, profile_picture, role")
+    .select(
+      "id, display_name, weight_unit, profile_picture, role, push_enabled"
+    )
     .eq("id", session.user.id)
     .single();
 

@@ -32,6 +32,9 @@ export default function SessionsScreen() {
       <LinkButton label="Reminders" href="/reminders">
         <Bell color="#f3f4f6" />
       </LinkButton>
+      <LinkButton label="Test" href="/test">
+        <Bell color="#f3f4f6" />
+      </LinkButton>
     </PageContainer>
   );
 }

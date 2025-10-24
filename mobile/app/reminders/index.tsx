@@ -17,6 +17,7 @@ import PageContainer from "@/components/PageContainer";
 import DatePicker from "react-native-date-picker";
 import AnimatedButton from "@/components/animatedButton";
 import { Plus } from "lucide-react-native";
+import { formatDateTime } from "@/lib/formatDate";
 
 export default function ReminderScreen() {
   const [open, setOpen] = useState(false);
@@ -28,6 +29,8 @@ export default function ReminderScreen() {
   const router = useRouter();
 
   const queryClient = useQueryClient();
+
+  const formattedTime = formatDateTime(notifyAt!);
 
   useEffect(() => {
     const loadDraft = async () => {
@@ -147,7 +150,7 @@ export default function ReminderScreen() {
             </View>
             <View>
               <AnimatedButton
-                label={notifyAt ? notifyAt.toLocaleString() : "Set Notify Time"}
+                label={notifyAt ? formattedTime : "Set Notify Time"}
                 onPress={() => setOpen(true)}
                 className="bg-blue-800 py-2 rounded-md shadow-md border-2 border-blue-500 flex-row gap-2 justify-center items-center"
               >

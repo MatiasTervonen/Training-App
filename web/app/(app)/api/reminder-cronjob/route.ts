@@ -55,6 +55,22 @@ export async function POST(request: NextRequest) {
       continue;
     }
 
+    const { data: expoTokens, error: expoError } = await supabase
+      .from("user_push_mobile_subscriptions")
+      .select("*")
+      .eq("user_id", item.user_id);
+
+    if (expoError) {
+      handleError(expoError, {
+        message: "Error fetching mobile subscriptions",
+        route: "/api/reminder-cronjob",
+        method: "POST",
+      });
+      continue;
+    }
+
+    let allSent = true;
+
     for (const sub of subscriptions ?? []) {
       try {
         await webpush.sendNotification(
@@ -75,7 +91,7 @@ export async function POST(request: NextRequest) {
         );
       } catch (error: unknown) {
         const e = error as webpush.WebPushError;
-
+        allSent = false;
         handleError(e, {
           message: "Error sending notification",
           route: "/api/reminder-cronjob",
@@ -99,17 +115,56 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    const { error: updateError } = await supabase
-      .from("reminders")
-      .update({ delivered: true })
-      .eq("id", item.id);
+    // Send mobile push notifications via Expo
+    for (const expoSub of expoTokens ?? []) {
+      try {
+        const response = await fetch("https://exp.host/--/api/v2/push/send", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            to: expoSub.token,
+            sound: "default",
+            title: item.title,
+            body: item.notes,
+          }),
+        });
 
-    if (updateError) {
-      handleError(updateError, {
-        message: "Error marking reminder as delivered",
-        route: "/api/reminder-cronjob",
-        method: "POST",
-      });
+        const result = await response.json();
+
+        if (result.data && result.data.status === "error") {
+          if (result.data.details?.error === "DeviceNotRegistered") {
+            // Delete the invalid token from your database
+            await supabase
+              .from("user_push_mobile_subscriptions")
+              .delete()
+              .eq("id", expoSub.id);
+          }
+        }
+      } catch (error) {
+        allSent = false;
+        handleError(error as Error, {
+          message: "Error sending Expo notification",
+          route: "/api/reminder-cronjob",
+          method: "POST",
+        });
+      }
+    }
+
+    if (allSent) {
+      const { error: updateError } = await supabase
+        .from("reminders")
+        .update({ delivered: true })
+        .eq("id", item.id);
+
+      if (updateError) {
+        handleError(updateError, {
+          message: "Error marking reminder as delivered",
+          route: "/api/reminder-cronjob",
+          method: "POST",
+        });
+      }
     }
   }
 

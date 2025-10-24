@@ -19,8 +19,6 @@ export async function saveNote({ title, notes }: props) {
   const { error } = await supabase
     .from("notes")
     .insert({ title, notes, user_id: session.user.id })
-    .select()
-    .single();
 
   if (error) {
     handleError(error, {

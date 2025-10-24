@@ -13,6 +13,7 @@ interface UserPreferences {
   weight_unit: string;
   profile_picture: string | null;
   role?: string; // Optional role for guest users
+  push_enabled: boolean;
 }
 
 type Store = {

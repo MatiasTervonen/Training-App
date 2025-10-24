@@ -218,7 +218,7 @@ export default function EditGym({
                               <SetInput
                                 type="number"
                                 placeholder="Time (min)"
-                                value={set.time_min}
+                                value={set.time_min ?? ""}
                                 onChange={(val) =>
                                   handleUpdateSet(
                                     index,
@@ -233,7 +233,7 @@ export default function EditGym({
                               <SetInput
                                 type="number"
                                 placeholder="distance (meters)..."
-                                value={set.distance_meters}
+                                value={set.distance_meters ?? ""}
                                 onChange={(val) =>
                                   handleUpdateSet(
                                     index,
@@ -251,7 +251,7 @@ export default function EditGym({
                               <SetInput
                                 placeholder="Weight..."
                                 type="number"
-                                value={set.weight}
+                                value={set.weight ?? ""}
                                 onChange={(val) =>
                                   handleUpdateSet(
                                     index,
@@ -266,7 +266,7 @@ export default function EditGym({
                               <SetInput
                                 type="number"
                                 placeholder="Reps..."
-                                value={set.reps}
+                                value={set.reps ?? ""}
                                 onChange={(val) =>
                                   handleUpdateSet(index, setIndex, "reps", val)
                                 }
@@ -274,7 +274,7 @@ export default function EditGym({
                             </td>
                             <td className="p-2 border-b w-2/3 relative">
                               <ExerciseTypeSelect
-                                value={set.rpe}
+                                value={set.rpe!}
                                 onChange={(val) =>
                                   handleUpdateSet(index, setIndex, "rpe", val)
                                 }

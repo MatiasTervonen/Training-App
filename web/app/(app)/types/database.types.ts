@@ -807,6 +807,33 @@ export type Database = {
           },
         ]
       }
+      user_push_mobile_subscriptions: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean | null
+          platform: string
+          token: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          platform: string
+          token: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          platform?: string
+          token?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_push_subscriptions: {
         Row: {
           auth: string | null
@@ -951,10 +978,7 @@ export type Database = {
       }
     }
     Functions: {
-      get_jwt: {
-        Args: Record<PropertyKey, never>
-        Returns: Json
-      }
+      get_jwt: { Args: never; Returns: Json }
     }
     Enums: {
       [_ in never]: never

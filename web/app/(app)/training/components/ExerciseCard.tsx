@@ -161,7 +161,7 @@ export default function ExerciseCard({
                   <SetInput
                     placeholder="Time in min..."
                     type="number"
-                    value={input.time_min}
+                    value={input.time_min ?? ""}
                     onChange={(val) => onInputChange(index, "time_min", val)}
                   />
                 </div>
@@ -169,8 +169,10 @@ export default function ExerciseCard({
                   <SetInput
                     placeholder="Length (meters)"
                     type="number"
-                    value={input.distance_meters}
-                    onChange={(val) => onInputChange(index, "distance_meters", val)}
+                    value={input.distance_meters ?? ""}
+                    onChange={(val) =>
+                      onInputChange(index, "distance_meters", val)
+                    }
                   />
                 </div>
               </>
@@ -180,13 +182,13 @@ export default function ExerciseCard({
                   <SetInput
                     placeholder="Weight..."
                     type="number"
-                    value={input.weight}
+                    value={input.weight ?? ""}
                     onChange={(val) => onInputChange(index, "weight", val)}
                   />
                   <SetInput
                     placeholder="Reps..."
                     type="number"
-                    value={input.reps}
+                    value={input.reps ?? ""}
                     onChange={(val) => onInputChange(index, "reps", val)}
                   />
                 </div>

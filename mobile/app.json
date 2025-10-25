@@ -52,7 +52,14 @@
         }
       ],
       "expo-audio",
-      "expo-notifications"
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/small-notification-icon.png",
+          "color": "#0f172a",
+          "androidCollapsedTitle": "{appName} Notifications"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
@@ -62,12 +69,6 @@
       "eas": {
         "projectId": "0eb5a9f8-44ed-470e-be70-717758c923f0"
       }
-    },
-    "notifications": {
-      "icon": "./assets/images/small-notification-icon.png",
-      "color": "#0f172a",
-      "androidMode": "default",
-      "androidCollapsedTitle": "{appName} Notifications"
     },
     "owner": "matiastervonen"
   }

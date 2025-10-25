@@ -21,7 +21,10 @@ import { MenuProvider } from "react-native-popup-menu";
 import { Provider as PaperProvider } from "react-native-paper";
 import { JSX } from "react/jsx-runtime";
 import { appQueryClient } from "@/lib/reactQueryClient";
-import { configureNotificationChannels } from "@/components/push-notifications/actions";
+import {
+  configureNotificationChannels,
+  configurePushNotificationsWhenAppIsOpen,
+} from "@/components/push-notifications/actions";
 
 // Custom Toast Configuration
 
@@ -97,6 +100,7 @@ export default Sentry.wrap(function RootLayout() {
 
   useEffect(() => {
     configureNotificationChannels();
+    configurePushNotificationsWhenAppIsOpen();
   }, []);
 
   useEffect(() => {

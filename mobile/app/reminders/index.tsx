@@ -18,6 +18,9 @@ import DatePicker from "react-native-date-picker";
 import AnimatedButton from "@/components/animatedButton";
 import { Plus } from "lucide-react-native";
 import { formatDateTime } from "@/lib/formatDate";
+import * as Notifications from "expo-notifications";
+import { NotificationTriggerInput } from "expo-notifications";
+import Toggle from "@/components/toggle";
 
 export default function ReminderScreen() {
   const [open, setOpen] = useState(false);
@@ -31,6 +34,21 @@ export default function ReminderScreen() {
   const queryClient = useQueryClient();
 
   const formattedTime = formatDateTime(notifyAt!);
+
+  function scheduleBackupNotification() {
+    // Schedule local notification as a backup
+    Notifications.scheduleNotificationAsync({
+      content: {
+        title: title,
+        body: notes,
+      },
+      trigger: notifyAt
+        ? (new Date(
+            notifyAt.getTime() + 30 * 1000
+          ) as unknown as NotificationTriggerInput)
+        : null,
+    });
+  }
 
   useEffect(() => {
     const loadDraft = async () => {
@@ -136,7 +154,7 @@ export default function ReminderScreen() {
               <AppInput
                 value={title}
                 onChangeText={setValue}
-                placeholder="Reminder title... (required)"
+                placeholder="Title... (required)"
                 label="Title..."
               />
             </View>
@@ -144,7 +162,7 @@ export default function ReminderScreen() {
               <NotesInput
                 value={notes}
                 onChangeText={setNotes}
-                placeholder="Write your notes here... (optional)"
+                placeholder="Notes... (optional)"
                 label="Notes..."
               />
             </View>

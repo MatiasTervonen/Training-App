@@ -1,5 +1,5 @@
 import { full_gym_session } from "@/types/models";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Toast from "react-native-toast-message";
 import AppText from "@/components/AppText";
 import { unpinItems } from "@/api/pinned/unpin-items";
@@ -31,6 +31,8 @@ import EditWeight from "./editSession/editWeight";
 import PageContainer from "@/components/PageContainer";
 import ReminderSession from "./expandSession/reminder";
 import EditReminder from "./editSession/editReminder";
+import * as Notifications from "expo-notifications";
+import { supabase } from "@/lib/supabase";
 
 type FeedItem = {
   table: "notes" | "weight" | "gym_sessions" | "todo_lists" | "reminders";
@@ -48,6 +50,45 @@ export default function SessionFeed() {
   function getCanonicalId(item: { id?: string; item_id?: string }) {
     return item.item_id ?? item.id ?? "";
   }
+
+  useEffect(() => {
+    const sub = Notifications.addNotificationResponseReceivedListener(
+      async (response) => {
+        const data = response.notification.request.content.data;
+        if (data?.reminderId) {
+          try {
+            console.log("Fetching reminder for ID:", data.reminderId);
+            const { data: feedItem, error } = await supabase
+              .from("feed_with_pins")
+              .select("*")
+              .eq("item_id", data.reminderId)
+              .single();
+
+            if (error) {
+              throw error;
+            }
+
+            if (feedItem) {
+              setExpandedItem({
+                table: "reminders",
+                item: { ...feedItem, id: getCanonicalId(feedItem) },
+                pinned: feedItem.pinned,
+              });
+            }
+          } catch (error) {
+            console.error("Error fetching reminder from notification:", error);
+            handleError(error as Error, {
+              message: "Error fetching reminder from notification",
+              route: "/notifications/response",
+              method: "GET",
+            });
+          }
+        }
+      }
+    );
+
+    return () => sub.remove();
+  }, []);
 
   const {
     error,

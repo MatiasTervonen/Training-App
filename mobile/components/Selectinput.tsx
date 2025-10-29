@@ -21,6 +21,7 @@ export default function SelectInput({
   onChange,
   disabled,
   topLabel,
+  placeholder,
 }: SelectInputProps) {
   const [isOpen, setIsOpen] = useState(false);
   const selectedlabel = options.find((option) => option.value === value)?.label;
@@ -47,7 +48,7 @@ export default function SelectInput({
           end={{ x: 1, y: 1 }}
           className="absolute inset-0 items-center justify-center"
         >
-          <AppText className="text-lg ">{selectedlabel}</AppText>
+          <AppText className="text-lg ">{selectedlabel || placeholder}</AppText>
         </LinearGradient>
       </Pressable>
 
@@ -63,10 +64,10 @@ export default function SelectInput({
         >
           <View
             style={{ maxHeight: "75%", width: screenWidth * 0.6 }}
-            className="border-2 border-gray-100 rounded-xl bg-slate-800  py-5 justify-center"
+            className="border-2 border-gray-100 rounded-xl bg-slate-800 py-5 justify-center"
           >
             {label && (
-              <AppText className="mb-6 text-center  text-xl px-4">
+              <AppText className="mb-6 text-center text-xl px-4">
                 {label}
               </AppText>
             )}
@@ -79,7 +80,7 @@ export default function SelectInput({
                     setIsOpen(false);
                   }}
                 >
-                  <AppText className="text-center text-2xl border p-4 bg-slate-700 my-2 border-gray-100 rounded-xl mx-6">
+                  <AppText className="text-center text-xl border p-2 bg-slate-700 my-2 border-gray-100 rounded-xl mx-6">
                     {option.label}
                   </AppText>
                 </AnimatedButton>

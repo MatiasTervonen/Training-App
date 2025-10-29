@@ -25,6 +25,15 @@ import {
   configureNotificationChannels,
   configurePushNotificationsWhenAppIsOpen,
 } from "@/components/push-notifications/actions";
+import {
+  configureReanimatedLogger,
+  ReanimatedLogLevel,
+} from "react-native-reanimated";
+
+configureReanimatedLogger({
+  level: ReanimatedLogLevel.error,
+  strict: false,
+});
 
 // Custom Toast Configuration
 
@@ -33,6 +42,27 @@ const toastConfig = {
     <BaseToast
       {...props}
       style={{ borderLeftColor: "green" }}
+      contentContainerStyle={{
+        paddingHorizontal: 15,
+        paddingVertical: 10,
+        backgroundColor: "#1e293b",
+      }}
+      text1Style={{
+        fontSize: 18,
+        fontWeight: "400",
+        color: "#f3f4f6",
+      }}
+      text2Style={{
+        fontSize: 15,
+        color: "#f3f4f6",
+      }}
+    />
+  ),
+
+  info: (props: JSX.IntrinsicAttributes & BaseToastProps) => (
+    <BaseToast
+      {...props}
+      style={{ borderLeftColor: "#3b82f6" }}
       contentContainerStyle={{
         paddingHorizontal: 15,
         paddingVertical: 10,

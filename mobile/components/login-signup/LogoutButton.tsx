@@ -7,7 +7,7 @@ import { router } from "expo-router";
 import { useUserStore } from "@/lib/stores/useUserStore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { handleError } from "@/utils/handleError";
-import AppButton from "../AppButton";
+import AppButton from "@/components/buttons/AppButton";
 import { useQueryClient } from "@tanstack/react-query";
 
 export default function LogoutButton() {

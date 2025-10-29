@@ -5,7 +5,7 @@ import { useSignOut } from "@/lib/handleSignout";
 import { supabase } from "@/lib/supabase";
 import AppInput from "@/components/AppInput";
 import { handleError } from "@/utils/handleError";
-import SaveButtonSpinner from "@/components/SaveButtonSpinner";
+import SaveButtonSpinner from "@/components/buttons/SaveButtonSpinner";
 import Toast from "react-native-toast-message";
 import PageContainer from "@/components/PageContainer";
 

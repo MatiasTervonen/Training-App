@@ -3,7 +3,6 @@ import { useMemo } from "react";
 import { Dimensions, View } from "react-native";
 import AppText from "../AppText";
 import AnimatedBar from "./AnimatedBar";
-import Animated from "react-native-reanimated";
 
 export default function MuscleGroupChartSets({
   data,

@@ -1,4 +1,4 @@
-import AppText from "./AppText";
+import AppText from "@/components/AppText";
 import { Pressable, ActivityIndicator } from "react-native";
 import { useUserStore } from "@/lib/stores/useUserStore";
 

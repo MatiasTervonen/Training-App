@@ -68,7 +68,7 @@ export default function DropDownModal({
                   setIsOpen(false);
                 }}
               >
-                <AppText className="text-gray-100  text-center text-2xl border p-4 bg-slate-700 my-2 border-gray-100 rounded-xl mx-6">
+                <AppText className="text-gray-100  text-center text-xl border p-2 bg-slate-700 my-2 border-gray-100 rounded-xl mx-6">
                   {option.label}
                 </AppText>
               </AnimatedButton>

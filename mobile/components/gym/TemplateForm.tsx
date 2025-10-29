@@ -12,8 +12,8 @@ import AppInput from "@/components/AppInput";
 import { useState, useEffect } from "react";
 import { ChevronDown, Plus } from "lucide-react-native";
 import FullScreenModal from "@/components/FullScreenModal";
-import SaveButton from "@/components/SaveButton";
-import DeleteButton from "@/components/DeleteButton";
+import SaveButton from "@/components/buttons/SaveButton";
+import DeleteButton from "@/components/buttons/DeleteButton";
 import {
   ExerciseEntry,
   emptyExerciseEntry,
@@ -36,7 +36,7 @@ import Toast from "react-native-toast-message";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { LinearGradient } from "expo-linear-gradient";
 import { confirmAction } from "@/lib/confirmAction";
-import AppButton from "../AppButton";
+import AppButton from "@/components/buttons/AppButton";
 import PageContainer from "../PageContainer";
 
 export default function TemplateForm() {

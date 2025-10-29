@@ -5,14 +5,20 @@ type SaveReminderParams = {
   title: string;
   notes: string;
   notify_at: string | null;
-  type: "global";
+  notify_date: Date | null;
+  weekdays: number[];
+  type: "weekly" | "daily" | "one-time";
+  notification_id: string[] | string;
 };
 
-export default async function SaveReminder({
+export default async function SaveCustomReminder({
   title,
   notes,
   notify_at,
+  weekdays,
+  notify_date,
   type,
+  notification_id,
 }: SaveReminderParams) {
   const {
     data: { session },
@@ -23,15 +29,20 @@ export default async function SaveReminder({
     throw new Error("Unauthorized");
   }
 
-  const { error: remindersError } = await supabase.from("reminders").insert([
-    {
-      user_id: session.user.id,
-      title,
-      notes,
-      notify_at,
-      type,
-    },
-  ]);
+  const { error: remindersError } = await supabase
+    .from("custom_reminders")
+    .insert([
+      {
+        user_id: session.user.id,
+        title,
+        notes,
+        notify_at,
+        notify_date,
+        weekdays,
+        type,
+        notification_id,
+      },
+    ]);
 
   if (remindersError) {
     handleError(remindersError, {

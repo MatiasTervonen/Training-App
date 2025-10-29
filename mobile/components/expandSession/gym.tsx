@@ -2,7 +2,7 @@ import { formatDate } from "@/lib/formatDate";
 import { useUserStore } from "@/lib/stores/useUserStore";
 import { full_gym_session, full_gym_exercises } from "@/types/models";
 import GroupExercises from "@/components/gym/lib/GroupExercises";
-import { View, SectionList, ScrollView } from "react-native";
+import { View, ScrollView } from "react-native";
 import AppText from "../AppText";
 import { LinearGradient } from "expo-linear-gradient";
 

@@ -11,7 +11,7 @@ export default function ReminderSession(reminder: Feed_item) {
 
   return (
     <View className="px-4 pb-10">
-      <AppText className="text-sm text-gray-400 mt-10 text-center">
+      <AppText className="text-lg text-gray-400 mt-10 text-center">
         {formattedDate}
       </AppText>
       <View>

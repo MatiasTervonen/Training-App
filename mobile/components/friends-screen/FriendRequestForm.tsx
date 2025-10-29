@@ -4,7 +4,7 @@ import toast from "react-native-toast-message";
 import { handleError } from "@/utils/handleError";
 import { sendFriendRequest } from "@/api/friend/send-request";
 import { View } from "react-native";
-import SaveButton from "../SaveButton";
+import SaveButton from "@/components/buttons/SaveButton";
 
 export default function FriendRequestForm() {
   const [identifier, setIdentifier] = useState("");

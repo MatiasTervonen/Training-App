@@ -1,7 +1,7 @@
 import { View, TouchableWithoutFeedback, Keyboard } from "react-native";
 import AppText from "@/components/AppText";
-import SaveButton from "@/components/SaveButton";
-import DeleteButton from "@/components/DeleteButton";
+import SaveButton from "@/components/buttons/SaveButton";
+import DeleteButton from "@/components/buttons/DeleteButton";
 import FullScreenLoader from "@/components/FullScreenLoader";
 import AppInput from "@/components/AppInput";
 import { useState, useEffect } from "react";

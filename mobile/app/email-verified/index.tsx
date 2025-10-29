@@ -1,6 +1,6 @@
 import { View } from "react-native";
 import AppText from "@/components/AppText";
-import LinkButton from "@/components/LinkButton";
+import LinkButton from "@/components/buttons/LinkButton";
 
 export default function EmailVerified() {
   return (

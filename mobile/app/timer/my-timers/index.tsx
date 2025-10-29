@@ -1,25 +1,26 @@
 import { View, ActivityIndicator } from "react-native";
 import AppText from "@/components/AppText";
 import PageContainer from "@/components/PageContainer";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import GetTimer from "@/api/timer/get-timers";
-import SaveButton from "@/components/SaveButton";
 import { useState } from "react";
 import { timers } from "@/types/models";
 import FullScreenModal from "@/components/FullScreenModal";
 import TimerCard from "@/components/cards/TimerCard";
 import DeleteTimer from "@/api/timer/delete-timer";
-import { confirmAction } from "@/lib/confirmAction";
 import Toast from "react-native-toast-message";
 import { handleError } from "@/utils/handleError";
 import { router } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useTimerStore } from "@/lib/stores/timerStore";
+import AnimatedButton from "@/components/animatedButton";
 
 export default function MyTimersScreen() {
   const [expandedItem, setExpandedItem] = useState<timers | null>(null);
 
   const { setActiveSession, startTimer } = useTimerStore();
+
+  const queryClient = useQueryClient();
 
   const {
     data: timers,
@@ -34,18 +35,10 @@ export default function MyTimersScreen() {
   });
 
   const handleDeleteTimer = async (timerId: string) => {
-    const confirmDelete = await confirmAction({
-      title: "Delete Timer",
-      message:
-        "Are you sure you want to delete this timer? This action cannot be undone.",
-      confirmText: "Delete",
-      cancelText: "Cancel",
-    });
-    if (!confirmDelete) return;
-
     try {
       await DeleteTimer(timerId);
 
+      queryClient.refetchQueries({ queryKey: ["timers"], exact: true });
       Toast.show({ type: "success", text1: "Timer deleted successfully" });
     } catch (error) {
       console.error("Error deleting timer:", error);
@@ -102,9 +95,13 @@ export default function MyTimersScreen() {
       ) : (
         timers?.map((timer) => (
           <View key={timer.id} className="mb-4 ">
-            <SaveButton onPress={() => {
-              setExpandedItem(timer);
-            }} label={timer.title} />
+            <AnimatedButton
+              className="bg-blue-800 py-2 rounded-md shadow-md border-2 border-blue-500 items-center"
+              onPress={() => {
+                setExpandedItem(timer);
+              }}
+              label={timer.title}
+            />
           </View>
         ))
       )}
@@ -119,10 +116,6 @@ export default function MyTimersScreen() {
             onDelete={() => {
               handleDeleteTimer(expandedItem.id);
               setExpandedItem(null);
-            }}
-            onExpand={() => {
-              // Handle expand logic here if needed
-              console.log("Expand template:", expandedItem.id);
             }}
             onEdit={() => {
               // Handle edit logic here

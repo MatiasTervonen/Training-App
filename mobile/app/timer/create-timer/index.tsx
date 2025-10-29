@@ -1,19 +1,20 @@
 import { View, TouchableWithoutFeedback, Keyboard } from "react-native";
 import { handleError } from "@/utils/handleError";
 import AppText from "@/components/AppText";
-import SaveButton from "@/components/SaveButton";
+import SaveButton from "@/components/buttons/SaveButton";
 import Toast from "react-native-toast-message";
 import { useState, useEffect } from "react";
 import AppInput from "@/components/AppInput";
 import NotesInput from "@/components/NotesInput";
 import PageContainer from "@/components/PageContainer";
-import DeleteButton from "@/components/DeleteButton";
+import DeleteButton from "@/components/buttons/DeleteButton";
 import saveTimer from "@/api/timer/save-timer";
 import FullScreenLoader from "@/components/FullScreenLoader";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import { useDebouncedCallback } from "use-debounce";
 import NumberInput from "@/components/NumberInput";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function SettingsScreen() {
   const [title, setTitle] = useState("");
@@ -24,6 +25,8 @@ export default function SettingsScreen() {
   const [isLoaded, setIsLoaded] = useState(false);
 
   const router = useRouter();
+
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     const loadDraft = async () => {
@@ -103,6 +106,7 @@ export default function SettingsScreen() {
         notes,
       });
 
+      queryClient.refetchQueries({ queryKey: ["timers"], exact: true });
       router.push("/timer/my-timers");
       Toast.show({
         type: "success",

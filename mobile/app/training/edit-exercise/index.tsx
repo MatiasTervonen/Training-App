@@ -1,6 +1,6 @@
 import AppInput from "@/components/AppInput";
 import { useState, useEffect } from "react";
-import SaveButton from "@/components/SaveButton";
+import SaveButton from "@/components/buttons/SaveButton";
 import Toast from "react-native-toast-message";
 import FullScreenLoader from "@/components/FullScreenLoader";
 import { handleError } from "@/utils/handleError";
@@ -16,7 +16,7 @@ import { gym_exercises } from "@/types/models";
 import EditExercise from "@/api/gym/edit-exercise";
 import DeleteExercise from "@/api/gym/delete-exercise";
 import ExerciseDropdownEdit from "@/components/gym/ExerciseDropDownEdit";
-import DeleteButton from "@/components/DeleteButton";
+import DeleteButton from "@/components/buttons/DeleteButton";
 import AnimatedButton from "@/components/animatedButton";
 import { useQueryClient } from "@tanstack/react-query";
 import PageContainer from "@/components/PageContainer";

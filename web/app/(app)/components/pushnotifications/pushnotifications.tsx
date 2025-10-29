@@ -1,9 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { subscribeUser, unsubscribeUser, sendNotification } from "./actions";
+import { subscribeUser, unsubscribeUser } from "./actions";
 import Toggle from "../toggle";
-import { useUserStore } from "../../lib/stores/useUserStore";
 
 function urlBase64ToUint8Array(base64String: string) {
   const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
@@ -36,10 +35,8 @@ export function PushNotificationManager() {
   const [subscription, setSubscription] = useState<PushSubscription | null>(
     null
   );
-  const [message, setMessage] = useState("");
   const [toggleState, setToggleState] = useState(false);
 
-  const role = useUserStore.getState().role;
 
   useEffect(() => {
     if ("serviceWorker" in navigator && "PushManager" in window) {
@@ -107,12 +104,6 @@ export function PushNotificationManager() {
     }
   }
 
-  async function sendTestNotification() {
-    if (subscription) {
-      await sendNotification(message);
-      setMessage("");
-    }
-  }
 
   if (!isSupported) {
     return (
@@ -134,23 +125,6 @@ export function PushNotificationManager() {
         </p>
         <Toggle isOn={toggleState} onToggle={handleToggle} />
       </div>
-      {subscription && role === "guest" && (
-        <div className=" mt-5">
-          <input
-            type="text"
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            placeholder="Test notification message"
-            className="p-2 rounded border w-full mb-2 text-gray-100 placeholder:text-slate-400 border-slate-400 bg-[linear-gradient(50deg,_#0f172a,_#1e293b,_#333333)] hover:border-blue-500 focus:outline-none focus:border-green-300"
-          />
-          <button
-            onClick={sendTestNotification}
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-          >
-            Send Test Notification
-          </button>
-        </div>
-      )}
     </div>
   );
 }

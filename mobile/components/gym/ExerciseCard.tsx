@@ -7,7 +7,7 @@ import AppInput from "../AppInput";
 import { useUserStore } from "@/lib/stores/useUserStore";
 import { confirmAction } from "@/lib/confirmAction";
 import SelectInput from "../Selectinput";
-import AppButton from "../AppButton";
+import AppButton from "@/components/buttons/AppButton";
 import DropDownModal from "../DropDownModal";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
 

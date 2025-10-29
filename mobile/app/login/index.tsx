@@ -19,7 +19,7 @@ import Animated, {
 } from "react-native-reanimated";
 
 import GuestLogIn from "@/components/login-signup/guest-login";
-import GradientButton from "@/components/GradientButton";
+import GradientButton from "@/components/buttons/GradientButton";
 import ForgotPasswordText from "@/components/login-signup/forgotPassword";
 import ModalLogin from "@/components/ModalLogin";
 import ResendEmailText from "@/components/login-signup/resendEmail";

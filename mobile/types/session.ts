@@ -143,3 +143,18 @@ export type optimisticNote = {
   notes: string;
   created_at: string;
 };
+
+export type full_reminder = {
+  id: string;
+  title: string;
+  notes: string;
+  type: "global" | "daily" | "weekly" | "one-time";
+  notify_at: string;
+  notification_id: string[] | string; 
+  created_at: string;
+  updated_at: string;
+  delivered: boolean;
+  weekdays?: number[];
+  active: boolean;
+  notify_date?: string;
+};

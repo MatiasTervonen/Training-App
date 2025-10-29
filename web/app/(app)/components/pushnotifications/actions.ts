@@ -22,23 +22,12 @@ type WebPushSubscription = {
   };
 };
 
-function detectDeviceType() {
-  const ua = navigator.userAgent.toLowerCase();
-
-  // Explicitly check for mobile platforms
-  if (/\b(android|iphone|ipad|ipod)\b/.test(ua)) {
-    return "mobile";
-  }
-
-  return "desktop";
-}
-
 export async function subscribeUser(sub: WebPushSubscription) {
   await savePushSubscription({
     endpoint: sub.endpoint,
     p256dh: sub.keys.p256dh,
     auth: sub.keys.auth,
-    device_type: detectDeviceType(),
+    device_type: "desktop",
   });
 
   return { success: true };

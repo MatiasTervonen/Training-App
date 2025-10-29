@@ -4,7 +4,7 @@ import { full_gym_template } from "@/types/models";
 
 export default async function GetFullTemplate(
   sessionId: string
-): Promise<full_gym_template> {
+) {
   const {
     data: { session },
     error: sessionError,

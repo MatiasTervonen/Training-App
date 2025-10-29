@@ -1,6 +1,6 @@
 import { View } from "react-native";
 import AppText from "@/components/AppText";
-import LinkButton from "@/components/LinkButton";
+import LinkButton from "@/components/buttons/LinkButton";
 import LogoutButton from "@/components/login-signup/LogoutButton";
 import { ShieldUser, UserPen, ContactRound } from "lucide-react-native";
 import PageContainer from "@/components/PageContainer";

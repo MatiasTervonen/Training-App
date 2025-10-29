@@ -5,7 +5,6 @@ import AppText from "../AppText";
 import { HistoryResult } from "@/types/session";
 import { FlatList } from "react-native-gesture-handler";
 import { LinearGradient } from "expo-linear-gradient";
-import { full_gym_exercises } from "@/types/models";
 import { useUserStore } from "@/lib/stores/useUserStore";
 
 type ExerciseHistoryModalProps = {

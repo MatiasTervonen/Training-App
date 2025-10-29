@@ -3,7 +3,7 @@ import AppText from "@/components/AppText";
 import AppInput from "@/components/AppInput";
 import ProfilePicture from "@/components/ProfilePicture";
 import SelectInput from "@/components/Selectinput";
-import SaveButton from "@/components/SaveButton";
+import SaveButton from "@/components/buttons/SaveButton";
 import { useUserStore } from "@/lib/stores/useUserStore";
 import { useState, useEffect } from "react";
 import Toast from "react-native-toast-message";

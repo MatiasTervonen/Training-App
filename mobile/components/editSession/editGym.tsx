@@ -1,7 +1,7 @@
 import { useState } from "react";
 import NotesInput from "@/components/NotesInput";
 import AppInput from "@/components/AppInput";
-import SaveButton from "@/components/SaveButton";
+import SaveButton from "@/components/buttons/SaveButton";
 import FullScreenLoader from "@/components/FullScreenLoader";
 import SelectInput from "@/components/Selectinput";
 import { full_gym_exercises, full_gym_session } from "@/types/models";
@@ -99,7 +99,7 @@ export default function EditGym({
   const groupedExercises = GroupExercises(gym_session.gym_session_exercises);
 
   return (
-    <ScrollView className="px-4">
+    <ScrollView showsVerticalScrollIndicator={false} className="px-4">
       <View className="my-10">
         <View className="gap-5">
           <AppText className={` text-gray-100 text-xl text-center`}>
@@ -122,7 +122,7 @@ export default function EditGym({
               keyboardType="numeric"
             />
           </View>
-          <View>
+          <View className="min-h-[80px]">
             <NotesInput
               value={notes || ""}
               onChangeText={setNotes}

@@ -3,6 +3,7 @@ import * as Device from "expo-device";
 import { supabase } from "../../lib/supabase";
 import { handleError } from "@/utils/handleError";
 import Constants from "expo-constants";
+import { useUserStore } from "@/lib/stores/useUserStore";
 
 function handleRegistrationError(errorMessage: string) {
   alert(errorMessage);
@@ -41,7 +42,6 @@ export async function registerForPushNotificationsAsync() {
         projectId,
       })
     ).data;
-    console.log(pushTokenString);
     return pushTokenString;
   } catch (e: unknown) {
     handleRegistrationError(`${e}`);
@@ -88,6 +88,12 @@ export async function SaveTokenToServer(token: string, platform: string) {
     throw new Error("Error updating push_enabled status");
   }
 
+  const { preferences, setUserPreferences } = useUserStore.getState();
+
+  if (preferences) {
+    setUserPreferences({ ...preferences, push_enabled: true });
+  }
+
   return true;
 }
 
@@ -129,6 +135,12 @@ export async function deleteTokenFromServer(token: string, platform: string) {
       method: "DELETE",
     });
     throw new Error("Error updating push_enabled status");
+  }
+
+  const { preferences, setUserPreferences } = useUserStore.getState();
+
+  if (preferences) {
+    setUserPreferences({ ...preferences, push_enabled: false });
   }
 
   return true;

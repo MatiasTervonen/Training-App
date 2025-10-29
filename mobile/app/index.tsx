@@ -3,7 +3,7 @@ import { View, Dimensions, ScrollView } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import GradientColorText from "@/components/GradientColorText";
 import { Image } from "expo-image";
-import GradientButton from "@/components/GradientButton";
+import GradientButton from "@/components/buttons/GradientButton";
 import { useRouter } from "expo-router";
 import PageContainer from "@/components/PageContainer";
 

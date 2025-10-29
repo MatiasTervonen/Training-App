@@ -1,6 +1,6 @@
 import { Link } from "expo-router";
 import { Pressable } from "react-native";
-import AppText from "./AppText";
+import AppText from "@/components/AppText";
 import type { LinkProps } from "expo-router";
 import Animated, {
   useSharedValue,

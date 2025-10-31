@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const optimizedBuffer = await sharp(buffer)
+  const optimizedBuffer = await sharp(buffer, { limitInputPixels: 4000 * 4000 })
     .resize(300, 300, { fit: "cover" })
     .toFormat("webp")
     .toBuffer();

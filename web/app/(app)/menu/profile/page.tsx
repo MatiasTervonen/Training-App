@@ -9,6 +9,7 @@ import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
 import ProfilePicture from "@/app/(app)/menu/components/profile-picture";
 import { handleError } from "@/app/(app)/utils/handleError";
+import { fileTypeFromBlob } from "file-type";
 
 export default function Settings() {
   const [isSaving, setIsSaving] = useState(false);
@@ -39,6 +40,17 @@ export default function Settings() {
     if (!selectedProfilePic) return null;
 
     const fileSize = selectedProfilePic.size;
+
+    const fileType = await fileTypeFromBlob(selectedProfilePic);
+    if (
+      !fileType ||
+      !["image/jpeg", "image/png", "image/webp"].includes(fileType.mime)
+    ) {
+      toast.error(
+        "Invalid file type. Please upload a JPEG, PNG, or WEBP image."
+      );
+      return null;
+    }
 
     if (fileSize > 5 * 1024 * 1024) {
       toast.error("File size exceeds 5MB limit.");
@@ -76,6 +88,11 @@ export default function Settings() {
     setIsSaving(true);
 
     const uploadedProfilePic = await saveProfilePicture();
+
+    if (selectedProfilePic && !uploadedProfilePic) {
+      setIsSaving(false);
+      return;
+    }
 
     const profilePictureUrl = uploadedProfilePic ?? profilePicZ;
 
@@ -176,7 +193,9 @@ export default function Settings() {
               setProfilePicPreview(previewUrl);
             }}
           />
-          <p className="text-sm text-gray-500 mt-2">Max size 5MB.</p>
+          <p className="text-sm text-gray-500 mt-2">
+            Max size 5MB. JPEG, PNG, and WEBP formats allowed.
+          </p>
         </div>
         <div className="mt-5 w-fit">
           <ExerciseTypeSelect

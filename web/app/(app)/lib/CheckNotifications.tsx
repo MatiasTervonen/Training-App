@@ -4,7 +4,10 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 
+
+
 export default function CheckNotifications() {
+
   const router = useRouter();
 
   useEffect(() => {
@@ -24,4 +27,6 @@ export default function CheckNotifications() {
 
     checkSubscription();
   }, [router]);
+
+
 }

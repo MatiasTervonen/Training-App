@@ -11,12 +11,11 @@ import toast from "react-hot-toast";
 import { useDebouncedCallback } from "use-debounce";
 import { updateFeed } from "@/app/(app)/lib/revalidateFeed";
 import DateTimePicker from "@/app/(app)/components/DateTimePicker";
-import CheckNotifications from "@/app/(app)/lib/CheckNotifications";
 import { handleError } from "../utils/handleError";
+import InfoModal from "../components/InfoModal";
+import LinkButton from "../ui/LinkButton";
 
 export default function Notes() {
-  CheckNotifications();
-
   const draft =
     typeof window !== "undefined"
       ? JSON.parse(localStorage.getItem("reminder_draft") || "null")
@@ -26,7 +25,26 @@ export default function Notes() {
   const [title, setValue] = useState(draft?.title || "");
   const [isSaving, setIsSaving] = useState(false);
   const [notifyAt, setNotifyAt] = useState<Date | null>(null);
+  const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
+
+
+  // Check for push notification subscription
+  
+  useEffect(() => {
+    async function checkSubscription() {
+      if ("serviceWorker" in navigator && "PushManager" in window) {
+        const registration = await navigator.serviceWorker.ready;
+        const sub = await registration.pushManager.getSubscription();
+
+        if (!sub) {
+          setIsOpen(true);
+        }
+      }
+    }
+
+    checkSubscription();
+  }, []);
 
   const saveReminder = async () => {
     if (title.trim().length === 0) {
@@ -104,9 +122,7 @@ export default function Notes() {
     <>
       <div className="flex flex-col h-full w-full px-6 max-w-md mx-auto">
         <div className="flex flex-col items-center mt-5 gap-5 flex-grow mb-10 h-full">
-          <p className="text-gray-100 text-lg text-center">
-            Add your reminders here
-          </p>
+          <p className="text-lg text-center">Add your reminders here</p>
           <div className="w-full">
             <CustomInput
               value={title}
@@ -138,6 +154,19 @@ export default function Notes() {
         </div>
       </div>
       {isSaving && <FullScreenLoader message="Saving reminder..." />}
+
+      <InfoModal isOpen={isOpen} onClose={() => setIsOpen(false)}>
+        <div className="p-6 items-center text-center">
+          <h2 className="text-xl mb-4">Push Notifications Disabled</h2>
+          <p className="mb-10 text-gray-300 text-lg">
+            Enable push notifications from menu to receive reminders.
+          </p>
+          <div className="flex gap-3">
+            <LinkButton href="/sessions">Back</LinkButton>
+            <LinkButton href="/menu">Menu</LinkButton>
+          </div>
+        </div>
+      </InfoModal>
     </>
   );
 }

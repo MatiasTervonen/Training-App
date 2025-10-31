@@ -14,6 +14,7 @@ import { validateUserName } from "@/api/settings/validateUserName";
 import { handleError } from "@/utils/handleError";
 import { supabase } from "@/lib/supabase";
 import PageContainer from "@/components/PageContainer";
+import mime from "mime";
 
 type UploadFile = {
   uri: string;
@@ -73,6 +74,20 @@ export default function ProfileScreen() {
       return profilePicZ || null;
     }
 
+    const fileType = mime.getType(selectedProfilePic.uri);
+    if (
+      fileType !== "image/jpeg" &&
+      fileType !== "image/png" &&
+      fileType !== "image/webp"
+    ) {
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "Invalid file format. Only JPEG, PNG, and WEBP are allowed.",
+      });
+      return profilePicZ || null;
+    }
+
     try {
       const {
         data: { session },
@@ -85,7 +100,11 @@ export default function ProfileScreen() {
 
       const formData = new FormData();
 
-      formData.append("file", selectedProfilePic as unknown as Blob);
+      formData.append("file", {
+        uri: selectedProfilePic.uri,
+        name: selectedProfilePic.name || "profile.jpg",
+        type: mime.getType(selectedProfilePic.uri) || "image/jpeg",
+      } as any);
 
       const response = await fetch(
         "https://training-app-bay.vercel.app/api/settings/save-profilePic",
@@ -224,7 +243,7 @@ export default function ProfileScreen() {
                 onFileSelected={setSelectedProfilePic}
               />
               <AppText className="text-sm text-gray-500 mt-2">
-                Max size 5MB. JPEG or PNG format.
+                Max size 5MB. JPEG, PNG or WEBP format.
               </AppText>
             </View>
             <View className="mt-10">

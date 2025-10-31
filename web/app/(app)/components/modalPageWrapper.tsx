@@ -24,7 +24,6 @@ export default function ModalPageWrapper({
   leftLabel = "back",
   rightLabel = "home",
 }: Props) {
-  
   const { direction, setDirection } = useTransitionDirectionStore();
   const [isTransitioning, setIsTransitioning] = useState(false);
   const router = useRouter();
@@ -67,7 +66,7 @@ export default function ModalPageWrapper({
         <div className="flex flex-col items-center gap-2 ml-2">
           {isTransitioning && leftLabel && (
             <>
-              <div className="text-gray-100 text-center text-xl">
+              <div className="text-center text-xl">
                 {leftLabel
                   ?.toUpperCase()
                   .split("")
@@ -75,10 +74,7 @@ export default function ModalPageWrapper({
                     <p key={index}>{letter}</p>
                   ))}
               </div>
-              <SquareArrowLeft
-                size={35}
-                className="text-gray-100 animate-pulse"
-              />
+              <SquareArrowLeft size={35} className="animate-pulse" />
             </>
           )}
         </div>
@@ -86,7 +82,7 @@ export default function ModalPageWrapper({
         <div className="flex flex-col items-center gap-2 mr-2">
           {isTransitioning && rightLabel && (
             <>
-              <div className="text-gray-100 text-center text-xl">
+              <div className="text-center text-xl">
                 {rightLabel
                   ?.toUpperCase()
                   .split("")
@@ -96,7 +92,7 @@ export default function ModalPageWrapper({
               </div>
               <SquareArrowRight
                 size={35}
-                className="text-gray-100 animate-pulse"
+                className="animate-pulse"
               />
             </>
           )}

@@ -1,6 +1,8 @@
 import { handleError } from "@/app/(app)/utils/handleError";
 import { createClient } from "@/utils/supabase/server";
 import { NextRequest } from "next/server";
+import { fileTypeFromBuffer } from "file-type";
+import sharp from "sharp";
 
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
@@ -29,13 +31,47 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  const fileText = file.name.split(".").pop();
-  const filePath = `${user.sub}.${fileText}`;
+  const arrayBuffer = await file.arrayBuffer();
+  const buffer = Buffer.from(arrayBuffer);
+  const fileType = await fileTypeFromBuffer(buffer);
+
+  if (
+    !fileType ||
+    !["image/jpeg", "image/png", "image/webp"].includes(fileType.mime)
+  ) {
+    return new Response(
+      JSON.stringify({
+        error: "Invalid file type. Please upload a JPEG, PNG, or WEBP image.",
+      }),
+      {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+  }
+
+  if (file.size > 5 * 1024 * 1024) {
+    return new Response(
+      JSON.stringify({ error: "File size exceeds 5MB limit." }),
+      {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+  }
+
+  const optimizedBuffer = await sharp(buffer)
+    .resize(300, 300, { fit: "cover" })
+    .toFormat("webp")
+    .toBuffer();
+
+  const filePath = `${user.sub}.webp`;
 
   const { error: uploadError } = await supabase.storage
     .from("profile-pictures")
-    .upload(filePath, file, {
+    .upload(filePath, optimizedBuffer, {
       upsert: true,
+      contentType: "image/webp",
     });
 
   if (uploadError) {

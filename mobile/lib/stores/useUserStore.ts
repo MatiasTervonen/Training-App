@@ -6,8 +6,8 @@ interface UserPreferences {
   display_name: string;
   weight_unit: string;
   profile_picture: string | null;
-  role?: string; // Optional role for guest users
-  push_enabled: boolean;
+  role?: string; 
+  push_enabled?: boolean;
 }
 
 interface UserStore {

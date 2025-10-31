@@ -40,7 +40,7 @@ export default function ModalLogin({
           className="bg-slate-800 relative flex flex-col justify-center items-center mx-auto rounded-xl h-1/2 w-[90vw] max-w-md"
         >
           <button
-            className="absolute top-2 right-2 text-gray-100 hover:text-gray-200 z-[100]"
+            className="absolute top-2 right-2 hover:text-gray-200 z-[100]"
             onClick={onClose}
           >
             <Image

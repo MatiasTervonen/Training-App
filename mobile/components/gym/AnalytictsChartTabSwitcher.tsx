@@ -23,7 +23,7 @@ export default function ChartTabSwitcher({
             activeTab === "muscleGroups" ? "bg-gray-800" : ""
           }`}
           textClassName={`text-center ${
-            activeTab === "muscleGroups" ? "text-cyan-500" : ""
+            activeTab === "muscleGroups" ? "text-cyan-400" : ""
           }`}
           label="exercises"
         />
@@ -34,7 +34,7 @@ export default function ChartTabSwitcher({
             activeTab === "muscleGroupSets" ? "bg-gray-800" : ""
           }`}
           textClassName={`text-center ${
-            activeTab === "muscleGroupSets" ? "text-cyan-500" : ""
+            activeTab === "muscleGroupSets" ? "text-cyan-400" : ""
           }`}
           label="Sets"
         />

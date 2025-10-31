@@ -16,7 +16,7 @@ export default function MuscleGroupChart({
     data.forEach((session) => {
       session.gym_session_exercises.forEach((exercise) => {
         const group = exercise.gym_exercises;
-        const name = group.muscle_group;
+        const name = group.muscle_group;     
         if (muscleGroupCount[name]) {
           muscleGroupCount[name] += 1;
         } else {

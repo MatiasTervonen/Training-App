@@ -2,6 +2,14 @@ import { NextResponse, NextRequest } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 import { handleError } from "@/app/(app)/utils/handleError";
 
+const allowedTables = [
+  "notes",
+  "gym_sessions",
+  "weight",
+  "todo_lists",
+  "reminders",
+];
+
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
 
@@ -14,6 +22,10 @@ export async function POST(req: NextRequest) {
 
   const body = await req.json();
   const { item_id, table } = body;
+
+  if (!allowedTables.includes(table)) {
+    return NextResponse.json({ error: "Invalid table" }, { status: 400 });
+  }
 
   const { error: tableError } = await supabase
     .from(table)

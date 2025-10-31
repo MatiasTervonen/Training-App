@@ -103,7 +103,7 @@ export type FeedItem = {
 export type Feed_item = {
   id: string;
   item_id?: string;
-  type: "notes" | "weight" | "gym_sessions" | "todo_lists";
+  type: "notes" | "weight" | "gym_sessions" | "todo_lists" | "reminders";
   created_at: string;
   notes?: string | null;
   title?: string | null;

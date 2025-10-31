@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
   }
 
   const body = await req.json();
-  const { notes, title, notify_at } = body;
+  const { notes, title, notify_at, type } = body;
 
   const { error: remindersError } = await supabase.from("reminders").insert([
     {
@@ -21,6 +21,7 @@ export async function POST(req: NextRequest) {
       title,
       notes,
       notify_at,
+      type: type,
     },
   ]);
 

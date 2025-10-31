@@ -49,13 +49,15 @@ export default function Notes() {
         body: JSON.stringify({
           title: title,
           notes,
+          type: "global",
           notify_at: notifyAt ? notifyAt.toISOString() : null,
         }),
       });
 
       if (!res.ok) {
+        console.log("Failed to save reminder:", res.statusText);
         setIsSaving(false);
-        throw new Error("Failed to save notes");
+        throw new Error("Failed to save reminder");
       }
 
       await res.json();
@@ -64,6 +66,7 @@ export default function Notes() {
       router.push("/dashboard");
       resetReminder();
     } catch (error) {
+      console.log("Error saving reminder:", error);
       handleError(error, {
         message: "Error saving reminders",
         route: "/api/reminders/save-reminders",

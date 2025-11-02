@@ -4,8 +4,7 @@ import { weight } from "@/types/models";
 import { View, Pressable } from "react-native";
 import AppText from "@/components/AppText";
 import { useUserStore } from "@/lib/stores/useUserStore";
-import { CartesianChart, Line } from "victory-native";
-import { useFont } from "@shopify/react-native-skia";
+
 
 type WeightChartProps = {
   range: "week" | "month" | "year";
@@ -101,7 +100,6 @@ export default function WeightChart({ range, data }: WeightChartProps) {
 
   const [start, end] = addOffsetToDate(latestDate, range, offset);
 
-  const font = useFont(russoFont, 14);
 
   const weightUnit = useUserStore(
     (state) => state.preferences?.weight_unit || "kg"
@@ -209,23 +207,6 @@ export default function WeightChart({ range, data }: WeightChartProps) {
         <AppText className="text-center mb-4 px-10">
           {range}: {weightDifference} {weightUnit}
         </AppText>
-      </View>
-      <View className="h-[300px]">
-        <CartesianChart
-          data={chartData}
-          xKey="label"
-          yKeys={["value"]}
-          padding={{ left: 0, right: 0, top: 0, bottom: 0 }}
-          domainPadding={{ left: 0, right: 0 }}
-          axisOptions={{
-            font,
-            labelColor: "#f3f4f6",
-          }}
-        >
-          {({ points }) => (
-            <Line points={points.value} color="#3b82f6" strokeWidth={2} />
-          )}
-        </CartesianChart>
       </View>
     </View>
   );

@@ -134,7 +134,7 @@ export default function Timer({
       <View style={{ width: fullWidth ? screenWidth * 0.95 : "auto" }}>
         <Animated.Text
           style={[{ fontSize: fullWidth ? 200 : fontSize }, animatedTextStyle]}
-          className={`font-mono  font-bold  ${textClassName}`}
+          className={`font-mono font-bold ${textClassName}`}
           numberOfLines={1}
           adjustsFontSizeToFit
           minimumFontScale={0.1}

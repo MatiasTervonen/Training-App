@@ -35,8 +35,9 @@ export default function ExerciseSelectorList({
         if (isLast && isEmpty) {
           // Show dropdown only for the last, empty item
           return (
-            <View key={index}>
+            <>
               <ExerciseDropdown
+                key={index}
                 onSelect={(selected) => {
                   const newExercise: ExerciseEntry = {
                     exercise_id: String(selected.id),
@@ -71,7 +72,7 @@ export default function ExerciseSelectorList({
                 }}
                 resetTrigger={resetTrigger}
               />
-            </View>
+            </>
           );
         }
 
@@ -79,7 +80,7 @@ export default function ExerciseSelectorList({
         return (
           <View
             key={index}
-            className="bg-slate-700 text-gray-100 p-2 my-2 px-4 flex-row justify-between items-center mr-20 ml-0"
+            className="bg-slate-700 p-2 my-2 px-4 flex-row justify-between items-center mr-20 ml-0"
           >
             <View>
               <AppText className="">{exercise.name}</AppText>
@@ -88,6 +89,7 @@ export default function ExerciseSelectorList({
               </AppText>
             </View>
             <Pressable
+              hitSlop={10}
               onPress={() =>
                 setDraftExercises((prev) => prev.filter((_, i) => i !== index))
               }

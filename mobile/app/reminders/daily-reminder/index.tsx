@@ -102,20 +102,19 @@ export default function ReminderScreen() {
     const notificationIds = await setNotification();
 
     try {
-      console.log("Notify at:", notifyAt);
-
       await SaveCustomReminder({
         title: title,
         notes,
         weekdays: [],
-        notify_at: notifyAt.toISOString().split("T")[1].split("Z")[0],
+        notify_at_time: notifyAt.toISOString().split("T")[1].split("Z")[0],
         type: "daily",
         notify_date: null,
         notification_id: notificationIds ?? [],
       });
 
       queryClient.refetchQueries({ queryKey: ["get-reminders"], exact: true });
-      router.push("/reminders/my-reminders");
+      queryClient.refetchQueries({ queryKey: ["feed"], exact: true });
+      router.push("/dashboard");
       resetReminder();
     } catch (error) {
       console.log("Error saving reminder:", error);
@@ -163,8 +162,6 @@ export default function ReminderScreen() {
               repeats: true,
             };
 
-      console.log("Notification trigger set to:", trigger);
-
       const id = await Notifications.scheduleNotificationAsync({
         content: {
           title: title,
@@ -173,8 +170,6 @@ export default function ReminderScreen() {
         },
         trigger,
       });
-
-      console.log("Scheduled notification with ID:", id);
 
       return id;
     } catch (error) {
@@ -232,6 +227,7 @@ export default function ReminderScreen() {
                 onDateChange={setNotifyAt}
                 mode="time"
                 modal
+                minimumDate={new Date()}
                 open={open}
                 onConfirm={(date) => {
                   setOpen(false);

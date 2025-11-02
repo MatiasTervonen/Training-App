@@ -1,7 +1,6 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { handleError } from "@/utils/handleError";
 import { supabase } from "@/lib/supabase";
-import { useUserStore } from "@/lib/stores/useUserStore";
 
 const PAGE_SIZE = 15;
 

@@ -1,7 +1,7 @@
 import { usePathname, Link } from "expo-router";
 import { View, Pressable } from "react-native";
 import AppText from "../AppText";
-import { Bell, MessageCircle } from "lucide-react-native";
+import { MessageCircle } from "lucide-react-native";
 import { Image } from "expo-image";
 import { useUserStore } from "@/lib/stores/useUserStore";
 import NotificationBell from "./components/notificationBell";

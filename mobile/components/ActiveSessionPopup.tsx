@@ -70,7 +70,7 @@ export default function ActiveSessionPopup() {
             </AppText>
           )}
           <View className="flex-row items-center gap-5">
-            <Timer />
+            <Timer fontSize={15} />
             <AppText>{activeSession.type.toUpperCase()}</AppText>
             {alarmFired && <AppText>ALARM!</AppText>}
             {activeSession.type === "timer" && totalDuration && (

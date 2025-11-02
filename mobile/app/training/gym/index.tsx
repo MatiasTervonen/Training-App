@@ -347,6 +347,7 @@ export default function GymScreen() {
     <>
       <View className="flex items-center bg-gray-600 p-2 px-4 w-full z-40  sticky top-0">
         <Timer
+          fontSize={18}
           buttonsAlwaysVisible
           manualSession={{
             label: title,
@@ -480,28 +481,30 @@ export default function GymScreen() {
                 onClose={() => {
                   setIsExerciseModalOpen(false);
                   setExerciseType("Normal");
+                  queryClient.invalidateQueries({ queryKey: ["exercises"] });
                 }}
               >
-                <ExerciseSelectorList
-                  draftExercises={
-                    exerciseType === "Super-Set"
-                      ? supersetExercise
-                      : normalExercises
-                  }
-                  setDraftExercises={
-                    exerciseType === "Super-Set"
-                      ? setSupersetExercise
-                      : setNormalExercises
-                  }
-                  exerciseToChangeIndex={exerciseToChangeIndex}
-                  setExerciseToChangeIndex={setExerciseToChangeIndex}
-                  exercises={exercises}
-                  setExercises={setExercises}
-                  resetTrigger={dropdownResetKey}
-                  setIsExerciseModalOpen={setIsExerciseModalOpen}
-                />
-
-                <View className="flex-row gap-3 px-2 absolute bottom-5 left-0 right-0 z-50">
+                <View className="flex-1">
+                  <ExerciseSelectorList
+                    draftExercises={
+                      exerciseType === "Super-Set"
+                        ? supersetExercise
+                        : normalExercises
+                    }
+                    setDraftExercises={
+                      exerciseType === "Super-Set"
+                        ? setSupersetExercise
+                        : setNormalExercises
+                    }
+                    exerciseToChangeIndex={exerciseToChangeIndex}
+                    setExerciseToChangeIndex={setExerciseToChangeIndex}
+                    exercises={exercises}
+                    setExercises={setExercises}
+                    resetTrigger={dropdownResetKey}
+                    setIsExerciseModalOpen={setIsExerciseModalOpen}
+                  />
+                </View>
+                <View className="flex-row gap-3 px-2 mt-5 mb-10  z-50">
                   <View className="relative flex-1">
                     <SelectInput
                       value={exerciseType}
@@ -530,7 +533,7 @@ export default function GymScreen() {
                     }}
                     className="justify-center items-center w-1/2 px-2 bg-blue-800 rounded-md shadow-md border-2 border-blue-500 text-gray-100 text-lg"
                   >
-                    <AppText>
+                    <AppText className="text-lg">
                       {exerciseType === "Super-Set"
                         ? "Add Super-Set"
                         : "Add Exercise"}
@@ -556,7 +559,7 @@ export default function GymScreen() {
                 }}
                 className="mt-10 flex-row gap-3 w-2/4 mx-auto items-center justify-center bg-blue-800 py-2 rounded-md border-2 border-blue-500 text-gray-100 text-lg"
               >
-                <AppText>Add Exercise</AppText>
+                <AppText className="text-lg">Add Exercise</AppText>
                 <Plus className="inline ml-2" size={20} color="#f3f4f6" />
               </Pressable>
 

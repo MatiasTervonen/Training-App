@@ -2,7 +2,7 @@ import { useRouter } from "expo-router";
 import FullScreenModal from "@/components/FullScreenModal";
 import { useState } from "react";
 import Toast from "react-native-toast-message";
-import { ScrollView } from "react-native";
+import { ScrollView, View } from "react-native";
 import { handleError } from "@/utils/handleError";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { confirmAction } from "@/lib/confirmAction";
@@ -16,9 +16,13 @@ import MyReminderCard from "@/components/cards/MyReminderCard";
 import { full_reminder } from "@/types/session";
 import MyReminder from "@/components/expandSession/myReminder";
 import * as Notifications from "expo-notifications";
+import AnimatedButton from "@/components/animatedButton";
 
 export default function RemindersPage() {
   const [expandedItem, setExpandedItem] = useState<full_reminder | null>(null);
+  const [activeTab, setActiveTab] = useState<"upcoming" | "delivered">(
+    "upcoming"
+  );
 
   const queryClient = useQueryClient();
 
@@ -35,8 +39,6 @@ export default function RemindersPage() {
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
   });
-
-  console.log("Reminders:", reminders);
 
   const handleDeleteReminder = async (reminder: full_reminder) => {
     const confirmDelete = await confirmAction({
@@ -88,15 +90,44 @@ export default function RemindersPage() {
     }
   };
 
+  const filteredReminders = reminders.filter((r) =>
+    activeTab === "upcoming" ? !r.delivered : r.delivered
+  );
+
   return (
     <ScrollView
       showsVerticalScrollIndicator={false}
       keyboardShouldPersistTaps="handled"
     >
       <PageContainer>
-        <AppText className="text-gray-100 text-center  mt-5 mb-10 text-2xl">
+        <AppText className="text-gray-100 text-center  mt-5 text-2xl">
           My Reminders
         </AppText>
+        <View className="flex-row gap-4 justify-center my-10  rounded-md">
+          <AnimatedButton
+            onPress={() => setActiveTab("upcoming")}
+            className={`px-4 py-2 w-[150px] rounded-xl ${
+              activeTab === "upcoming" ? "bg-gray-900" : ""
+            }`}
+            textClassName={`text-center ${
+              activeTab === "upcoming" ? "text-cyan-500" : ""
+            }`}
+            label="Upcoming"
+            hitSlop={10}
+          />
+
+          <AnimatedButton
+            onPress={() => setActiveTab("delivered")}
+            className={`px-4 py-2 w-[150px] rounded-xl ${
+              activeTab === "delivered" ? "bg-gray-900" : ""
+            }`}
+            textClassName={`text-center ${
+              activeTab === "delivered" ? "text-cyan-500" : ""
+            }`}
+            label="Delivered"
+            hitSlop={10}
+          />
+        </View>
 
         {!error && isLoading && <TemplateSkeleton count={6} />}
 
@@ -106,25 +137,22 @@ export default function RemindersPage() {
           </AppText>
         )}
 
-        {!isLoading && reminders.length === 0 && (
-          <AppText className="text-gray-300 text-center">
-            No reminders found. Create a new reminder to get started!
+        {!isLoading && filteredReminders.length === 0 && (
+          <AppText className="text-gray-300 text-center mt-10 text-lg">
+            No {activeTab} reminders.
           </AppText>
         )}
 
-        {reminders &&
-          reminders.map((reminder: full_reminder, index: number) => (
-            <MyReminderCard
-              index={index}
-              key={reminder.id}
-              item={reminder}
-              onDelete={() => handleDeleteReminder(reminder)}
-              onExpand={() => setExpandedItem(reminder)}
-              onEdit={() => {
-                router.push(`/training/templates/${reminder.id}`);
-              }}
-            />
-          ))}
+        {filteredReminders.map((reminder, index) => (
+          <MyReminderCard
+            key={reminder.id}
+            index={index}
+            item={reminder}
+            onDelete={() => handleDeleteReminder(reminder)}
+            onExpand={() => setExpandedItem(reminder)}
+            onEdit={() => router.push(`/training/templates/${reminder.id}`)}
+          />
+        ))}
 
         {expandedItem && (
           <FullScreenModal isOpen={true} onClose={() => setExpandedItem(null)}>

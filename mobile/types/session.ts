@@ -100,7 +100,13 @@ export type ExerciseInput = {
 export type Feed_item = {
   id: string;
   item_id?: string;
-  type: "notes" | "weight" | "gym_sessions" | "todo_lists" | "reminders";
+  type:
+    | "notes"
+    | "weight"
+    | "gym_sessions"
+    | "todo_lists"
+    | "reminders"
+    | "custom_reminders";
   created_at: string;
   notes?: string | null;
   title?: string | null;
@@ -110,11 +116,20 @@ export type Feed_item = {
   pinned: boolean;
   pinned_at?: string | null;
   notify_at?: string | Date | null;
-  delivered?: string | null;
+  delivered?: boolean;
+  notify_date?: string | Date | null;
+  notify_at_time?: string | null;
+  notification_id?: string[] | string | null;
 };
 
 export type FeedCardProps = {
-  table: "notes" | "gym_sessions" | "weight" | "todo_lists" | "reminders";
+  table:
+    | "notes"
+    | "gym_sessions"
+    | "weight"
+    | "todo_lists"
+    | "reminders"
+    | "custom_reminders";
   item: Feed_item;
   pinned: boolean;
   onTogglePin: () => void;
@@ -150,11 +165,12 @@ export type full_reminder = {
   notes: string;
   type: "global" | "daily" | "weekly" | "one-time";
   notify_at: string;
-  notification_id: string[] | string; 
+  notification_id: string[] | string;
   created_at: string;
   updated_at: string;
   delivered: boolean;
   weekdays?: number[];
   active: boolean;
   notify_date?: string;
+  notify_at_time?: string;
 };

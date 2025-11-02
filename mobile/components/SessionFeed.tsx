@@ -17,7 +17,7 @@ import { Pin } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { handleError } from "@/utils/handleError";
 import { useFeed } from "@/api/feed/getFeed";
-import { Feed_item, FeedData } from "@/types/session";
+import { Feed_item, FeedData, full_reminder } from "@/types/session";
 import { confirmAction } from "@/lib/confirmAction";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
 import FullScreenModal from "./FullScreenModal";
@@ -34,9 +34,17 @@ import EditReminder from "./editSession/editReminder";
 import * as Notifications from "expo-notifications";
 import { supabase } from "@/lib/supabase";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import CustomReminder from "./expandSession/customReminder";
+import GetFullCustomReminder from "@/api/reminders/get-full-custom-reminder";
 
 type FeedItem = {
-  table: "notes" | "weight" | "gym_sessions" | "todo_lists" | "reminders";
+  table:
+    | "notes"
+    | "weight"
+    | "gym_sessions"
+    | "todo_lists"
+    | "reminders"
+    | "custom_reminders";
   item: Feed_item;
   pinned: boolean;
 };
@@ -47,6 +55,15 @@ export default function SessionFeed() {
   const [refreshing, setRefreshing] = useState(false);
 
   const queryClient = useQueryClient();
+
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      const scheduled = await Notifications.getAllScheduledNotificationsAsync();
+      console.log("Scheduled notifications:", scheduled);
+    };
+
+    fetchNotifications();
+  }, []);
 
   function getCanonicalId(item: { id?: string; item_id?: string }) {
     return item.item_id ?? item.id ?? "";
@@ -232,7 +249,11 @@ export default function SessionFeed() {
     }
   };
 
-  const handleDelete = async (item_id: string, table: string) => {
+  const handleDelete = async (
+    notification_id: string[] | string | null,
+    item_id: string,
+    table: string
+  ) => {
     const confirmed = await confirmAction({
       title: "Are you sure you want to delete this session?",
     });
@@ -261,6 +282,18 @@ export default function SessionFeed() {
 
       if (!result.success) {
         throw new Error();
+      }
+
+      if (table === "custom_reminders") {
+        if (Array.isArray(notification_id)) {
+          for (const id of notification_id) {
+            await Notifications.cancelScheduledNotificationAsync(id);
+          }
+        }
+        queryClient.refetchQueries({
+          queryKey: ["get-reminders"],
+          exact: true,
+        });
       }
 
       Toast.show({
@@ -295,6 +328,13 @@ export default function SessionFeed() {
       ? editingId
       : null;
 
+  const customReminderId =
+    expandedItem?.table === "custom_reminders"
+      ? expandedId
+      : editingItem?.table === "custom_reminders"
+      ? editingId
+      : null;
+
   const {
     data: GymSessionFull,
     error: GymSessionError,
@@ -303,6 +343,19 @@ export default function SessionFeed() {
     queryKey: ["fullGymSession", gymId],
     queryFn: () => getFullGymSession(gymId!),
     enabled: !!gymId,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+  });
+
+  const {
+    data: CustomReminderFull,
+    error: CustomReminderError,
+    isLoading: isLoadingCustomReminder,
+  } = useQuery<full_reminder>({
+    queryKey: ["fullCustomReminder", customReminderId],
+    queryFn: () => GetFullCustomReminder(customReminderId!),
+    enabled: !!customReminderId,
     refetchOnMount: false,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
@@ -369,7 +422,11 @@ export default function SessionFeed() {
                     )
                   }
                   onDelete={() =>
-                    handleDelete(feedItem.item.id!, feedItem.table)
+                    handleDelete(
+                      feedItem.item.notification_id ?? null,
+                      feedItem.item.id,
+                      feedItem.table
+                    )
                   }
                   onEdit={() => {
                     setEditingItem(feedItem);
@@ -423,6 +480,27 @@ export default function SessionFeed() {
             )}
             {expandedItem.table === "reminders" && (
               <ReminderSession {...expandedItem.item} />
+            )}
+
+            {expandedItem.table === "custom_reminders" && (
+              <View>
+                {isLoadingCustomReminder ? (
+                  <View className="gap-5 items-center justify-center mt-40">
+                    <AppText className="text-xl">
+                      Loading reminder details...
+                    </AppText>
+                    <ActivityIndicator size="large" />
+                  </View>
+                ) : CustomReminderError ? (
+                  <AppText className="text-center text-xl mt-10">
+                    Failed to load reminder details. Please try again later.
+                  </AppText>
+                ) : (
+                  CustomReminderFull && (
+                    <CustomReminder {...CustomReminderFull} />
+                  )
+                )}
+              </View>
             )}
 
             {expandedItem.table === "gym_sessions" && (

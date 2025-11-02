@@ -5,7 +5,7 @@ import { full_reminder } from "@/types/session";
 import { formatNotifyTime, formatDate, formatDateTime } from "@/lib/formatDate";
 import { LinearGradient } from "expo-linear-gradient";
 
-export default function MyReminder(reminder: full_reminder) {
+export default function CustomReminder(reminder: full_reminder) {
   const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
   return (

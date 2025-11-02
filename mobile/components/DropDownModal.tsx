@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import { useState } from "react";
 import AnimatedButton from "./animatedButton";
-import { CircleX, Menu } from "lucide-react-native";
+import { Menu } from "lucide-react-native";
 
 type SelectInputProps = {
   label?: string;

@@ -10,7 +10,6 @@ import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { CircleX } from "lucide-react-native";
 import { View, Pressable, Dimensions } from "react-native";
 import { Portal } from "react-native-paper";
-import PageContainer from "@/components/PageContainer";
 
 export default function FullScreenModal({
   isOpen,
@@ -41,7 +40,7 @@ export default function FullScreenModal({
       translateX.value = event.translationX * 0.7;
     })
     .onFinalize(() => {
-      const threshold = screenWidth * 0.3; // Minimum swipe distance to trigger close
+      const threshold = screenWidth * 0.2; // Minimum swipe distance to trigger close
       const exitDistance = screenWidth * 1.2; // Distance to move off-screen
 
       if (Math.abs(translateX.value) > threshold) {
@@ -74,7 +73,7 @@ export default function FullScreenModal({
       <GestureDetector gesture={pan}>
         <View className="absolute inset-0 bg-black/50 flex-1 z-50 justify-end items-center">
           <Animated.View
-            className="bg-slate-800 rounded-t-2xl h-[95%] w-full z-50 max-w-3xl "
+            className="bg-slate-800 rounded-t-2xl h-[95%] w-full z-50 max-w-3xl"
             style={[animatedStyle]}
           >
             <Pressable
@@ -84,9 +83,7 @@ export default function FullScreenModal({
             >
               <CircleX size={30} color="#f3f4f6" />
             </Pressable>
-            <PageContainer className="flex-1 max-w-xl">
-              {children}
-            </PageContainer>
+            <View className="flex-1 max-w-xl px-2 w-full">{children}</View>
           </Animated.View>
         </View>
       </GestureDetector>

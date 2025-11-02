@@ -421,7 +421,7 @@ export default function TemplateForm() {
                 resetTrigger={dropdownResetKey}
                 setIsExerciseModalOpen={setIsExerciseModalOpen}
               />
-              <View className="flex-row gap-3 px-2 absolute bottom-5 left-0 right-0 z-50">
+              <View className="flex-row gap-3 px-2 mt-5 mb-10 right-0 z-50">
                 <View className="relative flex-1">
                   <SelectInput
                     value={exerciseType}

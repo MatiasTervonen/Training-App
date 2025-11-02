@@ -170,6 +170,7 @@ export default function ReminderScreen() {
                 onDateChange={setNotifyAt}
                 mode="datetime"
                 modal
+                minimumDate={new Date()}
                 open={open}
                 onConfirm={(date) => {
                   setOpen(false);

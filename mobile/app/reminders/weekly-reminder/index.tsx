@@ -110,14 +110,15 @@ export default function ReminderScreen() {
         title: title,
         notes,
         weekdays,
-        notify_at: notifyAt.toISOString().split("T")[1].split("Z")[0],
+        notify_at_time: notifyAt.toISOString().split("T")[1].split("Z")[0],
         type: "weekly",
         notify_date: null,
         notification_id: notificationIds ?? [],
       });
 
       queryClient.refetchQueries({ queryKey: ["get-reminders"], exact: true });
-      router.push("/reminders/my-reminders");
+      queryClient.refetchQueries({ queryKey: ["feed"], exact: true });
+      router.push("/dashboard");
       resetReminder();
     } catch (error) {
       console.log("Error saving reminder:", error);
@@ -235,6 +236,7 @@ export default function ReminderScreen() {
                 onDateChange={setNotifyAt}
                 mode="time"
                 modal
+                minimumDate={new Date()}
                 open={open}
                 onConfirm={(date) => {
                   setOpen(false);

@@ -140,6 +140,54 @@ export type Database = {
           },
         ]
       }
+      custom_reminders: {
+        Row: {
+          active: boolean | null
+          created_at: string
+          delivered: boolean | null
+          id: string
+          notes: string | null
+          notification_id: Json
+          notify_at_time: string | null
+          notify_date: string | null
+          title: string
+          type: string
+          updated_at: string | null
+          user_id: string
+          weekdays: Json
+        }
+        Insert: {
+          active?: boolean | null
+          created_at?: string
+          delivered?: boolean | null
+          id?: string
+          notes?: string | null
+          notification_id: Json
+          notify_at_time?: string | null
+          notify_date?: string | null
+          title: string
+          type: string
+          updated_at?: string | null
+          user_id: string
+          weekdays: Json
+        }
+        Update: {
+          active?: boolean | null
+          created_at?: string
+          delivered?: boolean | null
+          id?: string
+          notes?: string | null
+          notification_id?: Json
+          notify_at_time?: string | null
+          notify_date?: string | null
+          title?: string
+          type?: string
+          updated_at?: string | null
+          user_id?: string
+          weekdays?: Json
+        }
+        Relationships: []
+      }
       disc_golf_course_holes: {
         Row: {
           course_id: string | null
@@ -465,7 +513,7 @@ export type Database = {
           distance_meters: number | null
           id: string
           reps: number | null
-          rpe: string
+          rpe: string | null
           session_exercise_id: string
           set_number: number
           time_min: number | null
@@ -477,7 +525,7 @@ export type Database = {
           distance_meters?: number | null
           id?: string
           reps?: number | null
-          rpe: string
+          rpe?: string | null
           session_exercise_id: string
           set_number: number
           time_min?: number | null
@@ -489,7 +537,7 @@ export type Database = {
           distance_meters?: number | null
           id?: string
           reps?: number | null
-          rpe?: string
+          rpe?: string | null
           session_exercise_id?: string
           set_number?: number
           time_min?: number | null
@@ -699,6 +747,7 @@ export type Database = {
           notes: string | null
           notify_at: string
           title: string
+          type: string
           user_id: string
         }
         Insert: {
@@ -708,6 +757,7 @@ export type Database = {
           notes?: string | null
           notify_at: string
           title: string
+          type: string
           user_id?: string
         }
         Update: {
@@ -717,6 +767,7 @@ export type Database = {
           notes?: string | null
           notify_at?: string
           title?: string
+          type?: string
           user_id?: string
         }
         Relationships: []
@@ -806,6 +857,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_push_mobile_subscriptions: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean | null
+          platform: string
+          token: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          platform: string
+          token: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          platform?: string
+          token?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       user_push_subscriptions: {
         Row: {
@@ -918,7 +996,7 @@ export type Database = {
         }
         Relationships: []
       }
-      feed_view7: {
+      feed_view8: {
         Row: {
           created_at: string | null
           delivered: boolean | null
@@ -926,6 +1004,26 @@ export type Database = {
           id: string | null
           notes: string | null
           notify_at: string | null
+          notify_at_time: string | null
+          notify_date: string | null
+          title: string | null
+          type: string | null
+          user_id: string | null
+          weight: number | null
+        }
+        Relationships: []
+      }
+      feed_view9: {
+        Row: {
+          created_at: string | null
+          delivered: boolean | null
+          duration: number | null
+          id: string | null
+          notes: string | null
+          notification_id: Json | null
+          notify_at: string | null
+          notify_at_time: string | null
+          notify_date: string | null
           title: string | null
           type: string | null
           user_id: string | null
@@ -940,7 +1038,10 @@ export type Database = {
           duration: number | null
           id: string | null
           notes: string | null
+          notification_id: Json | null
           notify_at: string | null
+          notify_at_time: string | null
+          notify_date: string | null
           pinned: boolean | null
           title: string | null
           type: string | null
@@ -951,10 +1052,7 @@ export type Database = {
       }
     }
     Functions: {
-      get_jwt: {
-        Args: Record<PropertyKey, never>
-        Returns: Json
-      }
+      get_jwt: { Args: never; Returns: Json }
     }
     Enums: {
       [_ in never]: never

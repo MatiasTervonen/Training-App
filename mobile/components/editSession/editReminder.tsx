@@ -29,22 +29,30 @@ export default function EditReminder({ reminder, onClose, onSave }: Props) {
   );
   const [open, setOpen] = useState(false);
 
-  const formattedNotifyAt = formatDateTime(reminder.notify_at!);
+  const formattedNotifyAt = formatDateTime(notifyAt!);
 
   const handleSubmit = async () => {
     setIsSaving(true);
+
+    let delivered = reminder.delivered;
+
+    if (notifyAt?.toISOString() !== reminder.notify_at) {
+      delivered = false;
+    }
 
     try {
       await EditReminderData({
         id: reminder.id,
         title,
         notes,
-        notify_at: null,
+        delivered,
+        notify_at: notifyAt ? notifyAt.toISOString() : null,
       });
 
       await onSave?.();
       onClose();
     } catch (error) {
+      console.error("Error editing notes:", error);
       handleError(error, {
         message: "Error editing notes",
         route: "/api/notes/edit-notes",
@@ -96,6 +104,7 @@ export default function EditReminder({ reminder, onClose, onSave }: Props) {
             onDateChange={setNotifyAt}
             mode="datetime"
             modal
+            minimumDate={new Date()}
             open={open}
             onConfirm={(date) => {
               setOpen(false);

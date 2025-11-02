@@ -1,10 +1,7 @@
 import { supabase } from "@/lib/supabase";
 import { handleError } from "@/utils/handleError";
-import { full_gym_template } from "@/types/models";
 
-export default async function GetFullTemplate(
-  sessionId: string
-) {
+export default async function GetFullTemplate(sessionId: string) {
   const {
     data: { session },
     error: sessionError,
@@ -36,5 +33,5 @@ export default async function GetFullTemplate(
     throw new Error(templateError?.message || "Error fetching template");
   }
 
-  return template as full_gym_template;
+  return template;
 }

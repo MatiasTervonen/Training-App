@@ -4,7 +4,7 @@ import { supabase } from "@/lib/supabase";
 type SaveReminderParams = {
   title: string;
   notes: string;
-  notify_at: string | null;
+  notify_at_time: string | null;
   notify_date: Date | null;
   weekdays: number[];
   type: "weekly" | "daily" | "one-time";
@@ -14,7 +14,7 @@ type SaveReminderParams = {
 export default async function SaveCustomReminder({
   title,
   notes,
-  notify_at,
+  notify_at_time,
   weekdays,
   notify_date,
   type,
@@ -36,7 +36,7 @@ export default async function SaveCustomReminder({
         user_id: session.user.id,
         title,
         notes,
-        notify_at,
+        notify_at_time,
         notify_date,
         weekdays,
         type,

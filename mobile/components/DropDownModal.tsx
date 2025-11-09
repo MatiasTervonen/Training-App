@@ -7,7 +7,7 @@ import {
   Dimensions,
 } from "react-native";
 import { useState } from "react";
-import AnimatedButton from "./animatedButton";
+import AnimatedButton from "@/components/buttons//animatedButton";
 import { Menu } from "lucide-react-native";
 
 type SelectInputProps = {

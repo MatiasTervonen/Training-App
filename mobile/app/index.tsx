@@ -7,6 +7,7 @@ import GradientButton from "@/components/buttons/GradientButton";
 import { useRouter } from "expo-router";
 import PageContainer from "@/components/PageContainer";
 
+
 export default function Index() {
   const router = useRouter();
 

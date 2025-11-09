@@ -2,7 +2,7 @@ import AppText from "./AppText";
 import { View, Pressable, Modal, ScrollView, Dimensions } from "react-native";
 import { useState } from "react";
 import { LinearGradient } from "expo-linear-gradient";
-import AnimatedButton from "./animatedButton";
+import AnimatedButton from "@/components/buttons/animatedButton";
 
 type SelectInputProps = {
   label?: string;

@@ -6,8 +6,6 @@ type gym_template_exercises = {
   template_id: string;
   exercise_id: string;
   position: number;
-  sets: number;
-  reps: number;
   superset_id?: string;
 };
 
@@ -52,8 +50,6 @@ export async function POST(req: NextRequest) {
       template_id: template.id,
       user_id: user.sub,
       exercise_id: ex.exercise_id,
-      sets: ex.sets,
-      reps: ex.reps,
       position: index,
       superset_id: ex.superset_id,
     })

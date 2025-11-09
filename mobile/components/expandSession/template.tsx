@@ -5,6 +5,8 @@ import { ScrollView, View } from "react-native";
 import AppText from "../AppText";
 import AppButton from "@/components/buttons/AppButton";
 
+
+
 type Props = {
   item: full_gym_template;
   onStartWorkout: () => void;

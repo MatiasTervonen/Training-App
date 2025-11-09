@@ -38,11 +38,14 @@ export default function MuscleGroupChartSets({
   const maxValue = Math.max(...chartData.map((item) => item.value));
 
   const maxBarWidth = screenWidth * 0.8; // max width for bars
+  const minLabelSpace = 90;
 
   return (
     <View className="gap-2 my-5 ml-4">
       {chartData.map((item, index) => {
         const barWidth = (item.value / maxValue) * maxBarWidth;
+
+        const valueLeft = Math.max(barWidth + 8, minLabelSpace + 8);
 
         return (
           <View key={index} className="flex-row items-center gap-5">
@@ -56,7 +59,9 @@ export default function MuscleGroupChartSets({
               color="#3b82f6"
               style={{ height: 30 }}
             />
-            <AppText>{item.value}</AppText>
+            <View className="absolute" style={{ left: valueLeft }}>
+              <AppText className="text-gray-300">{item.value}</AppText>
+            </View>
           </View>
         );
       })}

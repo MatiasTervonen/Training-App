@@ -1,9 +1,9 @@
 import "@/lib/nativewindInterop";
-import { Slot } from "expo-router";
+import { Slot, useSegments } from "expo-router";
 import { StatusBar, View } from "react-native";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import "./global.css";
 import Navbar from "@/components/navbar/Navbar";
@@ -29,6 +29,7 @@ import {
   configureReanimatedLogger,
   ReanimatedLogLevel,
 } from "react-native-reanimated";
+import * as ScreenOrientation from "expo-screen-orientation";
 
 configureReanimatedLogger({
   level: ReanimatedLogLevel.error,
@@ -122,9 +123,43 @@ Sentry.init({
 });
 
 export default Sentry.wrap(function RootLayout() {
+  const [orieantation, setOrientation] =
+    useState<ScreenOrientation.Orientation | null>(null);
+
+  const segments = useSegments();
+  const route = segments.join("/");
+
   const [loaded, error] = useFonts({
     "Russo-One": require("../assets/fonts/RussoOne-Regular.ttf"),
   });
+
+  // Hide navbar on timer page when rotating to landscape
+
+  useEffect(() => {
+    const getOrientation = async () => {
+      const orientation = await ScreenOrientation.getOrientationAsync();
+      setOrientation(orientation);
+    };
+    getOrientation();
+
+    // Subscribe to orientation changes
+    const subscription = ScreenOrientation.addOrientationChangeListener(
+      (event) => {
+        setOrientation(event.orientationInfo.orientation);
+      }
+    );
+
+    return () => {
+      ScreenOrientation.removeOrientationChangeListener(subscription);
+    };
+  }, []);
+
+  const isLandscape =
+    orieantation === ScreenOrientation.Orientation.LANDSCAPE_LEFT ||
+    orieantation === ScreenOrientation.Orientation.LANDSCAPE_RIGHT;
+
+  const isTimerPage = route === "timer/empty-timer";
+  const hideNawbar = isTimerPage && isLandscape;
 
   // Configure Notification Channels for Android
 
@@ -166,8 +201,12 @@ export default Sentry.wrap(function RootLayout() {
                 translucent={false}
               />
               <SafeAreaView style={{ flex: 1 }} className="bg-slate-950">
-                <View className="flex-1 bg-slate-800 font-russo text-red-500 max-w-3xl mx-auto w-full">
-                  <Navbar />
+                <View
+                  className={`flex-1 bg-slate-800 font-russo text-red-500  mx-auto w-full ${
+                    hideNawbar ? "max-w-screen" : "max-w-3xl"
+                  }`}
+                >
+                  {!hideNawbar && <Navbar />}
                   <LayoutWrapper>
                     <Slot />
                   </LayoutWrapper>

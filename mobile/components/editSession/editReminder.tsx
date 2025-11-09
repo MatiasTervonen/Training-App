@@ -10,7 +10,7 @@ import AppText from "../AppText";
 import { View, TouchableWithoutFeedback, Keyboard } from "react-native";
 import EditReminderData from "@/api/reminders/edit-reminder";
 import DatePicker from "react-native-date-picker";
-import AnimatedButton from "@/components/animatedButton";
+import AnimatedButton from "@/components/buttons/animatedButton";
 import { Plus } from "lucide-react-native";
 import { formatDateTime } from "@/lib/formatDate";
 

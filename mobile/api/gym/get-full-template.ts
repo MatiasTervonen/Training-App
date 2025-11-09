@@ -1,6 +1,8 @@
 import { supabase } from "@/lib/supabase";
 import { handleError } from "@/utils/handleError";
 
+
+
 export default async function GetFullTemplate(sessionId: string) {
   const {
     data: { session },

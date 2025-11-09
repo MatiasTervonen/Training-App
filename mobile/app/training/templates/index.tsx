@@ -2,9 +2,7 @@ import { useRouter } from "expo-router";
 import FullScreenModal from "@/components/FullScreenModal";
 import { useState } from "react";
 import { ExerciseEntry } from "@/types/session";
-
 import Toast from "react-native-toast-message";
-import { full_gym_template } from "@/types/models";
 import TemplateCard from "@/components/cards/TemplateCard";
 import { ActivityIndicator, ScrollView, View } from "react-native";
 import GymTemplate from "@/components/expandSession/template";
@@ -18,6 +16,7 @@ import GetFullTemplate from "@/api/gym/get-full-template";
 import { TemplateSkeleton } from "@/components/skeletetons";
 import AppText from "@/components/AppText";
 import PageContainer from "@/components/PageContainer";
+import { full_gym_template } from "@/types/models";
 
 type templateSummary = {
   id: string;
@@ -25,10 +24,10 @@ type templateSummary = {
   created_at: string;
 };
 
+
 export default function TemplatesPage() {
-  const [expandedItem, setExpandedItem] = useState<full_gym_template | null>(
-    null
-  );
+  const [expandedItem, setExpandedItem] =
+    useState<full_gym_template | null>(null);
 
   const queryClient = useQueryClient();
 
@@ -52,13 +51,9 @@ export default function TemplatesPage() {
         exercise_id: ex.exercise_id,
         name: ex.gym_exercises.name,
         equipment: ex.gym_exercises.equipment,
-        muscle_group: ex.gym_exercises.muscle_group ?? undefined,
+        muscle_group: ex.gym_exercises.muscle_group,
         main_group: ex.gym_exercises.main_group,
-        sets: Array.from({ length: ex.sets ?? 0 }).map(() => ({
-          reps: undefined,
-          weight: undefined,
-          rpe: undefined, // Default RPE
-        })),
+        sets: [],
         superset_id: ex.superset_id,
       }));
 
@@ -157,7 +152,9 @@ export default function TemplatesPage() {
               key={template.id}
               item={template}
               onDelete={() => handleDeleteTemplate(template.id)}
-              onExpand={() => setExpandedItem(template as full_gym_template)}
+              onExpand={() =>
+                setExpandedItem(template as full_gym_template)
+              }
               onEdit={() => {
                 router.push(`/training/templates/${template.id}`);
               }}
@@ -168,8 +165,8 @@ export default function TemplatesPage() {
           <FullScreenModal isOpen={true} onClose={() => setExpandedItem(null)}>
             {isLoadingTemplateSession ? (
               <View className="gap-5 items-center justify-center pt-40">
-                <AppText>Loading template details...</AppText>
-                <ActivityIndicator />
+                <AppText className="text-lg">Loading details...</AppText>
+                <ActivityIndicator size="large" />
               </View>
             ) : TemplateSessionError ? (
               <AppText className="text-center text-lg mt-10">
@@ -178,8 +175,10 @@ export default function TemplatesPage() {
             ) : (
               TemplateSessionFull && (
                 <GymTemplate
-                  item={TemplateSessionFull}
-                  onStartWorkout={() => startWorkout(TemplateSessionFull)}
+                  item={TemplateSessionFull as any}
+                  onStartWorkout={() =>
+                    startWorkout(TemplateSessionFull as any)
+                  }
                 />
               )
             )}

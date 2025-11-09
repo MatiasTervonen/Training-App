@@ -1,5 +1,5 @@
 import { Pressable, PressableProps } from "react-native";
-import AppText from "./AppText";
+import AppTextNC from "../AppTextNC";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -50,7 +50,7 @@ export default function AnimatedButton({
         {...props}
       >
         {label && (
-          <AppText className={`text-lg ${textClassName}`}>{label}</AppText>
+          <AppTextNC className={`text-lg  ${textClassName}`}>{label}</AppTextNC>
         )}
         {children}
       </Pressable>

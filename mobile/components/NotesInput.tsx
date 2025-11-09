@@ -1,5 +1,4 @@
-import { TextInputProps, View } from "react-native";
-import { TextInput } from "react-native-gesture-handler";
+import { TextInputProps, View, TextInput } from "react-native";
 import AppText from "./AppText";
 import { LinearGradient } from "expo-linear-gradient";
 

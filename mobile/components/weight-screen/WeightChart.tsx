@@ -1,17 +1,18 @@
 import { ChevronLeft, ChevronRight } from "lucide-react-native";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useMemo, use } from "react";
 import { weight } from "@/types/models";
 import { View, Pressable } from "react-native";
 import AppText from "@/components/AppText";
 import { useUserStore } from "@/lib/stores/useUserStore";
-
+import * as echarts from "echarts/core";
+import { LineChart } from "echarts/charts";
+import { GridComponent } from "echarts/components";
+import { SkiaRenderer, SkiaChart } from "@wuba/react-native-echarts";
 
 type WeightChartProps = {
   range: "week" | "month" | "year";
   data: weight[];
 };
-
-const russoFont = require("@/assets/fonts/RussoOne-Regular.ttf");
 
 function addOffsetToDate(
   base: Date,
@@ -73,33 +74,22 @@ function formatDatelabel(
 function generateDateRange(start: Date, end: Date): string[] {
   const dateList: string[] = [];
   const currentDate = new Date(start);
-  while (currentDate < end) {
+  while (currentDate <= end) {
     dateList.push(currentDate.toISOString().split("T")[0]); // Format as YYYY-MM-DD
     currentDate.setDate(currentDate.getDate() + 1); // Increment by one day
   }
   return dateList;
 }
 
-// function fillMissingDates(
-//   fullDates: string[],
-//   entries: weight[]
-// ): { date: string; weight: number | null }[] {
-//   const weightMap = new Map(
-//     entries.map((entry) => [entry.created_at.split("T")[0], entry.weight])
-//   );
-
-//   return fullDates.map((date) => ({
-//     date,
-//     weight: weightMap.has(date) ? weightMap.get(date)! : null,
-//   }));
-// }
+echarts.use([SkiaRenderer, LineChart, GridComponent]);
 
 export default function WeightChart({ range, data }: WeightChartProps) {
   const [offset, setOffset] = useState(0);
   const latestDate = getLatestDate(data); // Hakee viiemeissimmän päivämäärän datasta
+  const [size, setSize] = useState({ width: 0, height: 0 });
+  const skiaRef = useRef<any>(null);
 
   const [start, end] = addOffsetToDate(latestDate, range, offset);
-
 
   const weightUnit = useUserStore(
     (state) => state.preferences?.weight_unit || "kg"
@@ -178,9 +168,90 @@ export default function WeightChart({ range, data }: WeightChartProps) {
     return `${startFormatted} - ${endFormatted}`;
   }
 
+  const values = chartData.map((item) => item.value);
+  const minWeight = Math.min(...values);
+  const maxWeight = Math.max(...values);
+
+  const option = useMemo(
+    () => ({
+      xAxis: {
+        type: "category",
+        data: chartData.map((item) => item.label),
+        axisLabel: {
+          color: "#f3f4f6",
+          fontSize: 12,
+        },
+      },
+      yAxis: {
+        type: "value",
+        min: Math.floor(minWeight) - 1,
+        max: Math.round(maxWeight) + 1,
+        splitLine: {
+          show: true,
+          lineStyle: {
+            color: "#9ca3af", // darker gray
+            width: 0.5,
+            type: "dashed", // or 'solid'
+          },
+        },
+        axisLabel: {
+          color: "#f3f4f6",
+          fontSize: 12,
+        },
+      },
+      series: [
+        {
+          data: chartData.map((item) => item.value),
+          type: "line",
+          smooth: true,
+          showSymbol: false,
+          itemStyle: {
+            color: "#3b82f6", // dot color (Tailwind blue-500)
+            borderColor: "#60a5fa", // outline
+            borderWidth: 2,
+          },
+          lineStyle: {
+            color: "#93c5fd",
+            width: 3,
+          },
+
+          areaStyle: {
+            color: {
+              type: "linear",
+              x: 0,
+              y: 0,
+              x2: 0,
+              y2: 1,
+              colorStops: [
+                { offset: 0, color: "rgba(56, 189, 248, 0.4)" }, // top
+                { offset: 1, color: "rgba(56, 189, 248, 0.05)" }, // fade bottom
+              ],
+            },
+          },
+        },
+      ],
+      grid: { top: 20, right: 20, bottom: 40, left: 20 },
+    }),
+    [chartData, minWeight, maxWeight]
+  );
+
+  useEffect(() => {
+    if (!skiaRef.current) return;
+
+    const chart = echarts.init(skiaRef.current, "light", {
+      renderer: "skia",
+      width: size.width,
+      height: size.height,
+    } as any);
+
+    chart.setOption(option);
+
+    return () => chart.dispose();
+  }, [option, size]);
+
   return (
-    <View className="bg-slate-700 shadow-md w-full px-2">
-      <View className="flex-row justify-center items-center my-4">
+    <View className="bg-slate-900 shadow-md w-full rounded-t-2xl">
+      <View className="flex-row justify-center items-center my-4 text-gray-400">
         <Pressable
           onPress={() => {
             setOffset((prev) => prev + 1);
@@ -207,6 +278,19 @@ export default function WeightChart({ range, data }: WeightChartProps) {
         <AppText className="text-center mb-4 px-10">
           {range}: {weightDifference} {weightUnit}
         </AppText>
+        <View
+          style={{
+            flex: 1,
+            width: "100%",
+            minHeight: 300,
+          }}
+          onLayout={(e) => {
+            const { width, height } = e.nativeEvent.layout;
+            setSize({ width, height });
+          }}
+        >
+          <SkiaChart ref={skiaRef} />
+        </View>
       </View>
     </View>
   );

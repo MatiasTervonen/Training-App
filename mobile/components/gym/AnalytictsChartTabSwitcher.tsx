@@ -1,8 +1,8 @@
 import { full_gym_session } from "../../types/models";
 import { useState } from "react";
 import { View } from "react-native";
-import AnimatedButton from "../animatedButton";
-import MuscleGroupChart from "./MuscleGroupChart";
+import AnimatedButton from "@/components/buttons/animatedButton";
+import MuscleGroupChart from "@/components/gym/MuscleGroupChart";
 import MuscleGroupChartSets from "./MuscleGroupChartSets";
 
 export default function ChartTabSwitcher({
@@ -23,7 +23,7 @@ export default function ChartTabSwitcher({
             activeTab === "muscleGroups" ? "bg-gray-800" : ""
           }`}
           textClassName={`text-center ${
-            activeTab === "muscleGroups" ? "text-cyan-400" : ""
+            activeTab === "muscleGroups" ? "text-cyan-400" : "text-gray-100"
           }`}
           label="exercises"
         />
@@ -34,7 +34,7 @@ export default function ChartTabSwitcher({
             activeTab === "muscleGroupSets" ? "bg-gray-800" : ""
           }`}
           textClassName={`text-center ${
-            activeTab === "muscleGroupSets" ? "text-cyan-400" : ""
+            activeTab === "muscleGroupSets" ? "text-cyan-400" : "text-gray-100"
           }`}
           label="Sets"
         />

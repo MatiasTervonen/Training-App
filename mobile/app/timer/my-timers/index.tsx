@@ -13,7 +13,7 @@ import { handleError } from "@/utils/handleError";
 import { router } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useTimerStore } from "@/lib/stores/timerStore";
-import AnimatedButton from "@/components/animatedButton";
+import AnimatedButton from "@/components/buttons/animatedButton";
 
 export default function MyTimersScreen() {
   const [expandedItem, setExpandedItem] = useState<timers | null>(null);

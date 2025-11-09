@@ -24,7 +24,7 @@ import ForgotPasswordText from "@/components/login-signup/forgotPassword";
 import ModalLogin from "@/components/ModalLogin";
 import ResendEmailText from "@/components/login-signup/resendEmail";
 import { handleError } from "@/utils/handleError";
-import AnimatedButton from "@/components/animatedButton";
+import AnimatedButton from "@/components/buttons/animatedButton";
 import { ArrowLeft } from "lucide-react-native";
 import GradientColorText from "@/components/GradientColorText";
 import PageContainer from "@/components/PageContainer";
@@ -237,7 +237,7 @@ export default function LoginScreen() {
           className="flex-1"
         >
           <PageContainer>
-            <View className="flex-row items-center justify-between px-6 pt-2 z-50">
+            <View className="flex-row items-center justify-between pt-3 z-50">
               <AnimatedButton
                 onPress={() => {
                   console.log("Back pressed");

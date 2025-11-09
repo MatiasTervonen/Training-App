@@ -284,6 +284,7 @@ export default function TemplateForm() {
       resetSession();
       router.push("/training/templates");
     } catch (error) {
+      console.log("Error saving template", error);
       handleError(error);
       toast.error("Failed to save template. Try again later.");
       setIsSaving(false);

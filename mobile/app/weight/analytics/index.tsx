@@ -4,7 +4,6 @@ import AllDataTable from "@/components/weight-screen/AllDataTable";
 import { getWeight } from "@/api/weight/get-weight";
 import { weight } from "@/types/models";
 
-
 export default function AnalyticsScreen() {
   const {
     data: weightData = [],

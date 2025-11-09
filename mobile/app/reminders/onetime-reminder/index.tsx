@@ -15,7 +15,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import PageContainer from "@/components/PageContainer";
 import DatePicker from "react-native-date-picker";
-import AnimatedButton from "@/components/animatedButton";
+import AnimatedButton from "@/components/buttons/animatedButton";
 import { Plus, Info } from "lucide-react-native";
 import { formatTime } from "@/lib/formatDate";
 import * as Notifications from "expo-notifications";

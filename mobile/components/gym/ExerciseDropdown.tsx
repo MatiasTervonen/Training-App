@@ -12,8 +12,9 @@ import { getExercises } from "@/api/gym/get-exercises";
 import { getRecentExercises } from "@/api/gym/recent-exercises";
 import AppInput from "../AppInput";
 import AppText from "../AppText";
-import AnimatedButton from "../animatedButton";
+import AnimatedButton from "@/components/buttons/animatedButton";
 import { useDebouncedCallback } from "use-debounce";
+import { Key } from "lucide-react-native";
 
 type Props = {
   onSelect: (exercise: gym_exercises) => void;
@@ -78,7 +79,7 @@ export default function ExerciseDropdown({ onSelect, resetTrigger }: Props) {
 
   if (!isError && !isLoading) {
     if (recentExercisesList.length > 0 && searchQuery.length === 0) {
-      sections.push({ title: "Recent Exercises", data: recentExercisesList });
+      sections.push({ title: "Recent Exercises", data: recentExercisesList, key: "recent" });
     }
 
     sections.push({

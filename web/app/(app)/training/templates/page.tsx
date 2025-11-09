@@ -45,11 +45,7 @@ export default function TemplatesPage() {
         equipment: ex.gym_exercises.equipment,
         muscle_group: ex.gym_exercises.muscle_group ?? undefined,
         main_group: ex.gym_exercises.main_group,
-        sets: Array.from({ length: ex.sets ?? 0 }).map(() => ({
-          reps: undefined,
-          weight: undefined,
-          rpe: undefined, // Default RPE
-        })),
+        sets: [],
         superset_id: ex.superset_id,
       }));
 

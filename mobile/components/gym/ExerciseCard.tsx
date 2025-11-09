@@ -96,7 +96,7 @@ export default function ExerciseCard({
       {mode === "session" && (
         <>
           <View className="my-4">
-            <View className="min-h-[80px]">
+            <View className="h-[80px]">
               <NotesInput
                 label={`Notes for ${exercise.name}`}
                 placeholder="Add your notes here..."

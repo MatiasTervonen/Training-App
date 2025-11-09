@@ -45,6 +45,7 @@ export default function ActiveSessionPopup() {
   };
 
   if (!activeSession) return null;
+  
 
   return (
     <Animated.View

@@ -1,5 +1,5 @@
 import { useUserStore } from "@/lib/stores/useUserStore";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "expo-router";
 import { supabase } from "@/lib/supabase";
 import { Session } from "@supabase/supabase-js";
@@ -27,6 +27,8 @@ export default function LayoutWrapper({
 }: {
   children: React.ReactNode;
 }) {
+  const [sessionChecked, setSessionChecked] = useState(false);
+
   const logoutUser = useUserStore((state) => state.logoutUser);
 
   const loginUser = useUserStore((state) => state.loginUser);
@@ -64,13 +66,15 @@ export default function LayoutWrapper({
   }, [pathname, setModalPageConfig]);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      handleSessionChange(session, {
-        router,
-        loginUser,
-        logoutUser,
-      });
-    });
+    const checkSession = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      await handleSessionChange(session, { router, loginUser, logoutUser });
+      setSessionChecked(true);
+    };
+
+    checkSession();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router]);
 
@@ -82,6 +86,7 @@ export default function LayoutWrapper({
           loginUser,
           logoutUser,
         });
+        setSessionChecked(true);
       }
     );
 
@@ -97,6 +102,10 @@ export default function LayoutWrapper({
 
   if (!shouldRenderModal) {
     return <>{children}</>;
+  }
+
+  if (!sessionChecked) {
+    return null; // keep splash screen visible
   }
 
   return (

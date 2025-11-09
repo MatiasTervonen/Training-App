@@ -4,6 +4,7 @@ import { ExerciseEntry, emptyExerciseEntry } from "@/types/session";
 import { generateUUID } from "@/utils/generateUUID";
 import AppText from "../AppText";
 import { Pressable, View } from "react-native";
+import React from "react";
 
 interface Props {
   draftExercises: ExerciseEntry[];
@@ -35,44 +36,42 @@ export default function ExerciseSelectorList({
         if (isLast && isEmpty) {
           // Show dropdown only for the last, empty item
           return (
-            <>
-              <ExerciseDropdown
-                key={index}
-                onSelect={(selected) => {
-                  const newExercise: ExerciseEntry = {
-                    exercise_id: String(selected.id),
-                    name: selected.name,
-                    equipment: selected.equipment,
-                    main_group: selected.main_group || "",
-                    sets: [],
-                    notes: "",
-                    superset_id:
-                      exerciseToChangeIndex !== null
-                        ? exercises[exerciseToChangeIndex]?.superset_id ||
-                          generateUUID()
-                        : "",
-                    muscle_group: selected.muscle_group || "",
-                  };
+            <ExerciseDropdown
+              key={index}
+              onSelect={(selected) => {
+                const newExercise: ExerciseEntry = {
+                  exercise_id: String(selected.id),
+                  name: selected.name,
+                  equipment: selected.equipment,
+                  main_group: selected.main_group || "",
+                  sets: [],
+                  notes: "",
+                  superset_id:
+                    exerciseToChangeIndex !== null
+                      ? exercises[exerciseToChangeIndex]?.superset_id ||
+                        generateUUID()
+                      : "",
+                  muscle_group: selected.muscle_group || "",
+                };
 
-                  if (exerciseToChangeIndex !== null) {
-                    // Update single exercise in session
-                    const updated = [...exercises];
-                    updated[exerciseToChangeIndex] = newExercise;
-                    setExercises(updated);
-                    setIsExerciseModalOpen(false);
-                    setExerciseToChangeIndex(null);
-                  } else {
-                    // Add new exercise to superset draft
-                    setDraftExercises((prev) => {
-                      const updated = [...prev];
-                      updated[updated.length - 1] = newExercise;
-                      return [...updated, emptyExerciseEntry]; // allow adding another
-                    });
-                  }
-                }}
-                resetTrigger={resetTrigger}
-              />
-            </>
+                if (exerciseToChangeIndex !== null) {
+                  // Update single exercise in session
+                  const updated = [...exercises];
+                  updated[exerciseToChangeIndex] = newExercise;
+                  setExercises(updated);
+                  setIsExerciseModalOpen(false);
+                  setExerciseToChangeIndex(null);
+                } else {
+                  // Add new exercise to superset draft
+                  setDraftExercises((prev) => {
+                    const updated = [...prev];
+                    updated[updated.length - 1] = newExercise;
+                    return [...updated, emptyExerciseEntry]; // allow adding another
+                  });
+                }
+              }}
+              resetTrigger={resetTrigger}
+            />
           );
         }
 

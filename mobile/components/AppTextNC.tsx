@@ -1,10 +1,10 @@
 import { Text, TextProps } from "react-native";
 
-export default function AppText({
+export default function AppTextNC({
   className,
   ...props
 }: TextProps & { className?: string }) {
   return (
-    <Text className={`font-russo text-gray-100 ${className}`} {...props} />
+    <Text className={`font-russo ${className}`} {...props} />
   );
 }

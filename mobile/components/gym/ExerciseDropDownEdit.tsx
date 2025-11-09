@@ -4,7 +4,7 @@ import GetUserExercises from "@/api/gym/user-exercises";
 import { useQuery } from "@tanstack/react-query";
 import AppInput from "../AppInput";
 import AppText from "../AppText";
-import AnimatedButton from "../animatedButton";
+import AnimatedButton from "@/components/buttons/animatedButton";
 
 type Props = {
   onSelect: (exercise: userExercise) => void;
@@ -110,9 +110,7 @@ export default function ExerciseDropdownEdit({
               <View className="gap-6 items-center justify-center z-50 text-center mt-10">
                 {isLoading && (
                   <>
-                    <AppText className=" text-xl">
-                      Loading exercises...
-                    </AppText>
+                    <AppText className=" text-xl">Loading exercises...</AppText>
                     <ActivityIndicator />
                   </>
                 )}

@@ -1,10 +1,4 @@
-import {
-  View,
-  TouchableWithoutFeedback,
-  Keyboard,
-  Pressable,
-  ScrollView,
-} from "react-native";
+import { View, ScrollView } from "react-native";
 import AppText from "@/components/AppText";
 import AppInput from "@/components/AppInput";
 import NotesInput from "@/components/NotesInput";
@@ -38,6 +32,7 @@ import FullScreenLoader from "@/components/FullScreenLoader";
 import { LinearGradient } from "expo-linear-gradient";
 import Timer from "@/components/timer";
 import PageContainer from "@/components/PageContainer";
+import AnimatedButton from "@/components/buttons/animatedButton";
 
 export default function GymScreen() {
   const [title, setTitle] = useState("");
@@ -226,6 +221,7 @@ export default function GymScreen() {
   };
 
   const logSetForExercise = (index: number) => {
+    console.log("logSetForExercise called", index, new Date().toISOString());
     const input = exerciseInputs[index];
     const exercise = exercises[index];
     const updated = [...exercises];
@@ -244,6 +240,7 @@ export default function GymScreen() {
 
       const updatedInputs = [...exerciseInputs];
       updatedInputs[index] = { ...input, time_min: "", distance_meters: "" };
+
       setExerciseInputs(updatedInputs);
     } else {
       const safeWeight = input.weight === "" ? 0 : Number(input.weight);
@@ -257,6 +254,7 @@ export default function GymScreen() {
 
       const updatedInputs = [...exerciseInputs];
       updatedInputs[index] = { weight: "", reps: "", rpe: "Medium" };
+
       setExerciseInputs(updatedInputs);
     }
 
@@ -357,220 +355,222 @@ export default function GymScreen() {
         />
       </View>
 
-      <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-        <ScrollView
-          onScrollBeginDrag={() => setIsScrolling(true)}
-          onScrollEndDrag={() => setTimeout(() => setIsScrolling(false), 150)}
-          keyboardShouldPersistTaps="handled"
-          contentContainerStyle={{ flexGrow: 1 }}
-        >
-          <PageContainer className="justify-between flex-1 mb-10">
-            <View>
-              <AppText className="text-2xl my-5 text-center">
-                Track your training progress
-              </AppText>
-              <View className="gap-5">
-                <AppInput
-                  value={title}
-                  onChangeText={setTitle}
-                  placeholder="Session Title..."
-                  label="Session Title..."
+      <ScrollView
+        onScrollBeginDrag={() => setIsScrolling(true)}
+        onScrollEndDrag={() => setTimeout(() => setIsScrolling(false), 150)}
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={{ flexGrow: 1 }}
+        showsVerticalScrollIndicator={false}
+      >
+        <PageContainer className="justify-between flex-1 mb-10">
+          <View>
+            <AppText className="text-2xl my-5 text-center">
+              Track your training progress
+            </AppText>
+            <View className="gap-5">
+              <AppInput
+                value={title}
+                onChangeText={setTitle}
+                placeholder="Session Title..."
+                label="Session Title..."
+              />
+              <View className="min-h-[80px]">
+                <NotesInput
+                  value={notes}
+                  onChangeText={setNotes}
+                  placeholder="Session Notes..."
+                  label="Session Notes..."
                 />
-                <View className="min-h-[80px]">
-                  <NotesInput
-                    value={notes}
-                    onChangeText={setNotes}
-                    placeholder="Session Notes..."
-                    label="Session Notes..."
-                  />
-                </View>
               </View>
             </View>
+          </View>
 
-            <>
-              {Object.entries(groupedExercises).map(([superset_id, group]) => (
-                <LinearGradient
-                  key={superset_id}
-                  colors={["#1e3a8a", "#0f172a", "#0f172a"]}
-                  start={{ x: 1, y: 0 }} // bottom-left
-                  end={{ x: 0, y: 1 }} // top-right
-                  className={`mt-10  rounded-md  ${
-                    group.length > 1
-                      ? "border-2 border-blue-700"
-                      : "border-2 border-gray-600"
-                  }`}
-                >
-                  {group.length > 1 && (
-                    <AppText className="text-gray-100 text-lg text-center my-2">
-                      Super-Set
-                    </AppText>
-                  )}
-
-                  {group.map(({ exercise, index }) => {
-                    return (
-                      <View key={index}>
-                        <ExerciseCard
-                          disabled={isScrolling}
-                          mode="session"
-                          exercise={exercise}
-                          lastExerciseHistory={(index) => {
-                            const ex = exercises[index];
-                            if (ex.exercise_id) {
-                              openHistory(ex.exercise_id);
-                            }
-                          }}
-                          onChangeExercise={(index) => {
-                            setExerciseToChangeIndex(index);
-                            setSupersetExercise([emptyExerciseEntry]);
-                            setNormalExercises([emptyExerciseEntry]);
-                            setIsExerciseModalOpen(true);
-                          }}
-                          index={index}
-                          input={exerciseInputs[index]}
-                          onInputChange={(index, field, value) => {
-                            const updatedInputs = [...exerciseInputs];
-                            updatedInputs[index] = {
-                              ...updatedInputs[index],
-                              [field]: value,
-                            };
-                            setExerciseInputs(updatedInputs);
-                          }}
-                          onAddSet={(index) => logSetForExercise(index)}
-                          onDeleteSet={(index, setIndex) => {
-                            const updated = [...exercises];
-                            updated[index].sets.splice(setIndex, 1);
-                            setExercises(updated);
-                          }}
-                          onUpdateExercise={(index, updatedExercise) => {
-                            const updated = [...exercises];
-                            updated[index] = updatedExercise;
-                            setExercises(updated);
-                          }}
-                          onDeleteExercise={async (index) => {
-                            const confirmDelete = await confirmAction({
-                              title: "Confirm Delete Exercise",
-                              message:
-                                "Are you sure you want to delete this exercise?",
-                            });
-                            if (!confirmDelete) return;
-
-                            const updated = exercises.filter(
-                              (_, i) => i !== index
-                            );
-                            setExercises(updated);
-
-                            const sessionDraft = {
-                              title: title,
-                              exercises: updated,
-                              notes,
-                            };
-                            AsyncStorage.setItem(
-                              "gym_session_draft",
-                              JSON.stringify(sessionDraft)
-                            );
-                          }}
-                        />
-                      </View>
-                    );
-                  })}
-                </LinearGradient>
-              ))}
-
-              <FullScreenModal
-                isOpen={isExerciseModalOpen}
-                onClose={() => {
-                  setIsExerciseModalOpen(false);
-                  setExerciseType("Normal");
-                  queryClient.invalidateQueries({ queryKey: ["exercises"] });
-                }}
+          <>
+            {Object.entries(groupedExercises).map(([superset_id, group]) => (
+              <LinearGradient
+                key={superset_id}
+                colors={["#1e3a8a", "#0f172a", "#0f172a"]}
+                start={{ x: 1, y: 0 }} // bottom-left
+                end={{ x: 0, y: 1 }} // top-right
+                className={`mt-10  rounded-md  ${
+                  group.length > 1
+                    ? "border-2 border-blue-700"
+                    : "border-2 border-gray-600"
+                }`}
               >
-                <View className="flex-1">
-                  <ExerciseSelectorList
-                    draftExercises={
-                      exerciseType === "Super-Set"
-                        ? supersetExercise
-                        : normalExercises
-                    }
-                    setDraftExercises={
-                      exerciseType === "Super-Set"
-                        ? setSupersetExercise
-                        : setNormalExercises
-                    }
-                    exerciseToChangeIndex={exerciseToChangeIndex}
-                    setExerciseToChangeIndex={setExerciseToChangeIndex}
-                    exercises={exercises}
-                    setExercises={setExercises}
-                    resetTrigger={dropdownResetKey}
-                    setIsExerciseModalOpen={setIsExerciseModalOpen}
-                  />
-                </View>
-                <View className="flex-row gap-3 px-2 mt-5 mb-10  z-50">
-                  <View className="relative flex-1">
-                    <SelectInput
-                      value={exerciseType}
-                      onChange={(value) => {
-                        const type = value;
-                        setExerciseType(type);
-                        if (type === "Normal") {
-                          setSupersetExercise([]);
-                        } else if (type === "Super-Set") {
+                {group.length > 1 && (
+                  <AppText className="text-gray-100 text-lg text-center my-2">
+                    Super-Set
+                  </AppText>
+                )}
+
+                {group.map(({ exercise, index }) => {
+                  return (
+                    <View key={index}>
+                      <ExerciseCard
+                        disabled={isScrolling}
+                        mode="session"
+                        exercise={exercise}
+                        lastExerciseHistory={(index) => {
+                          const ex = exercises[index];
+                          if (ex.exercise_id) {
+                            openHistory(ex.exercise_id);
+                          }
+                        }}
+                        onChangeExercise={(index) => {
+                          setExerciseToChangeIndex(index);
                           setSupersetExercise([emptyExerciseEntry]);
-                        }
-                      }}
-                      options={[
-                        { label: "Normal", value: "Normal" },
-                        { label: "Super-Set", value: "Super-Set" },
-                      ]}
-                    />
-                    <View className="absolute top-1/2 bottom-1/2 right-4 flex-row  items-center">
-                      <ChevronDown className="text-gray-100" color="#f3f4f6" />
+                          setNormalExercises([emptyExerciseEntry]);
+                          setIsExerciseModalOpen(true);
+                        }}
+                        index={index}
+                        input={exerciseInputs[index]}
+                        onInputChange={(index, field, value) => {
+                          const updatedInputs = [...exerciseInputs];
+                          updatedInputs[index] = {
+                            ...updatedInputs[index],
+                            [field]: value,
+                          };
+                          setExerciseInputs(updatedInputs);
+                        }}
+                        onAddSet={(index) => logSetForExercise(index)}
+                        onDeleteSet={(index, setIndex) => {
+                          const updated = [...exercises];
+                          updated[index].sets.splice(setIndex, 1);
+                          setExercises(updated);
+                        }}
+                        onUpdateExercise={(index, updatedExercise) => {
+                          const updated = [...exercises];
+                          updated[index] = updatedExercise;
+                          setExercises(updated);
+                        }}
+                        onDeleteExercise={async (index) => {
+                          const confirmDelete = await confirmAction({
+                            title: "Confirm Delete Exercise",
+                            message:
+                              "Are you sure you want to delete this exercise?",
+                          });
+                          if (!confirmDelete) return;
+
+                          const updated = exercises.filter(
+                            (_, i) => i !== index
+                          );
+                          setExercises(updated);
+
+                          const sessionDraft = {
+                            title: title,
+                            exercises: updated,
+                            notes,
+                          };
+                          AsyncStorage.setItem(
+                            "gym_session_draft",
+                            JSON.stringify(sessionDraft)
+                          );
+                        }}
+                      />
                     </View>
+                  );
+                })}
+              </LinearGradient>
+            ))}
+
+            <FullScreenModal
+              isOpen={isExerciseModalOpen}
+              onClose={() => {
+                setIsExerciseModalOpen(false);
+                setExerciseType("Normal");
+                queryClient.invalidateQueries({ queryKey: ["exercises"] });
+              }}
+            >
+              <View className="flex-1">
+                <ExerciseSelectorList
+                  draftExercises={
+                    exerciseType === "Super-Set"
+                      ? supersetExercise
+                      : normalExercises
+                  }
+                  setDraftExercises={
+                    exerciseType === "Super-Set"
+                      ? setSupersetExercise
+                      : setNormalExercises
+                  }
+                  exerciseToChangeIndex={exerciseToChangeIndex}
+                  setExerciseToChangeIndex={setExerciseToChangeIndex}
+                  exercises={exercises}
+                  setExercises={setExercises}
+                  resetTrigger={dropdownResetKey}
+                  setIsExerciseModalOpen={setIsExerciseModalOpen}
+                />
+              </View>
+              <View className="flex-row gap-3 px-2 mt-5 mb-10 z-50">
+                <View className="relative flex-1">
+                  <SelectInput
+                    value={exerciseType}
+                    onChange={(value) => {
+                      const type = value;
+                      setExerciseType(type);
+                      if (type === "Normal") {
+                        setSupersetExercise([]);
+                      } else if (type === "Super-Set") {
+                        setSupersetExercise([emptyExerciseEntry]);
+                      }
+                    }}
+                    options={[
+                      { label: "Normal", value: "Normal" },
+                      { label: "Super-Set", value: "Super-Set" },
+                    ]}
+                  />
+                  <View className="absolute top-1/2 bottom-1/2 right-4 flex-row  items-center">
+                    <ChevronDown className="text-gray-100" color="#f3f4f6" />
                   </View>
-                  <Pressable
+                </View>
+                <View className="flex-1">
+                  <AnimatedButton
                     onPress={() => {
                       startExercise();
                       setIsExerciseModalOpen(false);
                     }}
-                    className="justify-center items-center w-1/2 px-2 bg-blue-800 rounded-md shadow-md border-2 border-blue-500 text-gray-100 text-lg"
+                    className="justify-center items-center py-2 bg-blue-800 rounded-md shadow-md border-2 border-blue-500"
                   >
                     <AppText className="text-lg">
                       {exerciseType === "Super-Set"
                         ? "Add Super-Set"
                         : "Add Exercise"}
                     </AppText>
-                  </Pressable>
+                  </AnimatedButton>
                 </View>
-              </FullScreenModal>
-
-              <ExerciseHistoryModal
-                isOpen={isHistoryOpen}
-                onClose={() => setIsHistoryOpen(false)}
-                isLoading={isLoading}
-                history={Array.isArray(history) ? history : []}
-                error={historyError ? historyError.message : null}
-              />
-
-              <Pressable
-                onPress={() => {
-                  setExerciseType("Normal");
-                  setSupersetExercise([emptyExerciseEntry]);
-                  setNormalExercises([emptyExerciseEntry]);
-                  setIsExerciseModalOpen(true);
-                }}
-                className="mt-10 flex-row gap-3 w-2/4 mx-auto items-center justify-center bg-blue-800 py-2 rounded-md border-2 border-blue-500 text-gray-100 text-lg"
-              >
-                <AppText className="text-lg">Add Exercise</AppText>
-                <Plus className="inline ml-2" size={20} color="#f3f4f6" />
-              </Pressable>
-
-              <View className="gap-5 mt-20">
-                <SaveButton onPress={handleSaveSession} />
-                <DeleteButton onPress={resetSession} />
               </View>
-            </>
-          </PageContainer>
-        </ScrollView>
-      </TouchableWithoutFeedback>
+            </FullScreenModal>
+
+            <ExerciseHistoryModal
+              isOpen={isHistoryOpen}
+              onClose={() => setIsHistoryOpen(false)}
+              isLoading={isLoading}
+              history={Array.isArray(history) ? history : []}
+              error={historyError ? historyError.message : null}
+            />
+
+            <AnimatedButton
+              onPress={() => {
+                setExerciseType("Normal");
+                setSupersetExercise([emptyExerciseEntry]);
+                setNormalExercises([emptyExerciseEntry]);
+                setIsExerciseModalOpen(true);
+              }}
+              className="mt-10 flex-row gap-3 w-2/4 mx-auto items-center justify-center bg-blue-800 py-2 rounded-md border-2 border-blue-500"
+            >
+              <AppText className="text-lg">Add Exercise</AppText>
+              <Plus size={20} color="#f3f4f6" />
+            </AnimatedButton>
+
+            <View className="gap-5 mt-20">
+              <SaveButton onPress={handleSaveSession} />
+              <DeleteButton onPress={resetSession} />
+            </View>
+          </>
+        </PageContainer>
+      </ScrollView>
+
       <FullScreenLoader visible={isSaving} message="Saving session..." />
     </>
   );

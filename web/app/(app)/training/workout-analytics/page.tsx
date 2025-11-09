@@ -16,7 +16,7 @@ export default function WorkoutAnalyticsPage() {
   );
 
   return (
-      <div className="h-full bg-slate-800 text-gray-100 sm:px-5">
+      <div className="h-full bg-slate-800 sm:px-5">
         <h1 className="text-2xl my-5 text-center">Workout Analytics</h1>
         <AnalyticsForm data={data ?? []} isLoading={isLoading} error={error} />
       </div>

@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useUserStore } from "@/lib/stores/useUserStore";
 import { weight } from "@/types/models";
 import { handleError } from "../../utils/handleError";
@@ -114,7 +114,7 @@ export default function AllDataTable({ data, isLoading, error }: AllDataProps) {
     }
   };
 
-  const renderHeader = useCallback(
+  const renderHeader = useMemo(
     () => (
       <HeaderAllDataTable
         key={range} // Force re-render when range changes

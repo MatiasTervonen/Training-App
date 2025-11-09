@@ -2,6 +2,16 @@ import { View, ActivityIndicator } from "react-native";
 import AppText from "@/components/AppText";
 import { full_gym_session } from "../../types/models";
 import ChartTabSwitcher from "./AnalytictsChartTabSwitcher";
+import * as echarts from "echarts/core";
+import {
+  CalendarComponent,
+  VisualMapComponent,
+  TooltipComponent,
+} from "echarts/components";
+import { HeatmapChart } from "echarts/charts";
+import { SkiaRenderer, SkiaChart } from "@wuba/react-native-echarts";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { formatDate } from "@/lib/formatDate";
 
 type AnalyticsFormProps = {
   data: full_gym_session[];
@@ -9,11 +19,107 @@ type AnalyticsFormProps = {
   error: Error | null;
 };
 
+echarts.use([
+  SkiaRenderer,
+  HeatmapChart,
+  CalendarComponent,
+  VisualMapComponent,
+  TooltipComponent,
+]);
+
 export default function AnalyticsForm({
   data,
   error,
   isLoading,
 }: AnalyticsFormProps) {
+  const skiaRef = useRef<any>(null);
+  const [chartSize, setChartSize] = useState({ width: 0, height: 0 });
+
+  const heatmapData = useMemo(() => {
+    if (!data) return [];
+
+    return data.map((session) => {
+      const date = new Date(session.created_at).toISOString().split("T")[0]; // "YYYY-MM-DD"
+      const durationMinutes = Math.round(session.duration / 60);
+      const title = session.title;
+
+      return {
+        value: [date, durationMinutes],
+        title,
+      };
+    });
+  }, [data]);
+
+  const calendarRange = useMemo(() => {
+    const end = new Date();
+    const start = new Date();
+
+    start.setDate(end.getDate() - 29); // last 30 days
+
+    return [start.toISOString().split("T")[0], end.toISOString().split("T")[0]];
+  }, []);
+
+  const option = useMemo(
+    () => ({
+      tooltip: {
+        confine: true,
+        position: "top",
+        backgroundColor: "#020617",
+        textStyle: { color: "#f3f4f6" },
+        borderColor: "#2563eb",
+        formatter: function (params: any) {
+          const { value, title } = params.data || {};
+          if (!value) return "";
+          const date = formatDate(value[0]);
+          const duration = value[1];
+          return `${date}\n${title}\nDuration: ${duration} min`;
+        },
+      },
+      visualMap: {
+        show: false,
+        inRange: {
+          color: ["#2563eb"],
+        },
+      },
+      dayLabel: {
+        nameMap: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+      },
+      calendar: {
+        top: 20,
+        left: 45,
+        right: 20,
+        bottom: 20,
+        cellSize: ["auto", 13],
+        range: calendarRange,
+        itemStyle: {
+          color: "#1e293b",
+          borderWidth: 0.5,
+        },
+        yearLabel: { show: false },
+      },
+      series: {
+        type: "heatmap",
+        coordinateSystem: "calendar",
+        data: heatmapData,
+      },
+    }),
+    [heatmapData, calendarRange]
+  );
+
+  useEffect(() => {
+    if (!skiaRef.current) return;
+    if (chartSize.width === 0 || chartSize.height === 0) return;
+
+    const chart = echarts.init(skiaRef.current, "light", {
+      renderer: "skia",
+      width: chartSize.width,
+      height: chartSize.height,
+    } as any);
+
+    chart.setOption(option);
+    return () => chart.dispose();
+  }, [option, chartSize]);
+
   function totalSessions30Days(data: full_gym_session[]) {
     return data.length;
   }
@@ -65,7 +171,19 @@ export default function AnalyticsForm({
                   Average Duration: {averageDuration(data)} minutes
                 </AppText>
               </View>
-              {/* <AnalyticsHeatMap data={data} /> */}
+            </View>
+            <View
+              style={{
+                flex: 1,
+                width: "100%",
+                minHeight: 200,
+              }}
+              onLayout={(e) => {
+                const { width, height } = e.nativeEvent.layout;
+                setChartSize({ width, height });
+              }}
+            >
+              <SkiaChart ref={skiaRef} />
             </View>
             <View>
               <AppText className="text-center mb-6">

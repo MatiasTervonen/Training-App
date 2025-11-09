@@ -16,7 +16,7 @@ import MyReminderCard from "@/components/cards/MyReminderCard";
 import { full_reminder } from "@/types/session";
 import MyReminder from "@/components/expandSession/myReminder";
 import * as Notifications from "expo-notifications";
-import AnimatedButton from "@/components/animatedButton";
+import AnimatedButton from "@/components/buttons/animatedButton";
 
 export default function RemindersPage() {
   const [expandedItem, setExpandedItem] = useState<full_reminder | null>(null);

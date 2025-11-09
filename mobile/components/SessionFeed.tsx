@@ -56,14 +56,14 @@ export default function SessionFeed() {
 
   const queryClient = useQueryClient();
 
-  useEffect(() => {
-    const fetchNotifications = async () => {
-      const scheduled = await Notifications.getAllScheduledNotificationsAsync();
-      console.log("Scheduled notifications:", scheduled);
-    };
+  // useEffect(() => {
+  //   const fetchNotifications = async () => {
+  //     const scheduled = await Notifications.getAllScheduledNotificationsAsync();
+  //     // console.log("Scheduled notifications:", scheduled);
+  //   };
 
-    fetchNotifications();
-  }, []);
+  //   fetchNotifications();
+  // }, []);
 
   function getCanonicalId(item: { id?: string; item_id?: string }) {
     return item.item_id ?? item.id ?? "";

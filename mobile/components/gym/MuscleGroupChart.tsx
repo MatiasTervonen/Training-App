@@ -16,7 +16,7 @@ export default function MuscleGroupChart({
     data.forEach((session) => {
       session.gym_session_exercises.forEach((exercise) => {
         const group = exercise.gym_exercises;
-        const name = group.muscle_group;     
+        const name = group.muscle_group;
         if (muscleGroupCount[name]) {
           muscleGroupCount[name] += 1;
         } else {
@@ -40,11 +40,15 @@ export default function MuscleGroupChart({
   const maxValue = Math.max(...chartData.map((item) => item.value));
 
   const maxBarWidth = screenWidth * 0.8; // max width for bars
+  const minLabelSpace = 90;
 
   return (
     <View className="gap-2 my-5 ml-4">
       {chartData.map((item, index) => {
         const barWidth = (item.value / maxValue) * maxBarWidth;
+
+        const valueLeft = Math.max(barWidth + 8, minLabelSpace + 8);
+
         return (
           <View key={index} className="flex-row items-center gap-5">
             <View className="absolute z-50 ">
@@ -57,7 +61,10 @@ export default function MuscleGroupChart({
               color="#3b82f6"
               style={{ height: 30 }}
             />
-            <AppText>{item.value}</AppText>
+
+            <View className="absolute" style={{ left: valueLeft }}>
+              <AppText>{item.value}</AppText>
+            </View>
           </View>
         );
       })}

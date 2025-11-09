@@ -49,9 +49,6 @@ export default function AppButton({
     shineOpacity.value = withTiming(0, { duration: 150 });
     scale.value = withSpring(1, { stiffness: 200, damping: 15 });
     opacity.value = withSpring(1);
-
-    // trigger actual press
-    onPress();
   };
 
   return (
@@ -83,7 +80,11 @@ export default function AppButton({
             style={{ flex: 1 }}
           />
         </Animated.View>
-        {label && <AppText className="text-lg" numberOfLines={1}>{label}</AppText>}
+        {label && (
+          <AppText className="text-lg" numberOfLines={1}>
+            {label}
+          </AppText>
+        )}
         {children}
       </Animated.View>
     </Pressable>

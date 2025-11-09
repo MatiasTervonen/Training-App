@@ -1,7 +1,9 @@
-import { View, Pressable, ActivityIndicator } from "react-native";
+import { View, ActivityIndicator } from "react-native";
 import AppText from "../AppText";
 import { weight } from "@/types/models";
 import WeightChart from "@/components/weight-screen/WeightChart";
+import AnimatedButton from "../buttons/animatedButton";
+import AppTextNC from "../AppTextNC";
 
 type HeaderAllDataTableProps = {
   range: "week" | "month" | "year";
@@ -23,17 +25,21 @@ export default function HeaderAllDataTable({
       <AppText className="text-2xl my-5 text-center">Weight Analytics</AppText>
       <View className="flex-row justify-center gap-3 mb-5">
         {["week", "month", "year"].map((option) => (
-          <Pressable
+          <AnimatedButton
             key={option}
             className={`px-4 py-2 m-1 rounded-lg ${
               range === option ? "bg-blue-600" : "bg-gray-600"
             }`}
             onPress={() => setRange(option as "week" | "month" | "year")}
           >
-            <AppText className="text-center">
+            <AppTextNC
+              className={`text-center ${
+                range === option ? "text-cyan-300" : "text-gray-100"
+              }`}
+            >
               {option.charAt(0).toUpperCase() + option.slice(1)}
-            </AppText>
-          </Pressable>
+            </AppTextNC>
+          </AnimatedButton>
         ))}
       </View>
       <View className="w-full items-center">

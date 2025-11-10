@@ -1,10 +1,10 @@
 import { Dumbbell, Ellipsis, SquareArrowOutUpRight } from "lucide-react";
 import DropdownMenu from "../dropdownMenu";
 import { formatDate } from "@/app/(app)/lib/formatDate";
-import { Feed_item } from "@/app/(app)/types/session";
+import { gym_sessions } from "../../types/models";
 
 type Props = {
-  item: Feed_item;
+  item: gym_sessions;
   pinned: boolean;
   onTogglePin: () => void;
   onDelete: () => void;

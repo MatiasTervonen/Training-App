@@ -1,10 +1,10 @@
 import { ListTodo, Ellipsis, SquareArrowOutUpRight } from "lucide-react";
 import DropdownMenu from "../dropdownMenu";
 import { formatDate } from "@/app/(app)/lib/formatDate";
-import { Feed_item } from "@/app/(app)/types/session";
+import { todo_lists } from "../../types/models";
 
 type Props = {
-  item: Feed_item;
+  item: todo_lists;
   pinned: boolean;
   onTogglePin: () => void;
   onDelete: () => void;
@@ -35,7 +35,9 @@ export default function TodoCard({
           button={
             <div
               aria-label="More options"
-              className={`cursor-pointer  ${pinned ? "text-slate-900" : "text-gray-100"}`}
+              className={`cursor-pointer  ${
+                pinned ? "text-slate-900" : "text-gray-100"
+              }`}
             >
               <Ellipsis size={20} />
             </div>
@@ -71,7 +73,6 @@ export default function TodoCard({
         </DropdownMenu>
       </div>
 
-      <div className="ml-4 mb-4 mr-5 line-clamp-2">{item.notes}</div>
       <div className="flex justify-between items-center mt-2 bg-black/40 rounded-b-md">
         {/* Icon */}
 

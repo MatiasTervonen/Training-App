@@ -8,6 +8,9 @@ import toast from "react-hot-toast";
 import { generateUUID } from "@/app/(app)/lib/generateUUID";
 import FullScreenLoader from "../../components/FullScreenLoader";
 import { handleError } from "../../utils/handleError";
+import { saveExerciseToDB } from "../../database/gym";
+import { mutate } from "swr";
+import { fetcher } from "../../lib/fetcher";
 
 export default function EditExercises() {
   const [name, setName] = useState("");
@@ -18,6 +21,8 @@ export default function EditExercises() {
   const [isSaving, setIsSaving] = useState(false);
 
   const handleSave = async () => {
+    if (name.length >= 50) return;
+
     if (!name) {
       toast.error("Please enter an exercise name");
       return;
@@ -34,36 +39,23 @@ export default function EditExercises() {
     };
 
     try {
-      const response = await fetch("/api/gym/add-exercise", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(exerciseData),
-      });
+      await saveExerciseToDB(exerciseData);
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to save exercise");
-      }
-
-      await response.json();
-
+      await mutate(
+        "/api/gym/user-exercises",
+        async () => fetcher("/api/gym/user-exercises"),
+        false
+      );
       toast.success("Exercise saved successfully!");
       setName("");
-    } catch (error: unknown) {
+    } catch (error) {
+      console.log("error saving", error);
       handleError(error, {
         message: "Error saving exercise",
         route: "/api/gym/add-exercise",
         method: "POST",
       });
-      if (error instanceof Error) {
-        toast.error(
-          error.message || "Failed to save exercise. Please try again."
-        );
-      } else {
-        toast.error("An unexpected error occurred. Please try again.");
-      }
+      toast.error("Failed to save exercise. Please try again.");
     } finally {
       setIsSaving(false);
     }
@@ -73,12 +65,20 @@ export default function EditExercises() {
     <div className="h-full bg-slate-800 text-gray-100 px-5 pt-5 max-w-md mx-auto">
       <h1 className="text-2xl my-5 text-center">Add Exercises</h1>
       <div className="flex flex-col gap-5">
-        <CustomInput
-          value={name}
-          setValue={setName}
-          placeholder="Exercise name"
-          label="Exercise Name"
-        />
+        <div>
+          <CustomInput
+            value={name}
+            setValue={setName}
+            placeholder="Exercise name"
+            label="Exercise Name"
+            maxLength={50}
+          />
+          {name.length >= 50 ? (
+            <p className="text-yellow-400 mt-2">
+              Reached the limit (50 chars max)
+            </p>
+          ) : null}
+        </div>
         <ExerciseTypeSelect
           value={language}
           onChange={setLanguage}

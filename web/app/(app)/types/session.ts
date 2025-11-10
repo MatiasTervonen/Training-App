@@ -121,12 +121,4 @@ export type FeedResponse = {
   nextPage: number | null;
 };
 
-export type FeedCardProps = {
-  table: "notes" | "gym_sessions" | "weight" | "todo_lists" | "reminders";
-  item: Feed_item;
-  pinned: boolean;
-  onTogglePin: () => void;
-  onDelete: () => void;
-  onExpand: () => void;
-  onEdit: () => void;
-};
+

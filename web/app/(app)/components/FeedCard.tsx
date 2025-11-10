@@ -2,7 +2,7 @@ import NotesCard from "./cards/NotesCard";
 import GymCard from "./cards/GymCard";
 import WeightCard from "./cards/WeightCard";
 import TodoCard from "./cards/TodoCard";
-import { FeedCardProps } from "../types/session";
+import { FeedCardProps } from "../types/models";
 import ReminderCard from "./cards/ReminderCard";
 
 export default function FeedCard(props: FeedCardProps) {

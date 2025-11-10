@@ -1,9 +1,9 @@
 import { formatDate } from "@/app/(app)/lib/formatDate";
 import Link from "next/link";
 import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
-import { Feed_item } from "@/app/(app)/types/session";
+import { weight } from "../../types/models";
 
-export default function WeightSession(weight: Feed_item) {
+export default function WeightSession(weight: weight) {
   const weightUnit =
     useUserStore((state) => state.preferences?.weight_unit) || "kg";
 
@@ -19,7 +19,7 @@ export default function WeightSession(weight: Feed_item) {
         <div className="whitespace-pre-wrap break-words overflow-hidden max-w-full text-left bg-slate-900 p-4 rounded-md shadow-lg">
           <div className="flex flex-col">
             {weight.notes && (
-              <p className="mb-5">{weight.notes}</p> // Add gap only if notes exist
+              <p className="mb-5">{weight.notes}</p> 
             )}
             <p className="text-center">
               {weight.weight} {weightUnit}

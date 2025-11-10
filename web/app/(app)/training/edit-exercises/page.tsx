@@ -10,6 +10,9 @@ import DeleteSessionBtn from "@/app/(app)/ui/deleteSessionBtn";
 import { gym_exercises } from "../../types/models";
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import { handleError } from "@/app/(app)/utils/handleError";
+import { editExercise, deleteExercise } from "../../database/gym";
+import { fetcher } from "../../lib/fetcher";
+import { mutate } from "swr";
 
 export default function EditExercises() {
   const [name, setName] = useState("");
@@ -21,16 +24,19 @@ export default function EditExercises() {
   const [selectedExercise, setSelectedExercise] =
     useState<gym_exercises | null>(null);
   const [resetTrigger, setResetTrigger] = useState(0);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleUpdateExercise = async () => {
     if (!name || !equipment || !muscle_group || !main_group) {
       toast.error("Please fill in all fields.");
       return;
     }
+
+    if (name.length >= 50) return;
     setIsSaving(true);
 
     const exerciseData = {
-      id: selectedExercise?.id,
+      id: selectedExercise!.id,
       name,
       language,
       equipment,
@@ -39,19 +45,7 @@ export default function EditExercises() {
     };
 
     try {
-      const response = await fetch("/api/gym/edit-exercise", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(exerciseData),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to save exercise");
-      }
-
-      await response.json();
+      await editExercise(exerciseData);
 
       toast.success("Exercise updated successfully!");
       resetFields();
@@ -68,30 +62,30 @@ export default function EditExercises() {
   };
 
   const handleDeleteExercise = async (exerciseId: string) => {
+    setIsDeleting(true);
+    setIsSaving(true);
+
     try {
-      const response = await fetch("/api/gym/delete-exercise", {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ item_id: exerciseId }),
-      });
+      await deleteExercise(exerciseId);
 
-      if (!response.ok) {
-        throw new Error("Failed to delete exercise");
-      }
-
-      await response.json();
+      await mutate(
+        "/api/gym/user-exercises",
+        async () => fetcher("/api/gym/user-exercises"),
+        false
+      );
       toast.success("Exercise deleted successfully!");
       setSelectedExercise(null);
       setResetTrigger((prev) => prev + 1);
     } catch (error) {
       handleError(error, {
         message: "Error deleting exercise",
-        route: "/api/gym/delete-exercise",
+        route: "edit-exercise page",
         method: "DELETE",
       });
       toast.error("Failed to delete exercise. Please try again.");
+    } finally {
+      setIsDeleting(false);
+      setIsSaving(false);
     }
   };
 
@@ -111,7 +105,6 @@ export default function EditExercises() {
     setEquipment("");
     setMuscleGroup("");
     setMainGroup("");
-    setSelectedExercise(null);
     setResetTrigger((prev) => prev + 1);
   };
 
@@ -130,12 +123,20 @@ export default function EditExercises() {
           <>
             <div className="flex flex-col p-5 gap-5 max-w-md  mx-auto">
               <h1 className="text-2xl text-center my-5">Edit exercise</h1>
-              <CustomInput
-                value={name}
-                setValue={setName}
-                placeholder="Exercise name"
-                label="Exercise Name"
-              />
+              <div>
+                <CustomInput
+                  value={name}
+                  setValue={setName}
+                  placeholder="Exercise name"
+                  label="Exercise Name"
+                  maxLength={50}
+                />
+                {name.length >= 50 ? (
+                  <p className="text-yellow-400 mt-2">
+                    Reached the limit (50 chars max)
+                  </p>
+                ) : null}
+              </div>
               <ExerciseTypeSelect
                 value={language}
                 onChange={setLanguage}
@@ -226,7 +227,11 @@ export default function EditExercises() {
           </>
         )}
       </div>
-      {isSaving && <FullScreenLoader message="Saving exercise..." />}
+      {isSaving && (
+        <FullScreenLoader
+          message={isDeleting ? "Deleting exercise..." : "Saving exercise..."}
+        />
+      )}
     </div>
   );
 }

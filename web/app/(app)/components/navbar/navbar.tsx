@@ -42,7 +42,7 @@ export default function Navbar() {
               alt="Profile Picture"
               width={20}
               height={20}
-              className="rounded-full border-2 border-blue-500 w-[40px] h-[40px] cursor-pointer"
+              className="rounded-full border-2 border-blue-500 w-10 h-10 cursor-pointer"
             />
           </Link>
         </div>

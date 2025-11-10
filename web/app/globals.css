@@ -39,3 +39,7 @@ body {
   fill: #ffffffea !important;
   font-size: 13px !important;
 }
+
+::-webkit-scrollbar {
+  display: none;
+}

@@ -11,39 +11,41 @@ import {
   HistoryResult,
   ExerciseEntry,
   emptyExerciseEntry,
-  OptimisticTemplate,
-  ExerciseInput,
 } from "@/app/(app)/types/session";
 import ExerciseHistoryModal from "../components/ExerciseHistoryModal";
 import { generateUUID } from "@/app/(app)/lib/generateUUID";
 import { toast } from "react-hot-toast";
-import { mutate } from "swr";
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
-import { GroupGymExercises } from "@/app/(app)/utils/GroupGymExercises";
-import ExerciseCard from "../components/ExerciseCard";
-import { useParams } from "next/navigation";
 import useSWR from "swr";
 import { fetcher } from "@/app/(app)/lib/fetcher";
 import { full_gym_template } from "@/app/(app)/types/models";
 import ExerciseSelectorList from "../components/ExerciseSelectorList";
-import Spinner from "../../components/spinner";
 import { handleError } from "../../utils/handleError";
+import { saveTemplateToDB, editTemplate } from "../../database/template";
+import TemplateCard from "./TemplateCard";
+import { GroupGymExercises } from "../../utils/GroupGymExercises";
+import { mutate } from "swr";
 
-export default function TemplateForm() {
-  const params = useParams<{ id: string }>();
-  const templateId = params?.id;
-  const storageKey = templateId
-    ? `gym_template_draft_${templateId}` // editing
-    : "gym_template_draft_new"; // creating
+export default function TemplateForm({
+  initialData,
+  errorMessage,
+}: {
+  initialData: full_gym_template;
+  errorMessage: string;
+}) {
+  const session = initialData;
 
-  const draft =
-    typeof window !== "undefined"
-      ? JSON.parse(localStorage.getItem(storageKey) || "null")
-      : null;
-
-  const [workoutName, setWorkoutName] = useState(draft?.title || "");
+  const [workoutName, setWorkoutName] = useState(session.name || "");
   const [exercises, setExercises] = useState<ExerciseEntry[]>(
-    draft?.exercises || []
+    (session.gym_template_exercises || []).map((ex) => ({
+      exercise_id: ex.exercise_id,
+      name: ex.gym_exercises?.name,
+      main_group: ex.gym_exercises.main_group,
+      muscle_group: ex.gym_exercises?.main_group,
+      equipment: ex.gym_exercises?.equipment,
+      superset_id: ex.superset_id,
+      sets: [],
+    }))
   );
   const [isExerciseModalOpen, setIsExerciseModalOpen] = useState(false);
   const [exerciseType, setExerciseType] = useState("Normal");
@@ -51,11 +53,6 @@ export default function TemplateForm() {
   const [dropdownResetKey, setDropdownResetKey] = useState(0);
   const [isSaving, setIsSaving] = useState(false);
   const [normalExercises, setNormalExercises] = useState<ExerciseEntry[]>([]);
-  const [exerciseInputs, setExerciseInputs] = useState<ExerciseInput[]>(
-    draft?.exercises
-      ? draft.exercises.map(() => ({ weight: "", reps: "", rpe: "Medium" }))
-      : []
-  );
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [exerciseToChangeIndex, setExerciseToChangeIndex] = useState<
     number | null
@@ -68,54 +65,36 @@ export default function TemplateForm() {
 
   const router = useRouter();
 
-  // Remove draft when leaving the edit page without saving
+  const isEditing = Boolean(session?.id);
+  const [hasLoadedDraft, setHasLoadedDraft] = useState(isEditing);
 
   useEffect(() => {
-    return () => {
-      if (templateId) {
-        localStorage.removeItem(storageKey);
-      }
-    };
-  }, [templateId, storageKey]);
+    if (!hasLoadedDraft || isEditing) return;
 
-  // Load existing template when editing
-
-  const { data: existingTemplate, isLoading } = useSWR<full_gym_template>(
-    templateId ? `/api/gym/get-full-template?id=${templateId}` : null,
-    fetcher
-  );
-
-  useEffect(() => {
-    if (existingTemplate) {
-      setWorkoutName(existingTemplate.name);
-
-      const mappedExercises = existingTemplate.gym_template_exercises.map(
-        (ex) => ({
-          exercise_id: ex.exercise_id,
-          name: ex.gym_exercises.name,
-          equipment: ex.gym_exercises.equipment,
-          main_group: ex.gym_exercises.main_group,
-          muscle_group: ex.gym_exercises.muscle_group,
-          sets: Array.from({ length: ex.sets ?? 0 }).map(() => ({
-            reps: undefined,
-            weight: undefined,
-            rpe: undefined,
-          })),
-          superset_id: ex.superset_id,
-        })
-      );
-
-      setExercises(mappedExercises);
-
-      setExerciseInputs(
-        mappedExercises.map(() => ({
-          weight: "",
-          reps: "",
-          rpe: "Medium",
-        }))
-      );
+    if (exercises.length === 0 && workoutName.trim() === "") {
+      localStorage.removeItem("template_draft");
+      return;
     }
-  }, [existingTemplate]);
+
+    const sessionDraft = {
+      title: workoutName,
+      exercises,
+    };
+    localStorage.setItem("template_draft", JSON.stringify(sessionDraft));
+  }, [exercises, workoutName, hasLoadedDraft, isEditing]);
+
+  useEffect(() => {
+    if (isEditing) return;
+
+    const draft = localStorage.getItem("template_draft");
+    if (draft) {
+      const parsedDraft = JSON.parse(draft);
+      setWorkoutName(parsedDraft.title || "");
+      setExercises(parsedDraft.exercises || []);
+    }
+
+    setHasLoadedDraft(true);
+  }, [setWorkoutName, setExercises, isEditing]);
 
   const {
     data: history,
@@ -124,35 +103,13 @@ export default function TemplateForm() {
   } = useSWR<HistoryResult[]>(
     isHistoryOpen && exerciseHistoryId
       ? `/api/gym/last-exercise-history/${exerciseHistoryId}`
-      : null,
-    fetcher,
-    {
-      revalidateOnFocus: false,
-      revalidateOnReconnect: false,
-      revalidateIfStale: false,
-    }
+      : null
   );
 
   const openHistory = (exerciseId: string) => {
     setExerciseHistoryId(exerciseId);
     setIsHistoryOpen(true);
   };
-
-  const isCardioExercise = (exercise: ExerciseEntry) =>
-    (exercise.main_group || "").toLowerCase() === "cardio";
-
-  useEffect(() => {
-    if (exercises.length === 0 && workoutName.trim() === "") {
-      localStorage.removeItem(storageKey);
-      return;
-    }
-
-    const sessionDraft = {
-      title: workoutName,
-      exercises,
-    };
-    localStorage.setItem(storageKey, JSON.stringify(sessionDraft));
-  }, [exercises, workoutName, storageKey]);
 
   const handleAddExercise = () => {
     const newSupersetId = generateUUID();
@@ -169,14 +126,6 @@ export default function TemplateForm() {
       }));
 
       setExercises((prev) => [...prev, ...newGroup]);
-      setExerciseInputs((prev) => [
-        ...prev,
-        ...newGroup.map((ex) => ({
-          weight: "",
-          reps: "",
-          rpe: isCardioExercise(ex) ? "Warm-up" : "Medium",
-        })),
-      ]);
       setSupersetExercise([]);
     } else {
       const validNormal = normalExercises.filter(
@@ -190,14 +139,6 @@ export default function TemplateForm() {
       }));
 
       setExercises((prev) => [...prev, ...updated]);
-      setExerciseInputs((prev) => [
-        ...prev,
-        ...updated.map((ex) => ({
-          weight: "",
-          reps: "",
-          rpe: isCardioExercise(ex) ? "Warm-up" : "Medium",
-        })),
-      ]);
       setNormalExercises([]);
     }
 
@@ -209,83 +150,41 @@ export default function TemplateForm() {
 
     setIsSaving(true);
 
-    const simplified = exercises.map((ex) => ({
-      exercise_id: ex.exercise_id,
-      sets: ex.sets?.[0]?.sets,
-      reps: ex.sets?.[0]?.reps,
-      superset_id: ex.superset_id,
-    }));
-
-    let tempId: string | null = null;
-
-    if (!templateId) {
-      tempId = generateUUID();
-
-      mutate(
-        "/api/gym/get-templates",
-        (currentTemplates: OptimisticTemplate[] = []) => [
-          {
-            id: tempId as string,
-            name: workoutName,
-            created_at: new Date().toISOString(),
-          },
-          ...currentTemplates,
-        ],
-        false
-      );
-    }
     try {
-      const url = templateId
-        ? "/api/gym/edit-template"
-        : "/api/gym/save-template";
-
-      const res = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          id: templateId,
-          exercises: simplified,
+      if (isEditing) {
+        await editTemplate({
+          id: session.id,
+          exercises,
           name: workoutName,
-        }),
-      });
-
-      if (!res.ok) {
-        setIsSaving(false);
-        throw new Error("Failed to save template");
+        });
+      } else {
+        await saveTemplateToDB({
+          exercises,
+          name: workoutName,
+        });
       }
 
-      const saved = await res.json();
-
-      if (templateId) {
-        mutate(
-          "/api/gym/get-templates",
-          (current: OptimisticTemplate[] = []) =>
-            current.map((t) =>
-              t.id === templateId ? { ...t, name: workoutName } : t
-            ),
+      if (isEditing) {
+        await mutate(
+          `/api/gym/get-full-template?id=${session.id}`,
+          async () => fetcher(`/api/gym/get-full-template?id=${session.id}`),
           false
         );
-        mutate(`/api/gym/get-full-template?id=${templateId}`);
-      }
-
-      if (!templateId) {
-        mutate(
+      } else {
+        await mutate(
           "/api/gym/get-templates",
-          (currentTemplates: OptimisticTemplate[] = []) =>
-            currentTemplates.map((t) =>
-              t.id === tempId ? { ...t, id: saved.templateId } : t
-            ),
+          async () => fetcher("/api/gym/get-templates"),
           false
         );
       }
-
       resetSession();
       router.push("/training/templates");
     } catch (error) {
-      console.log("Error saving template", error);
-      handleError(error);
+      handleError(error, {
+        message: "Error saving/editing template",
+        route: "TemplatePage",
+        method: "Template",
+      });
       toast.error("Failed to save template. Try again later.");
       setIsSaving(false);
     }
@@ -298,43 +197,20 @@ export default function TemplateForm() {
     setExercises([]);
     setWorkoutName("");
     setNormalExercises([]);
-    localStorage.removeItem(storageKey);
+    localStorage.removeItem("template_draft");
   };
 
-  const logSetForExercise = (index: number) => {
-    const { weight, reps, rpe } = exerciseInputs[index];
+  if (!hasLoadedDraft) return null;
 
-    const safeWeight = weight === "" ? 0 : Number(weight);
-    const safeReps = reps === "" ? 0 : Number(reps);
-
-    const updated = [...exercises];
-    updated[index].sets.push({
-      weight: safeWeight,
-      reps: safeReps,
-      rpe: rpe,
-    });
-    setExercises(updated);
-
-    const updatedInputs = [...exerciseInputs];
-    updatedInputs[index] = { weight: "", reps: "", rpe: "Medium" };
-    setExerciseInputs(updatedInputs);
-  };
-
-  if (templateId && (isLoading || !existingTemplate)) {
-    return (
-      <div className="h-full flex flex-col items-center justify-center bg-slate-800 text-gray-100">
-        <p className="mb-4 text-xl">Loading template details...</p>
-        <Spinner />
-      </div>
-    );
-  }
+  const hasError = Boolean(errorMessage);
+  const hasNoData = !session && !hasError;
 
   return (
     <div className="h-full bg-slate-800 text-gray-100 px-4 pt-5">
       <div className="max-w-md mx-auto flex flex-col justify-between h-full">
         <div className="flex flex-col items-center  gap-5 ">
           <h2 className="text-gray-100 text-lg">
-            {templateId ? "Edit your template" : "Create your template"}
+            {isEditing ? "Edit your template" : "Create your template"}
           </h2>
           <div className="w-full px-6">
             <CustomInput
@@ -345,11 +221,24 @@ export default function TemplateForm() {
             />
           </div>
         </div>
+
+        {hasError && (
+          <div className="border border-red-500 text-red-300 rounded-md mt-5 p-3 text-center">
+            {errorMessage}
+          </div>
+        )}
+
+        {hasNoData && (
+          <div className="border border-gray-600 text-gray-300 rounded-md mt-5 p-3 text-center">
+            No session data found.
+          </div>
+        )}
+
         <div>
           {Object.entries(groupedExercises).map(([superset_id, group]) => (
             <div
               key={superset_id}
-              className={`mt-5 bg-gradient-to-tr from-gray-900 via-slate-800 to-blue-900  rounded-md mx-2 ${
+              className={`mt-5 bg-linear-to-tr from-gray-900 via-slate-800 to-blue-900  rounded-md mx-2 ${
                 group.length > 1
                   ? "border-2 border-blue-700"
                   : "border-2 border-gray-600"
@@ -363,7 +252,7 @@ export default function TemplateForm() {
               {group.map(({ exercise, index }) => {
                 return (
                   <div key={index}>
-                    <ExerciseCard
+                    <TemplateCard
                       exercise={exercise}
                       lastExerciseHistory={(index) => {
                         const ex = exercises[index];
@@ -378,21 +267,6 @@ export default function TemplateForm() {
                         setIsExerciseModalOpen(true);
                       }}
                       index={index}
-                      input={exerciseInputs[index]}
-                      onInputChange={(index, field, value) => {
-                        const updatedInputs = [...exerciseInputs];
-                        updatedInputs[index] = {
-                          ...updatedInputs[index],
-                          [field]: value,
-                        };
-                        setExerciseInputs(updatedInputs);
-                      }}
-                      onAddSet={(index) => logSetForExercise(index)}
-                      onDeleteSet={(index, setIndex) => {
-                        const updated = [...exercises];
-                        updated[index].sets.splice(setIndex, 1);
-                        setExercises(updated);
-                      }}
                       onUpdateExercise={(index, updatedExercise) => {
                         const updated = [...exercises];
                         updated[index] = updatedExercise;
@@ -412,7 +286,7 @@ export default function TemplateForm() {
                           exercises: updated,
                         };
                         localStorage.setItem(
-                          storageKey,
+                          "template_draft",
                           JSON.stringify(sessionDraft)
                         );
                       }}

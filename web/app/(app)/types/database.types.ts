@@ -140,6 +140,54 @@ export type Database = {
           },
         ]
       }
+      custom_reminders: {
+        Row: {
+          active: boolean | null
+          created_at: string
+          delivered: boolean | null
+          id: string
+          notes: string | null
+          notification_id: Json
+          notify_at_time: string | null
+          notify_date: string | null
+          title: string
+          type: string
+          updated_at: string | null
+          user_id: string
+          weekdays: Json
+        }
+        Insert: {
+          active?: boolean | null
+          created_at?: string
+          delivered?: boolean | null
+          id?: string
+          notes?: string | null
+          notification_id: Json
+          notify_at_time?: string | null
+          notify_date?: string | null
+          title: string
+          type: string
+          updated_at?: string | null
+          user_id: string
+          weekdays: Json
+        }
+        Update: {
+          active?: boolean | null
+          created_at?: string
+          delivered?: boolean | null
+          id?: string
+          notes?: string | null
+          notification_id?: Json
+          notify_at_time?: string | null
+          notify_date?: string | null
+          title?: string
+          type?: string
+          updated_at?: string | null
+          user_id?: string
+          weekdays?: Json
+        }
+        Relationships: []
+      }
       disc_golf_course_holes: {
         Row: {
           course_id: string | null
@@ -512,21 +560,17 @@ export type Database = {
           exercise_id: string
           id: string
           position: number
-          reps: number | null
-          sets: number | null
           superset_id: string
           template_id: string
           user_id: string
         }
         Insert: {
           created_at?: string
-          exercise_id?: string
+          exercise_id: string
           id?: string
           position: number
-          reps?: number | null
-          sets?: number | null
           superset_id: string
-          template_id?: string
+          template_id: string
           user_id: string
         }
         Update: {
@@ -534,8 +578,6 @@ export type Database = {
           exercise_id?: string
           id?: string
           position?: number
-          reps?: number | null
-          sets?: number | null
           superset_id?: string
           template_id?: string
           user_id?: string
@@ -699,6 +741,7 @@ export type Database = {
           notes: string | null
           notify_at: string
           title: string
+          type: string
           user_id: string
         }
         Insert: {
@@ -708,6 +751,7 @@ export type Database = {
           notes?: string | null
           notify_at: string
           title: string
+          type: string
           user_id?: string
         }
         Update: {
@@ -717,6 +761,7 @@ export type Database = {
           notes?: string | null
           notify_at?: string
           title?: string
+          type?: string
           user_id?: string
         }
         Relationships: []
@@ -945,14 +990,17 @@ export type Database = {
         }
         Relationships: []
       }
-      feed_view7: {
+      feed_view9: {
         Row: {
           created_at: string | null
           delivered: boolean | null
           duration: number | null
           id: string | null
           notes: string | null
+          notification_id: Json | null
           notify_at: string | null
+          notify_at_time: string | null
+          notify_date: string | null
           title: string | null
           type: string | null
           user_id: string | null
@@ -967,7 +1015,10 @@ export type Database = {
           duration: number | null
           id: string | null
           notes: string | null
+          notification_id: Json | null
           notify_at: string | null
+          notify_at_time: string | null
+          notify_date: string | null
           pinned: boolean | null
           title: string | null
           type: string | null

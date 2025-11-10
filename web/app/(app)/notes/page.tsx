@@ -11,89 +11,81 @@ import toast from "react-hot-toast";
 import { useDebouncedCallback } from "use-debounce";
 import { updateFeed } from "@/app/(app)/lib/revalidateFeed";
 import { handleError } from "../utils/handleError";
+import { saveNotesToDB } from "../database/notes";
 
 export default function Notes() {
-  const draft =
-    typeof window !== "undefined"
-      ? JSON.parse(localStorage.getItem("notes_draft") || "null")
-      : null;
-
-  const [notes, setNotes] = useState(draft?.notes || "");
-  const [notesTitle, setNotesTitle] = useState(draft?.title || "");
+  const [notes, setNotes] = useState("");
+  const [title, setTitle] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
   const router = useRouter();
 
-  const saveNotes = async () => {
-    if (notes.length === 0) return;
-    setIsSaving(true);
-
-    try {
-      const res = await fetch("/api/notes/save-notes", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          title: notesTitle,
-          notes,
-        }),
-      });
-
-      if (!res.ok) {
-        setIsSaving(false);
-        throw new Error("Failed to save notes");
-      }
-
-      await res.json();
-
-      updateFeed();
-      router.push("/dashboard");
-      resetNotes();
-    } catch (error) {
-      console.error("Error saving notes:", error);
-      handleError(error, {
-        message: "Error saving notes",
-        route: "/api/notes/save-notes",
-        method: "POST",
-      });
-      toast.error("Failed to save notes. Please try again.");
-      setIsSaving(false);
+  useEffect(() => {
+    const draft = localStorage.getItem("notes_draft");
+    if (draft) {
+      const { title: savedTitle, notes: savedNotes } = JSON.parse(draft);
+      if (savedTitle) setTitle(savedTitle);
+      if (savedNotes) setNotes(savedNotes);
     }
-  };
+    setIsLoaded(true);
+  }, []);
 
   const saveDraft = useDebouncedCallback(() => {
-    if (notes.trim().length === 0 && notesTitle.trim().length === 0) {
+    if (!isLoaded) return;
+
+    if (notes.trim().length === 0 && title.trim().length === 0) {
       localStorage.removeItem("notes_draft");
     } else {
       const sessionDraft = {
-        title: notesTitle,
+        title,
         notes,
       };
       localStorage.setItem("notes_draft", JSON.stringify(sessionDraft));
     }
-  }, 1000); // Save every second
+  }, 500);
 
   useEffect(() => {
     saveDraft();
-  }, [notes, notesTitle, saveDraft]);
+  }, [notes, title, saveDraft]);
 
   const resetNotes = () => {
     localStorage.removeItem("notes_draft");
-    setNotesTitle("");
+    setTitle("");
     setNotes("");
+  };
+
+  const saveNotes = async () => {
+    if (notes.trim().length === 0) return;
+
+    setIsSaving(true);
+    try {
+      await saveNotesToDB({ title, notes });
+
+      await updateFeed();
+      router.push("/dashboard");
+      resetNotes();
+    } catch (error) {
+      setIsSaving(false);
+      handleError(error, {
+        message: "Error saving notes",
+        route: "server-action: saveNotesToDB",
+        method: "direct",
+      });
+      toast.error("Failed to save notes. Please try again.");
+    }
   };
 
   return (
     <>
       <div className="flex flex-col h-full w-full px-6 max-w-md mx-auto">
-        <div className="flex flex-col items-center mt-5 gap-5 flex-grow mb-10 h-full">
+        <div className="flex flex-col items-center mt-5 gap-5 grow mb-10 h-full">
           <p className="text-gray-100 text-lg text-center">
             Add your notes here
           </p>
           <div className="mb-5 w-full">
             <CustomInput
-              value={notesTitle}
-              setValue={setNotesTitle}
+              value={title}
+              setValue={setTitle}
               placeholder="Notes title..."
               label="Title..."
             />

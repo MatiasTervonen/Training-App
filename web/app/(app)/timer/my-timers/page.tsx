@@ -9,9 +9,9 @@ import useSWR, { mutate } from "swr";
 import toast from "react-hot-toast";
 import TimerCard from "../components/TimerCard";
 import { useTimerStore } from "../../lib/stores/timerStore";
-import { fetcher } from "@/app/(app)/lib/fetcher";
 import { timers } from "@/app/(app)/types/models";
 import { handleError } from "@/app/(app)/utils/handleError";
+import { deleteTimer } from "../../database/timer";
 
 export default function TimersPage() {
   const [expandedItem, setExpandedItem] = useState<timers | null>(null);
@@ -22,20 +22,11 @@ export default function TimersPage() {
     data: timer = [],
     error,
     isLoading,
-  } = useSWR<timers[]>("/api/timer/get-timer", fetcher, {
-    revalidateOnFocus: false,
-    revalidateOnReconnect: false,
-    revalidateIfStale: false,
-  });
+  } = useSWR<timers[]>("/api/timer/get-timer");
 
   const { startTimer, setActiveSession } = useTimerStore();
 
   const handleDeleteTimer = async (timerId: string) => {
-    const confirmDelete = confirm(
-      "Are you sure you want to delete this template? This action cannot be undone."
-    );
-    if (!confirmDelete) return;
-
     mutate(
       "/api/timer/get-timer",
       (currentTimers: timers[] = []) => {
@@ -45,23 +36,17 @@ export default function TimersPage() {
     );
 
     try {
-      const res = await fetch("/api/timer/delete-timer", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ item_id: timerId }),
-      });
-
-      if (!res.ok) {
-        throw new Error("Failed to delete timer");
-      }
-
-      await res.json();
+      await deleteTimer(timerId);
 
       mutate("/api/timer/get-timer");
+
+      toast.success("Timer deleted succesfully!");
     } catch (error) {
-      handleError(error);
+      handleError(error, {
+        message: "Error deleting timer",
+        route: "my-timers page",
+        method: "delete",
+      });
       toast.error("Failed to delete timer. Please try again.");
       mutate("/api/timer/get-timer");
     }
@@ -116,7 +101,7 @@ export default function TimersPage() {
           timer.map((timer: timers) => (
             <div
               key={timer.id}
-              className={`${russoOne.className} text-gray-100 text-center bg-blue-800 py-2 my-3 rounded-md shadow-xl border-2 border-blue-500 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95`}
+              className={`${russoOne.className} text-center bg-blue-800 py-2 my-3 rounded-md shadow-md border-2 border-blue-500 text-lg cursor-pointer hover:scale-105 transition-all duration-200`}
               onClick={() => setExpandedItem(timer)}
             >
               {timer.title}

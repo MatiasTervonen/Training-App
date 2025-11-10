@@ -12,35 +12,17 @@ import { formatDate } from "@/app/(app)/lib/formatDate";
 import toast from "react-hot-toast";
 import { updateFeed } from "@/app/(app)/lib/revalidateFeed";
 import { handleError } from "@/app/(app)/utils/handleError";
+import { saveWeightToDB } from "../../database/weight";
 
 export default function WorkoutAnalyticsPage() {
   const now = formatDate(new Date());
 
   const [weightTitle, setWeightTitle] = useState(`Weight - ${now}`);
   const [weightNotes, setWeightNotes] = useState("");
-  const [isSaving, setIsSaving] = useState(false);
   const [weight, setWeight] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
   const router = useRouter();
-
-  useEffect(() => {
-    if (weight.trim().length === 0 && weightTitle.trim().length === 0) {
-      localStorage.removeItem("weight_draft");
-    } else {
-      const sessionDraft = {
-        title: weightTitle,
-        notes: weightNotes,
-        weight,
-      };
-      localStorage.setItem("weight_draft", JSON.stringify(sessionDraft));
-    }
-  }, [weightTitle, weightNotes, weight]);
-
-  const resetWeight = () => {
-    localStorage.removeItem("weight_draft");
-    setWeightTitle("");
-    setWeightNotes("");
-    setWeight("");
-  };
 
   useEffect(() => {
     const draft = localStorage.getItem("weight_draft");
@@ -54,43 +36,60 @@ export default function WorkoutAnalyticsPage() {
       if (savedWeightNotes) setWeightNotes(savedWeightNotes);
       if (savedWeight) setWeight(savedWeight);
     }
-  }, [weightTitle, weightNotes, weight]);
+
+    setIsLoaded(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isLoaded) return;
+
+    if (weight.trim().length === 0 && weightNotes.trim().length === 0) {
+      localStorage.removeItem("weight_draft");
+    } else {
+      const sessionDraft = {
+        title: weightTitle,
+        notes: weightNotes,
+        weight,
+      };
+      localStorage.setItem("weight_draft", JSON.stringify(sessionDraft));
+    }
+  }, [weightTitle, weightNotes, weight, isLoaded]);
+
+  const resetWeight = () => {
+    localStorage.removeItem("weight_draft");
+    setWeightTitle("");
+    setWeightNotes("");
+    setWeight("");
+  };
 
   const saveWeight = async () => {
     const parsedWeight = Number(weight);
-    if (weight.length === 0 || isNaN(parsedWeight) || parsedWeight <= 0) {
+
+    if (isNaN(parsedWeight) || parsedWeight <= 0) {
       toast.error("Please enter a valid weight value");
       return;
     }
-    setIsSaving(true); // Start saving
+
+    setIsSaving(true);
 
     try {
-      const res = await fetch("/api/weight/save-weight", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          title: weightTitle,
-          notes: weightNotes,
-          weight: parsedWeight,
-        }),
+      await saveWeightToDB({
+        title: weightTitle,
+        notes: weightNotes,
+        weight: parsedWeight,
       });
 
-      if (!res.ok) {
-        setIsSaving(false);
-        throw new Error("Failed to save weight session");
-      }
-
-      await res.json();
-
-      updateFeed();
+      await updateFeed();
       router.push("/dashboard");
       resetWeight();
     } catch (error) {
-      handleError(error);
-      toast.error("Failed to save weight session. Please try again.");
       setIsSaving(false);
+      handleError(error, {
+        message: "Error saving weight",
+        route: "server-action: saveWeightToDB",
+        method: "direct",
+      });
+      toast.error("Failed to save weight session. Please try again.");
     }
   };
 
@@ -119,10 +118,10 @@ export default function WorkoutAnalyticsPage() {
             <input
               autoComplete="off"
               id="weight"
-              type="text"
-              inputMode="numeric"
+              type="number"
+              inputMode="decimal"
               placeholder="Enter your weight here..."
-              className="custom-input text-lg p-2 rounded-md border-2 border-gray-100 z-10  placeholder-gray-500  text-gray-100 bg-[linear-gradient(50deg,_#0f172a,_#1e293b,_#333333)] hover:border-blue-500 focus:outline-none focus:border-green-300"
+              className="custom-input text-lg p-2 rounded-md border-2 border-gray-100 z-10  placeholder-gray-500  text-gray-100 bg-[linear-gradient(50deg,#0f172a,#1e293b,#333333)] hover:border-blue-500 focus:outline-none focus:border-green-300"
               value={weight}
               onChange={(e) => setWeight(e.target.value)}
             />

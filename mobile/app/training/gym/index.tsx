@@ -221,7 +221,6 @@ export default function GymScreen() {
   };
 
   const logSetForExercise = (index: number) => {
-    console.log("logSetForExercise called", index, new Date().toISOString());
     const input = exerciseInputs[index];
     const exercise = exercises[index];
     const updated = [...exercises];

@@ -6,13 +6,13 @@ import Modal from "@/app/(app)/components/modal";
 import { useState } from "react";
 import { ExerciseEntry } from "@/app/(app)/types/session";
 import useSWR, { mutate } from "swr";
-import { fetcher } from "../../lib/fetcher";
 import toast from "react-hot-toast";
 import { full_gym_template } from "../../types/models";
 import TemplateCard from "@/app/(app)/components/cards/TemplateCard";
 import Spinner from "../../components/spinner";
 import GymTemplate from "@/app/(app)/components/expandSession/template";
 import { handleError } from "../../utils/handleError";
+import { deleteTemplate } from "../../database/template";
 
 type templateSummary = {
   id: string;
@@ -28,13 +28,11 @@ export default function TemplatesPage() {
   const router = useRouter();
 
   const {
-    data: templates = [],
+    data: templates,
     error,
     isLoading,
-  } = useSWR<templateSummary[]>("/api/gym/get-templates", fetcher, {
-    revalidateOnFocus: false,
-    revalidateOnReconnect: false,
-    revalidateIfStale: false,
+  } = useSWR<templateSummary[]>("/api/gym/get-templates", {
+    keepPreviousData: true,
   });
 
   const startWorkout = (template: full_gym_template) => {
@@ -74,24 +72,14 @@ export default function TemplatesPage() {
     );
 
     try {
-      const res = await fetch("/api/gym/delete-template", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ item_id: templateId }),
-      });
+      await deleteTemplate(templateId);
 
-      if (!res.ok) {
-        throw new Error("Failed to delete template");
-      }
-
-      await res.json();
+      toast.success("Template deleted successfully!");
     } catch (error) {
       handleError(error, {
         message: "Error deleting template",
-        route: "/api/gym/delete-template",
-        method: "POST",
+        route: "templates page",
+        method: "delete",
       });
       toast.error("Failed to delete template. Please try again.");
       mutate("/api/gym/get-templates");
@@ -104,13 +92,7 @@ export default function TemplatesPage() {
     error: TemplateSessionError,
     isLoading: isLoadingTemplateSession,
   } = useSWR<full_gym_template>(
-    templateId ? `/api/gym/get-full-template?id=${templateId}` : null,
-    fetcher,
-    {
-      revalidateOnFocus: false,
-      revalidateOnReconnect: false,
-      revalidateIfStale: false,
-    }
+    templateId ? `/api/gym/get-full-template?id=${templateId}` : null
   );
 
   return (
@@ -120,7 +102,7 @@ export default function TemplatesPage() {
           My Templates
         </h1>
 
-        {!error && isLoading && <TemplateSkeleton count={6} />}
+        {!templates && isLoading && <TemplateSkeleton count={6} />}
 
         {error && (
           <p className="text-red-500 text-center">
@@ -128,7 +110,7 @@ export default function TemplatesPage() {
           </p>
         )}
 
-        {!isLoading && templates.length === 0 && (
+        {!isLoading && templates?.length === 0 && (
           <p className="text-gray-300 text-center">
             No templates found. Create a new template to get started!
           </p>

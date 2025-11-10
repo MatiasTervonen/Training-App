@@ -7,6 +7,7 @@ import SetInput from "./SetInput";
 import ExerciseTypeSelect from "./ExerciseTypeSelect";
 import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
 import { ExerciseEntry, ExerciseInput } from "../../types/session";
+import toast from "react-hot-toast";
 
 type ExerciseCardProps = {
   index: number;
@@ -210,7 +211,26 @@ export default function ExerciseCard({
           </div>
           <div className="flex items-center justify-center gap-4 my-6">
             <button
-              onClick={() => onAddSet(index)}
+              onClick={() => {
+                if (isCardioExercise(exercise)) {
+                  const isTimeEmpty =
+                    !input.time_min || input.time_min.trim() === "";
+
+                  if (isTimeEmpty) {
+                    toast.error("Missing data, please fill time (min).");
+                    return;
+                  }
+                } else {
+                  const isRepsEmpty = !input.reps || input.reps.trim() === "";
+
+                  if (isRepsEmpty) {
+                    toast.error("Missing data, please fill reps.");
+                    return;
+                  }
+                }
+
+                onAddSet(index);
+              }}
               className="px-10 bg-blue-900 py-2 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-105 transition-all duration-200"
             >
               Add Set

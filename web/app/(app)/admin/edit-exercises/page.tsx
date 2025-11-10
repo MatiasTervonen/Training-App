@@ -10,6 +10,9 @@ import DeleteSessionBtn from "@/app/(app)/ui/deleteSessionBtn";
 import { gym_exercises } from "../../types/models";
 import FullScreenLoader from "../../components/FullScreenLoader";
 import { handleError } from "../../utils/handleError";
+import { deleteExercise, editExercise } from "../../database/gym";
+import { mutate } from "swr";
+import { fetcher } from "../../lib/fetcher";
 
 export default function EditExercises() {
   const [name, setName] = useState("");
@@ -27,10 +30,13 @@ export default function EditExercises() {
       toast.error("Please fill in all fields.");
       return;
     }
+
+    if (name.length >= 50) return;
+
     setIsSaving(true);
 
     const exerciseData = {
-      id: selectedExercise?.id,
+      id: selectedExercise!.id,
       name,
       language,
       equipment,
@@ -39,27 +45,20 @@ export default function EditExercises() {
     };
 
     try {
-      const response = await fetch("/api/gym/edit-exercise", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(exerciseData),
-      });
+      await editExercise(exerciseData);
 
-      if (!response.ok) {
-        throw new Error("Failed to save exercise");
-      }
-
-      await response.json();
-
+      await mutate(
+        "/api/gym/exercises",
+        async () => fetcher("/api/gym/exercises"),
+        false
+      );
       toast.success("Exercise updated successfully!");
       resetFields();
     } catch (error) {
       handleError(error, {
         message: "Error updating exercise",
-        route: "/api/gym/edit-exercise",
-        method: "POST",
+        route: "delete exercise Admin",
+        method: "delete",
       });
       toast.error("Failed to update exercise. Please try again.");
     } finally {
@@ -68,30 +67,28 @@ export default function EditExercises() {
   };
 
   const handleDeleteExercise = async (exerciseId: string) => {
+    setIsSaving(true);
+
     try {
-      const response = await fetch("/api/gym/delete-exercise", {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ item_id: exerciseId }),
-      });
+      await deleteExercise(exerciseId);
 
-      if (!response.ok) {
-        throw new Error("Failed to delete exercise");
-      }
-
-      await response.json();
+      await mutate(
+        "/api/gym/exercises",
+        async () => fetcher("/api/gym/exercises"),
+        false
+      );
       toast.success("Exercise deleted successfully!");
       setSelectedExercise(null);
       setResetTrigger((prev) => prev + 1);
     } catch (error) {
       handleError(error, {
         message: "Error deleting exercise",
-        route: "/api/gym/delete-exercise",
+        route: "delete exercise Admin",
         method: "DELETE",
       });
       toast.error("Failed to delete exercise. Please try again.");
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -116,7 +113,7 @@ export default function EditExercises() {
   };
 
   return (
-    <div className="h-full bg-slate-800 text-gray-100">
+    <div className="h-full bg-slate-800">
       {!selectedExercise && (
         <ExerciseDropdown
           onSelect={(exercise) => {
@@ -128,13 +125,22 @@ export default function EditExercises() {
       <div>
         {selectedExercise && (
           <>
-            <div className="flex flex-col px-4 gap-5 mt-10 max-w-md mx-auto">
-              <CustomInput
-                placeholder="Exercise name"
-                label="Exercise Name"
-                value={name}
-                setValue={setName}
-              />
+            <div className="flex flex-col p-4 gap-5  max-w-md mx-auto">
+              <h1 className="text-2xl text-center my-5">Edit exercise</h1>
+              <div>
+                <CustomInput
+                  value={name}
+                  setValue={setName}
+                  placeholder="Exercise name"
+                  label="Exercise Name"
+                  maxLength={50}
+                />
+                {name.length >= 50 ? (
+                  <p className="text-yellow-400 mt-2">
+                    Reached the limit (50 chars max)
+                  </p>
+                ) : null}
+              </div>
               <ExerciseTypeSelect
                 value={language}
                 onChange={setLanguage}
@@ -215,7 +221,7 @@ export default function EditExercises() {
                   onClick={() => {
                     resetFields();
                   }}
-                  className="mb-10 bg-red-800 py-2 rounded-md shadow-xl border-2 border-red-500 text-gray-100 text-lg cursor-pointer hover:bg-red-700 hover:scale-95"
+                  className="mb-10 bg-red-800 py-2 rounded-md shadow-xl border-2 border-red-500 text-gray-100 text-lg cursor-pointer hover:bg-red-700 hover:scale-105 transition-all duration-200"
                 >
                   Cancel
                 </button>

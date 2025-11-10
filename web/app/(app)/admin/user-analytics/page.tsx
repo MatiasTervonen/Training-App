@@ -50,7 +50,7 @@ export default function Sessions() {
 
   return (
     <div className="relative max-w-7xl mx-auto h-full px-4 mt-5">
-      <h1 className="text-gray-100 text-2xl">User Analytics</h1>
+      <h1 className="text-2xl">User Analytics</h1>
 
       <div className="flex items-center justify-between mb-4">
         <div>
@@ -229,7 +229,7 @@ export default function Sessions() {
                               type="text"
                               spellCheck={false}
                               placeholder="Ban reason"
-                              className="py-1 pl-2 rounded-md border-2 border-gray-100 z-10  placeholder-gray-500  text-gray-100 bg-[linear-gradient(50deg,_#0f172a,_#1e293b,_#333333)] hover:border-blue-500 focus:outline-none focus:border-green-300"
+                              className="py-1 pl-2 rounded-md border-2 border-gray-100 z-10  placeholder-gray-500  text-gray-100 bg-[linear-gradient(50deg,#0f172a,#1e293b,#333333)] hover:border-blue-500 focus:outline-none focus:border-green-300"
                               onChange={(e) => {
                                 const reason = e.target.value;
                                 setReason(reason);

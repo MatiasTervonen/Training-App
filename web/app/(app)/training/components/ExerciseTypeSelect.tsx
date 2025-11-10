@@ -24,7 +24,7 @@ export default function ExerciseTypeSelect({
       {label && <label className="text-gray-300 block mb-1">{label}</label>}
       <div className="relative">
         <select
-          className="appearance-none  p-2 pr-10 rounded-md border-2 border-gray-100 z-10 w-full bg-slate-900  placeholder-gray-500 text-gray-100 bg-[linear-gradient(50deg,_#0f172a,_#1e293b,_#333333)] hover:border-blue-500 focus:outline-none focus:border-green-300"
+          className="appearance-none  p-2 pr-10 rounded-md border-2 border-gray-100 z-10 w-full bg-slate-900  placeholder-gray-500 text-gray-100 bg-[linear-gradient(50deg,#0f172a,#1e293b,#333333)] hover:border-blue-500 focus:outline-none focus:border-green-300"
           value={value}
           onChange={(e) => onChange(e.target.value)}
         >

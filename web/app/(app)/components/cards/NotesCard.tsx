@@ -1,10 +1,10 @@
 import { NotebookPen, Ellipsis, SquareArrowOutUpRight } from "lucide-react";
 import DropdownMenu from "../dropdownMenu";
 import { formatDate } from "@/app/(app)/lib/formatDate";
-import { Feed_item } from "@/app/(app)/types/session";
+import { notes } from "../../types/models";
 
 type Props = {
-  item: Feed_item;
+  item: notes;
   pinned: boolean;
   onTogglePin: () => void;
   onDelete: () => void;

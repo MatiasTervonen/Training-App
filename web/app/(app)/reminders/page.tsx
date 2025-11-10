@@ -14,6 +14,7 @@ import DateTimePicker from "@/app/(app)/components/DateTimePicker";
 import { handleError } from "../utils/handleError";
 import InfoModal from "../components/InfoModal";
 import LinkButton from "../ui/LinkButton";
+import { saveReminderToDB } from "../database/reminder";
 
 export default function Notes() {
   const draft =
@@ -28,9 +29,8 @@ export default function Notes() {
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
 
-
   // Check for push notification subscription
-  
+
   useEffect(() => {
     async function checkSubscription() {
       if ("serviceWorker" in navigator && "PushManager" in window) {
@@ -59,26 +59,12 @@ export default function Notes() {
     setIsSaving(true);
 
     try {
-      const res = await fetch("/api/reminders/save-reminders", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          title: title,
-          notes,
-          type: "global",
-          notify_at: notifyAt ? notifyAt.toISOString() : null,
-        }),
+      await saveReminderToDB({
+        title: title,
+        notes,
+        type: "global",
+        notify_at: notifyAt.toISOString(),
       });
-
-      if (!res.ok) {
-        console.log("Failed to save reminder:", res.statusText);
-        setIsSaving(false);
-        throw new Error("Failed to save reminder");
-      }
-
-      await res.json();
 
       updateFeed();
       router.push("/dashboard");
@@ -105,7 +91,7 @@ export default function Notes() {
       };
       localStorage.setItem("reminder_draft", JSON.stringify(sessionDraft));
     }
-  }, 1000); // Save every second
+  }, 500); 
 
   useEffect(() => {
     saveDraft();
@@ -121,7 +107,7 @@ export default function Notes() {
   return (
     <>
       <div className="flex flex-col h-full w-full px-6 max-w-md mx-auto">
-        <div className="flex flex-col items-center mt-5 gap-5 flex-grow mb-10 h-full">
+        <div className="flex flex-col items-center mt-5 gap-5 grow mb-10 h-full">
           <p className="text-lg text-center">Add your reminders here</p>
           <div className="w-full">
             <CustomInput
@@ -139,7 +125,7 @@ export default function Notes() {
               placeholder="Select date and time (required)"
             />
           </div>
-          <div className="flex w-full flex-grow z-0">
+          <div className="flex w-full grow z-0">
             <NotesInput
               notes={notes}
               setNotes={setNotes}

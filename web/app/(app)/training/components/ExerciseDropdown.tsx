@@ -102,7 +102,7 @@ export default function ExerciseDropdown({ onSelect, resetTrigger }: Props) {
       <div className="flex flex-col px-2 w-full h-[calc(100dvh-74px)] z-50">
         <div className="flex flex-col mt-8 px-20">
           <input
-            className="p-2 rounded-md border-2 border-gray-100 z-10 placeholder-gray-500 text-gray-100 bg-gray-900 hover:border-blue-500 focus:outline-none focus:border-green-300"
+            className="p-2 rounded-md border-2 border-gray-100 z-10 placeholder-gray-500 bg-gray-900 hover:border-blue-500 focus:outline-none focus:border-green-300"
             type="text"
             value={searchQuery}
             placeholder="Search exercises..."
@@ -125,9 +125,7 @@ export default function ExerciseDropdown({ onSelect, resetTrigger }: Props) {
                 <div className="h-[calc(100dvh-74px)] flex flex-col gap-6 items-center justify-center z-50 text-center">
                   {isLoading && (
                     <>
-                      <p className="text-gray-100 text-xl">
-                        Loading exercises...
-                      </p>
+                      <p className="text-xl">Loading exercises...</p>
                       <Spinner size="h-10 w-10" />
                     </>
                   )}
@@ -141,18 +139,20 @@ export default function ExerciseDropdown({ onSelect, resetTrigger }: Props) {
                 searchQuery.length === 0 &&
                 recentExercisesList.length > 0 && (
                   <div className="bg-slate-900">
-                    <h2 className="text-gray-100 text-center bg-slate-600">
+                    <h2 className="text-center bg-slate-600">
                       Recent Exercises
                     </h2>
                     {recentExercisesList.map((exercise) => (
                       <button
                         key={exercise.id}
-                        className="w-full text-left px-4 py-2 cursor-pointer z-40 text-gray-100 hover:bg-slate-600 hover:text-gray-100 border-b"
+                        className="w-full text-left px-4 py-2 cursor-pointer z-40 hover:bg-slate-800  border-b"
                         onClick={() => handleSelectExercise(exercise)}
                       >
                         <div className="flex justify-between flex-col">
                           <div className="flex justify-between items-center">
-                            <span>{exercise.name} </span>
+                            <span className="truncate mr-5">
+                              {exercise.name}
+                            </span>
                             <span className="text-sm text-gray-300">
                               {exercise.muscle_group}
                             </span>
@@ -167,16 +167,14 @@ export default function ExerciseDropdown({ onSelect, resetTrigger }: Props) {
                 )
               )}
 
-              <h2 className="text-gray-100 text-center bg-slate-600">
-                All Exercises
-              </h2>
+              <h2 className="text-center bg-slate-600">All Exercises</h2>
               {(searchQuery.length > 0 ? filteredExercises : allExercises).map(
                 (exercise, index) => {
                   return (
                     <button
                       key={index}
                       onClick={() => handleSelectExercise(exercise)}
-                      className={`w-full text-left px-4 py-2 cursor-pointer z-40 text-gray-100 hover:bg-slate-600 hover:text-gray-100 border-b ${
+                      className={`w-full text-left px-4 py-2 cursor-pointer z-40  hover:bg-slate-800  border-b ${
                         selectedIndex === index
                           ? "bg-slate-600 hover:bg-slate-500"
                           : ""
@@ -184,7 +182,7 @@ export default function ExerciseDropdown({ onSelect, resetTrigger }: Props) {
                     >
                       <div className="flex flex-col ">
                         <div className="flex justify-between items-center">
-                          <p>{exercise.name} </p>
+                          <p className="truncate mr-5">{exercise.name}</p>
                           <p className="text-sm text-gray-300">
                             {exercise.muscle_group}
                           </p>

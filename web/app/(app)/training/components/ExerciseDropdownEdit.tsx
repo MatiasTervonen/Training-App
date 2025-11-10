@@ -127,7 +127,7 @@ export default function ExerciseDropdownEdit({
                   </p>
                 )}
                 {exercises?.length === 0 && (
-                  <div className="flex flex-col gap-3 text-gray-100 text-lg px-5">
+                  <div className="flex flex-col gap-3 text-lg px-5">
                     <p>No exercises found.</p>
                     <p>Get started by adding a new exercise!</p>
                   </div>
@@ -135,7 +135,7 @@ export default function ExerciseDropdownEdit({
               </div>
             ) : (
               <>
-                <h2 className="text-gray-100 text-center bg-slate-600">
+                <h2 className=" text-center bg-slate-600">
                   All Exercises
                 </h2>
                 {(searchQuery.length > 0
@@ -145,7 +145,7 @@ export default function ExerciseDropdownEdit({
                   <button
                     key={index}
                     onClick={() => handleSelectExercise(exercise)}
-                    className={`w-full text-left px-4 py-2 cursor-pointer z-40 text-gray-100 hover:bg-slate-600 hover:text-gray-100 border-b ${
+                    className={`w-full text-left px-4 py-2 cursor-pointer z-40 hover:bg-slate-800  border-b ${
                       selectedIndex === index
                         ? "bg-slate-600 hover:bg-slate-500"
                         : ""
@@ -153,7 +153,7 @@ export default function ExerciseDropdownEdit({
                   >
                     <div className="flex flex-col ">
                       <div className="flex justify-between items-center">
-                        <p>{exercise.name} </p>
+                        <p className="truncate mr-5">{exercise.name} </p>
                         <p className="text-sm text-gray-300">
                           {exercise.muscle_group}
                         </p>

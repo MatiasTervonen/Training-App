@@ -7,27 +7,28 @@ import SaveButton from "@/app/(app)/ui/save-button";
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import { mutate } from "swr";
 import toast from "react-hot-toast";
-import { Feed_item } from "@/app/(app)/types/session";
 import DateTimePicker from "@/app/(app)/components/DateTimePicker";
 import { Bell } from "lucide-react";
 import { handleError } from "../../utils/handleError";
 import { formatDateTime } from "../../lib/formatDate";
+import { editReminder } from "../../database/reminder";
+import { reminders } from "../../types/models";
 
 type Props = {
-  reminder: Feed_item;
+  reminder: reminders;
   onClose: () => void;
   onSave?: () => void;
 };
 
 type FeedItem = {
   table: "reminders";
-  item: Feed_item;
+  item: reminders;
   pinned: boolean;
 };
 
 export default function EditReminder({ reminder, onClose, onSave }: Props) {
-  const [title, setValue] = useState(reminder.title);
-  const [notes, setNotes] = useState(reminder.notes);
+  const [title, setValue] = useState(reminder.title ?? "");
+  const [notes, setNotes] = useState(reminder.notes ?? "");
   const [notify_at, setNotify_at] = useState(
     reminder.notify_at ? new Date(reminder.notify_at) : null
   );
@@ -49,7 +50,7 @@ export default function EditReminder({ reminder, onClose, onSave }: Props) {
                 ...item.item,
                 title,
                 notes,
-                notify_at,
+                notify_at: notify_at!.toISOString(),
               },
             };
           }
@@ -60,24 +61,12 @@ export default function EditReminder({ reminder, onClose, onSave }: Props) {
     );
 
     try {
-      const res = await fetch("/api/reminders/edit-reminders", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          id: reminder.id,
-          title,
-          notes,
-          notify_at: notify_at ? notify_at.toISOString() : null,
-        }),
+      await editReminder({
+        id: reminder.id,
+        title,
+        notes,
+        notify_at: notify_at!.toISOString(),
       });
-
-      if (!res.ok) {
-        throw new Error("Failed to update weight session");
-      }
-
-      await res.json();
 
       await onSave?.();
       onClose();
@@ -124,7 +113,7 @@ export default function EditReminder({ reminder, onClose, onSave }: Props) {
               }
             />
           </div>
-          <div className="flex w-full flex-grow">
+          <div className="flex w-full grow">
             <NotesInput
               notes={notes || ""}
               setNotes={setNotes}

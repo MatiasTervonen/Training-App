@@ -7,7 +7,6 @@ import { useInView } from "react-intersection-observer";
 import FeedCard from "@/app/(app)/components/FeedCard";
 import { Pin } from "lucide-react";
 import EditNote from "@/app/(app)/ui/editSession/EditNotes";
-import EditGym from "@/app/(app)/ui/editSession/EditGym";
 import GymSession from "@/app/(app)/components/expandSession/gym";
 import useSWR from "swr";
 import Spinner from "@/app/(app)/components/spinner";
@@ -26,18 +25,18 @@ import EditTodo from "@/app/(app)/ui/editSession/EditTodo";
 import ReminderSession from "../../components/expandSession/reminder";
 import EditReminder from "@/app/(app)/ui/editSession/EditReminder";
 import { handleError } from "../../utils/handleError";
+import { useRouter } from "next/navigation";
+import { deleteSession } from "../../database/feed";
+import { pinItem, unpinItem } from "../../database/pinned";
+import { FeedCardProps } from "@/app/(app)/types/models";
 
-
-type FeedItem = {
-  table: "notes" | "weight" | "gym_sessions" | "todo_lists" | "reminders";
-  item: Feed_item;
-  pinned: boolean;
-};
+type FeedItem = FeedCardProps;
 
 type FeedResponse = {
   feed: Feed_item[];
   nextPage: number | null;
 };
+
 
 export default function SessionFeed() {
   const [expandedItem, setExpandedItem] = useState<FeedItem | null>(null);
@@ -46,6 +45,8 @@ export default function SessionFeed() {
     rootMargin: "200px",
   });
   const [editingItem, setEditingItem] = useState<FeedItem | null>(null);
+
+  const router = useRouter();
 
   const loadingMoreRef = useRef(false);
 
@@ -107,7 +108,7 @@ export default function SessionFeed() {
           table: item.type as FeedItem["table"],
           item: { ...item, id: getCanonicalId(item) },
           pinned: item.pinned,
-        } as FeedItem;
+        } as unknown as FeedItem;
       })
     );
   }, [data]);
@@ -129,13 +130,9 @@ export default function SessionFeed() {
 
   const togglePin = async (
     item_id: string,
-    table: string,
+    table: "notes" | "gym_sessions" | "weight" | "todo_lists" | "reminders",
     isPinned: boolean
   ) => {
-    const endpoint = isPinned
-      ? "/api/pinned/unpin-items"
-      : "/api/pinned/pin-items";
-
     const snapshot = data
       ? data.map((page) => ({
           ...page,
@@ -161,19 +158,10 @@ export default function SessionFeed() {
     );
 
     try {
-      const res = await fetch(endpoint, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          item_id: item_id,
-          table,
-        }),
-      });
-
-      if (!res.ok) {
-        throw new Error("Failed to toggle pin");
+      if (isPinned) {
+        await unpinItem({ item_id, table });
+      } else {
+        await pinItem({ item_id, table });
       }
 
       toast.success(
@@ -182,15 +170,18 @@ export default function SessionFeed() {
     } catch (error) {
       handleError(error, {
         message: "Failed to toggle pin",
-        route: "/api/pinned/toggle-pin",
-        method: "POST",
+        route: "server-action: pinSession/sessionFeed",
+        method: "direct",
       });
       toast.error("Failed to toggle pin");
       mutateFeed(snapshot, { revalidate: false });
     }
   };
 
-  const handleDelete = async (item_id: string, table: string) => {
+  const handleDelete = async (
+    item_id: string,
+    table: "notes" | "gym_sessions" | "weight" | "todo_lists" | "reminders"
+  ) => {
     const confirmDetlete = confirm(
       "Are you sure you want to delete this session?"
     );
@@ -221,24 +212,14 @@ export default function SessionFeed() {
     );
 
     try {
-      const res = await fetch("/api/delete-session", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ item_id, table }),
-      });
-
-      if (!res.ok) {
-        throw new Error("Failed to delete session");
-      }
+      await deleteSession({ item_id, table });
 
       toast.success("Item has been deleted successfully.");
     } catch (error) {
       handleError(error, {
         message: "Failed to delete session",
-        route: "/api/delete-session",
-        method: "POST",
+        route: "server-action: deleteSession",
+        method: "direct",
       });
       toast.error("Failed to delete session");
       mutateFeed(snapshot, { revalidate: false });
@@ -268,7 +249,6 @@ export default function SessionFeed() {
     data: GymSessionFull,
     error: GymSessionError,
     isLoading: isLoadingGymSession,
-    mutate: mutateFullSession,
   } = useSWR<full_gym_session>(
     gymId ? `/api/gym/get-full-gym-session?id=${gymId}` : null,
     fetcher,
@@ -298,7 +278,7 @@ export default function SessionFeed() {
     <>
       <div
         ref={containerRef}
-        className="max-w-3xl mx-auto relative bg-gradient-to-b from-slate-950 via-slate-900 to-slate-800  px-5 pt-3 pb-20 text-gray-100 overflow-y-auto touch-pan-y"
+        className="max-w-3xl mx-auto relative bg-linear-to-b from-slate-950 via-slate-900 to-slate-800  px-5 pt-3 pb-20 text-gray-100 overflow-y-auto touch-pan-y"
       >
         <div
           className="flex items-center justify-center text-white transition-all"
@@ -354,7 +334,11 @@ export default function SessionFeed() {
                         handleDelete(feedItem.item.id!, feedItem.table)
                       }
                       onEdit={() => {
-                        setEditingItem(feedItem);
+                        if (feedItem.table === "gym_sessions") {
+                          router.push(`/training/gym/${feedItem.item.id}/edit`);
+                        } else {
+                          setEditingItem(feedItem);
+                        }
                       }}
                     />
                   </div>
@@ -364,7 +348,7 @@ export default function SessionFeed() {
 
             {unpinnedFeed.map((feedItem) => {
               return (
-                <div className="mt-[32px]" key={feedItem.item.id}>
+                <div className="mt-8" key={feedItem.item.id}>
                   <FeedCard
                     {...feedItem}
                     onExpand={() => {
@@ -381,7 +365,11 @@ export default function SessionFeed() {
                       handleDelete(feedItem.item.id!, feedItem.table)
                     }
                     onEdit={() => {
-                      setEditingItem(feedItem);
+                      if (feedItem.table === "gym_sessions") {
+                        router.push(`/training/gym/${feedItem.item.id}/edit`);
+                      } else {
+                        setEditingItem(feedItem);
+                      }
                     }}
                   />
                 </div>
@@ -480,35 +468,6 @@ export default function SessionFeed() {
                   setEditingItem(null);
                 }}
               />
-            )}
-            {editingItem.table === "gym_sessions" && (
-              <>
-                {isLoadingGymSession ? (
-                  <div className="flex flex-col gap-5 items-center justify-center pt-40">
-                    <p>Loading gym session details...</p>
-                    <Spinner />
-                  </div>
-                ) : GymSessionError ? (
-                  <p className="text-center text-lg mt-10">
-                    Failed to load gym session details. Please try again later.
-                  </p>
-                ) : (
-                  GymSessionFull && (
-                    <EditGym
-                      gym_session={GymSessionFull}
-                      onClose={() => setEditingItem(null)}
-                      onSave={async () => {
-                        await Promise.all([
-                          mutateFeed(),
-                          mutateFullSession?.(),
-                        ]);
-
-                        setEditingItem(null);
-                      }}
-                    />
-                  )
-                )}
-              </>
             )}
             {editingItem.table === "todo_lists" && (
               <>

@@ -2,10 +2,10 @@ import { Scale, Ellipsis, SquareArrowOutUpRight } from "lucide-react";
 import DropdownMenu from "../dropdownMenu";
 import { formatDate } from "@/app/(app)/lib/formatDate";
 import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
-import { Feed_item } from "@/app/(app)/types/session";
+import { weight } from "../../types/models";
 
 type Props = {
-  item: Feed_item;
+  item: weight;
   pinned: boolean;
   onTogglePin: () => void;
   onDelete: () => void;
@@ -94,7 +94,7 @@ export default function WeightCard({
 
           <div>
             <p className={`${pinned ? "text-slate-900" : "text-gray-100"}`}>
-              {formatDate(item.created_at!)}
+              {formatDate(item.created_at)}
             </p>
           </div>
         </div>

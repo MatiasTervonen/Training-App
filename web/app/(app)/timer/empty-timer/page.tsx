@@ -8,6 +8,7 @@ import NotesInput from "../../ui/NotesInput";
 import Timer from "../../components/timer";
 import { CircleX, RotateCcw } from "lucide-react";
 import { useTimerStore } from "../../lib/stores/timerStore";
+import DeleteSessionBtn from "../../ui/deleteSessionBtn";
 
 export default function TimerPage() {
   const draft =
@@ -243,16 +244,15 @@ export default function TimerPage() {
           <div className="flex flex-col gap-5 items-center justify-center mb-5 mt-10">
             <button
               onClick={handleStartTimer}
-              className="flex items-center justify-center w-full gap-2 bg-blue-800 py-2 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95"
+              className="w-full gap-2 bg-blue-800 py-2 rounded-md shadow-md border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-105 transition-all duration-200"
             >
               Start Timer
             </button>
-            <button
-              className="w-full bg-red-600 border-2 border-red-400 py-2 shadow-xl rounded-md cursor-pointer hover:scale-95 hover:bg-red-500"
-              onClick={handleReset}
-            >
-              Cancel
-            </button>
+            <DeleteSessionBtn
+              onDelete={handleReset}
+              label="Cancel"
+              confirmMessage="Are you sure you want to cancel this timer?"
+            />
           </div>
         </div>
       )}

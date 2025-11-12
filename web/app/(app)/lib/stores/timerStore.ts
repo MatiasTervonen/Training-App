@@ -18,6 +18,7 @@ interface TimerState {
   setActiveSession: (session: ActiveSession | null) => void;
   startTimer: (totalDuration: number) => void;
   stopTimer: () => void;
+  clearEverything: () => void;
   pauseTimer: () => void;
   resumeTimer: () => void;
   setAlarmFired: (fired: boolean) => void;
@@ -65,6 +66,21 @@ export const useTimerStore = create<TimerState>()(
       },
 
       stopTimer: () => {
+        if (interval) {
+          clearInterval(interval);
+          interval = null;
+        }
+
+        set((state) => ({
+          isRunning: false,
+          elapsedTime: state.totalDuration,
+          alarmFired: false,
+          activeSession: null,
+          startTimestamp: null,
+        }));
+      },
+
+      clearEverything: () => {
         if (interval) {
           clearInterval(interval);
           interval = null;

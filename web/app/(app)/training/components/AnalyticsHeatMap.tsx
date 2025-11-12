@@ -36,7 +36,7 @@ export default function AnalyticsHeatMap({
   return (
     <>
       <HeatMap
-        width={200}
+        width={150}
         value={sessionData}
         weekLabels={["", "Mon", "", "Wed", "", "Fri", ""]}
         monthLabels={[

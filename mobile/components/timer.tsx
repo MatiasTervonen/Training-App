@@ -1,6 +1,6 @@
 import { CirclePlay, CirclePause } from "lucide-react-native";
 import { useTimerStore } from "@/lib/stores/timerStore";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { View, TouchableOpacity, AppState, Dimensions } from "react-native";
 import Animated, {
   useSharedValue,
@@ -9,7 +9,6 @@ import Animated, {
   withTiming,
   interpolateColor,
 } from "react-native-reanimated";
-import * as ScreenOrientation from "expo-screen-orientation";
 
 type ActiveSession = {
   label: string;
@@ -131,9 +130,7 @@ export default function Timer({
   };
 
   return (
-    <View
-      className={`flex-row gap-2 items-center ${className}`}
-    >
+    <View className={`flex-row gap-2 items-center ${className}`}>
       <View
         className="items-center"
         style={{ width: fullWidth ? screenWidth * 0.95 : "auto" }}

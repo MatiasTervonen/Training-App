@@ -10,6 +10,7 @@ import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
 import ProfilePicture from "@/app/(app)/menu/components/profile-picture";
 import { handleError } from "@/app/(app)/utils/handleError";
 import { fileTypeFromBlob } from "file-type";
+import { saveSettings } from "../../database/settings";
 
 export default function Settings() {
   const [isSaving, setIsSaving] = useState(false);
@@ -94,7 +95,7 @@ export default function Settings() {
       return;
     }
 
-    const profilePictureUrl = uploadedProfilePic ?? profilePicZ;
+    const profilePictureUrl = uploadedProfilePic ?? profilePicZ ?? null;
 
     const payload = {
       display_name: userName,
@@ -103,27 +104,24 @@ export default function Settings() {
     };
 
     try {
-      const res = await fetch("/api/settings/save-settings", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
-
-      if (!res.ok) {
-        throw new Error("Failed to update settings");
-      }
+      await saveSettings(payload);
 
       setPreferences(payload);
       toast.success("Settings updated successfully!");
     } catch (error) {
+      console.log("error", error);
       handleError(error, {
         message: "Error updating settings",
         route: "/api/settings/save-settings",
         method: "POST",
       });
-      toast.error("Failed to update settings. Please try again.");
+      if (error instanceof Error) {
+        if (error.message === "Username is already taken!") {
+          toast.error("Username is already taken. Please choose another.");
+        } else {
+          toast.error("Failed to update settings. Please try again.");
+        }
+      }
     } finally {
       setIsSaving(false);
     }
@@ -166,19 +164,14 @@ export default function Settings() {
           <CustomInput
             label="User Name"
             placeholder="Enter your user name..."
+            spellCheck={false}
             value={userName}
             setValue={(value) =>
-              setUserName(
-                value
-                  .toLowerCase()
-                  .replace(/[^a-z0-9_]/g, "")
-                  .slice(0, 15)
-              )
+              setUserName(value.replace(/[^a-zA-Z0-9_]/g, "").slice(0, 15))
             }
           />
           <p className="text-sm text-gray-500 mt-2">
-            Max 15 characters. Only lowercase letters, numbers, and
-            &quot;_&quot; allowed.
+            Max 15 characters. Only letters numbers, and &quot;_&quot; allowed.
           </p>
         </div>
         <div className="mt-5">
@@ -218,7 +211,7 @@ export default function Settings() {
               const isTaken = await isUserNameTaken(userName);
               if (isTaken) {
                 toast.error(
-                  "User name is already taken. Please choose another."
+                  "Username is already taken. Please choose another."
                 );
                 return;
               }

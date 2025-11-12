@@ -28,10 +28,12 @@ export async function GET(req: NextRequest) {
     );
   }
 
+  const allLowerUserName = userName.toLowerCase();
+
   const { data: userData, error } = await supabase
     .from("users")
     .select("display_name")
-    .ilike("display_name", userName)
+    .eq("display_name", allLowerUserName)
     .neq("id", user.sub) // Ensure we don't check against the current user's name
     .single();
 

@@ -1,14 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import NotesInput from "@/app/(app)/ui/NotesInput";
-import CustomInput from "@/app/(app)/ui/CustomInput";
 import SaveButton from "@/app/(app)/ui/save-button";
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import toast from "react-hot-toast";
 import { full_todo_session } from "../../types/models";
 import { generateUUID } from "../../lib/generateUUID";
-import { handleError } from "../../utils/handleError";
+import { editTodo } from "../../database/todo";
+import SubNotesInput from "../SubNotesInput";
+import TitleInput from "../TitleInput";
 
 type Props = {
   todo_session: full_todo_session;
@@ -71,36 +71,21 @@ export default function EditTodo({ todo_session, onClose, onSave }: Props) {
     setIsSaving(true);
 
     try {
-      const res = await fetch("/api/todo-list/edit-todo", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          id: sessionData.id,
-          title: sessionData.title,
-          tasks: sessionData.todo_tasks.map((task) => ({
-            id: task.id,
-            task: task.task,
-            notes: task.notes,
-          })),
-          deletedIds,
-        }),
+      await editTodo({
+        id: sessionData.id,
+        title: sessionData.title,
+        tasks: sessionData.todo_tasks.map((task) => ({
+          id: task.id,
+          task: task.task,
+          notes: task.notes ?? undefined,
+        })),
+        deletedIds,
       });
-
-      if (!res.ok) {
-        throw new Error("Failed to save");
-      }
 
       toast.success("Session updated successfully");
       onSave?.();
       onClose();
-    } catch (error) {
-      handleError(error, {
-        message: "Error editing todo session",
-        route: "/api/todo-list/edit-todo",
-        method: "POST",
-      });
+    } catch {
       toast.error("Failed to update session");
     } finally {
       setIsSaving(false);
@@ -115,8 +100,8 @@ export default function EditTodo({ todo_session, onClose, onSave }: Props) {
             Edit your todo lists
           </h2>
           <div className="w-full">
-            <CustomInput
-              value={sessionData.title || ""}
+            <TitleInput
+              value={sessionData.title}
               setValue={handleTitleChange}
               placeholder="Todo title..."
               label="Title..."
@@ -137,14 +122,14 @@ export default function EditTodo({ todo_session, onClose, onSave }: Props) {
                     Delete
                   </button>
                 </div>
-                <CustomInput
-                  value={task.task || ""}
+                <TitleInput
+                  value={task.task}
                   setValue={(value) => updateTask(index, { task: value })}
                   placeholder="Todo title..."
                   label="Task..."
                 />
                 <div className="mt-5">
-                  <NotesInput
+                  <SubNotesInput
                     notes={task.notes || ""}
                     setNotes={(value) => updateTask(index, { notes: value })}
                     placeholder="Todo notes..."

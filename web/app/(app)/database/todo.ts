@@ -1,0 +1,150 @@
+"use server";
+
+import { createClient } from "@/utils/supabase/server";
+import { handleError } from "@/app/(app)/utils/handleError";
+
+type TodoTask = {
+  task: string;
+  notes: string | null;
+};
+
+type saveTodoToDBProps = {
+  title: string;
+  todoList: TodoTask[];
+};
+
+export async function saveTodoToDB({ title, todoList }: saveTodoToDBProps) {
+  const supabase = await createClient();
+
+  const { data, error: authError } = await supabase.auth.getClaims();
+  const user = data?.claims;
+
+  if (authError || !user) {
+    throw new Error("Unauthorized");
+  }
+
+  const { data: list, error: listError } = await supabase
+    .from("todo_lists")
+    .insert([
+      {
+        user_id: user.sub,
+        title,
+      },
+    ])
+    .select("id")
+    .single();
+
+  if (listError || !list) {
+    handleError(listError, {
+      message: "Error creating todo list",
+      route: "server-action: saveTodoToDB",
+      method: "direct",
+    });
+    throw new Error("Error creating todo list");
+  }
+
+  const rows = todoList.map((item: TodoTask) => ({
+    user_id: user.sub,
+    list_id: list.id,
+    task: item.task,
+    notes: item.notes,
+  }));
+
+  const { error: tasksError } = await supabase.from("todo_tasks").insert(rows);
+
+  if (tasksError) {
+    handleError(tasksError, {
+      message: "Error saving todo tasks",
+      route: "server-action: saveTodoToDB",
+      method: "direct",
+    });
+    throw new Error("Error saving todo tasks");
+  }
+
+  return { success: true };
+}
+
+type TodoListEdit = {
+  id: string;
+  title: string;
+  tasks: TodoTaskEdit[];
+  deletedIds: string[];
+};
+
+type TodoTaskEdit = {
+  id: string;
+  task: string;
+  notes?: string;
+};
+
+export async function editTodo({
+  id: listId,
+  title,
+  tasks,
+  deletedIds,
+}: TodoListEdit) {
+  const supabase = await createClient();
+
+  const { data, error: authError } = await supabase.auth.getClaims();
+  const user = data?.claims;
+
+  if (authError || !user) {
+    throw new Error("Unauthorized");
+  }
+
+  const { error: listError } = await supabase
+    .from("todo_lists")
+    .update({ title })
+    .eq("id", listId)
+    .eq("user_id", user.sub);
+
+  if (listError) {
+    handleError(listError, {
+      message: "Error editing todo list",
+      route: "server-action: editTodo",
+      method: "direct",
+    });
+    throw new Error("Error editing todo list");
+  }
+
+  const upsertedTasks = tasks.map((task: TodoTaskEdit) => ({
+    id: task.id,
+    list_id: listId,
+    user_id: user.sub,
+    task: task.task,
+    notes: task.notes ?? null,
+  }));
+
+  const { error: taskError } = await supabase
+    .from("todo_tasks")
+    .upsert(upsertedTasks, { onConflict: "id" });
+
+  if (taskError) {
+    handleError(listError, {
+      message: "Error editing todo task",
+      route: "server-action: editTodo",
+      method: "direct",
+    });
+    throw new Error("Error editing todo task");
+  }
+
+  if (deletedIds && deletedIds.length > 0) {
+    const { error: deleteError } = await supabase
+      .from("todo_tasks")
+      .delete()
+      .in("id", deletedIds)
+      .eq("list_id", listId)
+      .eq("user_id", user.sub);
+
+    if (deleteError) {
+      handleError(listError, {
+        message: "Error deleting todo tasks",
+        route: "server-action: editTodo",
+        method: "direct",
+      });
+      throw new Error("Error deleting todo tasks");
+    }
+  }
+
+  return { success: true };
+}

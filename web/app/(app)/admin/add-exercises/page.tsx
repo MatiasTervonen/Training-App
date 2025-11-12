@@ -7,10 +7,10 @@ import SaveButton from "@/app/(app)/ui/save-button";
 import toast from "react-hot-toast";
 import { generateUUID } from "@/app/(app)/lib/generateUUID";
 import FullScreenLoader from "../../components/FullScreenLoader";
-import { handleError } from "../../utils/handleError";
 import { saveExerciseToDB } from "../../database/admin";
 import { mutate } from "swr";
 import { fetcher } from "../../lib/fetcher";
+
 
 export default function EditExercises() {
   const [name, setName] = useState("");
@@ -49,12 +49,7 @@ export default function EditExercises() {
       );
       toast.success("Exercise saved successfully!");
       setName("");
-    } catch (error) {
-      handleError(error, {
-        message: "Error saving exercise",
-        route: "add-exercise Admin",
-        method: "POST",
-      });
+    } catch  {
       toast.error("Failed to save exercise. Please try again.");
     } finally {
       setIsSaving(false);

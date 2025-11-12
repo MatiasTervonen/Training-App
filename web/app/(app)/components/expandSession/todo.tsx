@@ -77,7 +77,9 @@ export default function TodoSession({
         </div>
         <div className="bg-slate-950 px-4 rounded-xl pb-5 w-full">
           <div>
-            <div className="my-5 text-xl break-words">{sessionData.title}</div>
+            <div className="my-5 text-xl wrap-break-word">
+              {sessionData.title}
+            </div>
           </div>
           <ul className="flex flex-col gap-5">
             {sessionData.todo_tasks.map((task, index) => {
@@ -94,7 +96,7 @@ export default function TodoSession({
                     type="checkbox"
                     className=" h-6 w-6 rounded-md border border-gray-400 bg-slate-800 cursor-pointer transition-colors"
                   />
-                  <li className="flex-grow w-full text-gray-100 text-lg border p-2 rounded-md flex justify-between gap-2 bg-slate-900">
+                  <li className="grow w-full text-gray-100 text-lg border p-2 rounded-md flex justify-between gap-2 bg-slate-900">
                     <p className="line-clamp-2 text-left">{task.task}</p>
                     <div className="flex gap-4">
                       <button
@@ -112,11 +114,11 @@ export default function TodoSession({
                         }}
                         isOpen={true}
                       >
-                        <div className="flex flex-col justify-center items-center max-w-lg mx-auto px-5">
+                        <div className="flex flex-col  max-w-lg mx-auto px-5">
                           <h3 className="text-gray-100 text-2xl my-10">
                             {task.task}
                           </h3>
-                          <p className="text-gray-400">
+                          <p className="text-gray-20 bg-slate-900 p-10 whitespace-pre-wrap wrap-break-word rounded-md text-left">
                             {task.notes || "No notes available"}
                           </p>
                         </div>

@@ -2,17 +2,16 @@
 
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import CustomInput from "@/app/(app)/ui/CustomInput";
 import SetInput from "@/app/(app)/training/components/SetInput";
 import SaveButton from "../../ui/save-button";
 import toast from "react-hot-toast";
 import FullScreenLoader from "../../components/FullScreenLoader";
-import NotesInput from "../../ui/NotesInput";
 import { mutate } from "swr";
-import { handleError } from "@/app/(app)/utils/handleError";
 import DeleteSessionBtn from "../../ui/deleteSessionBtn";
 import { saveTimerToDB } from "../../database/timer";
 import { fetcher } from "../../lib/fetcher";
+import SubNotesInput from "../../ui/SubNotesInput";
+import TitleInput from "../../ui/TitleInput";
 
 export default function TimerPage() {
   const draft =
@@ -92,12 +91,7 @@ export default function TimerPage() {
       localStorage.removeItem("timer_session_draft");
 
       router.push("/timer/my-timers");
-    } catch (error) {
-      handleError(error, {
-        message: "Error saving timer",
-        route: "/api/timer/save-timer",
-        method: "POST",
-      });
+    } catch {
       toast.error("Failed to save timer. Please try again.");
       setIsSaving(false);
     }
@@ -108,20 +102,26 @@ export default function TimerPage() {
       <div>
         <h1 className="text-2xl text-center my-5 ">Create Timer</h1>
         <div className="mb-5">
-          <CustomInput
+          <TitleInput
             value={timerTitle}
             setValue={setTimerTitle}
             placeholder="Enter timer title"
             label="Timer Title"
+            maxLength={150}
           />
         </div>
         <div className="mb-5">
-          <NotesInput
+          <SubNotesInput
             placeholder="Enter notes (optional)"
             label="Notes"
             notes={notes}
             setNotes={setNotes}
           />
+          {notes.length >= 500 ? (
+            <p className="text-yellow-400 mt-2">
+              Reached the limit (500 chars max)
+            </p>
+          ) : null}
         </div>
         <div className="flex items-center justify-center gap-4 mb-5">
           <div>
@@ -130,7 +130,7 @@ export default function TimerPage() {
               placeholder="0 min"
               value={alarmMinutes}
               type="number"
-              onChange={(value) => setAlarmMinutes(value)}
+              onChange={(e) => setAlarmMinutes(e.target.value)}
             />
           </div>
           <div>
@@ -139,7 +139,7 @@ export default function TimerPage() {
               placeholder="0 sec"
               value={alarmSeconds}
               type="number"
-              onChange={(value) => setAlarmSeconds(value)}
+              onChange={(e) => setAlarmSeconds(e.target.value)}
             />
           </div>
         </div>

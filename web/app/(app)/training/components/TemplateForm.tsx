@@ -1,7 +1,6 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import CustomInput from "../../ui/CustomInput";
 import { useState, useEffect } from "react";
 import { ChevronDown, Plus } from "lucide-react";
 import Modal from "@/app/(app)/components/modal";
@@ -20,11 +19,11 @@ import useSWR from "swr";
 import { fetcher } from "@/app/(app)/lib/fetcher";
 import { full_gym_template } from "@/app/(app)/types/models";
 import ExerciseSelectorList from "../components/ExerciseSelectorList";
-import { handleError } from "../../utils/handleError";
 import { saveTemplateToDB, editTemplate } from "../../database/template";
 import TemplateCard from "./TemplateCard";
 import { GroupGymExercises } from "../../utils/GroupGymExercises";
 import { mutate } from "swr";
+import TitleInput from "../../ui/TitleInput";
 
 export default function TemplateForm({
   initialData,
@@ -179,12 +178,7 @@ export default function TemplateForm({
       }
       resetSession();
       router.push("/training/templates");
-    } catch (error) {
-      handleError(error, {
-        message: "Error saving/editing template",
-        route: "TemplatePage",
-        method: "Template",
-      });
+    } catch {
       toast.error("Failed to save template. Try again later.");
       setIsSaving(false);
     }
@@ -213,12 +207,18 @@ export default function TemplateForm({
             {isEditing ? "Edit your template" : "Create your template"}
           </h2>
           <div className="w-full px-6">
-            <CustomInput
+            <TitleInput
               value={workoutName}
               setValue={setWorkoutName}
               placeholder="Workout Name..."
               label="Workout Name..."
+              maxLength={100}
             />
+            {workoutName.length >= 100 ? (
+              <p className="text-yellow-400 mt-2">
+                Reached the limit (100 chars max)
+              </p>
+            ) : null}
           </div>
         </div>
 

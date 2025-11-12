@@ -1,8 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import NotesInput from "@/app/(app)/ui/NotesInput";
-import CustomInput from "@/app/(app)/ui/CustomInput";
 import SaveButton from "@/app/(app)/ui/save-button";
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import { mutate } from "swr";
@@ -10,6 +8,8 @@ import toast from "react-hot-toast";
 import { handleError } from "../../utils/handleError";
 import { editWeight } from "../../database/weight";
 import { weight } from "../../types/models";
+import SubNotesInput from "../SubNotesInput";
+import TitleInput from "../TitleInput";
 
 type Props = {
   weight: weight;
@@ -57,13 +57,13 @@ export default function EditWeight({ weight, onClose, onSave }: Props) {
           <h2 className="text-gray-100 text-lg text-center">
             Edit your weight session
           </h2>
-          <CustomInput
+          <TitleInput
             value={title || ""}
             setValue={setValue}
             placeholder="Weight title..."
             label="Title..."
           />
-          <NotesInput
+          <SubNotesInput
             notes={notes || ""}
             setNotes={setNotes}
             placeholder="Write your notes here..."

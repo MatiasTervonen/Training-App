@@ -1,7 +1,7 @@
 "use client";
 
 import CustomInput from "@/app/(app)/ui/CustomInput";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import SaveButtonSpinner from "@/app/(app)/ui/save-button-spinner";
 import { createClient } from "@/utils/supabase/client";
 import { useSignOut } from "@/app/(app)/lib/handleSignOut";
@@ -80,6 +80,10 @@ export default function Page() {
     }
   };
 
+  useEffect(() => {
+    setErrorMessage((prev) => (prev ? "" : prev));
+  }, [password, confirmPassword]);
+
   return (
     <div className="p-5 h-full relative">
       <div className="max-w-md mx-auto">
@@ -95,6 +99,7 @@ export default function Page() {
             value={password}
             setValue={setPassword}
             disabled={loading}
+            maxLength={128}
             id="new-password-input"
           />
         </div>
@@ -106,6 +111,7 @@ export default function Page() {
             value={confirmPassword}
             setValue={setConfirmPassword}
             disabled={loading}
+            maxLength={128}
             id="confirm-password-input"
           />
         </div>
@@ -114,7 +120,7 @@ export default function Page() {
         ) : errorMessage ? (
           <p className="text-red-500 mb-5 text-center">{errorMessage}</p>
         ) : (
-          <p className="mb-5 text-center text-transparent">Placeholder</p>
+          <p className="mb-5 text-center invisible">Placeholder</p>
         )}
         <div>
           <SaveButtonSpinner

@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { subscribeUser, unsubscribeUser } from "./actions";
 import Toggle from "../toggle";
+import toast from "react-hot-toast";
 
 function urlBase64ToUint8Array(base64String: string) {
   const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
@@ -37,7 +38,6 @@ export function PushNotificationManager() {
   );
   const [toggleState, setToggleState] = useState(false);
 
-
   useEffect(() => {
     if ("serviceWorker" in navigator && "PushManager" in window) {
       setIsSupported(true);
@@ -69,8 +69,8 @@ export function PushNotificationManager() {
 
       setSubscription(sub);
       await subscribeUser(serializeSubscription(sub));
-    } catch (error) {
-      console.error("Failed to subscribe to push notifications:", error);
+    } catch {
+      toast.error("Failed to subscribe to push notifications!");
       setToggleState(false);
     }
   }
@@ -83,8 +83,8 @@ export function PushNotificationManager() {
         setSubscription(null);
         await unsubscribeUser(subscription.endpoint);
       }
-    } catch (error) {
-      console.error("Failed to unsubscribe from push notifications:", error);
+    } catch {
+      toast.error("Failed to unsubscribe from push notifications!");
       setToggleState(true);
     }
   }
@@ -103,7 +103,6 @@ export function PushNotificationManager() {
       subscribeToPush();
     }
   }
-
 
   if (!isSupported) {
     return (

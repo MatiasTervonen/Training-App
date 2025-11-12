@@ -90,7 +90,7 @@ export async function savePushSubscription(subscription: {
   const user = data?.claims;
 
   if (authError || !user) {
-    return { user: null, preferences: null, role: null };
+    throw new Error("Unauthorized");
   }
 
   const { error } = await supabase.from("user_push_subscriptions").upsert(
@@ -111,7 +111,7 @@ export async function savePushSubscription(subscription: {
       message: "Error saving push subscription",
       method: "POST",
     });
-    return { success: false, error: "Failed to save push subscription" };
+    throw new Error("Failed to save push subscription");
   }
 
   return { success: true };
@@ -127,7 +127,7 @@ export async function deletePushSubscription(endpoint: string) {
   const user = data?.claims;
 
   if (authError || !user) {
-    return { user: null, preferences: null, role: null };
+    throw new Error("Unauthorized");
   }
 
   const { error } = await supabase
@@ -139,9 +139,9 @@ export async function deletePushSubscription(endpoint: string) {
   if (error) {
     handleError(error, {
       message: "Error deleting push subscription",
-      method: "POST",
+      method: "direct",
     });
-    return { success: false, error: "Failed to delete push subscription" };
+    throw Error("Error deleting push subscription");
   }
 
   return { success: true };
@@ -157,7 +157,7 @@ export async function getAllActivePushSubscriptions() {
   const user = data?.claims;
 
   if (authError || !user) {
-    return { user: null, preferences: null, role: null };
+    throw new Error("Unauthorized");
   }
 
   const { data: subscriptions, error } = await supabase

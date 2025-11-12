@@ -54,8 +54,8 @@ export default function AnalyticsForm({
         <>
           <div className="flex flex-col gap-4 bg-slate-900 p-4 rounded-2xl shadow-xl">
             <h2 className="text-xl mb-4 text-center">Last 30 Days Analytics</h2>
-            <div className="sm:flex items-center justify-center gap-10 ml-4">
-              <div className="flex flex-col gap-5">
+            <div className="sm:flex  items-center justify-center gap-10 ml-4">
+              <div className="flex flex-col items-center gap-5">
                 <h3 className="text-lg">
                   Total workouts: {totalSessions30Days(data)}
                 </h3>
@@ -63,7 +63,9 @@ export default function AnalyticsForm({
                   Average Duration: {averageDuration(data)} minutes
                 </h3>
               </div>
-              <AnalyticsHeatMap data={data} />
+              <div className="flex justify-center items-center">
+                <AnalyticsHeatMap data={data} />
+              </div>
             </div>
             <h2 className="text-center">Muscle Group Distribution</h2>
             <ChartTabSwitcher data={data} />

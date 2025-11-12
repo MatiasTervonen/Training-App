@@ -1,6 +1,5 @@
 "use client";
 
-import NotesInput from "../../ui/NotesInput";
 import DropdownMenu from "@/app/(app)/components/dropdownMenu";
 import { Ellipsis, SquareX } from "lucide-react";
 import SetInput from "./SetInput";
@@ -8,6 +7,7 @@ import ExerciseTypeSelect from "./ExerciseTypeSelect";
 import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
 import { ExerciseEntry, ExerciseInput } from "../../types/session";
 import toast from "react-hot-toast";
+import SubNotesInput from "../../ui/SubNotesInput";
 
 type ExerciseCardProps = {
   index: number;
@@ -81,14 +81,12 @@ export default function ExerciseCard({
       {mode === "session" && (
         <>
           <div className="my-4 ">
-            <NotesInput
+            <SubNotesInput
               label={`Notes for ${exercise.name}...`}
               notes={exercise.notes || ""}
               setNotes={(newNotes) => {
                 onUpdateExercise(index, { ...exercise, notes: newNotes });
               }}
-              rows={2}
-              cols={35}
               placeholder="Add your notes here..."
             />
           </div>
@@ -163,7 +161,9 @@ export default function ExerciseCard({
                     placeholder="Time in min..."
                     type="number"
                     value={input.time_min ?? ""}
-                    onChange={(val) => onInputChange(index, "time_min", val)}
+                    onChange={(e) =>
+                      onInputChange(index, "time_min", e.target.value)
+                    }
                   />
                 </div>
                 <div className="flex items-center gap-5 w-2/4">
@@ -171,8 +171,8 @@ export default function ExerciseCard({
                     placeholder="Length (meters)"
                     type="number"
                     value={input.distance_meters ?? ""}
-                    onChange={(val) =>
-                      onInputChange(index, "distance_meters", val)
+                    onChange={(e) =>
+                      onInputChange(index, "distance_meters", e.target.value)
                     }
                   />
                 </div>
@@ -184,13 +184,17 @@ export default function ExerciseCard({
                     placeholder="Weight..."
                     type="number"
                     value={input.weight ?? ""}
-                    onChange={(val) => onInputChange(index, "weight", val)}
+                    onChange={(e) =>
+                      onInputChange(index, "weight", e.target.value)
+                    }
                   />
                   <SetInput
                     placeholder="Reps..."
                     type="number"
                     value={input.reps ?? ""}
-                    onChange={(val) => onInputChange(index, "reps", val)}
+                    onChange={(e) =>
+                      onInputChange(index, "reps", e.target.value)
+                    }
                   />
                 </div>
                 <div className="w-1/3">

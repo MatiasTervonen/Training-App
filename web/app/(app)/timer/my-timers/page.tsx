@@ -10,7 +10,6 @@ import toast from "react-hot-toast";
 import TimerCard from "../components/TimerCard";
 import { useTimerStore } from "../../lib/stores/timerStore";
 import { timers } from "@/app/(app)/types/models";
-import { handleError } from "@/app/(app)/utils/handleError";
 import { deleteTimer } from "../../database/timer";
 
 export default function TimersPage() {
@@ -41,12 +40,7 @@ export default function TimersPage() {
       mutate("/api/timer/get-timer");
 
       toast.success("Timer deleted succesfully!");
-    } catch (error) {
-      handleError(error, {
-        message: "Error deleting timer",
-        route: "my-timers page",
-        method: "delete",
-      });
+    } catch {
       toast.error("Failed to delete timer. Please try again.");
       mutate("/api/timer/get-timer");
     }

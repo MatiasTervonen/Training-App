@@ -797,20 +797,20 @@ export type Database = {
         Row: {
           created_at: string
           id: string
-          title: string | null
-          user_id: string | null
+          title: string
+          user_id: string
         }
         Insert: {
           created_at?: string
           id?: string
-          title?: string | null
-          user_id?: string | null
+          title: string
+          user_id: string
         }
         Update: {
           created_at?: string
           id?: string
-          title?: string | null
-          user_id?: string | null
+          title?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -821,8 +821,8 @@ export type Database = {
           is_completed: boolean
           list_id: string
           notes: string | null
-          task: string | null
-          user_id: string | null
+          task: string
+          user_id: string
         }
         Insert: {
           created_at?: string
@@ -830,8 +830,8 @@ export type Database = {
           is_completed?: boolean
           list_id: string
           notes?: string | null
-          task?: string | null
-          user_id?: string | null
+          task: string
+          user_id: string
         }
         Update: {
           created_at?: string
@@ -839,8 +839,8 @@ export type Database = {
           is_completed?: boolean
           list_id?: string
           notes?: string | null
-          task?: string | null
-          user_id?: string | null
+          task?: string
+          user_id?: string
         }
         Relationships: [
           {

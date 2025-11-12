@@ -6,7 +6,6 @@ import SaveButton from "@/app/(app)/ui/save-button";
 import Timer from "@/app/(app)/components/timer";
 import DeleteSessionBtn from "@/app/(app)/ui/deleteSessionBtn";
 import CustomInput from "@/app/(app)/ui/CustomInput";
-import NotesInput from "../../ui/NotesInput";
 import { ChevronDown, Plus } from "lucide-react";
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import Modal from "@/app/(app)/components/modal";
@@ -26,9 +25,10 @@ import { updateFeed } from "@/app/(app)/lib/revalidateFeed";
 import ExerciseSelectorList from "../components/ExerciseSelectorList";
 import useSWR from "swr";
 import { fetcher } from "@/app/(app)/lib/fetcher";
-import { handleError } from "../../utils/handleError";
 import { saveGymToDB, editGymSession } from "../../database/gym";
 import { full_gym_session } from "../../types/models";
+import TitleInput from "../../ui/TitleInput";
+import SubNotesInput from "../../ui/SubNotesInput";
 
 export default function GymForm({
   initialData,
@@ -330,12 +330,7 @@ export default function GymForm({
         router.push("/training/training-finished"); // Redirect to the finished page
       }
       resetSession(); // Clear the session data
-    } catch (error) {
-      handleError(error, {
-        message: "Error saving gym session",
-        route: "/api/gym/save-session",
-        method: "POST",
-      });
+    } catch {
       toast.error("Failed to save gym session. Please try again.");
       setIsSaving(false);
     }
@@ -368,7 +363,7 @@ export default function GymForm({
       ) : (
         <nav className="flex items-center bg-gray-700 p-2 px-4 w-full z-40 max-w-3xl mx-auto sticky top-0">
           <Timer
-            buttonsAlwaysVisible
+            className="text-xl"
             manualSession={{
               label: sessionTitle,
               path: "/training/gym",
@@ -387,7 +382,7 @@ export default function GymForm({
                 : "Track your training progress"}
             </p>
             <div className="w-full">
-              <CustomInput
+              <TitleInput
                 value={sessionTitle}
                 setValue={setSessionTitle}
                 placeholder="Session Title..."
@@ -398,7 +393,7 @@ export default function GymForm({
               <div className="w-full">
                 <CustomInput
                   value={durationEdit || ""}
-                  setValue={(val) => setDurationEdit(Number(val))}
+                  setValue={(value) => setDurationEdit(Number(value))}
                   placeholder="Duration in seconds..."
                   label="Duration (seconds)..."
                   type="number"
@@ -406,7 +401,7 @@ export default function GymForm({
               </div>
             )}
             <div className="w-full">
-              <NotesInput
+              <SubNotesInput
                 notes={notes}
                 setNotes={setNotes}
                 placeholder="Add your notes here..."

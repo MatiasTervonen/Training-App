@@ -19,8 +19,8 @@ const formatSeconds = (seconds: number) => {
 export default function TimerCard({ item, onDelete, onStarTimer }: Props) {
   return (
     <>
-      <div className="max-w-md mx-auto flex flex-col justify-between gap-5 h-full">
-        <div className="my-5 flex flex-col gap-2 justify-center items-center">
+      <div className="max-w-md mx-auto flex flex-col gap-10 h-full">
+        <div className="mt-10 flex flex-col gap-2 justify-center items-center">
           <h2 className="text-sm text-gray-400">
             Created: {formatDate(item.created_at)}
           </h2>

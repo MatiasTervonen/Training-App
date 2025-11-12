@@ -4,17 +4,17 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import SaveButton from "@/app/(app)/ui/save-button";
 import DeleteSessionBtn from "@/app/(app)/ui/deleteSessionBtn";
-import NotesInput from "@/app/(app)/ui/NotesInput";
-import CustomInput from "@/app/(app)/ui/CustomInput";
+
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import toast from "react-hot-toast";
 import { useDebouncedCallback } from "use-debounce";
 import { updateFeed } from "@/app/(app)/lib/revalidateFeed";
 import DateTimePicker from "@/app/(app)/components/DateTimePicker";
-import { handleError } from "../utils/handleError";
 import InfoModal from "../components/InfoModal";
 import LinkButton from "../ui/LinkButton";
 import { saveReminderToDB } from "../database/reminder";
+import SubNotesInput from "@/app/(app)/ui/SubNotesInput";
+import TitleInput from "@/app/(app)/ui/TitleInput";
 
 export default function Notes() {
   const draft =
@@ -69,13 +69,7 @@ export default function Notes() {
       updateFeed();
       router.push("/dashboard");
       resetReminder();
-    } catch (error) {
-      console.log("Error saving reminder:", error);
-      handleError(error, {
-        message: "Error saving reminders",
-        route: "/api/reminders/save-reminders",
-        method: "POST",
-      });
+    } catch {
       toast.error("Failed to save reminder. Please try again.");
       setIsSaving(false);
     }
@@ -91,7 +85,7 @@ export default function Notes() {
       };
       localStorage.setItem("reminder_draft", JSON.stringify(sessionDraft));
     }
-  }, 500); 
+  }, 500);
 
   useEffect(() => {
     saveDraft();
@@ -110,7 +104,7 @@ export default function Notes() {
         <div className="flex flex-col items-center mt-5 gap-5 grow mb-10 h-full">
           <p className="text-lg text-center">Add your reminders here</p>
           <div className="w-full">
-            <CustomInput
+            <TitleInput
               value={title}
               setValue={setValue}
               placeholder="Reminder title... (required)"
@@ -125,8 +119,8 @@ export default function Notes() {
               placeholder="Select date and time (required)"
             />
           </div>
-          <div className="flex w-full grow z-0">
-            <NotesInput
+          <div className="w-full ">
+            <SubNotesInput
               notes={notes}
               setNotes={setNotes}
               placeholder="Write your notes here... (optional)"

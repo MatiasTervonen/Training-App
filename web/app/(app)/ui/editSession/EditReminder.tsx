@@ -1,8 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import NotesInput from "@/app/(app)/ui/NotesInput";
-import CustomInput from "@/app/(app)/ui/CustomInput";
 import SaveButton from "@/app/(app)/ui/save-button";
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import { mutate } from "swr";
@@ -13,6 +11,8 @@ import { handleError } from "../../utils/handleError";
 import { formatDateTime } from "../../lib/formatDate";
 import { editReminder } from "../../database/reminder";
 import { reminders } from "../../types/models";
+import SubNotesInput from "../SubNotesInput";
+import TitleInput from "../TitleInput";
 
 type Props = {
   reminder: reminders;
@@ -94,7 +94,7 @@ export default function EditReminder({ reminder, onClose, onSave }: Props) {
             <Bell />
           </h2>
           <div className="w-full">
-            <CustomInput
+            <TitleInput
               value={title || ""}
               setValue={setValue}
               placeholder="Reminder title..."
@@ -114,7 +114,7 @@ export default function EditReminder({ reminder, onClose, onSave }: Props) {
             />
           </div>
           <div className="flex w-full grow">
-            <NotesInput
+            <SubNotesInput
               notes={notes || ""}
               setNotes={setNotes}
               placeholder="Write your notes here..."

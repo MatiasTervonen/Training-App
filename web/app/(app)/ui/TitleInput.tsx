@@ -1,16 +1,20 @@
-type CustomInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
-  setValue?: (value: string) => void;
+type TitleInputProps = Omit<
+  React.InputHTMLAttributes<HTMLInputElement>,
+  "value" | "onChange"
+> & {
+  value: string;
   label?: string;
+  setValue: (value: string) => void;
 };
 
-export default function CustomInput({
+export default function TitleInput({
   value,
   setValue,
   label,
   id,
   className,
   ...props
-}: CustomInputProps) {
+}: TitleInputProps) {
   return (
     <div className="flex flex-col ">
       {label && (
@@ -19,13 +23,20 @@ export default function CustomInput({
         </label>
       )}
       <input
+        type="text"
         id={id}
         className={`p-2 rounded-md border-2 border-gray-100 z-10 placeholder-gray-500  text-gray-100 bg-[linear-gradient(50deg,#0f172a,#1e293b,#333333)] hover:border-blue-500 focus:outline-none focus:border-green-300 ${className}`}
-        onChange={(e) => setValue && setValue(e.target.value)}
         value={value}
+        onChange={(e) => setValue(e.target.value)}
         spellCheck={false}
+        maxLength={150}
         {...props}
       />
+      {typeof value === "string" && value.length >= 150 ? (
+        <p className="text-yellow-400 mt-2">
+          Reached the limit (150 chars max)
+        </p>
+      ) : null}
     </div>
   );
 }

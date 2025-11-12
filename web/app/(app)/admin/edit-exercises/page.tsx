@@ -9,7 +9,6 @@ import ExerciseDropdown from "@/app/(app)/training/components/ExerciseDropdown";
 import DeleteSessionBtn from "@/app/(app)/ui/deleteSessionBtn";
 import { gym_exercises } from "../../types/models";
 import FullScreenLoader from "../../components/FullScreenLoader";
-import { handleError } from "../../utils/handleError";
 import { deleteExercise, editExercise } from "../../database/gym";
 import { mutate } from "swr";
 import { fetcher } from "../../lib/fetcher";
@@ -54,12 +53,7 @@ export default function EditExercises() {
       );
       toast.success("Exercise updated successfully!");
       resetFields();
-    } catch (error) {
-      handleError(error, {
-        message: "Error updating exercise",
-        route: "delete exercise Admin",
-        method: "delete",
-      });
+    } catch {
       toast.error("Failed to update exercise. Please try again.");
     } finally {
       setIsSaving(false);
@@ -80,12 +74,7 @@ export default function EditExercises() {
       toast.success("Exercise deleted successfully!");
       setSelectedExercise(null);
       setResetTrigger((prev) => prev + 1);
-    } catch (error) {
-      handleError(error, {
-        message: "Error deleting exercise",
-        route: "delete exercise Admin",
-        method: "DELETE",
-      });
+    } catch {
       toast.error("Failed to delete exercise. Please try again.");
     } finally {
       setIsSaving(false);

@@ -2,28 +2,15 @@
 
 import { useRouter } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
-import CustomInput from "@/app/(app)/ui/CustomInput";
 import SetInput from "@/app/(app)/training/components/SetInput";
-import NotesInput from "../../ui/NotesInput";
-import Timer from "../../components/timer";
-import { CircleX, RotateCcw } from "lucide-react";
+import Timer from "../components/timer";
+import { CircleX } from "lucide-react";
 import { useTimerStore } from "../../lib/stores/timerStore";
-import DeleteSessionBtn from "../../ui/deleteSessionBtn";
+import { AlarmClock } from "lucide-react";
 
 export default function TimerPage() {
-  const draft =
-    typeof window !== "undefined"
-      ? JSON.parse(localStorage.getItem("timer_session_draft") || "null")
-      : null;
-
-  const [timerTitle, setTimerTitle] = useState(draft?.title || "");
-  const [alarmMinutes, setAlarmMinutes] = useState(
-    draft ? Math.floor(draft.durationInSeconds / 60).toString() : ""
-  );
-  const [alarmSeconds, setAlarmSeconds] = useState(
-    draft ? (draft.durationInSeconds % 60).toString() : ""
-  );
-  const [notes, setNotes] = useState(draft?.notes || "");
+  const [alarmMinutes, setAlarmMinutes] = useState("");
+  const [alarmSeconds, setAlarmSeconds] = useState("");
 
   const router = useRouter();
 
@@ -35,18 +22,9 @@ export default function TimerPage() {
     alarmFired,
     setAlarmFired,
     setActiveSession,
-    stopTimer,
     startTimer,
+    clearEverything,
   } = useTimerStore();
-
-  const handleReset = () => {
-    setActiveSession(null);
-    stopTimer();
-    setTimerTitle("");
-    setAlarmMinutes("");
-    setAlarmSeconds("");
-    setNotes("");
-  };
 
   const cancelTimer = () => {
     const confirmCancel = confirm(
@@ -54,17 +32,13 @@ export default function TimerPage() {
     );
     if (!confirmCancel) return;
 
-    router.replace("/timer/empty-timer");
+    router.replace("/timer");
 
     setTimeout(() => {
-      const { setActiveSession, stopTimer } = useTimerStore.getState();
-
-      setActiveSession(null);
-      stopTimer();
-      setTimerTitle("");
+      localStorage.removeItem("timer_session_draft");
+      clearEverything();
       setAlarmMinutes("");
       setAlarmSeconds("");
-      setNotes("");
 
       if (audioRef.current) {
         audioRef.current.pause();
@@ -77,7 +51,7 @@ export default function TimerPage() {
   const handleStartTimer = () => {
     setActiveSession({
       type: "timer",
-      label: timerTitle,
+      label: "Timer",
       path: "/timer/empty-timer",
     });
 
@@ -91,35 +65,9 @@ export default function TimerPage() {
 
     const totalSeconds = minutes * 60 + seconds;
 
+    setAlarmFired(false);
     startTimer(totalSeconds);
   };
-
-  const restartTimer = () => {
-    stopTimer();
-    handleStartTimer();
-  };
-
-  useEffect(() => {
-    if (
-      timerTitle.trim() === "" &&
-      alarmMinutes.trim() === "" &&
-      alarmSeconds.trim() === ""
-    ) {
-      localStorage.removeItem("timer_session_draft");
-      return;
-    }
-
-    const minutes = parseInt(alarmMinutes) || 0;
-    const seconds = parseInt(alarmSeconds) || 0;
-    const totalSeconds = minutes * 60 + seconds;
-
-    const sessionDraft = {
-      title: timerTitle,
-      notes: notes,
-      durationInSeconds: totalSeconds,
-    };
-    localStorage.setItem("timer_session_draft", JSON.stringify(sessionDraft));
-  }, [timerTitle, alarmMinutes, alarmSeconds, notes]);
 
   const playAlarm = () => {
     if (!audioRef.current) {
@@ -140,7 +88,6 @@ export default function TimerPage() {
       audioRef.current.pause();
       audioRef.current.currentTime = 0;
     }
-    setAlarmFired(false);
   };
 
   const showTimerUI = totalDuration > 0;
@@ -152,74 +99,46 @@ export default function TimerPage() {
           stopAlarm();
         }
       }}
-      className="p-5 h-full relative text-gray-100"
+      className="p-5 h-full relative"
     >
       {showTimerUI ? (
         <>
-          <div className="flex items-center justify-center mb-5 text-xl">
-            <h1>{timerTitle}</h1>
-          </div>
-          <p className="text-center text-sm text-gray-300 mt-2">
-            {Math.floor(totalDuration / 60)} min {totalDuration % 60} sec
-          </p>
-          <div>
-            <Timer
-              className={`text-8xl flex-col ${
-                elapsedTime >= totalDuration ? "animate-pulse text-red-500" : ""
-              }`}
-            />
-          </div>
-          <div className="text-center text-gray-300 mt-5">{notes}</div>
-          <div className="w-full bg-gray-200 h-5 rounded-full overflow-hidden mt-5">
-            <div
-              className="h-full bg-green-500 transition-all duration-100 ease-in-out"
-              style={{ width: `${(elapsedTime / totalDuration) * 100}%` }}
-            ></div>
-          </div>
-          {elapsedTime >= totalDuration && (
-            <div className="flex items-center justify-center mt-10 max-w-md mx-auto gap-2">
-              <button
-                className="bg-red-600 border-2 border-red-400 py-2 px-4 shadow-xl rounded-md cursor-pointer hover:scale-95 hover:bg-red-500"
-                onClick={stopAlarm}
-              >
-                Stop alarm
-              </button>
+          <div className="flex flex-col h-full">
+            <div>
+              <p className="text-center text-xl text-gray-300 mt-2">
+                {Math.floor(totalDuration / 60)} min {totalDuration % 60} sec
+              </p>
 
-              <button
-                onClick={restartTimer}
-                className="flex items-center gap-2 bg-blue-800 py-2 border-2 border-blue-500 rounded-md px-4 cursor-pointer hover:scale-95 hover:bg-blue-700"
-              >
-                <p>Restart</p>
-                <RotateCcw />
-              </button>
+              <Timer
+                onStopAlarmSound={stopAlarm}
+                className={`flex-col items-center justify-center w-full  ${
+                  elapsedTime >= totalDuration
+                    ? "animate-pulse text-red-500"
+                    : ""
+                }`}
+              />
+
+              <div className="w-full bg-gray-200 h-5 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-green-500 transition-all duration-100 ease-in-out"
+                  style={{ width: `${(elapsedTime / totalDuration) * 100}%` }}
+                ></div>
+              </div>
             </div>
-          )}
+          </div>
           <button>
             <CircleX
               className="absolute top-5 right-5 text-gray-300 hover:text-red-500"
-              size={24}
+              size={30}
               onClick={cancelTimer}
             />
           </button>
         </>
       ) : (
-        <div className="max-w-md mx-auto">
-          <h1 className="text-2xl text-center my-5">Timer</h1>
-          <div className="mb-5">
-            <CustomInput
-              value={timerTitle}
-              setValue={setTimerTitle}
-              placeholder="Timer title (optional)"
-              label="Timer Title"
-            />
-          </div>
-          <div className="mb-5">
-            <NotesInput
-              placeholder="Notes (optional)"
-              label="Notes"
-              notes={notes}
-              setNotes={setNotes}
-            />
+        <div className="max-w-md mx-auto flex flex-col gap-10 h-full">
+          <div className="flex justify-center items-center gap-5 my-5">
+            <h1 className="text-2xl text-center">Timer</h1>
+            <AlarmClock color="#d1d5db" size={30} />
           </div>
           <div className="flex items-center justify-center gap-4 mb-5">
             <div>
@@ -228,7 +147,8 @@ export default function TimerPage() {
                 placeholder="0 min"
                 value={alarmMinutes}
                 type="number"
-                onChange={(value) => setAlarmMinutes(value)}
+                min={0}
+                onChange={(e) => setAlarmMinutes(e.target.value)}
               />
             </div>
             <div>
@@ -237,7 +157,8 @@ export default function TimerPage() {
                 placeholder="0 sec"
                 value={alarmSeconds}
                 type="number"
-                onChange={(value) => setAlarmSeconds(value)}
+                min={0}
+                onChange={(e) => setAlarmSeconds(e.target.value)}
               />
             </div>
           </div>
@@ -248,11 +169,6 @@ export default function TimerPage() {
             >
               Start Timer
             </button>
-            <DeleteSessionBtn
-              onDelete={handleReset}
-              label="Cancel"
-              confirmMessage="Are you sure you want to cancel this timer?"
-            />
           </div>
         </div>
       )}

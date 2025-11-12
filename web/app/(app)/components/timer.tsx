@@ -12,22 +12,16 @@ type ActiveSession = {
 
 type TimerProps = {
   className?: string;
-  buttonsAlwaysVisible?: boolean;
   manualSession?: ActiveSession;
 };
 
-export default function Timer({
-  buttonsAlwaysVisible = false,
-  className = "",
-  manualSession,
-}: TimerProps) {
+export default function Timer({ className = "", manualSession }: TimerProps) {
   const {
     elapsedTime,
     isRunning,
     startTimer,
     pauseTimer,
     totalDuration,
-    alarmFired,
     setActiveSession,
     activeSession,
     resumeTimer,
@@ -67,7 +61,7 @@ export default function Timer({
   };
 
   const handleStart = () => {
-    if (buttonsAlwaysVisible && !activeSession && manualSession) {
+    if (!activeSession && manualSession) {
       setActiveSession(manualSession);
     }
 
@@ -85,21 +79,19 @@ export default function Timer({
   };
 
   return (
-    <div className={`flex items-center justify-center gap-2 ${className}`}>
-      <span className="text-center font-mono font-bold">
+    <div className={`flex items-center  gap-2 ${className}`}>
+      <p className="font-mono font-bold leading-none">
         {formatTime(elapsedTime)}
-      </span>
-      {(buttonsAlwaysVisible ||
-        !(alarmFired || (totalDuration > 0 && elapsedTime >= totalDuration))) &&
-        (isRunning ? (
-          <button aria-label="Pause timer" onClick={handlePause}>
-            <CirclePause />
-          </button>
-        ) : (
-          <button aria-label="Start timer" onClick={handleStart}>
-            <CirclePlay />
-          </button>
-        ))}
+      </p>
+      {isRunning ? (
+        <button aria-label="Pause timer" onClick={handlePause}>
+          <CirclePause size={20} />
+        </button>
+      ) : (
+        <button aria-label="Start timer" onClick={handleStart}>
+          <CirclePlay size={20} />
+        </button>
+      )}
     </div>
   );
 }

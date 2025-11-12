@@ -1,8 +1,6 @@
 "use client";
 
 import { russoOne } from "@/app/ui/fonts";
-import NotesInput from "@/app/(app)/ui/NotesInput";
-import CustomInput from "@/app/(app)/ui/CustomInput";
 import SaveButton from "@/app/(app)/ui/save-button";
 import DeleteSessionBtn from "@/app/(app)/ui/deleteSessionBtn";
 import { useState, useEffect } from "react";
@@ -11,8 +9,9 @@ import { useRouter } from "next/navigation";
 import { formatDate } from "@/app/(app)/lib/formatDate";
 import toast from "react-hot-toast";
 import { updateFeed } from "@/app/(app)/lib/revalidateFeed";
-import { handleError } from "@/app/(app)/utils/handleError";
 import { saveWeightToDB } from "../../database/weight";
+import TitleInput from "../../ui/TitleInput";
+import SubNotesInput from "../../ui/SubNotesInput";
 
 export default function WorkoutAnalyticsPage() {
   const now = formatDate(new Date());
@@ -82,13 +81,8 @@ export default function WorkoutAnalyticsPage() {
       await updateFeed();
       router.push("/dashboard");
       resetWeight();
-    } catch (error) {
+    } catch {
       setIsSaving(false);
-      handleError(error, {
-        message: "Error saving weight",
-        route: "server-action: saveWeightToDB",
-        method: "direct",
-      });
       toast.error("Failed to save weight session. Please try again.");
     }
   };
@@ -101,13 +95,13 @@ export default function WorkoutAnalyticsPage() {
         <div className="flex flex-col gap-10">
           <h1 className="text-2xl text-center">Track your body weight</h1>
 
-          <CustomInput
+          <TitleInput
             value={weightTitle}
             setValue={setWeightTitle}
             placeholder="Weight entry title..."
             label="Title for Weight..."
           />
-          <NotesInput
+          <SubNotesInput
             notes={weightNotes}
             setNotes={setWeightNotes}
             placeholder="Enter your notes here..."

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   login,
   signup,
@@ -32,8 +32,16 @@ export default function LoginPage() {
   };
 
   const [state, formAction] = React.useActionState(signup, initialState);
+  const [signupMessage, setSignupMessage] = useState("");
+  useEffect(() => {
+    if (state.message) setSignupMessage(state.message);
+  }, [state.message]);
 
   const [state2, formAction2] = React.useActionState(login, initialState);
+  const [loginMessage, setLoginMessage] = useState("");
+  useEffect(() => {
+    if (state2.message) setLoginMessage(state2.message);
+  }, [state2.message]);
 
   const [state3, formAction3] = React.useActionState(
     sendPasswordResetEmail,
@@ -47,7 +55,7 @@ export default function LoginPage() {
 
   return (
     <div className="bg-slate-950">
-      <div className="flex flex-col items-center h-[100dvh] w-full bg-gradient-to-tr from-slate-950 via-slate-950 to-blue-900 max-w-7xl mx-auto">
+      <div className="flex flex-col items-center h-dvh w-full bg-linear-to-tr from-slate-950 via-slate-950 to-blue-900 max-w-7xl mx-auto">
         <nav className="flex items-center justify-between w-full py-4 px-2">
           <button
             className="flex items-center gap-2 hover:scale-105 hover:text-teal-500 transition-transform duration-200 cursor-pointer"
@@ -56,12 +64,12 @@ export default function LoginPage() {
             <ArrowLeft size={30} />
             <p>back</p>
           </button>
-          <p className="text-3xl sm:text-4xl lg:text-5xl text-center bg-gradient-to-tr from-[#27aee4] via-[#66ece1] to-[#f3f18d] text-transparent bg-clip-text">
+          <p className="text-3xl sm:text-4xl lg:text-5xl text-center bg-linear-to-tr from-[#27aee4] via-[#66ece1] to-[#f3f18d] text-transparent bg-clip-text">
             MyTrack
           </p>
           <p className="min-w-[76px]"></p>
         </nav>
-        <div className="relative flex flex-grow w-full overflow-hidden max-w-md">
+        <div className="relative flex grow w-full overflow-hidden max-w-md">
           {/* Log in Form */}
 
           <form
@@ -79,6 +87,8 @@ export default function LoginPage() {
               autoComplete="email"
               required
               label="Email:"
+              maxLength={128}
+              onChange={() => setLoginMessage("")}
             />
             <CustomInput
               className="custom-login-input"
@@ -89,17 +99,19 @@ export default function LoginPage() {
               autoComplete="current-password"
               required
               label="Password:"
+              maxLength={128}
+              onChange={() => setLoginMessage("")}
             />
             <div className="flex flex-col ">
               <LoginButton />
               <p
                 aria-live="polite"
-                className={`mt-4 text-sm text-center min-h-[1.25rem]  ${
-                  state2.message
+                className={`mt-4 text-sm text-center min-h-5  ${
+                  loginMessage
                     ? state2.success
                       ? "text-green-500"
                       : "text-red-500"
-                    : "text-transparent"
+                    : "invisible"
                 }`}
               >
                 {state2.message}
@@ -156,16 +168,18 @@ export default function LoginPage() {
                     name="email"
                     type="email"
                     placeholder="Enter email..."
+                    spellCheck={false}
                     required
+                    maxLength={128}
                   />
                   <p
                     aria-live="polite"
-                    className={`mt-4 text-sm text-center min-h-[1.25rem] ${
+                    className={`mt-4 text-sm text-center min-h-5 ${
                       state3.message
                         ? state3.success
                           ? "text-green-500"
                           : "text-red-500"
-                        : "text-transparent"
+                        : "invisible"
                     }`}
                   >
                     {state3.message}
@@ -193,6 +207,8 @@ export default function LoginPage() {
               autoComplete="email"
               required
               label="Email:"
+              maxLength={128}
+              onChange={() => setSignupMessage("")}
             />
             <CustomInput
               className="custom-login-input"
@@ -203,6 +219,8 @@ export default function LoginPage() {
               autoComplete="new-password"
               required
               label="Password:"
+              maxLength={128}
+              onChange={() => setSignupMessage("")}
             />
             <CustomInput
               className="custom-login-input"
@@ -213,17 +231,19 @@ export default function LoginPage() {
               autoComplete="new-password"
               required
               label="Confirm Password:"
+              maxLength={128}
+              onChange={() => setSignupMessage("")}
             />
             <div className="flex flex-col gap-4">
               <SignupButton />
               <p
                 aria-live="polite"
-                className={`my-2 text-sm text-center min-h-[1.25rem] ${
-                  state.message
+                className={`my-2 text-sm text-center min-h-5 ${
+                  signupMessage
                     ? state.success
                       ? "text-green-500"
                       : "text-red-500"
-                    : "text-transparent"
+                    : "invisible"
                 }`}
               >
                 {state.message}
@@ -272,15 +292,16 @@ export default function LoginPage() {
                     autoComplete="email"
                     placeholder="Enter email..."
                     required
+                    maxLength={128}
                   />
                   <p
                     aria-live="polite"
-                    className={`mt-4 text-sm text-center min-h-[1.25rem] ${
+                    className={`mt-4 text-sm text-center min-h-5 ${
                       state4.message
                         ? state4.success
                           ? "text-green-500"
                           : "text-red-500"
-                        : "text-transparent"
+                        : "invisible"
                     }`}
                   >
                     {state4.message}
@@ -311,7 +332,7 @@ export default function LoginPage() {
                 state3.success = false;
                 state4.success = false;
               }}
-              className="text-gray-100 border-2 border-blue-400 py-2 px-10 rounded-md bg-gradient-to-tr from-slate-950  to-blue-700 hover:from-blue-700 hover:to-slate-950 transform hover:scale-105 transition-all duration-200 cursor-pointer"
+              className="text-gray-100 border-2 border-blue-400 py-2 px-10 rounded-md bg-linear-to-tr from-slate-950  to-blue-700 hover:from-blue-700 hover:to-slate-950 transform hover:scale-105 transition-all duration-200 cursor-pointer"
             >
               {activeForm ? "Log in" : "Sign up"}
             </button>

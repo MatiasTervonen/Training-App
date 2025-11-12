@@ -7,10 +7,7 @@ import { useTimerStore } from "@/app/(app)/lib/stores/timerStore";
 import { useRef, useEffect } from "react";
 
 export default function ActiveSessionPopup() {
-  const activeSession = useTimerStore((state) => state.activeSession);
-  const alarmFired = useTimerStore((state) => state.alarmFired);
-  const setAlarmFired = useTimerStore((state) => state.setAlarmFired);
-  const totalDuration = useTimerStore((state) => state.totalDuration);
+  const { activeSession, alarmFired, totalDuration } = useTimerStore();
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -31,7 +28,6 @@ export default function ActiveSessionPopup() {
       audioRef.current.pause();
       audioRef.current.currentTime = 0;
     }
-    setAlarmFired(false);
   };
 
   if (!activeSession) return null;
@@ -45,12 +41,12 @@ export default function ActiveSessionPopup() {
     >
       <div className="ml-10">
         <p className="pb-2 text-start text-slate-900">{activeSession.label}</p>
-        <div className="flex gap-5 text-slate-900 text-start">
+        <div className="flex  gap-5 text-slate-900 text-start items-center">
           <Timer />
           <p>{activeSession.type.toUpperCase()}</p>
-          {alarmFired && <p className="text-gray-100">ALARM!</p>}
+          {alarmFired && <p>ALARM!</p>}
           {activeSession.type === "timer" && totalDuration && (
-            <p>
+            <p className="text-nowrap">
               {Math.floor(totalDuration / 60)} min {totalDuration % 60} sec
             </p>
           )}

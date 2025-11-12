@@ -6,21 +6,21 @@ import {
   Trash2,
   SquareArrowOutUpRight,
 } from "lucide-react";
-import CustomInput from "../ui/CustomInput";
 import { useState, useEffect } from "react";
 import DeleteSessionBtn from "../ui/deleteSessionBtn";
-import NotesInput from "../ui/NotesInput";
 import Modal from "../components/modal";
 import SaveButton from "../ui/save-button";
 import FullScreenLoader from "../components/FullScreenLoader";
 import toast from "react-hot-toast";
 import { updateFeed } from "@/app/(app)/lib/revalidateFeed";
 import { useRouter } from "next/navigation";
-import { handleError } from "../utils/handleError";
+import { saveTodoToDB } from "../database/todo";
+import TitleInput from "../ui/TitleInput";
+import SubNotesInput from "../ui/SubNotesInput";
 
 type TodoItem = {
   task: string;
-  notes?: string;
+  notes: string | null;
 };
 
 export default function Todo() {
@@ -51,11 +51,13 @@ export default function Todo() {
     } else {
       const draft = {
         title,
+        task,
+        notes,
         todoList: todoList,
       };
       localStorage.setItem("todo_draft", JSON.stringify(draft));
     }
-  }, [title, notes, todoList]);
+  }, [title, notes, todoList, task]);
 
   const handleDeleteItem = (index: number) => {
     const confirmDelete = window.confirm(
@@ -78,35 +80,14 @@ export default function Todo() {
   const handleSaveTodo = async () => {
     setLoading(true);
     try {
-      const response = await fetch("/api/todo-list/save-todo", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          title,
-          todoList,
-        }),
-      });
-
-      if (!response.ok) {
-        setLoading(false);
-        throw new Error("Failed to save todo");
-      }
-
-      await response.json();
+      await saveTodoToDB({ title, todoList });
 
       updateFeed();
 
       toast.success("Todo saved successfully");
       router.push("/dashboard");
       handleDeleteAll();
-    } catch (error) {
-      handleError(error, {
-        message: "Error saving todo",
-        route: "/api/todo-list/save-todo",
-        method: "POST",
-      });
+    } catch {
       toast.error("Failed to save todo");
       setLoading(false);
     }
@@ -119,29 +100,26 @@ export default function Todo() {
           <h1 className="text-2xl text-gray-100">Todo List </h1>
           <ListTodo color="#f3f4f6" size={30} />
         </div>
-        <CustomInput
+        <TitleInput
           placeholder="Title"
           label="Add title to your todo list"
           value={title}
           setValue={setValue}
-          maxLength={50}
         />
         <div className="mt-5">
-          <CustomInput
+          <TitleInput
             placeholder="Enter task..."
             label="Add task to your todo list"
             value={task}
             setValue={setTask}
-            maxLength={150}
           />
         </div>
         <div className="mt-5">
-          <NotesInput
+          <SubNotesInput
             placeholder="Enter notes...(optional)"
             label="Add notes to your task"
             notes={notes}
             setNotes={setNotes}
-            maxLength={1000}
           />
         </div>
         <button
@@ -157,7 +135,7 @@ export default function Todo() {
         </button>
         <div className="flex flex-col items-center my-10">
           <div className="bg-slate-950 px-4 rounded-xl pb-5 w-full">
-            <h2 className="text-gray-100 my-10 text-2xl text-center break-words line-clamp-2">
+            <h2 className="text-gray-100 my-10 text-2xl text-center wrap-break-word line-clamp-2">
               {title || "My Todo List"}
             </h2>
             <ul className="flex flex-col gap-5">
@@ -166,7 +144,7 @@ export default function Todo() {
                   className="text-gray-100 text-lg border p-2 rounded-md flex justify-between gap-2 bg-slate-900"
                   key={index}
                 >
-                  <p className="overflow-hidden break-words line-clamp-2">
+                  <p className="overflow-hidden wrap-break-word line-clamp-2">
                     {item.task}
                   </p>
                   <div className="flex gap-4">
@@ -190,7 +168,7 @@ export default function Todo() {
                           <>
                             <h3 className="my-5 text-2xl">Edit Task</h3>
                             <div className="my-10 w-full">
-                              <CustomInput
+                              <TitleInput
                                 placeholder="Edit task..."
                                 label="Edit your task"
                                 value={modalDraft.task}
@@ -203,7 +181,7 @@ export default function Todo() {
                               />
                             </div>
                             <div className="w-full">
-                              <NotesInput
+                              <SubNotesInput
                                 placeholder="Enter notes...(optional)"
                                 label="Add your notes"
                                 notes={modalDraft.notes}
@@ -244,10 +222,10 @@ export default function Todo() {
                           </>
                         ) : (
                           <div>
-                            <h3 className="text-gray-100 text-2xl my-10 w-full break-words overflow-hidden text-center">
+                            <h3 className="text-gray-100 text-2xl my-10 w-full wrap-break-word overflow-hidden text-center">
                               {item.task}
                             </h3>
-                            <p className="text-gray-400 w-full break-words overflow-hidden text-center">
+                            <p className="text-gray-400 w-full wrap-break-word overflow-hidden text-center">
                               {item.notes || "No notes available"}
                             </p>
                             <div className="flex w-full gap-5 mt-20">

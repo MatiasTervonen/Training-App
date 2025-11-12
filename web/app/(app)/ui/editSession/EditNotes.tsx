@@ -1,14 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import NotesInput from "@/app/(app)/ui/NotesInput";
-import CustomInput from "@/app/(app)/ui/CustomInput";
 import SaveButton from "@/app/(app)/ui/save-button";
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import toast from "react-hot-toast";
 import { handleError } from "../../utils/handleError";
 import { editNotes } from "../../database/notes";
 import { notes } from "../../types/models";
+import SubNotesInput from "../SubNotesInput";
+import TitleInput from "../TitleInput";
 
 type Props = {
   note: notes;
@@ -45,7 +45,7 @@ export default function EditNotes({ note, onClose, onSave }: Props) {
         <div className="flex flex-col items-center gap-5 mx-6 mt-5 h-full ">
           <h2 className="text-gray-100 text-lg text-center">Edit your notes</h2>
           <div className="w-full">
-            <CustomInput
+            <TitleInput
               value={title || ""}
               setValue={setValue}
               placeholder="Notes title..."
@@ -53,7 +53,7 @@ export default function EditNotes({ note, onClose, onSave }: Props) {
             />
           </div>
           <div className="flex w-full grow">
-            <NotesInput
+            <SubNotesInput
               notes={notes || ""}
               setNotes={setNotes}
               placeholder="Write your notes here..."

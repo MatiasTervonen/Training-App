@@ -36,14 +36,14 @@ export default function GymSession(gym_session: full_gym_session) {
         <h3 className="mt-2">
           Duration: {formatDuration(gym_session.duration)}
         </h3>
-        <p className="mt-4 text-gray-200 whitespace-pre-wrap break-words overflow-hidden max-w-full">
+        <p className="mt-4 text-gray-200 whitespace-pre-wrap wrap-break-word overflow-hidden max-w-full">
           {gym_session.notes}
         </p>
       </div>
       {Object.entries(groupedExercises).map(([superset_id, group]) => (
         <div
           key={superset_id}
-          className={`mt-10 bg-gradient-to-tr from-gray-900 via-slate-800 to-blue-900 rounded-md mx-2 ${
+          className={`mt-10 bg-linear-to-tr from-gray-900 via-slate-800 to-blue-900 rounded-md mx-2 ${
             group.length > 1
               ? "border-2 border-blue-700"
               : "border-2 border-gray-700"
@@ -70,7 +70,7 @@ export default function GymSession(gym_session: full_gym_session) {
                   {exercise.gym_exercises.equipment}
                 </h2>
               </div>
-              <div className="py-2 whitespace-pre-wrap break-words overflow-hidden max-w-full">
+              <div className="py-2 whitespace-pre-wrap wrap-break-word overflow-hidden max-w-full">
                 {exercise.notes || ""}
               </div>
               <table className="w-full text-left">

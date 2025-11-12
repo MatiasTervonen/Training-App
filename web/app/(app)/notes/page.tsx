@@ -5,13 +5,12 @@ import { useRouter } from "next/navigation";
 import SaveButton from "@/app/(app)/ui/save-button";
 import DeleteSessionBtn from "@/app/(app)/ui/deleteSessionBtn";
 import NotesInput from "@/app/(app)/ui/NotesInput";
-import CustomInput from "@/app/(app)/ui/CustomInput";
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import toast from "react-hot-toast";
 import { useDebouncedCallback } from "use-debounce";
 import { updateFeed } from "@/app/(app)/lib/revalidateFeed";
-import { handleError } from "../utils/handleError";
 import { saveNotesToDB } from "../database/notes";
+import TitleInput from "../ui/TitleInput";
 
 export default function Notes() {
   const [notes, setNotes] = useState("");
@@ -64,13 +63,8 @@ export default function Notes() {
       await updateFeed();
       router.push("/dashboard");
       resetNotes();
-    } catch (error) {
+    } catch {
       setIsSaving(false);
-      handleError(error, {
-        message: "Error saving notes",
-        route: "server-action: saveNotesToDB",
-        method: "direct",
-      });
       toast.error("Failed to save notes. Please try again.");
     }
   };
@@ -83,20 +77,27 @@ export default function Notes() {
             Add your notes here
           </p>
           <div className="mb-5 w-full">
-            <CustomInput
+            <TitleInput
               value={title}
               setValue={setTitle}
               placeholder="Notes title..."
               label="Title..."
             />
           </div>
-          <div className="flex w-full flex-grow">
+          <div className="w-full flex-1 flex">
             <NotesInput
               notes={notes}
               setNotes={setNotes}
               placeholder="Write your notes here..."
               label="Notes..."
+              fillAvailableSpace
+              maxLength={10000}
             />
+            {title.length >= 10000 ? (
+              <p className="text-yellow-400 mt-2">
+                Reached the limit (10000 chars max)
+              </p>
+            ) : null}
           </div>
         </div>
         <div className="flex flex-col items-center gap-5 mb-10  self-center w-full">

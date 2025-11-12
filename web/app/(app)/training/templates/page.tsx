@@ -11,7 +11,6 @@ import { full_gym_template } from "../../types/models";
 import TemplateCard from "@/app/(app)/components/cards/TemplateCard";
 import Spinner from "../../components/spinner";
 import GymTemplate from "@/app/(app)/components/expandSession/template";
-import { handleError } from "../../utils/handleError";
 import { deleteTemplate } from "../../database/template";
 
 type templateSummary = {
@@ -52,7 +51,7 @@ export default function TemplatesPage() {
       exercises: workoutExercises,
     };
 
-    localStorage.setItem("gym_session_draft", JSON.stringify(sessionDraft));
+    localStorage.setItem("gym_draft", JSON.stringify(sessionDraft));
     localStorage.setItem("startedFromTemplate", "true");
     router.push("/training/gym");
   };
@@ -75,12 +74,7 @@ export default function TemplatesPage() {
       await deleteTemplate(templateId);
 
       toast.success("Template deleted successfully!");
-    } catch (error) {
-      handleError(error, {
-        message: "Error deleting template",
-        route: "templates page",
-        method: "delete",
-      });
+    } catch {
       toast.error("Failed to delete template. Please try again.");
       mutate("/api/gym/get-templates");
     }

@@ -32,7 +32,7 @@ export async function saveNotesToDB({ title, notes }: SaveNotesProps) {
       route: "server-action: saveNotesToDB",
       method: "direct",
     });
-    throw new Error(notesError?.message || "Failed to save notes");
+    throw new Error("Failed to save notes");
   }
 
   return { success: true };
@@ -66,7 +66,7 @@ export async function editNotes({ id, title, notes }: EditNotesProp) {
       route: "server-action: editNotes",
       method: "direct",
     });
-    throw new Error(notesError?.message || "Failed to edit notes");
+    throw new Error("Failed to edit notes");
   }
 
   return { success: true };

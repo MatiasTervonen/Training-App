@@ -341,7 +341,7 @@ export default function DiscGolfGame() {
     <>
       <nav className="flex items-center justify-between bg-gray-700 p-2 px-4 w-full z-40 max-w-3xl mx-auto">
         <div className="flex items-center justify-center gap-2  text-gray-100">
-          <Timer buttonsAlwaysVisible />
+          <Timer />
         </div>
         <Link href="/disc-golf/score-summary" className="text-gray-100">
           Live Scorecard
@@ -373,7 +373,7 @@ export default function DiscGolfGame() {
                     >
                       -
                     </button>
-                    <span className="w-[20px] text-center">{par}</span>
+                    <span className="w-5 text-center">{par}</span>
                     <button
                       onClick={() => setPar((prev) => Math.min(5, prev + 1))}
                       className="bg-blue-800 text-gray-100 px-4 py-2 rounded"
@@ -417,7 +417,7 @@ export default function DiscGolfGame() {
                     >
                       -
                     </button>
-                    <span className="w-[20px] text-center">
+                    <span className="w-5 text-center">
                       {playerStats[player.name]?.strokes ?? 0}
                     </span>
                     <button

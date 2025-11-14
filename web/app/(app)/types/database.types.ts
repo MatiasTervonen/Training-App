@@ -1030,6 +1030,7 @@ export type Database = {
     }
     Functions: {
       get_jwt: { Args: never; Returns: Json }
+      last_30d_analytics: { Args: { uid: string }; Returns: Json }
     }
     Enums: {
       [_ in never]: never

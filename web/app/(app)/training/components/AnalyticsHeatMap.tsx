@@ -3,18 +3,18 @@
 import type { HeatMapValue } from "@uiw/react-heat-map";
 import HeatMap from "@uiw/react-heat-map";
 import { Tooltip } from "react-tooltip";
-import { full_gym_session } from "@/app/(app)/types/models";
 
 type SessionHeatMapValue = HeatMapValue & {
   title: string[];
 };
 
-export default function AnalyticsHeatMap({
-  data,
-}: {
-  data: full_gym_session[];
-}) {
-  function mapSessionDate(data: full_gym_session[]): SessionHeatMapValue[] {
+type HeatMapData = {
+  title: string;
+  created_at: string;
+}[];
+
+export default function AnalyticsHeatMap({ data }: { data: HeatMapData }) {
+  function mapSessionDate(data: HeatMapData): SessionHeatMapValue[] {
     const uniqueDates: { [key: string]: string[] } = {};
     data.forEach((session) => {
       const date = session.created_at.split("T")[0];
@@ -36,7 +36,7 @@ export default function AnalyticsHeatMap({
   return (
     <>
       <HeatMap
-        width={150}
+        width={100}
         value={sessionData}
         weekLabels={["", "Mon", "", "Wed", "", "Fri", ""]}
         monthLabels={[

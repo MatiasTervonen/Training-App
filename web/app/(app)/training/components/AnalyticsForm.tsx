@@ -1,12 +1,12 @@
 "use client";
 
-import { full_gym_session } from "../../types/models";
+import { Last30DaysAnalytics } from "../../types/session";
 import Spinner from "../../components/spinner";
 import ChartTabSwitcher from "./AnalyticsChartTabSwitcher";
 import AnalyticsHeatMap from "./AnalyticsHeatMap";
 
 type AnalyticsFormProps = {
-  data: full_gym_session[];
+  data: Last30DaysAnalytics;
   isLoading: boolean;
   error: Error | null;
 };
@@ -16,18 +16,6 @@ export default function AnalyticsForm({
   isLoading,
   error,
 }: AnalyticsFormProps) {
-  function totalSessions30Days(data: full_gym_session[]) {
-    return data.length;
-  }
-
-  function averageDuration(data: full_gym_session[]) {
-    const totalDuration = data.reduce(
-      (acc, session) => acc + session.duration,
-      0
-    );
-    return Math.round(totalDuration / 60 / data.length || 0);
-  }
-
   return (
     <div className="h-full bg-slate-800  rounded-xl">
       {!error && isLoading && (
@@ -43,28 +31,29 @@ export default function AnalyticsForm({
         </p>
       )}
 
-      {!error && !isLoading && data.length === 0 && (
+      {!error && !isLoading && data.analytics.total_sessions === 0 && (
         <p className="text-gray-300 text-center mt-20">
           No workout data available. Start logging your workouts to see
           analytics!
         </p>
       )}
 
-      {!isLoading && !error && data.length > 0 && (
+      {!isLoading && !error && data.analytics.total_sessions > 0 && (
         <>
           <div className="flex flex-col gap-4 bg-slate-900 p-4 rounded-2xl shadow-xl">
             <h2 className="text-xl mb-4 text-center">Last 30 Days Analytics</h2>
             <div className="sm:flex  items-center justify-center gap-10 ml-4">
               <div className="flex flex-col items-center gap-5">
                 <h3 className="text-lg">
-                  Total workouts: {totalSessions30Days(data)}
+                  Total workouts: {data.analytics.total_sessions}
                 </h3>
                 <h3 className="text-lg mb-5">
-                  Average Duration: {averageDuration(data)} minutes
+                  Average Duration:{" "}
+                  {Math.round(data.analytics.avg_duration / 60)} minutes
                 </h3>
               </div>
               <div className="flex justify-center items-center">
-                <AnalyticsHeatMap data={data} />
+                <AnalyticsHeatMap data={data.heatMap} />
               </div>
             </div>
             <h2 className="text-center">Muscle Group Distribution</h2>

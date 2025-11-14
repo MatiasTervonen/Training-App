@@ -1,4 +1,3 @@
-import { full_gym_session } from "../../types/models";
 import {
   BarChart,
   Bar,
@@ -10,34 +9,20 @@ import {
   LabelList,
 } from "recharts";
 import { useMemo } from "react";
+import { Last30DaysAnalytics } from "../../types/session";
 
 export default function MuscleGroupChart({
   data,
 }: {
-  data: full_gym_session[];
+  data: Last30DaysAnalytics;
 }) {
-  function muscle_groupDataSets(data: full_gym_session[]) {
-    const muscleGroupSetCount: { [key: string]: number } = {};
-    data.forEach((session) => {
-      session.gym_session_exercises.forEach((exercise) => {
-        const name = exercise.gym_exercises.muscle_group;
-
-        exercise.gym_sets.forEach(() => {
-          muscleGroupSetCount[name] = (muscleGroupSetCount[name] || 0) + 1;
-        });
-      });
-    });
-    return muscleGroupSetCount;
-  }
-
   const chartDataSets = useMemo(() => {
-    const entries = Object.entries(muscle_groupDataSets(data)).map(
-      ([name, value]) => ({
-        name,
-        sets: value,
-      })
-    );
-    return entries.sort((a, b) => b.sets - a.sets);
+    return data.analytics.sets_per_muscle_group
+      .map((item) => ({
+        name: item.group,
+        sets: item.count,
+      }))
+      .sort((a, b) => b.sets - a.sets);
   }, [data]);
 
   return (

@@ -121,4 +121,15 @@ export type FeedResponse = {
   nextPage: number | null;
 };
 
-
+export type Last30DaysAnalytics = {
+  analytics: {
+    total_sessions: number;
+    avg_duration: number;
+    muscle_groups: { group: string; count: number }[];
+    sets_per_muscle_group: { group: string; count: number }[];
+  };
+  heatMap: {
+    title: string;
+    created_at: string;
+  }[];
+};

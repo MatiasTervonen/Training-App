@@ -2,13 +2,13 @@
 
 import MuscleGroupChart from "./MuscleGroupChart";
 import MuscleGroupChartSets from "./MuscleGroupChartSets";
-import { full_gym_session } from "../../types/models";
 import { useState } from "react";
+import { Last30DaysAnalytics } from "../../types/session";
 
 export default function ChartTabSwitcher({
   data,
 }: {
-  data: full_gym_session[];
+  data: Last30DaysAnalytics;
 }) {
   const [activeTab, setActiveTab] = useState<
     "muscleGroups" | "muscleGroupSets"

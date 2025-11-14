@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-import { full_gym_session } from "../../types/models";
 import {
   BarChart,
   Bar,
@@ -10,36 +9,20 @@ import {
   ResponsiveContainer,
   LabelList,
 } from "recharts";
+import { Last30DaysAnalytics } from "../../types/session";
 
 export default function MuscleGroupChart({
   data,
 }: {
-  data: full_gym_session[];
+  data: Last30DaysAnalytics;
 }) {
-  function muscle_groupData(data: full_gym_session[]) {
-    const muscleGroupCount: { [key: string]: number } = {};
-    data.forEach((session) => {
-      session.gym_session_exercises.forEach((exercise) => {
-        const group = exercise.gym_exercises;
-        const name = group.muscle_group;
-        if (muscleGroupCount[name]) {
-          muscleGroupCount[name] += 1;
-        } else {
-          muscleGroupCount[name] = 1;
-        }
-      });
-    });
-    return muscleGroupCount;
-  }
-
   const chartData = useMemo(() => {
-    const entries = Object.entries(muscle_groupData(data)).map(
-      ([name, value]) => ({
-        name,
-        exercises: value,
-      })
-    );
-    return entries.sort((a, b) => b.exercises - a.exercises);
+    return data.analytics.muscle_groups
+      .map((item) => ({
+        name: item.group,
+        exercises: item.count,
+      }))
+      .sort((a, b) => b.exercises - a.exercises);
   }, [data]);
 
   return (

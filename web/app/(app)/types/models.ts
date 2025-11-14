@@ -140,3 +140,4 @@ export type FeedCardProps =
       onExpand: () => void;
       onEdit: () => void;
     };
+

@@ -4,37 +4,39 @@ import Link from "next/link";
 import Timer from "./timer";
 import { SquareArrowRight } from "lucide-react";
 import { useTimerStore } from "@/app/(app)/lib/stores/timerStore";
-import { useRef, useEffect } from "react";
+import { useEffect } from "react";
+import {
+  playAlarmAudio,
+  stopAlarmAudio,
+} from "@/app/(app)/timer/components/alarmAudio";
 
 export default function ActiveSessionPopup() {
-  const { activeSession, alarmFired, totalDuration } = useTimerStore();
-
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const {
+    activeSession,
+    alarmFired,
+    totalDuration,
+    alarmSoundPlaying,
+    setAlarmSoundPlaying,
+  } = useTimerStore();
 
   useEffect(() => {
-    if (alarmFired) {
-      if (!audioRef.current) {
-        audioRef.current = new Audio(
-          "/timer-audio/mixkit-classic-alarm-995.wav"
-        );
-        audioRef.current.loop = true;
-      }
-      audioRef.current.play();
+    if (alarmSoundPlaying) {
+      playAlarmAudio();
+    } else {
+      stopAlarmAudio();
     }
-  }, [alarmFired]);
+  }, [alarmSoundPlaying]);
 
-  const stopAlarm = () => {
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0;
-    }
+  const handleStopTimer = () => {
+    setAlarmSoundPlaying(false);
+    stopAlarmAudio();
   };
 
   if (!activeSession) return null;
 
   return (
     <div
-      onClick={stopAlarm}
+      onClick={handleStopTimer}
       className={`flex flex-row justify-between items-center text-center bg-gray-300 py-4 sticky top-0 z-10 border-2 border-green-500 ${
         alarmFired ? "bg-red-500 animate-pulse" : ""
       }`}
@@ -53,7 +55,7 @@ export default function ActiveSessionPopup() {
         </div>
       </div>
       <div className="mr-5">
-        <Link onClick={stopAlarm} href={activeSession.path}>
+        <Link onClick={handleStopTimer} href={activeSession.path}>
           <SquareArrowRight size={40} color="#0f172b" />
         </Link>
       </div>

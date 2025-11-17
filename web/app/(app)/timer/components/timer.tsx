@@ -23,18 +23,17 @@ export default function Timer({
     resumeTimer,
     startTimestamp,
     stopTimer,
+    setActiveSession,
   } = useTimerStore();
   const containerRef = useRef<HTMLDivElement>(null);
   const textRef = useRef<HTMLParagraphElement>(null);
   const [fontSize, setFontSize] = useState(16);
 
   useEffect(() => {
-    const { isRunning, startTimestamp } = useTimerStore.getState();
-
     if (isRunning && startTimestamp) {
       resumeTimer();
     }
-  }, [resumeTimer]);
+  }, [resumeTimer, isRunning, startTimestamp]);
 
   useEffect(() => {
     const handleVisibilityChange = () => {
@@ -117,7 +116,7 @@ export default function Timer({
             <button
               aria-label="Pause timer"
               onClick={handlePause}
-              className="hover:scale-95 transition-transform"
+              className="hover:scale-105 transition-transform duration-200"
             >
               <CirclePause size={40} />
             </button>
@@ -125,7 +124,7 @@ export default function Timer({
             <button
               aria-label="Start timer"
               onClick={handleStart}
-              className="hover:scale-95 transition-transform"
+              className="hover:scale-105 transition-transform duration-200"
             >
               <CirclePlay size={40} />
             </button>
@@ -147,6 +146,11 @@ export default function Timer({
               onClick={() => {
                 stopTimer();
                 startTimer(totalDuration);
+                setActiveSession({
+                  type: "timer",
+                  label: "Timer",
+                  path: "/timer/empty-timer",
+                });
               }}
               className="flex gap-2 items-center bg-blue-800 border-2 border-blue-500 py-2 px-4 rounded-md text-white hover:bg-blue-700 hover:scale-105 transition-all duration-200"
             >

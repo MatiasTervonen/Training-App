@@ -2,6 +2,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
+
 type ActiveSession = {
   label: string;
   path: string;
@@ -15,6 +16,7 @@ interface TimerState {
   totalDuration: number;
   alarmFired: boolean;
   startTimestamp: number | null;
+  alarmSoundPlaying: boolean;
   setActiveSession: (session: ActiveSession | null) => void;
   startTimer: (totalDuration: number) => void;
   stopTimer: () => void;
@@ -22,6 +24,7 @@ interface TimerState {
   pauseTimer: () => void;
   resumeTimer: () => void;
   setAlarmFired: (fired: boolean) => void;
+  setAlarmSoundPlaying: (playing: boolean) => void;
 }
 
 let interval: NodeJS.Timeout | null = null;
@@ -34,9 +37,11 @@ export const useTimerStore = create<TimerState>()(
       elapsedTime: 0,
       totalDuration: 0,
       alarmFired: false,
+      alarmSoundPlaying: false,
       startTimestamp: null,
 
       setActiveSession: (session) => set({ activeSession: session }),
+      setAlarmSoundPlaying: (playing) => set({ alarmSoundPlaying: playing }),
 
       startTimer: (totalDuration) => {
         if (interval) clearInterval(interval);
@@ -60,7 +65,11 @@ export const useTimerStore = create<TimerState>()(
 
           if (totalDuration > 0 && newElapsed >= totalDuration) {
             clearInterval(interval!);
-            set({ alarmFired: true });
+            set({
+              alarmFired: true,
+              alarmSoundPlaying: true,
+              isRunning: false,
+            });
           }
         }, 1000);
       },
@@ -75,6 +84,7 @@ export const useTimerStore = create<TimerState>()(
           isRunning: false,
           elapsedTime: state.totalDuration,
           alarmFired: false,
+          alarmSoundPlaying: false,
           activeSession: null,
           startTimestamp: null,
         }));
@@ -91,6 +101,7 @@ export const useTimerStore = create<TimerState>()(
           elapsedTime: 0,
           totalDuration: 0,
           alarmFired: false,
+          alarmSoundPlaying: false,
           activeSession: null,
           startTimestamp: null,
         });
@@ -144,7 +155,11 @@ export const useTimerStore = create<TimerState>()(
 
           if (totalDuration > 0 && newElapsed >= totalDuration) {
             clearInterval(interval!);
-            set({ alarmFired: true, isRunning: false });
+            set({
+              alarmFired: true,
+              alarmSoundPlaying: true,
+              isRunning: false,
+            });
           }
         }, 1000);
       },

@@ -26,6 +26,7 @@ export default function Timer({ className = "", manualSession }: TimerProps) {
     activeSession,
     resumeTimer,
     startTimestamp,
+    alarmFired,
   } = useTimerStore();
 
   useEffect(() => {
@@ -83,15 +84,24 @@ export default function Timer({ className = "", manualSession }: TimerProps) {
       <p className="font-mono font-bold leading-none">
         {formatTime(elapsedTime)}
       </p>
-      {isRunning ? (
-        <button aria-label="Pause timer" onClick={handlePause}>
-          <CirclePause size={20} />
-        </button>
-      ) : (
-        <button aria-label="Start timer" onClick={handleStart}>
-          <CirclePlay size={20} />
-        </button>
-      )}
+      {!alarmFired &&
+        (isRunning ? (
+          <button
+            className="hover:scale-105 transition-transform duration-200"
+            aria-label="Pause timer"
+            onClick={handlePause}
+          >
+            <CirclePause size={20} />
+          </button>
+        ) : (
+          <button
+            className="hover:scale-105 transition-transform duration-200"
+            aria-label="Start timer"
+            onClick={handleStart}
+          >
+            <CirclePlay size={20} />
+          </button>
+        ))}
     </div>
   );
 }

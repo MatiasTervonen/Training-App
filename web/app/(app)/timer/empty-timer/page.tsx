@@ -1,51 +1,46 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import SetInput from "@/app/(app)/training/components/SetInput";
 import Timer from "../components/timer";
 import { CircleX } from "lucide-react";
 import { useTimerStore } from "../../lib/stores/timerStore";
 import { AlarmClock } from "lucide-react";
+import { playAlarmAudio, stopAlarmAudio } from "../components/alarmAudio";
 
 export default function TimerPage() {
   const [alarmMinutes, setAlarmMinutes] = useState("");
   const [alarmSeconds, setAlarmSeconds] = useState("");
+  const [isCancelling, setIsCancelling] = useState(false);
 
   const router = useRouter();
-
-  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const {
     totalDuration,
     elapsedTime,
-    alarmFired,
+    alarmSoundPlaying,
     setAlarmFired,
     setActiveSession,
     startTimer,
+    setAlarmSoundPlaying,
     clearEverything,
   } = useTimerStore();
 
   const cancelTimer = () => {
-    const confirmCancel = confirm(
-      "Are you sure you want to cancel the timer? This will reset all fields."
-    );
+    const confirmCancel = confirm("Are you sure you want to cancel the timer?");
     if (!confirmCancel) return;
 
+    setIsCancelling(true);
+
+    stopAlarmAudio();
+
+    localStorage.removeItem("timer_session_draft");
+    clearEverything();
+    setAlarmMinutes("");
+    setAlarmSeconds("");
+
     router.replace("/timer");
-
-    setTimeout(() => {
-      localStorage.removeItem("timer_session_draft");
-      clearEverything();
-      setAlarmMinutes("");
-      setAlarmSeconds("");
-
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current.currentTime = 0;
-        audioRef.current = null;
-      }
-    }, 50);
   };
 
   const handleStartTimer = () => {
@@ -69,34 +64,26 @@ export default function TimerPage() {
     startTimer(totalSeconds);
   };
 
-  const playAlarm = () => {
-    if (!audioRef.current) {
-      audioRef.current = new Audio("/timer-audio/mixkit-classic-alarm-995.wav");
-      audioRef.current.loop = true;
-    }
-    audioRef.current.play();
+  const handleStopTimer = () => {
+    setAlarmSoundPlaying(false);
+    stopAlarmAudio();
   };
 
   useEffect(() => {
-    if (alarmFired) {
-      playAlarm();
+    if (alarmSoundPlaying) {
+      playAlarmAudio();
+    } else {
+      stopAlarmAudio();
     }
-  }, [alarmFired]);
+  }, [alarmSoundPlaying]);
 
-  const stopAlarm = () => {
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0;
-    }
-  };
-
-  const showTimerUI = totalDuration > 0;
+  const showTimerUI = isCancelling || totalDuration > 0;
 
   return (
     <div
       onClick={() => {
-        if (alarmFired) {
-          stopAlarm();
+        if (alarmSoundPlaying) {
+          handleStopTimer();
         }
       }}
       className="p-5 h-full relative"
@@ -110,7 +97,6 @@ export default function TimerPage() {
               </p>
 
               <Timer
-                onStopAlarmSound={stopAlarm}
                 className={`flex-col items-center justify-center w-full  ${
                   elapsedTime >= totalDuration
                     ? "animate-pulse text-red-500"
@@ -128,7 +114,7 @@ export default function TimerPage() {
           </div>
           <button>
             <CircleX
-              className="absolute top-5 right-5 text-gray-300 hover:text-red-500"
+              className="absolute top-5 right-5 text-gray-300 hover:text-red-500 hover:scale-105 transition-transform duration-200 cursor-pointer"
               size={30}
               onClick={cancelTimer}
             />

@@ -91,13 +91,7 @@ export default function Notes() {
               placeholder="Write your notes here..."
               label="Notes..."
               fillAvailableSpace
-              maxLength={10000}
             />
-            {title.length >= 10000 ? (
-              <p className="text-yellow-400 mt-2">
-                Reached the limit (10000 chars max)
-              </p>
-            ) : null}
           </div>
         </div>
         <div className="flex flex-col items-center gap-5 mb-10  self-center w-full">

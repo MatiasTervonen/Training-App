@@ -8,7 +8,6 @@ type NotesInputProps = {
   rows?: number;
   cols?: number;
   label?: string;
-  maxLength?: number;
   fillAvailableSpace?: boolean;
 };
 
@@ -19,7 +18,6 @@ export default function NotesInput({
   rows,
   cols,
   label,
-  maxLength,
   fillAvailableSpace = false,
 }: NotesInputProps) {
   const shouldGrow = !rows && !cols;
@@ -57,8 +55,13 @@ export default function NotesInput({
         rows={rows}
         cols={cols}
         onChange={(e) => setNotes(e.target.value)}
-        maxLength={maxLength}
+        maxLength={10000}
       />
+      {notes.length >= 10000 ? (
+        <p className="text-yellow-400 mt-2">
+          Reached the limit (10000 chars max)
+        </p>
+      ) : null}
     </div>
   );
 }

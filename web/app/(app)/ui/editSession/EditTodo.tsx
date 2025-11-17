@@ -94,51 +94,53 @@ export default function EditTodo({ todo_session, onClose, onSave }: Props) {
 
   return (
     <>
-      <div className="flex flex-col mx-auto w-full h-full bg-slate-800 max-w-lg">
-        <div className="flex flex-col items-center gap-5 mx-6 mt-5 h-full ">
-          <h2 className="text-gray-100 text-lg text-center">
-            Edit your todo lists
-          </h2>
+      <div className="flex flex-col mx-auto w-full h-full max-w-lg px-6 pt-10">
+        <div className="flex flex-col justify-between items-center gap-5 h-full ">
           <div className="w-full">
-            <TitleInput
-              value={sessionData.title}
-              setValue={handleTitleChange}
-              placeholder="Todo title..."
-              label="Title..."
-            />
-          </div>
-          <ul className="w-full">
-            {sessionData.todo_tasks.map((task, index) => (
-              <li
-                key={task.id}
-                className="text-gray-300 mb-5 bg-slate-900 p-4 rounded-lg"
-              >
-                <div className="flex justify-between">
-                  <p className="mb-2">{index + 1}.</p>
-                  <button
-                    onClick={() => handleDeleteItem(index)}
-                    className="text-red-500 hover:scale-105 cursor-pointer"
-                  >
-                    Delete
-                  </button>
-                </div>
-                <TitleInput
-                  value={task.task}
-                  setValue={(value) => updateTask(index, { task: value })}
-                  placeholder="Todo title..."
-                  label="Task..."
-                />
-                <div className="mt-5">
-                  <SubNotesInput
-                    notes={task.notes || ""}
-                    setNotes={(value) => updateTask(index, { notes: value })}
-                    placeholder="Todo notes..."
-                    label="Notes..."
+            <h2 className="text-lg text-center mb-10">
+              Edit your todo lists
+            </h2>
+            <div className="w-full mb-10">
+              <TitleInput
+                value={sessionData.title}
+                setValue={handleTitleChange}
+                placeholder="Todo title..."
+                label="Title..."
+              />
+            </div>
+            <ul className="w-full">
+              {sessionData.todo_tasks.map((task, index) => (
+                <li
+                  key={task.id}
+                  className="text-gray-300 mb-5 bg-slate-900 p-4 rounded-lg"
+                >
+                  <div className="flex justify-between">
+                    <p className="mb-2">{index + 1}.</p>
+                    <button
+                      onClick={() => handleDeleteItem(index)}
+                      className="text-red-500 hover:scale-105 cursor-pointer"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                  <TitleInput
+                    value={task.task}
+                    setValue={(value) => updateTask(index, { task: value })}
+                    placeholder="Todo title..."
+                    label="Task..."
                   />
-                </div>
-              </li>
-            ))}
-          </ul>
+                  <div className="mt-5">
+                    <SubNotesInput
+                      notes={task.notes || ""}
+                      setNotes={(value) => updateTask(index, { notes: value })}
+                      placeholder="Todo notes..."
+                      label="Notes..."
+                    />
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
           <div className="w-full py-10 flex flex-col gap-5">
             <button
               onClick={addNewTask}

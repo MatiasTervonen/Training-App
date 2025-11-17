@@ -268,7 +268,7 @@ export default function Todo() {
         <SaveButton disabled={!draft} onClick={handleSaveTodo} />
         <DeleteSessionBtn disabled={!draft} onDelete={handleDeleteAll} />
       </div>
-      {loading && <FullScreenLoader message="Saving..." />}
+      {loading && <FullScreenLoader message="Saving todolist..." />}
     </div>
   );
 }

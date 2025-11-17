@@ -5,7 +5,6 @@ import SaveButton from "@/app/(app)/ui/save-button";
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import { mutate } from "swr";
 import toast from "react-hot-toast";
-import { handleError } from "../../utils/handleError";
 import { editWeight } from "../../database/weight";
 import { weight } from "../../types/models";
 import SubNotesInput from "../SubNotesInput";
@@ -38,13 +37,8 @@ export default function EditWeight({ weight, onClose, onSave }: Props) {
 
       await onSave?.();
       onClose();
-    } catch (error) {
+    } catch {
       setIsSaving(false);
-      handleError(error, {
-        message: "Error editing weight session",
-        route: "/api/weight/edit-weight",
-        method: "POST",
-      });
       toast.error("Failed to update weight session");
       mutate("/api/feed");
     }
@@ -52,39 +46,44 @@ export default function EditWeight({ weight, onClose, onSave }: Props) {
 
   return (
     <>
-      <div className="flex flex-col w-full h-full mb-10 max-w-md mx-auto pt-15">
-        <div className="flex flex-col gap-10">
-          <h2 className="text-gray-100 text-lg text-center">
-            Edit your weight session
-          </h2>
-          <TitleInput
-            value={title || ""}
-            setValue={setValue}
-            placeholder="Weight title..."
-            label="Title..."
-          />
-          <SubNotesInput
-            notes={notes || ""}
-            setNotes={setNotes}
-            placeholder="Write your notes here..."
-            label="Notes..."
-          />
-
-          <label htmlFor="weight" className="flex flex-col gap-1 text-gray-300">
-            Weight...
-            <input
-              id="weight"
-              type="number"
-              inputMode="decimal"
-              value={weightValue}
-              onChange={(e) => setWeightValue(Number(e.target.value))}
-              placeholder="Enter your weight..."
-              className="custom-input text-lg p-2 rounded-md border-2 border-gray-100 z-10  placeholder-gray-500  text-gray-100 bg-[linear-gradient(50deg,#0f172a,#1e293b,#333333)] hover:border-blue-500 focus:outline-none focus:border-green-300"
+      <div className="flex flex-col w-full h-full max-w-lg mx-auto px-6 pt-10">
+        <div className="flex flex-col justify-between h-full">
+          <div className="flex flex-col gap-5">
+            <h2 className="text-lg text-center mb-5">
+              Edit your weight session
+            </h2>
+            <TitleInput
+              value={title || ""}
+              setValue={setValue}
+              placeholder="Weight title..."
+              label="Title..."
             />
-          </label>
-        </div>
-        <div className="w-full py-10">
-          <SaveButton onClick={handleSubmit} />
+            <SubNotesInput
+              notes={notes || ""}
+              setNotes={setNotes}
+              placeholder="Write your notes here..."
+              label="Notes..."
+            />
+
+            <label
+              htmlFor="weight"
+              className="flex flex-col gap-1 text-gray-300"
+            >
+              Weight...
+              <input
+                id="weight"
+                type="number"
+                inputMode="decimal"
+                value={weightValue}
+                onChange={(e) => setWeightValue(Number(e.target.value))}
+                placeholder="Enter your weight..."
+                className="custom-input text-lg p-2 rounded-md border-2 border-gray-100 z-10  placeholder-gray-500  text-gray-100 bg-[linear-gradient(50deg,#0f172a,#1e293b,#333333)] hover:border-blue-500 focus:outline-none focus:border-green-300"
+              />
+            </label>
+          </div>
+          <div className="w-full py-10">
+            <SaveButton onClick={handleSubmit} />
+          </div>
         </div>
       </div>
 

@@ -4,10 +4,9 @@ import { useState } from "react";
 import SaveButton from "@/app/(app)/ui/save-button";
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import toast from "react-hot-toast";
-import { handleError } from "../../utils/handleError";
 import { editNotes } from "../../database/notes";
 import { notes } from "../../types/models";
-import SubNotesInput from "../SubNotesInput";
+import NotesInput from "../SubNotesInput";
 import TitleInput from "../TitleInput";
 
 type Props = {
@@ -28,22 +27,17 @@ export default function EditNotes({ note, onClose, onSave }: Props) {
 
       await onSave?.();
       onClose();
-    } catch (error) {
+    } catch {
       setIsSaving(false);
-      handleError(error, {
-        message: "Error editing notes",
-        route: "server-action: editNotes",
-        method: "direct",
-      });
       toast.error("Failed to update notes");
     }
   };
 
   return (
     <>
-      <div className="flex flex-col mx-auto w-full h-full bg-slate-800 max-w-lg">
-        <div className="flex flex-col items-center gap-5 mx-6 mt-5 h-full ">
-          <h2 className="text-gray-100 text-lg text-center">Edit your notes</h2>
+      <div className="flex flex-col mx-auto w-full h-full max-w-lg px-6 pt-10">
+        <div className="flex flex-col items-center grow gap-5 h-full w-full">
+          <h2 className="text-lg text-center mb-10">Edit your notes</h2>
           <div className="w-full">
             <TitleInput
               value={title || ""}
@@ -52,12 +46,13 @@ export default function EditNotes({ note, onClose, onSave }: Props) {
               label="Title..."
             />
           </div>
-          <div className="flex w-full grow">
-            <SubNotesInput
+          <div className="w-full flex-1 flex">
+            <NotesInput
               notes={notes || ""}
               setNotes={setNotes}
               placeholder="Write your notes here..."
               label="Notes..."
+              fillAvailableSpace
             />
           </div>
           <div className="w-full py-10">

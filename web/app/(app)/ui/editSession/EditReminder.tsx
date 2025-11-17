@@ -7,7 +7,6 @@ import { mutate } from "swr";
 import toast from "react-hot-toast";
 import DateTimePicker from "@/app/(app)/components/DateTimePicker";
 import { Bell } from "lucide-react";
-import { handleError } from "../../utils/handleError";
 import { formatDateTime } from "../../lib/formatDate";
 import { editReminder } from "../../database/reminder";
 import { reminders } from "../../types/models";
@@ -72,12 +71,7 @@ export default function EditReminder({ reminder, onClose, onSave }: Props) {
       onClose();
 
       mutate("/api/feed");
-    } catch (error) {
-      handleError(error, {
-        message: "Error editing reminder",
-        route: "/api/reminders/edit-reminders",
-        method: "POST",
-      });
+    } catch {
       toast.error("Failed to update reminder");
       mutate("/api/feed");
     } finally {
@@ -87,7 +81,7 @@ export default function EditReminder({ reminder, onClose, onSave }: Props) {
 
   return (
     <>
-      <div className="flex flex-col mx-auto w-full h-full bg-slate-800 max-w-lg">
+      <div className="flex flex-col mx-auto w-full h-full max-w-lg px-6 pt-10">
         <div className="flex flex-col items-center gap-5 mx-6 mt-5 h-full ">
           <h2 className="flex items-center gap-2 text-gray-100 text-lg text-center">
             <p>Edit your reminder</p>

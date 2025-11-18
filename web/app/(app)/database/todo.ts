@@ -148,3 +148,46 @@ export async function editTodo({
 
   return { success: true };
 }
+
+type TodoTaskCheck = {
+  todo_tasks: {
+    id: string;
+    list_id: string;
+    task: string;
+    is_completed: boolean;
+  }[];
+};
+
+export async function checkedTodo({ todo_tasks }: TodoTaskCheck) {
+  const supabase = await createClient();
+
+  const { data, error: authError } = await supabase.auth.getClaims();
+  const user = data?.claims;
+
+  if (authError || !user) {
+    throw new Error("Unauthorized");
+  }
+
+  const upsertedTasks = todo_tasks.map((task) => ({
+    id: task.id,
+    list_id: task.list_id,
+    task: task.task,
+    is_completed: task.is_completed,
+    user_id: user.sub,
+  }));
+
+  const { error: listError } = await supabase
+    .from("todo_tasks")
+    .upsert(upsertedTasks, { onConflict: "id" });
+
+  if (listError) {
+    handleError(listError, {
+      message: "Error checking todo tasks",
+      route: "server-action: checkedTodo",
+      method: "direct",
+    });
+    throw new Error("Error checking todo tasks");
+  }
+
+  return { success: true };
+}

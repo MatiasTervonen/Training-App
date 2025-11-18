@@ -8,6 +8,7 @@ import toast from "react-hot-toast";
 import SaveButton from "../../ui/save-button";
 import Modal from "../modal";
 import FullScreenLoader from "../FullScreenLoader";
+import { checkedTodo } from "../../database/todo";
 
 type TodoSessionProps = {
   initialTodo: full_todo_session;
@@ -37,28 +38,18 @@ export default function TodoSession({
     setIsSaving(true);
 
     try {
-      const response = await fetch("/api/todo-list/checked-todo", {
-        method: "POST",
-        headers: {
-          "content-type": "application/json",
-        },
-        body: JSON.stringify({
-          todo_tasks: sessionData.todo_tasks.map((task) => ({
-            id: task.id,
-            list_id: task.list_id,
-            is_completed: task.is_completed,
-          })),
-        }),
+      await checkedTodo({
+        todo_tasks: sessionData.todo_tasks.map((task) => ({
+          id: task.id,
+          list_id: task.list_id,
+          task: task.task,
+          is_completed: task.is_completed,
+        })),
       });
-
-      if (!response.ok) {
-        throw new Error("Failed to save changes");
-      }
 
       await mutateFullTodoSession();
       toast.success("Changes saved successfully");
-    } catch (error) {
-      console.error(error);
+    } catch {  
       toast.error("Failed to save changes");
     } finally {
       setIsSaving(false);

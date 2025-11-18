@@ -8,6 +8,7 @@ import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import { useSWRConfig } from "swr";
 import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
 import { clearLocalStorage } from "../utils/clearLocalStorage";
+import toast from "react-hot-toast";
 
 export default function SignOutButton() {
   const [isLoading, setIsLoading] = useState(false);
@@ -24,7 +25,7 @@ export default function SignOutButton() {
     const { error } = await supabase.auth.signOut({ scope: "local" });
 
     if (error) {
-      console.error("Error logging out:", error.message);
+      toast.error("Error logging out. Please try again!")
       setIsLoading(false);
       return;
     }

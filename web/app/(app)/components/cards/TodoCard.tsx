@@ -74,16 +74,13 @@ export default function TodoCard({
       </div>
 
       <div className="flex justify-between items-center mt-2 bg-black/40 rounded-b-md">
-        {/* Icon */}
 
         <div className="flex items-center gap-4">
           <div className="pl-2">
             <ListTodo size={20} />
           </div>
           <span>Todo</span>
-
-          {/* Date */}
-
+          
           <div>
             <p className={`${pinned ? "text-slate-900" : "text-gray-100"}`}>
               {formatDate(item.created_at!)}

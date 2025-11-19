@@ -87,10 +87,10 @@ export default function NotesCard({
 
           <div>
             <p className={` ${pinned ? "text-slate-900" : "text-gray-100"}`}>
-              <span className="hidden sm:inline">
+              <span className="hidden xs:inline">
                 {formatDate(item.created_at)}
               </span>
-              <span className="inline sm:hidden">
+              <span className="inline xs:hidden">
                 {formatDateShort(item.created_at)}
               </span>
             </p>

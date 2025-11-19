@@ -7,7 +7,7 @@ export default function CopyButton({
   label = "Copy Notes",
 }: {
   targetId: string;
-  label: string;
+  label?: string;
 }) {
   const handleCopy = async () => {
     const element = document.getElementById(targetId);

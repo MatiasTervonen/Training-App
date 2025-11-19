@@ -72,7 +72,7 @@ export async function editReminder({
   const { error } = await supabase
     .from("reminders")
     .update({ title, notes: notes, notify_at })
-    .eq("id", id!)
+    .eq("id", id)
     .eq("user_id", user.sub);
 
   if (error) {
@@ -82,6 +82,34 @@ export async function editReminder({
       method: "direct",
     });
     throw new Error("Error editing reminder");
+  }
+
+  return { success: true };
+}
+
+export async function deleteReminder(id: string) {
+  const supabase = await createClient();
+
+  const { data, error: authError } = await supabase.auth.getClaims();
+  const user = data?.claims;
+
+  if (authError || !user) {
+    throw new Error("Unauthorized");
+  }
+
+  const { error } = await supabase
+    .from("reminders")
+    .delete()
+    .eq("id", id)
+    .eq("user_id", user.sub);
+
+  if (error) {
+    handleError(error, {
+      message: "Error deleting reminder",
+      route: "server-action: deleteReminder",
+      method: "direct",
+    });
+    throw new Error("Error deleting reminder");
   }
 
   return { success: true };

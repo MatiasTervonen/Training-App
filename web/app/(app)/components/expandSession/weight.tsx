@@ -8,19 +8,15 @@ export default function WeightSession(weight: weight) {
     useUserStore((state) => state.preferences?.weight_unit) || "kg";
 
   return (
-    <div
-      className="text-center px-4 text-gray-100 max-w-md mx-auto"
-    >
+    <div className="text-center px-4 text-gray-100 max-w-md mx-auto">
       <div className="text-sm text-gray-400 mt-5">
         {formatDate(weight.created_at!)}
       </div>
       <div id="notes-id">
-        <div className="my-5 text-xl break-words">{weight.title}</div>
-        <div className="whitespace-pre-wrap break-words overflow-hidden max-w-full text-left bg-slate-900 p-4 rounded-md shadow-lg">
+        <div className="my-5 text-xl wrap-break-word">{weight.title}</div>
+        <div className="whitespace-pre-wrap wrap-break-word overflow-hidden max-w-full text-left bg-slate-900 p-4 rounded-md shadow-lg">
           <div className="flex flex-col">
-            {weight.notes && (
-              <p className="mb-5">{weight.notes}</p> 
-            )}
+            {weight.notes && <p className="mb-5">{weight.notes}</p>}
             <p className="text-center">
               {weight.weight} {weightUnit}
             </p>
@@ -28,7 +24,7 @@ export default function WeightSession(weight: weight) {
         </div>
         <Link
           href="/weight/analytics"
-          className="mt-10 flex items-center justify-center w-full gap-2 bg-blue-800 py-2 rounded-md shadow-xl border-2 border-blue-500 text-gray-100  cursor-pointer hover:bg-blue-700 hover:scale-95"
+          className="mt-10 flex items-center justify-center w-full gap-2 bg-blue-800 py-2 rounded-md shadow-xl border-2 border-blue-500 text-gray-100  cursor-pointer hover:bg-blue-700 hover:scale-105 transition-transform duration-200"
         >
           View Full History
         </Link>

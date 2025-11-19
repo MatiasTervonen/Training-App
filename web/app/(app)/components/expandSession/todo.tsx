@@ -49,7 +49,7 @@ export default function TodoSession({
 
       await mutateFullTodoSession();
       toast.success("Changes saved successfully");
-    } catch {  
+    } catch {
       toast.error("Failed to save changes");
     } finally {
       setIsSaving(false);
@@ -61,7 +61,7 @@ export default function TodoSession({
     JSON.stringify(initialTodo.todo_tasks);
 
   return (
-    <div className="text-center text-gray-100 max-w-lg mx-auto flex flex-col h-full justify-between px-4">
+    <div className="text-center max-w-lg mx-auto flex flex-col h-full justify-between px-4">
       <div className="flex flex-col items-center">
         <div className="text-sm text-gray-400 mb-10 mt-5">
           {formatDate(sessionData.created_at!)}
@@ -75,10 +75,7 @@ export default function TodoSession({
           <ul className="flex flex-col gap-5">
             {sessionData.todo_tasks.map((task, index) => {
               return (
-                <div
-                  key={task.id}
-                  className="flex gap-4 items-center relative "
-                >
+                <div key={task.id} className="flex gap-4 items-center relative">
                   <input
                     onChange={() => {
                       toggleCompleted(index);
@@ -87,8 +84,10 @@ export default function TodoSession({
                     type="checkbox"
                     className=" h-6 w-6 rounded-md border border-gray-400 bg-slate-800 cursor-pointer transition-colors"
                   />
-                  <li className="grow w-full text-gray-100 text-lg border p-2 rounded-md flex justify-between gap-2 bg-slate-900">
-                    <p className="line-clamp-2 text-left">{task.task}</p>
+                  <li className="w-full text-lg border p-2 rounded-md flex justify-between gap-2 bg-slate-900 min-w-0">
+                    <p className="text-left  line-clamp-2 wrap-break-word mr-2">
+                      {task.task}
+                    </p>
                     <div className="flex gap-4">
                       <button
                         onClick={() => setOpen(index)}
@@ -106,7 +105,7 @@ export default function TodoSession({
                         isOpen={true}
                       >
                         <div className="flex flex-col  max-w-lg mx-auto px-5">
-                          <h3 className="text-gray-100 text-2xl my-10">
+                          <h3 className="text-2xl my-10 wrap-break-word">
                             {task.task}
                           </h3>
                           <p className="text-gray-20 bg-slate-900 p-10 whitespace-pre-wrap wrap-break-word rounded-md text-left">

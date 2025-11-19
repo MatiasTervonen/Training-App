@@ -107,7 +107,7 @@ export default function EditReminder({ reminder, onClose, onSave }: Props) {
               }
             />
           </div>
-          <div className="flex w-full grow">
+          <div className="w-full flex-1">
             <SubNotesInput
               notes={notes || ""}
               setNotes={setNotes}

@@ -1,8 +1,7 @@
 import { handleError } from "@/app/(app)/utils/handleError";
 import { createClient } from "@/utils/supabase/server";
-import { NextRequest } from "next/server";
 
-export async function POST(req: NextRequest) {
+export async function GET() {
   const supabase = await createClient();
 
   const { data, error: authError } = await supabase.auth.getClaims();
@@ -12,19 +11,15 @@ export async function POST(req: NextRequest) {
     return new Response("Unauthorized", { status: 401 });
   }
 
-  const body = await req.json();
-  const { id, title, notes, notify_at } = body;
-
-  const { error } = await supabase
+  const { data: reminders, error } = await supabase
     .from("reminders")
-    .update({ title, notes, notify_at })
-    .eq("id", id)
+    .select("*")
     .eq("user_id", user.sub);
 
   if (error) {
     handleError(error, {
-      message: "Error updating reminder",
-      route: "/api/reminders/edit-reminders",
+      message: "Error fetting reminders",
+      route: "/api/reminders/get-reminders",
       method: "POST",
     });
     return new Response(JSON.stringify({ error: error.message }), {
@@ -33,7 +28,7 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  return new Response(JSON.stringify({ success: true }), {
+  return new Response(JSON.stringify(reminders), {
     status: 200,
     headers: { "Content-Type": "application/json" },
   });

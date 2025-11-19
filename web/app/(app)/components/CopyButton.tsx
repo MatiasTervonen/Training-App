@@ -2,7 +2,13 @@
 
 import toast from "react-hot-toast";
 
-export default function CopyButton({ targetId }: { targetId: string }) {
+export default function CopyButton({
+  targetId,
+  label = "Copy Notes",
+}: {
+  targetId: string;
+  label: string;
+}) {
   const handleCopy = async () => {
     const element = document.getElementById(targetId);
 
@@ -13,7 +19,7 @@ export default function CopyButton({ targetId }: { targetId: string }) {
 
     try {
       await navigator.clipboard.writeText(element.innerText);
-      toast.success("Notes copied to clipboard!");
+      toast.success("Copied to clipboard!");
     } catch {
       toast.error("Failed to copy notes.");
     }
@@ -23,9 +29,9 @@ export default function CopyButton({ targetId }: { targetId: string }) {
     <button
       aria-label="Copy Notes"
       onClick={handleCopy}
-      className="mt-10 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 hover:scale-105 transition-all duration-200 cursor-pointer"
+      className="mt-10 px-4 py-2 bg-blue-800 border-2 border-blue-500 rounded hover:bg-blue-700 hover:scale-105 transition-all duration-200 cursor-pointer"
     >
-      Copy Notes
+      {label}
     </button>
   );
 }

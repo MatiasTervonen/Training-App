@@ -112,7 +112,7 @@ export default function Page() {
 
   return (
     <div className="p-5 h-full relative">
-      <div className="max-w-md mx-auto">
+      <div className="max-w-md mx-auto pb-20">
         <h1 className="flex justify-center my-5 text-2xl">Security Settings</h1>
         <h2 className="my-5 underline">Reset Password</h2>
         <p className="text-gray-300 mb-5 text-sm">

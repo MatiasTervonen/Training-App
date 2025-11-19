@@ -50,7 +50,7 @@ export default function Sessions() {
 
   return (
     <div className="relative max-w-7xl mx-auto h-full px-4 mt-5">
-      <h1 className="text-2xl">User Analytics</h1>
+      <h1 className="text-2xl text-center mb-10">User Analytics</h1>
 
       <div className="flex items-center justify-between mb-4">
         <div>

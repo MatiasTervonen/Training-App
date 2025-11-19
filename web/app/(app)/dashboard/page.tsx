@@ -1,6 +1,5 @@
 "use client";
 
-import ActiveSessionPopup from "../components/activeSessionPopup";
 import SessionFeed from "../ui/homepage/sessionFeed";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
@@ -32,7 +31,6 @@ export default function Home() {
 
   return (
     <>
-      <ActiveSessionPopup />
       <SessionFeed />
     </>
   );

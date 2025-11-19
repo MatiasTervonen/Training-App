@@ -8,6 +8,7 @@ import { useTransitionDirectionStore } from "@/app/(app)/lib/stores/transitionDi
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
+import { useModalPageConfig } from "@/app/(app)/lib/stores/modalPageConfig";
 
 type Props = {
   children: ReactNode;
@@ -29,6 +30,8 @@ export default function ModalPageWrapper({
   const router = useRouter();
   const pathname = usePathname();
   const firstRender = useRef(true);
+
+  const { blockSwipe } = useModalPageConfig();
 
   useEffect(() => {
     firstRender.current = false;
@@ -90,10 +93,7 @@ export default function ModalPageWrapper({
                     <p key={index}>{letter}</p>
                   ))}
               </div>
-              <SquareArrowRight
-                size={35}
-                className="animate-pulse"
-              />
+              <SquareArrowRight size={35} className="animate-pulse" />
             </>
           )}
         </div>
@@ -103,7 +103,7 @@ export default function ModalPageWrapper({
         key={pathname}
         className="absolute z-30 w-full h-full overflow-y-auto bg-slate-800"
         custom={direction}
-        drag="x"
+        drag={blockSwipe ? false : "x"}
         onAnimationComplete={() => {
           setDirection(0);
         }}
@@ -131,10 +131,12 @@ export default function ModalPageWrapper({
           }
 
           if (swipedLeft) {
+            if (blockSwipe === true) return;
             handleSwipeLeft();
           }
 
           if (swipedRight) {
+            if (blockSwipe === true) return;
             handleSwipeRight();
           }
         }}

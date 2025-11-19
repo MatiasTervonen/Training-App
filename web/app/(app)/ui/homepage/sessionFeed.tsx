@@ -29,6 +29,10 @@ import { useRouter } from "next/navigation";
 import { deleteSession } from "../../database/feed";
 import { pinItem, unpinItem } from "../../database/pinned";
 import { FeedCardProps } from "@/app/(app)/types/models";
+import useEmblaCarousel from "embla-carousel-react";
+import Autoplay from "embla-carousel-autoplay";
+import { useModalPageConfig } from "@/app/(app)/lib/stores/modalPageConfig";
+import ActiveSessionPopup from "@/app/(app)/components/activeSessionPopup";
 
 type FeedItem = FeedCardProps;
 
@@ -36,7 +40,6 @@ type FeedResponse = {
   feed: Feed_item[];
   nextPage: number | null;
 };
-
 
 export default function SessionFeed() {
   const [expandedItem, setExpandedItem] = useState<FeedItem | null>(null);
@@ -51,6 +54,8 @@ export default function SessionFeed() {
   const loadingMoreRef = useRef(false);
 
   const hasTriggeredWhileVisibleRef = useRef(false);
+
+  const setBlockSwipe = useModalPageConfig((s) => s.setBlockSwipe);
 
   const {
     data,
@@ -133,6 +138,11 @@ export default function SessionFeed() {
     table: "notes" | "gym_sessions" | "weight" | "todo_lists" | "reminders",
     isPinned: boolean
   ) => {
+    if (!isPinned && pinnedFeed.length >= 10) {
+      toast.error("You can only pin 10 items. Unpin something first.");
+      return;
+    }
+
     const snapshot = data
       ? data.map((page) => ({
           ...page,
@@ -274,8 +284,35 @@ export default function SessionFeed() {
     }
   );
 
+  // Pinned carousell
+
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [Autoplay()]);
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+
+    const onSelect = () => {
+      setActiveIndex(emblaApi!.selectedScrollSnap);
+    };
+
+    const onPointerDown = () => setBlockSwipe(true);
+    const onPointerUp = () => setBlockSwipe(false);
+
+    emblaApi.on("select", onSelect);
+    emblaApi.on("pointerDown", onPointerDown);
+    emblaApi.on("pointerUp", onPointerUp);
+
+    return () => {
+      emblaApi.off("select", onSelect);
+      emblaApi.off("pointerDown", onPointerDown);
+      emblaApi.off("pointerUp", onPointerUp);
+    };
+  }, [emblaApi, setBlockSwipe]);
+
   return (
-    <>
+    <div>
+      <ActiveSessionPopup />
       <div
         ref={containerRef}
         className="max-w-3xl mx-auto relative bg-linear-to-b from-slate-950 via-slate-900 to-slate-800  px-5 pt-3 pb-20 text-gray-100 overflow-y-auto touch-pan-y"
@@ -314,35 +351,48 @@ export default function SessionFeed() {
                 <div className="flex items-center gap-2 mb-2">
                   <Pin size={20} />
                   <p className="text-gray-400">Pinned</p>
+                  <p className="text-gray-400">
+                    {activeIndex + 1} / {pinnedFeed.length}
+                  </p>
                 </div>
-                {pinnedFeed.map((feedItem) => (
-                  <div className="mb-3" key={feedItem.item.id}>
-                    <FeedCard
-                      {...feedItem}
-                      pinned={true}
-                      onExpand={() => {
-                        setExpandedItem(feedItem);
-                      }}
-                      onTogglePin={() =>
-                        togglePin(
-                          getCanonicalId(feedItem.item),
-                          feedItem.table,
-                          true
-                        )
-                      }
-                      onDelete={() =>
-                        handleDelete(feedItem.item.id!, feedItem.table)
-                      }
-                      onEdit={() => {
-                        if (feedItem.table === "gym_sessions") {
-                          router.push(`/training/gym/${feedItem.item.id}/edit`);
-                        } else {
-                          setEditingItem(feedItem);
-                        }
-                      }}
-                    />
+
+                <div className="embla" ref={emblaRef}>
+                  <div className="embla__container flex">
+                    {pinnedFeed.map((feedItem) => (
+                      <div
+                        className="flex-none basis-1/2 min-w-0 mr-5 select-none"
+                        key={feedItem.item.id}
+                      >
+                        <FeedCard
+                          {...feedItem}
+                          pinned={true}
+                          onExpand={() => {
+                            setExpandedItem(feedItem);
+                          }}
+                          onTogglePin={() =>
+                            togglePin(
+                              getCanonicalId(feedItem.item),
+                              feedItem.table,
+                              true
+                            )
+                          }
+                          onDelete={() =>
+                            handleDelete(feedItem.item.id!, feedItem.table)
+                          }
+                          onEdit={() => {
+                            if (feedItem.table === "gym_sessions") {
+                              router.push(
+                                `/training/gym/${feedItem.item.id}/edit`
+                              );
+                            } else {
+                              setEditingItem(feedItem);
+                            }
+                          }}
+                        />
+                      </div>
+                    ))}
                   </div>
-                ))}
+                </div>
               </div>
             )}
 
@@ -511,6 +561,6 @@ export default function SessionFeed() {
           </Modal>
         )}
       </div>
-    </>
+    </div>
   );
 }

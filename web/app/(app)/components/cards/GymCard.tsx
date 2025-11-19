@@ -34,13 +34,13 @@ export default function GymCard({
   return (
     <div
       className={`
-       border rounded-md flex flex-col justify-center transition-colors ${
+       border rounded-md flex flex-col  transition-colors min-h-[159px] justify-between ${
          pinned
            ? " border-yellow-200 bg-yellow-200 text-slate-900"
            : "bg-slate-700"
        }`}
     >
-      <div className=" flex justify-between items-center mt-2 mb-4 mx-4">
+      <div className="flex justify-between items-center mt-2 mb-4 mx-4">
         <div className="line-clamp-1 border-b">{item.title}</div>
         <DropdownMenu
           button={

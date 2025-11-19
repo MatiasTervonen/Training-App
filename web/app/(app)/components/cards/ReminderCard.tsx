@@ -23,7 +23,7 @@ export default function ReminderCard({
   return (
     <div
       className={`
-       border rounded-md flex flex-col justify-center transition-colors ${
+       border rounded-md flex flex-col justify-between transition-colors min-h-[159px] ${
          pinned
            ? `border-yellow-200 bg-yellow-200 text-slate-900`
            : "bg-slate-700"

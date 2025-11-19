@@ -1,6 +1,6 @@
 import { ListTodo, Ellipsis, SquareArrowOutUpRight } from "lucide-react";
 import DropdownMenu from "../dropdownMenu";
-import { formatDate } from "@/app/(app)/lib/formatDate";
+import { formatDate, formatDateShort } from "@/app/(app)/lib/formatDate";
 import { todo_lists } from "../../types/models";
 
 type Props = {
@@ -74,16 +74,20 @@ export default function TodoCard({
       </div>
 
       <div className="flex justify-between items-center mt-2 bg-black/40 rounded-b-md">
-
         <div className="flex items-center gap-4">
           <div className="pl-2">
             <ListTodo size={20} />
           </div>
           <span>Todo</span>
-          
+
           <div>
             <p className={`${pinned ? "text-slate-900" : "text-gray-100"}`}>
-              {formatDate(item.created_at!)}
+              <span className="hidden xs:inline">
+                {formatDate(item.created_at)}
+              </span>
+              <span className="inline xs:hidden">
+                {formatDateShort(item.created_at)}
+              </span>
             </p>
           </div>
         </div>

@@ -360,7 +360,7 @@ export default function SessionFeed() {
                   <div className="embla__container flex">
                     {pinnedFeed.map((feedItem) => (
                       <div
-                        className="flex-none basis-1/2 min-w-0 mr-5 select-none"
+                        className="flex-none basis-4/5 min-w-0 mr-5 select-none"
                         key={feedItem.item.id}
                       >
                         <FeedCard

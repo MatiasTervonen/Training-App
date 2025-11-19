@@ -1,6 +1,6 @@
 import { Scale, Ellipsis, SquareArrowOutUpRight } from "lucide-react";
 import DropdownMenu from "../dropdownMenu";
-import { formatDate } from "@/app/(app)/lib/formatDate";
+import { formatDate, formatDateShort } from "@/app/(app)/lib/formatDate";
 import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
 import { weight } from "../../types/models";
 
@@ -94,7 +94,12 @@ export default function WeightCard({
 
           <div>
             <p className={`${pinned ? "text-slate-900" : "text-gray-100"}`}>
-              {formatDate(item.created_at)}
+              <span className="hidden xs:inline">
+                {formatDate(item.created_at)}
+              </span>
+              <span className="inline xs:hidden">
+                {formatDateShort(item.created_at)}
+              </span>
             </p>
           </div>
         </div>

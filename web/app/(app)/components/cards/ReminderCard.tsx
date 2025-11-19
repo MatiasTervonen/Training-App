@@ -1,6 +1,10 @@
 import { Ellipsis, SquareArrowOutUpRight, Bell, Check } from "lucide-react";
 import DropdownMenu from "../dropdownMenu";
-import { formatDate, formatDateTime } from "@/app/(app)/lib/formatDate";
+import {
+  formatDate,
+  formatDateTime,
+  formatDateShort,
+} from "@/app/(app)/lib/formatDate";
 import { reminders } from "../../types/models";
 
 type Props = {
@@ -97,7 +101,12 @@ export default function ReminderCard({
 
           <div>
             <p className={`${pinned ? "text-slate-900" : "text-gray-100"}`}>
-              {formatDate(item.created_at!)}
+              <span className="hidden xs:inline">
+                {formatDate(item.created_at)}
+              </span>
+              <span className="inline xs:hidden">
+                {formatDateShort(item.created_at)}
+              </span>
             </p>
           </div>
         </div>

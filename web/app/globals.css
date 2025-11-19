@@ -3,6 +3,7 @@
 @theme {
   --color-primary: #f3f4f6;
   --font-primary: "Russo One", sans-serif;
+  --breakpoint-xs: 26rem;
 }
 
 html,
@@ -43,4 +44,3 @@ body {
 ::-webkit-scrollbar {
   display: none;
 }
-

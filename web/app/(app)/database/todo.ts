@@ -191,3 +191,33 @@ export async function checkedTodo({ todo_tasks }: TodoTaskCheck) {
 
   return { success: true };
 }
+
+export async function getFullTodoSession(id: string) {
+  const supabase = await createClient();
+
+  const { data, error: authError } = await supabase.auth.getClaims();
+  const user = data?.claims;
+
+  if (authError || !user) {
+    throw new Error("Unauthorized");
+  }
+
+  const { data: todoList, error: todoListError } = await supabase
+    .from("todo_lists")
+    .select(`*, todo_tasks(*)`)
+    .eq("user_id", user.sub)
+    .eq("id", id)
+    .single();
+
+  if (todoListError || !todoList) {
+    handleError(todoListError, {
+      message: "Error fetching todo session",
+      route: "server-actions, getFullTodoSession",
+      method: "direct",
+    });
+
+    throw new Error("Error fetching todo session");
+  }
+
+  return todoList;
+}

@@ -8,7 +8,6 @@ import FeedCard from "@/app/(app)/components/FeedCard";
 import { Pin } from "lucide-react";
 import EditNote from "@/app/(app)/ui/editSession/EditNotes";
 import GymSession from "@/app/(app)/components/expandSession/gym";
-import useSWR from "swr";
 import Spinner from "@/app/(app)/components/spinner";
 import usePullToRefresh from "@/app/(app)/lib/usePullToRefresh";
 import WeightSession from "@/app/(app)/components/expandSession/weight";
@@ -32,6 +31,9 @@ import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import { useModalPageConfig } from "@/app/(app)/lib/stores/modalPageConfig";
 import ActiveSessionPopup from "@/app/(app)/components/activeSessionPopup";
+import { getFullGymSession } from "../../database/gym";
+import { useQuery } from "@tanstack/react-query";
+import { getFullTodoSession } from "../../database/todo";
 
 type FeedItem = FeedCardProps;
 
@@ -258,18 +260,28 @@ export default function SessionFeed() {
     data: GymSessionFull,
     error: GymSessionError,
     isLoading: isLoadingGymSession,
-  } = useSWR<full_gym_session>(
-    gymId ? `/api/gym/get-full-gym-session?id=${gymId}` : null
-  );
+  } = useQuery<full_gym_session>({
+    queryKey: ["fullGymSession", gymId],
+    queryFn: async () => await getFullGymSession(gymId!),
+    enabled: !!gymId,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    refetchOnMount: false,
+  });
 
   const {
     data: TodoSessionFull,
     error: TodoSessionError,
     isLoading: isLoadingTodoSession,
-    mutate: mutateFullTodoSession,
-  } = useSWR<full_todo_session>(
-    todoId ? `/api/todo-list/get-full-todo-session?id=${todoId}` : null
-  );
+    refetch: refetchFullTodo,
+  } = useQuery<full_todo_session>({
+    queryKey: ["fullTodoSession", todoId],
+    queryFn: async () => await getFullTodoSession(todoId!),
+    enabled: !!todoId,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    refetchOnMount: false,
+  });
 
   // Pinned carousell
 
@@ -467,7 +479,7 @@ export default function SessionFeed() {
                     <TodoSession
                       initialTodo={TodoSessionFull}
                       mutateFullTodoSession={async () => {
-                        await mutateFullTodoSession();
+                        await refetchFullTodo();
                       }}
                     />
                   )
@@ -523,11 +535,8 @@ export default function SessionFeed() {
                       todo_session={TodoSessionFull}
                       onClose={() => setEditingItem(null)}
                       onSave={async () => {
-                        await Promise.all([
-                          mutateFeed(),
-                          mutateFullTodoSession(),
-                        ]);
-
+                        await mutateFeed();
+                        await refetchFullTodo();
                         setEditingItem(null);
                       }}
                     />

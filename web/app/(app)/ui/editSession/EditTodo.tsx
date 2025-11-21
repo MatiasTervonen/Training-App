@@ -83,7 +83,7 @@ export default function EditTodo({ todo_session, onClose, onSave }: Props) {
       });
 
       toast.success("Session updated successfully");
-      onSave?.();
+      await onSave?.();
       onClose();
     } catch {
       toast.error("Failed to update session");
@@ -97,9 +97,7 @@ export default function EditTodo({ todo_session, onClose, onSave }: Props) {
       <div className="flex flex-col mx-auto w-full h-full max-w-lg px-6 pt-10">
         <div className="flex flex-col justify-between items-center gap-5 h-full ">
           <div className="w-full">
-            <h2 className="text-lg text-center mb-10">
-              Edit your todo lists
-            </h2>
+            <h2 className="text-lg text-center mb-10">Edit your todo lists</h2>
             <div className="w-full mb-10">
               <TitleInput
                 value={sessionData.title}

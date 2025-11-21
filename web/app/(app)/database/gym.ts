@@ -109,35 +109,6 @@ export async function saveGymToDB({
   return { success: true };
 }
 
-export async function getFullGymSession(id: string) {
-  const supabase = await createClient();
-
-  const { data, error: authError } = await supabase.auth.getClaims();
-  const user = data?.claims;
-
-  if (authError || !user) {
-    throw new Error("Unauthorized");
-  }
-
-  const { data: gymSession, error: gymSessionError } = await supabase
-    .from("gym_sessions")
-    .select(`*, gym_session_exercises(*, gym_exercises(*), gym_sets(*))`)
-    .eq("user_id", user.sub)
-    .eq("id", id)
-    .single();
-
-  if (gymSessionError || !gymSession) {
-    handleError(gymSessionError, {
-      message: "Error fetching gym session",
-      route: "server-action: getFullGymSession",
-      method: "direct",
-    });
-    throw new Error("Error fetching gym session");
-  }
-
-  return gymSession;
-}
-
 type editGymSessionProps = {
   id: string;
   title: string;
@@ -481,4 +452,43 @@ export async function getRecentExercises() {
   }
 
   return uniqueExercises ?? [];
+}
+
+export async function getFullGymSession(id: string) {
+  const supabase = await createClient();
+
+  const { data, error: authError } = await supabase.auth.getClaims();
+  const user = data?.claims;
+
+  if (authError || !user) {
+    throw new Error("Unauthorized");
+  }
+
+  const { data: gymSession, error: gymSessionError } = await supabase
+    .from("gym_sessions")
+    .select(`*, gym_session_exercises(*, gym_exercises(*), gym_sets(*))`)
+    .order("position", {
+      referencedTable: "gym_session_exercises",
+      ascending: true,
+    })
+    .eq("user_id", user.sub)
+    .eq("id", id)
+    .single();
+
+  gymSession?.gym_session_exercises?.forEach((exercise) => {
+    if (Array.isArray(exercise.gym_sets)) {
+      exercise.gym_sets.sort((a, b) => a.set_number - b.set_number);
+    }
+  });
+
+  if (gymSessionError || !gymSession) {
+    handleError(gymSessionError, {
+      message: "Error fetching gym session",
+      route: "server-action: getFullGymSession",
+      method: "direct",
+    });
+    throw new Error("Error fetching gym session");
+  }
+
+  return gymSession;
 }

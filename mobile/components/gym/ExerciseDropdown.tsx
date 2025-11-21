@@ -14,7 +14,6 @@ import AppInput from "../AppInput";
 import AppText from "../AppText";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import { useDebouncedCallback } from "use-debounce";
-import { Key } from "lucide-react-native";
 
 type Props = {
   onSelect: (exercise: gym_exercises) => void;

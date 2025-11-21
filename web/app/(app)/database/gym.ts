@@ -385,3 +385,100 @@ export async function deleteExercise(item_id: string) {
 
   return { success: true };
 }
+
+// Get Exercises
+
+export async function getExercises({
+  pageParam = 0,
+  limit = 50,
+  search = "",
+}: {
+  pageParam?: number;
+  limit?: number;
+  search?: string;
+}) {
+  const supabase = await createClient();
+
+  const { data, error: authError } = await supabase.auth.getClaims();
+  const user = data?.claims;
+
+  if (authError || !user) {
+    throw new Error("Unauthorized");
+  }
+
+  const from = pageParam * limit;
+  const to = from + limit - 1;
+
+  let query = supabase
+    .from("gym_exercises")
+    .select(
+      "id, user_id, name, equipment, muscle_group, main_group, created_at, language",
+      { count: "exact" }
+    )
+    .order("name", { ascending: true })
+    .range(from, to);
+
+  if (search.trim() !== "") {
+    query = query.or(
+      `name.ilike.%${search}%,equipment.ilike.%${search}%,muscle_group.ilike.%${search}%,main_group.ilike.%${search}%`
+    );
+  }
+
+  const { data: exercises, error } = await query;
+
+  if (error) {
+    handleError(error, {
+      message: "Error fetching exercises",
+      route: "server-action: getExercise",
+      method: "direct",
+    });
+    throw new Error("Error fetching exercises");
+  }
+
+  const hasMore = exercises && exercises.length === limit;
+
+  return { exercises, nextPage: hasMore ? pageParam + 1 : undefined };
+}
+
+import { gym_exercises } from "@/app/(app)/types/models";
+
+export async function getRecentExercises() {
+  const supabase = await createClient();
+
+  const { data, error: authError } = await supabase.auth.getClaims();
+  const user = data?.claims;
+
+  if (authError || !user) {
+    throw new Error("Unauthorized");
+  }
+
+  const { data: exercises, error } = await supabase
+    .from("gym_session_exercises")
+    .select(
+      `exercise:exercise_id (id, user_id, name, equipment, muscle_group, main_group, created_at, language)`
+    )
+    .order("id", { ascending: false })
+    .limit(10);
+
+  if (error) {
+    handleError(error, {
+      message: "Error fetching recent exercises",
+      route: "/api/gym/recent-exercises",
+      method: "GET",
+    });
+    throw new Error("Error fetching recent exercises");
+  }
+
+  const uniqueExercises: gym_exercises[] = [];
+  const seen = new Set<number>();
+
+  for (const row of exercises) {
+    const ex = Array.isArray(row.exercise) ? row.exercise[0] : row.exercise;
+    if (ex && !seen.has(ex.id)) {
+      seen.add(ex.id);
+      uniqueExercises.push(ex);
+    }
+  }
+
+  return uniqueExercises ?? [];
+}

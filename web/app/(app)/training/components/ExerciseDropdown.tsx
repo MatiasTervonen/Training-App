@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { gym_exercises } from "../../types/models";
-import useSWR from "swr";
-import { fetcher } from "../../lib/fetcher";
 import Spinner from "../../components/spinner";
+import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
+import { useDebouncedCallback } from "use-debounce";
+import { getExercises } from "../../database/gym";
+import { getRecentExercises } from "../../database/gym";
 
 type Props = {
   onSelect: (exercise: gym_exercises) => void;
@@ -14,88 +15,75 @@ type Props = {
 
 export default function ExerciseDropdown({ onSelect, resetTrigger }: Props) {
   const [searchQuery, setSearchQuery] = useState("");
-  const [filteredExercises, setFilteredExercises] = useState<gym_exercises[]>(
-    []
-  );
-  const [selectedIndex, setSelectedIndex] = useState(-1);
-  const dropdownRef = useRef<HTMLDivElement | null>(null);
-  const [showDropdown, setShowDropdown] = useState(true);
+  const [inputValue, setInputValue] = useState("");
+
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
   const {
-    data: exercises,
+    data,
     error: exercisesError,
     isLoading: isExercisesLoading,
-  } = useSWR<gym_exercises[]>("/api/gym/exercises", fetcher, {
-    revalidateOnFocus: false,
-    revalidateOnReconnect: false,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery({
+    queryKey: ["exercises", searchQuery],
+    queryFn: ({ pageParam = 0 }) =>
+      getExercises({ pageParam, limit: 50, search: searchQuery }),
+    initialPageParam: 0,
+    getNextPageParam: (lastPage) => lastPage.nextPage,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    refetchOnMount: false,
   });
 
   const {
     data: recentExercises,
     error: recentError,
     isLoading: isRecentLoading,
-  } = useSWR<gym_exercises[]>("/api/gym/recent-exercises", fetcher, {
-    revalidateOnFocus: false,
-    revalidateOnReconnect: false,
-    revalidateIfStale: false,
+  } = useQuery({
+    queryKey: ["recentExercises"],
+    queryFn: async () => await getRecentExercises(),
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    refetchOnMount: false,
   });
 
   const isLoading = isExercisesLoading || isRecentLoading;
   const isError = exercisesError || recentError;
 
-  const allExercises = exercises || [];
+  const allExercises = data?.pages.flatMap((p) => p.exercises) || [];
 
   const recentExercisesList = recentExercises || [];
 
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
+  useEffect(() => {
+    if (!loadMoreRef.current) return;
+
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+        fetchNextPage();
+      }
+    });
+
+    observer.observe(loadMoreRef.current);
+
+    return () => observer.disconnect();
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+  const handleSearchChange = useDebouncedCallback((value: string) => {
     setSearchQuery(value);
-    setShowDropdown(true);
-    if (value.length > 0) {
-      const filteredExercises = allExercises.filter((exercise) => {
-        const combinedText =
-          `${exercise.name} ${exercise.equipment} ${exercise.muscle_group} ${exercise.main_group}`.toLowerCase();
-        return value
-          .toLowerCase()
-          .split(" ")
-          .every((word) => combinedText.includes(word));
-      });
-      setFilteredExercises(filteredExercises);
-      setSelectedIndex(-1);
-    } else {
-    }
-  };
+  }, 400);
 
   const handleSelectExercise = (exercise: gym_exercises) => {
     setSearchQuery(exercise.name + " " + "(" + exercise.equipment + ")");
     onSelect(exercise);
-    setShowDropdown(false);
-  };
-
-  //  Handles arrow key navigation in the dropdown
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "ArrowDown") {
-      e.preventDefault();
-      setSelectedIndex((prev) =>
-        prev < filteredExercises.length - 1 ? prev + 1 : 0
-      );
-    } else if (e.key === "ArrowUp") {
-      e.preventDefault();
-      setSelectedIndex((prev) =>
-        prev > 0 ? prev - 1 : filteredExercises.length - 1
-      );
-    } else if (e.key === "Enter") {
-      e.preventDefault();
-      if (selectedIndex !== -1) {
-        handleSelectExercise(filteredExercises[selectedIndex]); // Select highlighted city
-      }
-    }
   };
 
   useEffect(() => {
-    setShowDropdown(true);
     setSearchQuery("");
   }, [resetTrigger]);
+
+  console.log("all exercises", allExercises);
 
   return (
     <>
@@ -104,100 +92,105 @@ export default function ExerciseDropdown({ onSelect, resetTrigger }: Props) {
           <input
             className="p-2 rounded-md border-2 border-gray-100 z-10 placeholder-gray-500 bg-gray-900 hover:border-blue-500 focus:outline-none focus:border-green-300"
             type="text"
-            value={searchQuery}
+            value={inputValue}
             placeholder="Search exercises..."
             autoComplete="off"
-            onChange={handleSearchChange}
-            onKeyDown={handleKeyDown}
+            onChange={(e) => {
+              setInputValue(e.target.value);
+              handleSearchChange(e.target.value);
+            }}
             spellCheck={false}
             name="exercise"
           />
         </div>
 
-        {showDropdown && (
-          <>
-            <div
-              ref={dropdownRef}
-              className="w-full overflow-y-auto border rounded-md shadow-md 
-                    bg-slate-900 border-gray-100 touch-pan-y mt-10"
-            >
-              {isLoading || isError ? (
-                <div className="h-[calc(100dvh-74px)] flex flex-col gap-6 items-center justify-center z-50 text-center">
-                  {isLoading && (
-                    <>
-                      <p className="text-xl">Loading exercises...</p>
-                      <Spinner size="h-10 w-10" />
-                    </>
-                  )}
-                  {isError && (
-                    <p className="text-red-500">
-                      Failed to load exercises. Try again!
-                    </p>
-                  )}
-                </div>
-              ) : (
-                searchQuery.length === 0 &&
-                recentExercisesList.length > 0 && (
-                  <div className="bg-slate-900">
-                    <h2 className="text-center bg-slate-600">
-                      Recent Exercises
-                    </h2>
-                    {recentExercisesList.map((exercise) => (
-                      <button
-                        key={exercise.id}
-                        className="w-full text-left px-4 py-2 cursor-pointer z-40 hover:bg-slate-800  border-b"
-                        onClick={() => handleSelectExercise(exercise)}
-                      >
-                        <div className="flex justify-between flex-col">
-                          <div className="flex justify-between items-center">
-                            <span className="truncate mr-5">
-                              {exercise.name}
-                            </span>
-                            <span className="text-sm text-gray-300">
-                              {exercise.muscle_group}
-                            </span>
-                          </div>
-                          <span className="text-sm text-gray-400">
-                            {exercise.equipment}
+        <>
+          <div
+            className="w-full overflow-y-auto border rounded-md shadow-md 
+                    bg-slate-900 border-gray-100 touch-pan-y mt-10 h-full"
+          >
+            {isLoading || isError ? (
+              <div className="h-[calc(100dvh-74px)] flex flex-col gap-6 items-center justify-center z-50 text-center">
+                {isLoading && (
+                  <>
+                    <p className="text-lg">Loading exercises...</p>
+                    <Spinner size="h-8 w-8" />
+                  </>
+                )}
+                {isError && (
+                  <p className="text-red-500">
+                    Failed to load exercises. Try again!
+                  </p>
+                )}
+              </div>
+            ) : (
+              searchQuery.length === 0 &&
+              recentExercisesList.length > 0 && (
+                <div className="bg-slate-900">
+                  <h2 className="text-center bg-slate-600">Recent Exercises</h2>
+                  {recentExercisesList.map((exercise) => (
+                    <button
+                      key={exercise.id}
+                      className="w-full text-left px-4 py-2 cursor-pointer z-40 hover:bg-slate-800  border-b"
+                      onClick={() => handleSelectExercise(exercise)}
+                    >
+                      <div className="flex justify-between flex-col">
+                        <div className="flex justify-between items-center">
+                          <span className="truncate mr-5">{exercise.name}</span>
+                          <span className="text-sm text-gray-300">
+                            {exercise.muscle_group}
                           </span>
                         </div>
-                      </button>
-                    ))}
-                  </div>
-                )
-              )}
-
-              <h2 className="text-center bg-slate-600">All Exercises</h2>
-              {(searchQuery.length > 0 ? filteredExercises : allExercises).map(
-                (exercise, index) => {
-                  return (
-                    <button
-                      key={index}
-                      onClick={() => handleSelectExercise(exercise)}
-                      className={`w-full text-left px-4 py-2 cursor-pointer z-40  hover:bg-slate-800  border-b ${
-                        selectedIndex === index
-                          ? "bg-slate-600 hover:bg-slate-500"
-                          : ""
-                      }`}
-                    >
-                      <div className="flex flex-col ">
-                        <div className="flex justify-between items-center">
-                          <p className="truncate mr-5">{exercise.name}</p>
-                          <p className="text-sm text-gray-300">
-                            {exercise.muscle_group}
-                          </p>
-                        </div>
-                        <p className="text-sm text-gray-400">
+                        <span className="text-sm text-gray-400">
                           {exercise.equipment}
-                        </p>
+                        </span>
                       </div>
                     </button>
-                  );
-                }
+                  ))}
+                </div>
+              )
+            )}
+
+            <h2 className="text-center bg-slate-600">All Exercises</h2>
+
+            {!isLoading &&
+              searchQuery.length > 0 &&
+              allExercises.length === 0 && (
+                <p className="text-center py-4 text-gray-400 mt-20 text-lg">
+                  No exercises found.
+                </p>
               )}
-            </div>
-          </>
-        )}
+
+            {allExercises.map((exercise, index) => {
+              return (
+                <button
+                  key={index}
+                  onClick={() => handleSelectExercise(exercise)}
+                  className="w-full text-left px-4 py-2 cursor-pointer z-40  hover:bg-slate-800  border-b"
+                >
+                  <div className="flex flex-col ">
+                    <div className="flex justify-between items-center">
+                      <p className="truncate mr-5">{exercise.name}</p>
+                      <p className="text-sm text-gray-300">
+                        {exercise.muscle_group}
+                      </p>
+                    </div>
+                    <p className="text-sm text-gray-400">
+                      {exercise.equipment}
+                    </p>
+                  </div>
+                </button>
+              );
+            })}
+            {isFetchingNextPage && !isExercisesLoading && (
+              <div className="flex flex-col gap-2 justify-center items-center pt-5">
+                <p>Loading more</p>
+                <Spinner />
+              </div>
+            )}
+            <div ref={loadMoreRef} className="h-10"></div>
+          </div>
+        </>
       </div>
     </>
   );

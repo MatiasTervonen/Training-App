@@ -16,7 +16,6 @@ import EditWeight from "@/app/(app)/ui/editSession/EditWeight";
 import toast from "react-hot-toast";
 import { FeedSkeleton } from "../loadingSkeletons/skeletons";
 import { full_gym_session, full_todo_session } from "@/app/(app)/types/models";
-import { fetcher } from "@/app/(app)/lib/fetcher";
 import { Feed_item } from "@/app/(app)/types/session";
 import useSWRInfinite from "swr/infinite";
 import { getFeedKey } from "@/app/(app)/lib/feedKeys";
@@ -64,7 +63,7 @@ export default function SessionFeed() {
     mutate: mutateFeed,
     setSize,
     isValidating,
-  } = useSWRInfinite<FeedResponse>(getFeedKey, fetcher, {
+  } = useSWRInfinite<FeedResponse>(getFeedKey, {
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
     revalidateFirstPage: false, // Prevent revalidating page 1 unnecessarily
@@ -260,13 +259,7 @@ export default function SessionFeed() {
     error: GymSessionError,
     isLoading: isLoadingGymSession,
   } = useSWR<full_gym_session>(
-    gymId ? `/api/gym/get-full-gym-session?id=${gymId}` : null,
-    fetcher,
-    {
-      revalidateOnFocus: false,
-      revalidateOnReconnect: false,
-      revalidateIfStale: false,
-    }
+    gymId ? `/api/gym/get-full-gym-session?id=${gymId}` : null
   );
 
   const {
@@ -275,13 +268,7 @@ export default function SessionFeed() {
     isLoading: isLoadingTodoSession,
     mutate: mutateFullTodoSession,
   } = useSWR<full_todo_session>(
-    todoId ? `/api/todo-list/get-full-todo-session?id=${todoId}` : null,
-    fetcher,
-    {
-      revalidateOnFocus: false,
-      revalidateOnReconnect: false,
-      revalidateIfStale: false,
-    }
+    todoId ? `/api/todo-list/get-full-todo-session?id=${todoId}` : null
   );
 
   // Pinned carousell

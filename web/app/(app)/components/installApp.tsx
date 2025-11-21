@@ -56,7 +56,7 @@ export default function InstallApp({
           className={`${
             pathname === "/menu"
               ? "w-full py-2 px-6 rounded-md shadow-xl bg-blue-900 border-2 border-blue-500 hover:bg-blue-700 hover:scale-105 transition-all duration-200 cursor-pointer"
-              : "w-[183px] bg-gradient-to-tr from-slate-950  to-blue-700 py-2 px-4 rounded-xl border-2 border-blue-900 shadow-md shadow-blue-950 hover:from-blue-700 hover:to-slate-950 transform hover:scale-105 transition-all duration-200 cursor-pointer"
+              : "w-[183px] bg-linear-to-tr from-slate-950  to-blue-700 py-2 px-4 rounded-xl border-2 border-blue-900 shadow-md shadow-blue-950 hover:from-blue-700 hover:to-slate-950 transform hover:scale-105 transition-all duration-200 cursor-pointer"
           } `}
           onClick={handleInstallClick}
         >
@@ -70,10 +70,14 @@ export default function InstallApp({
       {showIosPrompt && (
         <div className="relative inline-block">
           <button
-            className="bg-gradient-to-tr from-slate-950  to-blue-700 py-2 px-4 rounded-xl border-2 border-blue-900 shadow-md shadow-blue-950 hover:from-blue-700 hover:to-slate-950 transform hover:scale-105 transition duration-200 cursor-pointer"
+            className={`${
+              pathname === "/menu"
+                ? "w-full py-2 px-6 rounded-md shadow-xl bg-blue-900 border-2 border-blue-500 hover:bg-blue-700 hover:scale-105 transition-all duration-200 cursor-pointer"
+                : "w-[183px] bg-linear-to-tr from-slate-950  to-blue-700 py-2 px-4 rounded-xl border-2 border-blue-900 shadow-md shadow-blue-950 hover:from-blue-700 hover:to-slate-950 transform hover:scale-105 transition-all duration-200 cursor-pointer"
+            } `}
             onClick={() => setExpanded((prev) => !prev)}
           >
-            <div className="flex gap-2 items-center">
+            <div className="flex gap-2 justify-center items-center">
               <Image
                 src="/Mobile.png"
                 alt="Mobile"

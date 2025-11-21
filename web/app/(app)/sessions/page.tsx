@@ -13,7 +13,7 @@ import LinkButton from "../ui/LinkButton";
 export default function Sessions() {
   return (
     <SessionsContext>
-      <div className="p-5 h-full max-w-md mx-auto">
+      <div className="p-5 h-full max-w-md mx-auto mb-20">
         <h1 className=" text-gray-100 text-center mt-5 mb-10 text-2xl ">
           Start Session
         </h1>

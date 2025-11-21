@@ -1,14 +1,15 @@
 "use client";
 
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 import Spinner from "@/app/(app)/components/spinner";
 import ExerciseTypeSelect from "@/app/(app)/training/components/ExerciseTypeSelect";
 import { useState } from "react";
-import { banUser } from "./components/banUser";
-import { deleteUser } from "./components/deleteUser";
-import { promoteUser } from "./components/promoteUser";
 import { users } from "@/app/(app)/types/models";
-import { fetcher } from "../../lib/fetcher";
+import { banUser } from "@/app/(app)/database/admin";
+import toast from "react-hot-toast";
+import SubNotesInput from "../../ui/SubNotesInput";
+import { deleteUser } from "@/app/(app)/database/admin";
+import { promoteUser } from "@/app/(app)/database/admin";
 
 export default function Sessions() {
   const [sortField, setSortField] = useState("created_at");
@@ -21,15 +22,7 @@ export default function Sessions() {
     [userId: string]: string;
   }>({});
 
-  const { data, error, isLoading } = useSWR<users[]>(
-    "/api/users/get-users",
-    fetcher,
-    {
-      revalidateOnFocus: false,
-      revalidateOnReconnect: false,
-      revalidateIfStale: false,
-    }
-  );
+  const { data, error, isLoading } = useSWR<users[]>("/api/users/get-users");
 
   const sortedData = [...(data || [])].sort((a, b) => {
     if (sortField === "created_at") {
@@ -41,6 +34,67 @@ export default function Sessions() {
     }
     return 0;
   });
+
+  type BanUser = {
+    user_id: string;
+    duration: string;
+    reason: string;
+  };
+
+  const handleBanUser = async ({ user_id, duration, reason }: BanUser) => {
+    try {
+      await banUser({ user_id, duration, reason });
+      mutate("/api/users/get-users");
+
+      if (reason === "unban") {
+        toast.success("User unbanned succesfully!");
+      } else {
+        toast.success("User banned succesfully!");
+      }
+    } catch {
+      toast.error("Error banning user. Please try again!");
+      mutate("/api/users/get-users");
+    }
+  };
+
+  const handleDeleteUser = async (user_id: string) => {
+    const confirmDelete = confirm(
+      `Are you sure you want to delete user: user_id ${user_id}`
+    );
+    if (!confirmDelete) return;
+
+    try {
+      await deleteUser(user_id);
+      mutate("/api/users/get-users");
+
+      toast.success("User deleted succesfully!");
+    } catch {
+      toast.error("Error deleting user. Please try again!");
+      mutate("/api/users/get-users");
+    }
+  };
+
+  type PromoteUser = {
+    userRole: string;
+    user_id: string;
+  };
+
+  const handlePromoteUser = async ({ user_id, userRole }: PromoteUser) => {
+    const confirmPromote = confirm(
+      `Are you sure you want to promote user: user_id ${user_id}`
+    );
+    if (!confirmPromote) return;
+
+    try {
+      await promoteUser({ user_id, userRole });
+      mutate("/api/users/get-users");
+
+      toast.success("User promoted succesfully!");
+    } catch {
+      toast.error("Error promoting user. Please try again!");
+      mutate("/api/users/get-users");
+    }
+  };
 
   const shorterId = (id: string, start = 4, end = 3) => {
     return `${id.slice(0, start)}...${id.slice(-end)}`;
@@ -75,7 +129,7 @@ export default function Sessions() {
       </div>
       <div>
         {isLoading && (
-          <div className="flex flex-col items-center justify-center h-full">
+          <div className="flex flex-col items-center justify-center h-full mt-20">
             <p className="text-gray-100">Loading user data...</p>
             <Spinner />
           </div>
@@ -85,9 +139,9 @@ export default function Sessions() {
             <p className="text-red-500">Failed to load user data.</p>
           </div>
         )}
-        {!isLoading && !error && data && data.length > 0 ? (
+        {!isLoading && !error && data && data.length > 0 && (
           <div className="overflow-x-auto">
-            <table className="min-w-full bg-gray-800 text-gray-100">
+            <table className="min-w-full bg-gray-900 text-gray-100">
               <thead>
                 <tr className="text-left border-b border-gray-700">
                   <th className="px-4 py-2 font-normal">id</th>
@@ -110,7 +164,6 @@ export default function Sessions() {
                     <td className="px-4 py-2 ">{user.display_name || "-"}</td>
                     <td className="px-4 py-2">{user.email}</td>
                     <td className="px-4 py-2 relative group">
-                      {" "}
                       <span
                         className={`border py-1 px-2 rounded-xl text-sm ${
                           user.banned_until &&
@@ -135,14 +188,15 @@ export default function Sessions() {
                       </span>
                       {user.banned_until &&
                         new Date(user.banned_until) > new Date() && (
-                          <div className="absolute z-10 border left-0 top-full mt-1 w-48 bg-gray-800 text-gray-100 p-2 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                          <div className="absolute z-10 border left-0 top-full w-48 bg-gray-800  py-2 px-4 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
                             <p>
-                              Banned until:{" "}
+                              Banned until: <br />
                               {new Date(user.banned_until).toLocaleDateString()}
                             </p>
+
                             {user.ban_reason && (
-                              <p>
-                                Reason:
+                              <p className="mt-2">
+                                Reason: <br />
                                 {user.ban_reason}
                               </p>
                             )}
@@ -152,20 +206,20 @@ export default function Sessions() {
                     <td className="px-4 py-2">
                       {new Date(user.created_at).toLocaleDateString()}
                     </td>
-                    <td className=" px-4 py-2 flex gap-2 flex-nowrap">
+                    <td className="px-4 py-2 flex gap-2 flex-nowrap">
                       <button
                         className="text-red-500 cursor-pointer  hover:text-red-700"
-                        onClick={() => {
-                          deleteUser(user.id);
+                        onClick={async () => {
+                          await handleDeleteUser(user.id);
                         }}
                       >
                         delete
                       </button>
 
                       <select
-                        value={selectedDurations[user.id] || ""}
-                        className="bg-slate-900 border w-17 px-1  border-gray-700  cursor-pointer rounded-lg text-sm"
-                        onChange={(e) => {
+                        value={selectedDurations[user.id] ?? "ban"}
+                        className="bg-slate-800 border w-17 px-1 border-gray-700  cursor-pointer rounded-lg text-sm"
+                        onChange={async (e) => {
                           const value = e.target.value;
                           if (!value) return;
 
@@ -177,25 +231,28 @@ export default function Sessions() {
                           if (value === "unban") {
                             setShowBanReason(null); // no modal needed
 
-                            setTimeout(() => {
-                              const confirmed = confirm(
-                                `Are you sure you want to unban user: ${user.id}?`
-                              );
+                            const confirmed = confirm(
+                              `Are you sure you want to unban user: ${user.id}?`
+                            );
 
-                              if (!confirmed) {
-                                setSelectedDurations((prev) => ({
-                                  ...prev,
-                                  [user.id]: "",
-                                }));
-                                return;
-                              }
-
-                              banUser(user.id, value, "");
+                            if (!confirmed) {
                               setSelectedDurations((prev) => ({
                                 ...prev,
                                 [user.id]: "",
                               }));
-                            }, 0);
+                              return;
+                            }
+
+                            await handleBanUser({
+                              user_id: user.id,
+                              duration: value,
+                              reason: "",
+                            });
+
+                            setSelectedDurations((prev) => ({
+                              ...prev,
+                              [user.id]: "ban",
+                            }));
 
                             return;
                           }
@@ -203,7 +260,7 @@ export default function Sessions() {
                           setShowBanReason(user.id);
                         }}
                       >
-                        <option value="" disabled>
+                        <option value="ban" disabled>
                           Ban
                         </option>
                         <option value="24h">1 Day</option>
@@ -225,29 +282,24 @@ export default function Sessions() {
 
                           <div className="flex flex-col gap-1">
                             <label htmlFor="">Give reason:</label>
-                            <input
-                              type="text"
-                              spellCheck={false}
-                              placeholder="Ban reason"
-                              className="py-1 pl-2 rounded-md border-2 border-gray-100 z-10  placeholder-gray-500  text-gray-100 bg-[linear-gradient(50deg,#0f172a,#1e293b,#333333)] hover:border-blue-500 focus:outline-none focus:border-green-300"
-                              onChange={(e) => {
-                                const reason = e.target.value;
-                                setReason(reason);
-                              }}
+                            <SubNotesInput
+                              placeholder="Ban reason..."
+                              notes={reason}
+                              setNotes={setReason}
                             />
                           </div>
                           <button
-                            className="mt-4 mr-4 bg-red-600 text-white px-4 py-1 rounded-md hover:bg-red-700 transition-colors cursor-pointer"
+                            className="mr-5 mt-4 bg-red-800 py-1 w-28 rounded-md shadow-xl border-2 border-red-500 text-lg cursor-pointer hover:bg-red-700 hover:scale-105 transition-all duration-200"
                             onClick={() => {
-                              banUser(
-                                user.id,
-                                selectedDurations[user.id],
-                                reason
-                              );
+                              handleBanUser({
+                                user_id: user.id,
+                                duration: selectedDurations[user.id],
+                                reason,
+                              });
                               setShowBanReason(null);
                               setSelectedDurations((prev) => ({
                                 ...prev,
-                                [user.id]: "",
+                                [user.id]: "ban",
                               }));
                               setReason("");
                             }}
@@ -255,12 +307,12 @@ export default function Sessions() {
                             Ban
                           </button>
                           <button
-                            className="mt-2 bg-gray-600 text-white px-4 py-1 rounded-md hover:bg-gray-700 transition-colors cursor-pointer"
+                            className="w-28 mt-2 bg-gray-600 py-1 rounded-md shadow-xl border-2 border-gray-500 text-lg cursor-pointer hover:bg-gray-700 hover:scale-105 transition-all duration-200"
                             onClick={() => {
                               setShowBanReason(null);
                               setSelectedDurations((prev) => ({
                                 ...prev,
-                                [user.id]: "",
+                                [user.id]: "ban",
                               }));
                               setReason("");
                             }}
@@ -271,9 +323,9 @@ export default function Sessions() {
                       )}
 
                       <select
-                        value={selectedRole[user.id] || ""}
-                        className="bg-slate-900 border w-17 px-1  border-gray-700  cursor-pointer rounded-lg text-sm"
-                        onChange={(e) => {
+                        value={selectedRole[user.id] ?? "role"}
+                        className="bg-slate-800 border w-17 px-1  border-gray-700  cursor-pointer rounded-lg text-sm"
+                        onChange={async (e) => {
                           const newRole = e.target.value;
                           if (!newRole) return;
 
@@ -282,16 +334,18 @@ export default function Sessions() {
                             [user.id]: newRole,
                           }));
 
-                          setTimeout(() => {
-                            promoteUser(user.id, newRole);
-                            setSelectedRole((prev) => ({
-                              ...prev,
-                              [user.id]: "",
-                            }));
-                          }, 0);
+                          await handlePromoteUser({
+                            user_id: user.id,
+                            userRole: newRole,
+                          });
+
+                          setSelectedRole((prev) => ({
+                            ...prev,
+                            [user.id]: "",
+                          }));
                         }}
                       >
-                        <option value="" disabled>
+                        <option value="role" disabled>
                           Role
                         </option>
                         <option value="guest">Guest</option>
@@ -305,12 +359,6 @@ export default function Sessions() {
               </tbody>
             </table>
           </div>
-        ) : (
-          !isLoading && (
-            <div className="flex flex-col items-center justify-center h-full">
-              <p className="text-gray-100">No users found.</p>
-            </div>
-          )
         )}
       </div>
     </div>

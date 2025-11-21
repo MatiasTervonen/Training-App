@@ -5,7 +5,7 @@ import { handleError } from "@/app/(app)/utils/handleError";
 export default async function GetSession({
   limit = 10,
   page = 1,
-  req
+  req,
 }: {
   limit?: number;
   page?: number;
@@ -39,8 +39,8 @@ export default async function GetSession({
       ? supabase
           .from("feed_with_pins")
           .select("*")
-          .eq("user_id", user.sub)
           .eq("pinned", true)
+          .eq("user_id", user.sub)
           .order("created_at", { ascending: false })
       : Promise.resolve({ data: [], error: null });
 

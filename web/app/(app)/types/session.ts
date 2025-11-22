@@ -133,3 +133,11 @@ export type Last30DaysAnalytics = {
     created_at: string;
   }[];
 };
+
+export type FeedData = {
+  pageParam: number;
+  pages: {
+    feed: Feed_item[];
+    nextPage: number;
+  }[];
+};

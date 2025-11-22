@@ -8,7 +8,6 @@ import DeleteSessionBtn from "@/app/(app)/ui/deleteSessionBtn";
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import toast from "react-hot-toast";
 import { useDebouncedCallback } from "use-debounce";
-import { updateFeed } from "@/app/(app)/lib/revalidateFeed";
 import DateTimePicker from "@/app/(app)/components/DateTimePicker";
 import InfoModal from "@/app/(app)/components/InfoModal";
 import LinkButton from "@/app/(app)/ui/LinkButton";
@@ -17,8 +16,9 @@ import SubNotesInput from "@/app/(app)/ui/SubNotesInput";
 import TitleInput from "@/app/(app)/ui/TitleInput";
 import { mutate } from "swr";
 import { fetcher } from "@/app/(app)/lib/fetcher";
+import { useQueryClient } from "@tanstack/react-query";
 
-export default function Notes() {
+export default function GlobalReminder() {
   const draft =
     typeof window !== "undefined"
       ? JSON.parse(localStorage.getItem("reminder_draft") || "null")
@@ -30,6 +30,8 @@ export default function Notes() {
   const [notifyAt, setNotifyAt] = useState<Date | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
+
+  const queryClient = useQueryClient();
 
   // Check for push notification subscription
 
@@ -73,7 +75,7 @@ export default function Notes() {
         async () => fetcher("/api/reminders/get-reminders"),
         false
       );
-      updateFeed();
+      await queryClient.refetchQueries({ queryKey: ["feed"], exact: true });
       router.push("/dashboard");
       resetReminder();
     } catch {

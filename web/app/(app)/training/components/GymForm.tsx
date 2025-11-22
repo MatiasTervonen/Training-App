@@ -21,7 +21,6 @@ import { toast } from "react-hot-toast";
 import { useTimerStore } from "@/app/(app)/lib/stores/timerStore";
 import { GroupGymExercises } from "@/app/(app)/utils/GroupGymExercises";
 import ExerciseCard from "../components/ExerciseCard";
-import { updateFeed } from "@/app/(app)/lib/revalidateFeed";
 import ExerciseSelectorList from "../components/ExerciseSelectorList";
 import useSWR from "swr";
 import { fetcher } from "@/app/(app)/lib/fetcher";
@@ -29,6 +28,7 @@ import { saveGymToDB, editGymSession } from "../../database/gym";
 import { full_gym_session } from "../../types/models";
 import TitleInput from "../../ui/TitleInput";
 import SubNotesInput from "../../ui/SubNotesInput";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function GymForm({
   initialData,
@@ -85,6 +85,8 @@ export default function GymForm({
 
   const isEditing = Boolean(session?.id);
   const [hasLoadedDraft, setHasLoadedDraft] = useState(isEditing);
+
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     if (!hasLoadedDraft || isEditing) return;
@@ -323,7 +325,7 @@ export default function GymForm({
         });
       }
 
-      await updateFeed();
+      await queryClient.refetchQueries({ queryKey: ["feed"], exact: true });
       if (isEditing) {
         router.push("/dashboard");
       } else {

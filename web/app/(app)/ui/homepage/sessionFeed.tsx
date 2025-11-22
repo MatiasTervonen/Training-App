@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import NotesSession from "@/app/(app)/components/expandSession/notes";
 import Modal from "@/app/(app)/components/modal";
-import { useInView } from "react-intersection-observer";
 import FeedCard from "@/app/(app)/components/FeedCard";
 import { Pin } from "lucide-react";
 import EditNote from "@/app/(app)/ui/editSession/EditNotes";
@@ -15,9 +14,6 @@ import EditWeight from "@/app/(app)/ui/editSession/EditWeight";
 import toast from "react-hot-toast";
 import { FeedSkeleton } from "../loadingSkeletons/skeletons";
 import { full_gym_session, full_todo_session } from "@/app/(app)/types/models";
-import { Feed_item } from "@/app/(app)/types/session";
-import useSWRInfinite from "swr/infinite";
-import { getFeedKey } from "@/app/(app)/lib/feedKeys";
 import TodoSession from "@/app/(app)/components/expandSession/todo";
 import EditTodo from "@/app/(app)/ui/editSession/EditTodo";
 import ReminderSession from "../../components/expandSession/reminder";
@@ -32,29 +28,34 @@ import Autoplay from "embla-carousel-autoplay";
 import { useModalPageConfig } from "@/app/(app)/lib/stores/modalPageConfig";
 import ActiveSessionPopup from "@/app/(app)/components/activeSessionPopup";
 import { getFullGymSession } from "../../database/gym";
-import { useQuery } from "@tanstack/react-query";
+import {
+  useQuery,
+  useInfiniteQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { getFullTodoSession } from "../../database/todo";
+import getFeed from "../../database/feed";
+import { Feed_item } from "../../types/session";
 
 type FeedItem = FeedCardProps;
 
-type FeedResponse = {
-  feed: Feed_item[];
-  nextPage: number | null;
+type FeedData = {
+  pageParams: number[];
+  pages: {
+    feed: Feed_item[];
+    nextPage: number;
+  }[];
 };
 
 export default function SessionFeed() {
   const [expandedItem, setExpandedItem] = useState<FeedItem | null>(null);
-  const { ref, inView } = useInView({
-    threshold: 0,
-    rootMargin: "200px",
-  });
   const [editingItem, setEditingItem] = useState<FeedItem | null>(null);
 
   const router = useRouter();
 
-  const loadingMoreRef = useRef(false);
+  const queryClient = useQueryClient();
 
-  const hasTriggeredWhileVisibleRef = useRef(false);
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
   const setBlockSwipe = useModalPageConfig((s) => s.setBlockSwipe);
 
@@ -62,41 +63,51 @@ export default function SessionFeed() {
     data,
     error,
     isLoading,
-    mutate: mutateFeed,
-    setSize,
-    isValidating,
-  } = useSWRInfinite<FeedResponse>(getFeedKey, {
-    revalidateOnFocus: false,
-    revalidateOnReconnect: false,
-    revalidateFirstPage: false, // Prevent revalidating page 1 unnecessarily
+    refetch: mutateFeed,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery({
+    queryKey: ["feed"],
+    queryFn: ({ pageParam = 0 }) => getFeed({ pageParam, limit: 15 }),
+    initialPageParam: 0,
+    getNextPageParam: (lastPage) => lastPage.nextPage,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    refetchOnMount: false,
   });
 
-  const hasNextPage = useMemo(() => {
-    if (!data || data.length === 0) return false;
-    return Boolean(data[data.length - 1]?.nextPage);
-  }, [data]);
+  // Keep only first page in cahce when user leaves feed
 
-  function getCanonicalId(item: { id?: string; item_id?: string }) {
-    return item.item_id ?? item.id ?? "";
-  }
+  useEffect(() => {
+    return () => {
+      queryClient.setQueryData<FeedData>(["feed"], (old) => {
+        if (!old) return old;
+
+        return {
+          ...old,
+          pages: old.pages.slice(0, 1), 
+          pageParams: old.pageParams.slice(0, 1), 
+        };
+      });
+    };
+  }, [queryClient]);
 
   // Load more when the bottom of the feed is in view
+
   useEffect(() => {
-    if (!inView) {
-      hasTriggeredWhileVisibleRef.current = false;
-      return;
-    }
-    if (hasTriggeredWhileVisibleRef.current) return;
-    if (!hasNextPage) return;
-    if (loadingMoreRef.current) return;
+    if (!loadMoreRef.current) return;
 
-    hasTriggeredWhileVisibleRef.current = true;
-    loadingMoreRef.current = true;
-
-    setSize((prev) => prev + 1).finally(() => {
-      loadingMoreRef.current = false;
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+        fetchNextPage();
+      }
     });
-  }, [inView, hasNextPage, setSize]);
+
+    observer.observe(loadMoreRef.current);
+
+    return () => observer.disconnect();
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   const { containerRef, pullDistance, refreshing } = usePullToRefresh({
     onRefresh: async () => {
@@ -108,14 +119,14 @@ export default function SessionFeed() {
 
   const feed: FeedItem[] = useMemo(() => {
     if (!data) return [];
-    return data.flatMap((page) =>
-      page.feed.map((item) => {
-        return {
+
+    return data.pages.flatMap(
+      (page) =>
+        page.feed.map((item) => ({
           table: item.type as FeedItem["table"],
-          item: { ...item, id: getCanonicalId(item) },
+          item,
           pinned: item.pinned,
-        } as unknown as FeedItem;
-      })
+        })) as unknown as FeedItem
     );
   }, [data]);
 
@@ -135,7 +146,7 @@ export default function SessionFeed() {
   );
 
   const togglePin = async (
-    item_id: string,
+    id: string,
     table: "notes" | "gym_sessions" | "weight" | "todo_lists" | "reminders",
     isPinned: boolean
   ) => {
@@ -143,54 +154,49 @@ export default function SessionFeed() {
       toast.error("You can only pin 10 items. Unpin something first.");
       return;
     }
+    const queryKey = ["feed"];
 
-    const snapshot = data
-      ? data.map((page) => ({
+    await queryClient.cancelQueries({ queryKey });
+
+    const previousFeed = queryClient.getQueryData(queryKey);
+
+    queryClient.setQueryData<FeedData>(["feed"], (oldData) => {
+      if (!oldData) return oldData;
+
+      return {
+        ...oldData,
+        pages: oldData.pages.map((page) => ({
           ...page,
-          feed: page.feed.map((item) => ({ ...item })),
-        }))
-      : undefined;
-
-    await mutateFeed(
-      (currentPages) => {
-        if (!currentPages) return currentPages;
-
-        return currentPages.map((page) => ({
-          ...page,
-          feed: page.feed.map((item) => {
-            const matches = item.id === item_id || item.item_id === item_id;
-            if (!matches) return item;
-
-            return matches ? { ...item, pinned: !isPinned } : item;
-          }),
-        }));
-      },
-      { revalidate: false }
-    );
+          feed: page.feed.map((feedItem) =>
+            feedItem.id === id ? { ...feedItem, pinned: !isPinned } : feedItem
+          ),
+        })),
+      };
+    });
 
     try {
       if (isPinned) {
-        await unpinItem({ item_id, table });
+        await unpinItem({ id, table });
       } else {
-        await pinItem({ item_id, table });
+        await pinItem({ id, table });
       }
 
       toast.success(
         `Item has been ${isPinned ? "unpinned" : "pinned"} successfully.`
       );
     } catch (error) {
+      queryClient.setQueryData(queryKey, previousFeed);
       handleError(error, {
         message: "Failed to toggle pin",
         route: "server-action: pinSession/sessionFeed",
         method: "direct",
       });
       toast.error("Failed to toggle pin");
-      mutateFeed(snapshot, { revalidate: false });
     }
   };
 
   const handleDelete = async (
-    item_id: string,
+    id: string,
     table: "notes" | "gym_sessions" | "weight" | "todo_lists" | "reminders"
   ) => {
     const confirmDetlete = confirm(
@@ -198,42 +204,35 @@ export default function SessionFeed() {
     );
     if (!confirmDetlete) return;
 
-    const snapshot = data
-      ? data.map((page) => ({
-          ...page,
-          feed: page.feed.map((item) => ({ ...item })),
-        }))
-      : undefined;
+    const queryKey = ["feed"];
 
-    await mutateFeed(
-      (currentPages) => {
-        if (!currentPages) return currentPages;
+    await queryClient.cancelQueries({ queryKey });
 
-        return currentPages.map((page) => ({
-          ...page,
-          feed: page.feed.filter((item) => {
-            const matches =
-              (item.id === item_id || item.item_id === item_id) &&
-              item.type === table;
-            return !matches;
-          }),
-        }));
-      },
-      { revalidate: false }
-    );
+    const perviousFeed = queryClient.getQueryData(queryKey);
+
+    queryClient.setQueryData<FeedData>(queryKey, (oldData) => {
+      if (!oldData) return oldData;
+
+      const newPages = oldData.pages.map((page) => {
+        const newFeed = page.feed.filter((feedItem) => feedItem.id !== id);
+        return { ...page, feed: newFeed };
+      });
+      return { ...oldData, pages: newPages };
+    });
 
     try {
-      await deleteSession({ item_id, table });
+      await deleteSession({ id, table });
 
       toast.success("Item has been deleted successfully.");
+      queryClient.invalidateQueries({ queryKey });
     } catch (error) {
+      queryClient.setQueryData(queryKey, perviousFeed);
       handleError(error, {
         message: "Failed to delete session",
         route: "server-action: deleteSession",
         method: "direct",
       });
       toast.error("Failed to delete session");
-      mutateFeed(snapshot, { revalidate: false });
     }
   };
 
@@ -369,11 +368,7 @@ export default function SessionFeed() {
                             setExpandedItem(feedItem);
                           }}
                           onTogglePin={() =>
-                            togglePin(
-                              getCanonicalId(feedItem.item),
-                              feedItem.table,
-                              true
-                            )
+                            togglePin(feedItem.item.id, feedItem.table, true)
                           }
                           onDelete={() =>
                             handleDelete(feedItem.item.id!, feedItem.table)
@@ -400,15 +395,12 @@ export default function SessionFeed() {
                 <div className="mt-8" key={feedItem.item.id}>
                   <FeedCard
                     {...feedItem}
+                    pinned={false}
                     onExpand={() => {
                       setExpandedItem(feedItem);
                     }}
                     onTogglePin={() =>
-                      togglePin(
-                        getCanonicalId(feedItem.item),
-                        feedItem.table,
-                        false
-                      )
+                      togglePin(feedItem.item.id, feedItem.table, false)
                     }
                     onDelete={() =>
                       handleDelete(feedItem.item.id!, feedItem.table)
@@ -424,15 +416,13 @@ export default function SessionFeed() {
                 </div>
               );
             })}
-            {feed.length > 0 && hasNextPage && (
-              <div ref={ref} className="h-10" />
-            )}
-            {isValidating && (
-              <div className="flex flex-col gap-2 items-center">
-                <p>Loading...</p>
+            {isFetchingNextPage && (
+              <div className="flex flex-col gap-2 items-center mt-10">
+                <p>Loading more...</p>
                 <Spinner />
               </div>
             )}
+            <div ref={loadMoreRef} className="h-10"></div>
           </>
         )}
 
@@ -535,8 +525,8 @@ export default function SessionFeed() {
                       todo_session={TodoSessionFull}
                       onClose={() => setEditingItem(null)}
                       onSave={async () => {
-                        await mutateFeed();
-                        await refetchFullTodo();
+                        await Promise.all([mutateFeed(), refetchFullTodo()]);
+
                         setEditingItem(null);
                       }}
                     />

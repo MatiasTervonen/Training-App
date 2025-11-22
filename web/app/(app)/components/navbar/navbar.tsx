@@ -26,7 +26,7 @@ export default function Navbar() {
           href="/dashboard"
           className={`${russoOne.className} text-gray-100 text-2xl sm:text-3xl`}
         >
-          MyTraxxx
+          MyTrack
         </Link>
         <div className="flex gap-3 items-center">
           <NotificationBell />

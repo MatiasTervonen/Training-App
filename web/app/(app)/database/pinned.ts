@@ -4,11 +4,11 @@ import { createClient } from "@/utils/supabase/server";
 import { handleError } from "@/app/(app)/utils/handleError";
 
 type PinSessionProps = {
-  item_id: string;
+  id: string;
   table: "notes" | "gym_sessions" | "weight" | "todo_lists" | "reminders";
 };
 
-export async function pinItem({ item_id, table }: PinSessionProps) {
+export async function pinItem({ id, table }: PinSessionProps) {
   const supabase = await createClient();
 
   const { data, error: authError } = await supabase.auth.getClaims();
@@ -18,7 +18,7 @@ export async function pinItem({ item_id, table }: PinSessionProps) {
     throw new Error("Unauthorized");
   }
 
-  if (!item_id || !table) {
+  if (!id || !table) {
     throw new Error("Invalid request");
   }
 
@@ -28,7 +28,7 @@ export async function pinItem({ item_id, table }: PinSessionProps) {
       [
         {
           user_id: user.sub,
-          item_id: item_id,
+          item_id: id,
           type: table,
         },
       ],
@@ -49,7 +49,7 @@ export async function pinItem({ item_id, table }: PinSessionProps) {
   return { success: true, pinnedItem: pinnedItem };
 }
 
-export async function unpinItem({ item_id, table }: PinSessionProps) {
+export async function unpinItem({ id, table }: PinSessionProps) {
   const supabase = await createClient();
 
   const { data, error: authError } = await supabase.auth.getClaims();
@@ -64,7 +64,7 @@ export async function unpinItem({ item_id, table }: PinSessionProps) {
     .delete()
     .eq("user_id", user.sub)
     .eq("type", table)
-    .eq("item_id", item_id);
+    .eq("item_id", id);
 
   if (error) {
     handleError(error, {

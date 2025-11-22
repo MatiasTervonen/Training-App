@@ -3,12 +3,72 @@
 import { createClient } from "@/utils/supabase/server";
 import { handleError } from "@/app/(app)/utils/handleError";
 
+
+export default async function getFeed({
+  pageParam = 0,
+  limit = 10,
+}: {
+  pageParam?: number;
+  limit?: number;
+}) {
+  const supabase = await createClient();
+
+  const { data, error: authError } = await supabase.auth.getClaims();
+  const user = data?.claims;
+
+  if (authError || !user) {
+    throw new Error("Unauthorized");
+  }
+
+  const from = pageParam * limit;
+  const to = from + limit - 1;
+
+  const pinnedPromise =
+    pageParam === 0
+      ? supabase
+          .from("feed_with_pins")
+          .select("*")
+          .eq("pinned", true)
+          .eq("user_id", user.sub)
+          .order("created_at", { ascending: false })
+      : Promise.resolve({ data: [], error: null });
+
+  const feedPromise = supabase
+    .from("feed_with_pins")
+    .select("*")
+    .eq("pinned", false)
+    .eq("user_id", user.sub)
+    .order("created_at", { ascending: false })
+    .range(from, to);
+
+  const [pinnedResult, feedResult] = await Promise.all([
+    pinnedPromise,
+    feedPromise,
+  ]);
+
+  if (pinnedResult.error || feedResult.error) {
+    const error = pinnedResult.error || feedResult.error;
+    handleError(error, {
+      message: "Error fetching feed",
+      route: "server-action: getFeed",
+      method: "direct",
+    });
+    throw new Error("Error fetching feed");
+  }
+
+  const feed = [...(pinnedResult.data ?? []), ...(feedResult.data ?? [])];
+
+  const hasMore = (feedResult.data?.length ?? 0) === limit;
+
+  return { feed, nextPage: hasMore ? pageParam + 1 : null };
+}
+
 type DeleteSessionProps = {
-  item_id: string;
+  id: string;
   table: "notes" | "gym_sessions" | "weight" | "todo_lists" | "reminders";
 };
 
-export async function deleteSession({ item_id, table }: DeleteSessionProps) {
+export async function deleteSession({ id, table }: DeleteSessionProps) {
   const supabase = await createClient();
 
   const { data, error: authError } = await supabase.auth.getClaims();
@@ -21,7 +81,7 @@ export async function deleteSession({ item_id, table }: DeleteSessionProps) {
   const { error: tableError } = await supabase
     .from(table)
     .delete()
-    .eq("id", item_id)
+    .eq("id", id)
     .eq("user_id", user.sub);
 
   if (tableError) {
@@ -36,7 +96,7 @@ export async function deleteSession({ item_id, table }: DeleteSessionProps) {
   const { error: pinnedError } = await supabase
     .from("pinned_items")
     .delete()
-    .eq("item_id", item_id)
+    .eq("item_id", id)
     .eq("type", table)
     .eq("user_id", user.sub);
 

@@ -8,10 +8,10 @@ import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import { useRouter } from "next/navigation";
 import { formatDate } from "@/app/(app)/lib/formatDate";
 import toast from "react-hot-toast";
-import { updateFeed } from "@/app/(app)/lib/revalidateFeed";
 import { saveWeightToDB } from "../../database/weight";
 import TitleInput from "../../ui/TitleInput";
 import SubNotesInput from "../../ui/SubNotesInput";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function WorkoutAnalyticsPage() {
   const now = formatDate(new Date());
@@ -22,6 +22,8 @@ export default function WorkoutAnalyticsPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const router = useRouter();
+
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     const draft = localStorage.getItem("weight_draft");
@@ -78,7 +80,7 @@ export default function WorkoutAnalyticsPage() {
         weight: parsedWeight,
       });
 
-      await updateFeed();
+      await queryClient.refetchQueries({ queryKey: ["feed"], exact: true });
       router.push("/dashboard");
       resetWeight();
     } catch {

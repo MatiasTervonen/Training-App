@@ -8,9 +8,9 @@ import NotesInput from "@/app/(app)/ui/NotesInput";
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import toast from "react-hot-toast";
 import { useDebouncedCallback } from "use-debounce";
-import { updateFeed } from "@/app/(app)/lib/revalidateFeed";
 import { saveNotesToDB } from "../database/notes";
 import TitleInput from "../ui/TitleInput";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function Notes() {
   const [notes, setNotes] = useState("");
@@ -18,6 +18,8 @@ export default function Notes() {
   const [isSaving, setIsSaving] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const router = useRouter();
+
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     const draft = localStorage.getItem("notes_draft");
@@ -60,7 +62,7 @@ export default function Notes() {
     try {
       await saveNotesToDB({ title, notes });
 
-      await updateFeed();
+      await queryClient.refetchQueries({ queryKey: ["feed"], exact: true });
       router.push("/dashboard");
       resetNotes();
     } catch {

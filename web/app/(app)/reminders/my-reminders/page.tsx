@@ -10,8 +10,7 @@ import MyReminderCard from "../../components/cards/MyReminderCard";
 import ReminderSession from "../../components/expandSession/reminder";
 import Modal from "../../components/modal";
 import EditReminder from "../../ui/editSession/EditReminder";
-import { GetSWRCache } from "../../lib/getSWRCache";
-import { updateFeed } from "@/app/(app)/lib/revalidateFeed";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function Sessions() {
   const [expandedItem, setExpandedItem] = useState<reminders | null>(null);
@@ -19,6 +18,8 @@ export default function Sessions() {
   const [activeTab, setActiveTab] = useState<"upcoming" | "delivered">(
     "upcoming"
   );
+
+  const queryClient = useQueryClient();
 
   const {
     error,
@@ -42,7 +43,7 @@ export default function Sessions() {
     try {
       await deleteReminder(reminder.id);
       mutate("/api/reminders/get-reminders");
-      updateFeed();
+      await queryClient.refetchQueries({ queryKey: ["feed"], exact: true });
     } catch (error) {
       console.log("Error deleting reminder", error);
       toast.error("Error deleting reminder. Please try again later! ");
@@ -56,7 +57,6 @@ export default function Sessions() {
 
   return (
     <div className="p-5 h-full max-w-md mx-auto">
-      <GetSWRCache />
       <h1 className="text-center mt-5 mb-10 text-2xl "> My Reminders</h1>
       <div className="flex items-center justify-center gap-5 my-10">
         <button

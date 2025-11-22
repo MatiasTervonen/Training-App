@@ -12,11 +12,11 @@ import Modal from "../components/modal";
 import SaveButton from "../ui/save-button";
 import FullScreenLoader from "../components/FullScreenLoader";
 import toast from "react-hot-toast";
-import { updateFeed } from "@/app/(app)/lib/revalidateFeed";
 import { useRouter } from "next/navigation";
 import { saveTodoToDB } from "../database/todo";
 import TitleInput from "../ui/TitleInput";
 import SubNotesInput from "../ui/SubNotesInput";
+import { useQueryClient } from "@tanstack/react-query";
 
 type TodoItem = {
   task: string;
@@ -43,6 +43,8 @@ export default function Todo() {
     }
   );
   const router = useRouter();
+
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     if (title.trim() === "" && todoList.length === 0) {
@@ -82,8 +84,7 @@ export default function Todo() {
     try {
       await saveTodoToDB({ title, todoList });
 
-      updateFeed();
-
+      await queryClient.refetchQueries({ queryKey: ["feed"], exact: true });
       toast.success("Todo saved successfully");
       router.push("/dashboard");
       handleDeleteAll();

@@ -102,7 +102,7 @@ export default function EditExercises() {
   };
 
   return (
-    <div className="h-full bg-slate-800">
+    <div className="">
       {!selectedExercise && (
         <ExerciseDropdown
           onSelect={(exercise) => {
@@ -114,7 +114,7 @@ export default function EditExercises() {
       <div>
         {selectedExercise && (
           <>
-            <div className="flex flex-col p-4 gap-5  max-w-md mx-auto">
+            <div className="flex flex-col pt-5 px-5 gap-5 max-w-md mx-auto">
               <h1 className="text-2xl text-center my-5">Edit exercise</h1>
               <div>
                 <CustomInput
@@ -210,7 +210,7 @@ export default function EditExercises() {
                   onClick={() => {
                     resetFields();
                   }}
-                  className="mb-10 bg-red-800 py-2 rounded-md shadow-xl border-2 border-red-500 text-gray-100 text-lg cursor-pointer hover:bg-red-700 hover:scale-105 transition-all duration-200"
+                  className="bg-red-800 py-2 rounded-md shadow-xl border-2 border-red-500 text-gray-100 text-lg cursor-pointer hover:bg-red-700 hover:scale-105 transition-all duration-200"
                 >
                   Cancel
                 </button>

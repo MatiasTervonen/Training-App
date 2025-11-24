@@ -9,6 +9,7 @@ import { generateUUID } from "../../lib/generateUUID";
 import { editTodo } from "../../database/todo";
 import SubNotesInput from "../SubNotesInput";
 import TitleInput from "../TitleInput";
+import BaseButton from "../BaseButton";
 
 type Props = {
   todo_session: full_todo_session;
@@ -94,60 +95,53 @@ export default function EditTodo({ todo_session, onClose, onSave }: Props) {
 
   return (
     <>
-      <div className="flex flex-col mx-auto w-full h-full max-w-lg px-6 pt-10">
-        <div className="flex flex-col justify-between items-center gap-5 h-full ">
-          <div className="w-full">
-            <h2 className="text-lg text-center mb-10">Edit your todo lists</h2>
-            <div className="w-full mb-10">
-              <TitleInput
-                value={sessionData.title}
-                setValue={handleTitleChange}
-                placeholder="Todo title..."
-                label="Title..."
-              />
-            </div>
-            <ul className="w-full">
-              {sessionData.todo_tasks.map((task, index) => (
-                <li
-                  key={task.id}
-                  className="text-gray-300 mb-5 bg-slate-900 p-4 rounded-lg"
-                >
-                  <div className="flex justify-between">
-                    <p className="mb-2">{index + 1}.</p>
-                    <button
-                      onClick={() => handleDeleteItem(index)}
-                      className="text-red-500 hover:scale-105 cursor-pointer"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                  <TitleInput
-                    value={task.task}
-                    setValue={(value) => updateTask(index, { task: value })}
-                    placeholder="Todo title..."
-                    label="Task..."
+      <div className="flex flex-col justify-between items-center gap-5  max-w-lg mx-auto pt-5">
+        <div className="w-full">
+          <h2 className="text-lg text-center mb-10">Edit your todo lists</h2>
+          <div className="w-full mb-10">
+            <TitleInput
+              value={sessionData.title}
+              setValue={handleTitleChange}
+              placeholder="Todo title..."
+              label="Title..."
+            />
+          </div>
+          <ul className="w-full">
+            {sessionData.todo_tasks.map((task, index) => (
+              <li
+                key={task.id}
+                className="text-gray-300 mb-5 bg-slate-900 p-4 rounded-lg"
+              >
+                <div className="flex justify-between">
+                  <p className="mb-2">{index + 1}.</p>
+                  <button
+                    onClick={() => handleDeleteItem(index)}
+                    className="text-red-500 hover:scale-105 cursor-pointer"
+                  >
+                    Delete
+                  </button>
+                </div>
+                <TitleInput
+                  value={task.task}
+                  setValue={(value) => updateTask(index, { task: value })}
+                  placeholder="Todo title..."
+                  label="Task..."
+                />
+                <div className="mt-5">
+                  <SubNotesInput
+                    notes={task.notes || ""}
+                    setNotes={(value) => updateTask(index, { notes: value })}
+                    placeholder="Todo notes..."
+                    label="Notes..."
                   />
-                  <div className="mt-5">
-                    <SubNotesInput
-                      notes={task.notes || ""}
-                      setNotes={(value) => updateTask(index, { notes: value })}
-                      placeholder="Todo notes..."
-                      label="Notes..."
-                    />
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="w-full py-10 flex flex-col gap-5">
-            <button
-              onClick={addNewTask}
-              className="w-full gap-2 bg-blue-800 py-2 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-105"
-            >
-              Add Task
-            </button>
-            <SaveButton onClick={handleSave} />
-          </div>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="w-full pt-10 flex flex-col gap-5">
+          <BaseButton onClick={addNewTask} label="Add Task" />
+          <SaveButton onClick={handleSave} />
         </div>
       </div>
 

@@ -95,10 +95,10 @@ export default function Todo() {
   };
 
   return (
-    <div className="flex flex-col justify-between h-full max-w-lg mx-auto px-4 ">
+    <div className="flex flex-col justify-between h-full max-w-md mx-auto px-5 pt-5">
       <div>
-        <div className="flex items-center gap-5 justify-center my-5">
-          <h1 className="text-2xl text-gray-100">Todo List </h1>
+        <div className="flex items-center gap-5 justify-center mb-10">
+          <h1 className="text-2xl">Todo List </h1>
           <ListTodo color="#f3f4f6" size={30} />
         </div>
         <TitleInput
@@ -130,19 +130,19 @@ export default function Todo() {
             setNotes("");
             setTask("");
           }}
-          className=" my-5 flex items-center justify-center w-full gap-2 bg-blue-800 py-2 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-105"
+          className=" my-5 flex items-center justify-center w-full gap-2 bg-blue-800 py-2 rounded-md shadow-md border-2 border-blue-500 text-lg cursor-pointer hover:bg-blue-700 hover:scale-105 transition-transform duration-200"
         >
           Add
         </button>
         <div className="flex flex-col items-center my-10">
           <div className="bg-slate-950 px-4 rounded-xl pb-5 w-full">
-            <h2 className="text-gray-100 my-10 text-2xl text-center wrap-break-word line-clamp-2">
+            <h2 className="my-10 text-2xl text-center wrap-break-word line-clamp-2">
               {title || "My Todo List"}
             </h2>
             <ul className="flex flex-col gap-5">
               {todoList.map((item: TodoItem, index: number) => (
                 <li
-                  className="text-gray-100 text-lg border p-2 rounded-md flex justify-between gap-2 bg-slate-900"
+                  className=" text-lg border p-2 rounded-md flex justify-between gap-2 bg-slate-900"
                   key={index}
                 >
                   <p className="overflow-hidden wrap-break-word line-clamp-2">
@@ -151,7 +151,7 @@ export default function Todo() {
                   <div className="flex gap-4">
                     <button
                       onClick={() => setOpen(index)}
-                      className="bg-blue-500 text-gray-100 px-1 rounded-md hover:bg-blue-400"
+                      className="bg-blue-500 px-1 rounded-md hover:bg-blue-400"
                     >
                       <SquareArrowOutUpRight size={20} />
                     </button>
@@ -206,7 +206,7 @@ export default function Todo() {
                                   );
                                   setEdit(null);
                                 }}
-                                className="w-full px-4 gap-2 bg-blue-800 py-2 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-105"
+                                className="w-full px-4 gap-2 bg-blue-800 py-2 rounded-md shadow-xl border-2 border-blue-500 text-lg cursor-pointer hover:bg-blue-700 hover:scale-105 transition-transform duration-200"
                               >
                                 <p>save</p>
                               </button>
@@ -215,7 +215,7 @@ export default function Todo() {
                                   setEdit(null);
                                   setModalDraft({ task: "", notes: "" });
                                 }}
-                                className="w-full px-4 gap-2 bg-blue-800 py-2 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-105"
+                                className="w-full px-4 gap-2 bg-blue-800 py-2 rounded-md shadow-xl border-2 border-blue-500 text-lg cursor-pointer hover:bg-blue-700 hover:scale-105 transition-transform duration-200"
                               >
                                 <p>cancel</p>
                               </button>
@@ -223,7 +223,7 @@ export default function Todo() {
                           </>
                         ) : (
                           <div>
-                            <h3 className="text-gray-100 text-2xl my-10 w-full wrap-break-word overflow-hidden text-center">
+                            <h3 className=" text-2xl my-10 w-full wrap-break-word overflow-hidden text-center max-w-lg">
                               {item.task}
                             </h3>
                             <p className="text-gray-400 w-full wrap-break-word overflow-hidden text-center">
@@ -238,7 +238,7 @@ export default function Todo() {
                                     notes: item.notes ?? "",
                                   });
                                 }}
-                                className="w-full flex items-center justify-center px-4 gap-2 bg-blue-800 py-2 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-105"
+                                className="w-[130px] flex items-center justify-center px-4 gap-2 bg-blue-800 py-2 rounded-md shadow-md border-2 border-blue-500 text-lg cursor-pointer hover:bg-blue-700 hover:scale-105 transition-transform duration-200"
                               >
                                 <p>edit</p>
                                 <SquarePen size={20} />
@@ -248,7 +248,7 @@ export default function Todo() {
                                   handleDeleteItem(index);
                                   setOpen(null);
                                 }}
-                                className="w-full flex items-center justify-center px-4 gap-2  bg-red-800 py-2 rounded-md shadow-xl border-2 border-red-500 text-gray-100 text-lg cursor-pointer hover:bg-red-700 hover:scale-105"
+                                className="w-[130px] flex items-center justify-center px-4 gap-2  bg-red-800 py-2 rounded-md shadow-md border-2 border-red-500 text-lg cursor-pointer hover:bg-red-700 hover:scale-105 transition-transform duration-200"
                               >
                                 <p>delete</p>
                                 <Trash2 size={20} />
@@ -265,7 +265,7 @@ export default function Todo() {
           </div>
         </div>
       </div>
-      <div className="flex flex-col gap-5 pb-10">
+      <div className="flex flex-col gap-5">
         <SaveButton disabled={!draft} onClick={handleSaveTodo} />
         <DeleteSessionBtn disabled={!draft} onDelete={handleDeleteAll} />
       </div>

@@ -136,6 +136,8 @@ export async function editTemplate({ id, exercises, name }: EditTemplateProps) {
 }
 
 export async function getFullTemplate(id: string) {
+  console.log("fetching full template");
+
   const supabase = await createClient();
 
   const { data, error: authError } = await supabase.auth.getClaims();
@@ -158,7 +160,7 @@ export async function getFullTemplate(id: string) {
       route: "server-action: getFullTemplate",
       method: "direct",
     });
-    throw new Error("Error updating template");
+    throw new Error("Error fetching full-template");
   }
 
   return template;
@@ -190,4 +192,32 @@ export async function deleteTemplate(id: string) {
   }
 
   return { success: true };
+}
+
+export async function getTemplates() {
+  const supabase = await createClient();
+
+  const { data, error: authError } = await supabase.auth.getClaims();
+  const user = data?.claims;
+
+  if (authError || !user) {
+    throw new Error("Unauthorized");
+  }
+
+  const { data: template, error: templateError } = await supabase
+    .from("gym_templates")
+    .select("id, name, created_at")
+    .eq("user_id", user.sub)
+    .order("created_at", { ascending: false });
+
+  if (templateError || !template) {
+    handleError(templateError, {
+      message: "Error fetching templates",
+      route: "server-actions: getTemplates",
+      method: "direct",
+    });
+    throw new Error("Error fetching templates");
+  }
+
+  return template;
 }

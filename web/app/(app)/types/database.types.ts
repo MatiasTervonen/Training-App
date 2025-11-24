@@ -14,6 +14,27 @@ export type Database = {
   }
   public: {
     Tables: {
+      analytics_counts: {
+        Row: {
+          count: number
+          created_at: string | null
+          id: string
+          updated_at: string | null
+        }
+        Insert: {
+          count: number
+          created_at?: string | null
+          id?: string
+          updated_at?: string | null
+        }
+        Update: {
+          count?: number
+          created_at?: string | null
+          id?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       chat_conversation_participants: {
         Row: {
           conversation_id: string | null
@@ -430,7 +451,15 @@ export type Database = {
           name?: string
           user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "gym_exercises_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       gym_session_exercises: {
         Row: {
@@ -464,6 +493,13 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "gym_session_exercises_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "session_exercises_exercise_id_fkey"
             columns: ["exercise_id"]
@@ -505,7 +541,15 @@ export type Database = {
           title?: string | null
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "gym_sessions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       gym_sets: {
         Row: {
@@ -545,6 +589,13 @@ export type Database = {
           weight?: number | null
         }
         Relationships: [
+          {
+            foreignKeyName: "gym_sets_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "sets_session_exercise_id_fkey"
             columns: ["session_exercise_id"]
@@ -597,6 +648,13 @@ export type Database = {
             referencedRelation: "gym_templates"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "gym_template_exercises_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
         ]
       }
       gym_template_sets: {
@@ -635,6 +693,13 @@ export type Database = {
             referencedRelation: "gym_template_exercises"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "gym_template_sets_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
         ]
       }
       gym_templates: {
@@ -659,7 +724,15 @@ export type Database = {
           updated_at?: string | null
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "gym_templates_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       notes: {
         Row: {
@@ -683,7 +756,15 @@ export type Database = {
           title?: string | null
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "notes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       pinned_items: {
         Row: {
@@ -707,7 +788,15 @@ export type Database = {
           type?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "pinned_items_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       players: {
         Row: {
@@ -764,7 +853,15 @@ export type Database = {
           type?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "reminders_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       timers: {
         Row: {
@@ -791,7 +888,15 @@ export type Database = {
           title?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "timers_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       todo_lists: {
         Row: {
@@ -812,7 +917,15 @@ export type Database = {
           title?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "todo_lists_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       todo_tasks: {
         Row: {
@@ -850,6 +963,13 @@ export type Database = {
             referencedRelation: "todo_lists"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "todo_tasks_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
         ]
       }
       user_push_mobile_subscriptions: {
@@ -877,7 +997,15 @@ export type Database = {
           token?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "user_push_mobile_subscriptions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_push_subscriptions: {
         Row: {
@@ -979,7 +1107,15 @@ export type Database = {
           user_id?: string
           weight?: number
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "weight_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

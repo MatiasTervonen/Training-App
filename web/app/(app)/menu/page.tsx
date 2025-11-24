@@ -7,9 +7,9 @@ import { ShieldUser, UserPen, ContactRound } from "lucide-react";
 
 export default function MenuPage() {
   return (
-    <div className="h-full bg-slate-800 text-primary px-5 pt-10 max-w-md mx-auto  flex flex-col justify-between">
+    <div className="px-4 pt-5 max-w-md mx-auto flex flex-col min-h-full justify-between">
       <div>
-        <h1 className="text-2xl text-center mb-10 text-primary">Menu</h1>
+        <h1 className="text-2xl text-center mb-10">Menu</h1>
         <div className="flex flex-col gap-5">
           <LinkButton href={"/menu/friends"}>
             <p>Friends</p>
@@ -29,7 +29,7 @@ export default function MenuPage() {
           <PushNotificationManager />
         </div>
       </div>
-      <div className="flex flex-col gap-5 items-center pb-20">
+      <div className="flex flex-col gap-5 items-center ">
         <InstallAppClient />
         <SignOutButton />
       </div>

@@ -86,8 +86,8 @@ export default function SessionFeed() {
 
         return {
           ...old,
-          pages: old.pages.slice(0, 1), 
-          pageParams: old.pageParams.slice(0, 1), 
+          pages: old.pages.slice(0, 1),
+          pageParams: old.pageParams.slice(0, 1),
         };
       });
     };
@@ -313,10 +313,10 @@ export default function SessionFeed() {
       <ActiveSessionPopup />
       <div
         ref={containerRef}
-        className="max-w-3xl mx-auto relative bg-linear-to-b from-slate-950 via-slate-900 to-slate-800  px-5 pt-3 pb-20 text-gray-100 overflow-y-auto touch-pan-y"
+        className="max-w-3xl mx-auto relative bg-linear-to-b from-slate-950 via-slate-900 to-slate-800 px-5 pt-3 pb-10 overflow-y-auto touch-pan-y"
       >
         <div
-          className="flex items-center justify-center text-white transition-all"
+          className="flex items-center justify-center transition-all"
           style={{ height: pullDistance }}
         >
           {refreshing ? (

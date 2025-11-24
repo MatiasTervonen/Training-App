@@ -61,9 +61,9 @@ export default function TodoSession({
     JSON.stringify(initialTodo.todo_tasks);
 
   return (
-    <div className="text-center max-w-lg mx-auto flex flex-col h-full justify-between px-4">
+    <div className="text-center max-w-lg mx-auto flex flex-col min-h-full justify-between px-2 mt-5">
       <div className="flex flex-col items-center">
-        <div className="text-sm text-gray-400 mb-10 mt-5">
+        <div className="text-sm text-gray-400 mb-10">
           {formatDate(sessionData.created_at!)}
         </div>
         <div className="bg-slate-950 px-4 rounded-xl pb-5 w-full">
@@ -104,11 +104,11 @@ export default function TodoSession({
                         }}
                         isOpen={true}
                       >
-                        <div className="flex flex-col  max-w-lg mx-auto px-5">
-                          <h3 className="text-2xl my-10 wrap-break-word">
+                        <div className="flex flex-col max-w-lg mx-auto mt-10 px-5">
+                          <h3 className="text-2xl mb-10 wrap-break-word">
                             {task.task}
                           </h3>
-                          <p className="text-gray-20 bg-slate-900 p-10 whitespace-pre-wrap wrap-break-word rounded-md text-left">
+                          <p className="bg-slate-900 p-10 whitespace-pre-wrap wrap-break-word rounded-md text-left">
                             {task.notes || "No notes available"}
                           </p>
                         </div>
@@ -128,7 +128,7 @@ export default function TodoSession({
           </ul>
         </div>
       </div>
-      <div className="my-10">
+      <div className="mt-10">
         <SaveButton
           onClick={saveChanges}
           disabled={!hasChanges}

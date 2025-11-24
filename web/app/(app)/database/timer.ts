@@ -70,3 +70,31 @@ export async function deleteTimer(id: string) {
 
   return { success: true };
 }
+
+export async function getTimers() {
+  const supabase = await createClient();
+
+  const { data, error: authError } = await supabase.auth.getClaims();
+  const user = data?.claims;
+
+  if (authError || !user) {
+    throw new Error("Unauthorized");
+  }
+
+  const { data: timers, error: timerError } = await supabase
+    .from("timers")
+    .select("id, title, time_seconds, notes, created_at, user_id")
+    .eq("user_id", user.sub)
+    .order("created_at", { ascending: false });
+
+  if (timerError || !timers) {
+    handleError(timerError, {
+      message: "Error fetching timers",
+      route: "server-action: getTimers",
+      method: "direct",
+    });
+    throw new Error("Unauthorized");
+  }
+
+  return timers;
+}

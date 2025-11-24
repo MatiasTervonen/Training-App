@@ -1,6 +1,5 @@
 "use client";
 
-import { russoOne } from "@/app/ui/fonts";
 import SaveButton from "@/app/(app)/ui/save-button";
 import DeleteSessionBtn from "@/app/(app)/ui/deleteSessionBtn";
 import { useState, useEffect } from "react";
@@ -12,6 +11,7 @@ import { saveWeightToDB } from "../../database/weight";
 import TitleInput from "../../ui/TitleInput";
 import SubNotesInput from "../../ui/SubNotesInput";
 import { useQueryClient } from "@tanstack/react-query";
+import CustomInput from "../../ui/CustomInput";
 
 export default function WorkoutAnalyticsPage() {
   const now = formatDate(new Date());
@@ -90,43 +90,33 @@ export default function WorkoutAnalyticsPage() {
   };
 
   return (
-    <div
-      className={`${russoOne.className} h-full bg-slate-800 text-gray-100 py-5 px-10`}
-    >
-      <div className="flex flex-col justify-between h-full max-w-md mx-auto">
-        <div className="flex flex-col gap-10">
-          <h1 className="text-2xl text-center">Track your body weight</h1>
+    <div className="flex flex-col justify-between h-full max-w-md mx-auto pt-5 px-5">
+      <div className="flex flex-col gap-10">
+        <h1 className="text-2xl text-center">Track your body weight</h1>
 
-          <TitleInput
-            value={weightTitle}
-            setValue={setWeightTitle}
-            placeholder="Weight entry title..."
-            label="Title for Weight..."
-          />
-          <SubNotesInput
-            notes={weightNotes}
-            setNotes={setWeightNotes}
-            placeholder="Enter your notes here..."
-            label="Notes for Weight..."
-          />
-          <label htmlFor="weight" className="flex flex-col gap-1 text-gray-400">
-            Weight...
-            <input
-              autoComplete="off"
-              id="weight"
-              type="number"
-              inputMode="decimal"
-              placeholder="Enter your weight here..."
-              className="custom-input text-lg p-2 rounded-md border-2 border-gray-100 z-10  placeholder-gray-500  text-gray-100 bg-[linear-gradient(50deg,#0f172a,#1e293b,#333333)] hover:border-blue-500 focus:outline-none focus:border-green-300"
-              value={weight}
-              onChange={(e) => setWeight(e.target.value)}
-            />
-          </label>
-        </div>
-        <div className="flex flex-col items-center gap-5">
-          <SaveButton onClick={saveWeight} />
-          <DeleteSessionBtn onDelete={resetWeight} />
-        </div>
+        <TitleInput
+          value={weightTitle}
+          setValue={setWeightTitle}
+          placeholder="Weight entry title..."
+          label="Title for Weight..."
+        />
+        <SubNotesInput
+          notes={weightNotes}
+          setNotes={setWeightNotes}
+          placeholder="Enter your notes here..."
+          label="Notes for Weight..."
+        />
+        <CustomInput
+          label="Weight..."
+          type="number"
+          inputMode="decimal"
+          placeholder="Enter your weight here..."
+          onChange={(e) => setWeight(e.target.value)}
+        />
+      </div>
+      <div className="flex flex-col items-center gap-5">
+        <SaveButton onClick={saveWeight} />
+        <DeleteSessionBtn onDelete={resetWeight} />
       </div>
       {isSaving && <FullScreenLoader message="Saving weight..." />}
     </div>

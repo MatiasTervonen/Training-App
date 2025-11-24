@@ -1,15 +1,15 @@
 import { formatDate } from "@/app/(app)/lib/formatDate";
-import Link from "next/link";
 import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
 import { weight } from "../../types/models";
+import LinkButton from "../../ui/LinkButton";
 
 export default function WeightSession(weight: weight) {
   const weightUnit =
     useUserStore((state) => state.preferences?.weight_unit) || "kg";
 
   return (
-    <div className="text-center px-4 text-gray-100 max-w-md mx-auto">
-      <div className="text-sm text-gray-400 mt-5">
+    <div className="text-center max-w-md mx-auto mt-5 px-4">
+      <div className="text-sm text-gray-400">
         {formatDate(weight.created_at!)}
       </div>
       <div id="notes-id">
@@ -22,12 +22,9 @@ export default function WeightSession(weight: weight) {
             </p>
           </div>
         </div>
-        <Link
-          href="/weight/analytics"
-          className="mt-10 flex items-center justify-center w-full gap-2 bg-blue-800 py-2 rounded-md shadow-xl border-2 border-blue-500 text-gray-100  cursor-pointer hover:bg-blue-700 hover:scale-105 transition-transform duration-200"
-        >
-          View Full History
-        </Link>
+        <div className="mt-10">
+          <LinkButton href="/weight/analytics">View Full History</LinkButton>
+        </div>
       </div>
     </div>
   );

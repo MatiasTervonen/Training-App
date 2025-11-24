@@ -6,7 +6,7 @@ import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import toast from "react-hot-toast";
 import { editNotes } from "../../database/notes";
 import { notes } from "../../types/models";
-import NotesInput from "../SubNotesInput";
+import NotesInput from "@/app/(app)/ui/NotesInput";
 import TitleInput from "../TitleInput";
 
 type Props = {
@@ -35,27 +35,25 @@ export default function EditNotes({ note, onClose, onSave }: Props) {
 
   return (
     <>
-      <div className="flex flex-col mx-auto w-full h-full max-w-lg px-6 pt-10">
-        <div className="flex flex-col items-center grow gap-5 h-full w-full">
-          <h2 className="text-lg text-center mb-10">Edit your notes</h2>
-          <div className="w-full">
-            <TitleInput
-              value={title || ""}
-              setValue={setValue}
-              placeholder="Notes title..."
-              label="Title..."
-            />
-          </div>
-          <div className="w-full flex-1 flex">
-            <NotesInput
-              notes={notes || ""}
-              setNotes={setNotes}
-              placeholder="Write your notes here..."
-              label="Notes..."
-              fillAvailableSpace
-            />
-          </div>
-          <div className="w-full py-10">
+      <div className="flex flex-col h-full px-5 max-w-md mx-auto pt-5">
+        <div className="flex flex-col items-center grow gap-5">
+          <h2 className="text-lg text-center">Edit your notes</h2>
+
+          <TitleInput
+            value={title || ""}
+            setValue={setValue}
+            placeholder="Notes title..."
+            label="Title..."
+          />
+
+          <NotesInput
+            notes={notes || ""}
+            setNotes={setNotes}
+            placeholder="Write your notes here..."
+            label="Notes..."
+            fillAvailableSpace
+          />
+          <div className="w-full mt-5">
             <SaveButton onClick={handleSubmit} />
           </div>
         </div>

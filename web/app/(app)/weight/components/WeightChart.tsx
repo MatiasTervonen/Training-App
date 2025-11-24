@@ -219,7 +219,7 @@ export default function WeightChart({ range, data }: WeightChartProps) {
 
   return (
     <div className="bg-slate-700  shadow-md">
-      <div className="flex justify-center items-center mb-4 px-10 pt-4">
+      <div className="flex justify-center items-center mb-4 px-10 pt-4 text-center">
         <button onClick={() => setOffset((prev) => prev + 1)} className="mr-4">
           <ChevronLeft />
         </button>

@@ -1,6 +1,5 @@
 "use client";
 
-import useSWR, { mutate } from "swr";
 import Spinner from "@/app/(app)/components/spinner";
 import ExerciseTypeSelect from "@/app/(app)/training/components/ExerciseTypeSelect";
 import { useState } from "react";
@@ -10,6 +9,10 @@ import toast from "react-hot-toast";
 import SubNotesInput from "../../ui/SubNotesInput";
 import { deleteUser } from "@/app/(app)/database/admin";
 import { promoteUser } from "@/app/(app)/database/admin";
+import { useQuery } from "@tanstack/react-query";
+import { getUsers } from "@/app/(app)/database/admin";
+import { getUserCount } from "@/app/(app)/database/admin";
+import { UserTableSkeleton } from "../../ui/loadingSkeletons/skeletons";
 
 export default function Sessions() {
   const [sortField, setSortField] = useState("created_at");
@@ -21,8 +24,34 @@ export default function Sessions() {
   const [selectedRole, setSelectedRole] = useState<{
     [userId: string]: string;
   }>({});
+  const [page, setPage] = useState(0);
+  const limit = 10;
 
-  const { data, error, isLoading } = useSWR<users[]>("/api/users/get-users");
+  const {
+    data,
+    error,
+    isLoading,
+    refetch: mutateUsers,
+  } = useQuery<users[]>({
+    queryKey: ["get-users", page],
+    queryFn: () => getUsers({ pageParam: page, limit }),
+    placeholderData: (previousData) => previousData,
+    refetchOnMount: true,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+  });
+
+  const {
+    data: userCount,
+    error: userCountError,
+    isLoading: isLoadingUserCount,
+  } = useQuery({
+    queryKey: ["get-user-count"],
+    queryFn: () => getUserCount(),
+    refetchOnMount: true,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+  });
 
   const sortedData = [...(data || [])].sort((a, b) => {
     if (sortField === "created_at") {
@@ -44,7 +73,7 @@ export default function Sessions() {
   const handleBanUser = async ({ user_id, duration, reason }: BanUser) => {
     try {
       await banUser({ user_id, duration, reason });
-      mutate("/api/users/get-users");
+      mutateUsers();
 
       if (reason === "unban") {
         toast.success("User unbanned succesfully!");
@@ -53,7 +82,6 @@ export default function Sessions() {
       }
     } catch {
       toast.error("Error banning user. Please try again!");
-      mutate("/api/users/get-users");
     }
   };
 
@@ -65,12 +93,11 @@ export default function Sessions() {
 
     try {
       await deleteUser(user_id);
-      mutate("/api/users/get-users");
+      mutateUsers();
 
       toast.success("User deleted succesfully!");
     } catch {
       toast.error("Error deleting user. Please try again!");
-      mutate("/api/users/get-users");
     }
   };
 
@@ -87,12 +114,11 @@ export default function Sessions() {
 
     try {
       await promoteUser({ user_id, userRole });
-      mutate("/api/users/get-users");
+      mutateUsers();
 
       toast.success("User promoted succesfully!");
     } catch {
       toast.error("Error promoting user. Please try again!");
-      mutate("/api/users/get-users");
     }
   };
 
@@ -100,18 +126,24 @@ export default function Sessions() {
     return `${id.slice(0, start)}...${id.slice(-end)}`;
   };
 
-  const userAmouunt = data ? data.length : 0;
+  const lastPage = userCount?.count
+    ? Math.ceil(userCount?.count / limit) - 1
+    : 0;
 
   return (
-    <div className="relative max-w-7xl mx-auto h-full px-4 mt-5">
+    <div className="relative max-w-7xl mx-auto pt-5 px-4">
       <h1 className="text-2xl text-center mb-10">User Analytics</h1>
 
       <div className="flex items-center justify-between mb-4">
-        <div>
-          <p className="text-gray-400 text-sm">
-            Total Users: <span className="text-gray-100">{userAmouunt}</span>
-          </p>
-        </div>
+        {userCountError ? (
+          <p>Error loading user count</p>
+        ) : (
+          <div className="flex items-center gap-3">
+            <p>Total Users:</p>
+            {isLoadingUserCount ? <Spinner /> : <p>{userCount?.count}</p>}
+          </div>
+        )}
+
         <div className="w-fit text-sm">
           <ExerciseTypeSelect
             label="sort by"
@@ -128,20 +160,15 @@ export default function Sessions() {
         </div>
       </div>
       <div>
-        {isLoading && (
-          <div className="flex flex-col items-center justify-center h-full mt-20">
-            <p className="text-gray-100">Loading user data...</p>
-            <Spinner />
-          </div>
-        )}
+        {isLoading && <UserTableSkeleton count={11} />}
         {error && (
           <div className="flex flex-col items-center justify-center h-full">
             <p className="text-red-500">Failed to load user data.</p>
           </div>
         )}
         {!isLoading && !error && data && data.length > 0 && (
-          <div className="overflow-x-auto">
-            <table className="min-w-full bg-gray-900 text-gray-100">
+          <div className="overflow-x-auto min-h-[451px] bg-gray-900">
+            <table className="min-w-full bg-gray-900 rounded-md">
               <thead>
                 <tr className="text-left border-b border-gray-700">
                   <th className="px-4 py-2 font-normal">id</th>
@@ -341,7 +368,7 @@ export default function Sessions() {
 
                           setSelectedRole((prev) => ({
                             ...prev,
-                            [user.id]: "",
+                            [user.id]: "role",
                           }));
                         }}
                       >
@@ -360,6 +387,30 @@ export default function Sessions() {
             </table>
           </div>
         )}
+        <div className="flex items-center gap-5 mt-3">
+          <button
+            className="border border-gray-100 p-2 bg-blue-700"
+            onClick={() => {
+              if (page === 0) return;
+
+              setPage((p) => p - 1);
+            }}
+          >
+            Previous
+          </button>
+          <p className="border border-gray-100 p-2 bg-gray-600">
+            Page {page + 1}
+          </p>
+          <button
+            className="border border-gray-100 p-2 bg-blue-700"
+            disabled={page >= lastPage}
+            onClick={() => {
+              if (page < lastPage) setPage((p) => p + 1);
+            }}
+          >
+            Next
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -10,8 +10,7 @@ import DeleteSessionBtn from "@/app/(app)/ui/deleteSessionBtn";
 import { gym_exercises } from "../../types/models";
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import { editExercise, deleteExercise } from "../../database/gym";
-import { fetcher } from "../../lib/fetcher";
-import { mutate } from "swr";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function EditExercises() {
   const [name, setName] = useState("");
@@ -24,6 +23,8 @@ export default function EditExercises() {
     useState<gym_exercises | null>(null);
   const [resetTrigger, setResetTrigger] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  const queryClient = useQueryClient();
 
   const handleUpdateExercise = async () => {
     if (!name || !equipment || !muscle_group || !main_group) {
@@ -46,6 +47,10 @@ export default function EditExercises() {
     try {
       await editExercise(exerciseData);
 
+      await queryClient.refetchQueries({
+        queryKey: ["user-exercises"],
+        exact: true,
+      });
       toast.success("Exercise updated successfully!");
       resetFields();
     } catch {
@@ -62,11 +67,10 @@ export default function EditExercises() {
     try {
       await deleteExercise(exerciseId);
 
-      await mutate(
-        "/api/gym/user-exercises",
-        async () => fetcher("/api/gym/user-exercises"),
-        false
-      );
+      await queryClient.refetchQueries({
+        queryKey: ["user-exercises"],
+        exact: true,
+      });
       toast.success("Exercise deleted successfully!");
       setSelectedExercise(null);
       setResetTrigger((prev) => prev + 1);
@@ -94,11 +98,12 @@ export default function EditExercises() {
     setEquipment("");
     setMuscleGroup("");
     setMainGroup("");
+    setSelectedExercise(null);
     setResetTrigger((prev) => prev + 1);
   };
 
   return (
-    <div className="h-full bg-slate-800 text-gray-100">
+    <div className="h-full">
       {!selectedExercise && (
         <ExerciseDropdownEdit
           onSelect={(exercise) => {
@@ -207,7 +212,7 @@ export default function EditExercises() {
                   onClick={() => {
                     resetFields();
                   }}
-                  className="mb-10 bg-red-800 py-2 rounded-md shadow-xl border-2 border-red-500 text-gray-100 text-lg cursor-pointer hover:bg-red-700 hover:scale-105 transition-all duration-200"
+                  className="mb-10 bg-red-800 py-2 rounded-md shadow-md border-2 border-red-500 text-lg cursor-pointer hover:bg-red-700 hover:scale-105 transition-all duration-200"
                 >
                   Cancel
                 </button>

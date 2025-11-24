@@ -254,3 +254,69 @@ export async function promoteUser({ userRole, user_id }: PromoteUser) {
 
   return { success: true };
 }
+
+export async function getUsers({
+  pageParam,
+  limit,
+}: {
+  pageParam: number;
+  limit: number;
+}) {
+  const supabase = await createClient();
+
+  const { data, error: authError } = await supabase.auth.getClaims();
+  const user = data?.claims;
+
+  if (authError || !user) {
+    throw new Error("Unauthorized");
+  }
+
+  const from = pageParam * limit;
+  const to = from + limit - 1;
+
+  const { data: users, error: usersError } = await supabase
+    .from("users")
+    .select("*")
+    .order("created_at", { ascending: false })
+    .range(from, to);
+
+  if (usersError || !users) {
+    handleError(usersError, {
+      message: "Error fetching users",
+      route: "server_action: getUsers",
+      method: "direct",
+    });
+    throw new Error("Unauthorized");
+  }
+
+  return users;
+}
+
+export async function getUserCount() {
+  const supabase = await createClient();
+
+  const { data, error: authError } = await supabase.auth.getClaims();
+  const user = data?.claims;
+
+  if (authError || !user) {
+    throw new Error("Unauthorized");
+  }
+
+  const { data: userCount, error: countError } = await supabase
+    .from("analytics_counts")
+    .select("count")
+    .eq("id", "users")
+    .single();
+
+  if (countError || !userCount) {
+    console.log("error", countError);
+    handleError(countError, {
+      message: "Error fetching user count",
+      route: "server_action: getUserCount",
+      method: "direct",
+    });
+    throw new Error("Error fetching user count");
+  }
+
+  return userCount;
+}

@@ -44,13 +44,12 @@ export type TemplateExercise = {
   };
 };
 
-export type SessionSet = {
-  set_number?: number;
-  weight?: number;
-  reps?: number;
-  rpe?: string;
+type SessionSet = {
+  weight: number | null;
+  reps: number | null;
+  rpe: string | null;
+  set_number: number;
 };
-
 export type HistoryResult = {
   date: string;
   sets: SessionSet[];

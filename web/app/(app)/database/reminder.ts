@@ -52,6 +52,7 @@ type editReminderProps = {
   title: string;
   notes: string | null;
   notify_at: string;
+  delivered: boolean;
 };
 
 export async function editReminder({
@@ -59,6 +60,7 @@ export async function editReminder({
   title,
   notify_at,
   id,
+  delivered,
 }: editReminderProps) {
   const supabase = await createClient();
 
@@ -71,7 +73,7 @@ export async function editReminder({
 
   const { error } = await supabase
     .from("reminders")
-    .update({ title, notes: notes, notify_at })
+    .update({ title, notes: notes, notify_at, delivered })
     .eq("id", id)
     .eq("user_id", user.sub);
 
@@ -113,4 +115,31 @@ export async function deleteReminder(id: string) {
   }
 
   return { success: true };
+}
+
+export async function getRTeminders() {
+  const supabase = await createClient();
+
+  const { data, error: authError } = await supabase.auth.getClaims();
+  const user = data?.claims;
+
+  if (authError || !user) {
+    throw new Error("Unauthorized");
+  }
+
+  const { data: reminders, error } = await supabase
+    .from("reminders")
+    .select("*")
+    .eq("user_id", user.sub);
+
+  if (error) {
+    handleError(error, {
+      message: "Error getting reminders",
+      route: "server-action: getReminders",
+      method: "direct",
+    });
+    throw new Error("Error getting reminders");
+  }
+
+  return reminders;
 }

@@ -22,13 +22,12 @@ import { useTimerStore } from "@/app/(app)/lib/stores/timerStore";
 import { GroupGymExercises } from "@/app/(app)/utils/GroupGymExercises";
 import ExerciseCard from "../components/ExerciseCard";
 import ExerciseSelectorList from "../components/ExerciseSelectorList";
-import useSWR from "swr";
-import { fetcher } from "@/app/(app)/lib/fetcher";
 import { saveGymToDB, editGymSession } from "../../database/gym";
 import { full_gym_session } from "../../types/models";
 import TitleInput from "../../ui/TitleInput";
 import SubNotesInput from "../../ui/SubNotesInput";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQueryClient, useQuery } from "@tanstack/react-query";
+import { getLastExerciseHistory } from "../../database/gym";
 
 export default function GymForm({
   initialData,
@@ -145,17 +144,19 @@ export default function GymForm({
     data: history,
     error: historyError,
     isLoading,
-  } = useSWR<HistoryResult[]>(
-    isHistoryOpen && exerciseHistoryId
-      ? `/api/gym/last-exercise-history/${exerciseHistoryId}`
-      : null,
-    fetcher,
-    {
-      revalidateOnFocus: false,
-      revalidateOnReconnect: false,
-      revalidateIfStale: false,
-    }
-  );
+  } = useQuery<HistoryResult[]>({
+    queryKey: ["exerciseHistory", exerciseHistoryId],
+    queryFn: async () => {
+      const result = await getLastExerciseHistory(exerciseHistoryId!);
+      return result ?? [];
+    },
+    enabled: !!exerciseHistoryId,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    staleTime: Infinity,
+    gcTime: Infinity,
+  });
 
   const openHistory = (exerciseId: string) => {
     setExerciseHistoryId(exerciseId);
@@ -375,10 +376,10 @@ export default function GymForm({
         </nav>
       )}
 
-      <div className="flex justify-center relative h-[calc(100%-40px)] max-w-md mx-auto pt-5">
+      <div className="flex justify-center relative h-[calc(100%-40px)] max-w-md mx-auto pt-5 px-6">
         <div className="flex flex-col justify-between w-full">
-          <div className="flex flex-col items-center justify-center gap-5 px-6">
-            <p className="text-gray-100 text-xl text-center">
+          <div className="flex flex-col items-center justify-center gap-5">
+            <p className="text-xl text-center">
               {isEditing
                 ? "Edit your gym session"
                 : "Track your training progress"}
@@ -582,7 +583,7 @@ export default function GymForm({
                   setNormalExercises([emptyExerciseEntry]);
                   setIsExerciseModalOpen(true);
                 }}
-                className="w-full px-10 bg-blue-800 py-2 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95"
+                className="w-full px-10 bg-blue-800 py-2 rounded-md shadow-xl border-2 border-blue-500 text-lg cursor-pointer hover:bg-blue-700 hover:scale-105 transition-transform duration-200"
               >
                 Add Exercise
                 <Plus className=" inline ml-2" size={20} />
@@ -590,7 +591,7 @@ export default function GymForm({
             </div>
           </div>
 
-          <div className="flex flex-col justify-center items-center mt-14 gap-5 pb-10 px-4">
+          <div className="flex flex-col justify-center items-center mt-14 gap-5">
             <SaveButton onClick={saveSession} />
             <DeleteSessionBtn onDelete={resetSession} />
           </div>

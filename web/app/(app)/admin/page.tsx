@@ -12,9 +12,9 @@ export default async function AdminPage() {
   }
 
   return (
-    <div className="h-full bg-slate-800 text-gray-100 px-5 pt-5">
-      <h1 className="text-2xl my-5 text-center">Admin panel</h1>
-      <div className="flex flex-col gap-5 max-w-md mx-auto">
+    <div className="max-w-md mx-auto px-4 pt-5">
+      <h1 className="text-2xl mb-10 text-center">Admin panel</h1>
+      <div className="flex flex-col gap-5">
         <LinkButton href={"/admin/user-analytics"}>user analytics</LinkButton>
         <LinkButton href={"/admin/add-exercises"}>add exercises</LinkButton>
         <LinkButton href={"/admin/edit-exercises"}>edit exercises</LinkButton>

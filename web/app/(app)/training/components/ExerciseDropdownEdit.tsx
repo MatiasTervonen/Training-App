@@ -3,9 +3,9 @@
 import { useState, useEffect } from "react";
 import { useRef } from "react";
 import { gym_exercises } from "../../types/models";
-import useSWR from "swr";
-import { fetcher } from "../../lib/fetcher";
 import Spinner from "../../components/spinner";
+import { useQuery } from "@tanstack/react-query";
+import { getUserExercises } from "../../database/gym";
 
 type Props = {
   onSelect: (exercise: gym_exercises) => void;
@@ -22,15 +22,19 @@ export default function ExerciseDropdownEdit({
   );
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
-  const [showDropdown, setShowDropdown] = useState(true);
 
   const {
     data: exercises,
     error: exercisesError,
     isLoading: isExercisesLoading,
-  } = useSWR<gym_exercises[]>("/api/gym/user-exercises", fetcher, {
-    revalidateOnFocus: false,
-    revalidateOnReconnect: false,
+  } = useQuery<gym_exercises[]>({
+    queryKey: ["user-exercises"],
+    queryFn: () => getUserExercises(),
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    staleTime: Infinity,
+    gcTime: Infinity,
   });
 
   const isLoading = isExercisesLoading;
@@ -41,7 +45,6 @@ export default function ExerciseDropdownEdit({
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchQuery(value);
-    setShowDropdown(true);
     if (value.length > 0) {
       const filteredExercises = allExercises.filter((exercise) => {
         const combinedText =
@@ -60,31 +63,28 @@ export default function ExerciseDropdownEdit({
   const handleSelectExercise = (exercise: gym_exercises) => {
     setSearchQuery(exercise.name + " " + "(" + exercise.equipment + ")");
     onSelect(exercise);
-    setShowDropdown(false);
   };
 
   //  Handles arrow key navigation in the dropdown
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const activeList =
+      searchQuery.length > 0 ? filteredExercises : allExercises;
+
     if (e.key === "ArrowDown") {
       e.preventDefault();
-      setSelectedIndex((prev) =>
-        prev < filteredExercises.length - 1 ? prev + 1 : 0
-      );
+      setSelectedIndex((prev) => (prev < activeList.length - 1 ? prev + 1 : 0));
     } else if (e.key === "ArrowUp") {
       e.preventDefault();
-      setSelectedIndex((prev) =>
-        prev > 0 ? prev - 1 : filteredExercises.length - 1
-      );
+      setSelectedIndex((prev) => (prev > 0 ? prev - 1 : activeList.length - 1));
     } else if (e.key === "Enter") {
       e.preventDefault();
       if (selectedIndex !== -1) {
-        handleSelectExercise(filteredExercises[selectedIndex]); // Select highlighted city
+        handleSelectExercise(activeList[selectedIndex]); // Select highlighted city
       }
     }
   };
 
   useEffect(() => {
-    setShowDropdown(true);
     setSearchQuery("");
   }, [resetTrigger]);
 
@@ -105,49 +105,42 @@ export default function ExerciseDropdownEdit({
           />
         </div>
 
-        {showDropdown && (
-          <div
-            ref={dropdownRef}
-            className="w-full overflow-y-auto border rounded-md shadow-md 
-                    bg-slate-900 border-gray-100 touch-pan-y mt-10"
-          >
-            {isLoading || isError || exercises?.length === 0 ? (
-              <div className="h-[calc(100dvh-200px)] flex flex-col gap-6 items-center justify-center z-50 text-center">
-                {isLoading && (
-                  <>
-                    <p className="text-gray-100 text-xl">
-                      Loading exercises...
-                    </p>
-                    <Spinner size="h-10 w-10" />
-                  </>
-                )}
-                {isError && (
-                  <p className="text-red-500">
-                    Failed to load exercises. Try again!
-                  </p>
-                )}
-                {exercises?.length === 0 && (
-                  <div className="flex flex-col gap-3 text-lg px-5">
-                    <p>No exercises found.</p>
-                    <p>Get started by adding a new exercise!</p>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <>
-                <h2 className=" text-center bg-slate-600">
-                  All Exercises
-                </h2>
-                {(searchQuery.length > 0
-                  ? filteredExercises
-                  : allExercises
-                ).map((exercise, index) => (
+        <div
+          ref={dropdownRef}
+          className="w-full overflow-y-auto border rounded-md shadow-md 
+                    bg-slate-900 border-gray-100 touch-pan-y mt-10 h-full"
+        >
+          {isLoading || isError || exercises?.length === 0 ? (
+            <div className="h-[calc(100dvh-200px)] flex flex-col gap-6 items-center justify-center z-50 text-center">
+              {isLoading && (
+                <>
+                  <p className="text-gray-100 text-xl">Loading exercises...</p>
+                  <Spinner size="h-10 w-10" />
+                </>
+              )}
+              {isError && (
+                <p className="text-red-500">
+                  Failed to load exercises. Try again!
+                </p>
+              )}
+              {exercises?.length === 0 && (
+                <div className="flex flex-col gap-3 text-lg px-5">
+                  <p>No exercises found.</p>
+                  <p>Get started by adding a new exercise!</p>
+                </div>
+              )}
+            </div>
+          ) : (
+            <>
+              <h2 className=" text-center bg-slate-600">All Exercises</h2>
+              {(searchQuery.length > 0 ? filteredExercises : allExercises).map(
+                (exercise, index) => (
                   <button
                     key={index}
                     onClick={() => handleSelectExercise(exercise)}
                     className={`w-full text-left px-4 py-2 cursor-pointer z-40 hover:bg-slate-800  border-b ${
                       selectedIndex === index
-                        ? "bg-slate-600 hover:bg-slate-500"
+                        ? "bg-slate-800 hover:bg-slate-500"
                         : ""
                     }`}
                   >
@@ -163,11 +156,11 @@ export default function ExerciseDropdownEdit({
                       </p>
                     </div>
                   </button>
-                ))}
-              </>
-            )}
-          </div>
-        )}
+                )
+              )}
+            </>
+          )}
+        </div>
       </div>
     </>
   );

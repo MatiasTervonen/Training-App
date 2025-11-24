@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import SaveButton from "@/app/(app)/ui/save-button";
 import DeleteSessionBtn from "@/app/(app)/ui/deleteSessionBtn";
-
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import toast from "react-hot-toast";
 import { useDebouncedCallback } from "use-debounce";
@@ -14,8 +13,6 @@ import LinkButton from "@/app/(app)/ui/LinkButton";
 import { saveReminderToDB } from "@/app/(app)/database/reminder";
 import SubNotesInput from "@/app/(app)/ui/SubNotesInput";
 import TitleInput from "@/app/(app)/ui/TitleInput";
-import { mutate } from "swr";
-import { fetcher } from "@/app/(app)/lib/fetcher";
 import { useQueryClient } from "@tanstack/react-query";
 
 export default function GlobalReminder() {
@@ -60,6 +57,11 @@ export default function GlobalReminder() {
       return;
     }
 
+    if (notifyAt < new Date()) {
+      toast.error("Notify time must be in the future.");
+      return;
+    }
+
     setIsSaving(true);
 
     try {
@@ -70,11 +72,10 @@ export default function GlobalReminder() {
         notify_at: notifyAt.toISOString(),
       });
 
-      mutate(
-        "/api/reminders/get-reminders",
-        async () => fetcher("/api/reminders/get-reminders"),
-        false
-      );
+      await queryClient.refetchQueries({
+        queryKey: ["get-reminders"],
+        exact: true,
+      });
       await queryClient.refetchQueries({ queryKey: ["feed"], exact: true });
       router.push("/dashboard");
       resetReminder();
@@ -128,16 +129,14 @@ export default function GlobalReminder() {
               placeholder="Select date and time (required)"
             />
           </div>
-          <div className="w-full ">
-            <SubNotesInput
-              notes={notes}
-              setNotes={setNotes}
-              placeholder="Write your notes here... (optional)"
-              label="Notes..."
-            />
-          </div>
+          <SubNotesInput
+            notes={notes}
+            setNotes={setNotes}
+            placeholder="Write your notes here... (optional)"
+            label="Notes..."
+          />
         </div>
-        <div className="flex flex-col items-center gap-5 mb-10  self-center w-full">
+        <div className="flex flex-col gap-5">
           <SaveButton onClick={saveReminder} />
           <DeleteSessionBtn onDelete={resetReminder} />
         </div>

@@ -33,7 +33,7 @@ export default function NotesInput({
 
   return (
     <div
-      className={clsx("flex flex-col", {
+      className={clsx("flex flex-col w-full", {
         "flex-1": fillAvailableSpace,
       })}
     >

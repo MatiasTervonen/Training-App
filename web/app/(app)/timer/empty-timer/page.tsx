@@ -86,7 +86,7 @@ export default function TimerPage() {
           handleStopTimer();
         }
       }}
-      className="p-5 h-full relative"
+      className="pt-5 px-5 h-full relative"
     >
       {showTimerUI ? (
         <>
@@ -121,8 +121,8 @@ export default function TimerPage() {
           </button>
         </>
       ) : (
-        <div className="max-w-md mx-auto flex flex-col gap-10 h-full">
-          <div className="flex justify-center items-center gap-5 my-5">
+        <div className="max-w-md mx-auto flex flex-col gap-10">
+          <div className="flex justify-center items-center gap-5">
             <h1 className="text-2xl text-center">Timer</h1>
             <AlarmClock color="#d1d5db" size={30} />
           </div>
@@ -148,14 +148,13 @@ export default function TimerPage() {
               />
             </div>
           </div>
-          <div className="flex flex-col gap-5 items-center justify-center mb-5 mt-10">
-            <button
-              onClick={handleStartTimer}
-              className="w-full gap-2 bg-blue-800 py-2 rounded-md shadow-md border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-105 transition-all duration-200"
-            >
-              Start Timer
-            </button>
-          </div>
+
+          <button
+            onClick={handleStartTimer}
+            className="w-full bg-blue-800 py-2 rounded-md shadow-md border-2 border-blue-500 text-lg cursor-pointer hover:bg-blue-700 hover:scale-105 transition-all duration-200"
+          >
+            Start Timer
+          </button>
         </div>
       )}
     </div>

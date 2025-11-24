@@ -82,3 +82,30 @@ export async function editWeight({ id, title, notes, weight }: EditWeightProp) {
 
   return { success: true };
 }
+
+export async function getWeight() {
+  const supabase = await createClient();
+
+  const { data, error: authError } = await supabase.auth.getClaims();
+  const user = data?.claims;
+  if (authError || !user) {
+    throw new Error("Unauthorized");
+  }
+
+  const { data: weight, error: weightError } = await supabase
+    .from("weight")
+    .select("*")
+    .eq("user_id", user.sub)
+    .order("created_at", { ascending: true });
+
+  if (weightError || !weight) {
+    handleError(weightError, {
+      message: "Error fetching weight entries",
+      route: "server-action: getWeight",
+      method: "direct",
+    });
+    throw new Error("Unauthorized");
+  }
+
+  return weight;
+}

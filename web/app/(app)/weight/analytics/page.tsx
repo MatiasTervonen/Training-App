@@ -3,10 +3,10 @@
 import { useState } from "react";
 import WeightChart from "../components/WeightChart";
 import AllDataTable from "../components/AllDataTable";
-import useSWR from "swr";
 import Spinner from "@/app/(app)/components/spinner";
-import { fetcher } from "@/app/(app)/lib/fetcher";
 import { weight } from "@/app/(app)/types/models";
+import { useQuery } from "@tanstack/react-query";
+import { getWeight } from "../../database/weight";
 
 export default function Page() {
   const [range, setRange] = useState<"week" | "month" | "year" | "all">(
@@ -17,13 +17,18 @@ export default function Page() {
     data: weight = [],
     error,
     isLoading,
-  } = useSWR<weight[]>("/api/weight/get-weight", fetcher, {
-    revalidateOnFocus: false,
-    revalidateOnReconnect: false,
+  } = useQuery<weight[]>({
+    queryKey: ["get-weight"],
+    queryFn: getWeight,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    staleTime: Infinity,
+    gcTime: Infinity,
   });
 
   return (
-    <div className="h-full bg-slate-800 text-gray-100 py-5">
+    <div className="pt-5">
       <h1 className="text-2xl mb-5 text-center">Weight analytics</h1>
       <div className="flex flex-col ">
         <div className="flex justify-center gap-3 mb-5">

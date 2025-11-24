@@ -16,7 +16,7 @@ export default function TitleInput({
   ...props
 }: TitleInputProps) {
   return (
-    <div className="flex flex-col ">
+    <div className="flex flex-col w-full">
       {label && (
         <label htmlFor={id} className="text-gray-300 mb-1 text-sm">
           {label}

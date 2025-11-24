@@ -6,43 +6,41 @@ import { reminders } from "../../types/models";
 
 export default function ReminderSession(reminder: reminders) {
   return (
-    <div>
+    <div className="mt-10 px-2">
       <div
         id="reminder-id"
-        className="mt-20 mb-10 pt-10 px-6 rounded-xl w-full border-2 border-slate-700  shadow-md bg-linear-to-tr from-slate-950 via-slate-950 to-blue-900 max-w-xl mx-auto"
+        className="max-w-lg mx-auto rounded-2xl border-2 border-slate-500 bg-linear-to-tr from-gray-900 via-slate-800 to-blue-900 shadow-xl p-4"
       >
-        <div className="flex justify-center">
-          <div className="flex flex-col items-center justify-center mt-5 bg-slate-800 p-5 rounded-md flex-1 border border-gray-600">
-            <CalendarSync color="#f3f4f6" />
-            <p className="mt-2 text-xl text-center">Global</p>
+        <div className="flex justify-center gap-4">
+          <div className="flex flex-col items-center justify-center bg-gray-900 rounded-xl py-5 border-2 border-slate-600 w-full">
+            <CalendarSync size={28} />
+            <p className="mt-2">Global</p>
           </div>
-          <div className="flex flex-col items-center justify-center mt-5 bg-slate-800 p-5 rounded-md flex-1 ml-5 border border-gray-600">
-            <Bell color="#f3f4f6" />
 
-            <div className="flex items-center gap-3 justify-center ">
-              <p className="text-center mt-2 text-lg">
-                {formatDateTime(reminder.notify_at)}
-              </p>
-            </div>
+          <div className="flex flex-col items-center justify-center bg-gray-900 rounded-xl py-5 border-2 border-slate-600 w-full">
+            <Bell size={28} />
+            <p className="mt-2 text-center">
+              {formatDateTime(reminder.notify_at)}
+            </p>
           </div>
         </div>
-        <div className="bg-slate-800 mt-5 rounded-md p-5 border border-gray-600">
-          <p className="text-xl wrap-break-word text-center">
-            {reminder.title}
-          </p>
+
+        <div className="bg-gray-900 rounded-xl p-5 mt-6 border-2 border-slate-600 text-center">
+          <p className="text-xl wrap-break-word">{reminder.title}</p>
         </div>
+
         {reminder.notes && (
-          <div>
-            <div className="whitespace-pre-wrap wrap-break-word  text-left bg-slate-800 p-4 rounded-md shadow-lg mt-5 border border-gray-600">
+          <div className="mt-6">
+            <div className="bg-gray-900 rounded-xl border-2 border-slate-600 p-4 whitespace-pre-wrap">
               {reminder.notes}
             </div>
           </div>
         )}
-        <p className="text-sm text-gray-400 mb-2 mt-8">
+        <p className="text-sm text-gray-400 mt-8 text-center">
           Created at: {formatDate(reminder.created_at)}
         </p>
       </div>
-      <div className="flex justify-center">
+      <div className="flex justify-center mt-4">
         <CopyButton targetId="reminder-id" label="Copy Reminder" />
       </div>
     </div>

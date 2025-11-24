@@ -1,19 +1,47 @@
 "use client";
 
-import useSWR from "swr";
 import AnalyticsForm from "../components/AnalyticsForm";
+import { useQuery } from "@tanstack/react-query";
+import { get30dAnalytics } from "../../database/gym";
+import Spinner from "../../components/spinner";
 
 export default function WorkoutAnalyticsPage() {
-  const { data, error, isLoading } = useSWR(
-    "/api/gym/analytics/last-30-days-RPC"
-  );
+  const { data, error, isLoading } = useQuery({
+    queryKey: ["last-30d-analytics"],
+    queryFn: get30dAnalytics,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    refetchOnMount: false,
+  });
 
   console.log("data", data);
 
+  const showAnalytics = !isLoading && !error && data;
+
   return (
-    <div className="h-full bg-slate-800 sm:px-5">
+    <div className="sm:px-5">
       <h1 className="text-2xl my-5 text-center">Workout Analytics</h1>
-      <AnalyticsForm data={data} isLoading={isLoading} error={error} />
+      {isLoading && (
+        <div className="flex flex-col  items-center gap-2 mt-20">
+          <p className="text-gray-300 text-center text-xl">Loading...</p>
+          <Spinner />
+        </div>
+      )}
+
+      {error && (
+        <p className="text-red-500 text-center mt-20">
+          Error loading workout data. Try again!
+        </p>
+      )}
+
+      {!isLoading && data && data.analytics.total_sessions === 0 && (
+        <p className="text-gray-300 text-center mt-20">
+          No workout data available. Start logging your workouts to see
+          analytics!
+        </p>
+      )}
+
+      {showAnalytics && <AnalyticsForm data={data} />}
     </div>
   );
 }

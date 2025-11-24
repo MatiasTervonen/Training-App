@@ -492,3 +492,157 @@ export async function getFullGymSession(id: string) {
 
   return gymSession;
 }
+
+type SessionExercise = {
+  id: string;
+  session_id: string;
+  exercise_id: string;
+  gym_sessions: { created_at: string; user_id: string };
+};
+
+export async function getLastExerciseHistory(exerciseId: string) {
+  const supabase = await createClient();
+
+  const { data, error: authError } = await supabase.auth.getClaims();
+  const user = data?.claims;
+
+  if (authError || !user) {
+    throw new Error("Unauthorized");
+  }
+
+  const { data: exercises, error: exerciseError } = await supabase
+    .from("gym_session_exercises")
+    .select(
+      "id, session_id, exercise_id, gym_sessions:session_id(created_at, user_id)"
+    )
+    .eq("exercise_id", exerciseId)
+    .eq("gym_sessions.user_id", user.sub);
+
+  const sessions = exercises as SessionExercise[] | null;
+
+  if (!sessions || sessions.length === 0) {
+    return null;
+  }
+
+  if (exerciseError) {
+    handleError(exerciseError, {
+      message: "Error fetching exercise history",
+      route: "server-action: getLastExerciseHistory",
+      method: "direct",
+    });
+    throw new Error("Error fetching exercise history");
+  }
+
+  const sorted = sessions.sort(
+    (a, b) =>
+      new Date(b.gym_sessions?.created_at).getTime() -
+      new Date(a.gym_sessions?.created_at).getTime()
+  );
+
+  const allSorted = await Promise.all(
+    sorted.map(async (session) => {
+      const { data: sets, error: setsError } = await supabase
+        .from("gym_sets")
+        .select("set_number,weight, reps, rpe")
+        .eq("session_exercise_id", session.id)
+        .order("set_number", { ascending: true });
+
+      if (setsError) {
+        handleError(setsError, {
+          message: "Error fetching sets",
+          route: "server-action: getLastExerciseHistory",
+          method: "direct",
+        });
+        throw new Error("Error fetching sets");
+      }
+
+      return {
+        date: session.gym_sessions?.created_at,
+        sets,
+      };
+    })
+  );
+
+  const filteredResults = allSorted.filter(Boolean);
+
+  return filteredResults;
+}
+
+export async function getUserExercises() {
+  const supabase = await createClient();
+
+  const { data, error: authError } = await supabase.auth.getClaims();
+  const user = data?.claims;
+
+  if (authError || !user) {
+    throw new Error("Unauthorized");
+  }
+
+  const { data: exercises, error } = await supabase
+    .from("gym_exercises")
+    .select("*")
+    .order("name", { ascending: true })
+    .eq("user_id", user.sub);
+
+  if (error) {
+    handleError(error, {
+      message: "Error fetching user exercises",
+      route: "server-action: getUserExercises",
+      method: "direct",
+    });
+    throw new Error("Error fetching user exercises");
+  }
+
+  return exercises;
+}
+
+import { Last30DaysAnalytics } from "../types/session";
+
+export async function get30dAnalytics() {
+  const supabase = await createClient();
+
+  const { data, error: authError } = await supabase.auth.getClaims();
+  const user = data?.claims;
+
+  if (authError || !user) {
+    throw new Error("Unauthorized");
+  }
+
+  const { data: analytics, error: gymSessionError } = await supabase.rpc(
+    "last_30d_analytics",
+    { uid: user.sub }
+  );
+
+  if (gymSessionError || !analytics) {
+    handleError(gymSessionError, {
+      message: "Error fetching gym sessions",
+      route: "server-actions: get30dAnalytics",
+      method: "direct",
+    });
+    throw new Error("Error fetching gym sessions");
+  }
+
+  const { data: heatMap, error: heatMapError } = await supabase
+    .from("gym_sessions")
+    .select("title, created_at")
+    .gte(
+      "created_at",
+      new Date(new Date().setDate(new Date().getDate() - 30)).toISOString()
+    )
+    .eq("user_id", user.sub)
+    .order("created_at", { ascending: true });
+
+  if (heatMapError || !heatMap) {
+    handleError(heatMapError, {
+      message: "Error fetching gym sessions",
+      route: "server-actions: get30dAnalytics",
+      method: "direct",
+    });
+    throw new Error("Error fetching gym sessions");
+  }
+
+  return {
+    analytics: analytics as Last30DaysAnalytics["analytics"],
+    heatMap: heatMap as Last30DaysAnalytics["heatMap"],
+  };
+}

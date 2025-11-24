@@ -5,13 +5,15 @@ import { TemplateSkeleton } from "@/app/(app)/ui/loadingSkeletons/skeletons";
 import Modal from "@/app/(app)/components/modal";
 import { useState } from "react";
 import { ExerciseEntry } from "@/app/(app)/types/session";
-import useSWR, { mutate } from "swr";
 import toast from "react-hot-toast";
 import { full_gym_template } from "../../types/models";
 import TemplateCard from "@/app/(app)/components/cards/TemplateCard";
 import Spinner from "../../components/spinner";
 import GymTemplate from "@/app/(app)/components/expandSession/template";
 import { deleteTemplate } from "../../database/template";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { getTemplates } from "../../database/template";
+import { getFullTemplate } from "../../database/template";
 
 type templateSummary = {
   id: string;
@@ -24,14 +26,22 @@ export default function TemplatesPage() {
     null
   );
 
+  const queryClient = useQueryClient();
+
   const router = useRouter();
 
   const {
     data: templates,
     error,
     isLoading,
-  } = useSWR<templateSummary[]>("/api/gym/get-templates", {
-    keepPreviousData: true,
+  } = useQuery<templateSummary[]>({
+    queryKey: ["templates"],
+    queryFn: getTemplates,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    staleTime: Infinity,
+    gcTime: Infinity,
   });
 
   const startWorkout = (template: full_gym_template) => {
@@ -62,21 +72,25 @@ export default function TemplatesPage() {
     );
     if (!confirmDelete) return;
 
-    mutate(
-      "/api/gym/get-templates",
-      (currentTemplates: full_gym_template[] = []) => {
-        return currentTemplates.filter((t) => t.id !== templateId);
-      },
-      false
-    );
+    const queryKey = ["templates"];
+
+    await queryClient.cancelQueries({ queryKey });
+
+    const previousTemplates = queryClient.getQueryData(queryKey);
+
+    queryClient.setQueryData<templateSummary[]>(queryKey, (oldData) => {
+      if (!oldData) return;
+
+      return oldData.filter((template) => template.id !== templateId);
+    });
 
     try {
       await deleteTemplate(templateId);
 
       toast.success("Template deleted successfully!");
     } catch {
+      queryClient.setQueryData(queryKey, previousTemplates);
       toast.error("Failed to delete template. Please try again.");
-      mutate("/api/gym/get-templates");
     }
   };
   const templateId = expandedItem?.id;
@@ -85,68 +99,71 @@ export default function TemplatesPage() {
     data: TemplateSessionFull,
     error: TemplateSessionError,
     isLoading: isLoadingTemplateSession,
-  } = useSWR<full_gym_template>(
-    templateId ? `/api/gym/get-full-template?id=${templateId}` : null
-  );
+  } = useQuery<full_gym_template>({
+    queryKey: ["fullTemplate", templateId],
+    queryFn: () => getFullTemplate(templateId!),
+    enabled: !!templateId,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    staleTime: Infinity,
+    gcTime: Infinity,
+  });
 
   return (
-    <div className="h-full text-gray-100 p-5">
-      <div className="flex flex-col max-w-md mx-auto">
-        <h1 className="text-gray-100 text-center  mt-5 mb-10 text-2xl">
-          My Templates
-        </h1>
+    <div className="flex flex-col max-w-md mx-auto pt-5 px-5">
+      <h1 className="text-center mb-10 text-2xl">My Templates</h1>
 
-        {!templates && isLoading && <TemplateSkeleton count={6} />}
+      {!templates && isLoading && <TemplateSkeleton count={6} />}
 
-        {error && (
-          <p className="text-red-500 text-center">
-            Error loading templates. Try again!
-          </p>
-        )}
+      {error && (
+        <p className="text-red-500 text-center">
+          Error loading templates. Try again!
+        </p>
+      )}
 
-        {!isLoading && templates?.length === 0 && (
-          <p className="text-gray-300 text-center">
-            No templates found. Create a new template to get started!
-          </p>
-        )}
+      {!isLoading && templates?.length === 0 && (
+        <p className="text-gray-300 text-center">
+          No templates found. Create a new template to get started!
+        </p>
+      )}
 
-        {templates &&
-          templates.map((template: templateSummary) => (
-            <TemplateCard
-              key={template.id}
-              item={template}
-              onDelete={() => handleDeleteTemplate(template.id)}
-              onExpand={() => setExpandedItem(template as full_gym_template)}
-              onEdit={() => {
-                router.push(`/training/templates/${template.id}/edit`);
-              }}
-            />
-          ))}
+      {templates &&
+        templates.map((template: templateSummary) => (
+          <TemplateCard
+            key={template.id}
+            item={template}
+            onDelete={() => handleDeleteTemplate(template.id)}
+            onExpand={() => setExpandedItem(template as full_gym_template)}
+            onEdit={() => {
+              router.push(`/training/templates/${template.id}/edit`);
+            }}
+          />
+        ))}
 
-        {expandedItem && (
-          <Modal isOpen={true} onClose={() => setExpandedItem(null)}>
-            <>
-              {isLoadingTemplateSession ? (
-                <div className="flex flex-col gap-5 items-center justify-center pt-40">
-                  <p>Loading template details...</p>
-                  <Spinner />
-                </div>
-              ) : TemplateSessionError ? (
-                <p className="text-center text-lg mt-10">
-                  Failed to load template details. Please try again later.
-                </p>
-              ) : (
-                TemplateSessionFull && (
-                  <GymTemplate
-                    item={TemplateSessionFull}
-                    onStartWorkout={() => startWorkout(TemplateSessionFull)}
-                  />
-                )
-              )}
-            </>
-          </Modal>
-        )}
-      </div>
+      {expandedItem && (
+        <Modal isOpen={true} onClose={() => setExpandedItem(null)}>
+          <>
+            {isLoadingTemplateSession ? (
+              <div className="flex flex-col gap-5 items-center justify-center pt-40">
+                <p>Loading template details...</p>
+                <Spinner />
+              </div>
+            ) : TemplateSessionError ? (
+              <p className="text-center text-lg mt-20 text-gray-300">
+                Failed to load template details. Please try again later.
+              </p>
+            ) : (
+              TemplateSessionFull && (
+                <GymTemplate
+                  item={TemplateSessionFull}
+                  onStartWorkout={() => startWorkout(TemplateSessionFull)}
+                />
+              )
+            )}
+          </>
+        </Modal>
+      )}
     </div>
   );
 }

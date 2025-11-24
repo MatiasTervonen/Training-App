@@ -27,9 +27,9 @@ export default function GymSession(gym_session: full_gym_session) {
     exercise.gym_exercises.main_group.toLowerCase() === "cardio";
 
   return (
-    <div className="max-w-md mx-auto mb-20">
+    <div className="max-w-lg mx-auto pt-5 px-2">
       <div className="flex flex-col gap-2 justify-center items-center">
-        <div className="text-sm text-gray-400 mt-5">
+        <div className="text-sm text-gray-400">
           {formatDate(gym_session.created_at)}
         </div>
         <h2 className="text-xl mt-2">{gym_session.title}</h2>
@@ -43,23 +43,21 @@ export default function GymSession(gym_session: full_gym_session) {
       {Object.entries(groupedExercises).map(([superset_id, group]) => (
         <div
           key={superset_id}
-          className={`mt-10 bg-linear-to-tr from-gray-900 via-slate-800 to-blue-900 rounded-md mx-2 ${
+          className={`mt-10 bg-linear-to-tr from-gray-900 via-slate-800 to-blue-900 rounded-md ${
             group.length > 1
               ? "border-2 border-blue-700"
               : "border-2 border-gray-700"
           }`}
         >
           {group.length > 1 && (
-            <h3 className="text-lg text-gray-100 my-2 text-center">
-              Super-Set
-            </h3>
+            <h3 className="text-lg my-2 text-center">Super-Set</h3>
           )}
 
           {group.map(({ exercise, index }) => (
             <div key={index} className="py-2 px-4 mb-4">
               <div className="flex justify-between flex-col mb-2">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-lg text-gray-100 ">
+                  <h3 className="text-lg">
                     {index + 1}. {exercise.gym_exercises.name}
                   </h3>
                   <h3 className="text-sm text-gray-300">
@@ -75,7 +73,7 @@ export default function GymSession(gym_session: full_gym_session) {
               </div>
               <table className="w-full text-left">
                 <thead>
-                  <tr className="text-gray-100 border-b">
+                  <tr className="border-b">
                     <th className="p-2 font-normal">Set</th>
                     {isCardioExercise(exercise) ? (
                       <>
@@ -96,9 +94,7 @@ export default function GymSession(gym_session: full_gym_session) {
                     <tr
                       key={setIndex}
                       className={`${
-                        set.rpe === "Failure"
-                          ? "bg-red-500 text-white"
-                          : "text-gray-100"
+                        set.rpe === "Failure" ? "bg-red-500" : "text-gray-100"
                       } ${set.rpe === "Warm-up" ? "bg-blue-500" : ""} border-b`}
                     >
                       {isCardioExercise(exercise) ? (

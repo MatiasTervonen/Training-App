@@ -111,84 +111,82 @@ export default function Page() {
   }, [password, confirmPassword]);
 
   return (
-    <div className="p-5 h-full relative">
-      <div className="max-w-md mx-auto pb-20">
-        <h1 className="flex justify-center my-5 text-2xl">Security Settings</h1>
-        <h2 className="my-5 underline">Reset Password</h2>
-        <p className="text-gray-300 mb-5 text-sm">
-          After resetting your password, you will be logged out from all devices
-          for security reasons. Any unsaved local data on this device may be
-          cleared.
-        </p>
-        <div className="mb-5">
-          <CustomInput
-            type="password"
-            label="New Password"
-            placeholder="Enter your new password..."
-            value={password}
-            setValue={setPassword}
-            disabled={loading}
-            maxLength={128}
-            id="new-password-input"
-          />
-        </div>
-        <div>
-          <CustomInput
-            type="password"
-            label="Confirm New Password"
-            placeholder="Confirm your new password..."
-            value={confirmPassword}
-            setValue={setConfirmPassword}
-            disabled={loading}
-            maxLength={128}
-            id="confirm-password-input"
-          />
-        </div>
-        {successMessage ? (
-          <p className="text-green-500 my-5 text-center">{successMessage}</p>
-        ) : errorMessage ? (
-          <p className="text-red-500 my-5 text-center">{errorMessage}</p>
-        ) : (
-          <p className="mb-5 text-center invisible">Placeholder</p>
-        )}
-        <div>
-          <SaveButtonSpinner
-            disabled={loading}
-            loading={loading}
-            onClick={handleSavePassword}
-          />
-        </div>
-        <h2 className="mt-10 underline">Delete Account</h2>
-        <p className="my-5 text-gray-300">
-          Type “DELETE ACCOUNT” to confirm. All your data will be permanently
-          removed and cannot be recovered.
-        </p>
-        <div>
-          <CustomInput
-            type="text"
-            label="Type: DELETE ACCOUNT"
-            placeholder="Type: DELETE ACCOUNT"
-            value={isDeleteAccount}
-            setValue={setIsDeleteAccount}
-            disabled={loading}
-            maxLength={128}
-          />
-        </div>
-        {successMessage2 ? (
-          <p className="text-green-500 my-5 text-center">{successMessage2}</p>
-        ) : errorMessage2 ? (
-          <p className="text-red-500 my-5 text-center">{errorMessage2}</p>
-        ) : (
-          <p className="mb-5 text-center invisible">Placeholder</p>
-        )}
-        <SaveButtonSpinner
-          label="Delete account"
-          onClick={handleDeleteAccount}
-          className="bg-red-600 border-red-400 hover:bg-red-500"
-          loading={loading2}
-          disabled={loading2}
+    <div className="p-5 relative max-w-md mx-auto">
+      <h1 className="flex justify-center my-5 text-2xl">Security Settings</h1>
+      <h2 className="my-5 underline">Reset Password</h2>
+      <p className="text-gray-300 mb-5 text-sm">
+        After resetting your password, you will be logged out from all devices
+        for security reasons. Any unsaved local data on this device may be
+        cleared.
+      </p>
+      <div className="mb-5">
+        <CustomInput
+          type="password"
+          label="New Password"
+          placeholder="Enter your new password..."
+          value={password}
+          setValue={setPassword}
+          disabled={loading}
+          maxLength={128}
+          id="new-password-input"
         />
       </div>
+      <div>
+        <CustomInput
+          type="password"
+          label="Confirm New Password"
+          placeholder="Confirm your new password..."
+          value={confirmPassword}
+          setValue={setConfirmPassword}
+          disabled={loading}
+          maxLength={128}
+          id="confirm-password-input"
+        />
+      </div>
+      {successMessage ? (
+        <p className="text-green-500 my-5 text-center">{successMessage}</p>
+      ) : errorMessage ? (
+        <p className="text-red-500 my-5 text-center">{errorMessage}</p>
+      ) : (
+        <p className="mb-5 text-center invisible">Placeholder</p>
+      )}
+      <div>
+        <SaveButtonSpinner
+          disabled={loading}
+          loading={loading}
+          onClick={handleSavePassword}
+        />
+      </div>
+      <h2 className="mt-10 underline">Delete Account</h2>
+      <p className="my-5 text-gray-300">
+        Type “DELETE ACCOUNT” to confirm. All your data will be permanently
+        removed and cannot be recovered.
+      </p>
+      <div>
+        <CustomInput
+          type="text"
+          label="Type: DELETE ACCOUNT"
+          placeholder="Type: DELETE ACCOUNT"
+          value={isDeleteAccount}
+          setValue={setIsDeleteAccount}
+          disabled={loading}
+          maxLength={128}
+        />
+      </div>
+      {successMessage2 ? (
+        <p className="text-green-500 my-5 text-center">{successMessage2}</p>
+      ) : errorMessage2 ? (
+        <p className="text-red-500 my-5 text-center">{errorMessage2}</p>
+      ) : (
+        <p className="mb-5 text-center invisible">Placeholder</p>
+      )}
+      <SaveButtonSpinner
+        label="Delete account"
+        onClick={handleDeleteAccount}
+        className="bg-red-600 border-red-400 hover:bg-red-500"
+        loading={loading2}
+        disabled={loading2}
+      />
     </div>
   );
 }

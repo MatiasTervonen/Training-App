@@ -1,6 +1,5 @@
 "use client";
 
-import useSWR, { mutate } from "swr";
 import { deleteReminder } from "../../database/reminder";
 import toast from "react-hot-toast";
 import { useState } from "react";
@@ -10,7 +9,8 @@ import MyReminderCard from "../../components/cards/MyReminderCard";
 import ReminderSession from "../../components/expandSession/reminder";
 import Modal from "../../components/modal";
 import EditReminder from "../../ui/editSession/EditReminder";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQueryClient, useQuery } from "@tanstack/react-query";
+import { getRTeminders } from "../../database/reminder";
 
 export default function Sessions() {
   const [expandedItem, setExpandedItem] = useState<reminders | null>(null);
@@ -25,7 +25,13 @@ export default function Sessions() {
     error,
     isLoading,
     data: reminders = [],
-  } = useSWR<reminders[]>("/api/reminders/get-reminders");
+  } = useQuery<reminders[]>({
+    queryKey: ["get-reminders"],
+    queryFn: getRTeminders,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    refetchOnMount: false,
+  });
 
   const handleDeleteReminder = async (reminder: reminders) => {
     const confirmDelete = confirm(
@@ -33,21 +39,25 @@ export default function Sessions() {
     );
     if (!confirmDelete) return;
 
-    mutate(
-      "/api/reminders/get-reminders",
-      (old: reminders[] | undefined) =>
-        old?.filter((r) => r.id !== reminder.id) || [],
-      false
-    );
+    const queryKey = ["get-reminders"];
+
+    await queryClient.cancelQueries({ queryKey });
+
+    const previousReminders = queryClient.getQueryData(queryKey);
+
+    queryClient.setQueryData<reminders[]>(queryKey, (oldData) => {
+      if (!oldData) return;
+
+      return oldData.filter((r) => r.id !== reminder.id);
+    });
 
     try {
       await deleteReminder(reminder.id);
-      mutate("/api/reminders/get-reminders");
+
       await queryClient.refetchQueries({ queryKey: ["feed"], exact: true });
-    } catch (error) {
-      console.log("Error deleting reminder", error);
+    } catch {
+      queryClient.setQueryData(queryKey, previousReminders);
       toast.error("Error deleting reminder. Please try again later! ");
-      mutate("/api/reminders/get-reminders");
     }
   };
 
@@ -56,8 +66,8 @@ export default function Sessions() {
   );
 
   return (
-    <div className="p-5 h-full max-w-md mx-auto">
-      <h1 className="text-center mt-5 mb-10 text-2xl "> My Reminders</h1>
+    <div className="pt-5 px-5 max-w-md mx-auto">
+      <h1 className="text-center mb-10 text-2xl "> My Reminders</h1>
       <div className="flex items-center justify-center gap-5 my-10">
         <button
           onClick={() => setActiveTab("upcoming")}

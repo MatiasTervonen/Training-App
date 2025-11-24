@@ -9,8 +9,7 @@ import { generateUUID } from "@/app/(app)/lib/generateUUID";
 import FullScreenLoader from "../../components/FullScreenLoader";
 import { handleError } from "../../utils/handleError";
 import { saveExerciseToDB } from "../../database/gym";
-import { mutate } from "swr";
-import { fetcher } from "../../lib/fetcher";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function EditExercises() {
   const [name, setName] = useState("");
@@ -19,6 +18,8 @@ export default function EditExercises() {
   const [muscleGroup, setMuscleGroup] = useState("chest");
   const [mainGroup, setMainGroup] = useState("chest");
   const [isSaving, setIsSaving] = useState(false);
+
+  const queryClient = useQueryClient();
 
   const handleSave = async () => {
     if (name.length >= 50) return;
@@ -41,15 +42,13 @@ export default function EditExercises() {
     try {
       await saveExerciseToDB(exerciseData);
 
-      await mutate(
-        "/api/gym/user-exercises",
-        async () => fetcher("/api/gym/user-exercises"),
-        false
-      );
+      await queryClient.refetchQueries({
+        queryKey: ["user-exercises"],
+        exact: true,
+      });
       toast.success("Exercise saved successfully!");
       setName("");
     } catch (error) {
-      console.log("error saving", error);
       handleError(error, {
         message: "Error saving exercise",
         route: "/api/gym/add-exercise",
@@ -62,7 +61,7 @@ export default function EditExercises() {
   };
 
   return (
-    <div className="h-full bg-slate-800 text-gray-100 px-5 pt-5 max-w-md mx-auto">
+    <div className="px-5 pt-5 max-w-md mx-auto">
       <h1 className="text-2xl my-5 text-center">Add Exercises</h1>
       <div className="flex flex-col gap-5">
         <div>

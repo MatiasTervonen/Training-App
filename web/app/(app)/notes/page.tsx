@@ -73,30 +73,24 @@ export default function Notes() {
 
   return (
     <>
-      <div className="flex flex-col h-full w-full px-6 max-w-md mx-auto">
-        <div className="flex flex-col items-center mt-5 gap-5 grow mb-10 h-full">
-          <p className="text-gray-100 text-lg text-center">
-            Add your notes here
-          </p>
-          <div className="mb-5 w-full">
-            <TitleInput
-              value={title}
-              setValue={setTitle}
-              placeholder="Notes title..."
-              label="Title..."
-            />
-          </div>
-          <div className="w-full flex-1 flex">
-            <NotesInput
-              notes={notes}
-              setNotes={setNotes}
-              placeholder="Write your notes here..."
-              label="Notes..."
-              fillAvailableSpace
-            />
-          </div>
+      <div className="flex flex-col h-full px-5 max-w-md mx-auto pt-5">
+        <div className="flex flex-col items-center gap-5 grow mb-10">
+          <p className="text-lg text-center">Add your notes here</p>
+          <TitleInput
+            value={title}
+            setValue={setTitle}
+            placeholder="Notes title..."
+            label="Title..."
+          />
+          <NotesInput
+            notes={notes}
+            setNotes={setNotes}
+            placeholder="Write your notes here..."
+            label="Notes..."
+            fillAvailableSpace
+          />
         </div>
-        <div className="flex flex-col items-center gap-5 mb-10  self-center w-full">
+        <div className="flex flex-col items-center gap-5">
           <SaveButton onClick={saveNotes} />
           <DeleteSessionBtn onDelete={resetNotes} />
         </div>

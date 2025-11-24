@@ -13,30 +13,26 @@ export default function GymTemplate({ item, onStartWorkout }: Props) {
   );
 
   return (
-    <div className="mx-4">
-      <div className="my-5 flex flex-col gap-2 justify-center items-center">
+    <div className="pt-5 px-4 max-w-lg mx-auto">
+      <div className="flex flex-col gap-2 justify-center items-center">
         <h2 className="text-sm text-gray-400">
           Created: {formatDate(item.created_at)}
         </h2>
-        <h2 className="text-lg text-gray-100">{item.name}</h2>
+        <h2 className="text-lg">{item.name}</h2>
       </div>
       {Object.entries(groupedExercises).map(([superset_id, group]) => (
         <div
           key={superset_id}
-          className="mt-6 bg-slate-900 rounded-md px-4 py-2 shadow-lg max-w-md mx-auto"
+          className="mt-6 bg-slate-900 rounded-md px-4 py-2 shadow-md"
         >
           {group.length > 1 && (
-            <h3 className="text-lg text-gray-100 mb-2 text-center">
-              Super-Set
-            </h3>
+            <h3 className="text-lg mb-2 text-center">Super-Set</h3>
           )}
           {group.map((exercise) => (
             <div key={exercise.id}>
               <div className="flex  justify-between flex-col">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-lg text-gray-100 ">
-                    {exercise.gym_exercises.name}
-                  </h3>
+                  <h3 className="text-lg truncate mr-2">{exercise.gym_exercises.name}</h3>
                   <h3 className="text-sm text-gray-300">
                     {exercise.gym_exercises.muscle_group}
                   </h3>
@@ -51,7 +47,7 @@ export default function GymTemplate({ item, onStartWorkout }: Props) {
       ))}
       <button
         onClick={onStartWorkout}
-        className="mb-5 max-w-md mx-auto mt-10  flex items-center justify-center w-full gap-2 bg-blue-800 py-2 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95"
+        className="w-full mt-10 bg-blue-800 py-2 rounded-md shadow-md border-2 border-blue-500 text-lg cursor-pointer hover:bg-blue-700 hover:scale-105 transition-transform duration-200"
       >
         Start Workout
       </button>

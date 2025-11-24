@@ -90,10 +90,9 @@ export default function WorkoutAnalyticsPage() {
   };
 
   return (
-    <div className="flex flex-col justify-between h-full max-w-md mx-auto pt-5 px-5">
-      <div className="flex flex-col gap-10">
-        <h1 className="text-2xl text-center">Track your body weight</h1>
-
+    <div className="flex flex-col justify-between h-full max-w-md mx-auto pt-5 px-5 pb-10">
+      <div className="flex flex-col gap-5">
+        <h1 className="text-2xl text-center mb-5">Track your body weight</h1>
         <TitleInput
           value={weightTitle}
           setValue={setWeightTitle}

@@ -79,7 +79,7 @@ export default function TimersPage() {
   };
 
   return (
-    <div className="flex flex-col max-w-md mx-auto pt-5 px-5">
+    <div className="flex flex-col max-w-md mx-auto page-padding">
       <h1 className="text-center text-2xl mb-10">My Timers</h1>
 
       {!error && isLoading && <TemplateSkeleton count={3} />}

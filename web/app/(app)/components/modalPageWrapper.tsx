@@ -105,7 +105,7 @@ export default function ModalPageWrapper({
 
       <motion.div
         key={pathname}
-        className="absolute z-30 w-full h-full overflow-y-auto bg-slate-800 grow pb-10"
+        className="absolute z-30 w-full h-full overflow-y-auto bg-slate-800 grow"
         custom={direction}
         drag={blockSwipe ? false : "x"}
         onAnimationComplete={() => {

@@ -111,7 +111,7 @@ export default function TemplatesPage() {
   });
 
   return (
-    <div className="flex flex-col max-w-md mx-auto pt-5 px-5">
+    <div className="flex flex-col max-w-md mx-auto page-padding">
       <h1 className="text-center mb-10 text-2xl">My Templates</h1>
 
       {!templates && isLoading && <TemplateSkeleton count={6} />}

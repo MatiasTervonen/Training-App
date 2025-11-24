@@ -27,30 +27,27 @@ export default function SwipeWrapper({
 
   return (
     <>
-      <div className="absolute inset-0 z-0 h-full flex justify-between bg-slate-950">
+      <div className="absolute inset-0 z-0 h-screen flex justify-between bg-slate-950">
         {!isSwiping && (
           <>
-            <div className="flex flex-col items-center pt-[10px] gap-2 mx-2">
+            <div className="flex flex-col items-center pt-2.5 gap-2 mx-2">
               {viewingHoleNumber > 1 && (
                 <>
-                  <div className="text-gray-100 text-center text-2xl">
+                  <div className="text-center text-2xl">
                     <p>H</p>
                     <p>O</p>
                     <p>L</p>
                     <p>E</p>
                     <p>{viewingHoleNumber - 1}</p>
                   </div>
-                  <SquareArrowLeft
-                    size={35}
-                    className="text-gray-100 animate-pulse"
-                  />
+                  <SquareArrowLeft size={35} className="animate-pulse" />
                 </>
               )}
             </div>
 
-            <div className="flex flex-col items-center gap-2 mx-2 pt-[10px]">
+            <div className="flex flex-col items-center gap-2 mx-2 pt-2.5">
               {viewingHoleNumber === totalHoles ? (
-                <div className="text-gray-100 text-center text-2xl">
+                <div className="text-center text-2xl">
                   <p>F</p>
                   <p>I</p>
                   <p>N</p>
@@ -59,7 +56,7 @@ export default function SwipeWrapper({
                   <p>H</p>
                 </div>
               ) : (
-                <div className="text-gray-100 text-center text-2xl">
+                <div className="text-center text-2xl">
                   <p>H</p>
                   <p>O</p>
                   <p>L</p>
@@ -68,10 +65,7 @@ export default function SwipeWrapper({
                 </div>
               )}
 
-              <SquareArrowRight
-                size={35}
-                className="text-gray-100 animate-pulse"
-              />
+              <SquareArrowRight size={35} className="animate-pulse" />
             </div>
           </>
         )}
@@ -80,7 +74,7 @@ export default function SwipeWrapper({
       <AnimatePresence initial={false} custom={direction}>
         <motion.div
           key={viewingHoleNumber}
-          className="absolute w-full z-30 bg-slate-900 px-5 h-full overflow-y-auto flex flex-col justify-between"
+          className="absolute z-30 w-full h-full overflow-y-auto bg-slate-900 grow"
           custom={direction}
           initial="enter"
           animate="center"

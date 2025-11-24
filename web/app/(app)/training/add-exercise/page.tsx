@@ -61,8 +61,8 @@ export default function EditExercises() {
   };
 
   return (
-    <div className="px-5 pt-5 max-w-md mx-auto">
-      <h1 className="text-2xl my-5 text-center">Add Exercises</h1>
+    <div className="page-padding max-w-md mx-auto">
+      <h1 className="text-2xl mb-10 text-center">Add Exercises</h1>
       <div className="flex flex-col gap-5">
         <div>
           <CustomInput

@@ -28,7 +28,7 @@ export default function Page() {
   });
 
   return (
-    <div className="pt-5">
+    <div className="pt-5 pb-10">
       <h1 className="text-2xl mb-5 text-center">Weight analytics</h1>
       <div className="flex flex-col ">
         <div className="flex justify-center gap-3 mb-5">

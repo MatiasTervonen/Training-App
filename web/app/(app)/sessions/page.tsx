@@ -13,7 +13,7 @@ import LinkButton from "../ui/LinkButton";
 export default function Sessions() {
   return (
     <SessionsContext>
-      <div className="pt-5 px-5 min-h-full max-w-md mx-auto">
+      <div className="page-padding min-h-full max-w-md mx-auto">
         <h1 className="text-center mb-10 text-2xl ">Start Session</h1>
         <div className="flex flex-col gap-5">
           <LinkButton href="/training">

@@ -19,7 +19,7 @@ export default function WorkoutAnalyticsPage() {
   const showAnalytics = !isLoading && !error && data;
 
   return (
-    <div className="sm:px-5">
+    <div className="sm:px-5 pb-10">
       <h1 className="text-2xl my-5 text-center">Workout Analytics</h1>
       {isLoading && (
         <div className="flex flex-col  items-center gap-2 mt-20">

@@ -205,7 +205,7 @@ export default function TemplateForm({
   const hasNoData = !session && !hasError;
 
   return (
-    <div className="max-w-md mx-auto flex flex-col h-full justify-between px-4 pt-5">
+    <div className="max-w-md mx-auto flex flex-col h-full justify-between page-padding">
       <div className="flex flex-col items-center gap-5 ">
         <h2 className="text-lg">
           {isEditing ? "Edit your template" : "Create your template"}

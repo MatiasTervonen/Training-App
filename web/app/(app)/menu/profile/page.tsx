@@ -155,8 +155,8 @@ export default function Settings() {
   };
 
   return (
-    <div className="pt-5 px-5 relative max-w-md mx-auto">
-      <h1 className="text-gray-100 flex justify-center my-5 text-2xl">
+    <div className="page-padding max-w-md mx-auto">
+      <h1 className="flex justify-center my-5 text-2xl">
         Profile Settings
       </h1>
       <div>

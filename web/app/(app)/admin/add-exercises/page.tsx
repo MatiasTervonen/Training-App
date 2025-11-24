@@ -57,7 +57,7 @@ export default function EditExercises() {
   };
 
   return (
-    <div className="px-4 pt-5 max-w-md mx-auto">
+    <div className="page-padding max-w-md mx-auto">
       <h1 className="text-2xl mb-10 text-center">Add Exercises</h1>
       <div className="flex flex-col gap-5">
         <div>

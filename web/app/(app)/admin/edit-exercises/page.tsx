@@ -114,8 +114,8 @@ export default function EditExercises() {
       <div>
         {selectedExercise && (
           <>
-            <div className="flex flex-col pt-5 px-5 gap-5 max-w-md mx-auto">
-              <h1 className="text-2xl text-center my-5">Edit exercise</h1>
+            <div className="flex flex-col page-padding gap-5 max-w-md mx-auto">
+              <h1 className="text-2xl text-center mb-10">Edit exercise</h1>
               <div>
                 <CustomInput
                   value={name}

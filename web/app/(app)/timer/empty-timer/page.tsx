@@ -86,7 +86,7 @@ export default function TimerPage() {
           handleStopTimer();
         }
       }}
-      className="pt-5 px-5 h-full relative"
+      className="page-padding h-full relative"
     >
       {showTimerUI ? (
         <>

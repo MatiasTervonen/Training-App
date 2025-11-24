@@ -12,6 +12,7 @@ import { clearLocalStorage } from "../components/ClearLocalStorage";
 import { useTimerStore } from "@/app/(app)/lib/stores/timerStore";
 import SwipeWrapper from "../components/SwipeWrapper";
 import StatsTracker from "../components/StatsTracker";
+import BaseButton from "../../ui/BaseButton";
 
 export default function DiscGolfGame() {
   const [length, setLength] = useState(""); // input value
@@ -340,7 +341,7 @@ export default function DiscGolfGame() {
   return (
     <>
       <nav className="flex items-center justify-between bg-gray-700 p-2 px-4 w-full z-40 max-w-3xl mx-auto">
-        <div className="flex items-center justify-center gap-2  text-gray-100">
+        <div className="flex items-center justify-center gap-2">
           <Timer />
         </div>
         <Link href="/disc-golf/score-summary" className="text-gray-100">
@@ -355,28 +356,26 @@ export default function DiscGolfGame() {
           onPreviousHole={handlePerviousHole}
           onFinishGame={handleFinishGame}
         >
-          <div className="max-w-md mx-auto flex flex-col justify-between w-full h-full">
+          <div className="max-w-md mx-auto flex flex-col justify-between w-full min-h-full page-padding">
             <div>
-              <h1 className="text-gray-100 flex justify-center my-2 text-2xl mt-5">
+              <h1 className="flex justify-center text-2xl mb-5">
                 Hole {viewingHoleNumber}
               </h1>
-              <p className="text-gray-100 flex justify-center my-2">
-                {courseName}
-              </p>
+              <p className="flex justify-center my-2">{courseName}</p>
               <div className="border-2 border-gray-100 p-5 rounded-xl mb-10 mx-10">
-                <div className="flex items-center justify-between gap-2 text-gray-100">
+                <div className="flex items-center justify-between gap-2">
                   <p className="text-xl">Par</p>
                   <div className="flex items-center gap-4">
                     <button
                       onClick={() => setPar((prev) => Math.max(3, prev - 1))}
-                      className="bg-blue-800 text-gray-100 px-4 py-2 rounded"
+                      className="bg-blue-800 px-4 py-2 rounded"
                     >
                       -
                     </button>
                     <span className="w-5 text-center">{par}</span>
                     <button
                       onClick={() => setPar((prev) => Math.min(5, prev + 1))}
-                      className="bg-blue-800 text-gray-100 px-4 py-2 rounded"
+                      className="bg-blue-800 px-4 py-2 rounded"
                     >
                       +
                     </button>
@@ -386,7 +385,7 @@ export default function DiscGolfGame() {
             </div>
             {getSortedPlayersByScoreAndLastHole().map((player, index) => (
               <div key={index} className="flex flex-col gap-2 mt-5 mb-10">
-                <div className="flex items-center justify-between text-gray-100 text-lg border-b">
+                <div className="flex items-center justify-between text-lg border-b">
                   {(() => {
                     const { totalStrokes, formattedDiff } = getPlayerTotals(
                       player.name
@@ -401,7 +400,7 @@ export default function DiscGolfGame() {
 
                   <div className="flex items-center gap-6">
                     <button
-                      className="bg-blue-800 text-gray-100 px-4 py-2 rounded"
+                      className="bg-blue-800 px-4 py-2 rounded"
                       onClick={() =>
                         setPlayerStats((prev) => ({
                           ...prev,
@@ -421,7 +420,7 @@ export default function DiscGolfGame() {
                       {playerStats[player.name]?.strokes ?? 0}
                     </span>
                     <button
-                      className="bg-blue-800 text-gray-100 px-4 py-2 rounded"
+                      className="bg-blue-800 px-4 py-2 rounded"
                       onClick={() =>
                         setPlayerStats((prev) => ({
                           ...prev,
@@ -449,23 +448,13 @@ export default function DiscGolfGame() {
               </div>
             ))}
 
-            <div className="mb-5">
-              <div className="flex gap-4 items-center  ">
+            <div>
+              <div className="flex gap-4 items-center mb-5">
                 {viewingHoleNumber > 1 && (
-                  <button
-                    onClick={handlePerviousHole}
-                    className="mb-5 flex items-center justify-center w-full  bg-blue-800 py-2 px-10 mt-10 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95"
-                  >
-                    Prev Hole
-                  </button>
+                  <BaseButton onClick={handlePerviousHole} label="Prev Hole" />
                 )}
                 {viewingHoleNumber < totalHoles && (
-                  <button
-                    onClick={handleNextHole}
-                    className="mb-5 flex items-center justify-center w-full  bg-blue-800 py-2 px-10 mt-10 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-95"
-                  >
-                    Next Hole
-                  </button>
+                  <BaseButton onClick={handleNextHole} label="Next Hole" />
                 )}
               </div>
               <div className="flex flex-col gap-5 items-center justify-center">

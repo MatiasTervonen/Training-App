@@ -95,7 +95,7 @@ export default function Todo() {
   };
 
   return (
-    <div className="flex flex-col justify-between h-full max-w-md mx-auto px-5 pt-5">
+    <div className="flex flex-col justify-between min-h-full max-w-md mx-auto page-padding">
       <div>
         <div className="flex items-center gap-5 justify-center mb-10">
           <h1 className="text-2xl">Todo List </h1>

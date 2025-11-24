@@ -98,32 +98,23 @@ export default function TimerPage() {
   };
 
   return (
-    <div className="p-5 h-full relative  max-w-md mx-auto flex flex-col justify-between">
-      <div>
-        <h1 className="text-2xl text-center my-5 ">Create Timer</h1>
-        <div className="mb-5">
-          <TitleInput
-            value={timerTitle}
-            setValue={setTimerTitle}
-            placeholder="Enter timer title"
-            label="Timer Title"
-            maxLength={150}
-          />
-        </div>
-        <div className="mb-5">
-          <SubNotesInput
-            placeholder="Enter notes (optional)"
-            label="Notes"
-            notes={notes}
-            setNotes={setNotes}
-          />
-          {notes.length >= 500 ? (
-            <p className="text-yellow-400 mt-2">
-              Reached the limit (500 chars max)
-            </p>
-          ) : null}
-        </div>
-        <div className="flex items-center justify-center gap-4 mb-5">
+    <div className="min-h-full max-w-md mx-auto flex flex-col justify-between page-padding">
+      <div className="flex flex-col gap-5">
+        <h1 className="text-2xl text-center mb-5">Create Timer</h1>
+        <TitleInput
+          value={timerTitle}
+          setValue={setTimerTitle}
+          placeholder="Enter timer title"
+          label="Timer Title"
+          maxLength={150}
+        />
+        <SubNotesInput
+          placeholder="Enter notes (optional)"
+          label="Notes"
+          notes={notes}
+          setNotes={setNotes}
+        />
+        <div className="flex items-center justify-center gap-4">
           <div>
             <SetInput
               label="Minutes"
@@ -144,7 +135,7 @@ export default function TimerPage() {
           </div>
         </div>
       </div>
-      <div className="flex flex-col gap-5 items-center justify-center mb-10 mt-10">
+      <div className="flex flex-col gap-5 mt-10">
         <SaveButton onClick={saveTimer} label="Save Timer" />
         <DeleteSessionBtn onDelete={handleReset} label="Delete" />
       </div>

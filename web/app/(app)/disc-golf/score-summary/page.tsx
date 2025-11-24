@@ -19,9 +19,9 @@ export default function DiscGolfScores() {
   }, []);
 
   return (
-      <div className="bg-slate-800 p-5 h-full relative">
+      <div className="page-padding">
         <div className="flex items-center justify-between mb-8 mx-2">
-          <h1 className="text-gray-100 text-center text-xl">
+          <h1 className="text-center text-xl">
             Live Scorecard
           </h1>
         </div>
@@ -64,11 +64,11 @@ export default function DiscGolfScores() {
               return (
                 <div key={playerName} className="mb-10">
                   <h2
-                    className="text-gray-100 text-lg mb-2"
+                    className="text-lg mb-2"
                   >
                     {playerName}
                   </h2>
-                  <table className="text-gray-100 border border-gray-600 w-full text-left bg-slate-900 ">
+                  <table className="border border-gray-600 w-full text-left bg-slate-900 ">
                     <thead>
                       <tr className="border-b border-gray-600">
                         <th className="p-2">Hole</th>

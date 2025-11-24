@@ -376,7 +376,7 @@ export default function GymForm({
         </nav>
       )}
 
-      <div className="flex justify-center relative h-[calc(100%-40px)] max-w-md mx-auto pt-5 px-6">
+      <div className="flex justify-center relative h-[calc(100%-40px)] max-w-md mx-auto page-padding">
         <div className="flex flex-col justify-between w-full">
           <div className="flex flex-col items-center justify-center gap-5">
             <p className="text-xl text-center">

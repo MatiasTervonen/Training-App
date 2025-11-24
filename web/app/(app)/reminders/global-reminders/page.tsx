@@ -110,9 +110,9 @@ export default function GlobalReminder() {
 
   return (
     <>
-      <div className="flex flex-col h-full w-full px-6 max-w-md mx-auto">
-        <div className="flex flex-col items-center mt-5 gap-5 grow mb-10 h-full">
-          <p className="text-lg text-center">Add your reminders here</p>
+      <div className="page-padding flex flex-col h-full w-full max-w-md mx-auto">
+        <div className="flex flex-col items-center gap-5 grow h-full">
+          <p className="text-lg text-center mb-5">Add your reminders here</p>
           <div className="w-full">
             <TitleInput
               value={title}

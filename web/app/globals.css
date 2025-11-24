@@ -4,6 +4,7 @@
   --color-primary: #f3f4f6;
   --font-primary: "Russo One", sans-serif;
   --breakpoint-xs: 26rem;
+  --page-padding: 1.25rem 1.25rem 2.5rem;
 }
 
 html,
@@ -13,6 +14,10 @@ body {
 }
 
 @layer utilities {
+  .page-padding {
+    padding: var(--page-padding);
+  }
+
   .custom-login-input:-webkit-autofill {
     /* Paint a solid dark background over Chrome's autofill color */
     -webkit-box-shadow: 0 0 0px 1000px #0f172a inset !important;

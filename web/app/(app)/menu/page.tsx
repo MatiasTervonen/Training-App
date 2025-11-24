@@ -7,7 +7,7 @@ import { ShieldUser, UserPen, ContactRound } from "lucide-react";
 
 export default function MenuPage() {
   return (
-    <div className="px-4 pt-5 max-w-md mx-auto flex flex-col min-h-full justify-between">
+    <div className="page-padding max-w-md mx-auto flex flex-col min-h-full justify-between">
       <div>
         <h1 className="text-2xl text-center mb-10">Menu</h1>
         <div className="flex flex-col gap-5">

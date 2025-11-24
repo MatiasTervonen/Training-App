@@ -131,7 +131,7 @@ export default function Sessions() {
     : 0;
 
   return (
-    <div className="relative max-w-7xl mx-auto pt-5 px-4">
+    <div className="relative max-w-7xl mx-auto page-padding">
       <h1 className="text-2xl text-center mb-10">User Analytics</h1>
 
       <div className="flex items-center justify-between mb-4">

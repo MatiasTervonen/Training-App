@@ -53,8 +53,8 @@ export default function GameFinished() {
   };
 
   return (
-    <div className="bg-slate-800 p-5 relative max-w-3xl mx-auto h-[calc(100dvh-72px)]">
-      <h1 className="text-gray-100 text-center text-xl">Final Scores</h1>
+    <div className="page-padding max-w-3xl mx-auto h-[calc(100dvh-72px)]">
+      <h1 className="text-center text-xl mb-10">Final Scores</h1>
       {holes.length > 0 &&
         (() => {
           const playerData: {
@@ -153,9 +153,9 @@ export default function GameFinished() {
                             className="pb-1"
                           />
                         )}
-                        <h2 className="text-gray-100 text-xl ">{playerName}</h2>
+                        <h2 className="text-xl ">{playerName}</h2>
                       </div>
-                      <table className="w-full text-left text-gray-100">
+                      <table className="w-full text-left ">
                         <tbody>
                           <tr className="border-b border-slate-500">
                             <th className="py-2 pr-4 font-normal">
@@ -205,8 +205,8 @@ export default function GameFinished() {
                 }
               )}
               <div className="flex gap-4">
-                <h2 className="text-gray-100 text-lg mb-2">Round Time</h2>
-                <p className="text-gray-100 text-xl mb-5">{time}</p>
+                <h2 className="text-lg mb-2">Round Time</h2>
+                <p className="text-xl mb-5">{time}</p>
               </div>
               <SaveButton onClick={finishGame} />
             </div>

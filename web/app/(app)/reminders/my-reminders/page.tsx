@@ -66,7 +66,7 @@ export default function Sessions() {
   );
 
   return (
-    <div className="pt-5 px-5 max-w-md mx-auto">
+    <div className="page-padding max-w-md mx-auto">
       <h1 className="text-center mb-10 text-2xl "> My Reminders</h1>
       <div className="flex items-center justify-center gap-5 my-10">
         <button

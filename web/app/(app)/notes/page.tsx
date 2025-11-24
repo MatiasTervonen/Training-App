@@ -73,7 +73,7 @@ export default function Notes() {
 
   return (
     <>
-      <div className="flex flex-col h-full px-5 max-w-md mx-auto pt-5">
+      <div className="flex flex-col h-full max-w-md mx-auto page-padding">
         <div className="flex flex-col items-center gap-5 grow mb-10">
           <p className="text-lg text-center">Add your notes here</p>
           <TitleInput

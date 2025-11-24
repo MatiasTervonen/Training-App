@@ -79,7 +79,7 @@ export default function EditReminder({ reminder, onClose, onSave }: Props) {
 
   return (
     <>
-      <div className="flex flex-col justify-between mx-auto h-full max-w-lg px-4 pt-5">
+      <div className="flex flex-col justify-between mx-auto h-full max-w-lg page-padding">
         <div className="flex flex-col gap-5">
           <h2 className="flex items-center justify-center gap-2 text-lg text-center mb-5">
             <p>Edit your reminder</p>

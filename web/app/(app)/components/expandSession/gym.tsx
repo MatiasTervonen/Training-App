@@ -27,7 +27,7 @@ export default function GymSession(gym_session: full_gym_session) {
     exercise.gym_exercises.main_group.toLowerCase() === "cardio";
 
   return (
-    <div className="max-w-lg mx-auto pt-5 px-2">
+    <div className="max-w-lg mx-auto pt-5 px-2 pb-10">
       <div className="flex flex-col gap-2 justify-center items-center">
         <div className="text-sm text-gray-400">
           {formatDate(gym_session.created_at)}

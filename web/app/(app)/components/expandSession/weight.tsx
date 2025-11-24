@@ -8,7 +8,7 @@ export default function WeightSession(weight: weight) {
     useUserStore((state) => state.preferences?.weight_unit) || "kg";
 
   return (
-    <div className="text-center max-w-md mx-auto mt-5 px-4">
+    <div className="text-center max-w-md mx-auto page-padding">
       <div className="text-sm text-gray-400">
         {formatDate(weight.created_at!)}
       </div>

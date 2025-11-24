@@ -61,7 +61,7 @@ export default function TodoSession({
     JSON.stringify(initialTodo.todo_tasks);
 
   return (
-    <div className="text-center max-w-lg mx-auto flex flex-col min-h-full justify-between px-2 mt-5">
+    <div className="text-center max-w-lg mx-auto flex flex-col min-h-full justify-between px-2 mt-5 pb-10">
       <div className="flex flex-col items-center">
         <div className="text-sm text-gray-400 mb-10">
           {formatDate(sessionData.created_at!)}

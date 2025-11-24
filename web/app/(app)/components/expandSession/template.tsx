@@ -13,7 +13,7 @@ export default function GymTemplate({ item, onStartWorkout }: Props) {
   );
 
   return (
-    <div className="pt-5 px-4 max-w-lg mx-auto">
+    <div className="page-padding max-w-lg mx-auto">
       <div className="flex flex-col gap-2 justify-center items-center">
         <h2 className="text-sm text-gray-400">
           Created: {formatDate(item.created_at)}

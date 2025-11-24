@@ -35,17 +35,15 @@ export default function EditNotes({ note, onClose, onSave }: Props) {
 
   return (
     <>
-      <div className="flex flex-col h-full px-5 max-w-md mx-auto pt-5">
+      <div className="flex flex-col h-full max-w-md mx-auto page-padding">
         <div className="flex flex-col items-center grow gap-5">
-          <h2 className="text-lg text-center">Edit your notes</h2>
-
+          <h2 className="text-lg text-center mb-5">Edit your notes</h2>
           <TitleInput
             value={title || ""}
             setValue={setValue}
             placeholder="Notes title..."
             label="Title..."
           />
-
           <NotesInput
             notes={notes || ""}
             setNotes={setNotes}

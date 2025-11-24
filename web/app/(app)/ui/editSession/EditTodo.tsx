@@ -95,7 +95,7 @@ export default function EditTodo({ todo_session, onClose, onSave }: Props) {
 
   return (
     <>
-      <div className="flex flex-col justify-between items-center gap-5  max-w-lg mx-auto pt-5">
+      <div className="flex flex-col justify-between items-center gap-5 max-w-lg mx-auto page-padding min-h-full">
         <div className="w-full">
           <h2 className="text-lg text-center mb-10">Edit your todo lists</h2>
           <div className="w-full mb-10">

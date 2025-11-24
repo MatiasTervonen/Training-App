@@ -46,7 +46,7 @@ export default function EditWeight({ weight, onClose, onSave }: Props) {
   };
 
   return (
-    <div className="flex flex-col justify-between h-full max-w-lg mx-auto pt-5 px-4">
+    <div className="flex flex-col justify-between h-full max-w-lg mx-auto page-padding">
       <div className="flex flex-col gap-5">
         <h2 className="text-lg text-center mb-5">Edit your weight session</h2>
         <TitleInput

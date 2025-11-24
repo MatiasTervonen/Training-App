@@ -4,7 +4,7 @@ import { notes } from "@/app/(app)/types/models";
 
 export default function NotesSession(notes: notes) {
   return (
-    <div className="text-center px-4  max-w-lg mx-auto pt-5">
+    <div className="text-center max-w-lg mx-auto page-padding">
       <div className="text-sm text-gray-400">
         {formatDate(notes.created_at)}
       </div>

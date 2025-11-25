@@ -1,14 +1,25 @@
 import { supabase } from "@/lib/supabase";
 import { handleError } from "@/utils/handleError";
 
-export async function unpinItems(item_id: string, table: string) {
+type PinSessionProps = {
+  id: string;
+  table:
+    | "notes"
+    | "gym_sessions"
+    | "weight"
+    | "todo_lists"
+    | "reminders"
+    | "custom_reminders";
+};
+
+export async function unpinItem({ id, table }: PinSessionProps) {
   const {
     data: { session },
     error: sessionError,
   } = await supabase.auth.getSession();
 
   if (sessionError || !session || !session.user) {
-    return { error: true, message: "No session" };
+    throw new Error("Unauthorized");
   }
 
   const { error } = await supabase
@@ -16,18 +27,16 @@ export async function unpinItems(item_id: string, table: string) {
     .delete()
     .eq("user_id", session.user.id)
     .eq("type", table)
-    .eq("item_id", item_id);
+    .eq("item_id", id);
 
   if (error) {
     handleError(error, {
       message: "Error unpinning item",
-      route: "/api/pinned/unpin-items",
+      route: "/database/pinned/unpin-items",
       method: "DELETE",
     });
-    return { error: true, message: "Error unpinning item" };
+    throw new Error("Error unpinning item");
   }
 
-  return {
-    success: true,
-  };
+  return { success: true };
 }

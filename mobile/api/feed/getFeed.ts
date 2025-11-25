@@ -1,49 +1,63 @@
-import { useInfiniteQuery } from "@tanstack/react-query";
 import { handleError } from "@/utils/handleError";
 import { supabase } from "@/lib/supabase";
 
-const PAGE_SIZE = 15;
+export default async function getFeed({
+  pageParam = 0,
+  limit = 10,
+}: {
+  pageParam?: number;
+  limit?: number;
+}) {
+  console.log("getting feed");
 
-async function fetchFeed({ pageParam = 1 }: { pageParam?: number }) {
   const {
     data: { session },
     error: sessionError,
   } = await supabase.auth.getSession();
 
   if (sessionError || !session || !session.user) {
-    throw new Error("No active Supabase session");
+    throw new Error("Unauthorized");
   }
 
-  const url = `https://training-app-bay.vercel.app/api/feed?limit=${PAGE_SIZE}&page=${pageParam}`;
+  const from = pageParam * limit;
+  const to = from + limit - 1;
 
-  const res = await fetch(url, {
-    method: "GET",
-    headers: { Authorization: `Bearer ${session.access_token}` },
-  });
+  const pinnedPromise =
+    pageParam === 0
+      ? supabase
+          .from("feed_with_pins")
+          .select("*")
+          .eq("pinned", true)
+          .eq("user_id", session.user.id)
+          .order("created_at", { ascending: false })
+      : Promise.resolve({ data: [], error: null });
 
-  if (!res.ok) {
-    handleError(new Error("Error fetching feed"), {
+  const feedPromise = supabase
+    .from("feed_with_pins")
+    .select("*")
+    .eq("pinned", false)
+    .eq("user_id", session.user.id)
+    .order("created_at", { ascending: false })
+    .range(from, to);
+
+  const [pinnedResult, feedResult] = await Promise.all([
+    pinnedPromise,
+    feedPromise,
+  ]);
+
+  if (pinnedResult.error || feedResult.error) {
+    const error = pinnedResult.error || feedResult.error;
+    handleError(error, {
       message: "Error fetching feed",
-      route: "/api/feed",
-      method: "GET",
+      route: "server-action: getFeed",
+      method: "direct",
     });
     throw new Error("Error fetching feed");
   }
 
-  const data = await res.json();
+  const feed = [...(pinnedResult.data ?? []), ...(feedResult.data ?? [])];
 
-  return data;
-}
+  const hasMore = (feedResult.data?.length ?? 0) === limit;
 
-export function useFeed() {
-
-  return useInfiniteQuery({
-    queryKey: ["feed"],
-    queryFn: ({ pageParam }) => fetchFeed({ pageParam }),
-    getNextPageParam: (lastPage) => lastPage.nextPage ?? undefined,
-    initialPageParam: 1,
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-  });
+  return { feed, nextPage: hasMore ? pageParam + 1 : null };
 }

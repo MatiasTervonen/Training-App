@@ -30,7 +30,7 @@ export default function CustomReminderCard({
   return (
     <View
       className={`
-       border rounded-md flex-col justify-center mb-10 transition-colors ${
+       border rounded-md flex-col justify-between mb-10 transition-colors min-h-[159px] ${
          pinned
            ? `border-yellow-200 bg-yellow-200`
            : "bg-slate-700 border-gray-100"
@@ -70,11 +70,9 @@ export default function CustomReminderCard({
 
       <View className="ml-4 mb-4 mr-5 flex-row items-center gap-2">
         <AppText className={`${pinned ? "text-slate-900" : "text-gray-100"}`}>
-          {item.notify_at_time ? (
-            formatNotifyTime(item.notify_at_time!)
-          ) : (
-            formatDateTime(item.notify_date!)
-          )}
+          {item.notify_at_time
+            ? formatNotifyTime(item.notify_at_time!)
+            : formatDateTime(item.notify_date!)}
         </AppText>
         {item.delivered ? (
           <Check size={30} color="#4ade80" />

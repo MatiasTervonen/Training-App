@@ -2,13 +2,14 @@ import { full_gym_session } from "@/types/models";
 import { useState, useMemo, useEffect } from "react";
 import Toast from "react-native-toast-message";
 import AppText from "@/components/AppText";
-import { unpinItems } from "@/api/pinned/unpin-items";
-import { pinItems } from "@/api/pinned/pin-items";
+import { unpinItem } from "@/api/pinned/unpin-items";
+import { pinItem } from "@/api/pinned/pin-items";
 import {
   FlatList,
   RefreshControl,
   View,
   ActivityIndicator,
+  Dimensions,
 } from "react-native";
 import FeedCard from "@/components/cards/FeedCard";
 import { DeleteSession } from "@/api/feed/deleteSession";
@@ -16,32 +17,37 @@ import { FeedSkeleton } from "@/components/skeletetons";
 import { Pin } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { handleError } from "@/utils/handleError";
-import { useFeed } from "@/api/feed/getFeed";
-import { Feed_item, FeedData, full_reminder } from "@/types/session";
+import { Feed_item, full_reminder } from "@/types/session";
 import { confirmAction } from "@/lib/confirmAction";
-import { useQueryClient, useQuery } from "@tanstack/react-query";
-import FullScreenModal from "./FullScreenModal";
-import GymSession from "./expandSession/gym";
+import {
+  useQuery,
+  useInfiniteQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
+import FullScreenModal from "../FullScreenModal";
+import GymSession from "../expandSession/gym";
 import { getFullGymSession } from "@/api/gym/get-full-gym-session";
-import NotesSession from "./expandSession/notes";
-import WeightSession from "./expandSession/weight";
-import EditGym from "./editSession/editGym";
-import EditNotes from "./editSession/editNotes";
-import EditWeight from "./editSession/editWeight";
-import PageContainer from "@/components/PageContainer";
-import ReminderSession from "./expandSession/reminder";
-import EditReminder from "./editSession/editReminder";
+import NotesSession from "../expandSession/notes";
+import WeightSession from "../expandSession/weight";
+import EditGym from "../editSession/editGym";
+import EditNotes from "../editSession/editNotes";
+import EditWeight from "../editSession/editWeight";
+import ReminderSession from "../expandSession/reminder";
+import EditReminder from "../editSession/editReminder";
 import * as Notifications from "expo-notifications";
 import { supabase } from "@/lib/supabase";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import CustomReminder from "./expandSession/customReminder";
+import CustomReminder from "../expandSession/customReminder";
 import GetFullCustomReminder from "@/api/reminders/get-full-custom-reminder";
+import getFeed from "@/api/feed/getFeed";
+import Carousel from "react-native-reanimated-carousel";
+import PinnedCarousel from "./PinnedCarousel";
 
 type FeedItem = {
   table:
     | "notes"
-    | "weight"
     | "gym_sessions"
+    | "weight"
     | "todo_lists"
     | "reminders"
     | "custom_reminders";
@@ -49,12 +55,24 @@ type FeedItem = {
   pinned: boolean;
 };
 
+type FeedData = {
+  pageParams: number[];
+  pages: {
+    feed: Feed_item[];
+    nextPage: number;
+  }[];
+};
+
 export default function SessionFeed() {
+  console.log("🔥 SessionFeed RENDERED");
+
   const [expandedItem, setExpandedItem] = useState<FeedItem | null>(null);
   const [editingItem, setEditingItem] = useState<FeedItem | null>(null);
   const [refreshing, setRefreshing] = useState(false);
 
   const queryClient = useQueryClient();
+
+  const width = Dimensions.get("window").width;
 
   // useEffect(() => {
   //   const fetchNotifications = async () => {
@@ -64,10 +82,6 @@ export default function SessionFeed() {
 
   //   fetchNotifications();
   // }, []);
-
-  function getCanonicalId(item: { id?: string; item_id?: string }) {
-    return item.item_id ?? item.id ?? "";
-  }
 
   const handleNotificationResponse = async (
     response: Notifications.NotificationResponse
@@ -98,7 +112,7 @@ export default function SessionFeed() {
         if (feedItem) {
           setExpandedItem({
             table: "reminders",
-            item: { ...feedItem, id: getCanonicalId(feedItem) },
+            item: { ...feedItem, id: feedItem.id },
             pinned: feedItem.pinned,
           });
         }
@@ -145,29 +159,55 @@ export default function SessionFeed() {
     })();
 
     return () => sub.remove();
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const {
-    error,
     data,
+    error,
     isLoading,
-    refetch,
+    refetch: mutateFeed,
+    isRefetching,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-    isRefetching,
-  } = useFeed();
+  } = useInfiniteQuery({
+    queryKey: ["feed"],
+    queryFn: ({ pageParam = 0 }) => getFeed({ pageParam, limit: 15 }),
+    initialPageParam: 0,
+    getNextPageParam: (lastPage) => lastPage.nextPage,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    refetchOnMount: false,
+  });
+
+  // Keep only first page in cahce when user leaves feed
+
+  useEffect(() => {
+    return () => {
+      queryClient.setQueryData<FeedData>(["feed"], (old) => {
+        if (!old) return old;
+
+        return {
+          ...old,
+          pages: old.pages.slice(0, 1),
+          pageParams: old.pageParams.slice(0, 1),
+        };
+      });
+    };
+  }, [queryClient]);
+
+  // Flattens the data in single array of FeedItem[]
 
   const feed: FeedItem[] = useMemo(() => {
     if (!data) return [];
-    return data.pages.flatMap((page) =>
-      page.feed.map((item: Feed_item) => ({
-        table: item.type as FeedItem["table"],
-        item: { ...item, id: getCanonicalId(item) },
-        pinned: item.pinned,
-      }))
+
+    return data.pages.flatMap(
+      (page) =>
+        page.feed.map((item) => ({
+          table: item.type as FeedItem["table"],
+          item,
+          pinned: item.pinned,
+        })) as unknown as FeedItem
     );
   }, [data]);
 
@@ -187,44 +227,49 @@ export default function SessionFeed() {
   );
 
   const togglePin = async (
-    item_id: string,
-    table: string,
+    id: string,
+    table:
+      | "notes"
+      | "gym_sessions"
+      | "weight"
+      | "todo_lists"
+      | "reminders"
+      | "custom_reminders",
     isPinned: boolean
   ) => {
+    if (!isPinned && pinnedFeed.length >= 10) {
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "You can only pin 10 items. Unpin something first.",
+      });
+      return;
+    }
     const queryKey = ["feed"];
 
     await queryClient.cancelQueries({ queryKey });
 
     const previousFeed = queryClient.getQueryData(queryKey);
 
-    queryClient.setQueryData<FeedData>(queryKey, (oldData) => {
+    queryClient.setQueryData<FeedData>(["feed"], (oldData) => {
       if (!oldData) return oldData;
 
-      const newPages = oldData.pages.map((page) => {
-        const newFeed = page.feed.map((feedItem) => {
-          if (getCanonicalId(feedItem) === item_id) {
-            return { ...feedItem, pinned: !isPinned };
-          }
-          return feedItem;
-        });
-        return { ...page, feed: newFeed };
-      });
-
-      return { ...oldData, pages: newPages };
+      return {
+        ...oldData,
+        pages: oldData.pages.map((page) => ({
+          ...page,
+          feed: page.feed.map((feedItem) =>
+            feedItem.id === id ? { ...feedItem, pinned: !isPinned } : feedItem
+          ),
+        })),
+      };
     });
 
     try {
-      const result = isPinned
-        ? await unpinItems(item_id, table)
-        : await pinItems(item_id, table);
-
-      if (!result.success) {
-        handleError(result.error, {
-          message: "Error toggling pin",
-          route: "/api/feed/togglePin",
-          method: "POST",
-        });
-        throw new Error("Failed to toggle pin status.");
+      if (isPinned) {
+        await unpinItem({ id, table });
+      } else {
+        await pinItem({ id, table });
       }
 
       Toast.show({
@@ -234,13 +279,8 @@ export default function SessionFeed() {
           isPinned ? "unpinned" : "pinned"
         } successfully.`,
       });
-    } catch (error) {
+    } catch {
       queryClient.setQueryData(queryKey, previousFeed);
-      handleError(error, {
-        message: "Unexpected Error toggling pin",
-        route: "/api/feed/togglePin",
-        method: "POST",
-      });
       Toast.show({
         type: "error",
         text1: "Error",
@@ -251,7 +291,7 @@ export default function SessionFeed() {
 
   const handleDelete = async (
     notification_id: string[] | string | null,
-    item_id: string,
+    id: string,
     table: string
   ) => {
     const confirmed = await confirmAction({
@@ -269,20 +309,14 @@ export default function SessionFeed() {
       if (!oldData) return oldData;
 
       const newPages = oldData.pages.map((page) => {
-        const newFeed = page.feed.filter(
-          (feedItem) => getCanonicalId(feedItem) !== item_id
-        );
+        const newFeed = page.feed.filter((feedItem) => feedItem.id !== id);
         return { ...page, feed: newFeed };
       });
       return { ...oldData, pages: newPages };
     });
 
     try {
-      const result = await DeleteSession(item_id, table);
-
-      if (!result.success) {
-        throw new Error();
-      }
+      await DeleteSession(id, table);
 
       if (table === "custom_reminders") {
         if (Array.isArray(notification_id)) {
@@ -301,13 +335,8 @@ export default function SessionFeed() {
         text1: "Deleted",
         text2: "Item has been deleted successfully.",
       });
-    } catch (error) {
+    } catch {
       queryClient.setQueryData(queryKey, previousFeed);
-      handleError(error, {
-        message: "Unexpected Error deleting item",
-        route: "/api/feed/deleteSession",
-        method: "DELETE",
-      });
       Toast.show({
         type: "error",
         text1: "Error",
@@ -361,8 +390,6 @@ export default function SessionFeed() {
     refetchOnReconnect: false,
   });
 
-  const allFeed = [...pinnedFeed, ...unpinnedFeed];
-
   return (
     <LinearGradient
       className="flex-1"
@@ -370,24 +397,24 @@ export default function SessionFeed() {
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
     >
-      <PageContainer className="max-w-3xl z-0">
-        {isLoading || isRefetching ? (
-          <>
-            <FeedSkeleton count={5} />
-          </>
-        ) : error ? (
-          <AppText className="text-center text-lg mt-10 mx-auto">
-            Failed to load sessions. Please try again later.
-          </AppText>
-        ) : feed.length === 0 ? (
-          <AppText className="text-center text-lg mt-10">
-            No sessions yet. Let&apos;s get started!
-          </AppText>
-        ) : (
+      {isLoading || isRefetching ? (
+        <>
+          <FeedSkeleton count={5} />
+        </>
+      ) : error ? (
+        <AppText className="text-center text-lg mt-10 mx-auto">
+          Failed to load sessions. Please try again later.
+        </AppText>
+      ) : feed.length === 0 ? (
+        <AppText className="text-center text-lg mt-10">
+          No sessions yet. Let&apos;s get started!
+        </AppText>
+      ) : (
+        <>
           <FlatList
-            data={allFeed}
+            data={unpinnedFeed}
             keyExtractor={(item) => item.item.id}
-            contentContainerStyle={{ paddingBottom: 100, paddingTop: 10 }}
+            contentContainerStyle={{ paddingBottom: 100, paddingTop: 8 }}
             showsHorizontalScrollIndicator={false}
             showsVerticalScrollIndicator={false}
             refreshControl={
@@ -396,7 +423,7 @@ export default function SessionFeed() {
                 onRefresh={async () => {
                   setRefreshing(true);
                   await queryClient.removeQueries({ queryKey: ["feed"] });
-                  await refetch();
+                  await mutateFeed();
                   setRefreshing(false);
                 }}
               />
@@ -408,18 +435,15 @@ export default function SessionFeed() {
             }}
             onEndReachedThreshold={0.5}
             renderItem={({ item: feedItem }) => (
-              <View>
+              <View className="px-4">
                 <FeedCard
                   {...feedItem}
+                  pinned={false}
                   onExpand={() => {
                     setExpandedItem(feedItem);
                   }}
                   onTogglePin={() =>
-                    togglePin(
-                      getCanonicalId(feedItem.item),
-                      feedItem.table,
-                      feedItem.pinned
-                    )
+                    togglePin(feedItem.item.id, feedItem.table, false)
                   }
                   onDelete={() =>
                     handleDelete(
@@ -436,13 +460,23 @@ export default function SessionFeed() {
             )}
             ListHeaderComponent={
               pinnedFeed.length > 0 ? (
-                <View className="flex-row items-center mb-2">
-                  <Pin size={20} color="gray" />
-                  <AppText className="text-gray-500 ml-2">Pinned</AppText>
-                </View>
-              ) : (
-                <View className="mb-4" />
-              )
+                <PinnedCarousel
+                  pinnedFeed={pinnedFeed}
+                  width={width}
+                  onExpand={setExpandedItem}
+                  onEdit={setEditingItem}
+                  onTogglePin={(item) =>
+                    togglePin(item.item.id, item.table, item.pinned)
+                  }
+                  onDelete={(item) =>
+                    handleDelete(
+                      item.item.notification_id ?? null,
+                      item.item.id,
+                      item.table
+                    )
+                  }
+                />
+              ) : null
             }
             ListFooterComponent={
               isFetchingNextPage ? (
@@ -465,131 +499,129 @@ export default function SessionFeed() {
               )
             }
           />
-        )}
+        </>
+      )}
 
-        {expandedItem && (
-          <FullScreenModal
-            isOpen={!!expandedItem}
-            onClose={() => setExpandedItem(null)}
-          >
-            {expandedItem.table === "notes" && (
-              <NotesSession {...expandedItem.item} />
-            )}
-            {expandedItem.table === "weight" && (
-              <WeightSession {...expandedItem.item} />
-            )}
-            {expandedItem.table === "reminders" && (
-              <ReminderSession {...expandedItem.item} />
-            )}
+      {expandedItem && (
+        <FullScreenModal
+          isOpen={!!expandedItem}
+          onClose={() => setExpandedItem(null)}
+        >
+          {expandedItem.table === "notes" && (
+            <NotesSession {...expandedItem.item} />
+          )}
+          {expandedItem.table === "weight" && (
+            <WeightSession {...expandedItem.item} />
+          )}
+          {expandedItem.table === "reminders" && (
+            <ReminderSession {...expandedItem.item} />
+          )}
 
-            {expandedItem.table === "custom_reminders" && (
-              <View>
-                {isLoadingCustomReminder ? (
-                  <View className="gap-5 items-center justify-center mt-40">
-                    <AppText className="text-xl">
-                      Loading reminder details...
-                    </AppText>
-                    <ActivityIndicator size="large" />
-                  </View>
-                ) : CustomReminderError ? (
-                  <AppText className="text-center text-xl mt-10">
-                    Failed to load reminder details. Please try again later.
+          {expandedItem.table === "custom_reminders" && (
+            <View>
+              {isLoadingCustomReminder ? (
+                <View className="gap-5 items-center justify-center mt-40">
+                  <AppText className="text-xl">
+                    Loading reminder details...
                   </AppText>
-                ) : (
-                  CustomReminderFull && (
-                    <CustomReminder {...CustomReminderFull} />
-                  )
-                )}
-              </View>
-            )}
+                  <ActivityIndicator size="large" />
+                </View>
+              ) : CustomReminderError ? (
+                <AppText className="text-center text-xl mt-10">
+                  Failed to load reminder details. Please try again later.
+                </AppText>
+              ) : (
+                CustomReminderFull && <CustomReminder {...CustomReminderFull} />
+              )}
+            </View>
+          )}
 
-            {expandedItem.table === "gym_sessions" && (
-              <View>
-                {isLoadingGymSession ? (
-                  <View className="gap-5 items-center justify-center mt-40">
-                    <AppText className="text-xl">
-                      Loading gym session details...
-                    </AppText>
-                    <ActivityIndicator size="large" />
-                  </View>
-                ) : GymSessionError ? (
-                  <AppText className="text-center text-xl mt-10">
-                    Failed to load gym session details. Please try again later.
+          {expandedItem.table === "gym_sessions" && (
+            <View>
+              {isLoadingGymSession ? (
+                <View className="gap-5 items-center justify-center mt-40">
+                  <AppText className="text-xl">
+                    Loading gym session details...
                   </AppText>
-                ) : (
-                  GymSessionFull && <GymSession {...GymSessionFull} />
-                )}
-              </View>
-            )}
-          </FullScreenModal>
-        )}
+                  <ActivityIndicator size="large" />
+                </View>
+              ) : GymSessionError ? (
+                <AppText className="text-center text-xl mt-10">
+                  Failed to load gym session details. Please try again later.
+                </AppText>
+              ) : (
+                GymSessionFull && <GymSession {...GymSessionFull} />
+              )}
+            </View>
+          )}
+        </FullScreenModal>
+      )}
 
-        {editingItem && (
-          <FullScreenModal
-            isOpen={!!editingItem}
-            onClose={() => setEditingItem(null)}
-          >
-            {editingItem.table === "notes" && (
-              <EditNotes
-                note={editingItem.item}
-                onClose={() => setEditingItem(null)}
-                onSave={() => {
-                  queryClient.invalidateQueries({ queryKey: ["feed"] });
-                  setEditingItem(null);
-                }}
-              />
-            )}
+      {editingItem && (
+        <FullScreenModal
+          isOpen={!!editingItem}
+          onClose={() => setEditingItem(null)}
+        >
+          {editingItem.table === "notes" && (
+            <EditNotes
+              note={editingItem.item}
+              onClose={() => setEditingItem(null)}
+              onSave={() => {
+                queryClient.invalidateQueries({ queryKey: ["feed"] });
+                setEditingItem(null);
+              }}
+            />
+          )}
 
-            {editingItem.table === "reminders" && (
-              <EditReminder
-                reminder={editingItem.item}
-                onClose={() => setEditingItem(null)}
-                onSave={() => {
-                  queryClient.invalidateQueries({ queryKey: ["feed"] });
-                  setEditingItem(null);
-                }}
-              />
-            )}
+          {editingItem.table === "reminders" && (
+            <EditReminder
+              reminder={editingItem.item}
+              onClose={() => setEditingItem(null)}
+              onSave={() => {
+                queryClient.invalidateQueries({ queryKey: ["feed"] });
+                setEditingItem(null);
+              }}
+            />
+          )}
 
-            {editingItem.table === "weight" && (
-              <EditWeight
-                weight={editingItem.item}
-                onClose={() => setEditingItem(null)}
-                onSave={() => {
-                  queryClient.invalidateQueries({ queryKey: ["feed"] });
-                  setEditingItem(null);
-                }}
-              />
-            )}
+          {editingItem.table === "weight" && (
+            <EditWeight
+              weight={editingItem.item}
+              onClose={() => setEditingItem(null)}
+              onSave={() => {
+                queryClient.invalidateQueries({ queryKey: ["feed"] });
+                setEditingItem(null);
+              }}
+            />
+          )}
 
-            {editingItem.table === "gym_sessions" && (
-              <View>
-                {isLoadingGymSession ? (
-                  <View className="flex flex-col gap-5 items-center justify-center pt-40">
-                    <AppText>Loading gym session details...</AppText>
-                    <ActivityIndicator />
-                  </View>
-                ) : GymSessionError ? (
-                  <AppText className="text-center text-lg mt-10">
-                    Failed to load gym session details. Please try again later.
-                  </AppText>
-                ) : (
-                  GymSessionFull && (
-                    <EditGym
-                      gym_session={GymSessionFull}
-                      onClose={() => setEditingItem(null)}
-                      onSave={() => {
-                        queryClient.invalidateQueries({ queryKey: ["feed"] });
-                        setEditingItem(null);
-                      }}
-                    />
-                  )
-                )}
-              </View>
-            )}
-          </FullScreenModal>
-        )}
-      </PageContainer>
+          {editingItem.table === "gym_sessions" && (
+            <View>
+              {isLoadingGymSession ? (
+                <View className="flex flex-col gap-5 items-center justify-center pt-40">
+                  <AppText>Loading gym session details...</AppText>
+                  <ActivityIndicator />
+                </View>
+              ) : GymSessionError ? (
+                <AppText className="text-center text-lg mt-10">
+                  Failed to load gym session details. Please try again later.
+                </AppText>
+              ) : (
+                GymSessionFull && (
+                  <EditGym
+                    gym_session={GymSessionFull}
+                    onClose={() => setEditingItem(null)}
+                    onSave={() => {
+                      queryClient.invalidateQueries({ queryKey: ["feed"] });
+                      setEditingItem(null);
+                    }}
+                  />
+                )
+              )}
+            </View>
+          )}
+        </FullScreenModal>
+      )}
     </LinearGradient>
   );
 }

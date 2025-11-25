@@ -1,4 +1,4 @@
-import SessionFeed from "@/components/SessionFeed";
+import SessionFeed from "@/components/feed/SessionFeed";
 import { useModalPageConfig } from "@/lib/stores/modalPageConfig";
 import { useTimerStore } from "@/lib/stores/timerStore";
 import { useEffect } from "react";

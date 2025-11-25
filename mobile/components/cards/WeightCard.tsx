@@ -30,7 +30,7 @@ export default function WeightCard({
   return (
     <View
       className={`
-       border rounded-md flex-col justify-center mb-10 transition-colors ${
+       border rounded-md flex-col justify-between mb-10 transition-colors min-h-[159px] ${
          pinned
            ? `border-yellow-200 bg-yellow-200`
            : "bg-slate-700 border-gray-100"

@@ -1,33 +1,54 @@
 import { supabase } from "@/lib/supabase";
 import { handleError } from "@/utils/handleError";
 
-export async function pinItems(item_id: string, table: string) {
+type PinSessionProps = {
+  id: string;
+  table:
+    | "notes"
+    | "gym_sessions"
+    | "weight"
+    | "todo_lists"
+    | "reminders"
+    | "custom_reminders";
+};
+
+export async function pinItem({ id, table }: PinSessionProps) {
   const {
     data: { session },
     error: sessionError,
   } = await supabase.auth.getSession();
 
   if (sessionError || !session || !session.user) {
-    return { error: true, message: "No session" };
+    throw new Error("Unauthorized");
   }
 
-  const { data, error } = await supabase
+  if (!id || !table) {
+    throw new Error("Invalid request");
+  }
+
+  const { data: pinnedItem, error } = await supabase
     .from("pinned_items")
-    .upsert([{ user_id: session.user.id, item_id, type: table }])
+    .upsert(
+      [
+        {
+          user_id: session.user.id,
+          item_id: id,
+          type: table,
+        },
+      ],
+      { onConflict: "user_id,type,item_id" } // Ensure upsert on user_id, item_id, and type
+    )
     .select()
     .single();
 
-  if (error || !data) {
+  if (error || !pinnedItem) {
     handleError(error, {
-      message: "Error fetching user preferences",
-      route: "/api/settings/get-settings",
-      method: "GET",
+      message: "Error pinning item",
+      route: "/database/pinned/pin-items",
+      method: "POST",
     });
-    return { error: true, message: "Error fetching pinned item" };
+    throw new Error("Error pinning session");
   }
 
-  return {
-    success: true,
-    pinnedItem: data,
-  };
+  return { success: true, pinnedItem: pinnedItem };
 }

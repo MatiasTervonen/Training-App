@@ -225,13 +225,8 @@ export default function SessionFeed() {
 
       toast.success("Item has been deleted successfully.");
       queryClient.invalidateQueries({ queryKey });
-    } catch (error) {
+    } catch {
       queryClient.setQueryData(queryKey, perviousFeed);
-      handleError(error, {
-        message: "Failed to delete session",
-        route: "server-action: deleteSession",
-        method: "direct",
-      });
       toast.error("Failed to delete session");
     }
   };

@@ -69,7 +69,6 @@ export default function SecurityPage() {
       setTimeout(() => {
         signOut();
       }, 3000);
-      
     } catch (error: any) {
       handleError(error, {
         message: "Unexpected error updating password",
@@ -84,19 +83,19 @@ export default function SecurityPage() {
   };
 
   const handleDeleteAccount = async () => {
-    const confirmed = confirmAction({
-      title: "Delete Account",
-      message:
-        "This action cannot be undone. Do you really want to delete your account?",
-    });
-    if (!confirmed) return;
-
     if (isDeleteAccount !== "DELETE ACCOUNT") {
       setErrorMessage2(
         "Incorrect confirmation text. Type “DELETE ACCOUNT” to proceed."
       );
       return;
     }
+
+    const confirmed = await confirmAction({
+      title: "Delete Account",
+      message:
+        "This action cannot be undone. Do you really want to delete your account?",
+    });
+    if (!confirmed) return;
 
     setLoading2(true);
 
@@ -132,6 +131,7 @@ export default function SecurityPage() {
         router.push("/");
       }, 3000);
     } catch (error) {
+      console.log("error deleting account", error);
       handleError(error, {
         message: "Error deleting account",
         route: "security settings",
@@ -145,6 +145,10 @@ export default function SecurityPage() {
   useEffect(() => {
     setErrorMessage((prev) => (prev ? "" : prev));
   }, [password, confirmPassword]);
+
+  useEffect(() => {
+    setErrorMessage2((prev) => (prev ? "" : prev));
+  }, [isDeleteAccount]);
 
   return (
     <ScrollView>
@@ -210,11 +214,11 @@ export default function SecurityPage() {
             />
           </View>
           {successMessage2 ? (
-            <AppText className="text-green-500 my-5 text-center">
+            <AppText className="text-green-500 mb-5 text-center">
               {successMessage2}
             </AppText>
           ) : errorMessage2 ? (
-            <AppText className="text-red-500 my-5 text-center">
+            <AppText className="text-red-500 mb-5 text-center">
               {errorMessage2}
             </AppText>
           ) : (

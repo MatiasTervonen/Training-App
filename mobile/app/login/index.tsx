@@ -1,12 +1,11 @@
 import { useState, useEffect } from "react";
 import {
-  Alert,
   View,
   Keyboard,
   TouchableWithoutFeedback,
   Dimensions,
+  Alert,
 } from "react-native";
-import { supabase } from "@/lib/supabase";
 import AppInput from "@/components/AppInput";
 import AppText from "@/components/AppText";
 import { useRouter } from "expo-router";
@@ -23,20 +22,16 @@ import GradientButton from "@/components/buttons/GradientButton";
 import ForgotPasswordText from "@/components/login-signup/forgotPassword";
 import ModalLogin from "@/components/ModalLogin";
 import ResendEmailText from "@/components/login-signup/resendEmail";
-import { handleError } from "@/utils/handleError";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import { ArrowLeft } from "lucide-react-native";
 import GradientColorText from "@/components/GradientColorText";
 import PageContainer from "@/components/PageContainer";
-
-const generateRandomUserName = (email: string) => {
-  const prefix = email
-    .split("@")[0]
-    .replace(/[^a-zA-Z0-9]/g, "")
-    .toLowerCase();
-  const randomNumber = Math.floor(1000 + Math.random() * 9000);
-  return `${prefix}${randomNumber}`;
-};
+import {
+  signInWithEmail,
+  signUpWithEmail,
+  sendPasswordResetEmail,
+  resendEmailVerification,
+} from "./actions";
 
 export default function LoginScreen() {
   const [login, setLogin] = useState({ email: "", password: "" });
@@ -54,6 +49,8 @@ export default function LoginScreen() {
   const [resendEmail, setResendEmail] = useState("");
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
+
+  const router = useRouter();
 
   const screenHeight = Dimensions.get("window").height;
   const translateY = useSharedValue(0);
@@ -88,144 +85,9 @@ export default function LoginScreen() {
     transform: [{ translateY: translateY.value }],
   }));
 
-  const router = useRouter();
-
-  async function signInWithEmail() {
-    if (!login.email || !login.password) {
-      Alert.alert("Please enter your email and password.");
-      return;
-    }
-
-    const { email, password } = login;
-
-    setLoadingMessage("Logging in...");
-    setLoading(true);
-
-    const { error } = await supabase.auth.signInWithPassword({
-      email: email,
-      password: password,
-    });
-
-    if (error && error.message === "Email not confirmed") {
-      setError("Please verify your email before logging in.");
-      Alert.alert("Please verify your email before logging in.");
-    }
-
-    if (error) Alert.alert(error.message);
-    setLoading(false);
-
-    if (!error) {
-      router.push("/dashboard");
-    }
-  }
-
-  async function signUpWithEmail() {
-    if (!signup.email || !signup.password) {
-      Alert.alert("Please enter your email and password.");
-      return;
-    }
-
-    if (signup.password !== signup.confirmPassword) {
-      Alert.alert("Passwords do not match.");
-      return;
-    }
-
-    if (signup.password.length < 8) {
-      Alert.alert("Password must be at least 8 characters long.");
-      return;
-    }
-
-    const { email, password } = signup;
-
-    setLoadingMessage("Signing up...");
-    setLoading(true);
-    const { data: signUpData, error: signupError } = await supabase.auth.signUp(
-      {
-        email: email,
-        password: password,
-      }
-    );
-
-    if (signupError) {
-      Alert.alert(
-        signupError.message || "Something went wrong. Please try again."
-      );
-      setSignup({ email: "", password: "", confirmPassword: "" });
-    }
-
-    const userExists = (signUpData?.user?.identities?.length ?? 0) === 0;
-
-    if (userExists) {
-      Alert.alert("Email already registered. Please log in.");
-      setSignup({ email: "", password: "", confirmPassword: "" });
-    }
-
-    const { error } = await supabase.from("users").insert({
-      id: signUpData.user!.id,
-      email: email,
-      display_name: generateRandomUserName(email), // Default display name
-      role: "user",
-    });
-
-    if (error) {
-      handleError(error, {
-        message: "Failed to create user profile",
-        route: "/api/auth/signup",
-        method: "POST",
-      });
-    }
-
-    setLoading(false);
-    setSignup({ email: "", password: "", confirmPassword: "" });
-    Alert.alert(
-      "Verification email sent! Please verify your email before logging in."
-    );
-    setSuccess(true);
-  }
-
-  async function sendPasswordResetEmail() {
-    if (!forgotPasswordEmail) {
-      Alert.alert("Please enter your email.");
-      return;
-    }
-
-    setLoadingMessage("Sending password reset email...");
-    setLoading(true);
-
-    const { error } = await supabase.auth.resetPasswordForEmail(
-      forgotPasswordEmail
-    );
-
-    if (error)
-      Alert.alert(error.message || "Something went wrong. Please try again.");
-    else Alert.alert("Password reset email sent!");
-
-    setLoading(false);
-  }
-
-  async function resendEmailVerification() {
-    if (!resendEmail) {
-      Alert.alert("Please enter your email.");
-      return;
-    }
-
-    setLoadingMessage("Resending verification email...");
-    setLoading(true);
-
-    const { error } = await supabase.auth.resend({
-      type: "signup",
-      email: resendEmail,
-    });
-
-    if (error)
-      Alert.alert(
-        error.message || "Could not resend verification email. Try again."
-      );
-
-    setLoading(false);
-    setSuccess(true);
-    Alert.alert("Verification email resent. Please check your inbox.");
-  }
+  const isValidEmail = (email: string) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
 
   return (
     <>
@@ -271,7 +133,7 @@ export default function LoginScreen() {
 
               <View
                 style={{ height: screenHeight }}
-                className="justify-center max-w-md mx-auto w-full"
+                className="justify-center max-w-md mx-auto w-full flex-1"
               >
                 <AppInput
                   label="Email"
@@ -302,7 +164,21 @@ export default function LoginScreen() {
                 <View className="mt-10">
                   <GradientButton
                     label="Log in"
-                    onPress={() => signInWithEmail()}
+                    onPress={() => {
+                      if (!isValidEmail(login.email)) {
+                        Alert.alert("Invalid email format.");
+                        return;
+                      }
+
+                      signInWithEmail({
+                        email: login.email,
+                        password: login.password,
+                        setLoadingMessage,
+                        setLoading,
+                        setError,
+                        onSuccess: () => router.push("/dashboard"),
+                      });
+                    }}
                   />
                 </View>
                 <View className="mt-10 items-center">
@@ -367,7 +243,22 @@ export default function LoginScreen() {
                 <View className="mt-10">
                   <GradientButton
                     label="Sign up"
-                    onPress={() => signUpWithEmail()}
+                    onPress={() => {
+                      if (!isValidEmail(signup.email)) {
+                        Alert.alert("Invalid email format.");
+                        return;
+                      }
+
+                      signUpWithEmail({
+                        email: signup.email,
+                        password: signup.password,
+                        confirmPassword: signup.confirmPassword,
+                        setLoadingMessage,
+                        setLoading,
+                        setSuccess,
+                        setSignup,
+                      });
+                    }}
                   />
                 </View>
 
@@ -379,7 +270,7 @@ export default function LoginScreen() {
               </View>
             </Animated.View>
 
-            <View className="absolute bottom-0 left-0 w-full flex flex-col justify-center gap-2 pb-10 px-6">
+            <View className="absolute bottom-0 left-0 w-full flex flex-col justify-center gap-2 pb-5 px-6">
               <AppText className="text-center mb-5 text-xl">
                 {activeForm
                   ? "Already have an account?"
@@ -433,7 +324,12 @@ export default function LoginScreen() {
               <GradientButton
                 label="Resend Verification Email"
                 onPress={async () => {
-                  await resendEmailVerification();
+                  await resendEmailVerification({
+                    resendEmail: resendEmail,
+                    setLoadingMessage,
+                    setLoading,
+                    setSuccess,
+                  });
                   setModal2Open(false);
                   resetFields();
                 }}
@@ -480,7 +376,11 @@ export default function LoginScreen() {
               <GradientButton
                 label="Send Reset Link"
                 onPress={async () => {
-                  await sendPasswordResetEmail();
+                  await sendPasswordResetEmail({
+                    forgotPasswordEmail: forgotPasswordEmail,
+                    setLoadingMessage,
+                    setLoading,
+                  });
                   setModalOpen(false);
                   resetFields();
                 }}

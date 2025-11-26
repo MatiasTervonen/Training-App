@@ -3,10 +3,12 @@ import {
   QueryClientManager,
   reactotronReactQuery,
 } from "reactotron-react-query";
-import { appQueryClient } from "./reactQueryClient";
+import { QueryClient } from "@tanstack/react-query";
+
+const queryClient = new QueryClient();
 
 const queryClientManager = new QueryClientManager({
-  queryClient: appQueryClient,
+  queryClient,
 });
 
 Reactotron.configure({

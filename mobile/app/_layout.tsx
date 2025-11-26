@@ -15,12 +15,11 @@ import Toast, {
   ErrorToast,
 } from "react-native-toast-message";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import * as Sentry from "@sentry/react-native";
 import { MenuProvider } from "react-native-popup-menu";
 import { Provider as PaperProvider } from "react-native-paper";
 import { JSX } from "react/jsx-runtime";
-import { appQueryClient } from "@/lib/reactQueryClient";
 import {
   configureNotificationChannels,
   configurePushNotificationsWhenAppIsOpen,
@@ -30,6 +29,8 @@ import {
   ReanimatedLogLevel,
 } from "react-native-reanimated";
 import * as ScreenOrientation from "expo-screen-orientation";
+
+const queryClient = new QueryClient();
 
 configureReanimatedLogger({
   level: ReanimatedLogLevel.error,
@@ -191,7 +192,7 @@ export default Sentry.wrap(function RootLayout() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <QueryClientProvider client={appQueryClient}>
+      <QueryClientProvider client={queryClient}>
         <MenuProvider>
           <PaperProvider>
             <SafeAreaProvider>

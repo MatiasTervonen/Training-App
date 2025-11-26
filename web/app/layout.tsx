@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { russoOne } from "./ui/fonts";
+import Provider from "./components/provider";
 
 export const metadata: Metadata = {
   title: {
@@ -36,7 +37,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${russoOne.className} antialiased`}>
       <body className="bg-slate-900 font-primary text-gray-100">
-        {children}
+        <Provider>{children}</Provider>
       </body>
     </html>
   );

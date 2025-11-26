@@ -27,7 +27,8 @@ export async function POST() {
   }
 
   const { error: authTableError } = await adminSupabase.auth.admin.deleteUser(
-    user.sub
+    user.sub,
+    true
   );
 
   if (authTableError) {
@@ -36,7 +37,10 @@ export async function POST() {
       route: "server-action: deleteAccount",
       method: "direct",
     });
-    throw new Error("Error deleting user");
+    return new Response(JSON.stringify({ error: "Error deleting user" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 
   return new Response(JSON.stringify({ success: true }), {

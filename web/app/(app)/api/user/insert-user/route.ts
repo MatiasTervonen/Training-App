@@ -19,7 +19,7 @@ export async function POST(req: Request) {
       route: "/api/user/insert-account",
       method: "POST",
     });
-    await adminSupabase.auth.admin.deleteUser(id);
+    await adminSupabase.auth.admin.deleteUser(id, true);
 
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,

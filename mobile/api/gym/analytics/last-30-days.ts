@@ -8,7 +8,7 @@ export default async function Last30DaysAnalytics() {
   } = await supabase.auth.getSession();
 
   if (sessionError || !session || !session.user) {
-    throw new Error("No session");
+    throw new Error("Unauthorized");
   }
 
   const { data: gymSession, error: gymSessionError } = await supabase
@@ -23,10 +23,10 @@ export default async function Last30DaysAnalytics() {
   if (gymSessionError || !gymSession) {
     handleError(gymSessionError, {
       message: "Error fetching gym sessions",
-      route: "/api/gym/analytics/last-30-days",
+      route: "/database/gym/analytics/last-30-days",
       method: "GET",
     });
-    throw new Error(gymSessionError?.message || "Error fetching gym sessions");
+    throw new Error("Error fetching gym sessions");
   }
 
   return gymSession;

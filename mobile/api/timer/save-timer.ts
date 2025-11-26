@@ -18,7 +18,7 @@ export default async function saveTimer({
   } = await supabase.auth.getSession();
 
   if (sessionError || !session || !session.user) {
-    throw new Error("No session");
+    throw new Error("Unauthorized");
   }
 
   const { error } = await supabase
@@ -35,7 +35,7 @@ export default async function saveTimer({
   if (error) {
     handleError(error, {
       message: "Error saving timer",
-      route: "/api/timer/save-timer",
+      route: "/database/timer/save-timer",
       method: "POST",
     });
     throw new Error("Error saving timer");

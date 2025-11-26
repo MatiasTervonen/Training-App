@@ -34,10 +34,10 @@ export default async function EditReminderData({
   if (error) {
     handleError(error, {
       message: "Error updating reminder",
-      route: "/api/reminders/edit-reminders",
+      route: "/database/reminders/edit-reminders",
       method: "POST",
     });
-    throw new Error(error.message);
+  throw new Error("Error updating reminder");
   }
 
   return { success: true };

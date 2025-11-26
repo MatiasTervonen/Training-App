@@ -9,7 +9,7 @@ export async function getFullGymSession(sessionId: string) {
   } = await supabase.auth.getSession();
 
   if (sessionError || !session || !session.user) {
-    throw new Error("No session");
+    throw new Error("Unauthorized");
   }
 
   if (!sessionId) {
@@ -26,10 +26,10 @@ export async function getFullGymSession(sessionId: string) {
   if (gymSessionError || !gymSession) {
     handleError(gymSessionError, {
       message: "Error fetching gym session",
-      route: "/api/gym/get-full-gym-session",
+      route: "/database/gym/get-full-gym-session",
       method: "GET",
     });
-    throw new Error(JSON.stringify({ error: gymSessionError?.message }));
+    throw new Error("Error fetching gym session");
   }
 
   return gymSession;

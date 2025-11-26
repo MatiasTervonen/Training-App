@@ -5,7 +5,7 @@ import Animated, {
   withSpring,
 } from "react-native-reanimated";
 import AppText from "../AppText";
-import { weight } from "@/types/models";
+import { weight } from "@/types/session";
 import { View, Pressable } from "react-native";
 import { useEffect } from "react";
 

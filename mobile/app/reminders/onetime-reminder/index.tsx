@@ -97,8 +97,6 @@ export default function ReminderScreen() {
     const notificationIds = await setNotification();
 
     try {
-      console.log("Notify at:", notifyAt);
-
       await SaveCustomReminder({
         title: title,
         notes,
@@ -111,22 +109,14 @@ export default function ReminderScreen() {
 
       setIsSaving(false);
       queryClient.refetchQueries({ queryKey: ["get-reminders"], exact: true });
-      queryClient.refetchQueries({ queryKey: ["feed"], exact: true });
+      await queryClient.refetchQueries({ queryKey: ["feed"], exact: true });
       router.push("/dashboard");
       resetReminder();
-    } catch (error) {
-      console.log("Error saving reminder:", error);
-      handleError(error, {
-        message: "Error saving reminders",
-        route: "/api/reminders/save-reminders",
-        method: "POST",
-      });
+    } catch {
       Toast.show({
         type: "error",
         text1: "Failed to save reminder. Please try again.",
       });
-      setIsSaving(false);
-    } finally {
       setIsSaving(false);
     }
   };
@@ -180,7 +170,7 @@ export default function ReminderScreen() {
               <View>
                 <AppInput
                   value={title}
-                  onChangeText={setValue}
+                  setValue={setValue}
                   placeholder="Title... (required)"
                   label="Title..."
                 />
@@ -188,7 +178,7 @@ export default function ReminderScreen() {
               <View className="min-h-[80px]">
                 <NotesInput
                   value={notes}
-                  onChangeText={setNotes}
+                  setValue={setNotes}
                   placeholder="Notes... (optional)"
                   label="Notes..."
                 />
@@ -198,6 +188,7 @@ export default function ReminderScreen() {
                   label={notifyAt ? formattedTime : "Set Notify Time"}
                   onPress={() => setOpen(true)}
                   className="bg-blue-800 py-2 rounded-md shadow-md border-2 border-blue-500 flex-row gap-2 justify-center items-center"
+                  textClassName="text-gray-100"
                 >
                   <Plus color="#f3f4f6" />
                 </AnimatedButton>

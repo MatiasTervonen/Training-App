@@ -1,6 +1,6 @@
 import { ChevronLeft, ChevronRight } from "lucide-react-native";
-import { useState, useEffect, useRef, useMemo, use } from "react";
-import { weight } from "@/types/models";
+import { useState, useEffect, useRef, useMemo } from "react";
+import { weight } from "@/types/session";
 import { View, Pressable } from "react-native";
 import AppText from "@/components/AppText";
 import { useUserStore } from "@/lib/stores/useUserStore";

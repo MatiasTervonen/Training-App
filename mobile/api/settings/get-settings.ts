@@ -8,7 +8,7 @@ export async function fetchUserPreferences() {
   } = await supabase.auth.getSession();
 
   if (sessionError || !session || !session.user) {
-    return { error: true, message: "No session" };
+    throw new Error("Unauthorized");
   }
 
   const { data, error } = await supabase
@@ -22,10 +22,10 @@ export async function fetchUserPreferences() {
   if (error) {
     handleError(error, {
       message: "Error fetching user preferences",
-      route: "/api/settings/get-settings",
+      route: "/database/settings/get-settings",
       method: "GET",
     });
-    return { error: true, message: "Error fetching user preferences" };
+  throw new Error("Error fetching user preferences");
   }
 
   return data;

@@ -11,24 +11,21 @@ export default async function GetFullCustomReminder(id: string) {
     throw new Error("Unauthorized");
   }
 
-  try {
-    const { data, error } = await supabase
-      .from("custom_reminders")
-      .select("*")
-      .eq("id", id)
-      .eq("user_id", session.user.id)
-      .single();
+  const { data, error } = await supabase
+    .from("custom_reminders")
+    .select("*")
+    .eq("id", id)
+    .eq("user_id", session.user.id)
+    .single();
 
-    if (error) {
-      throw error;
-    }
-
-    return data;
-  } catch (error) {
+  if (error) {
     handleError(error, {
       message: "Error fetching full custom reminder",
-      route: "/api/reminders/get-full-custom-reminder",
+      route: "/database/reminders/get-full-custom-reminder",
       method: "GET",
     });
+    throw new Error("Error fetching full custom reminder");
   }
+
+  return data;
 }

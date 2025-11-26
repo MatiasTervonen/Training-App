@@ -1,10 +1,8 @@
 import { Text, TextProps } from "react-native";
 
 export default function AppTextNC({
-  className,
+  className = "",
   ...props
 }: TextProps & { className?: string }) {
-  return (
-    <Text className={`font-russo ${className}`} {...props} />
-  );
+  return <Text className={`font-russo ${className}`} {...props} />;
 }

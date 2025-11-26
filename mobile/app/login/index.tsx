@@ -275,7 +275,7 @@ export default function LoginScreen() {
               >
                 <AppInput
                   label="Email"
-                  onChangeText={(text) => {
+                  setValue={(text) => {
                     setLogin({ ...login, email: text });
                     setSignup({ ...signup, email: "" });
                   }}
@@ -289,9 +289,7 @@ export default function LoginScreen() {
                 <View className="mt-4">
                   <AppInput
                     label="Password"
-                    onChangeText={(text) =>
-                      setLogin({ ...login, password: text })
-                    }
+                    setValue={(text) => setLogin({ ...login, password: text })}
                     value={login.password}
                     secureTextEntry={true}
                     placeholder="Enter password..."
@@ -328,7 +326,7 @@ export default function LoginScreen() {
               >
                 <AppInput
                   label="Email"
-                  onChangeText={(text) => {
+                  setValue={(text) => {
                     setSignup({ ...signup, email: text });
                     setLogin({ ...login, email: "" });
                   }}
@@ -342,7 +340,7 @@ export default function LoginScreen() {
                 <View className="mt-4">
                   <AppInput
                     label="Password"
-                    onChangeText={(text) =>
+                    setValue={(text) =>
                       setSignup({ ...signup, password: text })
                     }
                     value={signup.password}
@@ -357,7 +355,7 @@ export default function LoginScreen() {
                 <View className="mt-4">
                   <AppInput
                     label="Confirm Password"
-                    onChangeText={(text) =>
+                    setValue={(text) =>
                       setSignup({ ...signup, confirmPassword: text })
                     }
                     value={signup.confirmPassword}
@@ -419,7 +417,7 @@ export default function LoginScreen() {
               </AppText>
               <AppInput
                 label="Email"
-                onChangeText={(text) => {
+                setValue={(text) => {
                   setResendEmail(text);
                   setLogin({ ...login, email: "" });
                   setSignup({ ...signup, email: "" });
@@ -466,7 +464,7 @@ export default function LoginScreen() {
               </AppText>
               <AppInput
                 label="Email"
-                onChangeText={(text) => {
+                setValue={(text) => {
                   setForgotPasswordEmail(text);
                   setLogin({ ...login, email: "" });
                   setSignup({ ...signup, email: "" });

@@ -95,7 +95,7 @@ export default function ExerciseDropdownEdit({
             value={searchQuery}
             placeholder="Search exercises..."
             autoComplete="off"
-            onChangeText={handleSearchChange}
+            setValue={handleSearchChange}
             spellCheck={false}
           />
         </View>
@@ -106,7 +106,7 @@ export default function ExerciseDropdownEdit({
             className="w-full border rounded-md 
                        bg-slate-900 border-gray-100  mt-10 h-[83%]"
           >
-            {isLoading || isError ? (
+            {isLoading || isError || exercises?.length === 0 ? (
               <View className="gap-6 items-center justify-center z-50 text-center mt-10">
                 {isLoading && (
                   <>
@@ -118,6 +118,12 @@ export default function ExerciseDropdownEdit({
                   <AppText className="text-red-500 text-xl">
                     Failed to load exercises. Try again!
                   </AppText>
+                )}
+                {exercises?.length === 0 && (
+                  <View className="items-center self-center gap-3 text-lg px-5">
+                    <AppText>No exercises found.</AppText>
+                    <AppText>Get started by adding a new exercise!</AppText>
+                  </View>
                 )}
               </View>
             ) : (

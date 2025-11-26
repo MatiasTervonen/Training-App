@@ -8,7 +8,7 @@ export default async function DeleteTimer(timerId: string) {
   } = await supabase.auth.getSession();
 
   if (sessionError || !session || !session.user) {
-    throw new Error("No session");
+    throw new Error("Unauthorized");
   }
 
   const { error } = await supabase
@@ -20,7 +20,7 @@ export default async function DeleteTimer(timerId: string) {
   if (error) {
     handleError(error, {
       message: "Error deleting timer",
-      route: "/api/timer/delete-timer",
+      route: "/database/timer/delete-timer",
       method: "DELETE",
     });
     throw new Error("Error deleting timer");

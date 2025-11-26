@@ -9,7 +9,7 @@ export async function getRecentExercises() {
   } = await supabase.auth.getSession();
 
   if (sessionError || !session || !session.user) {
-    throw new Error("No session");
+    throw new Error("Unauthorized");
   }
   const { data: exercises, error } = await supabase
     .from("gym_session_exercises")
@@ -22,7 +22,7 @@ export async function getRecentExercises() {
   if (error) {
     handleError(error, {
       message: "Error fetching recent exercises",
-      route: "/api/gym/recent-exercises",
+      route: "/database/gym/recent-exercises",
       method: "GET",
     });
     throw new Error("Error fetching recent exercises");

@@ -93,13 +93,8 @@ export default function TemplatesPage() {
         type: "success",
         text1: "Template deleted successfully",
       });
-    } catch (error) {
+    } catch  {
       queryClient.setQueryData(queryKey, previousFeed);
-      handleError(error, {
-        message: "Error deleting template",
-        route: "/api/gym/delete-template",
-        method: "POST",
-      });
       Toast.show({
         type: "error",
         text1: "Failed to delete template",

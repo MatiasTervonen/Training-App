@@ -24,7 +24,7 @@ export default async function AddExercise({
   } = await supabase.auth.getSession();
 
   if (sessionError || !session || !session.user) {
-    throw new Error("No session");
+    throw new Error("Unauthorized");
   }
 
   const { error: exerciseError } = await supabase
@@ -46,10 +46,10 @@ export default async function AddExercise({
   if (exerciseError) {
     handleError(exerciseError, {
       message: "Error adding new exercise",
-      route: "/api/gym/add-exercise",
+      route: "/database/gym/add-exercise",
       method: "POST",
     });
-    throw new Error(exerciseError?.message || "Error adding new exercise");
+    throw new Error("Error adding new exercise");
   }
 
   return { success: true };

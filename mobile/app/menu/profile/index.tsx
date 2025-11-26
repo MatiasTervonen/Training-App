@@ -125,8 +125,7 @@ export default function ProfileScreen() {
       }
 
       return `${result.publicUrl}?v=${Date.now()}`;
-    } catch (error) {
-      console.error("Error uploading image:", error);
+    } catch {
       Toast.show({
         type: "error",
         text1: "Error",
@@ -196,12 +195,7 @@ export default function ProfileScreen() {
         setIsSaving(false);
         return;
       }
-    } catch (error) {
-      handleError(error, {
-        message: "Error saving settings",
-        route: "/api/settings/save-settings",
-        method: "POST",
-      });
+    } catch {
       Toast.show({
         type: "error",
         text1: "Error",
@@ -223,7 +217,7 @@ export default function ProfileScreen() {
             </View>
             <AppInput
               value={userName}
-              onChangeText={(value) => {
+              setValue={(value) => {
                 setUserName(
                   value
                     .toLowerCase()

@@ -9,7 +9,7 @@ export default async function DeleteExercise(item_id: string) {
   } = await supabase.auth.getSession();
 
   if (sessionError || !session || !session.user) {
-    throw new Error("No session");
+    throw new Error("Unauthorized");
   }
 
   const { error } = await supabase
@@ -20,10 +20,10 @@ export default async function DeleteExercise(item_id: string) {
   if (error) {
     handleError(error, {
       message: "Error deleting exercise",
-      route: "/api/gym/delete-exercise",
+      route: "/database/gym/delete-exercise",
       method: "DELETE",
     });
-    throw new Error(error.message);
+    throw new Error("Error deleting exercise");
   }
 
   return { success: true };

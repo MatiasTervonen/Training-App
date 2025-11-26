@@ -8,7 +8,7 @@ export default async function GetTimer() {
   } = await supabase.auth.getSession();
 
   if (sessionError || !session || !session.user) {
-    throw new Error("No session");
+    throw new Error("Unauthorized");
   }
 
   const { data: timers, error } = await supabase
@@ -20,7 +20,7 @@ export default async function GetTimer() {
   if (error) {
     handleError(error, {
       message: "Error getting timer",
-      route: "/api/timer/get-timer",
+      route: "/database/timer/get-timer",
       method: "GET",
     });
     throw new Error("Error getting timer");

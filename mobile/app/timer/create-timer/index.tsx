@@ -113,16 +113,10 @@ export default function SettingsScreen() {
         text1: "Timer saved successfully",
       });
       handleReset();
-    } catch (error) {
-      console.error("Error saving timer:", error);
+    } catch {
       Toast.show({
         type: "error",
         text1: "Error saving timer",
-      });
-      handleError(error, {
-        message: "Error saving timer",
-        route: "mobile/app/timer/create-timer/index.tsx",
-        method: "POST",
       });
     } finally {
       setIsSaving(false);
@@ -137,7 +131,7 @@ export default function SettingsScreen() {
           <AppInput
             label="Title..."
             value={title}
-            onChangeText={setTitle}
+            setValue={setTitle}
             placeholder="Timer Title"
           />
 
@@ -145,7 +139,7 @@ export default function SettingsScreen() {
             <NotesInput
               label="Notes..."
               value={notes}
-              onChangeText={setNotes}
+              setValue={setNotes}
               placeholder="Timer notes...(optional)"
             />
           </View>
@@ -171,8 +165,8 @@ export default function SettingsScreen() {
           </View>
         </View>
         <View className="gap-4">
-          <SaveButton label="Save" onPress={handleSaveTimer} />
-          <DeleteButton label="Cancel" onPress={handleReset} />
+          <SaveButton onPress={handleSaveTimer} />
+          <DeleteButton onPress={handleReset} />
         </View>
         <FullScreenLoader visible={isSaving} message="Saving timer..." />
       </PageContainer>

@@ -24,8 +24,6 @@ export default function PinnedCarousel({
 }: PinnedCarouselProps) {
   const [activeIndex, setActiveIndex] = useState(1);
 
-  console.log("rendered carousel");
-
   return (
     <View>
       <View className="flex-row items-center mb-2 gap-2 ml-4">

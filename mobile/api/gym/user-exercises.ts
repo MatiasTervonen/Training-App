@@ -8,7 +8,7 @@ export default async function GetUserExercises() {
   } = await supabase.auth.getSession();
 
   if (sessionError || !session || !session.user) {
-    throw new Error("No session");
+    throw new Error("Unauthorized");
   }
 
   const { data: exercises, error } = await supabase
@@ -20,10 +20,10 @@ export default async function GetUserExercises() {
   if (error) {
     handleError(error, {
       message: "Error fetching user exercises",
-      route: "/api/gym/edit-exercise",
+      route: "/database/gym/edit-exercise",
       method: "GET",
     });
-    throw new Error(error.message);
+  throw new Error("Error fetching user exercises");
   }
 
   return exercises;

@@ -14,7 +14,6 @@ import {
 import FeedCard from "@/components/cards/FeedCard";
 import { DeleteSession } from "@/api/feed/deleteSession";
 import { FeedSkeleton } from "@/components/skeletetons";
-import { Pin } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { handleError } from "@/utils/handleError";
 import { Feed_item, full_reminder } from "@/types/session";
@@ -40,7 +39,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import CustomReminder from "../expandSession/customReminder";
 import GetFullCustomReminder from "@/api/reminders/get-full-custom-reminder";
 import getFeed from "@/api/feed/getFeed";
-import Carousel from "react-native-reanimated-carousel";
 import PinnedCarousel from "./PinnedCarousel";
 
 type FeedItem = {
@@ -64,8 +62,6 @@ type FeedData = {
 };
 
 export default function SessionFeed() {
-  console.log("🔥 SessionFeed RENDERED");
-
   const [expandedItem, setExpandedItem] = useState<FeedItem | null>(null);
   const [editingItem, setEditingItem] = useState<FeedItem | null>(null);
   const [refreshing, setRefreshing] = useState(false);

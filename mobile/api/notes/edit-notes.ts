@@ -14,7 +14,7 @@ export async function editNotes({ id, title, notes }: Props) {
   } = await supabase.auth.getSession();
 
   if (sessionError || !session || !session.user) {
-    throw new Error("No session");
+    throw new Error("Unauthorized");
   }
 
   const { error } = await supabase
@@ -25,7 +25,7 @@ export async function editNotes({ id, title, notes }: Props) {
   if (error) {
     handleError(error, {
       message: "Error editing notes",
-      route: "/api/notes/edit-notes",
+      route: "/database/notes/edit-notes",
       method: "POST",
     });
     throw new Error("Error editing notes");

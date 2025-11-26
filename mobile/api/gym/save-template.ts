@@ -21,7 +21,7 @@ export async function saveTemplate({
   } = await supabase.auth.getSession();
 
   if (sessionError || !session || !session.user) {
-    throw new Error("No session");
+    throw new Error("Unauthorized");
   }
 
   const { data: template, error: templateError } = await supabase
@@ -38,10 +38,10 @@ export async function saveTemplate({
   if (templateError || !template) {
     handleError(templateError, {
       message: "Error creating template",
-      route: "/api/gym/save-template",
+      route: "/database/gym/save-template",
       method: "POST",
     });
-    throw new Error(templateError?.message || "Error creating template");
+    throw new Error("Error creating template");
   }
 
   const templateExercises = exercises.map(
@@ -61,12 +61,10 @@ export async function saveTemplate({
   if (templateExerciseError) {
     handleError(templateExerciseError, {
       message: "Error inserting template exercises",
-      route: "/api/gym/save-template",
+      route: "/database/gym/save-template",
       method: "POST",
     });
-    throw new Error(
-      templateExerciseError?.message || "Error inserting template exercises"
-    );
+    throw new Error("Error inserting template exercises");
   }
 
   return template.id;

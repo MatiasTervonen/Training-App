@@ -74,63 +74,18 @@ export default function NotesScreen() {
     }
     setIsSaving(true);
 
-    const queryKey = ["feed"];
-
-    await queryClient.cancelQueries({ queryKey });
-
-    const previousFeed = queryClient.getQueryData(queryKey);
-
-    const optimisticNote: Feed_item = {
-      id: generateUUID(),
-      title,
-      notes,
-      created_at: new Date().toISOString(),
-      type: "notes",
-      pinned: false,
-      user_id: "temp-user-id",
-    };
-
-    queryClient.setQueryData<FeedData>(queryKey, (oldData) => {
-      if (!oldData) return oldData;
-
-      const updatedPages = oldData.pages.map((page, index) => {
-        if (index === 0) {
-          return { ...page, feed: [optimisticNote, ...page.feed] };
-        }
-        return page;
-      });
-
-      return { ...oldData, pages: updatedPages };
-    });
-
     try {
-      const result = await saveNote({ title, notes });
+      await saveNote({ title, notes });
 
-      if (result === null) {
-        throw new Error("Failed to save note");
-      }
-
-      if (result === true) {
-        router.push("/dashboard");
-        queryClient.invalidateQueries({ queryKey });
-        setValue("");
-        setNotes("");
-        await AsyncStorage.removeItem("notes_draft");
-        setTimeout(() => {
-          Toast.show({
-            type: "success",
-            text1: "Success",
-            text2: "Note saved successfully!",
-          });
-        }, 500);
-      }
-    } catch (error) {
-      queryClient.setQueryData(queryKey, previousFeed);
-      handleError(error, {
-        message: "Error saving notes",
-        route: "/api/notes/save-note",
-        method: "POST",
+      await queryClient.refetchQueries({ queryKey: ["feed"], exact: true });
+      resetNote();
+      router.push("/dashboard");
+      Toast.show({
+        type: "success",
+        text1: "Success",
+        text2: "Note saved successfully!",
       });
+    } catch {
       Toast.show({
         type: "error",
         text1: "Error",
@@ -140,7 +95,7 @@ export default function NotesScreen() {
     }
   };
 
-  const handleDeleteNote = () => {
+  const resetNote = () => {
     setValue("");
     setNotes("");
     AsyncStorage.removeItem("notes_draft");
@@ -150,13 +105,13 @@ export default function NotesScreen() {
     <>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <PageContainer className="flex-col justify-between">
-          <View className="">
+          <View>
             <AppText className="text-2xl text-center my-5">
               Add your notes here
             </AppText>
             <AppInput
-              onChangeText={setValue}
               value={title}
+              setValue={setValue}
               label="Title.."
               placeholder="Notes title...(optional)"
             />
@@ -164,7 +119,7 @@ export default function NotesScreen() {
           <View className="flex-1 mt-10">
             <NotesInput
               value={notes}
-              onChangeText={setNotes}
+              setValue={setNotes}
               placeholder="Write your notes here..."
               label="Notes..."
             />
@@ -173,7 +128,7 @@ export default function NotesScreen() {
             <SaveButton onPress={() => handleSaveNotes()} />
             <DeleteButton
               onPress={() => {
-                handleDeleteNote();
+                resetNote();
               }}
             />
           </View>

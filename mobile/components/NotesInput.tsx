@@ -2,9 +2,18 @@ import { TextInputProps, View, TextInput } from "react-native";
 import AppText from "./AppText";
 import { LinearGradient } from "expo-linear-gradient";
 
-type NotesInputProps = TextInputProps & { label?: string };
+type NotesInputProps = TextInputProps & {
+  value: string;
+  setValue: (value: string) => void;
+  label?: string;
+};
 
-export default function NotesInput({ label, ...props }: NotesInputProps) {
+export default function NotesInput({
+  value,
+  setValue,
+  label,
+  ...props
+}: NotesInputProps) {
   return (
     <View className="flex-1">
       {label && <AppText className="text-gray-300 mb-1">{label}</AppText>}
@@ -22,10 +31,18 @@ export default function NotesInput({ label, ...props }: NotesInputProps) {
           autoCorrect={false}
           multiline
           textAlignVertical="top"
+          value={value}
+          onChangeText={setValue}
           className="flex-1 pl-3 text-gray-100 font-russo text-lg"
           style={{ lineHeight: 20 }}
+          maxLength={10000}
           {...props}
         />
+        {value.length >= 10000 ? (
+          <AppText className="text-yellow-400 mt-2">
+            Reached the limit (10000 chars max)
+          </AppText>
+        ) : null}
       </View>
     </View>
   );

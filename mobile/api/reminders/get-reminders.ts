@@ -22,7 +22,7 @@ export default async function GetReminders() {
       route: "/api/reminders/get-reminders",
       method: "GET",
     });
-    throw new Error(remindersError?.message);
+  throw new Error("Error getting reminders");
   }
 
   const { data: customReminders, error: customRemindersError } = await supabase
@@ -33,10 +33,10 @@ export default async function GetReminders() {
   if (customRemindersError) {
     handleError(customRemindersError, {
       message: "Error getting custom reminders",
-      route: "/api/reminders/get-reminders",
+      route: "/database/reminders/get-reminders",
       method: "GET",
     });
-    throw new Error(customRemindersError?.message);
+  throw new Error("Error getting custom reminders");
   }
 
   const combinedReminders = [...reminders, ...customReminders];

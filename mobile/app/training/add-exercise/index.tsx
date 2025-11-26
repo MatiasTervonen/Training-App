@@ -55,23 +55,11 @@ export default function AddExercises() {
         text1: "Exercise saved successfully!",
       });
       setName("");
-    } catch (error: unknown) {
-      handleError(error, {
-        message: "Error saving exercise",
-        route: "/api/gym/add-exercise",
-        method: "POST",
+    } catch {
+      Toast.show({
+        type: "error",
+        text1: "Failed to save exercise. Please try again.",
       });
-      if (error instanceof Error) {
-        Toast.show({
-          type: "error",
-          text1: error.message || "Failed to save exercise. Please try again.",
-        });
-      } else {
-        Toast.show({
-          type: "error",
-          text1: "An unexpected error occurred. Please try again.",
-        });
-      }
     } finally {
       setIsSaving(false);
     }
@@ -87,7 +75,7 @@ export default function AddExercises() {
             </AppText>
             <AppInput
               value={name}
-              onChangeText={setName}
+              setValue={setName}
               placeholder="Exercise name"
               label="Exercise Name"
             />

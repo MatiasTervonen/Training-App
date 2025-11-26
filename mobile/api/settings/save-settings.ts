@@ -12,7 +12,7 @@ export async function saveSettings(updates: {
   } = await supabase.auth.getSession();
 
   if (sessionError || !session || !session.user) {
-    return { error: true, message: "No session" };
+    throw new Error("Unauthorized");
   }
 
   const { error } = await supabase
@@ -23,10 +23,10 @@ export async function saveSettings(updates: {
   if (error) {
     handleError(error, {
       message: "Error saving user preferences",
-      route: "/api/settings/save-settings",
+      route: "/database/settings/save-settings",
       method: "POST",
     });
-    return { error: true, message: "Error saving user preferences" };
+  throw new Error("Error saving user preferences");
   }
 
   return true;

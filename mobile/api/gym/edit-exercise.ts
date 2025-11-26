@@ -24,23 +24,22 @@ export default async function EditExercise({
   } = await supabase.auth.getSession();
 
   if (sessionError || !session || !session.user) {
-    throw new Error("No session");
+    throw new Error("Unauthorized");
   }
 
   const { error } = await supabase
     .from("gym_exercises")
     .update({ name, language, equipment, muscle_group, main_group })
     .eq("id", id)
-    .eq("user_id", session.user.id)
-
+    .eq("user_id", session.user.id);
 
   if (error) {
     handleError(error, {
       message: "Error updating exercise",
-      route: "/api/gym/edit-exercise",
+      route: "/database/gym/edit-exercise",
       method: "POST",
     });
-    throw new Error(error.message);
+    throw new Error("Error updating exercise");
   }
 
   return { success: true };

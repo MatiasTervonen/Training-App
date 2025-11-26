@@ -15,10 +15,10 @@ export async function editWeight({ title, notes, weight, id }: props) {
   } = await supabase.auth.getSession();
 
   if (sessionError || !session || !session.user) {
-    throw new Error("No session");
+    throw new Error("Unauthorized");
   }
 
-  const { error: weightError, data: weightData } = await supabase
+  const { error: weightError } = await supabase
     .from("weight")
     .update({ title, notes, weight })
     .eq("id", id)
@@ -29,7 +29,7 @@ export async function editWeight({ title, notes, weight, id }: props) {
   if (weightError) {
     handleError(weightError, {
       message: "Error editing weight entry",
-      route: "/api/weight/edit-weight",
+      route: "/database/weight/edit-weight",
       method: "GET",
     });
     throw new Error("Error editing weight entry");

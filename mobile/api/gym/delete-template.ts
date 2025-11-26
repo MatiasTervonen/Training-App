@@ -8,7 +8,7 @@ export default async function DeleteTemplate(templateId: string) {
   } = await supabase.auth.getSession();
 
   if (sessionError || !session || !session.user) {
-    throw new Error("No session");
+    throw new Error("Unauthorized");
   }
 
   const { error } = await supabase
@@ -20,10 +20,10 @@ export default async function DeleteTemplate(templateId: string) {
   if (error) {
     handleError(error, {
       message: "Error deleting template",
-      route: "/api/gym/delete-template",
+      route: "/database/gym/delete-template",
       method: "POST",
     });
-    throw new Error(error.message || "Error deleting template");
+    throw new Error("Error deleting template");
   }
 
   return { success: true };

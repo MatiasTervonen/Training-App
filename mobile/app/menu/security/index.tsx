@@ -64,37 +64,37 @@ export default function SecurityPage() {
   };
 
   return (
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-        <PageContainer className="items-center">
-          <AppText className="text-2xl my-5">Security Settings</AppText>
-          <AppText className="text-xl my-5">Reset Password</AppText>
-          <View className="w-full mb-5">
-            <AppInput
-              label="New Password"
-              value={password}
-              onChangeText={setPassword}
-              placeholder="Enter new password"
-              secureTextEntry
-            />
-          </View>
-          <View className="w-full">
-            <AppInput
-              label="Confirm Password"
-              value={confirmPassword}
-              onChangeText={setConfirmPassword}
-              placeholder="Confirm new password"
-              secureTextEntry
-            />
-          </View>
-          <View className="w-full mt-10">
-            <SaveButtonSpinner
-              onPress={handleSavePassword}
-              label={loading ? "Saving..." : "Save"}
-              disabled={loading}
-              loading={loading}
-            />
-          </View>
-        </PageContainer>
-      </TouchableWithoutFeedback>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <PageContainer className="items-center">
+        <AppText className="text-2xl my-5">Security Settings</AppText>
+        <AppText className="text-xl my-5">Reset Password</AppText>
+        <View className="w-full mb-5">
+          <AppInput
+            label="New Password"
+            value={password}
+            setValue={setPassword}
+            placeholder="Enter new password"
+            secureTextEntry
+          />
+        </View>
+        <View className="w-full">
+          <AppInput
+            label="Confirm Password"
+            value={confirmPassword}
+            setValue={setConfirmPassword}
+            placeholder="Confirm new password"
+            secureTextEntry
+          />
+        </View>
+        <View className="w-full mt-10">
+          <SaveButtonSpinner
+            onPress={handleSavePassword}
+            label={loading ? "Saving..." : "Save"}
+            disabled={loading}
+            loading={loading}
+          />
+        </View>
+      </PageContainer>
+    </TouchableWithoutFeedback>
   );
 }

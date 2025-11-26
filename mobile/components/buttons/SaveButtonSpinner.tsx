@@ -1,6 +1,7 @@
 import AppText from "@/components/AppText";
-import { Pressable, ActivityIndicator } from "react-native";
+import { ActivityIndicator } from "react-native";
 import { useUserStore } from "@/lib/stores/useUserStore";
+import AnimatedButton from "./animatedButton";
 
 type SaveButtonProps = {
   onPress: () => void;
@@ -10,7 +11,7 @@ type SaveButtonProps = {
   className?: string;
 };
 
-export default function SaveButton({
+export default function SaveButtonSpinner({
   onPress,
   label = "Save",
   disabled,
@@ -20,23 +21,22 @@ export default function SaveButton({
 
   if (isGuest) {
     return (
-      <Pressable
-        disabled
+      <AnimatedButton
+        label="Save (not allowed)"
         className="bg-gray-400 py-2 rounded-md shadow-md border-2 border-gray-300"
-      >
-        <AppText className="text-center tewxt-lg">Save (not allowed)</AppText>
-      </Pressable>
+        onPress={onPress}
+      />
     );
   }
 
   return (
-    <Pressable
+    <AnimatedButton
       className="flex-row justify-center items-center gap-3 bg-blue-800 rounded-md shadow-md border-2 border-blue-500 py-2"
       onPress={onPress}
       disabled={disabled}
     >
       <AppText className="text-lg">{label}</AppText>
       {loading && <ActivityIndicator size="small" color="#fff" />}
-    </Pressable>
+    </AnimatedButton>
   );
 }

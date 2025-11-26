@@ -2,33 +2,25 @@ import { View } from "react-native";
 import { useQuery } from "@tanstack/react-query";
 import AllDataTable from "@/components/weight-screen/AllDataTable";
 import { getWeight } from "@/api/weight/get-weight";
-import { weight } from "@/types/models";
 
 export default function AnalyticsScreen() {
   const {
-    data: weightData = [],
-    isLoading,
+    data: weightData,
     error,
+    isLoading,
   } = useQuery({
-    queryKey: ["weightData"],
-    queryFn: async () => {
-      const data = await getWeight();
-
-      if (data.error) {
-        throw new Error(data.message || "Error fetching weight data");
-      }
-
-      return data.weight as weight[];
-    },
-
+    queryKey: ["get-weight"],
+    queryFn: getWeight,
     refetchOnMount: false,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
+    staleTime: Infinity,
+    gcTime: Infinity,
   });
 
   return (
     <View>
-      <AllDataTable data={weightData} isLoading={isLoading} error={error} />
+      <AllDataTable data={weightData ?? []} isLoading={isLoading} error={error} />
     </View>
   );
 }

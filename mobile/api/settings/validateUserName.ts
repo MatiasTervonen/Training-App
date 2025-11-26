@@ -8,7 +8,7 @@ export async function validateUserName(name: string) {
   } = await supabase.auth.getSession();
 
   if (sessionError || !session || !session.user) {
-    return { error: true, message: "No session" };
+    throw new Error("Unauthorized");
   }
 
   const { data, error } = await supabase
@@ -21,10 +21,10 @@ export async function validateUserName(name: string) {
   if (error && error.code !== "PGRST116") {
     handleError(error, {
       message: "Error validating user name",
-      route: "/api/settings/validateUserName",
+      route: "/database/settings/validateUserName",
       method: "POST",
     });
-    return { error: true, message: "Error validating user name" };
+  throw new Error("Error validating user name");
   }
 
   const isTaken = !!data;

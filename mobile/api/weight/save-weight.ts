@@ -14,7 +14,7 @@ export async function saveWeight({ title, notes, weight }: props) {
   } = await supabase.auth.getSession();
 
   if (sessionError || !session || !session.user) {
-    return { error: true, message: "No session" };
+    throw new Error("Unauthorized");
   }
 
   const { error } = await supabase
@@ -22,14 +22,14 @@ export async function saveWeight({ title, notes, weight }: props) {
     .insert({ title, notes, weight, user_id: session.user.id })
     .select()
     .single();
-1
+
   if (error) {
     handleError(error, {
       message: "Error saving weight",
-      route: "/api/weight/save-weight",
+      route: "/database/weight/save-weight",
       method: "POST",
     });
-    return { error: true, message: "Error saving weight" };
+    throw new Error("Error saving weight");
   }
 
   return true;

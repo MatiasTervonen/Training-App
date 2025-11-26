@@ -19,11 +19,11 @@ export default async function DeleteCustomReminder(reminderId: string) {
 
   if (remindersError) {
     handleError(remindersError, {
-      message: "Error getting reminders",
-      route: "/api/reminders/get-reminders",
+      message: "Error deleting custom reminders",
+      route: "/database/reminders/delete-custom-reminder",
       method: "GET",
     });
-    throw new Error(remindersError?.message);
+  throw new Error("Error deleting custom reminders");
   }
 
   return { success: true };

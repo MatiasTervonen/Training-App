@@ -47,10 +47,10 @@ export default async function SaveCustomReminder({
   if (remindersError) {
     handleError(remindersError, {
       message: "Error saving reminders",
-      route: "/api/reminders/save-reminders",
+      route: "/database/reminders/save-reminders",
       method: "POST",
     });
-    throw new Error(remindersError?.message);
+  throw new Error("Error saving reminders");
   }
 
   return { success: true };

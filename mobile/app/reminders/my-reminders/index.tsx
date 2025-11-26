@@ -75,13 +75,8 @@ export default function RemindersPage() {
         type: "success",
         text1: "Reminder deleted successfully",
       });
-    } catch (error) {
+    } catch {
       queryClient.setQueryData(queryKey, previousFeed);
-      handleError(error, {
-        message: "Error deleting reminder",
-        route: "/api/gym/delete-reminder",
-        method: "POST",
-      });
       Toast.show({
         type: "error",
         text1: "Failed to delete reminder",
@@ -110,7 +105,7 @@ export default function RemindersPage() {
               activeTab === "upcoming" ? "bg-gray-900" : ""
             }`}
             textClassName={`text-center ${
-              activeTab === "upcoming" ? "text-cyan-500" : ""
+              activeTab === "upcoming" ? "text-cyan-500" : "text-gray-100"
             }`}
             label="Upcoming"
             hitSlop={10}
@@ -118,11 +113,11 @@ export default function RemindersPage() {
 
           <AnimatedButton
             onPress={() => setActiveTab("delivered")}
-            className={`px-4 py-2 w-[150px] rounded-xl ${
+            className={`px-4 py-2 w-[150px] rounded-xl  ${
               activeTab === "delivered" ? "bg-gray-900" : ""
             }`}
-            textClassName={`text-center ${
-              activeTab === "delivered" ? "text-cyan-500" : ""
+            textClassName={`text-center  ${
+              activeTab === "delivered" ? "text-cyan-500" : "text-gray-100"
             }`}
             label="Delivered"
             hitSlop={10}

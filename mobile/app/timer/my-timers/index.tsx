@@ -9,7 +9,7 @@ import FullScreenModal from "@/components/FullScreenModal";
 import TimerCard from "@/components/cards/TimerCard";
 import DeleteTimer from "@/api/timer/delete-timer";
 import Toast from "react-native-toast-message";
-import { handleError } from "@/utils/handleError";
+
 import { router } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useTimerStore } from "@/lib/stores/timerStore";
@@ -40,13 +40,7 @@ export default function MyTimersScreen() {
 
       queryClient.refetchQueries({ queryKey: ["timers"], exact: true });
       Toast.show({ type: "success", text1: "Timer deleted successfully" });
-    } catch (error) {
-      console.error("Error deleting timer:", error);
-      handleError(error, {
-        message: "Failed to delete timer",
-        route: "/mobile/app/timer/my-timers/index.tsx",
-        method: "DELETE",
-      });
+    } catch {
       Toast.show({
         type: "error",
         text1: "Failed to delete timer. Please try again.",
@@ -97,6 +91,7 @@ export default function MyTimersScreen() {
           <View key={timer.id} className="mb-4 ">
             <AnimatedButton
               className="bg-blue-800 py-2 rounded-md shadow-md border-2 border-blue-500 items-center"
+              textClassName="text-gray-100"
               onPress={() => {
                 setExpandedItem(timer);
               }}

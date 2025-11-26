@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
 import { useUserStore } from "@/lib/stores/useUserStore";
-import { weight } from "@/types/models";
-import { handleError } from "../../utils/handleError";
+import { weight } from "@/types/session";
 import { View, SectionList } from "react-native";
 import AppText from "../AppText";
 import { confirmAction } from "@/lib/confirmAction";
@@ -85,27 +84,17 @@ export default function AllDataTable({ data, isLoading, error }: AllDataProps) {
     );
 
     try {
-      const result = await DeleteSession(item_id, table);
-
-      if (!result.success) {
-        throw new Error();
-      }
+      await DeleteSession(item_id, table);
 
       queryClient.refetchQueries({ queryKey: ["feed"], exact: true });
-      queryClient.invalidateQueries({ queryKey });
 
       Toast.show({
         type: "success",
         text1: "Deleted",
         text2: "Item has been deleted successfully.",
       });
-    } catch (error) {
+    } catch {
       queryClient.setQueryData(queryKey, previousData);
-      handleError(error, {
-        message: "Unexpected Error deleting item",
-        route: "/api/feed/deleteSession",
-        method: "DELETE",
-      });
       Toast.show({
         type: "error",
         text1: "Error",

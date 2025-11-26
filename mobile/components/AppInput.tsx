@@ -3,9 +3,18 @@ import { View, TextInput, TextInputProps } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import AppText from "./AppText";
 
-type AppInputProps = TextInputProps & { label?: string };
+type AppInputProps = TextInputProps & {
+  value: string;
+  setValue?: (value: string) => void;
+  label?: string;
+};
 
-export default function AppInput({ label, ...props }: AppInputProps) {
+export default function AppInput({
+  value,
+  setValue,
+  label,
+  ...props
+}: AppInputProps) {
   const [focused, setFocused] = useState(false);
 
   return (
@@ -24,6 +33,8 @@ export default function AppInput({ label, ...props }: AppInputProps) {
           className="absolute inset-0"
         />
         <TextInput
+          value={value}
+          onChangeText={setValue}
           placeholderTextColor="#9ca3af"
           autoCorrect={false}
           spellCheck={false}
@@ -31,9 +42,15 @@ export default function AppInput({ label, ...props }: AppInputProps) {
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
           className="bg-transparent text-gray-100 text-xl px-4 py-2 h-12 font-russo"
+          maxLength={150}
           {...props}
         />
       </View>
+      {value.length >= 150 ? (
+        <AppText className="text-yellow-500 mt-2">
+          Reached the limit (150 chars max)
+        </AppText>
+      ) : null}
     </View>
   );
 }

@@ -8,7 +8,7 @@ export default async function GetTemplate() {
   } = await supabase.auth.getSession();
 
   if (sessionError || !session || !session.user) {
-    throw new Error("No session");
+    throw new Error("Unauthorized");
   }
 
   const { data: template, error: templateError } = await supabase
@@ -20,10 +20,10 @@ export default async function GetTemplate() {
   if (templateError || !template) {
     handleError(templateError, {
       message: "Error fetching templates",
-      route: "/api/gym/get-templates",
+      route: "/database/gym/get-templates",
       method: "GET",
     });
-    throw new Error(templateError?.message || "Error fetching templates");
+    throw new Error("Error fetching templates");
   }
 
   return template;

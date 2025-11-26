@@ -9,7 +9,8 @@ import ActiveSessionPopup from "@/components/ActiveSessionPopup";
 export default function FeedScreen() {
   const router = useRouter();
   const { setModalPageConfig } = useModalPageConfig();
-  const { activeSession } = useTimerStore();
+
+  const activeSession = useTimerStore.getState().activeSession;
 
   useEffect(() => {
     setModalPageConfig({

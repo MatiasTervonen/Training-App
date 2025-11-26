@@ -34,7 +34,7 @@ export async function editSession({
   } = await supabase.auth.getSession();
 
   if (sessionError || !session || !session.user) {
-    throw new Error("No session");
+    throw new Error("Unauthorized");
   }
 
   const { error: editError } = await supabase
@@ -50,10 +50,10 @@ export async function editSession({
   if (editError) {
     handleError(editError, {
       message: "Error updating session",
-      route: "/api/gym/edit-session",
+      route: "/database/gym/edit-session",
       method: "POST",
     });
-    throw new Error(editError.message);
+    throw new Error("Error updating session");
   }
 
   const { data: existingExercises } = await supabase
@@ -113,10 +113,10 @@ export async function editSession({
   if (seError) {
     handleError(seError, {
       message: "Error inserting session exercises",
-      route: "/api/gym/edit-session",
+      route: "/database/gym/edit-session",
       method: "POST",
     });
-    throw new Error(seError.message);
+    throw new Error("Error inserting session exercises");
   }
 
   const { error: setsError } = await supabase.from("gym_sets").insert(sets);
@@ -124,10 +124,10 @@ export async function editSession({
   if (setsError) {
     handleError(setsError, {
       message: "Error inserting sets",
-      route: "/api/gym/edit-session",
+      route: "/database/gym/edit-session",
       method: "POST",
     });
-    throw new Error(setsError.message);
+    throw new Error("Error inserting sets");
   }
 
   return { success: true };

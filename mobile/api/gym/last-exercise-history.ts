@@ -20,7 +20,7 @@ export async function getLastExerciseHistory({
   } = await supabase.auth.getSession();
 
   if (sessionError || !session || !session.user) {
-    throw new Error("User not authenticated");
+    throw new Error("Unauthorized");
   }
 
   const { data: exercises, error: exerciseError } = await supabase
@@ -34,7 +34,7 @@ export async function getLastExerciseHistory({
   if (exerciseError) {
     handleError(exerciseError, {
       message: "Error fetching exercise history",
-      route: "/api/gym/last-exercise-history/[exerciseId]",
+      route: "/database/gym/last-exercise-history/[exerciseId]",
       method: "GET",
     });
     throw new Error("Error fetching exercise history");
@@ -49,7 +49,7 @@ export async function getLastExerciseHistory({
   if (exerciseError) {
     handleError(exerciseError, {
       message: "Error fetching exercise history",
-      route: "/api/gym/last-exercise-history",
+      route: "/database/gym/last-exercise-history",
       method: "GET",
     });
     throw new Error("Error fetching exercise history");
@@ -72,10 +72,10 @@ export async function getLastExerciseHistory({
       if (setsError) {
         handleError(setsError, {
           message: "Error fetching sets",
-          route: "/api/gym/last-exercise-history",
+          route: "/database/gym/last-exercise-history",
           method: "GET",
         });
-        return null;
+       throw new Error("Error fetching sets");
       }
 
       return {

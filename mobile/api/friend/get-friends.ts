@@ -8,7 +8,7 @@ export async function GET() {
   } = await supabase.auth.getSession();
 
   if (sessionError || !session || !session.user) {
-    return { error: true, message: "No session" };
+  throw new Error("Unauthorized");
   }
 
   const { data, error } = await supabase
@@ -19,10 +19,10 @@ export async function GET() {
   if (error) {
     handleError(error, {
       message: "Error fetching friends",
-      route: "/api/friend/get-friends",
+      route: "/database/friend/get-friends",
       method: "GET",
     });
-    return { error: true, message: "Error fetching friends" };
+  throw new Error("Error fetching friends");
   }
 
   return data;

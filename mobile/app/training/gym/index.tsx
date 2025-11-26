@@ -298,24 +298,13 @@ export default function GymScreen() {
     const duration = elapsedTime;
 
     try {
-      const res = await saveSession({ title, notes, duration, exercises });
-
-      if (res.error) {
-        setIsSaving(false);
-        throw new Error("Failed to save session gym session");
-      }
+      await saveSession({ title, notes, duration, exercises });
 
       queryClient.refetchQueries({ queryKey: ["feed"], exact: true });
 
       router.push("/training/training-finished"); // Redirect to the finished page
       resetSession(); // Clear the session data
-    } catch (error) {
-      console.log("Error saving session:", error);
-      handleError(error, {
-        message: "Error saving gym session",
-        route: "/api/gym/save-session",
-        method: "POST",
-      });
+    } catch {
       Toast.show({
         type: "error",
         text1: "Error",
@@ -369,14 +358,14 @@ export default function GymScreen() {
             <View className="gap-5">
               <AppInput
                 value={title}
-                onChangeText={setTitle}
+                setValue={setTitle}
                 placeholder="Session Title..."
                 label="Session Title..."
               />
               <View className="min-h-[80px]">
                 <NotesInput
                   value={notes}
-                  onChangeText={setNotes}
+                  setValue={setNotes}
                   placeholder="Session Notes..."
                   label="Session Notes..."
                 />

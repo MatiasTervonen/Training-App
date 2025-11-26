@@ -175,3 +175,10 @@ export type full_reminder = {
   notify_at_time?: string;
 };
 
+export type weight = {
+  created_at: string;
+  id: string;
+  notes: string | null;
+  title: string | null;
+  weight: number;
+};

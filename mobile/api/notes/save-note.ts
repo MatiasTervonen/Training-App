@@ -13,7 +13,7 @@ export async function saveNote({ title, notes }: props) {
   } = await supabase.auth.getSession();
 
   if (sessionError || !session || !session.user) {
-    return { error: true, message: "No session" };
+    throw new Error("Unauthorized");
   }
 
   const { error } = await supabase
@@ -23,10 +23,10 @@ export async function saveNote({ title, notes }: props) {
   if (error) {
     handleError(error, {
       message: "Error saving note",
-      route: "/api/notes/save-note",
+      route: "/database/notes/save-note",
       method: "POST",
     });
-    return { error: true, message: "Error saving note" };
+  throw new Error("Error saving note");
   }
 
   return true;

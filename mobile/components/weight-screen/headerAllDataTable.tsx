@@ -1,6 +1,6 @@
 import { View, ActivityIndicator } from "react-native";
 import AppText from "../AppText";
-import { weight } from "@/types/models";
+import { weight } from "@/types/session";
 import WeightChart from "@/components/weight-screen/WeightChart";
 import AnimatedButton from "../buttons/animatedButton";
 import AppTextNC from "../AppTextNC";

@@ -8,7 +8,7 @@ export async function getWeight() {
   } = await supabase.auth.getSession();
 
   if (sessionError || !session || !session.user) {
-    return { error: true, message: "No session" };
+    throw new Error("Unauthorized");
   }
 
   const { error: weightError, data: weight } = await supabase
@@ -17,14 +17,15 @@ export async function getWeight() {
     .eq("user_id", session.user.id)
     .order("created_at", { ascending: true });
 
+
   if (weightError || !weight) {
     handleError(weightError, {
       message: "Error fetching weight entries",
-      route: "/api/weight/get-weight",
+      route: "/database/weight/get-weight",
       method: "GET",
     });
-    return { error: true, message: "Error fetching weight entries" };
+    throw new Error("Error fetching weight entries");
   }
 
-  return { weight };
+  return weight;
 }

@@ -16,7 +16,7 @@ export async function getExercises({
   } = await supabase.auth.getSession();
 
   if (sessionError || !session || !session.user) {
-    throw new Error("No session");
+    throw new Error("Unauthorized");
   }
 
   const from = pageParam * limit;
@@ -42,10 +42,10 @@ export async function getExercises({
   if (error) {
     handleError(error, {
       message: "Error fetching exercises",
-      route: "/api/gym/get-exercises",
+      route: "/database/gym/get-exercises",
       method: "GET",
     });
-    throw error;
+  throw new Error("Error fetching exercises");
   }
 
   const hasMore = data && data.length === limit;

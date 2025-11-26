@@ -8,8 +8,6 @@ export default async function getFeed({
   pageParam?: number;
   limit?: number;
 }) {
-  console.log("getting feed");
-
   const {
     data: { session },
     error: sessionError,

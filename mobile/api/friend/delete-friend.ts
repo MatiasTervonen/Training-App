@@ -8,7 +8,7 @@ export async function deleteFriend(friendId: string) {
   } = await supabase.auth.getSession();
 
   if (sessionError || !session || !session.user) {
-    return { error: true, message: "No session" };
+    throw new Error("Unauthorized");
   }
 
   if (!friendId || typeof friendId !== "string") {
@@ -25,10 +25,10 @@ export async function deleteFriend(friendId: string) {
   if (friendError || !friendData) {
     handleError(friendError, {
       message: "Error fetching friend data",
-      route: "/api/friend/delete-friend",
+      route: "/database/friend/delete-friend",
       method: "DELETE",
     });
-    return { error: true, message: "Error fetching friend data" };
+    throw new Error("Error fetching friend data");
   }
 
   // Determine the other user's ID
@@ -46,10 +46,10 @@ export async function deleteFriend(friendId: string) {
   if (deleteError) {
     handleError(deleteError, {
       message: "Error deleting friendship",
-      route: "/api/friend/delete-friend",
+      route: "/database/friend/delete-friend",
       method: "DELETE",
     });
-    return { error: true, message: "Error deleting friendship" };
+    throw new Error("Error deleting friendship");
   }
 
   // Optionally, you can also delete any related friend requests
@@ -64,10 +64,10 @@ export async function deleteFriend(friendId: string) {
   if (requestDeleteError) {
     handleError(requestDeleteError, {
       message: "Error deleting related friend requests",
-      route: "/api/friend/delete-friend",
+      route: "/database/friend/delete-friend",
       method: "DELETE",
     });
-    return { error: true, message: "Error deleting related friend requests" };
+    throw new Error("Error deleting related friend requests");
   }
 
   return { success: true };

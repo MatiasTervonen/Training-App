@@ -78,7 +78,11 @@ export default function ExerciseDropdown({ onSelect, resetTrigger }: Props) {
 
   if (!isError && !isLoading) {
     if (recentExercisesList.length > 0 && searchQuery.length === 0) {
-      sections.push({ title: "Recent Exercises", data: recentExercisesList, key: "recent" });
+      sections.push({
+        title: "Recent Exercises",
+        data: recentExercisesList,
+        key: "recent",
+      });
     }
 
     sections.push({
@@ -107,7 +111,7 @@ export default function ExerciseDropdown({ onSelect, resetTrigger }: Props) {
           className="w-full  
                     bg-slate-900 border border-gray-100 mt-10 flex-1"
         >
-          {isLoading || isError ? (
+          {isLoading || isError || allExercises.length === 0 ? (
             <View className="gap-6 items-center justify-center z-50 text-center mt-20">
               {isLoading && (
                 <>
@@ -120,6 +124,11 @@ export default function ExerciseDropdown({ onSelect, resetTrigger }: Props) {
                   Failed to load exercises. Try again!
                 </AppText>
               )}
+              {!isLoading && allExercises.length === 0 && (
+                <AppText className="text-lg text-gray-300">
+                  No eexercises found.
+                </AppText>
+              )} 
             </View>
           ) : (
             <SectionList

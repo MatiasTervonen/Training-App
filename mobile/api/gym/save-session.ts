@@ -32,7 +32,7 @@ export async function saveSession({
   } = await supabase.auth.getSession();
 
   if (authnError || !session || !session.user) {
-    return { error: true, message: "No session" };
+    throw new Error("Unauthorized");
   }
 
   const { data: sessionData, error: sessionError } = await supabase
@@ -48,11 +48,10 @@ export async function saveSession({
     .select()
     .single();
 
-
   if (sessionError || !sessionData) {
     handleError(sessionError, {
       message: "Error creating session",
-      route: "/api/gym/save-session",
+      route: "/database/gym/save-session",
       method: "POST",
     });
     throw new Error("Error creating session");
@@ -99,7 +98,7 @@ export async function saveSession({
   if (seError) {
     handleError(seError, {
       message: "Error inserting session exercises",
-      route: "/api/gym/save-session",
+      route: "/database/gym/save-session",
       method: "POST",
     });
     throw new Error("Error inserting session exercises");
@@ -110,11 +109,11 @@ export async function saveSession({
   if (setsError) {
     handleError(setsError, {
       message: "Error inserting sets",
-      route: "/api/gym/save-session",
+      route: "/database/gym/save-session",
       method: "POST",
     });
     throw new Error("Error inserting sets");
   }
 
-  return { error: false, message: "Session saved successfully" };
+  return { success: true };
 }

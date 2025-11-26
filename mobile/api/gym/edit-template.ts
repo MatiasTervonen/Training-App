@@ -22,7 +22,7 @@ export async function editTemplate({
   } = await supabase.auth.getSession();
 
   if (sessionError || !session || !session.user) {
-    throw new Error("No session");
+    throw new Error("Unauthorized");
   }
 
   if (!id) {
@@ -38,7 +38,7 @@ export async function editTemplate({
   if (templateError) {
     handleError(templateError, {
       message: "Error updating template",
-      route: "/api/gym/edit-template",
+      route: "/database/gym/edit-template",
       method: "POST",
     });
     throw new Error(templateError?.message || "Error updating template");
@@ -66,16 +66,13 @@ export async function editTemplate({
     .insert(templateExercises)
     .select();
 
-
   if (templateExerciseError) {
     handleError(templateExerciseError, {
       message: "Error inserting template exercises",
-      route: "/api/gym/edit-template",
+      route: "/database/gym/edit-template",
       method: "POST",
     });
-    throw new Error(
-      templateExerciseError?.message || "Error inserting template exercises"
-    );
+    throw new Error("Error inserting template exercises");
   }
 
   return { success: true };

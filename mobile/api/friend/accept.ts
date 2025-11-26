@@ -8,7 +8,7 @@ export async function POST(sender_id: string) {
   } = await supabase.auth.getSession();
 
   if (sessionError || !session || !session.user) {
-    return { error: true, message: "No session" };
+  throw new Error("Unauthorized");
   }
 
   const { data: request, error: updateError } = await supabase
@@ -24,10 +24,10 @@ export async function POST(sender_id: string) {
   if (updateError || !request) {
     handleError(updateError, {
       message: "Error updating friend request",
-      route: "/api/friend/accept",
+      route: "/database/friend/accept",
       method: "POST",
     });
-    return { error: true, message: "Error updating friend request" };
+   throw new Error("Error updating friend request");
   }
 
   const [user1_id, user2_id] =
@@ -45,10 +45,10 @@ export async function POST(sender_id: string) {
   if (insertError) {
     handleError(insertError, {
       message: "Error creating friendship",
-      route: "/api/friend/accept",
+      route: "/database/friend/accept",
       method: "POST",
     });
-    return { error: true, message: "Error creating friendship" };
+  throw new Error("Error updating friend request");
   }
 
   return {

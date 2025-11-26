@@ -8,7 +8,7 @@ export async function getFullTemplate(sessionId: string) {
   } = await supabase.auth.getSession();
 
   if (sessionError || !session || !session.user) {
-    throw new Error("No session");
+    throw new Error("Unauthorized");
   }
 
   if (!sessionId) {
@@ -27,10 +27,10 @@ export async function getFullTemplate(sessionId: string) {
   if (templateError || !template) {
     handleError(templateError, {
       message: "Error fetching template",
-      route: "/api/gym/get-full-template",
+      route: "/database/gym/get-full-template",
       method: "GET",
     });
-    throw new Error(templateError?.message || "Error fetching template");
+    throw new Error("Error fetching template");
   }
 
   return template;

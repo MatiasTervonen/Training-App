@@ -41,6 +41,7 @@ export default function EditExercises() {
     null
   );
   const [resetTrigger, setResetTrigger] = useState(0);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const queryClient = useQueryClient();
 
@@ -63,36 +64,19 @@ export default function EditExercises() {
       main_group,
     };
 
-    const queryKey = ["userExercises"];
-
-    const previousData = queryClient.getQueryData(queryKey);
-
-    queryClient.setQueryData<Exercise[]>(queryKey, (oldData) => {
-      if (!oldData) return oldData;
-
-      return oldData.map((exercise) =>
-        exercise.id === selectedExercise!.id
-          ? { ...exercise, ...exerciseData }
-          : exercise
-      );
-    });
-
     try {
       await EditExercise(exerciseData);
 
+      await queryClient.refetchQueries({
+        queryKey: ["userExercises"],
+        exact: true,
+      });
       Toast.show({
         type: "success",
         text1: "Exercise updated successfully!",
       });
       resetFields();
-    } catch (error) {
-      queryClient.setQueryData(queryKey, previousData);
-      console.error("Error updating exercise:", error);
-      handleError(error, {
-        message: "Error updating exercise",
-        route: "/api/gym/edit-exercise",
-        method: "POST",
-      });
+    } catch {
       Toast.show({
         type: "error",
         text1: "Failed to update exercise. Please try again.",
@@ -103,35 +87,30 @@ export default function EditExercises() {
   };
 
   const handleDeleteExercise = async (exerciseId: string) => {
-    const queryKey = ["userExercises"];
-
-    const previousData = queryClient.getQueryData(queryKey);
-
-    queryClient.setQueryData<Exercise[]>(queryKey, (oldData) => {
-      if (!oldData) return oldData;
-      return oldData.filter((exercise) => exercise.id !== exerciseId);
-    });
+    setIsDeleting(true);
+    setIsSaving(true);
 
     try {
       await DeleteExercise(exerciseId);
 
+      await queryClient.refetchQueries({
+        queryKey: ["userExercises"],
+        exact: true,
+      });
       Toast.show({
         type: "success",
         text1: "Exercise deleted successfully!",
       });
       setSelectedExercise(null);
       setResetTrigger((prev) => prev + 1);
-    } catch (error) {
-      queryClient.setQueryData(queryKey, previousData);
-      handleError(error, {
-        message: "Error deleting exercise",
-        route: "/api/gym/delete-exercise",
-        method: "DELETE",
-      });
+    } catch {
       Toast.show({
         type: "error",
         text1: "Failed to delete exercise. Please try again.",
       });
+    } finally {
+      setIsDeleting(false);
+      setIsSaving(false);
     }
   };
 
@@ -173,7 +152,7 @@ export default function EditExercises() {
           <AppText className="text-2xl text-center my-5">Edit exercise</AppText>
           <AppInput
             value={name}
-            onChangeText={setName}
+            setValue={setName}
             placeholder="Exercise name"
             label="Exercise Name"
           />
@@ -263,10 +242,14 @@ export default function EditExercises() {
               }}
               label="Cancel"
               className="mb-10 bg-red-800 py-2 rounded-md shadow-md border-2 border-red-500 text-lg items-center"
+              textClassName="text-gray-100"
             />
           </View>
 
-          <FullScreenLoader visible={isSaving} message="Saving exercise..." />
+          <FullScreenLoader
+            visible={isSaving}
+            message={isDeleting ? "Deleting exercise..." : "Saving exercise..."}
+          />
         </PageContainer>
       </TouchableWithoutFeedback>
     </ScrollView>

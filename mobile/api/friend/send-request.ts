@@ -2,18 +2,17 @@ import { supabase } from "@/lib/supabase";
 import { handleError } from "@/utils/handleError";
 
 export async function sendFriendRequest(identifier: string) {
-
   const {
     data: { session },
     error: sessionError,
   } = await supabase.auth.getSession();
 
   if (sessionError || !session || !session.user) {
-    return { error: true, message: "No session" };
+    throw new Error("Unauthorized");
   }
 
   if (!identifier || typeof identifier !== "string") {
-    return { error: true, message: "Invalid identifier" };
+    throw new Error("invalid identifier");
   }
 
   const isUUID = (str: string) =>
@@ -47,10 +46,10 @@ export async function sendFriendRequest(identifier: string) {
   if (lookUpError || !targetuser) {
     handleError(lookUpError, {
       message: "Error fetching user",
-      route: "/api/friend/send-request",
+      route: "/database/friend/send-request",
       method: "POST",
     });
-    return { error: true, message: "User not found" };
+    throw new Error("Error fetching user");
   }
 
   const receiverId = targetuser.id;
@@ -76,10 +75,10 @@ export async function sendFriendRequest(identifier: string) {
   if (existingError) {
     handleError(existingError, {
       message: "Error checking existing friend request",
-      route: "/api/friend/send-request",
+      route: "/database/friend/send-request",
       method: "POST",
     });
-    return { error: true, message: "Error checking existing friend request" };
+    throw new Error("Error checking existing friend request");
   }
 
   if (existingRequest) {
@@ -99,12 +98,12 @@ export async function sendFriendRequest(identifier: string) {
   if (friendshipError) {
     handleError(friendshipError, {
       message: "Error checking friendship",
-      route: "/api/friend/send-request",
+      route: "/database/friend/send-request",
       method: "POST",
     });
   }
   if (friendship) {
-    return { error: true, message: "You are already friends" };
+    throw new Error("Error checking friendship");
   }
 
   const { data: request, error } = await supabase
@@ -122,14 +121,11 @@ export async function sendFriendRequest(identifier: string) {
   if (error || !request) {
     handleError(error, {
       message: "Error creating friend request",
-      route: "/api/friend/send-request",
+      route: "/database/friend/send-request",
       method: "POST",
     });
-    return { error: true, message: "Error creating friend request" };
+    throw new Error("Error creating friend request");
   }
 
-  return new Response(JSON.stringify({ success: true }), {
-    status: 200,
-    headers: { "Content-Type": "application/json" },
-  });
+  return { success: true };
 }

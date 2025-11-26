@@ -156,7 +156,8 @@ export async function signUpWithEmail({
   setLoading(false);
   setSignup({ email: "", password: "", confirmPassword: "" });
   Alert.alert(
-    "Verification email sent! Please verify your email before logging in."
+    "Verification email sent!",
+    "Please verify your email before logging in."
   );
   setSuccess(true);
 }

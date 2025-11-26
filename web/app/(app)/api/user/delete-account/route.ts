@@ -16,7 +16,7 @@ export async function POST() {
   const { error: usersTableError } = await supabase
     .from("users")
     .delete()
-    .eq("id", user.id);
+    .eq("id", user.sub);
 
   if (usersTableError) {
     handleError(usersTableError, {

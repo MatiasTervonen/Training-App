@@ -114,7 +114,7 @@ export default function SecurityPage() {
         {
           method: "POST",
           headers: {
-            Authorization: `Bearer ${session.access_token}`,
+            authorization: `Bearer ${session.access_token}`,
           },
         }
       );

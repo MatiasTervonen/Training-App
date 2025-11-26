@@ -2,14 +2,23 @@ import { createClient } from "@/utils/supabase/server";
 import { createAdminClient } from "@/utils/supabase/admin";
 import { handleError } from "@/app/(app)/utils/handleError";
 
-export async function POST() {
+export async function POST(request: Request) {
+  const authHeader = request.headers.get("authorization");
+  if (!authHeader) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
   const supabase = await createClient();
   const adminSupabase = createAdminClient();
 
-  const { data, error: authError } = await supabase.auth.getClaims();
-  const user = data?.claims;
+  const token = authHeader.replace("Bearer ", "");
 
-  if (authError || !user) {
+  const { data: userData, error } = await adminSupabase.auth.getUser(token);
+
+  if (error || !userData.user) {
     return new Response(JSON.stringify({ error: "Unauthorized" }), {
       status: 401,
       headers: { "Content-Type": "application/json" },
@@ -19,7 +28,7 @@ export async function POST() {
   const { error: usersTableError } = await supabase
     .from("users")
     .delete()
-    .eq("id", user.sub);
+    .eq("id", userData.user.id);
 
   if (usersTableError) {
     handleError(usersTableError, {
@@ -30,7 +39,7 @@ export async function POST() {
   }
 
   const { error: authTableError } = await adminSupabase.auth.admin.deleteUser(
-    user.sub,
+    userData.user.id,
     true
   );
 

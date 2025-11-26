@@ -148,85 +148,87 @@ export default function EditExercises() {
   return (
     <ScrollView>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <PageContainer className="gap-4">
-          <AppText className="text-2xl text-center my-5">Edit exercise</AppText>
-          <AppInput
-            value={name}
-            setValue={setName}
-            placeholder="Exercise name"
-            label="Exercise Name"
-          />
-          <SelectInput
-            topLabel="Language"
-            value={language}
-            onChange={setLanguage}
-            options={[
-              { value: "en", label: "English" },
-              { value: "fi", label: "Finland" },
-            ]}
-            label="Language"
-          />
-          <SelectInput
-            topLabel="Equipment"
-            value={equipment}
-            onChange={setEquipment}
-            options={[
-              { value: "barbell", label: "Barbell" },
-              { value: "dumbbell", label: "Dumbbell" },
-              { value: "machine", label: "Machine" },
-              { value: "smith", label: "Smith" },
-              { value: "cable", label: "Cable" },
-              { value: "rope", label: "Rope" },
-              { value: "bodyweight", label: "Bodyweight" },
-              { value: "gripper", label: "Gripper" },
-              { value: "band", label: "Band" },
-              { value: "ball", label: "Ball" },
-              { value: "wheel", label: "Wheel" },
-            ]}
-            label="Equipment"
-          />
+        <PageContainer>
+          <AppText className="text-2xl text-center mb-10">Edit exercise</AppText>
+          <View className="gap-4">
+            <AppInput
+              value={name}
+              setValue={setName}
+              placeholder="Exercise name"
+              label="Exercise Name"
+            />
+            <SelectInput
+              topLabel="Language"
+              value={language}
+              onChange={setLanguage}
+              options={[
+                { value: "en", label: "English" },
+                { value: "fi", label: "Finland" },
+              ]}
+              label="Language"
+            />
+            <SelectInput
+              topLabel="Equipment"
+              value={equipment}
+              onChange={setEquipment}
+              options={[
+                { value: "barbell", label: "Barbell" },
+                { value: "dumbbell", label: "Dumbbell" },
+                { value: "machine", label: "Machine" },
+                { value: "smith", label: "Smith" },
+                { value: "cable", label: "Cable" },
+                { value: "rope", label: "Rope" },
+                { value: "bodyweight", label: "Bodyweight" },
+                { value: "gripper", label: "Gripper" },
+                { value: "band", label: "Band" },
+                { value: "ball", label: "Ball" },
+                { value: "wheel", label: "Wheel" },
+              ]}
+              label="Equipment"
+            />
 
-          <SelectInput
-            topLabel="Muscle Group"
-            value={muscle_group}
-            onChange={setMuscleGroup}
-            options={[
-              { value: "chest", label: "Chest" },
-              { value: "quads", label: "Quads" },
-              { value: "hamstrings", label: "Hamstrings" },
-              { value: "biceps", label: "Biceps" },
-              { value: "triceps", label: "Triceps" },
-              { value: "lats", label: "Lats" },
-              { value: "abs", label: "Abs" },
-              { value: "calves", label: "Calves" },
-              { value: "upper_back", label: "Upper back" },
-              { value: "forearms", label: "Forearms" },
-              { value: "full_body", label: "Full body" },
-              { value: "side_delts", label: "Side delts" },
-              { value: "legs", label: "Legs" },
-              { value: "obliques", label: "Obliques" },
-              { value: "front_delts", label: "Front delts" },
-              { value: "traps", label: "Traps" },
-              { value: "delts", label: "Delts" },
-              { value: "lower_back", label: "Lower back" },
-            ]}
-            label="Muscle group"
-          />
-          <SelectInput
-            topLabel="Main Group"
-            value={main_group}
-            onChange={setMainGroup}
-            options={[
-              { value: "chest", label: "Chest" },
-              { value: "legs", label: "Legs" },
-              { value: "arms", label: "Arms" },
-              { value: "shoulders", label: "Shoulders" },
-              { value: "back", label: "Back" },
-              { value: "core", label: "Core" },
-              { value: "cardio", label: "Cardio" },
-            ]}
-            label="Main group"
-          />
+            <SelectInput
+              topLabel="Muscle Group"
+              value={muscle_group}
+              onChange={setMuscleGroup}
+              options={[
+                { value: "chest", label: "Chest" },
+                { value: "quads", label: "Quads" },
+                { value: "hamstrings", label: "Hamstrings" },
+                { value: "biceps", label: "Biceps" },
+                { value: "triceps", label: "Triceps" },
+                { value: "lats", label: "Lats" },
+                { value: "abs", label: "Abs" },
+                { value: "calves", label: "Calves" },
+                { value: "upper_back", label: "Upper back" },
+                { value: "forearms", label: "Forearms" },
+                { value: "full_body", label: "Full body" },
+                { value: "side_delts", label: "Side delts" },
+                { value: "legs", label: "Legs" },
+                { value: "obliques", label: "Obliques" },
+                { value: "front_delts", label: "Front delts" },
+                { value: "traps", label: "Traps" },
+                { value: "delts", label: "Delts" },
+                { value: "lower_back", label: "Lower back" },
+              ]}
+              label="Muscle group"
+            />
+            <SelectInput
+              topLabel="Main Group"
+              value={main_group}
+              onChange={setMainGroup}
+              options={[
+                { value: "chest", label: "Chest" },
+                { value: "legs", label: "Legs" },
+                { value: "arms", label: "Arms" },
+                { value: "shoulders", label: "Shoulders" },
+                { value: "back", label: "Back" },
+                { value: "core", label: "Core" },
+                { value: "cardio", label: "Cardio" },
+              ]}
+              label="Main group"
+            />
+          </View>
           <View className="mt-20 flex flex-col gap-5">
             <SaveButton
               onPress={handleUpdateExercise}
@@ -241,7 +243,7 @@ export default function EditExercises() {
                 resetFields();
               }}
               label="Cancel"
-              className="mb-10 bg-red-800 py-2 rounded-md shadow-md border-2 border-red-500 text-lg items-center"
+              className="bg-red-800 py-2 rounded-md shadow-md border-2 border-red-500 text-lg items-center"
               textClassName="text-gray-100"
             />
           </View>

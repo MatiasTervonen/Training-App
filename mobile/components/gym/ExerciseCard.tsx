@@ -2,7 +2,6 @@ import { Pressable, View } from "react-native";
 import AppText from "@/components/AppText";
 import { ExerciseEntry, ExerciseInput } from "@/types/session";
 import { SquareX } from "lucide-react-native";
-import NotesInput from "../NotesInput";
 import AppInput from "../AppInput";
 import { useUserStore } from "@/lib/stores/useUserStore";
 import { confirmAction } from "@/lib/confirmAction";
@@ -10,6 +9,7 @@ import SelectInput from "../Selectinput";
 import AppButton from "@/components/buttons/AppButton";
 import DropDownModal from "../DropDownModal";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
+import SubNotesInput from "../SubNotesInput";
 
 type ExerciseCardProps = {
   index: number;
@@ -96,16 +96,15 @@ export default function ExerciseCard({
       {mode === "session" && (
         <>
           <View className="my-4">
-            <View className="h-[80px]">
-              <NotesInput
-                label={`Notes for ${exercise.name}`}
-                placeholder="Add your notes here..."
-                value={exercise.notes || ""}
-                onChangeText={(newNotes) =>
-                  onUpdateExercise(index, { ...exercise, notes: newNotes })
-                }
-              />
-            </View>
+            <SubNotesInput
+              label={`Notes for ${exercise.name}`}
+              className="min-h-[60px]"
+              placeholder="Add your notes here..."
+              value={exercise.notes || ""}
+              setValue={(newNotes) =>
+                onUpdateExercise(index, { ...exercise, notes: newNotes })
+              }
+            />
           </View>
 
           <View className="w-full">
@@ -212,7 +211,7 @@ export default function ExerciseCard({
                     <AppInput
                       placeholder="Time (min)"
                       keyboardType="numeric"
-                      value={input.time_min}
+                      value={input.time_min ?? ""}
                       onChangeText={(val) => {
                         const numbersOnly = val.replace(/[^0-9.]/g, "");
                         onInputChange(index, "time_min", numbersOnly);
@@ -223,7 +222,7 @@ export default function ExerciseCard({
                     <AppInput
                       placeholder="Length (meters)"
                       keyboardType="numeric"
-                      value={input.distance_meters}
+                      value={input.distance_meters ?? ""}
                       onChangeText={(val) => {
                         const numbersOnly = val.replace(/[^0-9.]/g, "");
                         onInputChange(index, "distance_meters", numbersOnly);
@@ -238,7 +237,7 @@ export default function ExerciseCard({
                   <AppInput
                     placeholder="Weight..."
                     keyboardType="numeric"
-                    value={input.weight}
+                    value={input.weight ?? ""}
                     onChangeText={(val) => {
                       const numbersOnly = val.replace(/[^0-9.]/g, "");
                       onInputChange(index, "weight", numbersOnly);
@@ -249,7 +248,7 @@ export default function ExerciseCard({
                   <AppInput
                     placeholder="Reps..."
                     keyboardType="numeric"
-                    value={input.reps}
+                    value={input.reps || ""}
                     onChangeText={(val) => {
                       const numbersOnly = val.replace(/[^0-9.]/g, "");
                       onInputChange(index, "reps", numbersOnly);

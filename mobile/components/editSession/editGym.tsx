@@ -1,5 +1,5 @@
 import { useState } from "react";
-import NotesInput from "@/components/NotesInput";
+import SubNotesInput from "../SubNotesInput";
 import AppInput from "@/components/AppInput";
 import SaveButton from "@/components/buttons/SaveButton";
 import FullScreenLoader from "@/components/FullScreenLoader";
@@ -12,6 +12,7 @@ import { View, ScrollView } from "react-native";
 import AppText from "../AppText";
 import { editSession } from "@/api/gym/edit-session";
 import { LinearGradient } from "expo-linear-gradient";
+
 
 type EditGymSessionProps = {
   gym_session: full_gym_session;
@@ -122,14 +123,13 @@ export default function EditGym({
               keyboardType="numeric"
             />
           </View>
-          <View className="min-h-[80px]">
-            <NotesInput
-              value={notes || ""}
-              onChangeText={setNotes}
-              placeholder="Write your notes here..."
-              label="Session Notes..."
-            />
-          </View>
+          <SubNotesInput
+            value={notes || ""}
+            setValue={setNotes}
+            className="min-h-[60px]"
+            placeholder="Notes... (optional)"
+            label="Notes..."
+          />
         </View>
         {Object.entries(groupedExercises).map(([superset_id, group]) => (
           <LinearGradient
@@ -162,12 +162,13 @@ export default function EditGym({
                     </AppText>
                   </View>
                 </View>
-                <View className="my-5 min-h-[80px]">
-                  <NotesInput
+                <View className="my-5">
+                  <SubNotesInput
                     value={exercise.notes || ""}
-                    onChangeText={(newNotes) =>
+                    setValue={(newNotes) =>
                       handleUpdateExerciseNotes(index, newNotes)
                     }
+                    className=" min-h-[60px]"
                     placeholder="Add your notes here..."
                     label={`Notes for ${exercise.gym_exercises.name}...`}
                   />
@@ -292,7 +293,7 @@ export default function EditGym({
                             label={`${index + 1}. ${
                               exercise.gym_exercises.name
                             }`}
-                            value={set.rpe}
+                            value={set.rpe || ""}
                             onChange={(val) =>
                               handleUpdateSet(index, setIndex, "rpe", val)
                             }

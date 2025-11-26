@@ -1,7 +1,6 @@
 import { View, ScrollView } from "react-native";
 import AppText from "@/components/AppText";
 import AppInput from "@/components/AppInput";
-import NotesInput from "@/components/NotesInput";
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "expo-router";
 import {
@@ -33,6 +32,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import Timer from "@/components/timer";
 import PageContainer from "@/components/PageContainer";
 import AnimatedButton from "@/components/buttons/animatedButton";
+import SubNotesInput from "@/components/SubNotesInput";
 
 export default function GymScreen() {
   const [title, setTitle] = useState("");
@@ -331,7 +331,7 @@ export default function GymScreen() {
 
   return (
     <>
-      <View className="flex items-center bg-gray-600 p-2 px-4 w-full z-40  sticky top-0">
+      <View className="flex items-center bg-gray-600 p-2 px-4 w-full z-40 ticky top-0">
         <Timer
           fontSize={18}
           buttonsAlwaysVisible
@@ -350,9 +350,9 @@ export default function GymScreen() {
         contentContainerStyle={{ flexGrow: 1 }}
         showsVerticalScrollIndicator={false}
       >
-        <PageContainer className="justify-between flex-1 mb-10">
+        <PageContainer className="justify-between flex-1">
           <View>
-            <AppText className="text-2xl my-5 text-center">
+            <AppText className="text-2xl mb-5 text-center">
               Track your training progress
             </AppText>
             <View className="gap-5">
@@ -362,14 +362,13 @@ export default function GymScreen() {
                 placeholder="Session Title..."
                 label="Session Title..."
               />
-              <View className="min-h-[80px]">
-                <NotesInput
-                  value={notes}
-                  setValue={setNotes}
-                  placeholder="Session Notes..."
-                  label="Session Notes..."
-                />
-              </View>
+              <SubNotesInput
+                value={notes}
+                setValue={setNotes}
+                className="min-h-[60px]"
+                placeholder="Session Notes..."
+                label="Session Notes..."
+              />
             </View>
           </View>
 

@@ -63,8 +63,8 @@ export default function Page() {
 
       setTimeout(() => {
         signOut();
-        router.push("/login");
       }, 3000);
+
     } catch (error) {
       handleError(error, {
         message: "Unexpected error updating password",
@@ -167,7 +167,7 @@ export default function Page() {
           placeholder="Type: DELETE ACCOUNT"
           value={isDeleteAccount}
           setValue={setIsDeleteAccount}
-          disabled={loading}
+          disabled={loading2}
           maxLength={128}
         />
       </div>

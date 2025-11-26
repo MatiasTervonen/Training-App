@@ -9,6 +9,7 @@ import { handleError } from "@/utils/handleError";
 import AppText from "../AppText";
 import { View, TouchableWithoutFeedback, Keyboard } from "react-native";
 import { editNotes } from "@/api/notes/edit-notes";
+import PageContainer from "../PageContainer";
 
 type Props = {
   note: Feed_item;
@@ -46,9 +47,11 @@ export default function EditNotes({ note, onClose, onSave }: Props) {
 
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-      <View className="w-full flex-1 px-6 my-10 ">
-        <AppText className=" text-xl text-center my-5">Edit your notes</AppText>
-        <View className="mb-10">
+      <PageContainer className="mb-10">
+        <AppText className=" text-xl text-center mt-5 mb-10">
+          Edit your notes
+        </AppText>
+        <View className="mb-5">
           <AppInput
             value={title || ""}
             onChangeText={setValue}
@@ -59,16 +62,16 @@ export default function EditNotes({ note, onClose, onSave }: Props) {
         <View className="flex-1">
           <NotesInput
             value={notes || ""}
-            onChangeText={setNotes}
+            setValue={setNotes}
             placeholder="Write your notes here..."
             label="Notes..."
           />
         </View>
-        <View className="py-10">
+        <View className="pt-10">
           <SaveButton onPress={handleSubmit} />
         </View>
         <FullScreenLoader visible={isSaving} message="Saving notes..." />
-      </View>
+      </PageContainer>
     </TouchableWithoutFeedback>
   );
 }

@@ -202,7 +202,7 @@ export default Sentry.wrap(function RootLayout() {
               />
               <SafeAreaView style={{ flex: 1 }} className="bg-slate-950">
                 <View
-                  className={`flex-1 bg-slate-800 font-russo text-red-500  mx-auto w-full ${
+                  className={`flex-1 bg-slate-800 font-russo mx-auto w-full ${
                     hideNawbar ? "max-w-screen" : "max-w-3xl"
                   }`}
                 >

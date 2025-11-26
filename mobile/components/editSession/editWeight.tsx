@@ -1,5 +1,5 @@
 import { useState } from "react";
-import NotesInput from "@/components/NotesInput";
+import SubNotesInput from "../SubNotesInput";
 import AppInput from "@/components/AppInput";
 import SaveButton from "@/components/buttons/SaveButton";
 import FullScreenLoader from "@/components/FullScreenLoader";
@@ -9,6 +9,7 @@ import { handleError } from "@/utils/handleError";
 import AppText from "../AppText";
 import { View, TouchableWithoutFeedback, Keyboard } from "react-native";
 import { editWeight } from "@/api/weight/edit-weight";
+import PageContainer from "../PageContainer";
 
 type Props = {
   weight: Feed_item;
@@ -54,9 +55,9 @@ export default function EditWeight({ weight, onClose, onSave }: Props) {
 
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-      <View className="w-full flex-1 px-6 my-10 justify-between">
+      <PageContainer className="justify-between mb-10 mt-5">
         <View className="gap-5">
-          <AppText className="text-xl text-center my-5">
+          <AppText className="text-xl text-center mb-5">
             Edit your weight session
           </AppText>
           <AppInput
@@ -65,14 +66,13 @@ export default function EditWeight({ weight, onClose, onSave }: Props) {
             placeholder="Weight title..."
             label="Title..."
           />
-          <View className="min-h-[80px]">
-            <NotesInput
-              value={notes || ""}
-              onChangeText={setNotes}
-              placeholder="Write your notes here..."
-              label="Notes..."
-            />
-          </View>
+          <SubNotesInput
+            value={notes || ""}
+            setValue={setNotes}
+            className="min-h-[60px]"
+            placeholder="Notes... (optional)"
+            label="Notes..."
+          />
           <AppInput
             value={weightValue}
             onChangeText={(val) => {
@@ -83,11 +83,9 @@ export default function EditWeight({ weight, onClose, onSave }: Props) {
             label="Weight..."
           />
         </View>
-        <View className="w-full py-10">
-          <SaveButton onPress={handleSubmit} />
-        </View>
+        <SaveButton onPress={handleSubmit} />
         <FullScreenLoader visible={isSaving} message="Saving weight..." />
-      </View>
+      </PageContainer>
     </TouchableWithoutFeedback>
   );
 }

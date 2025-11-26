@@ -5,7 +5,6 @@ import SaveButton from "@/components/buttons/SaveButton";
 import Toast from "react-native-toast-message";
 import { useState, useEffect } from "react";
 import AppInput from "@/components/AppInput";
-import NotesInput from "@/components/NotesInput";
 import PageContainer from "@/components/PageContainer";
 import DeleteButton from "@/components/buttons/DeleteButton";
 import saveTimer from "@/api/timer/save-timer";
@@ -15,6 +14,7 @@ import { useRouter } from "expo-router";
 import { useDebouncedCallback } from "use-debounce";
 import NumberInput from "@/components/NumberInput";
 import { useQueryClient } from "@tanstack/react-query";
+import SubNotesInput from "@/components/SubNotesInput";
 
 export default function SettingsScreen() {
   const [title, setTitle] = useState("");
@@ -125,24 +125,22 @@ export default function SettingsScreen() {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <PageContainer className="justify-between pb-10">
+      <PageContainer className="justify-between">
         <View className="gap-5">
-          <AppText className="text-2xl text-center my-5">Create Timer</AppText>
+          <AppText className="text-2xl text-center mb-5">Create Timer</AppText>
           <AppInput
             label="Title..."
             value={title}
             setValue={setTitle}
             placeholder="Timer Title"
           />
-
-          <View className="min-h-[80px]">
-            <NotesInput
-              label="Notes..."
-              value={notes}
-              setValue={setNotes}
-              placeholder="Timer notes...(optional)"
-            />
-          </View>
+          <SubNotesInput
+            label="Notes..."
+            value={notes}
+            setValue={setNotes}
+            placeholder="Timer notes...(optional)"
+            className="min-h-[60px]"
+          />
           <View className="flex-row gap-2 mb-4 w-full">
             <View className="flex-1">
               <NumberInput

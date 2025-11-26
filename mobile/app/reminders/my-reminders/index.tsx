@@ -3,7 +3,6 @@ import FullScreenModal from "@/components/FullScreenModal";
 import { useState } from "react";
 import Toast from "react-native-toast-message";
 import { ScrollView, View } from "react-native";
-import { handleError } from "@/utils/handleError";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { confirmAction } from "@/lib/confirmAction";
 import { TemplateSkeleton } from "@/components/skeletetons";
@@ -95,10 +94,10 @@ export default function RemindersPage() {
       keyboardShouldPersistTaps="handled"
     >
       <PageContainer>
-        <AppText className="text-gray-100 text-center  mt-5 text-2xl">
+        <AppText className="text-center mb-5 text-2xl">
           My Reminders
         </AppText>
-        <View className="flex-row gap-4 justify-center my-10  rounded-md">
+        <View className="flex-row gap-4 justify-center my-10 rounded-md">
           <AnimatedButton
             onPress={() => setActiveTab("upcoming")}
             className={`px-4 py-2 w-[150px] rounded-xl ${

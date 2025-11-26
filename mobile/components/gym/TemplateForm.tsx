@@ -25,7 +25,6 @@ import FullScreenLoader from "@/components/FullScreenLoader";
 import GroupGymExercises from "@/components/gym/lib/GroupGymExercises";
 import ExerciseCard from "@/components/gym/ExerciseCard";
 import ExerciseSelectorList from "@/components/gym/ExerciseSelectorList";
-import { handleError } from "@/utils/handleError";
 import { useQuery } from "@tanstack/react-query";
 import GetFullTemplate from "@/api/gym/get-full-template";
 import { getLastExerciseHistory } from "@/api/gym/last-exercise-history";
@@ -242,9 +241,8 @@ export default function TemplateForm() {
         text1: "Template saved",
         text2: "Template has been saved successfully.",
       });
-    } catch (error) {
+    } catch {
       setIsSaving(false);
-      handleError(error);
       Toast.show({
         type: "error",
         text1: "Error saving template",
@@ -300,7 +298,7 @@ export default function TemplateForm() {
         >
           <PageContainer className="justify-between">
             <View>
-              <AppText className="text-gray-100 text-2xl text-center my-5">
+              <AppText className="text-2xl text-center mb-5">
                 {templateId ? "Edit your template" : "Create your template"}
               </AppText>
               <View className="mb-10">
@@ -480,7 +478,7 @@ export default function TemplateForm() {
                 <Plus size={20} color="#f3f4f6" />
               </AppButton>
             </View>
-            <View className="justify-center mt-14 gap-5 pb-10">
+            <View className="justify-center mt-14 gap-5">
               <SaveButton onPress={handleSaveTemplate} />
               <DeleteButton onPress={resetSession} />
             </View>

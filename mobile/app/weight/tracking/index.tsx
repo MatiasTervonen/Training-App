@@ -5,18 +5,16 @@ import DeleteButton from "@/components/buttons/DeleteButton";
 import FullScreenLoader from "@/components/FullScreenLoader";
 import AppInput from "@/components/AppInput";
 import { useState, useEffect } from "react";
-import NotesInput from "@/components/NotesInput";
 import { useRouter } from "expo-router";
 import { formatDate } from "@/lib/formatDate";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDebouncedCallback } from "use-debounce";
-import { FeedData, Feed_item } from "@/types/session";
-import { generateUUID } from "@/utils/generateUUID";
 import { useQueryClient } from "@tanstack/react-query";
 import { handleError } from "@/utils/handleError";
 import Toast from "react-native-toast-message";
 import { saveWeight } from "@/api/weight/save-weight";
 import PageContainer from "@/components/PageContainer";
+import SubNotesInput from "@/components/SubNotesInput";
 
 export default function SettingsScreen() {
   const now = formatDate(new Date());
@@ -69,7 +67,7 @@ export default function SettingsScreen() {
     saveWeightDraft();
   }, [notes, title, weight, saveWeightDraft, isLoaded]);
 
-  const handleDelete = async () => {
+  const resetWeight = async () => {
     await AsyncStorage.removeItem("weight_draft");
     setTitle("");
     setNotes("");
@@ -94,70 +92,22 @@ export default function SettingsScreen() {
       });
       return;
     }
-
     setIsSaving(true);
 
-    const queryKey = ["feed"];
-
-    await queryClient.cancelQueries({ queryKey });
-
-    const previousFeed = queryClient.getQueryData(queryKey);
-
-    const optimisticWeight: Feed_item = {
-      id: generateUUID(),
-      title,
-      weight: weight ? Number(weight) : undefined,
-      created_at: new Date().toISOString(),
-      type: "weight",
-      pinned: false,
-      user_id: "temp-user-id",
-    };
-
-    queryClient.setQueryData<FeedData>(queryKey, (oldData) => {
-      if (!oldData) return oldData;
-
-      const updatedPages = oldData.pages.map((page, index) => {
-        if (index === 0) {
-          return { ...page, feed: [optimisticWeight, ...page.feed] };
-        }
-        return page;
-      });
-
-      return { ...oldData, pages: updatedPages };
-    });
-
     try {
-      if (!title.trim() || !weight.trim()) return;
+      await saveWeight({ title, notes, weight: Number(weight) });
 
-      const result = await saveWeight({ title, notes, weight: Number(weight) });
+      queryClient.refetchQueries({ queryKey: ["weightData"], exact: true });
+      await queryClient.refetchQueries({ queryKey: ["feed"], exact: true });
 
-      if (result === null) {
-        throw new Error("Failed to save weight");
-      }
-
-      if (result === true) {
-        router.push("/dashboard");
-        queryClient.refetchQueries({ queryKey: ["weightData"], exact: true });
-        queryClient.invalidateQueries({ queryKey });
-        await AsyncStorage.removeItem("weight_draft");
-        setTitle("");
-        setNotes("");
-        setWeight("");
-        setTimeout(() => {
-          Toast.show({
-            type: "success",
-            text1: "Success",
-            text2: "Weight saved successfully!",
-          });
-        }, 500);
-      }
-    } catch (error) {
-      queryClient.setQueryData(queryKey, previousFeed);
-      handleError(error, {
-        message: "Error saving weights",
-        route: "/api/weights/save-weight",
-        method: "POST",
+      router.push("/dashboard");
+      resetWeight();
+      Toast.show({
+        type: "success",
+        text1: "Success",
+        text2: "Weight saved successfully!",
       });
+    } catch {
       Toast.show({
         type: "error",
         text1: "Error",
@@ -170,9 +120,9 @@ export default function SettingsScreen() {
   return (
     <>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-        <PageContainer className="flex-col justify-between pb-10">
+        <PageContainer className="flex-col justify-between">
           <View className="gap-5">
-            <AppText className="text-2xl text-center my-5">
+            <AppText className="text-2xl text-center mb-5">
               Weight Tracker
             </AppText>
             <AppInput
@@ -181,14 +131,13 @@ export default function SettingsScreen() {
               label="Title for Weight..."
               placeholder="Weight entry title..."
             />
-            <View className="min-h-[80px]">
-              <NotesInput
-                value={notes}
-                onChangeText={setNotes}
-                label="Enter your notes here..."
-                placeholder="Enter your notes here...(optional)"
-              />
-            </View>
+            <SubNotesInput
+              value={notes}
+              setValue={setNotes}
+              className="min-h-[60px]"
+              label="Enter your notes here..."
+              placeholder="Enter your notes here...(optional)"
+            />
             <AppInput
               value={weight}
               onChangeText={setWeight}
@@ -200,7 +149,7 @@ export default function SettingsScreen() {
 
           <View className="gap-5">
             <SaveButton onPress={handleSaveWeight} />
-            <DeleteButton onPress={handleDelete} />
+            <DeleteButton onPress={resetWeight} />
           </View>
         </PageContainer>
       </TouchableWithoutFeedback>

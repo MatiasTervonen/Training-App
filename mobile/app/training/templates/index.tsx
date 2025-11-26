@@ -122,7 +122,7 @@ export default function TemplatesPage() {
       keyboardShouldPersistTaps="handled"
     >
       <PageContainer>
-        <AppText className="text-gray-100 text-center  mt-5 mb-10 text-2xl">
+        <AppText className="text-center mb-10 text-2xl">
           My Templates
         </AppText>
 

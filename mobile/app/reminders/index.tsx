@@ -19,15 +19,20 @@ export default function SessionsScreen() {
 
   return (
     <>
-      <PageContainer className="gap-4">
-        <AppText className="text-2xl text-center my-5">Reminders</AppText>
-        <LinkButton label="One-Time Global" href="/reminders/global-reminder">
-          <Globe color="#f3f4f6" />
-        </LinkButton>
-        <LinkButton label="One-Time local" href="/reminders/onetime-reminder" />
-        <LinkButton label="Weekly" href="/reminders/weekly-reminder" />
-        <LinkButton label="Daily" href="/reminders/daily-reminder" />
-        <LinkButton label="My Reminders" href="/reminders/my-reminders" />
+      <PageContainer>
+        <AppText className="text-2xl text-center mb-10">Reminders</AppText>
+        <View className="gap-4">
+          <LinkButton label="One-Time Global" href="/reminders/global-reminder">
+            <Globe color="#f3f4f6" />
+          </LinkButton>
+          <LinkButton
+            label="One-Time local"
+            href="/reminders/onetime-reminder"
+          />
+          <LinkButton label="Weekly" href="/reminders/weekly-reminder" />
+          <LinkButton label="Daily" href="/reminders/daily-reminder" />
+          <LinkButton label="My Reminders" href="/reminders/my-reminders" />
+        </View>
       </PageContainer>
 
       <Modal visible={showModal} transparent={true} animationType="slide">

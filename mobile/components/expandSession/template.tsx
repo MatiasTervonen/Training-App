@@ -4,8 +4,7 @@ import { full_gym_template } from "@/types/models";
 import { ScrollView, View } from "react-native";
 import AppText from "../AppText";
 import AppButton from "@/components/buttons/AppButton";
-
-
+import PageContainer from "../PageContainer";
 
 type Props = {
   item: full_gym_template;
@@ -19,14 +18,12 @@ export default function GymTemplate({ item, onStartWorkout }: Props) {
 
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
-      <View className="flex-1 w-full px-6">
-        <View className="my-5 gap-2 justify-center items-center">
+      <PageContainer className="mb-10">
+        <View className="mb-5  justify-center items-center">
           <AppText className="text-lg text-gray-400">
             Created: {formatDate(item.created_at)}
           </AppText>
-          <AppText className="text-xl text-gray-100 text-center">
-            {item.name}
-          </AppText>
+          <AppText className="text-xl text-center mt-5">{item.name}</AppText>
         </View>
         {Object.entries(groupedExercises).map(([superset_id, group]) => (
           <View
@@ -59,10 +56,10 @@ export default function GymTemplate({ item, onStartWorkout }: Props) {
             ))}
           </View>
         ))}
-        <View className="mt-10 mb-20">
+        <View className="mt-10">
           <AppButton onPress={onStartWorkout} label="Start Workout" />
         </View>
-      </View>
+      </PageContainer>
     </ScrollView>
   );
 }

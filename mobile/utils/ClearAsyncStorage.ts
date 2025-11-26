@@ -1,4 +1,6 @@
-export function clearLocalStorage() {
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+export async function clearAsyncStorage() {
   const keysToRemove = [
     "user-store",
     "timer-store",
@@ -13,5 +15,5 @@ export function clearLocalStorage() {
     "todo_session_draft",
   ];
 
-  keysToRemove.forEach((key) => localStorage.removeItem(key));
+  await AsyncStorage.multiRemove(keysToRemove);
 }

@@ -1,8 +1,4 @@
-import {
-  Pressable,
-  View,
-  Keyboard,
-} from "react-native";
+import { Pressable, View, Keyboard } from "react-native";
 import AppText from "@/components/AppText";
 import NumberInput from "@/components/NumberInput";
 import { CircleX, RotateCcw, AlarmClock } from "lucide-react-native";
@@ -18,6 +14,7 @@ import Timer from "@/components/timer";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import Animated from "react-native-reanimated";
 import * as ScreenOrientation from "expo-screen-orientation";
+import PageContainer from "@/components/PageContainer";
 
 export default function SettingsScreen() {
   const [timerTitle, setTimerTitle] = useState("");
@@ -198,70 +195,69 @@ export default function SettingsScreen() {
       }}
       className="flex-1"
     >
-      {showTimerUI ? (
-        <View className="flex-1 items-center justify-center px-10">
-          <AppText className="text-gray-300 text-xl mt-5">
-            {Math.floor(totalDuration / 60)} min {totalDuration % 60} sec
-          </AppText>
-          <Timer fullWidth className="flex-col" iconSize={40} />
-          {elapsedTime < totalDuration && (
-            <View className="w-full bg-gray-300 h-6 rounded-full overflow-hidden mt-4">
-              <Animated.View
-                className=" bg-green-500 h-6 w-full"
-                style={{ width: `${(elapsedTime / totalDuration) * 100}%` }}
-              ></Animated.View>
-            </View>
-          )}
+      <PageContainer>
+        {showTimerUI ? (
+          <View className="flex-1 items-center justify-center">
+            <AppText className="text-gray-300 text-xl mt-5">
+              {Math.floor(totalDuration / 60)} min {totalDuration % 60} sec
+            </AppText>
+            <Timer fullWidth className="flex-col" iconSize={40} />
+            {elapsedTime < totalDuration && (
+              <View className="w-full bg-gray-300 h-6 rounded-full overflow-hidden mt-4">
+                <Animated.View
+                  className=" bg-green-500 h-6 w-full"
+                  style={{ width: `${(elapsedTime / totalDuration) * 100}%` }}
+                ></Animated.View>
+              </View>
+            )}
 
-          {elapsedTime >= totalDuration && (
-            <View className="flex-row  mt-10 gap-5">
-              <View className="flex-1">
-                <AnimatedButton
-                  label="Stop alarm"
-                  className="bg-red-600 border-2 border-red-400 py-2 px-4 shadow-md rounded-md items-center justify-center"
-                  onPress={() => {
-                    player.pause();
-                    setAlarmFired(false);
-                  }}
-                />
+            {elapsedTime >= totalDuration && (
+              <View className="flex-row  mt-10 gap-5">
+                <View className="flex-1">
+                  <AnimatedButton
+                    label="Stop alarm"
+                    className="bg-red-600 border-2 border-red-400 py-2 px-4 shadow-md rounded-md items-center justify-center"
+                    onPress={() => {
+                      player.pause();
+                      setAlarmFired(false);
+                    }}
+                  />
+                </View>
+                <View className="flex-1">
+                  <AnimatedButton
+                    label="Restart"
+                    onPress={restartTimer}
+                    className="flex-row justify-center items-center gap-2 bg-blue-800 py-2 border-2 border-blue-500 rounded-md px-4"
+                  >
+                    <RotateCcw color="#f3f4f6" />
+                  </AnimatedButton>
+                </View>
               </View>
-              <View className="flex-1">
-                <AnimatedButton
-                  label="Restart"
-                  onPress={restartTimer}
-                  className="flex-row justify-center items-center gap-2 bg-blue-800 py-2 border-2 border-blue-500 rounded-md px-4"
-                >
-                  <RotateCcw color="#f3f4f6" />
-                </AnimatedButton>
-              </View>
+            )}
+            <View className="absolute top-5 right-5" hitSlop={10}>
+              <AnimatedButton hitSlop={10} onPress={cancelTimer}>
+                <CircleX color="#d1d5db" size={30} />
+              </AnimatedButton>
             </View>
-          )}
-          <View className="absolute top-5 right-5" hitSlop={10}>
-            <AnimatedButton hitSlop={10} onPress={cancelTimer}>
-              <CircleX color="#d1d5db" size={30} />
-            </AnimatedButton>
           </View>
-        </View>
-      ) : (
-        <View className="flex-1 justify-between mb-10 max-w-md mx-auto w-full">
-          <View className="gap-5 flex-row justify-center items-center mt-10">
-            <AppText className="text-2xl text-center ">Timer</AppText>
-            <AlarmClock color="#d1d5db" size={30} />
-          </View>
-          <View
-            className={`gap-10 mb-5 px-20 justify-center w-full ${
-              isLandscape ? "flex-row" : "flex-col"
-            }`}
-          >
-            <View className="w-full">
+        ) : (
+          <View className="flex-1 justify-between">
+            <View className="gap-5 flex-row justify-center items-center">
+              <AppText className="text-2xl text-center">Timer</AppText>
+              <AlarmClock color="#d1d5db" size={30} />
+            </View>
+            <View
+              className={`gap-10 mb-5 px-20 justify-center ${
+                isLandscape ? "flex-row" : "flex-col"
+              }`}
+            >
               <NumberInput
                 label="Minutes"
                 placeholder="0 min"
                 value={alarmMinutes}
                 onChangeText={(value) => setAlarmMinutes(value)}
               />
-            </View>
-            <View className="w-full">
+
               <NumberInput
                 label="Seconds"
                 placeholder="0 sec"
@@ -269,31 +265,27 @@ export default function SettingsScreen() {
                 onChangeText={(value) => setAlarmSeconds(value)}
               />
             </View>
-          </View>
-
-          <View
-            className={`justify-center gap-5 w-full ${
-              isLandscape ? "flex-row" : "flex-col"
-            }`}
-          >
-            <View className="w-full">
+            <View
+              className={`justify-center gap-5 ${
+                isLandscape ? "flex-row" : "flex-col"
+              }`}
+            >
               <AnimatedButton
                 label="Start"
                 onPress={handleStartTimer}
                 className="items-center gap-2 bg-blue-800 py-2 rounded-md shadow-md border-2 border-blue-500"
+                textClassName="text-gray-100"
               />
-            </View>
-
-            <View className="w-full">
               <AnimatedButton
                 label="Clear"
                 onPress={handleReset}
                 className="items-center gap-2 bg-red-600 border-2 border-red-400 py-2 shadow-md rounded-md"
+                textClassName="text-gray-100"
               />
             </View>
           </View>
-        </View>
-      )}
+        )}
+      </PageContainer>
     </Pressable>
   );
 }

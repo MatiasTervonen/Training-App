@@ -120,7 +120,6 @@ export default function ProfileScreen() {
       const result = await response.json();
 
       if (result.error) {
-        console.log("Upload response:", response.status, result);
         throw new Error("Failed to upload image");
       }
 
@@ -211,7 +210,7 @@ export default function ProfileScreen() {
         <PageContainer className="justify-between">
           <View>
             <View>
-              <AppText className="text-2xl text-center my-5">
+              <AppText className="text-2xl text-center mb-10">
                 Profile Settings
               </AppText>
             </View>
@@ -253,7 +252,7 @@ export default function ProfileScreen() {
               />
             </View>
           </View>
-          <View className="mb-10">
+          <View>
             <SaveButton
               onPress={async () => {
                 if (!userName.trim()) {

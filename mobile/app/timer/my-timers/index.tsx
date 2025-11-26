@@ -69,7 +69,7 @@ export default function MyTimersScreen() {
 
   return (
     <PageContainer>
-      <AppText className="text-2xl text-center my-10">My Timers</AppText>
+      <AppText className="text-2xl text-center mb-10">My Timers</AppText>
 
       {isLoading ? (
         <View className="gap-3 items-center justify-center mt-20">
@@ -88,7 +88,7 @@ export default function MyTimersScreen() {
         </AppText>
       ) : (
         timers?.map((timer) => (
-          <View key={timer.id} className="mb-4 ">
+          <View key={timer.id} className="mb-4">
             <AnimatedButton
               className="bg-blue-800 py-2 rounded-md shadow-md border-2 border-blue-500 items-center"
               textClassName="text-gray-100"

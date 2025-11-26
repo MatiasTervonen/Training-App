@@ -1,5 +1,5 @@
 import { useState } from "react";
-import NotesInput from "@/components/NotesInput";
+import SubNotesInput from "../SubNotesInput";
 import AppInput from "@/components/AppInput";
 import SaveButton from "@/components/buttons/SaveButton";
 import FullScreenLoader from "@/components/FullScreenLoader";
@@ -13,6 +13,7 @@ import DatePicker from "react-native-date-picker";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import { Plus } from "lucide-react-native";
 import { formatDateTime } from "@/lib/formatDate";
+import PageContainer from "../PageContainer";
 
 type Props = {
   reminder: Feed_item;
@@ -69,9 +70,9 @@ export default function EditReminder({ reminder, onClose, onSave }: Props) {
 
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-      <View className="w-full flex-1 px-6 my-10 justify-between">
+      <PageContainer className="justify-between mb-10">
         <View>
-          <AppText className=" text-xl text-center my-5">
+          <AppText className=" text-xl text-center mb-10 mt-5">
             Edit your reminder
           </AppText>
           <View className="mb-5">
@@ -82,19 +83,19 @@ export default function EditReminder({ reminder, onClose, onSave }: Props) {
               label="Title..."
             />
           </View>
-          <View className="min-h-[80px]">
-            <NotesInput
-              value={notes || ""}
-              onChangeText={setNotes}
-              placeholder="Write your notes here..."
-              label="Notes..."
-            />
-          </View>
+          <SubNotesInput
+            value={notes || ""}
+            setValue={setNotes}
+            className="min-h-[60px]"
+            placeholder="Notes... (optional)"
+            label="Notes..."
+          />
           <View>
             <AnimatedButton
               label={notifyAt ? formattedNotifyAt : "Set Notify Time"}
               onPress={() => setOpen(true)}
               className="bg-blue-800 py-2 rounded-md shadow-md border-2 border-blue-500 flex-row gap-2 justify-center items-center mt-10"
+              textClassName="text-gray-100"
             >
               <Plus color="#f3f4f6" />
             </AnimatedButton>
@@ -115,11 +116,11 @@ export default function EditReminder({ reminder, onClose, onSave }: Props) {
             }}
           />
         </View>
-        <View className="py-10">
+        <View className="pt-10">
           <SaveButton onPress={handleSubmit} />
         </View>
         <FullScreenLoader visible={isSaving} message="Saving notes..." />
-      </View>
+      </PageContainer>
     </TouchableWithoutFeedback>
   );
 }

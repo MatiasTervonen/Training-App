@@ -16,6 +16,7 @@ export default function SaveButtonSpinner({
   label = "Save",
   disabled,
   loading,
+  className,
 }: SaveButtonProps) {
   const isGuest = useUserStore((state) => state.preferences?.role === "guest");
 
@@ -31,7 +32,7 @@ export default function SaveButtonSpinner({
 
   return (
     <AnimatedButton
-      className="flex-row justify-center items-center gap-3 bg-blue-800 rounded-md shadow-md border-2 border-blue-500 py-2"
+      className={`flex-row justify-center items-center gap-3 bg-blue-800 rounded-md shadow-md border-2 border-blue-500 py-2 ${className}`}
       onPress={onPress}
       disabled={disabled}
     >

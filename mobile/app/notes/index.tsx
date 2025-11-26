@@ -13,8 +13,6 @@ import { useDebouncedCallback } from "use-debounce";
 import { handleError } from "@/utils/handleError";
 import { useRouter } from "expo-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { FeedData, Feed_item } from "@/types/session";
-import { generateUUID } from "@/utils/generateUUID";
 import PageContainer from "@/components/PageContainer";
 
 export default function NotesScreen() {
@@ -106,7 +104,7 @@ export default function NotesScreen() {
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <PageContainer className="flex-col justify-between">
           <View>
-            <AppText className="text-2xl text-center my-5">
+            <AppText className="text-2xl text-center mb-10">
               Add your notes here
             </AppText>
             <AppInput
@@ -116,7 +114,7 @@ export default function NotesScreen() {
               placeholder="Notes title...(optional)"
             />
           </View>
-          <View className="flex-1 mt-10">
+          <View className="flex-1 mt-5">
             <NotesInput
               value={notes}
               setValue={setNotes}
@@ -124,7 +122,7 @@ export default function NotesScreen() {
               label="Notes..."
             />
           </View>
-          <View className="my-10 flex-col gap-4">
+          <View className="mt-10 flex-col gap-4">
             <SaveButton onPress={() => handleSaveNotes()} />
             <DeleteButton
               onPress={() => {

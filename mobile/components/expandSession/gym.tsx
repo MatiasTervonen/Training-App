@@ -5,6 +5,7 @@ import GroupExercises from "@/components/gym/lib/GroupExercises";
 import { View, ScrollView } from "react-native";
 import AppText from "../AppText";
 import { LinearGradient } from "expo-linear-gradient";
+import PageContainer from "../PageContainer";
 
 const formatDuration = (seconds: number) => {
   const totalMinutes = Math.floor(seconds / 60);
@@ -29,13 +30,15 @@ export default function GymSession(gym_session: full_gym_session) {
     exercise.gym_exercises.main_group.toLowerCase() === "cardio";
 
   return (
-    <ScrollView className="px-4" showsVerticalScrollIndicator={false}>
-      <View className="mb-32">
+    <ScrollView showsVerticalScrollIndicator={false}>
+      <PageContainer className="mb-10">
         <View className="gap-2 justify-center items-center">
-          <AppText className="text-lg text-gray-400 mt-10">
+          <AppText className="text-lg text-gray-400">
             {formatDate(gym_session.created_at)}
           </AppText>
-          <AppText className="text-2xl mt-2 text-center">{gym_session.title}</AppText>
+          <AppText className="text-2xl mt-2 text-center">
+            {gym_session.title}
+          </AppText>
           <AppText className="text-lg mt-2">
             Duration: {formatDuration(gym_session.duration)}
           </AppText>
@@ -181,7 +184,7 @@ export default function GymSession(gym_session: full_gym_session) {
             ))}
           </LinearGradient>
         ))}
-      </View>
+      </PageContainer>
     </ScrollView>
   );
 }

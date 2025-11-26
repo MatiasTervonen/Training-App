@@ -52,11 +52,15 @@ export default function LayoutWrapper({
     if (!preferences) {
       const data = await fetchUserPreferences();
       loginUser(data as UserPreferences);
-      router.replace("/dashboard");
+      if (pathname === "/" || pathname === "/login") {
+        router.replace("/dashboard");
+      }
       return;
     }
 
-    router.replace("/dashboard");
+    if (pathname === "/" || pathname === "/login") {
+      router.replace("/dashboard");
+    }
   };
 
   useEffect(() => {

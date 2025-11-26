@@ -1,10 +1,8 @@
-"use server";
-
-import { createAdminClient } from "@/utils/supabase/admin";
 import { createClient } from "@/utils/supabase/server";
+import { createAdminClient } from "@/utils/supabase/admin";
 import { handleError } from "@/app/(app)/utils/handleError";
 
-export async function deleteAccount() {
+export async function POST() {
   const supabase = await createClient();
   const adminSupabase = createAdminClient();
 
@@ -12,21 +10,20 @@ export async function deleteAccount() {
   const user = data?.claims;
 
   if (authError || !user) {
-    throw new Error("Unauthorized");
+    return new Response("Unauthorized", { status: 401 });
   }
 
   const { error: usersTableError } = await supabase
     .from("users")
     .delete()
-    .eq("id", user.sub);
+    .eq("id", user.id);
 
   if (usersTableError) {
     handleError(usersTableError, {
-      message: "Error deleting user",
-      route: "server-action: deleteAccount",
-      method: "direct",
+      message: "Error fetching user",
+      route: "/api/user/delete-account",
+      method: "POST",
     });
-    throw new Error("Error deleting user");
   }
 
   const { error: authTableError } = await adminSupabase.auth.admin.deleteUser(
@@ -42,5 +39,8 @@ export async function deleteAccount() {
     throw new Error("Error deleting user");
   }
 
-  return { success: true };
+  return new Response(JSON.stringify({ success: true }), {
+    status: 200,
+    headers: { "Content-Type": "application/json" },
+  });
 }

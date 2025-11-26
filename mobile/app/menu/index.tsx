@@ -9,7 +9,7 @@ import PushNotificationManager from "@/components/push-notifications/pushNotific
 export default function SettingsScreen() {
   return (
     <PageContainer>
-      <AppText className="text-2xl text-center my-5">Menu</AppText>
+      <AppText className="text-2xl text-center mb-10">Menu</AppText>
       <View className="justify-between flex-1">
         <View className="gap-4">
           <LinkButton label="Friends" href="/menu/friends">
@@ -23,7 +23,7 @@ export default function SettingsScreen() {
           </LinkButton>
           <PushNotificationManager />
         </View>
-        <View className="mb-10">
+        <View>
           <LogoutButton />
         </View>
       </View>

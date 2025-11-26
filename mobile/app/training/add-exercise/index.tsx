@@ -4,13 +4,7 @@ import SaveButton from "@/components/buttons/SaveButton";
 import Toast from "react-native-toast-message";
 import * as crypto from "expo-crypto";
 import FullScreenLoader from "@/components/FullScreenLoader";
-import { handleError } from "@/utils/handleError";
-import {
-  View,
-  TouchableWithoutFeedback,
-  Keyboard,
-  ScrollView,
-} from "react-native";
+import { View, TouchableWithoutFeedback, Keyboard } from "react-native";
 import AppText from "@/components/AppText";
 import SelectInput from "@/components/Selectinput";
 import AddExercise from "@/api/gym/add-exercise";
@@ -66,11 +60,11 @@ export default function AddExercises() {
   };
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <ScrollView showsVerticalScrollIndicator={false}>
-        <PageContainer className="pt-5 justify-between mb-10">
+    <>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <PageContainer className="justify-between flex-1">
           <View className="gap-5">
-            <AppText className="text-2xl my-5 text-center">
+            <AppText className="text-2xl mb-5 text-center">
               Add Exercises
             </AppText>
             <AppInput
@@ -148,12 +142,12 @@ export default function AddExercises() {
               label="Main group"
             />
           </View>
-          <View className="mt-20">
+          <View className="mt-10">
             <SaveButton onPress={handleSave} label="Save Exercise" />
           </View>
         </PageContainer>
-        <FullScreenLoader visible={isSaving} message="Saving exercise..." />
-      </ScrollView>
-    </TouchableWithoutFeedback>
+      </TouchableWithoutFeedback>
+      <FullScreenLoader visible={isSaving} message="Saving exercise..." />
+    </>
   );
 }

@@ -8,7 +8,6 @@ import AppText from "@/components/AppText";
 import SaveCustomReminder from "@/api/reminders/save-custom-reminder";
 import SaveButton from "@/components/buttons/SaveButton";
 import DeleteButton from "@/components/buttons/DeleteButton";
-import NotesInput from "@/components/NotesInput";
 import AppInput from "@/components/AppInput";
 import FullScreenLoader from "@/components/FullScreenLoader";
 import Toast from "react-native-toast-message";
@@ -24,6 +23,7 @@ import AnimatedButton from "@/components/buttons/animatedButton";
 import { Plus, Info } from "lucide-react-native";
 import { formatTime } from "@/lib/formatDate";
 import * as Notifications from "expo-notifications";
+import SubNotesInput from "@/components/SubNotesInput";
 
 export default function ReminderScreen() {
   const [open, setOpen] = useState(false);
@@ -181,8 +181,8 @@ export default function ReminderScreen() {
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <PageContainer>
           <View className="justify-between flex-1">
-            <View className="gap-5 mb-10">
-              <AppText className="text-xl text-center mt-5">
+            <View className="gap-5">
+              <AppText className="text-xl text-center">
                 Daily reminder
               </AppText>
               <View className="flex-row items-center justify-center">
@@ -199,14 +199,13 @@ export default function ReminderScreen() {
                   label="Title..."
                 />
               </View>
-              <View className="min-h-[80px]">
-                <NotesInput
-                  value={notes}
-                  setValue={setNotes}
-                  placeholder="Notes... (optional)"
-                  label="Notes..."
-                />
-              </View>
+              <SubNotesInput
+                value={notes}
+                setValue={setNotes}
+                className="min-h-[60px]"
+                placeholder="Notes... (optional)"
+                label="Notes..."
+              />
               <View>
                 <AnimatedButton
                   label={notifyAt ? formattedTime : "Set Notify Time"}
@@ -233,7 +232,7 @@ export default function ReminderScreen() {
                 }}
               />
             </View>
-            <View className="gap-5 mb-10">
+            <View className="gap-5">
               <SaveButton onPress={saveReminder} />
               <DeleteButton onPress={resetReminder} />
             </View>

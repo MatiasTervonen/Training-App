@@ -6,8 +6,9 @@ import { handleError } from "@/app/(app)/utils/handleError";
 export async function POST(request: NextRequest) {
   const authHeader = request.headers.get("authorization");
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return new NextResponse("Unauthorized", {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
       status: 401,
+      headers: { "Content-Type": "application/json" },
     });
   }
 
@@ -31,8 +32,9 @@ export async function POST(request: NextRequest) {
       route: "/api/reminder-cronjob",
       method: "POST",
     });
-    return new NextResponse("Error", {
+    return new Response(JSON.stringify({ error: "Error fetching reminders" }), {
       status: 500,
+      headers: { "Content-Type": "application/json" },
     });
   }
 

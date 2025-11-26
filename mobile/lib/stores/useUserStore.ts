@@ -6,7 +6,7 @@ interface UserPreferences {
   display_name: string;
   weight_unit: string;
   profile_picture: string | null;
-  role?: string; 
+  role?: string;
   push_enabled?: boolean;
 }
 

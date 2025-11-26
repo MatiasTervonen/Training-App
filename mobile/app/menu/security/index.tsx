@@ -13,7 +13,6 @@ import AppInput from "@/components/AppInput";
 import { handleError } from "@/utils/handleError";
 import SaveButtonSpinner from "@/components/buttons/SaveButtonSpinner";
 import PageContainer from "@/components/PageContainer";
-import { useRouter } from "expo-router";
 import { confirmAction } from "@/lib/confirmAction";
 
 export default function SecurityPage() {
@@ -28,8 +27,6 @@ export default function SecurityPage() {
   const [isDeleteAccount, setIsDeleteAccount] = useState("");
 
   const { signOut } = useSignOut();
-
-  const router = useRouter();
 
   const handleSavePassword = async () => {
     if (password !== confirmPassword) {
@@ -128,7 +125,6 @@ export default function SecurityPage() {
 
       setTimeout(() => {
         signOut();
-        router.push("/");
       }, 3000);
     } catch (error) {
       console.log("error deleting account", error);

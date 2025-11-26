@@ -19,8 +19,8 @@ export default function FullScreenLoader({
     >
       <View className="flex-1 bg-slate-500/30 justify-center items-center">
         <View className="p-6 bg-slate-800 rounded-xl">
+          <AppText className="mb-4 text-lg">{message}</AppText>
           <ActivityIndicator size="large" color="#0000ff" />
-          <AppText className="mt-4 text-lg">{message}</AppText>
         </View>
       </View>
     </Modal>

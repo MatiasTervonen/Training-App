@@ -5,7 +5,6 @@ import { createClient } from "@/utils/supabase/client";
 import { useSWRConfig } from "swr";
 import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
 import { clearLocalStorage } from "../utils/clearLocalStorage";
-import { handleError } from "../utils/handleError";
 import { useQueryClient } from "@tanstack/react-query";
 
 export function useSignOut() {
@@ -18,15 +17,9 @@ export function useSignOut() {
   const signOut = async () => {
     const supabase = createClient();
 
-    const { error } = await supabase.auth.signOut({ scope: "global" });
-
-    if (error) {
-      handleError(error, {
-        message: "Error signing out",
-        method: "POST",
-      });
-      return;
-    }
+    try {
+      await supabase.auth.signOut({ scope: "global" });
+    } catch {}
 
     // Clear TanStack Query cache
     queryClient.clear();

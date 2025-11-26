@@ -270,7 +270,7 @@ export default function ProfileScreen() {
           </View>
         </PageContainer>
       </TouchableWithoutFeedback>
-      <FullScreenLoader visible={isSaving} message="Saving..." />
+      <FullScreenLoader visible={isSaving} message="Saving profile..." />
     </>
   );
 }

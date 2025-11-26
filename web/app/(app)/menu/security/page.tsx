@@ -6,7 +6,6 @@ import SaveButtonSpinner from "@/app/(app)/ui/save-button-spinner";
 import { createClient } from "@/utils/supabase/client";
 import { useSignOut } from "@/app/(app)/lib/handleSignOut";
 import { handleError } from "@/app/(app)/utils/handleError";
-import { useRouter } from "next/navigation";
 import { deleteAccount } from "../../database/users";
 
 export default function Page() {
@@ -19,8 +18,6 @@ export default function Page() {
   const [successMessage2, setSuccessMessage2] = useState("");
   const [errorMessage2, setErrorMessage2] = useState("");
   const [isDeleteAccount, setIsDeleteAccount] = useState("");
-
-  const router = useRouter();
 
   const { signOut } = useSignOut();
 
@@ -98,7 +95,6 @@ export default function Page() {
 
       setTimeout(() => {
         signOut();
-        router.push("/");
       }, 3000);
     } catch {
       setErrorMessage2("Failed to delete account! Please try again.");

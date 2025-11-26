@@ -52,15 +52,11 @@ export default function LayoutWrapper({
     if (!preferences) {
       const data = await fetchUserPreferences();
       loginUser(data as UserPreferences);
-      if (pathname === "/" || pathname === "/login") {
-        router.replace("/dashboard");
-      }
+      router.replace("/dashboard");
       return;
     }
 
-    if (pathname === "/" || pathname === "/login") {
-      router.replace("/dashboard");
-    }
+    router.replace("/dashboard");
   };
 
   useEffect(() => {
@@ -84,7 +80,12 @@ export default function LayoutWrapper({
 
   useEffect(() => {
     const { data: listener } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
+      async (event, session) => {
+        if (event === "USER_UPDATED") {
+          // user changed password, don't redirect
+          return;
+        }
+
         handleSessionChange(session, {
           router,
           loginUser,

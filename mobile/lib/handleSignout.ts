@@ -1,5 +1,4 @@
 import { supabase } from "@/lib/supabase";
-import { Alert } from "react-native";
 import { router } from "expo-router";
 import { useUserStore } from "@/lib/stores/useUserStore";
 import { clearAsyncStorage } from "@/utils/ClearAsyncStorage";
@@ -11,13 +10,11 @@ export function useSignOut() {
   const queryClient = useQueryClient();
 
   const signOut = async () => {
-    // Sign out from supabase
-    const { error } = await supabase.auth.signOut({ scope: "global" });
 
-    if (error) {
-      Alert.alert("Logout Failed", error.message);
-      return;
-    }
+    // Sign out from supabase
+    try {
+      await supabase.auth.signOut({ scope: "global" });
+    } catch {}
 
     // Clear TanStack Query cache
     queryClient.clear();

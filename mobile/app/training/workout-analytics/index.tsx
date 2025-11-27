@@ -9,6 +9,11 @@ export default function AnalyticsScreen() {
   const { data, error, isLoading } = useQuery({
     queryKey: ["last-30-days-analytics"],
     queryFn: Last30DaysAnalytics,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    staleTime: Infinity,
+    gcTime: Infinity,
   });
 
   return (

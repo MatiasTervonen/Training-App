@@ -97,8 +97,13 @@ export default function SettingsScreen() {
     try {
       await saveWeight({ title, notes, weight: Number(weight) });
 
-      queryClient.refetchQueries({ queryKey: ["weightData"], exact: true });
-      await queryClient.refetchQueries({ queryKey: ["feed"], exact: true });
+      await Promise.all([
+        queryClient.refetchQueries({
+          queryKey: ["get-weight"],
+          exact: true,
+        }),
+        queryClient.refetchQueries({ queryKey: ["feed"], exact: true }),
+      ]);
 
       router.push("/dashboard");
       resetWeight();

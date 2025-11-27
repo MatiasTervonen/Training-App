@@ -354,7 +354,7 @@ export default function GymForm({
 
   const groupedExercises = GroupGymExercises(exercises);
 
-  if (!hasLoadedDraft) return null;
+  if (!hasLoadedDraft)  return null;
 
   const hasError = Boolean(errorMessage);
   const hasNoData = !session && !hasError;
@@ -590,7 +590,7 @@ export default function GymForm({
 
         <div className="flex flex-col justify-center items-center mt-14 gap-5">
           <SaveButton onClick={saveSession} />
-          <DeleteSessionBtn onDelete={resetSession} />
+          {isEditing ? "" : <DeleteSessionBtn onDelete={resetSession} />}
         </div>
       </div>
       {isSaving && <FullScreenLoader message="Saving session..." />}

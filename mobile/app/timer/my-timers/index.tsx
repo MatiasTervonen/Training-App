@@ -32,6 +32,8 @@ export default function MyTimersScreen() {
     refetchOnMount: false,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
+    staleTime: Infinity,
+    gcTime: Infinity,
   });
 
   const handleDeleteTimer = async (timerId: string) => {

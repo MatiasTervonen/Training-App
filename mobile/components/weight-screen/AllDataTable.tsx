@@ -73,7 +73,7 @@ export default function AllDataTable({ data, isLoading, error }: AllDataProps) {
     });
     if (!confirmed) return;
 
-    const queryKey = ["weightData"];
+    const queryKey = ["get-weight"];
 
     await queryClient.cancelQueries({ queryKey });
 

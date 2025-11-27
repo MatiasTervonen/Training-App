@@ -37,6 +37,8 @@ export default function RemindersPage() {
     refetchOnMount: false,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
+    staleTime: Infinity,
+    gcTime: Infinity,
   });
 
   const handleDeleteReminder = async (reminder: full_reminder) => {
@@ -70,6 +72,8 @@ export default function RemindersPage() {
         await DeleteCustomReminder(reminder.id);
       }
 
+      queryClient.refetchQueries({ queryKey: ["feed"], exact: true });
+
       Toast.show({
         type: "success",
         text1: "Reminder deleted successfully",
@@ -94,9 +98,7 @@ export default function RemindersPage() {
       keyboardShouldPersistTaps="handled"
     >
       <PageContainer>
-        <AppText className="text-center mb-5 text-2xl">
-          My Reminders
-        </AppText>
+        <AppText className="text-center mb-5 text-2xl">My Reminders</AppText>
         <View className="flex-row gap-4 justify-center my-10 rounded-md">
           <AnimatedButton
             onPress={() => setActiveTab("upcoming")}

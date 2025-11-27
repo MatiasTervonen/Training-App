@@ -1,33 +1,23 @@
 import { supabase } from "@/lib/supabase";
 import { handleError } from "@/utils/handleError";
 import * as crypto from "expo-crypto";
+import { ExerciseEntry } from "@/types/session";
 
-type editSessionProps = {
+type editGymSessionProps = {
   id: string;
-  exercises: {
-    exercise_id: string;
-    superset_id: string | null;
-    notes: string | null;
-    sets: {
-      weight: number | null;
-      reps: number | null;
-      rpe: string | null;
-      time_min: number | null;
-      distance_meters: number | null;
-    }[];
-  }[];
-  notes: string | null;
-  duration: number;
-  title: string | null;
+  title: string;
+  durationEdit: number;
+  notes: string;
+  exercises: ExerciseEntry[];
 };
 
 export async function editSession({
   exercises,
   notes,
-  duration,
+  durationEdit,
   title,
-  id: sessionId,
-}: editSessionProps) {
+  id,
+}: editGymSessionProps) {
   const {
     data: { session },
     error: sessionError,
@@ -42,9 +32,9 @@ export async function editSession({
     .update({
       title,
       notes,
-      duration,
+      duration: durationEdit,
     })
-    .eq("id", sessionId)
+    .eq("id", id)
     .eq("user_id", session.user.id);
 
   if (editError) {
@@ -59,7 +49,7 @@ export async function editSession({
   const { data: existingExercises } = await supabase
     .from("gym_session_exercises")
     .select("id")
-    .eq("session_id", sessionId);
+    .eq("session_id", id);
 
   const exerciseIds = existingExercises?.map((ex) => ex.id);
 
@@ -70,10 +60,7 @@ export async function editSession({
       .in("session_exercise_id", exerciseIds);
   }
 
-  await supabase
-    .from("gym_session_exercises")
-    .delete()
-    .eq("session_id", sessionId);
+  await supabase.from("gym_session_exercises").delete().eq("session_id", id);
 
   const sessionExercises = [];
   const sets = [];
@@ -85,7 +72,7 @@ export async function editSession({
     sessionExercises.push({
       id: sessionExerciseId,
       user_id: session.user.id,
-      session_id: sessionId,
+      session_id: id,
       exercise_id: ex.exercise_id,
       position: index,
       superset_id: supersetId ?? null,

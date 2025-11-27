@@ -112,8 +112,13 @@ export default function ReminderScreen() {
         notification_id: notificationIds ?? [],
       });
 
-      queryClient.refetchQueries({ queryKey: ["get-reminders"], exact: true });
-      queryClient.refetchQueries({ queryKey: ["feed"], exact: true });
+      await Promise.all([
+        queryClient.refetchQueries({ queryKey: ["feed"], exact: true }),
+        queryClient.refetchQueries({
+          queryKey: ["get-reminders"],
+          exact: true,
+        }),
+      ]);
       router.push("/dashboard");
       resetReminder();
     } catch {
@@ -182,9 +187,7 @@ export default function ReminderScreen() {
         <PageContainer>
           <View className="justify-between flex-1">
             <View className="gap-5">
-              <AppText className="text-xl text-center">
-                Daily reminder
-              </AppText>
+              <AppText className="text-xl text-center">Daily reminder</AppText>
               <View className="flex-row items-center justify-center">
                 <Info color="#9ca3af" size={18} />
                 <AppText className="text-gray-400 text-sm ml-2">

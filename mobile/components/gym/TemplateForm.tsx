@@ -101,6 +101,8 @@ export default function TemplateForm() {
     refetchOnMount: false,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
+    staleTime: Infinity,
+    gcTime: Infinity,
   });
 
   useEffect(() => {
@@ -148,6 +150,8 @@ export default function TemplateForm() {
     refetchOnMount: false,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
+    staleTime: Infinity,
+    gcTime: Infinity,
   });
 
   const openHistory = (exerciseId: string) => {
@@ -283,7 +287,7 @@ export default function TemplateForm() {
   if (templateId && (isLoading || !existingTemplate)) {
     return (
       <View className="flex-1 items-center justify-center">
-        <AppText className="mb-4 text-2xl">Loading template details...</AppText>
+        <AppText className="mb-4 text-lg">Loading template details...</AppText>
         <ActivityIndicator size="large" />
       </View>
     );
@@ -480,7 +484,7 @@ export default function TemplateForm() {
             </View>
             <View className="justify-center mt-14 gap-5">
               <SaveButton onPress={handleSaveTemplate} />
-              <DeleteButton onPress={resetSession} />
+              {templateId ? "" : <DeleteButton onPress={resetSession} />}
             </View>
           </PageContainer>
         </ScrollView>

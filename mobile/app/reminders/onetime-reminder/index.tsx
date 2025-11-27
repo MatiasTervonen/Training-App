@@ -108,9 +108,13 @@ export default function ReminderScreen() {
         notification_id: notificationIds ?? [],
       });
 
-      setIsSaving(false);
-      queryClient.refetchQueries({ queryKey: ["get-reminders"], exact: true });
-      await queryClient.refetchQueries({ queryKey: ["feed"], exact: true });
+      await Promise.all([
+        queryClient.refetchQueries({ queryKey: ["feed"], exact: true }),
+        queryClient.refetchQueries({
+          queryKey: ["get-reminders"],
+          exact: true,
+        }),
+      ]);
       router.push("/dashboard");
       resetReminder();
     } catch {

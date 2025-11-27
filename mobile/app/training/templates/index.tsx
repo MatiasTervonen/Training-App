@@ -6,7 +6,6 @@ import Toast from "react-native-toast-message";
 import TemplateCard from "@/components/cards/TemplateCard";
 import { ActivityIndicator, ScrollView, View } from "react-native";
 import GymTemplate from "@/components/expandSession/template";
-import { handleError } from "@/utils/handleError";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import GetTemplate from "@/api/gym/get-templates";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -43,6 +42,8 @@ export default function TemplatesPage() {
     refetchOnMount: false,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
+    staleTime: Infinity,
+    gcTime: Infinity,
   });
 
   const startWorkout = (template: full_gym_template) => {
@@ -114,6 +115,9 @@ export default function TemplatesPage() {
     enabled: !!templateId,
     refetchOnMount: false,
     refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    staleTime: Infinity,
+    gcTime: Infinity,
   });
 
   return (

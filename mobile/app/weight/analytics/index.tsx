@@ -1,4 +1,3 @@
-import { View } from "react-native";
 import { useQuery } from "@tanstack/react-query";
 import AllDataTable from "@/components/weight-screen/AllDataTable";
 import { getWeight } from "@/api/weight/get-weight";
@@ -19,8 +18,6 @@ export default function AnalyticsScreen() {
   });
 
   return (
-    <View>
-      <AllDataTable data={weightData ?? []} isLoading={isLoading} error={error} />
-    </View>
+    <AllDataTable data={weightData ?? []} isLoading={isLoading} error={error} />
   );
 }

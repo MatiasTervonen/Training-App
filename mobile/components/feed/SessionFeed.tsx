@@ -28,7 +28,6 @@ import GymSession from "../expandSession/gym";
 import { getFullGymSession } from "@/api/gym/get-full-gym-session";
 import NotesSession from "../expandSession/notes";
 import WeightSession from "../expandSession/weight";
-import EditGym from "../editSession/editGym";
 import EditNotes from "../editSession/editNotes";
 import EditWeight from "../editSession/editWeight";
 import ReminderSession from "../expandSession/reminder";
@@ -40,6 +39,7 @@ import CustomReminder from "../expandSession/customReminder";
 import GetFullCustomReminder from "@/api/reminders/get-full-custom-reminder";
 import getFeed from "@/api/feed/getFeed";
 import PinnedCarousel from "./PinnedCarousel";
+import { useRouter } from "expo-router";
 
 type FeedItem = {
   table:
@@ -69,6 +69,8 @@ export default function SessionFeed() {
   const queryClient = useQueryClient();
 
   const width = Dimensions.get("window").width;
+
+  const router = useRouter();
 
   // useEffect(() => {
   //   const fetchNotifications = async () => {
@@ -171,9 +173,11 @@ export default function SessionFeed() {
     queryFn: ({ pageParam = 0 }) => getFeed({ pageParam, limit: 15 }),
     initialPageParam: 0,
     getNextPageParam: (lastPage) => lastPage.nextPage,
+    refetchOnMount: false,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
-    refetchOnMount: false,
+    staleTime: Infinity,
+    gcTime: Infinity,
   });
 
   // Keep only first page in cahce when user leaves feed
@@ -314,6 +318,20 @@ export default function SessionFeed() {
     try {
       await DeleteSession(id, table);
 
+      if (table === "weight") {
+        queryClient.refetchQueries({
+          queryKey: ["get-weight"],
+          exact: true,
+        });
+      }
+
+      if (table === "reminders" || "custom_reminders") {
+        queryClient.refetchQueries({
+          queryKey: ["get-reminders"],
+          exact: true,
+        });
+      }
+
       if (table === "custom_reminders") {
         if (Array.isArray(notification_id)) {
           for (const id of notification_id) {
@@ -371,6 +389,9 @@ export default function SessionFeed() {
     refetchOnMount: false,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
+    placeholderData: (prev) => prev,
+    staleTime: Infinity,
+    gcTime: Infinity,
   });
 
   const {
@@ -384,6 +405,8 @@ export default function SessionFeed() {
     refetchOnMount: false,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
+    staleTime: Infinity,
+    gcTime: Infinity,
   });
 
   return (
@@ -441,15 +464,19 @@ export default function SessionFeed() {
                   onTogglePin={() =>
                     togglePin(feedItem.item.id, feedItem.table, false)
                   }
-                  onDelete={() =>
+                  onDelete={() => {
                     handleDelete(
                       feedItem.item.notification_id ?? null,
                       feedItem.item.id,
                       feedItem.table
-                    )
-                  }
+                    );
+                  }}
                   onEdit={() => {
-                    setEditingItem(feedItem);
+                    if (feedItem.table === "gym_sessions") {
+                      router.push(`/training/gym/${feedItem.item.id}` as any);
+                    } else {
+                      setEditingItem(feedItem);
+                    }
                   }}
                 />
               </View>
@@ -589,32 +616,6 @@ export default function SessionFeed() {
                 setEditingItem(null);
               }}
             />
-          )}
-
-          {editingItem.table === "gym_sessions" && (
-            <View>
-              {isLoadingGymSession ? (
-                <View className="flex flex-col gap-5 items-center justify-center pt-40">
-                  <AppText>Loading gym session details...</AppText>
-                  <ActivityIndicator />
-                </View>
-              ) : GymSessionError ? (
-                <AppText className="text-center text-lg mt-10">
-                  Failed to load gym session details. Please try again later.
-                </AppText>
-              ) : (
-                GymSessionFull && (
-                  <EditGym
-                    gym_session={GymSessionFull}
-                    onClose={() => setEditingItem(null)}
-                    onSave={() => {
-                      queryClient.invalidateQueries({ queryKey: ["feed"] });
-                      setEditingItem(null);
-                    }}
-                  />
-                )
-              )}
-            </View>
           )}
         </FullScreenModal>
       )}

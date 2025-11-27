@@ -6,66 +6,84 @@ import SetInput from "@/app/(app)/training/components/SetInput";
 import SaveButton from "../../ui/save-button";
 import toast from "react-hot-toast";
 import FullScreenLoader from "../../components/FullScreenLoader";
-import { mutate } from "swr";
 import DeleteSessionBtn from "../../ui/deleteSessionBtn";
 import { saveTimerToDB } from "../../database/timer";
-import { fetcher } from "../../lib/fetcher";
 import SubNotesInput from "../../ui/SubNotesInput";
 import TitleInput from "../../ui/TitleInput";
+import { useDebouncedCallback } from "use-debounce";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function TimerPage() {
-  const draft =
-    typeof window !== "undefined"
-      ? JSON.parse(localStorage.getItem("timer_session_draft") || "null")
-      : null;
-
-  const [timerTitle, setTimerTitle] = useState(draft?.title || "");
-  const [alarmMinutes, setAlarmMinutes] = useState(
-    draft?.durationInSeconds
-      ? Math.floor(draft.durationInSeconds / 60).toString()
-      : ""
-  );
-  const [alarmSeconds, setAlarmSeconds] = useState(
-    draft?.durationInSeconds ? (draft.durationInSeconds % 60).toString() : ""
-  );
+  const [title, setTitle] = useState("");
+  const [alarmMinutes, setAlarmMinutes] = useState("");
+  const [alarmSeconds, setAlarmSeconds] = useState("");
   const [isSaving, setIsSaving] = useState(false);
-  const [notes, setNotes] = useState(draft?.notes || "");
-
+  const [notes, setNotes] = useState("");
+  const [isLoaded, setIsLoaded] = useState(false);
   const router = useRouter();
 
+  const queryClient = useQueryClient();
+
   const handleReset = () => {
-    localStorage.removeItem("activeSession");
-    localStorage.removeItem("timer:timer");
-    setTimerTitle("");
+    localStorage.removeItem("timer_session_draft");
+    setTitle("");
     setAlarmMinutes("");
     setAlarmSeconds("");
     setNotes("");
   };
 
   useEffect(() => {
-    if (
-      timerTitle.trim() === "" &&
-      alarmMinutes.trim() === "" &&
-      alarmSeconds.trim() === ""
-    ) {
-      localStorage.removeItem("timer_session_draft");
-      return;
+    const draft = localStorage.getItem("timer_session_draft");
+    if (draft) {
+      const {
+        title: savedTitle,
+        notes: savedNotes,
+        durationInSeconds: savedAlarmDuration,
+      } = JSON.parse(draft);
+      if (savedTitle) setTitle(savedTitle);
+      if (savedNotes) setNotes(savedNotes);
+      if (savedAlarmDuration)
+        setAlarmMinutes(Math.floor(savedAlarmDuration / 60).toString());
+      if (savedAlarmDuration)
+        setAlarmSeconds((savedAlarmDuration % 60).toString());
     }
+    setIsLoaded(true);
+  }, []);
 
-    const minutes = parseInt(alarmMinutes) || 0;
-    const seconds = parseInt(alarmSeconds) || 0;
-    const totalSeconds = minutes * 60 + seconds;
+  const saveDraft = useDebouncedCallback(
+    () => {
+      if (!isLoaded) return;
 
-    const sessionDraft = {
-      title: timerTitle,
-      notes: notes,
-      durationInSeconds: totalSeconds,
-    };
-    localStorage.setItem("timer_session_draft", JSON.stringify(sessionDraft));
-  }, [timerTitle, alarmMinutes, alarmSeconds, notes]);
+      if (
+        title.trim() === "" &&
+        alarmMinutes.trim() === "" &&
+        alarmSeconds.trim() === ""
+      ) {
+        localStorage.removeItem("timer_session_draft");
+        return;
+      }
+
+      const minutes = parseInt(alarmMinutes) || 0;
+      const seconds = parseInt(alarmSeconds) || 0;
+      const totalSeconds = minutes * 60 + seconds;
+
+      const sessionDraft = {
+        title: title,
+        notes: notes,
+        durationInSeconds: totalSeconds,
+      };
+      localStorage.setItem("timer_session_draft", JSON.stringify(sessionDraft));
+    },
+    500,
+    { maxWait: 3000 }
+  );
+
+  useEffect(() => {
+    saveDraft();
+  }, [title, alarmMinutes, alarmSeconds, notes, saveDraft]);
 
   const saveTimer = async () => {
-    if (!timerTitle || !alarmMinutes || !alarmSeconds) {
+    if (!title || !alarmMinutes || !alarmSeconds) {
       alert("Please fill in all fields.");
       return;
     }
@@ -77,19 +95,17 @@ export default function TimerPage() {
 
     try {
       await saveTimerToDB({
-        title: timerTitle,
+        title: title,
         notes: notes,
         durationInSeconds,
       });
 
-      await mutate(
-        "/api/timer/get-timer",
-        async () => fetcher("/api/timer/get-timer"),
-        false
-      );
+      await queryClient.refetchQueries({
+        queryKey: ["get-timers"],
+        exact: true,
+      });
 
-      localStorage.removeItem("timer_session_draft");
-
+      handleReset();
       router.push("/timer/my-timers");
     } catch {
       toast.error("Failed to save timer. Please try again.");
@@ -102,8 +118,8 @@ export default function TimerPage() {
       <div className="flex flex-col gap-5">
         <h1 className="text-2xl text-center mb-5">Create Timer</h1>
         <TitleInput
-          value={timerTitle}
-          setValue={setTimerTitle}
+          value={title}
+          setValue={setTitle}
           placeholder="Enter timer title"
           label="Timer Title"
           maxLength={150}

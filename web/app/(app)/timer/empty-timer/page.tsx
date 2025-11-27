@@ -8,6 +8,8 @@ import { CircleX } from "lucide-react";
 import { useTimerStore } from "../../lib/stores/timerStore";
 import { AlarmClock } from "lucide-react";
 import { playAlarmAudio, stopAlarmAudio } from "../components/alarmAudio";
+import BaseButton from "../../ui/BaseButton";
+import DeleteSessionBtn from "../../ui/deleteSessionBtn";
 
 export default function TimerPage() {
   const [alarmMinutes, setAlarmMinutes] = useState("");
@@ -27,6 +29,11 @@ export default function TimerPage() {
     clearEverything,
   } = useTimerStore();
 
+  const clear = () => {
+    setAlarmMinutes("");
+    setAlarmSeconds("");
+  };
+
   const cancelTimer = () => {
     const confirmCancel = confirm("Are you sure you want to cancel the timer?");
     if (!confirmCancel) return;
@@ -34,12 +41,9 @@ export default function TimerPage() {
     setIsCancelling(true);
 
     stopAlarmAudio();
-
-    localStorage.removeItem("timer_session_draft");
     clearEverything();
-    setAlarmMinutes("");
-    setAlarmSeconds("");
-
+    localStorage.removeItem("timer_session_draft");
+    clear();
     router.replace("/timer");
   };
 
@@ -86,13 +90,12 @@ export default function TimerPage() {
           handleStopTimer();
         }
       }}
-      className="page-padding h-full relative"
     >
       {showTimerUI ? (
         <>
-          <div className="flex flex-col h-full">
+          <div className="flex flex-col h-full page-padding">
             <div>
-              <p className="text-center text-xl text-gray-300 mt-2">
+              <p className="text-center text-xl text-gray-300">
                 {Math.floor(totalDuration / 60)} min {totalDuration % 60} sec
               </p>
 
@@ -104,7 +107,7 @@ export default function TimerPage() {
                 }`}
               />
 
-              <div className="w-full bg-gray-200 h-5 rounded-full overflow-hidden">
+              <div className="w-full bg-gray-200 h-5 rounded-full overflow-hidden mt-5">
                 <div
                   className="h-full bg-green-500 transition-all duration-100 ease-in-out"
                   style={{ width: `${(elapsedTime / totalDuration) * 100}%` }}
@@ -121,12 +124,12 @@ export default function TimerPage() {
           </button>
         </>
       ) : (
-        <div className="max-w-md mx-auto flex flex-col gap-10">
+        <div className="max-w-md mx-auto flex flex-col gap-20 page-padding">
           <div className="flex justify-center items-center gap-5">
             <h1 className="text-2xl text-center">Timer</h1>
             <AlarmClock color="#d1d5db" size={30} />
           </div>
-          <div className="flex items-center justify-center gap-4 mb-5">
+          <div className="flex flex-col items-center justify-center gap-4 mb-5">
             <div>
               <SetInput
                 label="Minutes"
@@ -149,12 +152,10 @@ export default function TimerPage() {
             </div>
           </div>
 
-          <button
-            onClick={handleStartTimer}
-            className="w-full bg-blue-800 py-2 rounded-md shadow-md border-2 border-blue-500 text-lg cursor-pointer hover:bg-blue-700 hover:scale-105 transition-all duration-200"
-          >
-            Start Timer
-          </button>
+          <div className="flex flex-col gap-5">
+            <BaseButton onClick={handleStartTimer} label="Start Timer" />
+            <DeleteSessionBtn confirm={false} label="Clear" onDelete={clear} />
+          </div>
         </div>
       )}
     </div>

@@ -4,6 +4,7 @@ import { View } from "react-native";
 import AppText from "../AppText";
 import SaveButton from "@/components/buttons/SaveButton";
 import DeleteButton from "@/components/buttons/DeleteButton";
+import PageContainer from "../PageContainer";
 
 type Props = {
   item: timers;
@@ -20,9 +21,9 @@ const formatSeconds = (seconds: number) => {
 
 export default function TimerCard({ item, onDelete, onStarTimer }: Props) {
   return (
-    <View className="pb-10 w-full justify-between flex-1 mb-10">
+    <PageContainer className="w-full justify-between flex-1 pb-10">
       <View>
-        <AppText className="text-lg text-gray-400 mt-10 text-center">
+        <AppText className="text-lg text-gray-400  text-center">
           {formatDate(item.created_at)}
         </AppText>
         <AppText className="my-5 text-xl break-words text-center">
@@ -42,6 +43,6 @@ export default function TimerCard({ item, onDelete, onStarTimer }: Props) {
         <SaveButton onPress={onStarTimer} label="Start" />
         <DeleteButton onPress={onDelete} label="Delete" />
       </View>
-    </View>
+    </PageContainer>
   );
 }

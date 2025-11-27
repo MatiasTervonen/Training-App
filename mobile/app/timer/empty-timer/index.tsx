@@ -7,21 +7,16 @@ import { useState, useEffect } from "react";
 import Toast from "react-native-toast-message";
 import { confirmAction } from "@/lib/confirmAction";
 import { useAudioPlayer } from "expo-audio";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { handleError } from "@/utils/handleError";
-import { useDebouncedCallback } from "use-debounce";
 import Timer from "@/components/timer";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import Animated from "react-native-reanimated";
 import * as ScreenOrientation from "expo-screen-orientation";
 import PageContainer from "@/components/PageContainer";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function SettingsScreen() {
-  const [timerTitle, setTimerTitle] = useState("");
   const [alarmMinutes, setAlarmMinutes] = useState("");
   const [alarmSeconds, setAlarmSeconds] = useState("");
-  const [notes, setNotes] = useState("");
-  const [isLoaded, setIsLoaded] = useState(false);
   const [orieantation, setOrientation] =
     useState<ScreenOrientation.Orientation | null>(null);
 
@@ -52,51 +47,6 @@ export default function SettingsScreen() {
     orieantation === ScreenOrientation.Orientation.LANDSCAPE_LEFT ||
     orieantation === ScreenOrientation.Orientation.LANDSCAPE_RIGHT;
 
-  useEffect(() => {
-    const loadfDraft = async () => {
-      try {
-        const draftString = await AsyncStorage.getItem("timer_session_draft");
-        if (draftString) {
-          const draft = JSON.parse(draftString);
-          setTimerTitle(draft.title || "");
-          setNotes(draft.notes || "");
-          if (draft.durationInSeconds) {
-            setAlarmMinutes(
-              Math.floor(draft.durationInSeconds / 60).toString()
-            );
-            setAlarmSeconds((draft.durationInSeconds % 60).toString());
-          }
-        }
-      } catch (error) {
-        handleError(error, {
-          message: "Error loading timer draft",
-          route: "timer/empty-timer",
-          method: "loadDraft",
-        });
-      } finally {
-        setIsLoaded(true);
-      }
-    };
-    loadfDraft();
-  }, []);
-
-  const saveTimerDraft = useDebouncedCallback(async () => {
-    const minutes = parseInt(alarmMinutes) || 0;
-    const seconds = parseInt(alarmSeconds) || 0;
-    const totalSeconds = minutes * 60 + seconds;
-    const draft = {
-      title: timerTitle,
-      notes,
-      durationInSeconds: totalSeconds,
-    };
-    await AsyncStorage.setItem("timer_session_draft", JSON.stringify(draft));
-  }, 1000);
-
-  useEffect(() => {
-    if (!isLoaded) return;
-    saveTimerDraft();
-  }, [timerTitle, alarmMinutes, alarmSeconds, notes, isLoaded, saveTimerDraft]);
-
   const {
     totalDuration,
     elapsedTime,
@@ -108,11 +58,8 @@ export default function SettingsScreen() {
   } = useTimerStore();
 
   const handleReset = async () => {
-    stopTimer();
-    setTimerTitle("");
     setAlarmMinutes("");
     setAlarmSeconds("");
-    setNotes("");
   };
 
   const cancelTimer = async () => {
@@ -136,16 +83,13 @@ export default function SettingsScreen() {
     setActiveSession(null);
     stopTimer();
     AsyncStorage.removeItem("timer_session_draft");
-    setTimerTitle("");
-    setAlarmMinutes("");
-    setAlarmSeconds("");
-    setNotes("");
+    handleReset();
   };
 
   const handleStartTimer = () => {
     setActiveSession({
       type: "timer",
-      label: timerTitle,
+      label: "Timer",
       path: "/timer/empty-timer",
     });
 

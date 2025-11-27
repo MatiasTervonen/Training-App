@@ -147,12 +147,12 @@ export default function GymForm({
         JSON.stringify(sessionDraft)
       );
     }
-  }, 1000);
+  }, 500);
 
   useEffect(() => {
     if (!hasLoadedDraft) return;
     saveGymDraft();
-  }, [notes, title, saveGymDraft, exercises, hasLoadedDraft]);
+  }, [notes, title, saveGymDraft, exercises, hasLoadedDraft, isEditing]);
 
   const {
     activeSession,
@@ -392,14 +392,7 @@ export default function GymForm({
   const groupedExercises = GroupGymExercises(exercises);
 
   if (!isEditing && !hasLoadedDraft) {
-    return (
-      <View className="gap-3">
-        <AppText className="text-xl text-center mt-20">
-          Loading gym session...
-        </AppText>
-        <ActivityIndicator />
-      </View>
-    );
+    return null;
   }
 
   return (
@@ -643,7 +636,15 @@ export default function GymForm({
 
             <View className="gap-5 mt-20">
               <SaveButton onPress={handleSaveSession} />
-              {isEditing ? "" : <DeleteButton onPress={resetSession} />}
+              {isEditing ? (
+                <DeleteButton
+                  confirm={false}
+                  label="Cancel"
+                  onPress={() => router.push("/dashboard")}
+                />
+              ) : (
+                <DeleteButton onPress={resetSession} />
+              )}
             </View>
           </>
         </PageContainer>

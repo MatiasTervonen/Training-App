@@ -28,13 +28,12 @@ import TitleInput from "../../ui/TitleInput";
 import SubNotesInput from "../../ui/SubNotesInput";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { getLastExerciseHistory } from "../../database/gym";
+import { useDebouncedCallback } from "use-debounce";
 
 export default function GymForm({
   initialData,
-  errorMessage,
 }: {
   initialData: full_gym_session;
-  errorMessage?: string;
 }) {
   const session = initialData;
 
@@ -87,25 +86,34 @@ export default function GymForm({
 
   const queryClient = useQueryClient();
 
+  const saveGymDraft = useDebouncedCallback(
+    () => {
+      if (!hasLoadedDraft || isEditing) return;
+
+      if (
+        exercises.length === 0 &&
+        notes.trim() === "" &&
+        sessionTitle.trim() === ""
+      ) {
+        localStorage.removeItem("gym_draft");
+        return;
+      }
+
+      const sessionDraft = {
+        title: sessionTitle,
+        exercises,
+        notes,
+      };
+      localStorage.setItem("gym_draft", JSON.stringify(sessionDraft));
+    },
+    500,
+    { maxWait: 3000 }
+  );
+
   useEffect(() => {
-    if (!hasLoadedDraft || isEditing) return;
-
-    if (
-      exercises.length === 0 &&
-      notes.trim() === "" &&
-      sessionTitle.trim() === ""
-    ) {
-      localStorage.removeItem("gym_draft");
-      return;
-    }
-
-    const sessionDraft = {
-      title: sessionTitle,
-      exercises,
-      notes,
-    };
-    localStorage.setItem("gym_draft", JSON.stringify(sessionDraft));
-  }, [exercises, notes, sessionTitle, hasLoadedDraft, isEditing]);
+    if (!hasLoadedDraft) return;
+    saveGymDraft();
+  }, [exercises, notes, sessionTitle, hasLoadedDraft, isEditing, saveGymDraft]);
 
   useEffect(() => {
     if (isEditing) return;
@@ -354,10 +362,7 @@ export default function GymForm({
 
   const groupedExercises = GroupGymExercises(exercises);
 
-  if (!hasLoadedDraft)  return null;
-
-  const hasError = Boolean(errorMessage);
-  const hasNoData = !session && !hasError;
+  if (!hasLoadedDraft) return null;
 
   return (
     <>
@@ -410,18 +415,6 @@ export default function GymForm({
               label="Session notes..."
             />
           </div>
-
-          {hasError && (
-            <div className="border border-red-500 text-red-300 rounded-md mt-5 p-3 text-center">
-              {errorMessage}
-            </div>
-          )}
-
-          {hasNoData && (
-            <div className="border border-gray-600 text-gray-300 rounded-md mt-5 p-3 text-center">
-              No session data found.
-            </div>
-          )}
 
           {Object.entries(groupedExercises).map(([superset_id, group]) => (
             <div
@@ -590,7 +583,15 @@ export default function GymForm({
 
         <div className="flex flex-col justify-center items-center mt-14 gap-5">
           <SaveButton onClick={saveSession} />
-          {isEditing ? "" : <DeleteSessionBtn onDelete={resetSession} />}
+          {isEditing ? (
+            <DeleteSessionBtn
+              label="Cancel"
+              confirm={false}
+              onDelete={() => router.push("/dashboard")}
+            />
+          ) : (
+            <DeleteSessionBtn onDelete={resetSession} />
+          )}
         </div>
       </div>
       {isSaving && <FullScreenLoader message="Saving session..." />}

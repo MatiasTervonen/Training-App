@@ -16,19 +16,46 @@ import TitleInput from "@/app/(app)/ui/TitleInput";
 import { useQueryClient } from "@tanstack/react-query";
 
 export default function GlobalReminder() {
-  const draft =
-    typeof window !== "undefined"
-      ? JSON.parse(localStorage.getItem("reminder_draft") || "null")
-      : null;
-
-  const [notes, setNotes] = useState(draft?.notes || "");
-  const [title, setValue] = useState(draft?.title || "");
+  const [notes, setNotes] = useState("");
+  const [title, setTitle] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [notifyAt, setNotifyAt] = useState<Date | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
-
+  const [isLoaded, setIsLoaded] = useState(false);
   const queryClient = useQueryClient();
+
+  useEffect(() => {
+    const draft = localStorage.getItem("reminder_draft");
+    if (draft) {
+      const { title: savedTitle, notes: savedNotes } = JSON.parse(draft);
+      if (savedTitle) setTitle(savedTitle);
+      if (savedNotes) setNotes(savedNotes);
+    }
+    setIsLoaded(true);
+  }, []);
+
+  const saveDraft = useDebouncedCallback(
+    () => {
+      if (!isLoaded) return;
+
+      if (notes.trim().length === 0 && title.trim().length === 0) {
+        localStorage.removeItem("reminder_draft");
+      } else {
+        const sessionDraft = {
+          title: title,
+          notes,
+        };
+        localStorage.setItem("reminder_draft", JSON.stringify(sessionDraft));
+      }
+    },
+    500,
+    { maxWait: 3000 }
+  );
+
+  useEffect(() => {
+    saveDraft();
+  }, [notes, title, saveDraft]);
 
   // Check for push notification subscription
 
@@ -85,25 +112,9 @@ export default function GlobalReminder() {
     }
   };
 
-  const saveDraft = useDebouncedCallback(() => {
-    if (notes.trim().length === 0 && title.trim().length === 0) {
-      localStorage.removeItem("reminder_draft");
-    } else {
-      const sessionDraft = {
-        title: title,
-        notes,
-      };
-      localStorage.setItem("reminder_draft", JSON.stringify(sessionDraft));
-    }
-  }, 500);
-
-  useEffect(() => {
-    saveDraft();
-  }, [notes, title, saveDraft]);
-
   const resetReminder = () => {
     localStorage.removeItem("reminder_draft");
-    setValue("");
+    setTitle("");
     setNotes("");
     setNotifyAt(null);
   };
@@ -116,7 +127,7 @@ export default function GlobalReminder() {
           <div className="w-full">
             <TitleInput
               value={title}
-              setValue={setValue}
+              setValue={setTitle}
               placeholder="Reminder title... (required)"
               label="Title..."
             />

@@ -4,14 +4,11 @@ import { full_gym_session } from "@/types/models";
 import { useQuery } from "@tanstack/react-query";
 import { getFullGymSession } from "@/api/gym/get-full-gym-session";
 import Toast from "react-native-toast-message";
-import { useEffect, useState } from "react";
 import { View, ActivityIndicator } from "react-native";
 import AppText from "@/components/AppText";
 
 export default function EditGymScreen() {
   const { id } = useLocalSearchParams<{ id?: string }>();
-
-  const [showForm, setShowForm] = useState(false);
 
   const {
     data: GymSessionFull,
@@ -28,14 +25,7 @@ export default function EditGymScreen() {
     gcTime: Infinity,
   });
 
-  useEffect(() => {
-    // Wait one frame so navigation transition can complete
-    requestAnimationFrame(() => {
-      setShowForm(true);
-    });
-  }, []);
-
-  if (isLoadingGymSession || !showForm) {
+  if (isLoadingGymSession) {
     return (
       <View className="gap-3">
         <AppText className="text-xl text-center mt-20">

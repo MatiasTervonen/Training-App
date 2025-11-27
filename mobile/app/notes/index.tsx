@@ -54,7 +54,7 @@ export default function NotesScreen() {
       const draft = { title, notes };
       await AsyncStorage.setItem("notes_draft", JSON.stringify(draft));
     }
-  }, 1000);
+  }, 500, { maxWait: 3000 });
 
   useEffect(() => {
     if (!isLoaded) return;

@@ -2,7 +2,6 @@ import { supabase } from "@/lib/supabase";
 import { handleError } from "@/utils/handleError";
 
 export async function getFullGymSession(sessionId: string) {
-  console.log("fetching full session");
   const {
     data: { session },
     error: sessionError,

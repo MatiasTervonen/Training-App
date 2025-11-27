@@ -43,7 +43,7 @@ export default function Notes() {
       };
       localStorage.setItem("notes_draft", JSON.stringify(sessionDraft));
     }
-  }, 500);
+  }, 500, { maxWait: 3000 });
 
   useEffect(() => {
     saveDraft();

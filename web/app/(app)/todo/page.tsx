@@ -17,6 +17,7 @@ import { saveTodoToDB } from "../database/todo";
 import TitleInput from "../ui/TitleInput";
 import SubNotesInput from "../ui/SubNotesInput";
 import { useQueryClient } from "@tanstack/react-query";
+import { useDebouncedCallback } from "use-debounce";
 
 type TodoItem = {
   task: string;
@@ -24,16 +25,11 @@ type TodoItem = {
 };
 
 export default function Todo() {
-  const draft =
-    typeof window !== "undefined"
-      ? JSON.parse(localStorage.getItem("todo_draft") || "null")
-      : null;
-
   const [loading, setLoading] = useState(false);
-  const [title, setValue] = useState(draft?.title || "");
-  const [task, setTask] = useState(draft?.task || "");
-  const [notes, setNotes] = useState(draft?.notes || "");
-  const [todoList, setTodoList] = useState<TodoItem[]>(draft?.todoList || []);
+  const [title, setTitle] = useState("");
+  const [task, setTask] = useState("");
+  const [notes, setNotes] = useState("");
+  const [todoList, setTodoList] = useState<TodoItem[]>([]);
   const [open, setOpen] = useState<number | null>(null);
   const [edit, setEdit] = useState<number | null>(null);
   const [modalDraft, setModalDraft] = useState<{ task: string; notes: string }>(
@@ -43,23 +39,51 @@ export default function Todo() {
     }
   );
   const router = useRouter();
+  const [isLoaded, setIsLoaded] = useState(false);
 
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    if (title.trim() === "" && todoList.length === 0) {
-      localStorage.removeItem("todo_draft");
-      return;
-    } else {
-      const draft = {
-        title,
-        task,
-        notes,
-        todoList: todoList,
-      };
-      localStorage.setItem("todo_draft", JSON.stringify(draft));
+    const draft = localStorage.getItem("todo_draft");
+    if (draft) {
+      const {
+        title: savedTitle,
+        task: savedTask,
+        notes: savedNotes,
+        todoList: savedTodoList,
+      } = JSON.parse(draft);
+      if (savedTitle) setTitle(savedTitle);
+      if (savedTask) setTask(savedTask);
+      if (savedNotes) setNotes(savedNotes);
+      if (savedTodoList) setTodoList(savedTodoList);
     }
-  }, [title, notes, todoList, task]);
+    setIsLoaded(true);
+  }, []);
+
+  const saveTodoDraft = useDebouncedCallback(
+    () => {
+      if (!isLoaded) return;
+
+      if (title.trim() === "" && todoList.length === 0) {
+        localStorage.removeItem("todo_draft");
+        return;
+      } else {
+        const draft = {
+          title,
+          task,
+          notes,
+          todoList: todoList,
+        };
+        localStorage.setItem("todo_draft", JSON.stringify(draft));
+      }
+    },
+    500,
+    { maxWait: 3000 }
+  );
+
+  useEffect(() => {
+    saveTodoDraft();
+  }, [title, notes, todoList, task, saveTodoDraft]);
 
   const handleDeleteItem = (index: number) => {
     const confirmDelete = window.confirm(
@@ -76,7 +100,7 @@ export default function Todo() {
     setTodoList([]);
     setTask("");
     setNotes("");
-    setValue("");
+    setTitle("");
   };
 
   const handleSaveTodo = async () => {
@@ -105,7 +129,7 @@ export default function Todo() {
           placeholder="Title"
           label="Add title to your todo list"
           value={title}
-          setValue={setValue}
+          setValue={setTitle}
         />
         <div className="mt-5">
           <TitleInput
@@ -266,8 +290,8 @@ export default function Todo() {
         </div>
       </div>
       <div className="flex flex-col gap-5">
-        <SaveButton disabled={!draft} onClick={handleSaveTodo} />
-        <DeleteSessionBtn disabled={!draft} onDelete={handleDeleteAll} />
+        <SaveButton onClick={handleSaveTodo} />
+        <DeleteSessionBtn onDelete={handleDeleteAll} />
       </div>
       {loading && <FullScreenLoader message="Saving todolist..." />}
     </div>

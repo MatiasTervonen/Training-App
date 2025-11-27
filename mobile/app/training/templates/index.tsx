@@ -23,10 +23,10 @@ type templateSummary = {
   created_at: string;
 };
 
-
 export default function TemplatesPage() {
-  const [expandedItem, setExpandedItem] =
-    useState<full_gym_template | null>(null);
+  const [expandedItem, setExpandedItem] = useState<full_gym_template | null>(
+    null
+  );
 
   const queryClient = useQueryClient();
 
@@ -46,7 +46,7 @@ export default function TemplatesPage() {
     gcTime: Infinity,
   });
 
-  const startWorkout = (template: full_gym_template) => {
+  const startWorkout = async (template: full_gym_template) => {
     const workoutExercises: ExerciseEntry[] =
       template.gym_template_exercises.map((ex) => ({
         exercise_id: ex.exercise_id,
@@ -63,8 +63,11 @@ export default function TemplatesPage() {
       exercises: workoutExercises,
     };
 
-    AsyncStorage.setItem("gym_session_draft", JSON.stringify(sessionDraft));
-    AsyncStorage.setItem("startedFromTemplate", "true");
+    await AsyncStorage.setItem(
+      "gym_session_draft",
+      JSON.stringify(sessionDraft)
+    );
+    await AsyncStorage.setItem("startedFromTemplate", "true");
     router.push("/training/gym");
   };
 
@@ -94,7 +97,7 @@ export default function TemplatesPage() {
         type: "success",
         text1: "Template deleted successfully",
       });
-    } catch  {
+    } catch {
       queryClient.setQueryData(queryKey, previousFeed);
       Toast.show({
         type: "error",
@@ -126,9 +129,7 @@ export default function TemplatesPage() {
       keyboardShouldPersistTaps="handled"
     >
       <PageContainer>
-        <AppText className="text-center mb-10 text-2xl">
-          My Templates
-        </AppText>
+        <AppText className="text-center mb-10 text-2xl">My Templates</AppText>
 
         {!error && isLoading && <TemplateSkeleton count={6} />}
 
@@ -151,9 +152,7 @@ export default function TemplatesPage() {
               key={template.id}
               item={template}
               onDelete={() => handleDeleteTemplate(template.id)}
-              onExpand={() =>
-                setExpandedItem(template as full_gym_template)
-              }
+              onExpand={() => setExpandedItem(template as full_gym_template)}
               onEdit={() => {
                 router.push(`/training/templates/${template.id}`);
               }}

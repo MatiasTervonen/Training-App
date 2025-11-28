@@ -6,6 +6,14 @@ export const formatDate = (dateString: string | Date) => {
   }).format(date);
 };
 
+export const formatDateShort = (dateString: string | Date) => {
+  const date = new Date(dateString);
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+  }).format(date);
+};
+
 export const formatDateTime = (dateString: string | Date) => {
   const date = new Date(dateString);
   return new Intl.DateTimeFormat("en-US", {

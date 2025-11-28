@@ -66,7 +66,6 @@ export default function Todo() {
 
       if (title.trim() === "" && todoList.length === 0) {
         localStorage.removeItem("todo_draft");
-        return;
       } else {
         const draft = {
           title,
@@ -270,7 +269,6 @@ export default function Todo() {
                               <button
                                 onClick={() => {
                                   handleDeleteItem(index);
-                                  setOpen(null);
                                 }}
                                 className="w-[130px] flex items-center justify-center px-4 gap-2  bg-red-800 py-2 rounded-md shadow-md border-2 border-red-500 text-lg cursor-pointer hover:bg-red-700 hover:scale-105 transition-transform duration-200"
                               >

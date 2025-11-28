@@ -261,6 +261,8 @@ export default function SessionFeed() {
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     refetchOnMount: false,
+    staleTime: Infinity,
+    gcTime: Infinity,
   });
 
   const {
@@ -275,6 +277,8 @@ export default function SessionFeed() {
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     refetchOnMount: false,
+    staleTime: Infinity,
+    gcTime: Infinity,
   });
 
   // Pinned carousell
@@ -456,7 +460,7 @@ export default function SessionFeed() {
                     <Spinner />
                   </div>
                 ) : TodoSessionError ? (
-                  <p className="text-center text-lg mt-10">
+                  <p className="text-center text-lg mt-20">
                     Failed to load todo session details. Please try again later.
                   </p>
                 ) : (

@@ -16,7 +16,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import PageContainer from "@/components/PageContainer";
 
 export default function NotesScreen() {
-  const [title, setValue] = useState("");
+  const [title, setTitle] = useState("");
   const [notes, setNotes] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -31,7 +31,7 @@ export default function NotesScreen() {
         const storeDraft = await AsyncStorage.getItem("notes_draft");
         if (storeDraft) {
           const draft = JSON.parse(storeDraft);
-          setValue(draft.title || "");
+          setTitle(draft.title || "");
           setNotes(draft.notes || "");
         }
       } catch (error) {
@@ -47,14 +47,18 @@ export default function NotesScreen() {
     loadDraft();
   }, []);
 
-  const saveNotesDraft = useDebouncedCallback(async () => {
-    if (title.trim().length === 0 && notes.trim().length === 0) {
-      await AsyncStorage.removeItem("notes_draft");
-    } else {
-      const draft = { title, notes };
-      await AsyncStorage.setItem("notes_draft", JSON.stringify(draft));
-    }
-  }, 500, { maxWait: 3000 });
+  const saveNotesDraft = useDebouncedCallback(
+    async () => {
+      if (title.trim().length === 0 && notes.trim().length === 0) {
+        await AsyncStorage.removeItem("notes_draft");
+      } else {
+        const draft = { title, notes };
+        await AsyncStorage.setItem("notes_draft", JSON.stringify(draft));
+      }
+    },
+    500,
+    { maxWait: 3000 }
+  );
 
   useEffect(() => {
     if (!isLoaded) return;
@@ -94,7 +98,7 @@ export default function NotesScreen() {
   };
 
   const resetNote = () => {
-    setValue("");
+    setTitle("");
     setNotes("");
     AsyncStorage.removeItem("notes_draft");
   };
@@ -109,7 +113,7 @@ export default function NotesScreen() {
             </AppText>
             <AppInput
               value={title}
-              setValue={setValue}
+              setValue={setTitle}
               label="Title.."
               placeholder="Notes title...(optional)"
             />

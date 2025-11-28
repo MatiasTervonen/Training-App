@@ -6,6 +6,7 @@ import {
   Timer,
   Weight,
   Bell,
+  ListTodo,
 } from "lucide-react-native";
 import LinkButton from "@/components/buttons/LinkButton";
 import PageContainer from "@/components/PageContainer";
@@ -30,6 +31,9 @@ export default function SessionsScreen() {
         </LinkButton>
         <LinkButton label="Body Weight" href="/weight">
           <Weight color="#f3f4f6" />
+        </LinkButton>
+        <LinkButton label="Todo List" href="/todo">
+          <ListTodo color="#f3f4f6" />
         </LinkButton>
         <LinkButton label="Reminders" href="/reminders">
           <Bell color="#f3f4f6" />

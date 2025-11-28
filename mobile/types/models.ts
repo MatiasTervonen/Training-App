@@ -20,6 +20,14 @@ export type Friends = Pick<
   >;
 };
 
+export type todo_tasks = Database["public"]["Tables"]["todo_tasks"]["Row"];
+
+export type todo_lists = Database["public"]["Tables"]["todo_lists"]["Row"];
+
+export type full_todo_session = todo_lists & {
+  todo_tasks: todo_tasks[];
+};
+
 export type timers = Database["public"]["Tables"]["timers"]["Row"];
 
 export type users = Database["public"]["Tables"]["users"]["Row"];

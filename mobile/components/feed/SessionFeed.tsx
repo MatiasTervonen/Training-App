@@ -1,4 +1,4 @@
-import { full_gym_session } from "@/types/models";
+import { full_gym_session, full_todo_session } from "@/types/models";
 import { useState, useMemo, useEffect } from "react";
 import Toast from "react-native-toast-message";
 import AppText from "@/components/AppText";
@@ -40,6 +40,9 @@ import GetFullCustomReminder from "@/api/reminders/get-full-custom-reminder";
 import getFeed from "@/api/feed/getFeed";
 import PinnedCarousel from "./PinnedCarousel";
 import { useRouter } from "expo-router";
+import TodoSession from "../expandSession/todo";
+import { getFullTodoSession } from "@/api/todo/get-full-todo";
+import EditTodo from "../editSession/editTodo";
 
 type FeedItem = {
   table:
@@ -378,6 +381,13 @@ export default function SessionFeed() {
       ? editingId
       : null;
 
+  const todoId =
+    expandedItem?.table === "todo_lists"
+      ? expandedId
+      : editingItem?.table === "todo_lists"
+      ? editingId
+      : null;
+
   const {
     data: GymSessionFull,
     error: GymSessionError,
@@ -405,6 +415,22 @@ export default function SessionFeed() {
     refetchOnMount: false,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
+    staleTime: Infinity,
+    gcTime: Infinity,
+  });
+
+  const {
+    data: todoSessionFull,
+    error: todoSessionError,
+    isLoading: isLoadingTodoSession,
+    refetch: refetchFullTodo,
+  } = useQuery<full_todo_session>({
+    queryKey: ["fullTodoSession", todoId],
+    queryFn: async () => await getFullTodoSession(todoId!),
+    enabled: !!todoId,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    refetchOnMount: false,
     staleTime: Infinity,
     gcTime: Infinity,
   });
@@ -540,6 +566,32 @@ export default function SessionFeed() {
             <ReminderSession {...expandedItem.item} />
           )}
 
+          {expandedItem.table === "todo_lists" && (
+            <>
+              {isLoadingTodoSession ? (
+                <View className="gap-2 justify-center items-center pt-40">
+                  <AppText className="text-lg">Loading todo session...</AppText>
+                  <ActivityIndicator />
+                </View>
+              ) : todoSessionError ? (
+                <View>
+                  <AppText className="gap-2 justify-center mt-20 text-lg">
+                    Failed to load todo session details. Please try again later.
+                  </AppText>
+                </View>
+              ) : (
+                todoSessionFull && (
+                  <TodoSession
+                    initialTodo={todoSessionFull}
+                    mutateFullTodoSession={async () => {
+                      await refetchFullTodo();
+                    }}
+                  />
+                )
+              )}
+            </>
+          )}
+
           {expandedItem.table === "custom_reminders" && (
             <View>
               {isLoadingCustomReminder ? (
@@ -605,6 +657,42 @@ export default function SessionFeed() {
                 setEditingItem(null);
               }}
             />
+          )}
+
+          {editingItem.table === "todo_lists" && (
+            <>
+              {isLoadingTodoSession ? (
+                <View className="gap-2 justify-center items-center pt-40">
+                  <AppText className="text-lg">Loading todo session...</AppText>
+                  <ActivityIndicator />
+                </View>
+              ) : todoSessionError ? (
+                <View>
+                  <AppText className="gap-2 justify-center mt-20 text-lg">
+                    Failed to load todo session details. Please try again later.
+                  </AppText>
+                </View>
+              ) : (
+                todoSessionFull && (
+                  <EditTodo
+                    todo_session={todoSessionFull}
+                    onClose={() => setEditingItem(null)}
+                    onSave={async () => {
+                      await Promise.all([
+                        queryClient.invalidateQueries({
+                          queryKey: ["feed"],
+                        }),
+                        queryClient.invalidateQueries({
+                          queryKey: ["fullTodoSession"],
+                        }),
+                      ]);
+
+                      setEditingItem(null);
+                    }}
+                  />
+                )
+              )}
+            </>
           )}
 
           {editingItem.table === "weight" && (

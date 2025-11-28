@@ -4,11 +4,13 @@ import AnimatedButton from "./animatedButton";
 type SaveButtonProps = {
   onPress: () => void;
   label?: string;
+  disabled?: boolean;
 };
 
 export default function SaveButton({
   onPress,
   label = "Save",
+  disabled,
 }: SaveButtonProps) {
   const isGuest = useUserStore((state) => state.preferences?.role === "guest");
 
@@ -29,6 +31,7 @@ export default function SaveButton({
       label={label}
       onPress={onPress}
       textClassName="text-gray-100 text-center"
+      disabled={disabled}
     />
   );
 }

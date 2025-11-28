@@ -1,16 +1,13 @@
-import {
-  NotebookPen,
-  Ellipsis,
-  SquareArrowOutUpRight,
-} from "lucide-react-native";
-import { View, TouchableOpacity } from "react-native";
-import AppText from "../AppText";
+import { ListTodo, Ellipsis, SquareArrowOutUpRight } from "lucide-react-native";
 import DropdownMenu from "../DropdownMenu";
 import { formatDate } from "@/lib/formatDate";
-import { Feed_item } from "@/types/session";
+import { todo_lists } from "@/types/models";
+import { View } from "react-native";
+import AppText from "../AppText";
+import AnimatedButton from "../buttons/animatedButton";
 
 type Props = {
-  item: Feed_item;
+  item: todo_lists;
   pinned: boolean;
   onTogglePin: () => void;
   onDelete: () => void;
@@ -18,7 +15,7 @@ type Props = {
   onEdit: () => void;
 };
 
-export default function NotesCard({
+export default function TodoCard({
   item,
   pinned,
   onTogglePin,
@@ -31,7 +28,7 @@ export default function NotesCard({
       className={`
        border rounded-md flex-col justify-between mb-10 transition-colors min-h-[159px] ${
          pinned
-           ? `border-yellow-200 bg-yellow-200`
+           ? `border-yellow-200 bg-yellow-200 text-slate-900`
            : "bg-slate-700 border-gray-100"
        }`}
     >
@@ -45,7 +42,6 @@ export default function NotesCard({
         >
           {item.title}
         </AppText>
-
         <DropdownMenu
           button={<Ellipsis size={20} color={pinned ? "#0f172a" : "#f3f4f6"} />}
           pinned={pinned}
@@ -55,23 +51,13 @@ export default function NotesCard({
         />
       </View>
 
-      {item.notes && (
-        <AppText
-          className={`ml-4 mb-4 mr-5 line-clamp-2  ${
-            pinned ? "text-slate-900" : "text-gray-100"
-          }`}
-        >
-          {item.notes}
-        </AppText>
-      )}
-
       <View className="flex-row justify-between items-center mt-2 bg-black/40 rounded-b-md">
         <View className="flex-row items-center gap-4">
           <View className="pl-2">
-            <NotebookPen size={20} color={pinned ? "#0f172a" : "#f3f4f6"} />
+            <ListTodo size={20} color={pinned ? "#0f172a" : "#f3f4f6"} />
           </View>
           <AppText className={`${pinned ? "text-slate-900" : "text-gray-100"}`}>
-            Notes
+            Todo
           </AppText>
 
           <View>
@@ -82,12 +68,13 @@ export default function NotesCard({
             </AppText>
           </View>
         </View>
-        <TouchableOpacity
+
+        <AnimatedButton
           onPress={onExpand}
           className="bg-blue-500 p-2 rounded-br-md"
         >
           <SquareArrowOutUpRight size={20} color="#f3f4f6" />
-        </TouchableOpacity>
+        </AnimatedButton>
       </View>
     </View>
   );

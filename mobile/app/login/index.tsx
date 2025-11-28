@@ -31,7 +31,7 @@ import {
   signUpWithEmail,
   sendPasswordResetEmail,
   resendEmailVerification,
-} from "./actions";
+} from "@/components/login-signup/actions";
 
 export default function LoginScreen() {
   const [login, setLogin] = useState({ email: "", password: "" });

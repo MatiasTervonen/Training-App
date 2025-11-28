@@ -7,6 +7,7 @@ type EditReminderParams = {
   notes: string | null | undefined;
   notify_at: string | null;
   delivered?: boolean;
+  updated_at: string;
 };
 
 export default async function EditReminderData({
@@ -14,7 +15,8 @@ export default async function EditReminderData({
   title,
   notes,
   notify_at,
-  delivered
+  delivered,
+  updated_at,
 }: EditReminderParams) {
   const {
     data: { session },
@@ -27,7 +29,7 @@ export default async function EditReminderData({
 
   const { error } = await supabase
     .from("reminders")
-    .update({ title, notes, notify_at, delivered })
+    .update({ title, notes, notify_at, delivered, updated_at })
     .eq("id", id)
     .eq("user_id", session.user.id);
 
@@ -37,7 +39,7 @@ export default async function EditReminderData({
       route: "/database/reminders/edit-reminders",
       method: "POST",
     });
-  throw new Error("Error updating reminder");
+    throw new Error("Error updating reminder");
   }
 
   return { success: true };

@@ -1,5 +1,5 @@
 import NotesCard from "./NotesCard";
-import { FeedCardProps } from "@/types/session";
+import { FeedCardProps } from "@/types/models";
 import WeightCard from "./WeightCard";
 import GymCard from "./GymCard";
 import ReminderCard from "./ReminderCard";

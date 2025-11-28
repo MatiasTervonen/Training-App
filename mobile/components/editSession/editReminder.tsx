@@ -4,8 +4,6 @@ import AppInput from "@/components/AppInput";
 import SaveButton from "@/components/buttons/SaveButton";
 import FullScreenLoader from "@/components/FullScreenLoader";
 import Toast from "react-native-toast-message";
-import { Feed_item } from "@/types/session";
-import { handleError } from "@/utils/handleError";
 import AppText from "../AppText";
 import { View, TouchableWithoutFeedback, Keyboard } from "react-native";
 import EditReminderData from "@/api/reminders/edit-reminder";
@@ -14,9 +12,10 @@ import AnimatedButton from "@/components/buttons/animatedButton";
 import { Plus } from "lucide-react-native";
 import { formatDateTime } from "@/lib/formatDate";
 import PageContainer from "../PageContainer";
+import { reminders } from "@/types/models";
 
 type Props = {
-  reminder: Feed_item;
+  reminder: reminders;
   onClose: () => void;
   onSave?: () => void;
 };
@@ -33,7 +32,29 @@ export default function EditReminder({ reminder, onClose, onSave }: Props) {
   const formattedNotifyAt = formatDateTime(notifyAt!);
 
   const handleSubmit = async () => {
-    setIsSaving(true);
+    if (title.trim().length === 0) {
+      Toast.show({
+        type: "error",
+        text1: "Title is required",
+      });
+      return;
+    }
+
+    if (!notifyAt) {
+      Toast.show({
+        type: "error",
+        text1: "Notify time is required",
+      });
+      return;
+    }
+
+    if (notifyAt < new Date()) {
+      Toast.show({
+        type: "error",
+        text1: "Notify time must be in the future.",
+      });
+      return;
+    }
 
     let delivered = reminder.delivered;
 
@@ -41,6 +62,9 @@ export default function EditReminder({ reminder, onClose, onSave }: Props) {
       delivered = false;
     }
 
+    const updated = new Date().toISOString();
+
+    setIsSaving(true);
     try {
       await EditReminderData({
         id: reminder.id,
@@ -48,17 +72,12 @@ export default function EditReminder({ reminder, onClose, onSave }: Props) {
         notes,
         delivered,
         notify_at: notifyAt ? notifyAt.toISOString() : null,
+        updated_at: updated,
       });
 
       await onSave?.();
       onClose();
-    } catch (error) {
-      console.error("Error editing notes:", error);
-      handleError(error, {
-        message: "Error editing notes",
-        route: "/api/notes/edit-notes",
-        method: "POST",
-      });
+    } catch {
       Toast.show({
         type: "error",
         text1: "Error editing notes",

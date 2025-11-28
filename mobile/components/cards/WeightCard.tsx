@@ -5,10 +5,10 @@ import AppText from "../AppText";
 import DropdownMenu from "../DropdownMenu";
 import { formatDate } from "@/lib/formatDate";
 import { useUserStore } from "@/lib/stores/useUserStore";
-import { Feed_item } from "@/types/session";
+import { weight } from "@/types/models";
 
 type Props = {
-  item: Feed_item;
+  item: weight;
   pinned: boolean;
   onTogglePin: () => void;
   onDelete: () => void;

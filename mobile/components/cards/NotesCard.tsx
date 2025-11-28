@@ -7,10 +7,10 @@ import { View, TouchableOpacity } from "react-native";
 import AppText from "../AppText";
 import DropdownMenu from "../DropdownMenu";
 import { formatDate } from "@/lib/formatDate";
-import { Feed_item } from "@/types/session";
+import { notes } from "@/types/models";
 
 type Props = {
-  item: Feed_item;
+  item: notes;
   pinned: boolean;
   onTogglePin: () => void;
   onDelete: () => void;

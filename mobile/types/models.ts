@@ -27,6 +27,10 @@ export type todo_lists = Database["public"]["Tables"]["todo_lists"]["Row"];
 export type full_todo_session = todo_lists & {
   todo_tasks: todo_tasks[];
 };
+export type reminders = Database["public"]["Tables"]["reminders"]["Row"];
+
+export type customReminders =
+  Database["public"]["Tables"]["custom_reminders"]["Row"];
 
 export type timers = Database["public"]["Tables"]["timers"]["Row"];
 
@@ -79,3 +83,59 @@ export type full_gym_exercises = gym_session_exercises & {
 export type full_gym_session = gym_sessions & {
   gym_session_exercises: full_gym_exercises[];
 };
+
+export type FeedCardProps =
+  | {
+      table: "notes";
+      item: notes;
+      pinned: boolean;
+      onTogglePin: () => void;
+      onDelete: () => void;
+      onExpand: () => void;
+      onEdit: () => void;
+    }
+  | {
+      table: "gym_sessions";
+      item: gym_sessions;
+      pinned: boolean;
+      onTogglePin: () => void;
+      onDelete: () => void;
+      onExpand: () => void;
+      onEdit: () => void;
+    }
+  | {
+      table: "weight";
+      item: weight;
+      pinned: boolean;
+      onTogglePin: () => void;
+      onDelete: () => void;
+      onExpand: () => void;
+      onEdit: () => void;
+    }
+  | {
+      table: "todo_lists";
+      item: todo_lists;
+      pinned: boolean;
+      onTogglePin: () => void;
+      onDelete: () => void;
+      onExpand: () => void;
+      onEdit: () => void;
+    }
+  | {
+      table: "reminders";
+      item: reminders;
+      pinned: boolean;
+      onTogglePin: () => void;
+      onDelete: () => void;
+      onExpand: () => void;
+      onEdit: () => void;
+    }
+  | {
+      table: "custom_reminders";
+      item: customReminders;
+      pinned: boolean;
+      onTogglePin: () => void;
+      onDelete: () => void;
+      onExpand: () => void;
+      onEdit: () => void;
+    };

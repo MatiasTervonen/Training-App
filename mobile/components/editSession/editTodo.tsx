@@ -54,6 +54,7 @@ export default function EditTodo({ todo_session, onClose, onSave }: Props) {
           is_completed: false,
           list_id: prev.id,
           user_id: prev.user_id,
+          updated_at: "",
         },
       ],
     }));
@@ -76,6 +77,8 @@ export default function EditTodo({ todo_session, onClose, onSave }: Props) {
     });
   };
 
+  const updated = new Date().toISOString();
+
   const handleSave = async () => {
     setIsSaving(true);
 
@@ -89,6 +92,7 @@ export default function EditTodo({ todo_session, onClose, onSave }: Props) {
           notes: task.notes ?? undefined,
         })),
         deletedIds,
+        updated_at: updated,
       });
 
       Toast.show({

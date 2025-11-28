@@ -4,15 +4,15 @@ import AppInput from "@/components/AppInput";
 import SaveButton from "@/components/buttons/SaveButton";
 import FullScreenLoader from "@/components/FullScreenLoader";
 import Toast from "react-native-toast-message";
-import { Feed_item } from "@/types/session";
 import { handleError } from "@/utils/handleError";
 import AppText from "../AppText";
 import { View, TouchableWithoutFeedback, Keyboard } from "react-native";
 import { editWeight } from "@/api/weight/edit-weight";
 import PageContainer from "../PageContainer";
+import { weight } from "@/types/models";
 
 type Props = {
-  weight: Feed_item;
+  weight: weight;
   onClose: () => void;
   onSave?: () => void;
 };
@@ -38,12 +38,7 @@ export default function EditWeight({ weight, onClose, onSave }: Props) {
 
       onSave?.();
       onClose();
-    } catch (error) {
-      handleError(error, {
-        message: "Error editing weight session",
-        route: "/api/weight/edit-weight",
-        method: "POST",
-      });
+    } catch {
       Toast.show({
         type: "error",
         text1: "Failed to update weight session",

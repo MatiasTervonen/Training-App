@@ -6,6 +6,7 @@ type TodoListEdit = {
   title: string;
   tasks: TodoTaskEdit[];
   deletedIds: string[];
+  updated_at: string;
 };
 
 type TodoTaskEdit = {
@@ -19,6 +20,7 @@ export async function editTodo({
   title,
   tasks,
   deletedIds,
+  updated_at,
 }: TodoListEdit) {
   const {
     data: { session },
@@ -31,7 +33,7 @@ export async function editTodo({
 
   const { error: listError } = await supabase
     .from("todo_lists")
-    .update({ title })
+    .update({ title, updated_at })
     .eq("id", listId)
     .eq("user_id", session.user.id);
 

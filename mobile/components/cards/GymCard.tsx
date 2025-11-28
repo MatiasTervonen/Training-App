@@ -4,9 +4,10 @@ import AppText from "../AppText";
 import DropdownMenu from "../DropdownMenu";
 import { formatDate } from "@/lib/formatDate";
 import { Feed_item } from "@/types/session";
+import { gym_sessions } from "../../types/models";
 
 type Props = {
-  item: Feed_item;
+  item: gym_sessions;
   pinned: boolean;
   onTogglePin: () => void;
   onDelete: () => void;

@@ -429,6 +429,7 @@ export type Database = {
           main_group: string
           muscle_group: string
           name: string
+          updated_at: string | null
           user_id: string | null
         }
         Insert: {
@@ -439,6 +440,7 @@ export type Database = {
           main_group: string
           muscle_group: string
           name: string
+          updated_at?: string | null
           user_id?: string | null
         }
         Update: {
@@ -449,6 +451,7 @@ export type Database = {
           main_group?: string
           muscle_group?: string
           name?: string
+          updated_at?: string | null
           user_id?: string | null
         }
         Relationships: [
@@ -523,6 +526,7 @@ export type Database = {
           id: string
           notes: string | null
           title: string | null
+          updated_at: string | null
           user_id: string
         }
         Insert: {
@@ -531,6 +535,7 @@ export type Database = {
           id?: string
           notes?: string | null
           title?: string | null
+          updated_at?: string | null
           user_id: string
         }
         Update: {
@@ -539,6 +544,7 @@ export type Database = {
           id?: string
           notes?: string | null
           title?: string | null
+          updated_at?: string | null
           user_id?: string
         }
         Relationships: [
@@ -561,6 +567,7 @@ export type Database = {
           session_exercise_id: string
           set_number: number
           time_min: number | null
+          updated_at: string | null
           user_id: string
           weight: number | null
         }
@@ -573,6 +580,7 @@ export type Database = {
           session_exercise_id: string
           set_number: number
           time_min?: number | null
+          updated_at?: string | null
           user_id: string
           weight?: number | null
         }
@@ -585,6 +593,7 @@ export type Database = {
           session_exercise_id?: string
           set_number?: number
           time_min?: number | null
+          updated_at?: string | null
           user_id?: string
           weight?: number | null
         }
@@ -740,6 +749,7 @@ export type Database = {
           id: string
           notes: string | null
           title: string | null
+          updated_at: string | null
           user_id: string
         }
         Insert: {
@@ -747,6 +757,7 @@ export type Database = {
           id?: string
           notes?: string | null
           title?: string | null
+          updated_at?: string | null
           user_id: string
         }
         Update: {
@@ -754,6 +765,7 @@ export type Database = {
           id?: string
           notes?: string | null
           title?: string | null
+          updated_at?: string | null
           user_id?: string
         }
         Relationships: [
@@ -831,6 +843,7 @@ export type Database = {
           notify_at: string
           title: string
           type: string
+          updated_at: string | null
           user_id: string
         }
         Insert: {
@@ -841,6 +854,7 @@ export type Database = {
           notify_at: string
           title: string
           type: string
+          updated_at?: string | null
           user_id?: string
         }
         Update: {
@@ -851,6 +865,7 @@ export type Database = {
           notify_at?: string
           title?: string
           type?: string
+          updated_at?: string | null
           user_id?: string
         }
         Relationships: [
@@ -870,6 +885,7 @@ export type Database = {
           notes: string | null
           time_seconds: number
           title: string
+          updated_at: string | null
           user_id: string
         }
         Insert: {
@@ -878,6 +894,7 @@ export type Database = {
           notes?: string | null
           time_seconds: number
           title: string
+          updated_at?: string | null
           user_id: string
         }
         Update: {
@@ -886,6 +903,7 @@ export type Database = {
           notes?: string | null
           time_seconds?: number
           title?: string
+          updated_at?: string | null
           user_id?: string
         }
         Relationships: [
@@ -903,18 +921,21 @@ export type Database = {
           created_at: string
           id: string
           title: string
+          updated_at: string | null
           user_id: string
         }
         Insert: {
           created_at?: string
           id?: string
           title: string
+          updated_at?: string | null
           user_id: string
         }
         Update: {
           created_at?: string
           id?: string
           title?: string
+          updated_at?: string | null
           user_id?: string
         }
         Relationships: [
@@ -935,6 +956,7 @@ export type Database = {
           list_id: string
           notes: string | null
           task: string
+          updated_at: string | null
           user_id: string
         }
         Insert: {
@@ -944,6 +966,7 @@ export type Database = {
           list_id: string
           notes?: string | null
           task: string
+          updated_at?: string | null
           user_id: string
         }
         Update: {
@@ -953,6 +976,7 @@ export type Database = {
           list_id?: string
           notes?: string | null
           task?: string
+          updated_at?: string | null
           user_id?: string
         }
         Relationships: [
@@ -1087,7 +1111,8 @@ export type Database = {
           created_at: string
           id: string
           notes: string | null
-          title: string | null
+          title: string
+          updated_at: string | null
           user_id: string
           weight: number
         }
@@ -1095,7 +1120,8 @@ export type Database = {
           created_at?: string
           id?: string
           notes?: string | null
-          title?: string | null
+          title: string
+          updated_at?: string | null
           user_id: string
           weight: number
         }
@@ -1103,7 +1129,8 @@ export type Database = {
           created_at?: string
           id?: string
           notes?: string | null
-          title?: string | null
+          title?: string
+          updated_at?: string | null
           user_id?: string
           weight?: number
         }

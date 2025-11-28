@@ -51,6 +51,16 @@ export default function TodoCard({
         />
       </View>
 
+      <View className="flex-row items-center ml-4 ">
+        <AppText
+          className={`text-sm  ${
+            pinned ? "text-slate-900" : "text-yellow-500"
+          } `}
+        >
+          updated at: {formatDate(item.updated_at!)}
+        </AppText>
+      </View>
+
       <View className="flex-row justify-between items-center mt-2 bg-black/40 rounded-b-md">
         <View className="flex-row items-center gap-4">
           <View className="pl-2">

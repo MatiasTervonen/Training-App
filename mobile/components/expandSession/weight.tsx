@@ -1,13 +1,12 @@
 import { formatDate } from "@/lib/formatDate";
 import { useUserStore } from "@/lib/stores/useUserStore";
-import { Feed_item } from "@/types/session";
-
 import { View } from "react-native";
 import AppText from "../AppText";
 import PageContainer from "../PageContainer";
 import LinkButton from "../buttons/LinkButton";
+import { weight } from "@/types/models";
 
-export default function WeightSession(weight: Feed_item) {
+export default function WeightSession(weight: weight) {
   const weightUnit =
     useUserStore((state) => state.preferences?.weight_unit) || "kg";
 

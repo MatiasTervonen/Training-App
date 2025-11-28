@@ -122,27 +122,6 @@ export type Feed_item = {
   notification_id?: string[] | string | null;
 };
 
-export type FeedCardProps = {
-  table:
-    | "notes"
-    | "gym_sessions"
-    | "weight"
-    | "todo_lists"
-    | "reminders"
-    | "custom_reminders";
-  item: Feed_item;
-  pinned: boolean;
-  onTogglePin: () => void;
-  onDelete: () => void;
-  onExpand: () => void;
-  onEdit: () => void;
-};
-
-export type FeedResponse = {
-  feed: Feed_item[];
-  nextPage: number | null;
-};
-
 export type FeedData = {
   pageParams: any[];
   pages: {

@@ -1,11 +1,11 @@
 import { formatDate } from "@/lib/formatDate";
-import { Feed_item } from "@/types/session";
 import { View } from "react-native";
 import AppText from "../AppText";
 import CopyText from "../CopyToClipboard";
 import PageContainer from "../PageContainer";
+import { notes } from "@/types/models";
 
-export default function NotesSession(notes: Feed_item) {
+export default function NotesSession(notes: notes) {
   return (
     <PageContainer className="mb-10">
       <AppText className="text-lg text-gray-400 text-center">

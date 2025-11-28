@@ -1,4 +1,8 @@
-import { full_gym_session, full_todo_session } from "@/types/models";
+import {
+  full_gym_session,
+  full_todo_session,
+  FeedCardProps,
+} from "@/types/models";
 import { useState, useMemo, useEffect } from "react";
 import Toast from "react-native-toast-message";
 import AppText from "@/components/AppText";
@@ -44,17 +48,7 @@ import TodoSession from "../expandSession/todo";
 import { getFullTodoSession } from "@/api/todo/get-full-todo";
 import EditTodo from "../editSession/editTodo";
 
-type FeedItem = {
-  table:
-    | "notes"
-    | "gym_sessions"
-    | "weight"
-    | "todo_lists"
-    | "reminders"
-    | "custom_reminders";
-  item: Feed_item;
-  pinned: boolean;
-};
+type FeedItem = FeedCardProps;
 
 type FeedData = {
   pageParams: number[];
@@ -115,7 +109,7 @@ export default function SessionFeed() {
             table: "reminders",
             item: { ...feedItem, id: feedItem.id },
             pinned: feedItem.pinned,
-          });
+          } as any);
         }
       } catch (error) {
         console.error("Error fetching reminder from notification:", error);
@@ -328,7 +322,7 @@ export default function SessionFeed() {
         });
       }
 
-      if (table === "reminders" || "custom_reminders") {
+      if (table === "reminders" || table === "custom_reminders") {
         queryClient.refetchQueries({
           queryKey: ["get-reminders"],
           exact: true,
@@ -341,10 +335,6 @@ export default function SessionFeed() {
             await Notifications.cancelScheduledNotificationAsync(id);
           }
         }
-        queryClient.refetchQueries({
-          queryKey: ["get-reminders"],
-          exact: true,
-        });
       }
 
       Toast.show({
@@ -491,8 +481,16 @@ export default function SessionFeed() {
                     togglePin(feedItem.item.id, feedItem.table, false)
                   }
                   onDelete={() => {
+                    const notificationId =
+                      feedItem.table === "custom_reminders"
+                        ? (feedItem.item.notification_id as
+                            | string
+                            | string[]
+                            | null) ?? null
+                        : null;
+
                     handleDelete(
-                      feedItem.item.notification_id ?? null,
+                      notificationId,
                       feedItem.item.id,
                       feedItem.table
                     );
@@ -641,8 +639,8 @@ export default function SessionFeed() {
             <EditNotes
               note={editingItem.item}
               onClose={() => setEditingItem(null)}
-              onSave={() => {
-                queryClient.invalidateQueries({ queryKey: ["feed"] });
+              onSave={async () => {
+                await queryClient.invalidateQueries({ queryKey: ["feed"] });
                 setEditingItem(null);
               }}
             />
@@ -652,8 +650,8 @@ export default function SessionFeed() {
             <EditReminder
               reminder={editingItem.item}
               onClose={() => setEditingItem(null)}
-              onSave={() => {
-                queryClient.invalidateQueries({ queryKey: ["feed"] });
+              onSave={async () => {
+                await queryClient.invalidateQueries({ queryKey: ["feed"] });
                 setEditingItem(null);
               }}
             />
@@ -699,8 +697,8 @@ export default function SessionFeed() {
             <EditWeight
               weight={editingItem.item}
               onClose={() => setEditingItem(null)}
-              onSave={() => {
-                queryClient.invalidateQueries({ queryKey: ["feed"] });
+              onSave={async () => {
+                await queryClient.invalidateQueries({ queryKey: ["feed"] });
                 setEditingItem(null);
               }}
             />

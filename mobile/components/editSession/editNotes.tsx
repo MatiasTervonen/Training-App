@@ -4,15 +4,15 @@ import AppInput from "@/components/AppInput";
 import SaveButton from "@/components/buttons/SaveButton";
 import FullScreenLoader from "@/components/FullScreenLoader";
 import Toast from "react-native-toast-message";
-import { Feed_item } from "@/types/session";
 import { handleError } from "@/utils/handleError";
 import AppText from "../AppText";
 import { View, TouchableWithoutFeedback, Keyboard } from "react-native";
 import { editNotes } from "@/api/notes/edit-notes";
 import PageContainer from "../PageContainer";
+import { notes } from "@/types/models";
 
 type Props = {
-  note: Feed_item;
+  note: notes;
   onClose: () => void;
   onSave?: () => void;
 };
@@ -30,12 +30,7 @@ export default function EditNotes({ note, onClose, onSave }: Props) {
 
       await onSave?.();
       onClose();
-    } catch (error) {
-      handleError(error, {
-        message: "Error editing notes",
-        route: "/api/notes/edit-notes",
-        method: "POST",
-      });
+    } catch {
       Toast.show({
         type: "error",
         text1: "Error editing notes",

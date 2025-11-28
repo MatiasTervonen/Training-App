@@ -5,13 +5,14 @@ import {
   Check,
 } from "lucide-react-native";
 import { formatDate, formatDateTime, formatNotifyTime } from "@/lib/formatDate";
-import { Feed_item } from "@/types/session";
 import { View, TouchableOpacity } from "react-native";
 import AppText from "../AppText";
 import DropdownMenu from "../DropdownMenu";
+import { customReminders } from "@/types/models";
+
 
 type Props = {
-  item: Feed_item;
+  item: customReminders;
   pinned: boolean;
   onTogglePin: () => void;
   onDelete: () => void;

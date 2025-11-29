@@ -23,67 +23,73 @@ export default function NotesCard({
   return (
     <div
       className={`
-       border rounded-md flex flex-col justify-between transition-colors min-h-[159px] ${
+       border rounded-md flex flex-col justify-between transition-colors min-h-[159px]  ${
          pinned
            ? `border-yellow-200 bg-yellow-200 text-slate-900`
            : "bg-slate-700"
        }`}
     >
-      <div className="flex justify-between items-center mt-2 mb-4 mx-4">
-        <div className="mr-8 line-clamp-1 border-b">{item.title}</div>
-        <DropdownMenu
-          button={
-            <div
-              aria-label="More options"
-              className={`cursor-pointer ${
-                pinned ? "text-slate-900" : "text-gray-100"
-              }`}
+      <div className="flex flex-col justify-between flex-1">
+        <div className="flex justify-between items-center mt-2 mx-4">
+          <div className="mr-8 line-clamp-1 border-b">{item.title}</div>
+          <DropdownMenu
+            button={
+              <div
+                aria-label="More options"
+                className={`cursor-pointer ${
+                  pinned ? "text-slate-900" : "text-gray-100"
+                }`}
+              >
+                <Ellipsis size={20} />
+              </div>
+            }
+          >
+            <button
+              aria-label="Edit note"
+              onClick={() => {
+                onEdit();
+              }}
+              className="border-b py-2 px-4 hover:bg-gray-600"
             >
-              <Ellipsis size={20} />
-            </div>
-          }
-        >
-          <button
-            aria-label="Edit note"
-            onClick={() => {
-              onEdit();
-            }}
-            className="border-b py-2 px-4 hover:bg-gray-600"
-          >
-            Edit
-          </button>
-          <button
-            aria-label="Pin or unpin note"
-            onClick={() => {
-              onTogglePin();
-            }}
-            className="border-b py-2 px-4 hover:bg-gray-600"
-          >
-            {pinned ? "Unpin" : "Pin"}
-          </button>
-          <button
-            aria-label="Delete note"
-            onClick={() => {
-              onDelete();
-            }}
-            className="py-2 px-4 hover:bg-gray-600"
-          >
-            Delete
-          </button>
-        </DropdownMenu>
-      </div>
-
-      <div className="ml-4 mb-4 mr-5 line-clamp-2">{item.notes}</div>
-
-      {item.updated_at && (
-        <div
-          className={`ml-4 text-sm ${
-            pinned ? "text-slate-900" : "text-yellow-500"
-          }`}
-        >
-          updated: {formatDate(item.updated_at)}
+              Edit
+            </button>
+            <button
+              aria-label="Pin or unpin note"
+              onClick={() => {
+                onTogglePin();
+              }}
+              className="border-b py-2 px-4 hover:bg-gray-600"
+            >
+              {pinned ? "Unpin" : "Pin"}
+            </button>
+            <button
+              aria-label="Delete note"
+              onClick={() => {
+                onDelete();
+              }}
+              className="py-2 px-4 hover:bg-gray-600"
+            >
+              Delete
+            </button>
+          </DropdownMenu>
         </div>
-      )}
+
+        <div className="ml-4  mr-5 line-clamp-2 wrap-break-word">
+          {item.notes}
+        </div>
+
+        {item.updated_at ? (
+          <p
+            className={`ml-4 text-sm ${
+              pinned ? "text-slate-900" : "text-yellow-500"
+            }`}
+          >
+            updated: {formatDate(item.updated_at)}
+          </p>
+        ) : (
+          <p className="invisible"></p>
+        )}
+      </div>
 
       <div className="flex justify-between items-center mt-2 bg-black/40 rounded-b-md">
         {/* Icon */}

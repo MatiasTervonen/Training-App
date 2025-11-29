@@ -27,9 +27,9 @@ export default function PinnedCarousel({
   return (
     <View>
       <View className="flex-row items-center mb-2 gap-2 ml-4">
-        <Pin size={20} color="#9ca3af" />
-        <AppText className="text-gray-400">Pinned</AppText>
-        <AppText className="text-gray-400">
+        <Pin size={20} color="#d1d5db" />
+        <AppText className="text-gray-300">Pinned</AppText>
+        <AppText className="text-gray-300">
           {activeIndex + 1} / {pinnedFeed.length}
         </AppText>
       </View>

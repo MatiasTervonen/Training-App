@@ -29,52 +29,58 @@ export default function NotesCard({
   return (
     <View
       className={`
-       border rounded-md flex-col justify-between mb-10 transition-colors min-h-[159px] ${
+       border rounded-md flex-col justify-between transition-colors min-h-[159px] ${
          pinned
            ? `border-yellow-200 bg-yellow-200`
            : "bg-slate-700 border-gray-100"
        }`}
     >
-      <View className="flex-row justify-between items-center mt-2 mb-4 mx-4">
-        <AppText
-          className={`flex-1 mr-8 underline text-lg ${
-            pinned ? "text-slate-900 border-slate-900" : "text-gray-100"
-          }`}
-          numberOfLines={1}
-          ellipsizeMode="tail"
-        >
-          {item.title}
-        </AppText>
+      <View className="justify-between flex-1">
+        <View className="flex-row justify-between items-center mt-2 mx-4">
+          <AppText
+            className={`flex-1 mr-8 underline text-lg ${
+              pinned ? "text-slate-900 border-slate-900" : "text-gray-100"
+            }`}
+            numberOfLines={1}
+            ellipsizeMode="tail"
+          >
+            {item.title}
+          </AppText>
 
-        <DropdownMenu
-          button={<Ellipsis size={20} color={pinned ? "#0f172a" : "#f3f4f6"} />}
-          pinned={pinned}
-          onEdit={onEdit}
-          onTogglePin={onTogglePin}
-          onDelete={onDelete}
-        />
+          <DropdownMenu
+            button={
+              <Ellipsis size={20} color={pinned ? "#0f172a" : "#f3f4f6"} />
+            }
+            pinned={pinned}
+            onEdit={onEdit}
+            onTogglePin={onTogglePin}
+            onDelete={onDelete}
+          />
+        </View>
+
+        {item.notes && (
+          <AppText
+            className={`ml-4 mr-5  ${
+              pinned ? "text-slate-900" : "text-gray-100"
+            }`}
+            numberOfLines={2}
+          >
+            {item.notes}
+          </AppText>
+        )}
+
+        {item.updated_at ? (
+          <AppText
+            className={`ml-4 text-sm ${
+              pinned ? "text-slate-900" : "text-yellow-500"
+            } `}
+          >
+            updated: {formatDate(item.updated_at)}
+          </AppText>
+        ) : (
+          <AppText className="min-h-5"></AppText>
+        )}
       </View>
-
-      {item.notes && (
-        <AppText
-          className={`ml-4 mb-4 mr-5 line-clamp-2  ${
-            pinned ? "text-slate-900" : "text-gray-100"
-          }`}
-        >
-          {item.notes}
-        </AppText>
-      )}
-
-      {item.updated_at && (
-        <AppText
-          className={`ml-4 text-sm ${
-            pinned ? "text-slate-900" : "text-yellow-500"
-          } `}
-        >
-          updated: {formatDate(item.updated_at)}
-        </AppText>
-      )}
-
       <View className="flex-row justify-between items-center mt-2 bg-black/40 rounded-b-md">
         <View className="flex-row items-center gap-4">
           <View className="pl-2">

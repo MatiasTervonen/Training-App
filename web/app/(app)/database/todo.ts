@@ -152,6 +152,8 @@ export async function editTodo({
 }
 
 type TodoTaskCheck = {
+  updated_at: string;
+  listId: string;
   todo_tasks: {
     id: string;
     list_id: string;
@@ -160,7 +162,11 @@ type TodoTaskCheck = {
   }[];
 };
 
-export async function checkedTodo({ todo_tasks }: TodoTaskCheck) {
+export async function checkedTodo({
+  updated_at,
+  listId,
+  todo_tasks,
+}: TodoTaskCheck) {
   const supabase = await createClient();
 
   const { data, error: authError } = await supabase.auth.getClaims();
@@ -168,6 +174,21 @@ export async function checkedTodo({ todo_tasks }: TodoTaskCheck) {
 
   if (authError || !user) {
     throw new Error("Unauthorized");
+  }
+
+  const { error: listError } = await supabase
+    .from("todo_lists")
+    .update({ updated_at })
+    .eq("id", listId)
+    .eq("user_id", user.sub);
+
+  if (listError) {
+    handleError(listError, {
+      message: "Error editing todo list",
+      route: "server-action: editTodo",
+      method: "direct",
+    });
+    throw new Error("Error editing todo list");
   }
 
   const upsertedTasks = todo_tasks.map((task) => ({
@@ -178,12 +199,13 @@ export async function checkedTodo({ todo_tasks }: TodoTaskCheck) {
     user_id: user.sub,
   }));
 
-  const { error: listError } = await supabase
+  const { error: taskError } = await supabase
     .from("todo_tasks")
-    .upsert(upsertedTasks, { onConflict: "id" });
+    .upsert(upsertedTasks, { onConflict: "id" })
+    .eq("user_id", user.sub);
 
-  if (listError) {
-    handleError(listError, {
+  if (taskError) {
+    handleError(taskError, {
       message: "Error checking todo tasks",
       route: "server-action: checkedTodo",
       method: "direct",

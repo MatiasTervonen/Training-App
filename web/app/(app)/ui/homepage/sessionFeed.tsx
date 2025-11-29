@@ -100,11 +100,16 @@ export default function SessionFeed() {
   useEffect(() => {
     if (!loadMoreRef.current) return;
 
-    const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
-        fetchNextPage();
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      {
+        rootMargin: "300px",
       }
-    });
+    );
 
     observer.observe(loadMoreRef.current);
 
@@ -287,27 +292,36 @@ export default function SessionFeed() {
     gcTime: Infinity,
   });
 
+  // runs when feed finishes loading. Prefetch full sessions
+
+  const hashPrefetched = useRef(false);
+
   useEffect(() => {
-    if (!feed || feed.length === 0) return;
+    if (!data || hashPrefetched.current) return;
+    if (data.pages.length === 0) return;
 
-    feed
-      .filter((f) => f.table === "todo_lists")
-      .forEach((f) => {
-        queryClient.prefetchQuery({
-          queryKey: ["fullTodoSession", f.item.id],
-          queryFn: () => getFullTodoSession(f.item.id),
-        });
-      });
+    hashPrefetched.current = true;
 
-    feed
-      .filter((f) => f.table === "gym_sessions")
-      .forEach((f) => {
+    const firstPageFeed = data.pages[0].feed;
+
+    firstPageFeed.forEach((f) => {
+      if (f.type === "todo_lists") {
         queryClient.prefetchQuery({
-          queryKey: ["fullGymSession", f.item.id],
-          queryFn: () => getFullGymSession(f.item.id),
+          queryKey: ["fullTodoSession", f.id],
+          queryFn: () => getFullTodoSession(f.id!),
         });
-      });
-  }, [feed, queryClient]); // runs when feed finishes loading
+      }
+    });
+
+    firstPageFeed.forEach((f) => {
+      if (f.type === "gym_sessions") {
+        queryClient.prefetchQuery({
+          queryKey: ["fullGymSession", f.id],
+          queryFn: () => getFullGymSession(f.id!),
+        });
+      }
+    });
+  }, [data, queryClient]);
 
   // Pinned carousell
 
@@ -443,13 +457,18 @@ export default function SessionFeed() {
                 </div>
               );
             })}
-            {isFetchingNextPage && (
+            {isFetchingNextPage ? (
               <div className="flex flex-col gap-2 items-center mt-10">
                 <p>Loading more...</p>
                 <Spinner />
               </div>
+            ) : hasNextPage ? (
+              <div ref={loadMoreRef} className="h-20"></div>
+            ) : (
+              <p className="text-center justify-center mt-10 text-gray-300">
+                No more sessions
+              </p>
             )}
-            <div ref={loadMoreRef} className="h-10"></div>
           </>
         )}
 

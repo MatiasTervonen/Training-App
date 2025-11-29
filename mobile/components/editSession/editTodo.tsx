@@ -95,12 +95,12 @@ export default function EditTodo({ todo_session, onClose, onSave }: Props) {
         updated_at: updated,
       });
 
+      await onSave?.();
+      onClose();
       Toast.show({
         type: "success",
         text1: "Session updated successfully",
       });
-      await onSave?.();
-      onClose();
     } catch {
       Toast.show({
         type: "error",

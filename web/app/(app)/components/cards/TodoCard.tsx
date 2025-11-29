@@ -95,13 +95,17 @@ export default function TodoCard({
           </p>
         )}
 
-        <p
-          className={`text-sm ml-4 ${
-            pinned ? "text-slate-900" : "text-yellow-500"
-          } `}
-        >
-          updated: {formatDate(item.updated_at!)}
-        </p>
+        {item.updated_at ? (
+          <p
+            className={`text-sm ml-4 min-h-5 ${
+              pinned ? "text-slate-900" : "text-yellow-500"
+            } `}
+          >
+            updated: {formatDate(item.updated_at)}
+          </p>
+        ) : (
+          <p className="min-h-5 invisible"></p>
+        )}
       </div>
 
       <div className="flex justify-between items-center mt-2 bg-black/40 rounded-b-md">

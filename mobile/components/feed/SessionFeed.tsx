@@ -3,7 +3,7 @@ import {
   full_todo_session,
   FeedCardProps,
 } from "@/types/models";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import Toast from "react-native-toast-message";
 import AppText from "@/components/AppText";
 import { unpinItem } from "@/api/pinned/unpin-items";
@@ -428,27 +428,36 @@ export default function SessionFeed() {
     gcTime: Infinity,
   });
 
+  // runs when feed finishes loading. Prefetch full sessions
+
+  const hashPrefetched = useRef(false);
+
   useEffect(() => {
-    if (!feed || feed.length === 0) return;
+    if (!data || hashPrefetched.current) return;
+    if (data.pages.length === 0) return;
 
-    feed
-      .filter((f) => f.table === "todo_lists")
-      .forEach((f) => {
-        queryClient.prefetchQuery({
-          queryKey: ["fullTodoSession", f.item.id],
-          queryFn: () => getFullTodoSession(f.item.id),
-        });
-      });
+    hashPrefetched.current = true;
 
-    feed
-      .filter((f) => f.table === "gym_sessions")
-      .forEach((f) => {
+    const firstPageFeed = data.pages[0].feed;
+
+    firstPageFeed.forEach((f) => {
+      if (f.type === "todo_lists") {
         queryClient.prefetchQuery({
-          queryKey: ["fullGymSession", f.item.id],
-          queryFn: () => getFullGymSession(f.item.id),
+          queryKey: ["fullTodoSession", f.id],
+          queryFn: () => getFullTodoSession(f.id!),
         });
-      });
-  }, [feed, queryClient]); // runs when feed finishes loading
+      }
+    });
+
+    firstPageFeed.forEach((f) => {
+      if (f.type === "gym_sessions") {
+        queryClient.prefetchQuery({
+          queryKey: ["fullGymSession", f.id],
+          queryFn: () => getFullGymSession(f.id!),
+        });
+      }
+    });
+  }, [data, queryClient]);
 
   return (
     <LinearGradient
@@ -495,7 +504,7 @@ export default function SessionFeed() {
             }}
             onEndReachedThreshold={0.5}
             renderItem={({ item: feedItem }) => (
-              <View className="px-4">
+              <View className="px-4 mb-10">
                 <FeedCard
                   {...feedItem}
                   pinned={false}

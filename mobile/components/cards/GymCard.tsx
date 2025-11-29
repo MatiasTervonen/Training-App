@@ -53,13 +53,13 @@ export default function GymCard({
   return (
     <View
       className={`
-       border rounded-md flex-col justify-between mb-10 transition-colors min-h-[159px] ${
+       border rounded-md flex-col justify-between transition-colors min-h-[159px] ${
          pinned
            ? `border-yellow-200 bg-yellow-200`
            : "bg-slate-700 border-gray-100"
        }`}
     >
-      <View className="flex-row justify-between items-center mt-2 mb-4 mx-4">
+      <View className="flex-row justify-between items-center mt-2 mx-4">
         <AppText
           className={`flex-1 mr-8 underline text-lg  ${
             pinned
@@ -80,10 +80,12 @@ export default function GymCard({
         />
       </View>
 
-      <View className="flex-row">
-        <AppText className="ml-4">Exercises: {totalExercises}</AppText>
-        <AppText className="ml-4">Sets: {totalSets}</AppText>
-      </View>
+      {fullGym && (
+        <View className="flex-row">
+          <AppText className="ml-4">Exercises: {totalExercises}</AppText>
+          <AppText className="ml-4">Sets: {totalSets}</AppText>
+        </View>
+      )}
 
       <View className="flex-row justify-between items-center mt-2 bg-black/40 rounded-b-md">
         <View className="flex-row items-center gap-4">

@@ -34,11 +34,15 @@ export default function TodoSession({
     });
   };
 
+  const updated = new Date().toISOString();
+
   const saveChanges = async () => {
     setIsSaving(true);
 
     try {
       await checkedTodo({
+        updated_at: updated,
+        listId: sessionData.id,
         todo_tasks: sessionData.todo_tasks.map((task) => ({
           id: task.id,
           list_id: task.list_id,
@@ -61,7 +65,7 @@ export default function TodoSession({
     JSON.stringify(initialTodo.todo_tasks);
 
   return (
-    <div className="text-center max-w-lg mx-auto flex flex-col min-h-full justify-between px-2 mt-5 pb-10">
+    <div className="text-center max-w-lg mx-auto flex flex-col min-h-full justify-between pb-10 pt-5 px-2">
       <div className="flex flex-col items-center">
         <div className="flex flex-col gap-2 text-sm text-gray-400 mb-10">
           <p> Created: {formatDate(sessionData.created_at)}</p>
@@ -85,16 +89,14 @@ export default function TodoSession({
                     }}
                     checked={task.is_completed}
                     type="checkbox"
-                    className=" h-6 w-6 rounded-md border border-gray-400 bg-slate-800 cursor-pointer transition-colors"
+                    className=" h-6 w-6 rounded-md border border-gray-400 cursor-pointer transition-colors"
                   />
-                  <li className="w-full text-lg border p-2 rounded-md flex justify-between gap-2 bg-slate-900 min-w-0">
-                    <p className="text-left  line-clamp-2 wrap-break-word mr-2">
-                      {task.task}
-                    </p>
+                  <li className="w-full items-center border p-2 rounded-md flex justify-between gap-2 bg-slate-900 min-w-0">
+                    <p className="text-left line-clamp-1">{task.task}</p>
                     <div className="flex gap-4">
                       <button
                         onClick={() => setOpen(index)}
-                        className="bg-blue-500 text-gray-100 px-1 rounded-md hover:bg-blue-400"
+                        className="bg-blue-500 p-1 rounded-md hover:bg-blue-400"
                       >
                         <SquareArrowOutUpRight size={20} />
                       </button>
@@ -107,11 +109,11 @@ export default function TodoSession({
                         }}
                         isOpen={true}
                       >
-                        <div className="flex flex-col max-w-lg mx-auto mt-10 px-5">
-                          <h3 className="text-2xl mb-10 wrap-break-word">
+                        <div className="flex flex-col max-w-lg mx-auto mt-10 px-4">
+                          <h3 className="text-xl mb-10 wrap-break-word">
                             {task.task}
                           </h3>
-                          <p className="bg-slate-900 p-10 whitespace-pre-wrap wrap-break-word rounded-md text-left">
+                          <p className="bg-slate-900 p-5 sm:p-10 whitespace-pre-wrap wrap-break-word rounded-md text-left">
                             {task.notes || "No notes available"}
                           </p>
                         </div>
@@ -131,7 +133,7 @@ export default function TodoSession({
           </ul>
         </div>
       </div>
-      <div className="mt-10">
+      <div className="mt-10 px-4">
         <SaveButton
           onClick={saveChanges}
           disabled={!hasChanges}

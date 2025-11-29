@@ -68,14 +68,16 @@ export default function TodoSession({
   return (
     <View className="max-w-lg justify-between pt-5 pb-10 flex-1 px-2">
       <View className="items-center">
-        <AppText className="text-sm text-gray-400 mb-10">
-          created at: {formatDate(sessionData.created_at)}
-        </AppText>
-        {sessionData.updated_at && (
-          <AppText className="text-sm text-gray-400 mb-10">
-            updated at: {formatDate(sessionData.updated_at)}
+        <View className="mb-10 gap-2">
+          <AppText className="text-sm text-gray-300">
+            created: {formatDate(sessionData.created_at)}
           </AppText>
-        )}
+          {sessionData.updated_at && (
+            <AppText className="text-sm text-gray-300">
+              updated: {formatDate(sessionData.updated_at)}
+            </AppText>
+          )}
+        </View>
         <View className="bg-slate-950 px-4 rounded-xl pb-5 w-full">
           <AppText className="my-5 text-xl wrap-break-word text-center">
             {sessionData.title}
@@ -91,12 +93,12 @@ export default function TodoSession({
                       toggleCompleted(index);
                     }}
                     value={task.is_completed}
-                    className="bg-slate-800 "
+                    className="bg-slate-800"
                   />
-                  <View className="flex-row flex-1 items-center border border-gray-100 p-2 rounded-md justify-between bg-slate-900">
+                  <View className="flex-row flex-1 items-center border border-gray-100 py-2 pl-2 rounded-md justify-between bg-slate-900">
                     <AppText
-                      className="text-left mr-2 ml-2 text-lg flex-1"
-                      numberOfLines={2}
+                      className="text-left mr-2 ml-1 flex-1"
+                      numberOfLines={1}
                       ellipsizeMode="tail"
                     >
                       {task.task}
@@ -104,7 +106,7 @@ export default function TodoSession({
 
                     <AnimatedButton
                       onPress={() => setOpen(index)}
-                      className="bg-blue-500 p-1 rounded-md "
+                      className="bg-blue-500 p-1 rounded-md mr-2"
                       textClassName="text-gray-100"
                     >
                       <SquareArrowOutUpRight size={20} color="#f3f4f6" />
@@ -118,7 +120,7 @@ export default function TodoSession({
                         isOpen={true}
                       >
                         <View className="flex flex-col max-w-lg mx-auto mt-10 px-5">
-                          <AppText className="text-2xl mb-10 wrap-break-word text-center">
+                          <AppText className="text-xl mb-10 wrap-break-word text-center">
                             {task.task}
                           </AppText>
                           <AppText className="bg-slate-900 p-10 whitespace-pre-wrap wrap-break-word rounded-md text-left">

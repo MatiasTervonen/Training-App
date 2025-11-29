@@ -102,10 +102,12 @@ export default function GymCard({
         </DropdownMenu>
       </div>
 
-      <div className="flex">
-        <p className="ml-4">Exercises: {totalExercises}</p>
-        <p className="ml-4">Sets: {totalSets}</p>
-      </div>
+      {fullGym && (
+        <div className="flex">
+          <p className="ml-4">Exercises: {totalExercises}</p>
+          <p className="ml-4">Sets: {totalSets}</p>
+        </div>
+      )}
 
       <div className="flex justify-between items-center mt-2 bg-black/40 rounded-b-md">
         {/* Icon */}

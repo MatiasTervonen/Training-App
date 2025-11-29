@@ -25,7 +25,6 @@ export default function TodoCard({
   onExpand,
   onEdit,
 }: Props) {
-
   // Use Full-todo-session from cache. Prefetched when feed loads.
 
   const { data: fullTodo } = useQuery<full_todo_session>({
@@ -43,7 +42,7 @@ export default function TodoCard({
   return (
     <View
       className={`
-       border rounded-md flex-col justify-between mb-10 transition-colors min-h-[159px] ${
+       border rounded-md flex-col justify-between transition-colors min-h-[159px] ${
          pinned
            ? `border-yellow-200 bg-yellow-200 text-slate-900`
            : "bg-slate-700 border-gray-100"
@@ -79,13 +78,17 @@ export default function TodoCard({
           </AppText>
         )}
 
-        <AppText
-          className={`text-sm ml-4 ${
-            pinned ? "text-slate-900" : "text-yellow-500"
-          } `}
-        >
-          updated: {formatDate(item.updated_at!)}
-        </AppText>
+        {item.updated_at ? (
+          <AppText
+            className={`text-sm ml-4 min-h-5 ${
+              pinned ? "text-slate-900" : "text-yellow-500"
+            } `}
+          >
+            updated: {formatDate(item.updated_at!)}
+          </AppText>
+        ) : (
+          <AppText className="min-h-5 invisible"></AppText>
+        )}
       </View>
 
       <View className="flex-row justify-between items-center mt-2 bg-black/40 rounded-b-md">

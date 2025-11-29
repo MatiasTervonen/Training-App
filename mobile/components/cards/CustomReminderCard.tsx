@@ -10,7 +10,6 @@ import AppText from "../AppText";
 import DropdownMenu from "../DropdownMenu";
 import { customReminders } from "@/types/models";
 
-
 type Props = {
   item: customReminders;
   pinned: boolean;
@@ -59,16 +58,6 @@ export default function CustomReminderCard({
         />
       </View>
 
-      {item.notes && (
-        <AppText
-          className={`ml-4 mb-4 mr-5 line-clamp-2  ${
-            pinned ? "text-slate-900" : "text-gray-100"
-          }`}
-        >
-          {item.notes}
-        </AppText>
-      )}
-
       <View className="ml-4 mb-4 mr-5 flex-row items-center gap-2">
         <AppText className={`${pinned ? "text-slate-900" : "text-gray-100"}`}>
           {item.notify_at_time
@@ -80,6 +69,16 @@ export default function CustomReminderCard({
         ) : (
           <Bell size={20} color={pinned ? "#0f172a" : "#f3f4f6"} />
         )}
+      </View>
+
+      <View className="flex-row items-center ml-4 ">
+        <AppText
+          className={`text-sm  ${
+            pinned ? "text-slate-900" : "text-yellow-500"
+          } `}
+        >
+          updated at: {formatDate(item.updated_at!)}
+        </AppText>
       </View>
 
       <View className="flex-row justify-between items-center mt-2 bg-black/40 rounded-b-md">

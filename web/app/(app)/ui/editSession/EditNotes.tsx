@@ -20,10 +20,12 @@ export default function EditNotes({ note, onClose, onSave }: Props) {
   const [notes, setNotes] = useState(note.notes);
   const [isSaving, setIsSaving] = useState(false);
 
+  const updated = new Date().toISOString();
+
   const handleSubmit = async () => {
     setIsSaving(true);
     try {
-      await editNotes({ id: note.id, title, notes });
+      await editNotes({ id: note.id, title, notes, updated_at: updated });
 
       await onSave?.();
       onClose();

@@ -46,6 +46,8 @@ export default function EditReminder({ reminder, onClose, onSave }: Props) {
       return;
     }
 
+    const updated = new Date().toISOString();
+
     setIsSaving(true);
 
     const delivereStatus =
@@ -60,6 +62,7 @@ export default function EditReminder({ reminder, onClose, onSave }: Props) {
         notes,
         notify_at: notify_at!.toISOString(),
         delivered: delivereStatus,
+        updated_at: updated,
       });
 
       await Promise.all([

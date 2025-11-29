@@ -215,11 +215,15 @@ export default function SessionFeed() {
     () =>
       feed
         .filter((i) => !i.pinned)
-        .sort(
-          (a, b) =>
-            new Date(b.item.created_at).getTime() -
-            new Date(a.item.created_at).getTime()
-        ),
+        .sort((a, b) => {
+          const aTime = new Date(
+            a.item.updated_at || a.item.created_at
+          ).getTime();
+          const bTime = new Date(
+            b.item.updated_at || b.item.created_at
+          ).getTime();
+          return bTime - aTime;
+        }),
     [feed]
   );
 
@@ -386,10 +390,9 @@ export default function SessionFeed() {
     queryKey: ["fullGymSession", gymId],
     queryFn: () => getFullGymSession(gymId!),
     enabled: !!gymId,
-    refetchOnMount: false,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
-    placeholderData: (prev) => prev,
+    refetchOnMount: false,
     staleTime: Infinity,
     gcTime: Infinity,
   });
@@ -424,6 +427,28 @@ export default function SessionFeed() {
     staleTime: Infinity,
     gcTime: Infinity,
   });
+
+  useEffect(() => {
+    if (!feed || feed.length === 0) return;
+
+    feed
+      .filter((f) => f.table === "todo_lists")
+      .forEach((f) => {
+        queryClient.prefetchQuery({
+          queryKey: ["fullTodoSession", f.item.id],
+          queryFn: () => getFullTodoSession(f.item.id),
+        });
+      });
+
+    feed
+      .filter((f) => f.table === "gym_sessions")
+      .forEach((f) => {
+        queryClient.prefetchQuery({
+          queryKey: ["fullGymSession", f.item.id],
+          queryFn: () => getFullGymSession(f.item.id),
+        });
+      });
+  }, [feed, queryClient]); // runs when feed finishes loading
 
   return (
     <LinearGradient

@@ -5,9 +5,10 @@ type Props = {
   id: string;
   title: string | null | undefined;
   notes: string | null | undefined;
+  updated_at: string;
 };
 
-export async function editNotes({ id, title, notes }: Props) {
+export async function editNotes({ id, title, notes, updated_at }: Props) {
   const {
     data: { session },
     error: sessionError,
@@ -19,7 +20,7 @@ export async function editNotes({ id, title, notes }: Props) {
 
   const { error } = await supabase
     .from("notes")
-    .update({ title, notes })
+    .update({ title, notes, updated_at })
     .eq("id", id);
 
   if (error) {

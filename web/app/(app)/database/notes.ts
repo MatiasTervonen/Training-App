@@ -40,11 +40,17 @@ export async function saveNotesToDB({ title, notes }: SaveNotesProps) {
 
 type EditNotesProp = {
   id: string;
-  notes?: string | null | undefined;
-  title?: string | null | undefined;
+  notes?: string | null;
+  title?: string | null;
+  updated_at: string;
 };
 
-export async function editNotes({ id, title, notes }: EditNotesProp) {
+export async function editNotes({
+  id,
+  title,
+  notes,
+  updated_at,
+}: EditNotesProp) {
   const supabase = await createClient();
 
   const { data, error: authError } = await supabase.auth.getClaims();
@@ -56,7 +62,7 @@ export async function editNotes({ id, title, notes }: EditNotesProp) {
 
   const { error: notesError } = await supabase
     .from("notes")
-    .update({ title, notes })
+    .update({ title, notes, updated_at })
     .eq("id", id)
     .eq("user_id", user.sub);
 

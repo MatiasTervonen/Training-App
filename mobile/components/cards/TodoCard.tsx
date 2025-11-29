@@ -1,10 +1,12 @@
 import { ListTodo, Ellipsis, SquareArrowOutUpRight } from "lucide-react-native";
 import DropdownMenu from "../DropdownMenu";
 import { formatDate } from "@/lib/formatDate";
-import { todo_lists } from "@/types/models";
+import { todo_lists, full_todo_session } from "@/types/models";
 import { View } from "react-native";
 import AppText from "../AppText";
 import AnimatedButton from "../buttons/animatedButton";
+import { useQuery } from "@tanstack/react-query";
+import { getFullTodoSession } from "@/api/todo/get-full-todo";
 
 type Props = {
   item: todo_lists;
@@ -23,6 +25,21 @@ export default function TodoCard({
   onExpand,
   onEdit,
 }: Props) {
+
+  // Use Full-todo-session from cache. Prefetched when feed loads.
+
+  const { data: fullTodo } = useQuery<full_todo_session>({
+    queryKey: ["fullTodoSession", item.id],
+    queryFn: () => getFullTodoSession(item.id),
+    enabled: false,
+  });
+
+  const total = fullTodo?.todo_tasks.length;
+
+  const completed = fullTodo
+    ? fullTodo.todo_tasks.filter((t) => t.is_completed).length
+    : 0;
+
   return (
     <View
       className={`
@@ -32,32 +49,42 @@ export default function TodoCard({
            : "bg-slate-700 border-gray-100"
        }`}
     >
-      <View className="flex-row justify-between items-center mt-2 mb-4 mx-4">
-        <AppText
-          className={`flex-1 mr-8 underline text-lg ${
-            pinned ? "text-slate-900 border-slate-900" : "text-gray-100"
-          }`}
-          numberOfLines={1}
-          ellipsizeMode="tail"
-        >
-          {item.title}
-        </AppText>
-        <DropdownMenu
-          button={<Ellipsis size={20} color={pinned ? "#0f172a" : "#f3f4f6"} />}
-          pinned={pinned}
-          onEdit={onEdit}
-          onTogglePin={onTogglePin}
-          onDelete={onDelete}
-        />
-      </View>
+      <View className="justify-between flex-1">
+        <View className="flex-row justify-between items-center mt-2 mx-4">
+          <AppText
+            className={`flex-1 mr-8 underline text-lg ${
+              pinned ? "text-slate-900 border-slate-900" : "text-gray-100"
+            }`}
+            numberOfLines={1}
+            ellipsizeMode="tail"
+          >
+            {item.title}
+          </AppText>
+          <DropdownMenu
+            button={
+              <Ellipsis size={20} color={pinned ? "#0f172a" : "#f3f4f6"} />
+            }
+            pinned={pinned}
+            onEdit={onEdit}
+            onTogglePin={onTogglePin}
+            onDelete={onDelete}
+          />
+        </View>
 
-      <View className="flex-row items-center ml-4 ">
+        {fullTodo && (
+          <AppText
+            className={`ml-4 ${pinned ? "text-slate-900" : "text-gray-100"}`}
+          >
+            completed: {completed} / {total}
+          </AppText>
+        )}
+
         <AppText
-          className={`text-sm  ${
+          className={`text-sm ml-4 ${
             pinned ? "text-slate-900" : "text-yellow-500"
           } `}
         >
-          updated at: {formatDate(item.updated_at!)}
+          updated: {formatDate(item.updated_at!)}
         </AppText>
       </View>
 

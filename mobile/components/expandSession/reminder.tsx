@@ -6,8 +6,6 @@ import { LinearGradient } from "expo-linear-gradient";
 import { reminders } from "@/types/models";
 
 export default function ReminderSession(reminder: reminders) {
-  const formattedDate = formatDate(reminder.created_at!);
-
   return (
     <LinearGradient
       colors={["#1e3a8a", "#0f172a", "#0f172a"]}
@@ -40,9 +38,14 @@ export default function ReminderSession(reminder: reminders) {
           <AppText className="text-center">{reminder.notes}</AppText>
         </View>
       )}
-      <AppText className="text-sm text-gray-400 mb-2 mt-8">
-        Created at: {formattedDate}
+      <AppText className="text-sm text-gray-300 mb-2 mt-8">
+        Created: {formatDate(reminder.created_at)}
       </AppText>
+      {reminder.created_at && (
+        <AppText className="text-sm text-gray-300 mb-2">
+          Updated: {formatDate(reminder.created_at)}
+        </AppText>
+      )}
     </LinearGradient>
   );
 }

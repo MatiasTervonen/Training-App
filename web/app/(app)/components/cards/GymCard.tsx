@@ -1,7 +1,10 @@
 import { Dumbbell, Ellipsis, SquareArrowOutUpRight } from "lucide-react";
 import DropdownMenu from "../dropdownMenu";
-import { formatDate, formatDateShort } from "@/app/(app)/lib/formatDate";
+import { formatDate } from "@/app/(app)/lib/formatDate";
 import { gym_sessions } from "../../types/models";
+import { useQuery } from "@tanstack/react-query";
+import { full_gym_session } from "../../types/models";
+import { getFullGymSession } from "../../database/gym";
 
 type Props = {
   item: gym_sessions;
@@ -31,6 +34,21 @@ export default function GymCard({
     }
   };
 
+  const { data: fullGym } = useQuery<full_gym_session>({
+    queryKey: ["fullGymSession", item.id],
+    queryFn: () => getFullGymSession(item.id),
+    enabled: false,
+  });
+
+  const totalExercises = fullGym ? fullGym.gym_session_exercises.length : 0;
+
+  const totalSets = fullGym
+    ? fullGym.gym_session_exercises.reduce(
+        (sum, exercise) => sum + exercise.gym_sets.length,
+        0
+      )
+    : 0;
+
   return (
     <div
       className={`
@@ -40,7 +58,7 @@ export default function GymCard({
            : "bg-slate-700"
        }`}
     >
-      <div className="flex justify-between items-center mt-2 mb-4 mx-4">
+      <div className="flex justify-between items-center mt-2 mx-4">
         <div className="line-clamp-1 border-b">{item.title}</div>
         <DropdownMenu
           button={
@@ -84,7 +102,11 @@ export default function GymCard({
         </DropdownMenu>
       </div>
 
-      <div className="ml-4 mb-4 mr-5 line-clamp-2">{item.notes}</div>
+      <div className="flex">
+        <p className="ml-4">Exercises: {totalExercises}</p>
+        <p className="ml-4">Sets: {totalSets}</p>
+      </div>
+
       <div className="flex justify-between items-center mt-2 bg-black/40 rounded-b-md">
         {/* Icon */}
 
@@ -96,16 +118,10 @@ export default function GymCard({
 
           {/* Date */}
 
-          <div>
-            <p className={`${pinned ? "text-slate-900" : "text-gray-100"}`}>
-              <span className="hidden xs:inline">
-                {formatDate(item.created_at)}
-              </span>
-              <span className="inline xs:hidden">
-                {formatDateShort(item.created_at)}
-              </span>
-            </p>
-          </div>
+          <p className={`${pinned ? "text-slate-900" : "text-gray-100"}`}>
+            {formatDate(item.created_at)}
+          </p>
+
           <p>{formatDuration(item.duration)}</p>
         </div>
 

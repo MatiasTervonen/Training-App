@@ -455,6 +455,8 @@ export async function getRecentExercises() {
 }
 
 export async function getFullGymSession(id: string) {
+  console.log("fetching full gym session");
+
   const supabase = await createClient();
 
   const { data, error: authError } = await supabase.auth.getClaims();

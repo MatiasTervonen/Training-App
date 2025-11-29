@@ -63,8 +63,11 @@ export default function TodoSession({
   return (
     <div className="text-center max-w-lg mx-auto flex flex-col min-h-full justify-between px-2 mt-5 pb-10">
       <div className="flex flex-col items-center">
-        <div className="text-sm text-gray-400 mb-10">
-          {formatDate(sessionData.created_at!)}
+        <div className="flex flex-col gap-2 text-sm text-gray-400 mb-10">
+          <p> Created: {formatDate(sessionData.created_at)}</p>
+          {sessionData.updated_at && (
+            <p> Updated: {formatDate(sessionData.updated_at)}</p>
+          )}
         </div>
         <div className="bg-slate-950 px-4 rounded-xl pb-5 w-full">
           <div>

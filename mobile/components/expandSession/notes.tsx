@@ -8,9 +8,14 @@ import { notes } from "@/types/models";
 export default function NotesSession(notes: notes) {
   return (
     <PageContainer className="mb-10">
-      <AppText className="text-lg text-gray-400 text-center">
-        {formatDate(notes.created_at!)}
+      <AppText className="text-sm text-gray-300 text-center">
+        created: {formatDate(notes.created_at!)}
       </AppText>
+      {notes.updated_at && (
+        <AppText className="text-sm text-gray-300 mt-2 text-center">
+          updated: {formatDate(notes.updated_at)}
+        </AppText>
+      )}
       <View className="items-center">
         <AppText className="my-5 text-xl break-words text-center">
           {notes.title}

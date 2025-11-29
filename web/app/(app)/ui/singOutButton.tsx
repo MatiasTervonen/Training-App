@@ -9,11 +9,14 @@ import { useSWRConfig } from "swr";
 import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
 import { clearLocalStorage } from "../utils/clearLocalStorage";
 import toast from "react-hot-toast";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function SignOutButton() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const { cache } = useSWRConfig();
+
+  const queryClient = useQueryClient();
 
   const logOutUser = useUserStore((state) => state.logoutUser);
 
@@ -25,10 +28,13 @@ export default function SignOutButton() {
     const { error } = await supabase.auth.signOut({ scope: "local" });
 
     if (error) {
-      toast.error("Error logging out. Please try again!")
+      toast.error("Error logging out. Please try again!");
       setIsLoading(false);
       return;
     }
+
+    // Clear TanStack Query cache
+    queryClient.clear();
 
     // Clear all SWR cache
     if ("clear" in cache && typeof cache.clear === "function") {

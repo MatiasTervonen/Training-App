@@ -32,7 +32,7 @@ export default function WeightCard({
           : "bg-slate-700"
       }`}
     >
-      <div className="flex justify-between items-center mt-2 mb-4 mx-4">
+      <div className="flex justify-between items-center mt-2 mx-4 mb-3">
         <div className="mr-8 line-clamp-1 border-b">{item.title}</div>
         <DropdownMenu
           button={
@@ -75,13 +75,12 @@ export default function WeightCard({
           </button>
         </DropdownMenu>
       </div>
-
-      <div className="ml-4 mb-4 mr-5 line-clamp-2">{item.notes}</div>
+      
       <div className="ml-4 mb-4 mr-5 line-clamp-2">
         {item.weight} {weightUnit}
       </div>
 
-      <div className="flex justify-between items-center mt-2 bg-black/40 rounded-b-md">
+      <div className="flex justify-between items-center bg-black/40 rounded-b-md">
         {/* Icon */}
 
         <div className="flex items-center gap-4">

@@ -1,7 +1,10 @@
 import { ListTodo, Ellipsis, SquareArrowOutUpRight } from "lucide-react";
 import DropdownMenu from "../dropdownMenu";
-import { formatDate, formatDateShort } from "@/app/(app)/lib/formatDate";
+import { formatDate } from "@/app/(app)/lib/formatDate";
 import { todo_lists } from "../../types/models";
+import { useQuery } from "@tanstack/react-query";
+import { full_todo_session } from "../../types/models";
+import { getFullTodoSession } from "../../database/todo";
 
 type Props = {
   item: todo_lists;
@@ -20,6 +23,18 @@ export default function TodoCard({
   onExpand,
   onEdit,
 }: Props) {
+  const { data: fullTodo } = useQuery<full_todo_session>({
+    queryKey: ["fullTodoSession", item.id],
+    queryFn: () => getFullTodoSession(item.id),
+    enabled: false,
+  });
+
+  const total = fullTodo?.todo_tasks.length;
+
+  const completed = fullTodo
+    ? fullTodo.todo_tasks.filter((t) => t.is_completed).length
+    : 0;
+
   return (
     <div
       className={`
@@ -29,48 +44,64 @@ export default function TodoCard({
            : "bg-slate-700"
        }`}
     >
-      <div className="flex justify-between items-center mt-2 mb-4 mx-4">
-        <div className="mr-8 line-clamp-1 border-b">{item.title}</div>
-        <DropdownMenu
-          button={
-            <div
-              aria-label="More options"
-              className={`cursor-pointer  ${
-                pinned ? "text-slate-900" : "text-gray-100"
-              }`}
+      <div className="flex flex-col justify-between flex-1">
+        <div className="flex justify-between items-center mt-2  mx-4">
+          <div className="mr-8 line-clamp-1 border-b">{item.title}</div>
+          <DropdownMenu
+            button={
+              <div
+                aria-label="More options"
+                className={`cursor-pointer  ${
+                  pinned ? "text-slate-900" : "text-gray-100"
+                }`}
+              >
+                <Ellipsis size={20} />
+              </div>
+            }
+          >
+            <button
+              aria-label="Edit note"
+              onClick={() => {
+                onEdit();
+              }}
+              className="border-b py-2 px-4 hover:bg-gray-600"
             >
-              <Ellipsis size={20} />
-            </div>
-          }
+              Edit
+            </button>
+            <button
+              aria-label="Pin or unpin note"
+              onClick={() => {
+                onTogglePin();
+              }}
+              className="border-b py-2 px-4 hover:bg-gray-600"
+            >
+              {pinned ? "Unpin" : "Pin"}
+            </button>
+            <button
+              aria-label="Delete note"
+              onClick={() => {
+                onDelete();
+              }}
+              className="py-2 px-4 hover:bg-gray-600"
+            >
+              Delete
+            </button>
+          </DropdownMenu>
+        </div>
+
+        {fullTodo && (
+          <p className={`ml-4 ${pinned ? "text-slate-900" : "text-gray-100"}`}>
+            completed: {completed} / {total}
+          </p>
+        )}
+
+        <p
+          className={`text-sm ml-4 ${
+            pinned ? "text-slate-900" : "text-yellow-500"
+          } `}
         >
-          <button
-            aria-label="Edit note"
-            onClick={() => {
-              onEdit();
-            }}
-            className="border-b py-2 px-4 hover:bg-gray-600"
-          >
-            Edit
-          </button>
-          <button
-            aria-label="Pin or unpin note"
-            onClick={() => {
-              onTogglePin();
-            }}
-            className="border-b py-2 px-4 hover:bg-gray-600"
-          >
-            {pinned ? "Unpin" : "Pin"}
-          </button>
-          <button
-            aria-label="Delete note"
-            onClick={() => {
-              onDelete();
-            }}
-            className="py-2 px-4 hover:bg-gray-600"
-          >
-            Delete
-          </button>
-        </DropdownMenu>
+          updated: {formatDate(item.updated_at!)}
+        </p>
       </div>
 
       <div className="flex justify-between items-center mt-2 bg-black/40 rounded-b-md">
@@ -82,12 +113,7 @@ export default function TodoCard({
 
           <div>
             <p className={`${pinned ? "text-slate-900" : "text-gray-100"}`}>
-              <span className="hidden xs:inline">
-                {formatDate(item.created_at)}
-              </span>
-              <span className="inline xs:hidden">
-                {formatDateShort(item.created_at)}
-              </span>
+              {formatDate(item.created_at)}
             </p>
           </div>
         </div>

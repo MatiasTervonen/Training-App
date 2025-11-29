@@ -3,7 +3,6 @@ import {
   SquareArrowOutUpRight,
   Bell,
   Check,
-  Dot,
 } from "lucide-react-native";
 import { formatDate, formatDateTime } from "@/lib/formatDate";
 import { View, TouchableOpacity } from "react-native";
@@ -70,15 +69,15 @@ export default function ReminderCard({
         )}
       </View>
 
-      <View className="flex-row items-center ml-4 ">
+      {item.updated_at && (
         <AppText
-          className={`text-sm  ${
+          className={`text-sm ml-4  ${
             pinned ? "text-slate-900" : "text-yellow-500"
           } `}
         >
-          updated at: {formatDate(item.updated_at!)}
+          updated: {formatDate(item.updated_at)}
         </AppText>
-      </View>
+      )}
 
       <View className="flex-row justify-between items-center mt-2 bg-black/40 rounded-b-md">
         <View className="flex-row items-center gap-4">

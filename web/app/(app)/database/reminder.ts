@@ -53,6 +53,7 @@ type editReminderProps = {
   notes: string | null;
   notify_at: string;
   delivered: boolean;
+  updated_at: string;
 };
 
 export async function editReminder({
@@ -61,6 +62,7 @@ export async function editReminder({
   notify_at,
   id,
   delivered,
+  updated_at,
 }: editReminderProps) {
   const supabase = await createClient();
 
@@ -73,7 +75,7 @@ export async function editReminder({
 
   const { error } = await supabase
     .from("reminders")
-    .update({ title, notes: notes, notify_at, delivered })
+    .update({ title, notes: notes, notify_at, delivered, updated_at })
     .eq("id", id)
     .eq("user_id", user.sub);
 

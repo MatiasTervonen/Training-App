@@ -1,6 +1,6 @@
 import { NotebookPen, Ellipsis, SquareArrowOutUpRight } from "lucide-react";
 import DropdownMenu from "../dropdownMenu";
-import { formatDate, formatDateShort } from "@/app/(app)/lib/formatDate";
+import { formatDate } from "@/app/(app)/lib/formatDate";
 import { notes } from "../../types/models";
 
 type Props = {
@@ -74,6 +74,17 @@ export default function NotesCard({
       </div>
 
       <div className="ml-4 mb-4 mr-5 line-clamp-2">{item.notes}</div>
+
+      {item.updated_at && (
+        <div
+          className={`ml-4 text-sm ${
+            pinned ? "text-slate-900" : "text-yellow-500"
+          }`}
+        >
+          updated: {formatDate(item.updated_at)}
+        </div>
+      )}
+
       <div className="flex justify-between items-center mt-2 bg-black/40 rounded-b-md">
         {/* Icon */}
 
@@ -85,16 +96,9 @@ export default function NotesCard({
 
           {/* Date */}
 
-          <div>
-            <p className={` ${pinned ? "text-slate-900" : "text-gray-100"}`}>
-              <span className="hidden xs:inline">
-                {formatDate(item.created_at)}
-              </span>
-              <span className="inline xs:hidden">
-                {formatDateShort(item.created_at)}
-              </span>
-            </p>
-          </div>
+          <p className={` ${pinned ? "text-slate-900" : "text-gray-100"}`}>
+            {formatDate(item.created_at)}
+          </p>
         </div>
 
         <button

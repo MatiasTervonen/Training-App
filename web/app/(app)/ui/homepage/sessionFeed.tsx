@@ -75,6 +75,8 @@ export default function SessionFeed() {
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     refetchOnMount: false,
+    staleTime: Infinity,
+    gcTime: Infinity,
   });
 
   // Keep only first page in cahce when user leaves feed
@@ -137,11 +139,15 @@ export default function SessionFeed() {
     () =>
       feed
         .filter((i) => !i.pinned)
-        .sort(
-          (a, b) =>
-            new Date(b.item.created_at).getTime() -
-            new Date(a.item.created_at).getTime()
-        ),
+        .sort((a, b) => {
+          const aTime = new Date(
+            a.item.updated_at || a.item.created_at
+          ).getTime();
+          const bTime = new Date(
+            b.item.updated_at || b.item.created_at
+          ).getTime();
+          return bTime - aTime;
+        }),
     [feed]
   );
 
@@ -281,6 +287,28 @@ export default function SessionFeed() {
     gcTime: Infinity,
   });
 
+  useEffect(() => {
+    if (!feed || feed.length === 0) return;
+
+    feed
+      .filter((f) => f.table === "todo_lists")
+      .forEach((f) => {
+        queryClient.prefetchQuery({
+          queryKey: ["fullTodoSession", f.item.id],
+          queryFn: () => getFullTodoSession(f.item.id),
+        });
+      });
+
+    feed
+      .filter((f) => f.table === "gym_sessions")
+      .forEach((f) => {
+        queryClient.prefetchQuery({
+          queryKey: ["fullGymSession", f.item.id],
+          queryFn: () => getFullGymSession(f.item.id),
+        });
+      });
+  }, [feed, queryClient]); // runs when feed finishes loading
+
   // Pinned carousell
 
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [Autoplay()]);
@@ -357,7 +385,7 @@ export default function SessionFeed() {
                   <div className="embla__container flex">
                     {pinnedFeed.map((feedItem) => (
                       <div
-                        className="flex-none basis-4/5 min-w-0 mr-5 select-none"
+                        className="flex-none w-full min-w-0 mr-5 select-none"
                         key={feedItem.item.id}
                       >
                         <FeedCard

@@ -69,8 +69,13 @@ export default function TodoSession({
     <View className="max-w-lg justify-between pt-5 pb-10 flex-1 px-2">
       <View className="items-center">
         <AppText className="text-sm text-gray-400 mb-10">
-          created at: {formatDate(sessionData.created_at!)}
+          created at: {formatDate(sessionData.created_at)}
         </AppText>
+        {sessionData.updated_at && (
+          <AppText className="text-sm text-gray-400 mb-10">
+            updated at: {formatDate(sessionData.updated_at)}
+          </AppText>
+        )}
         <View className="bg-slate-950 px-4 rounded-xl pb-5 w-full">
           <AppText className="my-5 text-xl wrap-break-word text-center">
             {sessionData.title}

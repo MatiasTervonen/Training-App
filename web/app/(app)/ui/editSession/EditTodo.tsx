@@ -70,6 +70,8 @@ export default function EditTodo({ todo_session, onClose, onSave }: Props) {
   };
 
   const handleSave = async () => {
+    const updated = new Date().toISOString();
+
     setIsSaving(true);
 
     try {
@@ -82,6 +84,7 @@ export default function EditTodo({ todo_session, onClose, onSave }: Props) {
           notes: task.notes ?? undefined,
         })),
         deletedIds,
+        updated_at: updated,
       });
 
       toast.success("Session updated successfully");

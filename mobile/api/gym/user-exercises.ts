@@ -13,7 +13,7 @@ export default async function GetUserExercises() {
 
   const { data: exercises, error } = await supabase
     .from("gym_exercises")
-    .select("id, user_id, name, equipment, muscle_group, main_group, language")
+    .select("*")
     .order("name", { ascending: true })
     .eq("user_id", session.user.id);
 
@@ -23,7 +23,7 @@ export default async function GetUserExercises() {
       route: "/database/gym/edit-exercise",
       method: "GET",
     });
-  throw new Error("Error fetching user exercises");
+    throw new Error("Error fetching user exercises");
   }
 
   return exercises;

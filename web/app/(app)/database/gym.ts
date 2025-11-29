@@ -382,10 +382,7 @@ export async function getExercises({
 
   let query = supabase
     .from("gym_exercises")
-    .select(
-      "id, user_id, name, equipment, muscle_group, main_group, created_at, language",
-      { count: "exact" }
-    )
+    .select("*", { count: "exact" })
     .order("name", { ascending: true })
     .range(from, to);
 
@@ -425,9 +422,7 @@ export async function getRecentExercises() {
 
   const { data: exercises, error } = await supabase
     .from("gym_session_exercises")
-    .select(
-      `exercise:exercise_id (id, user_id, name, equipment, muscle_group, main_group, created_at, language)`
-    )
+    .select(`exercise:exercise_id (*)`)
     .order("id", { ascending: false })
     .limit(10);
 

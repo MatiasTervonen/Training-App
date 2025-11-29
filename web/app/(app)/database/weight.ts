@@ -38,11 +38,11 @@ export async function saveWeightToDB({
 
   if (notesError || !notesData) {
     handleError(notesError, {
-      message: "Error saving notes",
-      route: "server-action: saveNotesToDB",
+      message: "Error saving weight",
+      route: "server-action: saveWeightToDB",
       method: "direct",
     });
-    throw new Error(notesError?.message || "Failed to save notes");
+    throw new Error("Failed to save weight");
   }
 
   return { success: true, notes: notesData };
@@ -50,9 +50,9 @@ export async function saveWeightToDB({
 
 type EditWeightProp = {
   id: string;
-  notes?: string | null | undefined;
-  title?: string | null | undefined;
-  weight: number | undefined;
+  notes?: string | null;
+  title: string;
+  weight: number;
 };
 
 export async function editWeight({ id, title, notes, weight }: EditWeightProp) {
@@ -77,7 +77,7 @@ export async function editWeight({ id, title, notes, weight }: EditWeightProp) {
       route: "server-action: editWeight",
       method: "direct",
     });
-    throw new Error(notesError?.message || "Failed to edit weight");
+    throw new Error("Failed to edit weight");
   }
 
   return { success: true };

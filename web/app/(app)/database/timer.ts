@@ -83,7 +83,7 @@ export async function getTimers() {
 
   const { data: timers, error: timerError } = await supabase
     .from("timers")
-    .select("id, title, time_seconds, notes, created_at, user_id")
+    .select("*")
     .eq("user_id", user.sub)
     .order("created_at", { ascending: false });
 

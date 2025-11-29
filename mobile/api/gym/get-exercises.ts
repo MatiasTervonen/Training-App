@@ -24,10 +24,7 @@ export async function getExercises({
 
   let query = supabase
     .from("gym_exercises")
-    .select(
-      "id, user_id, name, equipment, muscle_group, main_group, created_at, language",
-      { count: "exact" }
-    )
+    .select("*", { count: "exact" })
     .order("name", { ascending: true })
     .range(from, to);
 
@@ -45,7 +42,7 @@ export async function getExercises({
       route: "/database/gym/get-exercises",
       method: "GET",
     });
-  throw new Error("Error fetching exercises");
+    throw new Error("Error fetching exercises");
   }
 
   const hasMore = data && data.length === limit;

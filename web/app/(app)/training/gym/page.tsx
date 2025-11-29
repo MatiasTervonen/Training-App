@@ -2,7 +2,6 @@ import GymForm from "../components/GymForm";
 import { full_gym_session } from "../../types/models";
 
 export default function TrainingSessionPage() {
-  
   const emptySession: full_gym_session = {
     id: "",
     user_id: "",
@@ -10,6 +9,7 @@ export default function TrainingSessionPage() {
     notes: "",
     duration: 0,
     created_at: new Date().toISOString(),
+    updated_at: "",
     gym_session_exercises: [],
   };
 

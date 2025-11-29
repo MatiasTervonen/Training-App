@@ -9,6 +9,7 @@ export default function GymScreen() {
     notes: "",
     duration: 0,
     created_at: new Date().toISOString(),
+    updated_at: "",
     gym_session_exercises: [],
   };
 

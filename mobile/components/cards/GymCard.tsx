@@ -82,8 +82,16 @@ export default function GymCard({
 
       {fullGym && (
         <View className="flex-row">
-          <AppText className="ml-4">Exercises: {totalExercises}</AppText>
-          <AppText className="ml-4">Sets: {totalSets}</AppText>
+          <AppText
+            className={`ml-4 ${pinned ? "text-slate-900" : "text-gray-100"}`}
+          >
+            Exercises: {totalExercises}
+          </AppText>
+          <AppText
+            className={`ml-4 ${pinned ? "text-slate-900" : "text-gray-100"}`}
+          >
+            Sets: {totalSets}
+          </AppText>
         </View>
       )}
 

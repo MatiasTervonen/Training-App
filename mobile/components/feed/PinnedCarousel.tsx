@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { View } from "react-native";
 import AppText from "../AppText";
 import Carousel from "react-native-reanimated-carousel";
@@ -22,7 +22,13 @@ export default function PinnedCarousel({
   onDelete,
   onTogglePin,
 }: PinnedCarouselProps) {
-  const [activeIndex, setActiveIndex] = useState(1);
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  useEffect(() => {
+    if (activeIndex >= pinnedFeed.length) {
+      setActiveIndex(0);
+    }
+  }, [pinnedFeed, activeIndex]);
 
   return (
     <View>
@@ -34,13 +40,14 @@ export default function PinnedCarousel({
         </AppText>
       </View>
       <Carousel
+        key={pinnedFeed.length}
         width={width}
         height={199}
         data={pinnedFeed}
         onSnapToItem={(index) => setActiveIndex(index)}
-        loop={true}
+        loop={pinnedFeed.length > 1}
         autoPlayInterval={2000}
-        autoPlay
+        autoPlay={pinnedFeed.length > 1}
         renderItem={({ item: feedItem }) => (
           <View className="px-4">
             <FeedCard

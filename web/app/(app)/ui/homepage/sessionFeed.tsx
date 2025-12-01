@@ -349,6 +349,12 @@ export default function SessionFeed() {
     };
   }, [emblaApi, setBlockSwipe]);
 
+  useEffect(() => {
+    if (activeIndex >= pinnedFeed.length) {
+      setActiveIndex(0);
+    }
+  }, [pinnedFeed, activeIndex]);
+
   return (
     <div>
       <ActiveSessionPopup />

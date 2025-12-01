@@ -16,8 +16,11 @@ import Animated, {
 export default function ActiveSessionPopup() {
   const activeSession = useTimerStore((state) => state.activeSession);
   const alarmFired = useTimerStore((state) => state.alarmFired);
-  const setAlarmFired = useTimerStore((state) => state.setAlarmFired);
   const totalDuration = useTimerStore((state) => state.totalDuration);
+  const alarmSoundPlaying = useTimerStore((state) => state.alarmSoundPlaying);
+  const setAlarmSoundPlaying = useTimerStore(
+    (state) => state.setAlarmSoundPlaying
+  );
 
   const audioSource = require("@/assets/audio/mixkit-classic-alarm-995.wav");
 
@@ -26,32 +29,34 @@ export default function ActiveSessionPopup() {
   const opacity = useSharedValue(1);
 
   useEffect(() => {
-    if (alarmFired) {
+    if (alarmSoundPlaying) {
       player.play();
       player.loop = true;
       opacity.value = withRepeat(withTiming(0.2, { duration: 500 }), -1, true);
     } else {
       opacity.value = withTiming(1, { duration: 300 });
+      player.pause();
+      player.seekTo(0);
     }
-  }, [alarmFired, player, opacity]);
+  }, [alarmSoundPlaying, player, opacity]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,
   }));
 
   const stopAlarm = () => {
+    setAlarmSoundPlaying(false);
     player.pause();
-    setAlarmFired(false);
+    player.seekTo(0);
   };
 
   if (!activeSession) return null;
-  
 
   return (
     <Animated.View
       style={animatedStyle}
       className={`z-0 ${
-        alarmFired
+        alarmSoundPlaying
           ? "bg-red-500 border-2 border-red-400"
           : "bg-gray-600 border-2 border-green-500"
       } `}
@@ -71,7 +76,7 @@ export default function ActiveSessionPopup() {
             </AppText>
           )}
           <View className="flex-row items-center gap-5">
-            <Timer fontSize={15} />
+            <Timer />
             <AppText>{activeSession.type.toUpperCase()}</AppText>
             {alarmFired && <AppText>ALARM!</AppText>}
             {activeSession.type === "timer" && totalDuration && (

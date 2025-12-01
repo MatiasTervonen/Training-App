@@ -7,10 +7,12 @@ import { useRouter } from "expo-router";
 import ActiveSessionPopup from "@/components/ActiveSessionPopup";
 
 export default function FeedScreen() {
+  console.log("FeedScreen mounted");
+
   const router = useRouter();
   const { setModalPageConfig } = useModalPageConfig();
 
-  const activeSession = useTimerStore.getState().activeSession;
+  const activeSession = useTimerStore((state) => state.activeSession);
 
   useEffect(() => {
     setModalPageConfig({

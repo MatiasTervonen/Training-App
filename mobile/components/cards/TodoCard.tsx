@@ -1,4 +1,9 @@
-import { ListTodo, Ellipsis, SquareArrowOutUpRight } from "lucide-react-native";
+import {
+  ListTodo,
+  Ellipsis,
+  SquareArrowOutUpRight,
+  Check,
+} from "lucide-react-native";
 import DropdownMenu from "../DropdownMenu";
 import { formatDate } from "@/lib/formatDate";
 import { todo_lists, full_todo_session } from "@/types/models";
@@ -70,13 +75,16 @@ export default function TodoCard({
           />
         </View>
 
-        {fullTodo && (
-          <AppText
-            className={`ml-4 ${pinned ? "text-slate-900" : "text-gray-100"}`}
-          >
-            completed: {completed} / {total}
-          </AppText>
-        )}
+        <View className="flex-row gap-2 items-center">
+          {fullTodo && (
+            <AppText
+              className={`ml-4 ${pinned ? "text-slate-900" : "text-gray-100"}`}
+            >
+              completed: {completed} / {total}
+            </AppText>
+          )}
+          {completed === total && <Check color="#22c55e" />}
+        </View>
 
         {item.updated_at ? (
           <AppText

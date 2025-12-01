@@ -12,15 +12,9 @@ interface UserPreferences {
   display_name: string;
   weight_unit: string;
   profile_picture: string | null;
-  role?: string; // Optional role for guest users
+  role: string;
   push_enabled: boolean;
 }
-
-type Store = {
-  router: ReturnType<typeof useRouter>;
-  logoutUser: () => void;
-  loginUser: (prefs: UserPreferences) => void;
-};
 
 export default function LayoutWrapper({
   children,
@@ -29,21 +23,19 @@ export default function LayoutWrapper({
 }) {
   const [sessionChecked, setSessionChecked] = useState(false);
 
+  const router = useRouter();
+  const pathname = usePathname();
+
   const logoutUser = useUserStore((state) => state.logoutUser);
 
   const loginUser = useUserStore((state) => state.loginUser);
 
   const { modalPageConfig, setModalPageConfig } = useModalPageConfig();
 
-  const router = useRouter();
-  const pathname = usePathname();
-
-  const handleSessionChange = async (session: Session | null, store: Store) => {
-    const { router, loginUser, logoutUser } = store;
-
+  const handleSessionChange = async (session: Session | null) => {
     if (!session) {
       logoutUser();
-      router.replace("/");
+      if (pathname !== "/") router.replace("/");
       return;
     }
 
@@ -52,31 +44,21 @@ export default function LayoutWrapper({
     if (!preferences) {
       const data = await fetchUserPreferences();
       loginUser(data as UserPreferences);
-      router.replace("/dashboard");
-      return;
     }
 
-    router.replace("/dashboard");
+    if (pathname !== "/dashboard") {
+      router.replace("/dashboard");
+    }
   };
 
   useEffect(() => {
-    if (pathname !== "/dashboard") {
-      setModalPageConfig(null);
-    }
-  }, [pathname, setModalPageConfig]);
-
-  useEffect(() => {
-    const checkSession = async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      await handleSessionChange(session, { router, loginUser, logoutUser });
-      setSessionChecked(true);
-    };
-
-    checkSession();
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      handleSessionChange(session).finally(() => {
+        setSessionChecked(true);
+      });
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [router]);
+  }, []);
 
   useEffect(() => {
     const { data: listener } = supabase.auth.onAuthStateChange(
@@ -85,13 +67,7 @@ export default function LayoutWrapper({
           // user changed password, don't redirect
           return;
         }
-
-        handleSessionChange(session, {
-          router,
-          loginUser,
-          logoutUser,
-        });
-        setSessionChecked(true);
+        handleSessionChange(session);
       }
     );
 
@@ -99,18 +75,23 @@ export default function LayoutWrapper({
       listener.subscription.unsubscribe();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [router]);
+  }, []);
+
+  useEffect(() => {
+    if (pathname !== "/dashboard") {
+      setModalPageConfig(null);
+    }
+  }, [pathname, setModalPageConfig]);
+
+  if (!sessionChecked) {
+    return null; // keep splash screen visible
+  }
 
   const noModalRoutes = ["/", "/login"];
-
   const shouldRenderModal = !noModalRoutes.includes(pathname);
 
   if (!shouldRenderModal) {
     return <>{children}</>;
-  }
-
-  if (!sessionChecked) {
-    return null; // keep splash screen visible
   }
 
   return (

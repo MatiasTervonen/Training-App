@@ -12,6 +12,7 @@ import { View, ScrollView } from "react-native";
 import AppText from "../AppText";
 import PageContainer from "../PageContainer";
 import { confirmAction } from "@/lib/confirmAction";
+import { Dot } from "lucide-react-native";
 
 type Props = {
   todo_session: full_todo_session;
@@ -25,6 +26,7 @@ type Task = {
 };
 
 export default function EditTodo({ todo_session, onClose, onSave }: Props) {
+  const [originalData] = useState(todo_session);
   const [isSaving, setIsSaving] = useState(false);
   const [sessionData, setSessionData] = useState(todo_session);
   const [deletedIds, setDeletedIds] = useState<string[]>([]);
@@ -80,6 +82,19 @@ export default function EditTodo({ todo_session, onClose, onSave }: Props) {
   const updated = new Date().toISOString();
 
   const handleSave = async () => {
+    const hasEmptyTasks = sessionData.todo_tasks.some(
+      (task) => task.task.trim().length === 0
+    );
+
+    if (hasEmptyTasks) {
+      Toast.show({
+        type: "error",
+        text1: "You have empty tasks.",
+        text2: "Fill or delete all empty tasks before saving.",
+      });
+      return;
+    }
+
     setIsSaving(true);
 
     try {
@@ -111,66 +126,86 @@ export default function EditTodo({ todo_session, onClose, onSave }: Props) {
     }
   };
 
+  const hasChanges =
+    JSON.stringify(sessionData) !== JSON.stringify(originalData);
+
   return (
-    <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-      <PageContainer className="justify-between items-center gap-5 max-w-lg">
-        <View className="w-full">
-          <AppText className="text-lg text-center mb-10">
-            Edit your todo lists
+    <View className="flex-1">
+      {hasChanges && (
+        <View className="bg-gray-900 absolute top-5 left-5 z-50  py-1 px-4 flex-row items-center rounded-lg">
+          <AppText className="text-sm text-yellow-500">
+            {hasChanges ? "unsaved changes" : ""}
           </AppText>
-          <View className="w-full mb-10">
-            <AppInput
-              value={sessionData.title}
-              setValue={handleTitleChange}
-              placeholder="Todo title..."
-              label="Title..."
+          <View className="animate-pulse">
+            <Dot color="#eab308" />
+          </View>
+        </View>
+      )}
+
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+        <PageContainer className="justify-between items-center gap-5 max-w-lg mb-5">
+          <View className="w-full">
+            <AppText className="text-lg text-center mb-10">
+              Edit your todo list
+            </AppText>
+            <View className="w-full mb-10">
+              <AppInput
+                value={sessionData.title}
+                setValue={handleTitleChange}
+                placeholder="Todo title..."
+                label="Title..."
+              />
+            </View>
+            <View className="w-full">
+              {sessionData.todo_tasks.map((task, index) => (
+                <View
+                  key={task.id}
+                  className="text-gray-300 mb-5 bg-slate-900 p-4 rounded-lg"
+                >
+                  <View className="flex-row justify-between">
+                    <AppText className="mb-2">{index + 1}.</AppText>
+                    <AnimatedButton
+                      onPress={() => handleDeleteItem(index)}
+                      label="Delete"
+                      textClassName="text-red-500"
+                    />
+                  </View>
+                  <AppInput
+                    value={task.task}
+                    setValue={(value) => updateTask(index, { task: value })}
+                    placeholder="Todo title..."
+                    label="Task..."
+                  />
+                  <View className="mt-5">
+                    <SubNotesInput
+                      value={task.notes || ""}
+                      setValue={(value) => updateTask(index, { notes: value })}
+                      className="min-h-[60px]"
+                      placeholder="Todo notes (optional)"
+                      label="Notes..."
+                    />
+                  </View>
+                </View>
+              ))}
+            </View>
+          </View>
+          <View className="w-full pt-10 flex flex-col gap-5">
+            <AnimatedButton
+              onPress={addNewTask}
+              label="Add Task"
+              className="bg-blue-800 rounded-md shadow-md border-2 border-blue-500 py-2"
+              textClassName="text-gray-100 text-center"
+            />
+            <SaveButton
+              disabled={!hasChanges}
+              onPress={handleSave}
+              label={!hasChanges ? "Save" : "Save Changes"}
             />
           </View>
-          <View className="w-full">
-            {sessionData.todo_tasks.map((task, index) => (
-              <View
-                key={task.id}
-                className="text-gray-300 mb-5 bg-slate-900 p-4 rounded-lg"
-              >
-                <View className="flex-row justify-between">
-                  <AppText className="mb-2">{index + 1}.</AppText>
-                  <AnimatedButton
-                    onPress={() => handleDeleteItem(index)}
-                    label="Delete"
-                    textClassName="text-red-500"
-                  />
-                </View>
-                <AppInput
-                  value={task.task}
-                  setValue={(value) => updateTask(index, { task: value })}
-                  placeholder="Todo title..."
-                  label="Task..."
-                />
-                <View className="mt-5">
-                  <SubNotesInput
-                    value={task.notes || ""}
-                    setValue={(value) => updateTask(index, { notes: value })}
-                    className="min-h-[60px]"
-                    placeholder="Todo notes..."
-                    label="Notes..."
-                  />
-                </View>
-              </View>
-            ))}
-          </View>
-        </View>
-        <View className="w-full pt-10 flex flex-col gap-5">
-          <AnimatedButton
-            onPress={addNewTask}
-            label="Add Task"
-            className="bg-blue-800 rounded-md shadow-md border-2 border-blue-500 py-2"
-            textClassName="text-gray-100 text-center"
-          />
-          <SaveButton onPress={handleSave} label="Save" />
-        </View>
-      </PageContainer>
+        </PageContainer>
 
-      <FullScreenLoader visible={isSaving} message="Saving todo list..." />
-    </ScrollView>
+        <FullScreenLoader visible={isSaving} message="Saving todo list..." />
+      </ScrollView>
+    </View>
   );
 }

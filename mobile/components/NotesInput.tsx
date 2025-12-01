@@ -6,18 +6,20 @@ type NotesInputProps = TextInputProps & {
   value: string;
   setValue: (value: string) => void;
   label?: string;
+  className?: string;
 };
 
 export default function NotesInput({
   value,
   setValue,
   label,
+  className,
   ...props
 }: NotesInputProps) {
   return (
-    <View className="flex-1">
+    <View>
       {label && <AppText className="text-gray-300 mb-1">{label}</AppText>}
-      <View className="flex-1 border-2 rounded-lg overflow-hidden border-gray-300 focus:border-green-500">
+      <View className="border-2 rounded-lg overflow-hidden border-gray-300 focus:border-green-500">
         <LinearGradient
           colors={["#0f172a", "#1e293b", "#333333"]}
           start={{ x: 0, y: 0 }}
@@ -33,7 +35,7 @@ export default function NotesInput({
           textAlignVertical="top"
           value={value}
           onChangeText={setValue}
-          className="flex-1 pl-3 text-gray-100 font-russo text-lg"
+          className={`pl-3 text-gray-100 font-russo text-lg ${className}`}
           style={{ lineHeight: 20 }}
           maxLength={10000}
           {...props}

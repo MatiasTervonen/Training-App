@@ -1,28 +1,31 @@
 import { Pressable, View, Keyboard } from "react-native";
 import AppText from "@/components/AppText";
 import NumberInput from "@/components/NumberInput";
-import { CircleX, RotateCcw, AlarmClock } from "lucide-react-native";
+import { CircleX, AlarmClock } from "lucide-react-native";
 import { useTimerStore } from "@/lib/stores/timerStore";
 import { useState, useEffect } from "react";
 import Toast from "react-native-toast-message";
 import { confirmAction } from "@/lib/confirmAction";
 import { useAudioPlayer } from "expo-audio";
-import Timer from "@/components/timer";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import Animated from "react-native-reanimated";
 import * as ScreenOrientation from "expo-screen-orientation";
-import PageContainer from "@/components/PageContainer";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Timer from "@/components/timer/timer";
+import { useRouter } from "expo-router";
 
 export default function SettingsScreen() {
   const [alarmMinutes, setAlarmMinutes] = useState("");
   const [alarmSeconds, setAlarmSeconds] = useState("");
+  const [isCancelling, setIsCancelling] = useState(false);
   const [orieantation, setOrientation] =
     useState<ScreenOrientation.Orientation | null>(null);
 
   const audioSource = require("@/assets/audio/mixkit-classic-alarm-995.wav");
 
   const player = useAudioPlayer(audioSource);
+
+  const router = useRouter();
 
   useEffect(() => {
     const getOrientation = async () => {
@@ -47,14 +50,27 @@ export default function SettingsScreen() {
     orieantation === ScreenOrientation.Orientation.LANDSCAPE_LEFT ||
     orieantation === ScreenOrientation.Orientation.LANDSCAPE_RIGHT;
 
+  useEffect(() => {
+    // Allow full rotation on this page
+    ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.ALL);
+
+    return () => {
+      // Reset back to portrait when leaving the page
+      ScreenOrientation.lockAsync(
+        ScreenOrientation.OrientationLock.PORTRAIT_UP
+      );
+    };
+  }, []);
+
   const {
     totalDuration,
     elapsedTime,
-    alarmFired,
+    alarmSoundPlaying,
     setAlarmFired,
     setActiveSession,
-    stopTimer,
     startTimer,
+    setAlarmSoundPlaying,
+    clearEverything,
   } = useTimerStore();
 
   const handleReset = async () => {
@@ -69,6 +85,8 @@ export default function SettingsScreen() {
     });
     if (!confirmCancel) return;
 
+    setIsCancelling(true);
+
     if (player) {
       try {
         player.pause();
@@ -78,12 +96,11 @@ export default function SettingsScreen() {
       }
     }
 
-    const { setActiveSession, stopTimer } = useTimerStore.getState();
-
     setActiveSession(null);
-    stopTimer();
+    clearEverything();
     AsyncStorage.removeItem("timer_session_draft");
     handleReset();
+    router.replace("/timer/empty-timer");
   };
 
   const handleStartTimer = () => {
@@ -106,46 +123,50 @@ export default function SettingsScreen() {
 
     const totalSeconds = minutes * 60 + seconds;
 
+    setAlarmFired(false);
     startTimer(totalSeconds);
   };
 
-  const restartTimer = () => {
-    player.seekTo(0);
-    player.pause();
-    setAlarmFired(false);
-    stopTimer();
-    handleStartTimer();
-  };
-
   useEffect(() => {
-    if (alarmFired) {
+    if (alarmSoundPlaying) {
       player.seekTo(0);
       player.play();
       player.loop = true;
+    } else {
+      player.pause();
+      player.seekTo(0);
     }
-  }, [alarmFired, player]);
+  }, [alarmSoundPlaying, player]);
 
-  const showTimerUI = totalDuration > 0;
+  const handleStopTimer = async () => {
+    setAlarmSoundPlaying(false);
+    if (player) {
+      try {
+        player.pause();
+        player.seekTo(0);
+      } catch (error) {
+        console.error("Error stopping audio player:", error);
+      }
+    }
+  };
+
+  const showTimerUI = isCancelling || totalDuration > 0;
 
   return (
     <Pressable
       onPress={() => {
         Keyboard.dismiss();
-        if (alarmFired) {
-          player.seekTo(0);
-          player.pause();
-          setAlarmFired(false);
-        }
+        handleStopTimer();
       }}
       className="flex-1"
     >
-      <PageContainer>
+      <View className="flex-1 px-4">
         {showTimerUI ? (
           <View className="flex-1 items-center justify-center">
             <AppText className="text-gray-300 text-xl mt-5">
               {Math.floor(totalDuration / 60)} min {totalDuration % 60} sec
             </AppText>
-            <Timer fullWidth className="flex-col" iconSize={40} />
+            <Timer className="flex-col" iconSize={40} />
             {elapsedTime < totalDuration && (
               <View className="w-full bg-gray-300 h-6 rounded-full overflow-hidden mt-4">
                 <Animated.View
@@ -155,29 +176,6 @@ export default function SettingsScreen() {
               </View>
             )}
 
-            {elapsedTime >= totalDuration && (
-              <View className="flex-row  mt-10 gap-5">
-                <View className="flex-1">
-                  <AnimatedButton
-                    label="Stop alarm"
-                    className="bg-red-600 border-2 border-red-400 py-2 px-4 shadow-md rounded-md items-center justify-center"
-                    onPress={() => {
-                      player.pause();
-                      setAlarmFired(false);
-                    }}
-                  />
-                </View>
-                <View className="flex-1">
-                  <AnimatedButton
-                    label="Restart"
-                    onPress={restartTimer}
-                    className="flex-row justify-center items-center gap-2 bg-blue-800 py-2 border-2 border-blue-500 rounded-md px-4"
-                  >
-                    <RotateCcw color="#f3f4f6" />
-                  </AnimatedButton>
-                </View>
-              </View>
-            )}
             <View className="absolute top-5 right-5" hitSlop={10}>
               <AnimatedButton hitSlop={10} onPress={cancelTimer}>
                 <CircleX color="#d1d5db" size={30} />
@@ -185,51 +183,58 @@ export default function SettingsScreen() {
             </View>
           </View>
         ) : (
-          <View className="flex-1 justify-between">
+          <View className="flex-1 justify-between max-w-lg mx-auto w-full mt-5 mb-5">
             <View className="gap-5 flex-row justify-center items-center">
               <AppText className="text-2xl text-center">Timer</AppText>
               <AlarmClock color="#d1d5db" size={30} />
             </View>
             <View
-              className={`gap-10 mb-5 px-20 justify-center ${
-                isLandscape ? "flex-row" : "flex-col"
+              className={`gap-10 mb-5 px-10 justify-center items-center ${
+                isLandscape ? "flex-row px-0 gap-5" : "flex-col"
               }`}
             >
-              <NumberInput
-                label="Minutes"
-                placeholder="0 min"
-                value={alarmMinutes}
-                onChangeText={(value) => setAlarmMinutes(value)}
-              />
-
-              <NumberInput
-                label="Seconds"
-                placeholder="0 sec"
-                value={alarmSeconds}
-                onChangeText={(value) => setAlarmSeconds(value)}
-              />
+              <View className={`${isLandscape ? "w-1/2" : "w-full"}`}>
+                <NumberInput
+                  label="Minutes"
+                  placeholder="0 min"
+                  value={alarmMinutes}
+                  onChangeText={(value) => setAlarmMinutes(value)}
+                />
+              </View>
+              <View className={`${isLandscape ? "w-1/2" : "w-full"}`}>
+                <NumberInput
+                  label="Seconds"
+                  placeholder="0 sec"
+                  value={alarmSeconds}
+                  onChangeText={(value) => setAlarmSeconds(value)}
+                />
+              </View>
             </View>
             <View
-              className={`justify-center gap-5 ${
+              className={`justify-center gap-5 items-center ${
                 isLandscape ? "flex-row" : "flex-col"
               }`}
             >
-              <AnimatedButton
-                label="Start"
-                onPress={handleStartTimer}
-                className="items-center gap-2 bg-blue-800 py-2 rounded-md shadow-md border-2 border-blue-500"
-                textClassName="text-gray-100"
-              />
-              <AnimatedButton
-                label="Clear"
-                onPress={handleReset}
-                className="items-center gap-2 bg-red-600 border-2 border-red-400 py-2 shadow-md rounded-md"
-                textClassName="text-gray-100"
-              />
+              <View className={`${isLandscape ? "w-1/2" : "w-full"}`}>
+                <AnimatedButton
+                  label="Start"
+                  onPress={handleStartTimer}
+                  className="bg-blue-800 py-2 rounded-md shadow-md border-2 border-blue-500"
+                  textClassName="text-gray-100 text-center"
+                />
+              </View>
+              <View className={`${isLandscape ? "w-1/2" : "w-full"}`}>
+                <AnimatedButton
+                  label="Clear"
+                  onPress={handleReset}
+                  className=" bg-red-600 border-2 border-red-400 py-2 shadow-md rounded-md"
+                  textClassName="text-gray-100 text-center"
+                />
+              </View>
             </View>
           </View>
         )}
-      </PageContainer>
+      </View>
     </Pressable>
   );
 }

@@ -14,11 +14,11 @@ export default function ReminderSession(reminder: reminders) {
       className={`mt-20 mb-10 pt-10 px-6 rounded-xl w-full border border-slate-700 overflow-hidden shadow-md`}
     >
       <View className="flex-row justify-center">
-        <View className="items-center justify-center mt-5 bg-slate-600 p-5 rounded-md flex-1 border border-gray-600">
+        <View className="items-center justify-center mt-5 bg-slate-700 p-5 rounded-md flex-1 border border-gray-400">
           <CalendarSync color="#f3f4f6" />
           <AppText className="mt-2 text-xl text-center">Global</AppText>
         </View>
-        <View className="items-center justify-center mt-5 bg-slate-600 p-5 rounded-md flex-1 ml-5 border border-gray-600">
+        <View className="items-center justify-center mt-5 bg-slate-700 p-5 rounded-md flex-1 ml-5 border border-gray-400">
           <Bell color="#f3f4f6" />
 
           <View className="flex-row items-center gap-3 justify-center">
@@ -28,22 +28,22 @@ export default function ReminderSession(reminder: reminders) {
           </View>
         </View>
       </View>
-      <View className="bg-slate-600 mt-5 rounded-md p-5 w-full">
+      <View className="bg-slate-700 mt-5 rounded-md p-5 w-full border border-gray-400">
         <AppText className="text-xl break-words text-center">
           {reminder.title}
         </AppText>
       </View>
       {reminder.notes && (
-        <View className="whitespace-pre-wrap break-words bg-slate-600 p-4 rounded-md shadow-md mt-5 border border-gray-60">
+        <View className="whitespace-pre-wrap break-words bg-slate-700 p-4 rounded-md shadow-md mt-5 border border-gray-400">
           <AppText className="text-center">{reminder.notes}</AppText>
         </View>
       )}
-      <AppText className="text-sm text-gray-300 mb-2 mt-8">
+      <AppText className="text-sm text-gray-300 mt-8 mb-2">
         Created: {formatDate(reminder.created_at)}
       </AppText>
-      {reminder.created_at && (
+      {reminder.updated_at && (
         <AppText className="text-sm text-gray-300 mb-2">
-          Updated: {formatDate(reminder.created_at)}
+          Updated: {formatDate(reminder.updated_at)}
         </AppText>
       )}
     </LinearGradient>

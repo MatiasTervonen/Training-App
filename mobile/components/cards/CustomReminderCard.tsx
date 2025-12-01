@@ -30,13 +30,13 @@ export default function CustomReminderCard({
   return (
     <View
       className={`
-       border rounded-md flex-col justify-between mb-10 transition-colors min-h-[159px] ${
+       border rounded-md flex-col justify-between transition-colors min-h-[159px] ${
          pinned
            ? `border-yellow-200 bg-yellow-200`
            : "bg-slate-700 border-gray-100"
        }`}
     >
-      <View className="flex-row justify-between items-center mt-2 mb-4 mx-4">
+      <View className="flex-row justify-between items-center mt-2 mx-4">
         <AppText
           className={`flex-1 mr-8 underline text-lg ${
             pinned
@@ -71,15 +71,15 @@ export default function CustomReminderCard({
         )}
       </View>
 
-      <View className="flex-row items-center ml-4 ">
+      {item.updated_at && (
         <AppText
-          className={`text-sm  ${
+          className={`text-sm ml-4  ${
             pinned ? "text-slate-900" : "text-yellow-500"
           } `}
         >
           updated at: {formatDate(item.updated_at!)}
         </AppText>
-      </View>
+      )}
 
       <View className="flex-row justify-between items-center mt-2 bg-black/40 rounded-b-md">
         <View className="flex-row items-center gap-4">

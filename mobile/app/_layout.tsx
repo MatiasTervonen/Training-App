@@ -47,7 +47,7 @@ const toastConfig = {
       contentContainerStyle={{
         paddingHorizontal: 15,
         paddingVertical: 10,
-        backgroundColor: "#1e293b",
+        backgroundColor: "#1C2431",
       }}
       text1Style={{
         fontSize: 18,
@@ -68,7 +68,7 @@ const toastConfig = {
       contentContainerStyle={{
         paddingHorizontal: 15,
         paddingVertical: 10,
-        backgroundColor: "#1e293b",
+        backgroundColor: "#1C2431",
       }}
       text1Style={{
         fontSize: 18,
@@ -89,7 +89,7 @@ const toastConfig = {
       contentContainerStyle={{
         paddingHorizontal: 15,
         paddingVertical: 10,
-        backgroundColor: "#1e293b",
+        backgroundColor: "#1C2431",
       }}
       text1Style={{
         fontSize: 18,
@@ -153,6 +153,12 @@ export default Sentry.wrap(function RootLayout() {
     return () => {
       ScreenOrientation.removeOrientationChangeListener(subscription);
     };
+  }, []);
+
+  // Lock screen orientation to portrait
+
+  useEffect(() => {
+    ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
   }, []);
 
   const isLandscape =

@@ -26,7 +26,6 @@ export default function DropdownMenu({
   onDelete,
   onHistory,
   onChange,
-  
 }: DropdownMenuProps) {
   return (
     <View>
@@ -42,7 +41,7 @@ export default function DropdownMenu({
         </MenuTrigger>
         <MenuOptions customStyles={optionsStyles}>
           {onEdit && (
-            <View className="border-b border-gray-300">
+            <View className="border-b border-blue-500">
               <MenuOption onSelect={onEdit}>
                 <AppText className="text-center">Edit</AppText>
               </MenuOption>
@@ -50,7 +49,7 @@ export default function DropdownMenu({
           )}
 
           {onTogglePin && (
-            <View className="border-b border-gray-300">
+            <View className="border-b border-blue-500">
               <MenuOption onSelect={onTogglePin}>
                 <AppText className="text-center">
                   {pinned ? "Unpin" : "Pin"}
@@ -72,7 +71,7 @@ export default function DropdownMenu({
           )}
           {onChange && (
             <MenuOption onSelect={onChange}>
-              <AppText className="text-center">Change</AppText>
+              <AppText className="text-center bg-slate-900">Change</AppText>
             </MenuOption>
           )}
         </MenuOptions>
@@ -83,14 +82,14 @@ export default function DropdownMenu({
 
 const optionsStyles = {
   optionsContainer: {
-    backgroundColor: "#f3f4f6",
+    backgroundColor: "#3b82f6",
     padding: 2,
     borderRadius: 8,
     borderWidth: 1,
     marginTop: 20,
   },
   optionsWrapper: {
-    backgroundColor: "#1e2939",
+    backgroundColor: "#0f172a",
     borderRadius: 8,
   },
   optionWrapper: {

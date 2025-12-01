@@ -1,4 +1,9 @@
-import { View, TouchableWithoutFeedback, Keyboard } from "react-native";
+import {
+  View,
+  TouchableWithoutFeedback,
+  Keyboard,
+  ScrollView,
+} from "react-native";
 import AppText from "@/components/AppText";
 import AppInput from "@/components/AppInput";
 import { useEffect, useState } from "react";
@@ -104,28 +109,30 @@ export default function NotesScreen() {
   };
 
   return (
-    <>
+    <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-        <PageContainer className="flex-col justify-between">
+        <PageContainer className="justify-between">
           <View>
             <AppText className="text-2xl text-center mb-10">
               Add your notes here
             </AppText>
-            <AppInput
-              value={title}
-              setValue={setTitle}
-              label="Title.."
-              placeholder="Notes title...(optional)"
-            />
-          </View>
-          <View className="flex-1 mt-5">
+            <View className="mb-5">
+              <AppInput
+                value={title}
+                setValue={setTitle}
+                label="Title.."
+                placeholder="Notes title...(optional)"
+              />
+            </View>
             <NotesInput
+              className="min-h-[120px]"
               value={notes}
               setValue={setNotes}
               placeholder="Write your notes here..."
               label="Notes..."
             />
           </View>
+
           <View className="mt-10 flex-col gap-4">
             <SaveButton onPress={() => handleSaveNotes()} />
             <DeleteButton
@@ -137,6 +144,6 @@ export default function NotesScreen() {
         </PageContainer>
       </TouchableWithoutFeedback>
       <FullScreenLoader visible={isSaving} message="Saving your notes..." />
-    </>
+    </ScrollView>
   );
 }

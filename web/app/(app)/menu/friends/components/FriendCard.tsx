@@ -65,7 +65,7 @@ export default function FriendCard({ friend }: FriendCardProps) {
             alt="Profile Picture"
             width={40}
             height={40}
-            className="rounded-full border-2 border-blue-500 w-[40px] h-[40px]"
+            className="rounded-full border-2 border-blue-500 w-10 h-10"
           />
           <h3 className="text-lg">{friend.user.display_name}</h3>
         </div>

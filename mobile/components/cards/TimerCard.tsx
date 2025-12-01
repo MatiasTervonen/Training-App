@@ -21,15 +21,15 @@ const formatSeconds = (seconds: number) => {
 
 export default function TimerCard({ item, onDelete, onStarTimer }: Props) {
   return (
-    <PageContainer className="w-full justify-between flex-1 pb-10">
+    <PageContainer className="w-full justify-between flex-1 pb-5">
       <View>
-        <AppText className="text-lg text-gray-400  text-center">
-          {formatDate(item.created_at)}
+        <AppText className="text-sm text-gray-400  text-center">
+          created: {formatDate(item.created_at)}
         </AppText>
         <AppText className="my-5 text-xl break-words text-center">
           {item.title}
         </AppText>
-        <View className="whitespace-pre-wrap break-words overflow-hidden max-w-full text-left bg-slate-900 p-4 rounded-md shadow-md mt-5">
+        <View className="whitespace-pre-wrap break-words overflow-hidden text-left bg-slate-900 p-4 rounded-md shadow-md mt-5">
           <AppText className="bg-slate-700 text-center px-6 py-2 rounded-md mx-auto text-lg">
             {formatSeconds(item.time_seconds)}
           </AppText>

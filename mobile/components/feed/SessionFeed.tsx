@@ -161,7 +161,6 @@ export default function SessionFeed() {
     error,
     isLoading,
     refetch: mutateFeed,
-    isRefetching,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
@@ -466,7 +465,7 @@ export default function SessionFeed() {
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
     >
-      {isLoading || isRefetching ? (
+      {isLoading || !data ? (
         <>
           <FeedSkeleton count={5} />
         </>
@@ -488,10 +487,9 @@ export default function SessionFeed() {
             showsVerticalScrollIndicator={false}
             refreshControl={
               <RefreshControl
-                refreshing={(!isLoading && isRefetching) || refreshing}
+                refreshing={refreshing}
                 onRefresh={async () => {
                   setRefreshing(true);
-                  await queryClient.removeQueries({ queryKey: ["feed"] });
                   await mutateFeed();
                   setRefreshing(false);
                 }}
@@ -504,7 +502,7 @@ export default function SessionFeed() {
             }}
             onEndReachedThreshold={0.5}
             renderItem={({ item: feedItem }) => (
-              <View className="px-4 mb-10">
+              <View className={`px-4 ${unpinnedFeed ? "pb-10" : ""}`}>
                 <FeedCard
                   {...feedItem}
                   pinned={false}

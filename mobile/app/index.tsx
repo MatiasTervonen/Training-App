@@ -17,6 +17,7 @@ export default function Index() {
   const aspectRatio = 2047 / 1106;
   const height = width * aspectRatio;
 
+  
   return (
     <ScrollView
       showsVerticalScrollIndicator={false}

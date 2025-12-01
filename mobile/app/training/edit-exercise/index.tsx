@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import SaveButton from "@/components/buttons/SaveButton";
 import Toast from "react-native-toast-message";
 import FullScreenLoader from "@/components/FullScreenLoader";
-import { handleError } from "@/utils/handleError";
 import {
   View,
   TouchableWithoutFeedback,

@@ -3,7 +3,6 @@ import AppText from "@/components/AppText";
 import SaveCustomReminder from "@/api/reminders/save-custom-reminder";
 import SaveButton from "@/components/buttons/SaveButton";
 import DeleteButton from "@/components/buttons/DeleteButton";
-import NotesInput from "@/components/NotesInput";
 import AppInput from "@/components/AppInput";
 import FullScreenLoader from "@/components/FullScreenLoader";
 import Toast from "react-native-toast-message";

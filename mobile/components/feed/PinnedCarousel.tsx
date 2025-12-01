@@ -35,7 +35,7 @@ export default function PinnedCarousel({
       </View>
       <Carousel
         width={width}
-        height={width / 2}
+        height={199}
         data={pinnedFeed}
         onSnapToItem={(index) => setActiveIndex(index)}
         loop={true}

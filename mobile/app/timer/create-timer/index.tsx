@@ -7,7 +7,7 @@ import { useState, useEffect } from "react";
 import AppInput from "@/components/AppInput";
 import PageContainer from "@/components/PageContainer";
 import DeleteButton from "@/components/buttons/DeleteButton";
-import saveTimer from "@/api/timer/save-timer";
+import saveTimer from "@/database/timer/save-timer";
 import FullScreenLoader from "@/components/FullScreenLoader";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";

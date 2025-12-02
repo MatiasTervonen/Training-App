@@ -11,7 +11,7 @@ import { View } from "react-native";
 import AppText from "../AppText";
 import AnimatedButton from "../buttons/animatedButton";
 import { useQuery } from "@tanstack/react-query";
-import { getFullTodoSession } from "@/api/todo/get-full-todo";
+import { getFullTodoSession } from "@/database/todo/get-full-todo";
 
 type Props = {
   item: todo_lists;

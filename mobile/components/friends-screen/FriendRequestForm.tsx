@@ -2,7 +2,7 @@ import AppInput from "../AppInput";
 import { useState } from "react";
 import toast from "react-native-toast-message";
 import { handleError } from "@/utils/handleError";
-import { sendFriendRequest } from "@/api/friend/send-request";
+import { sendFriendRequest } from "@/database/friend/send-request";
 import { View } from "react-native";
 import SaveButton from "@/components/buttons/SaveButton";
 

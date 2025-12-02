@@ -2,12 +2,12 @@ import { View, ActivityIndicator } from "react-native";
 import AppText from "@/components/AppText";
 import PageContainer from "@/components/PageContainer";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import GetTimer from "@/api/timer/get-timers";
+import GetTimer from "@/database/timer/get-timers";
 import { useState } from "react";
 import { timers } from "@/types/models";
 import FullScreenModal from "@/components/FullScreenModal";
 import TimerCard from "@/components/cards/TimerCard";
-import DeleteTimer from "@/api/timer/delete-timer";
+import DeleteTimer from "@/database/timer/delete-timer";
 import Toast from "react-native-toast-message";
 
 import { router } from "expo-router";

@@ -3,7 +3,7 @@ import SaveButton from "../buttons/SaveButton";
 import FullScreenLoader from "../FullScreenLoader";
 import Toast from "react-native-toast-message";
 import { full_todo_session } from "../../types/models";
-import { editTodo } from "@/api/todo/edit-todo";
+import { editTodo } from "@/database/todo/edit-todo";
 import SubNotesInput from "../SubNotesInput";
 import AppInput from "../AppInput";
 import AnimatedButton from "../buttons/animatedButton";

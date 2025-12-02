@@ -12,7 +12,7 @@ import { useDebouncedCallback } from "use-debounce";
 import { useQueryClient } from "@tanstack/react-query";
 import { handleError } from "@/utils/handleError";
 import Toast from "react-native-toast-message";
-import { saveWeight } from "@/api/weight/save-weight";
+import { saveWeight } from "@/database/weight/save-weight";
 import PageContainer from "@/components/PageContainer";
 import SubNotesInput from "@/components/SubNotesInput";
 

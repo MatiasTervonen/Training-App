@@ -6,7 +6,7 @@ import FullScreenLoader from "@/components/FullScreenLoader";
 import Toast from "react-native-toast-message";
 import AppText from "../AppText";
 import { View, TouchableWithoutFeedback, Keyboard } from "react-native";
-import { editNotes } from "@/api/notes/edit-notes";
+import { editNotes } from "@/database/notes/edit-notes";
 import PageContainer from "../PageContainer";
 import { notes } from "@/types/models";
 import { Dot } from "lucide-react-native";

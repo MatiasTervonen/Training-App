@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 import NotesInput from "@/components/NotesInput";
 import SaveButton from "@/components/buttons/SaveButton";
 import DeleteButton from "@/components/buttons/DeleteButton";
-import { saveNote } from "@/api/notes/save-note";
+import { saveNote } from "@/database/notes/save-note";
 import Toast from "react-native-toast-message";
 import FullScreenLoader from "@/components/FullScreenLoader";
 import AsyncStorage from "@react-native-async-storage/async-storage";

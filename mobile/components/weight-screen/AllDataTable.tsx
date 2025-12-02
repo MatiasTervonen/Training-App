@@ -4,7 +4,7 @@ import { weight } from "@/types/session";
 import { View, SectionList } from "react-native";
 import AppText from "../AppText";
 import { confirmAction } from "@/lib/confirmAction";
-import { DeleteSession } from "@/api/feed/deleteSession";
+import { DeleteSession } from "@/database/feed/deleteSession";
 import Toast from "react-native-toast-message";
 import { useQueryClient } from "@tanstack/react-query";
 import HeaderAllDataTable from "./headerAllDataTable";

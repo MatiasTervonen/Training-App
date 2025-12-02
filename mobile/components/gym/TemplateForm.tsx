@@ -25,12 +25,12 @@ import FullScreenLoader from "@/components/FullScreenLoader";
 import GroupGymExercises from "@/components/gym/lib/GroupGymExercises";
 import ExerciseCard from "@/components/gym/ExerciseCard";
 import ExerciseSelectorList from "@/components/gym/ExerciseSelectorList";
-import { useQuery } from "@tanstack/react-query";
-import GetFullTemplate from "@/api/gym/get-full-template";
-import { getLastExerciseHistory } from "@/api/gym/last-exercise-history";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import GetFullTemplate from "@/database/gym/get-full-template";
+import { getLastExerciseHistory } from "@/database/gym/last-exercise-history";
 import SelectInput from "@/components/Selectinput";
-import { saveTemplate } from "@/api/gym/save-template";
-import { editTemplate } from "@/api/gym/edit-template";
+import { saveTemplate } from "@/database/gym/save-template";
+import { editTemplate } from "@/database/gym/edit-template";
 import Toast from "react-native-toast-message";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { LinearGradient } from "expo-linear-gradient";
@@ -65,6 +65,8 @@ export default function TemplateForm() {
   const groupedExercises = GroupGymExercises(exercises);
 
   const router = useRouter();
+
+  const queryClient = useQueryClient();
 
   // Remove draft when leaving the edit page without saving
 
@@ -224,17 +226,32 @@ export default function TemplateForm() {
       superset_id: ex.superset_id,
     }));
 
+    const updated = new Date().toISOString();
+
     try {
       if (templateId) {
         await editTemplate({
           id: templateId,
           exercises: simplified,
           name: workoutName,
+          updated_at: updated,
         });
       } else {
         await saveTemplate({
           exercises: simplified,
           name: workoutName,
+        });
+      }
+
+      if (templateId) {
+        await queryClient.refetchQueries({
+          queryKey: ["full_gym_template", templateId],
+          exact: true,
+        });
+      } else {
+        await queryClient.refetchQueries({
+          queryKey: ["get-templates"],
+          exact: true,
         });
       }
 
@@ -483,8 +500,20 @@ export default function TemplateForm() {
               </AppButton>
             </View>
             <View className="justify-center mt-14 gap-5">
-              <SaveButton onPress={handleSaveTemplate} />
+              <SaveButton
+                disabled={exercises.length === 0}
+                onPress={handleSaveTemplate}
+              />
               {templateId ? "" : <DeleteButton onPress={resetSession} />}
+              {templateId ? (
+                <DeleteButton
+                  confirm={false}
+                  label="Cancel"
+                  onPress={() => router.push("/training/templates")}
+                />
+              ) : (
+                ""
+              )}
             </View>
           </PageContainer>
         </ScrollView>

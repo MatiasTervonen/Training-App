@@ -7,11 +7,11 @@ import TemplateCard from "@/components/cards/TemplateCard";
 import { ActivityIndicator, ScrollView, View } from "react-native";
 import GymTemplate from "@/components/expandSession/template";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import GetTemplate from "@/api/gym/get-templates";
+import GetTemplate from "@/database/gym/get-templates";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import DeleteTemplate from "@/api/gym/delete-template";
+import DeleteTemplate from "@/database/gym/delete-template";
 import { confirmAction } from "@/lib/confirmAction";
-import GetFullTemplate from "@/api/gym/get-full-template";
+import GetFullTemplate from "@/database/gym/get-full-template";
 import { TemplateSkeleton } from "@/components/skeletetons";
 import AppText from "@/components/AppText";
 import PageContainer from "@/components/PageContainer";
@@ -113,7 +113,7 @@ export default function TemplatesPage() {
     error: TemplateSessionError,
     isLoading: isLoadingTemplateSession,
   } = useQuery({
-    queryKey: ["fullGymTemplate", templateId],
+    queryKey: ["full_gym_template", templateId],
     queryFn: () => GetFullTemplate(templateId!),
     enabled: !!templateId,
     refetchOnMount: false,

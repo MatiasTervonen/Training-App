@@ -7,7 +7,7 @@ import FullScreenLoader from "@/components/FullScreenLoader";
 import { View, TouchableWithoutFeedback, Keyboard } from "react-native";
 import AppText from "@/components/AppText";
 import SelectInput from "@/components/Selectinput";
-import AddExercise from "@/api/gym/add-exercise";
+import AddExercise from "@/database/gym/add-exercise";
 import { useQueryClient } from "@tanstack/react-query";
 import PageContainer from "@/components/PageContainer";
 

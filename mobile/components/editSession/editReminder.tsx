@@ -6,7 +6,7 @@ import FullScreenLoader from "@/components/FullScreenLoader";
 import Toast from "react-native-toast-message";
 import AppText from "../AppText";
 import { View, TouchableWithoutFeedback, Keyboard } from "react-native";
-import EditReminderData from "@/api/reminders/edit-reminder";
+import EditReminderData from "@/database/reminders/edit-reminder";
 import DatePicker from "react-native-date-picker";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import { Plus } from "lucide-react-native";

@@ -6,7 +6,7 @@ import FullScreenLoader from "@/components/FullScreenLoader";
 import Toast from "react-native-toast-message";
 import AppText from "../AppText";
 import { View, TouchableWithoutFeedback, Keyboard } from "react-native";
-import { editWeight } from "@/api/weight/edit-weight";
+import { editWeight } from "@/database/weight/edit-weight";
 import PageContainer from "../PageContainer";
 import { weight } from "@/types/models";
 

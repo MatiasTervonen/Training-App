@@ -7,7 +7,7 @@ import FullScreenModal from "../FullScreenModal";
 import SaveButton from "../buttons/SaveButton";
 import FullScreenLoader from "../FullScreenLoader";
 import { Checkbox } from "expo-checkbox";
-import { checkedTodo } from "@/api/todo/check-todo";
+import { checkedTodo } from "@/database/todo/check-todo";
 import { full_todo_session } from "@/types/models";
 import { useState } from "react";
 import Toast from "react-native-toast-message";
@@ -70,7 +70,7 @@ export default function TodoSession({
   // });
 
   return (
-    <View>
+    <View className="flex-1 pb-5">
       {hasChanges && (
         <View className="bg-slate-900 absolute top-5 left-5 z-50  py-1 px-4 flex-row items-center rounded-lg">
           <AppText className="text-sm text-yellow-500">

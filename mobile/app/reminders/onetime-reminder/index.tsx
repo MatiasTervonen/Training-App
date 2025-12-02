@@ -1,6 +1,6 @@
 import { View, TouchableWithoutFeedback, Keyboard } from "react-native";
 import AppText from "@/components/AppText";
-import SaveCustomReminder from "@/api/reminders/save-custom-reminder";
+import SaveCustomReminder from "@/database/reminders/save-custom-reminder";
 import SaveButton from "@/components/buttons/SaveButton";
 import DeleteButton from "@/components/buttons/DeleteButton";
 import AppInput from "@/components/AppInput";

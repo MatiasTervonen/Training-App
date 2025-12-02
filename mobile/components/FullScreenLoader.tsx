@@ -18,8 +18,8 @@ export default function FullScreenLoader({
       statusBarTranslucent
     >
       <View className="flex-1 bg-slate-500/30 justify-center items-center">
-        <View className="p-6 bg-[#1C2431] rounded-xl border-2 border-blue-500 min-w-1/3">
-          <AppText className="mb-4 text-lg">{message}</AppText>
+        <View className="p-6 bg-[#1C2431] rounded-xl border-2 border-blue-500 w-2/4">
+          <AppText className="mb-4 text-lg text-center">{message}</AppText>
           <ActivityIndicator size="large" color="#0000ff" />
         </View>
       </View>

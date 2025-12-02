@@ -4,7 +4,7 @@ import Toast from "react-native-toast-message";
 import { Friends } from "@/types/models";
 import { confirmAction } from "@/lib/confirmAction";
 import { handleError } from "@/utils/handleError";
-import { deleteFriend } from "@/api/friend/delete-friend";
+import { deleteFriend } from "@/database/friend/delete-friend";
 import { View } from "react-native";
 import AppText from "../AppText";
 

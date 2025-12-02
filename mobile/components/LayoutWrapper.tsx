@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "expo-router";
 import { supabase } from "@/lib/supabase";
 import { Session } from "@supabase/supabase-js";
-import { fetchUserPreferences } from "@/api/settings/get-settings";
+import { fetchUserPreferences } from "@/database/settings/get-settings";
 import ModalPageWrapper from "./ModalPageWrapper";
 import { useModalPageConfig } from "@/lib/stores/modalPageConfig";
 

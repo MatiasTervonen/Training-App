@@ -8,8 +8,8 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
 } from "react-native";
-import { getExercises } from "@/api/gym/get-exercises";
-import { getRecentExercises } from "@/api/gym/recent-exercises";
+import { getExercises } from "@/database/gym/get-exercises";
+import { getRecentExercises } from "@/database/gym/recent-exercises";
 import AppInput from "../AppInput";
 import AppText from "../AppText";
 import AnimatedButton from "@/components/buttons/animatedButton";
@@ -128,7 +128,7 @@ export default function ExerciseDropdown({ onSelect, resetTrigger }: Props) {
                 <AppText className="text-lg text-gray-300">
                   No eexercises found.
                 </AppText>
-              )} 
+              )}
             </View>
           ) : (
             <SectionList

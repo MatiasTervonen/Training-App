@@ -20,9 +20,14 @@ export default function GymTemplate({ item, onStartWorkout }: Props) {
     <ScrollView showsVerticalScrollIndicator={false}>
       <PageContainer className="mb-10">
         <View className="mb-5  justify-center items-center">
-          <AppText className="text-lg text-gray-400">
+          <AppText className="text-sm text-gray-300">
             Created: {formatDate(item.created_at)}
           </AppText>
+          {item.updated_at && (
+            <AppText className="text-sm mt-2 text-gray-300">
+              Updated: {formatDate(item.updated_at)}
+            </AppText>
+          )}
           <AppText className="text-xl text-center mt-5">{item.name}</AppText>
         </View>
         {Object.entries(groupedExercises).map(([superset_id, group]) => (

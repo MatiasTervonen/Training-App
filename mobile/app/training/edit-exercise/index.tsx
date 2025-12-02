@@ -12,8 +12,8 @@ import {
 import AppText from "@/components/AppText";
 import SelectInput from "@/components/Selectinput";
 import { gym_exercises } from "@/types/models";
-import EditExercise from "@/api/gym/edit-exercise";
-import DeleteExercise from "@/api/gym/delete-exercise";
+import EditExercise from "@/database/gym/edit-exercise";
+import DeleteExercise from "@/database/gym/delete-exercise";
 import ExerciseDropdownEdit from "@/components/gym/ExerciseDropDownEdit";
 import DeleteButton from "@/components/buttons/DeleteButton";
 import AnimatedButton from "@/components/buttons/animatedButton";
@@ -148,7 +148,9 @@ export default function EditExercises() {
     <ScrollView>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <PageContainer>
-          <AppText className="text-2xl text-center mb-10">Edit exercise</AppText>
+          <AppText className="text-2xl text-center mb-10">
+            Edit exercise
+          </AppText>
           <View className="gap-4">
             <AppInput
               value={name}

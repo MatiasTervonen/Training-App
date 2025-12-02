@@ -11,10 +11,12 @@ export async function editTemplate({
   id,
   exercises,
   name,
+  updated_at,
 }: {
   id: string;
   exercises: gym_template_exercises[];
   name: string;
+  updated_at: string;
 }) {
   const {
     data: { session },
@@ -31,7 +33,7 @@ export async function editTemplate({
 
   const { error: templateError } = await supabase
     .from("gym_templates")
-    .update({ name })
+    .update({ name, updated_at })
     .eq("id", id)
     .eq("user_id", session.user.id);
 

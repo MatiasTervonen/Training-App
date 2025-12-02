@@ -2,7 +2,7 @@ import GymForm from "@/components/gym/GymForm";
 import { useLocalSearchParams } from "expo-router";
 import { full_gym_session } from "@/types/models";
 import { useQuery } from "@tanstack/react-query";
-import { getFullGymSession } from "@/api/gym/get-full-gym-session";
+import { getFullGymSession } from "@/database/gym/get-full-gym-session";
 import Toast from "react-native-toast-message";
 import { View, ActivityIndicator } from "react-native";
 import AppText from "@/components/AppText";

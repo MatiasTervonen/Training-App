@@ -11,7 +11,7 @@ import SaveButton from "@/components/buttons/SaveButton";
 import FullScreenLoader from "@/components/FullScreenLoader";
 import Toast from "react-native-toast-message";
 import { useRouter } from "expo-router";
-import saveTodoToDB from "@/api/todo/save-todo";
+import saveTodoToDB from "@/database/todo/save-todo";
 import AppInput from "@/components/AppInput";
 import SubNotesInput from "@/components/SubNotesInput";
 import { useQueryClient } from "@tanstack/react-query";

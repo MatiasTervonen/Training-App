@@ -5,7 +5,7 @@ import DropdownMenu from "../DropdownMenu";
 import { formatDate } from "@/lib/formatDate";
 import { gym_sessions, full_gym_session } from "../../types/models";
 import { useQuery } from "@tanstack/react-query";
-import { getFullGymSession } from "@/api/gym/get-full-gym-session";
+import { getFullGymSession } from "@/database/gym/get-full-gym-session";
 
 type Props = {
   item: gym_sessions;

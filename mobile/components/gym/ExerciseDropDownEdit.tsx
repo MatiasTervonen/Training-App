@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { ActivityIndicator, View, SectionList } from "react-native";
-import GetUserExercises from "@/api/gym/user-exercises";
+import GetUserExercises from "@/database/gym/user-exercises";
 import { useQuery } from "@tanstack/react-query";
 import AppInput from "../AppInput";
 import AppText from "../AppText";

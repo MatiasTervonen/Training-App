@@ -3,6 +3,11 @@ import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
 import { full_gym_session } from "../../types/models";
 import { GroupExercises } from "@/app/(app)/utils/GroupExercises";
 import { full_gym_exercises } from "../../types/models";
+import { History } from "lucide-react";
+import { getLastExerciseHistory } from "@/app/(app)/database/gym";
+import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import ExerciseHistoryModal from "@/app/(app)/training/components/ExerciseHistoryModal";
 
 const formatDuration = (seconds: number) => {
   const totalMinutes = Math.floor(seconds / 60);
@@ -16,6 +21,9 @@ const formatDuration = (seconds: number) => {
 };
 
 export default function GymSession(gym_session: full_gym_session) {
+  const [exerciseId, setExerciseId] = useState("");
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+
   const groupedExercises = GroupExercises(
     gym_session.gym_session_exercises || []
   );
@@ -25,6 +33,26 @@ export default function GymSession(gym_session: full_gym_session) {
 
   const isCardioExercise = (exercise: full_gym_exercises) =>
     exercise.gym_exercises.main_group.toLowerCase() === "cardio";
+
+  const {
+    data: history,
+    error: historyError,
+    isLoading,
+  } = useQuery({
+    queryKey: ["exerciseHistory", exerciseId],
+    queryFn: () => getLastExerciseHistory(exerciseId),
+    enabled: !!exerciseId,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    staleTime: Infinity,
+    gcTime: Infinity,
+  });
+
+  const openHistory = (exerciseId: string) => {
+    setExerciseId(exerciseId);
+    setIsHistoryOpen(true);
+  };
 
   return (
     <div className="max-w-lg mx-auto pt-5 px-2 pb-10">
@@ -43,7 +71,7 @@ export default function GymSession(gym_session: full_gym_session) {
       {Object.entries(groupedExercises).map(([superset_id, group]) => (
         <div
           key={superset_id}
-          className={`mt-10 bg-linear-to-tr from-gray-900 via-slate-800 to-blue-900 rounded-md ${
+          className={`mt-10 bg-linear-to-tr from-gray-900 via-slate-900 to-blue-900 rounded-md ${
             group.length > 1
               ? "border-2 border-blue-700"
               : "border-2 border-gray-700"
@@ -55,18 +83,23 @@ export default function GymSession(gym_session: full_gym_session) {
 
           {group.map(({ exercise, index }) => (
             <div key={index} className="py-2 px-4 mb-4">
-              <div className="flex justify-between flex-col mb-2">
+              <div className="flex justify-between flex-col mb-2 text-gray-100">
                 <div className="flex items-center justify-between">
                   <h3 className="text-lg">
                     {index + 1}. {exercise.gym_exercises.name}
                   </h3>
-                  <h3 className="text-sm text-gray-300">
-                    {exercise.gym_exercises.muscle_group}
-                  </h3>
+                  <button
+                    onClick={() => {
+                      openHistory(exercise.gym_exercises.id);
+                    }}
+                  >
+                    <History color="#f3f4f6" />
+                  </button>
                 </div>
-                <h2 className="text-sm text-gray-400">
+                <h3 className="text-sm text-gray-300">
+                  {exercise.gym_exercises.muscle_group} /{" "}
                   {exercise.gym_exercises.equipment}
-                </h2>
+                </h3>
               </div>
               <div className="py-2 whitespace-pre-wrap wrap-break-word overflow-hidden max-w-full">
                 {exercise.notes || ""}
@@ -78,7 +111,7 @@ export default function GymSession(gym_session: full_gym_session) {
                     {isCardioExercise(exercise) ? (
                       <>
                         <th className="p-2 font-normal">Time (min)</th>
-                        <th className="p-2 font-normal">Length (meters)</th>
+                        <th className="p-2 font-normal">Distance (meters)</th>
                       </>
                     ) : (
                       <>
@@ -121,6 +154,14 @@ export default function GymSession(gym_session: full_gym_session) {
           ))}
         </div>
       ))}
+
+      <ExerciseHistoryModal
+        isOpen={isHistoryOpen}
+        onClose={() => setIsHistoryOpen(false)}
+        isLoading={isLoading}
+        history={history ? history : []}
+        error={historyError ? historyError.message : null}
+      />
     </div>
   );
 }

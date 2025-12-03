@@ -11,7 +11,6 @@ import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import Modal from "@/app/(app)/components/modal";
 import ExerciseHistoryModal from "../components/ExerciseHistoryModal";
 import {
-  HistoryResult,
   ExerciseEntry,
   emptyExerciseEntry,
   ExerciseInput,
@@ -152,12 +151,9 @@ export default function GymForm({
     data: history,
     error: historyError,
     isLoading,
-  } = useQuery<HistoryResult[]>({
+  } = useQuery({
     queryKey: ["exerciseHistory", exerciseHistoryId],
-    queryFn: async () => {
-      const result = await getLastExerciseHistory(exerciseHistoryId!);
-      return result ?? [];
-    },
+    queryFn: () => getLastExerciseHistory(exerciseHistoryId!),
     enabled: !!exerciseHistoryId,
     refetchOnMount: false,
     refetchOnWindowFocus: false,
@@ -419,7 +415,7 @@ export default function GymForm({
           {Object.entries(groupedExercises).map(([superset_id, group]) => (
             <div
               key={superset_id}
-              className={`mt-10 bg-linear-to-tr from-gray-900 via-slate-800 to-blue-900 rounded-md mx-2 ${
+              className={`mt-10 bg-linear-to-tr from-gray-900 via-slate-900 to-blue-900 rounded-md mx-2 ${
                 group.length > 1
                   ? "border-2 border-blue-700"
                   : "border-2 border-gray-600"

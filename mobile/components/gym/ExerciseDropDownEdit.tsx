@@ -1,5 +1,11 @@
 import { useState, useEffect, useRef } from "react";
-import { ActivityIndicator, View, SectionList } from "react-native";
+import {
+  ActivityIndicator,
+  View,
+  SectionList,
+  TouchableWithoutFeedback,
+  Keyboard,
+} from "react-native";
 import GetUserExercises from "@/database/gym/user-exercises";
 import { useQuery } from "@tanstack/react-query";
 import AppInput from "../AppInput";
@@ -88,7 +94,7 @@ export default function ExerciseDropdownEdit({
   }
 
   return (
-    <>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <View className="px-2 w-full z-50">
         <View className="mt-10 w-full px-14">
           <AppInput
@@ -166,6 +172,6 @@ export default function ExerciseDropdownEdit({
           </View>
         )}
       </View>
-    </>
+    </TouchableWithoutFeedback>
   );
 }

@@ -6,11 +6,7 @@ import { ChevronDown, Plus } from "lucide-react";
 import Modal from "@/app/(app)/components/modal";
 import SaveButton from "@/app/(app)/ui/save-button";
 import DeleteSessionBtn from "@/app/(app)/ui/deleteSessionBtn";
-import {
-  HistoryResult,
-  ExerciseEntry,
-  emptyExerciseEntry,
-} from "@/app/(app)/types/session";
+import { ExerciseEntry, emptyExerciseEntry } from "@/app/(app)/types/session";
 import ExerciseHistoryModal from "../components/ExerciseHistoryModal";
 import { generateUUID } from "@/app/(app)/lib/generateUUID";
 import { toast } from "react-hot-toast";
@@ -98,12 +94,9 @@ export default function TemplateForm({
     data: history,
     error: historyError,
     isLoading: isHistoryLoading,
-  } = useQuery<HistoryResult[]>({
+  } = useQuery({
     queryKey: ["exerciseHistory", exerciseHistoryId],
-    queryFn: async () => {
-      const result = await getLastExerciseHistory(exerciseHistoryId!);
-      return result ?? [];
-    },
+    queryFn: async () => getLastExerciseHistory(exerciseHistoryId!),
     enabled: !!exerciseHistoryId,
     refetchOnMount: false,
     refetchOnWindowFocus: false,
@@ -235,7 +228,7 @@ export default function TemplateForm({
         {Object.entries(groupedExercises).map(([superset_id, group]) => (
           <div
             key={superset_id}
-            className={`mt-5 bg-linear-to-tr from-gray-900 via-slate-800 to-blue-900  rounded-md mx-2 ${
+            className={`mt-5 bg-linear-to-tr from-gray-900 via-slate-900 to-blue-900  rounded-md mx-2 ${
               group.length > 1
                 ? "border-2 border-blue-700"
                 : "border-2 border-gray-600"

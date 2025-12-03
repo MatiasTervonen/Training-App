@@ -43,6 +43,8 @@ export default async function AddExercise({
     .select()
     .single();
 
+  console.log("Sending user_id:", session.user.id);
+
   if (exerciseError) {
     handleError(exerciseError, {
       message: "Error adding new exercise",

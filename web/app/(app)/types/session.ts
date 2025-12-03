@@ -1,36 +1,8 @@
-export type OptimisticWeight = {
-  id: string;
-  title: string;
-  weight: number;
-  notes: string;
-  created_at: string;
-};
-
-export type OptimisticGymSession = {
-  id: string;
-  title: string;
-  notes: string;
-  created_at: string;
-  duration: number;
-};
-
-export type OptimisticNotes = {
-  id: string;
-  title: string;
-  notes: string;
-  created_at: string;
-};
-
 export type Template = {
   id: string;
   name: string;
   created_at: string;
   gym_template_exercises: TemplateExercise[];
-};
-
-export type OptimisticTemplate = {
-  id: string;
-  name: string;
 };
 
 export type TemplateExercise = {
@@ -49,11 +21,17 @@ type SessionSet = {
   reps: number | null;
   rpe: string | null;
   set_number: number;
+  time_min: number | null;
+  distance_meters: number | null;
 };
+
 export type HistoryResult = {
   date: string;
+  main_group?: string;
+  name: string;
+  equipment: string;
   sets: SessionSet[];
-};
+}[];
 
 export type ExerciseSet = {
   weight?: number;
@@ -93,11 +71,6 @@ export type ExerciseInput = {
   distance_meters?: string;
 };
 
-export type FeedItem = {
-  table: "gym_sessions";
-  item: OptimisticGymSession;
-  pinned: boolean;
-};
 
 export type Feed_item = {
   id: string;

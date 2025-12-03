@@ -6,6 +6,12 @@ import { View, ScrollView } from "react-native";
 import AppText from "../AppText";
 import { LinearGradient } from "expo-linear-gradient";
 import PageContainer from "../PageContainer";
+import { History } from "lucide-react-native";
+import { getLastExerciseHistory } from "@/database/gym/last-exercise-history";
+import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import AnimatedButton from "../buttons/animatedButton";
+import ExerciseHistoryModal from "../gym/ExerciseHistoryModal";
 
 const formatDuration = (seconds: number) => {
   const totalMinutes = Math.floor(seconds / 60);
@@ -19,6 +25,9 @@ const formatDuration = (seconds: number) => {
 };
 
 export default function GymSession(gym_session: full_gym_session) {
+  const [exerciseId, setExerciseId] = useState("");
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+
   const groupedExercises = GroupExercises(
     gym_session.gym_session_exercises || []
   );
@@ -28,6 +37,26 @@ export default function GymSession(gym_session: full_gym_session) {
 
   const isCardioExercise = (exercise: full_gym_exercises) =>
     exercise.gym_exercises.main_group.toLowerCase() === "cardio";
+
+  const {
+    data: history = [],
+    error: historyError,
+    isLoading,
+  } = useQuery({
+    queryKey: ["last-exercise-history", exerciseId],
+    queryFn: () => getLastExerciseHistory({ exerciseId }),
+    enabled: isHistoryOpen && !!exerciseId,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    staleTime: Infinity,
+    gcTime: Infinity,
+  });
+
+  const openHistory = (exerciseId: string) => {
+    setExerciseId(exerciseId);
+    setIsHistoryOpen(true);
+  };
 
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
@@ -52,9 +81,9 @@ export default function GymSession(gym_session: full_gym_session) {
           <LinearGradient
             key={superset_id}
             colors={["#1e3a8a", "#0f172a", "#0f172a"]}
-            start={{ x: 1, y: 0 }} // bottom-left
-            end={{ x: 0, y: 1 }} // top-right
-            className={`mt-10  rounded-md  ${
+            start={{ x: 1, y: 0 }}
+            end={{ x: 0, y: 1 }}
+            className={`mt-10 rounded-md overflow-hidden  ${
               group.length > 1
                 ? "border-2 border-blue-700"
                 : "border-2 border-gray-600"
@@ -65,11 +94,10 @@ export default function GymSession(gym_session: full_gym_session) {
                 Super-Set
               </AppText>
             )}
-
             {group.map(({ exercise, index }) => (
               <View key={index} className="py-2 px-4 mb-4">
                 <View className="justify-between flex-col mb-2">
-                  <View className="flex-row items-center justify-between">
+                  <View className="flex-row items-center">
                     <AppText
                       className="text-xl text-gray-100 flex-1 mr-4"
                       numberOfLines={1}
@@ -77,13 +105,19 @@ export default function GymSession(gym_session: full_gym_session) {
                     >
                       {index + 1}. {exercise.gym_exercises.name}
                     </AppText>
-                    <AppText className="text-lg text-gray-300">
-                      {exercise.gym_exercises.muscle_group}
+                    <AnimatedButton
+                      hitSlop={10}
+                      onPress={() => openHistory(exercise.gym_exercises.id)}
+                    >
+                      <History color="#f3f4f6" />
+                    </AnimatedButton>
+                  </View>
+                  <View className="flex-row items-center ">
+                    <AppText className="text-md text-gray-400 mt-1">
+                      {exercise.gym_exercises.muscle_group} /{" "}
+                      {exercise.gym_exercises.equipment}
                     </AppText>
                   </View>
-                  <AppText className="text-md text-gray-400">
-                    {exercise.gym_exercises.equipment}
-                  </AppText>
                 </View>
                 <AppText className="py-2 whitespace-pre-wrap break-words overflow-hidden">
                   {exercise.notes || ""}
@@ -96,11 +130,13 @@ export default function GymSession(gym_session: full_gym_session) {
                         <View className="w-[20%]">
                           <AppText className="p-2 text-lg">Set</AppText>
                         </View>
-                        <View className="w-[30%]">
+                        <View className="w-[30%] flex-row items-center">
                           <AppText className="p-2 text-lg">Time</AppText>
+                          <AppText className="text-sm">(min)</AppText>
                         </View>
-                        <View className="w-[30%]">
-                          <AppText className="p-2 text-lg">Length</AppText>
+                        <View className="w-[30%] flex-row items-center">
+                          <AppText className="p-2 text-lg">Distance</AppText>
+                          <AppText className="text-sm">(meters)</AppText>
                         </View>
                         <View className="w-[20%]">
                           <AppText className="p-2 text-lg"></AppText>
@@ -146,12 +182,12 @@ export default function GymSession(gym_session: full_gym_session) {
                           </View>
                           <View className="w-[30%] text-center">
                             <AppText className="p-2 text-lg ">
-                              {set.time_min}
+                              {set.time_min} 
                             </AppText>
                           </View>
                           <View className="w-[30%] text-center">
                             <AppText className="p-2 text-lg">
-                              {set.distance_meters}
+                              {set.distance_meters} 
                             </AppText>
                           </View>
                         </>
@@ -185,6 +221,14 @@ export default function GymSession(gym_session: full_gym_session) {
           </LinearGradient>
         ))}
       </PageContainer>
+
+      <ExerciseHistoryModal
+        isOpen={isHistoryOpen}
+        onClose={() => setIsHistoryOpen(false)}
+        isLoading={isLoading}
+        history={Array.isArray(history) ? history : []}
+        error={historyError ? historyError.message : null}
+      />
     </ScrollView>
   );
 }

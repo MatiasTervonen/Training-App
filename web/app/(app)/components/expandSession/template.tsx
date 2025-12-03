@@ -23,7 +23,7 @@ export default function GymTemplate({ item, onStartWorkout }: Props) {
       {Object.entries(groupedExercises).map(([superset_id, group]) => (
         <div
           key={superset_id}
-          className="mt-6 bg-slate-900 rounded-md px-4 py-2 shadow-md"
+          className="mt-6 bg-linear-to-tr from-gray-900 via-slate-900 to-blue-900 rounded-md px-4 py-2 shadow-md border-2 border-gray-600"
         >
           {group.length > 1 && (
             <h3 className="text-lg mb-2 text-center">Super-Set</h3>

@@ -1,4 +1,4 @@
-import { ListTodo, Ellipsis, SquareArrowOutUpRight } from "lucide-react";
+import { ListTodo, Ellipsis, SquareArrowOutUpRight, Check } from "lucide-react";
 import DropdownMenu from "../dropdownMenu";
 import { formatDate } from "@/app/(app)/lib/formatDate";
 import { todo_lists } from "../../types/models";
@@ -89,11 +89,16 @@ export default function TodoCard({
           </DropdownMenu>
         </div>
 
-        {fullTodo && (
-          <p className={`ml-4 ${pinned ? "text-slate-900" : "text-gray-100"}`}>
-            completed: {completed} / {total}
-          </p>
-        )}
+        <div className="flex gap-2">
+          {fullTodo && (
+            <p
+              className={`ml-4 ${pinned ? "text-slate-900" : "text-gray-100"}`}
+            >
+              completed: {completed} / {total}
+            </p>
+          )}
+          {completed === total && <Check color="#22c55e" />}
+        </div>
 
         {item.updated_at ? (
           <p

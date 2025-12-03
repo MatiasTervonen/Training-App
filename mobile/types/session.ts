@@ -44,20 +44,21 @@ export type TemplateExercise = {
   };
 };
 
-export type SessionSet = {
-  weight?: number;
-  reps?: number;
-  rpe?: string;
+type SessionSet = {
+  weight: number | null;
+  reps: number | null;
+  rpe: string | null;
+  set_number: number;
+  time_min: number;
+  distance_meters: number;
 };
 
 export type HistoryResult = ({
   date: string;
   main_group?: string;
-  sets: {
-    weight: number;
-    reps: number;
-    rpe: string;
-  }[];
+  name: string;
+  equipment: string;
+  sets: SessionSet[];
 } | null)[];
 
 export type ExerciseSet = {

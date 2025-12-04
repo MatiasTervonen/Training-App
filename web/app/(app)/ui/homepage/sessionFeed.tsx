@@ -356,11 +356,11 @@ export default function SessionFeed() {
   }, [pinnedFeed, activeIndex]);
 
   return (
-    <div>
+    <div className="h-full">
       <ActiveSessionPopup />
       <div
         ref={containerRef}
-        className="max-w-3xl mx-auto relative bg-linear-to-b from-slate-950 via-slate-900 to-slate-800 px-5 pt-3 pb-10 overflow-y-auto touch-pan-y"
+        className="max-w-3xl mx-auto relative bg-linear-to-b from-slate-950 via-slate-900 to-slate-800 px-5 pt-3 pb-10 overflow-y-auto touch-pan-y h-full"
       >
         <div
           className="flex items-center justify-center transition-all"
@@ -382,11 +382,11 @@ export default function SessionFeed() {
             <FeedSkeleton count={6} />
           </>
         ) : error ? (
-          <p className="text-center text-lg mt-10 ">
+          <p className="text-center text-lg mt-10">
             Failed to load sessions. Please try again later.
           </p>
         ) : !data || feed.length === 0 ? (
-          <p className="text-center text-lg mt-20 h-full grow">
+          <p className="text-center text-lg mt-20">
             No sessions yet. Let&apos;s get started!
           </p>
         ) : (

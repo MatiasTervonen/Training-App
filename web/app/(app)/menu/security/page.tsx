@@ -7,6 +7,7 @@ import { createClient } from "@/utils/supabase/client";
 import { useSignOut } from "@/app/(app)/lib/handleSignOut";
 import { handleError } from "@/app/(app)/utils/handleError";
 import { deleteAccount } from "../../database/users";
+import { useUserStore } from "../../lib/stores/useUserStore";
 
 export default function Page() {
   const [password, setPassword] = useState("");
@@ -18,6 +19,8 @@ export default function Page() {
   const [successMessage2, setSuccessMessage2] = useState("");
   const [errorMessage2, setErrorMessage2] = useState("");
   const [isDeleteAccount, setIsDeleteAccount] = useState("");
+
+  const isGuest = useUserStore((state) => state.role === "guest");
 
   const { signOut } = useSignOut();
 
@@ -61,7 +64,6 @@ export default function Page() {
       setTimeout(() => {
         signOut();
       }, 3000);
-
     } catch (error) {
       handleError(error, {
         message: "Unexpected error updating password",
@@ -144,13 +146,21 @@ export default function Page() {
       ) : (
         <p className="mb-5 text-center invisible">Placeholder</p>
       )}
-      <div>
+      {isGuest ? (
+        <SaveButtonSpinner
+          disabled={isGuest}
+          loading={loading}
+          onClick={handleSavePassword}
+          className="bg-gray-600 border-gray-400 hover:bg-gray-500"
+          label="Save (not allowed)"
+        />
+      ) : (
         <SaveButtonSpinner
           disabled={loading}
           loading={loading}
           onClick={handleSavePassword}
         />
-      </div>
+      )}
       <h2 className="mt-10 underline">Delete Account</h2>
       <p className="my-5 text-gray-300">
         Type “DELETE ACCOUNT” to confirm. All your data will be permanently

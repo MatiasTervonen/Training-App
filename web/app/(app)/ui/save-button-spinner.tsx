@@ -1,6 +1,5 @@
 "use client";
 
-import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
 import Spinner from "../components/spinner";
 
 type SaveButtonProps = {
@@ -18,19 +17,7 @@ export default function SaveButtonSpinner({
   className,
   loading,
 }: SaveButtonProps) {
-  const isGuest = useUserStore((state) => state.role === "guest");
 
-  if (isGuest) {
-    return (
-      <button
-        type="button"
-        disabled
-        className="flex items-center justify-center w-full gap-2 bg-gray-400 py-2 rounded-md shadow-xl border-2 border-gray-300 text-gray-100 text-lg cursor-not-allowed"
-      >
-        Save (not allowed)
-      </button>
-    );
-  }
 
   return (
     <button

@@ -1,6 +1,5 @@
 import AppText from "@/components/AppText";
 import { ActivityIndicator } from "react-native";
-import { useUserStore } from "@/lib/stores/useUserStore";
 import AnimatedButton from "./animatedButton";
 
 type SaveButtonProps = {
@@ -18,17 +17,6 @@ export default function SaveButtonSpinner({
   loading,
   className,
 }: SaveButtonProps) {
-  const isGuest = useUserStore((state) => state.preferences?.role === "guest");
-
-  if (isGuest) {
-    return (
-      <AnimatedButton
-        label="Save (not allowed)"
-        className="bg-gray-400 py-2 rounded-md shadow-md border-2 border-gray-300"
-        onPress={onPress}
-      />
-    );
-  }
 
   return (
     <AnimatedButton

@@ -14,6 +14,7 @@ import { handleError } from "@/utils/handleError";
 import SaveButtonSpinner from "@/components/buttons/SaveButtonSpinner";
 import PageContainer from "@/components/PageContainer";
 import { confirmAction } from "@/lib/confirmAction";
+import { useUserStore } from "@/lib/stores/useUserStore";
 
 export default function SecurityPage() {
   const [password, setPassword] = useState("");
@@ -27,6 +28,8 @@ export default function SecurityPage() {
   const [isDeleteAccount, setIsDeleteAccount] = useState("");
 
   const { signOut } = useSignOut();
+
+  const isGuest = useUserStore((state) => state.preferences?.role === "guest");
 
   const handleSavePassword = async () => {
     if (password !== confirmPassword) {
@@ -188,14 +191,27 @@ export default function SecurityPage() {
               Placeholder
             </AppText>
           )}
-          <View className="w-full">
-            <SaveButtonSpinner
-              onPress={handleSavePassword}
-              label={loading ? "Saving..." : "Save"}
-              disabled={loading}
-              loading={loading}
-            />
-          </View>
+          {isGuest ? (
+            <View className="w-full">
+              <SaveButtonSpinner
+                onPress={handleSavePassword}
+                label="Save (not allowed)"
+                disabled={isGuest}
+                loading={loading}
+                className="bg-gray-600 border-gray-400 hover:bg-gray-500"
+              />
+            </View>
+          ) : (
+            <View className="w-full">
+              <SaveButtonSpinner
+                onPress={handleSavePassword}
+                label={loading ? "Saving..." : "Save"}
+                disabled={loading}
+                loading={loading}
+              />
+            </View>
+          )}
+
           <AppText className="mt-10 underline text-xl">Delete Account</AppText>
           <AppText className="my-5 text-gray-300">
             Type “DELETE ACCOUNT” to confirm. All your data will be permanently

@@ -3,22 +3,12 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
-import { createAdminClient } from "@/utils/supabase/admin";
 import { checkBotId } from "botid/server";
-import { handleError } from "@/app/(app)/utils/handleError";
+
 
 type AuthActionState = {
   success: boolean;
   message: string;
-};
-
-const generateRandomUserName = (email: string) => {
-  const prefix = email
-    .split("@")[0]
-    .replace(/[^a-zA-Z0-9]/g, "")
-    .toLowerCase();
-  const randomNumber = Math.floor(1000 + Math.random() * 9000);
-  return `${prefix}${randomNumber}`;
 };
 
 export async function login(
@@ -104,34 +94,6 @@ export async function signup(
     return {
       success: false,
       message: "Email already registered. Please log in.",
-    };
-  }
-
-  // Create user profile in the database
-  const adminSupabase = createAdminClient();
-
-  const { error } = await adminSupabase.from("users").upsert(
-    {
-      id: signUpData.user!.id,
-      email: data.email,
-      display_name: generateRandomUserName(data.email), // Default display name
-      role: "user",
-    },
-    { onConflict: "email" }
-  );
-
-  if (error) {
-    handleError(error, {
-      message: "Failed to create user profile",
-      route: "/api/auth/signup",
-      method: "POST",
-    });
-
-    await adminSupabase.auth.admin.deleteUser(signUpData.user!.id, true);
-
-    return {
-      success: false,
-      message: "Sign up failed. Please try again!",
     };
   }
 

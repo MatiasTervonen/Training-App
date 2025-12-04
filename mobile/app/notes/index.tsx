@@ -92,7 +92,8 @@ export default function NotesScreen() {
         text1: "Success",
         text2: "Note saved successfully!",
       });
-    } catch {
+    } catch (error) {
+      console.log("notes", error);
       Toast.show({
         type: "error",
         text1: "Error",

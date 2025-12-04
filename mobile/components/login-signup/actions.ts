@@ -2,17 +2,6 @@ import { Alert } from "react-native";
 import { supabase } from "@/lib/supabase";
 import { handleError } from "@/utils/handleError";
 
-// Generate random username
-
-const generateRandomUserName = (email: string) => {
-  const prefix = email
-    .split("@")[0]
-    .replace(/[^a-zA-Z0-9]/g, "")
-    .toLowerCase();
-  const randomNumber = Math.floor(1000 + Math.random() * 9000);
-  return `${prefix}${randomNumber}`;
-};
-
 // LogIn
 
 type SignInProps = {
@@ -108,6 +97,11 @@ export async function signUpWithEmail({
     Alert.alert(
       signupError.message || "Something went wrong. Please try again."
     );
+    handleError(signupError, {
+      message: "Error logging in as guest",
+      route: "guest-login",
+      method: "POST",
+    });
     setSignup({ email: "", password: "", confirmPassword: "" });
     setLoading(false);
     return;
@@ -118,38 +112,6 @@ export async function signUpWithEmail({
   if (userExists) {
     Alert.alert("Email already registered. Please log in.");
     setSignup({ email: "", password: "", confirmPassword: "" });
-    setLoading(false);
-    return;
-  }
-
-  try {
-    const res = await fetch(
-      "https://training-app-bay.vercel.app/api/user/insert-user",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${signUpData.session?.access_token}`,
-        },
-        body: JSON.stringify({
-          id: signUpData.user?.id,
-          email,
-          display_name: generateRandomUserName(email),
-        }),
-      }
-    );
-
-    if (!res.ok) {
-      const body = await res.json();
-      throw new Error(body.error || "Failed to delete account");
-    }
-  } catch (error) {
-    console.log("signup failed", error);
-    handleError(error, {
-      message: "Error inserting account",
-      route: "sing up",
-      method: "POST",
-    });
-    Alert.alert("Sign up failed. Please try again!");
     setLoading(false);
     return;
   }

@@ -1,9 +1,10 @@
 import AppText from "../AppText";
 import { Alert } from "react-native";
 import { router } from "expo-router";
-import { supabase } from "@/lib/supabase";
 import FullScreenLoader from "@/components/FullScreenLoader";
 import { useState } from "react";
+import { supabase } from "@/lib/supabase";
+import { handleError } from "@/utils/handleError";
 
 export default function GuestLogIn() {
   const [isLoading, setIsLoading] = useState(false);
@@ -12,32 +13,16 @@ export default function GuestLogIn() {
     setIsLoading(true);
 
     try {
-      const response = await fetch(
-        `${process.env.EXPO_PUBLIC_API_URL_PROD}/api/guest-login`,
-        {
-          method: "POST",
-        }
-      );
-
-      const data = await response.json();
-
-      if (!response.ok || !data.success) {
-        throw new Error(data.message || "Failed to log in as guest");
-      }
-
-      const { access_token, refresh_token } = data.session;
-
-      const { error } = await supabase.auth.setSession({
-        access_token,
-        refresh_token,
-      });
-
-      if (error) throw new Error("Failed to set session in Supabase client");
+      await supabase.auth.signInAnonymously();
 
       router.replace("/dashboard");
     } catch (error) {
-      console.error("Error logging in as guest:", error);
       Alert.alert("Failed to log in as guest.");
+      handleError(error, {
+        message: "Error logging in as guest",
+        route: "guest-login",
+        method: "POST",
+      });
       setIsLoading(false);
     }
   };

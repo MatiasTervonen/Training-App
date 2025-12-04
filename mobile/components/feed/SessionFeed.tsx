@@ -473,7 +473,7 @@ export default function SessionFeed() {
         <AppText className="text-center text-lg mt-10 mx-auto">
           Failed to load sessions. Please try again later.
         </AppText>
-      ) : feed.length === 0 ? (
+      ) : !data || feed.length === 0 ? (
         <AppText className="text-center text-lg mt-10">
           No sessions yet. Let&apos;s get started!
         </AppText>
@@ -482,7 +482,10 @@ export default function SessionFeed() {
           <FlatList
             data={unpinnedFeed}
             keyExtractor={(item) => item.item.id}
-            contentContainerStyle={{ paddingBottom: 100, paddingTop: 8 }}
+            contentContainerStyle={{
+              paddingBottom: 100,
+              paddingTop: pinnedFeed.length === 0 ? 30 : 0,
+            }}
             showsHorizontalScrollIndicator={false}
             showsVerticalScrollIndicator={false}
             refreshControl={

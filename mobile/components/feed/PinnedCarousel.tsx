@@ -32,7 +32,7 @@ export default function PinnedCarousel({
 
   return (
     <View>
-      <View className="flex-row items-center mb-2 gap-2 ml-4">
+      <View className="flex-row items-center mb-2 gap-2 ml-4 mt-3">
         <Pin size={20} color="#d1d5db" />
         <AppText className="text-gray-300">Pinned</AppText>
         <AppText className="text-gray-300">

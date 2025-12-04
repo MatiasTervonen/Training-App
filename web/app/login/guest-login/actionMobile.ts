@@ -2,7 +2,6 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
-import { checkBotId } from "botid/server";
 import { handleError } from "@/app/(app)/utils/handleError";
 import { createAdminClient } from "@/utils/supabase/admin";
 
@@ -23,15 +22,6 @@ const generateRandomUserName = (email: string) => {
 };
 
 export async function guestLoginMobile(): Promise<GuestLoginResult> {
-  const verification = await checkBotId();
-
-  if (verification.isBot) {
-    return {
-      success: false,
-      message: "Login failed. Please try again.",
-    };
-  }
-
   const supabase = await createClient();
 
   const { data: signUpData, error } = await supabase.auth.signInAnonymously();

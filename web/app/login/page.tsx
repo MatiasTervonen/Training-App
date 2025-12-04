@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   login,
   signup,
@@ -17,13 +17,18 @@ import ResetPasswordButton from "./components/resetPasswordButton";
 import ResendButton from "./components/resendButton";
 import { ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
+
+const ConfettiAnimation = dynamic(() => import("../components/confetti"), {
+  ssr: false,
+});
 
 export default function LoginPage() {
   const [activeForm, setActiveForm] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
-  const [email, setEmail] = useState("");
   const [modal2Open, setModal2Open] = useState(false);
-
+  const [signUpSuccess, setSignUpSuccess] = useState(false);
+  const [hideErrorMessage, setHideErrorMessage] = useState(false);
   const router = useRouter();
 
   const initialState = {
@@ -32,16 +37,8 @@ export default function LoginPage() {
   };
 
   const [state, formAction] = React.useActionState(signup, initialState);
-  const [signupMessage, setSignupMessage] = useState("");
-  useEffect(() => {
-    if (state.message) setSignupMessage(state.message);
-  }, [state.message]);
 
   const [state2, formAction2] = React.useActionState(login, initialState);
-  const [loginMessage, setLoginMessage] = useState("");
-  useEffect(() => {
-    if (state2.message) setLoginMessage(state2.message);
-  }, [state2.message]);
 
   const [state3, formAction3] = React.useActionState(
     sendPasswordResetEmail,
@@ -53,8 +50,19 @@ export default function LoginPage() {
     initialState
   );
 
+  useEffect(() => {
+    if (state.success) {
+      setSignUpSuccess(true);
+    }
+  }, [state.success]);
+
   return (
     <div className="bg-slate-950">
+      {signUpSuccess && (
+        <div className="fixed inset-0 z-100 pointer-events-none">
+          <ConfettiAnimation />
+        </div>
+      )}
       <div className="flex flex-col items-center h-dvh w-full bg-linear-to-tr from-slate-950 via-slate-950 to-blue-900 max-w-7xl mx-auto">
         <nav className="flex items-center justify-between w-full py-4 px-2">
           <button
@@ -74,6 +82,7 @@ export default function LoginPage() {
 
           <form
             action={formAction2}
+            onSubmit={() => setHideErrorMessage(false)}
             className={`absolute top-0 left-0 w-full transition-transform duration-500 ease-in-out ${
               activeForm ? "-translate-y-full" : "translate-y-0"
             } flex flex-col justify-center h-full gap-5 px-10`}
@@ -88,7 +97,7 @@ export default function LoginPage() {
               required
               label="Email:"
               maxLength={128}
-              onChange={() => setLoginMessage("")}
+              onChange={() => setHideErrorMessage(true)}
             />
             <CustomInput
               className="custom-login-input"
@@ -100,21 +109,21 @@ export default function LoginPage() {
               required
               label="Password:"
               maxLength={128}
-              onChange={() => setLoginMessage("")}
+              onChange={() => setHideErrorMessage(true)}
             />
             <div className="flex flex-col ">
               <LoginButton />
               <p
                 aria-live="polite"
                 className={`mt-4 text-sm text-center min-h-5  ${
-                  loginMessage
+                  state2.message
                     ? state2.success
                       ? "text-green-500"
                       : "text-red-500"
                     : "invisible"
                 }`}
               >
-                {state2.message}
+                {!hideErrorMessage && state2.message}
               </p>
               {state2.message ===
                 "Please verify your email before logging in." && (
@@ -141,7 +150,6 @@ export default function LoginPage() {
             isOpen={modalOpen}
             onClose={() => {
               setModalOpen(false);
-              setEmail("");
               state3.message = "";
             }}
           >
@@ -149,6 +157,7 @@ export default function LoginPage() {
 
             <form
               action={formAction3}
+              onSubmit={() => setHideErrorMessage(false)}
               className="flex flex-col justify-between items-center p-8 text-center gap-5 h-full"
             >
               <div className="flex flex-col gap-5 ">
@@ -162,8 +171,6 @@ export default function LoginPage() {
                 <div className="w-full">
                   <CustomInput
                     className="custom-login-input"
-                    value={email}
-                    setValue={setEmail}
                     id="email-forgot-password"
                     name="email"
                     type="email"
@@ -171,6 +178,9 @@ export default function LoginPage() {
                     spellCheck={false}
                     required
                     maxLength={128}
+                    onChange={() => {
+                      setHideErrorMessage(true);
+                    }}
                   />
                   <p
                     aria-live="polite"
@@ -182,7 +192,7 @@ export default function LoginPage() {
                         : "invisible"
                     }`}
                   >
-                    {state3.message}
+                    {!hideErrorMessage && state3.message}
                   </p>
                 </div>
               </div>
@@ -194,6 +204,7 @@ export default function LoginPage() {
           {/* Sign Up Form */}
           <form
             action={formAction}
+            onSubmit={() => setHideErrorMessage(false)}
             className={`absolute top-0 left-0 w-full transition-transform duration-500 ease-in-out ${
               activeForm ? "translate-y-0" : "translate-y-full"
             } h-full flex flex-col justify-center gap-5 p-10`}
@@ -208,7 +219,7 @@ export default function LoginPage() {
               required
               label="Email:"
               maxLength={128}
-              onChange={() => setSignupMessage("")}
+              onChange={() => setHideErrorMessage(true)}
             />
             <CustomInput
               className="custom-login-input"
@@ -220,7 +231,7 @@ export default function LoginPage() {
               required
               label="Password:"
               maxLength={128}
-              onChange={() => setSignupMessage("")}
+              onChange={() => setHideErrorMessage(true)}
             />
             <CustomInput
               className="custom-login-input"
@@ -232,26 +243,22 @@ export default function LoginPage() {
               required
               label="Confirm Password:"
               maxLength={128}
-              onChange={() => setSignupMessage("")}
+              onChange={() => setHideErrorMessage(true)}
             />
             <div className="flex flex-col gap-4">
               <SignupButton />
               <p
                 aria-live="polite"
                 className={`my-2 text-sm text-center min-h-5 ${
-                  signupMessage
-                    ? state.success
-                      ? "text-green-500"
-                      : "text-red-500"
-                    : "invisible"
+                  !state.success ? "text-red-500" : "invisible"
                 }`}
               >
-                {state.message}
+                {!hideErrorMessage && state.message}
               </p>
               {state.success && (
                 <p
                   onClick={() => setModal2Open(true)}
-                  className="text-gray-100 cursor-pointer text-center hover:underline"
+                  className="cursor-pointer text-center hover:underline"
                 >
                   Didn&apos;t get an email?
                 </p>
@@ -259,13 +266,42 @@ export default function LoginPage() {
             </div>
           </form>
 
+          {/* Success modal */}
+
+          {state.success && (
+            <ModalLogin
+              isOpen={signUpSuccess}
+              onClose={() => {
+                setSignUpSuccess(false);
+              }}
+              className="backdrop-blur-sm"
+            >
+              <div className="flex flex-col items-center px-6 py-10 pb-10 justify-between h-full text-center">
+                <p className="text-3xl sm:text-4xl lg:text-5xl text-center bg-linear-to-tr from-[#27aee4] via-[#66ece1] to-[#f3f18d] text-transparent bg-clip-text">
+                  MyTrack
+                </p>
+                <h3 className="text-xl  mt-5">
+                  Thank you for signing up!
+                </h3>
+                <p className="text-green-500 ">{state.message}</p>
+
+                <p
+                  onClick={() => setModal2Open(true)}
+                  className="cursor-pointer hover:underline"
+                >
+                  Didn&apos;t get an email?
+                </p>
+              </div>
+            </ModalLogin>
+          )}
+
+          
           {/* Resend Verification Email Form */}
 
           <ModalLogin
             isOpen={modal2Open}
             onClose={() => {
               setModal2Open(false);
-              setEmail("");
               state4.message = "";
             }}
           >
@@ -274,7 +310,7 @@ export default function LoginPage() {
               className="flex flex-col justify-between items-center p-10 text-center gap-5 h-full"
             >
               <div className="flex flex-col gap-5">
-                <h3 className="text-xl underline mt-5 text-gray-100">
+                <h3 className="text-xl underline mt-5">
                   Resend Verification Email
                 </h3>
                 <p className="text-gray-300">
@@ -284,8 +320,6 @@ export default function LoginPage() {
                 <div className="w-full">
                   <CustomInput
                     className="custom-login-input"
-                    value={email}
-                    setValue={setEmail}
                     id="email-resend-verification"
                     name="email"
                     type="email"
@@ -311,6 +345,8 @@ export default function LoginPage() {
               <ResendButton />
             </form>
           </ModalLogin>
+
+          
         </div>
         <div className="flex justify-center items-center w-full  pb-10">
           <div className="flex flex-col items-center justify-center gap-5">
@@ -326,7 +362,6 @@ export default function LoginPage() {
                 state2.message = "";
                 state3.message = "";
                 state4.message = "";
-                setEmail("");
                 state.success = false;
                 state2.success = false;
                 state3.success = false;

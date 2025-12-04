@@ -6,12 +6,17 @@ export async function POST(req: Request) {
 
   const { id, email, display_name } = await req.json();
 
-  const { error } = await adminSupabase.from("users").insert({
-    id,
-    email,
-    display_name,
-    role: "user",
-  });
+  const { error } = await adminSupabase.from("users").upsert(
+    {
+      id,
+      email,
+      display_name,
+      role: "user",
+    },
+    {
+      onConflict: "email",
+    }
+  );
 
   if (error) {
     handleError(error, {

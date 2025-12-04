@@ -11,12 +11,14 @@ type AppButtonProps = {
   label: string;
   className?: string;
   onPress?: () => void; // Optional onPress for additional functionality
+  disabled?: boolean;
 };
 
 export default function GradientButton({
   label,
   className,
   onPress,
+  disabled,
 }: AppButtonProps) {
   const scale = useSharedValue(1);
   const opacity = useSharedValue(1);
@@ -45,6 +47,7 @@ export default function GradientButton({
         className={`rounded-md overflow-hidden ${className}`}
       >
         <Pressable
+          disabled={disabled}
           className="py-2 border-2 border-blue-700 rounded-md"
           onPress={onPress}
           android_ripple={{ color: "#666" }}

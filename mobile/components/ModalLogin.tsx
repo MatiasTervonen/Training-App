@@ -70,15 +70,13 @@ export default function ModalLogin({
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <View className="absolute inset-0 z-50 bg-black/50 items-center justify-center flex-1">
           <Animated.View
-            className="bg-slate-800 relative mx-auto rounded-xl h-1/2 w-[90vw] max-w-md z-0"
+            className="bg-slate-800 relative mx-auto rounded-xl h-1/2 w-[90vw] max-w-md z-0 border-2 border-gray-600 shadow-md"
             style={animatedStyle}
           >
             <Pressable onPress={onClose} className="absolute top-4 right-4">
               <CircleX size={30} color="#f3f4f6" />
             </Pressable>
-            <View className="flex-1">
-              {children}
-            </View>
+            <View className="flex-1">{children}</View>
           </Animated.View>
         </View>
       </TouchableWithoutFeedback>

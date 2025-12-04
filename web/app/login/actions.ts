@@ -110,12 +110,15 @@ export async function signup(
   // Create user profile in the database
   const adminSupabase = createAdminClient();
 
-  const { error } = await adminSupabase.from("users").insert({
-    id: signUpData.user!.id,
-    email: data.email,
-    display_name: generateRandomUserName(data.email), // Default display name
-    role: "user",
-  });
+  const { error } = await adminSupabase.from("users").upsert(
+    {
+      id: signUpData.user!.id,
+      email: data.email,
+      display_name: generateRandomUserName(data.email), // Default display name
+      role: "user",
+    },
+    { onConflict: "email" }
+  );
 
   if (error) {
     handleError(error, {
@@ -123,12 +126,19 @@ export async function signup(
       route: "/api/auth/signup",
       method: "POST",
     });
+
+    await adminSupabase.auth.admin.deleteUser(signUpData.user!.id, true);
+
+    return {
+      success: false,
+      message: "Sign up failed. Please try again!",
+    };
   }
 
   return {
     success: true,
     message:
-      "Verification email sent! Please verify your email before logging in.",
+      "Email sent! Check your inbox (and spam folder) to verify your account before logging in.",
   };
 }
 

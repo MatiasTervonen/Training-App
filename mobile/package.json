@@ -11,7 +11,7 @@
     "lint": "expo lint",
     "android:reset": "rimraf android && npx expo prebuild --clean && pnpm exec expo run:android",
     "gen:types": "npx supabase gen types typescript --project-id gqcqrstelckkkhhunchm --schema public > types/database.types.ts",
-     "postinstall": "rimraf node_modules/echarts/node_modules/tslib && rimraf node_modules/zrender/node_modules/tslib"
+    "postinstall": "rimraf node_modules/echarts/node_modules/tslib && rimraf node_modules/zrender/node_modules/tslib"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.2",
@@ -62,6 +62,7 @@
     "react-native": "0.81.5",
     "react-native-css-interop": "^0.2.1",
     "react-native-date-picker": "^5.0.13",
+    "react-native-fast-confetti": "^1.1.1",
     "react-native-gesture-handler": "~2.28.0",
     "react-native-gifted-charts": "^1.4.64",
     "react-native-paper": "^5.14.5",

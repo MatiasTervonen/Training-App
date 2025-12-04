@@ -1,30 +1,28 @@
 "use client";
 
-import { ReactNode, useRef } from "react";
+import { ReactNode } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { useClickOutside } from "../../(app)/components/clickOutside";
 
 export default function ModalLogin({
   isOpen,
   onClose,
   children,
+  className = "",
 }: {
   isOpen: boolean;
   onClose: () => void;
   children: ReactNode;
+  className?: ReactNode;
 }) {
-  const modalRef = useRef<HTMLDivElement>(null);
-
-  useClickOutside(modalRef, () => onClose());
-
   if (!isOpen) return null;
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
+      <div
+        className={`fixed inset-0 z-50 bg-black/50 flex items-center justify-center ${className}`}
+      >
         <motion.div
-          ref={modalRef}
           key={"modal"}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -40,7 +38,7 @@ export default function ModalLogin({
           className="bg-slate-800 relative flex flex-col justify-center items-center mx-auto rounded-xl h-1/2 w-[90vw] max-w-md"
         >
           <button
-            className="absolute top-2 right-2 hover:text-gray-200 z-[100]"
+            className="absolute top-2 right-2 hover:text-gray-200 z-100"
             onClick={onClose}
           >
             <Image
@@ -51,9 +49,7 @@ export default function ModalLogin({
               className="hover:cursor-pointer"
             />
           </button>
-          <div className="flex-grow overflow-y-auto touch-pan-y">
-            {children}
-          </div>
+          <div className="grow overflow-y-auto touch-pan-y">{children}</div>
         </motion.div>
       </div>
     </AnimatePresence>

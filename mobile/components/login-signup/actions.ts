@@ -65,7 +65,7 @@ type SignUpProps = {
   confirmPassword: string;
   setLoadingMessage: (loadingMessage: string) => void;
   setLoading: (loading: boolean) => void;
-  setSuccess: (success: boolean) => void;
+  setSignUpSuccess: (success: boolean) => void;
   setSignup: (values: {
     email: string;
     password: string;
@@ -79,7 +79,7 @@ export async function signUpWithEmail({
   confirmPassword,
   setLoadingMessage,
   setLoading,
-  setSuccess,
+  setSignUpSuccess,
   setSignup,
 }: SignUpProps) {
   if (!password) {
@@ -143,23 +143,20 @@ export async function signUpWithEmail({
       throw new Error(body.error || "Failed to delete account");
     }
   } catch (error) {
-    console.log("error creating account", error);
+    console.log("signup failed", error);
     handleError(error, {
       message: "Error inserting account",
       route: "sing up",
       method: "POST",
     });
     Alert.alert("Sign up failed. Please try again!");
+    setLoading(false);
     return;
   }
 
   setLoading(false);
   setSignup({ email: "", password: "", confirmPassword: "" });
-  Alert.alert(
-    "Verification email sent!",
-    "Please verify your email before logging in."
-  );
-  setSuccess(true);
+  setSignUpSuccess(true);
 }
 
 // Send password reset email
@@ -187,9 +184,11 @@ export async function sendPasswordResetEmail({
     forgotPasswordEmail
   );
 
-  if (error)
+  if (error) {
     Alert.alert(error.message || "Something went wrong. Please try again.");
-  else Alert.alert("Password reset email sent!");
+  } else {
+    Alert.alert("Password reset email sent!");
+  }
 
   setLoading(false);
 }

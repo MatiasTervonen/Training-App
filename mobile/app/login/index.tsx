@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   View,
   Keyboard,
@@ -32,6 +32,7 @@ import {
   sendPasswordResetEmail,
   resendEmailVerification,
 } from "@/components/login-signup/actions";
+import { Confetti, ConfettiMethods } from "react-native-fast-confetti";
 
 export default function LoginScreen() {
   const [login, setLogin] = useState({ email: "", password: "" });
@@ -49,8 +50,11 @@ export default function LoginScreen() {
   const [resendEmail, setResendEmail] = useState("");
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
+  const [signUpSuccess, setSignUpSuccess] = useState(false);
 
   const router = useRouter();
+
+  const confettiRef = useRef<ConfettiMethods>(null);
 
   const screenHeight = Dimensions.get("window").height;
   const translateY = useSharedValue(0);
@@ -91,6 +95,12 @@ export default function LoginScreen() {
 
   return (
     <>
+      {signUpSuccess && (
+        <View className="absolute inset-0 z-[9999] pointer-events-none">
+          <Confetti ref={confettiRef} />
+        </View>
+      )}
+
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <LinearGradient
           colors={["#0f172a", "#0f172a", "#1e3a8a"]}
@@ -255,7 +265,7 @@ export default function LoginScreen() {
                         confirmPassword: signup.confirmPassword,
                         setLoadingMessage,
                         setLoading,
-                        setSuccess,
+                        setSignUpSuccess,
                         setSignup,
                       });
                     }}
@@ -286,6 +296,34 @@ export default function LoginScreen() {
           </PageContainer>
         </LinearGradient>
       </TouchableWithoutFeedback>
+
+      {/* Success modal */}
+
+      {signUpSuccess && (
+        <ModalLogin
+          isOpen={signUpSuccess}
+          onClose={() => {
+            setSignUpSuccess(false);
+          }}
+        >
+          <View className="flex-1 justify-between  px-6 py-10 pb-10 items-center">
+            <GradientColorText style={{ width: 140, height: 36 }}>
+              MyTrack
+            </GradientColorText>
+            <AppText className="text-xl mt-5 text-center">
+              Thank you for signing up!
+            </AppText>
+            <AppText className="text-green-500 text-center">
+              Email sent! Check your inbox (and spam folder) to verify your
+              account before logging in.
+            </AppText>
+
+            <View className="mt-6 items-center">
+              <ResendEmailText onPress={() => setModal2Open(true)} />
+            </View>
+          </View>
+        </ModalLogin>
+      )}
 
       {/* Modal for Resend email verification */}
 
@@ -322,8 +360,14 @@ export default function LoginScreen() {
             </View>
             <View className="w-full">
               <GradientButton
+                disabled={!resendEmail}
                 label="Resend Verification Email"
                 onPress={async () => {
+                  if (!isValidEmail(login.email)) {
+                    Alert.alert("Invalid email format.");
+                    return;
+                  }
+
                   await resendEmailVerification({
                     resendEmail: resendEmail,
                     setLoadingMessage,
@@ -376,6 +420,11 @@ export default function LoginScreen() {
               <GradientButton
                 label="Send Reset Link"
                 onPress={async () => {
+                  if (!isValidEmail(login.email)) {
+                    Alert.alert("Invalid email format.");
+                    return;
+                  }
+
                   await sendPasswordResetEmail({
                     forgotPasswordEmail: forgotPasswordEmail,
                     setLoadingMessage,
@@ -384,6 +433,7 @@ export default function LoginScreen() {
                   setModalOpen(false);
                   resetFields();
                 }}
+                disabled={!forgotPasswordEmail}
               />
             </View>
           </View>

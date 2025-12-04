@@ -31,19 +31,23 @@ export default function Notes() {
     setIsLoaded(true);
   }, []);
 
-  const saveDraft = useDebouncedCallback(() => {
-    if (!isLoaded) return;
+  const saveDraft = useDebouncedCallback(
+    () => {
+      if (!isLoaded) return;
 
-    if (notes.trim().length === 0 && title.trim().length === 0) {
-      localStorage.removeItem("notes_draft");
-    } else {
-      const sessionDraft = {
-        title,
-        notes,
-      };
-      localStorage.setItem("notes_draft", JSON.stringify(sessionDraft));
-    }
-  }, 500, { maxWait: 3000 });
+      if (notes.trim().length === 0 && title.trim().length === 0) {
+        localStorage.removeItem("notes_draft");
+      } else {
+        const sessionDraft = {
+          title,
+          notes,
+        };
+        localStorage.setItem("notes_draft", JSON.stringify(sessionDraft));
+      }
+    },
+    500,
+    { maxWait: 3000 }
+  );
 
   useEffect(() => {
     saveDraft();
@@ -65,7 +69,8 @@ export default function Notes() {
       await queryClient.refetchQueries({ queryKey: ["feed"], exact: true });
       router.push("/dashboard");
       resetNotes();
-    } catch {
+    } catch (error) {
+      console.log("error saving notes", error);
       setIsSaving(false);
       toast.error("Failed to save notes. Please try again.");
     }

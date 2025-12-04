@@ -386,7 +386,7 @@ export default function SessionFeed() {
             Failed to load sessions. Please try again later.
           </p>
         ) : !data || feed.length === 0 ? (
-          <p className="text-center text-lg mt-10">
+          <p className="text-center text-lg mt-20 h-full grow">
             No sessions yet. Let&apos;s get started!
           </p>
         ) : (

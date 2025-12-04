@@ -1,11 +1,21 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
+import { createAdminClient } from "@/utils/supabase/admin";
 import { redirect } from "next/navigation";
 import { checkBotId } from "botid/server";
 import { handleError } from "@/app/(app)/utils/handleError";
 
 type GuestLoginResult = { success: false; message: string } | { success: true };
+
+const generateRandomUserName = (email: string) => {
+  const prefix = email
+    .split("@")[0]
+    .replace(/[^a-zA-Z0-9]/g, "")
+    .toLowerCase();
+  const randomNumber = Math.floor(1000 + Math.random() * 9000);
+  return `${prefix}${randomNumber}`;
+};
 
 export async function guestLogin(): Promise<GuestLoginResult> {
   const verification = await checkBotId();
@@ -19,10 +29,7 @@ export async function guestLogin(): Promise<GuestLoginResult> {
 
   const supabase = await createClient();
 
-  const { error } = await supabase.auth.signInWithPassword({
-    email: process.env.GUEST_EMAIL!,
-    password: process.env.GUEST_PASSWORD!,
-  });
+  const { data: signUpData, error } = await supabase.auth.signInAnonymously();
 
   if (error) {
     handleError(error, {
@@ -33,6 +40,34 @@ export async function guestLogin(): Promise<GuestLoginResult> {
     return {
       success: false,
       message: "Error logging in as guest, please try again.",
+    };
+  }
+
+  // Create user profile in the database
+  const adminSupabase = createAdminClient();
+
+  const { error: userTableError } = await adminSupabase.from("users").upsert(
+    {
+      id: signUpData.user!.id,
+      email: null,
+      display_name: generateRandomUserName("anonymous"), // Default display name
+      role: "user",
+    },
+    { onConflict: "id" }
+  );
+
+  if (userTableError) {
+    handleError(userTableError, {
+      message: "Failed to create user profile",
+      route: "/api/auth/signup",
+      method: "POST",
+    });
+
+    await adminSupabase.auth.admin.deleteUser(signUpData.user!.id, true);
+
+    return {
+      success: false,
+      message: "Sign up failed. Please try again!",
     };
   }
 

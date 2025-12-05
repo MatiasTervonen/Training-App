@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { LogOut } from "lucide-react";
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
-import { useSWRConfig } from "swr";
 import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
 import { clearLocalStorage } from "../utils/clearLocalStorage";
 import toast from "react-hot-toast";
@@ -14,7 +13,6 @@ import { useQueryClient } from "@tanstack/react-query";
 export default function SignOutButton() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const { cache } = useSWRConfig();
 
   const queryClient = useQueryClient();
 
@@ -35,11 +33,6 @@ export default function SignOutButton() {
 
     // Clear TanStack Query cache
     queryClient.clear();
-
-    // Clear all SWR cache
-    if ("clear" in cache && typeof cache.clear === "function") {
-      cache.clear();
-    }
 
     logOutUser();
 

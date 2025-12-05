@@ -1,58 +1,54 @@
+"use client";
+
 import Image from "next/image";
 import { Trash2 } from "lucide-react";
-import { mutate } from "swr";
 import toast from "react-hot-toast";
 import { Friends } from "@/app/(app)/types/models";
-import { handleError } from "@/app/(app)/utils/handleError";
+import { deleteFriend } from "@/app/(app)/database/friends";
+import { useQueryClient } from "@tanstack/react-query";
 
 type FriendCardProps = {
-  friend: Friends;
+  id: string;
+  created_at?: string;
+  user: {
+    display_name: string;
+    id: string;
+    profile_picture: string | null;
+  };
 };
 
-export default function FriendCard({ friend }: FriendCardProps) {
+export default function FriendCard({ id, user }: FriendCardProps) {
+  const queryClient = useQueryClient();
+
   const handleDeleteFriend = async () => {
     const confirmation = confirm(
       "Are you sure you want to delete this friend? This action cannot be undone."
     );
     if (!confirmation) return;
 
-    // Optimistically update the UI
-    mutate(
-      "/api/friend/get-friends",
-      (currentData?: { friends: Friends[]; currentUserId: string }) => {
-        if (!currentData) return currentData;
-        return {
-          ...currentData,
-          friends: currentData.friends.filter((f) => f.id !== friend.id),
-        };
-      },
-      false
-    );
+    const queryKey = ["get-friends"];
+
+    await queryClient.cancelQueries({ queryKey });
+
+    const previousData = queryClient.getQueryData(queryKey);
+
+    queryClient.setQueryData<Friends[]>(queryKey, (oldData) => {
+      if (!oldData) return;
+
+      return oldData.filter((f) => f.id !== id);
+    });
 
     try {
-      const response = await fetch("/api/friend/delete-friend", {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ friendId: friend.id }),
-      });
 
-      if (!response.ok) {
-        throw new Error("Failed to delete friend");
-      }
+      // Pass the friendship id not the actual user id.
 
-      await response.json();
-      mutate("/api/friend/get-friends"); // Revalidate the friends list
+      await deleteFriend(id);
+
       toast.success("Friend deleted successfully!");
     } catch (error) {
-      handleError(error, {
-        message: "Error deleting friend",
-        route: "/api/friend/delete-friend",
-        method: "DELETE",
-      });
-      mutate("/api/friend/get-friends"); // Revalidate the friends list in case of error
+      console.log("failed to delete friend", error);
       toast.error("Failed to delete friend");
+      queryClient.setQueryData(queryKey, previousData);
     }
   };
 
@@ -61,13 +57,13 @@ export default function FriendCard({ friend }: FriendCardProps) {
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-5">
           <Image
-            src={friend.user.profile_picture || "/default-avatar.png"}
+            src={user.profile_picture || "/default-avatar.png"}
             alt="Profile Picture"
             width={40}
             height={40}
             className="rounded-full border-2 border-blue-500 w-10 h-10"
           />
-          <h3 className="text-lg">{friend.user.display_name}</h3>
+          <h3 className="text-lg">{user.display_name}</h3>
         </div>
         <div>
           <button

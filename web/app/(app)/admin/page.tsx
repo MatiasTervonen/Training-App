@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { checkAdmin } from "@/app/(app)/lib/data";
+import { checkAdmin } from "@/app/(app)/database/admin";
 import LinkButton from "../ui/LinkButton";
 
 export default async function AdminPage() {

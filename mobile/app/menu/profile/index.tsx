@@ -146,24 +146,12 @@ export default function ProfileScreen() {
 
       const isTaken = await validateUserName(userName);
 
-      if (isTaken === null) {
-        Toast.show({
-          type: "error",
-          text1: "Error",
-          text2: "Error checking user name.",
-        });
-        setIsSaving(false);
-        return;
-      }
-
-      if (isTaken === true) {
-        Toast.show({
+      if (isTaken) {
+        return Toast.show({
           type: "error",
           text1: "Error",
           text2: "User name is already taken. Please choose another.",
         });
-        setIsSaving(false);
-        return; // User name is taken
       }
 
       const payload = {
@@ -172,34 +160,20 @@ export default function ProfileScreen() {
         profile_picture: profilePictureUrl,
       };
 
-      const result = await saveSettings(payload);
+      await saveSettings(payload);
 
-      if (result === null) {
-        Toast.show({
-          type: "error",
-          text1: "Error",
-          text2: "Failed to save settings.",
-        });
-        setIsSaving(false);
-        return;
-      }
-
-      if (result === true) {
-        setPreferences(payload);
-        Toast.show({
-          type: "success",
-          text1: "Success",
-          text2: "Settings saved successfully.",
-        });
-        setIsSaving(false);
-        return;
-      }
+      setPreferences(payload);
+      Toast.show({
+        type: "success",
+        text1: "Settings updated successfully!",
+      });
     } catch {
       Toast.show({
         type: "error",
         text1: "Error",
         text2: "An unexpected error occurred while saving settings.",
       });
+    } finally {
       setIsSaving(false);
     }
   };

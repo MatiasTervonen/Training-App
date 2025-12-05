@@ -8,9 +8,7 @@ import toast from "react-hot-toast";
 import { generateUUID } from "@/app/(app)/lib/generateUUID";
 import FullScreenLoader from "../../components/FullScreenLoader";
 import { saveExerciseToDB } from "../../database/admin";
-import { mutate } from "swr";
-import { fetcher } from "../../lib/fetcher";
-
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function EditExercises() {
   const [name, setName] = useState("");
@@ -20,6 +18,8 @@ export default function EditExercises() {
   const [mainGroup, setMainGroup] = useState("chest");
   const [isSaving, setIsSaving] = useState(false);
 
+  const queryClient = useQueryClient();
+
   const handleSave = async () => {
     if (!name || !equipment || !muscleGroup || !mainGroup) {
       toast.error("Please fill in all fields.");
@@ -27,7 +27,7 @@ export default function EditExercises() {
     }
 
     if (name.length >= 50) return;
-    
+
     setIsSaving(true);
 
     const exerciseData = {
@@ -42,14 +42,14 @@ export default function EditExercises() {
     try {
       await saveExerciseToDB(exerciseData);
 
-      await mutate(
-        "/api/gym/exercises",
-        async () => fetcher("/api/gym/exercises"),
-        false
-      );
+      await queryClient.refetchQueries({
+        queryKey: ["exercises", ""],
+        exact: true,
+      });
+
       toast.success("Exercise saved successfully!");
       setName("");
-    } catch  {
+    } catch {
       toast.error("Failed to save exercise. Please try again.");
     } finally {
       setIsSaving(false);

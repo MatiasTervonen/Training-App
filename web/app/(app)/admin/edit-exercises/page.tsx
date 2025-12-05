@@ -10,8 +10,7 @@ import DeleteSessionBtn from "@/app/(app)/ui/deleteSessionBtn";
 import { gym_exercises } from "../../types/models";
 import FullScreenLoader from "../../components/FullScreenLoader";
 import { deleteExercise, editExercise } from "../../database/gym";
-import { mutate } from "swr";
-import { fetcher } from "../../lib/fetcher";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function EditExercises() {
   const [name, setName] = useState("");
@@ -23,6 +22,8 @@ export default function EditExercises() {
   const [selectedExercise, setSelectedExercise] =
     useState<gym_exercises | null>(null);
   const [resetTrigger, setResetTrigger] = useState(0);
+
+  const queryClient = useQueryClient();
 
   const handleUpdateExercise = async () => {
     if (!name || !equipment || !muscle_group || !main_group) {
@@ -46,11 +47,11 @@ export default function EditExercises() {
     try {
       await editExercise(exerciseData);
 
-      await mutate(
-        "/api/gym/exercises",
-        async () => fetcher("/api/gym/exercises"),
-        false
-      );
+      queryClient.refetchQueries({
+        queryKey: ["exercises", ""],
+        exact: true,
+      });
+
       toast.success("Exercise updated successfully!");
       resetFields();
     } catch {
@@ -66,11 +67,11 @@ export default function EditExercises() {
     try {
       await deleteExercise(exerciseId);
 
-      await mutate(
-        "/api/gym/exercises",
-        async () => fetcher("/api/gym/exercises"),
-        false
-      );
+      await queryClient.refetchQueries({
+        queryKey: ["exercises", ""],
+        exact: true,
+      });
+
       toast.success("Exercise deleted successfully!");
       setSelectedExercise(null);
       setResetTrigger((prev) => prev + 1);
@@ -102,7 +103,7 @@ export default function EditExercises() {
   };
 
   return (
-    <div className="">
+    <div>
       {!selectedExercise && (
         <ExerciseDropdown
           onSelect={(exercise) => {

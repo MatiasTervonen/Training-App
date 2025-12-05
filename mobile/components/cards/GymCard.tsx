@@ -4,7 +4,7 @@ import AppText from "../AppText";
 import DropdownMenu from "../DropdownMenu";
 import { formatDate } from "@/lib/formatDate";
 import { gym_sessions, full_gym_session } from "../../types/models";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getFullGymSession } from "@/database/gym/get-full-gym-session";
 
 type Props = {
@@ -35,10 +35,18 @@ export default function GymCard({
     }
   };
 
+  const queryClient = useQueryClient();
+  const cached = queryClient.getQueryData(["fullGymSession", item.id]);
+
   const { data: fullGym } = useQuery<full_gym_session>({
     queryKey: ["fullGymSession", item.id],
     queryFn: () => getFullGymSession(item.id),
-    enabled: false,
+    enabled: !!cached,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    refetchOnMount: false,
+    staleTime: Infinity,
+    gcTime: Infinity,
   });
 
   const totalExercises = fullGym ? fullGym.gym_session_exercises.length : 0;

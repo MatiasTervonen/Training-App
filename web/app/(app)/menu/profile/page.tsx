@@ -8,9 +8,9 @@ import CustomInput from "@/app/(app)/ui/CustomInput";
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
 import ProfilePicture from "@/app/(app)/menu/components/profile-picture";
-import { handleError } from "@/app/(app)/utils/handleError";
 import { fileTypeFromBlob } from "file-type";
-import { saveSettings } from "../../database/settings";
+import { saveSettings } from "@/app/(app)/database/settings";
+import { validateUserName } from "@/app/(app)/database/settings";
 
 export default function Settings() {
   const [isSaving, setIsSaving] = useState(false);
@@ -74,12 +74,7 @@ export default function Settings() {
       const data = await res.json();
 
       return `${data.publicUrl}?v=${Date.now()}`;
-    } catch (error) {
-      handleError(error, {
-        message: "Error uploading image",
-        route: "/api/settings/save-profilePic",
-        method: "POST",
-      });
+    } catch {
       toast.error("Failed to upload image");
       return profilePicZ || null;
     }
@@ -87,78 +82,44 @@ export default function Settings() {
 
   const updateSettings = async () => {
     setIsSaving(true);
-
-    const uploadedProfilePic = await saveProfilePicture();
-
-    if (selectedProfilePic && !uploadedProfilePic) {
-      setIsSaving(false);
-      return;
-    }
-
-    const profilePictureUrl = uploadedProfilePic ?? profilePicZ ?? null;
-
-    const payload = {
-      display_name: userName,
-      weight_unit: weightUnit,
-      profile_picture: profilePictureUrl,
-    };
-
     try {
+      const uploadedProfilePic = await saveProfilePicture();
+
+      if (selectedProfilePic && !uploadedProfilePic) {
+        setIsSaving(false);
+        return;
+      }
+
+      const profilePictureUrl = uploadedProfilePic ?? profilePicZ ?? null;
+
+      const isTaken = await validateUserName(userName);
+
+      if (isTaken) {
+        return toast.error(
+          "User name is already taken. Please choose another."
+        );
+      }
+
+      const payload = {
+        display_name: userName,
+        weight_unit: weightUnit,
+        profile_picture: profilePictureUrl,
+      };
+
       await saveSettings(payload);
 
       setPreferences(payload);
       toast.success("Settings updated successfully!");
-    } catch (error) {
-      console.log("error", error);
-      handleError(error, {
-        message: "Error updating settings",
-        route: "/api/settings/save-settings",
-        method: "POST",
-      });
-      if (error instanceof Error) {
-        if (error.message === "Username is already taken!") {
-          toast.error("Username is already taken. Please choose another.");
-        } else {
-          toast.error("Failed to update settings. Please try again.");
-        }
-      }
+    } catch {
+      toast.error("Error updating settings");
     } finally {
       setIsSaving(false);
     }
   };
 
-  const isUserNameTaken = async (name: string) => {
-    try {
-      const res = await fetch(
-        "/api/settings/userName-available?name=" + encodeURIComponent(name),
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (!res.ok) {
-        throw new Error("Failed to check username availability");
-      }
-
-      const data = await res.json();
-      return data.isTaken;
-    } catch (error) {
-      handleError(error, {
-        message: "Error checking username availability",
-        route: "/api/settings/userName-available",
-        method: "GET",
-      });
-      return false;
-    }
-  };
-
   return (
     <div className="page-padding max-w-md mx-auto">
-      <h1 className="flex justify-center my-5 text-2xl">
-        Profile Settings
-      </h1>
+      <h1 className="flex justify-center my-5 text-2xl">Profile Settings</h1>
       <div>
         <CustomInput
           label="User Name"
@@ -202,18 +163,7 @@ export default function Settings() {
       </div>
       <div className="mt-10">
         <SaveButton
-          onClick={async () => {
-            if (!userName.trim()) {
-              toast.error("User name cannot be empty.");
-              return;
-            }
-            const isTaken = await isUserNameTaken(userName);
-            if (isTaken) {
-              toast.error("Username is already taken. Please choose another.");
-              return;
-            }
-            updateSettings();
-          }}
+          onClick={async () => updateSettings()}
           label="Save Changes"
         />
       </div>

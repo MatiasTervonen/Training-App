@@ -1,10 +1,12 @@
+"use client";
+
 import { ChevronRight, Trash2 } from "lucide-react";
 import React, { useState } from "react";
-import { mutate } from "swr";
 import toast from "react-hot-toast";
 import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
 import { weight } from "@/app/(app)/types/models";
-import { handleError } from "../../utils/handleError";
+import { deleteSession } from "../../database/feed";
+import { useQueryClient } from "@tanstack/react-query";
 
 type AllDataProps = {
   data: weight[];
@@ -12,6 +14,8 @@ type AllDataProps = {
 
 export default function AllDataTable({ data }: AllDataProps) {
   const [expanded, setExpanded] = useState<string | null>(null);
+
+  const queryClient = useQueryClient();
 
   const weightUnit =
     useUserStore((state) => state.preferences?.weight_unit) || "kg";
@@ -36,43 +40,29 @@ export default function AllDataTable({ data }: AllDataProps) {
     const confirmed = confirm("Are you sure you want to delete this entry?");
     if (!confirmed) return;
 
-    const previousData = data;
+    const queryKey = ["get-weight"];
 
-    mutate(
-      "/api/weight/get-weight",
-      (currentData: weight[] = []) => {
-        return currentData.filter((entry) => entry.id !== id);
-      },
-      false
-    ); // Optimistically update the data
+    await queryClient.cancelQueries({ queryKey });
+
+    const previousFeed = queryClient.getQueryData(queryKey);
+
+    queryClient.setQueryData<weight[]>(queryKey, (oldData) => {
+      if (!oldData) return;
+
+      return oldData.filter((w) => w.id !== id);
+    });
 
     try {
-      const res = await fetch("/api/delete-session", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          item_id: id,
-          table: "weight",
-        }),
-      });
+      await deleteSession({ table: "weight", id });
 
-      if (!res.ok) {
-        throw new Error("Failed to update weight session");
-      }
+      queryClient.refetchQueries({ queryKey: ["feed"], exact: true });
 
-      await res.json();
-    } catch (error) {
-      handleError(error, {
-        message: "Failed to delete weight entry",
-        route: "/api/delete-session",
-        method: "POST",
-      });
+      toast.success("Item has been deleted successfully.");
+    } catch {
       toast.error("Failed to delete weight entry");
-      mutate("/api/weight/get-weight", previousData, false);
+      queryClient.setQueryData(queryKey, previousFeed);
     } finally {
-      setExpanded(null); // Collapse any expanded row after deletion}
+      setExpanded(null); // Collapse any expanded row after deletion
     }
   };
 
@@ -139,7 +129,7 @@ export default function AllDataTable({ data }: AllDataProps) {
                           colSpan={3}
                           className="px-6 py-4 text-sm text-gray-300"
                         >
-                          <div className="flex justify-between items-center whitespace-pre-wrap break-words">
+                          <div className="flex justify-between items-center whitespace-pre-wrap wrap-break-word">
                             <p>{entry.notes || "No notes..."}</p>
                             <button
                               onClick={() => {

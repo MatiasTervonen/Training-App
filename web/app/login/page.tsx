@@ -78,6 +78,7 @@ export default function LoginPage() {
           <p className="min-w-[76px]"></p>
         </nav>
         <div className="relative flex grow w-full overflow-hidden max-w-md">
+          
           {/* Log in Form */}
 
           <form

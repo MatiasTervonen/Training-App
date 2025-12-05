@@ -323,6 +323,8 @@ export default function SessionFeed() {
         queryClient.prefetchQuery({
           queryKey: ["fullTodoSession", f.id],
           queryFn: () => getFullTodoSession(f.id!),
+          staleTime: Infinity, 
+          gcTime: Infinity,
         });
       }
     });
@@ -332,6 +334,8 @@ export default function SessionFeed() {
         queryClient.prefetchQuery({
           queryKey: ["fullGymSession", f.id],
           queryFn: () => getFullGymSession(f.id!),
+          staleTime: Infinity, 
+          gcTime: Infinity,
         });
       }
     });

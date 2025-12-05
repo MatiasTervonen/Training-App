@@ -5,7 +5,7 @@ import {
   savePushSubscription,
   deletePushSubscription,
   getAllActivePushSubscriptions,
-} from "@/app/(app)/lib/data";
+} from "@/app/(app)/database/pushSubscription";
 
 webpush.setVapidDetails(
   "mailto:matias.tervonen@hotmail.com",

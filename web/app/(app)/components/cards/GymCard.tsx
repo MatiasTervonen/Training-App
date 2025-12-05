@@ -2,7 +2,7 @@ import { Dumbbell, Ellipsis, SquareArrowOutUpRight } from "lucide-react";
 import DropdownMenu from "../dropdownMenu";
 import { formatDate } from "@/app/(app)/lib/formatDate";
 import { gym_sessions } from "../../types/models";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { full_gym_session } from "../../types/models";
 import { getFullGymSession } from "../../database/gym";
 
@@ -34,10 +34,18 @@ export default function GymCard({
     }
   };
 
+  const queryClient = useQueryClient();
+  const cached = queryClient.getQueryData(["fullGymSession", item.id]);
+
   const { data: fullGym } = useQuery<full_gym_session>({
     queryKey: ["fullGymSession", item.id],
     queryFn: () => getFullGymSession(item.id),
-    enabled: false,
+    enabled: !!cached,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    refetchOnMount: false,
+    staleTime: Infinity,
+    gcTime: Infinity,
   });
 
   const totalExercises = fullGym ? fullGym.gym_session_exercises.length : 0;

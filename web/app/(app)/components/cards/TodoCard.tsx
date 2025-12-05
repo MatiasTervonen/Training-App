@@ -64,7 +64,7 @@ export default function TodoCard({
               onClick={() => {
                 onEdit();
               }}
-              className="border-b py-2 px-4 hover:bg-gray-600"
+              className="border-b py-2 px-4 hover:bg-gray-600 hover:rounded-t"
             >
               Edit
             </button>
@@ -82,7 +82,7 @@ export default function TodoCard({
               onClick={() => {
                 onDelete();
               }}
-              className="py-2 px-4 hover:bg-gray-600"
+              className="py-2 px-4 hover:bg-gray-600 hover:rounded-b"
             >
               Delete
             </button>

@@ -1,7 +1,7 @@
 "use client";
 
 import DropdownMenu from "@/app/(app)/components/dropdownMenu";
-import { Ellipsis } from "lucide-react";
+import { Menu } from "lucide-react";
 import { ExerciseEntry } from "../../types/session";
 
 type ExerciseCardProps = {
@@ -32,20 +32,23 @@ export default function TemplateCard({
           </span>
         </div>
 
-        <DropdownMenu button={<Ellipsis className="text-gray-100 " />}>
+        <DropdownMenu button={<Menu />}>
           <button
-            className="border-b py-2 px-4"
+            className="border-b py-2 px-4 hover:bg-gray-600 hover:rounded-t"
             onClick={() => onDeleteExercise(index)}
           >
             Delete
           </button>
           <button
-            className="py-2 px-4 border-b"
+            className="py-2 px-4 border-b hover:bg-gray-600"
             onClick={() => lastExerciseHistory(index)}
           >
             History
           </button>
-          <button className="py-2 px-4" onClick={() => onChangeExercise(index)}>
+          <button
+            className="py-2 px-4 hover:bg-gray-600 hover:rounded-b"
+            onClick={() => onChangeExercise(index)}
+          >
             Change
           </button>
         </DropdownMenu>

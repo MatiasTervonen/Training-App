@@ -234,6 +234,20 @@ export default function SessionFeed() {
     try {
       await deleteSession({ id, table });
 
+      if (table === "weight") {
+        queryClient.refetchQueries({
+          queryKey: ["get-weight"],
+          exact: true,
+        });
+      }
+
+      if (table === "reminders") {
+        queryClient.refetchQueries({
+          queryKey: ["get-reminders"],
+          exact: true,
+        });
+      }
+
       toast.success("Item has been deleted successfully.");
       queryClient.invalidateQueries({ queryKey });
     } catch {
@@ -463,14 +477,16 @@ export default function SessionFeed() {
                 </div>
               );
             })}
-            {isFetchingNextPage ? (
+            {isFetchingNextPage && (
               <div className="flex flex-col gap-2 items-center mt-10">
                 <p>Loading more...</p>
                 <Spinner />
               </div>
-            ) : hasNextPage ? (
-              <div ref={loadMoreRef} className="h-20"></div>
-            ) : (
+            )}
+
+            {hasNextPage && <div ref={loadMoreRef} className="h-20"></div>}
+
+            {!hasNextPage && data?.pages.length > 1 && (
               <p className="text-center justify-center mt-10 text-gray-300">
                 No more sessions
               </p>

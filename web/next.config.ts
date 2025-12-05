@@ -2,7 +2,9 @@ import { withSentryConfig } from "@sentry/nextjs";
 import { NextConfig } from "next";
 import { withBotId } from "botid/next/config";
 
+
 const nextConfig: NextConfig = {
+  reactCompiler: true,
   images: {
     remotePatterns: [
       {

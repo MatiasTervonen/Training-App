@@ -14,34 +14,26 @@ export default function WorkoutAnalyticsPage() {
     refetchOnMount: false,
   });
 
-  console.log("data", data);
-
-  const showAnalytics = !isLoading && !error && data;
-
   return (
     <div className="sm:px-5 pb-10">
       <h1 className="text-2xl my-5 text-center">Workout Analytics</h1>
-      {isLoading && (
-        <div className="flex flex-col  items-center gap-2 mt-20">
+      {isLoading && !data ? (
+        <div className="flex flex-col  items-center gap-2 mt-20 px-6">
           <p className="text-gray-300 text-center text-xl">Loading...</p>
           <Spinner />
         </div>
-      )}
-
-      {error && (
-        <p className="text-red-500 text-center mt-20">
+      ) : error ? (
+        <p className="text-red-500 text-center mt-20 px-6">
           Error loading workout data. Try again!
         </p>
-      )}
-
-      {!isLoading && data && data.analytics.total_sessions === 0 && (
-        <p className="text-gray-300 text-center mt-20">
+      ) : !data || data.analytics.total_sessions === 0 ? (
+        <p className="text-gray-300 text-center mt-20 px-6">
           No workout data available. Start logging your workouts to see
           analytics!
         </p>
+      ) : (
+        <AnalyticsForm data={data} />
       )}
-
-      {showAnalytics && <AnalyticsForm data={data} />}
     </div>
   );
 }

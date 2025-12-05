@@ -80,7 +80,11 @@ export default function WorkoutAnalyticsPage() {
         weight: parsedWeight,
       });
 
-      await queryClient.refetchQueries({ queryKey: ["feed"], exact: true });
+      await Promise.all([
+        queryClient.refetchQueries({ queryKey: ["feed"], exact: true }),
+        queryClient.refetchQueries({ queryKey: ["get-weight"], exact: true }),
+      ]);
+
       router.push("/dashboard");
       resetWeight();
     } catch {

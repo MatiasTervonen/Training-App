@@ -51,7 +51,7 @@ export default function WeightCard({
             onClick={() => {
               onEdit();
             }}
-            className="border-b py-2 px-4 hover:bg-gray-600"
+            className="border-b py-2 px-4 hover:bg-gray-600 hover:rounded-t"
           >
             Edit
           </button>
@@ -69,13 +69,13 @@ export default function WeightCard({
             onClick={() => {
               onDelete();
             }}
-            className="py-2 px-4 hover:bg-gray-600"
+            className="py-2 px-4 hover:bg-gray-600 hover:rounded-b"
           >
             Delete
           </button>
         </DropdownMenu>
       </div>
-      
+
       <div className="ml-4 mb-4 mr-5 line-clamp-2">
         {item.weight} {weightUnit}
       </div>

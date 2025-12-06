@@ -145,13 +145,13 @@ export default function EditExercises() {
   }
 
   return (
-    <ScrollView>
+    <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <PageContainer>
-          <AppText className="text-2xl text-center mb-10">
-            Edit exercise
-          </AppText>
+        <PageContainer className="justify-between">
           <View className="gap-4">
+            <AppText className="text-2xl text-center mb-5">
+              Edit exercise
+            </AppText>
             <AppInput
               value={name}
               setValue={setName}

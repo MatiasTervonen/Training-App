@@ -402,7 +402,7 @@ export default function GymForm({
       ) : (
         <View className="flex items-center bg-gray-600 p-2 px-4 w-full z-40 ticky top-0">
           <Timer
-            textClassName="text-lg"
+            textClassName="text-xl"
             manualSession={{
               label: title,
               path: "/training/gym",

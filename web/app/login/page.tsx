@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 import {
   login,
   signup,
@@ -10,7 +10,6 @@ import {
 import React from "react";
 import LoginButton from "@/app/login/components/loginbutton";
 import SignupButton from "@/app/login/components/signupbutton";
-import GuestLogIn from "@/app/login/guest-login/quest-login";
 import ModalLogin from "./components/modalLogin";
 import CustomInput from "../(app)/ui/CustomInput";
 import ResetPasswordButton from "./components/resetPasswordButton";
@@ -18,12 +17,18 @@ import ResendButton from "./components/resendButton";
 import { ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
+import { guestLogin } from "@/app/login/guest-login/action";
+import FullScreenLoader from "../(app)/components/FullScreenLoader";
 
 const ConfettiAnimation = dynamic(() => import("../components/confetti"), {
   ssr: false,
 });
 
 export default function LoginPage() {
+  const [isPending, startTransition] = useTransition();
+  const [error, setError] = useState<string | null>(null);
+  const [guestModalOpen, setGuestModalOpen] = useState(false);
+
   const [activeForm, setActiveForm] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [modal2Open, setModal2Open] = useState(false);
@@ -78,7 +83,6 @@ export default function LoginPage() {
           <p className="min-w-[76px]"></p>
         </nav>
         <div className="relative flex grow w-full overflow-hidden max-w-md">
-          
           {/* Log in Form */}
 
           <form
@@ -130,18 +134,36 @@ export default function LoginPage() {
                 "Please verify your email before logging in." && (
                 <p
                   onClick={() => setModal2Open(true)}
-                  className="text-gray-100 cursor-pointer text-center hover:underline mt-2"
+                  className="cursor-pointer text-center hover:underline mt-2"
                 >
                   Didn&apos;t get an email?
                 </p>
               )}
             </div>
-            <div>
-              <GuestLogIn />
+
+            {/*  Guest login button */}
+
+            <div className="flex flex-col items-center justify-center">
+              <button
+                type="button"
+                onClick={() => setGuestModalOpen(true)}
+                className="flex items-center justify-center gap-2 px-10  border-2 border-blue-500 p-2 rounded-md bg-linear-to-tr from-slate-950  to-blue-700 hover:from-blue-700 hover:to-slate-950 transform hover:scale-105 transition duration-200 cursor-pointer"
+                disabled={isPending}
+              >
+                <span>Log in as a Guest</span>
+              </button>
+              <div className="h-6">
+                {error && (
+                  <p className="text-red-500 pt-5 text-center text-sm">
+                    {error}
+                  </p>
+                )}
+              </div>
             </div>
+
             <p
               onClick={() => setModalOpen(true)}
-              className="text-gray-100 cursor-pointer text-center hover:underline"
+              className="cursor-pointer text-center hover:underline"
             >
               Forgot password?
             </p>
@@ -278,12 +300,10 @@ export default function LoginPage() {
               className="backdrop-blur-sm"
             >
               <div className="flex flex-col items-center px-6 py-10 pb-10 justify-between h-full text-center">
-                <p className="text-3xl sm:text-4xl lg:text-5xl text-center bg-linear-to-tr from-[#27aee4] via-[#66ece1] to-[#f3f18d] text-transparent bg-clip-text">
+                <h1 className="text-3xl sm:text-4xl lg:text-5xl text-center bg-linear-to-tr from-[#27aee4] via-[#66ece1] to-[#f3f18d] text-transparent bg-clip-text">
                   MyTrack
-                </p>
-                <h3 className="text-xl  mt-5">
-                  Thank you for signing up!
-                </h3>
+                </h1>
+                <h3 className="text-xl  mt-5">Thank you for signing up!</h3>
                 <p className="text-green-500 ">{state.message}</p>
 
                 <p
@@ -296,7 +316,6 @@ export default function LoginPage() {
             </ModalLogin>
           )}
 
-          
           {/* Resend Verification Email Form */}
 
           <ModalLogin
@@ -347,11 +366,49 @@ export default function LoginPage() {
             </form>
           </ModalLogin>
 
-          
+          {/* Guest login modal */}
+
+          <ModalLogin
+            isOpen={guestModalOpen}
+            onClose={() => setGuestModalOpen(false)}
+          >
+            <div className="flex flex-col justify-between h-full py-10 px-4 sm:px-10 items-center z-100 w-full">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl text-center bg-linear-to-tr from-[#27aee4] via-[#66ece1] to-[#f3f18d] text-transparent bg-clip-text">
+                MyTrack
+              </h1>
+              <div className="flex flex-col text-center gap-10">
+                <h2 className="text-2xl underline">Demo account</h2>
+                <p className="text-lg">
+                  All features are available, but your data and account will be
+                  deleted after you log out.
+                </p>
+                <p>
+                  You can test the app without creating an account.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() =>
+                  startTransition(async () => {
+                    setError(null);
+                    const result = await guestLogin();
+                    if (!result.success) {
+                      setError(result.message ?? "Login failded");
+                    }
+                  })
+                }
+                className="w-full border-2 border-blue-500 p-2 rounded-md bg-linear-to-tr from-slate-950  to-blue-700 hover:from-blue-700 hover:to-slate-950 transform hover:scale-105 transition duration-200 cursor-pointer"
+                disabled={isPending}
+              >
+                <span>Continue</span>
+              </button>
+            </div>
+          </ModalLogin>
+          {isPending && <FullScreenLoader message="Logging in as guest..." />}
         </div>
         <div className="flex justify-center items-center w-full  pb-10">
           <div className="flex flex-col items-center justify-center gap-5">
-            <p className=" text-gray-100 text-center text-lg">
+            <p className="text-center text-lg">
               {activeForm
                 ? "Already have an account?"
                 : "Don't have an account?"}
@@ -368,7 +425,7 @@ export default function LoginPage() {
                 state3.success = false;
                 state4.success = false;
               }}
-              className="text-gray-100 border-2 border-blue-400 py-2 px-10 rounded-md bg-linear-to-tr from-slate-950  to-blue-700 hover:from-blue-700 hover:to-slate-950 transform hover:scale-105 transition-all duration-200 cursor-pointer"
+              className="border-2 border-blue-400 py-2 px-10 rounded-md bg-linear-to-tr from-slate-950  to-blue-700 hover:from-blue-700 hover:to-slate-950 transform hover:scale-105 transition-all duration-200 cursor-pointer"
             >
               {activeForm ? "Log in" : "Sign up"}
             </button>

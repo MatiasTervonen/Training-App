@@ -69,7 +69,7 @@ export default function ModalPageWrapper({
     <div
       className={`relative h-[calc(100dvh-${EXTRA_NAV_HEIGHT}px)] overflow-hidden ${fullPage} mx-auto`}
     >
-      <div className="absolute inset-0 z-0 h-screen flex justify-between bg-slate-900 mt-3">
+      <div className="absolute inset-0 z-0 h-screen flex justify-between bg-slate-900 pt-3">
         <div className="flex flex-col items-center gap-2 ml-2">
           {isTransitioning && leftLabel && (
             <>

@@ -46,7 +46,7 @@ export default function ExerciseDropdown({ onSelect, resetTrigger }: Props) {
     data: recentExercises,
     error: recentError,
     isLoading: isRecentLoading,
-  } = useQuery<gym_exercises[]>({
+  } = useQuery({
     queryKey: ["recentExercises"],
     queryFn: async () => await getRecentExercises(),
     refetchOnWindowFocus: false,
@@ -109,7 +109,7 @@ export default function ExerciseDropdown({ onSelect, resetTrigger }: Props) {
 
         <View
           className="w-full  
-                    bg-slate-900 border border-gray-100 mt-10 flex-1"
+                    bg-slate-900 border border-gray-100 mt-10 flex-1 rounded-md overflow-hidden"
         >
           {isLoading || isError || allExercises.length === 0 ? (
             <View className="gap-6 items-center justify-center z-50 text-center mt-20">
@@ -165,7 +165,7 @@ export default function ExerciseDropdown({ onSelect, resetTrigger }: Props) {
                 );
               }}
               renderSectionHeader={({ section: { title } }) => (
-                <AppText className="text-center bg-slate-600  text-lg">
+                <AppText className="text-center text-lg bg-blue-600">
                   {title}
                 </AppText>
               )}

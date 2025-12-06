@@ -63,7 +63,7 @@ export default function AddExercises() {
     <>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <PageContainer className="justify-between flex-1">
-          <View className="gap-5">
+          <View className="gap-4">
             <AppText className="text-2xl mb-5 text-center">
               Add Exercises
             </AppText>

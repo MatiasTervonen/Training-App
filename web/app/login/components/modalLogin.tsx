@@ -20,7 +20,7 @@ export default function ModalLogin({
   return (
     <AnimatePresence>
       <div
-        className={`fixed inset-0 z-50 bg-black/50 flex items-center justify-center ${className}`}
+        className={`fixed inset-0 z-50 backdrop-blur-sm flex items-center justify-center ${className}`}
       >
         <motion.div
           key={"modal"}

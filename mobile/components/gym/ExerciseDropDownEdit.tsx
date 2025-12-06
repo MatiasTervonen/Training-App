@@ -95,7 +95,7 @@ export default function ExerciseDropdownEdit({
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <View className="px-2 w-full z-50">
+      <View className="px-2 w-full z-50 flex-1">
         <View className="mt-10 w-full px-14">
           <AppInput
             value={searchQuery}
@@ -110,7 +110,7 @@ export default function ExerciseDropdownEdit({
           <View
             ref={dropdownRef}
             className="w-full border rounded-md 
-                       bg-slate-900 border-gray-100  mt-10 h-[83%]"
+                       bg-slate-900 border-gray-100  mt-10 flex-1"
           >
             {isLoading || isError || exercises?.length === 0 ? (
               <View className="gap-6 items-center justify-center z-50 text-center mt-10">

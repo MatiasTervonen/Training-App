@@ -192,3 +192,32 @@ export async function resendEmailVerification({
   setSuccess(true);
   Alert.alert("Verification email resent. Please check your inbox.");
 }
+
+type GuestSignInProps = {
+  setLoadingMessage: (loadingMessage: string) => void;
+  setLoading: (loading: boolean) => void;
+  onSuccess: () => void;
+};
+
+export async function guestLogIn({
+  setLoadingMessage,
+  setLoading,
+  onSuccess,
+}: GuestSignInProps) {
+  setLoadingMessage("Logging in as guest...");
+  setLoading(true);
+  await supabase.auth.signInAnonymously();
+
+  const { error } = await supabase.auth.signInAnonymously();
+
+  if (error) {
+    handleError(error, {
+      message: "Error logging in as guest",
+      route: "actions: guest-login",
+      method: "POST",
+    });
+    Alert.alert("Error logging in as guest");
+  }
+
+  onSuccess();
+}

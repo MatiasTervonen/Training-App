@@ -301,7 +301,6 @@ export default function DiscGolfGame() {
       if (!response.ok) {
         const errorData = await response.json();
         console.error("Server error:", errorData.error);
-        alert("Session not saved. You might be in demo mode.");
         router.push("/dashboard");
       }
 

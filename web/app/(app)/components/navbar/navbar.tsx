@@ -1,6 +1,5 @@
 "use client";
 
-import { russoOne } from "@/app/ui/fonts";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { MessageCircle } from "lucide-react";
@@ -21,18 +20,15 @@ export default function Navbar() {
 
   return (
     <div className="relative w-full md:max-w-3xl mx-auto">
-      <nav className="w-full flex items-center justify-between p-4 bg-slate-950">
-        <Link
-          href="/dashboard"
-          className={`${russoOne.className} text-gray-100 text-2xl sm:text-3xl`}
-        >
+      <nav className="w-full flex items-center justify-between p-4 bg-linear-to-tr from-gray-900 via-slate-900 to-blue-900">
+        <Link href="/dashboard" className=" text-2xl sm:text-3xl">
           MyTrack
         </Link>
         <div className="flex gap-3 items-center">
           <NotificationBell />
           <Link
             href={"/chat"}
-            className="text-gray-100 border-2 p-2 border-blue-500 rounded-full bg-gray-800"
+            className="border-2 p-2 border-blue-500 rounded-full bg-gray-800"
           >
             <MessageCircle size={20} />
           </Link>
@@ -48,9 +44,7 @@ export default function Navbar() {
         </div>
       </nav>
       {["/dashboard", "/menu", "/sessions"].includes(pathname) && (
-        <div
-          className={`${russoOne.className}  flex justify-between bg-slate-600 w-full text-center text-gray-100 z-0 `}
-        >
+        <div className="flex justify-between bg-slate-600 w-full text-center text-gray-100 z-0">
           <Link
             href={"/menu"}
             className={

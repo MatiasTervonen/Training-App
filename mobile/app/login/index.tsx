@@ -17,7 +17,6 @@ import Animated, {
   withSpring,
 } from "react-native-reanimated";
 
-import GuestLogIn from "@/components/login-signup/guest-login";
 import GradientButton from "@/components/buttons/GradientButton";
 import ForgotPasswordText from "@/components/login-signup/forgotPassword";
 import ModalLogin from "@/components/ModalLogin";
@@ -31,6 +30,7 @@ import {
   signUpWithEmail,
   sendPasswordResetEmail,
   resendEmailVerification,
+  guestLogIn,
 } from "@/components/login-signup/actions";
 import { Confetti, ConfettiMethods } from "react-native-fast-confetti";
 
@@ -51,6 +51,7 @@ export default function LoginScreen() {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
   const [signUpSuccess, setSignUpSuccess] = useState(false);
+  const [guestModalOpen, setGuestModalOpen] = useState(false);
 
   const router = useRouter();
 
@@ -192,7 +193,12 @@ export default function LoginScreen() {
                   />
                 </View>
                 <View className="mt-10 items-center">
-                  <GuestLogIn />
+                  <AppText
+                    onPress={() => setGuestModalOpen(true)}
+                    className="text-center text-lg mb-4 underline"
+                  >
+                    Log in as a Guest
+                  </AppText>
                 </View>
                 <View className="mt-6 items-center">
                   <ForgotPasswordText onPress={() => setModalOpen(true)} />
@@ -439,6 +445,39 @@ export default function LoginScreen() {
           </View>
         </ModalLogin>
       )}
+
+      {/* Guest Login modal */}
+
+      <ModalLogin
+        isOpen={guestModalOpen}
+        onClose={() => setGuestModalOpen(false)}
+      >
+        <View className="flex-1 justify-between items-center p-6">
+          <GradientColorText style={{ width: 140, height: 36 }}>
+            MyTrack
+          </GradientColorText>
+          <AppText className="text-2xl underline mt-5 text-gray-100 text-center">
+            Demo account
+          </AppText>
+          <AppText className="text-gray-300 text-center text-lg">
+            All features are available, but your data and account will be
+            deleted after you log out.
+          </AppText>
+          <AppText className="text-center text-gray-300">You can test the app without creating an account.</AppText>
+          <View className="w-full">
+            <GradientButton
+              label="Continue"
+              onPress={() => {
+                guestLogIn({
+                  setLoadingMessage,
+                  setLoading,
+                  onSuccess: () => router.push("/dashboard"),
+                });
+              }}
+            />
+          </View>
+        </View>
+      </ModalLogin>
 
       <FullScreenLoader visible={loading} message={loadingMessage} />
     </>

@@ -3,7 +3,7 @@ import LinkButton from "../../ui/LinkButton";
 
 export default function TrainingFinished() {
   return (
-      <div className="h-full flex w-full bg-slate-900 page-padding">
+      <div className="h-full flex w-full bg-slate-800 page-padding">
         <div className="flex flex-col items-center justify-center gap-10 max-w-md mx-auto">
           <Image
             src="/Confetti.png"

@@ -44,8 +44,8 @@ export default function ExerciseHistoryModal({
         </p>
       ) : (
         <div className="px-6 max-w-lg mx-auto">
-          <div className="flex flex-col gap-2 mt-10 bg-slate-900 py-2 border-2 border-blue-500 shadow-md rounded-md items-center">
-            <p>{exerciseName}</p>
+          <div className="flex flex-col mt-10 items-center rounded-md">
+            <p className="text-lg">{exerciseName}</p>
             <p className="text-gray-300">{equipment}</p>
           </div>
           <div className="flex flex-col items-center mb-20">

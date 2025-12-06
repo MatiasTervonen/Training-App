@@ -5,6 +5,7 @@ import { MessageCircle } from "lucide-react-native";
 import { Image } from "expo-image";
 import { useUserStore } from "@/lib/stores/useUserStore";
 import NotificationBell from "./components/notificationBell";
+import { LinearGradient } from "expo-linear-gradient";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -17,7 +18,12 @@ export default function Navbar() {
 
   return (
     <>
-      <View className="w-full p-4 flex flex-row items-center justify-between bg-slate-950">
+      <LinearGradient
+        colors={["#1e3a8a", "#0f172a", "#0f172a"]}
+        start={{ x: 1, y: 0 }}
+        end={{ x: 0, y: 1 }}
+        className="w-full p-4 flex flex-row items-center justify-between bg-slate-950"
+      >
         <Link href="/dashboard" asChild>
           <Pressable>
             <AppText className="text-2xl">MyTrack</AppText>
@@ -44,7 +50,7 @@ export default function Navbar() {
             </Pressable>
           </Link>
         </View>
-      </View>
+      </LinearGradient>
       {["/dashboard", "/menu", "/sessions"].includes(pathname) && (
         <View className="flex-row justify-between bg-slate-600 w-full text-center text-gray-100">
           <Link href="/menu" asChild>

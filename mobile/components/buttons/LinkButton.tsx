@@ -1,4 +1,3 @@
-import { Link } from "expo-router";
 import { Pressable } from "react-native";
 import AppText from "@/components/AppText";
 import type { LinkProps } from "expo-router";
@@ -9,18 +8,27 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import { LinearGradient } from "expo-linear-gradient";
+import { useRouter } from "expo-router";
 
 interface LinkButtonProps {
   href: LinkProps["href"];
   label?: string;
   children?: React.ReactNode;
+  onPress?: () => boolean | void;
 }
 
-export default function LinkButton({ href, label, children }: LinkButtonProps) {
+export default function LinkButton({
+  href,
+  label,
+  onPress,
+  children,
+}: LinkButtonProps) {
   const scale = useSharedValue(1);
   const opacity = useSharedValue(1);
   const shineX = useSharedValue(-200);
   const shineOpacity = useSharedValue(0);
+
+  const router = useRouter();
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
@@ -50,35 +58,43 @@ export default function LinkButton({ href, label, children }: LinkButtonProps) {
   };
 
   return (
-    <Link href={href} asChild>
-      <Pressable onPressIn={handlePressIn} onPressOut={handlePressOut}>
+    <Pressable
+      onPress={() => {
+        const allow = onPress?.();
+
+        if (allow === false) return;
+
+        router.push(href);
+      }}
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}
+    >
+      <Animated.View
+        style={animatedStyle}
+        className="flex-row items-center justify-center gap-2 bg-blue-800 py-2 w-full rounded-md shadow-md border-2 border-blue-500 text-lg"
+      >
+        {/* Light sweep gradient */}
         <Animated.View
-          style={animatedStyle}
-          className="flex-row items-center justify-center gap-2 bg-blue-800 py-2 w-full rounded-md shadow-md border-2 border-blue-500 text-lg"
+          style={[
+            shineStyle,
+            {
+              position: "absolute",
+              top: 0,
+              bottom: 0,
+              width: 80, // width of the light bar
+            },
+          ]}
         >
-          {/* Light sweep gradient */}
-          <Animated.View
-            style={[
-              shineStyle,
-              {
-                position: "absolute",
-                top: 0,
-                bottom: 0,
-                width: 80, // width of the light bar
-              },
-            ]}
-          >
-            <LinearGradient
-              colors={["transparent", "rgba(255,255,255,0.4)", "transparent"]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              style={{ flex: 1 }}
-            />
-          </Animated.View>
-          {label && <AppText className="text-lg">{label}</AppText>}
-          {children}
+          <LinearGradient
+            colors={["transparent", "rgba(255,255,255,0.4)", "transparent"]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={{ flex: 1 }}
+          />
         </Animated.View>
-      </Pressable>
-    </Link>
+        {label && <AppText className="text-lg">{label}</AppText>}
+        {children}
+      </Animated.View>
+    </Pressable>
   );
 }

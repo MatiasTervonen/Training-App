@@ -1,4 +1,4 @@
-import { Link } from "expo-router";
+import { Link, usePathname } from "expo-router";
 import { SquareArrowRight } from "lucide-react-native";
 import { useTimerStore } from "@/lib/stores/timerStore";
 import { useEffect } from "react";
@@ -21,6 +21,8 @@ export default function ActiveSessionPopup() {
   const setAlarmSoundPlaying = useTimerStore(
     (state) => state.setAlarmSoundPlaying
   );
+
+  const pathname = usePathname();
 
   const audioSource = require("@/assets/audio/mixkit-classic-alarm-995.wav");
 
@@ -52,6 +54,18 @@ export default function ActiveSessionPopup() {
 
   if (!activeSession) return null;
 
+  if (pathname === "/training/gym" && activeSession.type === "gym") {
+    return null;
+  }
+
+  if (pathname === "/timer/empty-timer" && activeSession.type === "timer") {
+    return null;
+  }
+
+  if (pathname === "/disc-golf/game" && activeSession.type === "disc-golf") {
+    return null;
+  }
+
   return (
     <Animated.View
       style={animatedStyle}
@@ -63,22 +77,24 @@ export default function ActiveSessionPopup() {
     >
       <Pressable
         onPress={stopAlarm}
-        className="w-full py-4 flex-row items-center z-50"
+        className="w-full py-3 flex-row items-center z-50"
       >
-        <View className="ml-10 flex-1 ">
-          {activeSession.label && (
-            <AppText
-              numberOfLines={1}
-              ellipsizeMode="tail"
-              className="pb-2 mr-8 text-lg"
-            >
-              {activeSession.label}
-            </AppText>
-          )}
-          <View className="flex-row items-center gap-5">
-            <Timer textClassName="text-xl" />
-            <AppText>{activeSession.type.toUpperCase()}</AppText>
+        <View className="ml-10 flex-1">
+          <View className="flex-row items-center mb-2">
+            {activeSession.label && (
+              <AppText
+                numberOfLines={1}
+                ellipsizeMode="tail"
+                className=" mr-8 text-lg"
+              >
+                {activeSession.label}
+              </AppText>
+            )}
             {alarmFired && <AppText>ALARM!</AppText>}
+          </View>
+          <View className="flex-row items-center gap-5">
+            <Timer textClassName="text-xl" onPress={stopAlarm} />
+            <AppText>{activeSession.type.toUpperCase()}</AppText>
             {activeSession.type === "timer" && totalDuration && (
               <AppText>
                 {Math.floor(totalDuration / 60)} min {totalDuration % 60} sec

@@ -59,7 +59,7 @@ export default function Sessions() {
         new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
       );
     } else if (sortField === "email" || sortField === "role") {
-      return a[sortField].localeCompare(b[sortField]);
+      return (a[sortField] || "").localeCompare(b[sortField] || "");
     }
     return 0;
   });

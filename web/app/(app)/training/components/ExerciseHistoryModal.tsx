@@ -80,7 +80,7 @@ export default function ExerciseHistoryModal({
                         {session!.sets.map((set, setIndex) => (
                           <tr
                             key={setIndex}
-                            className={`mb-2 border-b${
+                            className={`mb-2 border-b ${
                               set.rpe === "Failure" ? "bg-red-500" : ""
                             } ${set.rpe === "Warm-up" ? "bg-blue-500" : ""}`}
                           >

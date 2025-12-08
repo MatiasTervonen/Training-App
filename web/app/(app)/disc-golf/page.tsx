@@ -8,6 +8,7 @@ import { clearLocalStorage } from "./components/ClearLocalStorage";
 import CustomInput from "../ui/CustomInput";
 import { useTimerStore } from "../lib/stores/timerStore";
 import BaseButton from "../ui/BaseButton";
+import toast from "react-hot-toast";
 
 export default function DiscGolf() {
   const [players, setPlayers] = useState<string[]>([]);
@@ -18,7 +19,9 @@ export default function DiscGolf() {
   const [numHoles, setNumHoles] = useState<number>(18); // Default to 18
   const router = useRouter();
 
-  const { activeSession, setActiveSession, startTimer } = useTimerStore();
+  const { setActiveSession, startTimer } = useTimerStore();
+
+  const activeSession = useTimerStore((state) => state.activeSession);
 
   useEffect(() => {
     const fetchDisplayName = async () => {
@@ -62,6 +65,13 @@ export default function DiscGolf() {
   }
 
   const startGame = () => {
+    if (activeSession) {
+      toast.error(
+        "You already have an active session. Finish it before starting a new one."
+      );
+      return;
+    }
+
     clearLocalStorage();
 
     const randomizedPlayers = shuffleArray(players);
@@ -161,7 +171,7 @@ export default function DiscGolf() {
         ))}
       </div>
       <div className="flex flex-col gap-5 mt-10">
-        <BaseButton disabled={!!activeSession} onClick={startGame} />
+        <BaseButton onClick={startGame} />
         <DeleteSessionBtn onDelete={resetSessionState} />
       </div>
     </div>

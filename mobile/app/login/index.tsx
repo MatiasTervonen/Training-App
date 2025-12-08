@@ -111,13 +111,7 @@ export default function LoginScreen() {
         >
           <PageContainer>
             <View className="flex-row items-center justify-between pt-3 z-50">
-              <AnimatedButton
-                onPress={() => {
-                  console.log("Back pressed");
-                  router.push("/");
-                }}
-                hitSlop={10}
-              >
+              <AnimatedButton onPress={() => router.push("/")} hitSlop={10}>
                 <View className="flex-row gap-2 items-center">
                   <ArrowLeft color="#f3f4f6" />
                   <AppText>Back</AppText>
@@ -463,7 +457,9 @@ export default function LoginScreen() {
             All features are available, but your data and account will be
             deleted after you log out.
           </AppText>
-          <AppText className="text-center text-gray-300">You can test the app without creating an account.</AppText>
+          <AppText className="text-center text-gray-300">
+            You can test the app without creating an account.
+          </AppText>
           <View className="w-full">
             <GradientButton
               label="Continue"

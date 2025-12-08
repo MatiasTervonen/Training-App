@@ -6,9 +6,8 @@ import { MessageCircle } from "lucide-react";
 import Image from "next/image";
 import NotificationBell from "@/app/(app)/components/navbar/components/NotificationBell";
 import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
-import { useTimerStore } from "@/app/(app)/lib/stores/timerStore";
-import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import ActiveSessionPopup from "@/app/(app)/components/activeSessionPopup";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -16,10 +15,10 @@ export default function Navbar() {
 
   const preferences = useUserStore((state) => state.preferences);
 
-  const { activeSession } = useTimerStore();
+
 
   return (
-    <div className="relative w-full md:max-w-3xl mx-auto">
+    <div className="w-full md:max-w-3xl sticky top-0 mx-auto">
       <nav className="w-full flex items-center justify-between p-4 bg-linear-to-tr from-gray-900 via-slate-900 to-blue-900">
         <Link href="/dashboard" className=" text-2xl sm:text-3xl">
           MyTrack
@@ -67,15 +66,7 @@ export default function Navbar() {
             Feed
           </Link>
           <button
-            onClick={() => {
-              if (activeSession) {
-                toast.error(
-                  "You already have an active session. Finish it before starting a new one."
-                );
-                return;
-              }
-              router.push("/sessions");
-            }}
+            onClick={() => router.push("/sessions")}
             className={
               pathname === "/sessions"
                 ? "bg-slate-500 p-2 w-1/3"
@@ -86,6 +77,7 @@ export default function Navbar() {
           </button>
         </div>
       )}
+      <ActiveSessionPopup />
     </div>
   );
 }

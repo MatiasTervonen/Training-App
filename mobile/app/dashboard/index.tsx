@@ -4,7 +4,6 @@ import { useTimerStore } from "@/lib/stores/timerStore";
 import { useEffect } from "react";
 import { Alert } from "react-native";
 import { useRouter } from "expo-router";
-import ActiveSessionPopup from "@/components/ActiveSessionPopup";
 
 export default function FeedScreen() {
   console.log("FeedScreen mounted");
@@ -18,22 +17,13 @@ export default function FeedScreen() {
     setModalPageConfig({
       leftLabel: "Menu",
       rightLabel: "Sessions",
-      onSwipeLeft: () => {
-        if (activeSession) {
-          Alert.alert(
-            "You already have an active session. Finish it before starting a new one."
-          );
-          return;
-        }
-        router.push("/sessions");
-      },
+      onSwipeLeft: () => router.push("/sessions"),
       onSwipeRight: () => router.push("/menu"),
     });
   }, [router, setModalPageConfig, activeSession]);
 
   return (
     <>
-      <ActiveSessionPopup />
       <SessionFeed />
     </>
   );

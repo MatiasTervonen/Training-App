@@ -11,16 +11,9 @@ type SaveNotesProps = {
 export async function saveNotesToDB({ title, notes }: SaveNotesProps) {
   const supabase = await createClient();
 
-  const { data, error: authError } = await supabase.auth.getClaims();
-  const user = data?.claims;
-
-  if (authError || !user) {
-    throw new Error("Unauthorized");
-  }
-
   const { error: notesError } = await supabase.from("notes").insert([
     {
-      user_id: user.sub,
+
       title,
       notes,
     },

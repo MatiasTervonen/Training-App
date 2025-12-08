@@ -20,6 +20,8 @@ export default function MyTimersScreen() {
 
   const { setActiveSession, startTimer } = useTimerStore();
 
+  const activeSession = useTimerStore((state) => state.activeSession);
+
   const queryClient = useQueryClient();
 
   const {
@@ -51,6 +53,15 @@ export default function MyTimersScreen() {
   };
 
   const startSavedTimer = (timer: timers) => {
+    if (activeSession) {
+      Toast.show({
+        type: "error",
+        text1: "You already have an active session.",
+        text2: "Finish it before starting a new one.",
+      });
+      return;
+    }
+
     AsyncStorage.setItem(
       "timer_session_draft",
       JSON.stringify({

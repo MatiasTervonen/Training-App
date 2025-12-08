@@ -162,11 +162,15 @@ export default function SettingsScreen() {
     >
       <View className="flex-1 px-4">
         {showTimerUI ? (
-          <View className="flex-1 items-center justify-center">
+          <View className="flex-1 items-center">
             <AppText className="text-gray-300 text-xl mt-5">
               {Math.floor(totalDuration / 60)} min {totalDuration % 60} sec
             </AppText>
-            <Timer className="flex-col" iconSize={40} />
+            <Timer
+              className="flex-col"
+              iconSize={40}
+              onStopAlarmSound={() => setAlarmSoundPlaying(false)}
+            />
             {elapsedTime < totalDuration && (
               <View className="w-full bg-gray-300 h-6 rounded-full overflow-hidden mt-4">
                 <Animated.View
@@ -223,7 +227,7 @@ export default function SettingsScreen() {
                   textClassName="text-gray-100 text-center"
                 />
               </View>
-              <View className={`${isLandscape ? "w-1/2" : "w-full"}`}>
+              <View className={`${isLandscape ? "w-1/2" : "w-full pb-5"}`}>
                 <AnimatedButton
                   label="Clear"
                   onPress={handleReset}

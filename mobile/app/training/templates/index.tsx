@@ -16,6 +16,7 @@ import { TemplateSkeleton } from "@/components/skeletetons";
 import AppText from "@/components/AppText";
 import PageContainer from "@/components/PageContainer";
 import { full_gym_template } from "@/types/models";
+import { useTimerStore } from "@/lib/stores/timerStore";
 
 type templateSummary = {
   id: string;
@@ -27,6 +28,8 @@ export default function TemplatesPage() {
   const [expandedItem, setExpandedItem] = useState<full_gym_template | null>(
     null
   );
+
+  const activeSession = useTimerStore((state) => state.activeSession);
 
   const queryClient = useQueryClient();
 
@@ -47,6 +50,15 @@ export default function TemplatesPage() {
   });
 
   const startWorkout = async (template: full_gym_template) => {
+    if (activeSession) {
+      Toast.show({
+        type: "error",
+        text1: "You already have an active session.",
+        text2: "Finish it before starting a new one.",
+      });
+      return;
+    }
+
     const workoutExercises: ExerciseEntry[] =
       template.gym_template_exercises.map((ex) => ({
         exercise_id: ex.exercise_id,

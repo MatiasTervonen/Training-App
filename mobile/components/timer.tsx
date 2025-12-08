@@ -1,7 +1,7 @@
 import { CirclePlay, CirclePause } from "lucide-react-native";
 import { useTimerStore } from "@/lib/stores/timerStore";
 import { useEffect } from "react";
-import { View, TouchableOpacity } from "react-native";
+import { View, TouchableOpacity, Pressable } from "react-native";
 import AppText from "./AppText";
 
 type ActiveSession = {
@@ -14,12 +14,14 @@ type TimerProps = {
   className?: string;
   manualSession?: ActiveSession;
   textClassName?: string;
+  onPress?: () => void;
 };
 
 export default function Timer({
   className = "",
   manualSession,
   textClassName = "",
+  onPress,
 }: TimerProps) {
   const {
     elapsedTime,
@@ -75,11 +77,23 @@ export default function Timer({
         </AppText>
       </View>
       {isRunning ? (
-        <TouchableOpacity onPress={handlePause} hitSlop={20}>
+        <TouchableOpacity
+          onPress={() => {
+            onPress?.();
+            handlePause();
+          }}
+          hitSlop={20}
+        >
           <CirclePause color="#f3f4f6" />
         </TouchableOpacity>
       ) : (
-        <TouchableOpacity onPress={handleStart} hitSlop={20}>
+        <TouchableOpacity
+          onPress={() => {
+            onPress?.();
+            handleStart();
+          }}
+          hitSlop={20}
+        >
           <CirclePlay color="#f3f4f6" />
         </TouchableOpacity>
       )}

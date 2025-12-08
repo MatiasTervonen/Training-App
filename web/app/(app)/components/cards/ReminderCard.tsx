@@ -82,13 +82,15 @@ export default function ReminderCard({
         )}
       </div>
 
-      <p
-        className={`text-sm ml-4 ${
-          pinned ? "text-slate-900" : "text-yellow-500"
-        } `}
-      >
-       updated: {formatDate(item.updated_at!)}
-      </p>
+      {item.updated_at && (
+        <p
+          className={`text-sm ml-4 ${
+            pinned ? "text-slate-900" : "text-yellow-500"
+          } `}
+        >
+          updated: {formatDate(item.updated_at!)}
+        </p>
+      )}
 
       <div className="flex justify-between items-center mt-2 bg-black/40 rounded-b-md">
         {/* Icon */}

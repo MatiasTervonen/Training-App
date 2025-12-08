@@ -14,6 +14,7 @@ import { deleteTemplate } from "../../database/template";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getTemplates } from "../../database/template";
 import { getFullTemplate } from "../../database/template";
+import { useTimerStore } from "../../lib/stores/timerStore";
 
 type templateSummary = {
   id: string;
@@ -25,6 +26,8 @@ export default function TemplatesPage() {
   const [expandedItem, setExpandedItem] = useState<full_gym_template | null>(
     null
   );
+
+  const activeSession = useTimerStore((state) => state.activeSession);
 
   const queryClient = useQueryClient();
 
@@ -45,6 +48,11 @@ export default function TemplatesPage() {
   });
 
   const startWorkout = (template: full_gym_template) => {
+    if (activeSession) {
+      toast.error("You already have an active workout!");
+      return;
+    }
+
     const workoutExercises: ExerciseEntry[] =
       template.gym_template_exercises.map((ex) => ({
         exercise_id: ex.exercise_id,

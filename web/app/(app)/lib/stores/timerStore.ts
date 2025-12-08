@@ -1,7 +1,8 @@
 // store/timerStore.ts
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-
+import toast from "react-hot-toast";
+import ActiveSessionPopup from "../../components/activeSessionPopup";
 
 type ActiveSession = {
   label: string;
@@ -40,7 +41,15 @@ export const useTimerStore = create<TimerState>()(
       alarmSoundPlaying: false,
       startTimestamp: null,
 
-      setActiveSession: (session) => set({ activeSession: session }),
+      setActiveSession: (session) => {
+        const { activeSession } = get();
+
+        if (activeSession && session !== null) {
+          return;
+        }
+
+        set({ activeSession: session });
+      },
       setAlarmSoundPlaying: (playing) => set({ alarmSoundPlaying: playing }),
 
       startTimer: (totalDuration) => {

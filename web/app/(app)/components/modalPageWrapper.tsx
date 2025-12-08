@@ -9,6 +9,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
 import { useModalPageConfig } from "@/app/(app)/lib/stores/modalPageConfig";
+import { useTimerStore } from "../lib/stores/timerStore";
 
 type Props = {
   children: ReactNode;
@@ -33,6 +34,8 @@ export default function ModalPageWrapper({
 
   const { blockSwipe } = useModalPageConfig();
 
+  const activeSession = useTimerStore((state) => state.activeSession);
+
   useEffect(() => {
     firstRender.current = false;
   }, []);
@@ -55,11 +58,24 @@ export default function ModalPageWrapper({
     }
   };
 
-  const EXTRA_NAV_HEIGHT = ["/dashboard", "/menu", "/sessions"].includes(
-    pathname
-  )
-    ? 112
-    : 72;
+  const popupHeight =
+    (activeSession?.type === "gym" && pathname !== "/training/gym") ||
+    (activeSession?.type === "timer" && pathname !== "/timer/empty-timer") ||
+    (activeSession?.type === "disc-golf" && pathname !== "/disc-golf/game")
+      ? 92
+      : 0;
+
+  let heightClass = "h-[calc(100dvh-72px)]";
+
+  if (["/dashboard", "/menu", "/sessions"].includes(pathname)) {
+    heightClass = popupHeight
+      ? "h-[calc(100dvh-204px)]"
+      : "h-[calc(100dvh-112px)]";
+  } else {
+    heightClass = popupHeight
+      ? "h-[calc(100dvh-164px)]"
+      : "h-[calc(100dvh-72px)]";
+  }
 
   const fullPage = ["/admin/user-analytics"].includes(pathname)
     ? "w-full"
@@ -67,7 +83,7 @@ export default function ModalPageWrapper({
 
   return (
     <div
-      className={`relative h-[calc(100dvh-${EXTRA_NAV_HEIGHT}px)] overflow-hidden ${fullPage} mx-auto`}
+      className={`relative ${heightClass} overflow-hidden ${fullPage} mx-auto`}
     >
       <div className="absolute inset-0 z-0 h-screen flex justify-between bg-slate-900 pt-3">
         <div className="flex flex-col items-center gap-2 ml-2">

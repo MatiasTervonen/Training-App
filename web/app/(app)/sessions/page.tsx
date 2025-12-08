@@ -7,47 +7,44 @@ import {
   ListTodo,
   Bell,
 } from "lucide-react";
-import SessionsContext from "./components/SessionContext";
 import LinkButton from "../ui/LinkButton";
 
 export default function Sessions() {
   return (
-    <SessionsContext>
-      <div className="page-padding min-h-full max-w-md mx-auto">
-        <h1 className="text-center mb-10 text-2xl ">Start Session</h1>
-        <div className="flex flex-col gap-5">
-          <LinkButton href="/training">
-            Gym
-            <Dumbbell />
-          </LinkButton>
+    <div className="page-padding min-h-full max-w-md mx-auto">
+      <h1 className="text-center mb-10 text-2xl ">Start Session</h1>
+      <div className="flex flex-col gap-5">
+        <LinkButton href="/training">
+          Gym
+          <Dumbbell />
+        </LinkButton>
 
-          <LinkButton href="/notes">
-            Notes
-            <NotebookPen />
-          </LinkButton>
-          <LinkButton href="/disc-golf">
-            Disc Golf
-            <Disc />
-          </LinkButton>
+        <LinkButton href="/notes">
+          Notes
+          <NotebookPen />
+        </LinkButton>
+        <LinkButton href="/disc-golf">
+          Disc Golf
+          <Disc />
+        </LinkButton>
 
-          <LinkButton href="/timer">
-            Timer
-            <Timer />
-          </LinkButton>
-          <LinkButton href="/weight">
-            Weight Tracker
-            <Weight />
-          </LinkButton>
-          <LinkButton href="/todo">
-            Todo List
-            <ListTodo />
-          </LinkButton>
-          <LinkButton href="/reminders">
-            Reminders
-            <Bell />
-          </LinkButton>
-        </div>
+        <LinkButton href="/timer">
+          Timer
+          <Timer />
+        </LinkButton>
+        <LinkButton href="/weight">
+          Weight Tracker
+          <Weight />
+        </LinkButton>
+        <LinkButton href="/todo">
+          Todo List
+          <ListTodo />
+        </LinkButton>
+        <LinkButton href="/reminders">
+          Reminders
+          <Bell />
+        </LinkButton>
       </div>
-    </SessionsContext>
+    </div>
   );
 }

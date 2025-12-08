@@ -6,6 +6,7 @@ import { Image } from "expo-image";
 import { useUserStore } from "@/lib/stores/useUserStore";
 import NotificationBell from "./components/notificationBell";
 import { LinearGradient } from "expo-linear-gradient";
+import ActiveSessionPopup from "@/components/ActiveSessionPopup";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -89,6 +90,7 @@ export default function Navbar() {
           </Link>
         </View>
       )}
+      <ActiveSessionPopup />
     </>
   );
 }

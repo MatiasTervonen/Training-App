@@ -375,7 +375,6 @@ export default function SessionFeed() {
 
   return (
     <div className="h-full">
-      <ActiveSessionPopup />
       <div
         ref={containerRef}
         className="max-w-3xl mx-auto relative bg-linear-to-b from-slate-950 via-slate-900 to-slate-800 px-5 pt-3 pb-10 overflow-y-auto touch-pan-y h-full"

@@ -9,8 +9,11 @@ import {
   playAlarmAudio,
   stopAlarmAudio,
 } from "@/app/(app)/timer/components/alarmAudio";
+import { usePathname } from "next/navigation";
 
 export default function ActiveSessionPopup() {
+  const pathname = usePathname();
+
   const {
     activeSession,
     alarmFired,
@@ -34,10 +37,22 @@ export default function ActiveSessionPopup() {
 
   if (!activeSession) return null;
 
+  if (pathname === "/training/gym" && activeSession.type === "gym") {
+    return null;
+  }
+
+  if (pathname === "/timer/empty-timer" && activeSession.type === "timer") {
+    return null;
+  }
+
+  if (pathname === "/disc-golf/game" && activeSession.type === "disc-golf") {
+    return null;
+  }
+
   return (
     <div
       onClick={handleStopTimer}
-      className={`flex flex-row justify-between items-center text-center bg-gray-300 py-4 sticky top-0 z-10 border-2 border-green-500 ${
+      className={`sticky flex flex-row justify-between max-w-3xl items-center text-center w-full bg-gray-300 py-4 mx-auto z-1000 border-2 border-green-500 ${
         alarmFired ? "bg-red-500 animate-pulse" : ""
       }`}
     >

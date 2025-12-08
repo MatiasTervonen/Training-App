@@ -35,6 +35,8 @@ export default function TimersPage() {
 
   const { startTimer, setActiveSession } = useTimerStore();
 
+  const activeSession = useTimerStore((state) => state.activeSession);
+
   const handleDeleteTimer = async (timerId: string) => {
     const queryKey = ["get-timers"];
 
@@ -59,6 +61,13 @@ export default function TimersPage() {
   };
 
   const startSavedTimer = (timer: timers) => {
+    if (activeSession) {
+      toast.error(
+        "You already have an active session. Finish it before starting a new one."
+      );
+      return;
+    }
+
     localStorage.setItem(
       "timer_session_draft",
       JSON.stringify({

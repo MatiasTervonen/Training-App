@@ -22,7 +22,7 @@ export type Friends = Pick<
 
 export type pinned_item = Database["public"]["Tables"]["pinned_items"]["Row"];
 
-export type feed_view = Database["public"]["Views"]["feed_view9"]["Row"];
+export type feed_view = Database["public"]["Views"]["feed_view10"]["Row"];
 
 export type timers = Database["public"]["Tables"]["timers"]["Row"];
 

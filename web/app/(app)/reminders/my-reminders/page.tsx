@@ -31,6 +31,8 @@ export default function Sessions() {
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     refetchOnMount: false,
+    staleTime: Infinity,
+    gcTime: Infinity,
   });
 
   const handleDeleteReminder = async (reminder: reminders) => {

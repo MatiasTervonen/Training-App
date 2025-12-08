@@ -19,7 +19,7 @@ export default function AnalyticsScreen() {
   return (
     <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
       <PageContainer>
-        <AppText className="text-2xl my-5 text-center">
+        <AppText className="text-2xl mb-10 text-center">
           Workout Analytics
         </AppText>
         <AnalyticsForm data={data ?? []} isLoading={isLoading} error={error} />

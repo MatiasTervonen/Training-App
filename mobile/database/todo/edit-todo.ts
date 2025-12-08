@@ -22,20 +22,13 @@ export async function editTodo({
   deletedIds,
   updated_at,
 }: TodoListEdit) {
-  const {
-    data: { session },
-    error: sessionError,
-  } = await supabase.auth.getSession();
 
-  if (sessionError || !session || !session.user) {
-    throw new Error("Unauthorized");
-  }
 
   const { error: listError } = await supabase
     .from("todo_lists")
     .update({ title, updated_at })
     .eq("id", listId)
-    .eq("user_id", session.user.id);
+
 
   if (listError) {
     handleError(listError, {
@@ -49,7 +42,6 @@ export async function editTodo({
   const upsertedTasks = tasks.map((task: TodoTaskEdit) => ({
     id: task.id,
     list_id: listId,
-    user_id: session.user.id,
     task: task.task,
     notes: task.notes ?? null,
   }));
@@ -73,8 +65,7 @@ export async function editTodo({
       .delete()
       .in("id", deletedIds)
       .eq("list_id", listId)
-      .eq("user_id", session.user.id);
-
+  
     if (deleteError) {
       handleError(listError, {
         message: "Error deleting todo tasks",

@@ -15,20 +15,11 @@ export default async function saveTodoToDB({
   title,
   todoList,
 }: saveTodoToDBProps) {
-  const {
-    data: { session },
-    error: sessionError,
-  } = await supabase.auth.getSession();
-
-  if (sessionError || !session || !session.user) {
-    throw new Error("Unauthorized");
-  }
 
   const { data: list, error: listError } = await supabase
     .from("todo_lists")
     .insert({
       title,
-      user_id: session.user.id,
     })
     .select("id")
     .single();
@@ -43,7 +34,6 @@ export default async function saveTodoToDB({
   }
 
   const rows = todoList.map((item: TodoTask) => ({
-    user_id: session.user.id,
     list_id: list.id,
     task: item.task,
     notes: item.notes,

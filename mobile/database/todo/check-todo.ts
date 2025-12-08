@@ -11,21 +11,13 @@ type TodoTaskCheck = {
 };
 
 export async function checkedTodo({ todo_tasks }: TodoTaskCheck) {
-  const {
-    data: { session },
-    error: sessionError,
-  } = await supabase.auth.getSession();
 
-  if (sessionError || !session || !session.user) {
-    throw new Error("Unauthorized");
-  }
   
   const upsertedTasks = todo_tasks.map((task) => ({
     id: task.id,
     list_id: task.list_id,
     task: task.task,
     is_completed: task.is_completed,
-    user_id: session.user.id,
   }));
 
   const { error: listError } = await supabase

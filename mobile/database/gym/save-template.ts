@@ -15,20 +15,10 @@ export async function saveTemplate({
   exercises: gym_template_exercises[];
   name: string;
 }) {
-  const {
-    data: { session },
-    error: sessionError,
-  } = await supabase.auth.getSession();
-
-  if (sessionError || !session || !session.user) {
-    throw new Error("Unauthorized");
-  }
-
   const { data: template, error: templateError } = await supabase
     .from("gym_templates")
     .insert([
       {
-        user_id: session.user.id,
         name,
       },
     ])
@@ -47,7 +37,6 @@ export async function saveTemplate({
   const templateExercises = exercises.map(
     (ex: gym_template_exercises, index: number) => ({
       template_id: template.id,
-      user_id: session.user.id,
       exercise_id: ex.exercise_id,
       position: index,
       superset_id: ex.superset_id,

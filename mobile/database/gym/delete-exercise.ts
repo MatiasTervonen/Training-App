@@ -1,7 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import { handleError } from "@/utils/handleError";
 
-
 export default async function DeleteExercise(item_id: string) {
   const {
     data: { session },
@@ -15,6 +14,7 @@ export default async function DeleteExercise(item_id: string) {
   const { error } = await supabase
     .from("gym_exercises")
     .delete()
+    .eq("user_id", session.user.id)
     .eq("id", item_id);
 
   if (error) {

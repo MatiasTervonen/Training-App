@@ -8,18 +8,9 @@ type props = {
 };
 
 export async function saveWeight({ title, notes, weight }: props) {
-  const {
-    data: { session },
-    error: sessionError,
-  } = await supabase.auth.getSession();
-
-  if (sessionError || !session || !session.user) {
-    throw new Error("Unauthorized");
-  }
-
   const { error } = await supabase
     .from("weight")
-    .insert({ title, notes, weight, user_id: session.user.id })
+    .insert({ title, notes, weight })
     .select()
     .single();
 

@@ -18,14 +18,7 @@ export async function editSession({
   title,
   id,
 }: editGymSessionProps) {
-  const {
-    data: { session },
-    error: sessionError,
-  } = await supabase.auth.getSession();
 
-  if (sessionError || !session || !session.user) {
-    throw new Error("Unauthorized");
-  }
 
   const { error: editError } = await supabase
     .from("gym_sessions")
@@ -35,7 +28,6 @@ export async function editSession({
       duration: durationEdit,
     })
     .eq("id", id)
-    .eq("user_id", session.user.id);
 
   if (editError) {
     handleError(editError, {
@@ -71,7 +63,6 @@ export async function editSession({
 
     sessionExercises.push({
       id: sessionExerciseId,
-      user_id: session.user.id,
       session_id: id,
       exercise_id: ex.exercise_id,
       position: index,
@@ -82,7 +73,6 @@ export async function editSession({
     for (const [setIndex, set] of ex.sets.entries()) {
       sets.push({
         session_exercise_id: sessionExerciseId,
-        user_id: session.user.id,
         weight: set.weight ?? null,
         reps: set.reps ?? null,
         rpe: set.rpe ?? null,

@@ -9,20 +9,13 @@ type props = {
 };
 
 export async function editWeight({ title, notes, weight, id }: props) {
-  const {
-    data: { session },
-    error: sessionError,
-  } = await supabase.auth.getSession();
 
-  if (sessionError || !session || !session.user) {
-    throw new Error("Unauthorized");
-  }
 
   const { error: weightError } = await supabase
     .from("weight")
     .update({ title, notes, weight })
     .eq("id", id)
-    .eq("user_id", session.user.id);
+
 
   if (weightError) console.error("Supabase update error", weightError);
 

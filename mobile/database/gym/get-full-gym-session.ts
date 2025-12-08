@@ -3,15 +3,6 @@ import { handleError } from "@/utils/handleError";
 import { full_gym_session } from "@/types/models";
 
 export async function getFullGymSession(sessionId: string) {
-  const {
-    data: { session },
-    error: sessionError,
-  } = await supabase.auth.getSession();
-
-  if (sessionError || !session || !session.user) {
-    throw new Error("Unauthorized");
-  }
-
   if (!sessionId) {
     throw new Error("Missing session ID");
   }
@@ -23,7 +14,6 @@ export async function getFullGymSession(sessionId: string) {
       referencedTable: "gym_session_exercises",
       ascending: true,
     })
-    .eq("user_id", session.user.id)
     .eq("id", sessionId)
     .single<full_gym_session>();
 

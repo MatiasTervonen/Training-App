@@ -4,15 +4,6 @@ import { handleError } from "@/utils/handleError";
 
 
 export default async function GetFullTemplate(sessionId: string) {
-  const {
-    data: { session },
-    error: sessionError,
-  } = await supabase.auth.getSession();
-
-  if (sessionError || !session || !session.user) {
-    throw new Error("Unauthorized");
-  }
-
   if (!sessionId) {
     throw new Error("Missing session ID");
   }
@@ -22,7 +13,6 @@ export default async function GetFullTemplate(sessionId: string) {
     .select(
       "id, name, user_id, updated_at, created_at, gym_template_exercises(id, exercise_id, superset_id, gym_exercises:exercise_id(name, equipment, muscle_group, main_group))"
     )
-    .eq("user_id", session.user.id)
     .eq("id", sessionId)
     .single();
 

@@ -18,14 +18,6 @@ export async function editTemplate({
   name: string;
   updated_at: string;
 }) {
-  const {
-    data: { session },
-    error: sessionError,
-  } = await supabase.auth.getSession();
-
-  if (sessionError || !session || !session.user) {
-    throw new Error("Unauthorized");
-  }
 
   if (!id) {
     throw new Error("Missing template ID");
@@ -35,7 +27,6 @@ export async function editTemplate({
     .from("gym_templates")
     .update({ name, updated_at })
     .eq("id", id)
-    .eq("user_id", session.user.id);
 
   if (templateError) {
     handleError(templateError, {
@@ -51,12 +42,10 @@ export async function editTemplate({
     .from("gym_template_exercises")
     .delete()
     .eq("template_id", id)
-    .eq("user_id", session.user.id);
 
   const templateExercises = exercises.map(
     (ex: gym_template_exercises, index: number) => ({
       template_id: id,
-      user_id: session.user.id,
       exercise_id: ex.exercise_id,
       position: index,
       superset_id: ex.superset_id,

@@ -8,15 +8,6 @@ export default async function getFeed({
   pageParam?: number;
   limit?: number;
 }) {
-  const {
-    data: { session },
-    error: sessionError,
-  } = await supabase.auth.getSession();
-
-  if (sessionError || !session || !session.user) {
-    throw new Error("Unauthorized");
-  }
-
   const from = pageParam * limit;
   const to = from + limit - 1;
 
@@ -26,7 +17,6 @@ export default async function getFeed({
           .from("feed_with_pins")
           .select("*")
           .eq("pinned", true)
-          .eq("user_id", session.user.id)
           .order("created_at", { ascending: false })
       : Promise.resolve({ data: [], error: null });
 
@@ -34,7 +24,6 @@ export default async function getFeed({
     .from("feed_with_pins")
     .select("*")
     .eq("pinned", false)
-    .eq("user_id", session.user.id)
     .order("created_at", { ascending: false })
     .range(from, to);
 

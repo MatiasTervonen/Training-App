@@ -10,15 +10,6 @@ export async function getExercises({
   limit?: number;
   search?: string;
 }) {
-  const {
-    data: { session },
-    error: sessionError,
-  } = await supabase.auth.getSession();
-
-  if (sessionError || !session || !session.user) {
-    throw new Error("Unauthorized");
-  }
-
   const from = pageParam * limit;
   const to = from + limit - 1;
 

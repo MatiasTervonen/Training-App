@@ -26,20 +26,12 @@ export async function saveSession({
   duration,
   title,
 }: props) {
-  const {
-    data: { session },
-    error: authnError,
-  } = await supabase.auth.getSession();
 
-  if (authnError || !session || !session.user) {
-    throw new Error("Unauthorized");
-  }
 
   const { data: sessionData, error: sessionError } = await supabase
     .from("gym_sessions")
     .insert([
       {
-        user_id: session.user.id,
         title,
         notes,
         duration,
@@ -69,7 +61,6 @@ export async function saveSession({
 
     sessionExercises.push({
       id: sessionExerciseId,
-      user_id: session.user.id,
       session_id: sessionId,
       exercise_id: ex.exercise_id,
       position: index,
@@ -79,7 +70,6 @@ export async function saveSession({
 
     for (const [setIndex, set] of ex.sets.entries()) {
       sets.push({
-        user_id: session.user.id,
         session_exercise_id: sessionExerciseId,
         weight: set.weight,
         reps: set.reps,

@@ -12,22 +12,12 @@ export default async function saveTimer({
   durationInSeconds,
   notes,
 }: TimerData) {
-  const {
-    data: { session },
-    error: sessionError,
-  } = await supabase.auth.getSession();
-
-  if (sessionError || !session || !session.user) {
-    throw new Error("Unauthorized");
-  }
-
   const { error } = await supabase
     .from("timers")
     .insert({
       title,
       time_seconds: durationInSeconds,
       notes,
-      user_id: session.user.id,
     })
     .select()
     .single();

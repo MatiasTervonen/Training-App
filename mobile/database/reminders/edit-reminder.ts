@@ -18,20 +18,13 @@ export default async function EditReminderData({
   delivered,
   updated_at,
 }: EditReminderParams) {
-  const {
-    data: { session },
-    error: sessionError,
-  } = await supabase.auth.getSession();
 
-  if (sessionError || !session || !session.user) {
-    throw new Error("Unauthorized");
-  }
 
   const { error } = await supabase
     .from("reminders")
     .update({ title, notes, notify_at, delivered, updated_at })
     .eq("id", id)
-    .eq("user_id", session.user.id);
+
 
   if (error) {
     handleError(error, {

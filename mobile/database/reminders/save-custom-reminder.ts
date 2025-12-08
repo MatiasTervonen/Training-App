@@ -20,20 +20,12 @@ export default async function SaveCustomReminder({
   type,
   notification_id,
 }: SaveReminderParams) {
-  const {
-    data: { session },
-    error: sessionError,
-  } = await supabase.auth.getSession();
 
-  if (sessionError || !session || !session.user) {
-    throw new Error("Unauthorized");
-  }
 
   const { error: remindersError } = await supabase
     .from("custom_reminders")
     .insert([
       {
-        user_id: session.user.id,
         title,
         notes,
         notify_at_time,

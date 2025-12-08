@@ -3,14 +3,7 @@ import { handleError } from "@/utils/handleError";
 import { ExercisePreview } from "@/types/models";
 
 export async function getRecentExercises() {
-  const {
-    data: { session },
-    error: sessionError,
-  } = await supabase.auth.getSession();
 
-  if (sessionError || !session || !session.user) {
-    throw new Error("Unauthorized");
-  }
   const { data: exercises, error } = await supabase
     .from("gym_session_exercises")
     .select(`exercise:exercise_id (*)`)

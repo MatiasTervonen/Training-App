@@ -9,15 +9,6 @@ type Props = {
 };
 
 export async function editNotes({ id, title, notes, updated_at }: Props) {
-  const {
-    data: { session },
-    error: sessionError,
-  } = await supabase.auth.getSession();
-
-  if (sessionError || !session || !session.user) {
-    throw new Error("Unauthorized");
-  }
-
   const { error } = await supabase
     .from("notes")
     .update({ title, notes, updated_at })

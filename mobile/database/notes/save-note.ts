@@ -7,18 +7,7 @@ type props = {
 };
 
 export async function saveNote({ title, notes }: props) {
-  const {
-    data: { session },
-    error: sessionError,
-  } = await supabase.auth.getSession();
-
-  if (sessionError || !session || !session.user) {
-    throw new Error("Unauthorized");
-  }
-
-  const { error } = await supabase
-    .from("notes")
-    .insert({ title, notes, user_id: session.user.id })
+  const { error } = await supabase.from("notes").insert({ title, notes });
 
   if (error) {
     handleError(error, {
@@ -26,7 +15,7 @@ export async function saveNote({ title, notes }: props) {
       route: "/database/notes/save-note",
       method: "POST",
     });
-  throw new Error("Error saving note");
+    throw new Error("Error saving note");
   }
 
   return true;

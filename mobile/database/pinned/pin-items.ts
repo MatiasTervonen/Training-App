@@ -13,16 +13,7 @@ type PinSessionProps = {
 };
 
 export async function pinItem({ id, table }: PinSessionProps) {
-  const {
-    data: { session },
-    error: sessionError,
-  } = await supabase.auth.getSession();
-
-  if (sessionError || !session || !session.user) {
-    throw new Error("Unauthorized");
-  }
-
-  if (!id || !table) {
+ if (!id || !table) {
     throw new Error("Invalid request");
   }
 
@@ -31,7 +22,6 @@ export async function pinItem({ id, table }: PinSessionProps) {
     .upsert(
       [
         {
-          user_id: session.user.id,
           item_id: id,
           type: table,
         },

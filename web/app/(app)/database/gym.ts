@@ -19,18 +19,10 @@ export async function saveGymToDB({
 }: SaveGymProps) {
   const supabase = await createClient();
 
-  const { data, error: authError } = await supabase.auth.getClaims();
-  const user = data?.claims;
-
-  if (authError || !user) {
-    throw new Error("Unauthorized");
-  }
-
   const { data: gymData, error: gymError } = await supabase
     .from("gym_sessions")
     .insert([
       {
-        user_id: user.sub,
         title,
         notes,
         duration,
@@ -60,7 +52,6 @@ export async function saveGymToDB({
 
     sessionExercises.push({
       id: sessionExerciseId,
-      user_id: user.sub,
       session_id: sessionId,
       exercise_id: ex.exercise_id,
       position: index,
@@ -70,7 +61,6 @@ export async function saveGymToDB({
 
     for (const [setIndex, set] of ex.sets!.entries()) {
       sets.push({
-        user_id: user.sub,
         session_exercise_id: sessionExerciseId,
         weight: set.weight,
         reps: set.reps,
@@ -126,13 +116,6 @@ export async function editGymSession({
 }: editGymSessionProps) {
   const supabase = await createClient();
 
-  const { data, error: authError } = await supabase.auth.getClaims();
-  const user = data?.claims;
-
-  if (authError || !user) {
-    throw new Error("Unauthorized");
-  }
-
   const { error: sessionError } = await supabase
     .from("gym_sessions")
     .update({
@@ -140,8 +123,7 @@ export async function editGymSession({
       notes,
       duration: durationEdit,
     })
-    .eq("id", sessionId)
-    .eq("user_id", user.sub);
+    .eq("id", sessionId);
 
   if (sessionError) {
     handleError(sessionError, {
@@ -180,7 +162,6 @@ export async function editGymSession({
 
     sessionExercises.push({
       id: sessionExerciseId,
-      user_id: user.sub,
       session_id: sessionId,
       exercise_id: ex.exercise_id,
       position: index,
@@ -191,7 +172,6 @@ export async function editGymSession({
     for (const [setIndex, set] of ex.sets!.entries()) {
       sets.push({
         session_exercise_id: sessionExerciseId,
-        user_id: user.sub,
         weight: set.weight ?? null,
         reps: set.reps ?? null,
         rpe: set.rpe ?? null,
@@ -315,6 +295,7 @@ export async function editExercise({
       muscle_group,
       main_group,
     })
+    .eq("user_id", user.sub)
     .eq("id", id);
 
   if (exerciseError) {
@@ -343,6 +324,7 @@ export async function deleteExercise(item_id: string) {
   const { error: exerciseError } = await supabase
     .from("gym_exercises")
     .delete()
+    .eq("user_id", user.sub)
     .eq("id", item_id);
 
   if (exerciseError) {
@@ -369,13 +351,6 @@ export async function getExercises({
   search?: string;
 }) {
   const supabase = await createClient();
-
-  const { data, error: authError } = await supabase.auth.getClaims();
-  const user = data?.claims;
-
-  if (authError || !user) {
-    throw new Error("Unauthorized");
-  }
 
   const from = pageParam * limit;
   const to = from + limit - 1;
@@ -413,13 +388,6 @@ import { gym_exercises } from "@/app/(app)/types/models";
 export async function getRecentExercises() {
   const supabase = await createClient();
 
-  const { data, error: authError } = await supabase.auth.getClaims();
-  const user = data?.claims;
-
-  if (authError || !user) {
-    throw new Error("Unauthorized");
-  }
-
   const { data: exercises, error } = await supabase
     .from("gym_session_exercises")
     .select(`exercise:exercise_id (*)`)
@@ -450,16 +418,7 @@ export async function getRecentExercises() {
 }
 
 export async function getFullGymSession(id: string) {
-  console.log("fetching full gym session");
-
   const supabase = await createClient();
-
-  const { data, error: authError } = await supabase.auth.getClaims();
-  const user = data?.claims;
-
-  if (authError || !user) {
-    throw new Error("Unauthorized");
-  }
 
   const { data: gymSession, error: gymSessionError } = await supabase
     .from("gym_sessions")
@@ -468,7 +427,6 @@ export async function getFullGymSession(id: string) {
       referencedTable: "gym_session_exercises",
       ascending: true,
     })
-    .eq("user_id", user.sub)
     .eq("id", id)
     .single();
 

@@ -68,7 +68,7 @@ export async function getUserRoleAndPreferences(): Promise<{
     .from("users")
     .select("display_name, weight_unit, profile_picture, role")
     .eq("id", user.sub)
-    .single();
+    .maybeSingle();
 
   if (!profile || profileError) {
     console.log("profile error", profileError);

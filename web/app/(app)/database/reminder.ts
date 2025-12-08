@@ -18,16 +18,8 @@ export async function saveReminderToDB({
 }: ReminderProps) {
   const supabase = await createClient();
 
-  const { data, error: authError } = await supabase.auth.getClaims();
-  const user = data?.claims;
-
-  if (authError || !user) {
-    throw new Error("Unauthorized");
-  }
-
   const { error: remindersError } = await supabase.from("reminders").insert([
     {
-      user_id: user.sub,
       title,
       notes,
       notify_at,
@@ -66,18 +58,10 @@ export async function editReminder({
 }: editReminderProps) {
   const supabase = await createClient();
 
-  const { data, error: authError } = await supabase.auth.getClaims();
-  const user = data?.claims;
-
-  if (authError || !user) {
-    throw new Error("Unauthorized");
-  }
-
   const { error } = await supabase
     .from("reminders")
     .update({ title, notes: notes, notify_at, delivered, updated_at })
-    .eq("id", id)
-    .eq("user_id", user.sub);
+    .eq("id", id);
 
   if (error) {
     handleError(error, {
@@ -94,18 +78,7 @@ export async function editReminder({
 export async function deleteReminder(id: string) {
   const supabase = await createClient();
 
-  const { data, error: authError } = await supabase.auth.getClaims();
-  const user = data?.claims;
-
-  if (authError || !user) {
-    throw new Error("Unauthorized");
-  }
-
-  const { error } = await supabase
-    .from("reminders")
-    .delete()
-    .eq("id", id)
-    .eq("user_id", user.sub);
+  const { error } = await supabase.from("reminders").delete().eq("id", id);
 
   if (error) {
     handleError(error, {
@@ -122,17 +95,9 @@ export async function deleteReminder(id: string) {
 export async function getRTeminders() {
   const supabase = await createClient();
 
-  const { data, error: authError } = await supabase.auth.getClaims();
-  const user = data?.claims;
-
-  if (authError || !user) {
-    throw new Error("Unauthorized");
-  }
-
   const { data: reminders, error } = await supabase
     .from("reminders")
-    .select("*")
-    .eq("user_id", user.sub);
+    .select("*");
 
   if (error) {
     handleError(error, {

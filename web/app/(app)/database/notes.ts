@@ -13,7 +13,6 @@ export async function saveNotesToDB({ title, notes }: SaveNotesProps) {
 
   const { error: notesError } = await supabase.from("notes").insert([
     {
-
       title,
       notes,
     },
@@ -46,18 +45,10 @@ export async function editNotes({
 }: EditNotesProp) {
   const supabase = await createClient();
 
-  const { data, error: authError } = await supabase.auth.getClaims();
-  const user = data?.claims;
-
-  if (authError || !user) {
-    throw new Error("Unauthorized");
-  }
-
   const { error: notesError } = await supabase
     .from("notes")
     .update({ title, notes, updated_at })
-    .eq("id", id)
-    .eq("user_id", user.sub);
+    .eq("id", id);
 
   if (notesError) {
     handleError(notesError, {

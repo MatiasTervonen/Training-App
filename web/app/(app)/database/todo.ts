@@ -16,18 +16,10 @@ type saveTodoToDBProps = {
 export async function saveTodoToDB({ title, todoList }: saveTodoToDBProps) {
   const supabase = await createClient();
 
-  const { data, error: authError } = await supabase.auth.getClaims();
-  const user = data?.claims;
-
-  if (authError || !user) {
-    throw new Error("Unauthorized");
-  }
-
   const { data: list, error: listError } = await supabase
     .from("todo_lists")
     .insert([
       {
-        user_id: user.sub,
         title,
       },
     ])
@@ -44,7 +36,6 @@ export async function saveTodoToDB({ title, todoList }: saveTodoToDBProps) {
   }
 
   const rows = todoList.map((item: TodoTask) => ({
-    user_id: user.sub,
     list_id: list.id,
     task: item.task,
     notes: item.notes,
@@ -87,18 +78,10 @@ export async function editTodo({
 }: TodoListEdit) {
   const supabase = await createClient();
 
-  const { data, error: authError } = await supabase.auth.getClaims();
-  const user = data?.claims;
-
-  if (authError || !user) {
-    throw new Error("Unauthorized");
-  }
-
   const { error: listError } = await supabase
     .from("todo_lists")
     .update({ title, updated_at })
     .eq("id", listId)
-    .eq("user_id", user.sub);
 
   if (listError) {
     handleError(listError, {
@@ -112,7 +95,6 @@ export async function editTodo({
   const upsertedTasks = tasks.map((task: TodoTaskEdit) => ({
     id: task.id,
     list_id: listId,
-    user_id: user.sub,
     task: task.task,
     notes: task.notes ?? null,
   }));
@@ -136,7 +118,6 @@ export async function editTodo({
       .delete()
       .in("id", deletedIds)
       .eq("list_id", listId)
-      .eq("user_id", user.sub);
 
     if (deleteError) {
       handleError(listError, {
@@ -169,18 +150,10 @@ export async function checkedTodo({
 }: TodoTaskCheck) {
   const supabase = await createClient();
 
-  const { data, error: authError } = await supabase.auth.getClaims();
-  const user = data?.claims;
-
-  if (authError || !user) {
-    throw new Error("Unauthorized");
-  }
-
   const { error: listError } = await supabase
     .from("todo_lists")
     .update({ updated_at })
     .eq("id", listId)
-    .eq("user_id", user.sub);
 
   if (listError) {
     handleError(listError, {
@@ -196,13 +169,11 @@ export async function checkedTodo({
     list_id: task.list_id,
     task: task.task,
     is_completed: task.is_completed,
-    user_id: user.sub,
   }));
 
   const { error: taskError } = await supabase
     .from("todo_tasks")
     .upsert(upsertedTasks, { onConflict: "id" })
-    .eq("user_id", user.sub);
 
   if (taskError) {
     handleError(taskError, {
@@ -219,17 +190,9 @@ export async function checkedTodo({
 export async function getFullTodoSession(id: string) {
   const supabase = await createClient();
 
-  const { data, error: authError } = await supabase.auth.getClaims();
-  const user = data?.claims;
-
-  if (authError || !user) {
-    throw new Error("Unauthorized");
-  }
-
   const { data: todoList, error: todoListError } = await supabase
     .from("todo_lists")
     .select(`*, todo_tasks(*)`)
-    .eq("user_id", user.sub)
     .eq("id", id)
     .single();
 

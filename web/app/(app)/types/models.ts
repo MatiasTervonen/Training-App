@@ -34,7 +34,6 @@ export type gym_sets = Database["public"]["Tables"]["gym_sets"]["Row"];
 
 export type todo_tasks = Database["public"]["Tables"]["todo_tasks"]["Row"];
 
-
 export type gym_exercises =
   Database["public"]["Tables"]["gym_exercises"]["Row"];
 
@@ -141,4 +140,3 @@ export type FeedCardProps =
       onExpand: () => void;
       onEdit: () => void;
     };
-

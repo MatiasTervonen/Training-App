@@ -26,7 +26,6 @@ import { FeedCardProps } from "@/app/(app)/types/models";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import { useModalPageConfig } from "@/app/(app)/lib/stores/modalPageConfig";
-import ActiveSessionPopup from "@/app/(app)/components/activeSessionPopup";
 import { getFullGymSession } from "../../database/gym";
 import {
   useQuery,

@@ -16,18 +16,10 @@ export async function saveWeightToDB({
 }: SaveWeightProps) {
   const supabase = await createClient();
 
-  const { data, error: authError } = await supabase.auth.getClaims();
-  const user = data?.claims;
-
-  if (authError || !user) {
-    throw new Error("Unauthorized");
-  }
-
   const { data: notesData, error: notesError } = await supabase
     .from("weight")
     .insert([
       {
-        user_id: user.sub,
         title,
         notes,
         weight,
@@ -58,18 +50,10 @@ type EditWeightProp = {
 export async function editWeight({ id, title, notes, weight }: EditWeightProp) {
   const supabase = await createClient();
 
-  const { data, error: authError } = await supabase.auth.getClaims();
-  const user = data?.claims;
-
-  if (authError || !user) {
-    throw new Error("Unauthorized");
-  }
-
   const { error: notesError } = await supabase
     .from("weight")
     .update({ title, notes, weight })
     .eq("id", id)
-    .eq("user_id", user.sub);
 
   if (notesError) {
     handleError(notesError, {
@@ -86,16 +70,9 @@ export async function editWeight({ id, title, notes, weight }: EditWeightProp) {
 export async function getWeight() {
   const supabase = await createClient();
 
-  const { data, error: authError } = await supabase.auth.getClaims();
-  const user = data?.claims;
-  if (authError || !user) {
-    throw new Error("Unauthorized");
-  }
-
   const { data: weight, error: weightError } = await supabase
     .from("weight")
     .select("*")
-    .eq("user_id", user.sub)
     .order("created_at", { ascending: true });
 
   if (weightError || !weight) {

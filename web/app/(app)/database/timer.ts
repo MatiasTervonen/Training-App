@@ -16,15 +16,7 @@ export async function saveTimerToDB({
 }: SaveTimerProps) {
   const supabase = await createClient();
 
-  const { data, error: authError } = await supabase.auth.getClaims();
-  const user = data?.claims;
-
-  if (authError || !user) {
-    throw new Error("Unauthorized");
-  }
-
   const { error: notesError } = await supabase.from("timers").insert({
-    user_id: user.sub,
     title,
     notes,
     time_seconds: durationInSeconds,
@@ -46,18 +38,10 @@ export async function saveTimerToDB({
 export async function deleteTimer(id: string) {
   const supabase = await createClient();
 
-  const { data, error: authError } = await supabase.auth.getClaims();
-  const user = data?.claims;
-
-  if (authError || !user) {
-    throw new Error("Unauthorized");
-  }
-
   const { error: notesError } = await supabase
     .from("timers")
     .delete()
     .eq("id", id)
-    .eq("user_id", user.sub);
 
   if (notesError) {
     handleError(notesError, {
@@ -74,17 +58,9 @@ export async function deleteTimer(id: string) {
 export async function getTimers() {
   const supabase = await createClient();
 
-  const { data, error: authError } = await supabase.auth.getClaims();
-  const user = data?.claims;
-
-  if (authError || !user) {
-    throw new Error("Unauthorized");
-  }
-
   const { data: timers, error: timerError } = await supabase
     .from("timers")
     .select("*")
-    .eq("user_id", user.sub)
     .order("created_at", { ascending: false });
 
   if (timerError || !timers) {

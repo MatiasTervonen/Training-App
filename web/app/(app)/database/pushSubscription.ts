@@ -13,17 +13,8 @@ export async function savePushSubscription(subscription: {
 }) {
   const supabase = await createClient();
 
-  const { data, error: authError } = await supabase.auth.getClaims();
-
-  const user = data?.claims;
-
-  if (authError || !user) {
-    throw new Error("Unauthorized");
-  }
-
   const { error } = await supabase.from("user_push_subscriptions").upsert(
     {
-      user_id: user.sub,
       endpoint: subscription.endpoint,
       p256dh: subscription.p256dh,
       auth: subscription.auth,
@@ -50,18 +41,9 @@ export async function savePushSubscription(subscription: {
 export async function deletePushSubscription(endpoint: string) {
   const supabase = await createClient();
 
-  const { data, error: authError } = await supabase.auth.getClaims();
-
-  const user = data?.claims;
-
-  if (authError || !user) {
-    throw new Error("Unauthorized");
-  }
-
   const { error } = await supabase
     .from("user_push_subscriptions")
     .delete()
-    .eq("user_id", user.sub)
     .eq("endpoint", endpoint);
 
   if (error) {
@@ -80,19 +62,10 @@ export async function deletePushSubscription(endpoint: string) {
 export async function getAllActivePushSubscriptions() {
   const supabase = await createClient();
 
-  const { data, error: authError } = await supabase.auth.getClaims();
-
-  const user = data?.claims;
-
-  if (authError || !user) {
-    throw new Error("Unauthorized");
-  }
-
   const { data: subscriptions, error } = await supabase
     .from("user_push_subscriptions")
     .select("*")
     .eq("is_active", true)
-    .eq("user_id", user.sub);
 
   if (error) {
     handleError(error, {

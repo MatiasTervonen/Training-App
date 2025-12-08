@@ -3,7 +3,6 @@
 import { createClient } from "@/utils/supabase/server";
 import { handleError } from "@/app/(app)/utils/handleError";
 
-
 export default async function getFeed({
   pageParam = 0,
   limit = 10,
@@ -12,13 +11,6 @@ export default async function getFeed({
   limit?: number;
 }) {
   const supabase = await createClient();
-
-  const { data, error: authError } = await supabase.auth.getClaims();
-  const user = data?.claims;
-
-  if (authError || !user) {
-    throw new Error("Unauthorized");
-  }
 
   const from = pageParam * limit;
   const to = from + limit - 1;
@@ -29,7 +21,6 @@ export default async function getFeed({
           .from("feed_with_pins")
           .select("*")
           .eq("pinned", true)
-          .eq("user_id", user.sub)
           .order("created_at", { ascending: false })
       : Promise.resolve({ data: [], error: null });
 
@@ -37,7 +28,6 @@ export default async function getFeed({
     .from("feed_with_pins")
     .select("*")
     .eq("pinned", false)
-    .eq("user_id", user.sub)
     .order("created_at", { ascending: false })
     .range(from, to);
 
@@ -65,24 +55,22 @@ export default async function getFeed({
 
 type DeleteSessionProps = {
   id: string;
-  table: "notes" | "gym_sessions" | "weight" | "todo_lists" | "reminders";
+  table:
+    | "notes"
+    | "gym_sessions"
+    | "weight"
+    | "todo_lists"
+    | "reminders"
+    | "custom_reminders";
 };
 
 export async function deleteSession({ id, table }: DeleteSessionProps) {
   const supabase = await createClient();
 
-  const { data, error: authError } = await supabase.auth.getClaims();
-  const user = data?.claims;
-
-  if (authError || !user) {
-    throw new Error("Unauthorized");
-  }
-
   const { error: tableError } = await supabase
     .from(table)
     .delete()
-    .eq("id", id)
-    .eq("user_id", user.sub);
+    .eq("id", id);
 
   if (tableError) {
     handleError(tableError, {
@@ -97,8 +85,7 @@ export async function deleteSession({ id, table }: DeleteSessionProps) {
     .from("pinned_items")
     .delete()
     .eq("item_id", id)
-    .eq("type", table)
-    .eq("user_id", user.sub);
+    .eq("type", table);
 
   if (pinnedError) {
     handleError(pinnedError, {

@@ -18,18 +18,10 @@ type gym_template_exercises = {
 export async function saveTemplateToDB({ exercises, name }: SaveTemplateProps) {
   const supabase = await createClient();
 
-  const { data, error: authError } = await supabase.auth.getClaims();
-  const user = data?.claims;
-
-  if (authError || !user) {
-    throw new Error("Unauthorized");
-  }
-
   const { data: template, error: templateError } = await supabase
     .from("gym_templates")
     .insert([
       {
-        user_id: user.sub,
         name,
       },
     ])
@@ -48,7 +40,6 @@ export async function saveTemplateToDB({ exercises, name }: SaveTemplateProps) {
   const templateExercises = exercises.map(
     (ex: gym_template_exercises, index: number) => ({
       template_id: template.id,
-      user_id: user.sub,
       exercise_id: ex.exercise_id,
       position: index,
       superset_id: ex.superset_id || "",
@@ -80,18 +71,10 @@ type EditTemplateProps = {
 export async function editTemplate({ id, exercises, name }: EditTemplateProps) {
   const supabase = await createClient();
 
-  const { data, error: authError } = await supabase.auth.getClaims();
-  const user = data?.claims;
-
-  if (authError || !user) {
-    throw new Error("Unauthorized");
-  }
-
   const { error: templateError } = await supabase
     .from("gym_templates")
     .update({ name })
     .eq("id", id)
-    .eq("user_id", user.sub);
 
   if (templateError) {
     handleError(templateError, {
@@ -107,12 +90,10 @@ export async function editTemplate({ id, exercises, name }: EditTemplateProps) {
     .from("gym_template_exercises")
     .delete()
     .eq("template_id", id)
-    .eq("user_id", user.sub);
 
   const templateExercises = exercises.map(
     (ex: gym_template_exercises, index: number) => ({
       template_id: id,
-      user_id: user.sub,
       exercise_id: ex.exercise_id,
       position: index,
       superset_id: ex.superset_id || "",
@@ -136,21 +117,11 @@ export async function editTemplate({ id, exercises, name }: EditTemplateProps) {
 }
 
 export async function getFullTemplate(id: string) {
-  console.log("fetching full template");
-
   const supabase = await createClient();
-
-  const { data, error: authError } = await supabase.auth.getClaims();
-  const user = data?.claims;
-
-  if (authError || !user) {
-    throw new Error("Unauthorized");
-  }
 
   const { data: template, error: templateError } = await supabase
     .from("gym_templates")
     .select("*, gym_template_exercises(*, gym_exercises:exercise_id(*))")
-    .eq("user_id", user.sub)
     .eq("id", id)
     .single();
 
@@ -169,17 +140,10 @@ export async function getFullTemplate(id: string) {
 export async function deleteTemplate(id: string) {
   const supabase = await createClient();
 
-  const { data, error: authError } = await supabase.auth.getClaims();
-  const user = data?.claims;
-
-  if (authError || !user) {
-    throw new Error("Unauthorized");
-  }
 
   const { error: templateError } = await supabase
     .from("gym_templates")
     .delete()
-    .eq("user_id", user.sub)
     .eq("id", id);
 
   if (templateError) {
@@ -197,17 +161,9 @@ export async function deleteTemplate(id: string) {
 export async function getTemplates() {
   const supabase = await createClient();
 
-  const { data, error: authError } = await supabase.auth.getClaims();
-  const user = data?.claims;
-
-  if (authError || !user) {
-    throw new Error("Unauthorized");
-  }
-
   const { data: template, error: templateError } = await supabase
     .from("gym_templates")
     .select("id, name, created_at")
-    .eq("user_id", user.sub)
     .order("created_at", { ascending: false });
 
   if (templateError || !template) {

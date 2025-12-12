@@ -57,6 +57,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (state.success) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSignUpSuccess(true);
     }
   }, [state.success]);
@@ -173,7 +174,6 @@ export default function LoginPage() {
             isOpen={modalOpen}
             onClose={() => {
               setModalOpen(false);
-              state3.message = "";
             }}
           >
             {/* Forgot Password Form */}
@@ -322,7 +322,6 @@ export default function LoginPage() {
             isOpen={modal2Open}
             onClose={() => {
               setModal2Open(false);
-              state4.message = "";
             }}
           >
             <form
@@ -382,9 +381,7 @@ export default function LoginPage() {
                   All features are available, but your data and account will be
                   deleted after you log out.
                 </p>
-                <p>
-                  You can test the app without creating an account.
-                </p>
+                <p>You can test the app without creating an account.</p>
               </div>
               <button
                 type="button"
@@ -416,14 +413,7 @@ export default function LoginPage() {
             <button
               onClick={() => {
                 setActiveForm(!activeForm);
-                state.message = "";
-                state2.message = "";
-                state3.message = "";
-                state4.message = "";
-                state.success = false;
-                state2.success = false;
-                state3.success = false;
-                state4.success = false;
+                setHideErrorMessage(true);
               }}
               className="border-2 border-blue-400 py-2 px-10 rounded-md bg-linear-to-tr from-slate-950  to-blue-700 hover:from-blue-700 hover:to-slate-950 transform hover:scale-105 transition-all duration-200 cursor-pointer"
             >

@@ -1,7 +1,7 @@
 import { CirclePlay, CirclePause } from "lucide-react-native";
 import { useTimerStore } from "@/lib/stores/timerStore";
 import { useEffect } from "react";
-import { View, TouchableOpacity, Pressable } from "react-native";
+import { View, TouchableOpacity } from "react-native";
 import AppText from "./AppText";
 
 type ActiveSession = {

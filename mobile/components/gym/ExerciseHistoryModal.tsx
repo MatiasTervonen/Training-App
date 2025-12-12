@@ -6,7 +6,6 @@ import { HistoryResult } from "@/types/session";
 import { FlatList } from "react-native-gesture-handler";
 import { LinearGradient } from "expo-linear-gradient";
 import { useUserStore } from "@/lib/stores/useUserStore";
-import PageContainer from "../PageContainer";
 
 type ExerciseHistoryModalProps = {
   isOpen: boolean;

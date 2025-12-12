@@ -8,6 +8,7 @@ import { editNotes } from "../../database/notes";
 import { notes } from "../../types/models";
 import NotesInput from "@/app/(app)/ui/NotesInput";
 import TitleInput from "../TitleInput";
+import { Dot } from "lucide-react";
 
 type Props = {
   note: notes;
@@ -16,9 +17,16 @@ type Props = {
 };
 
 export default function EditNotes({ note, onClose, onSave }: Props) {
+  const [originalData] = useState(note);
   const [title, setValue] = useState(note.title);
   const [notes, setNotes] = useState(note.notes);
   const [isSaving, setIsSaving] = useState(false);
+
+  const currentData = {
+    ...originalData,
+    title,
+    notes,
+  };
 
   const updated = new Date().toISOString();
 
@@ -35,9 +43,22 @@ export default function EditNotes({ note, onClose, onSave }: Props) {
     }
   };
 
+  const hasChanges =
+    JSON.stringify(originalData) !== JSON.stringify(currentData);
+
   return (
     <>
-      <div className="flex flex-col h-full max-w-md mx-auto page-padding">
+      {hasChanges && (
+        <div className="bg-slate-900 z-50 py-1 px-4 flex items-center rounded-lg fixed top-5 self-start ml-5">
+          <p className="text-sm text-yellow-500">
+            {hasChanges ? "unsaved changes" : ""}
+          </p>
+          <div className="animate-pulse">
+            <Dot color="#eab308" />
+          </div>
+        </div>
+      )}
+      <div className="flex flex-col h-full max-w-lg mx-auto page-padding">
         <div className="flex flex-col items-center grow gap-5">
           <h2 className="text-lg text-center mb-5">Edit your notes</h2>
           <TitleInput

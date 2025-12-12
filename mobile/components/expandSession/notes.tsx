@@ -13,7 +13,7 @@ export default function NotesSession(notes: notes) {
           created: {formatDate(notes.created_at!)}
         </AppText>
         {notes.updated_at && (
-          <AppText className="text-sm text-gray-300 mt-2 text-center">
+          <AppText className="text-sm text-yellow-500 mt-2 text-center">
             updated: {formatDate(notes.updated_at)}
           </AppText>
         )}

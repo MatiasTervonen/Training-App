@@ -17,6 +17,7 @@ type SelectInputProps = {
   value?: string;
   onChange?: (value: string) => void;
   disabled?: boolean;
+  icon?: React.ReactNode;
 };
 
 export default function DropDownModal({
@@ -24,6 +25,7 @@ export default function DropDownModal({
   options,
   onChange,
   disabled,
+  icon,
 }: SelectInputProps) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -38,7 +40,7 @@ export default function DropDownModal({
   return (
     <View>
       <TouchableOpacity onPressIn={handlePress} hitSlop={12}>
-        <Menu color="#f3f4f6" />
+        {icon || <Menu color="#f3f4f6" />}
       </TouchableOpacity>
 
       <Modal

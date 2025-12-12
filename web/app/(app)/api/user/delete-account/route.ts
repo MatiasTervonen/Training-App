@@ -4,7 +4,7 @@ import { handleError } from "@/app/(app)/utils/handleError";
 
 export async function POST(request: Request) {
   const authHeader = request.headers.get("authorization");
-  if (!authHeader) {
+  if (!authHeader?.startsWith("Bearer ")) {
     return new Response(JSON.stringify({ error: "Unauthorized" }), {
       status: 401,
       headers: { "Content-Type": "application/json" },

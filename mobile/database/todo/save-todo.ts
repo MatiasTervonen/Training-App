@@ -15,7 +15,6 @@ export default async function saveTodoToDB({
   title,
   todoList,
 }: saveTodoToDBProps) {
-
   const { data: list, error: listError } = await supabase
     .from("todo_lists")
     .insert({
@@ -33,10 +32,11 @@ export default async function saveTodoToDB({
     throw new Error("Error creating todo list");
   }
 
-  const rows = todoList.map((item: TodoTask) => ({
+  const rows = todoList.map((item: TodoTask, index) => ({
     list_id: list.id,
     task: item.task,
     notes: item.notes,
+    position: index,
   }));
 
   const { error: tasksError } = await supabase.from("todo_tasks").insert(rows);

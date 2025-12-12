@@ -33,7 +33,6 @@ configureReanimatedLogger({
   strict: false,
 });
 
-
 Sentry.init({
   dsn: "https://cf3db79ed11dbd657e73bb68617c6a34@o4510142810619904.ingest.de.sentry.io/4510160894361680",
 
@@ -128,32 +127,32 @@ export default Sentry.wrap(function RootLayout() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <QueryClientProvider client={queryClient}>
-        <MenuProvider>
-          <PaperProvider>
-            <SafeAreaProvider>
-              <StatusBar
-                barStyle="light-content"
-                backgroundColor="#020617"
-                translucent={false}
-              />
-              <SafeAreaView style={{ flex: 1 }} className="bg-slate-900">
-                <View
-                  className={`flex-1 bg-slate-800 font-russo  ${
-                    hideNawbar ? "max-w-screen" : "max-w-3xl"
-                  }`}
-                >
-                  {!hideNawbar && <Navbar />}
-                  <LayoutWrapper>
-                    <Slot />
-                  </LayoutWrapper>
-                </View>
-              </SafeAreaView>
-            </SafeAreaProvider>
-          </PaperProvider>
-          <Toast config={toastConfig} position="top" />
-        </MenuProvider>
-      </QueryClientProvider>
+        <QueryClientProvider client={queryClient}>
+          <MenuProvider>
+            <PaperProvider>
+              <SafeAreaProvider>
+                <StatusBar
+                  barStyle="light-content"
+                  backgroundColor="#020617"
+                  translucent={false}
+                />
+                <SafeAreaView style={{ flex: 1 }} className="bg-slate-900">
+                  <View
+                    className={`flex-1 bg-slate-800 font-russo  ${
+                      hideNawbar ? "max-w-screen" : "max-w-3xl"
+                    }`}
+                  >
+                    {!hideNawbar && <Navbar />}
+                    <LayoutWrapper>
+                      <Slot />
+                    </LayoutWrapper>
+                  </View>
+                </SafeAreaView>
+              </SafeAreaProvider>
+            </PaperProvider>
+            <Toast config={toastConfig} position="top" />
+          </MenuProvider>
+        </QueryClientProvider>
     </GestureHandlerRootView>
   );
 });

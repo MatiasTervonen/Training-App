@@ -20,7 +20,7 @@ MyTrack includes a **web app (Next.js)** and a **mobile app (React Native / Expo
 - **Database & Auth:** Supabase (Postgres + Supabase Auth)
 - **State Management:** Zustand
 - **Styling:** Tailwind CSS
-- **Data Fetching:** SWR (caching, optimistic updates, infinite scrolling)
+- **Data Fetching:** TanStack Query (caching, optimistic updates, infinite scrolling)
 - **Animations:** Framer Motion (swipe-based navigation, animations)
 - **Security** Vercel Bot Protection (BotID) on login & signup
 - **Notifications:** Web Push Notifications (browser-based, Service Worker)
@@ -34,8 +34,9 @@ MyTrack includes a **web app (Next.js)** and a **mobile app (React Native / Expo
 - **Database & Auth:** Supabase (Postgres + Supabase Auth)
 - **State Management:** Zustand
 - **Styling:** Nativewind
-- **Data Fetching:** TanStack Query (caching, optimistic updates)
+- **Data Fetching:** TanStack Query (caching, optimistic updates, infinite scrolling)
 - **Navigation:** React Native Reanimated + Gesture Handler (swipe-based navigation)
+- **Error Monitoring:** Sentry (real-time error tracking and performance monitoring)
 
 ## Installation
 

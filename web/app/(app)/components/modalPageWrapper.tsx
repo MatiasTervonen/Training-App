@@ -1,11 +1,11 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ReactNode, useRef } from "react";
+import { ReactNode } from "react";
 import { SquareArrowLeft } from "lucide-react";
 import { SquareArrowRight } from "lucide-react";
 import { useTransitionDirectionStore } from "@/app/(app)/lib/stores/transitionDirection";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
 import { useModalPageConfig } from "@/app/(app)/lib/stores/modalPageConfig";
@@ -30,15 +30,10 @@ export default function ModalPageWrapper({
   const [isTransitioning, setIsTransitioning] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
-  const firstRender = useRef(true);
 
   const { blockSwipe } = useModalPageConfig();
 
   const activeSession = useTimerStore((state) => state.activeSession);
-
-  useEffect(() => {
-    firstRender.current = false;
-  }, []);
 
   const handleSwipeLeft = () => {
     setDirection(1);
@@ -133,7 +128,7 @@ export default function ModalPageWrapper({
         dragElastic={0.2}
         dragConstraints={{ left: 0, right: 0 }}
         initial={
-          firstRender.current || direction === 0
+          direction === 0
             ? { x: 0, opacity: 1 }
             : { x: direction > 0 ? 300 : -300, opacity: 0 }
         }

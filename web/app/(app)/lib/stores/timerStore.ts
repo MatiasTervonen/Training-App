@@ -1,8 +1,6 @@
 // store/timerStore.ts
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import toast from "react-hot-toast";
-import ActiveSessionPopup from "../../components/activeSessionPopup";
 
 type ActiveSession = {
   label: string;

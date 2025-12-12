@@ -189,7 +189,7 @@ export type Database = {
           title: string
           type: string
           updated_at?: string | null
-          user_id: string
+          user_id?: string
           weekdays: Json
         }
         Update: {
@@ -483,7 +483,7 @@ export type Database = {
           position: number
           session_id: string
           superset_id: string
-          user_id: string
+          user_id?: string
         }
         Update: {
           created_at?: string | null
@@ -536,7 +536,7 @@ export type Database = {
           notes?: string | null
           title?: string | null
           updated_at?: string | null
-          user_id: string
+          user_id?: string
         }
         Update: {
           created_at?: string
@@ -581,7 +581,7 @@ export type Database = {
           set_number: number
           time_min?: number | null
           updated_at?: string | null
-          user_id: string
+          user_id?: string
           weight?: number | null
         }
         Update: {
@@ -631,7 +631,7 @@ export type Database = {
           position: number
           superset_id: string
           template_id: string
-          user_id: string
+          user_id?: string
         }
         Update: {
           created_at?: string
@@ -673,7 +673,7 @@ export type Database = {
           rpe: string | null
           set_number: number | null
           template_exercise_id: string
-          user_id: string | null
+          user_id: string
           weight: number | null
         }
         Insert: {
@@ -682,7 +682,7 @@ export type Database = {
           rpe?: string | null
           set_number?: number | null
           template_exercise_id: string
-          user_id?: string | null
+          user_id?: string
           weight?: number | null
         }
         Update: {
@@ -691,7 +691,7 @@ export type Database = {
           rpe?: string | null
           set_number?: number | null
           template_exercise_id?: string
-          user_id?: string | null
+          user_id?: string
           weight?: number | null
         }
         Relationships: [
@@ -724,7 +724,7 @@ export type Database = {
           id?: string
           name: string
           updated_at?: string | null
-          user_id: string
+          user_id?: string
         }
         Update: {
           created_at?: string
@@ -758,7 +758,7 @@ export type Database = {
           notes?: string | null
           title?: string | null
           updated_at?: string | null
-          user_id: string
+          user_id?: string
         }
         Update: {
           created_at?: string
@@ -791,7 +791,7 @@ export type Database = {
           id?: string
           item_id: string
           type: string
-          user_id: string
+          user_id?: string
         }
         Update: {
           created_at?: string
@@ -895,7 +895,7 @@ export type Database = {
           time_seconds: number
           title: string
           updated_at?: string | null
-          user_id: string
+          user_id?: string
         }
         Update: {
           created_at?: string
@@ -929,7 +929,7 @@ export type Database = {
           id?: string
           title: string
           updated_at?: string | null
-          user_id: string
+          user_id?: string
         }
         Update: {
           created_at?: string
@@ -955,6 +955,7 @@ export type Database = {
           is_completed: boolean
           list_id: string
           notes: string | null
+          position: number | null
           task: string
           updated_at: string | null
           user_id: string
@@ -965,9 +966,10 @@ export type Database = {
           is_completed?: boolean
           list_id: string
           notes?: string | null
+          position?: number | null
           task: string
           updated_at?: string | null
-          user_id: string
+          user_id?: string
         }
         Update: {
           created_at?: string
@@ -975,6 +977,7 @@ export type Database = {
           is_completed?: boolean
           list_id?: string
           notes?: string | null
+          position?: number | null
           task?: string
           updated_at?: string | null
           user_id?: string
@@ -1011,7 +1014,7 @@ export type Database = {
           is_active?: boolean | null
           platform: string
           token: string
-          user_id: string
+          user_id?: string
         }
         Update: {
           created_at?: string
@@ -1052,7 +1055,7 @@ export type Database = {
           is_active?: boolean
           p256dh?: string | null
           updated_at?: string | null
-          user_id: string
+          user_id?: string
         }
         Update: {
           auth?: string | null
@@ -1065,7 +1068,15 @@ export type Database = {
           updated_at?: string | null
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "user_push_subscriptions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       users: {
         Row: {
@@ -1073,7 +1084,7 @@ export type Database = {
           banned_until: string | null
           created_at: string
           display_name: string
-          email: string
+          email: string | null
           id: string
           profile_picture: string | null
           push_enabled: boolean
@@ -1085,7 +1096,7 @@ export type Database = {
           banned_until?: string | null
           created_at?: string
           display_name: string
-          email: string
+          email?: string | null
           id: string
           profile_picture?: string | null
           push_enabled?: boolean
@@ -1097,7 +1108,7 @@ export type Database = {
           banned_until?: string | null
           created_at?: string
           display_name?: string
-          email?: string
+          email?: string | null
           id?: string
           profile_picture?: string | null
           push_enabled?: boolean
@@ -1122,7 +1133,7 @@ export type Database = {
           notes?: string | null
           title: string
           updated_at?: string | null
-          user_id: string
+          user_id?: string
           weight: number
         }
         Update: {
@@ -1153,7 +1164,7 @@ export type Database = {
         }
         Relationships: []
       }
-      feed_view9: {
+      feed_view10: {
         Row: {
           created_at: string | null
           delivered: boolean | null
@@ -1166,6 +1177,7 @@ export type Database = {
           notify_date: string | null
           title: string | null
           type: string | null
+          updated_at: string | null
           user_id: string | null
           weight: number | null
         }
@@ -1185,6 +1197,7 @@ export type Database = {
           pinned: boolean | null
           title: string | null
           type: string | null
+          updated_at: string | null
           user_id: string | null
           weight: number | null
         }

@@ -38,13 +38,6 @@ export function PushNotificationManager() {
   );
   const [toggleState, setToggleState] = useState(false);
 
-  useEffect(() => {
-    if ("serviceWorker" in navigator && "PushManager" in window) {
-      setIsSupported(true);
-      registerServiceWorker();
-    }
-  }, []);
-
   async function registerServiceWorker() {
     const registration = await navigator.serviceWorker.register("/sw.js", {
       updateViaCache: "none",
@@ -54,6 +47,14 @@ export function PushNotificationManager() {
     setSubscription(sub);
     setToggleState(!!sub);
   }
+
+  useEffect(() => {
+    if ("serviceWorker" in navigator && "PushManager" in window) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setIsSupported(true);
+      registerServiceWorker();
+    }
+  }, []);
 
   async function subscribeToPush() {
     setToggleState(true);

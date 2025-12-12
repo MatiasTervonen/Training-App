@@ -5,9 +5,16 @@ import { fileTypeFromBuffer } from "file-type";
 import sharp from "sharp";
 
 export async function POST(req: NextRequest) {
+  const authHeader = req.headers.get("authorization");
+  if (!authHeader?.startsWith("Bearer ")) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
   const supabase = await createClient();
 
-  const authHeader = req.headers.get("authorization");
   const token = authHeader?.replace("Bearer ", "");
 
   const { data, error: authError } = await supabase.auth.getClaims(token);

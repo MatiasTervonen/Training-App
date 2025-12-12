@@ -22,13 +22,10 @@ export async function editTodo({
   deletedIds,
   updated_at,
 }: TodoListEdit) {
-
-
   const { error: listError } = await supabase
     .from("todo_lists")
     .update({ title, updated_at })
-    .eq("id", listId)
-
+    .eq("id", listId);
 
   if (listError) {
     handleError(listError, {
@@ -39,11 +36,12 @@ export async function editTodo({
     throw new Error("Error editing todo list");
   }
 
-  const upsertedTasks = tasks.map((task: TodoTaskEdit) => ({
+  const upsertedTasks = tasks.map((task: TodoTaskEdit, index) => ({
     id: task.id,
     list_id: listId,
     task: task.task,
     notes: task.notes ?? null,
+    position: index,
   }));
 
   const { error: taskError } = await supabase
@@ -64,8 +62,8 @@ export async function editTodo({
       .from("todo_tasks")
       .delete()
       .in("id", deletedIds)
-      .eq("list_id", listId)
-  
+      .eq("list_id", listId);
+
     if (deleteError) {
       handleError(listError, {
         message: "Error deleting todo tasks",

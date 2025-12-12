@@ -57,6 +57,7 @@ export default function EditTodo({ todo_session, onClose, onSave }: Props) {
           list_id: prev.id,
           user_id: prev.user_id,
           updated_at: "",
+          position: 0,
         },
       ],
     }));

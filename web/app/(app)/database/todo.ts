@@ -35,10 +35,11 @@ export async function saveTodoToDB({ title, todoList }: saveTodoToDBProps) {
     throw new Error("Error creating todo list");
   }
 
-  const rows = todoList.map((item: TodoTask) => ({
+  const rows = todoList.map((item: TodoTask, index) => ({
     list_id: list.id,
     task: item.task,
     notes: item.notes,
+    position: index,
   }));
 
   const { error: tasksError } = await supabase.from("todo_tasks").insert(rows);
@@ -81,7 +82,7 @@ export async function editTodo({
   const { error: listError } = await supabase
     .from("todo_lists")
     .update({ title, updated_at })
-    .eq("id", listId)
+    .eq("id", listId);
 
   if (listError) {
     handleError(listError, {
@@ -92,11 +93,12 @@ export async function editTodo({
     throw new Error("Error editing todo list");
   }
 
-  const upsertedTasks = tasks.map((task: TodoTaskEdit) => ({
+  const upsertedTasks = tasks.map((task: TodoTaskEdit, index) => ({
     id: task.id,
     list_id: listId,
     task: task.task,
     notes: task.notes ?? null,
+    position: index,
   }));
 
   const { error: taskError } = await supabase
@@ -117,7 +119,7 @@ export async function editTodo({
       .from("todo_tasks")
       .delete()
       .in("id", deletedIds)
-      .eq("list_id", listId)
+      .eq("list_id", listId);
 
     if (deleteError) {
       handleError(listError, {
@@ -140,6 +142,7 @@ type TodoTaskCheck = {
     list_id: string;
     task: string;
     is_completed: boolean;
+    position: number;
   }[];
 };
 
@@ -153,7 +156,7 @@ export async function checkedTodo({
   const { error: listError } = await supabase
     .from("todo_lists")
     .update({ updated_at })
-    .eq("id", listId)
+    .eq("id", listId);
 
   if (listError) {
     handleError(listError, {
@@ -169,11 +172,12 @@ export async function checkedTodo({
     list_id: task.list_id,
     task: task.task,
     is_completed: task.is_completed,
+    position: task.position,
   }));
 
   const { error: taskError } = await supabase
     .from("todo_tasks")
-    .upsert(upsertedTasks, { onConflict: "id" })
+    .upsert(upsertedTasks, { onConflict: "id" });
 
   if (taskError) {
     handleError(taskError, {
@@ -194,6 +198,7 @@ export async function getFullTodoSession(id: string) {
     .from("todo_lists")
     .select(`*, todo_tasks(*)`)
     .eq("id", id)
+    .order("position", { ascending: true, referencedTable: "todo_tasks" })
     .single();
 
   if (todoListError || !todoList) {

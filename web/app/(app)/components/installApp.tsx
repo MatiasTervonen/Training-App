@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 
@@ -13,13 +13,32 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: string; platform: string }>;
 }
 
+function isIosSafari(): boolean {
+  if (typeof window === "undefined") return false;
+  const userAgent = window.navigator.userAgent.toLowerCase();
+  const isIos = /iphone|ipad|ipod/.test(userAgent);
+  const isSafari =
+    /safari/.test(userAgent) && !/crios|fxios|chrome|edge/.test(userAgent);
+  return isIos && isSafari;
+}
+
+function isInStandaloneMode(): boolean {
+  if (typeof window === "undefined") return false;
+  return (
+    "standalone" in navigator &&
+    (navigator as NavigatorStandalone).standalone === true
+  );
+}
+
 export default function InstallApp({
   promptEvent,
 }: {
   promptEvent: BeforeInstallPromptEvent | null;
 }) {
   const [expanded, setExpanded] = useState(false);
-  const [showIosPrompt, setShowIosPrompt] = useState(false);
+  const [showIosPrompt] = useState(
+    () => isIosSafari() && !isInStandaloneMode()
+  );
   const pathname = usePathname();
 
   const handleInstallClick = async () => {
@@ -27,27 +46,6 @@ export default function InstallApp({
       promptEvent.prompt();
     }
   };
-
-  function isIosSafari(): boolean {
-    const userAgent = window.navigator.userAgent.toLowerCase();
-    const isIos = /iphone|ipad|ipod/.test(userAgent);
-    const isSafari =
-      /safari/.test(userAgent) && !/crios|fxios|chrome|edge/.test(userAgent);
-    return isIos && isSafari;
-  }
-
-  function isInStandaloneMode(): boolean {
-    return (
-      "standalone" in navigator &&
-      (navigator as NavigatorStandalone).standalone === true
-    );
-  }
-
-  useEffect(() => {
-    if (isIosSafari() && isInStandaloneMode()) {
-      setShowIosPrompt(true);
-    }
-  }, []);
 
   return (
     <>

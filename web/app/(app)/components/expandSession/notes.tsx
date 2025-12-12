@@ -7,7 +7,7 @@ export default function NotesSession(notes: notes) {
     <div className="text-center max-w-lg mx-auto page-padding">
       <div className="flex flex-col gap-2 text-sm text-gray-400">
         <p>Created: {formatDate(notes.created_at)}</p>
-        {notes.updated_at && <p>Updated: {formatDate(notes.updated_at)}</p>}
+        {notes.updated_at && <p className="text-yellow-500">Updated: {formatDate(notes.updated_at)}</p>}
       </div>
       <div id="notes-id">
         <div className="my-5 text-xl wrap-break-word">{notes.title}</div>

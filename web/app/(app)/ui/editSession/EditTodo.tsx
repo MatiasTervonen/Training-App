@@ -10,6 +10,7 @@ import { editTodo } from "../../database/todo";
 import SubNotesInput from "../SubNotesInput";
 import TitleInput from "../TitleInput";
 import BaseButton from "../BaseButton";
+import { Dot } from "lucide-react";
 
 type Props = {
   todo_session: full_todo_session;
@@ -23,6 +24,7 @@ type Task = {
 };
 
 export default function EditTodo({ todo_session, onClose, onSave }: Props) {
+  const [originalData] = useState(todo_session);
   const [isSaving, setIsSaving] = useState(false);
   const [sessionData, setSessionData] = useState(todo_session);
   const [deletedIds, setDeletedIds] = useState<string[]>([]);
@@ -98,9 +100,22 @@ export default function EditTodo({ todo_session, onClose, onSave }: Props) {
     }
   };
 
+  const hasChanges =
+    JSON.stringify(sessionData) !== JSON.stringify(originalData);
+
   return (
     <>
-      <div className="flex flex-col justify-between items-center gap-5 max-w-lg mx-auto page-padding min-h-full">
+      {hasChanges && (
+        <div className="bg-slate-900 z-50 py-1 px-4 flex items-center rounded-lg fixed top-5 ml-5">
+          <p className="text-sm text-yellow-500">
+            {hasChanges ? "unsaved changes" : ""}
+          </p>
+          <div className="animate-pulse">
+            <Dot color="#eab308" />
+          </div>
+        </div>
+      )}
+      <div className="flex flex-col justify-between items-center gap-5 mx-auto page-padding min-h-full relative max-w-lg">
         <div className="w-full">
           <h2 className="text-lg text-center mb-10">Edit your todo lists</h2>
           <div className="w-full mb-10">

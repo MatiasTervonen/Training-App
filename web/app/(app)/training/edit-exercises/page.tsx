@@ -3,10 +3,10 @@
 import CustomInput from "@/app/(app)/ui/CustomInput";
 import { useState, useEffect } from "react";
 import ExerciseTypeSelect from "@/app/(app)/training/components/ExerciseTypeSelect";
-import SaveButton from "@/app/(app)/ui/save-button";
+import SaveButton from "@/app/(app)/components/buttons/save-button";
 import toast from "react-hot-toast";
 import ExerciseDropdownEdit from "@/app/(app)/training/components/ExerciseDropdownEdit";
-import DeleteSessionBtn from "@/app/(app)/ui/deleteSessionBtn";
+import DeleteSessionBtn from "@/app/(app)/components/buttons/deleteSessionBtn";
 import { gym_exercises } from "../../types/models";
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import { editExercise, deleteExercise } from "../../database/gym";

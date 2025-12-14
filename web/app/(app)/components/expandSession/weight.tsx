@@ -1,7 +1,7 @@
 import { formatDate } from "@/app/(app)/lib/formatDate";
 import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
 import { weight } from "../../types/models";
-import LinkButton from "../../ui/LinkButton";
+import LinkButton from "../buttons/LinkButton";
 
 export default function WeightSession(weight: weight) {
   const weightUnit =

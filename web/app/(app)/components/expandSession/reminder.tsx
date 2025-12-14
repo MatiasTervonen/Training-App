@@ -1,5 +1,5 @@
 import { formatDate, formatDateTime } from "@/app/(app)/lib/formatDate";
-import CopyButton from "../CopyButton";
+import CopyButton from "../buttons/CopyButton";
 import { Bell, CalendarSync } from "lucide-react";
 import { full_reminder } from "../../types/session";
 import { formatNotifyTime } from "../../lib/formatDate";
@@ -18,7 +18,9 @@ export default function ReminderSession(reminder: full_reminder) {
         <div className="flex justify-center gap-4">
           <div className="flex flex-col items-center justify-center bg-gray-900 rounded-xl py-5 border-2 border-slate-600 w-full">
             <CalendarSync size={28} />
-            <p className="mt-2">{reminder.type === "reminders" ? "global" : reminder.type}</p>
+            <p className="mt-2">
+              {reminder.type === "reminders" ? "global" : reminder.type}
+            </p>
           </div>
 
           <div className="flex flex-col items-center justify-center bg-gray-900 rounded-xl py-5 border-2 border-slate-600 w-full px-2">

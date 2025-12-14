@@ -1,4 +1,4 @@
-import TemplateForm from "@/app/(app)/training/components/TemplateForm";
+import TemplateForm from "@/app/(app)/training/components/template/TemplateForm";
 
 export default function CreateTemplatePage() {
   const emptySession = {

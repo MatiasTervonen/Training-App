@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { clearLocalStorage } from "../components/ClearLocalStorage";
-import SaveButton from "@/app/(app)/ui/save-button";
+import SaveButton from "@/app/(app)/components/buttons/save-button";
 import { useRouter } from "next/navigation";
 
 export default function GameFinished() {

@@ -1,24 +1,23 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { ChevronDown, Plus } from "lucide-react";
 import Modal from "@/app/(app)/components/modal";
-import SaveButton from "@/app/(app)/ui/save-button";
-import DeleteSessionBtn from "@/app/(app)/ui/deleteSessionBtn";
+import SaveButton from "@/app/(app)/components/buttons/save-button";
+import DeleteSessionBtn from "@/app/(app)/components/buttons/deleteSessionBtn";
 import { ExerciseEntry, emptyExerciseEntry } from "@/app/(app)/types/session";
-import ExerciseHistoryModal from "../components/ExerciseHistoryModal";
-import { generateUUID } from "@/app/(app)/lib/generateUUID";
-import { toast } from "react-hot-toast";
+import ExerciseHistoryModal from "@/app/(app)/training/components/ExerciseHistoryModal";
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import { full_gym_template } from "@/app/(app)/types/models";
-import ExerciseSelectorList from "../components/ExerciseSelectorList";
-import { saveTemplateToDB, editTemplate } from "../../database/template";
-import TemplateCard from "./TemplateCard";
-import { GroupGymExercises } from "../../utils/GroupGymExercises";
-import TitleInput from "../../ui/TitleInput";
-import { useQueryClient, useQuery } from "@tanstack/react-query";
-import { getLastExerciseHistory } from "../../database/gym";
+import ExerciseSelectorList from "@/app/(app)/training/components/ExerciseSelectorList";
+import TemplateCard from "@/app/(app)/training/components/template/TemplateCard";
+import { GroupGymExercises } from "@/app/(app)/utils/GroupGymExercises";
+import TitleInput from "@/app/(app)/ui/TitleInput";
+import { useQuery } from "@tanstack/react-query";
+import { getLastExerciseHistory } from "@/app/(app)/database/gym";
+import useDraftTemplate from "@/app/(app)/training/hooks/template/useDraftTemplate";
+import useAddExercise from "@/app/(app)/training/hooks/template/useAddExercise";
+import useSaveTemplate from "@/app/(app)/training/hooks/template/useSaveTemplate";
 
 export default function TemplateForm({
   initialData,
@@ -55,40 +54,19 @@ export default function TemplateForm({
 
   const groupedExercises = GroupGymExercises(exercises);
 
-  const router = useRouter();
-
-  const queryClient = useQueryClient();
-
   const isEditing = Boolean(session?.id);
   const [hasLoadedDraft, setHasLoadedDraft] = useState(isEditing);
 
-  useEffect(() => {
-    if (!hasLoadedDraft || isEditing) return;
-
-    if (exercises.length === 0 && workoutName.trim() === "") {
-      localStorage.removeItem("template_draft");
-      return;
-    }
-
-    const sessionDraft = {
-      title: workoutName,
-      exercises,
-    };
-    localStorage.setItem("template_draft", JSON.stringify(sessionDraft));
-  }, [exercises, workoutName, hasLoadedDraft, isEditing]);
-
-  useEffect(() => {
-    if (isEditing) return;
-
-    const draft = localStorage.getItem("template_draft");
-    if (draft) {
-      const parsedDraft = JSON.parse(draft);
-      setWorkoutName(parsedDraft.title || "");
-      setExercises(parsedDraft.exercises || []);
-    }
-
-    setHasLoadedDraft(true);
-  }, [setWorkoutName, setExercises, isEditing]);
+  // useDraftTemplate hook to save the draft
+  useDraftTemplate({
+    exercises,
+    workoutName,
+    hasLoadedDraft,
+    isEditing,
+    setWorkoutName,
+    setExercises,
+    setHasLoadedDraft,
+  });
 
   const {
     data: history,
@@ -110,78 +88,6 @@ export default function TemplateForm({
     setIsHistoryOpen(true);
   };
 
-  const handleAddExercise = () => {
-    const newSupersetId = generateUUID();
-
-    if (exerciseType === "Super-Set") {
-      const validExercises = supersetExercise.filter(
-        (ex) => ex && typeof ex.name === "string" && ex.name.trim() !== ""
-      );
-      if (validExercises.length === 0) return;
-
-      const newGroup = validExercises.map((ex) => ({
-        ...ex,
-        superset_id: newSupersetId,
-      }));
-
-      setExercises((prev) => [...prev, ...newGroup]);
-      setSupersetExercise([]);
-    } else {
-      const validNormal = normalExercises.filter(
-        (ex) => ex.name && ex.name.trim() !== ""
-      );
-      if (validNormal.length === 0) return;
-
-      const updated = validNormal.map((ex) => ({
-        ...ex,
-        superset_id: generateUUID(),
-      }));
-
-      setExercises((prev) => [...prev, ...updated]);
-      setNormalExercises([]);
-    }
-
-    setDropdownResetKey((prev) => prev + 1); // Reset dropdown
-  };
-
-  const handleSaveTemplate = async () => {
-    if (workoutName.trim() === "" || exercises.length === 0) return;
-
-    setIsSaving(true);
-
-    try {
-      if (isEditing) {
-        await editTemplate({
-          id: session.id,
-          exercises,
-          name: workoutName,
-        });
-      } else {
-        await saveTemplateToDB({
-          exercises,
-          name: workoutName,
-        });
-      }
-
-      if (isEditing) {
-        await queryClient.refetchQueries({
-          queryKey: ["fullTemplate", session.id],
-          exact: true,
-        });
-      } else {
-        await queryClient.refetchQueries({
-          queryKey: ["templates"],
-          exact: true,
-        });
-      }
-      resetSession();
-      router.push("/training/templates");
-    } catch {
-      toast.error("Failed to save template. Try again later.");
-      setIsSaving(false);
-    }
-  };
-
   const resetSession = () => {
     setNormalExercises([]);
     setSupersetExercise([]);
@@ -191,6 +97,29 @@ export default function TemplateForm({
     setNormalExercises([]);
     localStorage.removeItem("template_draft");
   };
+
+  // useAddExercise hook to add an exercise
+
+  const { handleAddExercise } = useAddExercise({
+    exerciseType,
+    supersetExercise,
+    normalExercises,
+    setExercises,
+    setSupersetExercise,
+    setNormalExercises,
+    setDropdownResetKey,
+  });
+
+  // useSaveTemplate hook to save the template
+
+  const { handleSaveTemplate } = useSaveTemplate({
+    workoutName,
+    exercises,
+    isEditing,
+    setIsSaving,
+    resetSession,
+    template: session,
+  });
 
   if (!hasLoadedDraft) return null;
 

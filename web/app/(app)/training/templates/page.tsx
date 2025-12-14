@@ -4,17 +4,15 @@ import { useRouter } from "next/navigation";
 import { TemplateSkeleton } from "@/app/(app)/ui/loadingSkeletons/skeletons";
 import Modal from "@/app/(app)/components/modal";
 import { useState } from "react";
-import { ExerciseEntry } from "@/app/(app)/types/session";
-import toast from "react-hot-toast";
-import { full_gym_template } from "../../types/models";
+import { full_gym_template } from "@/app/(app)/types/models";
 import TemplateCard from "@/app/(app)/components/cards/TemplateCard";
-import Spinner from "../../components/spinner";
+import Spinner from "@/app/(app)/components/spinner";
 import GymTemplate from "@/app/(app)/components/expandSession/template";
-import { deleteTemplate } from "../../database/template";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { getTemplates } from "../../database/template";
-import { getFullTemplate } from "../../database/template";
-import { useTimerStore } from "../../lib/stores/timerStore";
+import { useQuery } from "@tanstack/react-query";
+import { getTemplates } from "@/app/(app)/database/template";
+import { getFullTemplate } from "@/app/(app)/database/template";
+import useDeleteTemplate from "@/app/(app)/training/hooks/template/useDeleteTemplate";
+import useStartWorkoutTemplate from "@/app/(app)/training/hooks/template/useStartWorkoutTemplate";
 
 type templateSummary = {
   id: string;
@@ -26,10 +24,6 @@ export default function TemplatesPage() {
   const [expandedItem, setExpandedItem] = useState<full_gym_template | null>(
     null
   );
-
-  const activeSession = useTimerStore((state) => state.activeSession);
-
-  const queryClient = useQueryClient();
 
   const router = useRouter();
 
@@ -47,60 +41,14 @@ export default function TemplatesPage() {
     gcTime: Infinity,
   });
 
-  const startWorkout = (template: full_gym_template) => {
-    if (activeSession) {
-      toast.error("You already have an active workout!");
-      return;
-    }
+  // useStartWorkoutTemplate hook to start a workout from a template
 
-    const workoutExercises: ExerciseEntry[] =
-      template.gym_template_exercises.map((ex) => ({
-        exercise_id: ex.exercise_id,
-        name: ex.gym_exercises.name,
-        equipment: ex.gym_exercises.equipment,
-        muscle_group: ex.gym_exercises.muscle_group ?? undefined,
-        main_group: ex.gym_exercises.main_group,
-        sets: [],
-        superset_id: ex.superset_id,
-      }));
+  const { startWorkout } = useStartWorkoutTemplate();
 
-    const sessionDraft = {
-      title: template.name,
-      exercises: workoutExercises,
-    };
+  // useDeleteTemplate hook to delete a template
 
-    localStorage.setItem("gym_draft", JSON.stringify(sessionDraft));
-    localStorage.setItem("startedFromTemplate", "true");
-    router.push("/training/gym");
-  };
+  const { handleDeleteTemplate } = useDeleteTemplate();
 
-  const handleDeleteTemplate = async (templateId: string) => {
-    const confirmDelete = confirm(
-      "Are you sure you want to delete this template? This action cannot be undone."
-    );
-    if (!confirmDelete) return;
-
-    const queryKey = ["templates"];
-
-    await queryClient.cancelQueries({ queryKey });
-
-    const previousTemplates = queryClient.getQueryData(queryKey);
-
-    queryClient.setQueryData<templateSummary[]>(queryKey, (oldData) => {
-      if (!oldData) return;
-
-      return oldData.filter((template) => template.id !== templateId);
-    });
-
-    try {
-      await deleteTemplate(templateId);
-
-      toast.success("Template deleted successfully!");
-    } catch {
-      queryClient.setQueryData(queryKey, previousTemplates);
-      toast.error("Failed to delete template. Please try again.");
-    }
-  };
   const templateId = expandedItem?.id;
 
   const {

@@ -1,6 +1,6 @@
 "use client";
 
-import LinkButton from "../ui/LinkButton";
+import LinkButton from "../components/buttons/LinkButton";
 import { useTimerStore } from "../lib/stores/timerStore";
 import toast from "react-hot-toast";
 

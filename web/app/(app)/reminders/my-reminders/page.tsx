@@ -7,7 +7,7 @@ import { TemplateSkeleton } from "../../ui/loadingSkeletons/skeletons";
 import MyReminderCard from "../../components/cards/MyReminderCard";
 import ReminderSession from "../../components/expandSession/reminder";
 import Modal from "../../components/modal";
-import EditReminder from "../../ui/editSession/EditReminder";
+import EditReminder from "../../components/editSession/EditReminder";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { getRTeminders } from "../../database/reminder";
 import { full_reminder } from "../../types/session";

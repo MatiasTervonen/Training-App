@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import {
   BarChart,
   Bar,
@@ -9,27 +8,28 @@ import {
   ResponsiveContainer,
   LabelList,
 } from "recharts";
-import { Last30DaysAnalytics } from "../../types/session";
+import { useMemo } from "react";
+import { Last30DaysAnalytics } from "@/app/(app)/types/session";
 
 export default function MuscleGroupChart({
   data,
 }: {
   data: Last30DaysAnalytics;
 }) {
-  const chartData = useMemo(() => {
-    return data.analytics.muscle_groups
+  const chartDataSets = useMemo(() => {
+    return data.analytics.sets_per_muscle_group
       .map((item) => ({
         name: item.group,
-        exercises: item.count,
+        sets: item.count,
       }))
-      .sort((a, b) => b.exercises - a.exercises);
+      .sort((a, b) => b.sets - a.sets);
   }, [data]);
 
   return (
     <div>
       <ResponsiveContainer width="100%" height={600}>
         <BarChart
-          data={chartData}
+          data={chartDataSets}
           layout="vertical"
           margin={{
             top: 5,
@@ -48,7 +48,7 @@ export default function MuscleGroupChart({
             width={0}
           />
           <Legend />
-          <Bar dataKey="exercises" fill="#8884d8">
+          <Bar dataKey="sets" fill="#8884d8" name="Sets">
             <LabelList dataKey="name" position="insideLeft" fill="#fff" />
           </Bar>
         </BarChart>

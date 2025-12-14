@@ -1,6 +1,6 @@
 "use client";
 
-import SessionFeed from "@/app/(app)/components/feed/sessionFeed";
+import SessionFeed from "@/app/(app)/dashboard/components/sessionFeed";
 import { useRouter } from "next/navigation";
 import { useModalPageConfig } from "@/app/(app)/lib/stores/modalPageConfig";
 import { useTimerStore } from "@/app/(app)/lib/stores/timerStore";

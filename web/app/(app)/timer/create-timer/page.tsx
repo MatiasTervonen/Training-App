@@ -1,17 +1,17 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import SetInput from "@/app/(app)/training/components/SetInput";
-import SaveButton from "../../ui/save-button";
+import SaveButton from "../../components/buttons/save-button";
 import toast from "react-hot-toast";
 import FullScreenLoader from "../../components/FullScreenLoader";
-import DeleteSessionBtn from "../../ui/deleteSessionBtn";
+import DeleteSessionBtn from "../../components/buttons/deleteSessionBtn";
 import { saveTimerToDB } from "../../database/timer";
 import SubNotesInput from "../../ui/SubNotesInput";
 import TitleInput from "../../ui/TitleInput";
-import { useDebouncedCallback } from "use-debounce";
 import { useQueryClient } from "@tanstack/react-query";
+import useSaveDraft from "../hooks/useSaveDraft";
 
 export default function TimerPage() {
   const [title, setTitle] = useState("");
@@ -32,55 +32,20 @@ export default function TimerPage() {
     setNotes("");
   };
 
-  useEffect(() => {
-    const draft = localStorage.getItem("timer_session_draft");
-    if (draft) {
-      const {
-        title: savedTitle,
-        notes: savedNotes,
-        durationInSeconds: savedAlarmDuration,
-      } = JSON.parse(draft);
-      if (savedTitle) setTitle(savedTitle);
-      if (savedNotes) setNotes(savedNotes);
-      if (savedAlarmDuration)
-        setAlarmMinutes(Math.floor(savedAlarmDuration / 60).toString());
-      if (savedAlarmDuration)
-        setAlarmSeconds((savedAlarmDuration % 60).toString());
-    }
-    setIsLoaded(true);
-  }, []);
+  // useSaveDraft hook to save draft timer
 
-  const saveDraft = useDebouncedCallback(
-    () => {
-      if (!isLoaded) return;
-
-      if (
-        title.trim() === "" &&
-        alarmMinutes.trim() === "" &&
-        alarmSeconds.trim() === ""
-      ) {
-        localStorage.removeItem("timer_session_draft");
-        return;
-      }
-
-      const minutes = parseInt(alarmMinutes) || 0;
-      const seconds = parseInt(alarmSeconds) || 0;
-      const totalSeconds = minutes * 60 + seconds;
-
-      const sessionDraft = {
-        title: title,
-        notes: notes,
-        durationInSeconds: totalSeconds,
-      };
-      localStorage.setItem("timer_session_draft", JSON.stringify(sessionDraft));
-    },
-    500,
-    { maxWait: 3000 }
-  );
-
-  useEffect(() => {
-    saveDraft();
-  }, [title, alarmMinutes, alarmSeconds, notes, saveDraft]);
+  useSaveDraft({
+    title,
+    notes,
+    setTitle,
+    setNotes,
+    setIsLoaded,
+    isLoaded,
+    setAlarmMinutes,
+    setAlarmSeconds,
+    alarmMinutes,
+    alarmSeconds,
+  });
 
   const saveTimer = async () => {
     if (!title || !alarmMinutes || !alarmSeconds) {

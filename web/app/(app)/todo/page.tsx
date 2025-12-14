@@ -6,18 +6,16 @@ import {
   Trash2,
   SquareArrowOutUpRight,
 } from "lucide-react";
-import { useState, useEffect } from "react";
-import DeleteSessionBtn from "../ui/deleteSessionBtn";
+import { useState } from "react";
+import DeleteSessionBtn from "../components/buttons/deleteSessionBtn";
 import Modal from "../components/modal";
-import SaveButton from "../ui/save-button";
+import SaveButton from "../components/buttons/save-button";
 import FullScreenLoader from "../components/FullScreenLoader";
-import toast from "react-hot-toast";
-import { useRouter } from "next/navigation";
-import { saveTodoToDB } from "../database/todo";
 import TitleInput from "../ui/TitleInput";
 import SubNotesInput from "../ui/SubNotesInput";
-import { useQueryClient } from "@tanstack/react-query";
-import { useDebouncedCallback } from "use-debounce";
+import useSaveDraft from "./hooks/useSaveDraft";
+import useDeleteItem from "./hooks/useDeleteItem";
+import useSaveTodo from "./hooks/useSaveTodo";
 
 type TodoItem = {
   task: string;
@@ -25,7 +23,6 @@ type TodoItem = {
 };
 
 export default function Todo() {
-  const [loading, setLoading] = useState(false);
   const [title, setTitle] = useState("");
   const [task, setTask] = useState("");
   const [notes, setNotes] = useState("");
@@ -38,61 +35,28 @@ export default function Todo() {
       notes: "",
     }
   );
-  const router = useRouter();
   const [isLoaded, setIsLoaded] = useState(false);
 
-  const queryClient = useQueryClient();
+  // useSaveDraft hook to save draft todo list
 
-  useEffect(() => {
-    const draft = localStorage.getItem("todo_draft");
-    if (draft) {
-      const {
-        title: savedTitle,
-        task: savedTask,
-        notes: savedNotes,
-        todoList: savedTodoList,
-      } = JSON.parse(draft);
-      if (savedTitle) setTitle(savedTitle);
-      if (savedTask) setTask(savedTask);
-      if (savedNotes) setNotes(savedNotes);
-      if (savedTodoList) setTodoList(savedTodoList);
-    }
-    setIsLoaded(true);
-  }, []);
+  useSaveDraft({
+    title,
+    task,
+    notes,
+    todoList,
+    setTitle,
+    setTask,
+    setNotes,
+    setTodoList,
+    setIsLoaded,
+    isLoaded,
+  });
 
-  const saveTodoDraft = useDebouncedCallback(
-    () => {
-      if (!isLoaded) return;
-
-      if (title.trim() === "" && todoList.length === 0) {
-        localStorage.removeItem("todo_draft");
-      } else {
-        const draft = {
-          title,
-          task,
-          notes,
-          todoList: todoList,
-        };
-        localStorage.setItem("todo_draft", JSON.stringify(draft));
-      }
-    },
-    500,
-    { maxWait: 3000 }
-  );
-
-  useEffect(() => {
-    saveTodoDraft();
-  }, [title, notes, todoList, task, saveTodoDraft]);
-
-  const handleDeleteItem = (index: number) => {
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this task?"
-    );
-    if (!confirmDelete) return;
-
-    const newList = todoList.filter((_, i) => i !== index);
-    setTodoList(newList);
-  };
+  // useDeleteItem hook to delete item from todo list
+  const { handleDeleteItem } = useDeleteItem({
+    todoList,
+    setTodoList,
+  });
 
   const handleDeleteAll = () => {
     localStorage.removeItem("todo_draft");
@@ -102,20 +66,9 @@ export default function Todo() {
     setTitle("");
   };
 
-  const handleSaveTodo = async () => {
-    setLoading(true);
-    try {
-      await saveTodoToDB({ title, todoList });
+  // useSaveTodo hook to save todo list
 
-      await queryClient.refetchQueries({ queryKey: ["feed"], exact: true });
-      toast.success("Todo saved successfully");
-      router.push("/dashboard");
-      handleDeleteAll();
-    } catch {
-      toast.error("Failed to save todo");
-      setLoading(false);
-    }
-  };
+  const { mutate: saveTodo, isPending } = useSaveTodo();
 
   return (
     <div className="flex flex-col justify-between min-h-full max-w-md mx-auto page-padding">
@@ -288,10 +241,15 @@ export default function Todo() {
         </div>
       </div>
       <div className="flex flex-col gap-5">
-        <SaveButton onClick={handleSaveTodo} />
+        <SaveButton
+          onClick={() => {
+            saveTodo({ title, todoList });
+            handleDeleteAll();
+          }}
+        />
         <DeleteSessionBtn onDelete={handleDeleteAll} />
       </div>
-      {loading && <FullScreenLoader message="Saving todolist..." />}
+      {isPending && <FullScreenLoader message="Saving todolist..." />}
     </div>
   );
 }

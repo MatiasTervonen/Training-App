@@ -1,13 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import DeleteSessionBtn from "../ui/deleteSessionBtn";
+import DeleteSessionBtn from "../components/buttons/deleteSessionBtn";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 import { clearLocalStorage } from "./components/ClearLocalStorage";
 import CustomInput from "../ui/CustomInput";
 import { useTimerStore } from "../lib/stores/timerStore";
-import BaseButton from "../ui/BaseButton";
+import BaseButton from "../components/buttons/BaseButton";
 import toast from "react-hot-toast";
 
 export default function DiscGolf() {

@@ -1,6 +1,6 @@
 "use client";
 
-import Spinner from "../components/spinner";
+import Spinner from "../spinner";
 
 type SaveButtonProps = {
   onClick: () => void;
@@ -17,8 +17,6 @@ export default function SaveButtonSpinner({
   className,
   loading,
 }: SaveButtonProps) {
-
-
   return (
     <button
       aria-label={label}

@@ -3,24 +3,24 @@
 import { useState } from "react";
 import NotesSession from "@/app/(app)/components/expandSession/notes";
 import Modal from "@/app/(app)/components/modal";
-import FeedCard from "@/app/(app)/components/FeedCard";
-import EditNote from "@/app/(app)/ui/editSession/EditNotes";
+import FeedCard from "@/app/(app)/components/cards/FeedCard";
+import EditNote from "@/app/(app)/components/editSession/EditNotes";
 import GymSession from "@/app/(app)/components/expandSession/gym";
 import Spinner from "@/app/(app)/components/spinner";
 import WeightSession from "@/app/(app)/components/expandSession/weight";
-import EditWeight from "@/app/(app)/ui/editSession/EditWeight";
+import EditWeight from "@/app/(app)/components/editSession/EditWeight";
 import { FeedSkeleton } from "@/app/(app)/ui/loadingSkeletons/skeletons";
 import TodoSession from "@/app/(app)/components/expandSession/todo";
-import EditTodo from "@/app/(app)/ui/editSession/EditTodo";
+import EditTodo from "@/app/(app)/components/editSession/EditTodo";
 import ReminderSession from "@/app/(app)/components/expandSession/reminder";
-import EditReminder from "@/app/(app)/ui/editSession/EditReminder";
+import EditReminder from "@/app/(app)/components/editSession/EditReminder";
 import { useRouter } from "next/navigation";
-import useDeleteSession from "@/app/(app)/hooks/feed/useDeleteSession";
-import useTogglePin from "@/app/(app)/hooks/feed/useTogglePin";
+import useDeleteSession from "@/app/(app)/dashboard/hooks/useDeleteSession";
+import useTogglePin from "@/app/(app)/dashboard/hooks/useTogglePin";
 import { FeedItem } from "@/app/(app)/types/models";
-import useFeed from "@/app/(app)/hooks/feed/useFeed";
-import useFullSessions from "@/app/(app)/hooks/feed/useFullSessions";
-import useFeedPrefetch from "@/app/(app)/hooks/feed/useFeedPrefetch";
+import useFeed from "@/app/(app)/dashboard/hooks/useFeed";
+import useFullSessions from "@/app/(app)/dashboard/hooks/useFullSessions";
+import useFeedPrefetch from "@/app/(app)/dashboard/hooks/useFeedPrefetch";
 import PinnedCarousel from "./pinnedCarousell";
 
 export default function SessionFeed() {

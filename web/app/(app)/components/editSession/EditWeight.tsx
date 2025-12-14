@@ -1,13 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import SaveButton from "@/app/(app)/ui/save-button";
+import SaveButton from "@/app/(app)/components/buttons/save-button";
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import toast from "react-hot-toast";
 import { editWeight } from "../../database/weight";
 import { weight } from "../../types/models";
-import SubNotesInput from "../SubNotesInput";
-import TitleInput from "../TitleInput";
+import SubNotesInput from "../../ui/SubNotesInput";
+import TitleInput from "../../ui/TitleInput";
 import CustomInput from "../../ui/CustomInput";
 
 type Props = {

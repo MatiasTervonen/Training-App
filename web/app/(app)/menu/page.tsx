@@ -1,6 +1,6 @@
 import MenuContext from "./components/MenuContext";
-import LinkButton from "../ui/LinkButton";
-import SignOutButton from "../ui/singOutButton";
+import LinkButton from "../components/buttons/LinkButton";
+import SignOutButton from "../components/buttons/singOutButton";
 import InstallAppClient from "./components/installAppClient";
 import { PushNotificationManager } from "../components/pushnotifications/pushnotifications";
 import { ShieldUser, UserPen, ContactRound } from "lucide-react";

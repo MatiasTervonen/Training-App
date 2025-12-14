@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import SaveButton from "@/app/(app)/ui/save-button";
+import SaveButton from "@/app/(app)/components/buttons/save-button";
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import toast from "react-hot-toast";
 import DateTimePicker from "@/app/(app)/components/DateTimePicker";
@@ -9,8 +9,8 @@ import { Bell } from "lucide-react";
 import { formatDateTime } from "../../lib/formatDate";
 import { editReminder } from "../../database/reminder";
 import { full_reminder } from "../../types/session";
-import SubNotesInput from "../SubNotesInput";
-import TitleInput from "../TitleInput";
+import SubNotesInput from "../../ui/SubNotesInput";
+import TitleInput from "../../ui/TitleInput";
 import { useQueryClient } from "@tanstack/react-query";
 
 type Props = {

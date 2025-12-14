@@ -1,8 +1,8 @@
 "use client";
 
-import { Last30DaysAnalytics } from "../../types/session";
-import ChartTabSwitcher from "./AnalyticsChartTabSwitcher";
-import AnalyticsHeatMap from "./AnalyticsHeatMap";
+import { Last30DaysAnalytics } from "@/app/(app)/types/session";
+import ChartTabSwitcher from "@/app/(app)/training/components/analytics/AnalyticsChartTabSwitcher";
+import AnalyticsHeatMap from "@/app/(app)/training/components/analytics/AnalyticsHeatMap";
 
 type AnalyticsFormProps = {
   data: Last30DaysAnalytics;

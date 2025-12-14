@@ -1,9 +1,9 @@
 "use client";
 
-import AnalyticsForm from "../components/AnalyticsForm";
+import AnalyticsForm from "@/app/(app)/training/components/analytics/AnalyticsForm";
 import { useQuery } from "@tanstack/react-query";
-import { get30dAnalytics } from "../../database/gym";
-import Spinner from "../../components/spinner";
+import { get30dAnalytics } from "@/app/(app)/database/gym";
+import Spinner from "@/app/(app)/components/spinner";
 
 export default function WorkoutAnalyticsPage() {
   const { data, error, isLoading } = useQuery({

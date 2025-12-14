@@ -1,57 +1,29 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import SaveButton from "@/app/(app)/ui/save-button";
-import DeleteSessionBtn from "@/app/(app)/ui/deleteSessionBtn";
+import { useState } from "react";
+import SaveButton from "@/app/(app)/components/buttons/save-button";
+import DeleteSessionBtn from "@/app/(app)/components/buttons/deleteSessionBtn";
 import NotesInput from "@/app/(app)/ui/NotesInput";
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
-import toast from "react-hot-toast";
-import { useDebouncedCallback } from "use-debounce";
-import { saveNotesToDB } from "../database/notes";
 import TitleInput from "../ui/TitleInput";
-import { useQueryClient } from "@tanstack/react-query";
+import useSaveDraft from "./hooks/useSaveDraft";
+import useSaveNotes from "./hooks/useSaveNotes";
 
 export default function Notes() {
   const [notes, setNotes] = useState("");
   const [title, setTitle] = useState("");
-  const [isSaving, setIsSaving] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
-  const router = useRouter();
 
-  const queryClient = useQueryClient();
+  // useSaveDraft hook to save draft notes
 
-  useEffect(() => {
-    const draft = localStorage.getItem("notes_draft");
-    if (draft) {
-      const { title: savedTitle, notes: savedNotes } = JSON.parse(draft);
-      if (savedTitle) setTitle(savedTitle);
-      if (savedNotes) setNotes(savedNotes);
-    }
-    setIsLoaded(true);
-  }, []);
-
-  const saveDraft = useDebouncedCallback(
-    () => {
-      if (!isLoaded) return;
-
-      if (notes.trim().length === 0 && title.trim().length === 0) {
-        localStorage.removeItem("notes_draft");
-      } else {
-        const sessionDraft = {
-          title,
-          notes,
-        };
-        localStorage.setItem("notes_draft", JSON.stringify(sessionDraft));
-      }
-    },
-    500,
-    { maxWait: 3000 }
-  );
-
-  useEffect(() => {
-    saveDraft();
-  }, [notes, title, saveDraft]);
+  useSaveDraft({
+    title,
+    notes,
+    setTitle,
+    setNotes,
+    setIsLoaded,
+    isLoaded,
+  });
 
   const resetNotes = () => {
     localStorage.removeItem("notes_draft");
@@ -59,22 +31,8 @@ export default function Notes() {
     setNotes("");
   };
 
-  const saveNotes = async () => {
-    if (notes.trim().length === 0) return;
-
-    setIsSaving(true);
-    try {
-      await saveNotesToDB({ title, notes });
-
-      await queryClient.refetchQueries({ queryKey: ["feed"], exact: true });
-      router.push("/dashboard");
-      resetNotes();
-    } catch (error) {
-      console.log("error saving notes", error);
-      setIsSaving(false);
-      toast.error("Failed to save notes. Please try again.");
-    }
-  };
+  // useSaveNotes hook to save notes
+  const { mutate: saveNotes, isPending } = useSaveNotes();
 
   return (
     <>
@@ -96,11 +54,18 @@ export default function Notes() {
           />
         </div>
         <div className="flex flex-col items-center gap-5">
-          <SaveButton onClick={saveNotes} />
+          <SaveButton
+            onClick={() => {
+              if (notes.trim().length === 0) return;
+
+              saveNotes({ title, notes });
+              resetNotes();
+            }}
+          />
           <DeleteSessionBtn onDelete={resetNotes} />
         </div>
       </div>
-      {isSaving && <FullScreenLoader message="Saving notes..." />}
+      {isPending && <FullScreenLoader message="Saving notes..." />}
     </>
   );
 }

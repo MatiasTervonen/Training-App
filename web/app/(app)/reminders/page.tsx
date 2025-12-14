@@ -1,5 +1,5 @@
 import { Globe } from "lucide-react";
-import LinkButton from "../ui/LinkButton";
+import LinkButton from "../components/buttons/LinkButton";
 
 export default function Sessions() {
   return (

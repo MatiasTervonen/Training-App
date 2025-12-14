@@ -1,7 +1,7 @@
 import { formatDate } from "@/app/(app)/lib/formatDate";
 import { timers } from "@/app/(app)/types/models";
-import DeleteSessionBtn from "../../ui/deleteSessionBtn";
-import BaseButton from "../../ui/BaseButton";
+import DeleteSessionBtn from "../../components/buttons/deleteSessionBtn";
+import BaseButton from "../../components/buttons/BaseButton";
 
 type Props = {
   item: timers;

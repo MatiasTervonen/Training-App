@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import LinkButton from "../(app)/ui/LinkButton";
+import LinkButton from "../(app)/components/buttons/LinkButton";
 
 export default function EmailVerified() {
   const router = useRouter();

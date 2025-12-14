@@ -2,14 +2,14 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import SaveButton from "@/app/(app)/ui/save-button";
-import DeleteSessionBtn from "@/app/(app)/ui/deleteSessionBtn";
+import SaveButton from "@/app/(app)/components/buttons/save-button";
+import DeleteSessionBtn from "@/app/(app)/components/buttons/deleteSessionBtn";
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import toast from "react-hot-toast";
 import { useDebouncedCallback } from "use-debounce";
 import DateTimePicker from "@/app/(app)/components/DateTimePicker";
 import InfoModal from "@/app/(app)/components/InfoModal";
-import LinkButton from "@/app/(app)/ui/LinkButton";
+import LinkButton from "@/app/(app)/components/buttons/LinkButton";
 import { saveReminderToDB } from "@/app/(app)/database/reminder";
 import SubNotesInput from "@/app/(app)/ui/SubNotesInput";
 import TitleInput from "@/app/(app)/ui/TitleInput";

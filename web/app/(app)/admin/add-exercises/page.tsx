@@ -3,7 +3,7 @@
 import CustomInput from "@/app/(app)/ui/CustomInput";
 import { useState } from "react";
 import ExerciseTypeSelect from "@/app/(app)/training/components/ExerciseTypeSelect";
-import SaveButton from "@/app/(app)/ui/save-button";
+import SaveButton from "@/app/(app)/components/buttons/save-button";
 import toast from "react-hot-toast";
 import { generateUUID } from "@/app/(app)/lib/generateUUID";
 import FullScreenLoader from "../../components/FullScreenLoader";

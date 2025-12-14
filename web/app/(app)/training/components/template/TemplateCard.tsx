@@ -2,7 +2,7 @@
 
 import DropdownMenu from "@/app/(app)/components/dropdownMenu";
 import { Menu } from "lucide-react";
-import { ExerciseEntry } from "../../types/session";
+import { ExerciseEntry } from "@/app/(app)/types/session";
 
 type ExerciseCardProps = {
   index: number;

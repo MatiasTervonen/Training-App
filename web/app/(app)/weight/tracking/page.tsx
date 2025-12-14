@@ -1,7 +1,7 @@
 "use client";
 
-import SaveButton from "@/app/(app)/ui/save-button";
-import DeleteSessionBtn from "@/app/(app)/ui/deleteSessionBtn";
+import SaveButton from "@/app/(app)/components/buttons/save-button";
+import DeleteSessionBtn from "@/app/(app)/components/buttons/deleteSessionBtn";
 import { useState, useEffect } from "react";
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import { useRouter } from "next/navigation";

@@ -2,7 +2,7 @@
 
 import CustomInput from "@/app/(app)/ui/CustomInput";
 import { useState } from "react";
-import SaveButtonSpinner from "@/app/(app)/ui/save-button-spinner";
+import SaveButtonSpinner from "@/app/(app)/components/buttons/save-button-spinner";
 import { createClient } from "@/utils/supabase/client";
 import { useSignOut } from "@/app/(app)/lib/handleSignOut";
 import { handleError } from "@/app/(app)/utils/handleError";
@@ -79,7 +79,6 @@ export default function Page() {
       setLoading(false);
     }
   };
-
 
   return (
     <div className="p-5 h-full relative">

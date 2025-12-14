@@ -1,9 +1,9 @@
 "use client";
 
-import MuscleGroupChart from "./MuscleGroupChart";
-import MuscleGroupChartSets from "./MuscleGroupChartSets";
+import MuscleGroupChart from "@/app/(app)/training/components/analytics/MuscleGroupChart";
+import MuscleGroupChartSets from "@/app/(app)/training/components/analytics/MuscleGroupChartSets";
 import { useState } from "react";
-import { Last30DaysAnalytics } from "../../types/session";
+import { Last30DaysAnalytics } from "@/app/(app)/types/session";
 
 export default function ChartTabSwitcher({
   data,

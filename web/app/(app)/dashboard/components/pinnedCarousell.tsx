@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import { Pin } from "lucide-react";
-import FeedCard from "@/app/(app)/components/FeedCard";
+import FeedCard from "@/app/(app)/components/cards/FeedCard";
 import { useRouter } from "next/navigation";
 import { useModalPageConfig } from "@/app/(app)/lib/stores/modalPageConfig";
 import { FeedItem } from "@/app/(app)/types/models";

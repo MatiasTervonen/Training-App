@@ -6,7 +6,7 @@ import { createClient } from "@/utils/supabase/client";
 import { LogOut } from "lucide-react";
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
-import { clearLocalStorage } from "../utils/clearLocalStorage";
+import { clearLocalStorage } from "../../utils/clearLocalStorage";
 import toast from "react-hot-toast";
 import { useQueryClient } from "@tanstack/react-query";
 

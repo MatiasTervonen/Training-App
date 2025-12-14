@@ -1,10 +1,10 @@
-import NotesCard from "./cards/NotesCard";
-import GymCard from "./cards/GymCard";
-import WeightCard from "./cards/WeightCard";
-import TodoCard from "./cards/TodoCard";
+import NotesCard from "@/app/(app)/components/cards/NotesCard";
+import GymCard from "@/app/(app)/components/cards/GymCard";
+import WeightCard from "@/app/(app)/components/cards/WeightCard";
+import TodoCard from "@/app/(app)/components/cards/TodoCard";
 import { FeedItem } from "@/app/(app)/types/models";
-import ReminderCard from "./cards/ReminderCard";
-import CustomReminderCard from "./cards/customReminderCard";
+import ReminderCard from "@/app/(app)/components/cards/ReminderCard";
+import CustomReminderCard from "@/app/(app)/components/cards/customReminderCard";
 
 export default function FeedCard(props: FeedItem) {
   const { pinned, onTogglePin, onDelete, onExpand, onEdit } = props;

@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { checkAdmin } from "@/app/(app)/database/admin";
-import LinkButton from "../ui/LinkButton";
+import LinkButton from "../components/buttons/LinkButton";
 
 export default async function AdminPage() {
   const { user, role } = await checkAdmin();

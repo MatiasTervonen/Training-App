@@ -1,13 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import SaveButton from "@/app/(app)/ui/save-button";
+import SaveButton from "@/app/(app)/components/buttons/save-button";
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import toast from "react-hot-toast";
 import { editNotes } from "../../database/notes";
 import { notes } from "../../types/models";
 import NotesInput from "@/app/(app)/ui/NotesInput";
-import TitleInput from "../TitleInput";
+import TitleInput from "../../ui/TitleInput";
 import { Dot } from "lucide-react";
 
 type Props = {

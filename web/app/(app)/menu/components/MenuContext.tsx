@@ -1,6 +1,6 @@
 "use client";
 
-import LinkButton from "@/app/(app)/ui/LinkButton";
+import LinkButton from "@/app/(app)/components/buttons/LinkButton";
 import { useUserStore } from "../../lib/stores/useUserStore";
 
 export default function MenuContext() {

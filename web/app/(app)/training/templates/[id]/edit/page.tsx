@@ -1,4 +1,4 @@
-import TemplateForm from "@/app/(app)/training/components/TemplateForm";
+import TemplateForm from "@/app/(app)/training/components/template/TemplateForm";
 import { getFullTemplate } from "@/app/(app)/database/template";
 import { full_gym_template } from "@/app/(app)/types/models";
 

@@ -1,4 +1,4 @@
-import ExerciseDropdown from "../components/ExerciseDropdown";
+import ExerciseDropdown from "./ExerciseDropdown";
 import { CircleX } from "lucide-react";
 import { ExerciseEntry, emptyExerciseEntry } from "@/app/(app)/types/session";
 import { generateUUID } from "@/app/(app)/lib/generateUUID";

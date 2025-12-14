@@ -4,15 +4,15 @@ import Timer from "@/app/(app)/components/timer";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import DeleteSessionBtn from "@/app/(app)/ui/deleteSessionBtn";
+import DeleteSessionBtn from "@/app/(app)/components/buttons/deleteSessionBtn";
 import { HoleData, Player, PlayerStats } from "../Types/disc-golf";
-import SaveButton from "@/app/(app)/ui/save-button";
+import SaveButton from "@/app/(app)/components/buttons/save-button";
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import { clearLocalStorage } from "../components/ClearLocalStorage";
 import { useTimerStore } from "@/app/(app)/lib/stores/timerStore";
 import SwipeWrapper from "../components/SwipeWrapper";
 import StatsTracker from "../components/StatsTracker";
-import BaseButton from "../../ui/BaseButton";
+import BaseButton from "../../components/buttons/BaseButton";
 
 export default function DiscGolfGame() {
   const [length, setLength] = useState(""); // input value

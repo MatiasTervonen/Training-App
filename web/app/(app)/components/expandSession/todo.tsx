@@ -5,7 +5,7 @@ import { full_todo_session } from "../../types/models";
 import { SquareArrowOutUpRight, Check, Dot } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import toast from "react-hot-toast";
-import SaveButton from "../../ui/save-button";
+import SaveButton from "../buttons/save-button";
 import Modal from "../modal";
 import FullScreenLoader from "../FullScreenLoader";
 import { checkedTodo } from "../../database/todo";

@@ -8,8 +8,8 @@ import { CircleX } from "lucide-react";
 import { useTimerStore } from "../../lib/stores/timerStore";
 import { AlarmClock } from "lucide-react";
 import { playAlarmAudio, stopAlarmAudio } from "../components/alarmAudio";
-import BaseButton from "../../ui/BaseButton";
-import DeleteSessionBtn from "../../ui/deleteSessionBtn";
+import BaseButton from "../../components/buttons/BaseButton";
+import DeleteSessionBtn from "../../components/buttons/deleteSessionBtn";
 
 export default function TimerPage() {
   const [alarmMinutes, setAlarmMinutes] = useState("");

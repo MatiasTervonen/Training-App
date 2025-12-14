@@ -27,7 +27,6 @@ import { Checkbox } from "expo-checkbox";
 import SubNotesInput from "@/components/SubNotesInput";
 import UpdateNotificationId from "@/database/reminders/update-notification-id";
 
-
 export default function ReminderScreen() {
   const [open, setOpen] = useState(false);
   const [notes, setNotes] = useState("");
@@ -77,7 +76,7 @@ export default function ReminderScreen() {
       };
       await AsyncStorage.setItem(
         "reminder_draft",
-        JSON.stringify(sessionDraft)
+        JSON.stringify(sessionDraft),
       );
     }
   }, 1000); // Save every second
@@ -104,7 +103,6 @@ export default function ReminderScreen() {
     }
 
     setIsSaving(true);
-
 
     try {
       const reminder = await SaveCustomReminder({
@@ -182,7 +180,7 @@ export default function ReminderScreen() {
           });
 
           return id;
-        })
+        }),
       );
 
       return notifications;
@@ -270,7 +268,7 @@ export default function ReminderScreen() {
                               setWeekdays([...weekdays, dayNumber]);
                             } else {
                               setWeekdays(
-                                weekdays.filter((day) => day !== dayNumber)
+                                weekdays.filter((day) => day !== dayNumber),
                               );
                             }
                           }}

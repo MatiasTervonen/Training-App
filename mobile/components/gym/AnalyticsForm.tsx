@@ -103,7 +103,7 @@ export default function AnalyticsForm({
         data: heatmapData,
       },
     }),
-    [heatmapData, calendarRange]
+    [heatmapData, calendarRange],
   );
 
   useEffect(() => {
@@ -127,7 +127,7 @@ export default function AnalyticsForm({
   function averageDuration(data: full_gym_session[]) {
     const totalDuration = data.reduce(
       (acc, session) => acc + session.duration,
-      0
+      0,
     );
     return Math.round(totalDuration / 60 / data.length || 0);
   }

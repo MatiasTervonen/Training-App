@@ -13,7 +13,7 @@ type Props = {
 
 export default function GymTemplate({ item, onStartWorkout }: Props) {
   const groupedExercises = GroupTemplateExercise(
-    item.gym_template_exercises || []
+    item.gym_template_exercises || [],
   );
 
   return (

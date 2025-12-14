@@ -37,7 +37,7 @@ export default function EditExercises() {
   const [main_group, setMainGroup] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(
-    null
+    null,
   );
   const [resetTrigger, setResetTrigger] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);

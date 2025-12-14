@@ -32,7 +32,7 @@ export default function ProfileScreen() {
   const userNameZ = useUserStore((state) => state.preferences?.display_name);
   const weightUnitZ = useUserStore((state) => state.preferences?.weight_unit);
   const profilePicZ = useUserStore(
-    (state) => state.preferences?.profile_picture
+    (state) => state.preferences?.profile_picture,
   );
 
   const setPreferences = useUserStore((state) => state.setUserPreferences);
@@ -114,7 +114,7 @@ export default function ProfileScreen() {
             Authorization: `Bearer ${session.access_token}`,
           },
           body: formData,
-        }
+        },
       );
 
       const result = await response.json();
@@ -142,7 +142,7 @@ export default function ProfileScreen() {
       const profilePictureUrl =
         typeof uploadedProfilePic === "string"
           ? uploadedProfilePic
-          : profilePicZ ?? null;
+          : (profilePicZ ?? null);
 
       const isTaken = await validateUserName(userName);
 
@@ -195,7 +195,7 @@ export default function ProfileScreen() {
                   value
                     .toLowerCase()
                     .replace(/[^a-z0-9_]/g, "")
-                    .slice(0, 15)
+                    .slice(0, 15),
                 );
               }}
               label="User Name"

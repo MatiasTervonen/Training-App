@@ -33,7 +33,7 @@ export default function ExerciseDropdownEdit({
 }: Props) {
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredExercises, setFilteredExercises] = useState<userExercise[]>(
-    []
+    [],
   );
   const dropdownRef = useRef<View | null>(null);
   const [showDropdown, setShowDropdown] = useState(true);

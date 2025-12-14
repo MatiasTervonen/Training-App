@@ -38,7 +38,7 @@ export default function SettingsScreen() {
     const subscription = ScreenOrientation.addOrientationChangeListener(
       (event) => {
         setOrientation(event.orientationInfo.orientation);
-      }
+      },
     );
 
     return () => {
@@ -57,7 +57,7 @@ export default function SettingsScreen() {
     return () => {
       // Reset back to portrait when leaving the page
       ScreenOrientation.lockAsync(
-        ScreenOrientation.OrientationLock.PORTRAIT_UP
+        ScreenOrientation.OrientationLock.PORTRAIT_UP,
       );
     };
   }, []);

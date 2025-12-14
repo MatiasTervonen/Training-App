@@ -32,7 +32,7 @@ export async function registerForPushNotificationsAsync() {
       [
         { text: "Cancel", style: "cancel" },
         { text: "Open Settings", onPress: () => Linking.openSettings() },
-      ]
+      ],
     );
     return;
   }
@@ -70,7 +70,7 @@ export async function SaveTokenToServer(token: string, platform: string) {
     .from("user_push_mobile_subscriptions")
     .upsert(
       { token, platform, user_id: session.user.id },
-      { onConflict: "user_id,platform" }
+      { onConflict: "user_id,platform" },
     );
 
   if (error) {

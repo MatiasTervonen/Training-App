@@ -26,7 +26,7 @@ type templateSummary = {
 
 export default function TemplatesPage() {
   const [expandedItem, setExpandedItem] = useState<full_gym_template | null>(
-    null
+    null,
   );
 
   const activeSession = useTimerStore((state) => state.activeSession);
@@ -77,7 +77,7 @@ export default function TemplatesPage() {
 
     await AsyncStorage.setItem(
       "gym_session_draft",
-      JSON.stringify(sessionDraft)
+      JSON.stringify(sessionDraft),
     );
     await AsyncStorage.setItem("startedFromTemplate", "true");
     router.push("/training/gym");

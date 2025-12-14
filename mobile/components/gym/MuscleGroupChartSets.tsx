@@ -30,7 +30,7 @@ export default function MuscleGroupChartSets({
       ([name, value]) => ({
         value,
         label: name,
-      })
+      }),
     );
     return entries.sort((a, b) => b.value - a.value);
   }, [data]);

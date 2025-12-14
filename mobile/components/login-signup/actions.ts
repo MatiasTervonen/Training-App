@@ -95,7 +95,7 @@ export async function signUpWithEmail({
 
   if (signupError) {
     Alert.alert(
-      signupError.message || "Something went wrong. Please try again."
+      signupError.message || "Something went wrong. Please try again.",
     );
     handleError(signupError, {
       message: "Error logging in as guest",
@@ -142,9 +142,8 @@ export async function sendPasswordResetEmail({
   setLoadingMessage("Sending password reset email...");
   setLoading(true);
 
-  const { error } = await supabase.auth.resetPasswordForEmail(
-    forgotPasswordEmail
-  );
+  const { error } =
+    await supabase.auth.resetPasswordForEmail(forgotPasswordEmail);
 
   if (error) {
     Alert.alert(error.message || "Something went wrong. Please try again.");
@@ -185,7 +184,7 @@ export async function resendEmailVerification({
 
   if (error)
     Alert.alert(
-      error.message || "Could not resend verification email. Try again."
+      error.message || "Could not resend verification email. Try again.",
     );
 
   setLoading(false);

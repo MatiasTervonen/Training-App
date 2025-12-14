@@ -29,7 +29,7 @@ export default function GymSession(gym_session: full_gym_session) {
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
 
   const groupedExercises = GroupExercises(
-    gym_session.gym_session_exercises || []
+    gym_session.gym_session_exercises || [],
   );
 
   const weightUnit =
@@ -182,12 +182,12 @@ export default function GymSession(gym_session: full_gym_session) {
                           </View>
                           <View className="w-[30%] text-center">
                             <AppText className="p-2 text-lg ">
-                              {set.time_min} 
+                              {set.time_min}
                             </AppText>
                           </View>
                           <View className="w-[30%] text-center">
                             <AppText className="p-2 text-lg">
-                              {set.distance_meters} 
+                              {set.distance_meters}
                             </AppText>
                           </View>
                         </>

@@ -54,7 +54,7 @@ export default function GymCard({
   const totalSets = fullGym
     ? fullGym.gym_session_exercises.reduce(
         (sum, exercise) => sum + exercise.gym_sets.length,
-        0
+        0,
       )
     : 0;
 

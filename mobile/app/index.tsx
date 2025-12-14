@@ -7,7 +7,6 @@ import GradientButton from "@/components/buttons/GradientButton";
 import { useRouter } from "expo-router";
 import PageContainer from "@/components/PageContainer";
 
-
 export default function Index() {
   const router = useRouter();
 
@@ -17,7 +16,6 @@ export default function Index() {
   const aspectRatio = 2047 / 1106;
   const height = width * aspectRatio;
 
-  
   return (
     <ScrollView
       showsVerticalScrollIndicator={false}

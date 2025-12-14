@@ -68,7 +68,7 @@ export default function MyTimersScreen() {
         title: timer.title,
         notes: timer.notes,
         durationInSeconds: timer.time_seconds,
-      })
+      }),
     );
     setActiveSession({
       type: "timer",

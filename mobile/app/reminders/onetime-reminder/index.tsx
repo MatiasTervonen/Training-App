@@ -68,7 +68,7 @@ export default function ReminderScreen() {
       };
       await AsyncStorage.setItem(
         "reminder_draft",
-        JSON.stringify(sessionDraft)
+        JSON.stringify(sessionDraft),
       );
     }
   }, 1000); // Save every second
@@ -109,7 +109,7 @@ export default function ReminderScreen() {
 
       const occurrence = await SaveOccurence(
         reminder.id,
-        notifyAt.toISOString()
+        notifyAt.toISOString(),
       );
 
       const notificationId = await setNotification(reminder.id, occurrence.id);

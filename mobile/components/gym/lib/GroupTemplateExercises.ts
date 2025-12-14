@@ -11,12 +11,15 @@ type gym_template_exercises = {
 };
 
 export default function GroupTemplateExercises(
-  exercises: gym_template_exercises[]
+  exercises: gym_template_exercises[],
 ): Record<string, gym_template_exercises[]> {
-  return exercises.reduce((acc, exercise) => {
-    const key = exercise.superset_id ?? `solo-${exercise.id}`;
-    if (!acc[key]) acc[key] = [];
-    acc[key].push(exercise);
-    return acc;
-  }, {} as Record<string, gym_template_exercises[]>);
+  return exercises.reduce(
+    (acc, exercise) => {
+      const key = exercise.superset_id ?? `solo-${exercise.id}`;
+      if (!acc[key]) acc[key] = [];
+      acc[key].push(exercise);
+      return acc;
+    },
+    {} as Record<string, gym_template_exercises[]>,
+  );
 }

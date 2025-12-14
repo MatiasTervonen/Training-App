@@ -24,7 +24,6 @@ export default function FeedHeader({
   const { togglePin } = useTogglePin();
   const { handleDelete } = useDeleteSession();
 
-  
   return (
     <>
       {pinnedFeed.length > 0 && (
@@ -47,7 +46,7 @@ export default function FeedHeader({
             handleDelete(
               item.item.notification_id ?? null,
               item.item.id,
-              item.table
+              item.table,
             )
           }
         />
@@ -72,16 +71,16 @@ export default function FeedHeader({
                 onDelete={() => {
                   const notificationId =
                     feedItem.table === "custom_reminders"
-                      ? (feedItem.item.notification_id as
+                      ? ((feedItem.item.notification_id as
                           | string
                           | string[]
-                          | null) ?? null
+                          | null) ?? null)
                       : null;
 
                   handleDelete(
                     notificationId,
                     feedItem.item.id,
-                    feedItem.table
+                    feedItem.table,
                   );
                 }}
                 onEdit={() => setEditingItem(feedItem)}

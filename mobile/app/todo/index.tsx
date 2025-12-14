@@ -46,7 +46,7 @@ export default function Todo() {
     {
       task: "",
       notes: "",
-    }
+    },
   );
   const router = useRouter();
   const [isLoaded, setIsLoaded] = useState(false);
@@ -94,7 +94,7 @@ export default function Todo() {
       }
     },
     500,
-    { maxWait: 3000 }
+    { maxWait: 3000 },
   );
 
   useEffect(() => {
@@ -265,8 +265,8 @@ export default function Todo() {
                                       list.map((item, i) =>
                                         i === index
                                           ? { ...item, ...modalDraft }
-                                          : item
-                                      )
+                                          : item,
+                                      ),
                                     );
                                     setEdit(null);
                                   }}

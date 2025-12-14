@@ -36,7 +36,7 @@ export default function ModalPageWrapper({
   const router = useRouter();
   const direction = useTransitionDirectionStore((state) => state.direction);
   const setDirection = useTransitionDirectionStore(
-    (state) => state.setDirection
+    (state) => state.setDirection,
   );
 
   // Max width == max-w-3xl (768px) for the count of swipe dinstance to navigation

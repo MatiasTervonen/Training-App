@@ -25,7 +25,7 @@ export default function EditReminder({ reminder, onClose, onSave }: Props) {
   const [notes, setNotes] = useState(reminder.notes);
   const [isSaving, setIsSaving] = useState(false);
   const [notifyAt, setNotifyAt] = useState(
-    reminder.notify_at ? new Date(reminder.notify_at) : null
+    reminder.notify_at ? new Date(reminder.notify_at) : null,
   );
   const [open, setOpen] = useState(false);
 

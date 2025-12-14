@@ -1,10 +1,6 @@
 import AppText from "../AppText";
 
-export default function ResendEmailText({
-  onPress,
-}: {
-  onPress: () => void;
-}) {
+export default function ResendEmailText({ onPress }: { onPress: () => void }) {
   return (
     <>
       <AppText

@@ -35,7 +35,7 @@ export default function TodoSession({
   const [sessionData, setSessionData] = useState(initialTodo);
   const [isSaving, setIsSaving] = useState(false);
   const [sortField, setSortField] = useState<"original" | "completed">(
-    "original"
+    "original",
   );
   const [originalOrder, setOriginalOrder] = useState(initialTodo.todo_tasks);
   const lastSavedRef = useRef(initialTodo.todo_tasks);
@@ -60,7 +60,7 @@ export default function TodoSession({
       const updatedTasks = prev.todo_tasks.map((task) =>
         task.id === taskId
           ? { ...task, is_completed: !task.is_completed }
-          : task
+          : task,
       );
       return { ...prev, todo_tasks: updatedTasks };
     });
@@ -123,7 +123,7 @@ export default function TodoSession({
     setSessionData((prev) => {
       const restoredTasks = originalOrder.map((originalTask) => {
         const currentTask = prev.todo_tasks.find(
-          (t) => t.id === originalTask.id
+          (t) => t.id === originalTask.id,
         );
         return currentTask || originalTask;
       });
@@ -142,7 +142,7 @@ export default function TodoSession({
 
   const keyExtractor = useCallback(
     (item: todo_tasks, index: number) => `${item.id}-${index}`,
-    []
+    [],
   );
 
   return (
@@ -203,7 +203,7 @@ export default function TodoSession({
                   isActive,
                 }: RenderItemParams<todo_tasks>) => {
                   const taskIndex = sessionData.todo_tasks.findIndex(
-                    (t) => t.id === task.id
+                    (t) => t.id === task.id,
                   );
                   return (
                     <ScaleDecorator>

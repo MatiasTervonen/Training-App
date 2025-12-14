@@ -50,9 +50,7 @@ export default function AnimatedButton({
         {...props}
       >
         {label && (
-          <AppText className={`text-lg ${textClassName}`}>
-            {label}
-          </AppText>
+          <AppText className={`text-lg ${textClassName}`}>{label}</AppText>
         )}
         {children}
       </Pressable>

@@ -59,7 +59,7 @@ export default function GymForm({
           time_min: s.time_min ?? 0,
           distance_meters: s.distance_meters ?? 0,
         })) || [],
-    }))
+    })),
   );
   const [notes, setNotes] = useState("");
   const [exerciseInputs, setExerciseInputs] = useState<ExerciseInput[]>(
@@ -69,7 +69,7 @@ export default function GymForm({
       rpe: "Medium",
       time_min: "",
       distance_meters: "",
-    }))
+    })),
   );
   const [durationEdit, setDurationEdit] = useState(session.duration);
   const router = useRouter();
@@ -85,7 +85,7 @@ export default function GymForm({
   >(null);
   const [hasLoadedDraft, setHasLoadedDraft] = useState(false);
   const [exerciseHistoryId, setExerciseHistoryId] = useState<string | null>(
-    null
+    null,
   );
   const [isScrolling, setIsScrolling] = useState(false);
 
@@ -113,7 +113,7 @@ export default function GymForm({
                   time_min: "",
                   distance_meters: "",
                 }))
-              : []
+              : [],
           );
         }
       } catch (error) {
@@ -144,7 +144,7 @@ export default function GymForm({
 
       await AsyncStorage.setItem(
         "gym_session_draft",
-        JSON.stringify(sessionDraft)
+        JSON.stringify(sessionDraft),
       );
     }
   }, 500);
@@ -215,7 +215,7 @@ export default function GymForm({
 
     if (exerciseType === "Super-Set") {
       const validExercises = supersetExercise.filter(
-        (ex) => ex && typeof ex.name === "string" && ex.name.trim() !== ""
+        (ex) => ex && typeof ex.name === "string" && ex.name.trim() !== "",
       );
       if (validExercises.length === 0) return;
 
@@ -235,7 +235,7 @@ export default function GymForm({
       setSupersetExercise([]);
     } else {
       const validNormal = normalExercises.filter(
-        (ex) => ex.name && ex.name.trim() !== ""
+        (ex) => ex.name && ex.name.trim() !== "",
       );
       if (validNormal.length === 0) return;
 
@@ -523,7 +523,7 @@ export default function GymForm({
                           if (!confirmDelete) return;
 
                           const updated = exercises.filter(
-                            (_, i) => i !== index
+                            (_, i) => i !== index,
                           );
                           setExercises(updated);
 
@@ -534,7 +534,7 @@ export default function GymForm({
                           };
                           AsyncStorage.setItem(
                             "gym_session_draft",
-                            JSON.stringify(sessionDraft)
+                            JSON.stringify(sessionDraft),
                           );
                         }}
                       />

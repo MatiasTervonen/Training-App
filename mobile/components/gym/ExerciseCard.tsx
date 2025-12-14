@@ -21,7 +21,7 @@ type ExerciseCardProps = {
   onInputChange: (
     index: number,
     field: "weight" | "reps" | "rpe" | "time_min" | "distance_meters",
-    value: number | string
+    value: number | string,
   ) => void;
   onAddSet: (index: number) => void;
   onDeleteSet: (exerciseIndex: number, setIndex: number) => void;

@@ -56,8 +56,6 @@ export default Sentry.wrap(function RootLayout() {
   const [orieantation, setOrientation] =
     useState<ScreenOrientation.Orientation | null>(null);
 
-
-
   const segments = useSegments();
   const route = segments.join("/");
 
@@ -78,7 +76,7 @@ export default Sentry.wrap(function RootLayout() {
     const subscription = ScreenOrientation.addOrientationChangeListener(
       (event) => {
         setOrientation(event.orientationInfo.orientation);
-      }
+      },
     );
 
     return () => {

@@ -72,7 +72,7 @@ export default function LayoutWrapper({
           return;
         }
         handleSessionChange(session);
-      }
+      },
     );
 
     return () => {

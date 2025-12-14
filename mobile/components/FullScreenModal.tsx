@@ -50,7 +50,7 @@ export default function FullScreenModal({
           { duration: 300 },
           () => {
             runOnJS(onClose)();
-          }
+          },
         );
       } else {
         // Otherwise, spring back to original position

@@ -28,7 +28,7 @@ export default function DeleteButton({
             onPress: onPress,
           },
         ],
-        { cancelable: true }
+        { cancelable: true },
       );
     } else {
       onPress();

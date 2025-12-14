@@ -34,17 +34,20 @@ export default function AllDataTable({ data, isLoading, error }: AllDataProps) {
   }, [data]);
 
   const groupedData = useMemo(() => {
-    return sortedData.reduce((acc, entry) => {
-      const date = new Date(entry.created_at);
-      const monthYear = date.toLocaleString("default", {
-        month: "long",
-        year: "numeric",
-      });
+    return sortedData.reduce(
+      (acc, entry) => {
+        const date = new Date(entry.created_at);
+        const monthYear = date.toLocaleString("default", {
+          month: "long",
+          year: "numeric",
+        });
 
-      if (!acc[monthYear]) acc[monthYear] = [];
-      acc[monthYear].push(entry);
-      return acc;
-    }, {} as Record<string, weight[]>);
+        if (!acc[monthYear]) acc[monthYear] = [];
+        acc[monthYear].push(entry);
+        return acc;
+      },
+      {} as Record<string, weight[]>,
+    );
   }, [sortedData]);
 
   // Transform into SectionList format
@@ -80,7 +83,7 @@ export default function AllDataTable({ data, isLoading, error }: AllDataProps) {
     const previousData = queryClient.getQueryData(queryKey);
 
     queryClient.setQueryData<weight[]>(queryKey, (oldData) =>
-      oldData ? oldData.filter((item) => item.id !== item_id) : []
+      oldData ? oldData.filter((item) => item.id !== item_id) : [],
     );
 
     try {
@@ -114,7 +117,7 @@ export default function AllDataTable({ data, isLoading, error }: AllDataProps) {
         data={data}
       />
     ),
-    [range, setRange, isLoading, error, data]
+    [range, setRange, isLoading, error, data],
   );
 
   return (

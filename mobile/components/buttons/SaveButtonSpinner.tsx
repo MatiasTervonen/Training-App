@@ -17,7 +17,6 @@ export default function SaveButtonSpinner({
   loading,
   className,
 }: SaveButtonProps) {
-
   return (
     <AnimatedButton
       className={`flex-row justify-center items-center gap-3 bg-blue-800 rounded-md shadow-md border-2 border-blue-500 py-2 ${className}`}

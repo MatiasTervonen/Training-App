@@ -19,7 +19,7 @@ export default function ActiveSessionPopup() {
   const totalDuration = useTimerStore((state) => state.totalDuration);
   const alarmSoundPlaying = useTimerStore((state) => state.alarmSoundPlaying);
   const setAlarmSoundPlaying = useTimerStore(
-    (state) => state.setAlarmSoundPlaying
+    (state) => state.setAlarmSoundPlaying,
   );
 
   const pathname = usePathname();

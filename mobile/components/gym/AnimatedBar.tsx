@@ -29,7 +29,7 @@ export default function AnimatedBar({
   useEffect(() => {
     width.value = withDelay(
       delay || 0,
-      withTiming(targetWidth, { duration: 800 })
+      withTiming(targetWidth, { duration: 800 }),
     );
   }, [targetWidth, delay, width]);
 

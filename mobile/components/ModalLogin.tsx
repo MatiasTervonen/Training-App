@@ -47,7 +47,7 @@ export default function ModalLogin({
           { duration: 200 },
           () => {
             runOnJS(onClose)();
-          }
+          },
         );
       } else {
         // Otherwise, spring back to original position

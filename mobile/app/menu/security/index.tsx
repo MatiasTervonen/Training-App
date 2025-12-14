@@ -56,7 +56,7 @@ export default function SecurityPage() {
           method: "POST",
         });
         setErrorMessage(
-          error.message || "Failed to update password. Please try again."
+          error.message || "Failed to update password. Please try again.",
         );
         setLoading(false);
         return;
@@ -76,7 +76,7 @@ export default function SecurityPage() {
         method: "POST",
       });
       Alert.alert(
-        error.message || "An unexpected error occurred. Please try again."
+        error.message || "An unexpected error occurred. Please try again.",
       );
       setLoading(false);
     }
@@ -85,7 +85,7 @@ export default function SecurityPage() {
   const handleDeleteAccount = async () => {
     if (isDeleteAccount !== "DELETE ACCOUNT") {
       setErrorMessage2(
-        "Incorrect confirmation text. Type “DELETE ACCOUNT” to proceed."
+        "Incorrect confirmation text. Type “DELETE ACCOUNT” to proceed.",
       );
       return;
     }
@@ -116,7 +116,7 @@ export default function SecurityPage() {
           headers: {
             authorization: `Bearer ${session.access_token}`,
           },
-        }
+        },
       );
 
       if (!res.ok) {

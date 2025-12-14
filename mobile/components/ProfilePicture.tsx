@@ -53,8 +53,8 @@ export default function ProfilePicture({ data, onFileSelected }: Props) {
         (extension === "png"
           ? "image/png"
           : extension === "jpg" || extension === "jpeg"
-          ? "image/jpeg"
-          : "application/octet-stream");
+            ? "image/jpeg"
+            : "application/octet-stream");
 
       setUserPickedImage(true);
       setImageUri(uri);

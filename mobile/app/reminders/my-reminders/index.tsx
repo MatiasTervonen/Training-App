@@ -22,7 +22,7 @@ export default function RemindersPage() {
   const [expandedItem, setExpandedItem] = useState<full_reminder | null>(null);
   const [editingItem, setEditingItem] = useState<full_reminder | null>(null);
   const [activeTab, setActiveTab] = useState<"upcoming" | "delivered">(
-    "upcoming"
+    "upcoming",
   );
 
   const queryClient = useQueryClient();
@@ -62,8 +62,8 @@ export default function RemindersPage() {
       const ids = Array.isArray(reminder.notification_id)
         ? reminder.notification_id
         : typeof reminder.notification_id === "string"
-        ? [reminder.notification_id]
-        : [];
+          ? [reminder.notification_id]
+          : [];
 
       for (const nid of ids) {
         await Notifications.cancelScheduledNotificationAsync(nid);
@@ -92,7 +92,7 @@ export default function RemindersPage() {
   };
 
   const filteredReminders = reminders.filter((r) =>
-    activeTab === "upcoming" ? !r.delivered : r.delivered
+    activeTab === "upcoming" ? !r.delivered : r.delivered,
   );
 
   return (
@@ -161,7 +161,7 @@ export default function RemindersPage() {
 
         {editingItem &&
           filteredReminders.find(
-            (r) => r.id === editingItem?.id && r.type === "global"
+            (r) => r.id === editingItem?.id && r.type === "global",
           ) && (
             <FullScreenModal isOpen={true} onClose={() => setEditingItem(null)}>
               <EditReminder
@@ -184,7 +184,7 @@ export default function RemindersPage() {
 
         {editingItem &&
           filteredReminders.find(
-            (r) => r.id === editingItem?.id && r.type !== "global"
+            (r) => r.id === editingItem?.id && r.type !== "global",
           ) && (
             <FullScreenModal isOpen={true} onClose={() => setEditingItem(null)}>
               <EditCustomReminder

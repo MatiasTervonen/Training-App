@@ -17,7 +17,7 @@ type WeightChartProps = {
 function addOffsetToDate(
   base: Date,
   range: string,
-  offset: number
+  offset: number,
 ): [Date, Date] {
   const end = new Date(base);
   const start = new Date(base);
@@ -46,13 +46,13 @@ function addOffsetToDate(
 
 function getLatestDate(data: weight[]) {
   return new Date(
-    Math.max(...data.map((entry) => new Date(entry.created_at).getTime()))
+    Math.max(...data.map((entry) => new Date(entry.created_at).getTime())),
   );
 }
 
 function formatDatelabel(
   dateString: string,
-  range: "week" | "month" | "year"
+  range: "week" | "month" | "year",
 ): string {
   const date = new Date(dateString);
   switch (range) {
@@ -92,7 +92,7 @@ export default function WeightChart({ range, data }: WeightChartProps) {
   const [start, end] = addOffsetToDate(latestDate, range, offset);
 
   const weightUnit = useUserStore(
-    (state) => state.preferences?.weight_unit || "kg"
+    (state) => state.preferences?.weight_unit || "kg",
   );
 
   useEffect(() => {
@@ -119,18 +119,18 @@ export default function WeightChart({ range, data }: WeightChartProps) {
       rounded > 0
         ? `+ ${rounded}`
         : rounded < 0
-        ? `- ${Math.abs(rounded)}`
-        : `${rounded}`;
+          ? `- ${Math.abs(rounded)}`
+          : `${rounded}`;
   }
 
   const fullDateRange = generateDateRange(start, end);
 
   function fillMissingDatesWithCarry(
     fullDates: string[],
-    entries: weight[]
+    entries: weight[],
   ): { date: string; weight: number | null }[] {
     const weightMap = new Map(
-      entries.map((entry) => [entry.created_at.split("T")[0], entry.weight])
+      entries.map((entry) => [entry.created_at.split("T")[0], entry.weight]),
     );
 
     let lastKnownWeight: number | null = null;
@@ -232,7 +232,7 @@ export default function WeightChart({ range, data }: WeightChartProps) {
       ],
       grid: { top: 20, right: 20, bottom: 40, left: 20 },
     }),
-    [chartData, minWeight, maxWeight]
+    [chartData, minWeight, maxWeight],
   );
 
   useEffect(() => {

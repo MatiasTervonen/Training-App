@@ -34,7 +34,7 @@ export default function Timer({
     color: interpolateColor(
       colorProgress.value,
       [0, 1],
-      ["#f3f4f6", "#ef4444"] // gray-100 → red-500
+      ["#f3f4f6", "#ef4444"], // gray-100 → red-500
     ),
   }));
 
@@ -65,7 +65,7 @@ export default function Timer({
       colorProgress.value = withRepeat(
         withTiming(1, { duration: 500 }),
         -1,
-        true
+        true,
       );
     } else {
       colorProgress.value = withTiming(0, { duration: 300 });
@@ -96,7 +96,7 @@ export default function Timer({
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
     return `${String(minutes).padStart(2, "0")}:${String(
-      remainingSeconds
+      remainingSeconds,
     ).padStart(2, "0")}`;
   };
 

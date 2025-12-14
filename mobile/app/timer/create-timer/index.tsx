@@ -38,7 +38,7 @@ export default function SettingsScreen() {
           setNotes(draft.notes || "");
           if (draft.durationInSeconds) {
             setAlarmMinutes(
-              Math.floor(draft.durationInSeconds / 60).toString()
+              Math.floor(draft.durationInSeconds / 60).toString(),
             );
             setAlarmSeconds((draft.durationInSeconds % 60).toString());
           }

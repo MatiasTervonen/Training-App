@@ -11,7 +11,6 @@ export default function SaveButton({
   label = "Save",
   disabled,
 }: SaveButtonProps) {
-
   return (
     <AnimatedButton
       className="bg-blue-800 rounded-md shadow-md border-2 border-blue-500 py-2"

@@ -100,8 +100,8 @@ export default function EditCustomReminder({
       const oldNotificationIds = Array.isArray(reminder.notification_id)
         ? reminder.notification_id
         : typeof reminder.notification_id === "string"
-        ? [reminder.notification_id]
-        : [];
+          ? [reminder.notification_id]
+          : [];
 
       for (const nid of oldNotificationIds) {
         try {
@@ -221,7 +221,7 @@ export default function EditCustomReminder({
               },
               trigger,
             });
-          })
+          }),
         );
         return notifications;
       }
@@ -303,7 +303,7 @@ export default function EditCustomReminder({
                             setWeekdays([...weekdays, dayNumber]);
                           } else {
                             setWeekdays(
-                              weekdays.filter((day) => day !== dayNumber)
+                              weekdays.filter((day) => day !== dayNumber),
                             );
                           }
                         }}

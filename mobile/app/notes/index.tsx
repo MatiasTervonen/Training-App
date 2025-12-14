@@ -62,7 +62,7 @@ export default function NotesScreen() {
       }
     },
     500,
-    { maxWait: 3000 }
+    { maxWait: 3000 },
   );
 
   useEffect(() => {

@@ -20,7 +20,7 @@ export default function EditWeight({ weight, onClose, onSave }: Props) {
   const [title, setValue] = useState(weight.title);
   const [notes, setNotes] = useState(weight.notes);
   const [weightValue, setWeightValue] = useState(
-    weight.weight != null ? weight.weight.toString() : ""
+    weight.weight != null ? weight.weight.toString() : "",
   );
   const [isSaving, setIsSaving] = useState(false);
 

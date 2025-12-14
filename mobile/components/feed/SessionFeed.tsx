@@ -103,7 +103,7 @@ export default function SessionFeed() {
         </AppText>
       ) : !data || feed.length === 0 ? (
         <AppText className="text-center text-lg mt-20">
-          No sessions yet. Let&apos;s get started!
+          No sessions yet. Let's get started!
         </AppText>
       ) : (
         <>
@@ -147,16 +147,16 @@ export default function SessionFeed() {
                   onDelete={() => {
                     const notificationId =
                       feedItem.table === "custom_reminders"
-                        ? (feedItem.item.notification_id as
+                        ? ((feedItem.item.notification_id as
                             | string
                             | string[]
-                            | null) ?? null
+                            | null) ?? null)
                         : null;
 
                     handleDelete(
                       notificationId,
                       feedItem.item.id,
-                      feedItem.table
+                      feedItem.table,
                     );
                   }}
                   onEdit={() => {

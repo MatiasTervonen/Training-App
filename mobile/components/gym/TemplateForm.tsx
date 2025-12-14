@@ -53,7 +53,7 @@ export default function TemplateForm() {
     number | null
   >(null);
   const [exerciseHistoryId, setExerciseHistoryId] = useState<string | null>(
-    null
+    null,
   );
 
   const { id } = useLocalSearchParams<{ id?: string }>();
@@ -124,7 +124,7 @@ export default function TemplateForm() {
             rpe: undefined,
           })),
           superset_id: ex.superset_id,
-        })
+        }),
       );
 
       setExercises(mappedExercises);
@@ -134,7 +134,7 @@ export default function TemplateForm() {
           weight: "",
           reps: "",
           rpe: "Medium",
-        }))
+        })),
       );
     }
   }, [existingTemplate]);
@@ -169,7 +169,7 @@ export default function TemplateForm() {
 
     if (exerciseType === "Super-Set") {
       const validExercises = supersetExercise.filter(
-        (ex) => ex && typeof ex.name === "string" && ex.name.trim() !== ""
+        (ex) => ex && typeof ex.name === "string" && ex.name.trim() !== "",
       );
       if (validExercises.length === 0) return;
 
@@ -190,7 +190,7 @@ export default function TemplateForm() {
       setSupersetExercise([]);
     } else {
       const validNormal = normalExercises.filter(
-        (ex) => ex.name && ex.name.trim() !== ""
+        (ex) => ex.name && ex.name.trim() !== "",
       );
       if (validNormal.length === 0) return;
 
@@ -396,7 +396,7 @@ export default function TemplateForm() {
                             if (!confirmDelete) return;
 
                             const updated = exercises.filter(
-                              (_, i) => i !== index
+                              (_, i) => i !== index,
                             );
                             setExercises(updated);
 
@@ -406,7 +406,7 @@ export default function TemplateForm() {
                             };
                             AsyncStorage.setItem(
                               storageKey,
-                              JSON.stringify(sessionDraft)
+                              JSON.stringify(sessionDraft),
                             );
                           }}
                         />

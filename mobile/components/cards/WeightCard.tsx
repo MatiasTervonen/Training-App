@@ -58,7 +58,6 @@ export default function WeightCard({
         />
       </View>
 
-
       <AppText
         className={`ml-4 mb-4 mr-5 line-clamp-2 ${
           pinned ? "text-slate-900" : "text-gray-100"

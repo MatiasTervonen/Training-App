@@ -6,6 +6,7 @@ import { Session } from "@supabase/supabase-js";
 import { fetchUserPreferences } from "@/database/settings/get-settings";
 import ModalPageWrapper from "./ModalPageWrapper";
 import { useModalPageConfig } from "@/lib/stores/modalPageConfig";
+import syncNotifications from "@/database/reminders/syncNotifications";
 
 interface UserPreferences {
   id: string;
@@ -45,6 +46,9 @@ export default function LayoutWrapper({
       const data = await fetchUserPreferences();
       loginUser(data as UserPreferences);
     }
+
+    // Sync notifications when user opens app.
+    syncNotifications().catch(() => {});
 
     if (pathname !== "/dashboard") {
       router.replace("/dashboard");

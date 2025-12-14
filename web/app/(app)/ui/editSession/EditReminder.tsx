@@ -8,13 +8,13 @@ import DateTimePicker from "@/app/(app)/components/DateTimePicker";
 import { Bell } from "lucide-react";
 import { formatDateTime } from "../../lib/formatDate";
 import { editReminder } from "../../database/reminder";
-import { reminders } from "../../types/models";
+import { full_reminder } from "../../types/session";
 import SubNotesInput from "../SubNotesInput";
 import TitleInput from "../TitleInput";
 import { useQueryClient } from "@tanstack/react-query";
 
 type Props = {
-  reminder: reminders;
+  reminder: full_reminder;
   onClose: () => void;
   onSave?: () => void;
 };

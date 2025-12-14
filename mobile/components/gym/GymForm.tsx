@@ -462,7 +462,7 @@ export default function GymForm({
                 colors={["#1e3a8a", "#0f172a", "#0f172a"]}
                 start={{ x: 1, y: 0 }} // bottom-left
                 end={{ x: 0, y: 1 }} // top-right
-                className={`mt-10  rounded-md  ${
+                className={`mt-10  rounded-md overflow-hidden ${
                   group.length > 1
                     ? "border-2 border-blue-700"
                     : "border-2 border-gray-600"

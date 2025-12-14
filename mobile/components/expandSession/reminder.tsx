@@ -1,11 +1,15 @@
-import { formatDate, formatDateTime } from "@/lib/formatDate";
 import { Bell, CalendarSync } from "lucide-react-native";
 import { View } from "react-native";
 import AppText from "../AppText";
+import { full_reminder } from "@/types/session";
+import { formatNotifyTime, formatDate, formatDateTime } from "@/lib/formatDate";
 import { LinearGradient } from "expo-linear-gradient";
-import { reminders } from "@/types/models";
 
-export default function ReminderSession(reminder: reminders) {
+export default function ReminderSession(reminder: full_reminder) {
+  const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+  console.log(reminder);
+
   return (
     <LinearGradient
       colors={["#1e3a8a", "#0f172a", "#0f172a"]}
@@ -13,22 +17,38 @@ export default function ReminderSession(reminder: reminders) {
       end={{ x: 0, y: 1 }} // top-right
       className={`mt-20 mb-10 pt-10 px-6 rounded-xl w-full border border-slate-700 overflow-hidden shadow-md`}
     >
-      <View className="flex-row justify-center">
-        <View className="items-center justify-center mt-5 bg-slate-700 p-5 rounded-md flex-1 border border-gray-400">
+      <View className="flex-row w-full">
+        <View className="flex-1 min-w-0 items-center justify-center bg-slate-700 p-5 rounded-md border border-gray-400">
           <CalendarSync color="#f3f4f6" />
-          <AppText className="mt-2 text-xl text-center">Global</AppText>
+          <AppText className="mt-2 text-xl text-center">
+            {reminder.type === "reminders" ? "global" : reminder.type}
+          </AppText>
         </View>
-        <View className="items-center justify-center mt-5 bg-slate-700 p-5 rounded-md flex-1 ml-5 border border-gray-400">
+        <View className="flex-1 min-w-0  items-center justify-center  bg-slate-700 p-5 rounded-md ml-5 border border-gray-400">
           <Bell color="#f3f4f6" />
-
-          <View className="flex-row items-center gap-3 justify-center">
+          {reminder.type === "one-time" ? (
+            <AppText className="text-center mt-2 text-lg">
+              {formatDateTime(reminder.notify_date!)}
+            </AppText>
+          ) : reminder.type === "reminders" || reminder.type === "global" ? (
             <AppText className="text-center mt-2 text-lg">
               {formatDateTime(reminder.notify_at!)}
             </AppText>
-          </View>
+          ) : (
+            <AppText className="text-center mt-2 text-lg">
+              {formatNotifyTime(reminder.notify_at_time!)}
+            </AppText>
+          )}
         </View>
       </View>
-      <View className="bg-slate-700 mt-5 rounded-md p-5 w-full border border-gray-400">
+      {reminder.weekdays && reminder.weekdays.length > 0 && (
+        <View className="bg-slate-700 rounded-md p-5 mt-5 border border-gray-400">
+          <AppText className="text-center text-lg ">
+            {reminder.weekdays.map((dayNum) => days[dayNum - 1]).join(", ")}
+          </AppText>
+        </View>
+      )}
+      <View className="bg-slate-700 mt-5 rounded-md p-5 w-full border border-gray-400 shadow-md">
         <AppText className="text-xl break-words text-center">
           {reminder.title}
         </AppText>
@@ -38,11 +58,12 @@ export default function ReminderSession(reminder: reminders) {
           <AppText className="text-center">{reminder.notes}</AppText>
         </View>
       )}
+
       <AppText className="text-sm text-gray-300 mt-8 mb-2">
         Created: {formatDate(reminder.created_at)}
       </AppText>
       {reminder.updated_at && (
-        <AppText className="text-sm text-gray-300 mb-2">
+        <AppText className="text-sm text-yellow-500 mb-2">
           Updated: {formatDate(reminder.updated_at)}
         </AppText>
       )}

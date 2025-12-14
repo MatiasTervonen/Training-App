@@ -37,14 +37,24 @@ export default function SessionsScreen() {
 
       <Modal visible={showModal} transparent={true} animationType="slide">
         <View className="flex-1 justify-center items-center bg-black/50 px-5">
-          <View className="bg-slate-600 rounded-lg p-6 w-full border-2 border-gray-100">
+          <View className="bg-slate-700 rounded-lg p-6 w-full border-2 border-gray-100">
             <View className="mb-5">
               <Info size={35} color="#fbbf24" />
             </View>
             <AppText className="text-xl mb-6 text-center">
+              Push notifications disabled.
+            </AppText>
+            <AppText className="text-lg mb-6 text-center">
               Enable push notifications from menu to receive reminders.
             </AppText>
-            <LinkButton href="/menu" label="Go to Menu" />
+            <View className="flex-row gap-4">
+              <View className="flex-1">
+                <LinkButton href="/sessions" label="Back" />
+              </View>
+              <View className="flex-1">
+                <LinkButton href="/menu" label="Menu" />
+              </View>
+            </View>
           </View>
         </View>
       </Modal>

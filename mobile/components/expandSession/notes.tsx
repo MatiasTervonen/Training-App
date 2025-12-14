@@ -17,13 +17,11 @@ export default function NotesSession(notes: notes) {
             updated: {formatDate(notes.updated_at)}
           </AppText>
         )}
-        <View className="items-center">
-          <AppText className="my-5 text-xl break-words text-center">
+        <View className="items-center bg-slate-900 p-5 rounded-md shadow-md mt-5">
+          <AppText className="text-xl text-center mb-5 border-b border-gray-700 pb-2">
             {notes.title}
           </AppText>
-          <AppText className="text-lg whitespace-pre-wrap break-words bg-slate-900 p-4 rounded-md shadow-md mt-5 text-center">
-            {notes.notes}
-          </AppText>
+          <AppText className="text-lg  text-left">{notes.notes}</AppText>
         </View>
         <View className="mt-10">
           <CopyText textToCopy={notes.notes!} />

@@ -16,9 +16,11 @@ import PageContainer from "@/components/PageContainer";
 import DatePicker from "react-native-date-picker";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import { Plus, Info } from "lucide-react-native";
-import { formatTime } from "@/lib/formatDate";
+import { formatDateTime } from "@/lib/formatDate";
 import * as Notifications from "expo-notifications";
 import SubNotesInput from "@/components/SubNotesInput";
+import UpdateNotificationId from "@/database/reminders/update-notification-id";
+import SaveOccurence from "@/database/reminders/save-occurence";
 
 export default function ReminderScreen() {
   const [open, setOpen] = useState(false);
@@ -31,7 +33,7 @@ export default function ReminderScreen() {
 
   const queryClient = useQueryClient();
 
-  const formattedTime = formatTime(notifyAt!);
+  const formattedTime = formatDateTime(notifyAt!);
 
   useEffect(() => {
     const loadDraft = async () => {
@@ -94,18 +96,25 @@ export default function ReminderScreen() {
 
     setIsSaving(true);
 
-    const notificationIds = await setNotification();
-
     try {
-      await SaveCustomReminder({
-        title: title,
+      const reminder = await SaveCustomReminder({
+        title,
         notes,
         weekdays: [],
         notify_at_time: null,
         type: "one-time",
         notify_date: notifyAt,
-        notification_id: notificationIds ?? [],
+        notification_id: [],
       });
+
+      const occurrence = await SaveOccurence(
+        reminder.id,
+        notifyAt.toISOString()
+      );
+
+      const notificationId = await setNotification(reminder.id, occurrence.id);
+
+      await UpdateNotificationId(notificationId!, reminder.id);
 
       await Promise.all([
         queryClient.refetchQueries({ queryKey: ["feed"], exact: true }),
@@ -116,10 +125,12 @@ export default function ReminderScreen() {
       ]);
       router.push("/dashboard");
       resetReminder();
-    } catch {
+    } catch (error) {
+      console.log("Error saving reminder:", error);
       Toast.show({
         type: "error",
-        text1: "Failed to save reminder. Please try again.",
+        text1: "Failed to save reminder.",
+        text2: "Please try again later.",
       });
       setIsSaving(false);
     }
@@ -132,7 +143,7 @@ export default function ReminderScreen() {
     setNotifyAt(null);
   };
 
-  async function setNotification() {
+  async function setNotification(reminderId: string, occurrenceId: string) {
     if (!notifyAt) return;
 
     try {
@@ -141,6 +152,11 @@ export default function ReminderScreen() {
           title: title,
           body: notes,
           sound: true,
+          data: {
+            reminderId: reminderId,
+            occurrenceId: occurrenceId,
+            type: "onetime-reminder",
+          },
         },
         trigger: { type: "date", date: notifyAt } as any,
       });

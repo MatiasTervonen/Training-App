@@ -35,6 +35,7 @@ import {
 import { getFullTodoSession } from "../../database/todo";
 import getFeed from "../../database/feed";
 import { Feed_item } from "../../types/session";
+import { getFullCustomReminder } from "../../database/reminder";
 
 type FeedItem = FeedCardProps;
 
@@ -157,7 +158,13 @@ export default function SessionFeed() {
 
   const togglePin = async (
     id: string,
-    table: "notes" | "gym_sessions" | "weight" | "todo_lists" | "reminders",
+    table:
+      | "notes"
+      | "gym_sessions"
+      | "weight"
+      | "todo_lists"
+      | "reminders"
+      | "custom_reminders",
     isPinned: boolean
   ) => {
     if (!isPinned && pinnedFeed.length >= 10) {
@@ -207,7 +214,13 @@ export default function SessionFeed() {
 
   const handleDelete = async (
     id: string,
-    table: "notes" | "gym_sessions" | "weight" | "todo_lists" | "reminders"
+    table:
+      | "notes"
+      | "gym_sessions"
+      | "weight"
+      | "todo_lists"
+      | "reminders"
+      | "custom_reminders"
   ) => {
     const confirmDetlete = confirm(
       "Are you sure you want to delete this session?"
@@ -267,6 +280,13 @@ export default function SessionFeed() {
       ? editingId
       : null;
 
+  const customReminderId =
+    expandedItem?.table === "custom_reminders"
+      ? expandedId
+      : editingItem?.table === "custom_reminders"
+      ? editingId
+      : null;
+
   const todoId =
     expandedItem?.table === "todo_lists"
       ? expandedId
@@ -305,6 +325,21 @@ export default function SessionFeed() {
     gcTime: Infinity,
   });
 
+  const {
+    data: CustomReminderFull,
+    error: CustomReminderError,
+    isLoading: isLoadingCustomReminder,
+  } = useQuery({
+    queryKey: ["fullCustomReminder", customReminderId],
+    queryFn: () => getFullCustomReminder(customReminderId!),
+    enabled: !!customReminderId,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    staleTime: Infinity,
+    gcTime: Infinity,
+  });
+
   // runs when feed finishes loading. Prefetch full sessions
 
   const hashPrefetched = useRef(false);
@@ -322,7 +357,7 @@ export default function SessionFeed() {
         queryClient.prefetchQuery({
           queryKey: ["fullTodoSession", f.id],
           queryFn: () => getFullTodoSession(f.id!),
-          staleTime: Infinity, 
+          staleTime: Infinity,
           gcTime: Infinity,
         });
       }
@@ -333,7 +368,18 @@ export default function SessionFeed() {
         queryClient.prefetchQuery({
           queryKey: ["fullGymSession", f.id],
           queryFn: () => getFullGymSession(f.id!),
-          staleTime: Infinity, 
+          staleTime: Infinity,
+          gcTime: Infinity,
+        });
+      }
+    });
+
+    firstPageFeed.forEach((f) => {
+      if (f.type === "custom_reminders") {
+        queryClient.prefetchQuery({
+          queryKey: ["fullCustomReminder", f.id],
+          queryFn: () => getFullCustomReminder(f.id!),
+          staleTime: Infinity,
           gcTime: Infinity,
         });
       }
@@ -504,6 +550,26 @@ export default function SessionFeed() {
             {expandedItem.table === "reminders" && (
               <ReminderSession {...expandedItem.item} />
             )}
+
+            {expandedItem.table === "custom_reminders" && (
+              <>
+                {isLoadingCustomReminder ? (
+                  <div className="flex flex-col gap-5 items-center justify-center pt-40">
+                    <p>Loading reminder details...</p>
+                    <Spinner />
+                  </div>
+                ) : CustomReminderError ? (
+                  <p className="text-center text-lg mt-10">
+                    Failed to load reminder details. Please try again later.
+                  </p>
+                ) : (
+                  CustomReminderFull && (
+                    <ReminderSession {...CustomReminderFull} />
+                  )
+                )}
+              </>
+            )}
+
             {expandedItem.table === "gym_sessions" && (
               <>
                 {isLoadingGymSession ? (

@@ -25,6 +25,8 @@ import { formatTime } from "@/lib/formatDate";
 import * as Notifications from "expo-notifications";
 import { Checkbox } from "expo-checkbox";
 import SubNotesInput from "@/components/SubNotesInput";
+import UpdateNotificationId from "@/database/reminders/update-notification-id";
+
 
 export default function ReminderScreen() {
   const [open, setOpen] = useState(false);
@@ -103,18 +105,21 @@ export default function ReminderScreen() {
 
     setIsSaving(true);
 
-    const notificationIds = await setNotification();
 
     try {
-      await SaveCustomReminder({
+      const reminder = await SaveCustomReminder({
         title: title,
         notes,
         weekdays,
         notify_at_time: notifyAt.toISOString().split("T")[1].split("Z")[0],
         type: "weekly",
         notify_date: null,
-        notification_id: notificationIds ?? [],
+        notification_id: [],
       });
+
+      const notificationId = await setNotification(reminder.id);
+
+      await UpdateNotificationId(notificationId!, reminder.id);
 
       await Promise.all([
         queryClient.refetchQueries({ queryKey: ["feed"], exact: true }),
@@ -142,7 +147,7 @@ export default function ReminderScreen() {
     setWeekdays([]);
   };
 
-  async function setNotification() {
+  async function setNotification(reminderId: string) {
     if (!notifyAt || weekdays.length === 0) return;
 
     try {
@@ -171,6 +176,7 @@ export default function ReminderScreen() {
               title: title,
               body: notes,
               sound: true,
+              data: { reminderId: reminderId },
             },
             trigger,
           });

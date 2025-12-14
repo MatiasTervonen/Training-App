@@ -27,22 +27,72 @@ export default async function getFeed({
     .order("created_at", { ascending: false })
     .range(from, to);
 
-  const [pinnedResult, feedResult] = await Promise.all([
+  const now = new Date();
+  const nowIso = now.toISOString();
+  const next4hIso = new Date(now.getTime() + 4 * 60 * 60 * 1000).toISOString();
+
+  const remindersPromise =
+    pageParam === 0
+      ? supabase
+          .from("reminders")
+          .select("*")
+          .gte("notify_at", nowIso)
+          .lte("notify_at", next4hIso)
+          .is("delivered", false)
+          .order("notify_at", { ascending: true })
+      : Promise.resolve({ data: [], error: null });
+
+  const [pinnedResult, feedResult, remindersResult] = await Promise.all([
     pinnedPromise,
     feedPromise,
+    remindersPromise,
   ]);
 
-  if (pinnedResult.error || feedResult.error) {
-    const error = pinnedResult.error || feedResult.error;
+  if (pinnedResult.error || feedResult.error || remindersResult.error) {
+    const error =
+      pinnedResult.error || feedResult.error || remindersResult.error;
+
     handleError(error, {
-      message: "Error fetching feed",
+      message: "Error fetching feed, reminders, or custom reminders",
       route: "server-action: getFeed",
       method: "direct",
     });
-    throw new Error("Error fetching feed");
+    throw new Error("Error fetching feed, reminders, or custom reminders");
   }
 
-  const feed = [...(pinnedResult.data ?? []), ...(feedResult.data ?? [])];
+  const comingSoon = (remindersResult.data ?? []).map((item) => ({
+    ...item,
+    feed_context: "soon",
+    type: "reminders",
+  }));
+
+  const pinned = (pinnedResult.data ?? []).map((item) => ({
+    ...item,
+    feed_context: "pinned",
+  }));
+
+  const page = (feedResult.data ?? []).map((item) => ({
+    ...item,
+    feed_context: "feed",
+  }));
+
+  console.log("comingSoon", comingSoon);
+
+  const comingSoonIds = new Set(comingSoon.map((i) => i.id));
+
+  const pinnedWithoutComingSoon = pinned.filter(
+    (item) => !comingSoonIds.has(item.id)
+  );
+
+  const feedWithoutComingSoon = page.filter(
+    (item) => !comingSoonIds.has(item.id)
+  );
+
+  const feed = [
+    ...comingSoon,
+    ...pinnedWithoutComingSoon,
+    ...feedWithoutComingSoon,
+  ];
 
   const hasMore = (feedResult.data?.length ?? 0) === limit;
 

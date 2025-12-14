@@ -46,3 +46,23 @@ export const formatDateWeek = (dateString: string | Date) => {
     day: "numeric",
   }).format(date);
 };
+
+export const formatNotifyTime = (time: string | null) => {
+  const [hourStr, minuteStr] = time!.split(":");
+  const hour = parseInt(hourStr, 10);
+  const minute = minuteStr.padStart(2, "0");
+
+  const isPM = hour >= 12;
+  const period = isPM ? "PM" : "AM";
+
+  return `${hour}:${minute} ${period}`;
+};
+
+
+const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+export function formatWeekdays(weekdays: number[]) {
+  if (!weekdays || weekdays.length === 0) return null;
+
+  return weekdays.map((day) => days[day - 1]).join(", ");
+}

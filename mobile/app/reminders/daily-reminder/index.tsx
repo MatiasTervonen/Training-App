@@ -24,6 +24,7 @@ import { Plus, Info } from "lucide-react-native";
 import { formatTime } from "@/lib/formatDate";
 import * as Notifications from "expo-notifications";
 import SubNotesInput from "@/components/SubNotesInput";
+import UpdateNotificationId from "@/database/reminders/update-notification-id";
 
 export default function ReminderScreen() {
   const [open, setOpen] = useState(false);
@@ -99,18 +100,20 @@ export default function ReminderScreen() {
 
     setIsSaving(true);
 
-    const notificationIds = await setNotification();
-
     try {
-      await SaveCustomReminder({
+      const reminder = await SaveCustomReminder({
         title: title,
         notes,
         weekdays: [],
         notify_at_time: notifyAt.toISOString().split("T")[1].split("Z")[0],
         type: "daily",
         notify_date: null,
-        notification_id: notificationIds ?? [],
+        notification_id: [],
       });
+
+      const notificationId = await setNotification(reminder.id);
+
+      await UpdateNotificationId(notificationId!, reminder.id);
 
       await Promise.all([
         queryClient.refetchQueries({ queryKey: ["feed"], exact: true }),
@@ -139,7 +142,7 @@ export default function ReminderScreen() {
     setNotifyAt(null);
   };
 
-  async function setNotification() {
+  async function setNotification(reminderId: string) {
     if (!notifyAt) return;
 
     try {
@@ -166,6 +169,7 @@ export default function ReminderScreen() {
           title: title,
           body: notes,
           sound: true,
+          data: { reminderId: reminderId },
         },
         trigger,
       });

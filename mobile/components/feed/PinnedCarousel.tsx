@@ -8,6 +8,7 @@ import FeedCard from "../cards/FeedCard";
 interface PinnedCarouselProps {
   pinnedFeed: any[];
   width: number;
+  height: number;
   onExpand: (item: any) => void;
   onEdit: (item: any) => void;
   onDelete: (item: any) => void;
@@ -17,6 +18,7 @@ interface PinnedCarouselProps {
 export default function PinnedCarousel({
   pinnedFeed,
   width,
+  height,
   onExpand,
   onEdit,
   onDelete,
@@ -30,6 +32,9 @@ export default function PinnedCarousel({
     }
   }, [pinnedFeed, activeIndex]);
 
+  const carouselKey =
+    pinnedFeed.length === 1 ? `single-${pinnedFeed[0].item.id}` : "multi";
+
   return (
     <View>
       <View className="flex-row items-center mb-2 gap-2 ml-4 mt-3">
@@ -40,9 +45,9 @@ export default function PinnedCarousel({
         </AppText>
       </View>
       <Carousel
-        key={pinnedFeed.length}
+        key={carouselKey}
         width={width}
-        height={199}
+        height={height}
         data={pinnedFeed}
         onSnapToItem={(index) => setActiveIndex(index)}
         loop={pinnedFeed.length > 1}

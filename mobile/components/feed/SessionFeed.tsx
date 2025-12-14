@@ -34,12 +34,10 @@ import NotesSession from "../expandSession/notes";
 import WeightSession from "../expandSession/weight";
 import EditNotes from "../editSession/editNotes";
 import EditWeight from "../editSession/editWeight";
-import ReminderSession from "../expandSession/reminder";
 import EditReminder from "../editSession/editReminder";
 import * as Notifications from "expo-notifications";
 import { supabase } from "@/lib/supabase";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import CustomReminder from "../expandSession/customReminder";
 import GetFullCustomReminder from "@/database/reminders/get-full-custom-reminder";
 import getFeed from "@/database/feed/getFeed";
 import PinnedCarousel from "./PinnedCarousel";
@@ -47,6 +45,10 @@ import { useRouter } from "expo-router";
 import TodoSession from "../expandSession/todo";
 import { getFullTodoSession } from "@/database/todo/get-full-todo";
 import EditTodo from "../editSession/editTodo";
+import EditCustomReminder from "../editSession/editCustomReminder";
+import ReminderSession from "../expandSession/reminder";
+import MarkOccurrenceCompleted from "@/database/reminders/mark-occurrence-completed";
+import { Sparkles } from "lucide-react-native";
 
 type FeedItem = FeedCardProps;
 
@@ -78,6 +80,8 @@ export default function SessionFeed() {
   //   fetchNotifications();
   // }, []);
 
+  // when clicked on notification, fetch reminder from database and set as expanded item
+
   const handleNotificationResponse = async (
     response: Notifications.NotificationResponse
   ) => {
@@ -104,12 +108,23 @@ export default function SessionFeed() {
           return;
         }
 
+        console.log("Data:", data);
+        console.log("Feed item:", feedItem);
+
         if (feedItem) {
           setExpandedItem({
-            table: "reminders",
+            table: feedItem.type,
             item: { ...feedItem, id: feedItem.id },
             pinned: feedItem.pinned,
-          } as any);
+          } as FeedItem);
+
+          if (data.type === "onetime-reminder") {
+            await MarkOccurrenceCompleted(data.occurrenceId as string);
+          }
+
+          queryClient.invalidateQueries({
+            queryKey: ["feed"],
+          });
         }
       } catch (error) {
         console.error("Error fetching reminder from notification:", error);
@@ -210,6 +225,11 @@ export default function SessionFeed() {
   // Pinned items first, then by created_at desc for stable ordering in UI
 
   const pinnedFeed = useMemo(() => feed.filter((i) => i.pinned), [feed]);
+  const comingSoonFeed = useMemo(
+    () =>
+      feed.filter((i) => !i.pinned && (i.item as any).feed_context === "soon"),
+    [feed]
+  );
   const unpinnedFeed = useMemo(
     () =>
       feed
@@ -225,6 +245,8 @@ export default function SessionFeed() {
         }),
     [feed]
   );
+
+  console.log("comingSoonFeed", comingSoonFeed);
 
   const togglePin = async (
     id: string,
@@ -333,10 +355,14 @@ export default function SessionFeed() {
       }
 
       if (table === "custom_reminders") {
-        if (Array.isArray(notification_id)) {
-          for (const id of notification_id) {
-            await Notifications.cancelScheduledNotificationAsync(id);
-          }
+        const ids = Array.isArray(notification_id)
+          ? notification_id
+          : typeof notification_id === "string"
+          ? [notification_id]
+          : [];
+
+        for (const nid of ids) {
+          await Notifications.cancelScheduledNotificationAsync(nid);
         }
       }
 
@@ -460,6 +486,17 @@ export default function SessionFeed() {
         });
       }
     });
+
+    firstPageFeed.forEach((f) => {
+      if (f.type === "custom_reminders") {
+        queryClient.prefetchQuery({
+          queryKey: ["fullCustomReminder", f.id],
+          queryFn: () => GetFullCustomReminder(f.id!),
+          staleTime: Infinity,
+          gcTime: Infinity,
+        });
+      }
+    });
   }, [data, queryClient]);
 
   return (
@@ -488,7 +525,8 @@ export default function SessionFeed() {
             keyExtractor={(item) => item.item.id}
             contentContainerStyle={{
               paddingBottom: 100,
-              paddingTop: pinnedFeed.length === 0 ? 30 : 0,
+              paddingTop:
+                pinnedFeed.length + comingSoonFeed.length === 0 ? 30 : 0,
             }}
             showsHorizontalScrollIndicator={false}
             showsVerticalScrollIndicator={false}
@@ -545,24 +583,75 @@ export default function SessionFeed() {
               </View>
             )}
             ListHeaderComponent={
-              pinnedFeed.length > 0 ? (
-                <PinnedCarousel
-                  pinnedFeed={pinnedFeed}
-                  width={width}
-                  onExpand={setExpandedItem}
-                  onEdit={setEditingItem}
-                  onTogglePin={(item) =>
-                    togglePin(item.item.id, item.table, item.pinned)
-                  }
-                  onDelete={(item) =>
-                    handleDelete(
-                      item.item.notification_id ?? null,
-                      item.item.id,
-                      item.table
-                    )
-                  }
-                />
-              ) : null
+              <>
+                {pinnedFeed.length > 0 && (
+                  <PinnedCarousel
+                    pinnedFeed={pinnedFeed}
+                    width={width}
+                    height={comingSoonFeed.length === 0 ? 194.2 : 169.4}
+                    onExpand={setExpandedItem}
+                    onEdit={(feedItem) => {
+                      if (feedItem.table === "gym_sessions") {
+                        router.push(`/training/gym/${feedItem.item.id}` as any);
+                      } else {
+                        setEditingItem(feedItem);
+                      }
+                    }}
+                    onTogglePin={(item) =>
+                      togglePin(item.item.id, item.table, item.pinned)
+                    }
+                    onDelete={(item) =>
+                      handleDelete(
+                        item.item.notification_id ?? null,
+                        item.item.id,
+                        item.table
+                      )
+                    }
+                  />
+                )}
+
+                {comingSoonFeed.length > 0 && (
+                  <View className="px-4 bg-slate-900 border-2 border-blue-700 rounded-md overflow-hidden mb-5">
+                    <View className="flex-row items-center gap-2 mb-2 mt-1">
+                      <Sparkles size={20} color="#eab308" />
+                      <AppText className=" text-yellow-500">
+                        Coming Soon
+                      </AppText>
+                    </View>
+
+                    {comingSoonFeed.map((feedItem) => (
+                      <View key={feedItem.item.id} className="mb-5">
+                        <FeedCard
+                          {...feedItem}
+                          pinned={false}
+                          onExpand={() => {
+                            setExpandedItem(feedItem);
+                          }}
+                          onTogglePin={() =>
+                            togglePin(feedItem.item.id, feedItem.table, false)
+                          }
+                          onDelete={() => {
+                            const notificationId =
+                              feedItem.table === "custom_reminders"
+                                ? (feedItem.item.notification_id as
+                                    | string
+                                    | string[]
+                                    | null) ?? null
+                                : null;
+
+                            handleDelete(
+                              notificationId,
+                              feedItem.item.id,
+                              feedItem.table
+                            );
+                          }}
+                          onEdit={() => setEditingItem(feedItem)}
+                        />
+                      </View>
+                    ))}
+                  </View>
+                )}
+              </>
             }
             ListFooterComponent={() => {
               if (isFetchingNextPage) {
@@ -653,7 +742,9 @@ export default function SessionFeed() {
                   Failed to load reminder details. Please try again later.
                 </AppText>
               ) : (
-                CustomReminderFull && <CustomReminder {...CustomReminderFull} />
+                CustomReminderFull && (
+                  <ReminderSession {...CustomReminderFull} />
+                )
               )}
             </View>
           )}
@@ -706,6 +797,41 @@ export default function SessionFeed() {
             />
           )}
 
+          {editingItem.table === "custom_reminders" && (
+            <>
+              {isLoadingCustomReminder ? (
+                <View className="gap-5 items-center justify-center mt-40">
+                  <AppText className="text-lg">
+                    Loading reminder details...
+                  </AppText>
+                  <ActivityIndicator />
+                </View>
+              ) : CustomReminderError ? (
+                <AppText className="text-center text-lg mt-20">
+                  Failed to load reminder details. Please try again later.
+                </AppText>
+              ) : (
+                CustomReminderFull && (
+                  <EditCustomReminder
+                    reminder={CustomReminderFull!}
+                    onClose={() => setEditingItem(null)}
+                    onSave={async () => {
+                      await Promise.all([
+                        queryClient.invalidateQueries({
+                          queryKey: ["feed"],
+                        }),
+                        queryClient.invalidateQueries({
+                          queryKey: ["fullCustomReminder"],
+                        }),
+                      ]);
+                      setEditingItem(null);
+                    }}
+                  />
+                )
+              )}
+            </>
+          )}
+
           {editingItem.table === "todo_lists" && (
             <>
               {isLoadingTodoSession ? (
@@ -714,11 +840,9 @@ export default function SessionFeed() {
                   <ActivityIndicator />
                 </View>
               ) : todoSessionError ? (
-                <View>
-                  <AppText className="gap-2 justify-center mt-20 text-lg">
-                    Failed to load todo session details. Please try again later.
-                  </AppText>
-                </View>
+                <AppText className="gap-2 justify-center mt-20 text-lg">
+                  Failed to load todo session details. Please try again later.
+                </AppText>
               ) : (
                 todoSessionFull && (
                   <EditTodo
@@ -733,7 +857,6 @@ export default function SessionFeed() {
                           queryKey: ["fullTodoSession"],
                         }),
                       ]);
-
                       setEditingItem(null);
                     }}
                   />

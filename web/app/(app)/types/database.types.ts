@@ -1,4 +1,4 @@
-export type Json =
+ export type Json =
   | string
   | number
   | boolean
@@ -165,7 +165,7 @@ export type Database = {
         Row: {
           active: boolean | null
           created_at: string
-          delivered: boolean | null
+          delivered: boolean
           id: string
           notes: string | null
           notification_id: Json
@@ -175,12 +175,12 @@ export type Database = {
           type: string
           updated_at: string | null
           user_id: string
-          weekdays: Json
+          weekdays: Json | null
         }
         Insert: {
           active?: boolean | null
           created_at?: string
-          delivered?: boolean | null
+          delivered?: boolean
           id?: string
           notes?: string | null
           notification_id: Json
@@ -190,12 +190,12 @@ export type Database = {
           type: string
           updated_at?: string | null
           user_id?: string
-          weekdays: Json
+          weekdays?: Json | null
         }
         Update: {
           active?: boolean | null
           created_at?: string
-          delivered?: boolean | null
+          delivered?: boolean
           id?: string
           notes?: string | null
           notification_id?: Json
@@ -205,7 +205,7 @@ export type Database = {
           type?: string
           updated_at?: string | null
           user_id?: string
-          weekdays?: Json
+          weekdays?: Json | null
         }
         Relationships: []
       }

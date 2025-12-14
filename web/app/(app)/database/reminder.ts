@@ -108,5 +108,41 @@ export async function getRTeminders() {
     throw new Error("Error getting reminders");
   }
 
-  return reminders;
+  const { data: customReminders, error: customRemindersError } = await supabase
+    .from("custom_reminders")
+    .select("*");
+
+  if (customRemindersError) {
+    handleError(customRemindersError, {
+      message: "Error getting custom reminders",
+      route: "/database/reminders/get-reminders",
+      method: "GET",
+    });
+    throw new Error("Error getting custom reminders");
+  }
+
+  const combinedReminders = [...reminders, ...customReminders];
+
+  return combinedReminders;
+}
+
+export async function getFullCustomReminder(id: string) {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("custom_reminders")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  if (error) {
+    handleError(error, {
+      message: "Error fetching full custom reminder",
+      route: "server-action: getFullCustomReminder",
+      method: "direct",
+    });
+    throw new Error("Error fetching full custom reminder");
+  }
+
+  return data;
 }

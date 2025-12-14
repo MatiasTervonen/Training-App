@@ -4,6 +4,7 @@ import WeightCard from "./cards/WeightCard";
 import TodoCard from "./cards/TodoCard";
 import { FeedCardProps } from "../types/models";
 import ReminderCard from "./cards/ReminderCard";
+import CustomReminderCard from "./cards/customReminderCard";
 
 export default function FeedCard(props: FeedCardProps) {
   const { pinned, onTogglePin, onDelete, onExpand, onEdit } = props;
@@ -62,6 +63,15 @@ export default function FeedCard(props: FeedCardProps) {
           onDelete={onDelete}
           onExpand={onExpand}
           onEdit={onEdit}
+        />
+      );
+    case "custom_reminders":
+      return (
+        <CustomReminderCard
+          item={props.item}
+          pinned={pinned}
+          onTogglePin={onTogglePin}
+          onExpand={onExpand}
         />
       );
   }

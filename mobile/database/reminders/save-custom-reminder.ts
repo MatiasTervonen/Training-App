@@ -20,9 +20,7 @@ export default async function SaveCustomReminder({
   type,
   notification_id,
 }: SaveReminderParams) {
-
-
-  const { error: remindersError } = await supabase
+  const { data, error } = await supabase
     .from("custom_reminders")
     .insert([
       {
@@ -34,16 +32,18 @@ export default async function SaveCustomReminder({
         type,
         notification_id,
       },
-    ]);
+    ])
+    .select("id")
+    .single();
 
-  if (remindersError) {
-    handleError(remindersError, {
-      message: "Error saving reminders",
-      route: "/database/reminders/save-reminders",
+  if (error) {
+    handleError(error, {
+      message: "Error saving custom reminders",
+      route: "/database/reminders/save-custom-reminder",
       method: "POST",
     });
-  throw new Error("Error saving reminders");
+    throw new Error("Error saving custom reminders");
   }
 
-  return { success: true };
+  return data;
 }

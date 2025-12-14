@@ -1,25 +1,45 @@
 import { Ellipsis, SquareArrowOutUpRight, Bell, Check } from "lucide-react";
 import DropdownMenu from "../dropdownMenu";
-import { formatDate, formatDateTime } from "@/app/(app)/lib/formatDate";
-import { full_reminder } from "../../types/session";
+import {
+  formatDate,
+  formatDateTime,
+  formatNotifyTime,
+} from "@/app/(app)/lib/formatDate";
+import { custom_reminders } from "../../types/models";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { getFullCustomReminder } from "../../database/reminder";
 
 type Props = {
-  item: full_reminder;
+  item: custom_reminders;
   pinned: boolean;
   onTogglePin: () => void;
-  onDelete: () => void;
   onExpand: () => void;
-  onEdit: () => void;
 };
 
-export default function ReminderCard({
+export default function CustomReminderCard({
   item,
   pinned,
   onTogglePin,
-  onDelete,
   onExpand,
-  onEdit,
 }: Props) {
+  const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+  const queryClient = useQueryClient();
+  const cached = queryClient.getQueryData(["fullCustomReminder", item.id]);
+
+  const { data: fullCustomReminder } = useQuery<custom_reminders>({
+    queryKey: ["fullCustomReminder", item.id],
+    queryFn: () => getFullCustomReminder(item.id),
+    enabled: !!cached,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    refetchOnMount: false,
+    staleTime: Infinity,
+    gcTime: Infinity,
+  });
+
+  const weekdays = fullCustomReminder?.weekdays as number[] | null | undefined;
+
   return (
     <div
       className={`
@@ -29,7 +49,11 @@ export default function ReminderCard({
            : "bg-slate-700"
        }`}
     >
-      <div className="flex justify-between items-center mt-2 mb-4 mx-4">
+      <div
+        className={`flex justify-between items-center mt-2 mx-4 ${
+          weekdays && weekdays.length > 0 ? "mb-2" : "mb-4"
+        }`}
+      >
         <div className="mr-8 line-clamp-1 border-b">{item.title}</div>
         <DropdownMenu
           button={
@@ -44,43 +68,36 @@ export default function ReminderCard({
           }
         >
           <button
-            aria-label="Edit note"
-            onClick={() => {
-              onEdit();
-            }}
-            className="border-b py-2 px-4 hover:bg-gray-600 hover:rounded-t"
-          >
-            Edit
-          </button>
-          <button
             aria-label="Pin or unpin note"
             onClick={() => {
               onTogglePin();
             }}
-            className="border-b py-2 px-4 hover:bg-gray-600"
+            className=" py-2 px-4 hover:bg-gray-600 rounded-md"
           >
             {pinned ? "Unpin" : "Pin"}
-          </button>
-          <button
-            aria-label="Delete note"
-            onClick={() => {
-              onDelete();
-            }}
-            className="py-2 px-4 hover:bg-gray-600 hover:rounded-b"
-          >
-            Delete
           </button>
         </DropdownMenu>
       </div>
 
-      <div className="ml-4  mr-5 flex items-center">
-        <p>{formatDateTime(item.notify_at!)}</p>
+      <div className="ml-4 mr-5 flex items-center">
+        <p>
+          {" "}
+          {item.notify_at_time
+            ? formatNotifyTime(item.notify_at_time!)
+            : formatDateTime(item.notify_date!)}
+        </p>
         {item.delivered ? (
           <Check size={30} className="ml-2 text-green-400" />
         ) : (
           <Bell size={20} className="ml-2" />
         )}
       </div>
+
+      {weekdays && Array.isArray(weekdays) && weekdays.length > 0 && (
+        <p className={`ml-4 ${pinned ? "text-slate-900" : "text-gray-100"}`}>
+          {weekdays.map((dayNum: number) => days[dayNum - 1]).join(", ")}
+        </p>
+      )}
 
       {item.updated_at && (
         <p

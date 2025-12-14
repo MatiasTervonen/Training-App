@@ -1,3 +1,5 @@
+import type { Json } from "./database.types";
+
 export type Template = {
   id: string;
   name: string;
@@ -71,11 +73,16 @@ export type ExerciseInput = {
   distance_meters?: string;
 };
 
-
 export type Feed_item = {
   id: string;
   item_id?: string;
-  type: "notes" | "weight" | "gym_sessions" | "todo_lists" | "reminders";
+  type:
+    | "notes"
+    | "weight"
+    | "gym_sessions"
+    | "todo_lists"
+    | "reminders"
+    | "custom_reminders";
   created_at: string;
   notes?: string | null;
   title?: string | null;
@@ -112,4 +119,20 @@ export type FeedData = {
     feed: Feed_item[];
     nextPage: number;
   }[];
+};
+
+export type full_reminder = {
+  id: string;
+  title: string;
+  notes: string | null;
+  type: string;
+  notify_at?: string;
+  notification_id?: Json;
+  created_at: string;
+  updated_at?: string | null;
+  delivered: boolean;
+  weekdays?: Json;
+  active?: boolean | null;
+  notify_date?: string | null;
+  notify_at_time?: string | null;
 };

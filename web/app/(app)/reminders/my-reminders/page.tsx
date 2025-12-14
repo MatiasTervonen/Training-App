@@ -4,17 +4,17 @@ import { deleteReminder } from "../../database/reminder";
 import toast from "react-hot-toast";
 import { useState } from "react";
 import { TemplateSkeleton } from "../../ui/loadingSkeletons/skeletons";
-import { reminders } from "../../types/models";
 import MyReminderCard from "../../components/cards/MyReminderCard";
 import ReminderSession from "../../components/expandSession/reminder";
 import Modal from "../../components/modal";
 import EditReminder from "../../ui/editSession/EditReminder";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { getRTeminders } from "../../database/reminder";
+import { full_reminder } from "../../types/session";
 
 export default function Sessions() {
-  const [expandedItem, setExpandedItem] = useState<reminders | null>(null);
-  const [editingItem, setEditingItem] = useState<reminders | null>(null);
+  const [expandedItem, setExpandedItem] = useState<full_reminder | null>(null);
+  const [editingItem, setEditingItem] = useState<full_reminder | null>(null);
   const [activeTab, setActiveTab] = useState<"upcoming" | "delivered">(
     "upcoming"
   );
@@ -25,9 +25,12 @@ export default function Sessions() {
     error,
     isLoading,
     data: reminders = [],
-  } = useQuery<reminders[]>({
+  } = useQuery<full_reminder[]>({
     queryKey: ["get-reminders"],
-    queryFn: getRTeminders,
+    queryFn: async () => {
+      const data = await getRTeminders();
+      return data as full_reminder[];
+    },
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     refetchOnMount: false,
@@ -35,7 +38,7 @@ export default function Sessions() {
     gcTime: Infinity,
   });
 
-  const handleDeleteReminder = async (reminder: reminders) => {
+  const handleDeleteReminder = async (reminder: full_reminder) => {
     const confirmDelete = confirm(
       "Are you sure you want to delete this reminder?"
     );
@@ -47,7 +50,7 @@ export default function Sessions() {
 
     const previousReminders = queryClient.getQueryData(queryKey);
 
-    queryClient.setQueryData<reminders[]>(queryKey, (oldData) => {
+    queryClient.setQueryData<full_reminder[]>(queryKey, (oldData) => {
       if (!oldData) return;
 
       return oldData.filter((r) => r.id !== reminder.id);
@@ -109,6 +112,7 @@ export default function Sessions() {
           onEdit={() => setEditingItem(reminder)}
         />
       ))}
+
       {expandedItem && (
         <Modal
           isOpen={true}

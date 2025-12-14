@@ -89,7 +89,7 @@ export default function EditReminder({ reminder, onClose, onSave }: Props) {
 
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-      <PageContainer className="justify-between mb-10">
+      <PageContainer className="justify-between mb-5">
         <View>
           <AppText className=" text-xl text-center mb-10 mt-5">
             Edit your reminder
@@ -138,7 +138,7 @@ export default function EditReminder({ reminder, onClose, onSave }: Props) {
         <View className="pt-10">
           <SaveButton onPress={handleSubmit} />
         </View>
-        <FullScreenLoader visible={isSaving} message="Saving notes..." />
+        <FullScreenLoader visible={isSaving} message="Saving reminder..." />
       </PageContainer>
     </TouchableWithoutFeedback>
   );

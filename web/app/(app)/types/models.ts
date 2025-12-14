@@ -87,6 +87,9 @@ export type gym_sessions = Database["public"]["Tables"]["gym_sessions"]["Row"];
 
 export type reminders = Database["public"]["Tables"]["reminders"]["Row"];
 
+export type custom_reminders =
+  Database["public"]["Tables"]["custom_reminders"]["Row"];
+
 export type FeedEntry =
   | (reminders & { type: "reminders" })
   | (notes & { type: "notes" })
@@ -134,6 +137,15 @@ export type FeedCardProps =
   | {
       table: "reminders";
       item: reminders;
+      pinned: boolean;
+      onTogglePin: () => void;
+      onDelete: () => void;
+      onExpand: () => void;
+      onEdit: () => void;
+    }
+  | {
+      table: "custom_reminders";
+      item: custom_reminders;
       pinned: boolean;
       onTogglePin: () => void;
       onDelete: () => void;

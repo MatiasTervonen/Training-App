@@ -4,6 +4,7 @@ import { supabase } from "../../lib/supabase";
 import { handleError } from "@/utils/handleError";
 import Constants from "expo-constants";
 import { useUserStore } from "@/lib/stores/useUserStore";
+import { Alert, Linking } from "react-native";
 
 function handleRegistrationError(errorMessage: string) {
   alert(errorMessage);
@@ -25,7 +26,14 @@ export async function registerForPushNotificationsAsync() {
   }
 
   if (finalStatus !== "granted") {
-    alert("Failed to get push token for push notification!");
+    Alert.alert(
+      "Notifications Disabled",
+      "Enable notifications from your device settings to receive updates.",
+      [
+        { text: "Cancel", style: "cancel" },
+        { text: "Open Settings", onPress: () => Linking.openSettings() },
+      ]
+    );
     return;
   }
 

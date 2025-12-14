@@ -76,8 +76,6 @@ export default async function getFeed({
     feed_context: "feed",
   }));
 
-  console.log("comingSoon", comingSoon);
-
   const comingSoonIds = new Set(comingSoon.map((i) => i.id));
 
   const pinnedWithoutComingSoon = pinned.filter(

@@ -84,7 +84,7 @@ export type full_gym_session = gym_sessions & {
   gym_session_exercises: full_gym_exercises[];
 };
 
-export type FeedCardProps =
+export type FeedItem =
   | {
       table: "notes";
       item: notes;

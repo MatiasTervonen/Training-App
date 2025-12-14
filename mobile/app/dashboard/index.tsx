@@ -5,8 +5,6 @@ import { useEffect } from "react";
 import { useRouter } from "expo-router";
 
 export default function FeedScreen() {
-  console.log("FeedScreen mounted");
-
   const router = useRouter();
   const { setModalPageConfig } = useModalPageConfig();
 

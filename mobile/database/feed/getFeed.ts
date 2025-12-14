@@ -1,5 +1,6 @@
 import { handleError } from "@/utils/handleError";
 import { supabase } from "@/lib/supabase";
+import { Feed_item } from "@/types/session";
 
 export default async function getFeed({
   pageParam = 0,
@@ -7,7 +8,7 @@ export default async function getFeed({
 }: {
   pageParam?: number;
   limit?: number;
-}) {
+}): Promise<{ feed: Feed_item[]; nextPage: number | null }> {
   const from = pageParam * limit;
   const to = from + limit - 1;
 
@@ -79,11 +80,11 @@ export default async function getFeed({
   const comingSoonIds = new Set(comingSoon.map((i) => i.id));
 
   const pinnedWithoutComingSoon = pinned.filter(
-    (item) => !comingSoonIds.has(item.id)
+    (item) => !comingSoonIds.has(item.id),
   );
 
   const feedWithoutComingSoon = page.filter(
-    (item) => !comingSoonIds.has(item.id)
+    (item) => !comingSoonIds.has(item.id),
   );
 
   const feed = [

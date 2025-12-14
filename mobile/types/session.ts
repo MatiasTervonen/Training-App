@@ -1,26 +1,3 @@
-export type OptimisticWeight = {
-  id: string;
-  title: string;
-  weight: number;
-  notes: string;
-  created_at: string;
-};
-
-export type OptimisticGymSession = {
-  id: string;
-  title: string;
-  notes: string;
-  created_at: string;
-  duration: number;
-};
-
-export type OptimisticNotes = {
-  id: string;
-  title: string;
-  notes: string;
-  created_at: string;
-};
-
 export type Template = {
   id: string;
   name: string;
@@ -162,4 +139,3 @@ export type weight = {
   title: string | null;
   weight: number;
 };
-

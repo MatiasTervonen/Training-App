@@ -2,6 +2,7 @@
 
 import { createClient } from "@/utils/supabase/server";
 import { handleError } from "@/app/(app)/utils/handleError";
+import { Feed_item } from "@/app/(app)/types/session";
 
 export default async function getFeed({
   pageParam = 0,
@@ -9,7 +10,7 @@ export default async function getFeed({
 }: {
   pageParam?: number;
   limit?: number;
-}) {
+}): Promise<{ feed: Feed_item[]; nextPage: number | null }> {
   const supabase = await createClient();
 
   const from = pageParam * limit;
@@ -46,7 +47,10 @@ export default async function getFeed({
     throw new Error("Error fetching feed");
   }
 
-  const feed = [...(pinnedResult.data ?? []), ...(feedResult.data ?? [])];
+  const feed = [
+    ...(pinnedResult.data ?? []),
+    ...(feedResult.data ?? []),
+  ] as Feed_item[];
 
   const hasMore = (feedResult.data?.length ?? 0) === limit;
 

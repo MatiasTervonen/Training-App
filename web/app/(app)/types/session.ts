@@ -74,23 +74,28 @@ export type ExerciseInput = {
 };
 
 export type Feed_item = {
-  id: string | null;
+  id: string;
   item_id?: string;
-  type: string | null;
-  created_at: string | null;
+  type:
+    | "notes"
+    | "weight"
+    | "gym_sessions"
+    | "todo_lists"
+    | "reminders"
+    | "custom_reminders";
+  created_at: string;
   notes?: string | null;
   title?: string | null;
   weight?: number | null;
   duration?: number | null;
-  user_id: string | null;
-  pinned: boolean | null;
+  user_id: string;
+  pinned: boolean;
   pinned_at?: string | null;
-  notify_at?: string | null;
-  notify_date?: string | null;
-  delivered?: boolean | null;
-  notification_id?: Json | null;
+  notify_at?: string | Date | null;
+  delivered?: boolean;
+  notify_date?: string | Date | null;
   notify_at_time?: string | null;
-  updated_at?: string | null;
+  notification_id?: string[] | string | null;
 };
 
 export type FeedResponse = {

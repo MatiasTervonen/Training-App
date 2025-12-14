@@ -2,11 +2,11 @@ import NotesCard from "./cards/NotesCard";
 import GymCard from "./cards/GymCard";
 import WeightCard from "./cards/WeightCard";
 import TodoCard from "./cards/TodoCard";
-import { FeedCardProps } from "../types/models";
+import { FeedItem } from "@/app/(app)/types/models";
 import ReminderCard from "./cards/ReminderCard";
 import CustomReminderCard from "./cards/customReminderCard";
 
-export default function FeedCard(props: FeedCardProps) {
+export default function FeedCard(props: FeedItem) {
   const { pinned, onTogglePin, onDelete, onExpand, onEdit } = props;
 
   switch (props.table) {

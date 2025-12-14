@@ -11,6 +11,12 @@ module.exports = defineConfig([
   {
     rules: {
       "react/no-unescaped-entities": "off",
+      "prettier/prettier": [
+        "error",
+        {
+          endOfLine: "auto",
+        },
+      ],
     },
   },
 ]);

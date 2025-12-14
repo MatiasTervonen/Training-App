@@ -1,9 +1,11 @@
+"use client";
+
 import { useEffect, useRef } from "react";
 import { InfiniteData, useQueryClient } from "@tanstack/react-query";
-import { getFullTodoSession } from "@/database/todo/get-full-todo";
-import { getFullGymSession } from "@/database/gym/get-full-gym-session";
-import GetFullCustomReminder from "@/database/reminders/get-full-custom-reminder";
-import { Feed_item } from "@/types/session";
+import { getFullTodoSession } from "@/app/(app)/database/todo";
+import { getFullGymSession } from "@/app/(app)/database/gym";
+import { getFullCustomReminder } from "@/app/(app)/database/reminder";
+import { Feed_item } from "@/app/(app)/types/session";
 
 export type FeedPage = {
   feed: Feed_item[];
@@ -11,11 +13,9 @@ export type FeedPage = {
 };
 
 export default function useFeedPrefetch(
-  data: InfiniteData<FeedPage> | undefined | null,
+  data: InfiniteData<FeedPage> | undefined | null
 ) {
   const queryClient = useQueryClient();
-
-  // runs when feed finishes loading. Prefetch full sessions
 
   const hashPrefetched = useRef(false);
 
@@ -53,7 +53,7 @@ export default function useFeedPrefetch(
       if (f.type === "custom_reminders") {
         queryClient.prefetchQuery({
           queryKey: ["fullCustomReminder", f.id],
-          queryFn: () => GetFullCustomReminder(f.id!),
+          queryFn: () => getFullCustomReminder(f.id!),
           staleTime: Infinity,
           gcTime: Infinity,
         });

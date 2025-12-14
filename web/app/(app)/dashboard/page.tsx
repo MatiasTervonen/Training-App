@@ -1,15 +1,15 @@
 "use client";
 
-import SessionFeed from "../ui/homepage/sessionFeed";
+import SessionFeed from "@/app/(app)/components/feed/sessionFeed";
 import { useRouter } from "next/navigation";
-import { useModalPageConfig } from "../lib/stores/modalPageConfig";
-import { useTimerStore } from "../lib/stores/timerStore";
+import { useModalPageConfig } from "@/app/(app)/lib/stores/modalPageConfig";
+import { useTimerStore } from "@/app/(app)/lib/stores/timerStore";
 import { useEffect } from "react";
 
 export default function Home() {
   const router = useRouter();
   const { setModalPageConfig } = useModalPageConfig();
-  const { activeSession } = useTimerStore();
+  const activeSession = useTimerStore((state) => state.activeSession);
 
   useEffect(() => {
     setModalPageConfig({

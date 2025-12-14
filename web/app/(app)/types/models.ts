@@ -97,7 +97,7 @@ export type FeedEntry =
   | (gym_sessions & { type: "gym_sessions" })
   | (todo_lists & { type: "todo_lists" });
 
-export type FeedCardProps =
+export type FeedItem =
   | {
       table: "notes";
       item: notes;

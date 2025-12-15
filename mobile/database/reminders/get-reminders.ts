@@ -2,12 +2,9 @@ import { handleError } from "@/utils/handleError";
 import { supabase } from "@/lib/supabase";
 
 export default async function GetReminders() {
-
-
   const { data: reminders, error: remindersError } = await supabase
     .from("reminders")
-    .select("*")
-
+    .select("*");
 
   if (remindersError) {
     handleError(remindersError, {
@@ -15,13 +12,12 @@ export default async function GetReminders() {
       route: "/api/reminders/get-reminders",
       method: "GET",
     });
-  throw new Error("Error getting reminders");
+    throw new Error("Error getting reminders");
   }
 
   const { data: customReminders, error: customRemindersError } = await supabase
     .from("custom_reminders")
-    .select("*")
-
+    .select("*");
 
   if (customRemindersError) {
     handleError(customRemindersError, {
@@ -29,7 +25,7 @@ export default async function GetReminders() {
       route: "/database/reminders/get-reminders",
       method: "GET",
     });
-  throw new Error("Error getting custom reminders");
+    throw new Error("Error getting custom reminders");
   }
 
   const combinedReminders = [...reminders, ...customReminders];

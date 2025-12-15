@@ -181,6 +181,6 @@ export const useTimerStore = create<TimerState>()(
           await AsyncStorage.removeItem(key);
         },
       },
-    }
-  )
+    },
+  ),
 );

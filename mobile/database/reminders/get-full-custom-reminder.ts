@@ -2,8 +2,6 @@ import { handleError } from "@/utils/handleError";
 import { supabase } from "@/lib/supabase";
 
 export default async function GetFullCustomReminder(id: string) {
-
-
   const { data, error } = await supabase
     .from("custom_reminders")
     .select("*")

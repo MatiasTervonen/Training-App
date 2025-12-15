@@ -2,13 +2,7 @@ import { handleError } from "@/utils/handleError";
 import { supabase } from "@/lib/supabase";
 
 export default async function DeleteTimer(timerId: string) {
-
-
-  const { error } = await supabase
-    .from("timers")
-    .delete()
-    .eq("id", timerId)
-
+  const { error } = await supabase.from("timers").delete().eq("id", timerId);
 
   if (error) {
     handleError(error, {

@@ -10,7 +10,6 @@ export function useSignOut() {
   const queryClient = useQueryClient();
 
   const signOut = async () => {
-
     // Sign out from supabase
     try {
       await supabase.auth.signOut({ scope: "global" });

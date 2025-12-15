@@ -9,12 +9,12 @@ import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 
 export default function useNotificationResponse(
-  setExpandedItem: (item: FeedItem) => void
+  setExpandedItem: (item: FeedItem) => void,
 ) {
   const queryClient = useQueryClient();
 
   const handleNotificationResponse = async (
-    response: Notifications.NotificationResponse
+    response: Notifications.NotificationResponse,
   ) => {
     const data = response.notification.request.content.data;
 
@@ -71,7 +71,7 @@ export default function useNotificationResponse(
 
   useEffect(() => {
     const handleResponse = async (
-      response: Notifications.NotificationResponse
+      response: Notifications.NotificationResponse,
     ) => {
       const notifId = response.notification.request.identifier;
       console.log("Notification response received with ID:", notifId);

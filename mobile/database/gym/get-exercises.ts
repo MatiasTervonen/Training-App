@@ -21,7 +21,7 @@ export async function getExercises({
 
   if (search.trim() !== "") {
     query = query.or(
-      `name.ilike.%${search}%,equipment.ilike.%${search}%,muscle_group.ilike.%${search}%,main_group.ilike.%${search}%`
+      `name.ilike.%${search}%,equipment.ilike.%${search}%,muscle_group.ilike.%${search}%,main_group.ilike.%${search}%`,
     );
   }
 

@@ -26,7 +26,7 @@ export async function saveSettings(updates: {
       route: "/database/settings/save-settings",
       method: "POST",
     });
-  throw new Error("Error saving user preferences");
+    throw new Error("Error saving user preferences");
   }
 
   return true;

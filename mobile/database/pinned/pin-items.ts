@@ -13,7 +13,7 @@ type PinSessionProps = {
 };
 
 export async function pinItem({ id, table }: PinSessionProps) {
- if (!id || !table) {
+  if (!id || !table) {
     throw new Error("Invalid request");
   }
 
@@ -26,7 +26,7 @@ export async function pinItem({ id, table }: PinSessionProps) {
           type: table,
         },
       ],
-      { onConflict: "user_id,type,item_id" } // Ensure upsert on user_id, item_id, and type
+      { onConflict: "user_id,type,item_id" }, // Ensure upsert on user_id, item_id, and type
     )
     .select()
     .single();

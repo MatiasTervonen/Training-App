@@ -54,7 +54,7 @@ export default function useFeed() {
           table: item.type as FeedItem["table"],
           item,
           pinned: item.pinned,
-        })) as unknown as FeedItem
+        })) as unknown as FeedItem,
     );
   }, [data]);
 
@@ -64,7 +64,7 @@ export default function useFeed() {
   const comingSoonFeed = useMemo(
     () =>
       feed.filter((i) => !i.pinned && (i.item as any).feed_context === "soon"),
-    [feed]
+    [feed],
   );
   const unpinnedFeed = useMemo(
     () =>
@@ -72,14 +72,14 @@ export default function useFeed() {
         .filter((i) => !i.pinned)
         .sort((a, b) => {
           const aTime = new Date(
-            a.item.updated_at || a.item.created_at
+            a.item.updated_at || a.item.created_at,
           ).getTime();
           const bTime = new Date(
-            b.item.updated_at || b.item.created_at
+            b.item.updated_at || b.item.created_at,
           ).getTime();
           return bTime - aTime;
         }),
-    [feed]
+    [feed],
   );
 
   return {

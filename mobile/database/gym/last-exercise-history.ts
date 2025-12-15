@@ -26,7 +26,7 @@ export async function getLastExerciseHistory({
   const { data: exercises, error: exerciseError } = await supabase
     .from("gym_session_exercises")
     .select(
-      "id, session_id, exercise_id, gym_exercises(main_group, name, equipment), gym_sessions(created_at, user_id)"
+      "id, session_id, exercise_id, gym_exercises(main_group, name, equipment), gym_sessions(created_at, user_id)",
     )
     .eq("exercise_id", exerciseId)
     .eq("gym_sessions.user_id", session.user.id);
@@ -58,7 +58,7 @@ export async function getLastExerciseHistory({
   const sorted = sessions.sort(
     (a, b) =>
       new Date(b.gym_sessions.created_at || 0).getTime() -
-      new Date(a.gym_sessions.created_at || 0).getTime()
+      new Date(a.gym_sessions.created_at || 0).getTime(),
   );
 
   const allSorted = await Promise.all(
@@ -85,7 +85,7 @@ export async function getLastExerciseHistory({
         equipment: session.gym_exercises.equipment,
         sets,
       };
-    })
+    }),
   );
 
   const filteredResults = allSorted.filter(Boolean);

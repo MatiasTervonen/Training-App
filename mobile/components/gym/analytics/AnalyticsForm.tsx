@@ -1,6 +1,6 @@
 import { View, ActivityIndicator } from "react-native";
 import AppText from "@/components/AppText";
-import { full_gym_session } from "../../types/models";
+import { full_gym_session } from "../../../types/models";
 import ChartTabSwitcher from "./AnalytictsChartTabSwitcher";
 import * as echarts from "echarts/core";
 import {

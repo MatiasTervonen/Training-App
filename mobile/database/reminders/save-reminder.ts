@@ -14,8 +14,6 @@ export default async function SaveReminder({
   notify_at,
   type,
 }: SaveReminderParams) {
-
-
   const { error: remindersError } = await supabase.from("reminders").insert([
     {
       title,
@@ -31,7 +29,7 @@ export default async function SaveReminder({
       route: "/database/reminders/save-reminders",
       method: "POST",
     });
-   throw new Error("Error saving reminders");
+    throw new Error("Error saving reminders");
   }
 
   return { success: true };

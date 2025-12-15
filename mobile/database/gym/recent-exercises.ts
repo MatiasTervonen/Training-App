@@ -3,7 +3,6 @@ import { handleError } from "@/utils/handleError";
 import { ExercisePreview } from "@/types/models";
 
 export async function getRecentExercises() {
-
   const { data: exercises, error } = await supabase
     .from("gym_session_exercises")
     .select(`exercise:exercise_id (*)`)

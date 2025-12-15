@@ -4,68 +4,33 @@ import SaveButton from "@/components/buttons/SaveButton";
 import DeleteButton from "@/components/buttons/DeleteButton";
 import FullScreenLoader from "@/components/FullScreenLoader";
 import AppInput from "@/components/AppInput";
-import { useState, useEffect } from "react";
-import { useRouter } from "expo-router";
+import { useState } from "react";
 import { formatDate } from "@/lib/formatDate";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useDebouncedCallback } from "use-debounce";
-import { useQueryClient } from "@tanstack/react-query";
-import { handleError } from "@/utils/handleError";
-import Toast from "react-native-toast-message";
-import { saveWeight } from "@/database/weight/save-weight";
 import PageContainer from "@/components/PageContainer";
 import SubNotesInput from "@/components/SubNotesInput";
+import useWeightDraft from "@/hooks/weight/useDraft";
+import useSaveWeight from "@/hooks/weight/useSaveWeight";
 
 export default function SettingsScreen() {
   const now = formatDate(new Date());
-
   const [weight, setWeight] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [notes, setNotes] = useState("");
   const [title, setTitle] = useState(`Weight - ${now}`);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  const router = useRouter();
-
-  const queryClient = useQueryClient();
-
-  useEffect(() => {
-    const loadDraft = async () => {
-      try {
-        const storeDraft = await AsyncStorage.getItem("weight_draft");
-        if (storeDraft) {
-          const draft = JSON.parse(storeDraft);
-          setTitle(draft.title || `Weight - ${now}`);
-          setNotes(draft.notes || "");
-          setWeight(draft.weight || "");
-        }
-      } catch (error) {
-        handleError(error, {
-          message: "Error loading weight draft",
-          route: "weight/index.tsx",
-          method: "loadDraft",
-        });
-      } finally {
-        setIsLoaded(true);
-      }
-    };
-
-    loadDraft();
-  }, [now]);
-
-  const saveWeightDraft = useDebouncedCallback(async () => {
-    if (title.trim().length === 0 && notes.trim().length === 0) {
-      await AsyncStorage.removeItem("weight_draft");
-    } else {
-      const draft = { title, notes, weight };
-      await AsyncStorage.setItem("weight_draft", JSON.stringify(draft));
-    }
-  }, 1000);
-
-  useEffect(() => {
-    if (!isLoaded) return;
-    saveWeightDraft();
-  }, [notes, title, weight, saveWeightDraft, isLoaded]);
+  // useWeightDraft hook to save draft weight
+  useWeightDraft({
+    title,
+    notes,
+    weight,
+    setTitle,
+    setNotes,
+    setWeight,
+    setIsLoaded,
+    isLoaded,
+  });
 
   const resetWeight = async () => {
     await AsyncStorage.removeItem("weight_draft");
@@ -74,53 +39,14 @@ export default function SettingsScreen() {
     setWeight("");
   };
 
-  const handleSaveWeight = async () => {
-    if (!title.trim()) {
-      Toast.show({
-        type: "error",
-        text1: "Missing Title",
-        text2: "Please enter a title for your weight entry.",
-      });
-      return;
-    }
-
-    if (!weight.trim() || isNaN(Number(weight))) {
-      Toast.show({
-        type: "error",
-        text1: "Invalid Weight",
-        text2: "Please enter a valid numeric weight.",
-      });
-      return;
-    }
-    setIsSaving(true);
-
-    try {
-      await saveWeight({ title, notes, weight: Number(weight) });
-
-      await Promise.all([
-        queryClient.refetchQueries({
-          queryKey: ["get-weight"],
-          exact: true,
-        }),
-        queryClient.refetchQueries({ queryKey: ["feed"], exact: true }),
-      ]);
-
-      router.push("/dashboard");
-      resetWeight();
-      Toast.show({
-        type: "success",
-        text1: "Success",
-        text2: "Weight saved successfully!",
-      });
-    } catch {
-      Toast.show({
-        type: "error",
-        text1: "Error",
-        text2: "Failed to save weights. Please try again.",
-      });
-      setIsSaving(false);
-    }
-  };
+  // useSaveWeight hook to save weight
+  const { handleSaveWeight } = useSaveWeight({
+    title,
+    notes,
+    weight,
+    setIsSaving,
+    resetWeight,
+  });
 
   return (
     <>

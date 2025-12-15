@@ -57,7 +57,7 @@ export async function deleteFriend(friendId: string) {
     .from("friend_requests")
     .delete()
     .or(
-      `and(sender_id.eq.${session.user.id},receiver_id.eq.${otherUserId}),and(sender_id.eq.${otherUserId},receiver_id.eq.${session.user.id})`
+      `and(sender_id.eq.${session.user.id},receiver_id.eq.${otherUserId}),and(sender_id.eq.${otherUserId},receiver_id.eq.${session.user.id})`,
     )
     .eq("status", "accepted");
 

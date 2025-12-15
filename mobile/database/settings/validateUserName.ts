@@ -24,7 +24,7 @@ export async function validateUserName(name: string) {
       route: "/database/settings/validateUserName",
       method: "POST",
     });
-  throw new Error("Error validating user name");
+    throw new Error("Error validating user name");
   }
 
   const isTaken = !!data;

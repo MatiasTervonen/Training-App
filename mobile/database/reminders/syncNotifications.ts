@@ -27,13 +27,13 @@ export default async function SyncNotifications() {
       if (Array.isArray(id)) return id;
       if (typeof id === "string") return [id];
       return [];
-    })
+    }),
   );
 
   for (const notification of scheduled) {
     if (!validIds.has(notification.identifier)) {
       await Notifications.cancelScheduledNotificationAsync(
-        notification.identifier
+        notification.identifier,
       );
     }
   }

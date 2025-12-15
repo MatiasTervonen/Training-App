@@ -5,8 +5,7 @@ export default async function DeleteCustomReminder(reminderId: string) {
   const { error: remindersError } = await supabase
     .from("custom_reminders")
     .delete()
-    .eq("id", reminderId)
-
+    .eq("id", reminderId);
 
   if (remindersError) {
     handleError(remindersError, {
@@ -14,7 +13,7 @@ export default async function DeleteCustomReminder(reminderId: string) {
       route: "/database/reminders/delete-custom-reminder",
       method: "GET",
     });
-  throw new Error("Error deleting custom reminders");
+    throw new Error("Error deleting custom reminders");
   }
 
   return { success: true };

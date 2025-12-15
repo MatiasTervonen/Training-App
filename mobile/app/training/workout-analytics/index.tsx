@@ -2,7 +2,7 @@ import AppText from "@/components/AppText";
 import PageContainer from "@/components/PageContainer";
 import Last30DaysAnalytics from "@/database/gym/analytics/last-30-days";
 import { useQuery } from "@tanstack/react-query";
-import AnalyticsForm from "@/components/gym/AnalyticsForm";
+import AnalyticsForm from "@/components/gym/analytics/AnalyticsForm";
 import { ScrollView } from "react-native";
 
 export default function AnalyticsScreen() {

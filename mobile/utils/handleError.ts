@@ -6,7 +6,7 @@ export function handleError(
     message?: string;
     route?: string;
     method?: string;
-  }
+  },
 ) {
   Sentry.withScope((scope) => {
     if (context?.message) {

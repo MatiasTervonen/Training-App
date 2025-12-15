@@ -40,7 +40,7 @@ export async function saveTemplate({
       exercise_id: ex.exercise_id,
       position: index,
       superset_id: ex.superset_id,
-    })
+    }),
   );
 
   const { error: templateExerciseError } = await supabase

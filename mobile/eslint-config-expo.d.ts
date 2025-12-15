@@ -3,4 +3,3 @@ declare module "eslint-config-expo/flat" {
   const config: Linter.Config;
   export default config;
 }
-

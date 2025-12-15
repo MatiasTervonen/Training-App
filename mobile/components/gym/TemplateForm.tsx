@@ -20,23 +20,22 @@ import {
   ExerciseInput,
 } from "@/types/session";
 import ExerciseHistoryModal from "@/components/gym/ExerciseHistoryModal";
-import * as crypto from "expo-crypto";
 import FullScreenLoader from "@/components/FullScreenLoader";
 import GroupGymExercises from "@/components/gym/lib/GroupGymExercises";
 import ExerciseCard from "@/components/gym/ExerciseCard";
 import ExerciseSelectorList from "@/components/gym/ExerciseSelectorList";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import GetFullTemplate from "@/database/gym/get-full-template";
 import { getLastExerciseHistory } from "@/database/gym/last-exercise-history";
 import SelectInput from "@/components/Selectinput";
-import { saveTemplate } from "@/database/gym/save-template";
-import { editTemplate } from "@/database/gym/edit-template";
-import Toast from "react-native-toast-message";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { LinearGradient } from "expo-linear-gradient";
 import { confirmAction } from "@/lib/confirmAction";
 import AppButton from "@/components/buttons/AppButton";
 import PageContainer from "../PageContainer";
+import useAddExercise from "@/hooks/training/template/useAddExercise";
+import useSaveTemplate from "@/hooks/training/template/useSaveTemplate";
+import useLogSetForExercise from "@/hooks/training/template/useLogSetForExercise";
 
 export default function TemplateForm() {
   const [workoutName, setWorkoutName] = useState("");
@@ -53,7 +52,7 @@ export default function TemplateForm() {
     number | null
   >(null);
   const [exerciseHistoryId, setExerciseHistoryId] = useState<string | null>(
-    null,
+    null
   );
 
   const { id } = useLocalSearchParams<{ id?: string }>();
@@ -66,7 +65,15 @@ export default function TemplateForm() {
 
   const router = useRouter();
 
-  const queryClient = useQueryClient();
+  const resetSession = () => {
+    setNormalExercises([]);
+    setSupersetExercise([]);
+    setExerciseType("Normal");
+    setExercises([]);
+    setWorkoutName("");
+    setNormalExercises([]);
+    AsyncStorage.removeItem(storageKey);
+  };
 
   // Remove draft when leaving the edit page without saving
 
@@ -124,7 +131,7 @@ export default function TemplateForm() {
             rpe: undefined,
           })),
           superset_id: ex.superset_id,
-        }),
+        })
       );
 
       setExercises(mappedExercises);
@@ -134,7 +141,7 @@ export default function TemplateForm() {
           weight: "",
           reps: "",
           rpe: "Medium",
-        })),
+        }))
       );
     }
   }, [existingTemplate]);
@@ -164,142 +171,38 @@ export default function TemplateForm() {
   const isCardioExercise = (exercise: ExerciseEntry) =>
     (exercise.main_group || "").toLowerCase() === "cardio";
 
-  const handleAddExercise = () => {
-    const newSupersetId = crypto.randomUUID();
+  // useAddExercise hook to add an exercise
 
-    if (exerciseType === "Super-Set") {
-      const validExercises = supersetExercise.filter(
-        (ex) => ex && typeof ex.name === "string" && ex.name.trim() !== "",
-      );
-      if (validExercises.length === 0) return;
+  const { handleAddExercise } = useAddExercise({
+    exerciseType,
+    supersetExercise,
+    normalExercises,
+    setExercises,
+    setSupersetExercise,
+    setNormalExercises,
+    setDropdownResetKey,
+    setExerciseInputs,
+    isCardioExercise,
+  });
 
-      const newGroup = validExercises.map((ex) => ({
-        ...ex,
-        superset_id: newSupersetId,
-      }));
+  // useSaveTemplate hook to save the template
 
-      setExercises((prev) => [...prev, ...newGroup]);
-      setExerciseInputs((prev) => [
-        ...prev,
-        ...newGroup.map((ex) => ({
-          weight: "",
-          reps: "",
-          rpe: isCardioExercise(ex) ? "Warm-up" : "Medium",
-        })),
-      ]);
-      setSupersetExercise([]);
-    } else {
-      const validNormal = normalExercises.filter(
-        (ex) => ex.name && ex.name.trim() !== "",
-      );
-      if (validNormal.length === 0) return;
+  const { handleSaveTemplate } = useSaveTemplate({
+    workoutName,
+    exercises,
+    setIsSaving,
+    resetSession,
+    templateId: templateId || "",
+  });
 
-      const updated = validNormal.map((ex) => ({
-        ...ex,
-        superset_id: crypto.randomUUID(),
-      }));
+  // useLogSetForExercise hook to log the set for the exercise. not used in this component.
 
-      setExercises((prev) => [...prev, ...updated]);
-      setExerciseInputs((prev) => [
-        ...prev,
-        ...updated.map((ex) => ({
-          weight: "",
-          reps: "",
-          rpe: isCardioExercise(ex) ? "Warm-up" : "Medium",
-        })),
-      ]);
-      setNormalExercises([]);
-    }
-
-    setDropdownResetKey((prev) => prev + 1); // Reset dropdown
-  };
-
-  const handleSaveTemplate = async () => {
-    if (workoutName.trim() === "" || exercises.length === 0) return;
-
-    setIsSaving(true);
-
-    const simplified = exercises.map((ex) => ({
-      template_id: templateId || "",
-      exercise_id: ex.exercise_id,
-      position: 0,
-      superset_id: ex.superset_id,
-    }));
-
-    const updated = new Date().toISOString();
-
-    try {
-      if (templateId) {
-        await editTemplate({
-          id: templateId,
-          exercises: simplified,
-          name: workoutName,
-          updated_at: updated,
-        });
-      } else {
-        await saveTemplate({
-          exercises: simplified,
-          name: workoutName,
-        });
-      }
-
-      if (templateId) {
-        await queryClient.refetchQueries({
-          queryKey: ["full_gym_template", templateId],
-          exact: true,
-        });
-      } else {
-        await queryClient.refetchQueries({
-          queryKey: ["get-templates"],
-          exact: true,
-        });
-      }
-
-      router.push("/training/templates");
-      resetSession();
-      Toast.show({
-        type: "success",
-        text1: "Template saved",
-        text2: "Template has been saved successfully.",
-      });
-    } catch {
-      setIsSaving(false);
-      Toast.show({
-        type: "error",
-        text1: "Error saving template",
-        text2: "Please try again later.",
-      });
-    }
-  };
-
-  const resetSession = () => {
-    setNormalExercises([]);
-    setSupersetExercise([]);
-    setExerciseType("Normal");
-    setExercises([]);
-    setWorkoutName("");
-    setNormalExercises([]);
-    AsyncStorage.removeItem(storageKey);
-  };
-
-  const logSetForExercise = (index: number) => {
-    const { weight, reps, rpe } = exerciseInputs![index];
-
-    const safeWeight = weight === "" ? 0 : Number(weight);
-    const safeReps = reps === "" ? 0 : Number(reps);
-
-    const updated = [...exercises];
-    updated[index].sets.push({
-      weight: safeWeight,
-      reps: safeReps,
-      rpe: rpe,
-    });
-    setExercises(updated);
-
-    const updatedInputs = [...exerciseInputs];
-    updatedInputs[index] = { weight: "", reps: "", rpe: "Medium" };
-    setExerciseInputs(updatedInputs);
-  };
+  const { logSetForExercise } = useLogSetForExercise({
+    exercises,
+    exerciseInputs,
+    setExerciseInputs,
+    setExercises,
+  });
 
   if (templateId && (isLoading || !existingTemplate)) {
     return (
@@ -396,7 +299,7 @@ export default function TemplateForm() {
                             if (!confirmDelete) return;
 
                             const updated = exercises.filter(
-                              (_, i) => i !== index,
+                              (_, i) => i !== index
                             );
                             setExercises(updated);
 
@@ -406,7 +309,7 @@ export default function TemplateForm() {
                             };
                             AsyncStorage.setItem(
                               storageKey,
-                              JSON.stringify(sessionDraft),
+                              JSON.stringify(sessionDraft)
                             );
                           }}
                         />

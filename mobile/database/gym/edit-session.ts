@@ -18,8 +18,6 @@ export async function editSession({
   title,
   id,
 }: editGymSessionProps) {
-
-
   const { error: editError } = await supabase
     .from("gym_sessions")
     .update({
@@ -27,7 +25,7 @@ export async function editSession({
       notes,
       duration: durationEdit,
     })
-    .eq("id", id)
+    .eq("id", id);
 
   if (editError) {
     handleError(editError, {

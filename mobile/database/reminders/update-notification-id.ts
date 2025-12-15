@@ -3,13 +3,13 @@ import { supabase } from "@/lib/supabase";
 
 export default async function UpdateNotificationId(
   notificationId: string | string[],
-  reminderId: string
+  reminderId: string,
 ) {
   const notificationIds = Array.isArray(notificationId)
     ? notificationId
     : typeof notificationId === "string"
-    ? [notificationId]
-    : [];
+      ? [notificationId]
+      : [];
 
   const { data, error } = await supabase
     .from("custom_reminders")

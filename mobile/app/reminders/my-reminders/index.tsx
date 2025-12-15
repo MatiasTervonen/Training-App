@@ -1,28 +1,24 @@
 import FullScreenModal from "@/components/FullScreenModal";
 import { useState } from "react";
-import Toast from "react-native-toast-message";
 import { ScrollView, View } from "react-native";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { confirmAction } from "@/lib/confirmAction";
 import { TemplateSkeleton } from "@/components/skeletetons";
 import AppText from "@/components/AppText";
 import PageContainer from "@/components/PageContainer";
 import GetReminders from "@/database/reminders/get-reminders";
-import DeleteReminder from "@/database/reminders/delete-reminder";
-import DeleteCustomReminder from "@/database/reminders/delete-custom-reminder";
 import MyReminderCard from "@/components/cards/MyReminderCard";
 import { full_reminder } from "@/types/session";
-import * as Notifications from "expo-notifications";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import EditCustomReminder from "@/components/editSession/editCustomReminder";
 import EditReminder from "@/components/editSession/editReminder";
 import ReminderSession from "@/components/expandSession/reminder";
+import useDeleteReminder from "@/hooks/reminders/my-reminders/useDeleteReminder";
 
 export default function RemindersPage() {
   const [expandedItem, setExpandedItem] = useState<full_reminder | null>(null);
   const [editingItem, setEditingItem] = useState<full_reminder | null>(null);
   const [activeTab, setActiveTab] = useState<"upcoming" | "delivered">(
-    "upcoming",
+    "upcoming"
   );
 
   const queryClient = useQueryClient();
@@ -41,58 +37,11 @@ export default function RemindersPage() {
     gcTime: Infinity,
   });
 
-  const handleDeleteReminder = async (reminder: full_reminder) => {
-    const confirmDelete = await confirmAction({
-      message: "Delete Reminder",
-      title: "Are you sure you want to delete this reminder?",
-    });
-    if (!confirmDelete) return;
-
-    const queryKey = ["get-reminders"];
-
-    const previousFeed = queryClient.getQueryData<full_reminder[]>(queryKey);
-
-    queryClient.setQueryData<full_reminder[]>(queryKey, (oldData) => {
-      if (!oldData) return oldData;
-
-      return oldData.filter((item) => item.id !== reminder.id);
-    });
-
-    try {
-      const ids = Array.isArray(reminder.notification_id)
-        ? reminder.notification_id
-        : typeof reminder.notification_id === "string"
-          ? [reminder.notification_id]
-          : [];
-
-      for (const nid of ids) {
-        await Notifications.cancelScheduledNotificationAsync(nid);
-      }
-
-      if (reminder.type === "global") {
-        await DeleteReminder(reminder.id);
-      } else {
-        await DeleteCustomReminder(reminder.id);
-      }
-
-      queryClient.refetchQueries({ queryKey: ["feed"], exact: true });
-
-      Toast.show({
-        type: "success",
-        text1: "Reminder deleted successfully",
-      });
-    } catch {
-      queryClient.setQueryData(queryKey, previousFeed);
-      Toast.show({
-        type: "error",
-        text1: "Failed to delete reminder",
-        text2: "Please try again.",
-      });
-    }
-  };
+  // useDeleteReminder hook to delete reminder
+  const { handleDeleteReminder } = useDeleteReminder();
 
   const filteredReminders = reminders.filter((r) =>
-    activeTab === "upcoming" ? !r.delivered : r.delivered,
+    activeTab === "upcoming" ? !r.delivered : r.delivered
   );
 
   return (
@@ -161,7 +110,7 @@ export default function RemindersPage() {
 
         {editingItem &&
           filteredReminders.find(
-            (r) => r.id === editingItem?.id && r.type === "global",
+            (r) => r.id === editingItem?.id && r.type === "global"
           ) && (
             <FullScreenModal isOpen={true} onClose={() => setEditingItem(null)}>
               <EditReminder
@@ -184,7 +133,7 @@ export default function RemindersPage() {
 
         {editingItem &&
           filteredReminders.find(
-            (r) => r.id === editingItem?.id && r.type !== "global",
+            (r) => r.id === editingItem?.id && r.type !== "global"
           ) && (
             <FullScreenModal isOpen={true} onClose={() => setEditingItem(null)}>
               <EditCustomReminder

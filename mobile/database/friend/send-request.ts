@@ -17,7 +17,7 @@ export async function sendFriendRequest(identifier: string) {
 
   const isUUID = (str: string) =>
     /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/.test(
-      str
+      str,
     );
 
   let targetuser = null;
@@ -68,7 +68,7 @@ export async function sendFriendRequest(identifier: string) {
     .from("friend_requests")
     .select("*")
     .or(
-      `and(sender_id.eq.${session.user.id},receiver_id.eq.${receiverId},status.eq.pending),and(sender_id.eq.${receiverId},receiver_id.eq.${session.user.id},status.eq.pending)`
+      `and(sender_id.eq.${session.user.id},receiver_id.eq.${receiverId},status.eq.pending),and(sender_id.eq.${receiverId},receiver_id.eq.${session.user.id},status.eq.pending)`,
     )
     .maybeSingle();
 
@@ -91,7 +91,7 @@ export async function sendFriendRequest(identifier: string) {
     .from("friend_requests")
     .select("*")
     .or(
-      `and(sender_id.eq.${session.user.id},receiver_id.eq.${receiverId},status.eq.accepted),and(sender_id.eq.${receiverId},receiver_id.eq.${session.user.id},status.eq.accepted)`
+      `and(sender_id.eq.${session.user.id},receiver_id.eq.${receiverId},status.eq.accepted),and(sender_id.eq.${receiverId},receiver_id.eq.${session.user.id},status.eq.accepted)`,
     )
     .maybeSingle();
 

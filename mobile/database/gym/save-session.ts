@@ -26,8 +26,6 @@ export async function saveSession({
   duration,
   title,
 }: props) {
-
-
   const { data: sessionData, error: sessionError } = await supabase
     .from("gym_sessions")
     .insert([

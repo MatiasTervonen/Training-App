@@ -9,7 +9,7 @@ const getId = (fi: FeedItem | null) => fi?.item.id ?? null;
 
 export default function useFullSessions(
   expandedItem: FeedItem | null,
-  editingItem: FeedItem | null
+  editingItem: FeedItem | null,
 ) {
   const expandedId = getId(expandedItem);
   const editingId = getId(editingItem);
@@ -18,22 +18,22 @@ export default function useFullSessions(
     expandedItem?.table === "gym_sessions"
       ? expandedId
       : editingItem?.table === "gym_sessions"
-      ? editingId
-      : null;
+        ? editingId
+        : null;
 
   const customReminderId =
     expandedItem?.table === "custom_reminders"
       ? expandedId
       : editingItem?.table === "custom_reminders"
-      ? editingId
-      : null;
+        ? editingId
+        : null;
 
   const todoId =
     expandedItem?.table === "todo_lists"
       ? expandedId
       : editingItem?.table === "todo_lists"
-      ? editingId
-      : null;
+        ? editingId
+        : null;
 
   const {
     data: GymSessionFull,

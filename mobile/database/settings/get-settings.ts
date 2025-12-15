@@ -14,7 +14,7 @@ export async function fetchUserPreferences() {
   const { data, error } = await supabase
     .from("users")
     .select(
-      "id, display_name, weight_unit, profile_picture, role, push_enabled"
+      "id, display_name, weight_unit, profile_picture, role, push_enabled",
     )
     .eq("id", session.user.id)
     .single();
@@ -25,7 +25,7 @@ export async function fetchUserPreferences() {
       route: "/database/settings/get-settings",
       method: "GET",
     });
-  throw new Error("Error fetching user preferences");
+    throw new Error("Error fetching user preferences");
   }
 
   return data;

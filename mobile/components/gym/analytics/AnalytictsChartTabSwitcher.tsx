@@ -1,9 +1,9 @@
-import { full_gym_session } from "../../types/models";
+import { full_gym_session } from "@/types/models";
 import { useState } from "react";
 import { View } from "react-native";
 import AnimatedButton from "@/components/buttons/animatedButton";
-import MuscleGroupChart from "@/components/gym/MuscleGroupChart";
-import MuscleGroupChartSets from "./MuscleGroupChartSets";
+import MuscleGroupChart from "@/components/gym/analytics/MuscleGroupChart";
+import MuscleGroupChartSets from "@/components/gym/analytics/MuscleGroupChartSets";
 
 export default function ChartTabSwitcher({
   data,

@@ -18,13 +18,10 @@ export default async function EditReminderData({
   delivered,
   updated_at,
 }: EditReminderParams) {
-
-
   const { error } = await supabase
     .from("reminders")
     .update({ title, notes, notify_at, delivered, updated_at })
-    .eq("id", id)
-
+    .eq("id", id);
 
   if (error) {
     handleError(error, {

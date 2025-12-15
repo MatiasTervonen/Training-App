@@ -1,7 +1,7 @@
-import { full_gym_session } from "../../types/models";
+import { full_gym_session } from "../../../types/models";
 import { useMemo } from "react";
 import { Dimensions, View } from "react-native";
-import AppText from "../AppText";
+import AppText from "../../AppText";
 import AnimatedBar from "./AnimatedBar";
 
 export default function MuscleGroupChartSets({

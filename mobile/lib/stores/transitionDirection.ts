@@ -11,5 +11,5 @@ export const useTransitionDirectionStore = create<TransitionDirectionStore>(
     setDirection: (dir: number) => {
       set({ direction: dir });
     },
-  })
+  }),
 );

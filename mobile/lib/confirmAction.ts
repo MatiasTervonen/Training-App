@@ -31,7 +31,7 @@ export function confirmAction({
           onPress: () => resolve(true),
         },
       ],
-      { cancelable }
+      { cancelable },
     );
   });
 }

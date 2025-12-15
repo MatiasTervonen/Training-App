@@ -11,7 +11,7 @@ export default function useDeleteSession() {
   const handleDelete = async (
     notification_id: string[] | string | null,
     id: string,
-    table: string
+    table: string,
   ) => {
     const confirmed = await confirmAction({
       title: "Are you sure you want to delete this session?",
@@ -55,8 +55,8 @@ export default function useDeleteSession() {
         const ids = Array.isArray(notification_id)
           ? notification_id
           : typeof notification_id === "string"
-          ? [notification_id]
-          : [];
+            ? [notification_id]
+            : [];
 
         for (const nid of ids) {
           await Notifications.cancelScheduledNotificationAsync(nid);

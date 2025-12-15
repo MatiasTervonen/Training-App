@@ -1,16 +1,10 @@
 import { View, TouchableWithoutFeedback, Keyboard } from "react-native";
 import AppText from "@/components/AppText";
-import SaveReminder from "@/database/reminders/save-reminder";
 import SaveButton from "@/components/buttons/SaveButton";
 import DeleteButton from "@/components/buttons/DeleteButton";
 import AppInput from "@/components/AppInput";
 import FullScreenLoader from "@/components/FullScreenLoader";
-import Toast from "react-native-toast-message";
-import { useState, useEffect } from "react";
-import { useRouter } from "expo-router";
-import { useDebouncedCallback } from "use-debounce";
-import { handleError } from "@/utils/handleError";
-import { useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import PageContainer from "@/components/PageContainer";
 import DatePicker from "react-native-date-picker";
@@ -18,6 +12,8 @@ import AnimatedButton from "@/components/buttons/animatedButton";
 import { Plus, Info } from "lucide-react-native";
 import { formatDateTime } from "@/lib/formatDate";
 import SubNotesInput from "@/components/SubNotesInput";
+import useSaveDraft from "@/hooks/reminders/global/useSaveDraft";
+import useSaveReminder from "@/hooks/reminders/global/useSaveReminder";
 
 export default function ReminderScreen() {
   const [open, setOpen] = useState(false);
@@ -26,99 +22,8 @@ export default function ReminderScreen() {
   const [isSaving, setIsSaving] = useState(false);
   const [notifyAt, setNotifyAt] = useState<Date | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
-  const router = useRouter();
-
-  const queryClient = useQueryClient();
 
   const formattedTime = formatDateTime(notifyAt!);
-
-  useEffect(() => {
-    const loadDraft = async () => {
-      try {
-        const storeDraft = await AsyncStorage.getItem("reminder_draft");
-        if (storeDraft) {
-          const draft = JSON.parse(storeDraft);
-          setValue(draft.title || "");
-          setNotes(draft.notes || "");
-        }
-      } catch (error) {
-        handleError(error, {
-          message: "Error loading reminder draft",
-          route: "reminders/index.tsx",
-          method: "loadDraft",
-        });
-      } finally {
-        setIsLoaded(true);
-      }
-    };
-
-    loadDraft();
-  }, []);
-
-  const saveDraft = useDebouncedCallback(async () => {
-    if (notes.trim().length === 0 && title.trim().length === 0) {
-      await AsyncStorage.removeItem("reminder_draft");
-    } else {
-      const sessionDraft = {
-        title: title,
-        notes,
-      };
-      await AsyncStorage.setItem(
-        "reminder_draft",
-        JSON.stringify(sessionDraft),
-      );
-    }
-  }, 1000); // Save every second
-
-  useEffect(() => {
-    if (!isLoaded) return;
-    saveDraft();
-  }, [notes, title, saveDraft, isLoaded]);
-
-  const saveReminder = async () => {
-    if (title.trim().length === 0) {
-      Toast.show({
-        type: "error",
-        text1: "Title is required",
-      });
-      return;
-    }
-    if (!notifyAt) {
-      Toast.show({
-        type: "error",
-        text1: "Notify time is required",
-      });
-      return;
-    }
-
-    setIsSaving(true);
-
-    try {
-      await SaveReminder({
-        title: title,
-        notes,
-        type: "global",
-        notify_at: notifyAt ? notifyAt.toISOString() : null,
-      });
-
-      await Promise.all([
-        queryClient.refetchQueries({ queryKey: ["feed"], exact: true }),
-        queryClient.refetchQueries({
-          queryKey: ["get-reminders"],
-          exact: true,
-        }),
-      ]);
-
-      router.push("/dashboard");
-      resetReminder();
-    } catch {
-      Toast.show({
-        type: "error",
-        text1: "Failed to save reminder. Please try again.",
-      });
-      setIsSaving(false);
-    }
-  };
 
   const resetReminder = () => {
     AsyncStorage.removeItem("reminder_draft");
@@ -126,6 +31,25 @@ export default function ReminderScreen() {
     setNotes("");
     setNotifyAt(null);
   };
+
+  // useSaveDraft hook to save draft reminder
+  useSaveDraft({
+    title,
+    notes,
+    setValue,
+    setNotes,
+    setIsLoaded,
+    isLoaded,
+  });
+
+  // useSaveReminder hook to save reminder
+  const { saveReminder } = useSaveReminder({
+    title,
+    notes,
+    notifyAt: notifyAt || new Date(),
+    setIsSaving,
+    resetReminder,
+  });
 
   return (
     <>

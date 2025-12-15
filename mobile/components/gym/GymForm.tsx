@@ -9,16 +9,10 @@ import {
   emptyExerciseEntry,
 } from "@/types/session";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { handleError } from "@/utils/handleError";
-import { useDebouncedCallback } from "use-debounce";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getLastExerciseHistory } from "@/database/gym/last-exercise-history";
 import { useTimerStore } from "@/lib/stores/timerStore";
-import * as Crypto from "expo-crypto";
 import { confirmAction } from "@/lib/confirmAction";
-import { saveSession } from "@/database/gym/save-session";
-import { editSession } from "@/database/gym/edit-session";
-import Toast from "react-native-toast-message";
 import GroupGymExercises from "@/components/gym/lib/GroupGymExercises";
 import ExerciseCard from "@/components/gym/ExerciseCard";
 import FullScreenModal from "@/components/FullScreenModal";
@@ -35,6 +29,10 @@ import PageContainer from "@/components/PageContainer";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import SubNotesInput from "@/components/SubNotesInput";
 import { full_gym_session } from "@/types/models";
+import useSaveGymDraft from "@/hooks/training/useSaveGymDraft";
+import useStartExercise from "@/hooks/training/useStartExercise";
+import useLogSetForExercise from "@/hooks/training/useLogSetForExercise";
+import useSaveSession from "@/hooks/training/useSaveSession";
 
 export default function GymForm({
   initialData,
@@ -59,7 +57,7 @@ export default function GymForm({
           time_min: s.time_min ?? 0,
           distance_meters: s.distance_meters ?? 0,
         })) || [],
-    })),
+    }))
   );
   const [notes, setNotes] = useState("");
   const [exerciseInputs, setExerciseInputs] = useState<ExerciseInput[]>(
@@ -69,7 +67,7 @@ export default function GymForm({
       rpe: "Medium",
       time_min: "",
       distance_meters: "",
-    })),
+    }))
   );
   const [durationEdit, setDurationEdit] = useState(session.duration);
   const router = useRouter();
@@ -85,7 +83,7 @@ export default function GymForm({
   >(null);
   const [hasLoadedDraft, setHasLoadedDraft] = useState(false);
   const [exerciseHistoryId, setExerciseHistoryId] = useState<string | null>(
-    null,
+    null
   );
   const [isScrolling, setIsScrolling] = useState(false);
 
@@ -93,66 +91,20 @@ export default function GymForm({
 
   const queryClient = useQueryClient();
 
-  useEffect(() => {
-    if (isEditing) return;
+  // useSaveGymDraft hook to save the draft
 
-    const loadDraft = async () => {
-      try {
-        const draft = await AsyncStorage.getItem("gym_session_draft");
-        if (draft) {
-          const parsedDraft = JSON.parse(draft);
-          setTitle(parsedDraft.title || "");
-          setExercises(parsedDraft.exercises || []);
-          setNotes(parsedDraft.notes || "");
-          setExerciseInputs(
-            parsedDraft.exercises
-              ? parsedDraft.exercises.map(() => ({
-                  weight: "",
-                  reps: "",
-                  rpe: "Medium",
-                  time_min: "",
-                  distance_meters: "",
-                }))
-              : [],
-          );
-        }
-      } catch (error) {
-        handleError(error, {
-          message: "Error loading notes draft",
-          route: "notes/index.tsx",
-          method: "loadDraft",
-        });
-      } finally {
-        setHasLoadedDraft(true);
-      }
-    };
-    loadDraft();
-  }, [isEditing]);
-
-  const saveGymDraft = useDebouncedCallback(async () => {
-    if (!hasLoadedDraft || isEditing) return;
-
-    if (exercises.length === 0 && notes.trim() === "" && title.trim() === "") {
-      AsyncStorage.removeItem("gym_session_draft");
-      return;
-    } else {
-      const sessionDraft = {
-        title,
-        exercises,
-        notes,
-      };
-
-      await AsyncStorage.setItem(
-        "gym_session_draft",
-        JSON.stringify(sessionDraft),
-      );
-    }
-  }, 500);
-
-  useEffect(() => {
-    if (!hasLoadedDraft) return;
-    saveGymDraft();
-  }, [notes, title, saveGymDraft, exercises, hasLoadedDraft, isEditing]);
+  useSaveGymDraft({
+    exercises,
+    notes,
+    title,
+    isEditing,
+    setTitle,
+    setExercises,
+    setNotes,
+    setExerciseInputs,
+    setHasLoadedDraft,
+    hasLoadedDraft,
+  });
 
   const {
     activeSession,
@@ -206,100 +158,29 @@ export default function GymForm({
     checkTemplateFlag();
   }, [startSession]);
 
-  const startExercise = () => {
-    const newSupersetId = Crypto.randomUUID();
+  // useStartExercise hook to start the exercise
 
-    if (exercises.length === 0) {
-      startSession();
-    }
+  const { startExercise } = useStartExercise({
+    exercises,
+    setExercises,
+    setExerciseInputs,
+    setSupersetExercise,
+    setNormalExercises,
+    setDropdownResetKey,
+    startSession,
+    exerciseType,
+    supersetExercise,
+    normalExercises,
+  });
 
-    if (exerciseType === "Super-Set") {
-      const validExercises = supersetExercise.filter(
-        (ex) => ex && typeof ex.name === "string" && ex.name.trim() !== "",
-      );
-      if (validExercises.length === 0) return;
+  // useLogSetForExercise hook to log the set for the exercise
 
-      const newGroup = validExercises.map((ex) => ({
-        ...ex,
-        superset_id: newSupersetId,
-      }));
-
-      setExercises((prev) => {
-        const updated = [...prev, ...newGroup];
-        setExerciseInputs((inputs) => [
-          ...inputs,
-          ...newGroup.map(() => ({ weight: "", reps: "", rpe: "Medium" })),
-        ]);
-        return updated;
-      });
-      setSupersetExercise([]);
-    } else {
-      const validNormal = normalExercises.filter(
-        (ex) => ex.name && ex.name.trim() !== "",
-      );
-      if (validNormal.length === 0) return;
-
-      // Assign new superset_id to each normal exercise (so they're grouped individually)
-      const updated = validNormal.map((ex) => ({
-        ...ex,
-        superset_id: Crypto.randomUUID(),
-      }));
-
-      setExercises((prev) => [...prev, ...updated]);
-      setExerciseInputs((prev) => [
-        ...prev,
-        ...updated.map(() => ({
-          weight: "",
-          reps: "",
-          rpe: "Medium",
-          time_min: "",
-          distance_meters: "",
-        })),
-      ]);
-      setNormalExercises([]);
-    }
-    setDropdownResetKey((prev) => prev + 1); // Reset the dropdown
-  };
-
-  const logSetForExercise = (index: number) => {
-    const input = exerciseInputs[index];
-    const exercise = exercises[index];
-    const updated = [...exercises];
-
-    const isCardio = (exercise.main_group || "").toLowerCase() === "cardio";
-
-    if (isCardio) {
-      const safeTime = input.time_min === "" ? 0 : Number(input.time_min);
-      const safeDistance =
-        input.distance_meters === "" ? 0 : Number(input.distance_meters);
-
-      updated[index].sets.push({
-        time_min: safeDistance,
-        distance_meters: safeTime,
-      });
-
-      const updatedInputs = [...exerciseInputs];
-      updatedInputs[index] = { ...input, time_min: "", distance_meters: "" };
-
-      setExerciseInputs(updatedInputs);
-    } else {
-      const safeWeight = input.weight === "" ? 0 : Number(input.weight);
-      const safeReps = input.reps === "" ? 0 : Number(input.reps);
-
-      updated[index].sets.push({
-        weight: safeWeight,
-        reps: safeReps,
-        rpe: input.rpe,
-      });
-
-      const updatedInputs = [...exerciseInputs];
-      updatedInputs[index] = { weight: "", reps: "", rpe: "Medium" };
-
-      setExerciseInputs(updatedInputs);
-    }
-
-    setExercises(updated);
-  };
+  const { logSetForExercise } = useLogSetForExercise({
+    exercises,
+    exerciseInputs,
+    setExerciseInputs,
+    setExercises,
+  });
 
   const resetSession = () => {
     stopTimer();
@@ -314,67 +195,19 @@ export default function GymForm({
     setExerciseInputs([]);
   };
 
-  const handleSaveSession = async () => {
-    if (title.trim() === "") {
-      Toast.show({
-        type: "error",
-        text1: "Error",
-        text2: "Title is required.",
-      });
-      return;
-    }
+  // useSaveSession hook to save the session
 
-    const confirmSave = await confirmAction({
-      title: "Confirm Finish Session",
-      message: "Are you sure you want to finish this session?",
-    });
-
-    if (!confirmSave) return;
-    if (exercises.length === 0 && notes.trim() === "") return;
-
-    setIsSaving(true);
-
-    const duration = elapsedTime;
-
-    try {
-      if (isEditing) {
-        await editSession({
-          id: session.id,
-          title,
-          notes,
-          durationEdit,
-          exercises,
-        });
-
-        await Promise.all([
-          queryClient.refetchQueries({ queryKey: ["feed"], exact: true }),
-          queryClient.refetchQueries({
-            queryKey: ["fullGymSession", session.id],
-            exact: true,
-          }),
-        ]);
-      } else {
-        await saveSession({ title, notes, duration, exercises });
-
-        await queryClient.refetchQueries({ queryKey: ["feed"], exact: true });
-      }
-
-      if (isEditing) {
-        router.push("/dashboard");
-      } else {
-        router.push("/training/training-finished");
-      }
-
-      resetSession();
-    } catch {
-      Toast.show({
-        type: "error",
-        text1: "Error",
-        text2: "Failed to save session. Please try again.",
-      });
-      setIsSaving(false);
-    }
-  };
+  const { handleSaveSession } = useSaveSession({
+    title,
+    exercises,
+    notes,
+    durationEdit,
+    isEditing,
+    elapsedTime,
+    setIsSaving,
+    resetSession,
+    session,
+  });
 
   useEffect(() => {
     if (
@@ -523,7 +356,7 @@ export default function GymForm({
                           if (!confirmDelete) return;
 
                           const updated = exercises.filter(
-                            (_, i) => i !== index,
+                            (_, i) => i !== index
                           );
                           setExercises(updated);
 
@@ -534,7 +367,7 @@ export default function GymForm({
                           };
                           AsyncStorage.setItem(
                             "gym_session_draft",
-                            JSON.stringify(sessionDraft),
+                            JSON.stringify(sessionDraft)
                           );
                         }}
                       />

@@ -25,13 +25,19 @@ export default async function EditCustomReminderData({
   notification_id,
   updated_at,
 }: EditReminderParams) {
-
-
   const { error } = await supabase
     .from("custom_reminders")
-    .update({ title, notes, notify_at_time, notify_date, weekdays, type, notification_id, updated_at })
-    .eq("id", id)
-
+    .update({
+      title,
+      notes,
+      notify_at_time,
+      notify_date,
+      weekdays,
+      type,
+      notification_id,
+      updated_at,
+    })
+    .eq("id", id);
 
   if (error) {
     handleError(error, {

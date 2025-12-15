@@ -2,13 +2,10 @@ import { supabase } from "@/lib/supabase";
 import { handleError } from "@/utils/handleError";
 
 export async function getWeight() {
-
-
   const { error: weightError, data: weight } = await supabase
     .from("weight")
     .select("id,title, notes, weight, created_at")
     .order("created_at", { ascending: true });
-
 
   if (weightError || !weight) {
     handleError(weightError, {

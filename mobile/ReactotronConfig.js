@@ -2,7 +2,7 @@ import Reactotron, { asyncStorage } from "reactotron-react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 Reactotron.setAsyncStorageHandler(AsyncStorage) // controls connection & communication settings // set AsyncStorage handler
-    .configure({
+  .configure({
     name: "MyTrack",
   })
   .useReactNative()

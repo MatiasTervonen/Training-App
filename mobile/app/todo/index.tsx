@@ -4,7 +4,7 @@ import {
   Trash2,
   SquareArrowOutUpRight,
 } from "lucide-react-native";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import DeleteButton from "@/components/buttons/DeleteButton";
 import FullScreenModal from "@/components/FullScreenModal";
 import SaveButton from "@/components/buttons/SaveButton";
@@ -15,9 +15,7 @@ import saveTodoToDB from "@/database/todo/save-todo";
 import AppInput from "@/components/AppInput";
 import SubNotesInput from "@/components/SubNotesInput";
 import { useQueryClient } from "@tanstack/react-query";
-import { useDebouncedCallback } from "use-debounce";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { handleError } from "@/utils/handleError";
 import { confirmAction } from "@/lib/confirmAction";
 import PageContainer from "@/components/PageContainer";
 import {
@@ -28,6 +26,7 @@ import {
 } from "react-native";
 import AppText from "@/components/AppText";
 import AnimatedButton from "@/components/buttons/animatedButton";
+import useSaveDraft from "@/hooks/todo/useSaveDraft";
 
 type TodoItem = {
   task: string;
@@ -46,60 +45,26 @@ export default function Todo() {
     {
       task: "",
       notes: "",
-    },
+    }
   );
   const router = useRouter();
   const [isLoaded, setIsLoaded] = useState(false);
 
   const queryClient = useQueryClient();
 
-  useEffect(() => {
-    const loadDraft = async () => {
-      try {
-        const storeDraft = await AsyncStorage.getItem("todo_draft");
-        if (storeDraft) {
-          const draft = JSON.parse(storeDraft);
-          setTitle(draft.title || "");
-          setTask(draft.task || "");
-          setNotes(draft.notes || "");
-          setTodoList(draft.todoList || "");
-        }
-      } catch (error) {
-        handleError(error, {
-          message: "Error loading todo draft",
-          route: "todo/index.tsx",
-          method: "loadDraft",
-        });
-      } finally {
-        setIsLoaded(true);
-      }
-    };
-    loadDraft();
-  }, []);
-
-  const saveTodoDraft = useDebouncedCallback(
-    async () => {
-      if (!isLoaded) return;
-
-      if (title.trim() === "" && todoList.length === 0) {
-        await AsyncStorage.removeItem("todo_draft");
-      } else {
-        const draft = {
-          title,
-          task,
-          notes,
-          todoList: todoList,
-        };
-        await AsyncStorage.setItem("todo_draft", JSON.stringify(draft));
-      }
-    },
-    500,
-    { maxWait: 3000 },
-  );
-
-  useEffect(() => {
-    saveTodoDraft();
-  }, [title, notes, todoList, task, saveTodoDraft]);
+  // useSaveDraft hook to save draft todo list
+  useSaveDraft({
+    title,
+    task,
+    notes,
+    todoList,
+    setTitle,
+    setTask,
+    setNotes,
+    setTodoList,
+    setIsLoaded,
+    isLoaded,
+  });
 
   const handleDeleteItem = async (index: number) => {
     const confirmDelete = await confirmAction({
@@ -265,8 +230,8 @@ export default function Todo() {
                                       list.map((item, i) =>
                                         i === index
                                           ? { ...item, ...modalDraft }
-                                          : item,
-                                      ),
+                                          : item
+                                      )
                                     );
                                     setEdit(null);
                                   }}

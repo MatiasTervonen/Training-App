@@ -5,7 +5,7 @@ export default async function DeleteTemplate(templateId: string) {
   const { error } = await supabase
     .from("gym_templates")
     .delete()
-    .eq("id", templateId)
+    .eq("id", templateId);
 
   if (error) {
     handleError(error, {

@@ -2,7 +2,7 @@ import { Session } from "@supabase/supabase-js";
 
 export const isUserNameTaken = async (
   name: string,
-  session: Session | null
+  session: Session | null,
 ): Promise<boolean | null> => {
   try {
     const response = await fetch(
@@ -12,7 +12,7 @@ export const isUserNameTaken = async (
         headers: {
           Authorization: `Bearer ${session?.access_token}`,
         },
-      }
+      },
     );
 
     if (!response.ok) {

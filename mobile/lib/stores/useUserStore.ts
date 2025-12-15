@@ -57,6 +57,6 @@ export const useUserStore = create<UserStore>()(
           await AsyncStorage.removeItem(key);
         },
       },
-    }
-  )
+    },
+  ),
 );

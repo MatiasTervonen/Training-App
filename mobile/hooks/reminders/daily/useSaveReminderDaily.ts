@@ -70,8 +70,6 @@ export default function useSaveReminderDaily({
         text1: "Failed to save reminder. Please try again.",
       });
       setIsSaving(false);
-    } finally {
-      setIsSaving(false);
     }
   };
   return {

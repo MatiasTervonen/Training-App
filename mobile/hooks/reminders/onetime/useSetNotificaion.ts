@@ -1,4 +1,4 @@
-import Notifications from "expo-notifications";
+import * as Notifications from "expo-notifications";
 import { handleError } from "@/utils/handleError";
 
 export default function useSetNotificationOnetime({
@@ -27,6 +27,8 @@ export default function useSetNotificationOnetime({
         },
         trigger: { type: "date", date: notifyAt } as any,
       });
+
+      console.log("Notification scheduled:", id);
 
       return id;
     } catch (error) {

@@ -1,5 +1,5 @@
 import { Platform } from "react-native";
-import Notifications from "expo-notifications";
+import * as Notifications from "expo-notifications";
 import { handleError } from "@/utils/handleError";
 
 export default function useSetNotificationWeekly({

@@ -25,16 +25,8 @@ export default function AllDataTable({ data, isLoading, error }: AllDataProps) {
   const weightUnit =
     useUserStore((state) => state.preferences?.weight_unit) || "kg";
 
-  const sortedData = useMemo(() => {
-    return [...data].sort((a, b) => {
-      return (
-        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-      );
-    });
-  }, [data]);
-
   const groupedData = useMemo(() => {
-    return sortedData.reduce(
+    return data.reduce(
       (acc, entry) => {
         const date = new Date(entry.created_at);
         const monthYear = date.toLocaleString("default", {
@@ -46,9 +38,9 @@ export default function AllDataTable({ data, isLoading, error }: AllDataProps) {
         acc[monthYear].push(entry);
         return acc;
       },
-      {} as Record<string, weight[]>,
+      {} as Record<string, weight[]>
     );
-  }, [sortedData]);
+  }, [data]);
 
   // Transform into SectionList format
 
@@ -83,7 +75,7 @@ export default function AllDataTable({ data, isLoading, error }: AllDataProps) {
     const previousData = queryClient.getQueryData(queryKey);
 
     queryClient.setQueryData<weight[]>(queryKey, (oldData) =>
-      oldData ? oldData.filter((item) => item.id !== item_id) : [],
+      oldData ? oldData.filter((item) => item.id !== item_id) : []
     );
 
     try {
@@ -117,7 +109,7 @@ export default function AllDataTable({ data, isLoading, error }: AllDataProps) {
         data={data}
       />
     ),
-    [range, setRange, isLoading, error, data],
+    [range, setRange, isLoading, error, data]
   );
 
   return (

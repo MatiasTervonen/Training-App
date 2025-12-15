@@ -21,7 +21,7 @@ export default function useSaveDraft({
   useEffect(() => {
     const loadDraft = async () => {
       try {
-        const storeDraft = await AsyncStorage.getItem("reminder_draft");
+        const storeDraft = await AsyncStorage.getItem("global_reminder_draft");
         if (storeDraft) {
           const draft = JSON.parse(storeDraft);
           setValue(draft.title || "");
@@ -44,14 +44,14 @@ export default function useSaveDraft({
   const saveDraft = useDebouncedCallback(
     async () => {
       if (notes.trim().length === 0 && title.trim().length === 0) {
-        await AsyncStorage.removeItem("reminder_draft");
+        await AsyncStorage.removeItem("global_reminder_draft");
       } else {
         const sessionDraft = {
           title: title,
           notes,
         };
         await AsyncStorage.setItem(
-          "reminder_draft",
+          "global_reminder_draft",
           JSON.stringify(sessionDraft)
         );
       }

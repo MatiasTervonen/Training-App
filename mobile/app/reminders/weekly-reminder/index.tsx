@@ -31,7 +31,7 @@ export default function ReminderScreen() {
   const formattedTime = formatTime(notifyAt!);
 
   const resetReminder = () => {
-    AsyncStorage.removeItem("reminder_draft");
+    AsyncStorage.removeItem("weekly_reminder_draft");
     setValue("");
     setNotes("");
     setNotifyAt(null);
@@ -50,7 +50,7 @@ export default function ReminderScreen() {
 
   // useSetNotificationWeekly hook to set notification
   const { setNotification } = useSetNotificationWeekly({
-    notifyAt: notifyAt || new Date(),
+    notifyAt: notifyAt!,
     title,
     notes,
     weekdays,
@@ -60,7 +60,7 @@ export default function ReminderScreen() {
   const { saveReminder } = useSaveReminderWeekly({
     title,
     notes,
-    notifyAt: notifyAt || new Date(),
+    notifyAt: notifyAt!,
     weekdays,
     setIsSaving,
     setNotification,

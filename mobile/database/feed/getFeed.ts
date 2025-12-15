@@ -43,29 +43,60 @@ export default async function getFeed({
           .order("notify_at", { ascending: true })
       : Promise.resolve({ data: [], error: null });
 
-  const [pinnedResult, feedResult, remindersResult] = await Promise.all([
-    pinnedPromise,
-    feedPromise,
-    remindersPromise,
-  ]);
+  const customRemindersPromise =
+    pageParam === 0
+      ? supabase
+          .from("custom_reminders")
+          .select("*")
+          .gte("notify_date", nowIso)
+          .lte("notify_date", next4hIso)
+          .is("delivered", false)
+          .order("notify_date", { ascending: true })
+      : Promise.resolve({ data: [], error: null });
 
-  if (pinnedResult.error || feedResult.error || remindersResult.error) {
+  const [pinnedResult, feedResult, remindersResult, customRemindersResult] =
+    await Promise.all([
+      pinnedPromise,
+      feedPromise,
+      remindersPromise,
+      customRemindersPromise,
+    ]);
+
+  if (
+    pinnedResult.error ||
+    feedResult.error ||
+    remindersResult.error ||
+    customRemindersResult.error
+  ) {
     const error =
-      pinnedResult.error || feedResult.error || remindersResult.error;
-
+      pinnedResult.error ||
+      feedResult.error ||
+      remindersResult.error ||
+      customRemindersResult.error;
+    console.log(error);
     handleError(error, {
-      message: "Error fetching feed, reminders, or custom reminders",
+      message:
+        "Error fetching feed, reminders, or custom reminders, or custom reminders",
       route: "server-action: getFeed",
       method: "direct",
     });
-    throw new Error("Error fetching feed, reminders, or custom reminders");
+    throw new Error(
+      "Error fetching feed, reminders, or custom reminders, or custom reminders"
+    );
   }
 
-  const comingSoon = (remindersResult.data ?? []).map((item) => ({
-    ...item,
-    feed_context: "soon",
-    type: "reminders",
-  }));
+  const comingSoon = [
+    ...(remindersResult.data ?? []).map((item) => ({
+      ...item,
+      feed_context: "soon",
+      type: "reminders",
+    })),
+    ...(customRemindersResult.data ?? []).map((item) => ({
+      ...item,
+      feed_context: "soon",
+      type: "custom_reminders",
+    })),
+  ];
 
   const pinned = (pinnedResult.data ?? []).map((item) => ({
     ...item,
@@ -80,11 +111,11 @@ export default async function getFeed({
   const comingSoonIds = new Set(comingSoon.map((i) => i.id));
 
   const pinnedWithoutComingSoon = pinned.filter(
-    (item) => !comingSoonIds.has(item.id),
+    (item) => !comingSoonIds.has(item.id)
   );
 
   const feedWithoutComingSoon = page.filter(
-    (item) => !comingSoonIds.has(item.id),
+    (item) => !comingSoonIds.has(item.id)
   );
 
   const feed = [

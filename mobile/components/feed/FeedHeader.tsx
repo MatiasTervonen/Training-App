@@ -46,13 +46,15 @@ export default function FeedHeader({
             handleDelete(
               item.item.notification_id ?? null,
               item.item.id,
-              item.table,
+              item.table
             )
           }
         />
       )}
       {comingSoonFeed.length > 0 && (
-        <View className="px-4 bg-slate-900 border-2 border-blue-700 rounded-md overflow-hidden mb-5">
+        <View
+          className={`px-4 bg-slate-900 border-2 border-blue-700 rounded-md overflow-hidden mb-5 ${pinnedFeed.length > 0 ? "mt-0" : "mt-2"}`}
+        >
           <View className="flex-row items-center gap-2 mb-2 mt-1">
             <Sparkles size={20} color="#eab308" />
             <AppText className=" text-yellow-500">Coming Soon</AppText>
@@ -80,7 +82,7 @@ export default function FeedHeader({
                   handleDelete(
                     notificationId,
                     feedItem.item.id,
-                    feedItem.table,
+                    feedItem.table
                   );
                 }}
                 onEdit={() => setEditingItem(feedItem)}

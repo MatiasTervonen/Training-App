@@ -5,7 +5,7 @@ type SaveReminderParams = {
   title: string;
   notes: string;
   notify_at_time: string | null;
-  notify_date: Date | null;
+  notify_date: Date | string | null;
   weekdays: number[];
   type: "weekly" | "daily" | "one-time";
   notification_id: string[] | string;

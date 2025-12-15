@@ -27,7 +27,7 @@ export default function ReminderScreen() {
   const formattedTime = formatDateTime(notifyAt!);
 
   const resetReminder = () => {
-    AsyncStorage.removeItem("reminder_draft");
+    AsyncStorage.removeItem("onetime_reminder_draft");
     setValue("");
     setNotes("");
     setNotifyAt(null);
@@ -45,7 +45,7 @@ export default function ReminderScreen() {
 
   // useSetNotificationOnetime hook to set notification
   const { setNotification } = useSetNotificationOnetime({
-    notifyAt: notifyAt || new Date(),
+    notifyAt: notifyAt!,
     title,
     notes,
   });
@@ -54,7 +54,7 @@ export default function ReminderScreen() {
   const { saveReminder } = useSaveReminderOnetime({
     title,
     notes,
-    notifyAt: notifyAt || new Date(),
+    notifyAt: notifyAt!,
     setIsSaving,
     resetReminder,
     setNotification,

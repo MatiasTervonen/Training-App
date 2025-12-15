@@ -51,7 +51,7 @@ export default function useSaveReminderOnetime({
         weekdays: [],
         notify_at_time: null,
         type: "one-time",
-        notify_date: notifyAt,
+        notify_date: notifyAt ? notifyAt.toISOString() : null,
         notification_id: [],
       });
 

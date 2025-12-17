@@ -40,12 +40,14 @@ export default function useSaveReminderDaily({
 
     setIsSaving(true);
 
+    const time = `${notifyAt.getHours().toString().padStart(2, "0")}:${notifyAt.getMinutes().toString().padStart(2, "0")}`;
+
     try {
       const reminder = await SaveCustomReminder({
         title: title,
         notes,
         weekdays: [],
-        notify_at_time: notifyAt.toISOString().split("T")[1].split("Z")[0],
+        notify_at_time: time,
         type: "daily",
         notify_date: null,
         notification_id: [],

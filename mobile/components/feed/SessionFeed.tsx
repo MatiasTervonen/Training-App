@@ -156,7 +156,7 @@ export default function SessionFeed() {
                     handleDelete(
                       notificationId,
                       feedItem.item.id,
-                      feedItem.table,
+                      feedItem.table
                     );
                   }}
                   onEdit={() => {

@@ -15,10 +15,8 @@ export default function Navbar() {
 
   const preferences = useUserStore((state) => state.preferences);
 
-
-
   return (
-    <div className="w-full md:max-w-3xl sticky top-0 mx-auto">
+    <div className="w-full md:max-w-3xl sticky top-0 mx-auto z-50">
       <nav className="w-full flex items-center justify-between p-4 bg-linear-to-tr from-gray-900 via-slate-900 to-blue-900">
         <Link href="/dashboard" className=" text-2xl sm:text-3xl">
           MyTrack
@@ -43,7 +41,7 @@ export default function Navbar() {
         </div>
       </nav>
       {["/dashboard", "/menu", "/sessions"].includes(pathname) && (
-        <div className="flex justify-between bg-slate-600 w-full text-center text-gray-100 z-0">
+        <div className="flex justify-between bg-slate-600 w-full text-center text-gray-100">
           <Link
             href={"/menu"}
             className={

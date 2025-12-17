@@ -1,5 +1,5 @@
 import { useUserStore } from "@/lib/stores/useUserStore";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter, usePathname } from "expo-router";
 import { supabase } from "@/lib/supabase";
 import { Session } from "@supabase/supabase-js";
@@ -7,6 +7,7 @@ import { fetchUserPreferences } from "@/database/settings/get-settings";
 import ModalPageWrapper from "./ModalPageWrapper";
 import { useModalPageConfig } from "@/lib/stores/modalPageConfig";
 import syncNotifications from "@/database/reminders/syncNotifications";
+import { getPushEnabled } from "@/database/pushState/get-push-enabled";
 
 interface UserPreferences {
   id: string;
@@ -33,22 +34,38 @@ export default function LayoutWrapper({
 
   const { modalPageConfig, setModalPageConfig } = useModalPageConfig();
 
+  const didSyncNotifications = useRef(false);
+
   const handleSessionChange = async (session: Session | null) => {
+    console.log("handleSessionChange");
+
     if (!session) {
       logoutUser();
       if (pathname !== "/") router.replace("/");
       return;
     }
 
-    const preferences = useUserStore.getState().preferences;
+    let preferences = useUserStore.getState().preferences;
 
     if (!preferences) {
       const data = await fetchUserPreferences();
       loginUser(data as UserPreferences);
+      preferences = data as UserPreferences;
     }
 
+    const pushEnabled = await getPushEnabled();
+
+    useUserStore.getState().setUserPreferences({
+      ...preferences,
+      push_enabled: pushEnabled,
+    } as UserPreferences);
+
     // Sync notifications when user opens app.
-    syncNotifications().catch(() => {});
+    if (pushEnabled && !didSyncNotifications.current) {
+      console.log("Syncing notifications for the first time");
+      didSyncNotifications.current = true;
+      syncNotifications().catch(() => {});
+    }
 
     if (pathname !== "/dashboard") {
       router.replace("/dashboard");
@@ -72,7 +89,7 @@ export default function LayoutWrapper({
           return;
         }
         handleSessionChange(session);
-      },
+      }
     );
 
     return () => {

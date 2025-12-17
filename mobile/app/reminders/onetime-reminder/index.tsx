@@ -14,7 +14,7 @@ import { formatDateTime } from "@/lib/formatDate";
 import SubNotesInput from "@/components/SubNotesInput";
 import useSaveDraftOnetime from "@/hooks/reminders/onetime/useSaveDraft";
 import useSaveReminderOnetime from "@/hooks/reminders/onetime/useSaveReminder";
-import useSetNotificationOnetime from "@/hooks/reminders/onetime/useSetNotificaion";
+import useSetNotification from "@/hooks/reminders/onetime/useSetNotification";
 
 export default function ReminderScreen() {
   const [open, setOpen] = useState(false);
@@ -44,7 +44,7 @@ export default function ReminderScreen() {
   });
 
   // useSetNotificationOnetime hook to set notification
-  const { setNotification } = useSetNotificationOnetime({
+  const { setNotification } = useSetNotification({
     notifyAt: notifyAt!,
     title,
     notes,

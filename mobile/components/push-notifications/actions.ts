@@ -3,8 +3,8 @@ import * as Device from "expo-device";
 import { supabase } from "../../lib/supabase";
 import { handleError } from "@/utils/handleError";
 import Constants from "expo-constants";
-import { useUserStore } from "@/lib/stores/useUserStore";
 import { Alert, Linking } from "react-native";
+import { getDeviceId } from "@/utils/deviceId";
 
 function handleRegistrationError(errorMessage: string) {
   alert(errorMessage);
@@ -32,7 +32,7 @@ export async function registerForPushNotificationsAsync() {
       [
         { text: "Cancel", style: "cancel" },
         { text: "Open Settings", onPress: () => Linking.openSettings() },
-      ],
+      ]
     );
     return;
   }
@@ -57,23 +57,24 @@ export async function registerForPushNotificationsAsync() {
 }
 
 export async function SaveTokenToServer(token: string, platform: string) {
-  const {
-    data: { session },
-    error: sessionError,
-  } = await supabase.auth.getSession();
-
-  if (sessionError || !session || !session.user) {
-    return { error: true, message: "No session" };
-  }
+  const deviceId = await getDeviceId();
 
   const { error } = await supabase
     .from("user_push_mobile_subscriptions")
     .upsert(
-      { token, platform, user_id: session.user.id },
-      { onConflict: "user_id,platform" },
+      {
+        token,
+        platform,
+        is_active: true,
+        device_id: deviceId,
+      },
+      {
+        onConflict: "user_id,device_id",
+      }
     );
 
   if (error) {
+    console.log("Error saving push token", error);
     handleError(error, {
       message: "Error saving push token",
       route: "/api/push/save-token",
@@ -82,45 +83,18 @@ export async function SaveTokenToServer(token: string, platform: string) {
     throw new Error("Error saving push token");
   }
 
-  const { error: updateError } = await supabase
-    .from("users")
-    .update({ push_enabled: true })
-    .eq("id", session.user.id);
-
-  if (updateError) {
-    handleError(updateError, {
-      message: "Error updating push_enabled status",
-      route: "/api/push/save-token",
-      method: "POST",
-    });
-    throw new Error("Error updating push_enabled status");
-  }
-
-  const { preferences, setUserPreferences } = useUserStore.getState();
-
-  if (preferences) {
-    setUserPreferences({ ...preferences, push_enabled: true });
-  }
-
   return true;
 }
 
-export async function deleteTokenFromServer(token: string, platform: string) {
-  const {
-    data: { session },
-    error: sessionError,
-  } = await supabase.auth.getSession();
+export async function deleteTokenFromServer() {
+  const deviceId = await getDeviceId();
 
-  if (sessionError || !session || !session.user) {
-    return { error: true, message: "No session" };
-  }
+  console.log("Deleting token from server", deviceId);
 
   const { error } = await supabase
     .from("user_push_mobile_subscriptions")
     .delete()
-    .eq("token", token)
-    .eq("platform", platform)
-    .eq("user_id", session.user.id);
+    .eq("device_id", deviceId);
 
   if (error) {
     handleError(error, {
@@ -129,26 +103,6 @@ export async function deleteTokenFromServer(token: string, platform: string) {
       method: "DELETE",
     });
     throw new Error("Error deleting push token");
-  }
-
-  const { error: updateError } = await supabase
-    .from("users")
-    .update({ push_enabled: false })
-    .eq("id", session.user.id);
-
-  if (updateError) {
-    handleError(updateError, {
-      message: "Error updating push_enabled status",
-      route: "/api/push/delete-token",
-      method: "DELETE",
-    });
-    throw new Error("Error updating push_enabled status");
-  }
-
-  const { preferences, setUserPreferences } = useUserStore.getState();
-
-  if (preferences) {
-    setUserPreferences({ ...preferences, push_enabled: false });
   }
 
   return true;

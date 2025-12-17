@@ -1,7 +1,7 @@
 import * as Notifications from "expo-notifications";
 import { handleError } from "@/utils/handleError";
 
-export default function useSetNotificationOnetime({
+export default function useSetNotification({
   notifyAt,
   title,
   notes,
@@ -10,7 +10,7 @@ export default function useSetNotificationOnetime({
   title: string;
   notes: string;
 }) {
-  async function setNotification(reminderId: string, occurrenceId: string) {
+  async function setNotification(reminderId: string) {
     if (!notifyAt) return;
 
     try {
@@ -21,14 +21,14 @@ export default function useSetNotificationOnetime({
           sound: true,
           data: {
             reminderId: reminderId,
-            occurrenceId: occurrenceId,
             type: "onetime-reminder",
           },
         },
-        trigger: { type: "date", date: notifyAt } as any,
+        trigger: {
+          type: Notifications.SchedulableTriggerInputTypes.DATE,
+          date: notifyAt,
+        },
       });
-
-      console.log("Notification scheduled:", id);
 
       return id;
     } catch (error) {

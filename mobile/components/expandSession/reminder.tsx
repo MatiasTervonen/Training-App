@@ -8,8 +8,6 @@ import { LinearGradient } from "expo-linear-gradient";
 export default function ReminderSession(reminder: full_reminder) {
   const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-  console.log(reminder);
-
   return (
     <LinearGradient
       colors={["#1e3a8a", "#0f172a", "#0f172a"]}

@@ -1,7 +1,6 @@
 import Toast from "react-native-toast-message";
 import SaveCustomReminder from "@/database/reminders/save-custom-reminder";
 import UpdateNotificationId from "@/database/reminders/update-notification-id";
-import SaveOccurence from "@/database/reminders/save-occurence";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 
@@ -18,10 +17,7 @@ export default function useSaveReminderOnetime({
   notifyAt: Date;
   setIsSaving: (isSaving: boolean) => void;
   resetReminder: () => void;
-  setNotification: (
-    reminderId: string,
-    occurrenceId: string
-  ) => Promise<string | undefined>;
+  setNotification: (reminderId: string) => Promise<string | undefined>;
 }) {
   const queryClient = useQueryClient();
   const router = useRouter();
@@ -55,12 +51,7 @@ export default function useSaveReminderOnetime({
         notification_id: [],
       });
 
-      const occurrence = await SaveOccurence(
-        reminder.id,
-        notifyAt.toISOString()
-      );
-
-      const notificationId = await setNotification(reminder.id, occurrence.id);
+      const notificationId = await setNotification(reminder.id);
 
       await UpdateNotificationId(notificationId!, reminder.id);
 

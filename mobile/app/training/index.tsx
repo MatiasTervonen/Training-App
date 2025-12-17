@@ -22,7 +22,7 @@ export default function SessionsScreen() {
 
   return (
     <View className="px-5 max-w-md mx-auto w-full gap-5">
-      <AppText className="text-2xl text-center my-5">Start Sessions</AppText>
+      <AppText className="text-2xl text-center my-5">Gym</AppText>
       <LinkButton
         label="Start empty workout"
         href="/training/gym"

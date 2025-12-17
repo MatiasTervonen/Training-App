@@ -58,7 +58,6 @@ export const formatNotifyTime = (time: string | null) => {
   return `${hour}:${minute} ${period}`;
 };
 
-
 const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 export function formatWeekdays(weekdays: number[]) {

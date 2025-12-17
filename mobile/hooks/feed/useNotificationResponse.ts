@@ -3,7 +3,6 @@ import * as Notifications from "expo-notifications";
 import Toast from "react-native-toast-message";
 import { FeedItem } from "@/types/models";
 import { handleError } from "@/utils/handleError";
-import MarkOccurrenceCompleted from "@/database/reminders/mark-occurrence-completed";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
@@ -49,10 +48,6 @@ export default function useNotificationResponse(
             item: { ...feedItem, id: feedItem.id },
             pinned: feedItem.pinned,
           } as FeedItem);
-
-          if (data.type === "onetime-reminder") {
-            await MarkOccurrenceCompleted(data.occurrenceId as string);
-          }
 
           queryClient.invalidateQueries({
             queryKey: ["feed"],

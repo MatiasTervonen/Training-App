@@ -54,17 +54,20 @@ export default function EditGlobalReminder({
 
     setIsSaving(true);
 
-    const seen_at =
-      notify_at && notify_at.getTime() > Date.now() ? null : reminder.seen_at;
+    const delivered =
+      notify_at && notify_at.getTime() > Date.now()
+        ? false
+        : reminder.delivered;
 
     try {
       await editGlobalReminder({
         id: reminder.id,
         title,
         notes,
-        notify_at: notify_at!.toISOString(),
-        seen_at: seen_at,
+        notify_at: notify_at.toISOString(),
+        delivered: delivered,
         updated_at: updated,
+        seen_at: null,
       });
 
       await Promise.all([

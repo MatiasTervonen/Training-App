@@ -98,6 +98,7 @@ export type Feed_item = {
   notify_date?: string | Date | null;
   notify_at_time?: string | null;
   notification_id?: string[] | string | null;
+  delivered?: boolean | null;
 };
 
 export type FeedData = {
@@ -130,6 +131,7 @@ export type full_reminder = {
   notify_date?: string;
   notify_at_time?: string;
   seen_at?: string | null;
+  delivered?: boolean | null;
 };
 
 export type weight = {

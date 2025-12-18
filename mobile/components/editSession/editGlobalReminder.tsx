@@ -60,11 +60,8 @@ export default function HandleEditGlobalReminder({
       return;
     }
 
-    let seen_at = reminder.seen_at;
-
-    if (notifyAt?.toISOString() !== reminder.notify_at) {
-      seen_at = null;
-    }
+    const delivered =
+      notifyAt && notifyAt.getTime() > Date.now() ? false : reminder.delivered;
 
     const updated = new Date().toISOString();
 
@@ -74,9 +71,10 @@ export default function HandleEditGlobalReminder({
         id: reminder.id,
         title,
         notes,
-        seen_at,
+        delivered,
         notify_at: notifyAt ? notifyAt.toISOString() : null,
         updated_at: updated,
+        seen_at: null,
       });
 
       await onSave?.();

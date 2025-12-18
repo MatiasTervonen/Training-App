@@ -11,6 +11,7 @@ import SubNotesInput from "@/app/(app)/ui/SubNotesInput";
 import TitleInput from "@/app/(app)/ui/TitleInput";
 import useDraft from "../hooks/useDraft";
 import useSaveReminder from "../hooks/useSaveReminder";
+import { Info } from "lucide-react";
 
 export default function GlobalReminder() {
   const [notes, setNotes] = useState("");
@@ -67,7 +68,13 @@ export default function GlobalReminder() {
     <>
       <div className="page-padding flex flex-col h-full w-full max-w-md mx-auto">
         <div className="flex flex-col items-center gap-5 grow h-full">
-          <p className="text-lg text-center mb-5">Add your reminders here</p>
+          <p className="text-lg text-center">Add your reminders here</p>
+          <div className="flex items-center justify-center gap-2">
+            <Info color="#9ca3af" size={18} />
+            <p className="text-gray-400 text-sm">
+              Notifies all logged-in devices.
+            </p>
+          </div>
           <div className="w-full">
             <TitleInput
               value={title}

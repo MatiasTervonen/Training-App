@@ -95,6 +95,7 @@ export type Feed_item = {
   seen_at?: string | null;
   notify_date?: string | Date | null;
   notify_at_time?: string | null;
+  delivered?: boolean | null;
 };
 
 export type FeedResponse = {
@@ -136,4 +137,5 @@ export type full_reminder = {
   active?: boolean | null;
   notify_date?: string | null;
   notify_at_time?: string | null;
+  delivered?: boolean | null;
 };

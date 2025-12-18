@@ -48,6 +48,7 @@ type editGlobalReminderProps = {
   notify_at: string;
   seen_at?: string | null;
   updated_at?: string;
+  delivered?: boolean | null;
 };
 
 export async function editGlobalReminder({
@@ -57,12 +58,13 @@ export async function editGlobalReminder({
   id,
   seen_at,
   updated_at,
+  delivered,
 }: editGlobalReminderProps) {
   const supabase = await createClient();
 
   const { error } = await supabase
     .from("global_reminders")
-    .update({ title, notes: notes, notify_at, seen_at, updated_at })
+    .update({ title, notes: notes, notify_at, seen_at, updated_at, delivered })
     .eq("id", id);
 
   if (error) {

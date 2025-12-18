@@ -8,6 +8,7 @@ type EditGlobalReminderParams = {
   notify_at: string | null;
   seen_at?: string | null;
   updated_at: string;
+  delivered?: boolean | null;
 };
 
 export default async function EditGlobalReminder({
@@ -17,10 +18,11 @@ export default async function EditGlobalReminder({
   notify_at,
   seen_at,
   updated_at,
+  delivered,
 }: EditGlobalReminderParams) {
   const { error } = await supabase
     .from("global_reminders")
-    .update({ title, notes, notify_at, seen_at, updated_at })
+    .update({ title, notes, notify_at, seen_at, updated_at, delivered })
     .eq("id", id);
 
   if (error) {

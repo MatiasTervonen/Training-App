@@ -41,7 +41,9 @@ export default function RemindersPage() {
   const { handleDeleteReminder } = useDeleteReminder();
 
   const filteredReminders = reminders.filter((r) =>
-    activeTab === "upcoming" ? !r.seen_at : r.seen_at
+    activeTab === "upcoming"
+      ? !r.seen_at && !r.delivered
+      : r.seen_at || r.delivered
   );
 
   return (

@@ -32,26 +32,12 @@ export default function TemplateCard({
           </span>
         </div>
 
-        <DropdownMenu button={<Menu />}>
-          <button
-            className="border-b py-2 px-4 hover:bg-gray-600 hover:rounded-t"
-            onClick={() => onDeleteExercise(index)}
-          >
-            Delete
-          </button>
-          <button
-            className="py-2 px-4 border-b hover:bg-gray-600"
-            onClick={() => lastExerciseHistory(index)}
-          >
-            History
-          </button>
-          <button
-            className="py-2 px-4 hover:bg-gray-600 hover:rounded-b"
-            onClick={() => onChangeExercise(index)}
-          >
-            Change
-          </button>
-        </DropdownMenu>
+        <DropdownMenu
+          button={<Menu />}
+          onDelete={() => onDeleteExercise(index)}
+          onHistory={() => lastExerciseHistory(index)}
+          onChange={() => onChangeExercise(index)}
+        />
       </div>
     </div>
   );

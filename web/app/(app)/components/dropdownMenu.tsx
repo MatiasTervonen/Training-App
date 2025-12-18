@@ -5,14 +5,24 @@ import { useClickOutside } from "@/app/(app)/components/clickOutside";
 
 type DropdownMenuProps = {
   button: React.ReactNode;
-  children: React.ReactNode;
+  pinned?: boolean;
   className?: string;
+  onEdit?: () => void;
+  onDelete?: () => void;
+  onHistory?: () => void;
+  onChange?: () => void;
+  onTogglePin?: () => void;
 };
 
 export default function DropdownMenu({
   button,
-  children,
+  pinned,
   className,
+  onEdit,
+  onDelete,
+  onHistory,
+  onChange,
+  onTogglePin,
 }: DropdownMenuProps) {
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -25,10 +35,49 @@ export default function DropdownMenu({
 
       {open && (
         <div
-          className={`absolute right-0 top-full flex flex-col border-2 text-gray-100 shadow-lg rounded-md z-50 bg-gray-800 ${className}`}
+          className={`absolute right-0 top-full flex flex-col border-2 border-blue-500 text-gray-100 shadow-lg rounded-md z-50 w-[150px] bg-linear-to-tr from-gray-900 via-slate-900 to-blue-900 ${className}`}
           onClick={() => setOpen(false)}
         >
-          {children}
+          {onEdit && (
+            <button
+              className="border-b py-2  border-blue-500 hover:bg-gray-600 hover:rounded-t"
+              onClick={onEdit}
+            >
+              Edit
+            </button>
+          )}
+          {onTogglePin && (
+            <button
+              className="py-2  border-b border-blue-500 hover:bg-gray-600"
+              onClick={onTogglePin}
+            >
+              {pinned ? "Unpin" : "Pin"}
+            </button>
+          )}
+          {onHistory && (
+            <button
+              className="py-2 border-b border-blue-500  hover:bg-gray-600 hover:rounded-t"
+              onClick={onHistory}
+            >
+              History
+            </button>
+          )}
+          {onChange && (
+            <button
+              className="py-2 border-b border-blue-500 hover:bg-gray-600"
+              onClick={onChange}
+            >
+              Change
+            </button>
+          )}
+          {onDelete && (
+            <button
+              className="py-2  hover:bg-gray-600 hover:rounded-b"
+              onClick={onDelete}
+            >
+              Delete
+            </button>
+          )}
         </div>
       )}
     </div>

@@ -79,35 +79,11 @@ export default function GymCard({
               <Ellipsis size={20} />
             </div>
           }
-        >
-          <button
-            aria-label="Edit gym session"
-            onClick={() => {
-              onEdit();
-            }}
-            className="border-b py-2 px-4 hover:bg-gray-600 hover:rounded-t"
-          >
-            Edit
-          </button>
-          <button
-            aria-label="Pin or unpin gym session"
-            onClick={() => {
-              onTogglePin();
-            }}
-            className="border-b py-2 px-4 hover:bg-gray-600"
-          >
-            {pinned ? "Unpin" : "Pin"}
-          </button>
-          <button
-            aria-label="Delete gym session"
-            onClick={() => {
-              onDelete();
-            }}
-            className="py-2 px-4 hover:bg-gray-600 hover:rounded-b"
-          >
-            Delete
-          </button>
-        </DropdownMenu>
+          pinned={pinned}
+          onTogglePin={onTogglePin}
+          onDelete={onDelete}
+          onEdit={onEdit}
+        />
       </div>
 
       {fullGym && (

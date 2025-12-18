@@ -74,7 +74,7 @@ export async function editTemplate({ id, exercises, name }: EditTemplateProps) {
   const { error: templateError } = await supabase
     .from("gym_templates")
     .update({ name })
-    .eq("id", id)
+    .eq("id", id);
 
   if (templateError) {
     handleError(templateError, {
@@ -86,10 +86,7 @@ export async function editTemplate({ id, exercises, name }: EditTemplateProps) {
   }
 
   // 2. Delete old exercises
-  await supabase
-    .from("gym_template_exercises")
-    .delete()
-    .eq("template_id", id)
+  await supabase.from("gym_template_exercises").delete().eq("template_id", id);
 
   const templateExercises = exercises.map(
     (ex: gym_template_exercises, index: number) => ({
@@ -140,7 +137,6 @@ export async function getFullTemplate(id: string) {
 export async function deleteTemplate(id: string) {
   const supabase = await createClient();
 
-
   const { error: templateError } = await supabase
     .from("gym_templates")
     .delete()
@@ -163,7 +159,7 @@ export async function getTemplates() {
 
   const { data: template, error: templateError } = await supabase
     .from("gym_templates")
-    .select("id, name, created_at")
+    .select("id, name, created_at, updated_at")
     .order("created_at", { ascending: false });
 
   if (templateError || !template) {

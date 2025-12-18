@@ -1,10 +1,10 @@
 import { Ellipsis, SquareArrowOutUpRight, Bell, Check } from "lucide-react";
 import DropdownMenu from "../dropdownMenu";
 import { formatDate, formatDateTime } from "@/app/(app)/lib/formatDate";
-import { global_reminders } from "../../types/models";
+import { full_reminder } from "../../types/session";
 
 type Props = {
-  item: global_reminders;
+  item: full_reminder;
   pinned: boolean;
   onTogglePin: () => void;
   onDelete: () => void;
@@ -42,47 +42,24 @@ export default function GlobalReminderCard({
               <Ellipsis size={20} />
             </div>
           }
-        >
-          <button
-            aria-label="Edit note"
-            onClick={() => {
-              onEdit();
-            }}
-            className="border-b py-2 px-4 hover:bg-gray-600 hover:rounded-t"
-          >
-            Edit
-          </button>
-          <button
-            aria-label="Pin or unpin note"
-            onClick={() => {
-              onTogglePin();
-            }}
-            className="border-b py-2 px-4 hover:bg-gray-600"
-          >
-            {pinned ? "Unpin" : "Pin"}
-          </button>
-          <button
-            aria-label="Delete note"
-            onClick={() => {
-              onDelete();
-            }}
-            className="py-2 px-4 hover:bg-gray-600 hover:rounded-b"
-          >
-            Delete
-          </button>
-        </DropdownMenu>
+          pinned={pinned}
+          onTogglePin={onTogglePin}
+          onDelete={onDelete}
+          onEdit={onEdit}
+        />
       </div>
 
       <div className="ml-4  mr-5 flex items-center">
         <p>{formatDateTime(item.notify_at!)}</p>
-        {item.seen_at ? (
-          <Check size={30} className="ml-2 text-green-400" />
-        ) : (
-          <Bell size={20} className="ml-2" />
-        )}
+        <Bell size={20} className="ml-2" />
       </div>
 
-      {item.updated_at && (
+      {item.delivered ? (
+        <div className="flex items-center gap-2 bg-gray-900 rounded-md w-fit px-2 ml-2">
+          <Check size={30} className="text-green-400" />
+          <p className="text-gray-100">Delivered</p>
+        </div>
+      ) : item.updated_at ? (
         <p
           className={`text-sm ml-4 mt-auto ${
             pinned ? "text-slate-900" : "text-yellow-500"
@@ -90,7 +67,7 @@ export default function GlobalReminderCard({
         >
           updated: {formatDate(item.updated_at!)}
         </p>
-      )}
+      ) : null}
 
       <div className="flex justify-between items-center mt-2 bg-black/40 rounded-b-md">
         {/* Icon */}

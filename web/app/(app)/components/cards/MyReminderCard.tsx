@@ -39,26 +39,9 @@ export default function MyReminderCard({
                 <Menu size={20} color="#f3f4f6" />
               </div>
             }
-          >
-            <button
-              aria-label="Edit reminder"
-              onClick={() => {
-                onEdit(index);
-              }}
-              className="border-b rounded-t-md py-2 px-4 hover:bg-gray-600"
-            >
-              Edit
-            </button>
-            <button
-              aria-label="Delete reminder"
-              onClick={() => {
-                onDelete(index);
-              }}
-              className="py-2 px-4 hover:bg-gray-600 rounded-b-md"
-            >
-              Delete
-            </button>
-          </DropdownMenu>
+            onEdit={() => onEdit(index)}
+            onDelete={() => onDelete(index)}
+          />
         )}
       </div>
 

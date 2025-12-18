@@ -3,6 +3,7 @@ import { createAdminClient } from "@/utils/supabase/admin";
 import webpush from "web-push";
 import { handleError } from "@/app/(app)/utils/handleError";
 
+
 export async function POST(request: NextRequest) {
   const authHeader = request.headers.get("authorization");
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {

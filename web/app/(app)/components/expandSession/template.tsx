@@ -15,9 +15,14 @@ export default function GymTemplate({ item, onStartWorkout }: Props) {
   return (
     <div className="page-padding max-w-lg mx-auto">
       <div className="flex flex-col gap-2 justify-center items-center">
-        <h2 className="text-sm text-gray-400">
+        <h2 className="text-sm text-gray-300">
           Created: {formatDate(item.created_at)}
         </h2>
+        {item.updated_at && (
+          <h2 className=" text-yellow-500 text-sm">
+            updated: {formatDate(item.updated_at)}
+          </h2>
+        )}
         <h2 className="text-lg">{item.name}</h2>
       </div>
       {Object.entries(groupedExercises).map(([superset_id, group]) => (
@@ -32,7 +37,9 @@ export default function GymTemplate({ item, onStartWorkout }: Props) {
             <div key={exercise.id}>
               <div className="flex  justify-between flex-col">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-lg truncate mr-2">{exercise.gym_exercises.name}</h3>
+                  <h3 className="text-lg truncate mr-2">
+                    {exercise.gym_exercises.name}
+                  </h3>
                   <h3 className="text-sm text-gray-300">
                     {exercise.gym_exercises.muscle_group}
                   </h3>

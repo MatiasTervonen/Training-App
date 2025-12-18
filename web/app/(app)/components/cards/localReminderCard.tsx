@@ -5,12 +5,12 @@ import {
   formatDateTime,
   formatNotifyTime,
 } from "@/app/(app)/lib/formatDate";
-import { local_reminders } from "../../types/models";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getFullLocalReminder } from "../../database/reminder";
+import { full_reminder } from "../../types/session";
 
 type Props = {
-  item: local_reminders;
+  item: full_reminder;
   pinned: boolean;
   onTogglePin: () => void;
   onExpand: () => void;
@@ -27,7 +27,7 @@ export default function LocalReminderCard({
   const queryClient = useQueryClient();
   const cached = queryClient.getQueryData(["fullLocalReminder", item.id]);
 
-  const { data: fullLocalReminder } = useQuery<local_reminders>({
+  const { data: fullLocalReminder } = useQuery<full_reminder>({
     queryKey: ["fullLocalReminder", item.id],
     queryFn: () => getFullLocalReminder(item.id),
     enabled: !!cached,
@@ -66,19 +66,10 @@ export default function LocalReminderCard({
               <Ellipsis size={20} />
             </div>
           }
-        >
-          <button
-            aria-label="Pin or unpin note"
-            onClick={() => {
-              onTogglePin();
-            }}
-            className=" py-2 px-4 hover:bg-gray-600 rounded-md"
-          >
-            {pinned ? "Unpin" : "Pin"}
-          </button>
-        </DropdownMenu>
+          pinned={pinned}
+          onTogglePin={onTogglePin}
+        />
       </div>
-
       <div className="ml-4 mr-5 flex items-center">
         <p>
           {" "}
@@ -86,7 +77,7 @@ export default function LocalReminderCard({
             ? formatNotifyTime(item.notify_at_time!)
             : formatDateTime(item.notify_date!)}
         </p>
-        {item.seen_at ? (
+        {item.delivered ? (
           <Check size={30} className="ml-2 text-green-400" />
         ) : (
           <Bell size={20} className="ml-2" />
@@ -99,7 +90,12 @@ export default function LocalReminderCard({
         </p>
       )}
 
-      {item.updated_at && (
+      {item.delivered ? (
+        <div className="flex items-center gap-2 bg-slate-900 rounded-md w-fit px-2 ml-2">
+          <Check size={30} className="text-green-400" />
+          <p>Delivered</p>
+        </div>
+      ) : item.updated_at ? (
         <p
           className={`text-sm ml-4 mt-auto ${
             pinned ? "text-slate-900" : "text-yellow-500"
@@ -107,7 +103,7 @@ export default function LocalReminderCard({
         >
           updated: {formatDate(item.updated_at!)}
         </p>
-      )}
+      ) : null}
 
       <div className="flex justify-between items-center mt-2 bg-black/40 rounded-b-md">
         {/* Icon */}

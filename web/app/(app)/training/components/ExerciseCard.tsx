@@ -59,26 +59,12 @@ export default function ExerciseCard({
           </span>
         </div>
 
-        <DropdownMenu button={<Menu />}>
-          <button
-            className="border-b py-2 px-4 hover:bg-gray-600 hover:rounded-t"
-            onClick={() => onDeleteExercise(index)}
-          >
-            Delete
-          </button>
-          <button
-            className="py-2 px-4 border-b hover:bg-gray-600"
-            onClick={() => lastExerciseHistory(index)}
-          >
-            History
-          </button>
-          <button
-            className="py-2 px-4 hover:bg-gray-600 hover:rounded-b"
-            onClick={() => onChangeExercise(index)}
-          >
-            Change
-          </button>
-        </DropdownMenu>
+        <DropdownMenu
+          button={<Menu />}
+          onDelete={() => onDeleteExercise(index)}
+          onHistory={() => lastExerciseHistory(index)}
+          onChange={() => onChangeExercise(index)}
+        />
       </div>
 
       {mode === "session" && (
@@ -185,19 +171,24 @@ export default function ExerciseCard({
                 <div className="flex items-center gap-2 w-2/3">
                   <SetInput
                     placeholder="Weight..."
-                    type="number"
+                    type="text"
+                    inputMode="numeric"
+                    maxLength={5}
                     value={input.weight ?? ""}
-                    onChange={(e) =>
-                      onInputChange(index, "weight", e.target.value)
-                    }
+                    onChange={(e) => {
+                      onInputChange(index, "weight", e.target.value);
+                    }}
                   />
                   <SetInput
                     placeholder="Reps..."
-                    type="number"
+                    type="text"
+                    inputMode="numeric"
                     value={input.reps ?? ""}
-                    onChange={(e) =>
-                      onInputChange(index, "reps", e.target.value)
-                    }
+                    onChange={(e) => {
+                      if (/^\d*$/.test(e.target.value)) {
+                        onInputChange(index, "reps", e.target.value);
+                      }
+                    }}
                   />
                 </div>
                 <div className="w-1/3">

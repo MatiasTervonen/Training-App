@@ -1,13 +1,13 @@
 "use client";
 
 import { Bell } from "lucide-react";
-import DropdownMenu from "@/app/(app)/components/dropdownMenu";
 import { formatDate } from "@/app/(app)/lib/formatDate";
 import toast from "react-hot-toast";
 import { FriendRequest } from "@/app/(app)/types/models";
 import { useQuery } from "@tanstack/react-query";
 import { getFriendRequest } from "@/app/(app)/database/friends";
 import { acceptFriendRequest } from "@/app/(app)/database/friends";
+import CustomDropDown from "@/app/(app)/components/customDropDown";
 
 export default function NotificationBell() {
   const { data: friendRequest } = useQuery({
@@ -40,7 +40,7 @@ export default function NotificationBell() {
           {requests.length}
         </div>
       )}
-      <DropdownMenu
+      <CustomDropDown
         className="mr-[-110px] mt-2.5 bg-slate-950 border-blue-500"
         button={
           <div className="text-gray-100 border-2 p-2 rounded-full border-blue-500 cursor-pointer">
@@ -87,7 +87,7 @@ export default function NotificationBell() {
               ))}
           </div>
         </div>
-      </DropdownMenu>
+      </CustomDropDown>
     </div>
   );
 }

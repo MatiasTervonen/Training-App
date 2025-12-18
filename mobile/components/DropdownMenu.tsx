@@ -90,7 +90,7 @@ const optionsStyles = {
   },
   optionsWrapper: {
     backgroundColor: "#0f172a",
-    borderRadius: 8,
+    borderRadius: 6,
   },
   optionWrapper: {
     margin: 5,

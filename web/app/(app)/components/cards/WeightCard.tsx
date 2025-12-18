@@ -45,35 +45,11 @@ export default function WeightCard({
               <Ellipsis size={20} />
             </div>
           }
-        >
-          <button
-            aria-label="Edit note"
-            onClick={() => {
-              onEdit();
-            }}
-            className="border-b py-2 px-4 hover:bg-gray-600 hover:rounded-t"
-          >
-            Edit
-          </button>
-          <button
-            aria-label="Pin or unpin note"
-            onClick={() => {
-              onTogglePin();
-            }}
-            className="border-b py-2 px-4 hover:bg-gray-600"
-          >
-            {pinned ? "Unpin" : "Pin"}
-          </button>
-          <button
-            aria-label="Delete note"
-            onClick={() => {
-              onDelete();
-            }}
-            className="py-2 px-4 hover:bg-gray-600 hover:rounded-b"
-          >
-            Delete
-          </button>
-        </DropdownMenu>
+          pinned={pinned}
+          onTogglePin={onTogglePin}
+          onDelete={onDelete}
+          onEdit={onEdit}
+        />
       </div>
 
       <div className="ml-4 mb-4 mr-5 line-clamp-2">

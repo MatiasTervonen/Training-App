@@ -4,7 +4,7 @@ import GymCard from "./GymCard";
 import LocalReminderCard from "./LocalReminderCard";
 import TodoCard from "./TodoCard";
 import { FeedItem } from "@/types/models";
-import GlobalReminderCard from "./ReminderCard";
+import GlobalReminderCard from "./GlobalReminderCard";
 
 export default function FeedCard(props: FeedItem) {
   const { pinned, onTogglePin, onDelete, onExpand, onEdit } = props;

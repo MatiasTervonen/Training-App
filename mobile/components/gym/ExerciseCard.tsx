@@ -21,7 +21,7 @@ type ExerciseCardProps = {
   onInputChange: (
     index: number,
     field: "weight" | "reps" | "rpe" | "time_min" | "distance_meters",
-    value: number | string,
+    value: number | string
   ) => void;
   onAddSet: (index: number) => void;
   onDeleteSet: (exerciseIndex: number, setIndex: number) => void;
@@ -237,6 +237,7 @@ export default function ExerciseCard({
                   <AppInput
                     placeholder="Weight..."
                     keyboardType="numeric"
+                    maxLength={5}
                     value={input.weight ?? ""}
                     onChangeText={(val) => {
                       const numbersOnly = val.replace(/[^0-9.]/g, "");
@@ -248,10 +249,12 @@ export default function ExerciseCard({
                   <AppInput
                     placeholder="Reps..."
                     keyboardType="numeric"
+                    maxLength={5}
                     value={input.reps || ""}
                     onChangeText={(val) => {
-                      const numbersOnly = val.replace(/[^0-9.]/g, "");
-                      onInputChange(index, "reps", numbersOnly);
+                      if (/^\d*$/.test(val)) {
+                        onInputChange(index, "reps", val);
+                      }
                     }}
                   />
                 </View>

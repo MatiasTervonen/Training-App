@@ -66,7 +66,7 @@ export default function useSaveDraft({
       if (savedTodoList) setTodoList(savedTodoList);
     }
     setIsLoaded(true);
-  }, []);
+  }, [setIsLoaded, setNotes, setTask, setTitle, setTodoList]);
 
   useEffect(() => {
     saveTodoDraft();

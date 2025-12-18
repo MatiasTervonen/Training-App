@@ -65,7 +65,7 @@ export default function MyReminderCard({
       <div className="flex items-center gap-2 ml-4">
         {item.type === "one-time" ? (
           <p>{formatDateTime(item.notify_date!)}</p>
-        ) : item.type === "reminders" || item.type === "global" ? (
+        ) : item.type === "global_reminders" || item.type === "global" ? (
           <p>{formatDateTime(item.notify_at!)}</p>
         ) : (
           <>

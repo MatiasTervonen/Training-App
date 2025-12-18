@@ -1,16 +1,15 @@
 "use client";
 
-import { deleteReminder } from "../../database/reminder";
-import toast from "react-hot-toast";
 import { useState } from "react";
 import { TemplateSkeleton } from "../../ui/loadingSkeletons/skeletons";
 import MyReminderCard from "../../components/cards/MyReminderCard";
 import ReminderSession from "../../components/expandSession/reminder";
 import Modal from "../../components/modal";
-import EditReminder from "../../components/editSession/EditReminder";
-import { useQueryClient, useQuery } from "@tanstack/react-query";
-import { getRTeminders } from "../../database/reminder";
+import EditGlobalReminder from "../../components/editSession/EditGlobalReminder";
+import { useQuery } from "@tanstack/react-query";
 import { full_reminder } from "../../types/session";
+import { getReminders } from "../../database/reminder";
+import useDeleteReminder from "../hooks/useDeleteReminder";
 
 export default function Sessions() {
   const [expandedItem, setExpandedItem] = useState<full_reminder | null>(null);
@@ -19,8 +18,6 @@ export default function Sessions() {
     "upcoming"
   );
 
-  const queryClient = useQueryClient();
-
   const {
     error,
     isLoading,
@@ -28,7 +25,7 @@ export default function Sessions() {
   } = useQuery<full_reminder[]>({
     queryKey: ["get-reminders"],
     queryFn: async () => {
-      const data = await getRTeminders();
+      const data = await getReminders();
       return data as full_reminder[];
     },
     refetchOnWindowFocus: false,
@@ -38,36 +35,11 @@ export default function Sessions() {
     gcTime: Infinity,
   });
 
-  const handleDeleteReminder = async (reminder: full_reminder) => {
-    const confirmDelete = confirm(
-      "Are you sure you want to delete this reminder?"
-    );
-    if (!confirmDelete) return;
-
-    const queryKey = ["get-reminders"];
-
-    await queryClient.cancelQueries({ queryKey });
-
-    const previousReminders = queryClient.getQueryData(queryKey);
-
-    queryClient.setQueryData<full_reminder[]>(queryKey, (oldData) => {
-      if (!oldData) return;
-
-      return oldData.filter((r) => r.id !== reminder.id);
-    });
-
-    try {
-      await deleteReminder(reminder.id);
-
-      await queryClient.refetchQueries({ queryKey: ["feed"], exact: true });
-    } catch {
-      queryClient.setQueryData(queryKey, previousReminders);
-      toast.error("Error deleting reminder. Please try again later! ");
-    }
-  };
+  // useDeleteReminder hook to delete reminder
+  const { handleDeleteReminder } = useDeleteReminder();
 
   const filteredReminders = reminders.filter((r) =>
-    activeTab === "upcoming" ? !r.delivered : r.delivered
+    activeTab === "upcoming" ? !r.seen_at : r.seen_at
   );
 
   return (
@@ -131,7 +103,7 @@ export default function Sessions() {
             setEditingItem(null);
           }}
         >
-          <EditReminder
+          <EditGlobalReminder
             reminder={editingItem}
             onClose={() => setEditingItem(null)}
             onSave={async () => {

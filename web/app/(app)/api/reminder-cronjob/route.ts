@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
   );
 
   const { data: items, error: itemsError } = await supabase
-    .from("reminders")
+    .from("global_reminders")
     .select("*")
     .lte("notify_at", new Date().toISOString())
     .eq("delivered", false);
@@ -131,7 +131,7 @@ export async function POST(request: NextRequest) {
             title: item.title,
             body: item.notes,
             channelId: "reminders",
-            data: { reminderId: item.id, type: "global_reminders" },
+            data: { reminderId: item.id, type: "local_reminders" },
           }),
         });
 
@@ -158,13 +158,26 @@ export async function POST(request: NextRequest) {
 
     if (allSent) {
       const { error: updateError } = await supabase
-        .from("reminders")
+        .from("global_reminders")
         .update({ delivered: true })
         .eq("id", item.id);
 
       if (updateError) {
         handleError(updateError, {
           message: "Error marking reminder as delivered",
+          route: "/api/reminder-cronjob",
+          method: "POST",
+        });
+      }
+
+      const { error: localUpdateError } = await supabase
+        .from("local_reminders")
+        .update({ delivered: true })
+        .eq("id", item.id);
+
+      if (localUpdateError) {
+        handleError(localUpdateError, {
+          message: "Error marking local reminder as delivered",
           route: "/api/reminder-cronjob",
           method: "POST",
         });

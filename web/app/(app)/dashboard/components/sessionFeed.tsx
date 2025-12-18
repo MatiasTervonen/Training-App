@@ -13,7 +13,7 @@ import { FeedSkeleton } from "@/app/(app)/ui/loadingSkeletons/skeletons";
 import TodoSession from "@/app/(app)/components/expandSession/todo";
 import EditTodo from "@/app/(app)/components/editSession/EditTodo";
 import ReminderSession from "@/app/(app)/components/expandSession/reminder";
-import EditReminder from "@/app/(app)/components/editSession/EditReminder";
+import EditReminder from "@/app/(app)/components/editSession/EditGlobalReminder";
 import { useRouter } from "next/navigation";
 import useDeleteSession from "@/app/(app)/dashboard/hooks/useDeleteSession";
 import useTogglePin from "@/app/(app)/dashboard/hooks/useTogglePin";
@@ -61,9 +61,9 @@ export default function SessionFeed() {
     GymSessionFull,
     GymSessionError,
     isLoadingGymSession,
-    CustomReminderFull,
-    CustomReminderError,
-    isLoadingCustomReminder,
+    LocalReminderFull,
+    LocalReminderError,
+    isLoadingLocalReminder,
     TodoSessionFull,
     TodoSessionError,
     isLoadingTodoSession,
@@ -130,7 +130,7 @@ export default function SessionFeed() {
                       togglePin(feedItem.item.id, feedItem.table, false)
                     }
                     onDelete={() =>
-                      handleDelete(feedItem.item.id!, feedItem.table)
+                      handleDelete(feedItem.item.id, feedItem.table)
                     }
                     onEdit={() => {
                       if (feedItem.table === "gym_sessions") {
@@ -165,24 +165,24 @@ export default function SessionFeed() {
             {expandedItem.table === "notes" && (
               <NotesSession {...expandedItem.item} />
             )}
-            {expandedItem.table === "reminders" && (
+            {expandedItem.table === "global_reminders" && (
               <ReminderSession {...expandedItem.item} />
             )}
 
-            {expandedItem.table === "custom_reminders" && (
+            {expandedItem.table === "local_reminders" && (
               <>
-                {isLoadingCustomReminder ? (
+                {isLoadingLocalReminder ? (
                   <div className="flex flex-col gap-5 items-center justify-center pt-40">
                     <p>Loading reminder details...</p>
                     <Spinner />
                   </div>
-                ) : CustomReminderError ? (
+                ) : LocalReminderError ? (
                   <p className="text-center text-lg mt-10">
                     Failed to load reminder details. Please try again later.
                   </p>
                 ) : (
-                  CustomReminderFull && (
-                    <ReminderSession {...CustomReminderFull} />
+                  LocalReminderFull && (
+                    <ReminderSession {...LocalReminderFull} />
                   )
                 )}
               </>
@@ -251,7 +251,7 @@ export default function SessionFeed() {
                 }}
               />
             )}
-            {editingItem.table === "reminders" && (
+            {editingItem.table === "global_reminders" && (
               <EditReminder
                 reminder={editingItem.item}
                 onClose={() => setEditingItem(null)}

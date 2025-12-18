@@ -14,8 +14,8 @@ type Table =
   | "notes"
   | "weight"
   | "todo_lists"
-  | "reminders"
-  | "custom_reminders";
+  | "global_reminders"
+  | "local_reminders";
 
 interface PinnedCarouselProps {
   pinnedFeed: FeedItem[];
@@ -93,7 +93,7 @@ export default function PinnedCarousel({
                       togglePin(feedItem.item.id, feedItem.table, true)
                     }
                     onDelete={() =>
-                      handleDelete(feedItem.item.id!, feedItem.table)
+                      handleDelete(feedItem.item.id, feedItem.table)
                     }
                     onEdit={() => {
                       if (feedItem.table === "gym_sessions") {

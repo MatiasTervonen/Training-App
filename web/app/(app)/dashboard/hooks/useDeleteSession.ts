@@ -15,11 +15,11 @@ export default function useDeleteSession() {
       | "gym_sessions"
       | "weight"
       | "todo_lists"
-      | "reminders"
-      | "custom_reminders"
+      | "global_reminders"
+      | "local_reminders"
   ) => {
     const confirmDetlete = confirm(
-      "Are you sure you want to delete this session?"
+      "Are you sure you want to delete this item?"
     );
     if (!confirmDetlete) return;
 
@@ -49,7 +49,7 @@ export default function useDeleteSession() {
         });
       }
 
-      if (table === "reminders") {
+      if (table === "global_reminders") {
         queryClient.refetchQueries({
           queryKey: ["get-reminders"],
           exact: true,
@@ -60,7 +60,7 @@ export default function useDeleteSession() {
       queryClient.invalidateQueries({ queryKey });
     } catch {
       queryClient.setQueryData(queryKey, perviousFeed);
-      toast.error("Failed to delete session");
+      toast.error("Failed to delete item");
     }
   };
 

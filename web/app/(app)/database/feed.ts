@@ -64,8 +64,8 @@ type DeleteSessionProps = {
     | "gym_sessions"
     | "weight"
     | "todo_lists"
-    | "reminders"
-    | "custom_reminders";
+    | "global_reminders"
+    | "local_reminders";
 };
 
 export async function deleteSession({ id, table }: DeleteSessionProps) {
@@ -78,11 +78,11 @@ export async function deleteSession({ id, table }: DeleteSessionProps) {
 
   if (tableError) {
     handleError(tableError, {
-      message: "Error deleting session",
+      message: "Error deleting item",
       route: "server-action: deleteSession",
       method: "direct",
     });
-    throw new Error("Error deleting session");
+    throw new Error("Error deleting item");
   }
 
   const { error: pinnedError } = await supabase

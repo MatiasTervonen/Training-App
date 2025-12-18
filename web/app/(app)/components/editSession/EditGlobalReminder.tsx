@@ -7,11 +7,11 @@ import toast from "react-hot-toast";
 import DateTimePicker from "@/app/(app)/components/DateTimePicker";
 import { Bell } from "lucide-react";
 import { formatDateTime } from "../../lib/formatDate";
-import { editReminder } from "../../database/reminder";
-import { full_reminder } from "../../types/session";
+import { editGlobalReminder } from "../../database/reminder";
 import SubNotesInput from "../../ui/SubNotesInput";
 import TitleInput from "../../ui/TitleInput";
 import { useQueryClient } from "@tanstack/react-query";
+import { full_reminder } from "../../types/session";
 
 type Props = {
   reminder: full_reminder;
@@ -19,7 +19,11 @@ type Props = {
   onSave?: () => void;
 };
 
-export default function EditReminder({ reminder, onClose, onSave }: Props) {
+export default function EditGlobalReminder({
+  reminder,
+  onClose,
+  onSave,
+}: Props) {
   const [title, setValue] = useState(reminder.title);
   const [notes, setNotes] = useState(reminder.notes);
   const [notify_at, setNotify_at] = useState(
@@ -50,18 +54,16 @@ export default function EditReminder({ reminder, onClose, onSave }: Props) {
 
     setIsSaving(true);
 
-    const delivereStatus =
-      notify_at && notify_at.getTime() > Date.now()
-        ? false
-        : reminder.delivered;
+    const seen_at =
+      notify_at && notify_at.getTime() > Date.now() ? null : reminder.seen_at;
 
     try {
-      await editReminder({
+      await editGlobalReminder({
         id: reminder.id,
         title,
         notes,
         notify_at: notify_at!.toISOString(),
-        delivered: delivereStatus,
+        seen_at: seen_at,
         updated_at: updated,
       });
 

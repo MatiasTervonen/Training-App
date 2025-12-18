@@ -2,12 +2,12 @@ import { handleError } from "@/utils/handleError";
 import { supabase } from "@/lib/supabase";
 
 export default async function GetReminders() {
-  const { data: reminders, error: remindersError } = await supabase
+  const { data: GlobalReminders, error: GlobalRemindersError } = await supabase
     .from("global_reminders")
-    .select("*");
+    .select("");
 
-  if (remindersError) {
-    handleError(remindersError, {
+  if (GlobalRemindersError) {
+    handleError(GlobalRemindersError, {
       message: "Error getting global reminders",
       route: "/database/reminders/get-global-reminders",
       method: "GET",
@@ -28,7 +28,7 @@ export default async function GetReminders() {
     throw new Error("Error getting local reminders");
   }
 
-  const combinedReminders = [...reminders, ...localReminders];
+  const combinedReminders = [...GlobalReminders, ...localReminders];
 
   return combinedReminders;
 }

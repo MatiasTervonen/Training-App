@@ -1,19 +1,16 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import SaveButton from "@/app/(app)/components/buttons/save-button";
 import DeleteSessionBtn from "@/app/(app)/components/buttons/deleteSessionBtn";
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
-import toast from "react-hot-toast";
-import { useDebouncedCallback } from "use-debounce";
 import DateTimePicker from "@/app/(app)/components/DateTimePicker";
 import InfoModal from "@/app/(app)/components/InfoModal";
 import LinkButton from "@/app/(app)/components/buttons/LinkButton";
-import { saveReminderToDB } from "@/app/(app)/database/reminder";
 import SubNotesInput from "@/app/(app)/ui/SubNotesInput";
 import TitleInput from "@/app/(app)/ui/TitleInput";
-import { useQueryClient } from "@tanstack/react-query";
+import useDraft from "../hooks/useDraft";
+import useSaveReminder from "../hooks/useSaveReminder";
 
 export default function GlobalReminder() {
   const [notes, setNotes] = useState("");
@@ -21,41 +18,24 @@ export default function GlobalReminder() {
   const [isSaving, setIsSaving] = useState(false);
   const [notifyAt, setNotifyAt] = useState<Date | null>(null);
   const [isOpen, setIsOpen] = useState(false);
-  const router = useRouter();
   const [isLoaded, setIsLoaded] = useState(false);
-  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    const draft = localStorage.getItem("reminder_draft");
-    if (draft) {
-      const { title: savedTitle, notes: savedNotes } = JSON.parse(draft);
-      if (savedTitle) setTitle(savedTitle);
-      if (savedNotes) setNotes(savedNotes);
-    }
-    setIsLoaded(true);
-  }, []);
+  const resetReminder = () => {
+    localStorage.removeItem("reminder_draft");
+    setTitle("");
+    setNotes("");
+    setNotifyAt(null);
+  };
 
-  const saveDraft = useDebouncedCallback(
-    () => {
-      if (!isLoaded) return;
-
-      if (notes.trim().length === 0 && title.trim().length === 0) {
-        localStorage.removeItem("reminder_draft");
-      } else {
-        const sessionDraft = {
-          title: title,
-          notes,
-        };
-        localStorage.setItem("reminder_draft", JSON.stringify(sessionDraft));
-      }
-    },
-    500,
-    { maxWait: 3000 }
-  );
-
-  useEffect(() => {
-    saveDraft();
-  }, [notes, title, saveDraft]);
+  // useDraft hook to save draft
+  useDraft({
+    title,
+    notes,
+    setTitle,
+    setNotes,
+    setIsLoaded,
+    isLoaded,
+  });
 
   // Check for push notification subscription
 
@@ -74,50 +54,14 @@ export default function GlobalReminder() {
     checkSubscription();
   }, []);
 
-  const saveReminder = async () => {
-    if (title.trim().length === 0) {
-      toast.error("Title is required");
-      return;
-    }
-    if (!notifyAt) {
-      toast.error("Notify time is required");
-      return;
-    }
-
-    if (notifyAt < new Date()) {
-      toast.error("Notify time must be in the future.");
-      return;
-    }
-
-    setIsSaving(true);
-
-    try {
-      await saveReminderToDB({
-        title: title,
-        notes,
-        type: "global",
-        notify_at: notifyAt.toISOString(),
-      });
-
-      await queryClient.refetchQueries({
-        queryKey: ["get-reminders"],
-        exact: true,
-      });
-      await queryClient.refetchQueries({ queryKey: ["feed"], exact: true });
-      router.push("/dashboard");
-      resetReminder();
-    } catch {
-      toast.error("Failed to save reminder. Please try again.");
-      setIsSaving(false);
-    }
-  };
-
-  const resetReminder = () => {
-    localStorage.removeItem("reminder_draft");
-    setTitle("");
-    setNotes("");
-    setNotifyAt(null);
-  };
+  // useSaveReminder hook to save reminder
+  const { saveReminder } = useSaveReminder({
+    title,
+    notes,
+    notifyAt: notifyAt!,
+    setIsSaving,
+    resetReminder,
+  });
 
   return (
     <>

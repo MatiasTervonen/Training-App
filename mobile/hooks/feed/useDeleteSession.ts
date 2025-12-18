@@ -44,14 +44,14 @@ export default function useDeleteSession() {
         });
       }
 
-      if (table === "reminders" || table === "custom_reminders") {
+      if (table === "global_reminders" || table === "local_reminders") {
         queryClient.refetchQueries({
           queryKey: ["get-reminders"],
           exact: true,
         });
       }
 
-      if (table === "custom_reminders") {
+      if (table === "local_reminders") {
         const ids = Array.isArray(notification_id)
           ? notification_id
           : typeof notification_id === "string"

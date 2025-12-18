@@ -17,8 +17,8 @@ export default function useTogglePin() {
       | "gym_sessions"
       | "weight"
       | "todo_lists"
-      | "reminders"
-      | "custom_reminders",
+      | "global_reminders"
+      | "local_reminders",
     isPinned: boolean
   ) => {
     const feedData = queryClient.getQueryData<FeedData>(["feed"]);
@@ -65,7 +65,7 @@ export default function useTogglePin() {
       queryClient.setQueryData(queryKey, previousFeed);
       handleError(error, {
         message: "Failed to toggle pin",
-        route: "server-action: pinSession/sessionFeed",
+        route: "server-action: togglePin/sessionFeed",
         method: "direct",
       });
       toast.error("Failed to toggle pin");

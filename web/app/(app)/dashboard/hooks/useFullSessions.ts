@@ -4,7 +4,7 @@ import { FeedItem } from "@/app/(app)/types/models";
 import { useQuery } from "@tanstack/react-query";
 import { getFullGymSession } from "@/app/(app)/database/gym";
 import { getFullTodoSession } from "@/app/(app)/database/todo";
-import { getFullCustomReminder } from "@/app/(app)/database/reminder";
+import { getFullLocalReminder } from "@/app/(app)/database/reminder";
 import { full_gym_session, full_todo_session } from "@/app/(app)/types/models";
 
 export default function useFullSessions(
@@ -23,10 +23,10 @@ export default function useFullSessions(
       ? editingId
       : null;
 
-  const customReminderId =
-    expandedItem?.table === "custom_reminders"
+  const localReminderId =
+    expandedItem?.table === "local_reminders"
       ? expandedId
-      : editingItem?.table === "custom_reminders"
+      : editingItem?.table === "local_reminders"
       ? editingId
       : null;
 
@@ -69,13 +69,13 @@ export default function useFullSessions(
   });
 
   const {
-    data: CustomReminderFull,
-    error: CustomReminderError,
-    isLoading: isLoadingCustomReminder,
+    data: LocalReminderFull,
+    error: LocalReminderError,
+    isLoading: isLoadingLocalReminder,
   } = useQuery({
-    queryKey: ["fullCustomReminder", customReminderId],
-    queryFn: () => getFullCustomReminder(customReminderId!),
-    enabled: !!customReminderId,
+    queryKey: ["fullLocalReminder", localReminderId],
+    queryFn: () => getFullLocalReminder(localReminderId!),
+    enabled: !!localReminderId,
     refetchOnMount: false,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
@@ -91,8 +91,8 @@ export default function useFullSessions(
     TodoSessionError,
     isLoadingTodoSession,
     refetchFullTodo,
-    CustomReminderFull,
-    CustomReminderError,
-    isLoadingCustomReminder,
+    LocalReminderFull,
+    LocalReminderError,
+    isLoadingLocalReminder,
   };
 }

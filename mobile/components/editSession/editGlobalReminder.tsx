@@ -12,10 +12,10 @@ import AnimatedButton from "@/components/buttons/animatedButton";
 import { Plus } from "lucide-react-native";
 import { formatDateTime } from "@/lib/formatDate";
 import PageContainer from "../PageContainer";
-import { global_reminders } from "@/types/models";
+import { full_reminder } from "@/types/session";
 
 type Props = {
-  reminder: global_reminders;
+  reminder: full_reminder;
   onClose: () => void;
   onSave?: () => void;
 };

@@ -1,4 +1,4 @@
- export type Json =
+export type Json =
   | string
   | number
   | boolean
@@ -160,54 +160,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
-      }
-      custom_reminders: {
-        Row: {
-          active: boolean | null
-          created_at: string
-          delivered: boolean
-          id: string
-          notes: string | null
-          notification_id: Json
-          notify_at_time: string | null
-          notify_date: string | null
-          title: string
-          type: string
-          updated_at: string | null
-          user_id: string
-          weekdays: Json | null
-        }
-        Insert: {
-          active?: boolean | null
-          created_at?: string
-          delivered?: boolean
-          id?: string
-          notes?: string | null
-          notification_id: Json
-          notify_at_time?: string | null
-          notify_date?: string | null
-          title: string
-          type: string
-          updated_at?: string | null
-          user_id?: string
-          weekdays?: Json | null
-        }
-        Update: {
-          active?: boolean | null
-          created_at?: string
-          delivered?: boolean
-          id?: string
-          notes?: string | null
-          notification_id?: Json
-          notify_at_time?: string | null
-          notify_date?: string | null
-          title?: string
-          type?: string
-          updated_at?: string | null
-          user_id?: string
-          weekdays?: Json | null
-        }
-        Relationships: []
       }
       disc_golf_course_holes: {
         Row: {
@@ -414,6 +366,50 @@ export type Database = {
           {
             foreignKeyName: "friends_user2_id_fkey"
             columns: ["user2_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      global_reminders: {
+        Row: {
+          created_at: string
+          id: string
+          notes: string | null
+          notify_at: string
+          seen_at: string | null
+          title: string
+          type: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          notes?: string | null
+          notify_at: string
+          seen_at?: string | null
+          title: string
+          type: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          notes?: string | null
+          notify_at?: string
+          seen_at?: string | null
+          title?: string
+          type?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reminders_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
@@ -743,6 +739,54 @@ export type Database = {
           },
         ]
       }
+      local_reminders: {
+        Row: {
+          active: boolean | null
+          created_at: string
+          id: string
+          notes: string | null
+          notification_id: Json | null
+          notify_at_time: string | null
+          notify_date: string | null
+          seen_at: string | null
+          title: string
+          type: string
+          updated_at: string | null
+          user_id: string
+          weekdays: Json | null
+        }
+        Insert: {
+          active?: boolean | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          notification_id?: Json | null
+          notify_at_time?: string | null
+          notify_date?: string | null
+          seen_at?: string | null
+          title: string
+          type: string
+          updated_at?: string | null
+          user_id?: string
+          weekdays?: Json | null
+        }
+        Update: {
+          active?: boolean | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          notification_id?: Json | null
+          notify_at_time?: string | null
+          notify_date?: string | null
+          seen_at?: string | null
+          title?: string
+          type?: string
+          updated_at?: string | null
+          user_id?: string
+          weekdays?: Json | null
+        }
+        Relationships: []
+      }
       notes: {
         Row: {
           created_at: string
@@ -834,46 +878,37 @@ export type Database = {
         }
         Relationships: []
       }
-      reminders: {
+      reminder_occurrences: {
         Row: {
+          completed_at: string | null
           created_at: string
-          delivered: boolean
           id: string
-          notes: string | null
-          notify_at: string
-          title: string
-          type: string
-          updated_at: string | null
+          reminder_id: string
+          scheduled_at: string
           user_id: string
         }
         Insert: {
+          completed_at?: string | null
           created_at?: string
-          delivered?: boolean
           id?: string
-          notes?: string | null
-          notify_at: string
-          title: string
-          type: string
-          updated_at?: string | null
+          reminder_id: string
+          scheduled_at: string
           user_id?: string
         }
         Update: {
+          completed_at?: string | null
           created_at?: string
-          delivered?: boolean
           id?: string
-          notes?: string | null
-          notify_at?: string
-          title?: string
-          type?: string
-          updated_at?: string | null
+          reminder_id?: string
+          scheduled_at?: string
           user_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "reminders_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: "reminder_occurrences_reminder_id_fkey"
+            columns: ["reminder_id"]
             isOneToOne: false
-            referencedRelation: "users"
+            referencedRelation: "local_reminders"
             referencedColumns: ["id"]
           },
         ]
@@ -1002,6 +1037,7 @@ export type Database = {
       user_push_mobile_subscriptions: {
         Row: {
           created_at: string
+          device_id: string
           id: string
           is_active: boolean | null
           platform: string
@@ -1010,6 +1046,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          device_id: string
           id?: string
           is_active?: boolean | null
           platform: string
@@ -1018,6 +1055,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          device_id?: string
           id?: string
           is_active?: boolean | null
           platform?: string
@@ -1164,17 +1202,16 @@ export type Database = {
         }
         Relationships: []
       }
-      feed_view10: {
+      feed_view16: {
         Row: {
           created_at: string | null
-          delivered: boolean | null
           duration: number | null
           id: string | null
           notes: string | null
-          notification_id: Json | null
           notify_at: string | null
           notify_at_time: string | null
           notify_date: string | null
+          seen_at: string | null
           title: string | null
           type: string | null
           updated_at: string | null
@@ -1186,15 +1223,14 @@ export type Database = {
       feed_with_pins: {
         Row: {
           created_at: string | null
-          delivered: boolean | null
           duration: number | null
           id: string | null
           notes: string | null
-          notification_id: Json | null
           notify_at: string | null
           notify_at_time: string | null
           notify_date: string | null
           pinned: boolean | null
+          seen_at: string | null
           title: string | null
           type: string | null
           updated_at: string | null

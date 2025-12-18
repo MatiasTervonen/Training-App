@@ -19,7 +19,7 @@ export default function ReminderSession(reminder: full_reminder) {
           <div className="flex flex-col items-center justify-center bg-gray-900 rounded-xl py-5 border-2 border-slate-600 w-full">
             <CalendarSync size={28} />
             <p className="mt-2">
-              {reminder.type === "reminders" ? "global" : reminder.type}
+              {reminder.type === "global_reminders" ? "global" : reminder.type}
             </p>
           </div>
 
@@ -27,7 +27,8 @@ export default function ReminderSession(reminder: full_reminder) {
             <Bell size={28} />
             {reminder.type === "one-time" ? (
               <p className="mt-2">{formatDateTime(reminder.notify_date!)}</p>
-            ) : reminder.type === "reminders" || reminder.type === "global" ? (
+            ) : reminder.type === "global" ||
+              reminder.type === "global_reminders" ? (
               <p className="mt-2">{formatDateTime(reminder.notify_at!)}</p>
             ) : (
               <p className="mt-2">

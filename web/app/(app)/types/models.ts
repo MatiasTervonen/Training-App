@@ -22,7 +22,7 @@ export type Friends = Pick<
 
 export type pinned_item = Database["public"]["Tables"]["pinned_items"]["Row"];
 
-export type feed_view = Database["public"]["Views"]["feed_view10"]["Row"];
+export type feed_view = Database["public"]["Views"]["feed_view16"]["Row"];
 
 export type timers = Database["public"]["Tables"]["timers"]["Row"];
 
@@ -85,13 +85,13 @@ export type weight = Database["public"]["Tables"]["weight"]["Row"];
 
 export type gym_sessions = Database["public"]["Tables"]["gym_sessions"]["Row"];
 
-export type reminders = Database["public"]["Tables"]["reminders"]["Row"];
+export type global_reminders = Database["public"]["Tables"]["global_reminders"]["Row"];
 
-export type custom_reminders =
-  Database["public"]["Tables"]["custom_reminders"]["Row"];
+export type local_reminders =
+  Database["public"]["Tables"]["local_reminders"]["Row"];
 
 export type FeedEntry =
-  | (reminders & { type: "reminders" })
+  | (global_reminders & { type: "global_reminders" })
   | (notes & { type: "notes" })
   | (weight & { type: "weight" })
   | (gym_sessions & { type: "gym_sessions" })
@@ -135,8 +135,8 @@ export type FeedItem =
       onEdit: () => void;
     }
   | {
-      table: "reminders";
-      item: reminders;
+      table: "global_reminders";
+      item: global_reminders;
       pinned: boolean;
       onTogglePin: () => void;
       onDelete: () => void;
@@ -144,8 +144,8 @@ export type FeedItem =
       onEdit: () => void;
     }
   | {
-      table: "custom_reminders";
-      item: custom_reminders;
+      table: "local_reminders";
+      item: local_reminders;
       pinned: boolean;
       onTogglePin: () => void;
       onDelete: () => void;

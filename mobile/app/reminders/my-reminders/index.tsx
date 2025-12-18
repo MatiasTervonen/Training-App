@@ -9,10 +9,10 @@ import GetReminders from "@/database/reminders/get-reminders";
 import MyReminderCard from "@/components/cards/MyReminderCard";
 import { full_reminder } from "@/types/session";
 import AnimatedButton from "@/components/buttons/animatedButton";
-import EditCustomReminder from "@/components/editSession/editLocalReminder";
-import EditReminder from "@/components/editSession/editGlobalReminder";
 import ReminderSession from "@/components/expandSession/reminder";
 import useDeleteReminder from "@/hooks/reminders/my-reminders/useDeleteReminder";
+import EditLocalReminder from "@/components/editSession/editLocalReminder";
+import EditGlobalReminder from "@/components/editSession/editGlobalReminder";
 
 export default function RemindersPage() {
   const [expandedItem, setExpandedItem] = useState<full_reminder | null>(null);
@@ -113,8 +113,8 @@ export default function RemindersPage() {
             (r) => r.id === editingItem?.id && r.type === "global"
           ) && (
             <FullScreenModal isOpen={true} onClose={() => setEditingItem(null)}>
-              <EditReminder
-                reminder={editingItem as any}
+              <EditGlobalReminder
+                reminder={editingItem}
                 onClose={() => setEditingItem(null)}
                 onSave={async () => {
                   await Promise.all([
@@ -136,7 +136,7 @@ export default function RemindersPage() {
             (r) => r.id === editingItem?.id && r.type !== "global"
           ) && (
             <FullScreenModal isOpen={true} onClose={() => setEditingItem(null)}>
-              <EditCustomReminder
+              <EditLocalReminder
                 reminder={editingItem}
                 onClose={() => setEditingItem(null)}
                 onSave={async () => {
@@ -145,7 +145,7 @@ export default function RemindersPage() {
                       queryKey: ["get-reminders"],
                     }),
                     queryClient.invalidateQueries({
-                      queryKey: ["fullCustomReminder"],
+                      queryKey: ["fullLocalReminder"],
                     }),
                     queryClient.refetchQueries({
                       queryKey: ["feed"],

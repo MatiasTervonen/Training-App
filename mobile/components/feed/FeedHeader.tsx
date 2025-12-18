@@ -72,7 +72,7 @@ export default function FeedHeader({
                 }
                 onDelete={() => {
                   const notificationId =
-                    feedItem.table === "custom_reminders"
+                    feedItem.table === "local_reminders"
                       ? ((feedItem.item.notification_id as
                           | string
                           | string[]

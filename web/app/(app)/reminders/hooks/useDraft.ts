@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useDebouncedCallback } from "use-debounce";
 
-export default function useSaveDraft({
+export default function useDraft({
   title,
   notes,
   setTitle,
@@ -18,19 +18,18 @@ export default function useSaveDraft({
   setIsLoaded: (isLoaded: boolean) => void;
   isLoaded: boolean;
 }) {
-  
   const saveDraft = useDebouncedCallback(
     () => {
       if (!isLoaded) return;
 
       if (notes.trim().length === 0 && title.trim().length === 0) {
-        localStorage.removeItem("notes_draft");
+        localStorage.removeItem("reminder_draft");
       } else {
         const sessionDraft = {
-          title,
+          title: title,
           notes,
         };
-        localStorage.setItem("notes_draft", JSON.stringify(sessionDraft));
+        localStorage.setItem("reminder_draft", JSON.stringify(sessionDraft));
       }
     },
     500,
@@ -38,7 +37,7 @@ export default function useSaveDraft({
   );
 
   useEffect(() => {
-    const draft = localStorage.getItem("notes_draft");
+    const draft = localStorage.getItem("reminder_draft");
     if (draft) {
       const { title: savedTitle, notes: savedNotes } = JSON.parse(draft);
       if (savedTitle) setTitle(savedTitle);
@@ -50,8 +49,10 @@ export default function useSaveDraft({
   useEffect(() => {
     saveDraft();
   }, [notes, title, saveDraft]);
-
   return {
+    title,
+    notes,
+    isLoaded,
     saveDraft,
   };
 }

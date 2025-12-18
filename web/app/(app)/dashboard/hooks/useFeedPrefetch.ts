@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { InfiniteData, useQueryClient } from "@tanstack/react-query";
 import { getFullTodoSession } from "@/app/(app)/database/todo";
 import { getFullGymSession } from "@/app/(app)/database/gym";
-import { getFullCustomReminder } from "@/app/(app)/database/reminder";
+import { getFullLocalReminder } from "@/app/(app)/database/reminder";
 import { Feed_item } from "@/app/(app)/types/session";
 
 export type FeedPage = {
@@ -50,10 +50,10 @@ export default function useFeedPrefetch(
     });
 
     firstPageFeed.forEach((f) => {
-      if (f.type === "custom_reminders") {
+      if (f.type === "local_reminders") {
         queryClient.prefetchQuery({
-          queryKey: ["fullCustomReminder", f.id],
-          queryFn: () => getFullCustomReminder(f.id!),
+          queryKey: ["fullLocalReminder", f.id],
+          queryFn: () => getFullLocalReminder(f.id!),
           staleTime: Infinity,
           gcTime: Infinity,
         });

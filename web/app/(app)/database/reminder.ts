@@ -3,145 +3,150 @@
 import { createClient } from "@/utils/supabase/server";
 import { handleError } from "@/app/(app)/utils/handleError";
 
-type ReminderProps = {
+type GlobalReminderProps = {
   title: string;
   notes?: string;
   type: string;
   notify_at: string;
 };
 
-export async function saveReminderToDB({
+export async function saveGlobalReminderToDB({
   notes,
   title,
   notify_at,
   type,
-}: ReminderProps) {
+}: GlobalReminderProps) {
   const supabase = await createClient();
 
-  const { error: remindersError } = await supabase.from("reminders").insert([
-    {
-      title,
-      notes,
-      notify_at,
-      type,
-    },
-  ]);
+  const { error: remindersError } = await supabase
+    .from("global_reminders")
+    .insert([
+      {
+        title,
+        notes,
+        notify_at,
+        type,
+      },
+    ]);
 
   if (remindersError) {
     handleError(remindersError, {
-      message: "Error saving reminder",
-      route: "server-action: saveReminder",
+      message: "Error saving global reminder",
+      route: "server-action: saveGlobalReminder",
       method: "direct",
     });
-    throw new Error("Error saving reminder");
+    throw new Error("Error saving global reminder");
   }
 
   return { success: true };
 }
 
-type editReminderProps = {
+type editGlobalReminderProps = {
   id: string;
   title: string;
   notes: string | null;
   notify_at: string;
-  delivered: boolean;
-  updated_at: string;
+  seen_at?: string | null;
+  updated_at?: string;
 };
 
-export async function editReminder({
+export async function editGlobalReminder({
   notes,
   title,
   notify_at,
   id,
-  delivered,
+  seen_at,
   updated_at,
-}: editReminderProps) {
+}: editGlobalReminderProps) {
   const supabase = await createClient();
 
   const { error } = await supabase
-    .from("reminders")
-    .update({ title, notes: notes, notify_at, delivered, updated_at })
+    .from("global_reminders")
+    .update({ title, notes: notes, notify_at, seen_at, updated_at })
     .eq("id", id);
 
   if (error) {
     handleError(error, {
-      message: "Error editing reminder",
-      route: "server-action: editReminder",
+      message: "Error editing global reminder",
+      route: "server-action: editGlobalReminder",
       method: "direct",
     });
-    throw new Error("Error editing reminder");
+    throw new Error("Error editing global reminder");
   }
 
   return { success: true };
 }
 
-export async function deleteReminder(id: string) {
+export async function deleteGlobalReminder(id: string) {
   const supabase = await createClient();
 
-  const { error } = await supabase.from("reminders").delete().eq("id", id);
+  const { error } = await supabase
+    .from("global_reminders")
+    .delete()
+    .eq("id", id);
 
   if (error) {
     handleError(error, {
-      message: "Error deleting reminder",
-      route: "server-action: deleteReminder",
+      message: "Error deleting global reminder",
+      route: "server-action: deleteGlobalReminder",
       method: "direct",
     });
-    throw new Error("Error deleting reminder");
+    throw new Error("Error deleting global reminder");
   }
 
   return { success: true };
 }
 
-export async function getRTeminders() {
+export async function getReminders() {
   const supabase = await createClient();
 
-  const { data: reminders, error } = await supabase
-    .from("reminders")
+  const { data: globalReminders, error } = await supabase
+    .from("global_reminders")
     .select("*");
 
   if (error) {
     handleError(error, {
-      message: "Error getting reminders",
-      route: "server-action: getReminders",
+      message: "Error getting global reminders",
+      route: "server-action: getGlobalReminders",
       method: "direct",
     });
-    throw new Error("Error getting reminders");
+    throw new Error("Error getting global reminders");
   }
 
-  const { data: customReminders, error: customRemindersError } = await supabase
-    .from("custom_reminders")
+  const { data: localReminders, error: localRemindersError } = await supabase
+    .from("local_reminders")
     .select("*");
 
-  if (customRemindersError) {
-    handleError(customRemindersError, {
-      message: "Error getting custom reminders",
-      route: "/database/reminders/get-reminders",
-      method: "GET",
+  if (localRemindersError) {
+    handleError(localRemindersError, {
+      message: "Error getting local reminders",
+      route: "server-action: getLocalReminders",
+      method: "direct",
     });
-    throw new Error("Error getting custom reminders");
+    throw new Error("Error getting local reminders");
   }
 
-  const combinedReminders = [...reminders, ...customReminders];
+  const combinedReminders = [...globalReminders, ...localReminders];
 
   return combinedReminders;
 }
 
-export async function getFullCustomReminder(id: string) {
+export async function getFullLocalReminder(id: string) {
   const supabase = await createClient();
 
   const { data, error } = await supabase
-    .from("custom_reminders")
+    .from("local_reminders")
     .select("*")
     .eq("id", id)
     .single();
 
   if (error) {
     handleError(error, {
-      message: "Error fetching full custom reminder",
-      route: "server-action: getFullCustomReminder",
+      message: "Error fetching full local reminder",
+      route: "server-action: getFullLocalReminder",
       method: "direct",
     });
-    throw new Error("Error fetching full custom reminder");
+    throw new Error("Error fetching full local reminder");
   }
 
   return data;

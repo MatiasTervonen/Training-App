@@ -8,13 +8,13 @@ import { formatDate, formatDateTime, formatNotifyTime } from "@/lib/formatDate";
 import { View, TouchableOpacity } from "react-native";
 import AppText from "../AppText";
 import DropdownMenu from "../DropdownMenu";
-import { customReminders } from "@/types/models";
+import { local_reminders } from "@/types/models";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import GetFullCustomReminder from "@/database/reminders/get-full-custom-reminder";
 import { full_reminder } from "@/types/session";
+import GetFullLocalReminder from "@/database/reminders/get-full-local-reminder";
 
 type Props = {
-  item: customReminders;
+  item: local_reminders;
   pinned: boolean;
   onTogglePin: () => void;
   onDelete: () => void;
@@ -22,7 +22,7 @@ type Props = {
   onEdit: () => void;
 };
 
-export default function CustomReminderCard({
+export default function LocalReminderCard({
   item,
   pinned,
   onTogglePin,
@@ -33,11 +33,11 @@ export default function CustomReminderCard({
   const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
   const queryClient = useQueryClient();
-  const cached = queryClient.getQueryData(["fullCustomReminder", item.id]);
+  const cached = queryClient.getQueryData(["fullLocalReminder", item.id]);
 
-  const { data: fullCustomReminder } = useQuery<full_reminder>({
-    queryKey: ["fullCustomReminder", item.id],
-    queryFn: () => GetFullCustomReminder(item.id),
+  const { data: fullLocalReminder } = useQuery<full_reminder>({
+    queryKey: ["fullLocalReminder", item.id],
+    queryFn: () => GetFullLocalReminder(item.id),
     enabled: !!cached,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
@@ -46,7 +46,7 @@ export default function CustomReminderCard({
     gcTime: Infinity,
   });
 
-  const weekdays = fullCustomReminder?.weekdays;
+  const weekdays = fullLocalReminder?.weekdays;
 
   return (
     <View
@@ -88,7 +88,7 @@ export default function CustomReminderCard({
               ? formatNotifyTime(item.notify_at_time!)
               : formatDateTime(item.notify_date!)}
           </AppText>
-          {item.delivered ? (
+          {item.seen_at ? (
             <Check size={30} color="#4ade80" />
           ) : (
             <Bell size={20} color={pinned ? "#0f172a" : "#f3f4f6"} />

@@ -1,8 +1,8 @@
 import Toast from "react-native-toast-message";
-import SaveCustomReminder from "@/database/reminders/save-custom-reminder";
-import UpdateNotificationId from "@/database/reminders/update-notification-id";
+import SaveLocalReminder from "@/database/reminders/save-local-reminder";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function useSaveReminderDaily({
   title,
@@ -43,19 +43,23 @@ export default function useSaveReminderDaily({
     const time = `${notifyAt.getHours().toString().padStart(2, "0")}:${notifyAt.getMinutes().toString().padStart(2, "0")}`;
 
     try {
-      const reminder = await SaveCustomReminder({
+      const reminder = await SaveLocalReminder({
         title: title,
         notes,
         weekdays: [],
         notify_at_time: time,
         type: "daily",
         notify_date: null,
-        notification_id: [],
       });
 
       const notificationId = await setNotification(reminder.id);
 
-      await UpdateNotificationId(notificationId!, reminder.id);
+      if (notificationId) {
+        await AsyncStorage.setItem(
+          `notification:${reminder.id}`,
+          JSON.stringify([notificationId])
+        );
+      }
 
       await Promise.all([
         queryClient.refetchQueries({ queryKey: ["feed"], exact: true }),
@@ -69,7 +73,8 @@ export default function useSaveReminderDaily({
     } catch {
       Toast.show({
         type: "error",
-        text1: "Failed to save reminder. Please try again.",
+        text1: "Failed to save reminder.",
+        text2: "Please try again later.",
       });
       setIsSaving(false);
     }

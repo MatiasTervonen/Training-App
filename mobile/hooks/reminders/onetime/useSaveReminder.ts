@@ -1,8 +1,8 @@
 import Toast from "react-native-toast-message";
-import SaveCustomReminder from "@/database/reminders/save-custom-reminder";
-import UpdateNotificationId from "@/database/reminders/update-notification-id";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
+import SaveLocalReminder from "@/database/reminders/save-local-reminder";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function useSaveReminderOnetime({
   title,
@@ -41,19 +41,23 @@ export default function useSaveReminderOnetime({
     setIsSaving(true);
 
     try {
-      const reminder = await SaveCustomReminder({
+      const reminder = await SaveLocalReminder({
         title,
         notes,
         weekdays: [],
         notify_at_time: null,
         type: "one-time",
         notify_date: notifyAt ? notifyAt.toISOString() : null,
-        notification_id: [],
       });
 
       const notificationId = await setNotification(reminder.id);
 
-      await UpdateNotificationId(notificationId!, reminder.id);
+      if (notificationId) {
+        await AsyncStorage.setItem(
+          `notification:${reminder.id}`,
+          JSON.stringify([notificationId])
+        );
+      }
 
       await Promise.all([
         queryClient.refetchQueries({ queryKey: ["feed"], exact: true }),

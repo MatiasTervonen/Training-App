@@ -8,10 +8,10 @@ import { formatDate, formatDateTime } from "@/lib/formatDate";
 import { View, TouchableOpacity } from "react-native";
 import AppText from "../AppText";
 import DropdownMenu from "../DropdownMenu";
-import { reminders } from "@/types/models";
+import {  global_reminders } from "@/types/models";
 
 type Props = {
-  item: reminders;
+  item: global_reminders;
   pinned: boolean;
   onTogglePin: () => void;
   onDelete: () => void;
@@ -19,7 +19,7 @@ type Props = {
   onEdit: () => void;
 };
 
-export default function ReminderCard({
+export default function GlobalReminderCard({
   item,
   pinned,
   onTogglePin,
@@ -65,7 +65,7 @@ export default function ReminderCard({
           <AppText className={`${pinned ? "text-slate-900" : "text-gray-100"}`}>
             {formatDateTime(item.notify_at!)}
           </AppText>
-          {item.delivered ? (
+          {item.seen_at ? (
             <Check size={30} color="#4ade80" />
           ) : (
             <Bell size={20} color={pinned ? "#0f172a" : "#f3f4f6"} />

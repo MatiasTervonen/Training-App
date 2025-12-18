@@ -2,8 +2,8 @@ import { confirmAction } from "@/lib/confirmAction";
 import { full_reminder } from "@/types/session";
 import { useQueryClient } from "@tanstack/react-query";
 import * as Notifications from "expo-notifications";
-import DeleteReminder from "@/database/reminders/delete-reminder";
-import DeleteCustomReminder from "@/database/reminders/delete-custom-reminder";
+import DeleteReminder from "@/database/reminders/delete-global-reminder";
+import DeleteCustomReminder from "@/database/reminders/delete-local-reminder";
 import Toast from "react-native-toast-message";
 
 export default function useDeleteReminder() {

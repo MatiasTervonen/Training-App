@@ -28,6 +28,7 @@ import {
 } from "react-native-reanimated";
 import { toastConfig } from "@/lib/config/toast";
 import useScreenOrientation from "@/hooks/layout/useScreenOrientation";
+import useNotificationResponse from "@/hooks/feed/useNotificationResponse";
 
 Sentry.init({
   dsn: "https://cf3db79ed11dbd657e73bb68617c6a34@o4510142810619904.ingest.de.sentry.io/4510160894361680",
@@ -54,6 +55,9 @@ export default Sentry.wrap(function RootLayout() {
   const [loaded, error] = useFonts({
     "Russo-One": require("../assets/fonts/RussoOne-Regular.ttf"),
   });
+
+  // handle notification response when app is opened from notification
+  useNotificationResponse();
 
   // useScreenOrientation hook to get screen orientation and hide navbar on timer page when in landscape mode
   const { hideNawbar } = useScreenOrientation();

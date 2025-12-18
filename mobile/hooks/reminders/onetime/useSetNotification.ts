@@ -14,14 +14,14 @@ export default function useSetNotification({
     if (!notifyAt) return;
 
     try {
-      const id = await Notifications.scheduleNotificationAsync({
+      const notificationId = await Notifications.scheduleNotificationAsync({
         content: {
           title: title,
           body: notes,
           sound: true,
           data: {
             reminderId: reminderId,
-            type: "onetime-reminder",
+            type: "local-reminders",
           },
         },
         trigger: {
@@ -30,7 +30,7 @@ export default function useSetNotification({
         },
       });
 
-      return id;
+      return notificationId;    
     } catch (error) {
       console.log("Error scheduling notifications:", error);
       handleError(error, {

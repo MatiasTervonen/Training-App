@@ -83,8 +83,8 @@ export type Feed_item = {
     | "weight"
     | "gym_sessions"
     | "todo_lists"
-    | "reminders"
-    | "custom_reminders";
+    | "global_reminders"
+    | "local_reminders";
   created_at: string;
   notes?: string | null;
   title?: string | null;
@@ -94,7 +94,7 @@ export type Feed_item = {
   pinned: boolean;
   pinned_at?: string | null;
   notify_at?: string | Date | null;
-  delivered?: boolean;
+  seen_at?: string | null;
   notify_date?: string | Date | null;
   notify_at_time?: string | null;
   notification_id?: string[] | string | null;
@@ -125,11 +125,11 @@ export type full_reminder = {
   notification_id?: string[] | string;
   created_at: string;
   updated_at?: string | null;
-  delivered: boolean;
   weekdays?: number[];
   active?: boolean;
   notify_date?: string;
   notify_at_time?: string;
+  seen_at?: string | null;
 };
 
 export type weight = {

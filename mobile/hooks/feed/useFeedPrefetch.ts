@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { InfiniteData, useQueryClient } from "@tanstack/react-query";
 import { getFullTodoSession } from "@/database/todo/get-full-todo";
 import { getFullGymSession } from "@/database/gym/get-full-gym-session";
-import GetFullCustomReminder from "@/database/reminders/get-full-custom-reminder";
+import GetFullCustomReminder from "@/database/reminders/get-full-local-reminder";
 import { Feed_item } from "@/types/session";
 
 export type FeedPage = {
@@ -11,7 +11,7 @@ export type FeedPage = {
 };
 
 export default function useFeedPrefetch(
-  data: InfiniteData<FeedPage> | undefined | null,
+  data: InfiniteData<FeedPage> | undefined | null
 ) {
   const queryClient = useQueryClient();
 

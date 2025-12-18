@@ -1,7 +1,8 @@
 import Toast from "react-native-toast-message";
 import * as Notifications from "expo-notifications";
 import { full_reminder } from "@/types/session";
-import EditCustomReminderData from "@/database/reminders/edit-custom-reminder";
+import EditLocalReminder from "@/database/reminders/edit-local-reminder";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function useSaveReminder({
   title,
@@ -49,10 +50,10 @@ export default function useSaveReminder({
       return;
     }
 
-    const delivered =
+    const seen_at =
       reminder.type === "one-time"
         ? notifyAt?.toISOString() === reminder.notify_date
-          ? reminder.delivered
+          ? reminder.seen_at
           : false
         : false;
 
@@ -60,29 +61,34 @@ export default function useSaveReminder({
 
     setIsSaving(true);
     try {
+      
       // Cancel old notifications
-      const oldNotificationIds = Array.isArray(reminder.notification_id)
-        ? reminder.notification_id
-        : typeof reminder.notification_id === "string"
-          ? [reminder.notification_id]
-          : [];
+      const stored = await AsyncStorage.getItem(`notification:${reminder.id}`);
+      const oldIds: string[] = stored ? JSON.parse(stored) : [];
 
-      for (const nid of oldNotificationIds) {
-        try {
-          await Notifications.cancelScheduledNotificationAsync(nid);
-        } catch (error) {
-          console.log("Error canceling notification:", error);
-        }
+      for (const id of oldIds) {
+        await Notifications.cancelScheduledNotificationAsync(id);
       }
 
-      // Schedule new notifications with reminderId
-      const newNotificationIds = await scheduleNotifications();
+      const newIds = await scheduleNotifications();
+      const normalizedIds = newIds
+        ? Array.isArray(newIds)
+          ? newIds
+          : [newIds]
+        : [];
 
-      await EditCustomReminderData({
+      if (normalizedIds.length) {
+        await AsyncStorage.setItem(
+          `reminder:${reminder.id}`,
+          JSON.stringify(normalizedIds)
+        );
+      }
+
+      await EditLocalReminder({
         id: reminder.id,
         title,
         notes,
-        delivered,
+        seen_at,
         notify_at_time:
           reminder.type === "weekly" || reminder.type === "daily"
             ? notifyAt
@@ -93,7 +99,6 @@ export default function useSaveReminder({
           reminder.type === "one-time" ? (notifyAt ? notifyAt : null) : null,
         weekdays,
         type: reminder.type as "weekly" | "daily" | "one-time",
-        notification_id: newNotificationIds || [],
         updated_at: updated,
       });
 

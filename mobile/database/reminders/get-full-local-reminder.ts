@@ -1,20 +1,20 @@
 import { handleError } from "@/utils/handleError";
 import { supabase } from "@/lib/supabase";
 
-export default async function GetFullCustomReminder(id: string) {
+export default async function GetFullLocalReminder(id: string) {
   const { data, error } = await supabase
-    .from("custom_reminders")
+    .from("local_reminders")
     .select("*")
     .eq("id", id)
     .single();
 
   if (error) {
     handleError(error, {
-      message: "Error fetching full custom reminder",
-      route: "/database/reminders/get-full-custom-reminder",
+      message: "Error fetching full local reminder",
+      route: "/database/reminders/get-full-local-reminder",
       method: "GET",
     });
-    throw new Error("Error fetching full custom reminder");
+    throw new Error("Error fetching full local reminder");
   }
 
   return data;

@@ -9,8 +9,8 @@ import GetReminders from "@/database/reminders/get-reminders";
 import MyReminderCard from "@/components/cards/MyReminderCard";
 import { full_reminder } from "@/types/session";
 import AnimatedButton from "@/components/buttons/animatedButton";
-import EditCustomReminder from "@/components/editSession/editCustomReminder";
-import EditReminder from "@/components/editSession/editReminder";
+import EditCustomReminder from "@/components/editSession/editLocalReminder";
+import EditReminder from "@/components/editSession/editGlobalReminder";
 import ReminderSession from "@/components/expandSession/reminder";
 import useDeleteReminder from "@/hooks/reminders/my-reminders/useDeleteReminder";
 
@@ -41,7 +41,7 @@ export default function RemindersPage() {
   const { handleDeleteReminder } = useDeleteReminder();
 
   const filteredReminders = reminders.filter((r) =>
-    activeTab === "upcoming" ? !r.delivered : r.delivered
+    activeTab === "upcoming" ? !r.seen_at : r.seen_at
   );
 
   return (

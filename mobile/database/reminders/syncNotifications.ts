@@ -1,9 +1,10 @@
 import { handleError } from "@/utils/handleError";
 import { supabase } from "@/lib/supabase";
 import * as Notifications from "expo-notifications";
-import setDailyNotification from "@/app/reminders/setNotifications.ts/setDaily";
-import setWeeklyNotification from "@/app/reminders/setNotifications.ts/setWeekly";
-import setOneTimeNotification from "@/app/reminders/setNotifications.ts/setOneTime";
+import setDailyNotification from "@/components/reminders/setNotifications/setDaily";
+import setWeeklyNotification from "@/components/reminders/setNotifications/setWeekly";
+import setOneTimeNotification from "@/components/reminders/setNotifications/setOneTime";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default async function SyncNotifications() {
   console.log("Syncing notifications");
@@ -11,14 +12,18 @@ export default async function SyncNotifications() {
   // 1. Clear all existing scheduled notifications
   await Notifications.cancelAllScheduledNotificationsAsync();
 
-  const { data: customReminders, error: customRemindersError } = await supabase
-    .from("custom_reminders")
+  const keys = await AsyncStorage.getAllKeys();
+  const reminderIds = keys.filter((key) => key.startsWith("notification:"));
+  await AsyncStorage.multiRemove(reminderIds);
+
+  const { data: localReminders, error: localRemindersError } = await supabase
+    .from("local_reminders")
     .select("*")
     .eq("active", true);
 
-  if (customRemindersError) {
-    handleError(customRemindersError, {
-      message: "Error getting custom reminders notification ids",
+  if (localRemindersError) {
+    handleError(localRemindersError, {
+      message: "Error getting local reminders notification ids",
       route: "/database/reminders/syncNotifications",
       method: "GET",
     });
@@ -26,24 +31,36 @@ export default async function SyncNotifications() {
   }
 
   await Promise.all(
-    (customReminders || []).map(async (reminder) => {
+    (localReminders || []).map(async (reminder) => {
       switch (reminder.type) {
-        case "daily":
-          return setDailyNotification({
+        case "daily": {
+          const notificationId = await setDailyNotification({
             notifyAt: new Date(reminder.notify_at_time),
             title: reminder.title,
             notes: reminder.notes,
             reminderId: reminder.id,
           });
+          await AsyncStorage.setItem(
+            `notification:${reminder.id}`,
+            JSON.stringify([notificationId])
+          );
+          return;
+        }
 
-        case "weekly":
-          return setWeeklyNotification({
+        case "weekly": {
+          const notificationId = await setWeeklyNotification({
             notifyAt: new Date(reminder.notify_at_time),
             title: reminder.title,
             notes: reminder.notes,
             weekdays: reminder.weekdays,
             reminderId: reminder.id,
           });
+          await AsyncStorage.setItem(
+            `notification:${reminder.id}`,
+            JSON.stringify(notificationId)
+          );
+          return;
+        }
 
         case "one-time": {
           const notifyAt = new Date(reminder.notify_at_time);
@@ -52,12 +69,17 @@ export default async function SyncNotifications() {
             return; // do NOT schedule past one-time reminders
           }
 
-          return setOneTimeNotification({
+          const notificationId = await setOneTimeNotification({
             notifyAt,
             title: reminder.title,
             notes: reminder.notes,
             reminderId: reminder.id,
           });
+          await AsyncStorage.setItem(
+            `notification:${reminder.id}`,
+            JSON.stringify([notificationId])
+          );
+          return;
         }
       }
     })

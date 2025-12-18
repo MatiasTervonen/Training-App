@@ -1,35 +1,35 @@
 import { handleError } from "@/utils/handleError";
 import { supabase } from "@/lib/supabase";
 
-type EditReminderParams = {
+type EditGlobalReminderParams = {
   id: string;
   title: string | null | undefined;
   notes: string | null | undefined;
   notify_at: string | null;
-  delivered?: boolean;
+  seen_at?: string | null;
   updated_at: string;
 };
 
-export default async function EditReminderData({
+export default async function EditGlobalReminder({
   id,
   title,
   notes,
   notify_at,
-  delivered,
+  seen_at,
   updated_at,
-}: EditReminderParams) {
+}: EditGlobalReminderParams) {
   const { error } = await supabase
-    .from("reminders")
-    .update({ title, notes, notify_at, delivered, updated_at })
+    .from("global_reminders")
+    .update({ title, notes, notify_at, seen_at, updated_at })
     .eq("id", id);
 
   if (error) {
     handleError(error, {
-      message: "Error updating reminder",
-      route: "/database/reminders/edit-reminders",
+      message: "Error updating global reminder",
+      route: "/database/reminders/edit-global-reminder",
       method: "POST",
     });
-    throw new Error("Error updating reminder");
+    throw new Error("Error updating global reminder");
   }
 
   return { success: true };

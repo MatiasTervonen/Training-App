@@ -17,20 +17,19 @@ import NotesSession from "../expandSession/notes";
 import WeightSession from "../expandSession/weight";
 import EditNotes from "../editSession/editNotes";
 import EditWeight from "../editSession/editWeight";
-import EditReminder from "../editSession/editReminder";
+import HandleEditGlobalReminder from "../editSession/editGlobalReminder";
 import { useRouter } from "expo-router";
 import TodoSession from "../expandSession/todo";
 import EditTodo from "../editSession/editTodo";
-import EditCustomReminder from "../editSession/editCustomReminder";
 import ReminderSession from "../expandSession/reminder";
 import useDeleteSession from "@/hooks/feed/useDeleteSession";
 import useTogglePin from "@/hooks/feed/useTogglePin";
-import useNotificationResponse from "@/hooks/feed/useNotificationResponse";
 import useFeed from "@/hooks/feed/useFeed";
 import useFeedPrefetch from "@/hooks/feed/useFeedPrefetch";
 import useFullSessions from "@/hooks/feed/useFullSessions";
 import FeedHeader from "./FeedHeader";
 import FeedFooter from "./FeedFooter";
+import HandleEditLocalReminder from "../editSession/editLocalReminder";
 
 export default function SessionFeed() {
   const [expandedItem, setExpandedItem] = useState<FeedItem | null>(null);
@@ -57,8 +56,6 @@ export default function SessionFeed() {
     feed,
   } = useFeed();
 
-  useNotificationResponse(setExpandedItem); // when clicked on notification, fetch reminder from database and set as expanded item
-
   // handle feedItem pin toggling
 
   const { togglePin } = useTogglePin();
@@ -73,9 +70,9 @@ export default function SessionFeed() {
     GymSessionFull,
     GymSessionError,
     isLoadingGymSession,
-    CustomReminderFull,
-    CustomReminderError,
-    isLoadingCustomReminder,
+    LocalReminderFull,
+    LocalReminderError,
+    isLoadingLocalReminder,
     todoSessionFull,
     todoSessionError,
     isLoadingTodoSession,
@@ -146,7 +143,7 @@ export default function SessionFeed() {
                   }
                   onDelete={() => {
                     const notificationId =
-                      feedItem.table === "custom_reminders"
+                      feedItem.table === "local_reminders"
                         ? ((feedItem.item.notification_id as
                             | string
                             | string[]
@@ -199,7 +196,7 @@ export default function SessionFeed() {
           {expandedItem.table === "weight" && (
             <WeightSession {...expandedItem.item} />
           )}
-          {expandedItem.table === "reminders" && (
+          {expandedItem.table === "global_reminders" && (
             <ReminderSession {...expandedItem.item} />
           )}
 
@@ -229,23 +226,21 @@ export default function SessionFeed() {
             </>
           )}
 
-          {expandedItem.table === "custom_reminders" && (
+          {expandedItem.table === "local_reminders" && (
             <View>
-              {isLoadingCustomReminder ? (
+              {isLoadingLocalReminder ? (
                 <View className="gap-5 items-center justify-center mt-40">
                   <AppText className="text-xl">
                     Loading reminder details...
                   </AppText>
                   <ActivityIndicator size="large" />
                 </View>
-              ) : CustomReminderError ? (
+              ) : LocalReminderError ? (
                 <AppText className="text-center text-xl mt-10">
                   Failed to load reminder details. Please try again later.
                 </AppText>
               ) : (
-                CustomReminderFull && (
-                  <ReminderSession {...CustomReminderFull} />
-                )
+                LocalReminderFull && <ReminderSession {...LocalReminderFull} />
               )}
             </View>
           )}
@@ -287,8 +282,8 @@ export default function SessionFeed() {
             />
           )}
 
-          {editingItem.table === "reminders" && (
-            <EditReminder
+          {editingItem.table === "global_reminders" && (
+            <HandleEditGlobalReminder
               reminder={editingItem.item}
               onClose={() => setEditingItem(null)}
               onSave={async () => {
@@ -298,23 +293,23 @@ export default function SessionFeed() {
             />
           )}
 
-          {editingItem.table === "custom_reminders" && (
+          {editingItem.table === "local_reminders" && (
             <>
-              {isLoadingCustomReminder ? (
+              {isLoadingLocalReminder ? (
                 <View className="gap-5 items-center justify-center mt-40">
                   <AppText className="text-lg">
                     Loading reminder details...
                   </AppText>
                   <ActivityIndicator />
                 </View>
-              ) : CustomReminderError ? (
+              ) : LocalReminderError ? (
                 <AppText className="text-center text-lg mt-20">
                   Failed to load reminder details. Please try again later.
                 </AppText>
               ) : (
-                CustomReminderFull && (
-                  <EditCustomReminder
-                    reminder={CustomReminderFull!}
+                LocalReminderFull && (
+                  <HandleEditLocalReminder
+                    reminder={LocalReminderFull!}
                     onClose={() => setEditingItem(null)}
                     onSave={async () => {
                       await Promise.all([
@@ -322,7 +317,7 @@ export default function SessionFeed() {
                           queryKey: ["feed"],
                         }),
                         queryClient.invalidateQueries({
-                          queryKey: ["fullCustomReminder"],
+                          queryKey: ["fullLocalReminder"],
                         }),
                       ]);
                       setEditingItem(null);

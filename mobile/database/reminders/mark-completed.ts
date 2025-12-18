@@ -3,7 +3,7 @@ import { supabase } from "@/lib/supabase";
 
 export default async function MarkCompleted(id: string) {
   const { data, error } = await supabase
-    .from("custom_reminders")
+    .from("local_reminders")
     .update({ completed_at: new Date().toISOString() })
     .eq("id", id)
     .is("completed_at", null)

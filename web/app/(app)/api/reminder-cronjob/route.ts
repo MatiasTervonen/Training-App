@@ -131,7 +131,7 @@ export async function POST(request: NextRequest) {
             title: item.title,
             body: item.notes,
             channelId: "reminders",
-            data: { reminderId: item.id },
+            data: { reminderId: item.id, type: "global_reminders" },
           }),
         });
 

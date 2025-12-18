@@ -21,7 +21,7 @@ type Props = {
   onSave: () => void;
 };
 
-export default function EditCustomReminder({
+export default function HandleEditLocalReminder({
   reminder,
   onClose,
   onSave,

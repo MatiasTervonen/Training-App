@@ -35,53 +35,53 @@ export default async function getFeed({
   const remindersPromise =
     pageParam === 0
       ? supabase
-          .from("reminders")
+          .from("global_reminders")
           .select("*")
           .gte("notify_at", nowIso)
           .lte("notify_at", next4hIso)
-          .is("delivered", false)
+          .is("seen_at", null)
           .order("notify_at", { ascending: true })
       : Promise.resolve({ data: [], error: null });
 
-  const customRemindersPromise =
+  const localRemindersPromise =
     pageParam === 0
       ? supabase
-          .from("custom_reminders")
+          .from("local_reminders")
           .select("*")
           .gte("notify_date", nowIso)
           .lte("notify_date", next4hIso)
-          .is("delivered", false)
+          .is("seen_at", null)
           .order("notify_date", { ascending: true })
       : Promise.resolve({ data: [], error: null });
 
-  const [pinnedResult, feedResult, remindersResult, customRemindersResult] =
+  const [pinnedResult, feedResult, remindersResult, localRemindersResult] =
     await Promise.all([
       pinnedPromise,
       feedPromise,
       remindersPromise,
-      customRemindersPromise,
+      localRemindersPromise,
     ]);
 
   if (
     pinnedResult.error ||
     feedResult.error ||
     remindersResult.error ||
-    customRemindersResult.error
+    localRemindersResult.error
   ) {
     const error =
       pinnedResult.error ||
       feedResult.error ||
       remindersResult.error ||
-      customRemindersResult.error;
+      localRemindersResult.error;
     console.log(error);
     handleError(error, {
       message:
-        "Error fetching feed, reminders, or custom reminders, or custom reminders",
+        "Error fetching feed, reminders, or local reminders, or local reminders",
       route: "server-action: getFeed",
       method: "direct",
     });
     throw new Error(
-      "Error fetching feed, reminders, or custom reminders, or custom reminders"
+      "Error fetching feed, reminders, or local reminders, or local reminders"
     );
   }
 
@@ -89,22 +89,24 @@ export default async function getFeed({
     ...(remindersResult.data ?? []).map((item) => ({
       ...item,
       feed_context: "soon",
-      type: "reminders",
+      type: "global_reminders",
     })),
-    ...(customRemindersResult.data ?? []).map((item) => ({
+    ...(localRemindersResult.data ?? []).map((item) => ({
       ...item,
       feed_context: "soon",
-      type: "custom_reminders",
+      type: "local_reminders",
     })),
   ];
 
   const pinned = (pinnedResult.data ?? []).map((item) => ({
     ...item,
+    type: item.type,
     feed_context: "pinned",
   }));
 
   const page = (feedResult.data ?? []).map((item) => ({
     ...item,
+    type: item.type,
     feed_context: "feed",
   }));
 

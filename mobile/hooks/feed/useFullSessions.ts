@@ -1,15 +1,15 @@
 import { full_reminder } from "@/types/session";
 import { useQuery } from "@tanstack/react-query";
 import { getFullGymSession } from "@/database/gym/get-full-gym-session";
-import GetFullCustomReminder from "@/database/reminders/get-full-custom-reminder";
 import { getFullTodoSession } from "@/database/todo/get-full-todo";
 import { full_gym_session, full_todo_session, FeedItem } from "@/types/models";
+import getFullLocalReminder from "@/database/reminders/get-full-local-reminder";
 
 const getId = (fi: FeedItem | null) => fi?.item.id ?? null;
 
 export default function useFullSessions(
   expandedItem: FeedItem | null,
-  editingItem: FeedItem | null,
+  editingItem: FeedItem | null
 ) {
   const expandedId = getId(expandedItem);
   const editingId = getId(editingItem);
@@ -21,10 +21,10 @@ export default function useFullSessions(
         ? editingId
         : null;
 
-  const customReminderId =
-    expandedItem?.table === "custom_reminders"
+  const localReminderId =
+    expandedItem?.table === "local_reminders"
       ? expandedId
-      : editingItem?.table === "custom_reminders"
+      : editingItem?.table === "local_reminders"
         ? editingId
         : null;
 
@@ -51,13 +51,13 @@ export default function useFullSessions(
   });
 
   const {
-    data: CustomReminderFull,
-    error: CustomReminderError,
-    isLoading: isLoadingCustomReminder,
+    data: LocalReminderFull,
+    error: LocalReminderError,
+    isLoading: isLoadingLocalReminder,
   } = useQuery<full_reminder>({
-    queryKey: ["fullCustomReminder", customReminderId],
-    queryFn: () => GetFullCustomReminder(customReminderId!),
-    enabled: !!customReminderId,
+    queryKey: ["fullLocalReminder", localReminderId],
+    queryFn: () => getFullLocalReminder(localReminderId!),
+    enabled: !!localReminderId,
     refetchOnMount: false,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
@@ -85,9 +85,9 @@ export default function useFullSessions(
     GymSessionFull,
     GymSessionError,
     isLoadingGymSession,
-    CustomReminderFull,
-    CustomReminderError,
-    isLoadingCustomReminder,
+    LocalReminderFull,
+    LocalReminderError,
+    isLoadingLocalReminder,
     todoSessionFull,
     todoSessionError,
     isLoadingTodoSession,

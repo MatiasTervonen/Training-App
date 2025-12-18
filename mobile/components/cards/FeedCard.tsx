@@ -1,10 +1,10 @@
 import NotesCard from "./NotesCard";
 import WeightCard from "./WeightCard";
 import GymCard from "./GymCard";
-import ReminderCard from "./ReminderCard";
-import CustomReminderCard from "./CustomReminderCard";
+import LocalReminderCard from "./LocalReminderCard";
 import TodoCard from "./TodoCard";
 import { FeedItem } from "@/types/models";
+import GlobalReminderCard from "./ReminderCard";
 
 export default function FeedCard(props: FeedItem) {
   const { pinned, onTogglePin, onDelete, onExpand, onEdit } = props;
@@ -43,9 +43,9 @@ export default function FeedCard(props: FeedItem) {
           onEdit={onEdit}
         />
       );
-    case "reminders":
+    case "global_reminders":
       return (
-        <ReminderCard
+        <GlobalReminderCard
           item={props.item}
           pinned={pinned}
           onTogglePin={onTogglePin}
@@ -54,9 +54,9 @@ export default function FeedCard(props: FeedItem) {
           onEdit={onEdit}
         />
       );
-    case "custom_reminders":
+    case "local_reminders":
       return (
-        <CustomReminderCard
+        <LocalReminderCard
           item={props.item}
           pinned={pinned}
           onTogglePin={onTogglePin}

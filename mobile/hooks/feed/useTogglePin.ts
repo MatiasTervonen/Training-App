@@ -14,9 +14,9 @@ export default function useTogglePin() {
       | "gym_sessions"
       | "weight"
       | "todo_lists"
-      | "reminders"
-      | "custom_reminders",
-    isPinned: boolean,
+      | "global_reminders"
+      | "local_reminders",
+    isPinned: boolean
   ) => {
     const feedData = queryClient.getQueryData<FeedData>(["feed"]);
 
@@ -47,7 +47,7 @@ export default function useTogglePin() {
         pages: oldData.pages.map((page) => ({
           ...page,
           feed: page.feed.map((feedItem) =>
-            feedItem.id === id ? { ...feedItem, pinned: !isPinned } : feedItem,
+            feedItem.id === id ? { ...feedItem, pinned: !isPinned } : feedItem
           ),
         })),
       };

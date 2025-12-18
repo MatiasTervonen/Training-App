@@ -27,10 +27,11 @@ export type todo_lists = Database["public"]["Tables"]["todo_lists"]["Row"];
 export type full_todo_session = todo_lists & {
   todo_tasks: todo_tasks[];
 };
-export type reminders = Database["public"]["Tables"]["reminders"]["Row"];
+export type global_reminders =
+  Database["public"]["Tables"]["global_reminders"]["Row"];
 
-export type customReminders =
-  Database["public"]["Tables"]["custom_reminders"]["Row"];
+export type local_reminders =
+  Database["public"]["Tables"]["local_reminders"]["Row"];
 
 export type timers = Database["public"]["Tables"]["timers"]["Row"];
 
@@ -122,8 +123,8 @@ export type FeedItem =
       onEdit: () => void;
     }
   | {
-      table: "reminders";
-      item: reminders;
+      table: "global_reminders";
+      item: global_reminders;
       pinned: boolean;
       onTogglePin: () => void;
       onDelete: () => void;
@@ -131,8 +132,8 @@ export type FeedItem =
       onEdit: () => void;
     }
   | {
-      table: "custom_reminders";
-      item: customReminders;
+      table: "local_reminders";
+      item: local_reminders;
       pinned: boolean;
       onTogglePin: () => void;
       onDelete: () => void;

@@ -3,6 +3,7 @@
 import { ReactNode } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
+import { createPortal } from "react-dom";
 
 export default function Modal({
   isOpen,
@@ -15,9 +16,9 @@ export default function Modal({
 }) {
   if (!isOpen) return null;
 
-  return (
+  return createPortal(
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 bg-black/50">
+      <div className="fixed inset-0 z-999 bg-black/50">
         <motion.div
           className={`fixed top-0 left-0 right-0 bottom-0`}
           initial={{ opacity: 0 }}
@@ -47,6 +48,7 @@ export default function Modal({
           </div>
         </motion.div>
       </div>
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 }

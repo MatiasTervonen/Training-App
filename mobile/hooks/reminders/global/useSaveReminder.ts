@@ -1,5 +1,5 @@
 import Toast from "react-native-toast-message";
-import SaveReminder from "@/database/reminders/save-reminder";
+import SaveReminder from "@/database/reminders/save-global-reminder";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 
@@ -55,10 +55,15 @@ export default function useSaveReminder({
 
       router.push("/dashboard");
       resetReminder();
+      Toast.show({
+        type: "success",
+        text1: "Reminder saved successfully.",
+      });
     } catch {
       Toast.show({
         type: "error",
-        text1: "Failed to save reminder. Please try again.",
+        text1: "Failed to save reminder.",
+        text2: "Please try again later.",
       });
       setIsSaving(false);
     }

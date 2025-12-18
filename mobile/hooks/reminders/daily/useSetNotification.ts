@@ -38,7 +38,7 @@ export default function useSetNotification({
           title: title,
           body: notes,
           sound: true,
-          data: { reminderId: reminderId },
+          data: { reminderId: reminderId, type: "local-reminders" },
         },
         trigger,
       });

@@ -19,7 +19,7 @@ export default function ReminderSession(reminder: full_reminder) {
         <View className="flex-1 min-w-0 items-center justify-center bg-slate-700 p-5 rounded-md border border-gray-400">
           <CalendarSync color="#f3f4f6" />
           <AppText className="mt-2 text-xl text-center">
-            {reminder.type === "reminders" ? "global" : reminder.type}
+            {reminder.type === "global_reminders" ? "Global" : reminder.type}
           </AppText>
         </View>
         <View className="flex-1 min-w-0  items-center justify-center  bg-slate-700 p-5 rounded-md ml-5 border border-gray-400">
@@ -28,7 +28,7 @@ export default function ReminderSession(reminder: full_reminder) {
             <AppText className="text-center mt-2 text-lg">
               {formatDateTime(reminder.notify_date!)}
             </AppText>
-          ) : reminder.type === "reminders" || reminder.type === "global" ? (
+          ) : reminder.type === "global" || reminder.type === "global_reminders" ? (
             <AppText className="text-center mt-2 text-lg">
               {formatDateTime(reminder.notify_at!)}
             </AppText>

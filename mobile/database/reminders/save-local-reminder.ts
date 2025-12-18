@@ -8,20 +8,18 @@ type SaveReminderParams = {
   notify_date: Date | string | null;
   weekdays: number[];
   type: "weekly" | "daily" | "one-time";
-  notification_id: string[] | string;
 };
 
-export default async function SaveCustomReminder({
+export default async function SaveLocalReminder({
   title,
   notes,
   notify_at_time,
   weekdays,
   notify_date,
   type,
-  notification_id,
 }: SaveReminderParams) {
   const { data, error } = await supabase
-    .from("custom_reminders")
+    .from("local_reminders")
     .insert([
       {
         title,
@@ -30,19 +28,21 @@ export default async function SaveCustomReminder({
         notify_date,
         weekdays,
         type,
-        notification_id,
       },
     ])
     .select("id")
     .single();
 
+  console.log("save local reminder data", data);
+
   if (error) {
+    console.log("save local reminder error", error);
     handleError(error, {
-      message: "Error saving custom reminders",
-      route: "/database/reminders/save-custom-reminder",
+      message: "Error saving local reminders",
+      route: "/database/reminders/save-local-reminder",
       method: "POST",
     });
-    throw new Error("Error saving custom reminders");
+    throw new Error("Error saving local reminders");
   }
 
   return data;

@@ -6,26 +6,30 @@ import FullScreenLoader from "@/components/FullScreenLoader";
 import Toast from "react-native-toast-message";
 import AppText from "../AppText";
 import { View, TouchableWithoutFeedback, Keyboard } from "react-native";
-import EditReminderData from "@/database/reminders/edit-reminder";
+import EditGlobalReminder from "@/database/reminders/edit-global-reminder";
 import DatePicker from "react-native-date-picker";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import { Plus } from "lucide-react-native";
 import { formatDateTime } from "@/lib/formatDate";
 import PageContainer from "../PageContainer";
-import { reminders } from "@/types/models";
+import { global_reminders } from "@/types/models";
 
 type Props = {
-  reminder: reminders;
+  reminder: global_reminders;
   onClose: () => void;
   onSave?: () => void;
 };
 
-export default function EditReminder({ reminder, onClose, onSave }: Props) {
+export default function HandleEditGlobalReminder({
+  reminder,
+  onClose,
+  onSave,
+}: Props) {
   const [title, setValue] = useState(reminder.title);
   const [notes, setNotes] = useState(reminder.notes);
   const [isSaving, setIsSaving] = useState(false);
   const [notifyAt, setNotifyAt] = useState(
-    reminder.notify_at ? new Date(reminder.notify_at) : null,
+    reminder.notify_at ? new Date(reminder.notify_at) : null
   );
   const [open, setOpen] = useState(false);
 
@@ -56,21 +60,21 @@ export default function EditReminder({ reminder, onClose, onSave }: Props) {
       return;
     }
 
-    let delivered = reminder.delivered;
+    let seen_at = reminder.seen_at;
 
     if (notifyAt?.toISOString() !== reminder.notify_at) {
-      delivered = false;
+      seen_at = null;
     }
 
     const updated = new Date().toISOString();
 
     setIsSaving(true);
     try {
-      await EditReminderData({
+      await EditGlobalReminder({
         id: reminder.id,
         title,
         notes,
-        delivered,
+        seen_at,
         notify_at: notifyAt ? notifyAt.toISOString() : null,
         updated_at: updated,
       });
@@ -80,7 +84,7 @@ export default function EditReminder({ reminder, onClose, onSave }: Props) {
     } catch {
       Toast.show({
         type: "error",
-        text1: "Error editing notes",
+        text1: "Error editing global reminder",
       });
     } finally {
       setIsSaving(false);

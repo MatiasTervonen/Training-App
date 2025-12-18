@@ -8,8 +8,8 @@ type PinSessionProps = {
     | "gym_sessions"
     | "weight"
     | "todo_lists"
-    | "reminders"
-    | "custom_reminders";
+    | "global_reminders"
+    | "local_reminders";
 };
 
 export async function unpinItem({ id, table }: PinSessionProps) {

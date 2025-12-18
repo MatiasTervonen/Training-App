@@ -1,7 +1,7 @@
 import { handleError } from "@/utils/handleError";
 import { supabase } from "@/lib/supabase";
 
-type EditReminderParams = {
+type EditLocalReminderParams = {
   id: string;
   title: string | null | undefined;
   notes: string | null | undefined;
@@ -9,12 +9,11 @@ type EditReminderParams = {
   notify_date: Date | null;
   weekdays: number[];
   type: "weekly" | "daily" | "one-time";
-  notification_id: string[] | string;
-  delivered?: boolean;
+  seen_at?: string | null;
   updated_at: string;
 };
 
-export default async function EditCustomReminderData({
+export default async function EditLocalReminder({
   id,
   title,
   notes,
@@ -22,11 +21,10 @@ export default async function EditCustomReminderData({
   notify_date,
   weekdays,
   type,
-  notification_id,
   updated_at,
-}: EditReminderParams) {
+}: EditLocalReminderParams) {
   const { error } = await supabase
-    .from("custom_reminders")
+    .from("local_reminders")
     .update({
       title,
       notes,
@@ -34,18 +32,17 @@ export default async function EditCustomReminderData({
       notify_date,
       weekdays,
       type,
-      notification_id,
       updated_at,
     })
     .eq("id", id);
 
   if (error) {
     handleError(error, {
-      message: "Error updating reminder",
+      message: "Error updating local reminder",
       route: "/database/reminders/edit-reminders",
       method: "POST",
     });
-    throw new Error("Error updating reminder");
+    throw new Error("Error updating local reminder");
   }
 
   return { success: true };

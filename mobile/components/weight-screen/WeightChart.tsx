@@ -117,9 +117,9 @@ export default function WeightChart({ range, data }: WeightChartProps) {
 
     weightDifference =
       rounded > 0
-        ? `+ ${rounded}`
+        ? `- ${rounded}`
         : rounded < 0
-          ? `- ${Math.abs(rounded)}`
+          ? `+ ${Math.abs(rounded)}`
           : `${rounded}`;
   }
 

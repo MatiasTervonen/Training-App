@@ -4,7 +4,7 @@ import { useRouter, usePathname } from "expo-router";
 import { supabase } from "@/lib/supabase";
 import { Session } from "@supabase/supabase-js";
 import { fetchUserPreferences } from "@/database/settings/get-settings";
-import ModalPageWrapper from "./ModalPageWrapper";
+import ModalPageWrapper from "../ModalPageWrapper";
 import { useModalPageConfig } from "@/lib/stores/modalPageConfig";
 import syncNotifications from "@/database/reminders/syncNotifications";
 import { getPushEnabled } from "@/database/pushState/get-push-enabled";
@@ -37,8 +37,6 @@ export default function LayoutWrapper({
   const didSyncNotifications = useRef(false);
 
   const handleSessionChange = async (session: Session | null) => {
-    console.log("handleSessionChange");
-
     if (!session) {
       logoutUser();
       if (pathname !== "/") router.replace("/");
@@ -105,7 +103,7 @@ export default function LayoutWrapper({
   }, [pathname, setModalPageConfig]);
 
   if (!sessionChecked) {
-    return null; // keep splash screen visible
+    return null;
   }
 
   const noModalRoutes = ["/", "/login"];

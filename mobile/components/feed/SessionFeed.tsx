@@ -1,5 +1,5 @@
 import { FeedItem } from "@/types/models";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AppText from "@/components/AppText";
 import {
   FlatList,
@@ -30,8 +30,12 @@ import useFullSessions from "@/hooks/feed/useFullSessions";
 import FeedHeader from "./FeedHeader";
 import FeedFooter from "./FeedFooter";
 import HandleEditLocalReminder from "../editSession/editLocalReminder";
+import { useAppReadyStore } from "@/lib/stores/appReadyStore";
 
 export default function SessionFeed() {
+  const setFeedReady = useAppReadyStore((state) => state.setFeedReady);
+  const feedReady = useAppReadyStore((state) => state.feedReady);
+
   const [expandedItem, setExpandedItem] = useState<FeedItem | null>(null);
   const [editingItem, setEditingItem] = useState<FeedItem | null>(null);
   const [refreshing, setRefreshing] = useState(false);
@@ -54,7 +58,14 @@ export default function SessionFeed() {
     comingSoonFeed,
     unpinnedFeed,
     feed,
+    isSuccess,
   } = useFeed();
+
+  useEffect(() => {
+    if (!isLoading && isSuccess) {
+      setFeedReady();
+    }
+  }, [isLoading, isSuccess, setFeedReady]);
 
   // handle feedItem pin toggling
 
@@ -82,6 +93,10 @@ export default function SessionFeed() {
   // prefetch full sessions when feed finishes loading
 
   useFeedPrefetch(data);
+
+  if (!feedReady) {
+    return null;
+  }
 
   return (
     <LinearGradient

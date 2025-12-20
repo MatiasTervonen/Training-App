@@ -60,7 +60,10 @@ export default function FeedHeader({
             <AppText className=" text-yellow-500">Coming Soon</AppText>
           </View>
           {comingSoonFeed.map((feedItem) => (
-            <View key={feedItem.item.id} className="mb-5">
+            <View
+              key={`${feedItem.table}-${feedItem.item.id}`}
+              className="mb-5"
+            >
               <FeedCard
                 {...feedItem}
                 pinned={false}

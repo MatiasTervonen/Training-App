@@ -33,9 +33,12 @@ export default function PushNotificationManager() {
       const prefs = useUserStore.getState().preferences;
       if (!prefs) return;
 
+      if (!prefs.push_enabled) return;
+
       const { status } = await Notifications.getPermissionsAsync();
 
       if (status !== "granted") {
+        console.log("Deleting token from server");
         await deleteTokenFromServer();
 
         await Notifications.cancelAllScheduledNotificationsAsync();
@@ -99,7 +102,6 @@ export default function PushNotificationManager() {
 
     if (toggleState) {
       try {
-        console.log("Deleting token from server");
         await deleteTokenFromServer();
 
         await Notifications.cancelAllScheduledNotificationsAsync();

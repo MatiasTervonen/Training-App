@@ -73,7 +73,6 @@ export default async function getFeed({
       feedResult.error ||
       remindersResult.error ||
       localRemindersResult.error;
-    console.log(error);
     handleError(error, {
       message:
         "Error fetching feed, reminders, or local reminders, or local reminders",

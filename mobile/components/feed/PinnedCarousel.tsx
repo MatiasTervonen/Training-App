@@ -27,13 +27,10 @@ export default function PinnedCarousel({
   const [activeIndex, setActiveIndex] = useState(0);
 
   useEffect(() => {
-    if (activeIndex >= pinnedFeed.length) {
+    if (activeIndex >= pinnedFeed.length && pinnedFeed.length > 0) {
       setActiveIndex(0);
     }
-  }, [pinnedFeed, activeIndex]);
-
-  const carouselKey =
-    pinnedFeed.length === 1 ? `single-${pinnedFeed[0].item.id}` : "multi";
+  }, [pinnedFeed.length, activeIndex]);
 
   return (
     <View>
@@ -45,7 +42,7 @@ export default function PinnedCarousel({
         </AppText>
       </View>
       <Carousel
-        key={carouselKey}
+        key={pinnedFeed.length}
         width={width}
         height={height}
         data={pinnedFeed}
@@ -54,7 +51,7 @@ export default function PinnedCarousel({
         autoPlayInterval={2000}
         autoPlay={pinnedFeed.length > 1}
         renderItem={({ item: feedItem }) => (
-          <View className="px-4">
+          <View key={`${feedItem.table}-${feedItem.item.id}`} className="px-4">
             <FeedCard
               {...feedItem}
               pinned={true}

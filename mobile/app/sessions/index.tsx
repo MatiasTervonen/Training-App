@@ -2,7 +2,6 @@ import AppText from "@/components/AppText";
 import {
   NotebookPen,
   Dumbbell,
-  Disc,
   Timer,
   Weight,
   Bell,
@@ -23,9 +22,9 @@ export default function SessionsScreen() {
         <LinkButton label="Notes" href="/notes">
           <NotebookPen color="#f3f4f6" />
         </LinkButton>
-        <LinkButton label="Disc-golf" href="/disc-golf">
+        {/* <LinkButton label="Disc-golf" href="/disc-golf">
           <Disc color="#f3f4f6" />
-        </LinkButton>
+        </LinkButton> */}
         <LinkButton label="Timer" href="/timer">
           <Timer color="#f3f4f6" />
         </LinkButton>

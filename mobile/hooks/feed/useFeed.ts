@@ -15,9 +15,10 @@ export default function useFeed() {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
+    isSuccess,
   } = useInfiniteQuery({
     queryKey: ["feed"],
-    queryFn: ({ pageParam = 0 }) => getFeed({ pageParam, limit: 15 }),
+    queryFn: ({ pageParam = 0 }) => getFeed({ pageParam, limit: 10 }),
     initialPageParam: 0,
     getNextPageParam: (lastPage) => lastPage.nextPage,
     refetchOnMount: false,
@@ -94,5 +95,6 @@ export default function useFeed() {
     comingSoonFeed,
     unpinnedFeed,
     feed,
+    isSuccess,
   };
 }

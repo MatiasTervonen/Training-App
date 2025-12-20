@@ -1,17 +1,12 @@
 import "@/lib/nativewindInterop";
-import { Slot } from "expo-router";
-import { StatusBar, View } from "react-native";
+import { Slot, usePathname } from "expo-router";
+import { StatusBar } from "react-native";
 import { useFonts } from "expo-font";
-import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
-import {
-  SafeAreaProvider,
-  useSafeAreaInsets,
-} from "react-native-safe-area-context";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 import "./global.css";
-import Navbar from "@/components/navbar/Navbar";
 import "react-native-url-polyfill/auto";
-import LayoutWrapper from "@/components/LayoutWrapper";
+import LayoutWrapper from "@/components/layout/LayoutWrapper";
 import Toast from "react-native-toast-message";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
@@ -27,8 +22,10 @@ import {
   ReanimatedLogLevel,
 } from "react-native-reanimated";
 import { toastConfig } from "@/lib/config/toast";
-import useScreenOrientation from "@/hooks/layout/useScreenOrientation";
 import useNotificationResponse from "@/hooks/feed/useNotificationResponse";
+import { useAppReadyStore } from "@/lib/stores/appReadyStore";
+import BootScreen from "@/components/feed/fakeFeedLoader";
+import SaveAreaInset from "@/components/layout/SaveAreaInset";
 
 Sentry.init({
   dsn: "https://cf3db79ed11dbd657e73bb68617c6a34@o4510142810619904.ingest.de.sentry.io/4510160894361680",
@@ -52,17 +49,17 @@ configureReanimatedLogger({
 });
 
 export default Sentry.wrap(function RootLayout() {
-  const [loaded, error] = useFonts({
+  const [fontsLoaded] = useFonts({
     "Russo-One": require("../assets/fonts/RussoOne-Regular.ttf"),
   });
 
+  const feedReady = useAppReadyStore((state) => state.feedReady);
+  const resetFeedReady = useAppReadyStore((state) => state.resetFeedReady);
+
+  const pathname = usePathname();
+
   // handle notification response when app is opened from notification
   useNotificationResponse();
-
-  // useScreenOrientation hook to get screen orientation and hide navbar on timer page when in landscape mode
-  const { hideNawbar } = useScreenOrientation();
-
-  const insets = useSafeAreaInsets();
 
   // Configure Notification Channels for Android
   useEffect(() => {
@@ -70,53 +67,35 @@ export default Sentry.wrap(function RootLayout() {
     configurePushNotificationsWhenAppIsOpen();
   }, []);
 
+  // reset feed ready when app is mounted
   useEffect(() => {
-    if (loaded || error) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded, error]);
-
-  if (!loaded && !error) {
-    return null;
-  }
+    resetFeedReady();
+  }, [resetFeedReady]);
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <QueryClientProvider client={queryClient}>
-        <MenuProvider>
-          <PaperProvider>
-            <SafeAreaProvider>
+      <SafeAreaProvider>
+        <QueryClientProvider client={queryClient}>
+          <MenuProvider>
+            <PaperProvider>
               <StatusBar
                 barStyle="light-content"
                 backgroundColor="#020617"
                 translucent={false}
               />
-              <View
-                style={{
-                  flex: 1,
-                  paddingTop: insets.top,
-                  paddingBottom: insets.bottom,
-                  paddingLeft: insets.left,
-                  paddingRight: insets.right,
-                }}
-                className="bg-slate-900"
-              >
-                <View
-                  className={`flex-1 bg-slate-800 font-russo  ${
-                    hideNawbar ? "max-w-screen" : "max-w-3xl"
-                  }`}
-                >
-                  {!hideNawbar && <Navbar />}
-                  <LayoutWrapper>
-                    <Slot />
-                  </LayoutWrapper>
-                </View>
-              </View>
-            </SafeAreaProvider>
-          </PaperProvider>
-          <Toast config={toastConfig} position="top" />
-        </MenuProvider>
-      </QueryClientProvider>
+              <SaveAreaInset>
+                <LayoutWrapper>
+                  <Slot />
+                </LayoutWrapper>
+              </SaveAreaInset>
+              {pathname !== "/" &&
+                pathname !== "/login" &&
+                (!fontsLoaded || !feedReady) && <BootScreen />}
+            </PaperProvider>
+            <Toast config={toastConfig} position="top" />
+          </MenuProvider>
+        </QueryClientProvider>
+      </SafeAreaProvider>
     </GestureHandlerRootView>
   );
 });

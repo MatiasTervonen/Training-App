@@ -65,6 +65,11 @@ export type ExercisePreview = Pick<
   | "created_at"
 >;
 
+export type Activity = Pick<
+  Database["public"]["Tables"]["activities"]["Row"],
+  "id" | "name" | "category" | "created_at"
+>;
+
 export type full_gym_template = template & {
   gym_template_exercises: full_gym_template_exercise[];
 };

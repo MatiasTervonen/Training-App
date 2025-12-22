@@ -15,6 +15,8 @@ type TimerProps = {
   manualSession?: ActiveSession;
   textClassName?: string;
   onPress?: () => void;
+  onPause?: () => void;
+  onStart?: () => void;
 };
 
 export default function Timer({
@@ -22,6 +24,8 @@ export default function Timer({
   manualSession,
   textClassName = "",
   onPress,
+  onPause,
+  onStart,
 }: TimerProps) {
   const {
     elapsedTime,
@@ -47,7 +51,7 @@ export default function Timer({
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
     return `${String(minutes).padStart(2, "0")}:${String(
-      remainingSeconds,
+      remainingSeconds
     ).padStart(2, "0")}`;
   };
 
@@ -63,10 +67,13 @@ export default function Timer({
     } else {
       startTimer(totalDuration);
     }
+
+    onStart?.();
   };
 
   const handlePause = () => {
     pauseTimer();
+    onPause?.();
   };
 
   return (

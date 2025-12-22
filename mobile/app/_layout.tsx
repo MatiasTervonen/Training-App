@@ -1,4 +1,6 @@
+import "@/components/activities/locationTask";
 import "@/lib/nativewindInterop";
+
 import { Slot, usePathname } from "expo-router";
 import { StatusBar } from "react-native";
 import { useFonts } from "expo-font";
@@ -26,6 +28,9 @@ import useNotificationResponse from "@/hooks/feed/useNotificationResponse";
 import { useAppReadyStore } from "@/lib/stores/appReadyStore";
 import BootScreen from "@/components/feed/fakeFeedLoader";
 import SaveAreaInset from "@/components/layout/SaveAreaInset";
+import Mapbox from "@rnmapbox/maps";
+
+Mapbox.setAccessToken(process.env.EXPO_PUBLIC_MAPBOX_PUBLIC_TOKEN!);
 
 Sentry.init({
   dsn: "https://cf3db79ed11dbd657e73bb68617c6a34@o4510142810619904.ingest.de.sentry.io/4510160894361680",

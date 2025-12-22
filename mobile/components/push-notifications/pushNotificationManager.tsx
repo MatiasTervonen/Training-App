@@ -22,18 +22,16 @@ Notifications.setNotificationHandler({
 });
 
 export default function PushNotificationManager() {
-  const preferences = useUserStore((state) => state.preferences);
-  const toggleState = preferences?.push_enabled;
+  const pushEnabled = useUserStore((state) => state.settings?.push_enabled);
+
+  const settings = useUserStore.getState().settings;
 
   const platform = Platform.OS === "ios" ? "ios" : "android";
 
   // Listen for app state changes and update push notifications toggle state accordingly. Check permissions when app is opened.
   useEffect(() => {
     const checkPermissions = async () => {
-      const prefs = useUserStore.getState().preferences;
-      if (!prefs) return;
-
-      if (!prefs.push_enabled) return;
+      if (!pushEnabled) return;
 
       const { status } = await Notifications.getPermissionsAsync();
 
@@ -43,8 +41,7 @@ export default function PushNotificationManager() {
 
         await Notifications.cancelAllScheduledNotificationsAsync();
 
-        useUserStore.getState().setUserPreferences({
-          ...prefs,
+        useUserStore.getState().setUserSettings({
           push_enabled: false,
         });
       }
@@ -60,11 +57,10 @@ export default function PushNotificationManager() {
     return () => {
       subscription.remove();
     };
-  }, []);
+  }, [pushEnabled]);
 
   const subscribeToPush = async () => {
-    const prefs = useUserStore.getState().preferences;
-    if (!prefs) return;
+    if (!settings) return;
 
     try {
       const token = await registerForPushNotificationsAsync();
@@ -75,8 +71,7 @@ export default function PushNotificationManager() {
 
       await SaveTokenToServer(token, platform);
 
-      useUserStore.getState().setUserPreferences({
-        ...prefs,
+      useUserStore.getState().setUserSettings({
         push_enabled: true,
       });
 
@@ -97,17 +92,15 @@ export default function PushNotificationManager() {
   };
 
   async function handleToggle() {
-    const prefs = useUserStore.getState().preferences;
-    if (!prefs) return;
+    if (!settings) return;
 
-    if (toggleState) {
+    if (pushEnabled) {
       try {
         await deleteTokenFromServer();
 
         await Notifications.cancelAllScheduledNotificationsAsync();
 
-        useUserStore.getState().setUserPreferences({
-          ...prefs,
+        useUserStore.getState().setUserSettings({
           push_enabled: false,
         });
 
@@ -129,16 +122,16 @@ export default function PushNotificationManager() {
   }
 
   return (
-    <View className="my-5">
+    <View className="bg-slate-900 p-4 rounded-md">
       <AppText className="underline text-lg">Push Notifications</AppText>
       <View className="flex-row mt-5 items-center justify-between">
-        <AppText className="text-lg">
-          {toggleState
+        <AppText>
+          {pushEnabled
             ? "Push notifications enabled"
             : "Allow push notifications"}
         </AppText>
         <View className="mr-5">
-          <Toggle isOn={!!toggleState} onToggle={handleToggle} />
+          <Toggle isOn={!!pushEnabled} onToggle={handleToggle} />
         </View>
       </View>
     </View>

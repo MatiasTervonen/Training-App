@@ -1,5 +1,5 @@
 import { handleError } from "@/utils/handleError";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDebouncedCallback } from "use-debounce";
 
@@ -8,16 +8,14 @@ export default function useSaveDraft({
   notes,
   setValue,
   setNotes,
-  setIsLoaded,
-  isLoaded,
 }: {
   title: string;
   notes: string;
   setValue: (value: string) => void;
   setNotes: (notes: string) => void;
-  setIsLoaded: (isLoaded: boolean) => void;
-  isLoaded: boolean;
 }) {
+  const [isLoaded, setIsLoaded] = useState(false);
+
   useEffect(() => {
     const loadDraft = async () => {
       try {
@@ -43,11 +41,13 @@ export default function useSaveDraft({
 
   const saveDraft = useDebouncedCallback(
     async () => {
+      if (!isLoaded) return;
+
       if (notes.trim().length === 0 && title.trim().length === 0) {
         await AsyncStorage.removeItem("global_reminder_draft");
       } else {
         const sessionDraft = {
-          title: title,
+          title,
           notes,
         };
         await AsyncStorage.setItem(
@@ -61,9 +61,8 @@ export default function useSaveDraft({
   );
 
   useEffect(() => {
-    if (!isLoaded) return;
     saveDraft();
-  }, [notes, title, saveDraft, isLoaded]);
+  }, [notes, title, saveDraft]);
 
   return {
     saveDraft,

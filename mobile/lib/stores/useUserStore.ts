@@ -2,37 +2,54 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-interface UserPreferences {
+interface UserProfile {
   display_name: string;
   weight_unit: string;
   profile_picture: string | null;
-  role?: string;
-  push_enabled?: boolean;
+  role: string;
+}
+
+interface UserSettings {
+  push_enabled: boolean;
+  gps_tracking_enabled: boolean;
 }
 
 interface UserStore {
-  preferences: UserPreferences | null;
-  setUserPreferences: (preferences: UserPreferences) => void;
-  clearUserPreferences: () => void;
+  profile: UserProfile | null;
+  settings: UserSettings | null;
+  setUserProfile: (patch: Partial<UserProfile>) => void;
+  setUserSettings: (patch: Partial<UserSettings>) => void;
   logoutUser: () => void; // Method to clear user state on logout
-  loginUser: (prefs: UserPreferences) => void; // Method to set user state on login
+  loginUser: (profile: UserProfile, settings: UserSettings) => void; // Method to set user state on login
 }
 
 export const useUserStore = create<UserStore>()(
   persist(
     (set) => ({
-      session: null,
-      preferences: null,
-      setUserPreferences: (preferences) => set({ preferences }),
-      clearUserPreferences: () => set({ preferences: null }),
+      profile: null,
+      settings: null,
+      setUserProfile: (patch) =>
+        set((state) => ({
+          profile: state.profile
+            ? { ...state.profile, ...patch }
+            : state.profile,
+        })),
+      setUserSettings: (patch) =>
+        set((state) => ({
+          settings: state.settings
+            ? { ...state.settings, ...patch }
+            : state.settings,
+        })),
       logoutUser: () => {
         set({
-          preferences: null,
+          profile: null,
+          settings: null,
         });
       },
-      loginUser: (prefs) =>
+      loginUser: (profile, settings) =>
         set({
-          preferences: prefs,
+          profile: profile,
+          settings: settings,
         }),
     }),
     {
@@ -57,6 +74,6 @@ export const useUserStore = create<UserStore>()(
           await AsyncStorage.removeItem(key);
         },
       },
-    },
-  ),
+    }
+  )
 );

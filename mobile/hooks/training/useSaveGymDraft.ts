@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDebouncedCallback } from "use-debounce";
 import { ExerciseEntry, ExerciseInput } from "@/types/session";
@@ -13,8 +13,6 @@ export default function useSaveGymDraft({
   setExercises,
   setNotes,
   setExerciseInputs,
-  setHasLoadedDraft,
-  hasLoadedDraft,
 }: {
   exercises: ExerciseEntry[];
   notes: string;
@@ -24,9 +22,9 @@ export default function useSaveGymDraft({
   setExercises: (exercises: ExerciseEntry[]) => void;
   setNotes: (notes: string) => void;
   setExerciseInputs: (exerciseInputs: ExerciseInput[]) => void;
-  setHasLoadedDraft: (hasLoadedDraft: boolean) => void;
-  hasLoadedDraft: boolean;
 }) {
+  const [hasLoadedDraft, setHasLoadedDraft] = useState(false);
+
   useEffect(() => {
     if (isEditing) return;
 
@@ -47,7 +45,7 @@ export default function useSaveGymDraft({
                   time_min: "",
                   distance_meters: "",
                 }))
-              : [],
+              : []
           );
         }
       } catch (error) {
@@ -90,18 +88,17 @@ export default function useSaveGymDraft({
 
         await AsyncStorage.setItem(
           "gym_session_draft",
-          JSON.stringify(sessionDraft),
+          JSON.stringify(sessionDraft)
         );
       }
     },
     500,
-    { maxWait: 3000 },
+    { maxWait: 3000 }
   );
 
   useEffect(() => {
-    if (!hasLoadedDraft) return;
     saveGymDraft();
-  }, [notes, title, saveGymDraft, exercises, hasLoadedDraft, isEditing]);
+  }, [notes, title, exercises, saveGymDraft]);
 
   return {
     saveGymDraft,

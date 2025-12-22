@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDebouncedCallback } from "use-debounce";
 import { handleError } from "@/utils/handleError";
@@ -11,19 +11,16 @@ export default function useWeightDraft({
   setTitle,
   setNotes,
   setWeight,
-  setIsLoaded,
-  isLoaded,
 }: {
   title: string;
   notes: string;
   setTitle: (title: string) => void;
   setNotes: (notes: string) => void;
   setWeight: (weight: string) => void;
-  setIsLoaded: (isLoaded: boolean) => void;
-  isLoaded: boolean;
   weight: string;
 }) {
   const now = formatDate(new Date());
+  const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
     const loadDraft = async () => {
@@ -51,6 +48,8 @@ export default function useWeightDraft({
 
   const saveWeightDraft = useDebouncedCallback(
     async () => {
+      if (!isLoaded) return;
+
       if (title.trim().length === 0 && notes.trim().length === 0) {
         await AsyncStorage.removeItem("weight_draft");
       } else {
@@ -63,9 +62,8 @@ export default function useWeightDraft({
   );
 
   useEffect(() => {
-    if (!isLoaded) return;
     saveWeightDraft();
-  }, [notes, title, weight, saveWeightDraft, isLoaded]);
+  }, [notes, title, weight, saveWeightDraft]);
 
   return {
     saveWeightDraft,

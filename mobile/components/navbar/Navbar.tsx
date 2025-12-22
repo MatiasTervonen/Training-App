@@ -12,7 +12,7 @@ export default function Navbar() {
   const pathname = usePathname();
 
   const profilePictureRaw = useUserStore(
-    (state) => state.preferences?.profile_picture || null,
+    (state) => state.profile?.profile_picture || null,
   );
 
   if (pathname === "/login" || pathname === "/") return null; // Don't render the navbar on the login page

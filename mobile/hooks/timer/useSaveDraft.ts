@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDebouncedCallback } from "use-debounce";
 import { handleError } from "@/utils/handleError";
@@ -8,8 +8,6 @@ export default function useSaveDraft({
   notes,
   setTitle,
   setNotes,
-  setIsLoaded,
-  isLoaded,
   setAlarmMinutes,
   setAlarmSeconds,
   alarmMinutes,
@@ -19,13 +17,13 @@ export default function useSaveDraft({
   notes: string;
   setTitle: (title: string) => void;
   setNotes: (notes: string) => void;
-  setIsLoaded: (isLoaded: boolean) => void;
-  isLoaded: boolean;
   setAlarmMinutes: (alarmMinutes: string) => void;
   setAlarmSeconds: (alarmSeconds: string) => void;
   alarmMinutes: string;
   alarmSeconds: string;
 }) {
+  const [isLoaded, setIsLoaded] = useState(false);
+  
   useEffect(() => {
     const loadDraft = async () => {
       try {

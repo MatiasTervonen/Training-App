@@ -20,7 +20,6 @@ export default function NotesScreen() {
   const [title, setTitle] = useState("");
   const [notes, setNotes] = useState("");
   const [isSaving, setIsSaving] = useState(false);
-  const [isLoaded, setIsLoaded] = useState(false);
 
   const resetNote = () => {
     setTitle("");
@@ -34,8 +33,6 @@ export default function NotesScreen() {
     notes,
     setTitle,
     setNotes,
-    setIsLoaded,
-    isLoaded,
   });
 
   // useSaveNotes hook to save notes

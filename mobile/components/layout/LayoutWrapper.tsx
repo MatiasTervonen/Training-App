@@ -3,19 +3,24 @@ import { useEffect, useState, useRef } from "react";
 import { useRouter, usePathname } from "expo-router";
 import { supabase } from "@/lib/supabase";
 import { Session } from "@supabase/supabase-js";
-import { fetchUserPreferences } from "@/database/settings/get-settings";
+import { fetchUserProfile } from "@/database/settings/get-user-profile";
 import ModalPageWrapper from "../ModalPageWrapper";
 import { useModalPageConfig } from "@/lib/stores/modalPageConfig";
 import syncNotifications from "@/database/reminders/syncNotifications";
 import { getPushEnabled } from "@/database/pushState/get-push-enabled";
+import { fetchUserSettings } from "@/database/settings/get-user-settings";
 
-interface UserPreferences {
+interface UserProfile {
   id: string;
   display_name: string;
   weight_unit: string;
   profile_picture: string | null;
   role: string;
+}
+
+interface UserSettings {
   push_enabled: boolean;
+  gps_tracking_enabled: boolean;
 }
 
 export default function LayoutWrapper({
@@ -43,20 +48,28 @@ export default function LayoutWrapper({
       return;
     }
 
-    let preferences = useUserStore.getState().preferences;
+    let profile = useUserStore.getState().profile;
+    let settings = useUserStore.getState().settings;
 
-    if (!preferences) {
-      const data = await fetchUserPreferences();
-      loginUser(data as UserPreferences);
-      preferences = data as UserPreferences;
+    if (!profile || !settings) {
+      console.log("Fetching user profile and settings");
+      const [profileData, settingsData] = await Promise.all([
+        fetchUserProfile(),
+        fetchUserSettings(),
+      ]);
+      console.log("Profile data", profileData);
+      console.log("Settings data", settingsData);
+      profile = profileData as UserProfile;
+      settings = settingsData as UserSettings;
+      console.log("Logging in user with profile and settings");
+      loginUser(profile, settings);
+      console.log("User logged in");
     }
 
     const pushEnabled = await getPushEnabled();
 
-    useUserStore.getState().setUserPreferences({
-      ...preferences,
-      push_enabled: pushEnabled,
-    } as UserPreferences);
+    useUserStore.getState().setUserProfile(profile);
+    useUserStore.getState().setUserSettings(settings);
 
     // Sync notifications when user opens app.
     if (pushEnabled && !didSyncNotifications.current) {

@@ -9,13 +9,13 @@ import { Modal, View } from "react-native";
 export default function SessionsScreen() {
   const [showModal, setShowModal] = useState(false);
 
-  const { preferences } = useUserStore.getState();
+  const pushEnabled = useUserStore((state) => state.settings?.push_enabled);
 
   useEffect(() => {
-    if (preferences && preferences.push_enabled === false) {
+    if (pushEnabled === false) {
       setShowModal(true);
     }
-  }, [preferences]);
+  }, [pushEnabled]);
 
   return (
     <>
@@ -45,14 +45,14 @@ export default function SessionsScreen() {
               Push notifications disabled.
             </AppText>
             <AppText className="text-lg mb-6 text-center">
-              Enable push notifications from menu to receive reminders.
+              Enable push notifications from settings to receive reminders.
             </AppText>
             <View className="flex-row gap-4">
               <View className="flex-1">
                 <LinkButton href="/sessions" label="Back" />
               </View>
               <View className="flex-1">
-                <LinkButton href="/menu" label="Menu" />
+                <LinkButton href="/menu/settings" label="Settings" />
               </View>
             </View>
           </View>

@@ -81,7 +81,6 @@ export default function GymForm({
   const [exerciseToChangeIndex, setExerciseToChangeIndex] = useState<
     number | null
   >(null);
-  const [hasLoadedDraft, setHasLoadedDraft] = useState(false);
   const [exerciseHistoryId, setExerciseHistoryId] = useState<string | null>(
     null
   );
@@ -102,8 +101,6 @@ export default function GymForm({
     setExercises,
     setNotes,
     setExerciseInputs,
-    setHasLoadedDraft,
-    hasLoadedDraft,
   });
 
   const {
@@ -223,10 +220,6 @@ export default function GymForm({
   }, [title, activeSession, setActiveSession]);
 
   const groupedExercises = GroupGymExercises(exercises);
-
-  if (!isEditing && !hasLoadedDraft) {
-    return null;
-  }
 
   return (
     <>

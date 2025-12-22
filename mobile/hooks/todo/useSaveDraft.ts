@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDebouncedCallback } from "use-debounce";
 import { handleError } from "@/utils/handleError";
@@ -17,8 +17,6 @@ export default function useSaveDraft({
   setTask,
   setNotes,
   setTodoList,
-  setIsLoaded,
-  isLoaded,
 }: {
   title: string;
   task: string;
@@ -28,9 +26,9 @@ export default function useSaveDraft({
   setTask: (task: string) => void;
   setNotes: (notes: string) => void;
   setTodoList: (todoList: TodoItem[]) => void;
-  setIsLoaded: (isLoaded: boolean) => void;
-  isLoaded: boolean;
 }) {
+  const [isLoaded, setIsLoaded] = useState(false);
+  
   useEffect(() => {
     const loadDraft = async () => {
       try {
@@ -78,6 +76,7 @@ export default function useSaveDraft({
   useEffect(() => {
     saveTodoDraft();
   }, [title, notes, todoList, task, saveTodoDraft]);
+  
   return {
     saveTodoDraft,
   };

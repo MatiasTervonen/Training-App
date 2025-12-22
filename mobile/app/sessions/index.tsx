@@ -6,6 +6,7 @@ import {
   Weight,
   Bell,
   ListTodo,
+  Activity,
 } from "lucide-react-native";
 import LinkButton from "@/components/buttons/LinkButton";
 import PageContainer from "@/components/PageContainer";
@@ -18,6 +19,9 @@ export default function SessionsScreen() {
       <View className="gap-4">
         <LinkButton label="Gym" href="/training">
           <Dumbbell color="#f3f4f6" />
+        </LinkButton>
+        <LinkButton label="Activities" href="/activities">
+          <Activity color="#f3f4f6" />
         </LinkButton>
         <LinkButton label="Notes" href="/notes">
           <NotebookPen color="#f3f4f6" />

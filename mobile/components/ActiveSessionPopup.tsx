@@ -19,7 +19,7 @@ export default function ActiveSessionPopup() {
   const totalDuration = useTimerStore((state) => state.totalDuration);
   const alarmSoundPlaying = useTimerStore((state) => state.alarmSoundPlaying);
   const setAlarmSoundPlaying = useTimerStore(
-    (state) => state.setAlarmSoundPlaying,
+    (state) => state.setAlarmSoundPlaying
   );
 
   const pathname = usePathname();
@@ -63,6 +63,13 @@ export default function ActiveSessionPopup() {
   }
 
   if (pathname === "/disc-golf/game" && activeSession.type === "disc-golf") {
+    return null;
+  }
+
+  if (
+    pathname === "/activities/start-activity" &&
+    activeSession.type === "activity"
+  ) {
     return null;
   }
 

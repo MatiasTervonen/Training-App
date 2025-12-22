@@ -18,7 +18,6 @@ export default function SettingsScreen() {
   const [isSaving, setIsSaving] = useState(false);
   const [notes, setNotes] = useState("");
   const [title, setTitle] = useState(`Weight - ${now}`);
-  const [isLoaded, setIsLoaded] = useState(false);
 
   // useWeightDraft hook to save draft weight
   useWeightDraft({
@@ -28,8 +27,6 @@ export default function SettingsScreen() {
     setTitle,
     setNotes,
     setWeight,
-    setIsLoaded,
-    isLoaded,
   });
 
   const resetWeight = async () => {

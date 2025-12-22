@@ -2,9 +2,8 @@ import { View } from "react-native";
 import AppText from "@/components/AppText";
 import LinkButton from "@/components/buttons/LinkButton";
 import LogoutButton from "@/components/login-signup/LogoutButton";
-import { ShieldUser, UserPen } from "lucide-react-native";
+import { ShieldUser, UserPen, Settings } from "lucide-react-native";
 import PageContainer from "@/components/PageContainer";
-import PushNotificationManager from "@/components/push-notifications/pushNotificationManager";
 
 export default function SettingsScreen() {
   return (
@@ -16,12 +15,14 @@ export default function SettingsScreen() {
             <ContactRound color="white" />
           </LinkButton> */}
           <LinkButton label="Profile" href="/menu/profile">
-            <UserPen color="white" />
+            <UserPen color="#f3f4f6" />
           </LinkButton>
           <LinkButton label="Security" href="/menu/security">
-            <ShieldUser color="white" />
+            <ShieldUser color="#f3f4f6" />
           </LinkButton>
-          <PushNotificationManager />
+          <LinkButton label="Settings" href="/menu/settings">
+            <Settings color="#f3f4f6" />
+          </LinkButton> 
         </View>
         <View>
           <LogoutButton />

@@ -1,7 +1,7 @@
 import { supabase } from "@/lib/supabase";
 import { handleError } from "@/utils/handleError";
 
-export async function saveSettings(updates: {
+export async function saveUserProfile(updates: {
   display_name: string;
   weight_unit: string;
   profile_picture: string | null;
@@ -22,11 +22,11 @@ export async function saveSettings(updates: {
 
   if (error) {
     handleError(error, {
-      message: "Error saving user preferences",
-      route: "/database/settings/save-settings",
+      message: "Error saving user profile",
+      route: "/database/settings/save-user-profile",
       method: "POST",
     });
-    throw new Error("Error saving user preferences");
+    throw new Error("Error saving user profile");
   }
 
   return true;

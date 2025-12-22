@@ -9,9 +9,10 @@ import { useEffect } from "react";
 interface ToggleProps {
   isOn: boolean;
   onToggle: () => void;
+  disabled?: boolean;
 }
 
-export default function Toggle({ isOn, onToggle }: ToggleProps) {
+export default function Toggle({ isOn, onToggle, disabled }: ToggleProps) {
   const translateX = useSharedValue(isOn ? 24 : 0);
   const bgColor = useSharedValue(isOn ? "#22c55e" : "#475569");
 
@@ -29,7 +30,7 @@ export default function Toggle({ isOn, onToggle }: ToggleProps) {
   }));
 
   return (
-    <Pressable onPress={onToggle} hitSlop={10}>
+    <Pressable onPress={onToggle} hitSlop={10} disabled={disabled}>
       <Animated.View
         style={animatedStyleBg}
         className={`rounded-full border-2 border-gray-300 w-[48px] h-[24px] transition-colors p-0.5 flex items-center   justify-center`}

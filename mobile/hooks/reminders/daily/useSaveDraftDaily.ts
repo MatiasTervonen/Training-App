@@ -1,5 +1,5 @@
 import { useDebouncedCallback } from "use-debounce";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { handleError } from "@/utils/handleError";
 
@@ -8,16 +8,14 @@ export default function useSaveDraftDaily({
   notes,
   setValue,
   setNotes,
-  setIsLoaded,
-  isLoaded,
 }: {
   title: string;
   notes: string;
   setValue: (value: string) => void;
   setNotes: (notes: string) => void;
-  setIsLoaded: (isLoaded: boolean) => void;
-  isLoaded: boolean;
 }) {
+  const [isLoaded, setIsLoaded] = useState(false);
+
   useEffect(() => {
     const loadDraft = async () => {
       try {
@@ -43,6 +41,8 @@ export default function useSaveDraftDaily({
 
   const saveDraft = useDebouncedCallback(
     async () => {
+      if (!isLoaded) return;
+
       if (notes.trim().length === 0 && title.trim().length === 0) {
         await AsyncStorage.removeItem("daily_reminder_draft");
       } else {
@@ -61,7 +61,6 @@ export default function useSaveDraftDaily({
   );
 
   useEffect(() => {
-    if (!isLoaded) return;
     saveDraft();
   }, [notes, title, saveDraft, isLoaded]);
 

@@ -48,7 +48,7 @@ export default function ExerciseDropdown({ onSelect, resetTrigger }: Props) {
     isLoading: isRecentLoading,
   } = useQuery({
     queryKey: ["recentExercises"],
-    queryFn: async () => await getRecentExercises(),
+    queryFn: () => getRecentExercises(),
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     refetchOnMount: false,

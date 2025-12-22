@@ -9,7 +9,7 @@ import { useState, useEffect } from "react";
 import Toast from "react-native-toast-message";
 import FullScreenLoader from "@/components/FullScreenLoader";
 import { File } from "expo-file-system";
-import { saveSettings } from "@/database/settings/save-settings";
+import { saveUserProfile } from "@/database/settings/save-user-profile";
 import { validateUserName } from "@/database/settings/validateUserName";
 import { handleError } from "@/utils/handleError";
 import { supabase } from "@/lib/supabase";
@@ -29,13 +29,11 @@ export default function ProfileScreen() {
   const [selectedProfilePic, setSelectedProfilePic] =
     useState<UploadFile | null>(null);
 
-  const userNameZ = useUserStore((state) => state.preferences?.display_name);
-  const weightUnitZ = useUserStore((state) => state.preferences?.weight_unit);
-  const profilePicZ = useUserStore(
-    (state) => state.preferences?.profile_picture,
-  );
+  const userNameZ = useUserStore((state) => state.profile?.display_name);
+  const weightUnitZ = useUserStore((state) => state.profile?.weight_unit);
+  const profilePicZ = useUserStore((state) => state.profile?.profile_picture);
 
-  const setPreferences = useUserStore((state) => state.setUserPreferences);
+  const setUserProfile = useUserStore((state) => state.setUserProfile);
 
   useEffect(() => {
     setUserName(userNameZ || "");
@@ -114,7 +112,7 @@ export default function ProfileScreen() {
             Authorization: `Bearer ${session.access_token}`,
           },
           body: formData,
-        },
+        }
       );
 
       const result = await response.json();
@@ -160,9 +158,9 @@ export default function ProfileScreen() {
         profile_picture: profilePictureUrl,
       };
 
-      await saveSettings(payload);
+      await saveUserProfile(payload);
 
-      setPreferences(payload);
+      setUserProfile(payload);
       Toast.show({
         type: "success",
         text1: "Settings updated successfully!",
@@ -195,7 +193,7 @@ export default function ProfileScreen() {
                   value
                     .toLowerCase()
                     .replace(/[^a-z0-9_]/g, "")
-                    .slice(0, 15),
+                    .slice(0, 15)
                 );
               }}
               label="User Name"

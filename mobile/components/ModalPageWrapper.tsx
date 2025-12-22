@@ -13,6 +13,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { useTransitionDirectionStore } from "@/lib/stores/transitionDirection";
+import { useModalPageConfig } from "@/lib/stores/modalPageConfig";
 
 type Props = {
   children: ReactNode;
@@ -36,8 +37,12 @@ export default function ModalPageWrapper({
   const router = useRouter();
   const direction = useTransitionDirectionStore((state) => state.direction);
   const setDirection = useTransitionDirectionStore(
-    (state) => state.setDirection,
+    (state) => state.setDirection
   );
+
+  const modalPageConfig = useModalPageConfig((state) => state.modalPageConfig);
+
+  const swipeEnabled = modalPageConfig?.swipeEnabled ?? true;
 
   // Max width == max-w-3xl (768px) for the count of swipe dinstance to navigation
 
@@ -91,6 +96,7 @@ export default function ModalPageWrapper({
   const velocityThreshold = 700;
 
   const pan = Gesture.Pan()
+    .enabled(swipeEnabled ?? true)
     // Restrict gesture to horizontal swipes only
     .activeOffsetX([-30, 30]) // Activate only if horizontal movement exceeds 30 pixels
     .activeOffsetY([-1000, 1000]) // Prevent activation for vertical movements

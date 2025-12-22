@@ -1,7 +1,7 @@
 import { supabase } from "@/lib/supabase";
 import { handleError } from "@/utils/handleError";
 
-export async function fetchUserPreferences() {
+export async function fetchUserSettings() {
   const {
     data: { session },
     error: sessionError,
@@ -12,20 +12,17 @@ export async function fetchUserPreferences() {
   }
 
   const { data, error } = await supabase
-    .from("users")
-    .select(
-      "id, display_name, weight_unit, profile_picture, role, push_enabled",
-    )
-    .eq("id", session.user.id)
+    .from("user_settings")
+    .select("push_enabled, gps_tracking_enabled")
     .single();
 
   if (error) {
     handleError(error, {
-      message: "Error fetching user preferences",
-      route: "/database/settings/get-settings",
+      message: "Error fetching user settings",
+      route: "/database/settings/get-user-settings",
       method: "GET",
     });
-    throw new Error("Error fetching user preferences");
+    throw new Error("Error fetching user settings");
   }
 
   return data;

@@ -1,13 +1,11 @@
 import { useUserStore } from "@/lib/stores/useUserStore";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "expo-router";
 import { supabase } from "@/lib/supabase";
 import { Session } from "@supabase/supabase-js";
 import { fetchUserProfile } from "@/database/settings/get-user-profile";
 import ModalPageWrapper from "../ModalPageWrapper";
 import { useModalPageConfig } from "@/lib/stores/modalPageConfig";
-import syncNotifications from "@/database/reminders/syncNotifications";
-import { getPushEnabled } from "@/database/pushState/get-push-enabled";
 import { fetchUserSettings } from "@/database/settings/get-user-settings";
 
 interface UserProfile {
@@ -39,8 +37,6 @@ export default function LayoutWrapper({
 
   const { modalPageConfig, setModalPageConfig } = useModalPageConfig();
 
-  const didSyncNotifications = useRef(false);
-
   const handleSessionChange = async (session: Session | null) => {
     if (!session) {
       logoutUser();
@@ -52,31 +48,17 @@ export default function LayoutWrapper({
     let settings = useUserStore.getState().settings;
 
     if (!profile || !settings) {
-      console.log("Fetching user profile and settings");
       const [profileData, settingsData] = await Promise.all([
         fetchUserProfile(),
         fetchUserSettings(),
       ]);
-      console.log("Profile data", profileData);
-      console.log("Settings data", settingsData);
       profile = profileData as UserProfile;
       settings = settingsData as UserSettings;
-      console.log("Logging in user with profile and settings");
       loginUser(profile, settings);
-      console.log("User logged in");
     }
-
-    const pushEnabled = await getPushEnabled();
 
     useUserStore.getState().setUserProfile(profile);
     useUserStore.getState().setUserSettings(settings);
-
-    // Sync notifications when user opens app.
-    if (pushEnabled && !didSyncNotifications.current) {
-      console.log("Syncing notifications for the first time");
-      didSyncNotifications.current = true;
-      syncNotifications().catch(() => {});
-    }
 
     if (pathname !== "/dashboard") {
       router.replace("/dashboard");

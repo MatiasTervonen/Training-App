@@ -119,6 +119,9 @@ importers:
       expo-screen-orientation:
         specifier: ~9.0.7
         version: 9.0.7(expo@54.0.25)(react-native@0.81.5(@babel/core@7.28.5)(@react-native-community/cli@20.0.2(typescript@5.9.3))(@types/react@19.1.17)(react@19.1.0))
+      expo-sensors:
+        specifier: ~15.0.8
+        version: 15.0.8(expo@54.0.25)(react-native@0.81.5(@babel/core@7.28.5)(@react-native-community/cli@20.0.2(typescript@5.9.3))(@types/react@19.1.17)(react@19.1.0))
       expo-splash-screen:
         specifier: ~31.0.10
         version: 31.0.11(expo@54.0.25)
@@ -3168,6 +3171,12 @@ packages:
 
   expo-screen-orientation@9.0.7:
     resolution: {integrity: sha512-UH/XlB9eMw+I2cyHSkXhAHRAPk83WyA3k5bst7GLu14wRuWiTch9fb6I7qEJK5CN6+XelcWxlBJymys6Fr/FKA==}
+    peerDependencies:
+      expo: '*'
+      react-native: '*'
+
+  expo-sensors@15.0.8:
+    resolution: {integrity: sha512-ttibOSCYjFAMIfjV+vVukO1v7GKlbcPRfxcRqbTaSMGneewDwVSXbGFImY530fj1BR3mWq4n9jHnuDp8tAEY9g==}
     peerDependencies:
       expo: '*'
       react-native: '*'
@@ -9596,6 +9605,12 @@ snapshots:
   expo-screen-orientation@9.0.7(expo@54.0.25)(react-native@0.81.5(@babel/core@7.28.5)(@react-native-community/cli@20.0.2(typescript@5.9.3))(@types/react@19.1.17)(react@19.1.0)):
     dependencies:
       expo: 54.0.25(@babel/core@7.28.5)(@expo/metro-runtime@6.1.2)(expo-router@6.0.14)(react-native-webview@13.15.0(react-native@0.81.5(@babel/core@7.28.5)(@react-native-community/cli@20.0.2(typescript@5.9.3))(@types/react@19.1.17)(react@19.1.0))(react@19.1.0))(react-native@0.81.5(@babel/core@7.28.5)(@react-native-community/cli@20.0.2(typescript@5.9.3))(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
+      react-native: 0.81.5(@babel/core@7.28.5)(@react-native-community/cli@20.0.2(typescript@5.9.3))(@types/react@19.1.17)(react@19.1.0)
+
+  expo-sensors@15.0.8(expo@54.0.25)(react-native@0.81.5(@babel/core@7.28.5)(@react-native-community/cli@20.0.2(typescript@5.9.3))(@types/react@19.1.17)(react@19.1.0)):
+    dependencies:
+      expo: 54.0.25(@babel/core@7.28.5)(@expo/metro-runtime@6.1.2)(expo-router@6.0.14)(react-native-webview@13.15.0(react-native@0.81.5(@babel/core@7.28.5)(@react-native-community/cli@20.0.2(typescript@5.9.3))(@types/react@19.1.17)(react@19.1.0))(react@19.1.0))(react-native@0.81.5(@babel/core@7.28.5)(@react-native-community/cli@20.0.2(typescript@5.9.3))(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
+      invariant: 2.2.4
       react-native: 0.81.5(@babel/core@7.28.5)(@react-native-community/cli@20.0.2(typescript@5.9.3))(@types/react@19.1.17)(react@19.1.0)
 
   expo-server@1.0.4: {}

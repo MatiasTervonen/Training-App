@@ -1,13 +1,16 @@
-import Toggle from "../toggle";
+import Toggle from "@/components/toggle";
 import { View, AppState } from "react-native";
-import AppText from "../AppText";
+import AppText from "@/components/AppText";
 import { useUserStore } from "@/lib/stores/useUserStore";
 import Toast from "react-native-toast-message";
-import { registerForGpsTracking, updateGpsTrackingStatus } from "./actions";
-import { useEffect } from "react";
+import { updateGpsTrackingStatus } from "@/components/activities/toggleSettings/actions";
+import { useEffect, useState } from "react";
 import * as Location from "expo-location";
+import InfoModal from "@/components/activities/toggleSettings/infoModal";
 
 export default function GpsToggleManager() {
+  const [isOpen, setIsOpen] = useState(false);
+
   const gpsTrackingEnabled = useUserStore(
     (state) => state.settings?.gps_tracking_enabled
   );
@@ -18,8 +21,8 @@ export default function GpsToggleManager() {
     const checkPermissions = async () => {
       if (!gpsTrackingEnabled) return;
 
-      const fg = await Location.requestForegroundPermissionsAsync();
-      const bg = await Location.requestBackgroundPermissionsAsync();
+      const fg = await Location.getForegroundPermissionsAsync();
+      const bg = await Location.getBackgroundPermissionsAsync();
 
       const granted = fg.status === "granted" && bg.status === "granted";
 
@@ -57,21 +60,27 @@ export default function GpsToggleManager() {
 
         Toast.show({
           type: "success",
-          text1: "GPS Tracking disabled",
+          text1: "Location Tracking disabled",
         });
       } catch (error) {
         console.error(error);
         Toast.show({
           type: "error",
           text1: "Error",
-          text2: "Failed to disable GPS Tracking",
+          text2: "Failed to disable Location Tracking",
         });
       }
     } else {
       try {
-        const granted = await registerForGpsTracking();
+        const fg = await Location.getForegroundPermissionsAsync();
+        const bg = await Location.getBackgroundPermissionsAsync();
 
-        if (!granted) return;
+        const granted = fg.status === "granted" && bg.status === "granted";
+
+        if (!granted) {
+          setIsOpen(true);
+          return;
+        }
 
         await updateGpsTrackingStatus(true);
 
@@ -81,14 +90,14 @@ export default function GpsToggleManager() {
 
         Toast.show({
           type: "success",
-          text1: "GPS Tracking enabled",
+          text1: "Location Tracking enabled",
         });
       } catch (error) {
         console.error(error);
         Toast.show({
           type: "error",
           text1: "Error",
-          text2: "Failed to enable GPS Tracking",
+          text2: "Failed to enable Location Tracking",
         });
       }
     }
@@ -96,15 +105,18 @@ export default function GpsToggleManager() {
 
   return (
     <View className="bg-slate-900 p-4 rounded-md">
-      <AppText className="underline text-lg">GPS Tracking</AppText>
+      <AppText className="underline text-lg">Location Tracking</AppText>
       <View className="flex-row mt-5 items-center justify-between">
         <AppText>
-          {gpsTrackingEnabled ? "GPS Tracking Enabled" : "Allow GPS Tracking"}
+          {gpsTrackingEnabled
+            ? "Location Tracking Enabled"
+            : "Allow Location Tracking"}
         </AppText>
         <View className="mr-5">
           <Toggle isOn={!!gpsTrackingEnabled} onToggle={handleToggle} />
         </View>
       </View>
+      <InfoModal isOpen={isOpen} setIsOpen={setIsOpen} />
     </View>
   );
 }

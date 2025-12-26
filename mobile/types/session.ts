@@ -84,7 +84,8 @@ export type Feed_item = {
     | "gym_sessions"
     | "todo_lists"
     | "global_reminders"
-    | "local_reminders";
+    | "local_reminders"
+    | "activity_session";
   created_at: string;
   notes?: string | null;
   title?: string | null;
@@ -140,4 +141,24 @@ export type weight = {
   notes: string | null;
   title: string | null;
   weight: number;
+};
+
+export type TrackPoint = {
+  latitude: number;
+  longitude: number;
+  altitude?: number | null;
+  accuracy?: number | null;
+  speed?: number | null;
+  heading?: number | null;
+  timestamp: number;
+};
+
+export type Location = {
+  latitude: number;
+  longitude: number;
+  altitude: number | null;
+  accuracy: number | null;
+  speed: number | null;
+  heading: number | null;
+  timestamp: number;
 };

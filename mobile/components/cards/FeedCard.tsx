@@ -5,6 +5,7 @@ import LocalReminderCard from "./LocalReminderCard";
 import TodoCard from "./TodoCard";
 import { FeedItem } from "@/types/models";
 import GlobalReminderCard from "./GlobalReminderCard";
+import ActivityCard from "./ActivityCard";
 
 export default function FeedCard(props: FeedItem) {
   const { pinned, onTogglePin, onDelete, onExpand, onEdit } = props;
@@ -68,6 +69,17 @@ export default function FeedCard(props: FeedItem) {
     case "todo_lists":
       return (
         <TodoCard
+          item={props.item}
+          pinned={pinned}
+          onTogglePin={onTogglePin}
+          onDelete={onDelete}
+          onExpand={onExpand}
+          onEdit={onEdit}
+        />
+      );
+    case "activity_session":
+      return (
+        <ActivityCard
           item={props.item}
           pinned={pinned}
           onTogglePin={onTogglePin}

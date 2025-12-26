@@ -70,6 +70,9 @@ export type Activity = Pick<
   "id" | "name" | "category" | "created_at"
 >;
 
+export type activity_session =
+  Database["public"]["Tables"]["activity_session"]["Row"];
+
 export type full_gym_template = template & {
   gym_template_exercises: full_gym_template_exercise[];
 };
@@ -139,6 +142,15 @@ export type FeedItem =
   | {
       table: "local_reminders";
       item: local_reminders;
+      pinned: boolean;
+      onTogglePin: () => void;
+      onDelete: () => void;
+      onExpand: () => void;
+      onEdit: () => void;
+    }
+  | {
+      table: "activity_session";
+      item: activity_session;
       pinned: boolean;
       onTogglePin: () => void;
       onDelete: () => void;

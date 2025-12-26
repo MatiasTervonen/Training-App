@@ -32,15 +32,16 @@ import Mapbox from "@rnmapbox/maps";
 
 Mapbox.setAccessToken(process.env.EXPO_PUBLIC_MAPBOX_PUBLIC_TOKEN!);
 
-Sentry.init({
-  dsn: "https://cf3db79ed11dbd657e73bb68617c6a34@o4510142810619904.ingest.de.sentry.io/4510160894361680",
-  sendDefaultPii: true,
-  enableLogs: true,
-  replaysSessionSampleRate: 0.1,
-  replaysOnErrorSampleRate: 1,
-  integrations: [Sentry.mobileReplayIntegration()],
-});
-
+if (!__DEV__) {
+  Sentry.init({
+    dsn: "https://cf3db79ed11dbd657e73bb68617c6a34@o4510142810619904.ingest.de.sentry.io/4510160894361680",
+    sendDefaultPii: true,
+    enableLogs: true,
+    replaysSessionSampleRate: 0.1,
+    replaysOnErrorSampleRate: 1,
+    integrations: [Sentry.mobileReplayIntegration()],
+  });
+}
 // Initialize Reactotron in development
 if (__DEV__) {
   import("../ReactotronConfig");

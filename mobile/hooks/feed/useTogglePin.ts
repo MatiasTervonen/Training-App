@@ -15,7 +15,8 @@ export default function useTogglePin() {
       | "weight"
       | "todo_lists"
       | "global_reminders"
-      | "local_reminders",
+      | "local_reminders"
+      | "activity_session",
     isPinned: boolean
   ) => {
     const feedData = queryClient.getQueryData<FeedData>(["feed"]);

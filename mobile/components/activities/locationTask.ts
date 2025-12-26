@@ -42,8 +42,7 @@ TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
 
   const existingTrack = Array.isArray(draft.track) ? draft.track : [];
 
-  const MAX_POINTS = 5_000;
-  const nextTrack = [...existingTrack, ...track].slice(-MAX_POINTS);
+  const nextTrack = [...existingTrack, ...track];
 
   await AsyncStorage.mergeItem(
     "activity_draft",

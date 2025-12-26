@@ -9,7 +9,9 @@ type PinSessionProps = {
     | "weight"
     | "todo_lists"
     | "global_reminders"
-    | "local_reminders";
+    | "local_reminders"
+    | "activity_session";
+
 };
 
 export async function pinItem({ id, table }: PinSessionProps) {

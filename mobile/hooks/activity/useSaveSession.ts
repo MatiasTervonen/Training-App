@@ -3,16 +3,8 @@ import { useRouter } from "expo-router";
 import Toast from "react-native-toast-message";
 import { saveActivitySession } from "@/database/activities/save-session";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
-type TrackPoint = {
-  latitude: number;
-  longitude: number;
-  altitude?: number | null;
-  accuracy?: number | null;
-  speed?: number | null;
-  heading?: number | null;
-  timestamp: number;
-};
+import { TrackPoint } from "@/types/session";
+import { useStopGPStracking } from "@/components/activities/location-actions";
 
 export default function useSaveActivitySession({
   title,
@@ -30,6 +22,8 @@ export default function useSaveActivitySession({
   resetSession: () => void;
 }) {
   const router = useRouter();
+
+  const { stopGPStracking } = useStopGPStracking();
 
   const handleSaveSession = async () => {
     if (title.trim() === "") {
@@ -70,6 +64,9 @@ export default function useSaveActivitySession({
         track,
         activityId,
       });
+
+      // stop the GPS tracking
+      await stopGPStracking();
 
       resetSession();
       router.push("/dashboard");

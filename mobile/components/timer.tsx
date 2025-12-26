@@ -12,6 +12,7 @@ type ActiveSession = {
 
 type TimerProps = {
   className?: string;
+  color?: string;
   manualSession?: ActiveSession;
   textClassName?: string;
   onPress?: () => void;
@@ -21,6 +22,7 @@ type TimerProps = {
 
 export default function Timer({
   className = "",
+  color = "#f3f4f6",
   manualSession,
   textClassName = "",
   onPress,
@@ -91,7 +93,7 @@ export default function Timer({
           }}
           hitSlop={20}
         >
-          <CirclePause color="#f3f4f6" />
+          <CirclePause color={color} />
         </TouchableOpacity>
       ) : (
         <TouchableOpacity
@@ -101,7 +103,7 @@ export default function Timer({
           }}
           hitSlop={20}
         >
-          <CirclePlay color="#f3f4f6" />
+          <CirclePlay color={color} />
         </TouchableOpacity>
       )}
     </View>

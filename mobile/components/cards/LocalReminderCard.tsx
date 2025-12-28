@@ -8,18 +8,14 @@ import { formatDate, formatDateTime, formatNotifyTime } from "@/lib/formatDate";
 import { View, TouchableOpacity } from "react-native";
 import AppText from "../AppText";
 import DropdownMenu from "../DropdownMenu";
-import { local_reminders } from "@/types/models";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { full_reminder } from "@/types/session";
-import GetFullLocalReminder from "@/database/reminders/get-full-local-reminder";
+import { FeedCardProps } from "@/types/session";
 
-type Props = {
-  item: local_reminders;
-  pinned: boolean;
-  onTogglePin: () => void;
-  onDelete: () => void;
-  onExpand: () => void;
-  onEdit: () => void;
+type reminderPayload = {
+  notify_date: string;
+  notify_at: string;
+  notify_at_time: string;
+  weekdays: number[];
+  seen_at: string;
 };
 
 export default function LocalReminderCard({
@@ -29,24 +25,10 @@ export default function LocalReminderCard({
   onDelete,
   onExpand,
   onEdit,
-}: Props) {
+}: FeedCardProps) {
+  const payload = item.extra_fields as reminderPayload;
+
   const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-
-  const queryClient = useQueryClient();
-  const cached = queryClient.getQueryData(["fullLocalReminder", item.id]);
-
-  const { data: fullLocalReminder } = useQuery<full_reminder>({
-    queryKey: ["fullLocalReminder", item.id],
-    queryFn: () => GetFullLocalReminder(item.id),
-    enabled: !!cached,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    refetchOnMount: false,
-    staleTime: Infinity,
-    gcTime: Infinity,
-  });
-
-  const weekdays = fullLocalReminder?.weekdays;
 
   return (
     <View
@@ -84,20 +66,20 @@ export default function LocalReminderCard({
 
         <View className="ml-4 mr-5 flex-row items-center gap-2">
           <AppText className={`${pinned ? "text-slate-900" : "text-gray-100"}`}>
-            {item.notify_at_time
-              ? formatNotifyTime(item.notify_at_time!)
-              : formatDateTime(item.notify_date!)}
+            {payload.notify_at_time
+              ? formatNotifyTime(payload.notify_at_time!)
+              : formatDateTime(payload.notify_date!)}
           </AppText>
-          {item.seen_at ? (
+          {payload.seen_at ? (
             <Check size={30} color="#4ade80" />
           ) : (
             <Bell size={20} color={pinned ? "#0f172a" : "#f3f4f6"} />
           )}
-          {weekdays && weekdays.length > 0 && (
+          {payload.weekdays && payload.weekdays.length > 0 && (
             <AppText
               className={`ml-4 ${pinned ? "text-slate-900" : "text-gray-100"}`}
             >
-              {weekdays.map((dayNum) => days[dayNum - 1]).join(", ")}
+              {payload.weekdays.map((dayNum) => days[dayNum - 1]).join(", ")}
             </AppText>
           )}
         </View>

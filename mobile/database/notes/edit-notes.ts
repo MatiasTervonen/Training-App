@@ -9,10 +9,12 @@ type Props = {
 };
 
 export async function editNotes({ id, title, notes, updated_at }: Props) {
-  const { error } = await supabase
-    .from("notes")
-    .update({ title, notes, updated_at })
-    .eq("id", id);
+  const { error } = await supabase.rpc("notes_edit_note", {
+    p_id: id,
+    p_title: title,
+    p_notes: notes,
+    p_updated_at: updated_at,
+  });
 
   if (error) {
     handleError(error, {

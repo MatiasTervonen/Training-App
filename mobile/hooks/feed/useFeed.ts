@@ -2,7 +2,6 @@ import { useQueryClient, useInfiniteQuery } from "@tanstack/react-query";
 import getFeed from "@/database/feed/getFeed";
 import { FeedData } from "@/types/session";
 import { useEffect, useMemo } from "react";
-import { FeedItem } from "@/types/models";
 
 export default function useFeed() {
   const queryClient = useQueryClient();
@@ -44,44 +43,21 @@ export default function useFeed() {
     };
   }, [queryClient]);
 
-  // Flattens the data in single array of FeedItem[]
-
-  const feed: FeedItem[] = useMemo(() => {
-    if (!data) return [];
-
-    return data.pages.flatMap(
-      (page) =>
-        page.feed.map((item) => ({
-          table: item.type as FeedItem["table"],
-          item,
-          pinned: item.pinned,
-        })) as unknown as FeedItem
+  const pinnedFeed = useMemo(() => {
+    return (
+      data?.pages.flatMap((page) =>
+        page.feed.filter((item) => item.feed_context === "pinned")
+      ) ?? []
     );
   }, [data]);
 
-  // Pinned items first, then by created_at desc for stable ordering in UI
-
-  const pinnedFeed = useMemo(() => feed.filter((i) => i.pinned), [feed]);
-  const comingSoonFeed = useMemo(
-    () =>
-      feed.filter((i) => !i.pinned && (i.item as any).feed_context === "soon"),
-    [feed]
-  );
-  const unpinnedFeed = useMemo(
-    () =>
-      feed
-        .filter((i) => !i.pinned && (i.item as any).feed_context !== "soon")
-        .sort((a, b) => {
-          const aTime = new Date(
-            a.item.updated_at || a.item.created_at
-          ).getTime();
-          const bTime = new Date(
-            b.item.updated_at || b.item.created_at
-          ).getTime();
-          return bTime - aTime;
-        }),
-    [feed]
-  );
+  const unpinnedFeed = useMemo(() => {
+    return (
+      data?.pages.flatMap((page) =>
+        page.feed.filter((item) => item.feed_context === "feed")
+      ) ?? []
+    );
+  }, [data]);
 
   return {
     data,
@@ -91,10 +67,8 @@ export default function useFeed() {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-    pinnedFeed,
-    comingSoonFeed,
-    unpinnedFeed,
-    feed,
     isSuccess,
+    pinnedFeed,
+    unpinnedFeed,
   };
 }

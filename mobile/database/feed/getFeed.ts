@@ -1,6 +1,10 @@
 import { handleError } from "@/utils/handleError";
 import { supabase } from "@/lib/supabase";
-import { Feed_item } from "@/types/session";
+import { feed_items } from "@/types/models";
+
+export type FeedItemUI = feed_items & {
+  feed_context: "pinned" | "feed";
+};
 
 export default async function getFeed({
   pageParam = 0,
@@ -8,74 +12,41 @@ export default async function getFeed({
 }: {
   pageParam?: number;
   limit?: number;
-}): Promise<{ feed: Feed_item[]; nextPage: number | null }> {
+}): Promise<{
+  feed: FeedItemUI[];
+  nextPage: number | null;
+}> {
   const from = pageParam * limit;
   const to = from + limit - 1;
 
   const pinnedPromise =
     pageParam === 0
       ? supabase
-          .from("feed_with_pins")
-          .select("*")
-          .eq("pinned", true)
+          .from("pinned_items")
+          .select(`feed_items(*)`)
           .order("created_at", { ascending: false })
       : Promise.resolve({ data: [], error: null });
 
   const feedPromise = supabase
-    .from("feed_with_pins")
+    .from("feed_items")
     .select("*")
-    .eq("pinned", false)
-    .order("created_at", { ascending: false })
+    .order("occurred_at", { ascending: false })
     .range(from, to);
 
-  const now = new Date();
-  const nowIso = now.toISOString();
-  const next4hIso = new Date(now.getTime() + 4 * 60 * 60 * 1000).toISOString();
+  // const now = new Date();
+  // const nowIso = now.toISOString();
+  // const next4hIso = new Date(now.getTime() + 4 * 60 * 60 * 1000).toISOString();
 
-  const remindersPromise =
-    pageParam === 0
-      ? supabase
-          .from("global_reminders")
-          .select("*")
-          .gte("notify_at", nowIso)
-          .lte("notify_at", next4hIso)
-          .is("seen_at", null)
-          .order("notify_at", { ascending: true })
-      : Promise.resolve({ data: [], error: null });
+  const [pinnedResult, feedResult] = await Promise.all([
+    pinnedPromise,
+    feedPromise,
+  ]);
 
-  const localRemindersPromise =
-    pageParam === 0
-      ? supabase
-          .from("local_reminders")
-          .select("*")
-          .gte("notify_date", nowIso)
-          .lte("notify_date", next4hIso)
-          .is("seen_at", null)
-          .order("notify_date", { ascending: true })
-      : Promise.resolve({ data: [], error: null });
+  if (pinnedResult.error || feedResult.error) {
+    const error = pinnedResult.error || feedResult.error;
 
-  const [pinnedResult, feedResult, remindersResult, localRemindersResult] =
-    await Promise.all([
-      pinnedPromise,
-      feedPromise,
-      remindersPromise,
-      localRemindersPromise,
-    ]);
-
-  if (
-    pinnedResult.error ||
-    feedResult.error ||
-    remindersResult.error ||
-    localRemindersResult.error
-  ) {
-    const error =
-      pinnedResult.error ||
-      feedResult.error ||
-      remindersResult.error ||
-      localRemindersResult.error;
     handleError(error, {
-      message:
-        "Error fetching feed, reminders, or local reminders, or local reminders",
+      message: "Error fetching feed",
       route: "server-action: getFeed",
       method: "direct",
     });
@@ -84,45 +55,21 @@ export default async function getFeed({
     );
   }
 
-  const comingSoon = [
-    ...(remindersResult.data ?? []).map((item) => ({
-      ...item,
-      feed_context: "soon",
-      type: "global_reminders",
-    })),
-    ...(localRemindersResult.data ?? []).map((item) => ({
-      ...item,
-      feed_context: "soon",
-      type: "local_reminders",
-    })),
-  ];
-
   const pinned = (pinnedResult.data ?? []).map((item) => ({
-    ...item,
-    type: item.type,
+    ...item.feed_items,
     feed_context: "pinned",
-  }));
+  })) as unknown as FeedItemUI[];
 
-  const page = (feedResult.data ?? []).map((item) => ({
-    ...item,
-    type: item.type,
-    feed_context: "feed",
-  }));
-
-  const comingSoonIds = new Set(comingSoon.map((i) => i.id));
-
-  const pinnedWithoutComingSoon = pinned.filter(
-    (item) => !comingSoonIds.has(item.id)
-  );
-
-  const feedWithoutComingSoon = page.filter(
-    (item) => !comingSoonIds.has(item.id)
-  );
+  const pinnedIds = new Set(pinned.map((item) => item.id));
 
   const feed = [
-    ...comingSoon,
-    ...pinnedWithoutComingSoon,
-    ...feedWithoutComingSoon,
+    ...pinned,
+    ...feedResult.data
+      .filter((i) => !pinnedIds.has(i.id))
+      .map((item) => ({
+        ...item,
+        feed_context: "feed",
+      })),
   ];
 
   const hasMore = (feedResult.data?.length ?? 0) === limit;

@@ -1,6 +1,6 @@
 import Toast from "react-native-toast-message";
 import * as Notifications from "expo-notifications";
-import { full_reminder } from "@/types/session";
+import { FeedItemUI } from "@/types/session";
 import EditLocalReminder from "@/database/reminders/edit-local-reminder";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -19,7 +19,7 @@ export default function useSaveReminder({
   notes: string;
   notifyAt: Date;
   setIsSaving: (isSaving: boolean) => void;
-  reminder: full_reminder;
+  reminder: FeedItemUI;
   onSave: () => void;
   onClose: () => void;
   scheduleNotifications: () => Promise<string | string[] | undefined>;
@@ -50,20 +50,14 @@ export default function useSaveReminder({
       return;
     }
 
-    const seen_at =
-      reminder.type === "one-time"
-        ? notifyAt?.toISOString() === reminder.notify_date
-          ? reminder.seen_at
-          : false
-        : false;
-
     const updated = new Date().toISOString();
 
     setIsSaving(true);
     try {
-      
       // Cancel old notifications
-      const stored = await AsyncStorage.getItem(`notification:${reminder.id}`);
+      const stored = await AsyncStorage.getItem(
+        `notification:${reminder.source_id}`
+      );
       const oldIds: string[] = stored ? JSON.parse(stored) : [];
 
       for (const id of oldIds) {
@@ -79,16 +73,16 @@ export default function useSaveReminder({
 
       if (normalizedIds.length) {
         await AsyncStorage.setItem(
-          `reminder:${reminder.id}`,
+          `reminder:${reminder.source_id}`,
           JSON.stringify(normalizedIds)
         );
       }
 
       await EditLocalReminder({
-        id: reminder.id,
+        id: reminder.source_id,
         title,
         notes,
-        seen_at,
+        seen_at: null,
         notify_at_time:
           reminder.type === "weekly" || reminder.type === "daily"
             ? notifyAt
@@ -108,10 +102,12 @@ export default function useSaveReminder({
         type: "success",
         text1: "Reminder updated successfully",
       });
-    } catch {
+    } catch (error) {
+      console.log("error updating reminder", error);
       Toast.show({
         type: "error",
-        text1: "Error updating reminder, Try again later.",
+        text1: "Error updating reminder",
+        text2: "Try again later.",
       });
     } finally {
       setIsSaving(false);

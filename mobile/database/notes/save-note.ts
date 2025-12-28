@@ -7,9 +7,13 @@ type props = {
 };
 
 export async function saveNote({ title, notes }: props) {
-  const { error } = await supabase.from("notes").insert({ title, notes });
+  const { error } = await supabase.rpc("notes_save_note", {
+    p_title: title,
+    p_notes: notes,
+  });
 
   if (error) {
+    console.log("save note error", error);
     handleError(error, {
       message: "Error saving note",
       route: "/database/notes/save-note",

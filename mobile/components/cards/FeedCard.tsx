@@ -3,90 +3,36 @@ import WeightCard from "./WeightCard";
 import GymCard from "./GymCard";
 import LocalReminderCard from "./LocalReminderCard";
 import TodoCard from "./TodoCard";
-import { FeedItem } from "@/types/models";
 import GlobalReminderCard from "./GlobalReminderCard";
 import ActivityCard from "./ActivityCard";
+import { FeedCardProps } from "@/types/session";
 
-export default function FeedCard(props: FeedItem) {
+export default function FeedCard(props: FeedCardProps) {
   const { pinned, onTogglePin, onDelete, onExpand, onEdit } = props;
 
-  switch (props.table) {
+  const commomProps = {
+    item: props.item,
+    pinned: pinned,
+    onTogglePin: onTogglePin,
+    onDelete: onDelete,
+    onExpand: onExpand,
+    onEdit: onEdit,
+  };
+
+  switch (props.item.type) {
     case "notes":
-      return (
-        <NotesCard
-          item={props.item}
-          pinned={pinned}
-          onTogglePin={onTogglePin}
-          onDelete={onDelete}
-          onExpand={onExpand}
-          onEdit={onEdit}
-        />
-      );
+      return <NotesCard {...commomProps} />;
     case "weight":
-      return (
-        <WeightCard
-          item={props.item}
-          pinned={pinned}
-          onTogglePin={onTogglePin}
-          onDelete={onDelete}
-          onExpand={onExpand}
-          onEdit={onEdit}
-        />
-      );
+      return <WeightCard {...commomProps} />;
     case "gym_sessions":
-      return (
-        <GymCard
-          item={props.item}
-          pinned={pinned}
-          onTogglePin={onTogglePin}
-          onDelete={onDelete}
-          onExpand={onExpand}
-          onEdit={onEdit}
-        />
-      );
+      return <GymCard {...commomProps} />;
     case "global_reminders":
-      return (
-        <GlobalReminderCard
-          item={props.item}
-          pinned={pinned}
-          onTogglePin={onTogglePin}
-          onDelete={onDelete}
-          onExpand={onExpand}
-          onEdit={onEdit}
-        />
-      );
+      return <GlobalReminderCard {...commomProps} />;
     case "local_reminders":
-      return (
-        <LocalReminderCard
-          item={props.item}
-          pinned={pinned}
-          onTogglePin={onTogglePin}
-          onDelete={onDelete}
-          onExpand={onExpand}
-          onEdit={onEdit}
-        />
-      );
+      return <LocalReminderCard {...commomProps} />;
     case "todo_lists":
-      return (
-        <TodoCard
-          item={props.item}
-          pinned={pinned}
-          onTogglePin={onTogglePin}
-          onDelete={onDelete}
-          onExpand={onExpand}
-          onEdit={onEdit}
-        />
-      );
+      return <TodoCard {...commomProps} />;
     case "activity_session":
-      return (
-        <ActivityCard
-          item={props.item}
-          pinned={pinned}
-          onTogglePin={onTogglePin}
-          onDelete={onDelete}
-          onExpand={onExpand}
-          onEdit={onEdit}
-        />
-      );
+      return <ActivityCard {...commomProps} />;
   }
 }

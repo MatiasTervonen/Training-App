@@ -3,17 +3,12 @@ import { View, TouchableOpacity } from "react-native";
 import AppText from "../AppText";
 import DropdownMenu from "../DropdownMenu";
 import { formatDate } from "@/lib/formatDate";
-import { gym_sessions, full_gym_session } from "../../types/models";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { getFullGymSession } from "@/database/gym/get-full-gym-session";
+import { FeedCardProps } from "@/types/session";
 
-type Props = {
-  item: gym_sessions;
-  pinned: boolean;
-  onTogglePin: () => void;
-  onDelete: () => void;
-  onExpand: () => void;
-  onEdit: () => void;
+type gymPayload = {
+  duration: number;
+  exercises_count: number;
+  sets_count: number;
 };
 
 export default function GymCard({
@@ -23,7 +18,9 @@ export default function GymCard({
   onDelete,
   onExpand,
   onEdit,
-}: Props) {
+}: FeedCardProps) {
+  const payload = item.extra_fields as gymPayload;
+
   const formatDuration = (seconds: number) => {
     const totalMinutes = Math.floor(seconds / 60);
     const hours = Math.floor(totalMinutes / 60);
@@ -34,29 +31,6 @@ export default function GymCard({
       return `${minutes}m`;
     }
   };
-
-  const queryClient = useQueryClient();
-  const cached = queryClient.getQueryData(["fullGymSession", item.id]);
-
-  const { data: fullGym } = useQuery<full_gym_session>({
-    queryKey: ["fullGymSession", item.id],
-    queryFn: () => getFullGymSession(item.id),
-    enabled: !!cached,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    refetchOnMount: false,
-    staleTime: Infinity,
-    gcTime: Infinity,
-  });
-
-  const totalExercises = fullGym ? fullGym.gym_session_exercises.length : 0;
-
-  const totalSets = fullGym
-    ? fullGym.gym_session_exercises.reduce(
-        (sum, exercise) => sum + exercise.gym_sets.length,
-        0,
-      )
-    : 0;
 
   return (
     <View
@@ -88,20 +62,18 @@ export default function GymCard({
         />
       </View>
 
-      {fullGym && (
-        <View className="flex-row">
-          <AppText
-            className={`ml-4 ${pinned ? "text-slate-900" : "text-gray-100"}`}
-          >
-            Exercises: {totalExercises}
-          </AppText>
-          <AppText
-            className={`ml-4 ${pinned ? "text-slate-900" : "text-gray-100"}`}
-          >
-            Sets: {totalSets}
-          </AppText>
-        </View>
-      )}
+      <View className="flex-row">
+        <AppText
+          className={`ml-4 ${pinned ? "text-slate-900" : "text-gray-100"}`}
+        >
+          Exercises: {payload.exercises_count}
+        </AppText>
+        <AppText
+          className={`ml-4 ${pinned ? "text-slate-900" : "text-gray-100"}`}
+        >
+          Sets: {payload.sets_count}
+        </AppText>
+      </View>
 
       <View className="flex-row justify-between items-center mt-2 bg-black/40 rounded-b-md">
         <View className="flex-row items-center gap-4">
@@ -120,7 +92,7 @@ export default function GymCard({
             </AppText>
           </View>
           <AppText className={`${pinned ? "text-slate-900" : "text-gray-100"}`}>
-            {formatDuration(item.duration!)}
+            {formatDuration(payload.duration)}
           </AppText>
         </View>
         <TouchableOpacity

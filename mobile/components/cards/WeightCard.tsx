@@ -1,19 +1,13 @@
 import { Scale, Ellipsis, SquareArrowOutUpRight } from "lucide-react-native";
-
 import { View, TouchableOpacity } from "react-native";
 import AppText from "../AppText";
 import DropdownMenu from "../DropdownMenu";
 import { formatDate } from "@/lib/formatDate";
 import { useUserStore } from "@/lib/stores/useUserStore";
-import { weight } from "@/types/models";
+import { FeedCardProps } from "@/types/session";
 
-type Props = {
-  item: weight;
-  pinned: boolean;
-  onTogglePin: () => void;
-  onDelete: () => void;
-  onExpand: () => void;
-  onEdit: () => void;
+type weightPayload = {
+  weight: number;
 };
 
 export default function WeightCard({
@@ -23,9 +17,11 @@ export default function WeightCard({
   onDelete,
   onExpand,
   onEdit,
-}: Props) {
+}: FeedCardProps) {
+  const payload = item.extra_fields as weightPayload;
+
   const weightUnit =
-    useUserStore((state) => state.preferences?.weight_unit) || "kg";
+    useUserStore((state) => state.profile?.weight_unit) || "kg";
 
   return (
     <View
@@ -63,7 +59,7 @@ export default function WeightCard({
           pinned ? "text-slate-900" : "text-gray-100"
         }`}
       >
-        {item.weight} {weightUnit}
+        {payload.weight} {weightUnit}
       </AppText>
 
       <View className="flex-row justify-between items-center bg-black/40 rounded-b-md">

@@ -6,23 +6,31 @@ type props = {
   title: string | null | undefined;
   notes: string | null | undefined;
   weight: number | null | undefined;
+  updated_at: string;
 };
 
-export async function editWeight({ title, notes, weight, id }: props) {
-  const { error: weightError } = await supabase
-    .from("weight")
-    .update({ title, notes, weight })
-    .eq("id", id);
+export async function editWeight({
+  title,
+  notes,
+  weight,
+  id,
+  updated_at,
+}: props) {
+  const { error } = await supabase.rpc("weight_edit_weight", {
+    p_id: id,
+    p_title: title,
+    p_notes: notes,
+    p_weight: weight,
+    p_updated_at: updated_at,
+  });
 
-  if (weightError) console.error("Supabase update error", weightError);
-
-  if (weightError) {
-    handleError(weightError, {
-      message: "Error editing weight entry",
+  if (error) {
+    handleError(error, {
+      message: "Error editing weight",
       route: "/database/weight/edit-weight",
-      method: "GET",
+      method: "POST",
     });
-    throw new Error("Error editing weight entry");
+    throw new Error("Error editing weight");
   }
 
   return { success: true };

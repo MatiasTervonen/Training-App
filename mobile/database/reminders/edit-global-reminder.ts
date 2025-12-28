@@ -20,12 +20,18 @@ export default async function EditGlobalReminder({
   updated_at,
   delivered,
 }: EditGlobalReminderParams) {
-  const { error } = await supabase
-    .from("global_reminders")
-    .update({ title, notes, notify_at, seen_at, updated_at, delivered })
-    .eq("id", id);
+  const { error } = await supabase.rpc("reminders_edit_global_reminder", {
+    p_id: id,
+    p_title: title,
+    p_notes: notes,
+    p_notify_at: notify_at,
+    p_seen_at: seen_at,
+    p_updated_at: updated_at,
+    p_delivered: delivered,
+  });
 
   if (error) {
+    console.log("error updating global reminder", error);
     handleError(error, {
       message: "Error updating global reminder",
       route: "/database/reminders/edit-global-reminder",

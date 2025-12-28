@@ -3,22 +3,19 @@ import { handleError } from "@/utils/handleError";
 
 type PinSessionProps = {
   id: string;
-  table:
-    | "notes"
-    | "gym_sessions"
-    | "weight"
-    | "todo_lists"
-    | "global_reminders"
-    | "local_reminders"
-    | "activity_session";
+  type: string;
 };
 
-export async function unpinItem({ id, table }: PinSessionProps) {
+export async function unpinItem({ id, type }: PinSessionProps) {
+  if (!id || !type) {
+    throw new Error("Invalid request");
+  }
+
   const { error } = await supabase
     .from("pinned_items")
     .delete()
-    .eq("type", table)
-    .eq("item_id", id);
+    .eq("type", type)
+    .eq("feed_item_id", id);
 
   if (error) {
     handleError(error, {

@@ -57,12 +57,10 @@ export default function StartActivityScreen() {
 
   const setSwipeEnabled = useModalPageConfig((state) => state.setSwipeEnabled);
 
-  const { setActiveSession, elapsedTime, stopTimer, isRunning } =
-    useTimerStore();
+  const { elapsedTime, stopTimer, isRunning } = useTimerStore();
 
   const resetSession = async () => {
     stopTimer();
-    setActiveSession(null);
     AsyncStorage.removeItem("activity_draft");
     setTitle("");
     setNotes("");

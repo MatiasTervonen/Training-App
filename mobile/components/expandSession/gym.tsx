@@ -29,11 +29,11 @@ export default function GymSession(gym_session: full_gym_session) {
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
 
   const groupedExercises = GroupExercises(
-    gym_session.gym_session_exercises || [],
+    gym_session.gym_session_exercises || []
   );
 
   const weightUnit =
-    useUserStore((state) => state.preferences?.weight_unit) || "kg";
+    useUserStore((state) => state.profile?.weight_unit) || "kg";
 
   const isCardioExercise = (exercise: full_gym_exercises) =>
     exercise.gym_exercises.main_group.toLowerCase() === "cardio";

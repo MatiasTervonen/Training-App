@@ -1,3 +1,6 @@
+Need to install the following packages:
+supabase@2.70.5
+Ok to proceed? (y) 
 export type Json =
   | string
   | number
@@ -132,6 +135,59 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      activity_session_stats: {
+        Row: {
+          avg_pace: number | null
+          avg_speed: number | null
+          calories: number | null
+          created_at: string | null
+          distance_meters: number | null
+          duration_seconds: number
+          elevation_gain: number | null
+          id: string
+          max_speed: number | null
+          session_id: string
+          steps: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          avg_pace?: number | null
+          avg_speed?: number | null
+          calories?: number | null
+          created_at?: string | null
+          distance_meters?: number | null
+          duration_seconds: number
+          elevation_gain?: number | null
+          id?: string
+          max_speed?: number | null
+          session_id: string
+          steps?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          avg_pace?: number | null
+          avg_speed?: number | null
+          calories?: number | null
+          created_at?: string | null
+          distance_meters?: number | null
+          duration_seconds?: number
+          elevation_gain?: number | null
+          id?: string
+          max_speed?: number | null
+          session_id?: string
+          steps?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activity_session_stats_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: true
+            referencedRelation: "activity_session"
             referencedColumns: ["id"]
           },
         ]
@@ -419,6 +475,82 @@ export type Database = {
           },
         ]
       }
+      feed_items: {
+        Row: {
+          created_at: string
+          extra_fields: Json
+          id: string
+          occurred_at: string
+          source_id: string
+          title: string
+          type: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          extra_fields?: Json
+          id?: string
+          occurred_at: string
+          source_id: string
+          title: string
+          type: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          extra_fields?: Json
+          id?: string
+          occurred_at?: string
+          source_id?: string
+          title?: string
+          type?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feed_items_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      feed_pins: {
+        Row: {
+          expires_at: string | null
+          feed_item_id: string
+          id: string
+          pinned_at: string
+          user_id: string
+        }
+        Insert: {
+          expires_at?: string | null
+          feed_item_id: string
+          id?: string
+          pinned_at?: string
+          user_id?: string
+        }
+        Update: {
+          expires_at?: string | null
+          feed_item_id?: string
+          id?: string
+          pinned_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feed_pins_feed_item_id_fkey"
+            columns: ["feed_item_id"]
+            isOneToOne: false
+            referencedRelation: "feed_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       friend_requests: {
         Row: {
           created_at: string
@@ -515,7 +647,7 @@ export type Database = {
           notify_at: string
           seen_at?: string | null
           title: string
-          type: string
+          type?: string
           updated_at?: string | null
           user_id?: string
         }
@@ -953,26 +1085,33 @@ export type Database = {
       pinned_items: {
         Row: {
           created_at: string
+          feed_item_id: string
           id: string
-          item_id: string
           type: string
           user_id: string
         }
         Insert: {
           created_at?: string
+          feed_item_id: string
           id?: string
-          item_id: string
           type: string
           user_id?: string
         }
         Update: {
           created_at?: string
+          feed_item_id?: string
           id?: string
-          item_id?: string
           type?: string
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "pinned_items_feed_item_id_fkey"
+            columns: ["feed_item_id"]
+            isOneToOne: false
+            referencedRelation: "feed_items"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "pinned_items_user_id_fkey"
             columns: ["user_id"]
@@ -1397,8 +1536,167 @@ export type Database = {
       }
     }
     Functions: {
+      activities_save_activity: {
+        Args: {
+          p_activity_id: string
+          p_duration: number
+          p_end_time: string
+          p_notes: string
+          p_start_time: string
+          p_title: string
+          p_track: Json
+        }
+        Returns: string
+      }
       get_jwt: { Args: never; Returns: Json }
+      gym_edit_template: {
+        Args: { p_exercises: Json; p_id: string; p_name: string }
+        Returns: string
+      }
+      gym_save_session:
+        | {
+            Args: {
+              p_duration: number
+              p_exercises: Json
+              p_notes: string
+              p_title: string
+            }
+            Returns: string
+          }
+        | {
+            Args: {
+              p_duration: number
+              p_exercises: Json
+              p_notes: string
+              p_occured_at: string
+              p_title: string
+            }
+            Returns: string
+          }
+        | {
+            Args: {
+              p_duration: number
+              p_exercises: Json
+              p_notes: string
+              p_start_timestamp: number
+              p_title: string
+            }
+            Returns: string
+          }
+      gym_save_template: {
+        Args: { p_exercises: Json; p_name: string }
+        Returns: string
+      }
       last_30d_analytics: { Args: { uid: string }; Returns: Json }
+      notes_edit_note: {
+        Args: {
+          p_id: string
+          p_notes: string
+          p_title: string
+          p_updated_at: string
+        }
+        Returns: string
+      }
+      notes_save_note: {
+        Args: { p_notes: string; p_title: string }
+        Returns: string
+      }
+      reminders_delete_local_reminder: {
+        Args: { p_id: string }
+        Returns: undefined
+      }
+      reminders_edit_global_reminder:
+        | {
+            Args: {
+              p_delivered: boolean
+              p_id: string
+              p_notes: string
+              p_notify_at: string
+              p_seen_at: string
+              p_title: string
+              p_type: string
+              p_updated_at: string
+            }
+            Returns: string
+          }
+        | {
+            Args: {
+              p_delivered: boolean
+              p_id: string
+              p_notes: string
+              p_notify_at: string
+              p_seen_at: string
+              p_title: string
+              p_updated_at: string
+            }
+            Returns: string
+          }
+      reminders_edit_local_reminder: {
+        Args: {
+          p_id: string
+          p_notes: string
+          p_notify_at_time: string
+          p_notify_date: string
+          p_seen_at: string
+          p_title: string
+          p_type: string
+          p_updated_at: string
+          p_weekdays: Json
+        }
+        Returns: string
+      }
+      reminders_save_global_reminder: {
+        Args: {
+          p_notes: string
+          p_notify_at: string
+          p_title: string
+          p_type: string
+        }
+        Returns: string
+      }
+      reminders_save_local_reminder: {
+        Args: {
+          p_notes: string
+          p_notify_at_time: string
+          p_notify_date: string
+          p_title: string
+          p_type: string
+          p_weekdays: number[]
+        }
+        Returns: string
+      }
+      todo_check_todo: {
+        Args: { p_list_id: string; p_todo_tasks: Json; p_updated_at: string }
+        Returns: string
+      }
+      todo_edit_todo: {
+        Args: {
+          p_deleted_ids: string[]
+          p_id: string
+          p_tasks: Json
+          p_title: string
+          p_updated_at: string
+        }
+        Returns: string
+      }
+      todo_save_todo: {
+        Args: { p_title: string; p_todo_list: Json }
+        Returns: string
+      }
+      weight_edit_weight: {
+        Args: {
+          p_id: string
+          p_notes: string
+          p_title: string
+          p_updated_at: string
+          p_weight: number
+        }
+        Returns: string
+      }
+      weight_save_weight: {
+        Args: { p_notes: string; p_title: string; p_weight: number }
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never

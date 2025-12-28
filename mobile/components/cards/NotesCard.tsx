@@ -7,15 +7,10 @@ import { View, TouchableOpacity } from "react-native";
 import AppText from "../AppText";
 import DropdownMenu from "../DropdownMenu";
 import { formatDate } from "@/lib/formatDate";
-import { notes } from "@/types/models";
+import { FeedCardProps } from "@/types/session";
 
-type Props = {
-  item: notes;
-  pinned: boolean;
-  onTogglePin: () => void;
-  onDelete: () => void;
-  onExpand: () => void;
-  onEdit: () => void;
+type notesPayload = {
+  notes: string;
 };
 
 export default function NotesCard({
@@ -25,7 +20,9 @@ export default function NotesCard({
   onDelete,
   onExpand,
   onEdit,
-}: Props) {
+}: FeedCardProps) {
+  const payload = item.extra_fields as notesPayload;
+
   return (
     <View
       className={`
@@ -58,14 +55,14 @@ export default function NotesCard({
           />
         </View>
 
-        {item.notes && (
+        {payload.notes && (
           <AppText
             className={`ml-4 mr-5  ${
               pinned ? "text-slate-900" : "text-gray-100"
             }`}
             numberOfLines={2}
           >
-            {item.notes}
+            {payload.notes}
           </AppText>
         )}
 

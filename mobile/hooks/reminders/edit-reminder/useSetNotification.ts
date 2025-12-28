@@ -1,27 +1,29 @@
 import { Platform } from "react-native";
 import * as Notifications from "expo-notifications";
 import { handleError } from "@/utils/handleError";
-import { full_reminder } from "@/types/session";
+import { FeedItemUI } from "@/types/session";
 
 export default function useSetNotification({
   notifyAt,
   title,
-  notes,
   reminder,
+  notes,
   weekdays,
+  type,
 }: {
   notifyAt: Date;
+  reminder: FeedItemUI;
   title: string;
   notes: string;
-  reminder: full_reminder;
   weekdays: number[];
+  type: "weekly" | "daily" | "one-time";
 }) {
   const scheduleNotifications = async () => {
     try {
-      if (reminder.type === "one-time") {
+      if (type === "one-time") {
         const id = await Notifications.scheduleNotificationAsync({
           content: {
-            title: title,
+            title,
             body: notes || "",
             sound: true,
             data: { reminderId: reminder.id },
@@ -29,7 +31,7 @@ export default function useSetNotification({
           trigger: { type: "date", date: notifyAt } as any,
         });
         return id;
-      } else if (reminder.type === "daily") {
+      } else if (type === "daily") {
         const hour = notifyAt.getHours();
         const minute = notifyAt.getMinutes();
 
@@ -50,7 +52,7 @@ export default function useSetNotification({
 
         const id = await Notifications.scheduleNotificationAsync({
           content: {
-            title: title,
+            title,
             body: notes || "",
             sound: true,
             data: { reminderId: reminder.id },
@@ -58,7 +60,7 @@ export default function useSetNotification({
           trigger,
         });
         return id;
-      } else if (reminder.type === "weekly") {
+      } else if (type === "weekly") {
         const hour = notifyAt.getHours();
         const minute = notifyAt.getMinutes();
 
@@ -81,7 +83,7 @@ export default function useSetNotification({
 
             return Notifications.scheduleNotificationAsync({
               content: {
-                title: title,
+                title,
                 body: notes || "",
                 sound: true,
                 data: { reminderId: reminder.id },

@@ -4,11 +4,18 @@ import { View } from "react-native";
 import AppText from "../AppText";
 import PageContainer from "../PageContainer";
 import LinkButton from "../buttons/LinkButton";
-import { weight } from "@/types/models";
+import { FeedItemUI } from "@/types/session";
 
-export default function WeightSession(weight: weight) {
+type weightPayload = {
+  weight: number;
+  notes: string;
+};
+
+export default function WeightSession(weight: FeedItemUI) {
+  const payload = weight.extra_fields as weightPayload;
+
   const weightUnit =
-    useUserStore((state) => state.preferences?.weight_unit) || "kg";
+    useUserStore((state) => state.profile?.weight_unit) || "kg";
 
   return (
     <PageContainer>
@@ -21,13 +28,13 @@ export default function WeightSession(weight: weight) {
         </AppText>
         <View className="whitespace-pre-wrap break-words overflow-hidden max-w-full bg-slate-900 p-4 rounded-md shadow-md mt-5">
           <View className="flex flex-col">
-            {weight.notes && (
+            {payload.notes && (
               <AppText className="mb-5 text-lg text-center">
-                {weight.notes}
+                {payload.notes}
               </AppText> // Add gap only if notes exist
             )}
             <AppText className="text-center text-xl">
-              {weight.weight} {weightUnit}
+              {payload.weight} {weightUnit}
             </AppText>
           </View>
         </View>

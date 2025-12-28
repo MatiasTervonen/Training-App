@@ -2,12 +2,11 @@ import { useState } from "react";
 import SaveButton from "../buttons/SaveButton";
 import FullScreenLoader from "../FullScreenLoader";
 import Toast from "react-native-toast-message";
-import { full_todo_session } from "../../types/models";
+import { full_todo_session_optional_id } from "../../types/models";
 import { editTodo } from "@/database/todo/edit-todo";
 import SubNotesInput from "../SubNotesInput";
 import AppInput from "../AppInput";
 import AnimatedButton from "../buttons/animatedButton";
-import { randomUUID } from "expo-crypto";
 import { View, ScrollView } from "react-native";
 import AppText from "../AppText";
 import PageContainer from "../PageContainer";
@@ -15,14 +14,16 @@ import { confirmAction } from "@/lib/confirmAction";
 import { Dot } from "lucide-react-native";
 
 type Props = {
-  todo_session: full_todo_session;
+  todo_session: full_todo_session_optional_id;
   onClose: () => void;
   onSave?: () => void;
 };
 
 type Task = {
   task: string;
-  notes: string;
+  notes?: string;
+  position: number;
+  updated_at: string;
 };
 
 export default function EditTodo({ todo_session, onClose, onSave }: Props) {
@@ -49,7 +50,7 @@ export default function EditTodo({ todo_session, onClose, onSave }: Props) {
       todo_tasks: [
         ...prev.todo_tasks,
         {
-          id: randomUUID(),
+          id: null,
           task: "",
           notes: "",
           created_at: new Date().toISOString(),
@@ -73,7 +74,8 @@ export default function EditTodo({ todo_session, onClose, onSave }: Props) {
     setSessionData((prev) => {
       const updatedTasks = prev.todo_tasks[index];
 
-      if (updatedTasks?.id) setDeletedIds((ids) => [...ids, updatedTasks.id]);
+      if (updatedTasks?.id)
+        setDeletedIds((ids) => [...ids, updatedTasks.id as string]);
 
       const todo_tasks = prev.todo_tasks.filter((_, i) => i !== index);
       return { ...prev, todo_tasks };
@@ -84,7 +86,7 @@ export default function EditTodo({ todo_session, onClose, onSave }: Props) {
 
   const handleSave = async () => {
     const hasEmptyTasks = sessionData.todo_tasks.some(
-      (task) => task.task.trim().length === 0,
+      (task) => task.task.trim().length === 0
     );
 
     if (hasEmptyTasks) {
@@ -102,10 +104,12 @@ export default function EditTodo({ todo_session, onClose, onSave }: Props) {
       await editTodo({
         id: sessionData.id,
         title: sessionData.title,
-        tasks: sessionData.todo_tasks.map((task) => ({
-          id: task.id,
+        tasks: sessionData.todo_tasks.map((task, index) => ({
+          id: task.id ?? null,
           task: task.task,
           notes: task.notes ?? undefined,
+          position: index,
+          updated_at: updated,
         })),
         deletedIds,
         updated_at: updated,

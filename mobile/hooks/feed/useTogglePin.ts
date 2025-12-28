@@ -9,24 +9,17 @@ export default function useTogglePin() {
 
   const togglePin = async (
     id: string,
-    table:
-      | "notes"
-      | "gym_sessions"
-      | "weight"
-      | "todo_lists"
-      | "global_reminders"
-      | "local_reminders"
-      | "activity_session",
-    isPinned: boolean
+    type: string,
+    feed_context: "pinned" | "feed"
   ) => {
     const feedData = queryClient.getQueryData<FeedData>(["feed"]);
 
     const pinnedFeed =
       feedData?.pages
         .flatMap((page) => page.feed)
-        .filter((item) => item.pinned) ?? [];
+        .filter((item) => item.feed_context === "pinned") ?? [];
 
-    if (!isPinned && pinnedFeed.length >= 10) {
+    if (feed_context === "feed" && pinnedFeed.length >= 10) {
       Toast.show({
         type: "error",
         text1: "Error",
@@ -48,24 +41,29 @@ export default function useTogglePin() {
         pages: oldData.pages.map((page) => ({
           ...page,
           feed: page.feed.map((feedItem) =>
-            feedItem.id === id ? { ...feedItem, pinned: !isPinned } : feedItem
+            feedItem.id === id
+              ? {
+                  ...feedItem,
+                  feed_context: feed_context === "pinned" ? "feed" : "pinned",
+                }
+              : feedItem
           ),
         })),
       };
     });
 
     try {
-      if (isPinned) {
-        await unpinItem({ id, table });
+      if (feed_context === "pinned") {
+        await unpinItem({ id, type });
       } else {
-        await pinItem({ id, table });
+        await pinItem({ id, type });
       }
 
       Toast.show({
         type: "success",
-        text1: isPinned ? "Unpinned" : "Pinned",
+        text1: feed_context === "pinned" ? "Unpinned" : "Pinned",
         text2: `Item has been ${
-          isPinned ? "unpinned" : "pinned"
+          feed_context === "pinned" ? "unpinned" : "pinned"
         } successfully.`,
       });
     } catch {

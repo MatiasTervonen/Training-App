@@ -29,20 +29,17 @@ export async function saveActivitySession({
   track,
   activityId,
 }: props) {
-  const { data, error } = await supabase
-    .from("activity_session")
-    .insert({
-      title,
-      notes,
-      duration,
-      start_time,
-      end_time,
-      activity_id: activityId,
-    })
-    .select("id")
-    .single();
+  const { error } = await supabase.rpc("activities_save_activity", {
+    p_title: title,
+    p_notes: notes,
+    p_duration: duration,
+    p_start_time: start_time,
+    p_end_time: end_time,
+    p_track: track,
+    p_activity_id: activityId,
+  });
 
-  if (error || !data) {
+  if (error) {
     handleError(error, {
       message: "Error saving activity session",
       route: "/database/activities/save-session",
@@ -51,29 +48,5 @@ export async function saveActivitySession({
     throw new Error("Error saving activity session");
   }
 
-  const pointsData = track.map(
-    ({ latitude, longitude, timestamp, accuracy, altitude }) => ({
-      session_id: data.id,
-      recorded_at: new Date(timestamp).toISOString(),
-      latitude,
-      longitude,
-      accuracy,
-      altitude,
-    })
-  );
-
-  const { error: pointsError } = await supabase
-    .from("activity_gps_points")
-    .insert(pointsData);
-
-  if (pointsError) {
-    handleError(pointsError, {
-      message: "Error saving activity gps points",
-      route: "/database/activities/save-session",
-      method: "POST",
-    });
-    throw new Error("Error saving activity gps points");
-  }
-
-  return data;
+  return { success: true };
 }

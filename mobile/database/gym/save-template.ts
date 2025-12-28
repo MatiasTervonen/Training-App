@@ -15,46 +15,20 @@ export async function saveTemplate({
   exercises: gym_template_exercises[];
   name: string;
 }) {
-  const { data: template, error: templateError } = await supabase
-    .from("gym_templates")
-    .insert([
-      {
-        name,
-      },
-    ])
-    .select()
-    .single();
+  const { error } = await supabase.rpc("gym_save_template", {
+    p_exercises: exercises,
+    p_name: name,
+  });
 
-  if (templateError || !template) {
-    handleError(templateError, {
-      message: "Error creating template",
+  if (error) {
+    console.log("error saving template", error);
+    handleError(error, {
+      message: "Error saving template",
       route: "/database/gym/save-template",
       method: "POST",
     });
-    throw new Error("Error creating template");
+    throw new Error("Error saving template");
   }
 
-  const templateExercises = exercises.map(
-    (ex: gym_template_exercises, index: number) => ({
-      template_id: template.id,
-      exercise_id: ex.exercise_id,
-      position: index,
-      superset_id: ex.superset_id,
-    }),
-  );
-
-  const { error: templateExerciseError } = await supabase
-    .from("gym_template_exercises")
-    .insert(templateExercises);
-
-  if (templateExerciseError) {
-    handleError(templateExerciseError, {
-      message: "Error inserting template exercises",
-      route: "/database/gym/save-template",
-      method: "POST",
-    });
-    throw new Error("Error inserting template exercises");
-  }
-
-  return template.id;
+  return { success: true };
 }

@@ -51,9 +51,9 @@ export default function PinnedCarousel({
         autoPlayInterval={2000}
         autoPlay={pinnedFeed.length > 1}
         renderItem={({ item: feedItem }) => (
-          <View key={`${feedItem.table}-${feedItem.item.id}`} className="px-4">
+          <View key={`${feedItem.type}-${feedItem.id}`} className="px-4">
             <FeedCard
-              {...feedItem}
+              item={feedItem}
               pinned={true}
               onExpand={() => onExpand(feedItem)}
               onTogglePin={() => onTogglePin(feedItem)}

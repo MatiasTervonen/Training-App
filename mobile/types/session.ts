@@ -1,13 +1,10 @@
+import { feed_items } from "./models";
+
 export type Template = {
   id: string;
   name: string;
   created_at: string;
   gym_template_exercises: TemplateExercise[];
-};
-
-export type OptimisticTemplate = {
-  id: string;
-  name: string;
 };
 
 export type TemplateExercise = {
@@ -75,37 +72,14 @@ export type ExerciseInput = {
   distance_meters?: string;
 };
 
-export type Feed_item = {
-  id: string;
-  item_id?: string;
-  type:
-    | "notes"
-    | "weight"
-    | "gym_sessions"
-    | "todo_lists"
-    | "global_reminders"
-    | "local_reminders"
-    | "activity_session";
-  created_at: string;
-  notes?: string | null;
-  title?: string | null;
-  weight?: number | null;
-  duration?: number | null;
-  user_id: string;
-  pinned: boolean;
-  pinned_at?: string | null;
-  notify_at?: string | Date | null;
-  seen_at?: string | null;
-  notify_date?: string | Date | null;
-  notify_at_time?: string | null;
-  notification_id?: string[] | string | null;
-  delivered?: boolean | null;
+export type FeedItemUI = feed_items & {
+  feed_context: "pinned" | "feed";
 };
 
 export type FeedData = {
   pageParams: any[];
   pages: {
-    feed: Feed_item[];
+    feed: FeedItemUI[];
     nextPage?: number;
   }[];
 };
@@ -161,4 +135,13 @@ export type Location = {
   speed: number | null;
   heading: number | null;
   timestamp: number;
+};
+
+export type FeedCardProps = {
+  item: FeedItemUI;
+  pinned: boolean;
+  onTogglePin: () => void;
+  onDelete: () => void;
+  onExpand: () => void;
+  onEdit: () => void;
 };

@@ -10,68 +10,38 @@ type TodoListEdit = {
 };
 
 type TodoTaskEdit = {
-  id: string;
+  id: string | null;
   task: string;
   notes?: string;
+  position: number;
+  updated_at: string;
 };
 
 export async function editTodo({
-  id: listId,
+  id,
   title,
   tasks,
   deletedIds,
   updated_at,
 }: TodoListEdit) {
-  const { error: listError } = await supabase
-    .from("todo_lists")
-    .update({ title, updated_at })
-    .eq("id", listId);
+  console.log("tasks", tasks);
 
-  if (listError) {
-    handleError(listError, {
+  const { error } = await supabase.rpc("todo_edit_todo", {
+    p_id: id,
+    p_title: title,
+    p_tasks: tasks,
+    p_deleted_ids: deletedIds,
+    p_updated_at: updated_at,
+  });
+
+  if (error) {
+    console.error("Error editing todo", error);
+    handleError(error, {
       message: "Error editing todo list",
-      route: "/database/to/edit-todo",
-      method: "UPDATE",
+      route: "/database/todo/edit-todo",
+      method: "RPC",
     });
     throw new Error("Error editing todo list");
-  }
-
-  const upsertedTasks = tasks.map((task: TodoTaskEdit, index) => ({
-    id: task.id,
-    list_id: listId,
-    task: task.task,
-    notes: task.notes ?? null,
-    position: index,
-  }));
-
-  const { error: taskError } = await supabase
-    .from("todo_tasks")
-    .upsert(upsertedTasks, { onConflict: "id" });
-
-  if (taskError) {
-    handleError(listError, {
-      message: "Error editing todo task",
-      route: "/database/to/edit-todo",
-      method: "UPDATE",
-    });
-    throw new Error("Error editing todo task");
-  }
-
-  if (deletedIds && deletedIds.length > 0) {
-    const { error: deleteError } = await supabase
-      .from("todo_tasks")
-      .delete()
-      .in("id", deletedIds)
-      .eq("list_id", listId);
-
-    if (deleteError) {
-      handleError(listError, {
-        message: "Error deleting todo tasks",
-        route: "/database/to/edit-todo",
-        method: "UPDATE",
-      });
-      throw new Error("Error deleting todo tasks");
-    }
   }
 
   return { success: true };

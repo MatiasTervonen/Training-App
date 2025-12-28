@@ -1,6 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import { handleError } from "@/utils/handleError";
-import * as Crypto from "expo-crypto";
+import { useTimerStore } from "@/lib/stores/timerStore";
 
 type props = {
   title: string;
@@ -26,81 +26,26 @@ export async function saveSession({
   duration,
   title,
 }: props) {
-  const { data: sessionData, error: sessionError } = await supabase
-    .from("gym_sessions")
-    .insert([
-      {
-        title,
-        notes,
-        duration,
-      },
-    ])
-    .select()
-    .single();
+  const occured_at = new Date(
+    useTimerStore.getState().activeSession?.started_at ?? Date.now()
+  ).toISOString();
 
-  if (sessionError || !sessionData) {
-    handleError(sessionError, {
-      message: "Error creating session",
+  const { error } = await supabase.rpc("gym_save_session", {
+    p_exercises: exercises,
+    p_notes: notes,
+    p_duration: duration,
+    p_title: title,
+    p_occured_at: occured_at,
+  });
+
+  if (error) {
+    console.log("error saving session", error);
+    handleError(error, {
+      message: "Error saving session",
       route: "/database/gym/save-session",
       method: "POST",
     });
-    throw new Error("Error creating session");
-  }
-
-  const sessionId = sessionData.id;
-
-  const sessionExercises = [];
-  const sets = [];
-
-  for (const [index, ex] of exercises.entries()) {
-    const supersetId = ex.superset_id ?? null;
-
-    const sessionExerciseId = Crypto.randomUUID();
-
-    sessionExercises.push({
-      id: sessionExerciseId,
-      session_id: sessionId,
-      exercise_id: ex.exercise_id,
-      position: index,
-      superset_id: supersetId ?? null,
-      notes: ex.notes ?? null,
-    });
-
-    for (const [setIndex, set] of ex.sets.entries()) {
-      sets.push({
-        session_exercise_id: sessionExerciseId,
-        weight: set.weight,
-        reps: set.reps,
-        rpe: set.rpe,
-        set_number: setIndex,
-        time_min: set.time_min,
-        distance_meters: set.distance_meters,
-      });
-    }
-  }
-
-  const { error: seError } = await supabase
-    .from("gym_session_exercises")
-    .insert(sessionExercises);
-
-  if (seError) {
-    handleError(seError, {
-      message: "Error inserting session exercises",
-      route: "/database/gym/save-session",
-      method: "POST",
-    });
-    throw new Error("Error inserting session exercises");
-  }
-
-  const { error: setsError } = await supabase.from("gym_sets").insert(sets);
-
-  if (setsError) {
-    handleError(setsError, {
-      message: "Error inserting sets",
-      route: "/database/gym/save-session",
-      method: "POST",
-    });
-    throw new Error("Error inserting sets");
+    throw new Error("Error saving session");
   }
 
   return { success: true };

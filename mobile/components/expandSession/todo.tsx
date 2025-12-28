@@ -78,13 +78,11 @@ export default function TodoSession({
     try {
       await checkedTodo({
         updated_at: updated,
-        listId: sessionData.id,
-        todo_tasks: sessionData.todo_tasks.map((task, index) => ({
-          id: task.id,
+        list_id: sessionData.id,
+        todo_tasks: sessionData.todo_tasks.map((task) => ({
+          id: task.id ?? null,
           list_id: task.list_id,
-          task: task.task,
           is_completed: task.is_completed,
-          position: index,
         })),
       });
 

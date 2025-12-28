@@ -6,20 +6,14 @@ import {
 } from "lucide-react-native";
 import DropdownMenu from "../DropdownMenu";
 import { formatDate } from "@/lib/formatDate";
-import { todo_lists, full_todo_session } from "@/types/models";
 import { View } from "react-native";
 import AppText from "../AppText";
 import AnimatedButton from "../buttons/animatedButton";
-import { useQuery } from "@tanstack/react-query";
-import { getFullTodoSession } from "@/database/todo/get-full-todo";
+import { FeedCardProps } from "@/types/session";
 
-type Props = {
-  item: todo_lists;
-  pinned: boolean;
-  onTogglePin: () => void;
-  onDelete: () => void;
-  onExpand: () => void;
-  onEdit: () => void;
+type todoPayload = {
+  completed: number;
+  total: number;
 };
 
 export default function TodoCard({
@@ -29,20 +23,8 @@ export default function TodoCard({
   onDelete,
   onExpand,
   onEdit,
-}: Props) {
-  // Use Full-todo-session from cache. Prefetched when feed loads.
-
-  const { data: fullTodo } = useQuery<full_todo_session>({
-    queryKey: ["fullTodoSession", item.id],
-    queryFn: () => getFullTodoSession(item.id),
-    enabled: false,
-  });
-
-  const total = fullTodo?.todo_tasks.length;
-
-  const completed = fullTodo
-    ? fullTodo.todo_tasks.filter((t) => t.is_completed).length
-    : 0;
+}: FeedCardProps) {
+  const payload = item.extra_fields as todoPayload;
 
   return (
     <View
@@ -76,14 +58,12 @@ export default function TodoCard({
         </View>
 
         <View className="flex-row gap-2 items-center">
-          {fullTodo && (
-            <AppText
-              className={`ml-4 ${pinned ? "text-slate-900" : "text-gray-100"}`}
-            >
-              completed: {completed} / {total}
-            </AppText>
-          )}
-          {completed === total && <Check color="#22c55e" />}
+          <AppText
+            className={`ml-4 ${pinned ? "text-slate-900" : "text-gray-100"}`}
+          >
+            completed: {payload.completed} / {payload.total}
+          </AppText>
+          {payload.completed === payload.total && <Check color="#22c55e" />}
         </View>
 
         {item.updated_at ? (

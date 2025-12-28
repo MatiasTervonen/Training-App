@@ -3,7 +3,7 @@ import { full_reminder } from "@/types/session";
 import { useQueryClient } from "@tanstack/react-query";
 import * as Notifications from "expo-notifications";
 import DeleteReminder from "@/database/reminders/delete-global-reminder";
-import DeleteCustomReminder from "@/database/reminders/delete-local-reminder";
+import DeleteLocalReminder from "@/database/reminders/delete-local-reminder";
 import Toast from "react-native-toast-message";
 
 export default function useDeleteReminder() {
@@ -40,7 +40,7 @@ export default function useDeleteReminder() {
       if (reminder.type === "global") {
         await DeleteReminder(reminder.id);
       } else {
-        await DeleteCustomReminder(reminder.id);
+        await DeleteLocalReminder(reminder.id);
       }
 
       queryClient.refetchQueries({ queryKey: ["feed"], exact: true });

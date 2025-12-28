@@ -8,15 +8,11 @@ import { formatDate, formatDateTime } from "@/lib/formatDate";
 import { View, TouchableOpacity } from "react-native";
 import AppText from "../AppText";
 import DropdownMenu from "../DropdownMenu";
-import { full_reminder } from "@/types/session";
+import { FeedCardProps } from "@/types/session";
 
-type Props = {
-  item: full_reminder;
-  pinned: boolean;
-  onTogglePin: () => void;
-  onDelete: () => void;
-  onExpand: () => void;
-  onEdit: () => void;
+type reminderPayload = {
+  notify_at: string;
+  delivered: boolean;
 };
 
 export default function GlobalReminderCard({
@@ -26,7 +22,9 @@ export default function GlobalReminderCard({
   onDelete,
   onExpand,
   onEdit,
-}: Props) {
+}: FeedCardProps) {
+  const payload = item.extra_fields as reminderPayload;
+
   return (
     <View
       className={`
@@ -63,12 +61,12 @@ export default function GlobalReminderCard({
 
         <View className="ml-4 mr-5 flex-row items-center gap-2">
           <AppText className={`${pinned ? "text-slate-900" : "text-gray-100"}`}>
-            {formatDateTime(item.notify_at!)}
+            {formatDateTime(payload.notify_at)}
           </AppText>
           <Bell size={20} color={pinned ? "#0f172a" : "#f3f4f6"} />
         </View>
 
-        {item.delivered ? (
+        {payload.delivered ? (
           <View className="flex-row items-center gap-2 ml-4 bg-gray-900 rounded-md px-2 self-start">
             <Check size={30} color="#4ade80" />
             <AppText className="text-gray-100">Delivered</AppText>

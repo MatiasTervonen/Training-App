@@ -8,19 +8,26 @@ import AppText from "../AppText";
 import { View, TouchableWithoutFeedback, Keyboard } from "react-native";
 import { editNotes } from "@/database/notes/edit-notes";
 import PageContainer from "../PageContainer";
-import { notes } from "@/types/models";
+
 import { Dot } from "lucide-react-native";
+import { FeedItemUI } from "@/types/session";
 
 type Props = {
-  note: notes;
+  note: FeedItemUI;
   onClose: () => void;
   onSave?: () => void;
 };
 
+type notesPayload = {
+  notes: string;
+};
+
 export default function EditNotes({ note, onClose, onSave }: Props) {
+  const payload = note.extra_fields as unknown as notesPayload;
+
   const [originalData] = useState(note);
   const [title, setValue] = useState(note.title);
-  const [notes, setNotes] = useState(note.notes);
+  const [notes, setNotes] = useState(payload.notes);
   const [isSaving, setIsSaving] = useState(false);
 
   const currentData = {
@@ -35,7 +42,12 @@ export default function EditNotes({ note, onClose, onSave }: Props) {
     setIsSaving(true);
 
     try {
-      await editNotes({ id: note.id, title, notes, updated_at: updated });
+      await editNotes({
+        id: note.source_id,
+        title,
+        notes,
+        updated_at: updated,
+      });
 
       await onSave?.();
       onClose();
@@ -79,6 +91,7 @@ export default function EditNotes({ note, onClose, onSave }: Props) {
           </View>
           <View className="flex-1">
             <NotesInput
+              className="min-h-[120px]"
               value={notes || ""}
               setValue={setNotes}
               placeholder="Write your notes here..."

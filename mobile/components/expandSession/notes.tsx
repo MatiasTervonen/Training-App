@@ -3,9 +3,15 @@ import { View, ScrollView } from "react-native";
 import AppText from "../AppText";
 import CopyText from "../CopyToClipboard";
 import PageContainer from "../PageContainer";
-import { notes } from "@/types/models";
+import { FeedItemUI } from "@/types/session";
 
-export default function NotesSession(notes: notes) {
+type notesPayload = {
+  notes: string;
+};
+
+export default function NotesSession(notes: FeedItemUI) {
+  const payload = notes.extra_fields as notesPayload;
+
   return (
     <ScrollView>
       <PageContainer className="mb-10">
@@ -21,10 +27,10 @@ export default function NotesSession(notes: notes) {
           <AppText className="text-xl text-center mb-5 border-b border-gray-700 pb-2">
             {notes.title}
           </AppText>
-          <AppText className="text-lg  text-left">{notes.notes}</AppText>
+          <AppText className="text-lg  text-left">{payload.notes}</AppText>
         </View>
         <View className="mt-10">
-          <CopyText textToCopy={notes.notes!} />
+          <CopyText textToCopy={payload.notes} />
         </View>
       </PageContainer>
     </ScrollView>

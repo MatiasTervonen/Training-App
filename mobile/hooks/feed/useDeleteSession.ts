@@ -4,15 +4,12 @@ import { DeleteSession } from "@/database/feed/deleteSession";
 import Toast from "react-native-toast-message";
 import * as Notifications from "expo-notifications";
 import { FeedData } from "@/types/session";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function useDeleteSession() {
   const queryClient = useQueryClient();
 
-  const handleDelete = async (
-    notification_id: string[] | string | null,
-    id: string,
-    table: string,
-  ) => {
+  const handleDelete = async (id: string, type: string) => {
     const confirmed = await confirmAction({
       title: "Are you sure you want to delete this session?",
     });
@@ -28,39 +25,43 @@ export default function useDeleteSession() {
       if (!oldData) return oldData;
 
       const newPages = oldData.pages.map((page) => {
-        const newFeed = page.feed.filter((feedItem) => feedItem.id !== id);
+        const newFeed = page.feed.filter(
+          (feedItem) => feedItem.source_id !== id
+        );
         return { ...page, feed: newFeed };
       });
       return { ...oldData, pages: newPages };
     });
 
     try {
-      await DeleteSession(id, table);
+      if (type === "local_reminders") {
+        const stored = await AsyncStorage.getItem(`notification:${id}`);
 
-      if (table === "weight") {
+        if (stored) {
+          const ids: string[] = JSON.parse(stored);
+
+          for (const nid of ids) {
+            await Notifications.cancelScheduledNotificationAsync(nid);
+          }
+
+          await AsyncStorage.removeItem(`notification:${id}`);
+        }
+      }
+
+      await DeleteSession(id, type);
+
+      if (type === "weight") {
         queryClient.refetchQueries({
           queryKey: ["get-weight"],
           exact: true,
         });
       }
 
-      if (table === "global_reminders" || table === "local_reminders") {
+      if (type === "global_reminders" || type === "local_reminders") {
         queryClient.refetchQueries({
           queryKey: ["get-reminders"],
           exact: true,
         });
-      }
-
-      if (table === "local_reminders") {
-        const ids = Array.isArray(notification_id)
-          ? notification_id
-          : typeof notification_id === "string"
-            ? [notification_id]
-            : [];
-
-        for (const nid of ids) {
-          await Notifications.cancelScheduledNotificationAsync(nid);
-        }
       }
 
       Toast.show({

@@ -20,6 +20,31 @@ export type Friends = Pick<
   >;
 };
 
+// For editing todo sessions
+export type full_todo_session_optional_id = {
+  created_at: string;
+  id: string;
+  title: string;
+  updated_at: string | null;
+  user_id: string;
+} & {
+  todo_tasks: {
+    created_at: string;
+    id: string | null;
+    is_completed: boolean;
+    list_id: string;
+    notes: string | null;
+    position: number | null;
+    task: string;
+    updated_at: string | null;
+    user_id: string;
+  }[];
+};
+
+export type feed_items = Database["public"]["Tables"]["feed_items"]["Row"];
+
+export type pinned_items = Database["public"]["Tables"]["pinned_items"]["Row"];
+
 export type todo_tasks = Database["public"]["Tables"]["todo_tasks"]["Row"];
 
 export type todo_lists = Database["public"]["Tables"]["todo_lists"]["Row"];
@@ -92,68 +117,4 @@ export type full_gym_exercises = gym_session_exercises & {
 export type full_gym_session = gym_sessions & {
   gym_session_exercises: full_gym_exercises[];
 };
-
-export type FeedItem =
-  | {
-      table: "notes";
-      item: notes;
-      pinned: boolean;
-      onTogglePin: () => void;
-      onDelete: () => void;
-      onExpand: () => void;
-      onEdit: () => void;
-    }
-  | {
-      table: "gym_sessions";
-      item: gym_sessions;
-      pinned: boolean;
-      onTogglePin: () => void;
-      onDelete: () => void;
-      onExpand: () => void;
-      onEdit: () => void;
-    }
-  | {
-      table: "weight";
-      item: weight;
-      pinned: boolean;
-      onTogglePin: () => void;
-      onDelete: () => void;
-      onExpand: () => void;
-      onEdit: () => void;
-    }
-  | {
-      table: "todo_lists";
-      item: todo_lists;
-      pinned: boolean;
-      onTogglePin: () => void;
-      onDelete: () => void;
-      onExpand: () => void;
-      onEdit: () => void;
-    }
-  | {
-      table: "global_reminders";
-      item: global_reminders;
-      pinned: boolean;
-      onTogglePin: () => void;
-      onDelete: () => void;
-      onExpand: () => void;
-      onEdit: () => void;
-    }
-  | {
-      table: "local_reminders";
-      item: local_reminders;
-      pinned: boolean;
-      onTogglePin: () => void;
-      onDelete: () => void;
-      onExpand: () => void;
-      onEdit: () => void;
-    }
-  | {
-      table: "activity_session";
-      item: activity_session;
-      pinned: boolean;
-      onTogglePin: () => void;
-      onDelete: () => void;
-      onExpand: () => void;
-      onEdit: () => void;
-    };
+  

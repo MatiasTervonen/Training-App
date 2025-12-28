@@ -3,19 +3,11 @@ import { View, TouchableOpacity } from "react-native";
 import AppText from "../AppText";
 import DropdownMenu from "../DropdownMenu";
 import { formatDate } from "@/lib/formatDate";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { activity_session } from "@/types/models";
-import { getFullActivitySession } from "@/database/activities/get-full-activity-session";
+import { FeedCardProps } from "@/types/session";
 
-type Props = {
-  item: activity_session;
-  pinned: boolean;
-  onTogglePin: () => void;
-  onDelete: () => void;
-  onExpand: () => void;
-  onEdit: () => void;
+type activityPayload = {
+  duration: number;
 };
-
 export default function ActivityCard({
   item,
   pinned,
@@ -23,7 +15,9 @@ export default function ActivityCard({
   onDelete,
   onExpand,
   onEdit,
-}: Props) {
+}: FeedCardProps) {
+  const payload = item.extra_fields as activityPayload;
+
   const formatDuration = (seconds: number) => {
     const totalMinutes = Math.floor(seconds / 60);
     const hours = Math.floor(totalMinutes / 60);
@@ -34,20 +28,6 @@ export default function ActivityCard({
       return `${minutes}m`;
     }
   };
-
-  const queryClient = useQueryClient();
-  const cached = queryClient.getQueryData(["fullActivitySession", item.id]);
-
-  const { data } = useQuery<activity_session>({
-    queryKey: ["fullActivitySession", item.id],
-    queryFn: () => getFullActivitySession(item.id),
-    enabled: !!cached,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    refetchOnMount: false,
-    staleTime: Infinity,
-    gcTime: Infinity,
-  });
 
   return (
     <View
@@ -96,7 +76,7 @@ export default function ActivityCard({
             </AppText>
           </View>
           <AppText className={`${pinned ? "text-slate-900" : "text-gray-100"}`}>
-            {formatDuration(item.duration!)}
+            {formatDuration(payload.duration)}
           </AppText>
         </View>
         <TouchableOpacity

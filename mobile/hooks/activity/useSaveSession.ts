@@ -5,6 +5,7 @@ import { saveActivitySession } from "@/database/activities/save-session";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { TrackPoint } from "@/types/session";
 import { useStopGPStracking } from "@/components/activities/location-actions";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function useSaveActivitySession({
   title,
@@ -22,6 +23,7 @@ export default function useSaveActivitySession({
   resetSession: () => void;
 }) {
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const { stopGPStracking } = useStopGPStracking();
 
@@ -67,6 +69,8 @@ export default function useSaveActivitySession({
 
       // stop the GPS tracking
       await stopGPStracking();
+
+      await queryClient.refetchQueries({ queryKey: ["feed"], exact: true });
 
       resetSession();
       router.push("/dashboard");

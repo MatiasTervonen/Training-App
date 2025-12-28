@@ -1,4 +1,3 @@
-import { FeedItem } from "@/types/models";
 import { useEffect, useState } from "react";
 import AppText from "@/components/AppText";
 import {
@@ -25,19 +24,19 @@ import ReminderSession from "../expandSession/reminder";
 import useDeleteSession from "@/hooks/feed/useDeleteSession";
 import useTogglePin from "@/hooks/feed/useTogglePin";
 import useFeed from "@/hooks/feed/useFeed";
-import useFeedPrefetch from "@/hooks/feed/useFeedPrefetch";
 import useFullSessions from "@/hooks/feed/useFullSessions";
 import FeedHeader from "./FeedHeader";
 import FeedFooter from "./FeedFooter";
 import HandleEditLocalReminder from "../editSession/editLocalReminder";
 import { useAppReadyStore } from "@/lib/stores/appReadyStore";
+import { FeedItemUI } from "@/types/session";
 
 export default function SessionFeed() {
   const setFeedReady = useAppReadyStore((state) => state.setFeedReady);
   const feedReady = useAppReadyStore((state) => state.feedReady);
 
-  const [expandedItem, setExpandedItem] = useState<FeedItem | null>(null);
-  const [editingItem, setEditingItem] = useState<FeedItem | null>(null);
+  const [expandedItem, setExpandedItem] = useState<FeedItemUI | null>(null);
+  const [editingItem, setEditingItem] = useState<FeedItemUI | null>(null);
   const [refreshing, setRefreshing] = useState(false);
 
   const queryClient = useQueryClient();
@@ -54,11 +53,9 @@ export default function SessionFeed() {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-    pinnedFeed,
-    comingSoonFeed,
-    unpinnedFeed,
-    feed,
     isSuccess,
+    pinnedFeed,
+    unpinnedFeed,
   } = useFeed();
 
   useEffect(() => {
@@ -81,18 +78,11 @@ export default function SessionFeed() {
     GymSessionFull,
     GymSessionError,
     isLoadingGymSession,
-    LocalReminderFull,
-    LocalReminderError,
-    isLoadingLocalReminder,
     todoSessionFull,
     todoSessionError,
     isLoadingTodoSession,
     refetchFullTodo,
   } = useFullSessions(expandedItem, editingItem);
-
-  // prefetch full sessions when feed finishes loading
-
-  useFeedPrefetch(data);
 
   if (!feedReady) {
     return null;
@@ -113,7 +103,7 @@ export default function SessionFeed() {
         <AppText className="text-center text-lg mt-10 mx-auto">
           Failed to load sessions. Please try again later.
         </AppText>
-      ) : !data || feed.length === 0 ? (
+      ) : !data || (unpinnedFeed.length === 0 && pinnedFeed.length === 0) ? (
         <AppText className="text-center text-lg mt-20">
           No sessions yet. Let's get started!
         </AppText>
@@ -121,11 +111,10 @@ export default function SessionFeed() {
         <>
           <FlatList
             data={unpinnedFeed}
-            keyExtractor={(item) => item.item.id}
+            keyExtractor={(item) => item.id}
             contentContainerStyle={{
               paddingBottom: 100,
-              paddingTop:
-                pinnedFeed.length + comingSoonFeed.length === 0 ? 30 : 0,
+              paddingTop: pinnedFeed.length === 0 ? 30 : 0,
             }}
             showsHorizontalScrollIndicator={false}
             showsVerticalScrollIndicator={false}
@@ -148,34 +137,22 @@ export default function SessionFeed() {
             renderItem={({ item: feedItem }) => (
               <View className={`px-4 ${unpinnedFeed ? "pb-10" : ""}`}>
                 <FeedCard
-                  {...feedItem}
+                  item={feedItem as FeedItemUI}
                   pinned={false}
                   onExpand={() => {
                     setExpandedItem(feedItem);
                   }}
                   onTogglePin={() =>
-                    togglePin(feedItem.item.id, feedItem.table, false)
+                    togglePin(feedItem.id, feedItem.type, feedItem.feed_context)
                   }
                   onDelete={() => {
-                    const notificationId =
-                      feedItem.table === "local_reminders"
-                        ? ((feedItem.item.notification_id as
-                            | string
-                            | string[]
-                            | null) ?? null)
-                        : null;
-
-                    handleDelete(
-                      notificationId,
-                      feedItem.item.id,
-                      feedItem.table
-                    );
+                    handleDelete(feedItem.source_id, feedItem.type);
                   }}
                   onEdit={() => {
-                    if (feedItem.table === "gym_sessions") {
-                      router.push(`/training/gym/${feedItem.item.id}` as any);
+                    if (feedItem.type === "gym_sessions") {
+                      router.push(`/training/gym/${feedItem.source_id}` as any);
                     } else {
-                      setEditingItem(feedItem);
+                      setEditingItem({ ...feedItem, id: feedItem.source_id });
                     }
                   }}
                 />
@@ -184,7 +161,6 @@ export default function SessionFeed() {
             ListHeaderComponent={
               <FeedHeader
                 pinnedFeed={pinnedFeed}
-                comingSoonFeed={comingSoonFeed}
                 setExpandedItem={setExpandedItem}
                 setEditingItem={setEditingItem}
               />
@@ -205,17 +181,19 @@ export default function SessionFeed() {
           isOpen={!!expandedItem}
           onClose={() => setExpandedItem(null)}
         >
-          {expandedItem.table === "notes" && (
-            <NotesSession {...expandedItem.item} />
+          {expandedItem.type === "notes" && <NotesSession {...expandedItem} />}
+          {expandedItem.type === "weight" && (
+            <WeightSession {...expandedItem} />
           )}
-          {expandedItem.table === "weight" && (
-            <WeightSession {...expandedItem.item} />
-          )}
-          {expandedItem.table === "global_reminders" && (
-            <ReminderSession {...expandedItem.item} />
+          {expandedItem.type === "global_reminders" && (
+            <ReminderSession {...expandedItem} />
           )}
 
-          {expandedItem.table === "todo_lists" && (
+          {expandedItem.type === "local_reminders" && (
+            <ReminderSession {...expandedItem} />
+          )}
+
+          {expandedItem.type === "todo_lists" && (
             <>
               {isLoadingTodoSession ? (
                 <View className="gap-2 justify-center items-center pt-40">
@@ -241,36 +219,17 @@ export default function SessionFeed() {
             </>
           )}
 
-          {expandedItem.table === "local_reminders" && (
-            <View>
-              {isLoadingLocalReminder ? (
-                <View className="gap-5 items-center justify-center mt-40">
-                  <AppText className="text-xl">
-                    Loading reminder details...
-                  </AppText>
-                  <ActivityIndicator size="large" />
-                </View>
-              ) : LocalReminderError ? (
-                <AppText className="text-center text-xl mt-10">
-                  Failed to load reminder details. Please try again later.
-                </AppText>
-              ) : (
-                LocalReminderFull && <ReminderSession {...LocalReminderFull} />
-              )}
-            </View>
-          )}
-
-          {expandedItem.table === "gym_sessions" && (
+          {expandedItem.type === "gym_sessions" && (
             <View>
               {isLoadingGymSession ? (
-                <View className="gap-5 items-center justify-center mt-40">
+                <View className="gap-5 items-center justify-center mt-40 px-10">
                   <AppText className="text-xl">
                     Loading gym session details...
                   </AppText>
                   <ActivityIndicator size="large" />
                 </View>
               ) : GymSessionError ? (
-                <AppText className="text-center text-xl mt-10">
+                <AppText className="text-center text-xl mt-40 px-10">
                   Failed to load gym session details. Please try again later.
                 </AppText>
               ) : (
@@ -286,9 +245,9 @@ export default function SessionFeed() {
           isOpen={!!editingItem}
           onClose={() => setEditingItem(null)}
         >
-          {editingItem.table === "notes" && (
+          {editingItem.type === "notes" && (
             <EditNotes
-              note={editingItem.item}
+              note={editingItem}
               onClose={() => setEditingItem(null)}
               onSave={async () => {
                 await queryClient.invalidateQueries({ queryKey: ["feed"] });
@@ -297,9 +256,9 @@ export default function SessionFeed() {
             />
           )}
 
-          {editingItem.table === "global_reminders" && (
+          {editingItem.type === "global_reminders" && (
             <HandleEditGlobalReminder
-              reminder={editingItem.item}
+              reminder={editingItem}
               onClose={() => setEditingItem(null)}
               onSave={async () => {
                 await queryClient.invalidateQueries({ queryKey: ["feed"] });
@@ -308,42 +267,18 @@ export default function SessionFeed() {
             />
           )}
 
-          {editingItem.table === "local_reminders" && (
-            <>
-              {isLoadingLocalReminder ? (
-                <View className="gap-5 items-center justify-center mt-40">
-                  <AppText className="text-lg">
-                    Loading reminder details...
-                  </AppText>
-                  <ActivityIndicator />
-                </View>
-              ) : LocalReminderError ? (
-                <AppText className="text-center text-lg mt-20">
-                  Failed to load reminder details. Please try again later.
-                </AppText>
-              ) : (
-                LocalReminderFull && (
-                  <HandleEditLocalReminder
-                    reminder={LocalReminderFull!}
-                    onClose={() => setEditingItem(null)}
-                    onSave={async () => {
-                      await Promise.all([
-                        queryClient.invalidateQueries({
-                          queryKey: ["feed"],
-                        }),
-                        queryClient.invalidateQueries({
-                          queryKey: ["fullLocalReminder"],
-                        }),
-                      ]);
-                      setEditingItem(null);
-                    }}
-                  />
-                )
-              )}
-            </>
+          {editingItem.type === "local_reminders" && (
+            <HandleEditLocalReminder
+              reminder={editingItem}
+              onClose={() => setEditingItem(null)}
+              onSave={async () => {
+                await queryClient.invalidateQueries({ queryKey: ["feed"] });
+                setEditingItem(null);
+              }}
+            />
           )}
 
-          {editingItem.table === "todo_lists" && (
+          {editingItem.type === "todo_lists" && (
             <>
               {isLoadingTodoSession ? (
                 <View className="gap-2 justify-center items-center pt-40">
@@ -376,9 +311,9 @@ export default function SessionFeed() {
             </>
           )}
 
-          {editingItem.table === "weight" && (
+          {editingItem.type === "weight" && (
             <EditWeight
-              weight={editingItem.item}
+              weight={editingItem}
               onClose={() => setEditingItem(null)}
               onSave={async () => {
                 await queryClient.invalidateQueries({ queryKey: ["feed"] });

@@ -11,14 +11,23 @@ import { Plus } from "lucide-react-native";
 import { formatDateTime, formatTime } from "@/lib/formatDate";
 import PageContainer from "../PageContainer";
 import { Checkbox } from "expo-checkbox";
-import { full_reminder } from "@/types/session";
+import { FeedItemUI } from "@/types/session";
 import useSaveReminder from "@/hooks/reminders/edit-reminder/useSaveReminder";
 import useSetNotification from "@/hooks/reminders/edit-reminder/useSetNotification";
 
 type Props = {
-  reminder: full_reminder;
+  reminder: FeedItemUI;
   onClose: () => void;
   onSave: () => void;
+};
+
+type reminderPayload = {
+  notes: string;
+  notify_at: Date;
+  notify_at_time: string;
+  weekdays: number[];
+  type: "weekly" | "daily" | "one-time";
+  notify_date: Date;
 };
 
 export default function HandleEditLocalReminder({
@@ -26,41 +35,47 @@ export default function HandleEditLocalReminder({
   onClose,
   onSave,
 }: Props) {
+  const payload = reminder.extra_fields as unknown as reminderPayload;
+
   const [title, setValue] = useState(reminder.title);
-  const [notes, setNotes] = useState(reminder.notes);
+  const [notes, setNotes] = useState(payload.notes);
   const [isSaving, setIsSaving] = useState(false);
   const [notifyAt, setNotifyAt] = useState<Date>(() => {
-    if (reminder.notify_date) {
-      return new Date(reminder.notify_date);
+    if (payload.notify_date) {
+      return new Date(payload.notify_date);
     }
 
-    if (reminder.notify_at_time) {
+    if (payload.notify_at_time) {
       const base = new Date();
-      const [h, m, s] = reminder.notify_at_time.split(":").map(Number);
-      base.setHours(h, m, s || 0, 0);
+
+      const [h, m, s] = payload.notify_at_time.split(":").map(Number);
+
+      base.setHours(h, m, s || 0);
+
       return base;
     }
 
     return new Date();
   });
   const [open, setOpen] = useState(false);
-  const [weekdays, setWeekdays] = useState<number[]>(reminder.weekdays || []);
+  const [weekdays, setWeekdays] = useState<number[]>(payload.weekdays || []);
 
   const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
   const formattedNotifyAt =
-    reminder.type === "one-time"
+    payload.type === "one-time"
       ? formatDateTime(notifyAt!)
       : formatTime(notifyAt!);
 
   const { scheduleNotifications } = useSetNotification({
     notifyAt,
     title,
-    notes: notes || "",
     reminder,
+    notes,
     weekdays,
+    type: payload.type,
   });
-  
+
   const { handleSave } = useSaveReminder({
     title,
     notes: notes || "",

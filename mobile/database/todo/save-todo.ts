@@ -15,39 +15,19 @@ export default async function saveTodoToDB({
   title,
   todoList,
 }: saveTodoToDBProps) {
-  const { data: list, error: listError } = await supabase
-    .from("todo_lists")
-    .insert({
-      title,
-    })
-    .select("id")
-    .single();
+  const { error } = await supabase.rpc("todo_save_todo", {
+    p_title: title,
+    p_todo_list: todoList,
+  });
 
-  if (listError || !list) {
-    handleError(listError, {
-      message: "Error creating todo list",
-      route: "/database/to/save-todo",
+  if (error) {
+    console.error("Error saving todo", error);
+    handleError(error, {
+      message: "Error saving todo",
+      route: "/database/todo/save-todo",
       method: "POST",
     });
-    throw new Error("Error creating todo list");
-  }
-
-  const rows = todoList.map((item: TodoTask, index) => ({
-    list_id: list.id,
-    task: item.task,
-    notes: item.notes,
-    position: index,
-  }));
-
-  const { error: tasksError } = await supabase.from("todo_tasks").insert(rows);
-
-  if (tasksError) {
-    handleError(tasksError, {
-      message: "Error saving todo tasks",
-      route: "/database/to/save-todo",
-      method: "POST",
-    });
-    throw new Error("Error saving todo tasks");
+    throw new Error("Error saving todo");
   }
 
   return { success: true };

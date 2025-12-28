@@ -7,6 +7,7 @@ type ActiveSession = {
   label: string;
   path: string;
   type: string;
+  started_at: number;
 };
 
 interface TimerState {
@@ -17,7 +18,7 @@ interface TimerState {
   alarmFired: boolean;
   startTimestamp: number | null;
   alarmSoundPlaying: boolean;
-  setActiveSession: (session: ActiveSession | null) => void;
+  setActiveSession: (session: NewSession) => void;
   startTimer: (totalDuration: number) => void;
   stopTimer: () => void;
   pauseTimer: () => void;
@@ -28,6 +29,8 @@ interface TimerState {
 }
 
 let interval: ReturnType<typeof setInterval> | null = null;
+
+type NewSession = Omit<ActiveSession, "started_at">;
 
 export const useTimerStore = create<TimerState>()(
   persist(
@@ -40,7 +43,13 @@ export const useTimerStore = create<TimerState>()(
       startTimestamp: null,
       alarmSoundPlaying: false,
 
-      setActiveSession: (session) => set({ activeSession: session }),
+      setActiveSession: (session: NewSession) =>
+        set({
+          activeSession: {
+            ...session,
+            started_at: Date.now(),
+          },
+        }),
       setAlarmSoundPlaying: (playing) => set({ alarmSoundPlaying: playing }),
 
       startTimer: (totalDuration) => {
@@ -181,6 +190,6 @@ export const useTimerStore = create<TimerState>()(
           await AsyncStorage.removeItem(key);
         },
       },
-    },
-  ),
+    }
+  )
 );

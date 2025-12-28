@@ -6,6 +6,7 @@ import { editSession } from "@/database/gym/edit-session";
 import { saveSession } from "@/database/gym/save-session";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
+import { useTimerStore } from "@/lib/stores/timerStore";
 
 export default function useSaveSession({
   title,
@@ -71,7 +72,12 @@ export default function useSaveSession({
           }),
         ]);
       } else {
-        await saveSession({ title, notes, duration, exercises });
+        await saveSession({
+          title,
+          notes,
+          duration,
+          exercises,
+        });
 
         await queryClient.refetchQueries({ queryKey: ["feed"], exact: true });
       }

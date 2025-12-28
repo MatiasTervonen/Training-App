@@ -8,19 +8,27 @@ import AppText from "../AppText";
 import { View, TouchableWithoutFeedback, Keyboard } from "react-native";
 import { editWeight } from "@/database/weight/edit-weight";
 import PageContainer from "../PageContainer";
-import { weight } from "@/types/models";
+import { FeedItemUI } from "@/types/session";
 
 type Props = {
-  weight: weight;
+  weight: FeedItemUI;
   onClose: () => void;
   onSave?: () => void;
 };
 
+type weightPayload = {
+  notes: string;
+  weight: number;
+};
+
 export default function EditWeight({ weight, onClose, onSave }: Props) {
+
+  const payload = weight.extra_fields as unknown as weightPayload;
+
   const [title, setValue] = useState(weight.title);
-  const [notes, setNotes] = useState(weight.notes);
+  const [notes, setNotes] = useState(payload.notes);
   const [weightValue, setWeightValue] = useState(
-    weight.weight != null ? weight.weight.toString() : "",
+    payload.weight != null ? payload.weight.toString() : ""
   );
   const [isSaving, setIsSaving] = useState(false);
 
@@ -29,10 +37,11 @@ export default function EditWeight({ weight, onClose, onSave }: Props) {
 
     try {
       await editWeight({
-        id: weight.id,
+        id: weight.source_id,
         title,
         notes,
         weight: Number(weightValue),
+        updated_at: new Date().toISOString(),
       });
 
       onSave?.();

@@ -3,19 +3,11 @@ import { handleError } from "@/utils/handleError";
 
 type PinSessionProps = {
   id: string;
-  table:
-    | "notes"
-    | "gym_sessions"
-    | "weight"
-    | "todo_lists"
-    | "global_reminders"
-    | "local_reminders"
-    | "activity_session";
-
+  type: string;
 };
 
-export async function pinItem({ id, table }: PinSessionProps) {
-  if (!id || !table) {
+export async function pinItem({ id, type }: PinSessionProps) {
+  if (!id || !type) {
     throw new Error("Invalid request");
   }
 
@@ -24,16 +16,17 @@ export async function pinItem({ id, table }: PinSessionProps) {
     .upsert(
       [
         {
-          item_id: id,
-          type: table,
+          feed_item_id: id,
+          type: type,
         },
       ],
-      { onConflict: "user_id,type,item_id" }, // Ensure upsert on user_id, item_id, and type
+      { onConflict: "user_id,type,feed_item_id" } // Ensure upsert on user_id, item_id, and type
     )
     .select()
     .single();
 
-  if (error || !pinnedItem) {
+  if (error) {
+    console.log("error pinning item", error);
     handleError(error, {
       message: "Error pinning item",
       route: "/database/pinned/pin-items",

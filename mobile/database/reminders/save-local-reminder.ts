@@ -18,22 +18,14 @@ export default async function SaveLocalReminder({
   notify_date,
   type,
 }: SaveReminderParams) {
-  const { data, error } = await supabase
-    .from("local_reminders")
-    .insert([
-      {
-        title,
-        notes,
-        notify_at_time,
-        notify_date,
-        weekdays,
-        type,
-      },
-    ])
-    .select("id")
-    .single();
-
-  console.log("save local reminder data", data);
+  const { data, error } = await supabase.rpc("reminders_save_local_reminder", {
+    p_title: title,
+    p_notes: notes,
+    p_notify_at_time: notify_at_time,
+    p_weekdays: weekdays,
+    p_notify_date: notify_date,
+    p_type: type,
+  });
 
   if (error) {
     console.log("save local reminder error", error);

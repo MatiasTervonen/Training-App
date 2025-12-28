@@ -26,10 +26,10 @@ export default function useSaveTemplate({
 
     setIsSaving(true);
 
-    const simplified = exercises.map((ex) => ({
-      template_id: templateId || "",
+    const simplified = exercises.map((ex, index) => ({
+      template_id: templateId,
       exercise_id: ex.exercise_id,
-      position: 0,
+      position: index,
       superset_id: ex.superset_id,
     }));
 
@@ -69,7 +69,8 @@ export default function useSaveTemplate({
         text1: "Template saved",
         text2: "Template has been saved successfully.",
       });
-    } catch {
+    } catch (error) {
+      console.log("error saving template", error);
       setIsSaving(false);
       Toast.show({
         type: "error",

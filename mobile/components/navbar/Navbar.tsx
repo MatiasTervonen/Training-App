@@ -12,7 +12,7 @@ export default function Navbar() {
   const pathname = usePathname();
 
   const profilePictureRaw = useUserStore(
-    (state) => state.profile?.profile_picture || null,
+    (state) => state.profile?.profile_picture || null
   );
 
   if (pathname === "/login" || pathname === "/") return null; // Don't render the navbar on the login page
@@ -27,7 +27,7 @@ export default function Navbar() {
       >
         <Link href="/dashboard" asChild>
           <Pressable>
-            <AppText className="text-2xl">MyTrack</AppText>
+            <AppText className="text-2xl pr-[1px]">MyTrack</AppText>
           </Pressable>
         </Link>
         <View className="flex-row items-center gap-3">
@@ -62,7 +62,7 @@ export default function Navbar() {
                   : "p-3 w-1/3 items-center"
               }
             >
-              <AppText>Menu</AppText>
+              <AppText className="pr-[1px]">Menu</AppText>
             </Pressable>
           </Link>
 
@@ -74,7 +74,7 @@ export default function Navbar() {
                   : "p-3 w-1/3 items-center"
               }
             >
-              <AppText>Feed</AppText>
+              <AppText className="pr-[1px]">Feed</AppText>
             </Pressable>
           </Link>
           <Link href="/sessions" asChild>
@@ -85,7 +85,7 @@ export default function Navbar() {
                   : "p-3 w-1/3 items-center"
               }
             >
-              <AppText>Sessions</AppText>
+              <AppText className="pr-[1px]">Sessions</AppText>
             </Pressable>
           </Link>
         </View>

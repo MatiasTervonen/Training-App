@@ -48,7 +48,6 @@ export default function Todo() {
     }
   );
   const router = useRouter();
-  const [isLoaded, setIsLoaded] = useState(false);
 
   const queryClient = useQueryClient();
 
@@ -62,8 +61,6 @@ export default function Todo() {
     setTask,
     setNotes,
     setTodoList,
-    setIsLoaded,
-    isLoaded,
   });
 
   const handleDeleteItem = async (index: number) => {

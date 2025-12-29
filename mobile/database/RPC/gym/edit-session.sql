@@ -5,7 +5,7 @@ create or replace function gym_edit_session(
   p_title text,
   p_id uuid
 )
-returns uuid
+returns feed_items
 language plpgsql
 security invoker
 set search_path = public
@@ -17,6 +17,7 @@ declare
  v_sets jsonb;
  v_position integer;
  v_set_number integer;
+ v_feed_item feed_items;
 begin
 
 -- insert into gym session 
@@ -111,9 +112,10 @@ set
   from jsonb_array_elements(p_exercises) as t(e))),
   updated_at = now()
 where source_id = p_id
- and type = 'gym_sessions';
+ and type = 'gym_sessions'
+ returning * into v_feed_item;
 
 
-return v_session_id;
+return v_feed_item;
 end;
 $$

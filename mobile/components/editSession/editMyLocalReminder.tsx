@@ -11,23 +11,14 @@ import { Plus } from "lucide-react-native";
 import { formatDateTime, formatTime } from "@/lib/formatDate";
 import PageContainer from "../PageContainer";
 import { Checkbox } from "expo-checkbox";
-import { FeedItemUI } from "@/types/session";
+import { full_reminder } from "@/types/session";
 import useSaveReminder from "@/hooks/reminders/edit-reminder/useSaveReminder";
 import useSetNotification from "@/hooks/reminders/edit-reminder/useSetNotification";
 
 type Props = {
-  reminder: FeedItemUI;
+  reminder: full_reminder;
   onClose: () => void;
-  onSave: (updateFeedItem: FeedItemUI) => void;
-};
-
-type reminderPayload = {
-  notes: string;
-  notify_at: Date;
-  notify_at_time: string;
-  weekdays: number[];
-  type: "weekly" | "daily" | "one-time";
-  notify_date: Date;
+  onSave: () => void;
 };
 
 export default function HandleEditLocalReminder({
@@ -35,22 +26,18 @@ export default function HandleEditLocalReminder({
   onClose,
   onSave,
 }: Props) {
-  const payload = reminder.extra_fields as unknown as reminderPayload;
-
-  console.log("payload", payload);
-
   const [title, setValue] = useState(reminder.title);
-  const [notes, setNotes] = useState(payload.notes);
+  const [notes, setNotes] = useState(reminder.notes);
   const [isSaving, setIsSaving] = useState(false);
   const [notifyAt, setNotifyAt] = useState<Date>(() => {
-    if (payload.notify_date) {
-      return new Date(payload.notify_date);
+    if (reminder.notify_date) {
+      return new Date(reminder.notify_date);
     }
 
-    if (payload.notify_at_time) {
+    if (reminder.notify_at_time) {
       const base = new Date();
 
-      const [h, m, s] = payload.notify_at_time.split(":").map(Number);
+      const [h, m, s] = reminder.notify_at_time.split(":").map(Number);
 
       base.setHours(h, m, s || 0);
 
@@ -60,12 +47,12 @@ export default function HandleEditLocalReminder({
     return new Date();
   });
   const [open, setOpen] = useState(false);
-  const [weekdays, setWeekdays] = useState<number[]>(payload.weekdays || []);
+  const [weekdays, setWeekdays] = useState<number[]>(reminder.weekdays || []);
 
   const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
   const formattedNotifyAt =
-    payload.type === "one-time"
+    reminder.type === "one-time"
       ? formatDateTime(notifyAt!)
       : formatTime(notifyAt!);
 
@@ -73,9 +60,9 @@ export default function HandleEditLocalReminder({
     notifyAt,
     title,
     reminder,
-    notes,
+    notes: notes || "",
     weekdays,
-    type: payload.type,
+    type: reminder.type as "weekly" | "daily" | "one-time",
   });
 
   console.log("notifyAt", notifyAt);
@@ -86,11 +73,11 @@ export default function HandleEditLocalReminder({
     notifyAt,
     setIsSaving,
     reminder,
-    type: payload.type,
     onSave,
     onClose,
     scheduleNotifications,
     weekdays,
+    type: reminder.type as "weekly" | "daily" | "one-time",
   });
 
   return (
@@ -128,9 +115,9 @@ export default function HandleEditLocalReminder({
           <DatePicker
             date={notifyAt}
             onDateChange={setNotifyAt}
-            mode={payload.type === "one-time" ? "datetime" : "time"}
+            mode={reminder.type === "one-time" ? "datetime" : "time"}
             modal
-            minimumDate={payload.type === "one-time" ? new Date() : undefined}
+            minimumDate={reminder.type === "one-time" ? new Date() : undefined}
             open={open}
             onConfirm={(date) => {
               setOpen(false);
@@ -140,7 +127,7 @@ export default function HandleEditLocalReminder({
               setOpen(false);
             }}
           />
-          {payload.type === "weekly" && (
+          {reminder.type === "weekly" && (
             <View className="mt-5">
               <View className="flex-row gap-6">
                 <AppText>Repeat on these days:</AppText>

@@ -1,6 +1,6 @@
 import { Toast } from "react-native-toast-message/lib/src/Toast";
 import { confirmAction } from "@/lib/confirmAction";
-import { ExerciseEntry } from "@/types/session";
+import { ExerciseEntry, FeedData } from "@/types/session";
 import { full_gym_session } from "@/types/models";
 import { editSession } from "@/database/gym/edit-session";
 import { saveSession } from "@/database/gym/save-session";
@@ -56,7 +56,7 @@ export default function useSaveSession({
 
     try {
       if (isEditing) {
-        await editSession({
+        const updatedFeedItem = await editSession({
           id: session.id,
           title,
           notes,
@@ -65,7 +65,21 @@ export default function useSaveSession({
         });
 
         await Promise.all([
-          queryClient.refetchQueries({ queryKey: ["feed"], exact: true }),
+          queryClient.setQueryData<FeedData>(["feed"], (oldData) => {
+            if (!oldData) return oldData;
+
+            return {
+              ...oldData,
+              pages: oldData.pages.map((page) => ({
+                ...page,
+                feed: page.feed.map((item) =>
+                  item.id === updatedFeedItem.id
+                    ? { ...item, ...updatedFeedItem }
+                    : item
+                ),
+              })),
+            };
+          }),
           queryClient.refetchQueries({
             queryKey: ["fullGymSession", session.id],
             exact: true,

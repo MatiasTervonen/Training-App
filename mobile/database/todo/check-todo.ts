@@ -8,6 +8,7 @@ type TodoTaskCheck = {
     id: string | null;
     list_id: string;
     is_completed: boolean;
+    position: number;
   }[];
 };
 
@@ -18,7 +19,7 @@ export async function checkedTodo({
 }: TodoTaskCheck) {
   console.log("list_id", list_id);
 
-  const { error } = await supabase.rpc("todo_check_todo", {
+  const { error, data } = await supabase.rpc("todo_check_todo", {
     p_list_id: list_id,
     p_todo_tasks: todo_tasks,
     p_updated_at: updated_at,
@@ -34,5 +35,5 @@ export async function checkedTodo({
     throw new Error("Error checking todo");
   }
 
-  return { success: true };
+  return data;
 }

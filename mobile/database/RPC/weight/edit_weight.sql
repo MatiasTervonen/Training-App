@@ -5,13 +5,13 @@ create or replace function weight_edit_weight(
   p_weight numeric,
   p_updated_at timestamptz
 )
-returns uuid
+returns feed_items
 language plpgsql
 security invoker
 set search_path = public
 as $$
 declare
- v_weight_id uuid;
+v_feed_item feed_items;
 begin
 
 -- update weight 
@@ -23,7 +23,6 @@ set
   weight = p_weight,
   updated_at = p_updated_at
 where id = p_id
-returning id into v_weight_id;
 
 -- update feed item
 
@@ -33,8 +32,9 @@ set
   extra_fields = jsonb_build_object('notes', p_notes, 'weight', p_weight),
   updated_at = p_updated_at
 where source_id = p_id
- and type = 'weight';
+ and type = 'weight'
+ returning * into v_feed_item;
 
-return v_weight_id;
+return v_feed_item;
 end;
 $$

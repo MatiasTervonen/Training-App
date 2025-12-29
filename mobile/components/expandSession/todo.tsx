@@ -21,15 +21,20 @@ import DraggableFlatList, {
   RenderItemParams,
   ScaleDecorator,
 } from "react-native-draggable-flatlist";
+import PageContainer from "../PageContainer";
+import CopyText from "../CopyToClipboard";
+import { FeedItemUI } from "@/types/session";
 
 type TodoSessionProps = {
   initialTodo: full_todo_session;
-  mutateFullTodoSession: () => Promise<void>;
+  mutateFullTodoSession: () => void;
+  onSave: (updatedItem: FeedItemUI) => void;
 };
 
 export default function TodoSession({
   initialTodo,
   mutateFullTodoSession,
+  onSave,
 }: TodoSessionProps) {
   const [open, setOpen] = useState<number | null>(null);
   const [sessionData, setSessionData] = useState(initialTodo);
@@ -76,13 +81,14 @@ export default function TodoSession({
     setIsSaving(true);
 
     try {
-      await checkedTodo({
+      const updatedFeedItem = await checkedTodo({
         updated_at: updated,
         list_id: sessionData.id,
-        todo_tasks: sessionData.todo_tasks.map((task) => ({
+        todo_tasks: sessionData.todo_tasks.map((task, index) => ({
           id: task.id ?? null,
           list_id: task.list_id,
           is_completed: task.is_completed,
+          position: index,
         })),
       });
 
@@ -90,7 +96,8 @@ export default function TodoSession({
       lastSavedRef.current = sessionData.todo_tasks;
       setOriginalOrder(sessionData.todo_tasks);
 
-      await mutateFullTodoSession();
+      onSave?.(updatedFeedItem as FeedItemUI);
+      mutateFullTodoSession();
       Toast.show({
         type: "success",
         text1: "Changes saved successfully",
@@ -170,7 +177,7 @@ export default function TodoSession({
               )}
             </View>
             <View className="bg-slate-950  rounded-xl pb-5 w-full">
-              <View className="flex-row justify-between items-center my-5 gap-3 px-4 flex-1">
+              <View className="flex-row justify-between items-center my-5 gap-3 px-[30px] flex-1">
                 <AppText
                   className="text-xl flex-1"
                   numberOfLines={2}
@@ -256,14 +263,31 @@ export default function TodoSession({
                                 }}
                                 isOpen={true}
                               >
-                                <View className="flex flex-col max-w-lg mx-auto mt-10 px-5">
-                                  <AppText className="text-xl mb-10 wrap-break-word text-center">
-                                    {task.task}
+                                <PageContainer className="mb-10">
+                                  <AppText className="text-sm text-gray-300 text-center">
+                                    created: {formatDate(task.created_at!)}
                                   </AppText>
-                                  <AppText className="bg-slate-900 p-10 whitespace-pre-wrap wrap-break-word rounded-md text-left">
-                                    {task.notes || "No notes available"}
-                                  </AppText>
-                                </View>
+                                  {task.updated_at && (
+                                    <AppText className="text-sm text-yellow-500 mt-2 text-center">
+                                      updated: {formatDate(task.updated_at)}
+                                    </AppText>
+                                  )}
+                                  <View className="items-center bg-slate-900 p-5 rounded-md shadow-md mt-5">
+                                    <AppText className="text-xl text-center mb-5 border-b border-gray-700 pb-2">
+                                      {task.task}
+                                    </AppText>
+                                    <AppText className="text-left text-lg">
+                                      {task.notes || "No notes available"}
+                                    </AppText>
+                                  </View>
+                                  <View className="mt-10">
+                                    <CopyText
+                                      textToCopy={
+                                        task.task + "\n\n" + task.notes || ""
+                                      }
+                                    />
+                                  </View>
+                                </PageContainer>
                               </FullScreenModal>
                             )}
                           </View>

@@ -16,7 +16,7 @@ export async function editWeight({
   id,
   updated_at,
 }: props) {
-  const { error } = await supabase.rpc("weight_edit_weight", {
+  const { data, error } = await supabase.rpc("weight_edit_weight", {
     p_id: id,
     p_title: title,
     p_notes: notes,
@@ -33,5 +33,5 @@ export async function editWeight({
     throw new Error("Error editing weight");
   }
 
-  return { success: true };
+  return data;
 }

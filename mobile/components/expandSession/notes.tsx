@@ -27,10 +27,10 @@ export default function NotesSession(notes: FeedItemUI) {
           <AppText className="text-xl text-center mb-5 border-b border-gray-700 pb-2">
             {notes.title}
           </AppText>
-          <AppText className="text-lg  text-left">{payload.notes}</AppText>
+          <AppText className="text-lg text-left">{payload.notes}</AppText>
         </View>
         <View className="mt-10">
-          <CopyText textToCopy={payload.notes} />
+          <CopyText textToCopy={notes.title + "\n\n" + payload.notes} />
         </View>
       </PageContainer>
     </ScrollView>

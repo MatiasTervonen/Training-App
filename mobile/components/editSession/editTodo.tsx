@@ -12,11 +12,12 @@ import AppText from "../AppText";
 import PageContainer from "../PageContainer";
 import { confirmAction } from "@/lib/confirmAction";
 import { Dot } from "lucide-react-native";
+import { FeedItemUI } from "@/types/session";
 
 type Props = {
   todo_session: full_todo_session_optional_id;
   onClose: () => void;
-  onSave?: () => void;
+  onSave?: (updateFeedItem: FeedItemUI) => void;
 };
 
 type Task = {
@@ -101,7 +102,7 @@ export default function EditTodo({ todo_session, onClose, onSave }: Props) {
     setIsSaving(true);
 
     try {
-      await editTodo({
+      const updatedFeedItem = await editTodo({
         id: sessionData.id,
         title: sessionData.title,
         tasks: sessionData.todo_tasks.map((task, index) => ({
@@ -115,7 +116,7 @@ export default function EditTodo({ todo_session, onClose, onSave }: Props) {
         updated_at: updated,
       });
 
-      await onSave?.();
+      await onSave?.(updatedFeedItem);
       onClose();
       Toast.show({
         type: "success",

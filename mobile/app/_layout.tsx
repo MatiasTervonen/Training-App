@@ -78,6 +78,10 @@ export default Sentry.wrap(function RootLayout() {
     resetFeedReady();
   }, [resetFeedReady]);
 
+  if (!fontsLoaded) {
+    return null;
+  }
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>

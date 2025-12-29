@@ -30,6 +30,7 @@ import FeedFooter from "./FeedFooter";
 import HandleEditLocalReminder from "../editSession/editLocalReminder";
 import { useAppReadyStore } from "@/lib/stores/appReadyStore";
 import { FeedItemUI } from "@/types/session";
+import useUpdateFeedItem from "../../hooks/feed/useUpdateFeedItem";
 
 export default function SessionFeed() {
   const setFeedReady = useAppReadyStore((state) => state.setFeedReady);
@@ -83,6 +84,9 @@ export default function SessionFeed() {
     isLoadingTodoSession,
     refetchFullTodo,
   } = useFullSessions(expandedItem, editingItem);
+
+  // useUpdateFeedItem hook to update feed item in cache
+  const { updateFeedItem } = useUpdateFeedItem();
 
   if (!feedReady) {
     return null;
@@ -210,8 +214,11 @@ export default function SessionFeed() {
                 todoSessionFull && (
                   <TodoSession
                     initialTodo={todoSessionFull}
-                    mutateFullTodoSession={async () => {
-                      await refetchFullTodo();
+                    mutateFullTodoSession={() => {
+                      refetchFullTodo();
+                    }}
+                    onSave={(updatedItem) => {
+                      updateFeedItem(updatedItem);
                     }}
                   />
                 )
@@ -223,10 +230,10 @@ export default function SessionFeed() {
             <View>
               {isLoadingGymSession ? (
                 <View className="gap-5 items-center justify-center mt-40 px-10">
-                  <AppText className="text-xl">
+                  <AppText className="text-lg">
                     Loading gym session details...
                   </AppText>
-                  <ActivityIndicator size="large" />
+                  <ActivityIndicator />
                 </View>
               ) : GymSessionError ? (
                 <AppText className="text-center text-xl mt-40 px-10">
@@ -249,8 +256,8 @@ export default function SessionFeed() {
             <EditNotes
               note={editingItem}
               onClose={() => setEditingItem(null)}
-              onSave={async () => {
-                await queryClient.invalidateQueries({ queryKey: ["feed"] });
+              onSave={(updatedItem) => {
+                updateFeedItem(updatedItem);
                 setEditingItem(null);
               }}
             />
@@ -271,8 +278,8 @@ export default function SessionFeed() {
             <HandleEditLocalReminder
               reminder={editingItem}
               onClose={() => setEditingItem(null)}
-              onSave={async () => {
-                await queryClient.invalidateQueries({ queryKey: ["feed"] });
+              onSave={async (updatedItem) => {
+                updateFeedItem(updatedItem);
                 setEditingItem(null);
               }}
             />
@@ -281,12 +288,12 @@ export default function SessionFeed() {
           {editingItem.type === "todo_lists" && (
             <>
               {isLoadingTodoSession ? (
-                <View className="gap-2 justify-center items-center pt-40">
+                <View className="gap-5 items-center justify-center mt-40 px-10">
                   <AppText className="text-lg">Loading todo session...</AppText>
                   <ActivityIndicator />
                 </View>
               ) : todoSessionError ? (
-                <AppText className="gap-2 justify-center mt-20 text-lg">
+                <AppText className="text-center text-xl mt-40 px-10">
                   Failed to load todo session details. Please try again later.
                 </AppText>
               ) : (
@@ -294,11 +301,9 @@ export default function SessionFeed() {
                   <EditTodo
                     todo_session={todoSessionFull}
                     onClose={() => setEditingItem(null)}
-                    onSave={async () => {
+                    onSave={async (updatedItem) => {
                       await Promise.all([
-                        queryClient.invalidateQueries({
-                          queryKey: ["feed"],
-                        }),
+                        updateFeedItem(updatedItem),
                         queryClient.invalidateQueries({
                           queryKey: ["fullTodoSession"],
                         }),
@@ -315,8 +320,8 @@ export default function SessionFeed() {
             <EditWeight
               weight={editingItem}
               onClose={() => setEditingItem(null)}
-              onSave={async () => {
-                await queryClient.invalidateQueries({ queryKey: ["feed"] });
+              onSave={(updatedItem) => {
+                updateFeedItem(updatedItem);
                 setEditingItem(null);
               }}
             />

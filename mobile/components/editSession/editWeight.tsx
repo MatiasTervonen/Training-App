@@ -13,7 +13,7 @@ import { FeedItemUI } from "@/types/session";
 type Props = {
   weight: FeedItemUI;
   onClose: () => void;
-  onSave?: () => void;
+  onSave?: (updateFeedItem: FeedItemUI) => void;
 };
 
 type weightPayload = {
@@ -22,7 +22,6 @@ type weightPayload = {
 };
 
 export default function EditWeight({ weight, onClose, onSave }: Props) {
-
   const payload = weight.extra_fields as unknown as weightPayload;
 
   const [title, setValue] = useState(weight.title);
@@ -36,7 +35,7 @@ export default function EditWeight({ weight, onClose, onSave }: Props) {
     setIsSaving(true);
 
     try {
-      await editWeight({
+      const updatedFeedItem = await editWeight({
         id: weight.source_id,
         title,
         notes,
@@ -44,9 +43,10 @@ export default function EditWeight({ weight, onClose, onSave }: Props) {
         updated_at: new Date().toISOString(),
       });
 
-      onSave?.();
+      onSave?.(updatedFeedItem);
       onClose();
-    } catch {
+    } catch (error) {
+      console.log("error editing weight", error);
       Toast.show({
         type: "error",
         text1: "Failed to update weight session",

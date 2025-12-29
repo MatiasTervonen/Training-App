@@ -1,7 +1,7 @@
 import { Platform } from "react-native";
 import * as Notifications from "expo-notifications";
 import { handleError } from "@/utils/handleError";
-import { FeedItemUI } from "@/types/session";
+import { FeedItemUI, full_reminder } from "@/types/session";
 
 export default function useSetNotification({
   notifyAt,
@@ -12,7 +12,7 @@ export default function useSetNotification({
   type,
 }: {
   notifyAt: Date;
-  reminder: FeedItemUI;
+  reminder: FeedItemUI | full_reminder;
   title: string;
   notes: string;
   weekdays: number[];
@@ -24,9 +24,11 @@ export default function useSetNotification({
         const id = await Notifications.scheduleNotificationAsync({
           content: {
             title,
-            body: notes || "",
+            body: notes || (reminder as full_reminder).notes || "",
             sound: true,
-            data: { reminderId: reminder.id },
+            data: {
+              reminderId: (reminder as FeedItemUI).source_id ?? (reminder as full_reminder).id,
+            },
           },
           trigger: { type: "date", date: notifyAt } as any,
         });
@@ -53,9 +55,11 @@ export default function useSetNotification({
         const id = await Notifications.scheduleNotificationAsync({
           content: {
             title,
-            body: notes || "",
+            body: notes || (reminder as full_reminder).notes || "",
             sound: true,
-            data: { reminderId: reminder.id },
+            data: {
+              reminderId: (reminder as FeedItemUI).source_id || reminder.id,
+            },
           },
           trigger,
         });
@@ -84,9 +88,11 @@ export default function useSetNotification({
             return Notifications.scheduleNotificationAsync({
               content: {
                 title,
-                body: notes || "",
+                body: notes || (reminder as full_reminder).notes || "",
                 sound: true,
-                data: { reminderId: reminder.id },
+                data: {
+                  reminderId: (reminder as FeedItemUI).source_id || reminder.id,
+                },
               },
               trigger,
             });

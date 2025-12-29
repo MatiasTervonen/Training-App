@@ -4,13 +4,13 @@ create or replace function notes_edit_note(
   p_notes text,
   p_updated_at timestamptz
 )
-returns uuid
+returns feed_items
 language plpgsql
 security invoker
 set search_path = public
 as $$
 declare
- v_note_id uuid;
+ v_feed_item feed_items;
 begin
 
 -- update note 
@@ -20,12 +20,7 @@ set
   title = p_title,
   notes = p_notes,
   updated_at = p_updated_at
-where id = p_id
-returning id into v_note_id;
-
-if not found then
-  raise exception 'Note not found';
-end if;
+where id = p_id;
 
 -- update feed item
 
@@ -35,8 +30,9 @@ set
   extra_fields = jsonb_build_object('notes', p_notes),
   updated_at = p_updated_at
 where source_id = p_id
- and type = 'notes';
+ and type = 'notes'
+ returning * into v_feed_item; 
 
-return v_note_id;
+return v_feed_item;
 end;
 $$

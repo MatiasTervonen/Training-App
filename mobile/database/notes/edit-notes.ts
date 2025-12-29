@@ -9,7 +9,7 @@ type Props = {
 };
 
 export async function editNotes({ id, title, notes, updated_at }: Props) {
-  const { error } = await supabase.rpc("notes_edit_note", {
+  const { data, error } = await supabase.rpc("notes_edit_note", {
     p_id: id,
     p_title: title,
     p_notes: notes,
@@ -17,6 +17,7 @@ export async function editNotes({ id, title, notes, updated_at }: Props) {
   });
 
   if (error) {
+    console.log("error editing notes", error);
     handleError(error, {
       message: "Error editing notes",
       route: "/database/notes/edit-notes",
@@ -25,5 +26,5 @@ export async function editNotes({ id, title, notes, updated_at }: Props) {
     throw new Error("Error editing notes");
   }
 
-  return { success: true };
+  return data;
 }

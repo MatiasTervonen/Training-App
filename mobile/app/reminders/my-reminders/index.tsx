@@ -9,10 +9,10 @@ import GetReminders from "@/database/reminders/get-reminders";
 import MyReminderCard from "@/components/cards/MyReminderCard";
 import { full_reminder } from "@/types/session";
 import AnimatedButton from "@/components/buttons/animatedButton";
-import ReminderSession from "@/components/expandSession/reminder";
 import useDeleteReminder from "@/hooks/reminders/my-reminders/useDeleteReminder";
-import EditLocalReminder from "@/components/editSession/editLocalReminder";
-import EditGlobalReminder from "@/components/editSession/editGlobalReminder";
+import EditMyGlobalReminder from "@/components/editSession/editMyGlobalReminder";
+import MyReminderSession from "@/components/expandSession/myReminder";
+import EditMyLocalReminder from "@/components/editSession/editMyLocalReminder";
 
 export default function RemindersPage() {
   const [expandedItem, setExpandedItem] = useState<full_reminder | null>(null);
@@ -106,7 +106,7 @@ export default function RemindersPage() {
 
         {expandedItem && (
           <FullScreenModal isOpen={true} onClose={() => setExpandedItem(null)}>
-            <ReminderSession {...expandedItem} />
+            <MyReminderSession {...expandedItem} />
           </FullScreenModal>
         )}
 
@@ -115,7 +115,7 @@ export default function RemindersPage() {
             (r) => r.id === editingItem?.id && r.type === "global"
           ) && (
             <FullScreenModal isOpen={true} onClose={() => setEditingItem(null)}>
-              <EditGlobalReminder
+              <EditMyGlobalReminder
                 reminder={editingItem}
                 onClose={() => setEditingItem(null)}
                 onSave={async () => {
@@ -138,7 +138,7 @@ export default function RemindersPage() {
             (r) => r.id === editingItem?.id && r.type !== "global"
           ) && (
             <FullScreenModal isOpen={true} onClose={() => setEditingItem(null)}>
-              <EditLocalReminder
+              <EditMyLocalReminder
                 reminder={editingItem}
                 onClose={() => setEditingItem(null)}
                 onSave={async () => {

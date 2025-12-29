@@ -24,9 +24,7 @@ export async function editTodo({
   deletedIds,
   updated_at,
 }: TodoListEdit) {
-  console.log("tasks", tasks);
-
-  const { error } = await supabase.rpc("todo_edit_todo", {
+  const { data, error } = await supabase.rpc("todo_edit_todo", {
     p_id: id,
     p_title: title,
     p_tasks: tasks,
@@ -44,5 +42,5 @@ export async function editTodo({
     throw new Error("Error editing todo list");
   }
 
-  return { success: true };
+  return data;
 }

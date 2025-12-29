@@ -1,6 +1,5 @@
 import { supabase } from "@/lib/supabase";
 import { handleError } from "@/utils/handleError";
-import * as crypto from "expo-crypto";
 import { ExerciseEntry } from "@/types/session";
 
 type editGymSessionProps = {
@@ -18,17 +17,16 @@ export async function editSession({
   title,
   id,
 }: editGymSessionProps) {
-  const { error: editError } = await supabase
-    .from("gym_sessions")
-    .update({
-      title,
-      notes,
-      duration: durationEdit,
-    })
-    .eq("id", id);
+  const { data, error } = await supabase.rpc("gym_edit_session", {
+    p_exercises: exercises,
+    p_notes: notes,
+    p_duration: durationEdit,
+    p_title: title,
+    p_id: id,
+  });
 
-  if (editError) {
-    handleError(editError, {
+  if (error) {
+    handleError(error, {
       message: "Error updating session",
       route: "/database/gym/edit-session",
       method: "POST",
@@ -36,74 +34,5 @@ export async function editSession({
     throw new Error("Error updating session");
   }
 
-  const { data: existingExercises } = await supabase
-    .from("gym_session_exercises")
-    .select("id")
-    .eq("session_id", id);
-
-  const exerciseIds = existingExercises?.map((ex) => ex.id);
-
-  if (exerciseIds && exerciseIds.length > 0) {
-    await supabase
-      .from("gym_sets")
-      .delete()
-      .in("session_exercise_id", exerciseIds);
-  }
-
-  await supabase.from("gym_session_exercises").delete().eq("session_id", id);
-
-  const sessionExercises = [];
-  const sets = [];
-
-  for (const [index, ex] of exercises.entries()) {
-    const sessionExerciseId = crypto.randomUUID();
-    const supersetId = ex.superset_id ?? null;
-
-    sessionExercises.push({
-      id: sessionExerciseId,
-      session_id: id,
-      exercise_id: ex.exercise_id,
-      position: index,
-      superset_id: supersetId ?? null,
-      notes: ex.notes ?? null,
-    });
-
-    for (const [setIndex, set] of ex.sets.entries()) {
-      sets.push({
-        session_exercise_id: sessionExerciseId,
-        weight: set.weight ?? null,
-        reps: set.reps ?? null,
-        rpe: set.rpe ?? null,
-        set_number: setIndex,
-        time_min: set.time_min ?? null,
-        distance_meters: set.distance_meters ?? null,
-      });
-    }
-  }
-
-  const { error: seError } = await supabase
-    .from("gym_session_exercises")
-    .insert(sessionExercises);
-
-  if (seError) {
-    handleError(seError, {
-      message: "Error inserting session exercises",
-      route: "/database/gym/edit-session",
-      method: "POST",
-    });
-    throw new Error("Error inserting session exercises");
-  }
-
-  const { error: setsError } = await supabase.from("gym_sets").insert(sets);
-
-  if (setsError) {
-    handleError(setsError, {
-      message: "Error inserting sets",
-      route: "/database/gym/edit-session",
-      method: "POST",
-    });
-    throw new Error("Error inserting sets");
-  }
-
-  return { success: true };
+  return data;
 }

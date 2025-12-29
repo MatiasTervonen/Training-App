@@ -24,12 +24,17 @@ export default function BaseMap({
   const [isFollowingUser, setIsFollowingUser] = useState(true);
 
   const { isForeground } = useForeground();
-  const [userLocationKey, setUserLocationKey] = useState(0);
 
   useEffect(() => {
     if (isForeground) {
-      setUserLocationKey(Date.now());
+      Mapbox.locationManager.start();
+    } else {
+      Mapbox.locationManager.stop();
     }
+
+    return () => {
+      Mapbox.locationManager.stop();
+    };
   }, [isForeground]);
 
   const mapCoordinates = track
@@ -67,7 +72,7 @@ export default function BaseMap({
           setIsFollowingUser(false);
         }}
       >
-        <Mapbox.UserLocation visible={true} key={userLocationKey} />
+        <Mapbox.UserLocation visible={true} />
 
         <Mapbox.Camera
           followUserLocation={isFollowingUser}

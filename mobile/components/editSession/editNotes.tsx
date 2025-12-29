@@ -15,7 +15,7 @@ import { FeedItemUI } from "@/types/session";
 type Props = {
   note: FeedItemUI;
   onClose: () => void;
-  onSave?: () => void;
+  onSave?: (updateFeedItem: FeedItemUI) => void;
 };
 
 type notesPayload = {
@@ -25,44 +25,39 @@ type notesPayload = {
 export default function EditNotes({ note, onClose, onSave }: Props) {
   const payload = note.extra_fields as unknown as notesPayload;
 
-  const [originalData] = useState(note);
   const [title, setValue] = useState(note.title);
   const [notes, setNotes] = useState(payload.notes);
   const [isSaving, setIsSaving] = useState(false);
 
-  const currentData = {
-    ...originalData,
-    title,
-    notes,
-  };
-
-  const updated = new Date().toISOString();
+  const initialTitle = note.title || "";
+  const initialNotes = payload.notes || "";
 
   const handleSubmit = async () => {
     setIsSaving(true);
 
     try {
-      await editNotes({
+      const updatedFeedItem = await editNotes({
         id: note.source_id,
         title,
         notes,
-        updated_at: updated,
+        updated_at: new Date().toISOString(),
       });
 
-      await onSave?.();
+      await onSave?.(updatedFeedItem as FeedItemUI);
       onClose();
-    } catch {
+    } catch (error) {
+      console.log("error editing notes", error);
       Toast.show({
         type: "error",
         text1: "Error editing notes",
+        text2: "Please try again later.",
       });
     } finally {
       setIsSaving(false);
     }
   };
 
-  const hasChanges =
-    JSON.stringify(originalData) !== JSON.stringify(currentData);
+  const hasChanges = title !== initialTitle || notes !== initialNotes;
 
   return (
     <View className="flex-1">

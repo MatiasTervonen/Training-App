@@ -24,7 +24,7 @@ export default async function EditLocalReminder({
   updated_at,
   seen_at,
 }: EditLocalReminderParams) {
-  const { error } = await supabase.rpc("reminders_edit_local_reminder", {
+  const { data, error } = await supabase.rpc("reminders_edit_local_reminder", {
     p_id: id,
     p_title: title,
     p_notes: notes,
@@ -46,5 +46,5 @@ export default async function EditLocalReminder({
     throw new Error("Error updating local reminder");
   }
 
-  return { success: true };
+  return data;
 }

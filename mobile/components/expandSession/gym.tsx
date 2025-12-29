@@ -62,7 +62,7 @@ export default function GymSession(gym_session: full_gym_session) {
     <ScrollView showsVerticalScrollIndicator={false}>
       <PageContainer className="mb-10">
         <View className="gap-2 justify-center items-center">
-          <AppText className="text-lg text-gray-400">
+          <AppText className="text-gray-400">
             {formatDate(gym_session.created_at)}
           </AppText>
           <AppText className="text-2xl mt-2 text-center">

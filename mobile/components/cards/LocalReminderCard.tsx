@@ -90,7 +90,7 @@ export default function LocalReminderCard({
               pinned ? "text-slate-900" : "text-yellow-500"
             } `}
           >
-            updated at: {formatDate(item.updated_at!)}
+            updated: {formatDate(item.updated_at!)}
           </AppText>
         ) : (
           <View className="h-[17.8px]" />

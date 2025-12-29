@@ -19,8 +19,8 @@ export default function WeightSession(weight: FeedItemUI) {
 
   return (
     <PageContainer>
-      <AppText className="text-lg text-gray-400 text-center">
-        {formatDate(weight.created_at!)}
+      <AppText className="text-sm text-gray-400 text-center">
+        created: {formatDate(weight.created_at!)}
       </AppText>
       <View>
         <AppText className="my-5 text-2xl text-center break-words">

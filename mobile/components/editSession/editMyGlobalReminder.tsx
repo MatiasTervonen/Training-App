@@ -12,18 +12,12 @@ import AnimatedButton from "@/components/buttons/animatedButton";
 import { Plus } from "lucide-react-native";
 import { formatDateTime } from "@/lib/formatDate";
 import PageContainer from "../PageContainer";
-import { FeedItemUI } from "@/types/session";
+import { full_reminder } from "@/types/session";
 
 type Props = {
-  reminder: FeedItemUI;
+  reminder: full_reminder;
   onClose: () => void;
   onSave?: () => void;
-};
-
-type reminderPayload = {
-  notes: string;
-  notify_at: Date;
-  delivered: boolean;
 };
 
 export default function HandleEditGlobalReminder({
@@ -31,13 +25,11 @@ export default function HandleEditGlobalReminder({
   onClose,
   onSave,
 }: Props) {
-  const payload = reminder.extra_fields as unknown as reminderPayload;
-
   const [title, setValue] = useState(reminder.title);
-  const [notes, setNotes] = useState(payload.notes);
+  const [notes, setNotes] = useState(reminder.notes);
   const [isSaving, setIsSaving] = useState(false);
   const [notifyAt, setNotifyAt] = useState(
-    payload.notify_at ? new Date(payload.notify_at) : null
+    reminder.notify_at ? new Date(reminder.notify_at) : null
   );
   const [open, setOpen] = useState(false);
 
@@ -69,15 +61,14 @@ export default function HandleEditGlobalReminder({
     }
 
     const delivered =
-      notifyAt && notifyAt.getTime() > Date.now() ? false : payload.delivered;
+      notifyAt && notifyAt.getTime() > Date.now() ? false : reminder.delivered;
 
     const updated = new Date().toISOString();
 
     setIsSaving(true);
-    console.log("reminder.source_id", reminder.source_id);
     try {
       await EditGlobalReminder({
-        id: reminder.source_id,
+        id: reminder.id,
         title,
         notes,
         delivered,

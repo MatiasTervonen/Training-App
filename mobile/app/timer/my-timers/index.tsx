@@ -6,7 +6,7 @@ import GetTimer from "@/database/timer/get-timers";
 import { useState } from "react";
 import { timers } from "@/types/models";
 import FullScreenModal from "@/components/FullScreenModal";
-import TimerCard from "@/components/cards/TimerCard";
+import TimerCard from "@/Features/feed-cards/TimerCard";
 import DeleteTimer from "@/database/timer/delete-timer";
 import Toast from "react-native-toast-message";
 
@@ -68,7 +68,7 @@ export default function MyTimersScreen() {
         title: timer.title,
         notes: timer.notes,
         durationInSeconds: timer.time_seconds,
-      }),
+      })
     );
     setActiveSession({
       type: "timer",

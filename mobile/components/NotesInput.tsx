@@ -1,5 +1,5 @@
 import { TextInputProps, View, TextInput } from "react-native";
-import AppText from "./AppText";
+import AppText from "@/components/AppText";
 import { LinearGradient } from "expo-linear-gradient";
 
 type NotesInputProps = TextInputProps & {

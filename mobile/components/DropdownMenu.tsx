@@ -6,7 +6,7 @@ import {
   MenuTrigger,
   MenuOption,
 } from "react-native-popup-menu";
-import AppText from "./AppText";
+import AppText from "@/components/AppText";
 
 type DropdownMenuProps = {
   button: React.ReactNode;

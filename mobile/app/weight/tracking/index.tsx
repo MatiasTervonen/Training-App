@@ -9,8 +9,8 @@ import { formatDate } from "@/lib/formatDate";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import PageContainer from "@/components/PageContainer";
 import SubNotesInput from "@/components/SubNotesInput";
-import useWeightDraft from "@/hooks/weight/useDraft";
-import useSaveWeight from "@/hooks/weight/useSaveWeight";
+import useWeightDraft from "@/Features/weight/hooks/useDraft";
+import useSaveWeight from "@/Features/weight/hooks/useSaveWeight";
 
 export default function SettingsScreen() {
   const now = formatDate(new Date());

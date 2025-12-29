@@ -1,5 +1,5 @@
 import { Pressable, PressableProps } from "react-native";
-import AppText from "../AppTextNC";
+import AppText from "@/components/AppTextNC";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,

@@ -1,6 +1,6 @@
 import AppText from "@/components/AppText";
 import { ActivityIndicator } from "react-native";
-import AnimatedButton from "./animatedButton";
+import AnimatedButton from "@/components/buttons/animatedButton";
 
 type SaveButtonProps = {
   onPress: () => void;

@@ -1,9 +1,9 @@
 import { handleError } from "@/utils/handleError";
 import { supabase } from "@/lib/supabase";
 import * as Notifications from "expo-notifications";
-import setDailyNotification from "@/components/reminders/setNotifications/setDaily";
-import setWeeklyNotification from "@/components/reminders/setNotifications/setWeekly";
-import setOneTimeNotification from "@/components/reminders/setNotifications/setOneTime";
+import setDailyNotification from "@/Features/reminders/setNotifications/setDaily";
+import setWeeklyNotification from "@/Features/reminders/setNotifications/setWeekly";
+import setOneTimeNotification from "@/Features/reminders/setNotifications/setOneTime";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default async function SyncNotifications() {

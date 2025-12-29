@@ -12,9 +12,9 @@ import AnimatedButton from "@/components/buttons/animatedButton";
 import { Plus, Info } from "lucide-react-native";
 import { formatTime } from "@/lib/formatDate";
 import SubNotesInput from "@/components/SubNotesInput";
-import useSaveDraftDaily from "@/hooks/reminders/daily/useSaveDraftDaily";
-import useSaveReminderDaily from "@/hooks/reminders/daily/useSaveReminderDaily";
-import useSetNotification from "@/hooks/reminders/daily/useSetNotification";
+import useSaveDraftDaily from "@/Features/reminders/hooks/daily/useSaveDraftDaily";
+import useSaveReminderDaily from "@/Features/reminders/hooks/daily/useSaveReminderDaily";
+import useSetNotification from "@/Features/reminders/hooks/daily/useSetNotification";
 
 export default function ReminderScreen() {
   const [open, setOpen] = useState(false);

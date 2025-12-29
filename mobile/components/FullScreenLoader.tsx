@@ -1,5 +1,5 @@
 import { View, ActivityIndicator, Modal } from "react-native";
-import AppText from "./AppText";
+import AppText from "@/components/AppText";
 
 type FullScreenLoaderProps = {
   visible?: boolean;

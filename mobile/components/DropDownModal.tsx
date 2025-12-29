@@ -1,4 +1,4 @@
-import AppText from "./AppText";
+import AppText from "@/components/AppText";
 import {
   View,
   Pressable,
@@ -7,7 +7,7 @@ import {
   Dimensions,
 } from "react-native";
 import { useState } from "react";
-import AnimatedButton from "@/components/buttons//animatedButton";
+import AnimatedButton from "@/components/buttons/animatedButton";
 import { Menu } from "lucide-react-native";
 
 type SelectInputProps = {

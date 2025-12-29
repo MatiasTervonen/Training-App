@@ -1,4 +1,4 @@
-import AppText from "./AppText";
+import AppText from "@/components/AppText";
 import { View, Pressable, Modal, ScrollView, Dimensions } from "react-native";
 import { useState } from "react";
 import { LinearGradient } from "expo-linear-gradient";

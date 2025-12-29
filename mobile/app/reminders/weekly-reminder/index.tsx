@@ -13,9 +13,9 @@ import { Plus, Info } from "lucide-react-native";
 import { formatTime } from "@/lib/formatDate";
 import { Checkbox } from "expo-checkbox";
 import SubNotesInput from "@/components/SubNotesInput";
-import useSaveDraftWeekly from "@/hooks/reminders/weekly/useSaveDraft";
-import useSaveReminderWeekly from "@/hooks/reminders/weekly/useSaveReminder";
-import useSetNotificationWeekly from "@/hooks/reminders/weekly/useSetNotification";
+import useSaveDraftWeekly from "@/Features/reminders/hooks/weekly/useSaveDraft";
+import useSaveReminderWeekly from "@/Features/reminders/hooks/weekly/useSaveReminder";
+import useSetNotificationWeekly from "@/Features/reminders/hooks/weekly/useSetNotification";
 
 export default function ReminderScreen() {
   const [open, setOpen] = useState(false);

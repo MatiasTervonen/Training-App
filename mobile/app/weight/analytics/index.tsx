@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import AllDataTable from "@/components/weight-screen/AllDataTable";
+import AllDataTable from "@/Features/weight/AllDataTable";
 import { getWeight } from "@/database/weight/get-weight";
 
 export default function AnalyticsScreen() {

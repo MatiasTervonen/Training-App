@@ -9,8 +9,8 @@ import FullScreenLoader from "@/components/FullScreenLoader";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import NumberInput from "@/components/NumberInput";
 import SubNotesInput from "@/components/SubNotesInput";
-import useSaveDraft from "@/hooks/timer/useSaveDraft";
-import useSaveTimer from "@/hooks/timer/useSaveTimer";
+import useSaveDraft from "@/Features/timer/hooks/useSaveDraft";
+import useSaveTimer from "@/Features/timer/hooks/useSaveTimer";
 
 export default function SettingsScreen() {
   const [title, setTitle] = useState("");

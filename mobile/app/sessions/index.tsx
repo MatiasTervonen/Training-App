@@ -17,7 +17,7 @@ export default function SessionsScreen() {
     <PageContainer>
       <AppText className="text-2xl text-center mb-10">Start Sessions</AppText>
       <View className="gap-4">
-        <LinkButton label="Gym" href="/training">
+        <LinkButton label="Gym" href="/gym">
           <Dumbbell color="#f3f4f6" />
         </LinkButton>
         <LinkButton label="Activities" href="/activities">

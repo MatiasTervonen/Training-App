@@ -1,4 +1,4 @@
-import AnimatedButton from "./animatedButton";
+import AnimatedButton from "@/components/buttons/animatedButton";
 import { Alert } from "react-native";
 
 type DeleteButtonProps = {

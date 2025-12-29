@@ -6,13 +6,13 @@ import { TemplateSkeleton } from "@/components/skeletetons";
 import AppText from "@/components/AppText";
 import PageContainer from "@/components/PageContainer";
 import GetReminders from "@/database/reminders/get-reminders";
-import MyReminderCard from "@/components/cards/MyReminderCard";
+import MyReminderCard from "@/Features/feed-cards/MyReminderCard";
 import { full_reminder } from "@/types/session";
 import AnimatedButton from "@/components/buttons/animatedButton";
-import useDeleteReminder from "@/hooks/reminders/my-reminders/useDeleteReminder";
-import EditMyGlobalReminder from "@/components/editSession/editMyGlobalReminder";
-import MyReminderSession from "@/components/expandSession/myReminder";
-import EditMyLocalReminder from "@/components/editSession/editMyLocalReminder";
+import useDeleteReminder from "@/Features/reminders/hooks/my-reminders/useDeleteReminder";
+import EditMyGlobalReminder from "@/Features/edit-session-cards/editMyGlobalReminder";
+import MyReminderSession from "@/Features/expand-session-cards/myReminder";
+import EditMyLocalReminder from "@/Features/edit-session-cards/editMyLocalReminder";
 
 export default function RemindersPage() {
   const [expandedItem, setExpandedItem] = useState<full_reminder | null>(null);

@@ -1,4 +1,4 @@
-import SessionFeed from "@/components/feed/SessionFeed";
+import SessionFeed from "@/Features/feed/SessionFeed";
 import { useModalPageConfig } from "@/lib/stores/modalPageConfig";
 import { useEffect } from "react";
 import { useRouter } from "expo-router";
@@ -6,7 +6,6 @@ import { useRouter } from "expo-router";
 export default function FeedScreen() {
   const router = useRouter();
   const { setModalPageConfig } = useModalPageConfig();
-
 
   useEffect(() => {
     setModalPageConfig({

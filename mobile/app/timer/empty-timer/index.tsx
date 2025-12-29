@@ -11,7 +11,7 @@ import AnimatedButton from "@/components/buttons/animatedButton";
 import Animated from "react-native-reanimated";
 import * as ScreenOrientation from "expo-screen-orientation";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import Timer from "@/components/timer/timer";
+import Timer from "@/Features/timer/timer";
 import { useRouter } from "expo-router";
 
 export default function SettingsScreen() {
@@ -38,7 +38,7 @@ export default function SettingsScreen() {
     const subscription = ScreenOrientation.addOrientationChangeListener(
       (event) => {
         setOrientation(event.orientationInfo.orientation);
-      },
+      }
     );
 
     return () => {
@@ -57,7 +57,7 @@ export default function SettingsScreen() {
     return () => {
       // Reset back to portrait when leaving the page
       ScreenOrientation.lockAsync(
-        ScreenOrientation.OrientationLock.PORTRAIT_UP,
+        ScreenOrientation.OrientationLock.PORTRAIT_UP
       );
     };
   }, []);
@@ -96,7 +96,6 @@ export default function SettingsScreen() {
       }
     }
 
-    setActiveSession(null);
     clearEverything();
     AsyncStorage.removeItem("timer_session_draft");
     handleReset();

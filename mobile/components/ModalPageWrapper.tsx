@@ -1,4 +1,4 @@
-import AppText from "./AppText";
+import AppText from "@/components/AppText";
 import { View, Dimensions } from "react-native";
 import { SquareArrowLeft, SquareArrowRight } from "lucide-react-native";
 import { ReactNode, useState, useEffect } from "react";

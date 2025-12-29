@@ -13,8 +13,8 @@ import DeleteButton from "@/components/buttons/DeleteButton";
 import FullScreenLoader from "@/components/FullScreenLoader";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import PageContainer from "@/components/PageContainer";
-import useSaveDraft from "@/hooks/notes/useSaveDraft";
-import useSaveNotes from "@/hooks/notes/useSaveNotes";
+import useSaveDraft from "@/Features/notes/hooks/useSaveDraft";
+import useSaveNotes from "@/Features/notes/hooks/useSaveNotes";
 
 export default function NotesScreen() {
   const [title, setTitle] = useState("");

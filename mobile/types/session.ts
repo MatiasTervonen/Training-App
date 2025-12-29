@@ -80,7 +80,7 @@ export type FeedData = {
   pageParams: any[];
   pages: {
     feed: FeedItemUI[];
-    nextPage?: number;
+    nextPage?: number | null;
   }[];
 };
 

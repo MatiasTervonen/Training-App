@@ -1,4 +1,4 @@
-import "@/components/activities/locationTask";
+import "@/Features/activities/lib/locationTask";
 import "@/lib/nativewindInterop";
 
 import { Slot, usePathname } from "expo-router";
@@ -8,7 +8,7 @@ import { useEffect } from "react";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import "./global.css";
 import "react-native-url-polyfill/auto";
-import LayoutWrapper from "@/components/layout/LayoutWrapper";
+import LayoutWrapper from "@/Features/layout/LayoutWrapper";
 import Toast from "react-native-toast-message";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
@@ -18,16 +18,16 @@ import { Provider as PaperProvider } from "react-native-paper";
 import {
   configureNotificationChannels,
   configurePushNotificationsWhenAppIsOpen,
-} from "@/components/push-notifications/actions";
+} from "@/Features/push-notifications/actions";
 import {
   configureReanimatedLogger,
   ReanimatedLogLevel,
 } from "react-native-reanimated";
 import { toastConfig } from "@/lib/config/toast";
-import useNotificationResponse from "@/hooks/feed/useNotificationResponse";
+import useNotificationResponse from "@/Features/feed/hooks/useNotificationResponse";
 import { useAppReadyStore } from "@/lib/stores/appReadyStore";
-import BootScreen from "@/components/feed/fakeFeedLoader";
-import SaveAreaInset from "@/components/layout/SaveAreaInset";
+import BootScreen from "@/Features/feed/fakeFeedLoader";
+import SaveAreaInset from "@/Features/layout/SaveAreaInset";
 import Mapbox from "@rnmapbox/maps";
 
 Mapbox.setAccessToken(process.env.EXPO_PUBLIC_MAPBOX_PUBLIC_TOKEN!);

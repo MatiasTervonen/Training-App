@@ -1,7 +1,7 @@
 import PageContainer from "@/components/PageContainer";
 import AppText from "@/components/AppText";
 import AppInput from "@/components/AppInput";
-import ActivityDropdown from "@/components/activities/activityDropdown";
+import ActivityDropdown from "@/Features/activities/activityDropdown";
 import { useState, useEffect } from "react";
 import { View, ScrollView } from "react-native";
 import SubNotesInput from "@/components/SubNotesInput";
@@ -13,27 +13,27 @@ import { useUserStore } from "@/lib/stores/useUserStore";
 import { Link } from "expo-router";
 import { useTimerStore } from "@/lib/stores/timerStore";
 import AnimatedButton from "@/components/buttons/animatedButton";
-import useSaveDraft from "@/hooks/activity/useSaveDraft";
+import useSaveDraft from "@/Features/activities/hooks/useSaveDraft";
 import FullScreenLoader from "@/components/FullScreenLoader";
 import SaveButton from "@/components/buttons/SaveButton";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import useSaveActivitySession from "@/hooks/activity/useSaveSession";
+import useSaveActivitySession from "@/Features/activities/hooks/useSaveSession";
 import DeleteButton from "@/components/buttons/DeleteButton";
 import { Fullscreen } from "lucide-react-native";
 import {
   useStartGPStracking,
   useStopGPStracking,
-} from "@/components/activities/location-actions";
+} from "@/Features/activities/lib/location-actions";
 import { formatDate } from "@/lib/formatDate";
 import { useModalPageConfig } from "@/lib/stores/modalPageConfig";
-import MapIcons from "@/components/activities/mapIcons";
-import FullScreenMapModal from "@/components/activities/fullScreenMapModal";
-import BaseMap from "@/components/activities/baseMap";
+import MapIcons from "@/Features/activities/mapIcons";
+import FullScreenMapModal from "@/Features/activities/fullScreenMapModal";
+import BaseMap from "@/Features/activities/baseMap";
 import { TrackPoint } from "@/types/session";
-import InfoModal from "@/components/activities/infoModal";
-import { useCountDistance } from "@/hooks/activity/useCountDistance";
-import { useStartActivity } from "@/hooks/activity/useStartActivity";
-import { useForegroundLocationTracker } from "@/hooks/activity/useForegroundLocationTracker";
+import InfoModal from "@/Features/activities/infoModal";
+import { useCountDistance } from "@/Features/activities/hooks/useCountDistance";
+import { useStartActivity } from "@/Features/activities/hooks/useStartActivity";
+import { useForegroundLocationTracker } from "@/Features/activities/hooks/useForegroundLocationTracker";
 
 export default function StartActivityScreen() {
   const now = formatDate(new Date());

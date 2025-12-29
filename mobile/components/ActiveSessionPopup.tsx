@@ -2,10 +2,10 @@ import { Link, usePathname } from "expo-router";
 import { SquareArrowRight } from "lucide-react-native";
 import { useTimerStore } from "@/lib/stores/timerStore";
 import { useEffect } from "react";
-import AppText from "./AppText";
+import AppText from "@/components/AppText";
 import { useAudioPlayer } from "expo-audio";
 import { View, Pressable, TouchableOpacity } from "react-native";
-import Timer from "./timer";
+import Timer from "@/Features/timer/timer";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -100,7 +100,7 @@ export default function ActiveSessionPopup() {
             {alarmFired && <AppText>ALARM!</AppText>}
           </View>
           <View className="flex-row items-center gap-5">
-            <Timer textClassName="text-xl" onPress={stopAlarm} />
+            <Timer textClassName="text-xl" onStopAlarmSound={stopAlarm} />
             <AppText>{activeSession.type.toUpperCase()}</AppText>
             {activeSession.type === "timer" && totalDuration && (
               <AppText>

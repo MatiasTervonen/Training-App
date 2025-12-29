@@ -1,6 +1,6 @@
 import { View, Pressable } from "react-native";
 import * as Clipboard from "expo-clipboard";
-import AppText from "./AppText";
+import AppText from "@/components/AppText";
 import Toast from "react-native-toast-message";
 
 export default function CopyText({ textToCopy }: { textToCopy: string }) {

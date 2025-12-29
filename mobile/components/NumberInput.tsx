@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { View, TextInput, TextInputProps } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import AppText from "./AppText";
+import AppText from "@/components/AppText";
 
 type AppInputProps = TextInputProps & { label?: string };
 

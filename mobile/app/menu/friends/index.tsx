@@ -1,7 +1,7 @@
 import { View } from "react-native";
 import AppText from "@/components/AppText";
-import FriendRequestForm from "@/components/friends-screen/FriendRequestForm";
-import FriendCard from "@/components/friends-screen/FriendCard";
+import FriendRequestForm from "@/Features/friends/FriendRequestForm";
+import FriendCard from "@/Features/friends/FriendCard";
 import { Friends } from "@/types/models";
 import PageContainer from "@/components/PageContainer";
 

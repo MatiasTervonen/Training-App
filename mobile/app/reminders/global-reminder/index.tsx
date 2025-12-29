@@ -12,8 +12,8 @@ import AnimatedButton from "@/components/buttons/animatedButton";
 import { Plus, Info } from "lucide-react-native";
 import { formatDateTime } from "@/lib/formatDate";
 import SubNotesInput from "@/components/SubNotesInput";
-import useSaveDraft from "@/hooks/reminders/global/useSaveDraft";
-import useSaveReminder from "@/hooks/reminders/global/useSaveReminder";
+import useSaveDraft from "@/Features/reminders/hooks/global/useSaveDraft";
+import useSaveReminder from "@/Features/reminders/hooks/global/useSaveReminder";
 
 export default function ReminderScreen() {
   const [open, setOpen] = useState(false);

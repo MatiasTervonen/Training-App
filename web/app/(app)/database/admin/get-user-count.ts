@@ -13,6 +13,12 @@ export async function getUserCount() {
     throw new Error("Unauthorized");
   }
 
+    // Check if the user has admin privileges
+    const role = user.app_metadata?.role;
+    if (role !== "admin" && role !== "super_admin") {
+      throw new Error("Forbidden");
+    }
+
   const { data: userCount, error: countError } = await supabase
     .from("analytics_counts")
     .select("count")

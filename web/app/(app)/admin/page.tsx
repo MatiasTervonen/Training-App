@@ -1,15 +1,6 @@
-import { redirect } from "next/navigation";
-import { checkAdmin } from "@/app/(app)/database/admin/check-is-admin";
 import LinkButton from "../components/buttons/LinkButton";
 
 export default async function AdminPage() {
-  const { user, role } = await checkAdmin();
-
-  if (!user) redirect("/login");
-
-  if (!role || (role !== "admin" && role !== "super_admin")) {
-    redirect("/dashboard");
-  }
 
   return (
     <div className="max-w-md mx-auto page-padding">

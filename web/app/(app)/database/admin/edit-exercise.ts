@@ -29,6 +29,12 @@ export async function editExercise({
     throw new Error("Unauthorized");
   }
 
+    // Check if the user has admin privileges
+    const role = user.app_metadata?.role;
+    if (role !== "admin" && role !== "super_admin") {
+      throw new Error("Forbidden");
+    }
+
   const { error } = await supabase
     .from("gym_exercises")
     .update({ name, language, equipment, muscle_group, main_group })

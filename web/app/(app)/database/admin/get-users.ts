@@ -19,6 +19,12 @@ export async function getUsers({
     throw new Error("Unauthorized");
   }
 
+    // Check if the user has admin privileges
+    const role = user.app_metadata?.role;
+    if (role !== "admin" && role !== "super_admin") {
+      throw new Error("Forbidden");
+    }
+
   const from = pageParam * limit;
   const to = from + limit - 1;
 

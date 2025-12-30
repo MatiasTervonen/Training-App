@@ -27,6 +27,12 @@ export async function saveExercise({
     throw new Error("Unauthorized");
   }
 
+  // Check if the user has admin privileges
+  const role = user.app_metadata?.role;
+  if (role !== "admin" && role !== "super_admin") {
+    throw new Error("Forbidden");
+  }
+
   const { data: existingExercise, error: fetchError } = await supabase
     .from("gym_exercises")
     .select("*")

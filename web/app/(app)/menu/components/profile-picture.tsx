@@ -44,7 +44,7 @@ export default function ProfilePicture({ data, onFileSelected }: props) {
       <div className="flex flex-col cursor-pointer">
         <div
           onClick={() => fileInputRef.current?.click()}
-          className="flex items-center gap-2 border-2 bg-[linear-gradient(50deg,_#0f172a,_#1e293b,_#333333)] rounded-md p-2 w-full hover:border-blue-500 focus:outline-none focus:border-green-300"
+          className="flex items-center gap-2 border-2 bg-[linear-gradient(50deg,#0f172a,#1e293b,#333333)] rounded-md p-2 w-full hover:border-blue-500 focus:outline-none focus:border-green-300"
         >
           <span className="truncate">
             {fileName || "Change Profile Picture"}

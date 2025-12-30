@@ -3,8 +3,8 @@ import { handleError } from "@/utils/handleError";
 
 type Props = {
   id: string;
-  title: string | null | undefined;
-  notes: string | null | undefined;
+  title: string;
+  notes: string;
   updated_at: string;
 };
 

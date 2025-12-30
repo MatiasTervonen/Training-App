@@ -145,3 +145,25 @@ export type FeedCardProps = {
   onExpand: () => void;
   onEdit: () => void;
 };
+
+// For editing todo sessions
+export type full_todo_session_optional_id = {
+  created_at: string;
+  id: string;
+  title: string;
+  updated_at: string | null;
+  user_id: string;
+} & {
+  todo_tasks: {
+    created_at: string;
+    id?: string;
+    tempId?: string;
+    is_completed: boolean;
+    list_id: string;
+    notes: string | null;
+    position: number | null;
+    task: string;
+    updated_at: string | null;
+    user_id: string;
+  }[];
+};

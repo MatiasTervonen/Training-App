@@ -1,11 +1,9 @@
 "use server";
 
 import webpush from "web-push";
-import {
-  savePushSubscription,
-  deletePushSubscription,
-  getAllActivePushSubscriptions,
-} from "@/app/(app)/database/pushSubscription";
+import { savePushSubscription } from "@/app/(app)/database/push-notifications/save-push-subscription";
+import { deletePushSubscription } from "@/app/(app)/database/push-notifications/delete-push-subscription";
+import { getAllActivePushSubscriptions } from "@/app/(app)/database/push-notifications/get-all-active-push-subscriptions";
 
 webpush.setVapidDetails(
   "mailto:matias.tervonen@hotmail.com",

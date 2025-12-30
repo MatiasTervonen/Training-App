@@ -17,10 +17,9 @@ import { useDebouncedCallback } from "use-debounce";
 
 type Props = {
   onSelect: (exercise: gym_exercises) => void;
-  resetTrigger?: number;
 };
 
-export default function ExerciseDropdown({ onSelect, resetTrigger }: Props) {
+export default function ExerciseDropdown({ onSelect }: Props) {
   const [searchQuery, setSearchQuery] = useState("");
   const [inputValue, setInputValue] = useState("");
 
@@ -69,11 +68,7 @@ export default function ExerciseDropdown({ onSelect, resetTrigger }: Props) {
     setSearchQuery(exercise.name + " " + "(" + exercise.equipment + ")");
     onSelect(exercise);
   };
-
-  useEffect(() => {
-    setSearchQuery("");
-  }, [resetTrigger]);
-
+  
   const sections = [];
 
   if (!isError && !isLoading) {

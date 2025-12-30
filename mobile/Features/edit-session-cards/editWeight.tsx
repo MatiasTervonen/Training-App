@@ -13,7 +13,7 @@ import { FeedItemUI } from "@/types/session";
 type Props = {
   weight: FeedItemUI;
   onClose: () => void;
-  onSave?: (updateFeedItem: FeedItemUI) => void;
+  onSave: (updateFeedItem: FeedItemUI) => void;
 };
 
 type weightPayload = {
@@ -43,7 +43,7 @@ export default function EditWeight({ weight, onClose, onSave }: Props) {
         updated_at: new Date().toISOString(),
       });
 
-      onSave?.(updatedFeedItem);
+      onSave(updatedFeedItem);
       onClose();
     } catch (error) {
       console.log("error editing weight", error);

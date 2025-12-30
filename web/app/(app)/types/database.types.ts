@@ -14,6 +14,181 @@ export type Database = {
   }
   public: {
     Tables: {
+      activities: {
+        Row: {
+          category: string
+          created_at: string
+          id: string
+          is_active: boolean
+          name: string
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      activity_gps_points: {
+        Row: {
+          accuracy: number | null
+          altitude: number
+          id: string
+          latitude: number
+          longitude: number
+          recorded_at: string
+          session_id: string
+        }
+        Insert: {
+          accuracy?: number | null
+          altitude: number
+          id?: string
+          latitude: number
+          longitude: number
+          recorded_at: string
+          session_id: string
+        }
+        Update: {
+          accuracy?: number | null
+          altitude?: number
+          id?: string
+          latitude?: number
+          longitude?: number
+          recorded_at?: string
+          session_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activity_gps_points_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "activity_session"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      activity_session: {
+        Row: {
+          activity_id: string
+          created_at: string
+          duration: number
+          end_time: string
+          id: string
+          notes: string | null
+          start_time: string
+          title: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          activity_id: string
+          created_at?: string
+          duration: number
+          end_time: string
+          id?: string
+          notes?: string | null
+          start_time: string
+          title: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Update: {
+          activity_id?: string
+          created_at?: string
+          duration?: number
+          end_time?: string
+          id?: string
+          notes?: string | null
+          start_time?: string
+          title?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activity_session_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "activity_session_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      activity_session_stats: {
+        Row: {
+          avg_pace: number | null
+          avg_speed: number | null
+          calories: number | null
+          created_at: string | null
+          distance_meters: number | null
+          duration_seconds: number
+          elevation_gain: number | null
+          id: string
+          max_speed: number | null
+          session_id: string
+          steps: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          avg_pace?: number | null
+          avg_speed?: number | null
+          calories?: number | null
+          created_at?: string | null
+          distance_meters?: number | null
+          duration_seconds: number
+          elevation_gain?: number | null
+          id?: string
+          max_speed?: number | null
+          session_id: string
+          steps?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          avg_pace?: number | null
+          avg_speed?: number | null
+          calories?: number | null
+          created_at?: string | null
+          distance_meters?: number | null
+          duration_seconds?: number
+          elevation_gain?: number | null
+          id?: string
+          max_speed?: number | null
+          session_id?: string
+          steps?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activity_session_stats_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: true
+            referencedRelation: "activity_session"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       analytics_counts: {
         Row: {
           count: number
@@ -297,6 +472,82 @@ export type Database = {
           },
         ]
       }
+      feed_items: {
+        Row: {
+          created_at: string
+          extra_fields: Json
+          id: string
+          occurred_at: string
+          source_id: string
+          title: string
+          type: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          extra_fields?: Json
+          id?: string
+          occurred_at: string
+          source_id: string
+          title: string
+          type: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          extra_fields?: Json
+          id?: string
+          occurred_at?: string
+          source_id?: string
+          title?: string
+          type?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feed_items_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      feed_pins: {
+        Row: {
+          expires_at: string | null
+          feed_item_id: string
+          id: string
+          pinned_at: string
+          user_id: string
+        }
+        Insert: {
+          expires_at?: string | null
+          feed_item_id: string
+          id?: string
+          pinned_at?: string
+          user_id?: string
+        }
+        Update: {
+          expires_at?: string | null
+          feed_item_id?: string
+          id?: string
+          pinned_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feed_pins_feed_item_id_fkey"
+            columns: ["feed_item_id"]
+            isOneToOne: false
+            referencedRelation: "feed_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       friend_requests: {
         Row: {
           created_at: string
@@ -375,6 +626,7 @@ export type Database = {
       global_reminders: {
         Row: {
           created_at: string
+          delivered: boolean
           id: string
           notes: string | null
           notify_at: string
@@ -386,17 +638,19 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          delivered?: boolean
           id?: string
           notes?: string | null
           notify_at: string
           seen_at?: string | null
           title: string
-          type: string
+          type?: string
           updated_at?: string | null
           user_id?: string
         }
         Update: {
           created_at?: string
+          delivered?: boolean
           id?: string
           notes?: string | null
           notify_at?: string
@@ -743,9 +997,9 @@ export type Database = {
         Row: {
           active: boolean | null
           created_at: string
+          delivered: boolean
           id: string
           notes: string | null
-          notification_id: Json | null
           notify_at_time: string | null
           notify_date: string | null
           seen_at: string | null
@@ -758,9 +1012,9 @@ export type Database = {
         Insert: {
           active?: boolean | null
           created_at?: string
+          delivered?: boolean
           id?: string
           notes?: string | null
-          notification_id?: Json | null
           notify_at_time?: string | null
           notify_date?: string | null
           seen_at?: string | null
@@ -773,9 +1027,9 @@ export type Database = {
         Update: {
           active?: boolean | null
           created_at?: string
+          delivered?: boolean
           id?: string
           notes?: string | null
-          notification_id?: Json | null
           notify_at_time?: string | null
           notify_date?: string | null
           seen_at?: string | null
@@ -825,26 +1079,33 @@ export type Database = {
       pinned_items: {
         Row: {
           created_at: string
+          feed_item_id: string
           id: string
-          item_id: string
           type: string
           user_id: string
         }
         Insert: {
           created_at?: string
+          feed_item_id: string
           id?: string
-          item_id: string
           type: string
           user_id?: string
         }
         Update: {
           created_at?: string
+          feed_item_id?: string
           id?: string
-          item_id?: string
           type?: string
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "pinned_items_feed_item_id_fkey"
+            columns: ["feed_item_id"]
+            isOneToOne: false
+            referencedRelation: "feed_items"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "pinned_items_user_id_fkey"
             columns: ["user_id"]
@@ -1116,6 +1377,35 @@ export type Database = {
           },
         ]
       }
+      user_settings: {
+        Row: {
+          gps_tracking_enabled: boolean
+          push_enabled: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          gps_tracking_enabled?: boolean
+          push_enabled?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          gps_tracking_enabled?: boolean
+          push_enabled?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_settings_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       users: {
         Row: {
           ban_reason: string | null
@@ -1125,7 +1415,6 @@ export type Database = {
           email: string | null
           id: string
           profile_picture: string | null
-          push_enabled: boolean
           role: string
           weight_unit: string
         }
@@ -1137,7 +1426,6 @@ export type Database = {
           email?: string | null
           id: string
           profile_picture?: string | null
-          push_enabled?: boolean
           role?: string
           weight_unit?: string
         }
@@ -1149,7 +1437,6 @@ export type Database = {
           email?: string | null
           id?: string
           profile_picture?: string | null
-          push_enabled?: boolean
           role?: string
           weight_unit?: string
         }
@@ -1202,9 +1489,10 @@ export type Database = {
         }
         Relationships: []
       }
-      feed_view16: {
+      feed_view18: {
         Row: {
           created_at: string | null
+          delivered: boolean | null
           duration: number | null
           id: string | null
           notes: string | null
@@ -1223,6 +1511,7 @@ export type Database = {
       feed_with_pins: {
         Row: {
           created_at: string | null
+          delivered: boolean | null
           duration: number | null
           id: string | null
           notes: string | null
@@ -1241,8 +1530,263 @@ export type Database = {
       }
     }
     Functions: {
+      activities_save_activity: {
+        Args: {
+          p_activity_id: string
+          p_duration: number
+          p_end_time: string
+          p_notes: string
+          p_start_time: string
+          p_title: string
+          p_track: Json
+        }
+        Returns: string
+      }
+      feed_delete_session: {
+        Args: { p_id: string; p_type: string }
+        Returns: undefined
+      }
       get_jwt: { Args: never; Returns: Json }
-      last_30d_analytics: { Args: { uid: string }; Returns: Json }
+      gym_edit_session: {
+        Args: {
+          p_duration: number
+          p_exercises: Json
+          p_id: string
+          p_notes: string
+          p_title: string
+        }
+        Returns: {
+          created_at: string
+          extra_fields: Json
+          id: string
+          occurred_at: string
+          source_id: string
+          title: string
+          type: string
+          updated_at: string | null
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "feed_items"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      gym_edit_template: {
+        Args: { p_exercises: Json; p_id: string; p_name: string }
+        Returns: string
+      }
+      gym_save_session: {
+        Args: {
+          p_duration: number
+          p_exercises: Json
+          p_notes: string
+          p_occured_at: string
+          p_title: string
+        }
+        Returns: string
+      }
+      gym_save_template: {
+        Args: { p_exercises: Json; p_name: string }
+        Returns: string
+      }
+      last_30d_analytics: { Args: never; Returns: Json }
+      notes_edit_note: {
+        Args: {
+          p_id: string
+          p_notes: string
+          p_title: string
+          p_updated_at: string
+        }
+        Returns: {
+          created_at: string
+          extra_fields: Json
+          id: string
+          occurred_at: string
+          source_id: string
+          title: string
+          type: string
+          updated_at: string | null
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "feed_items"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      notes_save_note: {
+        Args: { p_notes: string; p_title: string }
+        Returns: string
+      }
+      reminders_delete_global_reminder: {
+        Args: { p_id: string }
+        Returns: undefined
+      }
+      reminders_delete_local_reminder: {
+        Args: { p_id: string }
+        Returns: undefined
+      }
+      reminders_edit_global_reminder: {
+        Args: {
+          p_delivered: boolean
+          p_id: string
+          p_notes: string
+          p_notify_at: string
+          p_seen_at: string
+          p_title: string
+          p_updated_at: string
+        }
+        Returns: {
+          created_at: string
+          extra_fields: Json
+          id: string
+          occurred_at: string
+          source_id: string
+          title: string
+          type: string
+          updated_at: string | null
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "feed_items"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      reminders_edit_local_reminder: {
+        Args: {
+          p_id: string
+          p_notes: string
+          p_notify_at_time: string
+          p_notify_date: string
+          p_seen_at: string
+          p_title: string
+          p_type: string
+          p_updated_at: string
+          p_weekdays: Json
+        }
+        Returns: {
+          created_at: string
+          extra_fields: Json
+          id: string
+          occurred_at: string
+          source_id: string
+          title: string
+          type: string
+          updated_at: string | null
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "feed_items"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      reminders_save_global_reminder: {
+        Args: {
+          p_notes: string
+          p_notify_at: string
+          p_title: string
+          p_type: string
+        }
+        Returns: string
+      }
+      reminders_save_local_reminder: {
+        Args: {
+          p_notes: string
+          p_notify_at_time: string
+          p_notify_date: string
+          p_title: string
+          p_type: string
+          p_weekdays: Json
+        }
+        Returns: string
+      }
+      todo_check_todo: {
+        Args: { p_list_id: string; p_todo_tasks: Json; p_updated_at: string }
+        Returns: {
+          created_at: string
+          extra_fields: Json
+          id: string
+          occurred_at: string
+          source_id: string
+          title: string
+          type: string
+          updated_at: string | null
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "feed_items"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      todo_edit_todo: {
+        Args: {
+          p_deleted_ids: string[]
+          p_id: string
+          p_tasks: Json
+          p_title: string
+          p_updated_at: string
+        }
+        Returns: {
+          created_at: string
+          extra_fields: Json
+          id: string
+          occurred_at: string
+          source_id: string
+          title: string
+          type: string
+          updated_at: string | null
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "feed_items"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      todo_save_todo: {
+        Args: { p_title: string; p_todo_list: Json }
+        Returns: string
+      }
+      weight_edit_weight: {
+        Args: {
+          p_id: string
+          p_notes: string
+          p_title: string
+          p_updated_at: string
+          p_weight: number
+        }
+        Returns: {
+          created_at: string
+          extra_fields: Json
+          id: string
+          occurred_at: string
+          source_id: string
+          title: string
+          type: string
+          updated_at: string | null
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "feed_items"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      weight_save_weight: {
+        Args: { p_notes: string; p_title: string; p_weight: number }
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never

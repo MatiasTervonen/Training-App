@@ -5,7 +5,7 @@ import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
 import { weight } from "@/app/(app)/types/models";
-import { deleteSession } from "../../database/feed";
+import { deleteSession } from "@/app/(app)/database/feed/deleteSession";
 import { useQueryClient } from "@tanstack/react-query";
 
 type AllDataProps = {
@@ -53,7 +53,7 @@ export default function AllDataTable({ data }: AllDataProps) {
     });
 
     try {
-      await deleteSession({ table: "weight", id });
+      await deleteSession(id, "weight");
 
       queryClient.refetchQueries({ queryKey: ["feed"], exact: true });
 

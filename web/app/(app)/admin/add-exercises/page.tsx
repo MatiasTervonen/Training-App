@@ -2,15 +2,14 @@
 
 import CustomInput from "@/app/(app)/ui/CustomInput";
 import { useState } from "react";
-import ExerciseTypeSelect from "@/app/(app)/training/components/ExerciseTypeSelect";
+import ExerciseTypeSelect from "@/app/(app)/gym/components/ExerciseTypeSelect";
 import SaveButton from "@/app/(app)/components/buttons/save-button";
 import toast from "react-hot-toast";
-import { generateUUID } from "@/app/(app)/lib/generateUUID";
-import FullScreenLoader from "../../components/FullScreenLoader";
-import { saveExerciseToDB } from "../../database/admin";
+import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
+import { saveExercise } from "@/app/(app)/database/admin/save-exercise";
 import { useQueryClient } from "@tanstack/react-query";
 
-export default function EditExercises() {
+export default function AddExercises() {
   const [name, setName] = useState("");
   const [language, setLanguage] = useState("en");
   const [equipment, setEquipment] = useState("barbell");
@@ -31,7 +30,6 @@ export default function EditExercises() {
     setIsSaving(true);
 
     const exerciseData = {
-      id: generateUUID(),
       name,
       language,
       equipment,
@@ -40,7 +38,7 @@ export default function EditExercises() {
     };
 
     try {
-      await saveExerciseToDB(exerciseData);
+      await saveExercise(exerciseData);
 
       await queryClient.refetchQueries({
         queryKey: ["exercises", ""],

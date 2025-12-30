@@ -1,4 +1,4 @@
-import LinkButton from "../components/buttons/LinkButton";
+import LinkButton from "@/app/(app)/components/buttons/LinkButton";
 
 export default function WeightPage() {
   return (

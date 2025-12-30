@@ -3,7 +3,7 @@
 import FriendRequestForm from "./components/FriendRequestForm";
 import FriendCard from "./components/FriendCard";
 import { FriendCardSkeleton } from "../../ui/loadingSkeletons/skeletons";
-import { getFirends } from "@/app/(app)/database/friends";
+import { getFirends } from "@/app/(app)/database/friends/get-friends";
 import { useQuery } from "@tanstack/react-query";
 
 type Friends = {

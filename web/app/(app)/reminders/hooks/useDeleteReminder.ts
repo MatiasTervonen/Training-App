@@ -1,6 +1,6 @@
-import { full_reminder } from "../../types/session";
+import { full_reminder } from "@/app/(app)/types/session";
 import { useQueryClient } from "@tanstack/react-query";
-import { deleteGlobalReminder } from "../../database/reminder";
+import { deleteGlobalReminder } from "@/app/(app)/database/reminders/delete-global-reminder";
 import toast from "react-hot-toast";
 
 export default function useDeleteReminder() {

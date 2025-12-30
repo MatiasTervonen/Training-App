@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { MessageCircle } from "lucide-react";
 import Image from "next/image";
-import NotificationBell from "@/app/(app)/components/navbar/components/NotificationBell";
+import NotificationBell from "@/app/(app)/components/navbar/NotificationBell";
 import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
 import { useRouter } from "next/navigation";
 import ActiveSessionPopup from "@/app/(app)/components/activeSessionPopup";

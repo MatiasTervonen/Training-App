@@ -2,7 +2,6 @@ import { supabase } from "@/lib/supabase";
 import { handleError } from "@/utils/handleError";
 
 type Exercise = {
-  id: string;
   name: string;
   language: string;
   equipment: string;
@@ -11,7 +10,6 @@ type Exercise = {
 };
 
 export default async function AddExercise({
-  id,
   name,
   language,
   equipment,
@@ -31,7 +29,6 @@ export default async function AddExercise({
     .from("gym_exercises")
     .insert([
       {
-        id,
         name,
         language,
         equipment,

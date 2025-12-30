@@ -13,7 +13,6 @@ interface Props {
   setExerciseToChangeIndex: (index: number | null) => void;
   exercises: ExerciseEntry[];
   setExercises: React.Dispatch<React.SetStateAction<ExerciseEntry[]>>;
-  resetTrigger: number;
   setIsExerciseModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
@@ -24,7 +23,6 @@ export default function ExerciseSelectorList({
   setExerciseToChangeIndex,
   exercises,
   setExercises,
-  resetTrigger,
   setIsExerciseModalOpen,
 }: Props) {
   return (
@@ -70,7 +68,6 @@ export default function ExerciseSelectorList({
                   });
                 }
               }}
-              resetTrigger={resetTrigger}
             />
           );
         }

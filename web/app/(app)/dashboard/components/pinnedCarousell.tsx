@@ -4,25 +4,21 @@ import { useState, useEffect } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import { Pin } from "lucide-react";
-import FeedCard from "@/app/(app)/components/cards/FeedCard";
+import FeedCard from "@/app/(app)/components/feed-cards/FeedCard";
 import { useRouter } from "next/navigation";
 import { useModalPageConfig } from "@/app/(app)/lib/stores/modalPageConfig";
-import { FeedItem } from "@/app/(app)/types/models";
-
-type Table =
-  | "gym_sessions"
-  | "notes"
-  | "weight"
-  | "todo_lists"
-  | "global_reminders"
-  | "local_reminders";
+import { FeedItemUI } from "../../types/session";
 
 interface PinnedCarouselProps {
-  pinnedFeed: FeedItem[];
-  setExpandedItem: (item: FeedItem) => void;
-  setEditingItem: (item: FeedItem) => void;
-  togglePin: (id: string, table: Table, pinned: boolean) => void;
-  handleDelete: (id: string, table: Table) => void;
+  pinnedFeed: FeedItemUI[];
+  setExpandedItem: (item: FeedItemUI) => void;
+  setEditingItem: (item: FeedItemUI) => void;
+  togglePin: (
+    id: string,
+    type: string,
+    feed_context: "pinned" | "feed"
+  ) => void;
+  handleDelete: (id: string, type: string) => void;
 }
 
 export default function PinnedCarousel({
@@ -81,23 +77,27 @@ export default function PinnedCarousel({
               {pinnedFeed.map((feedItem) => (
                 <div
                   className="flex-none w-full min-w-0 mr-5 select-none"
-                  key={feedItem.item.id}
+                  key={feedItem.id}
                 >
                   <FeedCard
-                    {...feedItem}
+                    item={feedItem}
                     pinned={true}
                     onExpand={() => {
                       setExpandedItem(feedItem);
                     }}
                     onTogglePin={() =>
-                      togglePin(feedItem.item.id, feedItem.table, true)
+                      togglePin(
+                        feedItem.id,
+                        feedItem.type,
+                        feedItem.feed_context
+                      )
                     }
                     onDelete={() =>
-                      handleDelete(feedItem.item.id, feedItem.table)
+                      handleDelete(feedItem.source_id, feedItem.type)
                     }
                     onEdit={() => {
-                      if (feedItem.table === "gym_sessions") {
-                        router.push(`/training/gym/${feedItem.item.id}/edit`);
+                      if (feedItem.type === "gym_sessions") {
+                        router.push(`/training/gym/${feedItem.source_id}/edit`);
                       } else {
                         setEditingItem(feedItem);
                       }

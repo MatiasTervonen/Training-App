@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { saveNotesToDB } from "../../database/notes";
+import { saveNote } from "@/app/(app)/database/notes/save-notes";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 
@@ -10,7 +10,7 @@ export default function useSaveNotes() {
   const router = useRouter();
 
   return useMutation({
-    mutationFn: saveNotesToDB,
+    mutationFn: saveNote,
     onSuccess: () => {
       queryClient.refetchQueries({ queryKey: ["feed"], exact: true });
       toast.success("Notes saved successfully");

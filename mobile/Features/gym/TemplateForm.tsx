@@ -43,7 +43,6 @@ export default function TemplateForm() {
   const [isExerciseModalOpen, setIsExerciseModalOpen] = useState(false);
   const [exerciseType, setExerciseType] = useState("Normal");
   const [supersetExercise, setSupersetExercise] = useState<ExerciseEntry[]>([]);
-  const [dropdownResetKey, setDropdownResetKey] = useState(0);
   const [isSaving, setIsSaving] = useState(false);
   const [normalExercises, setNormalExercises] = useState<ExerciseEntry[]>([]);
   const [exerciseInputs, setExerciseInputs] = useState<ExerciseInput[]>([]);
@@ -180,7 +179,6 @@ export default function TemplateForm() {
     setExercises,
     setSupersetExercise,
     setNormalExercises,
-    setDropdownResetKey,
     setExerciseInputs,
     isCardioExercise,
   });
@@ -340,7 +338,6 @@ export default function TemplateForm() {
                 setExerciseToChangeIndex={setExerciseToChangeIndex}
                 exercises={exercises}
                 setExercises={setExercises}
-                resetTrigger={dropdownResetKey}
                 setIsExerciseModalOpen={setIsExerciseModalOpen}
               />
               <View className="flex-row gap-3 px-2 mt-5 mb-10 right-0 z-50">

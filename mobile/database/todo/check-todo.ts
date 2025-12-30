@@ -17,7 +17,6 @@ export async function checkedTodo({
   list_id,
   todo_tasks,
 }: TodoTaskCheck) {
-  console.log("list_id", list_id);
 
   const { error, data } = await supabase.rpc("todo_check_todo", {
     p_list_id: list_id,

@@ -2,14 +2,17 @@
 
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import SetInput from "@/app/(app)/training/components/SetInput";
-import Timer from "../components/timer";
+import SetInput from "@/app/(app)/gym/components/SetInput";
+import Timer from "@/app/(app)/timer/components/timer";
 import { CircleX } from "lucide-react";
-import { useTimerStore } from "../../lib/stores/timerStore";
+import { useTimerStore } from "@/app/(app)/lib/stores/timerStore";
 import { AlarmClock } from "lucide-react";
-import { playAlarmAudio, stopAlarmAudio } from "../components/alarmAudio";
-import BaseButton from "../../components/buttons/BaseButton";
-import DeleteSessionBtn from "../../components/buttons/deleteSessionBtn";
+import {
+  playAlarmAudio,
+  stopAlarmAudio,
+} from "@/app/(app)/timer/components/alarmAudio";
+import BaseButton from "@/app/(app)/components/buttons/BaseButton";
+import DeleteSessionBtn from "@/app/(app)/components/buttons/deleteSessionBtn";
 
 export default function TimerPage() {
   const [alarmMinutes, setAlarmMinutes] = useState("");

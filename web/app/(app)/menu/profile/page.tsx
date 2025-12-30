@@ -3,14 +3,14 @@
 import SaveButton from "@/app/(app)/components/buttons/save-button";
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
-import ExerciseTypeSelect from "@/app/(app)/training/components/ExerciseTypeSelect";
+import ExerciseTypeSelect from "@/app/(app)/gym/components/ExerciseTypeSelect";
 import CustomInput from "@/app/(app)/ui/CustomInput";
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
 import ProfilePicture from "@/app/(app)/menu/components/profile-picture";
 import { fileTypeFromBlob } from "file-type";
-import { saveSettings } from "@/app/(app)/database/settings";
-import { validateUserName } from "@/app/(app)/database/settings";
+import { saveUserProfile } from "@/app/(app)/database/settings/save-user-profile";
+import { validateUserName } from "@/app/(app)/database/settings/validateUserName";
 
 export default function Settings() {
   const [isSaving, setIsSaving] = useState(false);
@@ -62,7 +62,7 @@ export default function Settings() {
     formData.append("file", selectedProfilePic);
 
     try {
-      const res = await fetch("/api/settings/save-profilePic", {
+      const res = await fetch("/api/settings/save-profilePic-web", {
         method: "POST",
         body: formData,
       });
@@ -74,7 +74,8 @@ export default function Settings() {
       const data = await res.json();
 
       return `${data.publicUrl}?v=${Date.now()}`;
-    } catch {
+    } catch (error) {
+      console.log("error uploading image", error);
       toast.error("Failed to upload image");
       return profilePicZ || null;
     }
@@ -106,7 +107,7 @@ export default function Settings() {
         profile_picture: profilePictureUrl,
       };
 
-      await saveSettings(payload);
+      await saveUserProfile(payload);
 
       setPreferences(payload);
       toast.success("Settings updated successfully!");

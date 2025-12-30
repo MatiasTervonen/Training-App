@@ -1,12 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import WeightChart from "../components/WeightChart";
-import AllDataTable from "../components/AllDataTable";
+import WeightChart from "@/app/(app)/weight/components/WeightChart";
+import AllDataTable from "@/app/(app)/weight/components/AllDataTable";
 import Spinner from "@/app/(app)/components/spinner";
 import { weight } from "@/app/(app)/types/models";
 import { useQuery } from "@tanstack/react-query";
-import { getWeight } from "../../database/weight";
+import { getWeight } from "@/app/(app)/database/weight/get-weight";
 
 export default function Page() {
   const [range, setRange] = useState<"week" | "month" | "year" | "all">(

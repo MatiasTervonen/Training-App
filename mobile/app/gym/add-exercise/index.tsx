@@ -2,7 +2,6 @@ import AppInput from "@/components/AppInput";
 import { useState } from "react";
 import SaveButton from "@/components/buttons/SaveButton";
 import Toast from "react-native-toast-message";
-import * as crypto from "expo-crypto";
 import FullScreenLoader from "@/components/FullScreenLoader";
 import { View, TouchableWithoutFeedback, Keyboard } from "react-native";
 import AppText from "@/components/AppText";
@@ -32,7 +31,6 @@ export default function AddExercises() {
     setIsSaving(true);
 
     const exerciseData = {
-      id: crypto.randomUUID(),
       name,
       language,
       equipment,

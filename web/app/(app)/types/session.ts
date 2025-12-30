@@ -1,4 +1,5 @@
 import type { Json } from "./database.types";
+import { feed_items } from "./models";
 
 export type Template = {
   id: string;
@@ -46,6 +47,7 @@ export type ExerciseSet = {
 
 export type ExerciseEntry = {
   exercise_id: string;
+  template_id: string;
   name: string;
   equipment: string; // Optional, can be used to display equipment type
   main_group?: string; // Optional, can be used to display main muscle group
@@ -53,16 +55,19 @@ export type ExerciseEntry = {
   notes?: string;
   superset_id?: string; // For super-sets
   muscle_group?: string; // Optional, can be used to display muscle group
+  position: number;
 };
 
 export const emptyExerciseEntry: ExerciseEntry = {
   exercise_id: "",
+  template_id: "",
   name: "",
   equipment: "",
   sets: [],
   notes: "",
   superset_id: "",
   muscle_group: "",
+  position: 0,
 };
 
 export type ExerciseInput = {
@@ -116,14 +121,6 @@ export type Last30DaysAnalytics = {
   }[];
 };
 
-export type FeedData = {
-  pageParams: number[];
-  pages: {
-    feed: Feed_item[];
-    nextPage: number;
-  }[];
-};
-
 export type full_reminder = {
   id: string;
   title: string;
@@ -138,4 +135,47 @@ export type full_reminder = {
   notify_date?: string | null;
   notify_at_time?: string | null;
   delivered?: boolean | null;
+};
+
+export type FeedData = {
+  pageParams: number[] | null;
+  pages: {
+    feed: FeedItemUI[];
+    nextPage?: number | null;
+  }[];
+};
+
+export type FeedItemUI = feed_items & {
+  feed_context: "pinned" | "feed";
+};
+
+export type FeedCardProps = {
+  item: FeedItemUI;
+  pinned: boolean;
+  onTogglePin: () => void;
+  onDelete: () => void;
+  onExpand: () => void;
+  onEdit: () => void;
+};
+
+// For editing todo sessions
+export type full_todo_session_optional_id = {
+  created_at: string;
+  id: string;
+  title: string;
+  updated_at: string | null;
+  user_id: string;
+} & {
+  todo_tasks: {
+    created_at: string;
+    id?: string;
+    tempId?: string;
+    is_completed: boolean;
+    list_id: string;
+    notes: string | null;
+    position: number | null;
+    task: string;
+    updated_at: string | null;
+    user_id: string;
+  }[];
 };

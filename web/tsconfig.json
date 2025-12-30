@@ -36,7 +36,7 @@
     "tailwind.config.ts",
     "scripts/seed-users.js",
     ".next/dev/types/**/*.ts"
-  ],
+, "app/(app)/database/push-notifications"  ],
   "exclude": [
     "node_modules"
   ]

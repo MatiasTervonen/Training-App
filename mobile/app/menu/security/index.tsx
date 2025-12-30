@@ -6,7 +6,7 @@ import {
   ScrollView,
 } from "react-native";
 import AppText from "@/components/AppText";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useSignOut } from "@/lib/handleSignout";
 import { supabase } from "@/lib/supabase";
 import AppInput from "@/components/AppInput";
@@ -69,15 +69,13 @@ export default function SecurityPage() {
       setTimeout(() => {
         signOut();
       }, 3000);
-    } catch (error: any) {
+    } catch (error) {
       handleError(error, {
         message: "Unexpected error updating password",
         route: "security settings",
         method: "POST",
       });
-      Alert.alert(
-        error.message || "An unexpected error occurred. Please try again."
-      );
+      Alert.alert("Failed to update password! Please try again.");
       setLoading(false);
     }
   };
@@ -130,7 +128,6 @@ export default function SecurityPage() {
         signOut();
       }, 3000);
     } catch (error) {
-      console.log("error deleting account", error);
       handleError(error, {
         message: "Error deleting account",
         route: "security settings",
@@ -140,14 +137,6 @@ export default function SecurityPage() {
       setLoading2(false);
     }
   };
-
-  useEffect(() => {
-    setErrorMessage((prev) => (prev ? "" : prev));
-  }, [password, confirmPassword]);
-
-  useEffect(() => {
-    setErrorMessage2((prev) => (prev ? "" : prev));
-  }, [isDeleteAccount]);
 
   return (
     <ScrollView>
@@ -164,7 +153,10 @@ export default function SecurityPage() {
             <AppInput
               label="New Password"
               value={password}
-              setValue={setPassword}
+              setValue={(value) => {
+                setPassword(value);
+                setErrorMessage("");
+              }}
               placeholder="Enter new password"
               secureTextEntry
             />
@@ -173,7 +165,10 @@ export default function SecurityPage() {
             <AppInput
               label="Confirm Password"
               value={confirmPassword}
-              setValue={setConfirmPassword}
+              setValue={(value) => {
+                setConfirmPassword(value);
+                setErrorMessage("");
+              }}
               placeholder="Confirm new password"
               secureTextEntry
             />
@@ -222,7 +217,10 @@ export default function SecurityPage() {
               label="Type: DELETE ACCOUNT"
               placeholder="Type: DELETE ACCOUNT"
               value={isDeleteAccount}
-              setValue={setIsDeleteAccount}
+              setValue={(value) => {
+                setIsDeleteAccount(value);
+                setErrorMessage2("");
+              }}
             />
           </View>
           {successMessage2 ? (

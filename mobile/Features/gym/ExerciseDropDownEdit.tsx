@@ -14,7 +14,6 @@ import AnimatedButton from "@/components/buttons/animatedButton";
 
 type Props = {
   onSelect: (exercise: userExercise) => void;
-  resetTrigger?: number;
 };
 
 type userExercise = {
@@ -28,8 +27,7 @@ type userExercise = {
 };
 
 export default function ExerciseDropdownEdit({
-  onSelect,
-  resetTrigger,
+  onSelect
 }: Props) {
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredExercises, setFilteredExercises] = useState<userExercise[]>(
@@ -78,11 +76,6 @@ export default function ExerciseDropdownEdit({
     onSelect(exercise);
     setShowDropdown(false);
   };
-
-  useEffect(() => {
-    setShowDropdown(true);
-    setSearchQuery("");
-  }, [resetTrigger]);
 
   const sections = [];
 

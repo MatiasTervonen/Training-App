@@ -1,17 +1,17 @@
 "use client";
 
 import Spinner from "@/app/(app)/components/spinner";
-import ExerciseTypeSelect from "@/app/(app)/training/components/ExerciseTypeSelect";
+import ExerciseTypeSelect from "@/app/(app)/gym/components/ExerciseTypeSelect";
 import { useState } from "react";
 import { users } from "@/app/(app)/types/models";
-import { banUser } from "@/app/(app)/database/admin";
+import { banUser } from "@/app/(app)/database/admin/ban-user";
 import toast from "react-hot-toast";
 import SubNotesInput from "../../ui/SubNotesInput";
-import { deleteUser } from "@/app/(app)/database/admin";
-import { promoteUser } from "@/app/(app)/database/admin";
+import { deleteUser } from "@/app/(app)/database/admin/delete-user";
+import { promoteUser } from "@/app/(app)/database/admin/promote-user";
 import { useQuery } from "@tanstack/react-query";
-import { getUsers } from "@/app/(app)/database/admin";
-import { getUserCount } from "@/app/(app)/database/admin";
+import { getUsers } from "@/app/(app)/database/admin/get-users";
+import { getUserCount } from "@/app/(app)/database/admin/get-user-count";
 import { UserTableSkeleton } from "../../ui/loadingSkeletons/skeletons";
 
 export default function Sessions() {

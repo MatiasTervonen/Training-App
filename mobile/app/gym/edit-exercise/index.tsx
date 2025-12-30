@@ -39,7 +39,6 @@ export default function EditExercises() {
   const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(
     null
   );
-  const [resetTrigger, setResetTrigger] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
 
   const queryClient = useQueryClient();
@@ -101,7 +100,6 @@ export default function EditExercises() {
         text1: "Exercise deleted successfully!",
       });
       setSelectedExercise(null);
-      setResetTrigger((prev) => prev + 1);
     } catch {
       Toast.show({
         type: "error",
@@ -130,7 +128,6 @@ export default function EditExercises() {
     setMuscleGroup("");
     setMainGroup("");
     setSelectedExercise(null);
-    setResetTrigger((prev) => prev + 1);
   };
 
   if (!selectedExercise) {
@@ -139,7 +136,6 @@ export default function EditExercises() {
         onSelect={(exercise) => {
           setSelectedExercise(exercise as gym_exercises);
         }}
-        resetTrigger={resetTrigger}
       />
     );
   }

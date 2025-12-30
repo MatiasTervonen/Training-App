@@ -37,7 +37,7 @@ export default function ActiveSessionPopup() {
 
   if (!activeSession) return null;
 
-  if (pathname === "/training/gym" && activeSession.type === "gym") {
+  if (pathname === "/gym/gym" && activeSession.type === "gym") {
     return null;
   }
 

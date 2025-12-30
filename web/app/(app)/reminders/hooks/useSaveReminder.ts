@@ -1,4 +1,4 @@
-import { saveGlobalReminderToDB } from "../../database/reminder";
+import { saveGlobalReminder } from "@/app/(app)/database/reminders/save-global-reminder";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
@@ -37,7 +37,7 @@ export default function useSaveReminder({
     setIsSaving(true);
 
     try {
-      await saveGlobalReminderToDB({
+      await saveGlobalReminder({
         title: title,
         notes,
         type: "global",

@@ -15,7 +15,7 @@ import { FeedItemUI } from "@/types/session";
 type Props = {
   note: FeedItemUI;
   onClose: () => void;
-  onSave?: (updateFeedItem: FeedItemUI) => void;
+  onSave: (updateFeedItem: FeedItemUI) => void;
 };
 
 type notesPayload = {
@@ -43,7 +43,7 @@ export default function EditNotes({ note, onClose, onSave }: Props) {
         updated_at: new Date().toISOString(),
       });
 
-      await onSave?.(updatedFeedItem as FeedItemUI);
+      onSave(updatedFeedItem as FeedItemUI);
       onClose();
     } catch (error) {
       console.log("error editing notes", error);

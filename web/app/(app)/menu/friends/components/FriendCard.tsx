@@ -4,7 +4,7 @@ import Image from "next/image";
 import { Trash2 } from "lucide-react";
 import toast from "react-hot-toast";
 import { Friends } from "@/app/(app)/types/models";
-import { deleteFriend } from "@/app/(app)/database/friends";
+import { deleteFriend } from "@/app/(app)/database/friends/delete-friend";
 import { useQueryClient } from "@tanstack/react-query";
 
 type FriendCardProps = {

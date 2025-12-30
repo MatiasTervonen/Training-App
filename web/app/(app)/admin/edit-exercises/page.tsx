@@ -2,14 +2,15 @@
 
 import CustomInput from "@/app/(app)/ui/CustomInput";
 import { useState, useEffect } from "react";
-import ExerciseTypeSelect from "@/app/(app)/training/components/ExerciseTypeSelect";
+import ExerciseTypeSelect from "@/app/(app)/gym/components/ExerciseTypeSelect";
 import SaveButton from "@/app/(app)/components/buttons/save-button";
 import toast from "react-hot-toast";
-import ExerciseDropdown from "@/app/(app)/training/components/ExerciseDropdown";
+import ExerciseDropdown from "@/app/(app)/gym/components/ExerciseDropdown";
 import DeleteSessionBtn from "@/app/(app)/components/buttons/deleteSessionBtn";
-import { gym_exercises } from "../../types/models";
-import FullScreenLoader from "../../components/FullScreenLoader";
-import { deleteExercise, editExercise } from "../../database/gym";
+import { gym_exercises } from "@/app/(app)/types/models";
+import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
+import { deleteExercise } from "@/app/(app)/database/admin/delete-exercise";
+import { editExercise } from "@/app/(app)/database/admin/edit-exercise";
 import { useQueryClient } from "@tanstack/react-query";
 
 export default function EditExercises() {
@@ -21,7 +22,6 @@ export default function EditExercises() {
   const [isSaving, setIsSaving] = useState(false);
   const [selectedExercise, setSelectedExercise] =
     useState<gym_exercises | null>(null);
-  const [resetTrigger, setResetTrigger] = useState(0);
 
   const queryClient = useQueryClient();
 
@@ -74,7 +74,6 @@ export default function EditExercises() {
 
       toast.success("Exercise deleted successfully!");
       setSelectedExercise(null);
-      setResetTrigger((prev) => prev + 1);
     } catch {
       toast.error("Failed to delete exercise. Please try again.");
     } finally {
@@ -99,7 +98,6 @@ export default function EditExercises() {
     setMuscleGroup("");
     setMainGroup("");
     setSelectedExercise(null);
-    setResetTrigger((prev) => prev + 1);
   };
 
   return (
@@ -109,7 +107,6 @@ export default function EditExercises() {
           onSelect={(exercise) => {
             setSelectedExercise(exercise);
           }}
-          resetTrigger={resetTrigger}
         />
       )}
       <div>

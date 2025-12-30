@@ -7,11 +7,11 @@ import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import { useRouter } from "next/navigation";
 import { formatDate } from "@/app/(app)/lib/formatDate";
 import toast from "react-hot-toast";
-import { saveWeightToDB } from "../../database/weight";
-import TitleInput from "../../ui/TitleInput";
-import SubNotesInput from "../../ui/SubNotesInput";
+import { saveWeight } from "@/app/(app)/database/weight/save-weight";
+import TitleInput from "@/app/(app)/ui/TitleInput";
+import SubNotesInput from "@/app/(app)/ui/SubNotesInput";
 import { useQueryClient } from "@tanstack/react-query";
-import CustomInput from "../../ui/CustomInput";
+import CustomInput from "@/app/(app)/ui/CustomInput";
 
 export default function WorkoutAnalyticsPage() {
   const now = formatDate(new Date());
@@ -63,7 +63,7 @@ export default function WorkoutAnalyticsPage() {
     setWeight("");
   };
 
-  const saveWeight = async () => {
+  const handleSaveWeight = async () => {
     const parsedWeight = Number(weight);
 
     if (isNaN(parsedWeight) || parsedWeight <= 0) {
@@ -74,7 +74,7 @@ export default function WorkoutAnalyticsPage() {
     setIsSaving(true);
 
     try {
-      await saveWeightToDB({
+      await saveWeight({
         title: weightTitle,
         notes: weightNotes,
         weight: parsedWeight,
@@ -118,7 +118,7 @@ export default function WorkoutAnalyticsPage() {
         />
       </div>
       <div className="flex flex-col items-center gap-5">
-        <SaveButton onClick={saveWeight} />
+        <SaveButton onClick={handleSaveWeight} />
         <DeleteSessionBtn onDelete={resetWeight} />
       </div>
       {isSaving && <FullScreenLoader message="Saving weight..." />}

@@ -16,7 +16,7 @@ export default async function Last30DaysAnalytics() {
     .select(`*, gym_session_exercises(*, gym_exercises(*), gym_sets(*))`)
     .gte(
       "created_at",
-      new Date(new Date().setDate(new Date().getDate() - 30)).toISOString(),
+      new Date(new Date().setDate(new Date().getDate() - 30)).toISOString()
     )
     .eq("user_id", session.user.id);
 

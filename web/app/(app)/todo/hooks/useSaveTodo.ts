@@ -1,22 +1,42 @@
-import { saveTodoToDB } from "../../database/todo";
+import { saveTodo } from "@/app/(app)/database/todo/save-todo";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-import { useMutation } from "@tanstack/react-query";
+import { useState } from "react";
 
-export default function useSaveTodo() {
+type TodoTask = {
+  task: string;
+  notes: string | null;
+};
+
+export default function useSaveTodo({
+  title,
+  todoList,
+}: {
+  title: string;
+  todoList: TodoTask[];
+}) {
+  const [isSaving, setIsSaving] = useState(false);
   const queryClient = useQueryClient();
   const router = useRouter();
 
-  return useMutation({
-    mutationFn: saveTodoToDB,
-    onSuccess: () => {
-      queryClient.refetchQueries({ queryKey: ["feed"], exact: true });
+  const handleSaveTodo = async () => {
+    try {
+      setIsSaving(true);
+      await saveTodo({
+        title,
+        todoList,
+      });
+
+      await queryClient.refetchQueries({ queryKey: ["feed"], exact: true });
+
       toast.success("Todo saved successfully");
       router.push("/dashboard");
-    },
-    onError: () => {
+    } catch {
       toast.error("Failed to save todo");
-    },
-  });
+      setIsSaving(false);
+    }
+  };
+
+  return { handleSaveTodo, isSaving };
 }

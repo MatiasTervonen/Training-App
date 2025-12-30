@@ -27,13 +27,11 @@ import { FeedItemUI } from "@/types/session";
 
 type TodoSessionProps = {
   initialTodo: full_todo_session;
-  mutateFullTodoSession: () => void;
   onSave: (updatedItem: FeedItemUI) => void;
 };
 
 export default function TodoSession({
   initialTodo,
-  mutateFullTodoSession,
   onSave,
 }: TodoSessionProps) {
   const [open, setOpen] = useState<number | null>(null);
@@ -96,8 +94,7 @@ export default function TodoSession({
       lastSavedRef.current = sessionData.todo_tasks;
       setOriginalOrder(sessionData.todo_tasks);
 
-      onSave?.(updatedFeedItem as FeedItemUI);
-      mutateFullTodoSession();
+      onSave(updatedFeedItem as FeedItemUI);
       Toast.show({
         type: "success",
         text1: "Changes saved successfully",

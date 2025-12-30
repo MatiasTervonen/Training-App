@@ -6,10 +6,10 @@ import Modal from "@/app/(app)/components/modal";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import TimerCard from "../components/TimerCard";
-import { useTimerStore } from "../../lib/stores/timerStore";
+import { useTimerStore } from "@/app/(app)/lib/stores/timerStore";
 import { timers } from "@/app/(app)/types/models";
-import { deleteTimer } from "../../database/timer";
-import { getTimers } from "../../database/timer";
+import { deleteTimer } from "@/app/(app)/database/timer/delete-timer";
+import { getTimers } from "@/app/(app)/database/timer/get-timers";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
 
 export default function TimersPage() {

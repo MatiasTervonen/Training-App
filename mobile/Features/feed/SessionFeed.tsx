@@ -214,11 +214,11 @@ export default function SessionFeed() {
                 todoSessionFull && (
                   <TodoSession
                     initialTodo={todoSessionFull}
-                    mutateFullTodoSession={() => {
-                      refetchFullTodo();
-                    }}
-                    onSave={(updatedItem) => {
-                      updateFeedItem(updatedItem);
+                    onSave={async (updatedItem) => {
+                      await Promise.all([
+                        updateFeedItem(updatedItem),
+                        refetchFullTodo(),
+                      ]);
                     }}
                   />
                 )
@@ -278,7 +278,7 @@ export default function SessionFeed() {
             <HandleEditLocalReminder
               reminder={editingItem}
               onClose={() => setEditingItem(null)}
-              onSave={async (updatedItem) => {
+              onSave={(updatedItem) => {
                 updateFeedItem(updatedItem);
                 setEditingItem(null);
               }}

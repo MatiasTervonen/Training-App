@@ -74,7 +74,6 @@ export default function GymForm({
   const [isSaving, setIsSaving] = useState(false);
   const [exerciseType, setExerciseType] = useState("Normal");
   const [supersetExercise, setSupersetExercise] = useState<ExerciseEntry[]>([]);
-  const [dropdownResetKey, setDropdownResetKey] = useState(0);
   const [isExerciseModalOpen, setIsExerciseModalOpen] = useState(false);
   const [normalExercises, setNormalExercises] = useState<ExerciseEntry[]>([]);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
@@ -163,7 +162,6 @@ export default function GymForm({
     setExerciseInputs,
     setSupersetExercise,
     setNormalExercises,
-    setDropdownResetKey,
     startSession,
     exerciseType,
     supersetExercise,
@@ -394,7 +392,6 @@ export default function GymForm({
                   setExerciseToChangeIndex={setExerciseToChangeIndex}
                   exercises={exercises}
                   setExercises={setExercises}
-                  resetTrigger={dropdownResetKey}
                   setIsExerciseModalOpen={setIsExerciseModalOpen}
                 />
               </View>

@@ -9,8 +9,8 @@ import InfoModal from "@/app/(app)/components/InfoModal";
 import LinkButton from "@/app/(app)/components/buttons/LinkButton";
 import SubNotesInput from "@/app/(app)/ui/SubNotesInput";
 import TitleInput from "@/app/(app)/ui/TitleInput";
-import useDraft from "../hooks/useDraft";
-import useSaveReminder from "../hooks/useSaveReminder";
+import useDraft from "@/app/(app)/reminders/hooks/useDraft";
+import useSaveReminder from "@/app/(app)/reminders/hooks/useSaveReminder";
 import { Info } from "lucide-react";
 
 export default function GlobalReminder() {

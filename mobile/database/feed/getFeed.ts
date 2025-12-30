@@ -33,10 +33,6 @@ export default async function getFeed({
     .order("occurred_at", { ascending: false })
     .range(from, to);
 
-  // const now = new Date();
-  // const nowIso = now.toISOString();
-  // const next4hIso = new Date(now.getTime() + 4 * 60 * 60 * 1000).toISOString();
-
   const [pinnedResult, feedResult] = await Promise.all([
     pinnedPromise,
     feedPromise,

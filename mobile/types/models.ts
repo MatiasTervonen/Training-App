@@ -20,27 +20,6 @@ export type Friends = Pick<
   >;
 };
 
-// For editing todo sessions
-export type full_todo_session_optional_id = {
-  created_at: string;
-  id: string;
-  title: string;
-  updated_at: string | null;
-  user_id: string;
-} & {
-  todo_tasks: {
-    created_at: string;
-    id: string | null;
-    is_completed: boolean;
-    list_id: string;
-    notes: string | null;
-    position: number | null;
-    task: string;
-    updated_at: string | null;
-    user_id: string;
-  }[];
-};
-
 export type feed_items = Database["public"]["Tables"]["feed_items"]["Row"];
 
 export type pinned_items = Database["public"]["Tables"]["pinned_items"]["Row"];

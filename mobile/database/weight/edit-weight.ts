@@ -3,9 +3,9 @@ import { handleError } from "@/utils/handleError";
 
 type props = {
   id: string;
-  title: string | null | undefined;
-  notes: string | null | undefined;
-  weight: number | null | undefined;
+  title: string;
+  notes: string;
+  weight: number;
   updated_at: string;
 };
 

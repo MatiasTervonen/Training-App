@@ -1,6 +1,3 @@
-Need to install the following packages:
-supabase@2.70.5
-Ok to proceed? (y) 
 export type Json =
   | string
   | number
@@ -1003,7 +1000,6 @@ export type Database = {
           delivered: boolean
           id: string
           notes: string | null
-          notification_id: Json | null
           notify_at_time: string | null
           notify_date: string | null
           seen_at: string | null
@@ -1019,7 +1015,6 @@ export type Database = {
           delivered?: boolean
           id?: string
           notes?: string | null
-          notification_id?: Json | null
           notify_at_time?: string | null
           notify_date?: string | null
           seen_at?: string | null
@@ -1035,7 +1030,6 @@ export type Database = {
           delivered?: boolean
           id?: string
           notes?: string | null
-          notification_id?: Json | null
           notify_at_time?: string | null
           notify_date?: string | null
           seen_at?: string | null
@@ -1548,41 +1542,51 @@ export type Database = {
         }
         Returns: string
       }
+      feed_delete_session: {
+        Args: { p_id: string; p_type: string }
+        Returns: undefined
+      }
       get_jwt: { Args: never; Returns: Json }
+      gym_edit_session: {
+        Args: {
+          p_duration: number
+          p_exercises: Json
+          p_id: string
+          p_notes: string
+          p_title: string
+        }
+        Returns: {
+          created_at: string
+          extra_fields: Json
+          id: string
+          occurred_at: string
+          source_id: string
+          title: string
+          type: string
+          updated_at: string | null
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "feed_items"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       gym_edit_template: {
         Args: { p_exercises: Json; p_id: string; p_name: string }
         Returns: string
       }
-      gym_save_session:
-        | {
-            Args: {
-              p_duration: number
-              p_exercises: Json
-              p_notes: string
-              p_title: string
-            }
-            Returns: string
-          }
-        | {
-            Args: {
-              p_duration: number
-              p_exercises: Json
-              p_notes: string
-              p_occured_at: string
-              p_title: string
-            }
-            Returns: string
-          }
-        | {
-            Args: {
-              p_duration: number
-              p_exercises: Json
-              p_notes: string
-              p_start_timestamp: number
-              p_title: string
-            }
-            Returns: string
-          }
+      gym_save_session: {
+        Args: {
+          p_duration: number
+          p_exercises: Json
+          p_notes: string
+          p_occured_at: string
+          p_title: string
+        }
+        Returns: string
+      }
       gym_save_template: {
         Args: { p_exercises: Json; p_name: string }
         Returns: string
@@ -1595,7 +1599,23 @@ export type Database = {
           p_title: string
           p_updated_at: string
         }
-        Returns: string
+        Returns: {
+          created_at: string
+          extra_fields: Json
+          id: string
+          occurred_at: string
+          source_id: string
+          title: string
+          type: string
+          updated_at: string | null
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "feed_items"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
       notes_save_note: {
         Args: { p_notes: string; p_title: string }
@@ -1605,32 +1625,34 @@ export type Database = {
         Args: { p_id: string }
         Returns: undefined
       }
-      reminders_edit_global_reminder:
-        | {
-            Args: {
-              p_delivered: boolean
-              p_id: string
-              p_notes: string
-              p_notify_at: string
-              p_seen_at: string
-              p_title: string
-              p_type: string
-              p_updated_at: string
-            }
-            Returns: string
-          }
-        | {
-            Args: {
-              p_delivered: boolean
-              p_id: string
-              p_notes: string
-              p_notify_at: string
-              p_seen_at: string
-              p_title: string
-              p_updated_at: string
-            }
-            Returns: string
-          }
+      reminders_edit_global_reminder: {
+        Args: {
+          p_delivered: boolean
+          p_id: string
+          p_notes: string
+          p_notify_at: string
+          p_seen_at: string
+          p_title: string
+          p_updated_at: string
+        }
+        Returns: {
+          created_at: string
+          extra_fields: Json
+          id: string
+          occurred_at: string
+          source_id: string
+          title: string
+          type: string
+          updated_at: string | null
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "feed_items"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       reminders_edit_local_reminder: {
         Args: {
           p_id: string
@@ -1643,7 +1665,23 @@ export type Database = {
           p_updated_at: string
           p_weekdays: Json
         }
-        Returns: string
+        Returns: {
+          created_at: string
+          extra_fields: Json
+          id: string
+          occurred_at: string
+          source_id: string
+          title: string
+          type: string
+          updated_at: string | null
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "feed_items"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
       reminders_save_global_reminder: {
         Args: {
@@ -1661,13 +1699,29 @@ export type Database = {
           p_notify_date: string
           p_title: string
           p_type: string
-          p_weekdays: number[]
+          p_weekdays: Json
         }
         Returns: string
       }
       todo_check_todo: {
         Args: { p_list_id: string; p_todo_tasks: Json; p_updated_at: string }
-        Returns: string
+        Returns: {
+          created_at: string
+          extra_fields: Json
+          id: string
+          occurred_at: string
+          source_id: string
+          title: string
+          type: string
+          updated_at: string | null
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "feed_items"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
       todo_edit_todo: {
         Args: {
@@ -1677,11 +1731,43 @@ export type Database = {
           p_title: string
           p_updated_at: string
         }
-        Returns: string
+        Returns: {
+          created_at: string
+          extra_fields: Json
+          id: string
+          occurred_at: string
+          source_id: string
+          title: string
+          type: string
+          updated_at: string | null
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "feed_items"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
       todo_save_todo: {
         Args: { p_title: string; p_todo_list: Json }
-        Returns: string
+        Returns: {
+          created_at: string
+          extra_fields: Json
+          id: string
+          occurred_at: string
+          source_id: string
+          title: string
+          type: string
+          updated_at: string | null
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "feed_items"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
       weight_edit_weight: {
         Args: {
@@ -1691,7 +1777,23 @@ export type Database = {
           p_updated_at: string
           p_weight: number
         }
-        Returns: string
+        Returns: {
+          created_at: string
+          extra_fields: Json
+          id: string
+          occurred_at: string
+          source_id: string
+          title: string
+          type: string
+          updated_at: string | null
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "feed_items"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
       weight_save_weight: {
         Args: { p_notes: string; p_title: string; p_weight: number }

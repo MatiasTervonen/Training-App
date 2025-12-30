@@ -2,22 +2,13 @@
 
 import { toast } from "react-hot-toast";
 import { useQueryClient } from "@tanstack/react-query";
-import { deleteSession } from "@/app/(app)/database/feed";
+import { deleteSession } from "@/app/(app)/database/feed/deleteSession";
 import { FeedData } from "@/app/(app)/types/session";
 
 export default function useDeleteSession() {
   const queryClient = useQueryClient();
 
-  const handleDelete = async (
-    id: string,
-    table:
-      | "notes"
-      | "gym_sessions"
-      | "weight"
-      | "todo_lists"
-      | "global_reminders"
-      | "local_reminders"
-  ) => {
+  const handleDelete = async (id: string, type: string) => {
     const confirmDetlete = confirm(
       "Are you sure you want to delete this item?"
     );
@@ -40,16 +31,16 @@ export default function useDeleteSession() {
     });
 
     try {
-      await deleteSession({ id, table });
+      await deleteSession(id, type);
 
-      if (table === "weight") {
+      if (type === "weight") {
         queryClient.refetchQueries({
           queryKey: ["get-weight"],
           exact: true,
         });
       }
 
-      if (table === "global_reminders") {
+      if (type === "global_reminders") {
         queryClient.refetchQueries({
           queryKey: ["get-reminders"],
           exact: true,

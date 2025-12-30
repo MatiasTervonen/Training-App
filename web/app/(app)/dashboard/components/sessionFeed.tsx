@@ -1,31 +1,31 @@
 "use client";
 
 import { useState } from "react";
-import NotesSession from "@/app/(app)/components/expandSession/notes";
+import NotesSession from "@/app/(app)/components/expand-session-cards/notes";
 import Modal from "@/app/(app)/components/modal";
-import FeedCard from "@/app/(app)/components/cards/FeedCard";
-import EditNote from "@/app/(app)/components/editSession/EditNotes";
-import GymSession from "@/app/(app)/components/expandSession/gym";
+import FeedCard from "@/app/(app)/components/feed-cards/FeedCard";
+import EditNote from "@/app/(app)/components/edit-session-cards/EditNotes";
+import GymSession from "@/app/(app)/components/expand-session-cards/gym";
 import Spinner from "@/app/(app)/components/spinner";
-import WeightSession from "@/app/(app)/components/expandSession/weight";
-import EditWeight from "@/app/(app)/components/editSession/EditWeight";
+import WeightSession from "@/app/(app)/components/expand-session-cards/weight";
+import EditWeight from "@/app/(app)/components/edit-session-cards/EditWeight";
 import { FeedSkeleton } from "@/app/(app)/ui/loadingSkeletons/skeletons";
-import TodoSession from "@/app/(app)/components/expandSession/todo";
-import EditTodo from "@/app/(app)/components/editSession/EditTodo";
-import ReminderSession from "@/app/(app)/components/expandSession/reminder";
-import EditReminder from "@/app/(app)/components/editSession/EditGlobalReminder";
+import TodoSession from "@/app/(app)/components/expand-session-cards/todo";
+import EditTodo from "@/app/(app)/components/edit-session-cards/EditTodo";
+import ReminderSession from "@/app/(app)/components/expand-session-cards/reminder";
+import EditReminder from "@/app/(app)/components/edit-session-cards/EditGlobalReminder";
 import { useRouter } from "next/navigation";
 import useDeleteSession from "@/app/(app)/dashboard/hooks/useDeleteSession";
 import useTogglePin from "@/app/(app)/dashboard/hooks/useTogglePin";
-import { FeedItem } from "@/app/(app)/types/models";
+import { FeedItemUI } from "@/app/(app)/types/session";
 import useFeed from "@/app/(app)/dashboard/hooks/useFeed";
 import useFullSessions from "@/app/(app)/dashboard/hooks/useFullSessions";
-import useFeedPrefetch from "@/app/(app)/dashboard/hooks/useFeedPrefetch";
 import PinnedCarousel from "./pinnedCarousell";
+import useUpdateFeedItem from "@/app/(app)/dashboard/hooks/useUpdateFeedItem";
 
 export default function SessionFeed() {
-  const [expandedItem, setExpandedItem] = useState<FeedItem | null>(null);
-  const [editingItem, setEditingItem] = useState<FeedItem | null>(null);
+  const [expandedItem, setExpandedItem] = useState<FeedItemUI | null>(null);
+  const [editingItem, setEditingItem] = useState<FeedItemUI | null>(null);
 
   const router = useRouter();
 
@@ -35,12 +35,10 @@ export default function SessionFeed() {
     data,
     error,
     isLoading,
-    mutateFeed,
     hasNextPage,
     isFetchingNextPage,
     pinnedFeed,
     unpinnedFeed,
-    feed,
     containerRef,
     pullDistance,
     refreshing,
@@ -61,18 +59,14 @@ export default function SessionFeed() {
     GymSessionFull,
     GymSessionError,
     isLoadingGymSession,
-    LocalReminderFull,
-    LocalReminderError,
-    isLoadingLocalReminder,
     TodoSessionFull,
     TodoSessionError,
     isLoadingTodoSession,
     refetchFullTodo,
   } = useFullSessions(expandedItem, editingItem);
 
-  // prefetch full sessions when feed finishes loading
-
-  useFeedPrefetch(data);
+  // useUpdateFeedItem hook to update feed item in cache
+  const { updateFeedItem } = useUpdateFeedItem();
 
   return (
     <div className="h-full">
@@ -103,7 +97,7 @@ export default function SessionFeed() {
           <p className="text-center text-lg mt-10">
             Failed to load sessions. Please try again later.
           </p>
-        ) : !data || feed.length === 0 ? (
+        ) : !data || (unpinnedFeed.length === 0 && pinnedFeed.length === 0) ? (
           <p className="text-center text-lg mt-20">
             No sessions yet. Let&apos;s get started!
           </p>
@@ -119,22 +113,26 @@ export default function SessionFeed() {
 
             {unpinnedFeed.map((feedItem) => {
               return (
-                <div className="mt-8" key={feedItem.item.id}>
+                <div className="mt-8" key={feedItem.id}>
                   <FeedCard
-                    {...feedItem}
+                    item={feedItem}
                     pinned={false}
                     onExpand={() => {
                       setExpandedItem(feedItem);
                     }}
                     onTogglePin={() =>
-                      togglePin(feedItem.item.id, feedItem.table, false)
+                      togglePin(
+                        feedItem.id,
+                        feedItem.type,
+                        feedItem.feed_context
+                      )
                     }
                     onDelete={() =>
-                      handleDelete(feedItem.item.id, feedItem.table)
+                      handleDelete(feedItem.source_id, feedItem.type)
                     }
                     onEdit={() => {
-                      if (feedItem.table === "gym_sessions") {
-                        router.push(`/training/gym/${feedItem.item.id}/edit`);
+                      if (feedItem.type === "gym_sessions") {
+                        router.push(`/gym/gym/${feedItem.source_id}/edit`);
                       } else {
                         setEditingItem(feedItem);
                       }
@@ -162,33 +160,18 @@ export default function SessionFeed() {
 
         {expandedItem && (
           <Modal onClose={() => setExpandedItem(null)} isOpen={true}>
-            {expandedItem.table === "notes" && (
-              <NotesSession {...expandedItem.item} />
+            {expandedItem.type === "notes" && (
+              <NotesSession {...expandedItem} />
             )}
-            {expandedItem.table === "global_reminders" && (
-              <ReminderSession {...expandedItem.item} />
-            )}
-
-            {expandedItem.table === "local_reminders" && (
-              <>
-                {isLoadingLocalReminder ? (
-                  <div className="flex flex-col gap-5 items-center justify-center pt-40">
-                    <p>Loading reminder details...</p>
-                    <Spinner />
-                  </div>
-                ) : LocalReminderError ? (
-                  <p className="text-center text-lg mt-10">
-                    Failed to load reminder details. Please try again later.
-                  </p>
-                ) : (
-                  LocalReminderFull && (
-                    <ReminderSession {...LocalReminderFull} />
-                  )
-                )}
-              </>
+            {expandedItem.type === "global_reminders" && (
+              <ReminderSession {...expandedItem} />
             )}
 
-            {expandedItem.table === "gym_sessions" && (
+            {expandedItem.type === "local_reminders" && (
+              <ReminderSession {...expandedItem} />
+            )}
+
+            {expandedItem.type === "gym_sessions" && (
               <>
                 {isLoadingGymSession ? (
                   <div className="flex flex-col gap-5 items-center justify-center pt-40">
@@ -204,10 +187,10 @@ export default function SessionFeed() {
                 )}
               </>
             )}
-            {expandedItem.table === "weight" && (
-              <WeightSession {...expandedItem.item} />
+            {expandedItem.type === "weight" && (
+              <WeightSession {...expandedItem} />
             )}
-            {expandedItem.table === "todo_lists" && (
+            {expandedItem.type === "todo_lists" && (
               <>
                 {isLoadingTodoSession ? (
                   <div className="flex flex-col gap-5 items-center justify-center pt-40">
@@ -222,8 +205,11 @@ export default function SessionFeed() {
                   TodoSessionFull && (
                     <TodoSession
                       initialTodo={TodoSessionFull}
-                      mutateFullTodoSession={async () => {
-                        await refetchFullTodo();
+                      onSave={async (updatedItem) => {
+                        await Promise.all([
+                          updateFeedItem(updatedItem),
+                          refetchFullTodo(),
+                        ]);
                       }}
                     />
                   )
@@ -240,29 +226,27 @@ export default function SessionFeed() {
               setEditingItem(null);
             }}
           >
-            {editingItem.table === "notes" && (
+            {editingItem.type === "notes" && (
               <EditNote
-                note={editingItem.item}
+                note={editingItem}
                 onClose={() => setEditingItem(null)}
-                onSave={async () => {
-                  await mutateFeed();
-
+                onSave={(updatedItem) => {
+                  updateFeedItem(updatedItem);
                   setEditingItem(null);
                 }}
               />
             )}
-            {editingItem.table === "global_reminders" && (
+            {editingItem.type === "global_reminders" && (
               <EditReminder
-                reminder={editingItem.item}
+                reminder={editingItem}
                 onClose={() => setEditingItem(null)}
-                onSave={async () => {
-                  await mutateFeed();
-
+                onSave={(updatedItem) => {
+                  updateFeedItem(updatedItem);
                   setEditingItem(null);
                 }}
               />
             )}
-            {editingItem.table === "todo_lists" && (
+            {editingItem.type === "todo_lists" && (
               <>
                 {isLoadingTodoSession ? (
                   <div className="flex flex-col gap-5 items-center justify-center pt-40">
@@ -278,9 +262,11 @@ export default function SessionFeed() {
                     <EditTodo
                       todo_session={TodoSessionFull}
                       onClose={() => setEditingItem(null)}
-                      onSave={async () => {
-                        await Promise.all([mutateFeed(), refetchFullTodo()]);
-
+                      onSave={async (updatedItem) => {
+                        await Promise.all([
+                          updateFeedItem(updatedItem),
+                          refetchFullTodo(),
+                        ]);
                         setEditingItem(null);
                       }}
                     />
@@ -288,12 +274,12 @@ export default function SessionFeed() {
                 )}
               </>
             )}
-            {editingItem.table === "weight" && (
+            {editingItem.type === "weight" && (
               <EditWeight
-                weight={editingItem.item}
+                weight={editingItem}
                 onClose={() => setEditingItem(null)}
-                onSave={async () => {
-                  await mutateFeed();
+                onSave={(updatedItem) => {
+                  updateFeedItem(updatedItem);
                   setEditingItem(null);
                 }}
               />

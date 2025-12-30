@@ -2,14 +2,14 @@
 
 import { useState } from "react";
 import { TemplateSkeleton } from "../../ui/loadingSkeletons/skeletons";
-import MyReminderCard from "../../components/cards/MyReminderCard";
-import ReminderSession from "../../components/expandSession/reminder";
+import MyReminderCard from "@/app/(app)/components/feed-cards/MyReminderCard";
 import Modal from "../../components/modal";
-import EditGlobalReminder from "../../components/editSession/EditGlobalReminder";
+import EditMyGlobalReminder from "@/app/(app)/components/edit-session-cards/EditMyReminder";
 import { useQuery } from "@tanstack/react-query";
-import { full_reminder } from "../../types/session";
-import { getReminders } from "../../database/reminder";
-import useDeleteReminder from "../hooks/useDeleteReminder";
+import { full_reminder } from "@/app/(app)/types/session";
+import { getReminders } from "@/app/(app)/database/reminders/get-reminders";
+import useDeleteReminder from "@/app/(app)/reminders/hooks/useDeleteReminder";
+import MyReminderSession from "@/app/(app)/components/expand-session-cards/myReminder";
 
 export default function Sessions() {
   const [expandedItem, setExpandedItem] = useState<full_reminder | null>(null);
@@ -94,7 +94,7 @@ export default function Sessions() {
             setExpandedItem(null);
           }}
         >
-          <ReminderSession {...expandedItem} />
+          <MyReminderSession {...expandedItem} />
         </Modal>
       )}
 
@@ -105,7 +105,7 @@ export default function Sessions() {
             setEditingItem(null);
           }}
         >
-          <EditGlobalReminder
+          <EditMyGlobalReminder
             reminder={editingItem}
             onClose={() => setEditingItem(null)}
             onSave={async () => {

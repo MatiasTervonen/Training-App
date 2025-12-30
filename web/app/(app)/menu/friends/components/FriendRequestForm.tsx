@@ -3,7 +3,7 @@
 import CustomInput from "@/app/(app)/ui/CustomInput";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { sendFriendRequest } from "@/app/(app)/database/friends";
+import { sendFriendRequest } from "@/app/(app)/database/friends/send-friend-request";
 
 export default function FriendRequestForm() {
   const [identifier, setIdentifier] = useState("");

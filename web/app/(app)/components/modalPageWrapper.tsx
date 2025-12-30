@@ -54,7 +54,7 @@ export default function ModalPageWrapper({
   };
 
   const popupHeight =
-    (activeSession?.type === "gym" && pathname !== "/training/gym") ||
+    (activeSession?.type === "gym" && pathname !== "/gym/gym") ||
     (activeSession?.type === "timer" && pathname !== "/timer/empty-timer") ||
     (activeSession?.type === "disc-golf" && pathname !== "/disc-golf/game")
       ? 92
@@ -64,7 +64,7 @@ export default function ModalPageWrapper({
 
   if (["/dashboard", "/menu", "/sessions"].includes(pathname)) {
     heightClass = popupHeight
-      ? "h-[calc(100dvh-204px)]"
+      ? "h-[calc(100dvh-188px)]"
       : "h-[calc(100dvh-112px)]";
   } else {
     heightClass = popupHeight

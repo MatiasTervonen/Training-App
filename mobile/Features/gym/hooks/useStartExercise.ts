@@ -7,7 +7,6 @@ export default function useStartExercise({
   setExerciseInputs,
   setSupersetExercise,
   setNormalExercises,
-  setDropdownResetKey,
   startSession,
   exerciseType,
   supersetExercise,
@@ -27,9 +26,6 @@ export default function useStartExercise({
     normalExercises:
       | ExerciseEntry[]
       | ((prev: ExerciseEntry[]) => ExerciseEntry[])
-  ) => void;
-  setDropdownResetKey: (
-    dropdownResetKey: number | ((prev: number) => number)
   ) => void;
   startSession: () => void;
   exerciseType: string;
@@ -88,7 +84,6 @@ export default function useStartExercise({
       ]);
       setNormalExercises([]);
     }
-    setDropdownResetKey((prev) => prev + 1); // Reset the dropdown
   };
   return {
     startExercise,

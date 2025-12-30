@@ -6,6 +6,7 @@ type ActiveSession = {
   label: string;
   path: string;
   type: string;
+  started_at: number;
 };
 
 interface TimerState {
@@ -16,7 +17,7 @@ interface TimerState {
   alarmFired: boolean;
   startTimestamp: number | null;
   alarmSoundPlaying: boolean;
-  setActiveSession: (session: ActiveSession | null) => void;
+  setActiveSession: (session: NewSession) => void;
   startTimer: (totalDuration: number) => void;
   stopTimer: () => void;
   clearEverything: () => void;
@@ -27,6 +28,8 @@ interface TimerState {
 }
 
 let interval: NodeJS.Timeout | null = null;
+
+type NewSession = Omit<ActiveSession, "started_at">;
 
 export const useTimerStore = create<TimerState>()(
   persist(
@@ -39,15 +42,13 @@ export const useTimerStore = create<TimerState>()(
       alarmSoundPlaying: false,
       startTimestamp: null,
 
-      setActiveSession: (session) => {
-        const { activeSession } = get();
-
-        if (activeSession && session !== null) {
-          return;
-        }
-
-        set({ activeSession: session });
-      },
+      setActiveSession: (session: NewSession) =>
+        set({
+          activeSession: {
+            ...session,
+            started_at: Date.now(),
+          },
+        }),
       setAlarmSoundPlaying: (playing) => set({ alarmSoundPlaying: playing }),
 
       startTimer: (totalDuration) => {

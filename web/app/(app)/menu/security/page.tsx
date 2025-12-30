@@ -1,12 +1,12 @@
 "use client";
 
 import CustomInput from "@/app/(app)/ui/CustomInput";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import SaveButtonSpinner from "@/app/(app)/components/buttons/save-button-spinner";
 import { createClient } from "@/utils/supabase/client";
 import { useSignOut } from "@/app/(app)/lib/handleSignOut";
 import { handleError } from "@/app/(app)/utils/handleError";
-import { deleteAccount } from "../../database/users";
+import { deleteAccount } from "@/app/(app)/database/user/delete-account";
 import { useUserStore } from "../../lib/stores/useUserStore";
 
 export default function Page() {
@@ -81,7 +81,7 @@ export default function Page() {
     );
     if (!confirmed) return;
 
-    if (isDeleteAccount != "DELETE ACCOUNT") {
+    if (isDeleteAccount !== "DELETE ACCOUNT") {
       setErrorMessage2(
         "Incorrect confirmation text. Type “DELETE ACCOUNT” to proceed."
       );
@@ -104,10 +104,6 @@ export default function Page() {
     }
   };
 
-  useEffect(() => {
-    setErrorMessage((prev) => (prev ? "" : prev));
-  }, [password, confirmPassword]);
-
   return (
     <div className="page-padding max-w-md mx-auto">
       <h1 className="flex justify-center mb-10 text-2xl">Security Settings</h1>
@@ -123,7 +119,10 @@ export default function Page() {
           label="New Password"
           placeholder="Enter your new password..."
           value={password}
-          setValue={setPassword}
+          setValue={(value) => {
+            setPassword(value);
+            setErrorMessage("");
+          }}
           disabled={loading}
           maxLength={128}
           id="new-password-input"
@@ -134,7 +133,10 @@ export default function Page() {
         label="Confirm New Password"
         placeholder="Confirm your new password..."
         value={confirmPassword}
-        setValue={setConfirmPassword}
+        setValue={(value) => {
+          setConfirmPassword(value);
+          setErrorMessage("");
+        }}
         disabled={loading}
         maxLength={128}
         id="confirm-password-input"
@@ -172,7 +174,10 @@ export default function Page() {
           label="Type: DELETE ACCOUNT"
           placeholder="Type: DELETE ACCOUNT"
           value={isDeleteAccount}
-          setValue={setIsDeleteAccount}
+          setValue={(value) => {
+            setIsDeleteAccount(value);
+            setErrorMessage2("");
+          }}
           disabled={loading2}
           maxLength={128}
         />

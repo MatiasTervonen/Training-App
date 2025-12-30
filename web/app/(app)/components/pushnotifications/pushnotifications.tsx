@@ -1,8 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { subscribeUser, unsubscribeUser } from "./actions";
-import Toggle from "../toggle";
+import {
+  subscribeUser,
+  unsubscribeUser,
+} from "@/app/(app)/components/pushnotifications/actions";
+import Toggle from "@/app/(app)/components/toggle";
 import toast from "react-hot-toast";
 
 function urlBase64ToUint8Array(base64String: string) {

@@ -3,8 +3,8 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
 import { FeedData } from "@/app/(app)/types/session";
-import { unpinItem } from "@/app/(app)/database/pinned";
-import { pinItem } from "@/app/(app)/database/pinned";
+import { unpinItem } from "@/app/(app)/database/pinned/unpin-items";
+import { pinItem } from "@/app/(app)/database/pinned/pin-items";
 import { handleError } from "@/app/(app)/utils/handleError";
 
 export default function useTogglePin() {
@@ -12,22 +12,17 @@ export default function useTogglePin() {
 
   const togglePin = async (
     id: string,
-    table:
-      | "notes"
-      | "gym_sessions"
-      | "weight"
-      | "todo_lists"
-      | "global_reminders"
-      | "local_reminders",
-    isPinned: boolean
+    type: string,
+    feed_context: "pinned" | "feed"
   ) => {
     const feedData = queryClient.getQueryData<FeedData>(["feed"]);
+
     const pinnedFeed =
       feedData?.pages
         .flatMap((page) => page.feed)
-        .filter((item) => item.pinned) ?? [];
+        .filter((item) => item.feed_context === "pinned") ?? [];
 
-    if (!isPinned && pinnedFeed.length >= 10) {
+    if (feed_context === "feed" && pinnedFeed.length >= 10) {
       toast.error("You can only pin 10 items. Unpin something first.");
       return;
     }
@@ -45,21 +40,28 @@ export default function useTogglePin() {
         pages: oldData.pages.map((page) => ({
           ...page,
           feed: page.feed.map((feedItem) =>
-            feedItem.id === id ? { ...feedItem, pinned: !isPinned } : feedItem
+            feedItem.id === id
+              ? {
+                  ...feedItem,
+                  feed_context: feed_context === "pinned" ? "feed" : "pinned",
+                }
+              : feedItem
           ),
         })),
       };
     });
 
     try {
-      if (isPinned) {
-        await unpinItem({ id, table });
+      if (feed_context === "pinned") {
+        await unpinItem({ id, type });
       } else {
-        await pinItem({ id, table });
+        await pinItem({ id, type });
       }
 
       toast.success(
-        `Item has been ${isPinned ? "unpinned" : "pinned"} successfully.`
+        `Item has been ${
+          feed_context === "pinned" ? "unpinned" : "pinned"
+        } successfully.`
       );
     } catch (error) {
       queryClient.setQueryData(queryKey, previousFeed);

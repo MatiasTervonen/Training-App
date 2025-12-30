@@ -7,15 +7,15 @@ import {
   SquareArrowOutUpRight,
 } from "lucide-react";
 import { useState } from "react";
-import DeleteSessionBtn from "../components/buttons/deleteSessionBtn";
-import Modal from "../components/modal";
-import SaveButton from "../components/buttons/save-button";
-import FullScreenLoader from "../components/FullScreenLoader";
-import TitleInput from "../ui/TitleInput";
-import SubNotesInput from "../ui/SubNotesInput";
-import useSaveDraft from "./hooks/useSaveDraft";
-import useDeleteItem from "./hooks/useDeleteItem";
-import useSaveTodo from "./hooks/useSaveTodo";
+import DeleteSessionBtn from "@/app/(app)/components/buttons/deleteSessionBtn";
+import Modal from "@/app/(app)/components/modal";
+import SaveButton from "@/app/(app)/components/buttons/save-button";
+import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
+import TitleInput from "@/app/(app)/ui/TitleInput";
+import SubNotesInput from "@/app/(app)/ui/SubNotesInput";
+import useSaveDraft from "@/app/(app)/todo/hooks/useSaveDraft";
+import useDeleteItem from "@/app/(app)/todo/hooks/useDeleteItem";
+import useSaveTodo from "@/app/(app)/todo/hooks/useSaveTodo";
 
 type TodoItem = {
   task: string;
@@ -68,7 +68,7 @@ export default function Todo() {
 
   // useSaveTodo hook to save todo list
 
-  const { mutate: saveTodo, isPending } = useSaveTodo();
+  const { handleSaveTodo, isSaving } = useSaveTodo({ title, todoList });
 
   return (
     <div className="flex flex-col justify-between min-h-full max-w-md mx-auto page-padding">
@@ -243,13 +243,13 @@ export default function Todo() {
       <div className="flex flex-col gap-5">
         <SaveButton
           onClick={() => {
-            saveTodo({ title, todoList });
+            handleSaveTodo();
             handleDeleteAll();
           }}
         />
         <DeleteSessionBtn onDelete={handleDeleteAll} />
       </div>
-      {isPending && <FullScreenLoader message="Saving todolist..." />}
+      {isSaving && <FullScreenLoader message="Saving todolist..." />}
     </div>
   );
 }

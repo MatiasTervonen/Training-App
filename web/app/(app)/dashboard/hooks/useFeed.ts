@@ -1,9 +1,8 @@
 "use client";
 
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
-import getFeed from "@/app/(app)/database/feed";
+import getFeed from "@/app/(app)/database/feed/get-feed";
 import { FeedData } from "@/app/(app)/types/session";
-import { FeedItem } from "@/app/(app)/types/models";
 import { useEffect, useMemo, useRef } from "react";
 import usePullToRefresh from "@/app/(app)/lib/usePullToRefresh";
 
@@ -42,7 +41,7 @@ export default function useFeed() {
         return {
           ...old,
           pages: old.pages.slice(0, 1),
-          pageParams: old.pageParams.slice(0, 1),
+          pageParams: old.pageParams?.slice(0, 1) ?? [],
         };
       });
     };
@@ -75,39 +74,21 @@ export default function useFeed() {
     },
   });
 
-  // Flattens the data in single array of FeedItem[]
-
-  const feed: FeedItem[] = useMemo(() => {
-    if (!data) return [];
-
-    return data.pages.flatMap(
-      (page) =>
-        page.feed.map((item) => ({
-          table: item.type as FeedItem["table"],
-          item,
-          pinned: item.pinned,
-        })) as unknown as FeedItem
+  const pinnedFeed = useMemo(() => {
+    return (
+      data?.pages.flatMap((page) =>
+        page.feed.filter((item) => item.feed_context === "pinned")
+      ) ?? []
     );
   }, [data]);
 
-  // Pinned items first, then by created_at desc for stable ordering in UI
-
-  const pinnedFeed = useMemo(() => feed.filter((i) => i.pinned), [feed]);
-  const unpinnedFeed = useMemo(
-    () =>
-      feed
-        .filter((i) => !i.pinned)
-        .sort((a, b) => {
-          const aTime = new Date(
-            a.item.updated_at || a.item.created_at
-          ).getTime();
-          const bTime = new Date(
-            b.item.updated_at || b.item.created_at
-          ).getTime();
-          return bTime - aTime;
-        }),
-    [feed]
-  );
+  const unpinnedFeed = useMemo(() => {
+    return (
+      data?.pages.flatMap((page) =>
+        page.feed.filter((item) => item.feed_context === "feed")
+      ) ?? []
+    );
+  }, [data]);
 
   return {
     data,
@@ -119,7 +100,6 @@ export default function useFeed() {
     isFetchingNextPage,
     pinnedFeed,
     unpinnedFeed,
-    feed,
     containerRef,
     pullDistance,
     refreshing,

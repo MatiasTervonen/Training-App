@@ -1,39 +1,31 @@
 "use client";
 
-import { FeedItem } from "@/app/(app)/types/models";
+import { FeedItemUI } from "@/app/(app)/types/session";
 import { useQuery } from "@tanstack/react-query";
-import { getFullGymSession } from "@/app/(app)/database/gym";
-import { getFullTodoSession } from "@/app/(app)/database/todo";
-import { getFullLocalReminder } from "@/app/(app)/database/reminder";
+import { getFullGymSession } from "@/app/(app)/database/gym/get-full-gym-session";
+import { getFullTodoSession } from "@/app/(app)/database/todo/get-full-todo";
 import { full_gym_session, full_todo_session } from "@/app/(app)/types/models";
 
 export default function useFullSessions(
-  expandedItem: FeedItem | null,
-  editingItem: FeedItem | null
+  expandedItem: FeedItemUI | null,
+  editingItem: FeedItemUI | null
 ) {
-  const getId = (fi: FeedItem | null) => fi?.item.id ?? null;
+  const getId = (fi: FeedItemUI | null) => fi?.source_id ?? null;
 
   const expandedId = getId(expandedItem);
   const editingId = getId(editingItem);
 
   const gymId =
-    expandedItem?.table === "gym_sessions"
+    expandedItem?.type === "gym_sessions"
       ? expandedId
-      : editingItem?.table === "gym_sessions"
-      ? editingId
-      : null;
-
-  const localReminderId =
-    expandedItem?.table === "local_reminders"
-      ? expandedId
-      : editingItem?.table === "local_reminders"
+      : editingItem?.type === "gym_sessions"
       ? editingId
       : null;
 
   const todoId =
-    expandedItem?.table === "todo_lists"
+    expandedItem?.type === "todo_lists"
       ? expandedId
-      : editingItem?.table === "todo_lists"
+      : editingItem?.type === "todo_lists"
       ? editingId
       : null;
 
@@ -68,21 +60,6 @@ export default function useFullSessions(
     gcTime: Infinity,
   });
 
-  const {
-    data: LocalReminderFull,
-    error: LocalReminderError,
-    isLoading: isLoadingLocalReminder,
-  } = useQuery({
-    queryKey: ["fullLocalReminder", localReminderId],
-    queryFn: () => getFullLocalReminder(localReminderId!),
-    enabled: !!localReminderId,
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    staleTime: Infinity,
-    gcTime: Infinity,
-  });
-
   return {
     GymSessionFull,
     GymSessionError,
@@ -91,8 +68,5 @@ export default function useFullSessions(
     TodoSessionError,
     isLoadingTodoSession,
     refetchFullTodo,
-    LocalReminderFull,
-    LocalReminderError,
-    isLoadingLocalReminder,
   };
 }

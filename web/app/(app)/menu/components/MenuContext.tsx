@@ -1,7 +1,7 @@
 "use client";
 
 import LinkButton from "@/app/(app)/components/buttons/LinkButton";
-import { useUserStore } from "../../lib/stores/useUserStore";
+import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
 
 export default function MenuContext() {
   const role = useUserStore((state) => state.role);

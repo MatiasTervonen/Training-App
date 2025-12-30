@@ -62,6 +62,8 @@ export default function TemplatesPage() {
     const workoutExercises: ExerciseEntry[] =
       template.gym_template_exercises.map((ex) => ({
         exercise_id: ex.exercise_id,
+        template_id: template.id,
+        position: ex.position,
         name: ex.gym_exercises.name,
         equipment: ex.gym_exercises.equipment,
         muscle_group: ex.gym_exercises.muscle_group,

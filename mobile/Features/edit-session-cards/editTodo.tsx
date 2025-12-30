@@ -1,23 +1,23 @@
 import { useState } from "react";
-import SaveButton from "../../components/buttons/SaveButton";
-import FullScreenLoader from "../../components/FullScreenLoader";
+import SaveButton from "@/components/buttons/SaveButton";
+import FullScreenLoader from "@/components/FullScreenLoader";
 import Toast from "react-native-toast-message";
-import { full_todo_session_optional_id } from "../../types/models";
+import { full_todo_session_optional_id, FeedItemUI } from "../../types/session";
 import { editTodo } from "@/database/todo/edit-todo";
-import SubNotesInput from "../../components/SubNotesInput";
-import AppInput from "../../components/AppInput";
-import AnimatedButton from "../../components/buttons/animatedButton";
+import SubNotesInput from "@/components/SubNotesInput";
+import AppInput from "@/components/AppInput";
+import AnimatedButton from "@/components/buttons/animatedButton";
 import { View, ScrollView } from "react-native";
-import AppText from "../../components/AppText";
-import PageContainer from "../../components/PageContainer";
+import AppText from "@/components/AppText";
+import PageContainer from "@/components/PageContainer";
 import { confirmAction } from "@/lib/confirmAction";
 import { Dot } from "lucide-react-native";
-import { FeedItemUI } from "@/types/session";
+import * as Crypto from "expo-crypto";
 
 type Props = {
   todo_session: full_todo_session_optional_id;
   onClose: () => void;
-  onSave?: (updateFeedItem: FeedItemUI) => void;
+  onSave: (updateFeedItem: FeedItemUI) => void;
 };
 
 type Task = {
@@ -51,7 +51,7 @@ export default function EditTodo({ todo_session, onClose, onSave }: Props) {
       todo_tasks: [
         ...prev.todo_tasks,
         {
-          id: null,
+          tempId: Crypto.randomUUID(),
           task: "",
           notes: "",
           created_at: new Date().toISOString(),
@@ -116,7 +116,7 @@ export default function EditTodo({ todo_session, onClose, onSave }: Props) {
         updated_at: updated,
       });
 
-      await onSave?.(updatedFeedItem);
+      onSave(updatedFeedItem as FeedItemUI);
       onClose();
       Toast.show({
         type: "success",
@@ -165,7 +165,7 @@ export default function EditTodo({ todo_session, onClose, onSave }: Props) {
             <View className="w-full">
               {sessionData.todo_tasks.map((task, index) => (
                 <View
-                  key={task.id}
+                  key={task.id ?? task.tempId}
                   className="text-gray-300 mb-5 bg-slate-900 p-4 rounded-lg"
                 >
                   <View className="flex-row justify-between">

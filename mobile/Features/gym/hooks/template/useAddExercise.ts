@@ -8,7 +8,6 @@ export default function useAddExercise({
   setExercises,
   setSupersetExercise,
   setNormalExercises,
-  setDropdownResetKey,
   setExerciseInputs,
   isCardioExercise,
 }: {
@@ -23,9 +22,6 @@ export default function useAddExercise({
     normalExercises:
       | ExerciseEntry[]
       | ((prev: ExerciseEntry[]) => ExerciseEntry[])
-  ) => void;
-  setDropdownResetKey: (
-    dropdownResetKey: number | ((prev: number) => number)
   ) => void;
   setExerciseInputs: (
     exerciseInputs:
@@ -80,8 +76,6 @@ export default function useAddExercise({
       ]);
       setNormalExercises([]);
     }
-
-    setDropdownResetKey((prev) => prev + 1); // Reset dropdown
   };
   return {
     handleAddExercise,

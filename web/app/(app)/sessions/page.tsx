@@ -7,14 +7,14 @@ import {
   ListTodo,
   Bell,
 } from "lucide-react";
-import LinkButton from "../components/buttons/LinkButton";
+import LinkButton from "@/app/(app)/components/buttons/LinkButton";
 
 export default function Sessions() {
   return (
     <div className="page-padding min-h-full max-w-md mx-auto">
       <h1 className="text-center mb-10 text-2xl ">Start Session</h1>
       <div className="flex flex-col gap-5">
-        <LinkButton href="/training">
+        <LinkButton href="/gym">
           Gym
           <Dumbbell />
         </LinkButton>

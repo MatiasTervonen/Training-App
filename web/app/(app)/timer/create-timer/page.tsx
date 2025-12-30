@@ -2,16 +2,16 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import SetInput from "@/app/(app)/training/components/SetInput";
-import SaveButton from "../../components/buttons/save-button";
+import SetInput from "@/app/(app)/gym/components/SetInput";
+import SaveButton from "@/app/(app)/components/buttons/save-button";
 import toast from "react-hot-toast";
-import FullScreenLoader from "../../components/FullScreenLoader";
-import DeleteSessionBtn from "../../components/buttons/deleteSessionBtn";
-import { saveTimerToDB } from "../../database/timer";
-import SubNotesInput from "../../ui/SubNotesInput";
-import TitleInput from "../../ui/TitleInput";
+import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
+import DeleteSessionBtn from "@/app/(app)/components/buttons/deleteSessionBtn";
+import { saveTimer } from "@/app/(app)/database/timer/save-timer";
+import SubNotesInput from "@/app/(app)/ui/SubNotesInput";
+import TitleInput from "@/app/(app)/ui/TitleInput";
 import { useQueryClient } from "@tanstack/react-query";
-import useSaveDraft from "../hooks/useSaveDraft";
+import useSaveDraft from "@/app/(app)/timer/hooks/useSaveDraft";
 
 export default function TimerPage() {
   const [title, setTitle] = useState("");
@@ -47,7 +47,7 @@ export default function TimerPage() {
     alarmSeconds,
   });
 
-  const saveTimer = async () => {
+  const handleSaveTimer = async () => {
     if (!title || !alarmMinutes || !alarmSeconds) {
       alert("Please fill in all fields.");
       return;
@@ -59,7 +59,7 @@ export default function TimerPage() {
       parseInt(alarmMinutes) * 60 + parseInt(alarmSeconds);
 
     try {
-      await saveTimerToDB({
+      await saveTimer({
         title: title,
         notes: notes,
         durationInSeconds,
@@ -117,7 +117,7 @@ export default function TimerPage() {
         </div>
       </div>
       <div className="flex flex-col gap-5 mt-10">
-        <SaveButton onClick={saveTimer} label="Save Timer" />
+        <SaveButton onClick={handleSaveTimer} label="Save Timer" />
         <DeleteSessionBtn onDelete={handleReset} label="Delete" />
       </div>
       {isSaving && <FullScreenLoader message="Saving Timer..." />}

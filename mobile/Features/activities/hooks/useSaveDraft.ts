@@ -11,10 +11,6 @@ export default function useSaveDraft({
   setNotes,
   setAllowGPS,
   setActivityName,
-  setIsLoaded,
-  isLoaded,
-  meters,
-  setMeters,
 }: {
   title: string;
   notes: string;
@@ -23,10 +19,6 @@ export default function useSaveDraft({
   setNotes: (notes: string) => void;
   setAllowGPS: (allowGPS: boolean) => void;
   setActivityName: (activityName: string) => void;
-  setIsLoaded: (isLoaded: boolean) => void;
-  isLoaded: boolean;
-  meters: number;
-  setMeters: (meters: number) => void;
 }) {
   useEffect(() => {
     const loadDraft = async () => {
@@ -40,7 +32,6 @@ export default function useSaveDraft({
           setNotes(draft.notes || "");
           setAllowGPS(draft.allowGPS);
           setActivityName(draft.activityName || "");
-          setMeters(draft.meters || 0);
         }
       } catch (error) {
         console.log("error", error);
@@ -49,25 +40,14 @@ export default function useSaveDraft({
           route: "activities/start-activity/index.tsx",
           method: "loadActivityDraft",
         });
-      } finally {
-        setIsLoaded(true);
       }
     };
     loadDraft();
-  }, [
-    setTitle,
-    setNotes,
-    setAllowGPS,
-    setActivityName,
-    setIsLoaded,
-    setMeters,
-  ]);
+  }, [setTitle, setNotes, setAllowGPS, setActivityName]);
 
   const saveActivityDraft = useDebouncedCallback(
     async () => {
-      if (!isLoaded) return;
-
-      const draft = { title, notes, allowGPS, meters };
+      const draft = { title, notes, allowGPS };
       await AsyncStorage.mergeItem("activity_draft", JSON.stringify(draft));
       console.log("saveActivityDraft", draft);
     },
@@ -77,7 +57,7 @@ export default function useSaveDraft({
 
   useEffect(() => {
     saveActivityDraft();
-  }, [notes, title, allowGPS, meters, saveActivityDraft]);
+  }, [notes, title, allowGPS, saveActivityDraft]);
 
   return {
     saveActivityDraft,

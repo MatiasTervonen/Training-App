@@ -18,6 +18,7 @@ type props = {
   end_time: string;
   track: TrackPoint[];
   activityId: string | null;
+  meters: number;
 };
 
 export async function saveActivitySession({
@@ -28,18 +29,26 @@ export async function saveActivitySession({
   end_time,
   track,
   activityId,
+  meters,
 }: props) {
+  const normalizedTrack = track.map((point) => ({
+    ...point,
+    timestamp: new Date(point.timestamp).toISOString(),
+  }));
+
   const { error } = await supabase.rpc("activities_save_activity", {
     p_title: title,
     p_notes: notes,
     p_duration: duration,
     p_start_time: start_time,
     p_end_time: end_time,
-    p_track: track,
+    p_track: normalizedTrack,
     p_activity_id: activityId,
+    p_meters: meters,
   });
 
   if (error) {
+    console.error("error saving activity session", error);
     handleError(error, {
       message: "Error saving activity session",
       route: "/database/activities/save-session",

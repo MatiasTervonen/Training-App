@@ -137,7 +137,7 @@ export default function GymForm({
     setActiveSession({
       type: "gym",
       label: title,
-      path: "/training/gym",
+      path: "/gym/gym",
     });
 
     startTimer(0);
@@ -229,7 +229,7 @@ export default function GymForm({
             textClassName="text-xl"
             manualSession={{
               label: title,
-              path: "/training/gym",
+              path: "/gym/gym",
               type: "gym",
             }}
           />

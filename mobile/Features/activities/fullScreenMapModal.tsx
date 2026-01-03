@@ -5,14 +5,12 @@ import { CircleX, Layers2, MapPin } from "lucide-react-native";
 import MapIcons from "./mapIcons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { TrackPoint } from "@/types/session";
-import { useState, useEffect } from "react";
-import useForeground from "@/Features/activities/hooks/useForegound";
+import { useState } from "react";
 
 export default function FullScreenMapModal({
   fullScreen,
   mapStyle,
   track,
-  lastPoint,
   setFullScreen,
   toggleMapStyle,
   startGPStracking,
@@ -23,7 +21,6 @@ export default function FullScreenMapModal({
   fullScreen: boolean;
   mapStyle: Mapbox.StyleURL;
   track: TrackPoint[];
-  lastPoint: TrackPoint;
   setFullScreen: (value: boolean) => void;
   toggleMapStyle: () => void;
   startGPStracking: () => void;
@@ -33,20 +30,6 @@ export default function FullScreenMapModal({
 }) {
   const insets = useSafeAreaInsets();
   const [isFollowingUser, setIsFollowingUser] = useState(true);
-
-  const { isForeground } = useForeground();
-
-  useEffect(() => {
-    if (isForeground) {
-      Mapbox.locationManager.start();
-    } else {
-      Mapbox.locationManager.stop();
-    }
-
-    return () => {
-      Mapbox.locationManager.stop();
-    };
-  }, [isForeground]);
 
   const mapCoordinates = track
     .filter((p) => p.accuracy == null || p.accuracy <= 30)
@@ -59,6 +42,8 @@ export default function FullScreenMapModal({
       coordinates: mapCoordinates,
     },
   };
+
+  const lastPoint = track[track.length - 1];
 
   return (
     <Modal visible={fullScreen} transparent={true} animationType="slide">
@@ -74,7 +59,12 @@ export default function FullScreenMapModal({
               setIsFollowingUser(false);
             }}
           >
-            <Mapbox.UserLocation visible={true} />
+            <Mapbox.UserLocation
+              visible={true}
+              minDisplacement={0}
+              androidRenderMode="compass"
+            />
+
             <Mapbox.Camera
               followUserLocation={isFollowingUser}
               followZoomLevel={15}

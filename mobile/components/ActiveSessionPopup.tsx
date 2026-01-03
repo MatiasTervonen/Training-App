@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import AppText from "@/components/AppText";
 import { useAudioPlayer } from "expo-audio";
 import { View, Pressable, TouchableOpacity } from "react-native";
-import Timer from "@/Features/timer/timer";
+import Timer from "@/components/timer";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -54,7 +54,7 @@ export default function ActiveSessionPopup() {
 
   if (!activeSession) return null;
 
-  if (pathname === "/training/gym" && activeSession.type === "gym") {
+  if (pathname === "/gym/gym" && activeSession.type === "gym") {
     return null;
   }
 
@@ -100,7 +100,7 @@ export default function ActiveSessionPopup() {
             {alarmFired && <AppText>ALARM!</AppText>}
           </View>
           <View className="flex-row items-center gap-5">
-            <Timer textClassName="text-xl" onStopAlarmSound={stopAlarm} />
+            <Timer textClassName="text-xl" />
             <AppText>{activeSession.type.toUpperCase()}</AppText>
             {activeSession.type === "timer" && totalDuration && (
               <AppText>

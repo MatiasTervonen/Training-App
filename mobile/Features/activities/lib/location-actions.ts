@@ -17,12 +17,10 @@ export function useStartGPStracking() {
     if (started) return;
 
     await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
-      accuracy: Location.Accuracy.Balanced,
-      timeInterval: 10000,
-      distanceInterval: 10,
+      accuracy: Location.Accuracy.Highest,
+      timeInterval: 5000,
+      distanceInterval: 5,
       showsBackgroundLocationIndicator: true,
-      deferredUpdatesDistance: 50,
-      deferredUpdatesInterval: 30000,
       foregroundService: {
         notificationTitle: "MyTrack is tracking your location",
         notificationBody: "You are moving",

@@ -3,22 +3,44 @@ import { useRouter } from "expo-router";
 import Toast from "react-native-toast-message";
 import { saveActivitySession } from "@/database/activities/save-session";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { TrackPoint } from "@/types/session";
 import { useStopGPStracking } from "@/Features/activities/lib/location-actions";
 import { useQueryClient } from "@tanstack/react-query";
+import { getDatabase } from "@/database/local-database/database";
+import { clearLocalSessionDatabase } from "@/Features/activities/lib/database-actions";
+
+async function loadTrackFromDatabase() {
+  const db = await getDatabase();
+
+  return await db.getAllAsync<{
+    timestamp: number;
+    latitude: number;
+    longitude: number;
+    altitude: number | null;
+    accuracy: number | null;
+  }>(
+    "SELECT timestamp, latitude, longitude, altitude, accuracy FROM gps_points ORDER BY timestamp ASC"
+  );
+}
+
+async function loadMetersFromDatabase() {
+  const db = await getDatabase();
+  const row = await db.getFirstAsync<{ meters: number }>(
+    "SELECT meters FROM session_stats"
+  );
+
+  return row?.meters ?? 0;
+}
 
 export default function useSaveActivitySession({
   title,
   notes,
   elapsedTime,
-  track,
   setIsSaving,
   resetSession,
 }: {
   title: string;
   notes: string;
   elapsedTime: number;
-  track: TrackPoint[];
   setIsSaving: (isSaving: boolean) => void;
   resetSession: () => void;
 }) {
@@ -44,33 +66,40 @@ export default function useSaveActivitySession({
 
     if (!confirmSave) return;
 
-    const duration = elapsedTime;
-    const end_time = new Date().toISOString();
-
-    const draft = await AsyncStorage.getItem("activity_draft");
-
-    const startTime = draft
-      ? JSON.parse(draft).startTime
-      : new Date().toISOString();
-
-    const activityId = draft ? JSON.parse(draft).activityId : null;
-
     try {
       setIsSaving(true);
-      await saveActivitySession({
-        title,
-        notes,
-        duration,
-        start_time: startTime,
-        end_time,
-        track,
-        activityId,
-      });
 
       // stop the GPS tracking
       await stopGPStracking();
 
+      const track = await loadTrackFromDatabase();
+      const meters = await loadMetersFromDatabase();
+
+      const duration = elapsedTime;
+      const end_time = new Date().toISOString();
+
+      const draft = await AsyncStorage.getItem("activity_draft");
+
+      const start_time = draft
+        ? JSON.parse(draft).start_time
+        : new Date().toISOString();
+
+      const activityId = draft ? JSON.parse(draft).activityId : null;
+
+      await saveActivitySession({
+        title,
+        notes,
+        duration,
+        start_time,
+        end_time,
+        track,
+        activityId,
+        meters,
+      });
+
       await queryClient.refetchQueries({ queryKey: ["feed"], exact: true });
+
+      await clearLocalSessionDatabase();
 
       resetSession();
       router.push("/dashboard");

@@ -1,75 +1,39 @@
-import useForeground from "./useForegound";
+import useForeground from "./useForeground";
 import { useEffect, useRef } from "react";
 import * as Location from "expo-location";
 import { TrackPoint } from "@/types/session";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { haversine } from "../lib/countDistance";
 import { useTimerStore } from "@/lib/stores/timerStore";
 
 export function useForegroundLocationTracker({
-  setTrack,
   allowGPS,
   isRunning,
   setColdStartCount,
+  onPoint,
 }: {
-  setTrack: React.Dispatch<React.SetStateAction<TrackPoint[]>>;
   allowGPS: boolean;
   isRunning: boolean;
   setColdStartCount: React.Dispatch<React.SetStateAction<boolean>>;
+  onPoint: (point: TrackPoint) => void;
 }) {
   const { isForeground } = useForeground();
-
-  const lastPersistRef = useRef(0);
-  const trackRef = useRef<TrackPoint[]>([]);
-  const hydratedRef = useRef(false); // used to read asyncStorage only once when in foreground. Reads the data what bg job saved to the async storage and syncs it to trackRef.
   const goodFixCountRef = useRef(0);
   const gpsReadyRef = useRef(false);
-
+  const lastAcceptedPointRef = useRef<TrackPoint | null>(null);
   const { activeSession } = useTimerStore();
 
-  // resset states when the activity is ended.
   useEffect(() => {
     if (!activeSession) {
-      hydratedRef.current = false;
-      hydratedRef.current = false;
+      gpsReadyRef.current = false;
       goodFixCountRef.current = 0;
-      trackRef.current = [];
+      setColdStartCount(false);
+      lastAcceptedPointRef.current = null;
     }
-  }, [activeSession]);
-
-  // Read the asyncStroage once and set track when back to foreground
-  useEffect(() => {
-    if (!isForeground || !isRunning || hydratedRef.current) return;
-
-    const hydrate = async () => {
-      const stored = await AsyncStorage.getItem("activity_draft");
-
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed.track)) {
-          setTrack(parsed.track);
-          trackRef.current = parsed.track;
-        }
-
-        hydratedRef.current = true;
-        lastPersistRef.current = Date.now();
-      }
-    };
-
-    hydrate();
-  }, [isForeground, isRunning, setTrack]);
-
-  // Reset the hydratedRef when the component is not in the foreground
-  useEffect(() => {
-    if (!isForeground) {
-      hydratedRef.current = false;
-    }
-  }, [isForeground]);
+  }, [setColdStartCount, activeSession]);
 
   // Start the location tracking when the component is in the foreground and the GPS is allowed and the activity is running
   useEffect(() => {
     if (!isForeground || !allowGPS || !isRunning) return;
-
-    console.log("START FG LOCATION");
 
     let sub: Location.LocationSubscription | null = null;
 
@@ -91,10 +55,14 @@ export function useForegroundLocationTracker({
             timestamp: location.timestamp,
           };
 
-          const isColdStart = point.accuracy ?? Infinity <= 20;
+          const isColdStart = (point.accuracy ?? Infinity) <= 20;
+
+          console.log("GPS READY", gpsReadyRef.current);
+          console.log("GOOD FIX COUNT", goodFixCountRef.current);
 
           // When gps is cold starting avoid adding points to the track
           if (!gpsReadyRef.current) {
+            console.log("GPS COLD START", isColdStart);
             if (isColdStart) {
               setColdStartCount(true);
               goodFixCountRef.current += 1;
@@ -109,24 +77,20 @@ export function useForegroundLocationTracker({
             return;
           }
 
-          const isMoving = point.accuracy ?? Infinity <= 20;
-
-          setTrack((prev) => {
-            if (!isMoving) return prev;
-
-            const nextTrack = [...prev, point];
-            trackRef.current = nextTrack;
-            return nextTrack;
-          });
-
-          const now = Date.now();
-          if (now - lastPersistRef.current >= 5000) {
-            lastPersistRef.current = now;
-            AsyncStorage.mergeItem(
-              "activity_draft",
-              JSON.stringify({ track: trackRef.current })
+          if (lastAcceptedPointRef.current) {
+            const d = haversine(
+              lastAcceptedPointRef.current.latitude,
+              lastAcceptedPointRef.current.longitude,
+              point.latitude,
+              point.longitude
             );
+            if (d < 5) {
+              return;
+            }
           }
+
+          lastAcceptedPointRef.current = point;
+          onPoint(point);
         }
       );
     };
@@ -134,14 +98,7 @@ export function useForegroundLocationTracker({
     start();
 
     return () => {
-      console.log("STOP FG LOCATION");
       sub?.remove();
-
-      // persist the track when the component unmounts
-      AsyncStorage.mergeItem(
-        "activity_draft",
-        JSON.stringify({ track: trackRef.current })
-      );
     };
-  }, [isForeground, allowGPS, isRunning, setTrack, setColdStartCount]);
+  }, [isForeground, allowGPS, isRunning, setColdStartCount, onPoint]);
 }

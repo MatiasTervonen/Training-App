@@ -5,7 +5,6 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 import { checkBotId } from "botid/server";
 
-
 type AuthActionState = {
   success: boolean;
   message: string;
@@ -73,6 +72,13 @@ export async function signup(
     return {
       success: false,
       message: "Passwords do not match.",
+    };
+  }
+
+  if (data.password.length < 8) {
+    return {
+      success: false,
+      message: "Password must be at least 8 characters long.",
     };
   }
 

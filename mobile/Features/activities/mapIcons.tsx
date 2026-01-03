@@ -65,7 +65,7 @@ export default function MapIcons({
     }
   }, [isColdStart, opacity]);
 
-  const isMoving = lastPoint?.accuracy ?? Infinity <= 20;
+  const isMoving = (lastPoint?.accuracy ?? Infinity) <= 20;
 
   return (
     <View className="bg-slate-950 py-5" style={style}>

@@ -2,6 +2,7 @@ import { useTimerStore } from "@/lib/stores/timerStore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Toast from "react-native-toast-message";
 import { useStartGPStracking } from "@/Features/activities/lib/location-actions";
+import { getDatabase } from "@/database/local-database/database";
 
 export function useStartActivity({
   activityName,
@@ -11,7 +12,6 @@ export function useStartActivity({
   title: string;
 }) {
   const { elapsedTime, setActiveSession, startTimer } = useTimerStore();
-
   const { startGPStracking } = useStartGPStracking();
 
   const startActivity = async () => {
@@ -26,17 +26,55 @@ export function useStartActivity({
       return;
     }
 
+    const initializeDatabase = async () => {
+      const db = await getDatabase();
+
+      try {
+        await db.execAsync(`
+            CREATE TABLE IF NOT EXISTS gps_points (
+              timestamp INTEGER NOT NULL,
+              latitude REAL NOT NULL,
+              longitude REAL NOT NULL,
+              altitude REAL,
+              accuracy REAL
+            );
+            CREATE TABLE IF NOT EXISTS session_stats (
+              meters REAL NOT NULL
+            );
+            DELETE FROM session_stats;
+            INSERT INTO session_stats (meters) VALUES (0);
+          `);
+
+        return true;
+      } catch (error) {
+        console.error("Error initializing database", error);
+        Toast.show({
+          type: "error",
+          text1: "Error",
+          text2: "Failed to initialize database. Please try again.",
+        });
+        return false;
+      }
+    };
+
+    const ok = await initializeDatabase();
+
+    if (!ok) return;
+
     setActiveSession({
       type: "activity",
       label: title,
       path: "/activities/start-activity",
     });
 
-    const startTime = new Date().toISOString();
+    const start_time = new Date().toISOString();
 
-    await AsyncStorage.mergeItem(
+    const stored = await AsyncStorage.getItem("activity_draft");
+    const draft = stored ? JSON.parse(stored) : {};
+
+    await AsyncStorage.setItem(
       "activity_draft",
-      JSON.stringify({ startTime, track: [] })
+      JSON.stringify({ ...draft, start_time })
     );
 
     await startGPStracking();

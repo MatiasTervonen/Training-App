@@ -1,5 +1,5 @@
 import * as TaskManager from "expo-task-manager";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getDatabase } from "@/database/local-database/database";
 
 export const LOCATION_TASK_NAME = "location-task";
 
@@ -8,8 +8,6 @@ type Location = {
   longitude: number;
   altitude: number | null;
   accuracy: number | null;
-  speed: number | null;
-  heading: number | null;
   timestamp: number;
 };
 
@@ -17,35 +15,40 @@ TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
   if (error || !data) return;
 
   const { locations } = data as { locations: any[] };
-
   if (!locations.length) return;
 
-  const track: Location[] = [];
+  const db = await getDatabase();
 
-  for (const point of locations) {
-    const coord: Location = {
-      latitude: point.coords.latitude,
-      longitude: point.coords.longitude,
-      altitude: point.coords.altitude ?? null,
-      accuracy: point.coords.accuracy ?? null,
-      speed: point.coords.speed ?? null,
-      heading: point.coords.heading ?? null,
-      timestamp: point.timestamp,
-    };
+  await db.execAsync("BEGIN");
 
-    track.push(coord);
+  try {
+    for (const point of locations) {
+      const coord: Location = {
+        latitude: point.coords.latitude,
+        longitude: point.coords.longitude,
+        altitude: point.coords.altitude ?? null,
+        accuracy: point.coords.accuracy ?? null,
+        timestamp: point.timestamp,
+      };
+
+      const isMoving = (coord.accuracy ?? Infinity) <= 20;
+      if (!isMoving) continue;
+
+      await db.runAsync(
+        `INSERT INTO gps_points (timestamp, latitude, longitude, altitude, accuracy) VALUES (?, ?, ?, ?, ?)`,
+        [
+          coord.timestamp,
+          coord.latitude,
+          coord.longitude,
+          coord.altitude ?? null,
+          coord.accuracy ?? null,
+        ]
+      );
+    }
+
+    await db.execAsync("COMMIT");
+  } catch (error) {
+    await db.execAsync("ROLLBACK");
+    console.error("Error persisting points to database", error);
   }
-
-  const stored = await AsyncStorage.getItem("activity_draft");
-
-  const draft = stored ? JSON.parse(stored) : {};
-
-  const existingTrack = Array.isArray(draft.track) ? draft.track : [];
-
-  const nextTrack = [...existingTrack, ...track];
-
-  await AsyncStorage.mergeItem(
-    "activity_draft",
-    JSON.stringify({ track: nextTrack })
-  );
 });

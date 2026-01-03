@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="test">
+  <trk>
+    <name>Test Walk</name>
+    <trkseg>
+      <trkpt lat="60.1699" lon="24.9384"></trkpt>
+      <trkpt lat="60.1700" lon="24.9386"></trkpt>
+      <trkpt lat="60.1701" lon="24.9388"></trkpt>
+      <trkpt lat="60.1702" lon="24.9390"></trkpt>
+      <trkpt lat="60.1703" lon="24.9392"></trkpt>
+    </trkseg>
+  </trk>
+</gpx>

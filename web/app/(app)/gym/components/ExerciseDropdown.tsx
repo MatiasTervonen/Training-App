@@ -125,7 +125,9 @@ export default function ExerciseDropdown({ onSelect }: Props) {
                     <button
                       key={exercise.id}
                       className="w-full text-left px-4 py-2 cursor-pointer z-40 hover:bg-slate-800  border-b"
-                      onClick={() => handleSelectExercise(exercise as gym_exercises)}
+                      onClick={() =>
+                        handleSelectExercise(exercise as gym_exercises)
+                      }
                     >
                       <div className="flex justify-between flex-col">
                         <div className="flex justify-between items-center">

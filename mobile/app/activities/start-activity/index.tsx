@@ -3,11 +3,10 @@ import AppText from "@/components/AppText";
 import AppInput from "@/components/AppInput";
 import ActivityDropdown from "@/Features/activities/activityDropdown";
 import { useState, useEffect } from "react";
-import { View, ScrollView } from "react-native";
+import { View, ScrollView, Button } from "react-native";
 import SubNotesInput from "@/components/SubNotesInput";
 import Timer from "@/components/timer";
 import Toggle from "@/components/toggle";
-
 import MapboxGL from "@rnmapbox/maps";
 import { useUserStore } from "@/lib/stores/useUserStore";
 import { Link } from "expo-router";
@@ -26,14 +25,17 @@ import {
 } from "@/Features/activities/lib/location-actions";
 import { formatDate } from "@/lib/formatDate";
 import { useModalPageConfig } from "@/lib/stores/modalPageConfig";
-import MapIcons from "@/Features/activities/mapIcons";
 import FullScreenMapModal from "@/Features/activities/fullScreenMapModal";
 import BaseMap from "@/Features/activities/baseMap";
 import { TrackPoint } from "@/types/session";
 import InfoModal from "@/Features/activities/infoModal";
 import { useCountDistance } from "@/Features/activities/hooks/useCountDistance";
 import { useStartActivity } from "@/Features/activities/hooks/useStartActivity";
+import { getDatabase } from "@/database/local-database/database";
+import { clearLocalSessionDatabase } from "@/Features/activities/lib/database-actions";
+import { useTrackHydration } from "@/Features/activities/hooks/useTrackHydration";
 import { useForegroundLocationTracker } from "@/Features/activities/hooks/useForegroundLocationTracker";
+import { usePersistToDatabase } from "@/Features/activities/hooks/usePersistToDatabase";
 
 export default function StartActivityScreen() {
   const now = formatDate(new Date());
@@ -43,7 +45,6 @@ export default function StartActivityScreen() {
   const [allowGPS, setAllowGPS] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [track, setTrack] = useState<TrackPoint[]>([]);
-  const [isLoaded, setIsLoaded] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [scrollEnabled, setScrollEnabled] = useState(true);
   const [fullScreen, setFullScreen] = useState(false);
@@ -70,6 +71,8 @@ export default function StartActivityScreen() {
     setMeters(0);
     // stop the GPS tracking
     await stopGPStracking();
+
+    await clearLocalSessionDatabase();
   };
 
   //  useSaveDraft hook to save the activity draft
@@ -77,14 +80,10 @@ export default function StartActivityScreen() {
     title,
     notes,
     allowGPS,
-    isLoaded,
     setAllowGPS,
-    setIsLoaded,
     setTitle,
     setNotes,
     setActivityName,
-    setMeters,
-    meters,
   });
 
   const { startGPStracking } = useStartGPStracking();
@@ -98,12 +97,9 @@ export default function StartActivityScreen() {
     title,
     notes,
     elapsedTime,
-    track,
     setIsSaving,
     resetSession,
   });
-
-  const lastPoint = track[track.length - 1];
 
   // useCountDistance hook to count the total distance
   const { totalDistanceKm } = useCountDistance({ track, meters, setMeters });
@@ -130,15 +126,27 @@ export default function StartActivityScreen() {
     });
   };
 
-  // useForegroundLocationTracker hook to track the location when the app is in the foreground
-  useForegroundLocationTracker({
+  // when poiunt arrives add it to the track and persist it to the database
+  const { addPoint, replaceFromFydration } = usePersistToDatabase();
+
+  // when foreground resumes from background, hydrate the track from the database
+  useTrackHydration({
+    isRunning,
     setTrack,
+    onHydrated: replaceFromFydration,
+    setMeters,
+  });
+
+  // When foreground watch gps
+  useForegroundLocationTracker({
     allowGPS,
     isRunning,
     setColdStartCount,
+    onPoint: (point) => {
+      setTrack((prev) => [...prev, point]);
+      addPoint(point, meters);
+    },
   });
-
-  if (!isLoaded) return null;
 
   return (
     <>
@@ -254,12 +262,7 @@ export default function StartActivityScreen() {
                     setScrollEnabled={setScrollEnabled}
                     setSwipeEnabled={setSwipeEnabled}
                     toggleMapStyle={toggleMapStyle}
-                  />
-                )}
-                {allowGPS && (
-                  <MapIcons
                     title={title}
-                    lastPoint={lastPoint}
                     startGPStracking={startGPStracking}
                     stopGPStracking={stopGPStracking}
                     totalDistance={totalDistanceKm}
@@ -272,6 +275,21 @@ export default function StartActivityScreen() {
                     onPress={handleSaveSession}
                   />
                   <DeleteButton label="Delete" onPress={resetSession} />
+                  <Button
+                    title="DEBUG: Log DB"
+                    onPress={async () => {
+                      const db = await getDatabase();
+                      const points = await db.getAllAsync(
+                        "SELECT * FROM gps_points"
+                      );
+                      const stats = await db.getAllAsync(
+                        "SELECT * FROM session_stats"
+                      );
+
+                      console.log("GPS:", points);
+                      console.log("STATS:", stats);
+                    }}
+                  />
                 </View>
               </View>
             </PageContainer>
@@ -284,7 +302,6 @@ export default function StartActivityScreen() {
           fullScreen={fullScreen}
           mapStyle={mapStyle}
           track={track}
-          lastPoint={lastPoint}
           setFullScreen={setFullScreen}
           toggleMapStyle={toggleMapStyle}
           startGPStracking={startGPStracking}

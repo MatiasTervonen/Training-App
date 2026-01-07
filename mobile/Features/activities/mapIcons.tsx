@@ -11,6 +11,7 @@ import Animated, {
   Easing,
 } from "react-native-reanimated";
 import { useEffect } from "react";
+import { formatAveragePace, formatMeters } from "@/lib/formatDate";
 
 function mapDegreesToDirection(degrees: number): string {
   const directions = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"];
@@ -26,15 +27,17 @@ export default function MapIcons({
   startGPStracking,
   stopGPStracking,
   totalDistance,
-  isColdStart,
+  hasStartedTracking,
+  averagePacePerKm,
 }: {
   title: string;
   lastPoint: TrackPoint;
   style?: StyleProp<ViewStyle>;
   startGPStracking: () => void;
   stopGPStracking: () => void;
-  totalDistance: string;
-  isColdStart: boolean;
+  totalDistance: number;
+  hasStartedTracking: boolean;
+  averagePacePerKm: number;
 }) {
   const heading = useSharedValue(0);
   const opacity = useSharedValue(1);
@@ -54,7 +57,7 @@ export default function MapIcons({
   }));
 
   useEffect(() => {
-    if (isColdStart) {
+    if (!hasStartedTracking) {
       opacity.value = withRepeat(
         withTiming(0.4, { duration: 700, easing: Easing.inOut(Easing.ease) }),
         -1,
@@ -63,9 +66,7 @@ export default function MapIcons({
     } else {
       opacity.value = withTiming(1, { duration: 300 });
     }
-  }, [isColdStart, opacity]);
-
-  const isMoving = (lastPoint?.accuracy ?? Infinity) <= 20;
+  }, [hasStartedTracking, opacity]);
 
   return (
     <View className="bg-slate-950 py-5" style={style}>
@@ -84,12 +85,17 @@ export default function MapIcons({
           />
         </View>
         <View>
-          <AppText className="text-2xl z-[999]">{totalDistance} km</AppText>
+          <AppText className="text-xl z-[999]">
+            {formatAveragePace(averagePacePerKm)} min/km
+          </AppText>
+          <AppText className="text-xl z-[999]">
+            {formatMeters(totalDistance)}
+          </AppText>
         </View>
       </View>
       <View className="gap-10 flex-row items-center justify-around">
         <View>
-          {isMoving && lastPoint?.speed != null ? (
+          {hasStartedTracking && lastPoint?.speed != null ? (
             <View className="items-center justify-center">
               <View className="flex-row items-center gap-2">
                 <View className="border-2 border-blue-500 rounded-full w-14 h-14 items-center justify-center mb-2">
@@ -116,7 +122,7 @@ export default function MapIcons({
         </View>
 
         <View>
-          {isMoving && lastPoint?.heading != null ? (
+          {hasStartedTracking && lastPoint?.heading != null ? (
             <View className="items-center justify-center">
               <View className="flex-row items-center gap-2">
                 <View className="border-2 border-blue-500 rounded-full w-14 h-14 items-center justify-center mb-2">
@@ -145,7 +151,7 @@ export default function MapIcons({
         </View>
 
         <View>
-          {lastPoint?.altitude != null ? (
+          {hasStartedTracking && lastPoint?.altitude != null ? (
             <View className="items-center justify-center">
               <View className="flex-row items-center gap-2">
                 <View className="border-2 border-blue-500 rounded-full w-14 h-14 items-center justify-center mb-2">

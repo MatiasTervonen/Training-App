@@ -2,11 +2,12 @@ import { Activity, Ellipsis, SquareArrowOutUpRight } from "lucide-react-native";
 import { View, TouchableOpacity } from "react-native";
 import AppText from "@/components/AppText";
 import DropdownMenu from "@/components/DropdownMenu";
-import { formatDate } from "@/lib/formatDate";
+import { formatDate, formatMeters, formatDuration } from "@/lib/formatDate";
 import { FeedCardProps } from "@/types/session";
 
 type activityPayload = {
   duration: number;
+  meters: number;
 };
 export default function ActivityCard({
   item,
@@ -17,17 +18,6 @@ export default function ActivityCard({
   onEdit,
 }: FeedCardProps) {
   const payload = item.extra_fields as activityPayload;
-
-  const formatDuration = (seconds: number) => {
-    const totalMinutes = Math.floor(seconds / 60);
-    const hours = Math.floor(totalMinutes / 60);
-    const minutes = totalMinutes % 60;
-    if (hours > 0) {
-      return `${hours}h ${minutes}m`;
-    } else {
-      return `${minutes}m`;
-    }
-  };
 
   return (
     <View
@@ -58,6 +48,16 @@ export default function ActivityCard({
           onDelete={onDelete}
         />
       </View>
+
+      {payload.meters > 0 && (
+        <View>
+          <AppText
+            className={`ml-4 ${pinned ? "text-slate-900" : "text-gray-100"}`}
+          >
+            {formatMeters(payload.meters)}
+          </AppText>
+        </View>
+      )}
 
       <View className="flex-row justify-between items-center mt-2 bg-black/40 rounded-b-md">
         <View className="flex-row items-center gap-4">

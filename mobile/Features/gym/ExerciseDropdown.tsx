@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { gym_exercises } from "@/types/models";
 import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
 import {

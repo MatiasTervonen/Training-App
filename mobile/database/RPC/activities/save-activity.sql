@@ -5,8 +5,7 @@ create or replace function activities_save_activity(
     p_start_time timestamptz,
     p_end_time timestamptz,
     p_track jsonb,
-    p_activity_id uuid,
-    p_meters numeric
+    p_activity_id uuid
 )
 returns uuid
 language plpgsql
@@ -19,9 +18,8 @@ declare
     v_position integer;
 begin 
 
-    -- insert into activities
 
-  insert into activity_session (
+  insert into activity_sessions (
     title,
     notes,
     duration,
@@ -38,17 +36,6 @@ begin
     p_activity_id
   )
   returning id into v_activity_id;
-
-insert into activity_session_stats (
-  session_id,
-  distance_meters,
-  duration_seconds
-)
-values (
-  v_activity_id,
-  p_meters,
-  p_duration
-);
 
 for v_track, v_position in 
   select elem, ordinality - 1 
@@ -84,8 +71,8 @@ insert into feed_items (
 )
 values (
   p_title,
-  'activity_session',
-  jsonb_build_object('duration', p_duration, 'start_time', p_start_time, 'end_time', p_end_time, 'meters', p_meters),
+  'activity_sessions',
+  jsonb_build_object('duration', p_duration, 'start_time', p_start_time, 'end_time', p_end_time),
   v_activity_id,
   p_start_time
 );

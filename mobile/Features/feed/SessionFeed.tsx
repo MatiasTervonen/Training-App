@@ -31,6 +31,7 @@ import HandleEditLocalReminder from "@/Features/edit-session-cards/editLocalRemi
 import { useAppReadyStore } from "@/lib/stores/appReadyStore";
 import { FeedItemUI } from "@/types/session";
 import useUpdateFeedItem from "@/Features/feed/hooks/useUpdateFeedItem";
+import ActivitySession from "@/Features/expand-session-cards/actrivity/activity";
 
 export default function SessionFeed() {
   const setFeedReady = useAppReadyStore((state) => state.setFeedReady);
@@ -83,6 +84,9 @@ export default function SessionFeed() {
     todoSessionError,
     isLoadingTodoSession,
     refetchFullTodo,
+    activitySessionFull,
+    activitySessionError,
+    isLoadingActivitySession,
   } = useFullSessions(expandedItem, editingItem);
 
   // useUpdateFeedItem hook to update feed item in cache
@@ -241,6 +245,28 @@ export default function SessionFeed() {
                 </AppText>
               ) : (
                 GymSessionFull && <GymSession {...GymSessionFull} />
+              )}
+            </View>
+          )}
+
+          {expandedItem.type === "activity_sessions" && (
+            <View>
+              {isLoadingActivitySession ? (
+                <View className="gap-5 items-center justify-center mt-40 px-10">
+                  <AppText className="text-lg">
+                    Loading activity session details...
+                  </AppText>
+                  <ActivityIndicator />
+                </View>
+              ) : activitySessionError ? (
+                <AppText className="text-center text-xl mt-40 px-10">
+                  Failed to load activity session details. Please try again
+                  later.
+                </AppText>
+              ) : (
+                activitySessionFull && (
+                  <ActivitySession {...activitySessionFull} />
+                )
               )}
             </View>
           )}

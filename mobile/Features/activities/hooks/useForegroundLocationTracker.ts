@@ -8,13 +8,15 @@ import { useTimerStore } from "@/lib/stores/timerStore";
 export function useForegroundLocationTracker({
   allowGPS,
   isRunning,
-  setColdStartCount,
   onPoint,
+  setHasStartedTracking,
+  hasStartedTracking,
 }: {
   allowGPS: boolean;
   isRunning: boolean;
-  setColdStartCount: React.Dispatch<React.SetStateAction<boolean>>;
   onPoint: (point: TrackPoint) => void;
+  setHasStartedTracking: (hasStartedTracking: boolean) => void;
+  hasStartedTracking: boolean;
 }) {
   const { isForeground } = useForeground();
   const goodFixCountRef = useRef(0);
@@ -26,10 +28,10 @@ export function useForegroundLocationTracker({
     if (!activeSession) {
       gpsReadyRef.current = false;
       goodFixCountRef.current = 0;
-      setColdStartCount(false);
       lastAcceptedPointRef.current = null;
+      setHasStartedTracking(false);
     }
-  }, [setColdStartCount, activeSession]);
+  }, [activeSession, setHasStartedTracking]);
 
   // Start the location tracking when the component is in the foreground and the GPS is allowed and the activity is running
   useEffect(() => {
@@ -57,18 +59,12 @@ export function useForegroundLocationTracker({
 
           const isColdStart = (point.accuracy ?? Infinity) <= 20;
 
-          console.log("GPS READY", gpsReadyRef.current);
-          console.log("GOOD FIX COUNT", goodFixCountRef.current);
-
           // When gps is cold starting avoid adding points to the track
           if (!gpsReadyRef.current) {
-            console.log("GPS COLD START", isColdStart);
             if (isColdStart) {
-              setColdStartCount(true);
               goodFixCountRef.current += 1;
               if (goodFixCountRef.current >= 5) {
                 gpsReadyRef.current = true;
-                setColdStartCount(false);
               }
             } else {
               goodFixCountRef.current = 0;
@@ -77,6 +73,17 @@ export function useForegroundLocationTracker({
             return;
           }
 
+          // Filter out low accuracy points
+          if ((point.accuracy ?? Infinity) > 15) {
+            return;
+          }
+
+          // Filter out stationary points (speed less than 0.6 m/s ≈ 2 km/h)
+          if ((point.speed ?? 0) < 0.6) {
+            return;
+          }
+
+          // Filter out points too close to last accepted point
           if (lastAcceptedPointRef.current) {
             const d = haversine(
               lastAcceptedPointRef.current.latitude,
@@ -90,6 +97,11 @@ export function useForegroundLocationTracker({
           }
 
           lastAcceptedPointRef.current = point;
+
+          if (!hasStartedTracking) {
+            setHasStartedTracking(true);
+          }
+
           onPoint(point);
         }
       );
@@ -100,5 +112,5 @@ export function useForegroundLocationTracker({
     return () => {
       sub?.remove();
     };
-  }, [isForeground, allowGPS, isRunning, setColdStartCount, onPoint]);
+  }, [isForeground, allowGPS, isRunning, onPoint, hasStartedTracking]);
 }

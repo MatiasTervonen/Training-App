@@ -19,13 +19,13 @@ export function usePersistToDatabase() {
   }, [activeSession]);
 
   // Persist the track to the local-database
-  const addPoint = useCallback(async (point: TrackPoint, meters: number) => {
+  const addPoint = useCallback(async (point: TrackPoint) => {
     trackRef.current.push(point);
 
     const now = Date.now();
     const shouldPersist =
-      now - lastPersistRef.current >= 5000 ||
-      trackRef.current.length - lastPersistedLengthRef.current >= 25;
+      now - lastPersistRef.current >= 2000 || // Reduced from 5000ms to 2000ms
+      trackRef.current.length - lastPersistedLengthRef.current >= 5; // Reduced from 25 to 5
 
     if (!shouldPersist || isPersistingRef.current) return;
 
@@ -57,8 +57,6 @@ export function usePersistToDatabase() {
           ]
         );
       }
-
-      await db.runAsync(`UPDATE session_stats SET meters = ?`, [meters]);
 
       await db.execAsync("COMMIT");
       lastPersistedLengthRef.current = trackRef.current.length;

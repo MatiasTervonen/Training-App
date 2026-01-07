@@ -9,27 +9,26 @@ import { useState } from "react";
 
 export default function FullScreenMapModal({
   fullScreen,
-  mapStyle,
   track,
   setFullScreen,
-  toggleMapStyle,
   startGPStracking,
   stopGPStracking,
   totalDistance,
-  isColdStart,
+  hasStartedTracking,
+  averagePacePerKm,
 }: {
   fullScreen: boolean;
-  mapStyle: Mapbox.StyleURL;
   track: TrackPoint[];
   setFullScreen: (value: boolean) => void;
-  toggleMapStyle: () => void;
   startGPStracking: () => void;
   stopGPStracking: () => void;
-  totalDistance: string;
-  isColdStart: boolean;
+  totalDistance: number;
+  hasStartedTracking: boolean;
+  averagePacePerKm: number;
 }) {
   const insets = useSafeAreaInsets();
   const [isFollowingUser, setIsFollowingUser] = useState(true);
+  const [mapStyle, setMapStyle] = useState(Mapbox.StyleURL.Dark);
 
   const mapCoordinates = track
     .filter((p) => p.accuracy == null || p.accuracy <= 30)
@@ -45,6 +44,35 @@ export default function FullScreenMapModal({
 
   const lastPoint = track[track.length - 1];
 
+  const userFeature = lastPoint
+    ? {
+        type: "Feature",
+        properties: {
+          accuracy: lastPoint.accuracy,
+        },
+        geometry: {
+          type: "Point",
+          coordinates: [lastPoint.longitude, lastPoint.latitude],
+        },
+      }
+    : null;
+
+  const MAP_STYLES = [
+    Mapbox.StyleURL.Dark,
+    Mapbox.StyleURL.SatelliteStreet,
+    Mapbox.StyleURL.Street,
+  ];
+
+  const toggleMapStyle = () => {
+    setMapStyle((prev) => {
+      const currentIndex = MAP_STYLES.indexOf(prev);
+      const nextIndex =
+        currentIndex === -1 ? 0 : (currentIndex + 1) % MAP_STYLES.length;
+
+      return MAP_STYLES[nextIndex];
+    });
+  };
+
   return (
     <Modal visible={fullScreen} transparent={true} animationType="slide">
       <View className="bg-slate-950 w-full h-full">
@@ -59,11 +87,28 @@ export default function FullScreenMapModal({
               setIsFollowingUser(false);
             }}
           >
-            <Mapbox.UserLocation
-              visible={true}
-              minDisplacement={0}
-              androidRenderMode="compass"
-            />
+            {userFeature && (
+              <Mapbox.ShapeSource id="user-location" shape={userFeature as any}>
+                <Mapbox.CircleLayer
+                  id="user-dot-outer-blur"
+                  style={{
+                    circleColor: "#3b82f6",
+                    circleRadius: 18,
+                    circleOpacity: 0.25,
+                  }}
+                />
+                <Mapbox.CircleLayer
+                  id="user-dot-core"
+                  style={{
+                    circleColor: "#3b82f6",
+                    circleRadius: 9,
+                    circleOpacity: 1,
+                    circleStrokeColor: "#ffffff",
+                    circleStrokeWidth: 2,
+                  }}
+                />
+              </Mapbox.ShapeSource>
+            )}
 
             <Mapbox.Camera
               followUserLocation={isFollowingUser}
@@ -122,7 +167,8 @@ export default function FullScreenMapModal({
           startGPStracking={startGPStracking}
           stopGPStracking={stopGPStracking}
           totalDistance={totalDistance}
-          isColdStart={isColdStart}
+          hasStartedTracking={hasStartedTracking}
+          averagePacePerKm={averagePacePerKm}
         />
         <View
           className="absolute z-50 top-5 right-10"

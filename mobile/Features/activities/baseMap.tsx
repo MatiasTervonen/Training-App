@@ -7,31 +7,30 @@ import { useState } from "react";
 import MapIcons from "./mapIcons";
 
 type BaseMapProps = {
-  mapStyle: Mapbox.StyleURL;
   track: TrackPoint[];
   setScrollEnabled: (value: boolean) => void;
   setSwipeEnabled: (value: boolean) => void;
-  toggleMapStyle: () => void;
   startGPStracking: () => void;
   stopGPStracking: () => void;
-  totalDistance: string;
-  isColdStart: boolean;
+  totalDistance: number;
   title: string;
+  averagePacePerKm: number;
+  hasStartedTracking: boolean;
 };
 
 export default function BaseMap({
-  mapStyle,
   track,
   setScrollEnabled,
   setSwipeEnabled,
-  toggleMapStyle,
   startGPStracking,
   stopGPStracking,
   totalDistance,
-  isColdStart,
   title,
+  hasStartedTracking,
+  averagePacePerKm,
 }: BaseMapProps) {
   const [isFollowingUser, setIsFollowingUser] = useState(true);
+  const [mapStyle, setMapStyle] = useState(Mapbox.StyleURL.Dark);
 
   const mapCoordinates = track
     .filter((p) => p.accuracy == null || p.accuracy <= 30)
@@ -46,6 +45,35 @@ export default function BaseMap({
   };
 
   const lastPoint = track[track.length - 1];
+
+  const userFeature = lastPoint
+    ? {
+        type: "Feature",
+        properties: {
+          accuracy: lastPoint.accuracy,
+        },
+        geometry: {
+          type: "Point",
+          coordinates: [lastPoint.longitude, lastPoint.latitude],
+        },
+      }
+    : null;
+
+  const MAP_STYLES = [
+    Mapbox.StyleURL.Dark,
+    Mapbox.StyleURL.SatelliteStreet,
+    Mapbox.StyleURL.Street,
+  ];
+
+  const toggleMapStyle = () => {
+    setMapStyle((prev) => {
+      const currentIndex = MAP_STYLES.indexOf(prev);
+      const nextIndex =
+        currentIndex === -1 ? 0 : (currentIndex + 1) % MAP_STYLES.length;
+
+      return MAP_STYLES[nextIndex];
+    });
+  };
 
   return (
     <>
@@ -71,11 +99,28 @@ export default function BaseMap({
             setIsFollowingUser(false);
           }}
         >
-          <Mapbox.UserLocation
-            visible={true}
-            minDisplacement={0}
-            androidRenderMode="normal"
-          />
+          {userFeature && (
+            <Mapbox.ShapeSource id="user-location" shape={userFeature as any}>
+              <Mapbox.CircleLayer
+                id="user-dot-outer-blur"
+                style={{
+                  circleColor: "#3b82f6",
+                  circleRadius: 18,
+                  circleOpacity: 0.25,
+                }}
+              />
+              <Mapbox.CircleLayer
+                id="user-dot-core"
+                style={{
+                  circleColor: "#3b82f6",
+                  circleRadius: 9,
+                  circleOpacity: 1,
+                  circleStrokeColor: "#ffffff",
+                  circleStrokeWidth: 2,
+                }}
+              />
+            </Mapbox.ShapeSource>
+          )}
 
           <Mapbox.Camera
             followUserLocation={isFollowingUser}
@@ -135,7 +180,8 @@ export default function BaseMap({
         startGPStracking={startGPStracking}
         stopGPStracking={stopGPStracking}
         totalDistance={totalDistance}
-        isColdStart={isColdStart}
+        hasStartedTracking={hasStartedTracking}
+        averagePacePerKm={averagePacePerKm}
       />
     </>
   );

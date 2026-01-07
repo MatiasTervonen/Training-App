@@ -7,7 +7,6 @@ import { View, ScrollView, Button } from "react-native";
 import SubNotesInput from "@/components/SubNotesInput";
 import Timer from "@/components/timer";
 import Toggle from "@/components/toggle";
-import MapboxGL from "@rnmapbox/maps";
 import { useUserStore } from "@/lib/stores/useUserStore";
 import { Link } from "expo-router";
 import { useTimerStore } from "@/lib/stores/timerStore";
@@ -29,13 +28,15 @@ import FullScreenMapModal from "@/Features/activities/fullScreenMapModal";
 import BaseMap from "@/Features/activities/baseMap";
 import { TrackPoint } from "@/types/session";
 import InfoModal from "@/Features/activities/infoModal";
-import { useCountDistance } from "@/Features/activities/hooks/useCountDistance";
+import { useDistanceFromTrack } from "@/Features/activities/hooks/useDistanceFromTrack";
 import { useStartActivity } from "@/Features/activities/hooks/useStartActivity";
 import { getDatabase } from "@/database/local-database/database";
 import { clearLocalSessionDatabase } from "@/Features/activities/lib/database-actions";
 import { useTrackHydration } from "@/Features/activities/hooks/useTrackHydration";
 import { useForegroundLocationTracker } from "@/Features/activities/hooks/useForegroundLocationTracker";
 import { usePersistToDatabase } from "@/Features/activities/hooks/usePersistToDatabase";
+import { useMovingTimeFromTrack } from "@/Features/activities/hooks/useMovingTimeFromTrack";
+import { useAveragePace } from "@/Features/activities/hooks/useAveragePace";
 
 export default function StartActivityScreen() {
   const now = formatDate(new Date());
@@ -48,9 +49,7 @@ export default function StartActivityScreen() {
   const [showModal, setShowModal] = useState(false);
   const [scrollEnabled, setScrollEnabled] = useState(true);
   const [fullScreen, setFullScreen] = useState(false);
-  const [mapStyle, setMapStyle] = useState(MapboxGL.StyleURL.Dark);
-  const [coldStartCount, setColdStartCount] = useState(false);
-  const [meters, setMeters] = useState(0);
+  const [hasStartedTracking, setHasStartedTracking] = useState(false);
 
   const gpsEnabledGlobally = useUserStore(
     (state) => state.settings?.gps_tracking_enabled
@@ -68,7 +67,7 @@ export default function StartActivityScreen() {
     setActivityName("");
     setAllowGPS(false);
     setTrack([]);
-    setMeters(0);
+    replaceFromFydration([]);
     // stop the GPS tracking
     await stopGPStracking();
 
@@ -76,6 +75,7 @@ export default function StartActivityScreen() {
   };
 
   //  useSaveDraft hook to save the activity draft
+
   useSaveDraft({
     title,
     notes,
@@ -92,17 +92,22 @@ export default function StartActivityScreen() {
   // useStartActivity hook to start the activity
   const { startActivity } = useStartActivity({ activityName, title });
 
+  // useCountDistance hook to count the total distance
+  const { meters } = useDistanceFromTrack({ track });
+
+  // useCountAveragePace hook to count the average pace
+  const movingTimeSeconds = useMovingTimeFromTrack(track);
+  const averagePacePerKm = useAveragePace(meters, movingTimeSeconds ?? 0);
+
   // useSaveActivitySession hook to save the activity session
   const { handleSaveSession } = useSaveActivitySession({
     title,
     notes,
+    meters,
     elapsedTime,
     setIsSaving,
     resetSession,
   });
-
-  // useCountDistance hook to count the total distance
-  const { totalDistanceKm } = useCountDistance({ track, meters, setMeters });
 
   useEffect(() => {
     return () => {
@@ -110,23 +115,8 @@ export default function StartActivityScreen() {
     };
   }, [setSwipeEnabled]);
 
-  const MAP_STYLES = [
-    MapboxGL.StyleURL.Dark,
-    MapboxGL.StyleURL.SatelliteStreet,
-    MapboxGL.StyleURL.Street,
-  ];
 
-  const toggleMapStyle = () => {
-    setMapStyle((prev) => {
-      const currentIndex = MAP_STYLES.indexOf(prev);
-      const nextIndex =
-        currentIndex === -1 ? 0 : (currentIndex + 1) % MAP_STYLES.length;
-
-      return MAP_STYLES[nextIndex];
-    });
-  };
-
-  // when poiunt arrives add it to the track and persist it to the database
+  // when point arrives add it to the track and persist it to the database
   const { addPoint, replaceFromFydration } = usePersistToDatabase();
 
   // when foreground resumes from background, hydrate the track from the database
@@ -134,17 +124,17 @@ export default function StartActivityScreen() {
     isRunning,
     setTrack,
     onHydrated: replaceFromFydration,
-    setMeters,
   });
 
   // When foreground watch gps
   useForegroundLocationTracker({
     allowGPS,
     isRunning,
-    setColdStartCount,
+    setHasStartedTracking,
+    hasStartedTracking,
     onPoint: (point) => {
       setTrack((prev) => [...prev, point]);
-      addPoint(point, meters);
+      addPoint(point);
     },
   });
 
@@ -257,16 +247,15 @@ export default function StartActivityScreen() {
 
                 {allowGPS && (
                   <BaseMap
-                    mapStyle={mapStyle}
                     track={track}
                     setScrollEnabled={setScrollEnabled}
-                    setSwipeEnabled={setSwipeEnabled}
-                    toggleMapStyle={toggleMapStyle}
+                    setSwipeEnabled={setSwipeEnabled}    
                     title={title}
                     startGPStracking={startGPStracking}
                     stopGPStracking={stopGPStracking}
-                    totalDistance={totalDistanceKm}
-                    isColdStart={coldStartCount}
+                    totalDistance={meters}
+                    hasStartedTracking={hasStartedTracking}
+                    averagePacePerKm={averagePacePerKm}
                   />
                 )}
                 <View className="gap-5 mt-10">
@@ -300,14 +289,13 @@ export default function StartActivityScreen() {
       {allowGPS && (
         <FullScreenMapModal
           fullScreen={fullScreen}
-          mapStyle={mapStyle}
           track={track}
           setFullScreen={setFullScreen}
-          toggleMapStyle={toggleMapStyle}
           startGPStracking={startGPStracking}
           stopGPStracking={stopGPStracking}
-          totalDistance={totalDistanceKm}
-          isColdStart={coldStartCount}
+          totalDistance={meters}
+          hasStartedTracking={hasStartedTracking}
+          averagePacePerKm={averagePacePerKm}
         />
       )}
 

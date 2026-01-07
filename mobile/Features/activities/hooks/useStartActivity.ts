@@ -3,6 +3,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import Toast from "react-native-toast-message";
 import { useStartGPStracking } from "@/Features/activities/lib/location-actions";
 import { getDatabase } from "@/database/local-database/database";
+import { clearLocalSessionDatabase } from "@/Features/activities/lib/database-actions";
 
 export function useStartActivity({
   activityName,
@@ -38,12 +39,10 @@ export function useStartActivity({
               altitude REAL,
               accuracy REAL
             );
-            CREATE TABLE IF NOT EXISTS session_stats (
-              meters REAL NOT NULL
-            );
-            DELETE FROM session_stats;
-            INSERT INTO session_stats (meters) VALUES (0);
-          `);
+        `);
+
+        // Clear any leftover data from previous sessions
+        await clearLocalSessionDatabase();
 
         return true;
       } catch (error) {

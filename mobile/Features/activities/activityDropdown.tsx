@@ -12,18 +12,18 @@ import AppInput from "@/components/AppInput";
 import { useState, useEffect } from "react";
 import { useDebouncedCallback } from "use-debounce";
 import { getRecentActivities } from "@/database/activities/recent-activities";
-import { Activity } from "@/types/models";
+import { activities } from "@/types/models";
 import AnimatedButton from "@/components/buttons/animatedButton";
 
 type Props = {
-  onSelect: (activity: Activity) => void;
+  onSelect: (activity: activities) => void;
   resetTrigger?: number;
 };
 
 export default function ActivityDropdown({ onSelect, resetTrigger }: Props) {
   const [inputValue, setInputValue] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedActivity, setSelectedActivity] = useState<Activity | null>(
+  const [selectedActivity, setSelectedActivity] = useState<activities | null>(
     null
   );
 
@@ -81,7 +81,7 @@ export default function ActivityDropdown({ onSelect, resetTrigger }: Props) {
     setSearchQuery(value);
   }, 400);
 
-  const handleSelectActivity = (activity: Activity) => {
+  const handleSelectActivity = (activity: activities) => {
     setSearchQuery("");
     onSelect(activity);
     setSelectedActivity(activity);
@@ -137,8 +137,8 @@ export default function ActivityDropdown({ onSelect, resetTrigger }: Props) {
               }}
               showsVerticalScrollIndicator={false}
               sections={sections}
-              keyExtractor={(item: Activity) => item.id}
-              renderItem={({ item }: { item: Activity }) => {
+              keyExtractor={(item: activities) => item.id}
+              renderItem={({ item }: { item: activities }) => {
                 return (
                   <AnimatedButton
                     className={`w-full text-left px-4 py-2 z-40 border-b border-gray-400 ${selectedActivity?.id === item.id ? "bg-blue-800" : ""}`}

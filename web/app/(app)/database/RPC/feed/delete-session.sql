@@ -17,7 +17,7 @@ if p_type not in (
     'global_reminders',
     'local_reminders',
     'global_reminders',
-    'activity_session'
+    'activity_sessions'
 ) then 
  raise exception 'invalid feed type: %', p_type;
  end if;

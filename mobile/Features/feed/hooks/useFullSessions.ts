@@ -2,7 +2,12 @@ import { FeedItemUI } from "@/types/session";
 import { useQuery } from "@tanstack/react-query";
 import { getFullGymSession } from "@/database/gym/get-full-gym-session";
 import { getFullTodoSession } from "@/database/todo/get-full-todo";
-import { full_gym_session, full_todo_session } from "@/types/models";
+import {
+  full_gym_session,
+  full_todo_session,
+  full_activity_session,
+} from "@/types/models";
+import { getFullActivitySession } from "@/database/activities/get-full-activity-session";
 
 const getId = (fi: FeedItemUI | null) => fi?.source_id ?? null;
 
@@ -24,6 +29,13 @@ export default function useFullSessions(
     expandedItem?.type === "todo_lists"
       ? expandedId
       : editingItem?.type === "todo_lists"
+        ? editingId
+        : null;
+
+  const activityId =
+    expandedItem?.type === "activity_sessions"
+      ? expandedId
+      : editingItem?.type === "activity_sessions"
         ? editingId
         : null;
 
@@ -58,6 +70,21 @@ export default function useFullSessions(
     gcTime: Infinity,
   });
 
+  const {
+    data: activitySessionFull,
+    error: activitySessionError,
+    isLoading: isLoadingActivitySession,
+  } = useQuery<full_activity_session>({
+    queryKey: ["fullActivitySession", activityId],
+    queryFn: async () => await getFullActivitySession(activityId!),
+    enabled: !!activityId,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    refetchOnMount: false,
+    staleTime: Infinity,
+    gcTime: Infinity,
+  });
+
   return {
     GymSessionFull,
     GymSessionError,
@@ -66,5 +93,8 @@ export default function useFullSessions(
     todoSessionError,
     isLoadingTodoSession,
     refetchFullTodo,
+    activitySessionFull,
+    activitySessionError,
+    isLoadingActivitySession,
   };
 }

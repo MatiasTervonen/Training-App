@@ -77,12 +77,68 @@ export type Database = {
             foreignKeyName: "activity_gps_points_session_id_fkey"
             columns: ["session_id"]
             isOneToOne: false
-            referencedRelation: "activity_session"
+            referencedRelation: "activity_sessions"
             referencedColumns: ["id"]
           },
         ]
       }
-      activity_session: {
+      activity_session_stats: {
+        Row: {
+          avg_pace: number | null
+          avg_speed: number | null
+          calories: number | null
+          computed_at: string | null
+          created_at: string | null
+          distance_meters: number | null
+          elevation_gain: number | null
+          id: string
+          max_speed: number | null
+          moving_time_seconds: number | null
+          session_id: string
+          steps: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          avg_pace?: number | null
+          avg_speed?: number | null
+          calories?: number | null
+          computed_at?: string | null
+          created_at?: string | null
+          distance_meters?: number | null
+          elevation_gain?: number | null
+          id?: string
+          max_speed?: number | null
+          moving_time_seconds?: number | null
+          session_id: string
+          steps?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          avg_pace?: number | null
+          avg_speed?: number | null
+          calories?: number | null
+          computed_at?: string | null
+          created_at?: string | null
+          distance_meters?: number | null
+          elevation_gain?: number | null
+          id?: string
+          max_speed?: number | null
+          moving_time_seconds?: number | null
+          session_id?: string
+          steps?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activity_session_stats_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: true
+            referencedRelation: "activity_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      activity_sessions: {
         Row: {
           activity_id: string
           created_at: string
@@ -132,59 +188,6 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      activity_session_stats: {
-        Row: {
-          avg_pace: number | null
-          avg_speed: number | null
-          calories: number | null
-          created_at: string | null
-          distance_meters: number | null
-          duration_seconds: number
-          elevation_gain: number | null
-          id: string
-          max_speed: number | null
-          session_id: string
-          steps: number | null
-          updated_at: string | null
-        }
-        Insert: {
-          avg_pace?: number | null
-          avg_speed?: number | null
-          calories?: number | null
-          created_at?: string | null
-          distance_meters?: number | null
-          duration_seconds: number
-          elevation_gain?: number | null
-          id?: string
-          max_speed?: number | null
-          session_id: string
-          steps?: number | null
-          updated_at?: string | null
-        }
-        Update: {
-          avg_pace?: number | null
-          avg_speed?: number | null
-          calories?: number | null
-          created_at?: string | null
-          distance_meters?: number | null
-          duration_seconds?: number
-          elevation_gain?: number | null
-          id?: string
-          max_speed?: number | null
-          session_id?: string
-          steps?: number | null
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "activity_session_stats_session_id_fkey"
-            columns: ["session_id"]
-            isOneToOne: true
-            referencedRelation: "activity_session"
             referencedColumns: ["id"]
           },
         ]
@@ -1530,6 +1533,10 @@ export type Database = {
       }
     }
     Functions: {
+      activities_compute_session_stats: {
+        Args: { p_session_id: string }
+        Returns: undefined
+      }
       activities_save_activity: {
         Args: {
           p_activity_id: string
@@ -1591,7 +1598,7 @@ export type Database = {
         Args: { p_exercises: Json; p_name: string }
         Returns: string
       }
-      last_30d_analytics: { Args: { uid: string }; Returns: Json }
+      last_30d_analytics: { Args: never; Returns: Json }
       notes_edit_note: {
         Args: {
           p_id: string
@@ -1620,6 +1627,10 @@ export type Database = {
       notes_save_note: {
         Args: { p_notes: string; p_title: string }
         Returns: string
+      }
+      reminders_delete_global_reminder: {
+        Args: { p_id: string }
+        Returns: undefined
       }
       reminders_delete_local_reminder: {
         Args: { p_id: string }
@@ -1751,23 +1762,7 @@ export type Database = {
       }
       todo_save_todo: {
         Args: { p_title: string; p_todo_list: Json }
-        Returns: {
-          created_at: string
-          extra_fields: Json
-          id: string
-          occurred_at: string
-          source_id: string
-          title: string
-          type: string
-          updated_at: string | null
-          user_id: string
-        }
-        SetofOptions: {
-          from: "*"
-          to: "feed_items"
-          isOneToOne: true
-          isSetofReturn: false
-        }
+        Returns: string
       }
       weight_edit_weight: {
         Args: {

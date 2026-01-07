@@ -8,25 +8,14 @@ export function useTrackHydration({
   isRunning,
   setTrack,
   onHydrated,
-  setMeters,
 }: {
   isRunning: boolean;
   setTrack: React.Dispatch<React.SetStateAction<TrackPoint[]>>;
   onHydrated: (points: TrackPoint[]) => void;
-  setMeters: React.Dispatch<React.SetStateAction<number>>;
 }) {
   const { isForeground } = useForeground();
   const prevForegroundRef = useRef(false);
   const { activeSession } = useTimerStore();
-
-  useEffect(() => {
-    if (!activeSession) {
-      setTrack([]);
-      setMeters(0);
-      onHydrated([]);
-      prevForegroundRef.current = false;
-    }
-  }, [activeSession, setTrack, setMeters, onHydrated]);
 
   const hydrateFromDatabase = useCallback(async () => {
     const db = await getDatabase();
@@ -50,23 +39,24 @@ export function useTrackHydration({
         timestamp: point.timestamp,
       }));
 
-      const meters = await db.getFirstAsync<{ meters: number }>(
-        "SELECT meters FROM session_stats"
-      );
-
-      if (meters) {
-        setMeters(meters.meters);
-      }
-
       setTrack(points);
       onHydrated(points);
     }
-  }, [setTrack, setMeters, onHydrated]);
+  }, [setTrack, onHydrated]);
+
+  // Hydrate on initial mount if there's an active session
+  useEffect(() => {
+    if (activeSession && isRunning) {
+      hydrateFromDatabase();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only run once on mount
 
   useEffect(() => {
     const wasForeground = prevForegroundRef.current;
     prevForegroundRef.current = isForeground;
 
+    // Also hydrate when coming back to foreground
     if (!wasForeground && isForeground && isRunning) {
       hydrateFromDatabase();
     }

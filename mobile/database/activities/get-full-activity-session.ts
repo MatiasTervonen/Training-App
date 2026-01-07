@@ -3,8 +3,15 @@ import { handleError } from "@/utils/handleError";
 
 export async function getFullActivitySession(sessionId: string) {
   const { data: activitySession, error: activitySessionError } = await supabase
-    .from("activity_session")
-    .select("*")
+    .from("activity_sessions")
+    .select(
+      "*, activities (*), activity_session_stats(*), activity_gps_points(*)"
+    )
+    .order("recorded_at", {
+      ascending: true,
+      referencedTable: "activity_gps_points",
+    })
+    .eq("id", sessionId)
     .single();
 
   if (activitySessionError || !activitySession) {

@@ -10,6 +10,7 @@ import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { CircleX } from "lucide-react-native";
 import { View, Pressable, Dimensions } from "react-native";
 import { Portal } from "react-native-paper";
+import { useFullScreenModalConfig } from "@/lib/stores/fullScreenModalConfig";
 
 export default function FullScreenModal({
   isOpen,
@@ -21,6 +22,11 @@ export default function FullScreenModal({
   children: ReactNode;
 }) {
   const translateX = useSharedValue(0);
+
+  const fullScreenModalConfig = useFullScreenModalConfig(
+    (state) => state.fullScreenModalConfig
+  );
+  const swipeEnabled = fullScreenModalConfig?.swipeEnabled ?? true;
 
   // Max width == max-w-3xl (768px) for the count of swipe dinstance to navigation
 
@@ -35,6 +41,7 @@ export default function FullScreenModal({
   }, [isOpen, translateX]);
 
   const pan = Gesture.Pan()
+    .enabled(swipeEnabled ?? true)
     .activeOffsetX([-30, 30])
     .onChange((event) => {
       translateX.value = event.translationX * 0.7;
@@ -50,7 +57,7 @@ export default function FullScreenModal({
           { duration: 300 },
           () => {
             runOnJS(onClose)();
-          },
+          }
         );
       } else {
         // Otherwise, spring back to original position

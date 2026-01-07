@@ -22,27 +22,20 @@ async function loadTrackFromDatabase() {
   );
 }
 
-async function loadMetersFromDatabase() {
-  const db = await getDatabase();
-  const row = await db.getFirstAsync<{ meters: number }>(
-    "SELECT meters FROM session_stats"
-  );
-
-  return row?.meters ?? 0;
-}
-
 export default function useSaveActivitySession({
   title,
   notes,
   elapsedTime,
   setIsSaving,
   resetSession,
+  meters,
 }: {
   title: string;
   notes: string;
   elapsedTime: number;
   setIsSaving: (isSaving: boolean) => void;
   resetSession: () => void;
+  meters: number;
 }) {
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -59,6 +52,15 @@ export default function useSaveActivitySession({
       return;
     }
 
+    if (meters <= 50) {
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "You need to track at least 50 meters to save the session.",
+      });
+      return;
+    }
+    
     const confirmSave = await confirmAction({
       title: "Confirm Finish Session",
       message: "Are you sure you want to finish this session?",
@@ -73,7 +75,6 @@ export default function useSaveActivitySession({
       await stopGPStracking();
 
       const track = await loadTrackFromDatabase();
-      const meters = await loadMetersFromDatabase();
 
       const duration = elapsedTime;
       const end_time = new Date().toISOString();
@@ -94,7 +95,6 @@ export default function useSaveActivitySession({
         end_time,
         track,
         activityId,
-        meters,
       });
 
       await queryClient.refetchQueries({ queryKey: ["feed"], exact: true });

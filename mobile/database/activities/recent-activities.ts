@@ -1,6 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import { handleError } from "@/utils/handleError";
-import { Activity } from "@/types/models";
+import { activities } from "@/types/models";
 
 export async function getRecentActivities() {
   const { data: activities, error } = await supabase
@@ -18,7 +18,7 @@ export async function getRecentActivities() {
     throw new Error("Error fetching recent activities");
   }
 
-  const uniqueActivities: Activity[] = [];
+  const uniqueActivities: activities[] = [];
   const seen = new Set<string>();
 
   for (const row of activities) {

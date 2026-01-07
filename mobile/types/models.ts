@@ -69,13 +69,25 @@ export type ExercisePreview = Pick<
   | "created_at"
 >;
 
-export type Activity = Pick<
+export type activities = Pick<
   Database["public"]["Tables"]["activities"]["Row"],
   "id" | "name" | "category" | "created_at"
 >;
 
 export type activity_session =
-  Database["public"]["Tables"]["activity_session"]["Row"];
+  Database["public"]["Tables"]["activity_sessions"]["Row"];
+
+export type activity_session_stats =
+  Database["public"]["Tables"]["activity_session_stats"]["Row"];
+
+export type activity_gps_points =
+  Database["public"]["Tables"]["activity_gps_points"]["Row"];
+
+export type full_activity_session = activity_session & {
+  activities: activities;
+  activity_session_stats: activity_session_stats;
+  activity_gps_points: activity_gps_points[];
+};
 
 export type full_gym_template = template & {
   gym_template_exercises: full_gym_template_exercise[];
@@ -96,4 +108,3 @@ export type full_gym_exercises = gym_session_exercises & {
 export type full_gym_session = gym_sessions & {
   gym_session_exercises: full_gym_exercises[];
 };
-  

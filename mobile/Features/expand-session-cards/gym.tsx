@@ -1,4 +1,4 @@
-import { formatDate } from "@/lib/formatDate";
+import { formatDate, formatDuration } from "@/lib/formatDate";
 import { useUserStore } from "@/lib/stores/useUserStore";
 import { full_gym_session, full_gym_exercises } from "@/types/models";
 import GroupExercises from "@/Features/gym/lib/GroupExercises";
@@ -12,17 +12,6 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import AnimatedButton from "../../components/buttons/animatedButton";
 import ExerciseHistoryModal from "../gym/ExerciseHistoryModal";
-
-const formatDuration = (seconds: number) => {
-  const totalMinutes = Math.floor(seconds / 60);
-  const hours = Math.floor(totalMinutes / 60);
-  const minutes = totalMinutes % 60;
-  if (hours > 0) {
-    return `${hours}h ${minutes}m`;
-  } else {
-    return `${minutes}m`;
-  }
-};
 
 export default function GymSession(gym_session: full_gym_session) {
   const [exerciseId, setExerciseId] = useState("");

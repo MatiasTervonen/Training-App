@@ -32,7 +32,7 @@ export default function FeedCard(props: FeedCardProps) {
       return <LocalReminderCard {...commomProps} />;
     case "todo_lists":
       return <TodoCard {...commomProps} />;
-    case "activity_session":
+    case "activity_sessions":
       return <ActivityCard {...commomProps} />;
   }
 }

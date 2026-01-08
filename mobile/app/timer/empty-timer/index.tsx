@@ -123,7 +123,7 @@ export default function SettingsScreen() {
     const totalSeconds = minutes * 60 + seconds;
 
     setAlarmFired(false);
-    startTimer(totalSeconds);
+    startTimer(totalSeconds, "Timer");
   };
 
   useEffect(() => {

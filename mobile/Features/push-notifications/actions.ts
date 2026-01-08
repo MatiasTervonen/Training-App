@@ -114,6 +114,14 @@ export async function configureNotificationChannels() {
     importance: Notifications.AndroidImportance.HIGH,
     sound: "default",
   });
+
+  await Notifications.setNotificationChannelAsync("alarm", {
+    name: "Alarm Reminders",
+    importance: Notifications.AndroidImportance.MAX,
+    sound: "default",
+    vibrationPattern: [0, 1000, 500, 1000],
+    lockscreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC,
+  });
 }
 
 export async function configurePushNotificationsWhenAppIsOpen() {

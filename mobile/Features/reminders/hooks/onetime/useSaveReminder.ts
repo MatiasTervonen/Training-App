@@ -8,6 +8,7 @@ export default function useSaveReminderOnetime({
   title,
   notes,
   notifyAt,
+  mode,
   setIsSaving,
   resetReminder,
   setNotification,
@@ -18,6 +19,7 @@ export default function useSaveReminderOnetime({
   setIsSaving: (isSaving: boolean) => void;
   resetReminder: () => void;
   setNotification: (reminderId: string) => Promise<string | undefined>;
+  mode?: "alarm" | "normal";
 }) {
   const queryClient = useQueryClient();
   const router = useRouter();
@@ -48,13 +50,14 @@ export default function useSaveReminderOnetime({
         notify_at_time: null,
         type: "one-time",
         notify_date: notifyAt ? notifyAt.toISOString() : null,
+        mode,
       });
 
-      const notificationId = await setNotification(reminder.id);
+      const notificationId = await setNotification(reminder);
 
       if (notificationId) {
         await AsyncStorage.setItem(
-          `notification:${reminder.id}`,
+          `notification:${reminder}`,
           JSON.stringify([notificationId])
         );
       }

@@ -23,7 +23,6 @@ export default function ReminderScreen() {
   const [title, setValue] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [notifyAt, setNotifyAt] = useState<Date | null>(null);
-  const [isLoaded, setIsLoaded] = useState(false);
   const [weekdays, setWeekdays] = useState<number[]>([]);
 
   const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -44,8 +43,6 @@ export default function ReminderScreen() {
     notes,
     setValue,
     setNotes,
-    setIsLoaded,
-    isLoaded,
   });
 
   // useSetNotificationWeekly hook to set notification

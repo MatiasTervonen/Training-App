@@ -55,7 +55,7 @@ export default function Timer({
     const { isRunning, startTimestamp } = useTimerStore.getState();
 
     if (isRunning && startTimestamp) {
-      resumeTimer();
+      resumeTimer("Timer");
     }
   }, [resumeTimer]);
 
@@ -80,7 +80,7 @@ export default function Timer({
       ) {
         const { isRunning, startTimestamp } = useTimerStore.getState();
         if (isRunning && startTimestamp) {
-          resumeTimer();
+          resumeTimer("Timer");
         }
       }
 
@@ -104,9 +104,9 @@ export default function Timer({
     const isPaused = !isRunning && elapsedTime > 0 && startTimestamp === null;
 
     if (isPaused) {
-      resumeTimer();
+      resumeTimer("Timer");
     } else {
-      startTimer(totalDuration);
+      startTimer(totalDuration, "Timer");
     }
   };
 
@@ -161,7 +161,7 @@ export default function Timer({
               label="Restart"
               onPress={() => {
                 stopTimer();
-                startTimer(totalDuration);
+                startTimer(totalDuration, "Timer");
                 setActiveSession({
                   type: "timer",
                   label: "Timer",

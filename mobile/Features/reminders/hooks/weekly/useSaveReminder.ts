@@ -54,11 +54,11 @@ export default function useSaveReminderWeekly({
         notify_date: null,
       });
 
-      const notificationId = await setNotification(reminder.id);
+      const notificationId = await setNotification(reminder);
 
       if (notificationId) {
         await AsyncStorage.setItem(
-          `notification:${reminder.id}`,
+          `notification:${reminder}`,
           JSON.stringify(notificationId)
         );
       }

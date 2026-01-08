@@ -8,6 +8,7 @@ type SaveReminderParams = {
   notify_date: Date | string | null;
   weekdays: number[];
   type: "weekly" | "daily" | "one-time";
+  mode?: "alarm" | "normal";
 };
 
 export default async function SaveLocalReminder({
@@ -17,6 +18,7 @@ export default async function SaveLocalReminder({
   weekdays,
   notify_date,
   type,
+  mode,
 }: SaveReminderParams) {
   const { data, error } = await supabase.rpc("reminders_save_local_reminder", {
     p_title: title,
@@ -25,6 +27,7 @@ export default async function SaveLocalReminder({
     p_weekdays: weekdays,
     p_notify_date: notify_date,
     p_type: type,
+    p_mode: mode,
   });
 
   if (error) {
@@ -37,5 +40,6 @@ export default async function SaveLocalReminder({
     throw new Error("Error saving local reminders");
   }
 
+  console.log("data", data);
   return data;
 }

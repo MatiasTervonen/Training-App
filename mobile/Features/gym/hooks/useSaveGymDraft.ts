@@ -3,6 +3,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDebouncedCallback } from "use-debounce";
 import { ExerciseEntry, ExerciseInput } from "@/types/session";
 import { handleError } from "@/utils/handleError";
+import { formatDate } from "@/lib/formatDate";
 
 export default function useSaveGymDraft({
   exercises,
@@ -25,6 +26,8 @@ export default function useSaveGymDraft({
 }) {
   const [hasLoadedDraft, setHasLoadedDraft] = useState(false);
 
+  const now = formatDate(new Date());
+
   useEffect(() => {
     if (isEditing) return;
 
@@ -33,7 +36,7 @@ export default function useSaveGymDraft({
         const draft = await AsyncStorage.getItem("gym_session_draft");
         if (draft) {
           const parsedDraft = JSON.parse(draft);
-          setTitle(parsedDraft.title || "");
+          setTitle(parsedDraft.title || `Gym - ${now}`);
           setExercises(parsedDraft.exercises || []);
           setNotes(parsedDraft.notes || "");
           setExerciseInputs(

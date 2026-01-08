@@ -44,10 +44,11 @@ export default function Timer({
   useEffect(() => {
     const { isRunning, startTimestamp } = useTimerStore.getState();
 
+    const label = activeSession?.label || "Session";
     if (isRunning && startTimestamp) {
-      resumeTimer();
+      resumeTimer(label);
     }
-  }, [resumeTimer]);
+  }, [resumeTimer, activeSession]);
 
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
@@ -62,12 +63,13 @@ export default function Timer({
       setActiveSession(manualSession);
     }
 
+    const label = activeSession?.label || "Session";
     const isPaused = !isRunning && elapsedTime > 0 && startTimestamp === null;
 
     if (isPaused) {
-      resumeTimer();
+      resumeTimer(label);
     } else {
-      startTimer(totalDuration);
+      startTimer(totalDuration, label);
     }
 
     onStart?.();

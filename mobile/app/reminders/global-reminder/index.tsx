@@ -21,7 +21,7 @@ export default function ReminderScreen() {
   const [title, setValue] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [notifyAt, setNotifyAt] = useState<Date | null>(null);
-  const [isLoaded, setIsLoaded] = useState(false);
+
 
   const formattedTime = formatDateTime(notifyAt!);
 
@@ -38,8 +38,6 @@ export default function ReminderScreen() {
     notes,
     setValue,
     setNotes,
-    setIsLoaded,
-    isLoaded,
   });
 
   // useSaveReminder hook to save reminder

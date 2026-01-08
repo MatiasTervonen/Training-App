@@ -17,6 +17,7 @@ export default function ReminderSession(reminder: FeedItemUI) {
     weekdays: number[];
     notes: string;
     type: string;
+    mode: "alarm" | "normal";
   };
 
   return (
@@ -24,8 +25,13 @@ export default function ReminderSession(reminder: FeedItemUI) {
       colors={["#1e3a8a", "#0f172a", "#0f172a"]}
       start={{ x: 1, y: 0 }} // bottom-left
       end={{ x: 0, y: 1 }} // top-right
-      className={`mt-20 mb-10 pt-10 px-6 rounded-xl w-full border border-slate-700 overflow-hidden shadow-md`}
+      className={`mt-20 mb-10 px-6 rounded-xl w-full border border-slate-700 overflow-hidden shadow-md ${payload.mode === "alarm" ? "pb-0" : "pt-10"}`}
     >
+      {payload.mode === "alarm" && (
+        <AppText className="text-sm text-yellow-500 my-4">
+          High-priority reminder
+        </AppText>
+      )}
       <View className="flex-row w-full">
         <View className="flex-1 min-w-0 items-center justify-center bg-slate-700 p-5 rounded-md border border-gray-400">
           <CalendarSync color="#f3f4f6" />

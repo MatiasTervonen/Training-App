@@ -16,7 +16,7 @@ export default function useSaveReminderDaily({
   notes: string;
   notifyAt: Date;
   setIsSaving: (isSaving: boolean) => void;
-  setNotification: (reminderId: string) => Promise<string | undefined>;
+  setNotification: (reminder: string) => Promise<string | undefined>;
   resetReminder: () => void;
 }) {
   const queryClient = useQueryClient();
@@ -52,11 +52,11 @@ export default function useSaveReminderDaily({
         notify_date: null,
       });
 
-      const notificationId = await setNotification(reminder.id);
+      const notificationId = await setNotification(reminder);
 
       if (notificationId) {
         await AsyncStorage.setItem(
-          `notification:${reminder.id}`,
+          `notification:${reminder}`,
           JSON.stringify([notificationId])
         );
       }

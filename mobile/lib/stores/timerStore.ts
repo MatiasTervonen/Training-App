@@ -2,6 +2,10 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import {
+  startNativeTimer,
+  stopNativeTimer,
+} from "@/native/android/NativeTimer";
 
 type ActiveSession = {
   label: string;
@@ -19,11 +23,11 @@ interface TimerState {
   startTimestamp: number | null;
   alarmSoundPlaying: boolean;
   setActiveSession: (session: NewSession) => void;
-  startTimer: (totalDuration: number) => void;
+  startTimer: (totalDuration: number, label: string) => void;
   stopTimer: () => void;
   pauseTimer: () => void;
   clearEverything: () => void;
-  resumeTimer: () => void;
+  resumeTimer: (label: string) => void;
   setAlarmFired: (fired: boolean) => void;
   setAlarmSoundPlaying: (playing: boolean) => void;
 }
@@ -52,7 +56,7 @@ export const useTimerStore = create<TimerState>()(
         }),
       setAlarmSoundPlaying: (playing) => set({ alarmSoundPlaying: playing }),
 
-      startTimer: (totalDuration) => {
+      startTimer: (totalDuration, label) => {
         if (interval) clearInterval(interval);
 
         const now = Date.now();
@@ -64,6 +68,8 @@ export const useTimerStore = create<TimerState>()(
           alarmFired: false,
           startTimestamp: now,
         });
+
+        startNativeTimer(now, label);
 
         interval = setInterval(() => {
           const { startTimestamp, totalDuration, isRunning } = get();
@@ -89,6 +95,8 @@ export const useTimerStore = create<TimerState>()(
           interval = null;
         }
 
+        stopNativeTimer();
+
         set({
           isRunning: false,
           elapsedTime: 0,
@@ -105,6 +113,8 @@ export const useTimerStore = create<TimerState>()(
           clearInterval(interval);
           interval = null;
         }
+
+        stopNativeTimer();
 
         const { startTimestamp } = get();
         if (startTimestamp) {
@@ -123,6 +133,8 @@ export const useTimerStore = create<TimerState>()(
           interval = null;
         }
 
+        stopNativeTimer();
+
         set({
           isRunning: false,
           elapsedTime: 0,
@@ -134,7 +146,7 @@ export const useTimerStore = create<TimerState>()(
         });
       },
 
-      resumeTimer: () => {
+      resumeTimer: (label: string) => {
         if (interval) clearInterval(interval);
 
         const now = Date.now();
@@ -155,6 +167,8 @@ export const useTimerStore = create<TimerState>()(
           startTimestamp: newStart,
           elapsedTime: newElapsed,
         });
+
+        startNativeTimer(newStart, label);
 
         interval = setInterval(() => {
           const { startTimestamp, totalDuration, isRunning } = get();

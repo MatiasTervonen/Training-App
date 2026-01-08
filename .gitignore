@@ -22,7 +22,6 @@ web/next-env.d.ts
 # mobile app (expo)
 mobile/.expo/
 mobile/dist/
-mobile/android/
 mobile/ios/
 mobile/web-build/
 mobile/expo-env.d.ts

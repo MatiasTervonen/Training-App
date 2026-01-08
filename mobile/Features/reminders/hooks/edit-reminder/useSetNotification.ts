@@ -2,6 +2,7 @@ import { Platform } from "react-native";
 import * as Notifications from "expo-notifications";
 import { handleError } from "@/utils/handleError";
 import { FeedItemUI, full_reminder } from "@/types/session";
+import { cancelNativeAlarm, scheduleNativeAlarm } from "@/native/android/NativeAlarm";
 
 export default function useSetNotification({
   notifyAt,
@@ -10,6 +11,7 @@ export default function useSetNotification({
   notes,
   weekdays,
   type,
+  mode = "normal",
 }: {
   notifyAt: Date;
   reminder: FeedItemUI | full_reminder;
@@ -17,17 +19,28 @@ export default function useSetNotification({
   notes: string;
   weekdays: number[];
   type: "weekly" | "daily" | "one-time";
+  mode?: "alarm" | "normal";
 }) {
   const scheduleNotifications = async () => {
     try {
       if (type === "one-time") {
+        if (mode === "alarm") {
+          scheduleNativeAlarm(notifyAt.getTime(), reminder.id);
+        }
+
+        if (mode === "normal") {
+          cancelNativeAlarm(reminder.id);
+        }
+
         const id = await Notifications.scheduleNotificationAsync({
           content: {
             title,
             body: notes || (reminder as full_reminder).notes || "",
             sound: true,
             data: {
-              reminderId: (reminder as FeedItemUI).source_id ?? (reminder as full_reminder).id,
+              reminderId:
+                (reminder as FeedItemUI).source_id ??
+                (reminder as full_reminder).id,
             },
           },
           trigger: { type: "date", date: notifyAt } as any,

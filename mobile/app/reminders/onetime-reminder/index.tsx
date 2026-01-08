@@ -15,6 +15,8 @@ import SubNotesInput from "@/components/SubNotesInput";
 import useSaveDraftOnetime from "@/Features/reminders/hooks/onetime/useSaveDraft";
 import useSaveReminderOnetime from "@/Features/reminders/hooks/onetime/useSaveReminder";
 import useSetNotification from "@/Features/reminders/hooks/onetime/useSetNotification";
+import Toggle from "@/components/toggle";
+import { ensureExactAlarmPermission } from "@/native/android/EnsureExactAlarmPermission";
 
 export default function ReminderScreen() {
   const [open, setOpen] = useState(false);
@@ -22,7 +24,7 @@ export default function ReminderScreen() {
   const [title, setValue] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [notifyAt, setNotifyAt] = useState<Date | null>(null);
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [mode, setMode] = useState<"alarm" | "normal">("normal");
 
   const formattedTime = formatDateTime(notifyAt!);
 
@@ -39,8 +41,6 @@ export default function ReminderScreen() {
     notes,
     setValue,
     setNotes,
-    setIsLoaded,
-    isLoaded,
   });
 
   // useSetNotificationOnetime hook to set notification
@@ -48,6 +48,7 @@ export default function ReminderScreen() {
     notifyAt: notifyAt!,
     title,
     notes,
+    mode,
   });
 
   // useSaveReminderOnetime hook to save reminder
@@ -55,6 +56,7 @@ export default function ReminderScreen() {
     title,
     notes,
     notifyAt: notifyAt!,
+    mode,
     setIsSaving,
     resetReminder,
     setNotification,
@@ -115,6 +117,25 @@ export default function ReminderScreen() {
                   setOpen(false);
                 }}
               />
+              <View className="flex-row items-center justify-between px-4 mt-5">
+                <View>
+                  <AppText>Enable high priority reminder</AppText>
+                  <AppText className="text-gray-400 text-sm">
+                    (Continue to alarm until dismissed)
+                  </AppText>
+                </View>
+                <Toggle
+                  isOn={mode === "alarm"}
+                  onToggle={async () => {
+                    const allowed = await ensureExactAlarmPermission();
+                    if (!allowed) {
+                      return;
+                    }
+
+                    setMode(mode === "alarm" ? "normal" : "alarm");
+                  }}
+                />
+              </View>
             </View>
             <View className="gap-5">
               <SaveButton onPress={saveReminder} />

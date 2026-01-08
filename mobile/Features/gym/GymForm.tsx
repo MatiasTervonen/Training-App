@@ -33,6 +33,7 @@ import useSaveGymDraft from "@/Features/gym/hooks/useSaveGymDraft";
 import useStartExercise from "@/Features/gym/hooks/useStartExercise";
 import useLogSetForExercise from "@/Features/gym/hooks/useLogSetForExercise";
 import useSaveSession from "@/Features/gym/hooks/useSaveSession";
+import { formatDate } from "@/lib/formatDate";
 
 export default function GymForm({
   initialData,
@@ -40,8 +41,8 @@ export default function GymForm({
   initialData: full_gym_session;
 }) {
   const session = initialData;
-
-  const [title, setTitle] = useState(session.title || "");
+  const now = formatDate(new Date());
+  const [title, setTitle] = useState(session.title || `Gym - ${now}`);
   const [exercises, setExercises] = useState<ExerciseEntry[]>(
     (session.gym_session_exercises || []).map((ex) => ({
       exercise_id: ex.exercise_id,
@@ -140,7 +141,7 @@ export default function GymForm({
       path: "/gym/gym",
     });
 
-    startTimer(0);
+    startTimer(0, title);
   }, [title, setActiveSession, startTimer]);
 
   useEffect(() => {

@@ -28,7 +28,7 @@ import FullScreenMapModal from "@/Features/activities/fullScreenMapModal";
 import BaseMap from "@/Features/activities/baseMap";
 import { TrackPoint } from "@/types/session";
 import InfoModal from "@/Features/activities/infoModal";
-import { useDistanceFromTrack } from "@/Features/activities/hooks/useDistanceFromTrack";
+import { useDistanceFromTrack } from "@/Features/activities/hooks/useCountDistance";
 import { useStartActivity } from "@/Features/activities/hooks/useStartActivity";
 import { getDatabase } from "@/database/local-database/database";
 import { clearLocalSessionDatabase } from "@/Features/activities/lib/database-actions";

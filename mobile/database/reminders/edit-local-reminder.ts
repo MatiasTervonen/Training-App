@@ -11,6 +11,7 @@ type EditLocalReminderParams = {
   type: "weekly" | "daily" | "one-time";
   seen_at: string | null;
   updated_at: string;
+  mode?: "alarm" | "normal";
 };
 
 export default async function EditLocalReminder({
@@ -23,6 +24,7 @@ export default async function EditLocalReminder({
   type,
   updated_at,
   seen_at,
+  mode,
 }: EditLocalReminderParams) {
   const { data, error } = await supabase.rpc("reminders_edit_local_reminder", {
     p_id: id,
@@ -34,6 +36,7 @@ export default async function EditLocalReminder({
     p_type: type,
     p_updated_at: updated_at,
     p_seen_at: seen_at,
+    p_mode: mode,
   });
 
   if (error) {

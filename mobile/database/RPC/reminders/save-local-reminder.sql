@@ -4,7 +4,8 @@ create or replace function reminders_save_local_reminder(
   p_notify_at_time time,
   p_notify_date timestamptz,
   p_weekdays json,
-  p_type text
+  p_type text,
+  p_mode text
 )
 returns uuid
 language plpgsql
@@ -24,7 +25,8 @@ insert into local_reminders (
   notify_at_time,
   notify_date,
   weekdays,
-  type
+  type,
+  mode
 )
 values (
   p_title,
@@ -32,7 +34,8 @@ values (
   p_notify_at_time,
   p_notify_date,
   p_weekdays,
-  p_type
+  p_type,
+  p_mode
 )
 returning id into v_reminder_id;
 
@@ -48,7 +51,7 @@ insert into feed_items (
 values (
   p_title,
   'local_reminders',
-  jsonb_build_object('notes', p_notes, 'notify_at_time', p_notify_at_time, 'notify_date', p_notify_date, 'weekdays', p_weekdays, 'type', p_type),
+  jsonb_build_object('notes', p_notes, 'notify_at_time', p_notify_at_time, 'notify_date', p_notify_date, 'weekdays', p_weekdays, 'type', p_type, 'mode', p_mode),
   v_reminder_id,
   now()
 );

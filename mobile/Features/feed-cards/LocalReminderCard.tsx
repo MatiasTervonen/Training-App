@@ -16,6 +16,7 @@ type reminderPayload = {
   notify_at_time: string;
   weekdays: number[];
   seen_at: string;
+  mode: "alarm" | "normal";
 };
 
 export default function LocalReminderCard({

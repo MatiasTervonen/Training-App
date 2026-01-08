@@ -5,6 +5,7 @@ import * as Notifications from "expo-notifications";
 import DeleteReminder from "@/database/reminders/delete-global-reminder";
 import DeleteLocalReminder from "@/database/reminders/delete-local-reminder";
 import Toast from "react-native-toast-message";
+import { cancelNativeAlarm } from "@/native/android/NativeAlarm";
 
 export default function useDeleteReminder() {
   const queryClient = useQueryClient();
@@ -36,6 +37,9 @@ export default function useDeleteReminder() {
       for (const nid of ids) {
         await Notifications.cancelScheduledNotificationAsync(nid);
       }
+
+      // Cancel native Android alarm if it was a high-priority reminder
+      cancelNativeAlarm(reminder.id);
 
       if (reminder.type === "global") {
         await DeleteReminder(reminder.id);

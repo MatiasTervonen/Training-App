@@ -15,6 +15,7 @@ export default function useSaveReminder({
   scheduleNotifications,
   weekdays,
   type,
+  mode,
 }: {
   title: string;
   notes: string;
@@ -26,6 +27,7 @@ export default function useSaveReminder({
   scheduleNotifications: () => Promise<string | string[] | undefined>;
   weekdays: number[];
   type: "weekly" | "daily" | "one-time";
+  mode?: "alarm" | "normal";
 }) {
   const handleSave = async () => {
     if (title.trim().length === 0) {
@@ -95,6 +97,7 @@ export default function useSaveReminder({
         weekdays,
         type: type as "weekly" | "daily" | "one-time",
         updated_at: updated,
+        mode,
       });
 
       await onSave(updatedFeedItem);

@@ -1,12 +1,13 @@
-package com.layer100crypto.MyTrack
+package com.layer100crypto.MyTrack.timer
 
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
 import android.util.Log
 import androidx.core.app.NotificationCompat
-
 import android.app.PendingIntent
+import com.layer100crypto.MyTrack.MainActivity
+import com.layer100crypto.MyTrack.R
 
 
 class TimerService : Service() {
@@ -15,9 +16,10 @@ class TimerService : Service() {
         Log.d("NativeTimer", "Timer Service started")
 
         val startTime = intent?.getLongExtra("startTime", 0L) ?: 0L
-
         val label = intent?.getStringExtra("label") ?: "Session"
+        val mode = intent?.getStringExtra("mode") ?: "countup"
 
+        val whenTime = startTime
 
        val openAppIntent = Intent(this, MainActivity::class.java).apply {
       this.flags =
@@ -37,19 +39,27 @@ class TimerService : Service() {
   )
 
 
-        val notification = NotificationCompat.Builder(this, "timer_channel")
+        val builder = NotificationCompat.Builder(this, "timer_channel")
             .setContentTitle(label)
             .setContentText("In progress")
             .setSmallIcon(R.drawable.small_notification_icon)
             .setOngoing(true)
             .setUsesChronometer(true)
-            .setWhen(startTime)
+            .setWhen(whenTime)
             .setContentIntent(pendingIntent)
-            .build()
+            
 
-        startForeground(1, notification)
+            if(mode == "countdown") {
+              builder.setChronometerCountDown(true)
+              builder.setContentText("Time remaining")
+            } else {
+              builder.setContentText("In progress")
+            }
+
+        startForeground(1, builder.build())
         return START_STICKY
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
 }
+

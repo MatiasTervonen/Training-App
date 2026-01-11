@@ -1,0 +1,78 @@
+package com.layer100crypto.MyTrack
+
+import android.content.Context
+import com.facebook.react.ReactApplication
+import com.facebook.react.bridge.Arguments
+import com.facebook.react.bridge.ReactContext
+import com.facebook.react.modules.core.DeviceEventManagerModule
+
+object ReactEventEmitter {
+
+    fun sendTimerFinished(
+        context: Context,
+        reminderId: String?,
+        title: String
+    ): Boolean {
+
+        val reactApplication = context.applicationContext as? ReactApplication
+            ?: return false
+
+        // Try New Architecture first (reactHost)
+        var reactContext: ReactContext? = try {
+            reactApplication.reactHost?.currentReactContext
+        } catch (e: Exception) {
+            null
+        }
+
+        // Fall back to old architecture (reactNativeHost -> reactInstanceManager)
+        if (reactContext == null) {
+            reactContext = try {
+                reactApplication.reactNativeHost
+                    ?.reactInstanceManager
+                    ?.currentReactContext
+            } catch (e: Exception) {
+                null
+            }
+        }
+
+        if (reactContext == null) return false
+
+        reactContext
+            .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
+            .emit("TIMER_FINISHED", Arguments.createMap().apply {
+                putString("id", reminderId)
+                putString("title", title)
+            })
+
+        return true
+    }
+    
+    fun sendStopAlarmSound(context: Context): Boolean {
+        val reactApplication = context.applicationContext as? ReactApplication
+            ?: return false
+
+        var reactContext: ReactContext? = try {
+            reactApplication.reactHost?.currentReactContext
+        } catch (e: Exception) {
+            null
+        }
+
+        if (reactContext == null) {
+            reactContext = try {
+                reactApplication.reactNativeHost
+                    ?.reactInstanceManager
+                    ?.currentReactContext
+            } catch (e: Exception) {
+                null
+            }
+        }
+
+        if (reactContext == null) return false
+
+        reactContext
+            .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
+            .emit("STOP_ALARM_SOUND", null)
+
+        return true
+    }
+}

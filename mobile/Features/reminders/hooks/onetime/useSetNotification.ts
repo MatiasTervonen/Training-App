@@ -21,7 +21,7 @@ export default function useSetNotification({
       console.log("reminderId", reminderId);
       // Schedule native alarm for high priority mode (Android only)
       if (mode === "alarm") {
-        scheduleNativeAlarm(notifyAt.getTime(), reminderId);
+        scheduleNativeAlarm(notifyAt.getTime(), reminderId, title, "reminder");
       }
 
       // Always schedule a regular notification as backup / for iOS

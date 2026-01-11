@@ -7,7 +7,7 @@ export default function useStartExercise({
   setExerciseInputs,
   setSupersetExercise,
   setNormalExercises,
-  startSession,
+  handleStartSession,
   exerciseType,
   supersetExercise,
   normalExercises,
@@ -27,7 +27,7 @@ export default function useStartExercise({
       | ExerciseEntry[]
       | ((prev: ExerciseEntry[]) => ExerciseEntry[])
   ) => void;
-  startSession: () => void;
+  handleStartSession: () => void;
   exerciseType: string;
   supersetExercise: ExerciseEntry[];
   normalExercises: ExerciseEntry[];
@@ -36,7 +36,7 @@ export default function useStartExercise({
     const newSupersetId = Crypto.randomUUID();
 
     if (exercises.length === 0) {
-      startSession();
+      handleStartSession();
     }
 
     if (exerciseType === "Super-Set") {

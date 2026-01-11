@@ -6,6 +6,7 @@ import { editSession } from "@/database/gym/edit-session";
 import { saveSession } from "@/database/gym/save-session";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
+import { useTimerStore } from "@/lib/stores/timerStore";
 
 export default function useSaveSession({
   title,
@@ -13,7 +14,6 @@ export default function useSaveSession({
   notes,
   durationEdit,
   isEditing,
-  elapsedTime,
   setIsSaving,
   resetSession,
   session,
@@ -23,13 +23,13 @@ export default function useSaveSession({
   notes: string;
   durationEdit: number;
   isEditing: boolean;
-  elapsedTime: number;
   setIsSaving: (isSaving: boolean) => void;
   resetSession: () => void;
   session: full_gym_session;
 }) {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const { startTimestamp, isRunning, remainingMs } = useTimerStore();
 
   const handleSaveSession = async () => {
     if (title.trim() === "") {
@@ -51,7 +51,10 @@ export default function useSaveSession({
 
     setIsSaving(true);
 
-    const duration = elapsedTime;
+    const durationInSeconds =
+      isRunning && startTimestamp
+        ? Math.floor((Date.now() - startTimestamp) / 1000)
+        : Math.floor((remainingMs ?? 0) / 1000);
 
     try {
       if (isEditing) {
@@ -88,7 +91,7 @@ export default function useSaveSession({
         await saveSession({
           title,
           notes,
-          duration,
+          duration: durationInSeconds,
           exercises,
         });
 

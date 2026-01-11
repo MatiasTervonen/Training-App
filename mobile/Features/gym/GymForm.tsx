@@ -103,13 +103,8 @@ export default function GymForm({
     setExerciseInputs,
   });
 
-  const {
-    activeSession,
-    setActiveSession,
-    startTimer,
-    stopTimer,
-    elapsedTime,
-  } = useTimerStore();
+  const { activeSession, setActiveSession, startSession, clearEverything } =
+    useTimerStore();
 
   const {
     data: history = [],
@@ -131,29 +126,26 @@ export default function GymForm({
     setIsHistoryOpen(true);
   };
 
-  const startSession = useCallback(() => {
-    const currentElapsed = useTimerStore.getState().elapsedTime;
-    if (currentElapsed > 0) return;
-
+  const handleStartSession = useCallback(() => {
     setActiveSession({
       type: "gym",
       label: title,
       path: "/gym/gym",
     });
 
-    startTimer(0, title);
-  }, [title, setActiveSession, startTimer]);
+    startSession(title);
+  }, [title, setActiveSession, startSession]);
 
   useEffect(() => {
     const checkTemplateFlag = async () => {
       const flag = await AsyncStorage.getItem("startedFromTemplate");
       if (flag === "true") {
-        startSession();
+        handleStartSession();
         AsyncStorage.removeItem("startedFromTemplate");
       }
     };
     checkTemplateFlag();
-  }, [startSession]);
+  }, [handleStartSession]);
 
   // useStartExercise hook to start the exercise
 
@@ -163,7 +155,7 @@ export default function GymForm({
     setExerciseInputs,
     setSupersetExercise,
     setNormalExercises,
-    startSession,
+    handleStartSession,
     exerciseType,
     supersetExercise,
     normalExercises,
@@ -179,7 +171,7 @@ export default function GymForm({
   });
 
   const resetSession = () => {
-    stopTimer();
+    clearEverything();
     AsyncStorage.removeItem("gym_session_draft");
     AsyncStorage.removeItem("startedFromTemplate");
     setSupersetExercise([]);
@@ -199,7 +191,6 @@ export default function GymForm({
     notes,
     durationEdit,
     isEditing,
-    elapsedTime,
     setIsSaving,
     resetSession,
     session,

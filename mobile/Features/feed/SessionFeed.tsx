@@ -158,7 +158,7 @@ export default function SessionFeed() {
                   }}
                   onEdit={() => {
                     if (feedItem.type === "gym_sessions") {
-                      router.push(`/training/gym/${feedItem.source_id}` as any);
+                      router.push(`/gym/gym/${feedItem.source_id}` as any);
                     } else {
                       setEditingItem({ ...feedItem, id: feedItem.source_id });
                     }

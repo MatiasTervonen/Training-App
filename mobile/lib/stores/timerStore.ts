@@ -6,6 +6,10 @@ import {
   startNativeTimer,
   stopNativeTimer,
 } from "@/native/android/NativeTimer";
+import {
+  cancelNativeAlarm,
+  scheduleNativeAlarm,
+} from "@/native/android/NativeAlarm";
 
 type ActiveSession = {
   label: string;
@@ -14,21 +18,27 @@ type ActiveSession = {
   started_at: number;
 };
 
+type SessionMode = "countup" | "countdown";
+
 interface TimerState {
   activeSession: ActiveSession | null;
   isRunning: boolean;
-  elapsedTime: number;
-  totalDuration: number;
   alarmFired: boolean;
   startTimestamp: number | null;
+  endTimestamp: number | null;
+  remainingMs: number | null;
+  mode: SessionMode | null;
+  uiTick: number;
+  totalDuration: number;
   alarmSoundPlaying: boolean;
+  paused: boolean;
   setActiveSession: (session: NewSession) => void;
   startTimer: (totalDuration: number, label: string) => void;
-  stopTimer: () => void;
   pauseTimer: () => void;
   clearEverything: () => void;
   resumeTimer: (label: string) => void;
   setAlarmFired: (fired: boolean) => void;
+  startSession: (label: string) => void;
   setAlarmSoundPlaying: (playing: boolean) => void;
 }
 
@@ -41,12 +51,16 @@ export const useTimerStore = create<TimerState>()(
     (set, get) => ({
       activeSession: null,
       isRunning: false,
-      elapsedTime: 0,
-      totalDuration: 0,
       alarmFired: false,
       startTimestamp: null,
+      endTimestamp: null,
+      remainingMs: null,
+      mode: null,
+      uiTick: 0,
+      totalDuration: 0,
       alarmSoundPlaying: false,
-
+      elapsedTime: 0,
+      paused: false,
       setActiveSession: (session: NewSession) =>
         set({
           activeSession: {
@@ -54,77 +68,70 @@ export const useTimerStore = create<TimerState>()(
             started_at: Date.now(),
           },
         }),
-      setAlarmSoundPlaying: (playing) => set({ alarmSoundPlaying: playing }),
 
-      startTimer: (totalDuration, label) => {
+      startSession: (label: string) => {
         if (interval) clearInterval(interval);
 
         const now = Date.now();
 
         set({
           isRunning: true,
-          totalDuration,
-          elapsedTime: 0,
-          alarmFired: false,
+          mode: "countup",
           startTimestamp: now,
+          endTimestamp: null,
+          remainingMs: null,
+          alarmFired: false,
         });
 
-        startNativeTimer(now, label);
+        startNativeTimer(now, label, "countup");
 
         interval = setInterval(() => {
-          const { startTimestamp, totalDuration, isRunning } = get();
-          if (!isRunning || !startTimestamp) return;
-
-          const newElapsed = Math.floor((Date.now() - startTimestamp) / 1000);
-          set({ elapsedTime: newElapsed });
-
-          if (totalDuration > 0 && newElapsed >= totalDuration) {
-            clearInterval(interval!);
-            set({
-              alarmFired: true,
-              alarmSoundPlaying: true,
-              isRunning: false,
-            });
-          }
+          set((state) => ({
+            uiTick: state.uiTick + 1,
+          }));
         }, 1000);
       },
 
-      stopTimer: () => {
-        if (interval) {
-          clearInterval(interval);
-          interval = null;
-        }
+      startTimer: (totalDurationInSeconds, label) => {
+        if (interval) clearInterval(interval);
 
-        stopNativeTimer();
+        const now = Date.now();
+
+        const endTimestamp = now + totalDurationInSeconds * 1000;
 
         set({
-          isRunning: false,
-          elapsedTime: 0,
-          totalDuration: 0,
+          isRunning: true,
           alarmFired: false,
-          alarmSoundPlaying: false,
-          activeSession: null,
-          startTimestamp: null,
+          startTimestamp: now,
+          endTimestamp,
+          mode: "countdown",
+          totalDuration: totalDurationInSeconds,
         });
-      },
 
-      pauseTimer: () => {
-        if (interval) {
-          clearInterval(interval);
-          interval = null;
-        }
+        startNativeTimer(endTimestamp, label, "countdown");
 
-        stopNativeTimer();
+        interval = setInterval(() => {
+          const { isRunning, mode, endTimestamp } = get();
 
-        const { startTimestamp } = get();
-        if (startTimestamp) {
-          const elapsed = Math.floor((Date.now() - startTimestamp) / 1000);
-          set({
-            elapsedTime: elapsed,
-            isRunning: false,
-            startTimestamp: null,
-          });
-        }
+          if (!isRunning) return;
+
+          if (
+            mode === "countdown" &&
+            endTimestamp &&
+            Date.now() >= endTimestamp
+          ) {
+            set({
+              alarmFired: true,
+              isRunning: false,
+              alarmSoundPlaying: true,
+            });
+            stopNativeTimer();
+
+            return;
+          }
+
+          set((state) => ({ uiTick: state.uiTick + 1 }));
+        }, 1000);
       },
 
       clearEverything: () => {
@@ -137,57 +144,111 @@ export const useTimerStore = create<TimerState>()(
 
         set({
           isRunning: false,
-          elapsedTime: 0,
-          totalDuration: 0,
           alarmFired: false,
-          alarmSoundPlaying: false,
           activeSession: null,
           startTimestamp: null,
+          endTimestamp: null,
+          remainingMs: null,
+          alarmSoundPlaying: false,
+          paused: false,
+        });
+      },
+
+      pauseTimer: () => {
+        if (interval) {
+          clearInterval(interval);
+          interval = null;
+        }
+
+        stopNativeTimer();
+
+        if (get().activeSession?.type === "timer") {
+          cancelNativeAlarm("timer");
+        }
+
+        const { isRunning, endTimestamp, mode, startTimestamp } = get();
+        if (!startTimestamp || !isRunning) return;
+
+        const now = Date.now();
+
+        const frozeMS =
+          mode === "countup"
+            ? now - startTimestamp
+            : Math.max(0, endTimestamp! - now);
+
+
+
+        set({
+          isRunning: false,
+          startTimestamp: null,
+          endTimestamp: null,
+          remainingMs: frozeMS,
+          paused: true,
         });
       },
 
       resumeTimer: (label: string) => {
-        if (interval) clearInterval(interval);
-
-        const now = Date.now();
-        const { elapsedTime, startTimestamp } = get();
-
-        let newElapsed = elapsedTime;
-        let newStart = now;
-
-        if (startTimestamp) {
-          newElapsed = Math.floor((now - startTimestamp) / 1000);
-          newStart = startTimestamp; // continue from actual start
-        } else {
-          newStart = now - elapsedTime * 1000; // fallback
+        if (interval) {
+          clearInterval(interval);
+          interval = null;
         }
 
-        set({
-          isRunning: true,
-          startTimestamp: newStart,
-          elapsedTime: newElapsed,
-        });
+        const { remainingMs, mode } = get();
+        if (!remainingMs) return;
 
-        startNativeTimer(newStart, label);
+        const now = Date.now();
+
+        if (mode === "countup") {
+          set({
+            isRunning: true,
+            startTimestamp: now - remainingMs,
+            remainingMs: null,
+          });
+        } else {
+          set({
+            isRunning: true,
+            endTimestamp: now + remainingMs,
+            startTimestamp: now,
+            remainingMs: null,
+            paused: false,
+          });
+        }
+
+        if (mode === "countup") {
+          startNativeTimer(now - remainingMs, label, "countup");
+        } else {
+          startNativeTimer(now + remainingMs, label, "countdown");
+        }
+
+        if (get().activeSession?.type === "timer") {
+          scheduleNativeAlarm(now + remainingMs, "timer", "Timer", "timer");
+        }
 
         interval = setInterval(() => {
-          const { startTimestamp, totalDuration, isRunning } = get();
-          if (!isRunning || !startTimestamp) return;
+          const { isRunning, mode, endTimestamp } = get();
 
-          const newElapsed = Math.floor((Date.now() - startTimestamp) / 1000);
-          set({ elapsedTime: newElapsed });
+          if (!isRunning) return;
 
-          if (totalDuration > 0 && newElapsed >= totalDuration) {
-            clearInterval(interval!);
+          if (
+            mode === "countdown" &&
+            endTimestamp &&
+            Date.now() >= endTimestamp
+          ) {
             set({
               alarmFired: true,
               isRunning: false,
               alarmSoundPlaying: true,
             });
+            stopNativeTimer();
+
+            return;
           }
+
+          set((state) => ({ uiTick: state.uiTick + 1 }));
         }, 1000);
       },
 
+      setAlarmSoundPlaying: (playing) => set({ alarmSoundPlaying: playing }),
       setAlarmFired: (fired) => set({ alarmFired: fired }),
     }),
     {

@@ -18,7 +18,6 @@ export default function SettingsScreen() {
   const [alarmSeconds, setAlarmSeconds] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [notes, setNotes] = useState("");
-  const [isLoaded, setIsLoaded] = useState(false);
 
   const handleReset = () => {
     AsyncStorage.removeItem("activeSession");
@@ -36,8 +35,6 @@ export default function SettingsScreen() {
     notes,
     setTitle,
     setNotes,
-    setIsLoaded,
-    isLoaded,
     setAlarmMinutes,
     setAlarmSeconds,
     alarmMinutes,

@@ -25,11 +25,11 @@ export default function useSetNotification({
     try {
       if (type === "one-time") {
         if (mode === "alarm") {
-          scheduleNativeAlarm(notifyAt.getTime(), reminder.id);
+          scheduleNativeAlarm(notifyAt.getTime(), (reminder as FeedItemUI).source_id, title, "reminder");
         }
 
         if (mode === "normal") {
-          cancelNativeAlarm(reminder.id);
+          cancelNativeAlarm((reminder as FeedItemUI).source_id);
         }
 
         const id = await Notifications.scheduleNotificationAsync({
@@ -39,8 +39,7 @@ export default function useSetNotification({
             sound: true,
             data: {
               reminderId:
-                (reminder as FeedItemUI).source_id ??
-                (reminder as full_reminder).id,
+                (reminder as FeedItemUI).source_id
             },
           },
           trigger: { type: "date", date: notifyAt } as any,
@@ -71,7 +70,7 @@ export default function useSetNotification({
             body: notes || (reminder as full_reminder).notes || "",
             sound: true,
             data: {
-              reminderId: (reminder as FeedItemUI).source_id || reminder.id,
+              reminderId: (reminder as FeedItemUI).source_id,
             },
           },
           trigger,
@@ -104,7 +103,7 @@ export default function useSetNotification({
                 body: notes || (reminder as full_reminder).notes || "",
                 sound: true,
                 data: {
-                  reminderId: (reminder as FeedItemUI).source_id || reminder.id,
+                  reminderId: (reminder as FeedItemUI).source_id,
                 },
               },
               trigger,

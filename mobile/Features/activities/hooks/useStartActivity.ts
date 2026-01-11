@@ -12,12 +12,10 @@ export function useStartActivity({
   activityName: string;
   title: string;
 }) {
-  const { elapsedTime, setActiveSession, startTimer } = useTimerStore();
+  const { setActiveSession, startSession } = useTimerStore();
   const { startGPStracking } = useStartGPStracking();
 
   const startActivity = async () => {
-    if (elapsedTime > 0) return;
-
     if (!activityName || activityName.trim() === "") {
       Toast.show({
         type: "error",
@@ -78,7 +76,7 @@ export function useStartActivity({
 
     await startGPStracking();
 
-    startTimer(0);
+    startSession("Activity");
   };
 
   return {

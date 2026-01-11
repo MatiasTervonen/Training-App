@@ -1,4 +1,4 @@
-package com.layer100crypto.MyTrack
+package com.layer100crypto.MyTrack.timer
 
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.NativeModule
@@ -11,3 +11,4 @@ class TimerPackage : ReactPackage {
 
   override fun createViewManagers(rc: ReactApplicationContext) = emptyList<ViewManager<*, *>>()
 }
+

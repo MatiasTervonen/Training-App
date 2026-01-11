@@ -1,4 +1,4 @@
-package com.layer100crypto.MyTrack
+package com.layer100crypto.MyTrack.alarm
 
 import android.app.AlarmManager
 import android.app.PendingIntent
@@ -7,9 +7,11 @@ import android.content.Intent
 
 class AlarmScheduler(private val context: Context) {
 
-    fun schedule(triggerAtMillis: Long, reminderId: String) {
+    fun schedule(triggerAtMillis: Long, reminderId: String, title: String, soundType: String) {
         val intent = Intent(context, AlarmReceiver::class.java).apply {
             putExtra("REMINDER_ID", reminderId)
+            putExtra("TITLE", title)
+            putExtra("SOUND_TYPE", soundType)
         }
 
         val pendingIntent = PendingIntent.getBroadcast(
@@ -42,3 +44,4 @@ class AlarmScheduler(private val context: Context) {
         alarmManager.cancel(pendingIntent)
     }
 }
+

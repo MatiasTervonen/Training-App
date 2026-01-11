@@ -29,6 +29,7 @@ import { useAppReadyStore } from "@/lib/stores/appReadyStore";
 import BootScreen from "@/Features/feed/fakeFeedLoader";
 import SaveAreaInset from "@/Features/layout/SaveAreaInset";
 import Mapbox from "@rnmapbox/maps";
+import TimerFinishListener from "@/Features/layout/TimerFinished";
 
 Mapbox.setAccessToken(process.env.EXPO_PUBLIC_MAPBOX_PUBLIC_TOKEN!);
 
@@ -88,6 +89,7 @@ export default Sentry.wrap(function RootLayout() {
         <QueryClientProvider client={queryClient}>
           <MenuProvider>
             <PaperProvider>
+              <TimerFinishListener />
               <StatusBar
                 barStyle="light-content"
                 backgroundColor="#020617"

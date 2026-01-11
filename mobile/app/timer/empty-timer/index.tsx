@@ -1,81 +1,84 @@
-import { Pressable, View, Keyboard } from "react-native";
+import { Pressable, View, Keyboard, DeviceEventEmitter } from "react-native";
 import AppText from "@/components/AppText";
 import NumberInput from "@/components/NumberInput";
-import { CircleX, AlarmClock } from "lucide-react-native";
+import { AlarmClock, CircleX } from "lucide-react-native";
 import { useTimerStore } from "@/lib/stores/timerStore";
 import { useState, useEffect } from "react";
 import Toast from "react-native-toast-message";
-import { confirmAction } from "@/lib/confirmAction";
-import { useAudioPlayer } from "expo-audio";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import Animated from "react-native-reanimated";
-import * as ScreenOrientation from "expo-screen-orientation";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import Timer from "@/Features/timer/timer";
-import { useRouter } from "expo-router";
+import {
+  scheduleNativeAlarm,
+  stopNativeAlarm,
+} from "@/native/android/NativeAlarm";
+import { useAudioPlayer } from "expo-audio";
+import { formatDurationLong } from "@/lib/formatDate";
+import useRotation from "@/Features/timer/hooks/useRotation";
+import { confirmAction } from "@/lib/confirmAction";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { router } from "expo-router";
 
 export default function SettingsScreen() {
   const [alarmMinutes, setAlarmMinutes] = useState("");
   const [alarmSeconds, setAlarmSeconds] = useState("");
-  const [isCancelling, setIsCancelling] = useState(false);
-  const [orieantation, setOrientation] =
-    useState<ScreenOrientation.Orientation | null>(null);
+  const [skipPlaying, setSkipPlaying] = useState(false);
 
   const audioSource = require("@/assets/audio/mixkit-classic-alarm-995.wav");
 
   const player = useAudioPlayer(audioSource);
 
-  const router = useRouter();
-
-  useEffect(() => {
-    const getOrientation = async () => {
-      const orientation = await ScreenOrientation.getOrientationAsync();
-      setOrientation(orientation);
-    };
-    getOrientation();
-
-    // Subscribe to orientation changes
-    const subscription = ScreenOrientation.addOrientationChangeListener(
-      (event) => {
-        setOrientation(event.orientationInfo.orientation);
-      }
-    );
-
-    return () => {
-      ScreenOrientation.removeOrientationChangeListener(subscription);
-    };
-  }, []);
-
-  const isLandscape =
-    orieantation === ScreenOrientation.Orientation.LANDSCAPE_LEFT ||
-    orieantation === ScreenOrientation.Orientation.LANDSCAPE_RIGHT;
-
-  useEffect(() => {
-    // Allow full rotation on this page
-    ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.ALL);
-
-    return () => {
-      // Reset back to portrait when leaving the page
-      ScreenOrientation.lockAsync(
-        ScreenOrientation.OrientationLock.PORTRAIT_UP
-      );
-    };
-  }, []);
+  const { isLandscape } = useRotation();
 
   const {
-    totalDuration,
-    elapsedTime,
-    alarmSoundPlaying,
     setAlarmFired,
     setActiveSession,
     startTimer,
+    remainingMs,
+    mode,
+    startTimestamp,
+    endTimestamp,
+    isRunning,
+    alarmFired,
     setAlarmSoundPlaying,
+    alarmSoundPlaying,
+    totalDuration,
     clearEverything,
   } = useTimerStore();
 
   const handleReset = async () => {
     setAlarmMinutes("");
     setAlarmSeconds("");
+  };
+
+  const minutes = parseInt(alarmMinutes) || 0;
+  const seconds = parseInt(alarmSeconds) || 0;
+  const totalDurationInSeconds = minutes * 60 + seconds;
+  const totalDurationMs = (totalDuration ?? 0) * 1000;
+
+  const handleStartTimer = () => {
+    setActiveSession({
+      type: "timer",
+      label: "Timer",
+      path: "/timer/empty-timer",
+    });
+
+    if (minutes === 0 && seconds === 0) {
+      Toast.show({
+        type: "error",
+        text1: "Please set a duration for the timer.",
+      });
+      return;
+    }
+
+    setAlarmFired(false);
+    startTimer(totalDurationInSeconds, "Timer");
+    scheduleNativeAlarm(
+      Date.now() + totalDurationInSeconds * 1000,
+      "timer",
+      "Timer",
+      "timer"
+    );
   };
 
   const cancelTimer = async () => {
@@ -85,7 +88,6 @@ export default function SettingsScreen() {
     });
     if (!confirmCancel) return;
 
-    setIsCancelling(true);
 
     if (player) {
       try {
@@ -102,32 +104,16 @@ export default function SettingsScreen() {
     router.replace("/timer/empty-timer");
   };
 
-  const handleStartTimer = () => {
-    setActiveSession({
-      type: "timer",
-      label: "Timer",
-      path: "/timer/empty-timer",
-    });
+  const hasSessionStarted = remainingMs !== null || startTimestamp !== null;
 
-    const minutes = parseInt(alarmMinutes) || 0;
-    const seconds = parseInt(alarmSeconds) || 0;
+  const now = Date.now();
 
-    if (minutes === 0 && seconds === 0) {
-      Toast.show({
-        type: "error",
-        text1: "Please set a duration for the timer.",
-      });
-      return;
-    }
-
-    const totalSeconds = minutes * 60 + seconds;
-
-    setAlarmFired(false);
-    startTimer(totalSeconds, "Timer");
-  };
+  const remainingMSLive = isRunning
+    ? Math.max(0, Math.floor(endTimestamp! - now))
+    : remainingMs;
 
   useEffect(() => {
-    if (alarmSoundPlaying) {
+    if (alarmSoundPlaying && !skipPlaying) {
       player.seekTo(0);
       player.play();
       player.loop = true;
@@ -135,10 +121,11 @@ export default function SettingsScreen() {
       player.pause();
       player.seekTo(0);
     }
-  }, [alarmSoundPlaying, player]);
+  }, [alarmSoundPlaying, player, skipPlaying]);
 
   const handleStopTimer = async () => {
     setAlarmSoundPlaying(false);
+    stopNativeAlarm();
     if (player) {
       try {
         player.pause();
@@ -146,10 +133,23 @@ export default function SettingsScreen() {
       } catch (error) {
         console.error("Error stopping audio player:", error);
       }
+    } else {
+      console.log("Player is null/undefined!");
     }
   };
 
-  const showTimerUI = isCancelling || totalDuration > 0;
+  // Listen for STOP_ALARM_SOUND event from native (when notification is tapped)
+  useEffect(() => {
+    const sub = DeviceEventEmitter.addListener("STOP_ALARM_SOUND", () => {
+      handleStopTimer();
+      setSkipPlaying(true);
+    });
+
+    return () => {
+      sub.remove();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Pressable
@@ -160,21 +160,24 @@ export default function SettingsScreen() {
       className="flex-1"
     >
       <View className="flex-1 px-4">
-        {showTimerUI ? (
+        {hasSessionStarted ? (
           <View className="flex-1 items-center">
-            <AppText className="text-gray-300 text-xl mt-5">
-              {Math.floor(totalDuration / 60)} min {totalDuration % 60} sec
-            </AppText>
+            {mode === "countdown" && totalDuration && (
+              <AppText className="text-gray-300 text-xl mt-5">
+                {formatDurationLong(totalDuration)}
+              </AppText>
+            )}
             <Timer
-              className="flex-col"
               iconSize={40}
               onStopAlarmSound={() => setAlarmSoundPlaying(false)}
             />
-            {elapsedTime < totalDuration && (
+            {mode === "countdown" && !alarmFired && (
               <View className="w-full bg-gray-300 h-6 rounded-full overflow-hidden mt-4">
                 <Animated.View
                   className=" bg-green-500 h-6 w-full"
-                  style={{ width: `${(elapsedTime / totalDuration) * 100}%` }}
+                  style={{
+                    width: `${(remainingMSLive! / totalDurationMs) * 100}%`,
+                  }}
                 ></Animated.View>
               </View>
             )}

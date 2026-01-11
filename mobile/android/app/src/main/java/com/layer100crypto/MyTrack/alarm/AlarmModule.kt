@@ -1,4 +1,4 @@
-package com.layer100crypto.MyTrack
+package com.layer100crypto.MyTrack.alarm
 
 import android.app.AlarmManager
 import android.content.Context
@@ -13,14 +13,14 @@ import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.module.annotations.ReactModule
 
 @ReactModule(name = "NativeAlarm")
-class NativeAlarmModule(private val reactContext: ReactApplicationContext)
+class AlarmModule(private val reactContext: ReactApplicationContext)
     : ReactContextBaseJavaModule(reactContext) {
 
     override fun getName() = "NativeAlarm"
 
     @ReactMethod
-    fun scheduleAlarm(timestamp: Double, reminderId: String) {
-        AlarmScheduler(reactContext).schedule(timestamp.toLong(), reminderId)
+    fun scheduleAlarm(timestamp: Double, reminderId: String, title: String, soundType: String) {
+        AlarmScheduler(reactContext).schedule(timestamp.toLong(), reminderId, title, soundType)
     }
 
     @ReactMethod
@@ -48,3 +48,4 @@ fun requestExactAlarmPermission() {
     reactContext.startActivity(intent)
 }
 }
+

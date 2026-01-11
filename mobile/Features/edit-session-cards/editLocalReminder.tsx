@@ -14,6 +14,8 @@ import { Checkbox } from "expo-checkbox";
 import { FeedItemUI } from "@/types/session";
 import useSaveReminder from "@/Features/reminders/hooks/edit-reminder/useSaveReminder";
 import useSetNotification from "@/Features/reminders/hooks/edit-reminder/useSetNotification";
+import { ensureExactAlarmPermission } from "@/native/android/EnsureExactAlarmPermission";
+import Toggle from "@/components/toggle";
 
 type Props = {
   reminder: FeedItemUI;
@@ -28,6 +30,7 @@ type reminderPayload = {
   weekdays: number[];
   type: "weekly" | "daily" | "one-time";
   notify_date: Date;
+  mode: "alarm" | "normal";
 };
 
 export default function HandleEditLocalReminder({
@@ -37,7 +40,6 @@ export default function HandleEditLocalReminder({
 }: Props) {
   const payload = reminder.extra_fields as unknown as reminderPayload;
 
-  console.log("payload", payload);
 
   const [title, setValue] = useState(reminder.title);
   const [notes, setNotes] = useState(payload.notes);
@@ -62,6 +64,10 @@ export default function HandleEditLocalReminder({
   const [open, setOpen] = useState(false);
   const [weekdays, setWeekdays] = useState<number[]>(payload.weekdays || []);
 
+  const [mode, setMode] = useState<"alarm" | "normal">(
+    payload.mode || "normal"
+  );
+
   const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
   const formattedNotifyAt =
@@ -76,9 +82,8 @@ export default function HandleEditLocalReminder({
     notes,
     weekdays,
     type: payload.type,
+    mode,
   });
-
-  console.log("notifyAt", notifyAt);
 
   const { handleSave } = useSaveReminder({
     title,
@@ -91,6 +96,7 @@ export default function HandleEditLocalReminder({
     onClose,
     scheduleNotifications,
     weekdays,
+    mode,
   });
 
   return (
@@ -170,6 +176,27 @@ export default function HandleEditLocalReminder({
                   );
                 })}
               </View>
+            </View>
+          )}
+          {payload.type === "one-time" && (
+            <View className="flex-row items-center justify-between px-4 mt-10">
+              <View>
+                <AppText>Enable high priority reminder</AppText>
+                <AppText className="text-gray-400 text-sm">
+                  (Continue to alarm until dismissed)
+                </AppText>
+              </View>
+              <Toggle
+                isOn={mode === "alarm"}
+                onToggle={async () => {
+                  const allowed = await ensureExactAlarmPermission();
+                  if (!allowed) {
+                    return;
+                  }
+
+                  setMode(mode === "alarm" ? "normal" : "alarm");
+                }}
+              />
             </View>
           )}
         </View>

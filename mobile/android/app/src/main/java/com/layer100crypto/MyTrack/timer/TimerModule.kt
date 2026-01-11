@@ -1,4 +1,4 @@
-package com.layer100crypto.MyTrack
+package com.layer100crypto.MyTrack.timer
 
 import android.content.Intent
 import com.facebook.react.bridge.ReactApplicationContext
@@ -11,12 +11,13 @@ class TimerModule(reactContext: ReactApplicationContext) :
     override fun getName() = "NativeTimer"
 
     @ReactMethod
-    fun startTimer(startTime: Double, label: String?) {
+    fun startTimer(startTime: Double, label: String?, mode: String) {
         val safeLabel = label ?: "Session"
 
         val intent = Intent(reactApplicationContext, TimerService::class.java)
         intent.putExtra("startTime", startTime.toLong())
         intent.putExtra("label", safeLabel)
+        intent.putExtra("mode", mode)
         reactApplicationContext.startForegroundService(intent)
     }
 
@@ -26,3 +27,4 @@ class TimerModule(reactContext: ReactApplicationContext) :
         reactApplicationContext.stopService(intent)
     }
 }
+

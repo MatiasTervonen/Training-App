@@ -1,3 +1,6 @@
+Need to install the following packages:
+supabase@2.72.2
+Ok to proceed? (y) 
 export type Json =
   | string
   | number
@@ -1002,6 +1005,7 @@ export type Database = {
           created_at: string
           delivered: boolean
           id: string
+          mode: string | null
           notes: string | null
           notify_at_time: string | null
           notify_date: string | null
@@ -1017,6 +1021,7 @@ export type Database = {
           created_at?: string
           delivered?: boolean
           id?: string
+          mode?: string | null
           notes?: string | null
           notify_at_time?: string | null
           notify_date?: string | null
@@ -1032,6 +1037,7 @@ export type Database = {
           created_at?: string
           delivered?: boolean
           id?: string
+          mode?: string | null
           notes?: string | null
           notify_at_time?: string | null
           notify_date?: string | null
@@ -1664,36 +1670,6 @@ export type Database = {
           isSetofReturn: false
         }
       }
-      reminders_edit_local_reminder: {
-        Args: {
-          p_id: string
-          p_notes: string
-          p_notify_at_time: string
-          p_notify_date: string
-          p_seen_at: string
-          p_title: string
-          p_type: string
-          p_updated_at: string
-          p_weekdays: Json
-        }
-        Returns: {
-          created_at: string
-          extra_fields: Json
-          id: string
-          occurred_at: string
-          source_id: string
-          title: string
-          type: string
-          updated_at: string | null
-          user_id: string
-        }
-        SetofOptions: {
-          from: "*"
-          to: "feed_items"
-          isOneToOne: true
-          isSetofReturn: false
-        }
-      }
       reminders_save_global_reminder: {
         Args: {
           p_notes: string
@@ -1705,6 +1681,7 @@ export type Database = {
       }
       reminders_save_local_reminder: {
         Args: {
+          p_mode: string
           p_notes: string
           p_notify_at_time: string
           p_notify_date: string

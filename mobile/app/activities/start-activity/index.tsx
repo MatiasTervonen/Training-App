@@ -57,10 +57,11 @@ export default function StartActivityScreen() {
 
   const setSwipeEnabled = useModalPageConfig((state) => state.setSwipeEnabled);
 
-  const { elapsedTime, stopTimer, isRunning } = useTimerStore();
+  const { clearEverything, isRunning, remainingMs, startTimestamp } =
+    useTimerStore();
 
   const resetSession = async () => {
-    stopTimer();
+    clearEverything();
     AsyncStorage.removeItem("activity_draft");
     setTitle("");
     setNotes("");
@@ -104,7 +105,6 @@ export default function StartActivityScreen() {
     title,
     notes,
     meters,
-    elapsedTime,
     setIsSaving,
     resetSession,
   });
@@ -114,7 +114,6 @@ export default function StartActivityScreen() {
       setSwipeEnabled(true);
     };
   }, [setSwipeEnabled]);
-
 
   // when point arrives add it to the track and persist it to the database
   const { addPoint, replaceFromFydration } = usePersistToDatabase();
@@ -138,9 +137,11 @@ export default function StartActivityScreen() {
     },
   });
 
+  const hasSessionStarted = remainingMs !== null || startTimestamp !== null;
+
   return (
     <>
-      {elapsedTime === 0 ? (
+      {!hasSessionStarted ? (
         <PageContainer>
           <AppText className="text-2xl text-center mb-5">
             Select Activity
@@ -249,7 +250,7 @@ export default function StartActivityScreen() {
                   <BaseMap
                     track={track}
                     setScrollEnabled={setScrollEnabled}
-                    setSwipeEnabled={setSwipeEnabled}    
+                    setSwipeEnabled={setSwipeEnabled}
                     title={title}
                     startGPStracking={startGPStracking}
                     stopGPStracking={stopGPStracking}

@@ -1,11 +1,7 @@
 import { useEffect, useState } from "react";
 import * as ScreenOrientation from "expo-screen-orientation";
-import { useSegments } from "expo-router";
 
-export default function useScreenOrientation() {
-  const segments = useSegments();
-  const route = segments.join("/");
-
+export default function useRotation() {
   const [orientation, setOrientation] =
     useState<ScreenOrientation.Orientation | null>(null);
 
@@ -28,19 +24,23 @@ export default function useScreenOrientation() {
     };
   }, []);
 
-  // Lock screen orientation to portrait
-  useEffect(() => {
-    ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
-  }, []);
-
-  // Check if screen is in landscape mode
   const isLandscape =
     orientation === ScreenOrientation.Orientation.LANDSCAPE_LEFT ||
     orientation === ScreenOrientation.Orientation.LANDSCAPE_RIGHT;
 
-  // Check if current route is the timer page
-  const isTimerPage = route === "timer/empty-timer" || route === "timer/start-stopwatch";
-  const hideNawbar = isTimerPage && isLandscape;
+  useEffect(() => {
+    // Allow full rotation on this page
+    ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.ALL);
 
-  return { hideNawbar };
+    return () => {
+      // Reset back to portrait when leaving the page
+      ScreenOrientation.lockAsync(
+        ScreenOrientation.OrientationLock.PORTRAIT_UP
+      );
+    };
+  }, []);
+
+  return {
+    isLandscape,
+  };
 }

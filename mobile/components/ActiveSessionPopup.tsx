@@ -3,7 +3,6 @@ import { SquareArrowRight } from "lucide-react-native";
 import { useTimerStore } from "@/lib/stores/timerStore";
 import { useEffect } from "react";
 import AppText from "@/components/AppText";
-import { useAudioPlayer } from "expo-audio";
 import { View, Pressable, TouchableOpacity } from "react-native";
 import Timer from "@/components/timer";
 import Animated, {
@@ -12,45 +11,33 @@ import Animated, {
   withRepeat,
   withTiming,
 } from "react-native-reanimated";
+import {
+  stopNativeAlarm,
+  cancelNativeAlarm,
+} from "@/native/android/NativeAlarm";
+import { formatDurationLong } from "@/lib/formatDate";
 
 export default function ActiveSessionPopup() {
   const activeSession = useTimerStore((state) => state.activeSession);
   const alarmFired = useTimerStore((state) => state.alarmFired);
-  const totalDuration = useTimerStore((state) => state.totalDuration);
-  const alarmSoundPlaying = useTimerStore((state) => state.alarmSoundPlaying);
-  const setAlarmSoundPlaying = useTimerStore(
-    (state) => state.setAlarmSoundPlaying
-  );
+
+  const { totalDuration, mode } = useTimerStore();
 
   const pathname = usePathname();
-
-  const audioSource = require("@/assets/audio/mixkit-classic-alarm-995.wav");
-
-  const player = useAudioPlayer(audioSource, { loop: true } as any);
 
   const opacity = useSharedValue(1);
 
   useEffect(() => {
-    if (alarmSoundPlaying) {
-      player.play();
-      player.loop = true;
+    if (alarmFired) {
       opacity.value = withRepeat(withTiming(0.2, { duration: 500 }), -1, true);
     } else {
       opacity.value = withTiming(1, { duration: 300 });
-      player.pause();
-      player.seekTo(0);
     }
-  }, [alarmSoundPlaying, player, opacity]);
+  }, [alarmFired, opacity]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,
   }));
-
-  const stopAlarm = () => {
-    setAlarmSoundPlaying(false);
-    player.pause();
-    player.seekTo(0);
-  };
 
   if (!activeSession) return null;
 
@@ -59,6 +46,12 @@ export default function ActiveSessionPopup() {
   }
 
   if (pathname === "/timer/empty-timer" && activeSession.type === "timer") {
+    return null;
+  }
+  if (
+    pathname === "/timer/start-stopwatch" &&
+    activeSession.type === "stopwatch"
+  ) {
     return null;
   }
 
@@ -77,13 +70,16 @@ export default function ActiveSessionPopup() {
     <Animated.View
       style={animatedStyle}
       className={`z-0 ${
-        alarmSoundPlaying
+        alarmFired
           ? "bg-red-500 border-2 border-red-400"
           : "bg-gray-600 border-2 border-green-500"
       } `}
     >
       <Pressable
-        onPress={stopAlarm}
+        onPress={() => {
+          stopNativeAlarm();
+          cancelNativeAlarm("timer");
+        }}
         className="w-full py-3 flex-row items-center z-50"
       >
         <View className="ml-10 flex-1">
@@ -102,15 +98,20 @@ export default function ActiveSessionPopup() {
           <View className="flex-row items-center gap-5">
             <Timer textClassName="text-xl" />
             <AppText>{activeSession.type.toUpperCase()}</AppText>
-            {activeSession.type === "timer" && totalDuration && (
-              <AppText>
-                {Math.floor(totalDuration / 60)} min {totalDuration % 60} sec
-              </AppText>
+            {mode === "countdown" && (
+              <AppText>{formatDurationLong(totalDuration)}</AppText>
             )}
           </View>
         </View>
         <View className="mr-5">
-          <Link onPress={stopAlarm} asChild href={activeSession.path as any}>
+          <Link
+            onPress={() => {
+              stopNativeAlarm();
+              cancelNativeAlarm("timer");
+            }}
+            asChild
+            href={activeSession.path as any}
+          >
             <TouchableOpacity>
               <SquareArrowRight size={40} color="#f3f4f6" />
             </TouchableOpacity>

@@ -1,8 +1,10 @@
 package com.layer100crypto.MyTrack
 import expo.modules.splashscreen.SplashScreenManager
 
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
@@ -10,6 +12,7 @@ import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.fabricEnable
 import com.facebook.react.defaults.DefaultReactActivityDelegate
 
 import expo.modules.ReactActivityDelegateWrapper
+import com.layer100crypto.MyTrack.alarm.AlarmService
 
 class MainActivity : ReactActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -21,6 +24,29 @@ class MainActivity : ReactActivity() {
     SplashScreenManager.registerOnActivity(this)
     // @generated end expo-splashscreen
     super.onCreate(null)
+    
+    // Stop alarm if opened from alarm notification
+    handleAlarmIntent(intent)
+  }
+  
+  override fun onNewIntent(intent: Intent) {
+    super.onNewIntent(intent)
+    handleAlarmIntent(intent)
+  }
+  
+  private fun handleAlarmIntent(intent: Intent) {
+    Log.d("MainActivity", "handleAlarmIntent: action=${intent.action}, data=${intent.data}, stopAlarm=${intent.getBooleanExtra("stopAlarm", false)}")
+    
+    // Check for stopAlarm extra OR if opened via timer deep link from alarm notification
+    val isFromAlarm = intent.getBooleanExtra("stopAlarm", false) ||
+        (intent.data?.toString()?.contains("timer/empty-timer") == true && intent.action == Intent.ACTION_VIEW)
+    
+    if (isFromAlarm) {
+      Log.d("MainActivity", "Stopping alarm service and sending event to JS")
+      stopService(Intent(this, AlarmService::class.java))
+      // Send event to JS to stop the alarm sound in the app
+      ReactEventEmitter.sendStopAlarmSound(this)
+    }
   }
 
   /**

@@ -1,4 +1,4 @@
-package com.layer100crypto.MyTrack
+package com.layer100crypto.MyTrack.alarm
 
 import android.content.BroadcastReceiver
 import android.content.Context

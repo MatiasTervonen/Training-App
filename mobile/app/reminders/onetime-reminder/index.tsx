@@ -1,4 +1,4 @@
-import { View, TouchableWithoutFeedback, Keyboard } from "react-native";
+import { View, TouchableWithoutFeedback, Keyboard, Modal } from "react-native";
 import AppText from "@/components/AppText";
 import SaveButton from "@/components/buttons/SaveButton";
 import DeleteButton from "@/components/buttons/DeleteButton";
@@ -16,7 +16,10 @@ import useSaveDraftOnetime from "@/Features/reminders/hooks/onetime/useSaveDraft
 import useSaveReminderOnetime from "@/Features/reminders/hooks/onetime/useSaveReminder";
 import useSetNotification from "@/Features/reminders/hooks/onetime/useSetNotification";
 import Toggle from "@/components/toggle";
-import { ensureExactAlarmPermission } from "@/native/android/EnsureExactAlarmPermission";
+import {
+  canUseExactAlarm,
+  requestExactAlarm,
+} from "@/native/android/EnsureExactAlarmPermission";
 
 export default function ReminderScreen() {
   const [open, setOpen] = useState(false);
@@ -25,6 +28,7 @@ export default function ReminderScreen() {
   const [isSaving, setIsSaving] = useState(false);
   const [notifyAt, setNotifyAt] = useState<Date | null>(null);
   const [mode, setMode] = useState<"alarm" | "normal">("normal");
+  const [showModal, setShowModal] = useState(false);
 
   const formattedTime = formatDateTime(notifyAt!);
 
@@ -127,8 +131,9 @@ export default function ReminderScreen() {
                 <Toggle
                   isOn={mode === "alarm"}
                   onToggle={async () => {
-                    const allowed = await ensureExactAlarmPermission();
+                    const allowed = await canUseExactAlarm();
                     if (!allowed) {
+                      setShowModal(true);
                       return;
                     }
 
@@ -145,6 +150,45 @@ export default function ReminderScreen() {
           <FullScreenLoader visible={isSaving} message="Saving reminder..." />
         </PageContainer>
       </TouchableWithoutFeedback>
+
+      <Modal visible={showModal} transparent={true} animationType="slide">
+        <View className="flex-1 justify-center items-center bg-black/50 px-5">
+          <View className="bg-slate-700 rounded-lg p-6 w-full border-2 border-gray-100">
+            <View className="mb-5">
+              <Info size={35} color="#fbbf24" />
+            </View>
+            <AppText className="text-xl mb-6 text-center">
+              Allow setting alarms and reminders
+            </AppText>
+            <AppText className="text-lg mb-6 text-center">
+              This reminder can use a high-priority alarm that rings
+              continuously, even when your phone is locked, until you dismiss
+              it.
+              {"\n\n"}
+              You can continue without enabling this, but reminders may be
+              delayed or less reliable.
+            </AppText>
+            <View className="flex-row gap-4">
+              <View className="flex-1">
+                <AnimatedButton
+                  onPress={() => setShowModal(false)}
+                  label="Cancel"
+                  className="bg-blue-800 rounded-md shadow-md border-2 border-blue-500 py-2"
+                  textClassName="text-gray-100 text-center"
+                />
+              </View>
+              <View className="flex-1">
+                <AnimatedButton
+                  onPress={async () => await requestExactAlarm()}
+                  label="Allow"
+                  className="bg-blue-800 rounded-md shadow-md border-2 border-blue-500 py-2"
+                  textClassName="text-gray-100 text-center"
+                />
+              </View>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </>
   );
 }

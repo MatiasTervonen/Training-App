@@ -2,9 +2,14 @@ import { NativeModules, Platform } from "react-native";
 
 const nativeAlarm = NativeModules.NativeAlarm;
 
-export function scheduleNativeAlarm(timestamp: number, reminderId: string) {
+export function scheduleNativeAlarm(
+  timestamp: number,
+  reminderId: string,
+  title: string,
+  soundType: string
+) {
   if (Platform.OS === "android" && nativeAlarm) {
-    nativeAlarm.scheduleAlarm(timestamp, reminderId);
+    nativeAlarm.scheduleAlarm(timestamp, reminderId, title, soundType);
   }
 }
 

@@ -7,6 +7,7 @@ import { useStopGPStracking } from "@/Features/activities/lib/location-actions";
 import { useQueryClient } from "@tanstack/react-query";
 import { getDatabase } from "@/database/local-database/database";
 import { clearLocalSessionDatabase } from "@/Features/activities/lib/database-actions";
+import { useTimerStore } from "@/lib/stores/timerStore";
 
 async function loadTrackFromDatabase() {
   const db = await getDatabase();
@@ -25,21 +26,19 @@ async function loadTrackFromDatabase() {
 export default function useSaveActivitySession({
   title,
   notes,
-  elapsedTime,
   setIsSaving,
   resetSession,
   meters,
 }: {
   title: string;
   notes: string;
-  elapsedTime: number;
   setIsSaving: (isSaving: boolean) => void;
   resetSession: () => void;
   meters: number;
 }) {
   const router = useRouter();
   const queryClient = useQueryClient();
-
+  const { startTimestamp, isRunning, remainingMs } = useTimerStore();
   const { stopGPStracking } = useStopGPStracking();
 
   const handleSaveSession = async () => {
@@ -60,7 +59,7 @@ export default function useSaveActivitySession({
       });
       return;
     }
-    
+
     const confirmSave = await confirmAction({
       title: "Confirm Finish Session",
       message: "Are you sure you want to finish this session?",
@@ -76,7 +75,11 @@ export default function useSaveActivitySession({
 
       const track = await loadTrackFromDatabase();
 
-      const duration = elapsedTime;
+      const durationInSeconds =
+        isRunning && startTimestamp
+          ? Math.floor((Date.now() - startTimestamp) / 1000)
+          : Math.floor((remainingMs ?? 0) / 1000);
+
       const end_time = new Date().toISOString();
 
       const draft = await AsyncStorage.getItem("activity_draft");
@@ -90,7 +93,7 @@ export default function useSaveActivitySession({
       await saveActivitySession({
         title,
         notes,
-        duration,
+        duration: durationInSeconds,
         start_time,
         end_time,
         track,

@@ -269,8 +269,8 @@ export default function TodoSession({
                                       updated: {formatDate(task.updated_at)}
                                     </AppText>
                                   )}
-                                  <View className="items-center bg-slate-900 p-5 rounded-md shadow-md mt-5">
-                                    <AppText className="text-xl text-center mb-5 border-b border-gray-700 pb-2">
+                                  <View className="items-center bg-slate-900 px-5 py-10 rounded-md shadow-md mt-5">
+                                    <AppText className="text-xl text-center mb-10 border-b border-gray-700 pb-2">
                                       {task.task}
                                     </AppText>
                                     <AppText className="text-left text-lg">

@@ -6,18 +6,14 @@ import { handleError } from "@/utils/handleError";
 export default function useSaveDraft({
   title,
   notes,
-  allowGPS,
   setTitle,
   setNotes,
-  setAllowGPS,
   setActivityName,
 }: {
   title: string;
   notes: string;
-  allowGPS: boolean;
   setTitle: (title: string) => void;
   setNotes: (notes: string) => void;
-  setAllowGPS: (allowGPS: boolean) => void;
   setActivityName: (activityName: string) => void;
 }) {
   useEffect(() => {
@@ -30,7 +26,6 @@ export default function useSaveDraft({
           const draft = JSON.parse(storeDraft);
           setTitle(draft.title || "");
           setNotes(draft.notes || "");
-          setAllowGPS(draft.allowGPS);
           setActivityName(draft.activityName || "");
         }
       } catch (error) {
@@ -43,11 +38,11 @@ export default function useSaveDraft({
       }
     };
     loadDraft();
-  }, [setTitle, setNotes, setAllowGPS, setActivityName]);
+  }, [setTitle, setNotes, setActivityName]);
 
   const saveActivityDraft = useDebouncedCallback(
     async () => {
-      const draft = { title, notes, allowGPS };
+      const draft = { title, notes };
       await AsyncStorage.mergeItem("activity_draft", JSON.stringify(draft));
       console.log("saveActivityDraft", draft);
     },
@@ -57,7 +52,7 @@ export default function useSaveDraft({
 
   useEffect(() => {
     saveActivityDraft();
-  }, [notes, title, allowGPS, saveActivityDraft]);
+  }, [notes, title, saveActivityDraft]);
 
   return {
     saveActivityDraft,

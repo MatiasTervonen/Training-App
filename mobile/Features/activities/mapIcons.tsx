@@ -1,6 +1,6 @@
 import { StyleProp, View, ViewStyle } from "react-native";
 import AppText from "../../components/AppText";
-import { Gauge, Compass, Mountain } from "lucide-react-native";
+import { Gauge, Compass, Mountain, Footprints } from "lucide-react-native";
 import Timer from "../../components/timer";
 import { TrackPoint } from "@/types/session";
 import Animated, {
@@ -29,6 +29,7 @@ export default function MapIcons({
   totalDistance,
   hasStartedTracking,
   averagePacePerKm,
+  currentStepCount,
 }: {
   title: string;
   lastPoint: TrackPoint;
@@ -38,6 +39,7 @@ export default function MapIcons({
   totalDistance: number;
   hasStartedTracking: boolean;
   averagePacePerKm: number;
+  currentStepCount: number;
 }) {
   const heading = useSharedValue(0);
   const opacity = useSharedValue(1);
@@ -83,12 +85,16 @@ export default function MapIcons({
             onPause={stopGPStracking}
             color="#3b82f6"
           />
+          <View className="z-[999] flex-row gap-2 items-center mt-2">
+            <Footprints size={20} color="#f3f4f6" />
+            <AppText className="text-xl z-[999]">{currentStepCount}</AppText>
+          </View>
         </View>
         <View>
           <AppText className="text-xl z-[999]">
             {formatAveragePace(averagePacePerKm)} min/km
           </AppText>
-          <AppText className="text-xl z-[999]">
+          <AppText className="text-xl z-[999] mt-2">
             {formatMeters(totalDistance)}
           </AppText>
         </View>

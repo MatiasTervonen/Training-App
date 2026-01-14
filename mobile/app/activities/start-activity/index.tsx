@@ -3,7 +3,7 @@ import AppText from "@/components/AppText";
 import AppInput from "@/components/AppInput";
 import ActivityDropdown from "@/Features/activities/activityDropdown";
 import { useState, useEffect } from "react";
-import { View, ScrollView, Button } from "react-native";
+import { View, ScrollView, Linking, AppState } from "react-native";
 import SubNotesInput from "@/components/SubNotesInput";
 import Timer from "@/components/timer";
 import Toggle from "@/components/toggle";
@@ -30,13 +30,15 @@ import { TrackPoint } from "@/types/session";
 import InfoModal from "@/Features/activities/infoModal";
 import { useDistanceFromTrack } from "@/Features/activities/hooks/useCountDistance";
 import { useStartActivity } from "@/Features/activities/hooks/useStartActivity";
-import { getDatabase } from "@/database/local-database/database";
 import { clearLocalSessionDatabase } from "@/Features/activities/lib/database-actions";
 import { useTrackHydration } from "@/Features/activities/hooks/useTrackHydration";
 import { useForegroundLocationTracker } from "@/Features/activities/hooks/useForegroundLocationTracker";
 import { usePersistToDatabase } from "@/Features/activities/hooks/usePersistToDatabase";
 import { useMovingTimeFromTrack } from "@/Features/activities/hooks/useMovingTimeFromTrack";
 import { useAveragePace } from "@/Features/activities/hooks/useAveragePace";
+import StepInfoModal from "@/Features/activities/stepToggle/stepInfoModal";
+import { hasStepsPermission } from "@/Features/activities/stepToggle/stepPermission";
+import { useStepHydration } from "@/Features/activities/hooks/useStepHydration";
 
 export default function StartActivityScreen() {
   const now = formatDate(new Date());
@@ -50,6 +52,10 @@ export default function StartActivityScreen() {
   const [scrollEnabled, setScrollEnabled] = useState(true);
   const [fullScreen, setFullScreen] = useState(false);
   const [hasStartedTracking, setHasStartedTracking] = useState(false);
+  const [showStepsModal, setShowStepsModal] = useState(false);
+  const [steps, setSteps] = useState(0);
+  const [showStepToggle, setShowStepToggle] = useState(false);
+  const [stepsAllowed, setStepsAllowed] = useState(false);
 
   const gpsEnabledGlobally = useUserStore(
     (state) => state.settings?.gps_tracking_enabled
@@ -57,8 +63,41 @@ export default function StartActivityScreen() {
 
   const setSwipeEnabled = useModalPageConfig((state) => state.setSwipeEnabled);
 
-  const { clearEverything, isRunning, remainingMs, startTimestamp } =
-    useTimerStore();
+  // Use selectors to avoid re-rendering every second when uiTick changes
+  const clearEverything = useTimerStore((state) => state.clearEverything);
+  const isRunning = useTimerStore((state) => state.isRunning);
+  const remainingMs = useTimerStore((state) => state.remainingMs);
+  const startTimestamp = useTimerStore((state) => state.startTimestamp);
+  const activeSession = useTimerStore((state) => state.activeSession);
+
+  // Restore GPS and steps settings from persisted activeSession on mount
+  useEffect(() => {
+    if (activeSession) {
+      setAllowGPS(activeSession.gpsAllowed ?? false);
+      setStepsAllowed(activeSession.stepsAllowed ?? false);
+    }
+  }, [activeSession]);
+
+  // check if steps permission is granted and show/hide the step toggle
+  useEffect(() => {
+    const checkStepsPermission = async () => {
+      const granted = await hasStepsPermission();
+      setShowStepToggle(!granted);
+      setStepsAllowed(granted);
+    };
+
+    // Initial check when screen mounts
+    checkStepsPermission();
+
+    // Re-check when app returns to foreground
+    const sub = AppState.addEventListener("change", (state) => {
+      if (state === "active") {
+        checkStepsPermission();
+      }
+    });
+
+    return () => sub.remove();
+  }, []);
 
   const resetSession = async () => {
     clearEverything();
@@ -68,6 +107,7 @@ export default function StartActivityScreen() {
     setActivityName("");
     setAllowGPS(false);
     setTrack([]);
+    setSteps(0);
     replaceFromFydration([]);
     // stop the GPS tracking
     await stopGPStracking();
@@ -76,28 +116,33 @@ export default function StartActivityScreen() {
   };
 
   //  useSaveDraft hook to save the activity draft
-
   useSaveDraft({
     title,
     notes,
-    allowGPS,
-    setAllowGPS,
     setTitle,
     setNotes,
     setActivityName,
   });
 
+  // useStartGPStracking hook to start the GPS tracking and useStopGPStracking hook to stop the GPS tracking
   const { startGPStracking } = useStartGPStracking();
   const { stopGPStracking } = useStopGPStracking();
 
   // useStartActivity hook to start the activity
-  const { startActivity } = useStartActivity({ activityName, title });
+  const { startActivity } = useStartActivity({
+    activityName,
+    title,
+    allowGPS,
+    stepsAllowed,
+  });
 
   // useCountDistance hook to count the total distance
   const { meters } = useDistanceFromTrack({ track });
 
-  // useCountAveragePace hook to count the average pace
+  // useMovingTimeFromTrack hook to count the moving time
   const movingTimeSeconds = useMovingTimeFromTrack(track);
+
+  // useCountAveragePace hook to count the average pace from moving time
   const averagePacePerKm = useAveragePace(meters, movingTimeSeconds ?? 0);
 
   // useSaveActivitySession hook to save the activity session
@@ -120,9 +165,14 @@ export default function StartActivityScreen() {
 
   // when foreground resumes from background, hydrate the track from the database
   useTrackHydration({
-    isRunning,
     setTrack,
     onHydrated: replaceFromFydration,
+  });
+
+  // when foreground resumes from background, hydrate the steps from the health connect
+  useStepHydration({
+    setSteps,
+    stepsAllowed,
   });
 
   // When foreground watch gps
@@ -160,7 +210,7 @@ export default function StartActivityScreen() {
               );
             }}
           />
-          <View className="flex-row items-center my-10 justify-between px-4">
+          <View className="flex-row items-center my-10  justify-between px-4">
             {allowGPS ? (
               <AppText className="text-lg">Disable Location Tracking</AppText>
             ) : (
@@ -181,6 +231,18 @@ export default function StartActivityScreen() {
               }}
             />
           </View>
+          {showStepToggle && (
+            <View className="flex-row items-center mb-10 justify-between px-4">
+              <AppText className="text-lg">Enable Steps Tracking</AppText>
+              <Toggle
+                disabled={isRunning}
+                isOn={false}
+                onToggle={async () => {
+                  setShowStepsModal(true);
+                }}
+              />
+            </View>
+          )}
           <AnimatedButton
             label="Start Activity"
             onPress={startActivity}
@@ -198,8 +260,8 @@ export default function StartActivityScreen() {
                 path: "/activities/start-activity",
                 type: "activity",
               }}
-              onStart={startGPStracking}
-              onPause={stopGPStracking}
+              onStart={allowGPS ? startGPStracking : undefined}
+              onPause={allowGPS ? stopGPStracking : undefined}
             />
           </View>
 
@@ -257,6 +319,7 @@ export default function StartActivityScreen() {
                     totalDistance={meters}
                     hasStartedTracking={hasStartedTracking}
                     averagePacePerKm={averagePacePerKm}
+                    currentStepCount={steps}
                   />
                 )}
                 <View className="gap-5 mt-10">
@@ -265,21 +328,6 @@ export default function StartActivityScreen() {
                     onPress={handleSaveSession}
                   />
                   <DeleteButton label="Delete" onPress={resetSession} />
-                  <Button
-                    title="DEBUG: Log DB"
-                    onPress={async () => {
-                      const db = await getDatabase();
-                      const points = await db.getAllAsync(
-                        "SELECT * FROM gps_points"
-                      );
-                      const stats = await db.getAllAsync(
-                        "SELECT * FROM session_stats"
-                      );
-
-                      console.log("GPS:", points);
-                      console.log("STATS:", stats);
-                    }}
-                  />
                 </View>
               </View>
             </PageContainer>
@@ -297,10 +345,33 @@ export default function StartActivityScreen() {
           totalDistance={meters}
           hasStartedTracking={hasStartedTracking}
           averagePacePerKm={averagePacePerKm}
+          currentStepCount={steps}
         />
       )}
 
-      <InfoModal showModal={showModal} />
+      <InfoModal showModal={showModal} onCancel={() => setShowModal(false)} />
+
+      <StepInfoModal
+        visible={showStepsModal}
+        onCancel={() => setShowStepsModal(false)}
+        onOpenSettings={async () => {
+          try {
+            const supported = await Linking.canOpenURL(
+              "healthconnect://settings"
+            );
+
+            if (supported) {
+              await Linking.openURL("healthconnect://settings");
+            } else {
+              await Linking.openSettings();
+            }
+          } catch {
+            await Linking.openSettings();
+          } finally {
+            setShowStepsModal(false);
+          }
+        }}
+      />
 
       <FullScreenLoader visible={isSaving} message="Saving session..." />
     </>

@@ -1,4 +1,4 @@
-import { Pressable } from "react-native";
+import { Pressable, View } from "react-native";
 import AppText from "@/components/AppText";
 import type { LinkProps } from "expo-router";
 import Animated, {
@@ -71,7 +71,7 @@ export default function LinkButton({
     >
       <Animated.View
         style={animatedStyle}
-        className="flex-row items-center justify-center gap-2 bg-blue-800 py-2 w-full rounded-md shadow-md border-2 border-blue-500 text-lg"
+        className="bg-blue-800 py-2 rounded-md shadow-md border-2 border-blue-500 text-lg"
       >
         {/* Light sweep gradient */}
         <Animated.View
@@ -92,8 +92,10 @@ export default function LinkButton({
             style={{ flex: 1 }}
           />
         </Animated.View>
-        {label && <AppText className="text-lg">{label}</AppText>}
-        {children}
+        <View className="flex-row items-center justify-center gap-2">
+          {label && <AppText className="text-lg text-center">{label}</AppText>}
+          {children}
+        </View>
       </Animated.View>
     </Pressable>
   );

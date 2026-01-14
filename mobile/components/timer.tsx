@@ -14,6 +14,8 @@ type TimerProps = {
   color?: string;
   manualSession?: ActiveSession;
   textClassName?: string;
+  onStart?: () => void;
+  onPause?: () => void;
 };
 
 export default function Timer({
@@ -21,6 +23,8 @@ export default function Timer({
   color = "#f3f4f6",
   manualSession,
   textClassName = "",
+  onStart,
+  onPause,
 }: TimerProps) {
   const {
     isRunning,
@@ -47,11 +51,13 @@ export default function Timer({
       resumeTimer(label);
     } else {
       startSession(label);
+      onStart?.();
     }
   };
 
   const handlePause = () => {
     pauseTimer();
+    onPause?.();
   };
 
   const formatTime = (seconds: number) => {

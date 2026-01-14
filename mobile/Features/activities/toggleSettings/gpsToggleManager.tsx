@@ -1,10 +1,10 @@
 import Toggle from "@/components/toggle";
-import { View, AppState } from "react-native";
+import { AppState, View } from "react-native";
 import AppText from "@/components/AppText";
 import { useUserStore } from "@/lib/stores/useUserStore";
 import Toast from "react-native-toast-message";
 import { updateGpsTrackingStatus } from "@/Features/activities/toggleSettings/actions";
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import * as Location from "expo-location";
 import InfoModal from "@/Features/activities/toggleSettings/infoModal";
 
@@ -16,36 +16,26 @@ export default function GpsToggleManager() {
   );
   const settings = useUserStore.getState().settings;
 
-  // Listen for app state changes and update push notifications toggle state accordingly. Check permissions when app is opened.
   useEffect(() => {
-    const checkPermissions = async () => {
-      if (!gpsTrackingEnabled) return;
+    const sub = AppState.addEventListener("change", async (state) => {
+      if (state !== "active") return;
 
       const fg = await Location.getForegroundPermissionsAsync();
       const bg = await Location.getBackgroundPermissionsAsync();
 
       const granted = fg.status === "granted" && bg.status === "granted";
 
-      if (!granted) {
-        await updateGpsTrackingStatus(false);
-
+      if (granted) {
         useUserStore.getState().setUserSettings({
-          gps_tracking_enabled: false,
+          gps_tracking_enabled: true,
         });
       }
-    };
-
-    checkPermissions();
-
-    const sub = AppState.addEventListener("change", async (state) => {
-      if (state !== "active") return;
-      checkPermissions();
     });
 
     return () => {
       sub.remove();
     };
-  }, [gpsTrackingEnabled]);
+  }, []);
 
   const handleToggle = async () => {
     if (!settings) return;

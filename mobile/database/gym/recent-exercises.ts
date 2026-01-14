@@ -6,8 +6,8 @@ export async function getRecentExercises() {
   const { data: exercises, error } = await supabase
     .from("gym_session_exercises")
     .select(`exercise:exercise_id (*)`)
-    .order("id", { ascending: false })
-    .limit(10);
+    .order("created_at", { ascending: false })
+    .limit(50);
 
   if (error) {
     handleError(error, {
@@ -21,13 +21,14 @@ export async function getRecentExercises() {
   const uniqueExercises: ExercisePreview[] = [];
   const seen = new Set<number>();
 
-  for (const row of exercises) {
+  for (const row of exercises || []) {
     const ex = Array.isArray(row.exercise) ? row.exercise[0] : row.exercise;
     if (ex && !seen.has(ex.id)) {
       seen.add(ex.id);
       uniqueExercises.push(ex);
     }
+    if (uniqueExercises.length >= 10) break;
   }
 
-  return uniqueExercises ?? [];
+  return uniqueExercises;
 }

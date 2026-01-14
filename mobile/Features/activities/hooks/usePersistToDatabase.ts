@@ -2,6 +2,7 @@ import { getDatabase } from "@/database/local-database/database";
 import { useCallback, useEffect, useRef } from "react";
 import { TrackPoint } from "@/types/session";
 import { useTimerStore } from "@/lib/stores/timerStore";
+import { handleError } from "@/utils/handleError";
 
 export function usePersistToDatabase() {
   const trackRef = useRef<TrackPoint[]>([]);
@@ -32,19 +33,18 @@ export function usePersistToDatabase() {
     lastPersistRef.current = now;
     isPersistingRef.current = true;
 
-    const db = await getDatabase();
-    const pointsToPersist = trackRef.current.slice(
-      lastPersistedLengthRef.current
-    );
-
-    if (pointsToPersist.length === 0) {
-      isPersistingRef.current = false;
-      return;
-    }
-
-    await db.execAsync("BEGIN");
-
     try {
+      const db = await getDatabase();
+      const pointsToPersist = trackRef.current.slice(
+        lastPersistedLengthRef.current
+      );
+
+      if (pointsToPersist.length === 0) {
+        isPersistingRef.current = false;
+        return;
+      }
+
+      // Insert points without explicit transaction to avoid locking conflicts
       for (const point of pointsToPersist) {
         await db.runAsync(
           `INSERT INTO gps_points (timestamp, latitude, longitude, altitude, accuracy) VALUES (?, ?, ?, ?, ?)`,
@@ -58,11 +58,13 @@ export function usePersistToDatabase() {
         );
       }
 
-      await db.execAsync("COMMIT");
       lastPersistedLengthRef.current = trackRef.current.length;
     } catch (error) {
-      await db.execAsync("ROLLBACK");
-      console.error("Error persisting points to database", error);
+      handleError(error, {
+        message: "Error persisting points to database",
+        route: "/features/activities/hooks/usePersistToDatabase",
+        method: "addPoint",
+      });
     } finally {
       isPersistingRef.current = false;
     }

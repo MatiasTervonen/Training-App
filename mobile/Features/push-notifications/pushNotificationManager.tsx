@@ -28,37 +28,6 @@ export default function PushNotificationManager() {
 
   const platform = Platform.OS === "ios" ? "ios" : "android";
 
-  // Listen for app state changes and update push notifications toggle state accordingly. Check permissions when app is opened.
-  useEffect(() => {
-    const checkPermissions = async () => {
-      if (!pushEnabled) return;
-
-      const { status } = await Notifications.getPermissionsAsync();
-
-      if (status !== "granted") {
-        console.log("Deleting token from server");
-        await deleteTokenFromServer();
-
-        await Notifications.cancelAllScheduledNotificationsAsync();
-
-        useUserStore.getState().setUserSettings({
-          push_enabled: false,
-        });
-      }
-    };
-
-    checkPermissions();
-
-    const subscription = AppState.addEventListener("change", async (state) => {
-      if (state !== "active") return;
-      checkPermissions();
-    });
-
-    return () => {
-      subscription.remove();
-    };
-  }, [pushEnabled]);
-
   const subscribeToPush = async () => {
     if (!settings) return;
 
@@ -90,6 +59,25 @@ export default function PushNotificationManager() {
       });
     }
   };
+
+  
+  useEffect(() => {
+    const sub = AppState.addEventListener("change", async (state) => {
+      if (state !== "active") return;
+
+      const allowed = await Notifications.getPermissionsAsync();
+
+      if (allowed.status === "granted") {
+        useUserStore.getState().setUserSettings({
+          push_enabled: true,
+        });
+      }
+    });
+
+    return () => {
+      sub.remove();
+    };
+  }, []);
 
   async function handleToggle() {
     if (!settings) return;

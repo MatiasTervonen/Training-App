@@ -6,8 +6,9 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useStopGPStracking } from "@/Features/activities/lib/location-actions";
 import { useQueryClient } from "@tanstack/react-query";
 import { getDatabase } from "@/database/local-database/database";
-import { clearLocalSessionDatabase } from "@/Features/activities/lib/database-actions";
 import { useTimerStore } from "@/lib/stores/timerStore";
+import { readRecords, initialize } from "react-native-health-connect";
+import { handleError } from "@/utils/handleError";
 
 async function loadTrackFromDatabase() {
   const db = await getDatabase();
@@ -23,25 +24,65 @@ async function loadTrackFromDatabase() {
   );
 }
 
+async function loadStepsFromHealthConnect(
+  start_time: string,
+  end_time: string
+): Promise<number> {
+  try {
+    // Ensure Health Connect is initialized before reading
+    const initialized = await initialize();
+    if (!initialized) {
+      console.warn("Health Connect not initialized, returning 0 steps");
+      return 0;
+    }
+
+    const steps = await readRecords("Steps", {
+      timeRangeFilter: {
+        operator: "between",
+        startTime: start_time,
+        endTime: end_time,
+      },
+    });
+
+    const totalSteps = steps.records.reduce(
+      (acc, record) => acc + record.count,
+      0
+    );
+
+    return totalSteps;
+  } catch (error) {
+    handleError(error, {
+      message: "Error loading steps from Health Connect",
+      route: "/Features/activities/hooks/useSaveSession",
+      method: "loadStepsFromHealthConnect",
+    });
+    // Return 0 steps as fallback instead of crashing
+    return 0;
+  }
+}
+
 export default function useSaveActivitySession({
   title,
   notes,
+  meters,
   setIsSaving,
   resetSession,
-  meters,
 }: {
   title: string;
   notes: string;
+  meters: number;
   setIsSaving: (isSaving: boolean) => void;
   resetSession: () => void;
-  meters: number;
 }) {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { startTimestamp, isRunning, remainingMs } = useTimerStore();
   const { stopGPStracking } = useStopGPStracking();
 
   const handleSaveSession = async () => {
+    // Get timer state only when saving, not on every render
+    const { startTimestamp, isRunning, remainingMs, activeSession } =
+      useTimerStore.getState();
+
     if (title.trim() === "") {
       Toast.show({
         type: "error",
@@ -51,7 +92,10 @@ export default function useSaveActivitySession({
       return;
     }
 
-    if (meters <= 50) {
+    const allowGPS = activeSession?.gpsAllowed ?? false;
+    const stepsAllowed = activeSession?.stepsAllowed ?? false;
+
+    if (allowGPS && meters <= 50) {
       Toast.show({
         type: "error",
         text1: "Error",
@@ -71,9 +115,11 @@ export default function useSaveActivitySession({
       setIsSaving(true);
 
       // stop the GPS tracking
-      await stopGPStracking();
+      if (allowGPS) {
+        await stopGPStracking();
+      }
 
-      const track = await loadTrackFromDatabase();
+      const track = allowGPS ? await loadTrackFromDatabase() : [];
 
       const durationInSeconds =
         isRunning && startTimestamp
@@ -83,12 +129,17 @@ export default function useSaveActivitySession({
       const end_time = new Date().toISOString();
 
       const draft = await AsyncStorage.getItem("activity_draft");
+      const parsedDraft = draft ? JSON.parse(draft) : null;
 
-      const start_time = draft
-        ? JSON.parse(draft).start_time
-        : new Date().toISOString();
+      const start_time = new Date(
+        activeSession?.started_at ?? Date.now()
+      ).toISOString();
 
-      const activityId = draft ? JSON.parse(draft).activityId : null;
+      const activityId = parsedDraft?.activityId ?? null;
+
+      const steps = stepsAllowed
+        ? await loadStepsFromHealthConnect(start_time, end_time)
+        : 0;
 
       await saveActivitySession({
         title,
@@ -96,13 +147,12 @@ export default function useSaveActivitySession({
         duration: durationInSeconds,
         start_time,
         end_time,
-        track,
+        track: track ?? [],
         activityId,
+        steps: steps ?? 0,
       });
 
       await queryClient.refetchQueries({ queryKey: ["feed"], exact: true });
-
-      await clearLocalSessionDatabase();
 
       resetSession();
       router.push("/dashboard");

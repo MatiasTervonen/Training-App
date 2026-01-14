@@ -29,7 +29,6 @@ export default function useSaveSession({
 }) {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { startTimestamp, isRunning, remainingMs } = useTimerStore();
 
   const handleSaveSession = async () => {
     if (title.trim() === "") {
@@ -50,6 +49,9 @@ export default function useSaveSession({
     if (exercises.length === 0 && notes.trim() === "") return;
 
     setIsSaving(true);
+
+    // Get timer state only when saving, not on every render
+    const { startTimestamp, isRunning, remainingMs } = useTimerStore.getState();
 
     const durationInSeconds =
       isRunning && startTimestamp

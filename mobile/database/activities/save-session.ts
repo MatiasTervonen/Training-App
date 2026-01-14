@@ -18,6 +18,7 @@ type props = {
   end_time: string;
   track: TrackPoint[];
   activityId: string | null;
+  steps: number;
 };
 
 export async function saveActivitySession({
@@ -28,6 +29,7 @@ export async function saveActivitySession({
   end_time,
   track,
   activityId,
+  steps,
 }: props) {
   const normalizedTrack = track.map((point) => ({
     ...point,
@@ -44,6 +46,7 @@ export async function saveActivitySession({
       p_end_time: end_time,
       p_track: normalizedTrack,
       p_activity_id: activityId,
+      p_steps: steps,
     }
   );
 
@@ -55,23 +58,6 @@ export async function saveActivitySession({
       method: "POST",
     });
     throw new Error("Error saving activity session");
-  }
-
-  const { error: computeError } = await supabase.rpc(
-    "activities_compute_session_stats",
-    {
-      p_session_id: sessionId,
-    }
-  );
-
-  if (computeError) {
-    console.error("error computing session stats", computeError);
-    handleError(computeError, {
-      message: "Error computing session stats",
-      route: "/database/activities/save-session",
-      method: "POST",
-    });
-    throw new Error("Error computing session stats");
   }
 
   return { success: true };

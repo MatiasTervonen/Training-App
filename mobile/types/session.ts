@@ -167,3 +167,19 @@ export type full_todo_session_optional_id = {
     user_id: string;
   }[];
 };
+
+export type LatestHistoryPerExercise = {
+  exercise_id: string;
+  created_at: string;
+  main_group: string;
+  name: string;
+  equipment: string;
+  sets: {
+    set_number: number;
+    weight: number | null;
+    reps: number | null;
+    rpe: string | null;
+    time_min: number | null;
+    distance_meters: number | null;
+  }[];
+};

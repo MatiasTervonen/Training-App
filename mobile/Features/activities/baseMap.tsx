@@ -16,6 +16,7 @@ type BaseMapProps = {
   title: string;
   averagePacePerKm: number;
   hasStartedTracking: boolean;
+  currentStepCount: number;
 };
 
 export default function BaseMap({
@@ -28,6 +29,7 @@ export default function BaseMap({
   title,
   hasStartedTracking,
   averagePacePerKm,
+  currentStepCount,
 }: BaseMapProps) {
   const [isFollowingUser, setIsFollowingUser] = useState(true);
   const [mapStyle, setMapStyle] = useState(Mapbox.StyleURL.Dark);
@@ -182,6 +184,7 @@ export default function BaseMap({
         totalDistance={totalDistance}
         hasStartedTracking={hasStartedTracking}
         averagePacePerKm={averagePacePerKm}
+        currentStepCount={currentStepCount}
       />
     </>
   );

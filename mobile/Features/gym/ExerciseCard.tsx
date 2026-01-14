@@ -1,6 +1,10 @@
 import { Pressable, View } from "react-native";
 import AppText from "@/components/AppText";
-import { ExerciseEntry, ExerciseInput } from "@/types/session";
+import {
+  ExerciseEntry,
+  ExerciseInput,
+  LatestHistoryPerExercise,
+} from "@/types/session";
 import { SquareX } from "lucide-react-native";
 import AppInput from "@/components/AppInput";
 import { useUserStore } from "@/lib/stores/useUserStore";
@@ -28,6 +32,7 @@ type ExerciseCardProps = {
   onChangeExercise: (index: number) => void;
   mode?: "session";
   disabled?: boolean;
+  history?: LatestHistoryPerExercise;
 };
 
 const isCardioExercise = (exercise: ExerciseEntry) => {
@@ -47,6 +52,7 @@ export default function ExerciseCard({
   onChangeExercise,
   mode,
   disabled,
+  history,
 }: ExerciseCardProps) {
   const weightUnit =
     useUserStore((state) => state.profile?.weight_unit) || "kg";
@@ -62,9 +68,11 @@ export default function ExerciseCard({
           >
             {index + 1}. {exercise.name}
           </AppText>
-          <AppText className="text-lg text-gray-400 mt-1">
-            {exercise.equipment} / {exercise.muscle_group}
-          </AppText>
+          <View className="flex-row items-center gap-3 mt-1">
+            <AppText className="text-lg text-gray-400">
+              {exercise.equipment} / {exercise.muscle_group}
+            </AppText>
+          </View>
         </View>
         <View className="mr-4">
           <DropDownModal
@@ -93,6 +101,24 @@ export default function ExerciseCard({
           />
         </View>
       </View>
+      {history?.sets && history?.sets.length > 0 && (
+        <View className="flex-row mt-2">
+          <View className="flex-row items-center bg-gray-700/50 px-2 py-0.5 rounded flex-wrap">
+            <AppText className="text-sm text-gray-300">Last: </AppText>
+            <AppText className="text-sm text-green-400">
+              {isCardioExercise(exercise)
+                ? history?.sets
+                    .map(
+                      (set) => `${set.time_min}min / ${set.distance_meters}m`
+                    )
+                    .join(" • ")
+                : history?.sets
+                    .map((set) => `${set.weight}kg × ${set.reps}`)
+                    .join(" • ")}
+            </AppText>
+          </View>
+        </View>
+      )}
       {mode === "session" && (
         <>
           <View className="my-4">

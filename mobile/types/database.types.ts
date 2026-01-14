@@ -1,5 +1,5 @@
 Need to install the following packages:
-supabase@2.72.2
+supabase@2.72.7
 Ok to proceed? (y) 
 export type Json =
   | string
@@ -50,7 +50,7 @@ export type Database = {
       activity_gps_points: {
         Row: {
           accuracy: number | null
-          altitude: number
+          altitude: number | null
           id: string
           latitude: number
           longitude: number
@@ -59,7 +59,7 @@ export type Database = {
         }
         Insert: {
           accuracy?: number | null
-          altitude: number
+          altitude?: number | null
           id?: string
           latitude: number
           longitude: number
@@ -68,7 +68,7 @@ export type Database = {
         }
         Update: {
           accuracy?: number | null
-          altitude?: number
+          altitude?: number | null
           id?: string
           latitude?: number
           longitude?: number
@@ -147,6 +147,7 @@ export type Database = {
           created_at: string
           duration: number
           end_time: string
+          geom: unknown
           id: string
           notes: string | null
           start_time: string
@@ -159,6 +160,7 @@ export type Database = {
           created_at?: string
           duration: number
           end_time: string
+          geom?: unknown
           id?: string
           notes?: string | null
           start_time: string
@@ -171,6 +173,7 @@ export type Database = {
           created_at?: string
           duration?: number
           end_time?: string
+          geom?: unknown
           id?: string
           notes?: string | null
           start_time?: string
@@ -191,6 +194,44 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      activity_templates: {
+        Row: {
+          activity_id: string
+          created_at: string
+          id: string
+          name: string
+          notes: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          activity_id: string
+          created_at?: string
+          id?: string
+          name: string
+          notes?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Update: {
+          activity_id?: string
+          created_at?: string
+          id?: string
+          name?: string
+          notes?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activity_templates_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activities"
             referencedColumns: ["id"]
           },
         ]
@@ -518,38 +559,6 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      feed_pins: {
-        Row: {
-          expires_at: string | null
-          feed_item_id: string
-          id: string
-          pinned_at: string
-          user_id: string
-        }
-        Insert: {
-          expires_at?: string | null
-          feed_item_id: string
-          id?: string
-          pinned_at?: string
-          user_id?: string
-        }
-        Update: {
-          expires_at?: string | null
-          feed_item_id?: string
-          id?: string
-          pinned_at?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "feed_pins_feed_item_id_fkey"
-            columns: ["feed_item_id"]
-            isOneToOne: false
-            referencedRelation: "feed_items"
             referencedColumns: ["id"]
           },
         ]
@@ -1498,49 +1507,10 @@ export type Database = {
         }
         Relationships: []
       }
-      feed_view18: {
-        Row: {
-          created_at: string | null
-          delivered: boolean | null
-          duration: number | null
-          id: string | null
-          notes: string | null
-          notify_at: string | null
-          notify_at_time: string | null
-          notify_date: string | null
-          seen_at: string | null
-          title: string | null
-          type: string | null
-          updated_at: string | null
-          user_id: string | null
-          weight: number | null
-        }
-        Relationships: []
-      }
-      feed_with_pins: {
-        Row: {
-          created_at: string | null
-          delivered: boolean | null
-          duration: number | null
-          id: string | null
-          notes: string | null
-          notify_at: string | null
-          notify_at_time: string | null
-          notify_date: string | null
-          pinned: boolean | null
-          seen_at: string | null
-          title: string | null
-          type: string | null
-          updated_at: string | null
-          user_id: string | null
-          weight: number | null
-        }
-        Relationships: []
-      }
     }
     Functions: {
       activities_compute_session_stats: {
-        Args: { p_session_id: string }
+        Args: { p_session_id: string; p_steps: number }
         Returns: undefined
       }
       activities_save_activity: {
@@ -1550,6 +1520,7 @@ export type Database = {
           p_end_time: string
           p_notes: string
           p_start_time: string
+          p_steps: number
           p_title: string
           p_track: Json
         }
@@ -1589,6 +1560,17 @@ export type Database = {
       gym_edit_template: {
         Args: { p_exercises: Json; p_id: string; p_name: string }
         Returns: string
+      }
+      gym_latest_history_per_exercise: {
+        Args: { exercise_ids: string[] }
+        Returns: {
+          created_at: string
+          equipment: string
+          exercise_id: string
+          main_group: string
+          name: string
+          sets: Json
+        }[]
       }
       gym_save_session: {
         Args: {
@@ -1651,6 +1633,37 @@ export type Database = {
           p_seen_at: string
           p_title: string
           p_updated_at: string
+        }
+        Returns: {
+          created_at: string
+          extra_fields: Json
+          id: string
+          occurred_at: string
+          source_id: string
+          title: string
+          type: string
+          updated_at: string | null
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "feed_items"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      reminders_edit_local_reminder: {
+        Args: {
+          p_id: string
+          p_mode: string
+          p_notes: string
+          p_notify_at_time: string
+          p_notify_date: string
+          p_seen_at: string
+          p_title: string
+          p_type: string
+          p_updated_at: string
+          p_weekdays: Json
         }
         Returns: {
           created_at: string

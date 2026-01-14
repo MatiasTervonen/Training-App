@@ -68,7 +68,7 @@ export default function ExerciseDropdown({ onSelect }: Props) {
     setSearchQuery(exercise.name + " " + "(" + exercise.equipment + ")");
     onSelect(exercise);
   };
-  
+
   const sections = [];
 
   if (!isError && !isLoading) {

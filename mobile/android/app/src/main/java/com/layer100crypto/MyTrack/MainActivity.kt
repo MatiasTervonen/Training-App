@@ -13,6 +13,7 @@ import com.facebook.react.defaults.DefaultReactActivityDelegate
 
 import expo.modules.ReactActivityDelegateWrapper
 import com.layer100crypto.MyTrack.alarm.AlarmService
+import dev.matinzd.healthconnect.permissions.HealthConnectPermissionDelegate
 
 class MainActivity : ReactActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,6 +25,8 @@ class MainActivity : ReactActivity() {
     SplashScreenManager.registerOnActivity(this)
     // @generated end expo-splashscreen
     super.onCreate(null)
+    HealthConnectPermissionDelegate.setPermissionDelegate(this)
+    
     
     // Stop alarm if opened from alarm notification
     handleAlarmIntent(intent)

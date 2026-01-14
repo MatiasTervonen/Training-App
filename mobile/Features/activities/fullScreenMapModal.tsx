@@ -16,6 +16,7 @@ export default function FullScreenMapModal({
   totalDistance,
   hasStartedTracking,
   averagePacePerKm,
+  currentStepCount,
 }: {
   fullScreen: boolean;
   track: TrackPoint[];
@@ -25,6 +26,7 @@ export default function FullScreenMapModal({
   totalDistance: number;
   hasStartedTracking: boolean;
   averagePacePerKm: number;
+  currentStepCount: number;
 }) {
   const insets = useSafeAreaInsets();
   const [isFollowingUser, setIsFollowingUser] = useState(true);
@@ -169,6 +171,7 @@ export default function FullScreenMapModal({
           totalDistance={totalDistance}
           hasStartedTracking={hasStartedTracking}
           averagePacePerKm={averagePacePerKm}
+          currentStepCount={currentStepCount}
         />
         <View
           className="absolute z-50 top-5 right-10"

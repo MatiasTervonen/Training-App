@@ -100,8 +100,8 @@ packagingOptions {
     namespace 'com.layer100crypto.MyTrack'
     defaultConfig {
         applicationId 'com.layer100crypto.MyTrack'
-        minSdkVersion rootProject.ext.minSdkVersion
-        targetSdkVersion rootProject.ext.targetSdkVersion
+        minSdkVersion 26
+        targetSdkVersion 34
         versionCode 1
         versionName "1.0.0"
 

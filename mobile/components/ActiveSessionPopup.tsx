@@ -20,8 +20,8 @@ import { formatDurationLong } from "@/lib/formatDate";
 export default function ActiveSessionPopup() {
   const activeSession = useTimerStore((state) => state.activeSession);
   const alarmFired = useTimerStore((state) => state.alarmFired);
-
-  const { totalDuration, mode } = useTimerStore();
+  const totalDuration = useTimerStore((state) => state.totalDuration);
+  const mode = useTimerStore((state) => state.mode);
 
   const pathname = usePathname();
 

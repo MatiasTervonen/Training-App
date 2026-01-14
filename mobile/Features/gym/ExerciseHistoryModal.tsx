@@ -80,28 +80,22 @@ export default function ExerciseHistoryModal({
                         <View className="text-gray-300 border-b border-gray-300 flex-row">
                           {session!.main_group === "cardio" ? (
                             <>
-                              <>
-                                <View className="w-[20%]">
-                                  <AppText className="p-2 text-lg">Set</AppText>
-                                </View>
-                                <View className="w-[30%] flex-row items-center">
-                                  <AppText className="p-2 text-lg">
-                                    Time
-                                  </AppText>
-                                  <AppText className="text-sm">(min)</AppText>
-                                </View>
-                                <View className="w-[30%] flex-row items-center">
-                                  <AppText className="p-2 text-lg">
-                                    Distance
-                                  </AppText>
-                                  <AppText className="text-sm">
-                                    (meters)
-                                  </AppText>
-                                </View>
-                                <View className="w-[20%]">
-                                  <AppText className="p-2 text-lg"></AppText>
-                                </View>
-                              </>
+                              <View className="w-[20%]">
+                                <AppText className="p-2 text-lg">Set</AppText>
+                              </View>
+                              <View className="w-[30%] flex-row items-center">
+                                <AppText className="p-2 text-lg">Time</AppText>
+                                <AppText className="text-sm">(min)</AppText>
+                              </View>
+                              <View className="w-[30%] flex-row items-center">
+                                <AppText className="p-2 text-lg">
+                                  Distance
+                                </AppText>
+                                <AppText className="text-sm">(meters)</AppText>
+                              </View>
+                              <View className="w-[20%]">
+                                <AppText className="p-2 text-lg"></AppText>
+                              </View>
                             </>
                           ) : (
                             <>

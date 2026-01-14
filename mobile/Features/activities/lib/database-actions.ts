@@ -2,5 +2,7 @@ import { getDatabase } from "@/database/local-database/database";
 
 export async function clearLocalSessionDatabase() {
   const db = await getDatabase();
-  await db.execAsync("DELETE FROM gps_points");
+
+  // Just drop the table - it will be recreated when starting a new session
+  await db.execAsync(`DROP TABLE IF EXISTS gps_points;`);
 }

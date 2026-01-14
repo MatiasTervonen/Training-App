@@ -1,7 +1,7 @@
 import AppText from "@/components/AppText";
 import LinkButton from "@/components/buttons/LinkButton";
 import PageContainer from "@/components/PageContainer";
-import { View, Modal } from "react-native";
+import { View, Modal, AppState } from "react-native";
 import { useTimerStore } from "@/lib/stores/timerStore";
 import Toast from "react-native-toast-message";
 import { useEffect, useState } from "react";
@@ -40,6 +40,22 @@ export default function TimerScreen() {
 
     return true;
   };
+
+  useEffect(() => {
+    const sub = AppState.addEventListener("change", async (state) => {
+      if (state !== "active") return;
+
+      const allowed = await canUseExactAlarm();
+
+      if (allowed) {
+        setShowModal(false);
+      }
+    });
+
+    return () => {
+      sub.remove();
+    };
+  }, []);
 
   return (
     <>

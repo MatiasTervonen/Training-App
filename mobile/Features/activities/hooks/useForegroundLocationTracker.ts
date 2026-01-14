@@ -112,5 +112,5 @@ export function useForegroundLocationTracker({
     return () => {
       sub?.remove();
     };
-  }, [isForeground, allowGPS, isRunning, onPoint, hasStartedTracking]);
+  }, [isForeground, allowGPS, isRunning, onPoint, hasStartedTracking, setHasStartedTracking]);
 }

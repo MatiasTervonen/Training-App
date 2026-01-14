@@ -1,7 +1,7 @@
 import { View, ScrollView } from "react-native";
 import AppText from "@/components/AppText";
 import AppInput from "@/components/AppInput";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useRouter } from "expo-router";
 import {
   ExerciseEntry,
@@ -34,6 +34,7 @@ import useStartExercise from "@/Features/gym/hooks/useStartExercise";
 import useLogSetForExercise from "@/Features/gym/hooks/useLogSetForExercise";
 import useSaveSession from "@/Features/gym/hooks/useSaveSession";
 import { formatDate } from "@/lib/formatDate";
+import { getPrefetchedHistoryPerCard } from "@/database/gym/prefetchedHistoryPerCard";
 
 export default function GymForm({
   initialData,
@@ -84,8 +85,6 @@ export default function GymForm({
   const [exerciseHistoryId, setExerciseHistoryId] = useState<string | null>(
     null
   );
-  const [isScrolling, setIsScrolling] = useState(false);
-
   const isEditing = Boolean(session?.id);
 
   const queryClient = useQueryClient();
@@ -103,8 +102,11 @@ export default function GymForm({
     setExerciseInputs,
   });
 
-  const { activeSession, setActiveSession, startSession, clearEverything } =
-    useTimerStore();
+  // Use selectors to avoid re-rendering on uiTick changes
+  const activeSession = useTimerStore((state) => state.activeSession);
+  const setActiveSession = useTimerStore((state) => state.setActiveSession);
+  const startSession = useTimerStore((state) => state.startSession);
+  const clearEverything = useTimerStore((state) => state.clearEverything);
 
   const {
     data: history = [],
@@ -120,6 +122,25 @@ export default function GymForm({
     staleTime: Infinity,
     gcTime: Infinity,
   });
+
+  const exerciseIds = exercises.map((ex) => ex.exercise_id!);
+
+  const { data: prefetchedHistory = [] } = useQuery({
+    queryKey: ["prefetched-history", exerciseIds],
+    queryFn: () => getPrefetchedHistoryPerCard(exerciseIds),
+    enabled: exerciseIds.length > 0,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    staleTime: Infinity,
+    gcTime: Infinity,
+  });
+
+  const historyMap = useMemo(() => {
+    return Object.fromEntries(
+      (prefetchedHistory ?? []).map((h) => [h.exercise_id, h])
+    );
+  }, [prefetchedHistory]);
 
   const openHistory = (exerciseId: string) => {
     setExerciseHistoryId(exerciseId);
@@ -229,8 +250,6 @@ export default function GymForm({
       )}
 
       <ScrollView
-        onScrollBeginDrag={() => setIsScrolling(true)}
-        onScrollEndDrag={() => setTimeout(() => setIsScrolling(false), 150)}
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={{ flexGrow: 1 }}
         showsVerticalScrollIndicator={false}
@@ -294,9 +313,10 @@ export default function GymForm({
                   return (
                     <View key={index}>
                       <ExerciseCard
-                        disabled={isScrolling}
+                        disabled={false}
                         mode="session"
                         exercise={exercise}
+                        history={historyMap[exercise.exercise_id]}
                         lastExerciseHistory={(index) => {
                           const ex = exercises[index];
                           if (ex.exercise_id) {

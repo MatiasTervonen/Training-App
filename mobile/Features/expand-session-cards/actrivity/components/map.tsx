@@ -78,7 +78,6 @@ export default function Map({
   return (
     <View
       style={{ height: 300 }}
-      className="mt-10"
       onTouchStart={() => {
         setScrollEnabled(false);
         setSwipeEnabled(false);

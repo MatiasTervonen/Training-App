@@ -30,6 +30,8 @@ import BootScreen from "@/Features/feed/fakeFeedLoader";
 import SaveAreaInset from "@/Features/layout/SaveAreaInset";
 import Mapbox from "@rnmapbox/maps";
 import TimerFinishListener from "@/Features/layout/TimerFinished";
+import AppStatePermissionListener from "@/Features/push-notifications/AppStatePermissionListener";
+import GpsTrackingPermission from "@/Features/activities/toggleSettings/gpsTrackingPermission";
 
 Mapbox.setAccessToken(process.env.EXPO_PUBLIC_MAPBOX_PUBLIC_TOKEN!);
 
@@ -78,6 +80,10 @@ export default Sentry.wrap(function RootLayout() {
   useEffect(() => {
     resetFeedReady();
   }, [resetFeedReady]);
+
+  // listen for app state changes and check permissions notifications and gps tracking
+  AppStatePermissionListener();
+  GpsTrackingPermission();
 
   if (!fontsLoaded) {
     return null;

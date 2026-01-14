@@ -1,10 +1,16 @@
-import { View, TouchableWithoutFeedback, Keyboard, Modal } from "react-native";
+import {
+  View,
+  TouchableWithoutFeedback,
+  Keyboard,
+  Modal,
+  AppState,
+} from "react-native";
 import AppText from "@/components/AppText";
 import SaveButton from "@/components/buttons/SaveButton";
 import DeleteButton from "@/components/buttons/DeleteButton";
 import AppInput from "@/components/AppInput";
 import FullScreenLoader from "@/components/FullScreenLoader";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import PageContainer from "@/components/PageContainer";
 import DatePicker from "react-native-date-picker";
@@ -65,6 +71,25 @@ export default function ReminderScreen() {
     resetReminder,
     setNotification,
   });
+
+
+  
+  useEffect(() => {
+    const sub = AppState.addEventListener("change", async (state) => {
+      if (state !== "active") return;
+
+      const allowed = await canUseExactAlarm();
+
+      if (allowed) {
+        setShowModal(false);
+        setMode("alarm");
+      }
+    });
+
+    return () => {
+      sub.remove();
+    };
+  }, []);
 
   return (
     <>

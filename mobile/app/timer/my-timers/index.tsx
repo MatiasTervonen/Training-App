@@ -6,7 +6,7 @@ import GetTimer from "@/database/timer/get-timers";
 import { useState } from "react";
 import { timers } from "@/types/models";
 import FullScreenModal from "@/components/FullScreenModal";
-import TimerCard from "@/Features/feed-cards/TimerCard";
+import TimerCard from "@/Features/expand-session-cards/TimerCard";
 import DeleteTimer from "@/database/timer/delete-timer";
 import Toast from "react-native-toast-message";
 

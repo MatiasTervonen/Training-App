@@ -1,3 +1,16 @@
+// How to use useTimerStore to avoid re-rendering on uiTick changes:
+
+// When only need value, dosent show on ui, example saving
+//  const { .... } = useTimerStore.getState();
+
+// When using timer and showing on ui, to avoid rerendering every second when uiTick changes, use selectors
+//  const activeSession = useTimerStore((state) => state.activeSession);
+//  const isRunning = useTimerStore((state) => state.isRunning);
+//  .....
+
+// if you want rerender on uiTick changes, use the state directly
+//  const { uiTick, ...rest } = useTimerStore.getState();
+
 // store/timerStore.ts
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
@@ -16,6 +29,8 @@ type ActiveSession = {
   path: string;
   type: string;
   started_at: number;
+  gpsAllowed?: boolean;
+  stepsAllowed?: boolean;
 };
 
 type SessionMode = "countup" | "countdown";
@@ -175,8 +190,6 @@ export const useTimerStore = create<TimerState>()(
           mode === "countup"
             ? now - startTimestamp
             : Math.max(0, endTimestamp! - now);
-
-
 
         set({
           isRunning: false,

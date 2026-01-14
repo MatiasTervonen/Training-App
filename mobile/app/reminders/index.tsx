@@ -11,6 +11,8 @@ export default function SessionsScreen() {
 
   const pushEnabled = useUserStore((state) => state.settings?.push_enabled);
 
+  console.log("pushEnabled", pushEnabled);
+
   useEffect(() => {
     if (pushEnabled === false) {
       setShowModal(true);

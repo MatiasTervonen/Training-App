@@ -1,5 +1,4 @@
 import { useTimerStore } from "@/lib/stores/timerStore";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import Toast from "react-native-toast-message";
 import { useStartGPStracking } from "@/Features/activities/lib/location-actions";
 import { getDatabase } from "@/database/local-database/database";
@@ -8,11 +7,16 @@ import { clearLocalSessionDatabase } from "@/Features/activities/lib/database-ac
 export function useStartActivity({
   activityName,
   title,
+  allowGPS,
+  stepsAllowed,
 }: {
   activityName: string;
   title: string;
+  allowGPS: boolean;
+  stepsAllowed: boolean;
 }) {
-  const { setActiveSession, startSession } = useTimerStore();
+  const setActiveSession = useTimerStore((state) => state.setActiveSession);
+  const startSession = useTimerStore((state) => state.startSession);
   const { startGPStracking } = useStartGPStracking();
 
   const startActivity = async () => {
@@ -25,11 +29,16 @@ export function useStartActivity({
       return;
     }
 
-    const initializeDatabase = async () => {
-      const db = await getDatabase();
+    if (allowGPS) {
+      const initializeDatabase = async () => {
+        const db = await getDatabase();
 
-      try {
-        await db.execAsync(`
+        try {
+          // First drop any leftover table from previous sessions
+          await clearLocalSessionDatabase();
+
+          // Then create fresh table for new session
+          await db.execAsync(`
             CREATE TABLE IF NOT EXISTS gps_points (
               timestamp INTEGER NOT NULL,
               latitude REAL NOT NULL,
@@ -39,42 +48,34 @@ export function useStartActivity({
             );
         `);
 
-        // Clear any leftover data from previous sessions
-        await clearLocalSessionDatabase();
+          return true;
+        } catch (error) {
+          console.error("Error initializing database", error);
+          Toast.show({
+            type: "error",
+            text1: "Error",
+            text2: "Failed to initialize database. Please try again.",
+          });
+          return false;
+        }
+      };
 
-        return true;
-      } catch (error) {
-        console.error("Error initializing database", error);
-        Toast.show({
-          type: "error",
-          text1: "Error",
-          text2: "Failed to initialize database. Please try again.",
-        });
-        return false;
-      }
-    };
+      const ok = await initializeDatabase();
 
-    const ok = await initializeDatabase();
-
-    if (!ok) return;
+      if (!ok) return;
+    }
 
     setActiveSession({
       type: "activity",
       label: title,
       path: "/activities/start-activity",
+      gpsAllowed: allowGPS,
+      stepsAllowed: stepsAllowed,
     });
 
-    const start_time = new Date().toISOString();
-
-    const stored = await AsyncStorage.getItem("activity_draft");
-    const draft = stored ? JSON.parse(stored) : {};
-
-    await AsyncStorage.setItem(
-      "activity_draft",
-      JSON.stringify({ ...draft, start_time })
-    );
-
-    await startGPStracking();
+    if (allowGPS) {
+      await startGPStracking();
+    }
 
     startSession("Activity");
   };

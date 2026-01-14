@@ -17,11 +17,10 @@ TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
   const { locations } = data as { locations: any[] };
   if (!locations.length) return;
 
-  const db = await getDatabase();
-
-  await db.execAsync("BEGIN");
-
   try {
+    const db = await getDatabase();
+
+    // Insert points without explicit transaction to avoid locking conflicts
     for (const point of locations) {
       const coord: Location = {
         latitude: point.coords.latitude,
@@ -45,10 +44,7 @@ TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
         ]
       );
     }
-
-    await db.execAsync("COMMIT");
   } catch (error) {
-    await db.execAsync("ROLLBACK");
     console.error("Error persisting points to database", error);
   }
 });

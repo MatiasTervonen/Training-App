@@ -1,5 +1,6 @@
 create or replace function activities_compute_session_stats(
-    p_session_id uuid
+    p_session_id uuid,
+    p_steps integer
 ) 
 returns void
 language plpgsql 
@@ -57,6 +58,7 @@ begin
             distance_meters,
             moving_time_seconds,
             avg_pace,
+            steps,
             computed_at
         )
         values (
@@ -68,6 +70,7 @@ begin
                 then v_moving_time_seconds / (v_distance / 1000)
                 else null
             end,
+            p_steps,
             now()
         )
         on conflict (session_id) do update 
@@ -75,6 +78,7 @@ begin
             distance_meters = excluded.distance_meters,
             moving_time_seconds = excluded.moving_time_seconds,
             avg_pace = excluded.avg_pace,
+            steps = excluded.steps,
             computed_at = excluded.computed_at;
 
 end;

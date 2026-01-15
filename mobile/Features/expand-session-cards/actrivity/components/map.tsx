@@ -1,10 +1,10 @@
-import { full_activity_session } from "@/types/models";
+import { FullActivitySession } from "@/types/models";
 import Mapbox from "@rnmapbox/maps";
 import { View } from "react-native";
 import { useState } from "react";
 
 type MapProps = {
-  activity_session: full_activity_session;
+  activity_session: FullActivitySession;
   setScrollEnabled: (value: boolean) => void;
   setSwipeEnabled: (value: boolean) => void;
 };
@@ -16,26 +16,23 @@ export default function Map({
 }: MapProps) {
   const [mapStyle, setMapStyle] = useState(Mapbox.StyleURL.Dark);
 
-  const mapCoordinates = activity_session.activity_gps_points.map((point) => {
-    return [point.longitude, point.latitude];
-  });
+  const coordinates = activity_session.route!.coordinates;
 
-  const start = mapCoordinates[0];
-  const end = mapCoordinates[mapCoordinates.length - 1];
-
-  const lons = mapCoordinates.map((c) => c[0]);
-  const lats = mapCoordinates.map((c) => c[1]);
-
-  const ne = [Math.max(...lons), Math.max(...lats)];
-  const sw = [Math.min(...lons), Math.min(...lats)];
-
-  const trackShape = {
+  const routeFeature = {
     type: "Feature",
-    geometry: {
-      type: "LineString",
-      coordinates: mapCoordinates,
-    },
+    geometry: activity_session.route,
+    properties: {},
   };
+
+  const start = coordinates[0]!;
+  const end = coordinates[coordinates.length - 1];
+
+  const lons = coordinates.map((c) => c[0]);
+  const lats = coordinates.map((c) => c[1]);
+
+  const ne: [number, number] = [Math.max(...lons), Math.max(...lats)];
+
+  const sw: [number, number] = [Math.min(...lons), Math.min(...lats)];
 
   const startEndGeoJSON = {
     type: "FeatureCollection",
@@ -112,7 +109,7 @@ export default function Map({
           animationMode="flyTo"
           animationDuration={2000}
         />
-        <Mapbox.ShapeSource id="track-source" shape={trackShape as any}>
+        <Mapbox.ShapeSource id="track-source" shape={routeFeature as any}>
           <Mapbox.LineLayer
             id="track-layer"
             style={{

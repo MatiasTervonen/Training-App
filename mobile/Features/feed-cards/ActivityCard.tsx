@@ -7,7 +7,7 @@ import { FeedCardProps } from "@/types/session";
 
 type activityPayload = {
   duration: number;
-  meters: number;
+  distance: number;
 };
 export default function ActivityCard({
   item,
@@ -49,12 +49,12 @@ export default function ActivityCard({
         />
       </View>
 
-      {payload.meters > 0 && (
+      {payload.distance > 0 && (
         <View>
           <AppText
             className={`ml-4 ${pinned ? "text-slate-900" : "text-gray-100"}`}
           >
-            {formatMeters(payload.meters)}
+            {formatMeters(payload.distance)}
           </AppText>
         </View>
       )}

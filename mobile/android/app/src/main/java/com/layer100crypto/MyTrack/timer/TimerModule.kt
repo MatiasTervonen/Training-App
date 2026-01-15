@@ -22,6 +22,17 @@ class TimerModule(reactContext: ReactApplicationContext) :
     }
 
     @ReactMethod
+    fun updateTimerLabel(startTime: Double, label: String?, mode: String) {
+        val safeLabel = label ?: "Session"
+
+        val intent = Intent(reactApplicationContext, TimerService::class.java)
+        intent.putExtra("startTime", startTime.toLong())
+        intent.putExtra("label", safeLabel)
+        intent.putExtra("mode", mode)
+        reactApplicationContext.startForegroundService(intent)
+    }
+
+    @ReactMethod
     fun stopTimer() {
         val intent = Intent(reactApplicationContext, TimerService::class.java)
         reactApplicationContext.stopService(intent)

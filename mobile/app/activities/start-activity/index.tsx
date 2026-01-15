@@ -39,6 +39,7 @@ import { useAveragePace } from "@/Features/activities/hooks/useAveragePace";
 import StepInfoModal from "@/Features/activities/stepToggle/stepInfoModal";
 import { hasStepsPermission } from "@/Features/activities/stepToggle/stepPermission";
 import { useStepHydration } from "@/Features/activities/hooks/useStepHydration";
+import { updateNativeTimerLabel } from "@/native/android/NativeTimer";
 
 export default function StartActivityScreen() {
   const now = formatDate(new Date());
@@ -69,6 +70,8 @@ export default function StartActivityScreen() {
   const remainingMs = useTimerStore((state) => state.remainingMs);
   const startTimestamp = useTimerStore((state) => state.startTimestamp);
   const activeSession = useTimerStore((state) => state.activeSession);
+  const setActiveSession = useTimerStore((state) => state.setActiveSession);
+  const mode = useTimerStore((state) => state.mode);
 
   // Restore GPS and steps settings from persisted activeSession on mount
   useEffect(() => {
@@ -77,6 +80,23 @@ export default function StartActivityScreen() {
       setStepsAllowed(activeSession.stepsAllowed ?? false);
     }
   }, [activeSession]);
+
+  // Sync title changes to activeSession and native timer notification
+  useEffect(() => {
+    if (
+      activeSession &&
+      activeSession.type === "activity" &&
+      activeSession.label !== title
+    ) {
+      setActiveSession({
+        ...activeSession,
+        label: title,
+      });
+    }
+    if (startTimestamp && mode) {
+      updateNativeTimerLabel(startTimestamp, title, mode);
+    }
+  }, [title, activeSession, setActiveSession, startTimestamp, mode]);
 
   // check if steps permission is granted and show/hide the step toggle
   useEffect(() => {

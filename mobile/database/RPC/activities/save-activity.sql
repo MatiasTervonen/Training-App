@@ -11,7 +11,7 @@ create or replace function activities_save_activity(
 returns uuid
 language plpgsql
 security invoker
-set search_path = public
+set search_path = public, extensions
 as $$
 declare
     v_activity_id uuid;
@@ -71,12 +71,12 @@ if p_track is not null then
   update activity_sessions s 
   set geom = (
     select ST_MakeLine(
-    ST_SetSRID(
+      ST_SetSRID(
         ST_MakePoint(p.longitude, p.latitude),
         4326
-      )::geography
-    order by p.recorded_at
-    )
+      )
+      order by p.recorded_at
+    )::geography
     from activity_gps_points p
     where p.session_id = s.id
   )

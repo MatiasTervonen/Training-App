@@ -1,6 +1,3 @@
-Need to install the following packages:
-supabase@2.72.7
-Ok to proceed? (y) 
 export type Json =
   | string
   | number
@@ -1512,6 +1509,10 @@ export type Database = {
       activities_compute_session_stats: {
         Args: { p_session_id: string; p_steps: number }
         Returns: undefined
+      }
+      activities_get_full_session: {
+        Args: { p_session_id: string }
+        Returns: Json
       }
       activities_save_activity: {
         Args: {

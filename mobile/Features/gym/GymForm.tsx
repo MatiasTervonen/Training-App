@@ -33,8 +33,8 @@ import useSaveGymDraft from "@/Features/gym/hooks/useSaveGymDraft";
 import useStartExercise from "@/Features/gym/hooks/useStartExercise";
 import useLogSetForExercise from "@/Features/gym/hooks/useLogSetForExercise";
 import useSaveSession from "@/Features/gym/hooks/useSaveSession";
-import { formatDate } from "@/lib/formatDate";
 import { getPrefetchedHistoryPerCard } from "@/database/gym/prefetchedHistoryPerCard";
+import { updateNativeTimerLabel } from "@/native/android/NativeTimer";
 
 export default function GymForm({
   initialData,
@@ -42,8 +42,8 @@ export default function GymForm({
   initialData: full_gym_session;
 }) {
   const session = initialData;
-  const now = formatDate(new Date());
-  const [title, setTitle] = useState(session.title || `Gym - ${now}`);
+
+  const [title, setTitle] = useState(session.title ?? "");
   const [exercises, setExercises] = useState<ExerciseEntry[]>(
     (session.gym_session_exercises || []).map((ex) => ({
       exercise_id: ex.exercise_id,
@@ -85,6 +85,9 @@ export default function GymForm({
   const [exerciseHistoryId, setExerciseHistoryId] = useState<string | null>(
     null
   );
+  const startTimestamp = useTimerStore((state) => state.startTimestamp);
+  const mode = useTimerStore((state) => state.mode);
+
   const isEditing = Boolean(session?.id);
 
   const queryClient = useQueryClient();
@@ -228,7 +231,12 @@ export default function GymForm({
         label: title,
       });
     }
-  }, [title, activeSession, setActiveSession]);
+
+    // Update native timer notification with new title
+    if (startTimestamp && mode) {
+      updateNativeTimerLabel(startTimestamp, title, mode);
+    }
+  }, [title, activeSession, setActiveSession, startTimestamp, mode]);
 
   const groupedExercises = GroupGymExercises(exercises);
 

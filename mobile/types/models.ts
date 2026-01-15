@@ -83,10 +83,14 @@ export type activity_session_stats =
 export type activity_gps_points =
   Database["public"]["Tables"]["activity_gps_points"]["Row"];
 
-export type full_activity_session = activity_session & {
-  activities: activities;
-  activity_session_stats: activity_session_stats;
-  activity_gps_points: activity_gps_points[];
+export type FullActivitySession = {
+  session: activity_session;
+  activity: activities | null;
+  stats: activity_session_stats | null;
+  route: {
+    type: "LineString";
+    coordinates: [number, number][];
+  } | null;
 };
 
 export type full_gym_template = template & {

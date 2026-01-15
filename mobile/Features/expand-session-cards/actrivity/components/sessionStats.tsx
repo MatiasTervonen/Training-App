@@ -1,6 +1,6 @@
 import { View } from "react-native";
 import AppText from "@/components/AppText";
-import { full_activity_session } from "@/types/models";
+import { FullActivitySession } from "@/types/models";
 import {
   formatDurationLong,
   formatMeters,
@@ -9,7 +9,7 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 
 type SessionStatsProps = {
-  activity_session: full_activity_session;
+  activity_session: FullActivitySession;
 };
 
 export default function SessionStats({ activity_session }: SessionStatsProps) {
@@ -24,23 +24,21 @@ export default function SessionStats({ activity_session }: SessionStatsProps) {
         <View className="items-center gap-2 border-blue-500 border-2 p-2 rounded-md bg-slate-950">
           <AppText>Duration</AppText>
           <AppText className="text-center">
-            {formatDurationLong(activity_session.duration ?? 0)}
+            {formatDurationLong(activity_session.session.duration ?? 0)}
           </AppText>
         </View>
         <View className="items-center gap-2 border-blue-500 border-2 p-2 rounded-md bg-slate-950">
           <AppText>Moving Time</AppText>
           <AppText className="text-center">
             {formatDurationLong(
-              activity_session.activity_session_stats.moving_time_seconds ?? 0
+              activity_session.stats?.moving_time_seconds ?? 0
             )}
           </AppText>
         </View>
         <View className="items-center gap-2 border-blue-500 border-2 p-2 rounded-md bg-slate-950">
           <AppText>Distance</AppText>
           <AppText className="text-center">
-            {formatMeters(
-              activity_session.activity_session_stats.distance_meters ?? 0
-            )}
+            {formatMeters(activity_session.stats?.distance_meters ?? 0)}
           </AppText>
         </View>
         <View className="items-center gap-2 border-blue-500 border-2 p-2 rounded-md bg-slate-950">
@@ -49,10 +47,7 @@ export default function SessionStats({ activity_session }: SessionStatsProps) {
             <AppText className="text-sm">(moving)</AppText>
           </View>
           <AppText className="text-center">
-            {formatAveragePace(
-              activity_session.activity_session_stats.avg_pace ?? 0
-            )}{" "}
-            min/km
+            {formatAveragePace(activity_session.stats?.avg_pace ?? 0)} min/km
           </AppText>
         </View>
         <View className="items-center gap-2 border-blue-500 border-2 p-2 rounded-md bg-slate-950">
@@ -60,7 +55,7 @@ export default function SessionStats({ activity_session }: SessionStatsProps) {
             <AppText>Steps</AppText>
           </View>
           <AppText className="text-center">
-            {activity_session.activity_session_stats.steps ?? 0}
+            {activity_session.stats?.steps ?? 0}
           </AppText>
         </View>
       </View>

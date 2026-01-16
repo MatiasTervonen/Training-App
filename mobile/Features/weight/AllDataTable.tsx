@@ -4,7 +4,7 @@ import { weight } from "@/types/session";
 import { View, SectionList } from "react-native";
 import AppText from "@/components/AppText";
 import { confirmAction } from "@/lib/confirmAction";
-import { DeleteSession } from "@/database/feed/deleteSession";
+import { deleteSession } from "@/database/feed/deleteSession";
 import Toast from "react-native-toast-message";
 import { useQueryClient } from "@tanstack/react-query";
 import HeaderAllDataTable from "@/Features/weight/headerAllDataTable";
@@ -79,7 +79,7 @@ export default function AllDataTable({ data, isLoading, error }: AllDataProps) {
     );
 
     try {
-      await DeleteSession(item_id, table);
+      await deleteSession(item_id, table);
 
       queryClient.refetchQueries({ queryKey: ["feed"], exact: true });
 

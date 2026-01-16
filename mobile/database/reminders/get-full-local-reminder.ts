@@ -1,7 +1,7 @@
 import { handleError } from "@/utils/handleError";
 import { supabase } from "@/lib/supabase";
 
-export default async function GetFullLocalReminder(id: string) {
+export async function getFullLocalReminder(id: string) {
   const { data, error } = await supabase
     .from("local_reminders")
     .select("*")

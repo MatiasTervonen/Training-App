@@ -1,19 +1,19 @@
 import { supabase } from "@/lib/supabase";
 import { handleError } from "@/utils/handleError";
 
-export async function deleteTemplate(templateId: string) {
+export async function deleteActivityTemplate(templateId: string) {
   const { error } = await supabase
-    .from("gym_templates")
+    .from("activity_templates")
     .delete()
     .eq("id", templateId);
 
   if (error) {
     handleError(error, {
-      message: "Error deleting template",
-      route: "/database/gym/delete-template",
+      message: "Error deleting activity template",
+      route: "/database/activities/delete-template",
       method: "POST",
     });
-    throw new Error("Error deleting template");
+    throw new Error("Error deleting activity template");
   }
 
   return { success: true };

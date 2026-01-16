@@ -11,7 +11,7 @@ type saveTodoToDBProps = {
   todoList: TodoTask[];
 };
 
-export default async function saveTodoToDB({
+export async function saveTodoToDB({
   title,
   todoList,
 }: saveTodoToDBProps) {

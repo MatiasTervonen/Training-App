@@ -1,7 +1,7 @@
 import { handleError } from "@/utils/handleError";
 import { supabase } from "@/lib/supabase";
 
-export default async function Last30DaysAnalytics() {
+export async function last30DaysAnalytics() {
   const {
     data: { session },
     error: sessionError,

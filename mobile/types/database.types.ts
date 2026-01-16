@@ -148,6 +148,7 @@ export type Database = {
           id: string
           notes: string | null
           start_time: string
+          template_id: string | null
           title: string
           updated_at: string | null
           user_id: string
@@ -161,6 +162,7 @@ export type Database = {
           id?: string
           notes?: string | null
           start_time: string
+          template_id?: string | null
           title: string
           updated_at?: string | null
           user_id?: string
@@ -174,6 +176,7 @@ export type Database = {
           id?: string
           notes?: string | null
           start_time?: string
+          template_id?: string | null
           title?: string
           updated_at?: string | null
           user_id?: string
@@ -193,12 +196,20 @@ export type Database = {
             referencedRelation: "users"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "activity_sessions_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "activity_templates"
+            referencedColumns: ["id"]
+          },
         ]
       }
       activity_templates: {
         Row: {
           activity_id: string
           created_at: string
+          geom: unknown
           id: string
           name: string
           notes: string | null
@@ -208,6 +219,7 @@ export type Database = {
         Insert: {
           activity_id: string
           created_at?: string
+          geom?: unknown
           id?: string
           name: string
           notes?: string | null
@@ -217,6 +229,7 @@ export type Database = {
         Update: {
           activity_id?: string
           created_at?: string
+          geom?: unknown
           id?: string
           name?: string
           notes?: string | null
@@ -1525,6 +1538,10 @@ export type Database = {
           p_title: string
           p_track: Json
         }
+        Returns: string
+      }
+      activities_save_template: {
+        Args: { p_name: string; p_notes: string; p_session_id: string }
         Returns: string
       }
       feed_delete_session: {

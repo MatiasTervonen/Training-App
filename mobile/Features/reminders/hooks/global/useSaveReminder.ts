@@ -1,5 +1,5 @@
 import Toast from "react-native-toast-message";
-import SaveReminder from "@/database/reminders/save-global-reminder";
+import { saveGlobalReminder } from "@/database/reminders/save-global-reminder";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 
@@ -38,7 +38,7 @@ export default function useSaveReminder({
     setIsSaving(true);
 
     try {
-      await SaveReminder({
+      await saveGlobalReminder({
         title: title,
         notes,
         type: "global",

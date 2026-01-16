@@ -8,8 +8,6 @@ import { useTimerStore } from "@/lib/stores/timerStore";
 export default function SessionsScreen() {
   const activeSession = useTimerStore((state) => state.activeSession);
 
-
-
   const handleClick = () => {
     if (activeSession && activeSession?.type !== "activity") {
       Toast.show({
@@ -32,6 +30,7 @@ export default function SessionsScreen() {
           href="/activities/start-activity"
           onPress={handleClick}
         />
+        <LinkButton label="Templates" href="/activities/templates" />
       </View>
     </PageContainer>
   );

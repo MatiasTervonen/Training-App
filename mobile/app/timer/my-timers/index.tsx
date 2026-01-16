@@ -2,12 +2,12 @@ import { View, ActivityIndicator } from "react-native";
 import AppText from "@/components/AppText";
 import PageContainer from "@/components/PageContainer";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import GetTimer from "@/database/timer/get-timers";
+import { getTimer } from "@/database/timer/get-timers";
 import { useState } from "react";
 import { timers } from "@/types/models";
 import FullScreenModal from "@/components/FullScreenModal";
 import TimerCard from "@/Features/expand-session-cards/TimerCard";
-import DeleteTimer from "@/database/timer/delete-timer";
+import { deleteTimer } from "@/database/timer/delete-timer";
 import Toast from "react-native-toast-message";
 
 import { router } from "expo-router";
@@ -30,7 +30,7 @@ export default function MyTimersScreen() {
     error,
   } = useQuery({
     queryKey: ["timers"],
-    queryFn: GetTimer,
+    queryFn: getTimer,
     refetchOnMount: false,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
@@ -40,7 +40,7 @@ export default function MyTimersScreen() {
 
   const handleDeleteTimer = async (timerId: string) => {
     try {
-      await DeleteTimer(timerId);
+      await deleteTimer(timerId);
 
       queryClient.refetchQueries({ queryKey: ["timers"], exact: true });
       Toast.show({ type: "success", text1: "Timer deleted successfully" });
@@ -76,7 +76,7 @@ export default function MyTimersScreen() {
       path: "/timer/empty-timer",
     });
 
-    startTimer(timer.time_seconds);
+    startTimer(timer.time_seconds, timer.title);
     router.push("/timer/empty-timer");
   };
 

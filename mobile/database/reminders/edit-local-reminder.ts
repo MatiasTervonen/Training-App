@@ -14,7 +14,7 @@ type EditLocalReminderParams = {
   mode?: "alarm" | "normal";
 };
 
-export default async function EditLocalReminder({
+export async function editLocalReminder({
   id,
   title,
   notes,

@@ -8,7 +8,7 @@ type SaveGlobalReminderParams = {
   type: "global";
 };
 
-export default async function SaveGlobalReminder({
+export async function saveGlobalReminder({
   title,
   notes,
   notify_at,

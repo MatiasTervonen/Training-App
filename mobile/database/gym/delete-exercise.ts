@@ -1,7 +1,7 @@
 import { supabase } from "@/lib/supabase";
 import { handleError } from "@/utils/handleError";
 
-export default async function DeleteExercise(item_id: string) {
+export async function deleteExercise(item_id: string) {
   const {
     data: { session },
     error: sessionError,

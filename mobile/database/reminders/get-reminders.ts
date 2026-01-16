@@ -1,7 +1,7 @@
 import { handleError } from "@/utils/handleError";
 import { supabase } from "@/lib/supabase";
 
-export default async function GetReminders() {
+export async function getReminders() {
   const { data: GlobalReminders, error: GlobalRemindersError } = await supabase
     .from("global_reminders")
     .select("");

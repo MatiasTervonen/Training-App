@@ -1,7 +1,7 @@
 import { Modal, View } from "react-native";
 import { Info } from "lucide-react-native";
-import AppText from "../../components/AppText";
-import LinkButton from "../../components/buttons/LinkButton";
+import AppText from "../../../components/AppText";
+import LinkButton from "../../../components/buttons/LinkButton";
 import AnimatedButton from "@/components/buttons/animatedButton";
 
 export default function InfoModal({

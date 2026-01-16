@@ -1,7 +1,7 @@
 import { supabase } from "@/lib/supabase";
 import { handleError } from "@/utils/handleError";
 
-export default async function GetFullTemplate(sessionId: string) {
+export async function getFullTemplate(sessionId: string) {
   if (!sessionId) {
     throw new Error("Missing session ID");
   }

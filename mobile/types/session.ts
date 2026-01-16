@@ -183,3 +183,36 @@ export type LatestHistoryPerExercise = {
     distance_meters: number | null;
   }[];
 };
+
+export type full_activity_template = {
+  template: {
+    id: string;
+    name: string;
+    created_at: string;
+    updated_at: string;
+    user_id: string;
+  };
+  route: {
+    type: "LineString";
+    coordinates: [number, number][];
+  } | null;
+};
+
+export type templateSummary = {
+  template: {
+    id: string;
+    name: string;
+    notes: string | null;
+    created_at: string;
+    updated_at?: string | null;
+    distance_meters: number | null;
+  };
+  activity: {
+    id: string;
+    name: string;
+  };
+  route: {
+    type: "LineString";
+    coordinates: [number, number][];
+  } | null;
+};

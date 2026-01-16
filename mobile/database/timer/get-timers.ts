@@ -1,7 +1,7 @@
 import { handleError } from "@/utils/handleError";
 import { supabase } from "@/lib/supabase";
 
-export default async function GetTimer() {
+export async function getTimer() {
   const { data: timers, error } = await supabase
     .from("timers")
     .select("*")

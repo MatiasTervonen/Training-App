@@ -11,7 +11,7 @@ type SaveReminderParams = {
   mode?: "alarm" | "normal";
 };
 
-export default async function SaveLocalReminder({
+export async function saveLocalReminder({
   title,
   notes,
   notify_at_time,

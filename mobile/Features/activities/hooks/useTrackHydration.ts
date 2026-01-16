@@ -8,17 +8,21 @@ import { handleError } from "@/utils/handleError";
 export function useTrackHydration({
   setTrack,
   onHydrated,
+  setIsHydrated,
 }: {
   setTrack: React.Dispatch<React.SetStateAction<TrackPoint[]>>;
   onHydrated: (points: TrackPoint[]) => void;
+  setIsHydrated: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const { isForeground } = useForeground();
   const prevForegroundRef = useRef(false);
-  const { activeSession } = useTimerStore();
+  const activeSession = useTimerStore((state) => state.activeSession);
   const isHydratingRef = useRef(false);
+
   const hydrateFromDatabase = useCallback(async () => {
     if (isHydratingRef.current) return;
     isHydratingRef.current = true;
+    setIsHydrated(false);
 
     try {
       const db = await getDatabase();
@@ -33,18 +37,16 @@ export function useTrackHydration({
         "SELECT timestamp, latitude, longitude, altitude, accuracy FROM gps_points ORDER BY timestamp ASC"
       );
 
-      if (result.length > 0) {
-        const points: TrackPoint[] = result.map((point) => ({
-          latitude: point.latitude,
-          longitude: point.longitude,
-          altitude: point.altitude,
-          accuracy: point.accuracy,
-          timestamp: point.timestamp,
-        }));
+      const points: TrackPoint[] = result.map((point) => ({
+        latitude: point.latitude,
+        longitude: point.longitude,
+        altitude: point.altitude,
+        accuracy: point.accuracy,
+        timestamp: point.timestamp,
+      }));
 
-        setTrack(points);
-        onHydrated(points);
-      }
+      setTrack(points);
+      onHydrated(points);
     } catch (error) {
       handleError(error, {
         message: "Error hydrating from database",
@@ -54,7 +56,7 @@ export function useTrackHydration({
     } finally {
       isHydratingRef.current = false;
     }
-  }, [setTrack, onHydrated]);
+  }, [setTrack, onHydrated, setIsHydrated]);
 
   // Hydrate on initial mount if there's an active session
   useEffect(() => {

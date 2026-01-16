@@ -5,7 +5,7 @@ import { getFullTodoSession } from "@/database/todo/get-full-todo";
 import {
   full_gym_session,
   full_todo_session,
-  full_activity_session,
+  FullActivitySession,
 } from "@/types/models";
 import { getFullActivitySession } from "@/database/activities/get-full-activity-session";
 
@@ -74,7 +74,7 @@ export default function useFullSessions(
     data: activitySessionFull,
     error: activitySessionError,
     isLoading: isLoadingActivitySession,
-  } = useQuery<full_activity_session>({
+  } = useQuery<FullActivitySession>({
     queryKey: ["fullActivitySession", activityId],
     queryFn: async () => await getFullActivitySession(activityId!),
     enabled: !!activityId,

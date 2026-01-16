@@ -12,8 +12,8 @@ import {
 import AppText from "@/components/AppText";
 import SelectInput from "@/components/Selectinput";
 import { gym_exercises } from "@/types/models";
-import EditExercise from "@/database/gym/edit-exercise";
-import DeleteExercise from "@/database/gym/delete-exercise";
+import { editExercise } from "@/database/gym/edit-exercise";
+import { deleteExercise } from "@/database/gym/delete-exercise";
 import ExerciseDropdownEdit from "@/Features/gym/ExerciseDropDownEdit";
 import DeleteButton from "@/components/buttons/DeleteButton";
 import AnimatedButton from "@/components/buttons/animatedButton";
@@ -63,7 +63,7 @@ export default function EditExercises() {
     };
 
     try {
-      await EditExercise(exerciseData);
+      await editExercise(exerciseData);
 
       await queryClient.refetchQueries({
         queryKey: ["userExercises"],
@@ -89,7 +89,7 @@ export default function EditExercises() {
     setIsSaving(true);
 
     try {
-      await DeleteExercise(exerciseId);
+      await deleteExercise(exerciseId);
 
       await queryClient.refetchQueries({
         queryKey: ["userExercises"],

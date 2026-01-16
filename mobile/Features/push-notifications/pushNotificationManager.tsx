@@ -9,7 +9,7 @@ import {
 import * as Notifications from "expo-notifications";
 import { useUserStore } from "@/lib/stores/useUserStore";
 import Toast from "react-native-toast-message";
-import syncNotifications from "@/database/reminders/syncNotifications";
+import { syncNotifications } from "@/database/reminders/syncNotifications";
 import { useEffect } from "react";
 
 Notifications.setNotificationHandler({

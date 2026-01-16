@@ -1,7 +1,7 @@
 import { handleError } from "@/utils/handleError";
 import { supabase } from "@/lib/supabase";
 
-export default async function SaveOccurence(id: string, scheduledAt: string) {
+export async function saveOccurence(id: string, scheduledAt: string) {
   const { data, error } = await supabase
     .from("reminder_occurrences")
     .insert({

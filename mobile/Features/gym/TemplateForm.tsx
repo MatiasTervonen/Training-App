@@ -25,7 +25,7 @@ import GroupGymExercises from "@/Features/gym/lib/GroupGymExercises";
 import ExerciseCard from "@/Features/gym/ExerciseCard";
 import ExerciseSelectorList from "@/Features/gym/ExerciseSelectorList";
 import { useQuery } from "@tanstack/react-query";
-import GetFullTemplate from "@/database/gym/get-full-template";
+import { getFullTemplate } from "@/database/gym/get-full-template";
 import { getLastExerciseHistory } from "@/database/gym/last-exercise-history";
 import SelectInput from "@/components/Selectinput";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -104,7 +104,7 @@ export default function TemplateForm() {
     queryFn: async () => {
       if (!templateId) throw new Error("No template ID");
 
-      return await GetFullTemplate(templateId);
+      return await getFullTemplate(templateId);
     },
     refetchOnMount: false,
     refetchOnWindowFocus: false,

@@ -11,12 +11,16 @@ export function useForegroundLocationTracker({
   onPoint,
   setHasStartedTracking,
   hasStartedTracking,
+  isHydrated,
+  track,
 }: {
   allowGPS: boolean;
   isRunning: boolean;
   onPoint: (point: TrackPoint) => void;
   setHasStartedTracking: (hasStartedTracking: boolean) => void;
   hasStartedTracking: boolean;
+  isHydrated: boolean;
+  track: TrackPoint[];
 }) {
   const { isForeground } = useForeground();
   const goodFixCountRef = useRef(0);
@@ -33,9 +37,17 @@ export function useForegroundLocationTracker({
     }
   }, [activeSession, setHasStartedTracking]);
 
-  // Start the location tracking when the component is in the foreground and the GPS is allowed and the activity is running
+  // Sync lastAcceptedPointRef with the last point from hydrated track
   useEffect(() => {
-    if (!isForeground || !allowGPS || !isRunning) return;
+    if (isHydrated && track.length > 0) {
+      lastAcceptedPointRef.current = track[track.length - 1];
+    }
+  }, [isHydrated, track]);
+
+  // Start the location tracking when the component is in the foreground and the GPS is allowed and the activity is running
+  // Wait for hydration to complete before starting to track
+  useEffect(() => {
+    if (!isForeground || !allowGPS || !isRunning || !isHydrated) return;
 
     let sub: Location.LocationSubscription | null = null;
 
@@ -112,5 +124,13 @@ export function useForegroundLocationTracker({
     return () => {
       sub?.remove();
     };
-  }, [isForeground, allowGPS, isRunning, onPoint, hasStartedTracking, setHasStartedTracking]);
+  }, [
+    isForeground,
+    allowGPS,
+    isRunning,
+    isHydrated,
+    onPoint,
+    hasStartedTracking,
+    setHasStartedTracking,
+  ]);
 }

@@ -1,7 +1,7 @@
 import Toast from "react-native-toast-message";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
-import SaveLocalReminder from "@/database/reminders/save-local-reminder";
+import { saveLocalReminder } from "@/database/reminders/save-local-reminder";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function useSaveReminderOnetime({
@@ -43,7 +43,7 @@ export default function useSaveReminderOnetime({
     setIsSaving(true);
 
     try {
-      const reminder = await SaveLocalReminder({
+      const reminder = await saveLocalReminder({
         title,
         notes,
         weekdays: [],

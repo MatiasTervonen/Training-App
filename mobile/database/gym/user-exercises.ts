@@ -1,7 +1,7 @@
 import { supabase } from "@/lib/supabase";
 import { handleError } from "@/utils/handleError";
 
-export default async function GetUserExercises() {
+export async function getUserExercises() {
   const {
     data: { session },
     error: sessionError,

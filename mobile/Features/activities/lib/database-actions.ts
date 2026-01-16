@@ -5,4 +5,5 @@ export async function clearLocalSessionDatabase() {
 
   // Just drop the table - it will be recreated when starting a new session
   await db.execAsync(`DROP TABLE IF EXISTS gps_points;`);
+  await db.execAsync(`DROP TABLE IF EXISTS template_route;`);
 }

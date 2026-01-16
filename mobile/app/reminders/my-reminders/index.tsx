@@ -5,7 +5,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { TemplateSkeleton } from "@/components/skeletetons";
 import AppText from "@/components/AppText";
 import PageContainer from "@/components/PageContainer";
-import GetReminders from "@/database/reminders/get-reminders";
+import { getReminders } from "@/database/reminders/get-reminders";
 import MyReminderCard from "@/Features/feed-cards/MyReminderCard";
 import { full_reminder } from "@/types/session";
 import AnimatedButton from "@/components/buttons/animatedButton";
@@ -29,7 +29,7 @@ export default function RemindersPage() {
     isLoading,
   } = useQuery({
     queryKey: ["get-reminders"],
-    queryFn: GetReminders,
+    queryFn: getReminders,
     refetchOnMount: false,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,

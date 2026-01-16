@@ -1,6 +1,6 @@
 import { confirmAction } from "@/lib/confirmAction";
 import { useQueryClient } from "@tanstack/react-query";
-import { DeleteSession } from "@/database/feed/deleteSession";
+import { deleteSession } from "@/database/feed/deleteSession";
 import Toast from "react-native-toast-message";
 import * as Notifications from "expo-notifications";
 import { FeedData } from "@/types/session";
@@ -48,7 +48,7 @@ export default function useDeleteSession() {
         }
       }
 
-      await DeleteSession(id, type);
+      await deleteSession(id, type);
 
       if (type === "weight") {
         queryClient.refetchQueries({

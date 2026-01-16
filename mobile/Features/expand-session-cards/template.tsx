@@ -2,9 +2,9 @@ import { formatDate } from "@/lib/formatDate";
 import GroupTemplateExercise from "@/Features/gym/lib/GroupTemplateExercises";
 import { full_gym_template } from "@/types/models";
 import { ScrollView, View } from "react-native";
-import AppText from "../../components/AppText";
+import AppText from "@/components/AppText";
 import AppButton from "@/components/buttons/AppButton";
-import PageContainer from "../../components/PageContainer";
+import PageContainer from "@/components/PageContainer";
 import { LinearGradient } from "expo-linear-gradient";
 
 type Props = {

@@ -7,11 +7,11 @@ import TemplateCard from "@/Features/feed-cards/TemplateCard";
 import { ActivityIndicator, ScrollView, View } from "react-native";
 import GymTemplate from "@/Features/expand-session-cards/template";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import GetTemplate from "@/database/gym/get-templates";
+import { getTemplates } from "@/database/gym/get-templates";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import DeleteTemplate from "@/database/gym/delete-template";
+import { deleteTemplate } from "@/database/gym/delete-template";
 import { confirmAction } from "@/lib/confirmAction";
-import GetFullTemplate from "@/database/gym/get-full-template";
+import { getFullTemplate } from "@/database/gym/get-full-template";
 import { TemplateSkeleton } from "@/components/skeletetons";
 import AppText from "@/components/AppText";
 import PageContainer from "@/components/PageContainer";
@@ -41,7 +41,7 @@ export default function TemplatesPage() {
     isLoading,
   } = useQuery({
     queryKey: ["get-templates"],
-    queryFn: GetTemplate,
+    queryFn: getTemplates,
     refetchOnMount: false,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
@@ -105,7 +105,7 @@ export default function TemplatesPage() {
     });
 
     try {
-      await DeleteTemplate(templateId);
+      await deleteTemplate(templateId);
 
       Toast.show({
         type: "success",
@@ -128,7 +128,7 @@ export default function TemplatesPage() {
     isLoading: isLoadingTemplateSession,
   } = useQuery({
     queryKey: ["full_gym_template", templateId],
-    queryFn: () => GetFullTemplate(templateId!),
+    queryFn: () => getFullTemplate(templateId!),
     enabled: !!templateId,
     refetchOnMount: false,
     refetchOnWindowFocus: false,

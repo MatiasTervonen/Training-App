@@ -1,6 +1,6 @@
 import { Modal, View } from "react-native";
 import Mapbox from "@rnmapbox/maps";
-import AnimatedButton from "../../components/buttons/animatedButton";
+import AnimatedButton from "../../../components/buttons/animatedButton";
 import { CircleX, Layers2, MapPin } from "lucide-react-native";
 import MapIcons from "./mapIcons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -10,6 +10,7 @@ import { useState } from "react";
 export default function FullScreenMapModal({
   fullScreen,
   track,
+  templateRoute,
   setFullScreen,
   startGPStracking,
   stopGPStracking,
@@ -20,6 +21,7 @@ export default function FullScreenMapModal({
 }: {
   fullScreen: boolean;
   track: TrackPoint[];
+  templateRoute: [number, number][] | null;
   setFullScreen: (value: boolean) => void;
   startGPStracking: () => void;
   stopGPStracking: () => void;
@@ -31,6 +33,8 @@ export default function FullScreenMapModal({
   const insets = useSafeAreaInsets();
   const [isFollowingUser, setIsFollowingUser] = useState(true);
   const [mapStyle, setMapStyle] = useState(Mapbox.StyleURL.Dark);
+
+  const shouldShowTemplateRoute = templateRoute && templateRoute.length > 0;
 
   const mapCoordinates = track
     .filter((p) => p.accuracy == null || p.accuracy <= 30)
@@ -138,6 +142,31 @@ export default function FullScreenMapModal({
                     lineWidth: 4,
                     lineCap: "round",
                     lineJoin: "round",
+                  }}
+                />
+              </Mapbox.ShapeSource>
+            )}
+
+            {shouldShowTemplateRoute && (
+              <Mapbox.ShapeSource
+                id="template-route"
+                shape={{
+                  type: "Feature",
+                  geometry: {
+                    type: "LineString",
+                    coordinates: templateRoute,
+                  },
+                  properties: {},
+                }}
+              >
+                <Mapbox.LineLayer
+                  id="template-route-layer"
+                  style={{
+                    lineColor: "rgba(255,255,255,0.35)",
+                    lineWidth: 4,
+                    lineCap: "round",
+                    lineJoin: "round",
+                    lineDasharray: [2, 2],
                   }}
                 />
               </Mapbox.ShapeSource>

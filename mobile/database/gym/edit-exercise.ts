@@ -10,7 +10,7 @@ type Exercise = {
   main_group: string;
 };
 
-export default async function EditExercise({
+export async function editExercise({
   id,
   name,
   language,

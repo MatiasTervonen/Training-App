@@ -1,8 +1,8 @@
 import PageContainer from "@/components/PageContainer";
 import AppText from "@/components/AppText";
 import AppInput from "@/components/AppInput";
-import ActivityDropdown from "@/Features/activities/activityDropdown";
-import { useState, useEffect } from "react";
+import ActivityDropdown from "@/Features/activities/components/activityDropdown";
+import { useState, useEffect, useCallback } from "react";
 import { View, ScrollView, Linking, AppState } from "react-native";
 import SubNotesInput from "@/components/SubNotesInput";
 import Timer from "@/components/timer";
@@ -24,10 +24,10 @@ import {
 } from "@/Features/activities/lib/location-actions";
 import { formatDate } from "@/lib/formatDate";
 import { useModalPageConfig } from "@/lib/stores/modalPageConfig";
-import FullScreenMapModal from "@/Features/activities/fullScreenMapModal";
-import BaseMap from "@/Features/activities/baseMap";
+import FullScreenMapModal from "@/Features/activities/components/fullScreenMapModal";
+import BaseMap from "@/Features/activities/components/baseMap";
 import { TrackPoint } from "@/types/session";
-import InfoModal from "@/Features/activities/infoModal";
+import InfoModal from "@/Features/activities/components/infoModal";
 import { useDistanceFromTrack } from "@/Features/activities/hooks/useCountDistance";
 import { useStartActivity } from "@/Features/activities/hooks/useStartActivity";
 import { clearLocalSessionDatabase } from "@/Features/activities/lib/database-actions";
@@ -40,6 +40,7 @@ import StepInfoModal from "@/Features/activities/stepToggle/stepInfoModal";
 import { hasStepsPermission } from "@/Features/activities/stepToggle/stepPermission";
 import { useStepHydration } from "@/Features/activities/hooks/useStepHydration";
 import { updateNativeTimerLabel } from "@/native/android/NativeTimer";
+import { useTemplateRoute } from "@/Features/activities/hooks/useTemplateRoute";
 
 export default function StartActivityScreen() {
   const now = formatDate(new Date());
@@ -57,6 +58,7 @@ export default function StartActivityScreen() {
   const [steps, setSteps] = useState(0);
   const [showStepToggle, setShowStepToggle] = useState(false);
   const [stepsAllowed, setStepsAllowed] = useState(false);
+  const [isHydrated, setIsHydrated] = useState(false);
 
   const gpsEnabledGlobally = useUserStore(
     (state) => state.settings?.gps_tracking_enabled
@@ -129,6 +131,7 @@ export default function StartActivityScreen() {
     setTrack([]);
     setSteps(0);
     replaceFromFydration([]);
+    setRoute([]);
     // stop the GPS tracking
     await stopGPStracking();
 
@@ -183,10 +186,20 @@ export default function StartActivityScreen() {
   // when point arrives add it to the track and persist it to the database
   const { addPoint, replaceFromFydration } = usePersistToDatabase();
 
+  // Memoize the hydration callback to prevent unnecessary database calls
+  const handleHydrated = useCallback(
+    (points: TrackPoint[]) => {
+      replaceFromFydration(points);
+      setIsHydrated(true);
+    },
+    [replaceFromFydration]
+  );
+
   // when foreground resumes from background, hydrate the track from the database
   useTrackHydration({
     setTrack,
-    onHydrated: replaceFromFydration,
+    onHydrated: handleHydrated,
+    setIsHydrated,
   });
 
   // when foreground resumes from background, hydrate the steps from the health connect
@@ -195,19 +208,25 @@ export default function StartActivityScreen() {
     stepsAllowed,
   });
 
+  // useTemplateRoute hook to get the template route
+  const { route, setRoute, isLoadingTemplateRoute } = useTemplateRoute();
+
   // When foreground watch gps
   useForegroundLocationTracker({
     allowGPS,
     isRunning,
     setHasStartedTracking,
     hasStartedTracking,
+    isHydrated,
+    track,
     onPoint: (point) => {
       setTrack((prev) => [...prev, point]);
       addPoint(point);
     },
   });
 
-  const hasSessionStarted = remainingMs !== null || startTimestamp !== null;
+  const hasSessionStarted =
+    remainingMs !== null || startTimestamp !== null || route.length > 0;
 
   return (
     <>
@@ -331,6 +350,7 @@ export default function StartActivityScreen() {
                 {allowGPS && (
                   <BaseMap
                     track={track}
+                    templateRoute={route}
                     setScrollEnabled={setScrollEnabled}
                     setSwipeEnabled={setSwipeEnabled}
                     title={title}
@@ -340,6 +360,8 @@ export default function StartActivityScreen() {
                     hasStartedTracking={hasStartedTracking}
                     averagePacePerKm={averagePacePerKm}
                     currentStepCount={steps}
+                    isLoadingTemplateRoute={isLoadingTemplateRoute}
+                    isLoadingPosition={isRunning && track.length === 0}
                   />
                 )}
                 <View className="gap-5 mt-10">
@@ -359,6 +381,7 @@ export default function StartActivityScreen() {
         <FullScreenMapModal
           fullScreen={fullScreen}
           track={track}
+          templateRoute={route}
           setFullScreen={setFullScreen}
           startGPStracking={startGPStracking}
           stopGPStracking={stopGPStracking}

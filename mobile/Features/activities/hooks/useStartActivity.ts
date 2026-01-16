@@ -29,15 +29,15 @@ export function useStartActivity({
       return;
     }
 
+    // Always clear old GPS data first to avoid loading stale points
+    await clearLocalSessionDatabase();
+
     if (allowGPS) {
       const initializeDatabase = async () => {
         const db = await getDatabase();
 
         try {
-          // First drop any leftover table from previous sessions
-          await clearLocalSessionDatabase();
-
-          // Then create fresh table for new session
+          // Create fresh table for new session
           await db.execAsync(`
             CREATE TABLE IF NOT EXISTS gps_points (
               timestamp INTEGER NOT NULL,

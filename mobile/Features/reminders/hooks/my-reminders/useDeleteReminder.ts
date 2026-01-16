@@ -2,8 +2,8 @@ import { confirmAction } from "@/lib/confirmAction";
 import { full_reminder } from "@/types/session";
 import { useQueryClient } from "@tanstack/react-query";
 import * as Notifications from "expo-notifications";
-import DeleteReminder from "@/database/reminders/delete-global-reminder";
-import DeleteLocalReminder from "@/database/reminders/delete-local-reminder";
+import { deleteGlobalReminder } from "@/database/reminders/delete-global-reminder";
+import { deleteLocalReminder } from "@/database/reminders/delete-local-reminder";
 import Toast from "react-native-toast-message";
 import { cancelNativeAlarm } from "@/native/android/NativeAlarm";
 
@@ -42,9 +42,9 @@ export default function useDeleteReminder() {
       cancelNativeAlarm(reminder.id);
 
       if (reminder.type === "global") {
-        await DeleteReminder(reminder.id);
+        await deleteGlobalReminder(reminder.id);
       } else {
-        await DeleteLocalReminder(reminder.id);
+        await deleteLocalReminder(reminder.id);
       }
 
       queryClient.refetchQueries({ queryKey: ["feed"], exact: true });

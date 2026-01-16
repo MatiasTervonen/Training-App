@@ -11,7 +11,7 @@ type EditGlobalReminderParams = {
   delivered?: boolean | null;
 };
 
-export default async function EditGlobalReminder({
+export async function editGlobalReminder({
   id,
   title,
   notes,

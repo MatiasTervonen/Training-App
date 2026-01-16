@@ -1,7 +1,7 @@
 import { handleError } from "@/utils/handleError";
 import { supabase } from "@/lib/supabase";
 
-export default async function DeleteLocalReminder(reminderId: string) {
+export async function deleteLocalReminder(reminderId: string) {
   const { error } = await supabase.rpc("reminders_delete_local_reminder", {
     p_id: reminderId,
   });

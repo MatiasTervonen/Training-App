@@ -1,7 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import Toast from "react-native-toast-message";
 import { useRouter } from "expo-router";
-import saveTimer from "@/database/timer/save-timer";
+import { saveTimer } from "@/database/timer/save-timer";
 
 export default function useSaveTimer({
   title,

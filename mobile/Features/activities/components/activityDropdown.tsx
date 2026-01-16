@@ -1,6 +1,6 @@
 import AppText from "@/components/AppText";
 import { useQuery } from "@tanstack/react-query";
-import GetActivities from "@/database/activities/get-activities";
+import { getActivities } from "@/database/activities/get-activities";
 import {
   TouchableWithoutFeedback,
   Keyboard,
@@ -33,7 +33,7 @@ export default function ActivityDropdown({ onSelect, resetTrigger }: Props) {
     isLoading: isActivitiesLoading,
   } = useQuery({
     queryKey: ["activities", searchQuery],
-    queryFn: () => GetActivities(searchQuery),
+    queryFn: () => getActivities(searchQuery),
     refetchOnMount: false,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,

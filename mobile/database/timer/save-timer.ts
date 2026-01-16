@@ -7,7 +7,7 @@ type TimerData = {
   notes: string;
 };
 
-export default async function saveTimer({
+export async function saveTimer({
   title,
   durationInSeconds,
   notes,

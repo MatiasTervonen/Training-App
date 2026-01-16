@@ -1,7 +1,7 @@
 import { supabase } from "@/lib/supabase";
 import { handleError } from "@/utils/handleError";
 
-export default async function GetActivities(search: string) {
+export async function getActivities(search: string) {
   let query = supabase.from("activities").select("*");
 
   if (search.trim() !== "") {

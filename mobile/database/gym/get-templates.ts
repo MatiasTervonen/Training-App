@@ -1,7 +1,7 @@
 import { supabase } from "@/lib/supabase";
 import { handleError } from "@/utils/handleError";
 
-export default async function GetTemplate() {
+export async function getTemplates() {
   const { data: template, error: templateError } = await supabase
     .from("gym_templates")
     .select("id, name, created_at, updated_at")

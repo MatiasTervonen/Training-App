@@ -6,7 +6,7 @@ import setWeeklyNotification from "@/Features/reminders/setNotifications/setWeek
 import setOneTimeNotification from "@/Features/reminders/setNotifications/setOneTime";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export default async function SyncNotifications() {
+export async function syncNotifications() {
   console.log("Syncing notifications");
 
   // 1. Clear all existing scheduled notifications

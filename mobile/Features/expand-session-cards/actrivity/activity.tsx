@@ -1,5 +1,5 @@
 import { FullActivitySession } from "@/types/models";
-import { View, ScrollView } from "react-native";
+import { View, ScrollView, Modal } from "react-native";
 import PageContainer from "@/components/PageContainer";
 import AppText from "@/components/AppText";
 import { formatDate, formatTime, formatDuration } from "@/lib/formatDate";
@@ -8,15 +8,39 @@ import { useFullScreenModalConfig } from "@/lib/stores/fullScreenModalConfig";
 import Map from "./components/map";
 import SessionStats from "./components/sessionStats";
 import { LinearGradient } from "expo-linear-gradient";
+import AnimatedButton from "@/components/buttons/animatedButton";
+import AppInput from "@/components/AppInput";
+import SubNotesInput from "@/components/SubNotesInput";
+import FullScreenLoader from "@/components/FullScreenLoader";
+import useSaveTemplate from "./hooks/useSaveTemplate";
 
 export default function ActivitySession(activity_session: FullActivitySession) {
   const [scrollEnabled, setScrollEnabled] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+  const [templateName, setTemplateName] = useState("");
+  const [templateNotes, setTemplateNotes] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
+  const [savedTemplateId, setSavedTemplateId] = useState<string | null>(
+    activity_session.session.template_id
+  );
 
   const setSwipeEnabled = useFullScreenModalConfig(
     (state) => state.setSwipeEnabled
   );
 
   const hasRoute = activity_session.route !== null;
+
+  // hook to save the activity as a template
+  const { saveAsTemplate } = useSaveTemplate({
+    templateName,
+    templateNotes,
+    sessionId: activity_session.session.id,
+    setIsSaving,
+    setShowModal,
+    setTemplateName,
+    setTemplateNotes,
+    onSuccess: (templateId) => setSavedTemplateId(templateId),
+  });
 
   return (
     <ScrollView scrollEnabled={scrollEnabled}>
@@ -64,7 +88,62 @@ export default function ActivitySession(activity_session: FullActivitySession) {
             <SessionStats activity_session={activity_session} />
           </View>
         )}
+        {hasRoute && savedTemplateId === null && (
+          <AnimatedButton
+            onPress={() => setShowModal(true)}
+            label="Save as a Template"
+            className="bg-blue-800 py-2 my-3 rounded-md shadow-md border-2 border-blue-500 mt-10"
+            textClassName="text-gray-100 text-center"
+          />
+        )}
       </PageContainer>
+
+      <Modal visible={showModal} transparent animationType="slide">
+        <View className="flex-1 justify-center items-center bg-black/50 px-5">
+          <View className="bg-slate-700 rounded-lg p-6 w-full border-2 border-gray-100">
+            <AppText className="text-xl mb-6 text-center">
+              Save as a Template
+            </AppText>
+            <AppText className="text-lg mb-6 text-center">
+              Save this activity as a template for future use.
+            </AppText>
+            <AppInput
+              value={templateName}
+              setValue={setTemplateName}
+              placeholder="Enter template name"
+              label="Template name"
+            />
+            <View className="mt-5">
+              <SubNotesInput
+                value={templateNotes}
+                setValue={setTemplateNotes}
+                placeholder="Enter template notes (optional)"
+                label="Template notes"
+                className="min-h-[60px]"
+              />
+            </View>
+            <View className="flex-row gap-3 w-full mt-10">
+              <View className="flex-1">
+                <AnimatedButton
+                  onPress={() => setShowModal(false)}
+                  label="Cancel"
+                  className="bg-red-800 py-2 my-3 rounded-md shadow-md border-2 border-red-500"
+                  textClassName="text-gray-100 text-center"
+                />
+              </View>
+              <View className="flex-1">
+                <AnimatedButton
+                  onPress={saveAsTemplate}
+                  label="Save"
+                  className="bg-blue-800 py-2 my-3 rounded-md shadow-md border-2 border-blue-500"
+                  textClassName="text-gray-100 text-center"
+                />
+              </View>
+            </View>
+          </View>
+        </View>
+      </Modal>
+      <FullScreenLoader visible={isSaving} message="Saving template..." />
     </ScrollView>
   );
 }

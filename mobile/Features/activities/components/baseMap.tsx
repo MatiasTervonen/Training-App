@@ -1,6 +1,6 @@
-import { View } from "react-native";
+import { View, Text, ActivityIndicator } from "react-native";
 import Mapbox from "@rnmapbox/maps";
-import AnimatedButton from "../../components/buttons/animatedButton";
+import AnimatedButton from "../../../components/buttons/animatedButton";
 import { Layers2, MapPin } from "lucide-react-native";
 import { TrackPoint } from "@/types/session";
 import { useState } from "react";
@@ -8,6 +8,7 @@ import MapIcons from "./mapIcons";
 
 type BaseMapProps = {
   track: TrackPoint[];
+  templateRoute: [number, number][] | null;
   setScrollEnabled: (value: boolean) => void;
   setSwipeEnabled: (value: boolean) => void;
   startGPStracking: () => void;
@@ -17,10 +18,13 @@ type BaseMapProps = {
   averagePacePerKm: number;
   hasStartedTracking: boolean;
   currentStepCount: number;
+  isLoadingTemplateRoute: boolean;
+  isLoadingPosition: boolean;
 };
 
 export default function BaseMap({
   track,
+  templateRoute,
   setScrollEnabled,
   setSwipeEnabled,
   startGPStracking,
@@ -30,9 +34,13 @@ export default function BaseMap({
   hasStartedTracking,
   averagePacePerKm,
   currentStepCount,
+  isLoadingTemplateRoute,
+  isLoadingPosition,
 }: BaseMapProps) {
   const [isFollowingUser, setIsFollowingUser] = useState(true);
   const [mapStyle, setMapStyle] = useState(Mapbox.StyleURL.Dark);
+
+  const shouldShowTemplateRoute = templateRoute && templateRoute.length > 0;
 
   const mapCoordinates = track
     .filter((p) => p.accuracy == null || p.accuracy <= 30)
@@ -155,7 +163,54 @@ export default function BaseMap({
               />
             </Mapbox.ShapeSource>
           )}
+
+          {shouldShowTemplateRoute && (
+            <Mapbox.ShapeSource
+              id="template-route"
+              shape={{
+                type: "Feature",
+                geometry: {
+                  type: "LineString",
+                  coordinates: templateRoute,
+                },
+                properties: {},
+              }}
+            >
+              <Mapbox.LineLayer
+                id="template-route-layer"
+                style={{
+                  lineColor: "rgba(255,255,255,0.35)",
+                  lineWidth: 4,
+                  lineCap: "round",
+                  lineJoin: "round",
+                  lineDasharray: [2, 2],
+                }}
+              />
+            </Mapbox.ShapeSource>
+          )}
         </Mapbox.MapView>
+
+        {isLoadingTemplateRoute && (
+          <View
+            className="absolute z-50 flex-row gap-2 items-center px-2 py-1 rounded"
+            style={{ top: 10, left: 10 }}
+          >
+            <Text className="text-white text-xs ml-1.5">Loading route...</Text>
+            <ActivityIndicator size="small" color="#3b82f6" />
+          </View>
+        )}
+
+        {isLoadingPosition && (
+          <View
+            className="absolute z-50 flex-row gap-2 items-center px-2 py-1 rounded"
+            style={{ top: isLoadingTemplateRoute ? 35 : 10, left: 10 }}
+          >
+            <Text className="text-white text-xs ml-1.5">
+              Loading position...
+            </Text>
+            <ActivityIndicator size="small" color="#3b82f6" />
+          </View>
+        )}
 
         <View className="absolute z-50" style={{ bottom: 15, right: 25 }}>
           <AnimatedButton

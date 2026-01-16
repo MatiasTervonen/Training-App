@@ -1,5 +1,5 @@
 import Toast from "react-native-toast-message";
-import SaveLocalReminder from "@/database/reminders/save-local-reminder";
+import { saveLocalReminder } from "@/database/reminders/save-local-reminder";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -43,7 +43,7 @@ export default function useSaveReminderDaily({
     const time = `${notifyAt.getHours().toString().padStart(2, "0")}:${notifyAt.getMinutes().toString().padStart(2, "0")}`;
 
     try {
-      const reminder = await SaveLocalReminder({
+      const reminder = await saveLocalReminder({
         title: title,
         notes,
         weekdays: [],

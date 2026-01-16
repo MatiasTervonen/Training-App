@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import {
   ActivityIndicator,
   View,
@@ -6,7 +6,7 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
 } from "react-native";
-import GetUserExercises from "@/database/gym/user-exercises";
+import { getUserExercises } from "@/database/gym/user-exercises";
 import { useQuery } from "@tanstack/react-query";
 import AppInput from "@/components/AppInput";
 import AppText from "@/components/AppText";
@@ -42,7 +42,7 @@ export default function ExerciseDropdownEdit({
     isLoading: isExercisesLoading,
   } = useQuery<userExercise[]>({
     queryKey: ["userExercises"],
-    queryFn: GetUserExercises,
+    queryFn: getUserExercises,
     refetchOnMount: false,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,

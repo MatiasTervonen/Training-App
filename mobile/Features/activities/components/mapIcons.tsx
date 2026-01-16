@@ -1,7 +1,7 @@
 import { StyleProp, View, ViewStyle } from "react-native";
-import AppText from "../../components/AppText";
+import AppText from "../../../components/AppText";
 import { Gauge, Compass, Mountain, Footprints } from "lucide-react-native";
-import Timer from "../../components/timer";
+import Timer from "../../../components/timer";
 import { TrackPoint } from "@/types/session";
 import Animated, {
   useAnimatedStyle,

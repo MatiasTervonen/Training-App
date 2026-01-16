@@ -1,7 +1,7 @@
 import { handleError } from "@/utils/handleError";
 import { supabase } from "@/lib/supabase";
 
-export default async function DeleteGlobalReminder(reminderId: string) {
+export async function deleteGlobalReminder(reminderId: string) {
   const { error } = await supabase.rpc("reminders_delete_global_reminder", {
     p_id: reminderId,
   });

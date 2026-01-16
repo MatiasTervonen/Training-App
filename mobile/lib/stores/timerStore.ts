@@ -31,6 +31,7 @@ type ActiveSession = {
   started_at: number;
   gpsAllowed?: boolean;
   stepsAllowed?: boolean;
+  hasTemplateRoute?: boolean;
 };
 
 type SessionMode = "countup" | "countdown";
@@ -79,9 +80,9 @@ export const useTimerStore = create<TimerState>()(
       setActiveSession: (session: NewSession) =>
         set({
           activeSession: {
-            ...session,
             started_at: Date.now(),
-          },
+            ...session,
+          } as ActiveSession,
         }),
 
       startSession: (label: string) => {

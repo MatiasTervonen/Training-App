@@ -1,7 +1,7 @@
 import { handleError } from "@/utils/handleError";
 import { supabase } from "@/lib/supabase";
 
-export default async function MarkOccurrenceCompleted(occurrenceId: string) {
+export async function markOccurrenceCompleted(occurrenceId: string) {
   const { error } = await supabase
     .from("reminder_occurrences")
     .update({ completed_at: new Date().toISOString() })

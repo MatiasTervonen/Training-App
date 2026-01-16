@@ -9,7 +9,7 @@ type Exercise = {
   main_group: string;
 };
 
-export default async function AddExercise({
+export async function addExercise({
   name,
   language,
   equipment,

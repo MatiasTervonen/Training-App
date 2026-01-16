@@ -6,7 +6,7 @@ import { handleError } from "@/utils/handleError";
 
 export function usePersistToDatabase() {
   const trackRef = useRef<TrackPoint[]>([]);
-  const { activeSession } = useTimerStore();
+  const activeSession = useTimerStore((state) => state.activeSession);
   const lastPersistedLengthRef = useRef(0);
   const isPersistingRef = useRef(false);
   const lastPersistRef = useRef(0);

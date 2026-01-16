@@ -1,7 +1,7 @@
 import { supabase } from "@/lib/supabase";
 import { handleError } from "@/utils/handleError";
 
-export async function DeleteSession(id: string, type: string) {
+export async function deleteSession(id: string, type: string) {
   console.log("deleting session", id, type);
 
   const { error } = await supabase.rpc("feed_delete_session", {

@@ -40,7 +40,6 @@ export async function editLocalReminder({
   });
 
   if (error) {
-    console.log("error updating local reminder", error);
     handleError(error, {
       message: "Error updating local reminder",
       route: "/database/reminders/edit-reminders",

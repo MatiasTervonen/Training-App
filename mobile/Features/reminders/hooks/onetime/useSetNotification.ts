@@ -17,8 +17,6 @@ export default function useSetNotification({
     if (!notifyAt) return;
 
     try {
-      console.log("mode", mode);
-      console.log("reminderId", reminderId);
       // Schedule native alarm for high priority mode (Android only)
       if (mode === "alarm") {
         scheduleNativeAlarm(notifyAt.getTime(), reminderId, title, "reminder");
@@ -43,7 +41,6 @@ export default function useSetNotification({
 
       return notificationId;
     } catch (error) {
-      console.log("Error scheduling notifications:", error);
       handleError(error, {
         message: "Error scheduling notifications",
         route: "/api/reminders/schedule-notifications",

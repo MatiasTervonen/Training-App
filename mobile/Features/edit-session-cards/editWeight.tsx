@@ -45,8 +45,7 @@ export default function EditWeight({ weight, onClose, onSave }: Props) {
 
       onSave(updatedFeedItem);
       onClose();
-    } catch (error) {
-      console.log("error editing weight", error);
+    } catch {
       Toast.show({
         type: "error",
         text1: "Failed to update weight session",

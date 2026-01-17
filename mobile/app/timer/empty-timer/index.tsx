@@ -133,9 +133,7 @@ export default function SettingsScreen() {
       } catch (error) {
         console.error("Error stopping audio player:", error);
       }
-    } else {
-      console.log("Player is null/undefined!");
-    }
+    } 
   };
 
   // Listen for STOP_ALARM_SOUND event from native (when notification is tapped)

@@ -28,9 +28,9 @@ export default async function getFeed({
       : Promise.resolve({ data: [], error: null });
 
   const feedPromise = supabase
-    .from("feed_items")
+    .from("feed_items_with_activity")
     .select("*")
-    .order("occurred_at", { ascending: false })
+    .order("activity_at", { ascending: false })
     .range(from, to);
 
   const [pinnedResult, feedResult] = await Promise.all([

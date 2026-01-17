@@ -45,7 +45,6 @@ Sentry.init({
   debug: false,
 
   beforeSend(event) {
-    console.log("[Sentry] Sending event:", event); // 💡 for confirmation
     return event;
   },
 });

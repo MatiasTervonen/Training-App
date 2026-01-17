@@ -19,17 +19,14 @@ export default function useSaveDraft({
   useEffect(() => {
     const loadDraft = async () => {
       try {
-        console.log("loadDraft");
         const storeDraft = await AsyncStorage.getItem("activity_draft");
         if (storeDraft) {
-          console.log("storeDraft", JSON.parse(storeDraft));
           const draft = JSON.parse(storeDraft);
           setTitle(draft.title || "");
           setNotes(draft.notes || "");
           setActivityName(draft.activityName || "");
         }
       } catch (error) {
-        console.log("error", error);
         handleError(error, {
           message: "Error loading activity draft",
           route: "activities/start-activity/index.tsx",
@@ -44,7 +41,6 @@ export default function useSaveDraft({
     async () => {
       const draft = { title, notes };
       await AsyncStorage.mergeItem("activity_draft", JSON.stringify(draft));
-      console.log("saveActivityDraft", draft);
     },
     500,
     { maxWait: 3000 }

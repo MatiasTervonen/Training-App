@@ -50,8 +50,7 @@ export default function PushNotificationManager() {
         type: "success",
         text1: "Push notifications enabled",
       });
-    } catch (error) {
-      console.log("Error during push notification registration:", error);
+    } catch {
       Toast.show({
         type: "error",
         text1: "Error",
@@ -96,8 +95,7 @@ export default function PushNotificationManager() {
           type: "success",
           text1: "Push notifications disabled",
         });
-      } catch (error) {
-        console.log("Error during push notification unregistration:", error);
+      } catch {
         Toast.show({
           type: "error",
           text1: "Error",

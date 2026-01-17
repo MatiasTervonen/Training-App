@@ -1,5 +1,4 @@
 import * as Notifications from "expo-notifications";
-import * as Device from "expo-device";
 import { supabase } from "@/lib/supabase";
 import { handleError } from "@/utils/handleError";
 import Constants from "expo-constants";
@@ -12,11 +11,6 @@ function handleRegistrationError(errorMessage: string) {
 }
 
 export async function registerForPushNotificationsAsync() {
-  if (!Device.isDevice) {
-    console.log("Push notifications only work on a physical device.");
-    return null;
-  }
-
   const { status: existingStatus } = await Notifications.getPermissionsAsync();
   let finalStatus = existingStatus;
 
@@ -74,7 +68,6 @@ export async function SaveTokenToServer(token: string, platform: string) {
     );
 
   if (error) {
-    console.log("Error saving push token", error);
     handleError(error, {
       message: "Error saving push token",
       route: "/api/push/save-token",
@@ -88,8 +81,6 @@ export async function SaveTokenToServer(token: string, platform: string) {
 
 export async function deleteTokenFromServer() {
   const deviceId = await getDeviceId();
-
-  console.log("Deleting token from server", deviceId);
 
   const { error } = await supabase
     .from("user_push_mobile_subscriptions")

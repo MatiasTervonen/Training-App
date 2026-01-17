@@ -231,7 +231,7 @@ export default function SessionFeed() {
           )}
 
           {expandedItem.type === "gym_sessions" && (
-            <View>
+            <>
               {isLoadingGymSession ? (
                 <View className="gap-5 items-center justify-center mt-40 px-10">
                   <AppText className="text-lg">
@@ -246,11 +246,11 @@ export default function SessionFeed() {
               ) : (
                 GymSessionFull && <GymSession {...GymSessionFull} />
               )}
-            </View>
+            </>
           )}
 
           {expandedItem.type === "activity_sessions" && (
-            <View>
+            <>
               {isLoadingActivitySession ? (
                 <View className="gap-5 items-center justify-center mt-40 px-10">
                   <AppText className="text-lg">
@@ -268,7 +268,7 @@ export default function SessionFeed() {
                   <ActivitySession {...activitySessionFull} />
                 )
               )}
-            </View>
+            </>
           )}
         </FullScreenModal>
       )}

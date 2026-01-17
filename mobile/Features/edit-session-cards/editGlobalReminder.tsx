@@ -6,7 +6,7 @@ import FullScreenLoader from "@/components/FullScreenLoader";
 import Toast from "react-native-toast-message";
 import AppText from "../../components/AppText";
 import { View, TouchableWithoutFeedback, Keyboard } from "react-native";
-import EditGlobalReminder from "@/database/reminders/edit-global-reminder";
+import { editGlobalReminder } from "@/database/reminders/edit-global-reminder";
 import DatePicker from "react-native-date-picker";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import { Plus } from "lucide-react-native";
@@ -74,9 +74,9 @@ export default function HandleEditGlobalReminder({
     const updated = new Date().toISOString();
 
     setIsSaving(true);
-    console.log("reminder.source_id", reminder.source_id);
+
     try {
-      await EditGlobalReminder({
+      await editGlobalReminder({
         id: reminder.source_id,
         title,
         notes,
@@ -88,8 +88,7 @@ export default function HandleEditGlobalReminder({
 
       await onSave?.();
       onClose();
-    } catch (error) {
-      console.log("error editing global reminder", error);
+    } catch {
       Toast.show({
         type: "error",
         text1: "Error editing global reminder",

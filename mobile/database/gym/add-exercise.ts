@@ -40,7 +40,6 @@ export async function addExercise({
     .select()
     .single();
 
-  console.log("Sending user_id:", session.user.id);
 
   if (exerciseError) {
     handleError(exerciseError, {

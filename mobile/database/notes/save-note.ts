@@ -13,7 +13,6 @@ export async function saveNote({ title, notes }: props) {
   });
 
   if (error) {
-    console.log("save note error", error);
     handleError(error, {
       message: "Error saving note",
       route: "/database/notes/save-note",

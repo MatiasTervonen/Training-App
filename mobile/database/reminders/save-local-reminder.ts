@@ -31,7 +31,6 @@ export async function saveLocalReminder({
   });
 
   if (error) {
-    console.log("save local reminder error", error);
     handleError(error, {
       message: "Error saving local reminders",
       route: "/database/reminders/save-local-reminder",
@@ -40,6 +39,5 @@ export async function saveLocalReminder({
     throw new Error("Error saving local reminders");
   }
 
-  console.log("data", data);
   return data;
 }

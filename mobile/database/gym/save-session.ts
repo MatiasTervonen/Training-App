@@ -39,7 +39,6 @@ export async function saveSession({
   });
 
   if (error) {
-    console.log("error saving session", error);
     handleError(error, {
       message: "Error saving session",
       route: "/database/gym/save-session",

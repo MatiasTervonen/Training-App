@@ -1,7 +1,6 @@
 self.addEventListener("push", function (event) {
-  console.log("[Service Worker] Push Received:", event);
+
   if (event.data) {
-    console.log("[Service Worker] Push data:", event.data.text());
     const payload = event.data.json();
 
     const data = payload.notification || payload;
@@ -22,7 +21,6 @@ self.addEventListener("push", function (event) {
 });
 
 self.addEventListener("notificationclick", function (event) {
-  console.log("Notification click received.");
   event.notification.close();
   event.waitUntil(clients.openWindow(self.location.origin));
 });

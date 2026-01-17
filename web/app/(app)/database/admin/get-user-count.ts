@@ -26,7 +26,6 @@ export async function getUserCount() {
     .single();
 
   if (countError || !userCount) {
-    console.log("error", countError);
     handleError(countError, {
       message: "Error fetching user count",
       route: "server_action: getUserCount",

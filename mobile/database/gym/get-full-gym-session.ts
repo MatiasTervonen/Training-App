@@ -24,7 +24,6 @@ export async function getFullGymSession(sessionId: string) {
   });
 
   if (gymSessionError || !gymSession) {
-    console.log("error fetching gym session", gymSessionError);
     handleError(gymSessionError, {
       message: "Error fetching gym session",
       route: "/database/gym/get-full-gym-session",

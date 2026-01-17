@@ -45,7 +45,6 @@ export default function useSetNotification({
 
       return id;
     } catch (error) {
-      console.log("Error scheduling notifications:", error);
       handleError(error, {
         message: "Error scheduling notifications",
         route: "/api/reminders/schedule-notifications",

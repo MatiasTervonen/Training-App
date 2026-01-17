@@ -17,7 +17,6 @@ export async function editNotes({ id, title, notes, updated_at }: Props) {
   });
 
   if (error) {
-    console.log("error editing notes", error);
     handleError(error, {
       message: "Error editing notes",
       route: "/database/notes/edit-notes",

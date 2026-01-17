@@ -45,8 +45,7 @@ export default function EditNotes({ note, onClose, onSave }: Props) {
 
       onSave(updatedFeedItem as FeedItemUI);
       onClose();
-    } catch (error) {
-      console.log("error editing notes", error);
+    } catch {
       Toast.show({
         type: "error",
         text1: "Error editing notes",

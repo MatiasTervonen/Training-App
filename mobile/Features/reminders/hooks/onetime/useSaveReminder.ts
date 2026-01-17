@@ -71,8 +71,7 @@ export default function useSaveReminderOnetime({
       ]);
       router.push("/dashboard");
       resetReminder();
-    } catch (error) {
-      console.log("Error saving reminder:", error);
+    } catch {
       Toast.show({
         type: "error",
         text1: "Failed to save reminder.",

@@ -24,7 +24,7 @@ export default function ActivityTemplateCard({
     <View className="border border-gray-700 rounded-md justify-center bg-slate-900 mb-10">
       <View className="flex-row justify-between items-center my-2 mx-4">
         <AppText
-          className="mr-8 text-lg flex-1"
+          className="mr-8 text-lg flex-1 underline"
           numberOfLines={1}
           ellipsizeMode="tail"
         >

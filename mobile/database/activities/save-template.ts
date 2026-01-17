@@ -17,7 +17,6 @@ export async function saveTemplate({
   });
 
   if (error) {
-    console.log("error saving template", error);
     handleError(error, {
       message: "Error saving template",
       route: "/database/activities/save-template",

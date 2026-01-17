@@ -160,6 +160,8 @@ export default function TemplatesPage() {
         type: "success",
         text1: "Template deleted successfully",
       });
+
+      queryClient.refetchQueries({ queryKey: ["fullActivitySession"] });
     } catch {
       queryClient.setQueryData(queryKey, previousTemplates);
       Toast.show({

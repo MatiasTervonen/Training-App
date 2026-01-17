@@ -62,8 +62,7 @@ export default function useSaveTemplate({
         queryKey: ["get-activity-templates"],
         exact: true,
       });
-    } catch (error) {
-      console.log("error saving template", error);
+    } catch {
       Toast.show({
         type: "error",
         text1: "Error saving template",

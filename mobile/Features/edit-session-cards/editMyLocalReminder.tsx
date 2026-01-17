@@ -65,7 +65,6 @@ export default function HandleEditLocalReminder({
     type: reminder.type as "weekly" | "daily" | "one-time",
   });
 
-  console.log("notifyAt", notifyAt);
 
   const { handleSave } = useSaveReminder({
     title,

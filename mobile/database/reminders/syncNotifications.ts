@@ -7,7 +7,6 @@ import setOneTimeNotification from "@/Features/reminders/setNotifications/setOne
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export async function syncNotifications() {
-  console.log("Syncing notifications");
 
   // 1. Clear all existing scheduled notifications
   await Notifications.cancelAllScheduledNotificationsAsync();

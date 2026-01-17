@@ -33,15 +33,12 @@ export default function useSaveTemplate({
       superset_id: ex.superset_id,
     }));
 
-    const updated = new Date().toISOString();
-
     try {
       if (templateId) {
         await editTemplate({
           id: templateId,
           exercises: simplified,
           name: workoutName,
-          updated_at: updated,
         });
       } else {
         await saveTemplate({
@@ -62,15 +59,14 @@ export default function useSaveTemplate({
         });
       }
 
-      router.push("/training/templates");
+      router.push("/gym/templates");
       resetSession();
       Toast.show({
         type: "success",
         text1: "Template saved",
         text2: "Template has been saved successfully.",
       });
-    } catch (error) {
-      console.log("error saving template", error);
+    } catch {
       setIsSaving(false);
       Toast.show({
         type: "error",

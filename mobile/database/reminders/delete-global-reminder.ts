@@ -7,7 +7,6 @@ export async function deleteGlobalReminder(reminderId: string) {
   });
 
   if (error) {
-    console.log("error deleting global reminder", error);
     handleError(error, {
       message: "Error deleting global reminder",
       route: "/database/reminders/delete-global-reminder",

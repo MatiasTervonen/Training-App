@@ -22,7 +22,6 @@ export async function saveGlobalReminder({
   });
 
   if (error) {
-    console.log(error);
     handleError(error, {
       message: "Error saving global reminders",
       route: "/database/reminders/save-global-reminder",

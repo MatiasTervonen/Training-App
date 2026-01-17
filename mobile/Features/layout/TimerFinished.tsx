@@ -13,7 +13,6 @@ export default function TimerFinishListener() {
       if (handleRef.current) return;
       handleRef.current = true;
 
-      console.log("Timer finished");
 
       router.replace(`/timer/empty-timer`);
 

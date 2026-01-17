@@ -113,7 +113,6 @@ export default function useSetNotification({
         return notifications;
       }
     } catch (error) {
-      console.log("Error scheduling notifications:", error);
       handleError(error, {
         message: "Error scheduling notifications",
         route: "/components/editSession/editCustomReminder",

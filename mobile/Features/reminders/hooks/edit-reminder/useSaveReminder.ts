@@ -1,7 +1,7 @@
 import Toast from "react-native-toast-message";
 import * as Notifications from "expo-notifications";
 import { FeedItemUI, full_reminder } from "@/types/session";
-import EditLocalReminder from "@/database/reminders/edit-local-reminder";
+import { editLocalReminder } from "@/database/reminders/edit-local-reminder";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function useSaveReminder({
@@ -82,7 +82,7 @@ export default function useSaveReminder({
         );
       }
 
-      const updatedFeedItem = await EditLocalReminder({
+      const updatedFeedItem = await editLocalReminder({
         id: (reminder as FeedItemUI).source_id ?? (reminder as full_reminder).id,
         title,
         notes,
@@ -106,8 +106,7 @@ export default function useSaveReminder({
         type: "success",
         text1: "Reminder updated successfully",
       });
-    } catch (error) {
-      console.log("error updating reminder", error);
+    } catch {
       Toast.show({
         type: "error",
         text1: "Error updating reminder",

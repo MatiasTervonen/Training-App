@@ -15,7 +15,5 @@ export async function getFullActivitySession(sessionId: string) {
     throw new Error("Error fetching activity session");
   }
 
-  console.log("data", data);
-
   return data;
 }

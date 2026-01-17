@@ -11,6 +11,7 @@ export async function editTemplate({
   id,
   exercises,
   name,
+
 }: {
   id: string;
   exercises: gym_template_exercises[];

@@ -27,7 +27,6 @@ export async function deleteUser(user_id: string) {
     .eq("id", user_id);
 
   if (errorUserTable) {
-    console.log("error server", errorUserTable);
     handleError(errorUserTable, {
       message: "Error deleting user from users table",
       route: "server-actions: deleteUser",
@@ -39,7 +38,6 @@ export async function deleteUser(user_id: string) {
   const { error } = await adminSupabase.auth.admin.deleteUser(user_id);
 
   if (error) {
-    console.log("error server", error);
     handleError(error, {
       message: "Error deleting user from auth table",
       route: "server-actions: deleteUser",

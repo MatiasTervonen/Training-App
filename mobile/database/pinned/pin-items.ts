@@ -26,7 +26,6 @@ export async function pinItem({ id, type }: PinSessionProps) {
     .single();
 
   if (error) {
-    console.log("error pinning item", error);
     handleError(error, {
       message: "Error pinning item",
       route: "/database/pinned/pin-items",

@@ -53,7 +53,6 @@ export default function useSetNotificationWeekly({
 
       return notifications;
     } catch (error) {
-      console.log("Error scheduling notifications:", error);
       handleError(error, {
         message: "Error scheduling notifications",
         route: "reminders/weekly-reminder/index.tsx",

@@ -1,7 +1,7 @@
 create or replace function gym_edit_template(
 p_id uuid,
 p_exercises jsonb,
-p_name text
+p_name text,
 )
 returns uuid
 language plpgsql

@@ -16,16 +16,8 @@ export async function addExercise({
   muscle_group,
   main_group,
 }: Exercise) {
-  const {
-    data: { session },
-    error: sessionError,
-  } = await supabase.auth.getSession();
 
-  if (sessionError || !session || !session.user) {
-    throw new Error("Unauthorized");
-  }
-
-  const { error: exerciseError } = await supabase
+  const { error } = await supabase
     .from("gym_exercises")
     .insert([
       {
@@ -34,15 +26,14 @@ export async function addExercise({
         equipment,
         muscle_group,
         main_group,
-        user_id: session.user.id,
       },
     ])
     .select()
     .single();
 
 
-  if (exerciseError) {
-    handleError(exerciseError, {
+  if (error) {
+    handleError(error, {
       message: "Error adding new exercise",
       route: "/database/gym/add-exercise",
       method: "POST",

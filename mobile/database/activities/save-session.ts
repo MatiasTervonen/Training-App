@@ -9,6 +9,7 @@ type TrackPoint = {
   speed?: number | null;
   heading?: number | null;
   timestamp: number;
+  isStationary: boolean;
 };
 type props = {
   title: string;

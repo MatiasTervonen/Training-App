@@ -53,7 +53,8 @@ loop
     latitude,
     longitude,
     accuracy,
-    altitude
+    altitude,
+    is_stationary
   )
   values (
     v_activity_id,
@@ -61,7 +62,8 @@ loop
     (v_track->> 'latitude')::numeric,
     (v_track->> 'longitude')::numeric,
     (v_track->> 'accuracy')::numeric,
-    (v_track->> 'altitude')::numeric
+    (v_track->> 'altitude')::numeric,
+    coalesce((v_track->> 'isStationary')::boolean, false)
   );
 
 end loop;

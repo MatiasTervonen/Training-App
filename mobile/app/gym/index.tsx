@@ -28,10 +28,16 @@ export default function SessionsScreen() {
         href="/gym/gym"
         onPress={handleClick}
       />
+
+      <View className="border border-gray-400 rounded-md my-4" />
       <LinkButton label="Create template" href="/gym/create-template" />
       <LinkButton label="Templates" href="/gym/templates" />
+
+      <View className="border border-gray-400 rounded-md my-4" />
       <LinkButton label="Add Exercise" href="/gym/add-exercise" />
       <LinkButton label="Edit Exercise" href="/gym/edit-exercise" />
+
+      <View className="border border-gray-400 rounded-md my-4" />
       <LinkButton label="Workout Analytics" href="/gym/workout-analytics" />
     </View>
   );

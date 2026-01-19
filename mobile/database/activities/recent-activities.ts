@@ -4,10 +4,10 @@ import { activities } from "@/types/models";
 
 export async function getRecentActivities() {
   const { data: activities, error } = await supabase
-    .from("activities")
-    .select(`*`)
+    .from("activity_sessions")
+    .select(`activity:activity_id (*)`)
     .order("id", { ascending: false })
-    .limit(10);
+    .limit(50);
 
   if (error) {
     handleError(error, {
@@ -29,6 +29,7 @@ export async function getRecentActivities() {
       seen.add(activity.id);
       uniqueActivities.push(activity);
     }
+    if (uniqueActivities.length >= 10) break;
   }
 
   return uniqueActivities ?? [];

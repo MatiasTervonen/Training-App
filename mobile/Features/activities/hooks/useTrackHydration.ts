@@ -33,8 +33,9 @@ export function useTrackHydration({
         longitude: number;
         altitude: number | null;
         accuracy: number | null;
+        is_stationary: number;
       }>(
-        "SELECT timestamp, latitude, longitude, altitude, accuracy FROM gps_points ORDER BY timestamp ASC"
+        "SELECT timestamp, latitude, longitude, altitude, accuracy, is_stationary FROM gps_points ORDER BY timestamp ASC"
       );
 
       const points: TrackPoint[] = result.map((point) => ({
@@ -43,6 +44,7 @@ export function useTrackHydration({
         altitude: point.altitude,
         accuracy: point.accuracy,
         timestamp: point.timestamp,
+        isStationary: point.is_stationary === 1,
       }));
 
       setTrack(points);

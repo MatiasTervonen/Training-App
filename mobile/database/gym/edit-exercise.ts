@@ -18,20 +18,11 @@ export async function editExercise({
   muscle_group,
   main_group,
 }: Exercise) {
-  const {
-    data: { session },
-    error: sessionError,
-  } = await supabase.auth.getSession();
-
-  if (sessionError || !session || !session.user) {
-    throw new Error("Unauthorized");
-  }
 
   const { error } = await supabase
     .from("gym_exercises")
     .update({ name, language, equipment, muscle_group, main_group })
     .eq("id", id)
-    .eq("user_id", session.user.id);
 
   if (error) {
     handleError(error, {

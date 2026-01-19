@@ -9,7 +9,7 @@ import {
   SectionList,
 } from "react-native";
 import AppInput from "@/components/AppInput";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useDebouncedCallback } from "use-debounce";
 import { getRecentActivities } from "@/database/activities/recent-activities";
 import { activities } from "@/types/models";
@@ -17,10 +17,10 @@ import AnimatedButton from "@/components/buttons/animatedButton";
 
 type Props = {
   onSelect: (activity: activities) => void;
-  resetTrigger?: number;
+
 };
 
-export default function ActivityDropdown({ onSelect, resetTrigger }: Props) {
+export default function ActivityDropdown({ onSelect}: Props) {
   const [inputValue, setInputValue] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedActivity, setSelectedActivity] = useState<activities | null>(
@@ -88,10 +88,6 @@ export default function ActivityDropdown({ onSelect, resetTrigger }: Props) {
     setInputValue(activity.name);
   };
 
-  useEffect(() => {
-    setSearchQuery("");
-  }, [resetTrigger]);
-
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <View className="w-full z-50 flex-1">
@@ -111,25 +107,19 @@ export default function ActivityDropdown({ onSelect, resetTrigger }: Props) {
           className="w-full  
                     bg-slate-900 border border-gray-100 mt-10 flex-1 rounded-md overflow-hidden"
         >
-          {isLoading || isError || allActivitiesList.length === 0 ? (
-            <View className="gap-6 items-center justify-center z-50 text-center mt-20">
-              {isLoading && (
-                <>
-                  <AppText className="text-xl">Loading activities...</AppText>
-                  <ActivityIndicator />
-                </>
-              )}
-              {isError && (
-                <AppText className="text-red-500 text-xl">
-                  Failed to load activities. Try again!
-                </AppText>
-              )}
-              {!isLoading && allActivitiesList.length === 0 && (
-                <AppText className="text-lg text-gray-300">
-                  No activities found.
-                </AppText>
-              )}
+          {isError ? (
+            <AppText className="text-red-500 text-xl">
+              Failed to load activities. Try again!
+            </AppText>
+          ) : isLoading ? (
+            <View className="items-center justify-center gap-3 mt-20">
+              <AppText className="text-xl">Loading activities...</AppText>
+              <ActivityIndicator />
             </View>
+          ) : allActivitiesList.length === 0 ? (
+            <AppText className="text-lg text-gray-300 mt-20 text-center">
+              No activities found.
+            </AppText>
           ) : (
             <SectionList
               contentContainerStyle={{

@@ -19,7 +19,7 @@ export function useStartGPStracking() {
     await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
       accuracy: Location.Accuracy.Highest,
       timeInterval: 5000,
-      distanceInterval: 5,
+      distanceInterval: 0, // Must be 0 to detect stationary (otherwise callbacks stop when not moving)
       showsBackgroundLocationIndicator: true,
       foregroundService: {
         notificationTitle: "MyTrack is tracking your location",

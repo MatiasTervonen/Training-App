@@ -47,13 +47,14 @@ export function usePersistToDatabase() {
       // Insert points without explicit transaction to avoid locking conflicts
       for (const point of pointsToPersist) {
         await db.runAsync(
-          `INSERT INTO gps_points (timestamp, latitude, longitude, altitude, accuracy) VALUES (?, ?, ?, ?, ?)`,
+          `INSERT INTO gps_points (timestamp, latitude, longitude, altitude, accuracy, is_stationary) VALUES (?, ?, ?, ?, ?, ?)`,
           [
             point.timestamp,
             point.latitude,
             point.longitude,
             point.altitude ?? null,
             point.accuracy ?? null,
+            point.isStationary ? 1 : 0,
           ]
         );
       }

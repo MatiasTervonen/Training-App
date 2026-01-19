@@ -26,6 +26,7 @@ export function useForegroundLocationTracker({
   const goodFixCountRef = useRef(0);
   const gpsReadyRef = useRef(false);
   const lastAcceptedPointRef = useRef<TrackPoint | null>(null);
+  const wasMovingRef = useRef(true);
   const { activeSession } = useTimerStore();
 
   useEffect(() => {
@@ -33,6 +34,7 @@ export function useForegroundLocationTracker({
       gpsReadyRef.current = false;
       goodFixCountRef.current = 0;
       lastAcceptedPointRef.current = null;
+      wasMovingRef.current = true;
       setHasStartedTracking(false);
     }
   }, [activeSession, setHasStartedTracking]);
@@ -55,8 +57,8 @@ export function useForegroundLocationTracker({
       sub = await Location.watchPositionAsync(
         {
           accuracy: Location.Accuracy.High,
-          timeInterval: 500,
-          distanceInterval: 5,
+          timeInterval: 500, // 0.5 sec for smoother dot movement
+          distanceInterval: 0, // Continuous updates for stationary detection
         },
         (location) => {
           const point: TrackPoint = {
@@ -67,6 +69,7 @@ export function useForegroundLocationTracker({
             speed: location.coords.speed ?? null,
             heading: location.coords.heading ?? null,
             timestamp: location.timestamp,
+            isStationary: false,
           };
 
           const isColdStart = (point.accuracy ?? Infinity) <= 20;
@@ -90,13 +93,12 @@ export function useForegroundLocationTracker({
             return;
           }
 
-          // Filter out stationary points (speed less than 0.6 m/s ≈ 2 km/h)
-          if ((point.speed ?? 0) < 0.6) {
-            return;
-          }
+          const isMoving = (point.speed ?? 0) >= 0.6;
+          const isTransitionToStationary = !isMoving && wasMovingRef.current;
 
           // Filter out points too close to last accepted point
-          if (lastAcceptedPointRef.current) {
+          // BUT allow stationary transition points through (they mark stop location)
+          if (lastAcceptedPointRef.current && !isTransitionToStationary) {
             const d = haversine(
               lastAcceptedPointRef.current.latitude,
               lastAcceptedPointRef.current.longitude,
@@ -108,13 +110,25 @@ export function useForegroundLocationTracker({
             }
           }
 
+          // If already stationary and still stationary, don't save (jitter protection)
+          if (!isMoving && !wasMovingRef.current) {
+            return;
+          }
+
           lastAcceptedPointRef.current = point;
 
           if (!hasStartedTracking) {
             setHasStartedTracking(true);
           }
 
-          onPoint(point);
+          if (isMoving) {
+            onPoint({ ...point, isStationary: false });
+            wasMovingRef.current = true;
+          } else {
+            // isTransitionToStationary is true here
+            onPoint({ ...point, isStationary: true });
+            wasMovingRef.current = false;
+          }
         }
       );
     };

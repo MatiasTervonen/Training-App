@@ -10,6 +10,7 @@ export async function getExercises({
   limit?: number;
   search?: string;
 }) {
+  console.log("FETCHING:", search);
   const from = pageParam * limit;
   const to = from + limit - 1;
 

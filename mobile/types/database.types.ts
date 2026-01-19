@@ -1,3 +1,6 @@
+Need to install the following packages:
+supabase@2.72.8
+Ok to proceed? (y) 
 export type Json =
   | string
   | number
@@ -44,11 +47,33 @@ export type Database = {
         }
         Relationships: []
       }
+      activity_categories: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       activity_gps_points: {
         Row: {
           accuracy: number | null
           altitude: number | null
           id: string
+          is_stationary: boolean | null
           latitude: number
           longitude: number
           recorded_at: string
@@ -58,6 +83,7 @@ export type Database = {
           accuracy?: number | null
           altitude?: number | null
           id?: string
+          is_stationary?: boolean | null
           latitude: number
           longitude: number
           recorded_at: string
@@ -67,6 +93,7 @@ export type Database = {
           accuracy?: number | null
           altitude?: number | null
           id?: string
+          is_stationary?: boolean | null
           latitude?: number
           longitude?: number
           recorded_at?: string
@@ -209,6 +236,7 @@ export type Database = {
         Row: {
           activity_id: string
           created_at: string
+          distance_meters: number | null
           geom: unknown
           id: string
           name: string
@@ -219,6 +247,7 @@ export type Database = {
         Insert: {
           activity_id: string
           created_at?: string
+          distance_meters?: number | null
           geom?: unknown
           id?: string
           name: string
@@ -229,6 +258,7 @@ export type Database = {
         Update: {
           activity_id?: string
           created_at?: string
+          distance_meters?: number | null
           geom?: unknown
           id?: string
           name?: string
@@ -531,6 +561,7 @@ export type Database = {
       }
       feed_items: {
         Row: {
+          activity_at: string | null
           created_at: string
           extra_fields: Json
           id: string
@@ -542,6 +573,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          activity_at?: string | null
           created_at?: string
           extra_fields?: Json
           id?: string
@@ -553,6 +585,7 @@ export type Database = {
           user_id?: string
         }
         Update: {
+          activity_at?: string | null
           created_at?: string
           extra_fields?: Json
           id?: string
@@ -1135,6 +1168,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "pinned_items_feed_item_id_fkey"
+            columns: ["feed_item_id"]
+            isOneToOne: false
+            referencedRelation: "feed_items_with_activity"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "pinned_items_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
@@ -1517,6 +1557,53 @@ export type Database = {
         }
         Relationships: []
       }
+      feed_items_with_activity: {
+        Row: {
+          activity_at: string | null
+          created_at: string | null
+          extra_fields: Json | null
+          id: string | null
+          occurred_at: string | null
+          source_id: string | null
+          title: string | null
+          type: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          activity_at?: never
+          created_at?: string | null
+          extra_fields?: Json | null
+          id?: string | null
+          occurred_at?: string | null
+          source_id?: string | null
+          title?: string | null
+          type?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          activity_at?: never
+          created_at?: string | null
+          extra_fields?: Json | null
+          id?: string | null
+          occurred_at?: string | null
+          source_id?: string | null
+          title?: string | null
+          type?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feed_items_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       activities_compute_session_stats: {
@@ -1527,6 +1614,7 @@ export type Database = {
         Args: { p_session_id: string }
         Returns: Json
       }
+      activities_get_templates: { Args: never; Returns: Json }
       activities_save_activity: {
         Args: {
           p_activity_id: string
@@ -1558,6 +1646,7 @@ export type Database = {
           p_title: string
         }
         Returns: {
+          activity_at: string | null
           created_at: string
           extra_fields: Json
           id: string
@@ -1613,6 +1702,7 @@ export type Database = {
           p_updated_at: string
         }
         Returns: {
+          activity_at: string | null
           created_at: string
           extra_fields: Json
           id: string
@@ -1653,6 +1743,7 @@ export type Database = {
           p_updated_at: string
         }
         Returns: {
+          activity_at: string | null
           created_at: string
           extra_fields: Json
           id: string
@@ -1684,6 +1775,7 @@ export type Database = {
           p_weekdays: Json
         }
         Returns: {
+          activity_at: string | null
           created_at: string
           extra_fields: Json
           id: string
@@ -1725,6 +1817,7 @@ export type Database = {
       todo_check_todo: {
         Args: { p_list_id: string; p_todo_tasks: Json; p_updated_at: string }
         Returns: {
+          activity_at: string | null
           created_at: string
           extra_fields: Json
           id: string
@@ -1751,6 +1844,7 @@ export type Database = {
           p_updated_at: string
         }
         Returns: {
+          activity_at: string | null
           created_at: string
           extra_fields: Json
           id: string
@@ -1781,6 +1875,7 @@ export type Database = {
           p_weight: number
         }
         Returns: {
+          activity_at: string | null
           created_at: string
           extra_fields: Json
           id: string

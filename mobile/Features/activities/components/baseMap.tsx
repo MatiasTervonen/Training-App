@@ -3,8 +3,9 @@ import Mapbox from "@rnmapbox/maps";
 import AnimatedButton from "../../../components/buttons/animatedButton";
 import { Layers2, MapPin } from "lucide-react-native";
 import { TrackPoint } from "@/types/session";
-import { useState } from "react";
+import { useState, useEffect  } from "react";
 import MapIcons from "./mapIcons";
+import useForeground from "../hooks/useForeground";
 
 type BaseMapProps = {
   track: TrackPoint[];
@@ -39,6 +40,13 @@ export default function BaseMap({
 }: BaseMapProps) {
   const [isFollowingUser, setIsFollowingUser] = useState(true);
   const [mapStyle, setMapStyle] = useState(Mapbox.StyleURL.Dark);
+  const { isForeground } = useForeground();
+
+  useEffect(() => {
+    if (isForeground) {
+      setIsFollowingUser(true);
+    }
+  }, [isForeground]);
 
   const shouldShowTemplateRoute = templateRoute && templateRoute.length > 0;
 

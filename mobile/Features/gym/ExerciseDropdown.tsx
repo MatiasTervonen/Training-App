@@ -64,11 +64,6 @@ export default function ExerciseDropdown({ onSelect }: Props) {
     setSearchQuery(value);
   }, 400);
 
-  const handleSelectExercise = (exercise: gym_exercises) => {
-    setSearchQuery(exercise.name + " " + "(" + exercise.equipment + ")");
-    onSelect(exercise);
-  };
-
   const sections = [];
 
   if (!isError && !isLoading) {
@@ -106,25 +101,19 @@ export default function ExerciseDropdown({ onSelect }: Props) {
           className="w-full  
                     bg-slate-900 border border-gray-100 mt-10 flex-1 rounded-md overflow-hidden"
         >
-          {isLoading || isError || allExercises.length === 0 ? (
-            <View className="gap-6 items-center justify-center z-50 text-center mt-20">
-              {isLoading && (
-                <>
-                  <AppText className="text-xl">Loading exercises...</AppText>
-                  <ActivityIndicator />
-                </>
-              )}
-              {isError && (
-                <AppText className="text-red-500 text-xl">
-                  Failed to load exercises. Try again!
-                </AppText>
-              )}
-              {!isLoading && allExercises.length === 0 && (
-                <AppText className="text-lg text-gray-300">
-                  No eexercises found.
-                </AppText>
-              )}
+          {isError ? (
+            <AppText className="text-red-500 text-xl mt-20 text-center">
+              Failed to load exercises. Try again!
+            </AppText>
+          ) : isLoading ? (
+            <View className="items-center justify-center gap-3 mt-20">
+              <AppText className="text-xl">Loading exercises...</AppText>
+              <ActivityIndicator />
             </View>
+          ) : allExercises.length === 0 ? (
+            <AppText className="text-lg text-gray-300 mt-20 text-center">
+              No exercises found.
+            </AppText>
           ) : (
             <SectionList
               contentContainerStyle={{
@@ -137,7 +126,7 @@ export default function ExerciseDropdown({ onSelect }: Props) {
                 return (
                   <AnimatedButton
                     className="w-full text-left px-4 py-2 z-40 border-b border-gray-400"
-                    onPress={() => handleSelectExercise(item)}
+                    onPress={() => onSelect(item)}
                   >
                     <View className="justify-between">
                       <View className="flex-row justify-between items-center">

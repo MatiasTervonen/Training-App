@@ -5,7 +5,8 @@ import { CircleX, Layers2, MapPin } from "lucide-react-native";
 import MapIcons from "./mapIcons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { TrackPoint } from "@/types/session";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import useForeground from "../hooks/useForeground";
 
 export default function FullScreenMapModal({
   fullScreen,
@@ -33,6 +34,13 @@ export default function FullScreenMapModal({
   const insets = useSafeAreaInsets();
   const [isFollowingUser, setIsFollowingUser] = useState(true);
   const [mapStyle, setMapStyle] = useState(Mapbox.StyleURL.Dark);
+  const { isForeground } = useForeground();
+
+  useEffect(() => {
+    if (isForeground) {
+      setIsFollowingUser(true);
+    }
+  }, [isForeground]);
 
   const shouldShowTemplateRoute = templateRoute && templateRoute.length > 0;
 

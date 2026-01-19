@@ -44,7 +44,8 @@ export function useStartActivity({
               latitude REAL NOT NULL,
               longitude REAL NOT NULL,
               altitude REAL,
-              accuracy REAL
+              accuracy REAL,
+              is_stationary INTEGER DEFAULT 0
             );
         `);
 

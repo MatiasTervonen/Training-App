@@ -151,7 +151,7 @@ export default function EditActivity() {
                 </FullScreenModal>
               </View>
               <View className="mt-20 flex flex-col gap-5">
-                <SaveButton onPress={handleSave} label="Update Exercise" />
+                <SaveButton onPress={handleSave} label="Update Activity" />
                 <DeleteButton
                   onPress={() => handleDeleteActivity(selectedActivity!.id)}
                   label="Delete Activity"

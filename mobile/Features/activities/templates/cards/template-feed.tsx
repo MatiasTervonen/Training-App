@@ -51,11 +51,11 @@ export default function ActivityTemplateCard({
         />
       </View>
       {item.activity.name && (
-        <AppText className="ml-4 text-lg ">{item.activity.name}</AppText>
+        <AppText className="ml-4 ">{item.activity.name}</AppText>
       )}
 
       {item.template.updated_at ? (
-        <AppText className=" text-yellow-500 text-sm ml-4 mb-2">
+        <AppText className=" text-yellow-500 text-sm ml-4 my-2">
           updated: {formatDate(item.template.updated_at)}
         </AppText>
       ) : (

@@ -1,7 +1,7 @@
 import AppText from "@/components/AppText";
 import PageContainer from "@/components/PageContainer";
 import PushNotificationManager from "@/Features/push-notifications/pushNotificationManager";
-import GpsToggleManager from "@/Features/activities/toggleSettings/gpsToggleManager";
+import GpsToggleManager from "@/Features/activities/gpsToggle/gpsToggleManager";
 import { View } from "react-native";
 
 export default function SettingsPage() {

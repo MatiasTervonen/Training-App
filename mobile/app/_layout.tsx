@@ -31,7 +31,7 @@ import SaveAreaInset from "@/Features/layout/SaveAreaInset";
 import Mapbox from "@rnmapbox/maps";
 import TimerFinishListener from "@/Features/layout/TimerFinished";
 import AppStatePermissionListener from "@/Features/push-notifications/AppStatePermissionListener";
-import GpsTrackingPermission from "@/Features/activities/toggleSettings/gpsTrackingPermission";
+import GpsTrackingPermission from "@/Features/activities/gpsToggle/gpsTrackingPermission";
 
 Mapbox.setAccessToken(process.env.EXPO_PUBLIC_MAPBOX_PUBLIC_TOKEN!);
 

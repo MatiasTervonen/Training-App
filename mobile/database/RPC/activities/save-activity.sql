@@ -63,7 +63,7 @@ loop
     (v_track->> 'longitude')::numeric,
     (v_track->> 'accuracy')::numeric,
     (v_track->> 'altitude')::numeric,
-    coalesce((v_track->> 'isStationary')::boolean, false)
+    coalesce((v_track->> 'is_stationary')::boolean, false)
   );
 
 end loop;

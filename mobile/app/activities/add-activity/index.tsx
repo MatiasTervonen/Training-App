@@ -60,7 +60,7 @@ export default function AddActivity() {
     <>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <PageContainer className="justify-between flex-1">
-          <View className="gap-4">
+          <View>
             <AppText className="text-2xl mb-10 text-center">
               Add Activity
             </AppText>
@@ -72,6 +72,7 @@ export default function AddActivity() {
                 label="Activity Name"
               />
             </View>
+            <AppText className="mb-2">Select Category</AppText>
             <AnimatedButton
               onPress={() => setOpenCategoryModal(true)}
               label={category || "Select Category"}

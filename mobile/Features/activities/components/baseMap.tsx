@@ -3,7 +3,7 @@ import Mapbox from "@rnmapbox/maps";
 import AnimatedButton from "../../../components/buttons/animatedButton";
 import { Layers2, MapPin } from "lucide-react-native";
 import { TrackPoint } from "@/types/session";
-import { useState, useEffect  } from "react";
+import { useState, useEffect } from "react";
 import MapIcons from "./mapIcons";
 import useForeground from "../hooks/useForeground";
 
@@ -42,6 +42,7 @@ export default function BaseMap({
   const [mapStyle, setMapStyle] = useState(Mapbox.StyleURL.Dark);
   const { isForeground } = useForeground();
 
+
   useEffect(() => {
     if (isForeground) {
       setIsFollowingUser(true);
@@ -51,30 +52,33 @@ export default function BaseMap({
   const shouldShowTemplateRoute = templateRoute && templateRoute.length > 0;
 
   const mapCoordinates = track
-    .filter((p) => p.accuracy == null || p.accuracy <= 30)
+    .filter((p) => !p.isStationary && (p.accuracy == null || p.accuracy <= 30))
     .map((p) => [p.longitude, p.latitude]);
 
   const trackShape = {
     type: "Feature",
+    properties: {},
     geometry: {
       type: "LineString",
       coordinates: mapCoordinates,
     },
   };
 
-  const lastPoint = track[track.length - 1];
+  const lastMovingPoint = [...track]
+    .reverse()
+    .find((p) => !p.isStationary) || track[track.length - 1];
 
-  const userFeature = lastPoint
+  const userFeature = lastMovingPoint
     ? {
-        type: "Feature",
-        properties: {
-          accuracy: lastPoint.accuracy,
-        },
-        geometry: {
-          type: "Point",
-          coordinates: [lastPoint.longitude, lastPoint.latitude],
-        },
-      }
+      type: "Feature",
+      properties: {
+        accuracy: lastMovingPoint.accuracy,
+      },
+      geometry: {
+        type: "Point",
+        coordinates: [lastMovingPoint.longitude, lastMovingPoint.latitude],
+      },
+    }
     : null;
 
   const MAP_STYLES = [
@@ -232,6 +236,7 @@ export default function BaseMap({
         <View className="absolute z-50" style={{ bottom: 15, right: 80 }}>
           <AnimatedButton
             onPress={() => setIsFollowingUser(true)}
+
             className="p-2 rounded-full bg-blue-700 border-2 border-blue-500"
             hitSlop={10}
           >
@@ -241,7 +246,7 @@ export default function BaseMap({
       </View>
       <MapIcons
         title={title || "Activity"}
-        lastPoint={lastPoint}
+        lastPoint={lastMovingPoint as TrackPoint}
         startGPStracking={startGPStracking}
         stopGPStracking={stopGPStracking}
         totalDistance={totalDistance}

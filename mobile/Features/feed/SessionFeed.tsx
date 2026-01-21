@@ -31,7 +31,7 @@ import HandleEditLocalReminder from "@/Features/edit-session-cards/editLocalRemi
 import { useAppReadyStore } from "@/lib/stores/appReadyStore";
 import { FeedItemUI } from "@/types/session";
 import useUpdateFeedItem from "@/Features/feed/hooks/useUpdateFeedItem";
-import ActivitySession from "@/Features/expand-session-cards/actrivity/activity";
+import ActivitySession from "@/Features/activities/cards/actrivity-feed-expanded/activity";
 
 export default function SessionFeed() {
   const setFeedReady = useAppReadyStore((state) => state.setFeedReady);

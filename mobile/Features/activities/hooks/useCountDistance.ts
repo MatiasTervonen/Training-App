@@ -6,6 +6,7 @@ export function useDistanceFromTrack({ track }: { track: TrackPoint[] }) {
   const meters = useMemo(() => {
     if (track.length < 2) return 0;
 
+
     let total = 0;
 
     for (let i = 1; i < track.length; i++) {
@@ -32,6 +33,10 @@ export function useDistanceFromTrack({ track }: { track: TrackPoint[] }) {
         curr.latitude,
         curr.longitude
       );
+
+      if (prev.isStationary && curr.isStationary) {
+        continue;
+      }
 
       if (distance < 2) continue;
 

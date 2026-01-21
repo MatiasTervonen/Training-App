@@ -4,6 +4,7 @@ import * as Location from "expo-location";
 import { TrackPoint } from "@/types/session";
 import { haversine } from "../lib/countDistance";
 import { useTimerStore } from "@/lib/stores/timerStore";
+import { detectMovement, createInitialState, MovementState } from "../lib/stationaryDetection";
 
 export function useForegroundLocationTracker({
   allowGPS,
@@ -23,18 +24,34 @@ export function useForegroundLocationTracker({
   track: TrackPoint[];
 }) {
   const { isForeground } = useForeground();
+  const { activeSession } = useTimerStore();
+
   const goodFixCountRef = useRef(0);
   const gpsReadyRef = useRef(false);
   const lastAcceptedPointRef = useRef<TrackPoint | null>(null);
-  const wasMovingRef = useRef(true);
-  const { activeSession } = useTimerStore();
+  const onPointRef = useRef(onPoint);
+
+  const movementStateRef = useRef<MovementState>(createInitialState());
+
+  const hasStartedTrackingRef = useRef(false)
+
+  // Keep onPoint stable
+  useEffect(() => {
+    onPointRef.current = onPoint;
+  }, [onPoint]);
+
+
+  useEffect(() => {
+    hasStartedTrackingRef.current = hasStartedTracking;
+  }, [hasStartedTracking]);
 
   useEffect(() => {
     if (!activeSession) {
       gpsReadyRef.current = false;
       goodFixCountRef.current = 0;
       lastAcceptedPointRef.current = null;
-      wasMovingRef.current = true;
+      hasStartedTrackingRef.current = false;
+      movementStateRef.current = createInitialState();
       setHasStartedTracking(false);
     }
   }, [activeSession, setHasStartedTracking]);
@@ -42,7 +59,25 @@ export function useForegroundLocationTracker({
   // Sync lastAcceptedPointRef with the last point from hydrated track
   useEffect(() => {
     if (isHydrated && track.length > 0) {
-      lastAcceptedPointRef.current = track[track.length - 1];
+      const lastPoint = track[track.length - 1];
+      lastAcceptedPointRef.current = lastPoint;
+
+
+      // Find last moving point for proper state reconstruction
+      const lastMovingPoint = [...track].reverse().find((p) => !p.isStationary);
+
+
+      movementStateRef.current = {
+        confidence: lastPoint.isStationary ? 0 : 3,
+        lastMovingPoint: lastMovingPoint
+          ? {
+            latitude: lastMovingPoint.latitude,
+            longitude: lastMovingPoint.longitude,
+            timestamp: lastMovingPoint.timestamp,
+          }
+          : null,
+        lastAcceptedTimestamp: lastPoint.timestamp,
+      };
     }
   }, [isHydrated, track]);
 
@@ -51,16 +86,20 @@ export function useForegroundLocationTracker({
   useEffect(() => {
     if (!isForeground || !allowGPS || !isRunning || !isHydrated) return;
 
+    let cancelled = false;
     let sub: Location.LocationSubscription | null = null;
 
     const start = async () => {
-      sub = await Location.watchPositionAsync(
+
+      const newSub = await Location.watchPositionAsync(
         {
           accuracy: Location.Accuracy.High,
           timeInterval: 500, // 0.5 sec for smoother dot movement
-          distanceInterval: 0, // Continuous updates for stationary detection
+          distanceInterval: 1, 
         },
         (location) => {
+          if (cancelled) return;
+
           const point: TrackPoint = {
             latitude: location.coords.latitude,
             longitude: location.coords.longitude,
@@ -72,9 +111,10 @@ export function useForegroundLocationTracker({
             isStationary: false,
           };
 
+
+          // ------- GPS warm-up -------
           const isColdStart = (point.accuracy ?? Infinity) <= 20;
 
-          // When gps is cold starting avoid adding points to the track
           if (!gpsReadyRef.current) {
             if (isColdStart) {
               goodFixCountRef.current += 1;
@@ -88,63 +128,63 @@ export function useForegroundLocationTracker({
             return;
           }
 
-          // Filter out low accuracy points
-          if ((point.accuracy ?? Infinity) > 15) {
+          // ---------- Timestamp sanity ----------
+          if (
+            lastAcceptedPointRef.current &&
+            point.timestamp <= lastAcceptedPointRef.current.timestamp
+          ) {
             return;
           }
 
-          const isMoving = (point.speed ?? 0) >= 0.6;
-          const isTransitionToStationary = !isMoving && wasMovingRef.current;
 
-          // Filter out points too close to last accepted point
-          // BUT allow stationary transition points through (they mark stop location)
-          if (lastAcceptedPointRef.current && !isTransitionToStationary) {
-            const d = haversine(
-              lastAcceptedPointRef.current.latitude,
-              lastAcceptedPointRef.current.longitude,
-              point.latitude,
-              point.longitude
-            );
-            if (d < 5) {
-              return;
-            }
-          }
+          const result = detectMovement(
+            point,
+            lastAcceptedPointRef.current,
+            movementStateRef.current,
+            haversine
+          );
 
-          // If already stationary and still stationary, don't save (jitter protection)
-          if (!isMoving && !wasMovingRef.current) {
-            return;
-          }
+          movementStateRef.current = result.newState;
 
-          lastAcceptedPointRef.current = point;
+          if (!result.shouldSave) return;
 
-          if (!hasStartedTracking) {
+          if (!hasStartedTrackingRef.current) {
+            hasStartedTrackingRef.current = true;
             setHasStartedTracking(true);
           }
 
-          if (isMoving) {
-            onPoint({ ...point, isStationary: false });
-            wasMovingRef.current = true;
-          } else {
-            // isTransitionToStationary is true here
-            onPoint({ ...point, isStationary: true });
-            wasMovingRef.current = false;
-          }
+          // ---------- Save point ----------
+          onPointRef.current({
+            ...point,
+            isStationary: !result.isMoving,
+          });
+
+
+          lastAcceptedPointRef.current = {
+            ...point,
+            isStationary: !result.isMoving,
+          };
         }
       );
+
+      if (cancelled) {
+        newSub.remove(); // Created too late, clean it up immediately
+      } else {
+        sub = newSub;
+      }
     };
 
     start();
 
     return () => {
-      sub?.remove();
+      cancelled = true;
+      sub?.remove(); // Clean up the subscription if it exists
     };
   }, [
     isForeground,
     allowGPS,
     isRunning,
     isHydrated,
-    onPoint,
-    hasStartedTracking,
     setHasStartedTracking,
   ]);
 }

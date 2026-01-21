@@ -19,8 +19,9 @@ async function loadTrackFromDatabase() {
     longitude: number;
     altitude: number | null;
     accuracy: number | null;
+    is_stationary: number;
   }>(
-    "SELECT timestamp, latitude, longitude, altitude, accuracy FROM gps_points ORDER BY timestamp ASC"
+    "SELECT timestamp, latitude, longitude, altitude, accuracy, is_stationary FROM gps_points ORDER BY timestamp ASC"
   );
 }
 
@@ -147,7 +148,7 @@ export default function useSaveActivitySession({
         duration: durationInSeconds,
         start_time,
         end_time,
-        track: track ?? [],
+        track,
         activityId,
         steps: steps ?? 0,
       });

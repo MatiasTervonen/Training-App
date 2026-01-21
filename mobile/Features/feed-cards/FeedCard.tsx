@@ -4,7 +4,7 @@ import GymCard from "@/Features/feed-cards/GymCard";
 import LocalReminderCard from "@/Features/feed-cards/LocalReminderCard";
 import TodoCard from "@/Features/feed-cards/TodoCard";
 import GlobalReminderCard from "@/Features/feed-cards/GlobalReminderCard";
-import ActivityCard from "@/Features/feed-cards/ActivityCard";
+import ActivityCard from "@/Features/activities/cards/activity-feed";
 import { FeedCardProps } from "@/types/session";
 
 export default function FeedCard(props: FeedCardProps) {

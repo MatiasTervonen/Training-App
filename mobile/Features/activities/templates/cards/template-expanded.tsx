@@ -10,14 +10,14 @@ import SaveButtonSpinner from "@/components/buttons/SaveButtonSpinner";
 
 type Props = {
   item: templateSummary;
-  onStartWorkout: () => void;
-  isStartingWorkout: boolean;
+  onStartActivity: () => void;
+  isStartingActivity: boolean;
 };
 
 export default function ActivityTemplateExpanded({
   item,
-  onStartWorkout,
-  isStartingWorkout,
+  onStartActivity,
+  isStartingActivity,
 }: Props) {
   const [scrollEnabled, setScrollEnabled] = useState(true);
 
@@ -66,10 +66,10 @@ export default function ActivityTemplateExpanded({
         </View>
         <View className="mt-10">
           <SaveButtonSpinner
-            disabled={isStartingWorkout}
-            onPress={onStartWorkout}
+            disabled={isStartingActivity}
+            onPress={onStartActivity}
             label="Start Activity"
-            loading={isStartingWorkout}
+            loading={isStartingActivity}
           />
         </View>
       </PageContainer>

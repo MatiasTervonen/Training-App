@@ -1,23 +1,22 @@
 import { supabase } from "@/lib/supabase";
 import { handleError } from "@/utils/handleError";
 
-type TrackPoint = {
-  latitude: number;
-  longitude: number;
-  altitude?: number | null;
-  accuracy?: number | null;
-  speed?: number | null;
-  heading?: number | null;
-  timestamp: number;
-  isStationary: boolean;
-};
 type props = {
   title: string;
   notes: string;
   duration: number;
   start_time: string;
   end_time: string;
-  track: TrackPoint[];
+  track: {
+    latitude: number;
+    longitude: number;
+    altitude?: number | null;
+    accuracy?: number | null;
+    speed?: number | null;
+    heading?: number | null;
+    timestamp: number;
+    is_stationary: number;
+  }[];
   activityId: string | null;
   steps: number;
 };

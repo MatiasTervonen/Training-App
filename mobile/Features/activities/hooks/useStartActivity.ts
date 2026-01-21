@@ -40,7 +40,7 @@ export function useStartActivity({
           // Create fresh table for new session
           await db.execAsync(`
             CREATE TABLE IF NOT EXISTS gps_points (
-              timestamp INTEGER NOT NULL,
+              timestamp INTEGER NOT NULL UNIQUE,
               latitude REAL NOT NULL,
               longitude REAL NOT NULL,
               altitude REAL,

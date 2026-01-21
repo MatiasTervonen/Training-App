@@ -21,6 +21,13 @@ export function usePersistToDatabase() {
 
   // Persist the track to the local-database
   const addPoint = useCallback(async (point: TrackPoint) => {
+
+
+    const lastPoint = trackRef.current[trackRef.current.length - 1];
+    if (lastPoint?.timestamp === point.timestamp) {
+      return;
+    }
+
     trackRef.current.push(point);
 
     const now = Date.now();
@@ -47,7 +54,7 @@ export function usePersistToDatabase() {
       // Insert points without explicit transaction to avoid locking conflicts
       for (const point of pointsToPersist) {
         await db.runAsync(
-          `INSERT INTO gps_points (timestamp, latitude, longitude, altitude, accuracy, is_stationary) VALUES (?, ?, ?, ?, ?, ?)`,
+          `INSERT OR IGNORE INTO gps_points (timestamp, latitude, longitude, altitude, accuracy, is_stationary) VALUES (?, ?, ?, ?, ?, ?)`,
           [
             point.timestamp,
             point.latitude,
@@ -71,7 +78,7 @@ export function usePersistToDatabase() {
     }
   }, []);
 
-  const replaceFromFydration = useCallback(async (points: TrackPoint[]) => {
+  const replaceFromHydration = useCallback(async (points: TrackPoint[]) => {
     trackRef.current = points;
     lastPersistedLengthRef.current = points.length;
     lastPersistRef.current = Date.now();
@@ -79,6 +86,6 @@ export function usePersistToDatabase() {
 
   return {
     addPoint,
-    replaceFromFydration,
+    replaceFromHydration,
   };
 }

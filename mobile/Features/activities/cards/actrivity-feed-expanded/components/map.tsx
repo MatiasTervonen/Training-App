@@ -1,7 +1,7 @@
 import { FullActivitySession } from "@/types/models";
 import Mapbox from "@rnmapbox/maps";
 import { View } from "react-native";
-import { useState } from "react";
+// import { useState } from "react";
 
 type MapProps = {
   activity_session: FullActivitySession;
@@ -14,9 +14,11 @@ export default function Map({
   setScrollEnabled,
   setSwipeEnabled,
 }: MapProps) {
-  const [mapStyle, setMapStyle] = useState(Mapbox.StyleURL.Dark);
+  // const [mapStyle, setMapStyle] = useState(Mapbox.StyleURL.Dark);
 
   const coordinates = activity_session.route!.coordinates;
+
+  console.log("coordinates", coordinates);
 
   const routeFeature = {
     type: "Feature",
@@ -56,21 +58,22 @@ export default function Map({
     ],
   };
 
-  const MAP_STYLES = [
-    Mapbox.StyleURL.Dark,
-    Mapbox.StyleURL.SatelliteStreet,
-    Mapbox.StyleURL.Street,
-  ];
 
-  const toggleMapStyle = () => {
-    setMapStyle((prev) => {
-      const currentIndex = MAP_STYLES.indexOf(prev);
-      const nextIndex =
-        currentIndex === -1 ? 0 : (currentIndex + 1) % MAP_STYLES.length;
+  // const MAP_STYLES = [
+  //   Mapbox.StyleURL.Dark,
+  //   Mapbox.StyleURL.SatelliteStreet,
+  //   Mapbox.StyleURL.Street,
+  // ];
 
-      return MAP_STYLES[nextIndex];
-    });
-  };
+  // const toggleMapStyle = () => {
+  //   setMapStyle((prev) => {
+  //     const currentIndex = MAP_STYLES.indexOf(prev);
+  //     const nextIndex =
+  //       currentIndex === -1 ? 0 : (currentIndex + 1) % MAP_STYLES.length;
+
+  //     return MAP_STYLES[nextIndex];
+  //   });
+  // };
 
   return (
     <View
@@ -86,7 +89,7 @@ export default function Map({
     >
       <Mapbox.MapView
         style={{ flex: 1 }}
-        styleURL={mapStyle}
+        styleURL={Mapbox.StyleURL.Dark}
         scaleBarEnabled={false}
         logoEnabled={false}
         attributionEnabled={false}
@@ -131,6 +134,7 @@ export default function Map({
             }}
           />
         </Mapbox.ShapeSource>
+
         <Mapbox.ShapeSource id="points" shape={startEndGeoJSON as any}>
           <Mapbox.SymbolLayer
             id="points-layer"

@@ -3,10 +3,10 @@ import { AppState, View } from "react-native";
 import AppText from "@/components/AppText";
 import { useUserStore } from "@/lib/stores/useUserStore";
 import Toast from "react-native-toast-message";
-import { updateGpsTrackingStatus } from "@/Features/activities/toggleSettings/actions";
+import { updateGpsTrackingStatus } from "@/Features/activities/gpsToggle/actions";
 import { useState, useEffect } from "react";
 import * as Location from "expo-location";
-import InfoModal from "@/Features/activities/toggleSettings/infoModal";
+import InfoModal from "@/Features/activities/gpsToggle/infoModal";
 
 export default function GpsToggleManager() {
   const [isOpen, setIsOpen] = useState(false);

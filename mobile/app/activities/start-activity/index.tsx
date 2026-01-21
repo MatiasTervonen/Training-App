@@ -42,6 +42,7 @@ import { useStepHydration } from "@/Features/activities/hooks/useStepHydration";
 import { updateNativeTimerLabel } from "@/native/android/NativeTimer";
 import { useTemplateRoute } from "@/Features/activities/hooks/useTemplateRoute";
 
+
 export default function StartActivityScreen() {
   const now = formatDate(new Date());
   const [activityName, setActivityName] = useState("");
@@ -130,8 +131,9 @@ export default function StartActivityScreen() {
     setAllowGPS(false);
     setTrack([]);
     setSteps(0);
-    replaceFromFydration([]);
+    replaceFromHydration([]);
     setRoute([]);
+    setHasStartedTracking(false);
     // stop the GPS tracking
     await stopGPStracking();
 
@@ -184,15 +186,15 @@ export default function StartActivityScreen() {
   }, [setSwipeEnabled]);
 
   // when point arrives add it to the track and persist it to the database
-  const { addPoint, replaceFromFydration } = usePersistToDatabase();
+  const { addPoint, replaceFromHydration } = usePersistToDatabase();
 
   // Memoize the hydration callback to prevent unnecessary database calls
   const handleHydrated = useCallback(
     (points: TrackPoint[]) => {
-      replaceFromFydration(points);
+      replaceFromHydration(points);
       setIsHydrated(true);
     },
-    [replaceFromFydration]
+    [replaceFromHydration]
   );
 
   // when foreground resumes from background, hydrate the track from the database
@@ -222,7 +224,7 @@ export default function StartActivityScreen() {
     onPoint: (point) => {
       setTrack((prev) => [...prev, point]);
       addPoint(point);
-    },
+    }
   });
 
   const hasSessionStarted =
@@ -303,7 +305,6 @@ export default function StartActivityScreen() {
               onPause={allowGPS ? stopGPStracking : undefined}
             />
           </View>
-
           <ScrollView
             keyboardShouldPersistTaps="handled"
             contentContainerStyle={{ flexGrow: 1 }}

@@ -3,6 +3,7 @@ import AppText from "@/components/AppText";
 import LinkButton from "@/components/buttons/LinkButton";
 import { useTimerStore } from "@/lib/stores/timerStore";
 import Toast from "react-native-toast-message";
+import { List, ChartNoAxesCombined } from "lucide-react-native";
 
 export default function SessionsScreen() {
   const activeSession = useTimerStore((state) => state.activeSession);
@@ -29,16 +30,21 @@ export default function SessionsScreen() {
         onPress={handleClick}
       />
 
-      <View className="border border-gray-400 rounded-md my-4" />
+      <View className="border border-gray-400 rounded-md my-2" />
       <LinkButton label="Create template" href="/gym/create-template" />
       <LinkButton label="Templates" href="/gym/templates" />
 
-      <View className="border border-gray-400 rounded-md my-4" />
+      <View className="border border-gray-400 rounded-md my-2" />
       <LinkButton label="Add Exercise" href="/gym/add-exercise" />
       <LinkButton label="Edit Exercise" href="/gym/edit-exercise" />
 
-      <View className="border border-gray-400 rounded-md my-4" />
-      <LinkButton label="Workout Analytics" href="/gym/workout-analytics" />
+      <View className="border border-gray-400 rounded-md my-2" />
+      <LinkButton label="Workout Analytics" href="/gym/workout-analytics">
+        <ChartNoAxesCombined color="#f3f4f6" className="ml-2" />
+      </LinkButton>
+      <LinkButton label="My Sessions" href="/gym/my-sessions">
+        <List color="#f3f4f6" className="ml-2" />
+      </LinkButton>
     </View>
   );
 }

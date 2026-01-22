@@ -112,7 +112,7 @@ export default function MyNotesScreen() {
       {expandedItem && (
         <FullScreenModal
           isOpen={!!expandedItem}
-          onClose={() => setExpandedItem(null)}
+          onClose={() =>  setExpandedItem(null)}
         >
           <MyNotesExpanded {...expandedItem} />
         </FullScreenModal>

@@ -1,12 +1,8 @@
-import { handleError } from "@/utils/handleError";
 import { supabase } from "@/lib/supabase";
-import { feed_items } from "@/types/models";
+import { handleError } from "@/utils/handleError";
+import { FeedItemUI } from "@/types/session";
 
-export type FeedItemUI = feed_items & {
-  feed_context: "pinned" | "feed";
-};
-
-export default async function getFeed({
+export async function getGymSessions({
   pageParam = 0,
   limit = 10,
 }: {
@@ -24,13 +20,26 @@ export default async function getFeed({
       ? supabase
           .from("pinned_items")
           .select(`feed_items(*)`)
-          .eq("pinned_context", "main")
+          .eq("pinned_context", "gym")
           .order("created_at", { ascending: false })
       : Promise.resolve({ data: [], error: null });
 
   const feedPromise = supabase
     .from("feed_items")
-    .select("*")
+    .select(
+      `
+    id,
+    title,
+    source_id,
+    activity_at,
+    created_at,
+    updated_at,
+    occurred_at,
+    type,
+    extra_fields
+`,
+    )
+    .eq("type", "gym_sessions")
     .order("activity_at", { ascending: false })
     .range(from, to);
 
@@ -43,13 +52,11 @@ export default async function getFeed({
     const error = pinnedResult.error || feedResult.error;
 
     handleError(error, {
-      message: "Error fetching feed",
-      route: "server-action: getFeed",
+      message: "Error fetching gym feed",
+      route: "server-action: getGymSessions",
       method: "direct",
     });
-    throw new Error(
-      "Error fetching feed, reminders, or local reminders, or local reminders",
-    );
+    throw new Error("Error fetching gym feed");
   }
 
   const pinned = (pinnedResult.data ?? []).map((item) => ({
@@ -65,9 +72,9 @@ export default async function getFeed({
       .filter((i) => !pinnedIds.has(i.id))
       .map((item) => ({
         ...item,
-        feed_context: "feed",
+        feed_context: "feed" as const,
       })),
-  ];
+  ] as FeedItemUI[];
 
   const hasMore = (feedResult.data?.length ?? 0) === limit;
 

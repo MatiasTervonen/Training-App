@@ -9,14 +9,18 @@ export default function FeedHeader({
   pinnedFeed,
   setExpandedItem,
   setEditingItem,
+  pinned_context,
+  queryKey = ["feed"],
 }: {
   pinnedFeed: FeedItemUI[];
   setExpandedItem: (item: FeedItemUI) => void;
   setEditingItem: (item: FeedItemUI) => void;
+  pinned_context: string;
+  queryKey?: string[];
 }) {
   const width = Dimensions.get("window").width;
   const router = useRouter();
-  const { togglePin } = useTogglePin();
+  const { togglePin } = useTogglePin(queryKey);
   const { handleDelete } = useDeleteSession();
 
   return (
@@ -35,7 +39,7 @@ export default function FeedHeader({
             }
           }}
           onTogglePin={(item) =>
-            togglePin(item.id, item.type, item.feed_context)
+            togglePin(item.id, item.type, item.feed_context, pinned_context)
           }
           onDelete={(item) => handleDelete(item.source_id, item.type)}
         />

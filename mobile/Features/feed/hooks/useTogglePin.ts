@@ -4,15 +4,16 @@ import { FeedData } from "@/types/session";
 import { unpinItem } from "@/database/pinned/unpin-items";
 import { pinItem } from "@/database/pinned/pin-items";
 
-export default function useTogglePin() {
+export default function useTogglePin(queryKey: string[] = ["feed"]) {
   const queryClient = useQueryClient();
 
   const togglePin = async (
     id: string,
     type: string,
-    feed_context: "pinned" | "feed"
+    feed_context: "pinned" | "feed",
+    pinned_context: string
   ) => {
-    const feedData = queryClient.getQueryData<FeedData>(["feed"]);
+    const feedData = queryClient.getQueryData<FeedData>(queryKey);
 
     const pinnedFeed =
       feedData?.pages
@@ -27,13 +28,12 @@ export default function useTogglePin() {
       });
       return;
     }
-    const queryKey = ["feed"];
 
     await queryClient.cancelQueries({ queryKey });
 
     const previousFeed = queryClient.getQueryData(queryKey);
 
-    queryClient.setQueryData<FeedData>(["feed"], (oldData) => {
+    queryClient.setQueryData<FeedData>(queryKey, (oldData) => {
       if (!oldData) return oldData;
 
       return {
@@ -54,9 +54,9 @@ export default function useTogglePin() {
 
     try {
       if (feed_context === "pinned") {
-        await unpinItem({ id, type });
+        await unpinItem({ id, type, pinned_context });
       } else {
-        await pinItem({ id, type });
+        await pinItem({ id, type, pinned_context });
       }
 
       Toast.show({

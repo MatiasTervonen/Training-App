@@ -1,3 +1,4 @@
+import { Json } from "./database.types";
 import { feed_items, notes } from "./models";
 
 export type Template = {
@@ -225,4 +226,11 @@ export type templateSummary = {
     type: "LineString";
     coordinates: [number, number][];
   } | null;
+};
+
+export type editMyNotes = {
+  id: string;
+  title: string;
+  notes: string;
+  updated_at: string;
 };

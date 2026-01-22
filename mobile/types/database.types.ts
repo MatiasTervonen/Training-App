@@ -1145,6 +1145,7 @@ export type Database = {
           created_at: string
           feed_item_id: string
           id: string
+          pinned_context: string | null
           type: string
           user_id: string
         }
@@ -1152,6 +1153,7 @@ export type Database = {
           created_at?: string
           feed_item_id: string
           id?: string
+          pinned_context?: string | null
           type: string
           user_id?: string
         }
@@ -1159,6 +1161,7 @@ export type Database = {
           created_at?: string
           feed_item_id?: string
           id?: string
+          pinned_context?: string | null
           type?: string
           user_id?: string
         }
@@ -1168,13 +1171,6 @@ export type Database = {
             columns: ["feed_item_id"]
             isOneToOne: false
             referencedRelation: "feed_items"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "pinned_items_feed_item_id_fkey"
-            columns: ["feed_item_id"]
-            isOneToOne: false
-            referencedRelation: "feed_items_with_activity"
             referencedColumns: ["id"]
           },
           {
@@ -1559,53 +1555,6 @@ export type Database = {
           user_id: string | null
         }
         Relationships: []
-      }
-      feed_items_with_activity: {
-        Row: {
-          activity_at: string | null
-          created_at: string | null
-          extra_fields: Json | null
-          id: string | null
-          occurred_at: string | null
-          source_id: string | null
-          title: string | null
-          type: string | null
-          updated_at: string | null
-          user_id: string | null
-        }
-        Insert: {
-          activity_at?: never
-          created_at?: string | null
-          extra_fields?: Json | null
-          id?: string | null
-          occurred_at?: string | null
-          source_id?: string | null
-          title?: string | null
-          type?: string | null
-          updated_at?: string | null
-          user_id?: string | null
-        }
-        Update: {
-          activity_at?: never
-          created_at?: string | null
-          extra_fields?: Json | null
-          id?: string | null
-          occurred_at?: string | null
-          source_id?: string | null
-          title?: string | null
-          type?: string | null
-          updated_at?: string | null
-          user_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "feed_items_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-        ]
       }
     }
     Functions: {

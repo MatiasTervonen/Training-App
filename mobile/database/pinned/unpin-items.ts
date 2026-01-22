@@ -4,9 +4,10 @@ import { handleError } from "@/utils/handleError";
 type PinSessionProps = {
   id: string;
   type: string;
+  pinned_context: string;
 };
 
-export async function unpinItem({ id, type }: PinSessionProps) {
+export async function unpinItem({ id, type, pinned_context }: PinSessionProps) {
   if (!id || !type) {
     throw new Error("Invalid request");
   }

@@ -108,11 +108,11 @@ export default function SessionFeed() {
           <FeedSkeleton count={5} />
         </>
       ) : error ? (
-        <AppText className="text-center text-lg mt-10 mx-auto">
+        <AppText className="text-center text-lg mt-20 mx-auto px-10">
           Failed to load sessions. Please try again later.
         </AppText>
       ) : !data || (unpinnedFeed.length === 0 && pinnedFeed.length === 0) ? (
-        <AppText className="text-center text-lg mt-20">
+        <AppText className="text-center text-lg mt-20 mx-auto px-10">
           No sessions yet. Let's get started!
         </AppText>
       ) : (
@@ -151,7 +151,7 @@ export default function SessionFeed() {
                     setExpandedItem(feedItem);
                   }}
                   onTogglePin={() =>
-                    togglePin(feedItem.id, feedItem.type, feedItem.feed_context)
+                    togglePin(feedItem.id, feedItem.type, feedItem.feed_context, "main")
                   }
                   onDelete={() => {
                     handleDelete(feedItem.source_id, feedItem.type);
@@ -171,6 +171,7 @@ export default function SessionFeed() {
                 pinnedFeed={pinnedFeed}
                 setExpandedItem={setExpandedItem}
                 setEditingItem={setEditingItem}
+                pinned_context="main"
               />
             }
             ListFooterComponent={

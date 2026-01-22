@@ -56,21 +56,19 @@ export default function FullScreenMapModal({
     },
   };
 
-  const lastMovingPoint = [...track]
-    .reverse()
-    .find((p) => !p.isStationary);
+  const lastPoint = track.length > 0 ? track[track.length - 1] : null;
 
-  const userFeature = lastMovingPoint
+  const userFeature = lastPoint
     ? {
-      type: "Feature",
-      properties: {
-        accuracy: lastMovingPoint.accuracy,
-      },
-      geometry: {
-        type: "Point",
-        coordinates: [lastMovingPoint.longitude, lastMovingPoint.latitude],
-      },
-    }
+        type: "Feature",
+        properties: {
+          accuracy: lastPoint.accuracy,
+        },
+        geometry: {
+          type: "Point",
+          coordinates: [lastPoint.longitude, lastPoint.latitude],
+        },
+      }
     : null;
 
   const MAP_STYLES = [
@@ -203,7 +201,7 @@ export default function FullScreenMapModal({
         </View>
         <MapIcons
           title="Activity"
-          lastPoint={lastMovingPoint as TrackPoint}
+          lastPoint={lastPoint as TrackPoint}
           style={{ bottom: insets.bottom }}
           startGPStracking={startGPStracking}
           stopGPStracking={stopGPStracking}

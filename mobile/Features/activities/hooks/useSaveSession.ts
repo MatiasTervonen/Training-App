@@ -9,6 +9,7 @@ import { getDatabase } from "@/database/local-database/database";
 import { useTimerStore } from "@/lib/stores/timerStore";
 import { readRecords, initialize } from "react-native-health-connect";
 import { handleError } from "@/utils/handleError";
+import { filterTrackBeforeSaving } from "../lib/filterTrackBeforeSaving";
 
 async function loadTrackFromDatabase() {
   const db = await getDatabase();
@@ -21,13 +22,13 @@ async function loadTrackFromDatabase() {
     accuracy: number | null;
     is_stationary: number;
   }>(
-    "SELECT timestamp, latitude, longitude, altitude, accuracy, is_stationary FROM gps_points ORDER BY timestamp ASC"
+    "SELECT timestamp, latitude, longitude, altitude, accuracy, is_stationary FROM gps_points ORDER BY timestamp ASC",
   );
 }
 
 async function loadStepsFromHealthConnect(
   start_time: string,
-  end_time: string
+  end_time: string,
 ): Promise<number> {
   try {
     // Ensure Health Connect is initialized before reading
@@ -47,7 +48,7 @@ async function loadStepsFromHealthConnect(
 
     const totalSteps = steps.records.reduce(
       (acc, record) => acc + record.count,
-      0
+      0,
     );
 
     return totalSteps;
@@ -120,7 +121,9 @@ export default function useSaveActivitySession({
         await stopGPStracking();
       }
 
-      const track = allowGPS ? await loadTrackFromDatabase() : [];
+      const rawTrack = allowGPS ? await loadTrackFromDatabase() : [];
+
+      const cleanTrack = allowGPS ? filterTrackBeforeSaving(rawTrack) : [];
 
       const durationInSeconds =
         isRunning && startTimestamp
@@ -133,7 +136,7 @@ export default function useSaveActivitySession({
       const parsedDraft = draft ? JSON.parse(draft) : null;
 
       const start_time = new Date(
-        activeSession?.started_at ?? Date.now()
+        activeSession?.started_at ?? Date.now(),
       ).toISOString();
 
       const activityId = parsedDraft?.activityId ?? null;
@@ -148,7 +151,7 @@ export default function useSaveActivitySession({
         duration: durationInSeconds,
         start_time,
         end_time,
-        track,
+        track: cleanTrack,
         activityId,
         steps: steps ?? 0,
       });

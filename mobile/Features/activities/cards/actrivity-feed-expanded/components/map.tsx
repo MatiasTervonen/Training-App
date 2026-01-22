@@ -18,8 +18,6 @@ export default function Map({
 
   const coordinates = activity_session.route!.coordinates;
 
-  console.log("coordinates", coordinates);
-
   const routeFeature = {
     type: "Feature",
     geometry: activity_session.route,

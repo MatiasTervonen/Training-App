@@ -31,7 +31,7 @@ export default function WeightSession(weight: FeedItemUI) {
             {payload.notes && (
               <AppText className="mb-5 text-lg text-center">
                 {payload.notes}
-              </AppText> // Add gap only if notes exist
+              </AppText> 
             )}
             <AppText className="text-center text-xl">
               {payload.weight} {weightUnit}

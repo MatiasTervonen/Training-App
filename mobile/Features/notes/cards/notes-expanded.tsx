@@ -1,8 +1,8 @@
 import { formatDate } from "@/lib/formatDate";
 import { View, ScrollView } from "react-native";
-import AppText from "../../components/AppText";
-import CopyText from "../../components/CopyToClipboard";
-import PageContainer from "../../components/PageContainer";
+import AppText from "@/components/AppText";
+import CopyText from "@/components/CopyToClipboard";
+import PageContainer from "@/components/PageContainer";
 import { FeedItemUI } from "@/types/session";
 
 type notesPayload = {

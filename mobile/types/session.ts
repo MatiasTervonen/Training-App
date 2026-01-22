@@ -1,4 +1,4 @@
-import { feed_items } from "./models";
+import { feed_items, notes } from "./models";
 
 export type Template = {
   id: string;
@@ -140,6 +140,15 @@ export type Location = {
 
 export type FeedCardProps = {
   item: FeedItemUI;
+  pinned: boolean;
+  onTogglePin: () => void;
+  onDelete: () => void;
+  onExpand: () => void;
+  onEdit: () => void;
+};
+
+export type NotesFeedCardProps = {
+  item: notes;
   pinned: boolean;
   onTogglePin: () => void;
   onDelete: () => void;

@@ -13,6 +13,7 @@ interface PinnedCarouselProps {
   onEdit: (item: any) => void;
   onDelete: (item: any) => void;
   onTogglePin: (item: any) => void;
+  CardComponent?: React.ComponentType<any>;
 }
 
 export default function PinnedCarousel({
@@ -23,6 +24,7 @@ export default function PinnedCarousel({
   onEdit,
   onDelete,
   onTogglePin,
+  CardComponent = FeedCard,
 }: PinnedCarouselProps) {
   const [activeIndex, setActiveIndex] = useState(0);
 
@@ -52,7 +54,7 @@ export default function PinnedCarousel({
         autoPlay={pinnedFeed.length > 1}
         renderItem={({ item: feedItem }) => (
           <View key={`${feedItem.type}-${feedItem.id}`} className="px-4">
-            <FeedCard
+            <CardComponent
               item={feedItem}
               pinned={true}
               onExpand={() => onExpand(feedItem)}

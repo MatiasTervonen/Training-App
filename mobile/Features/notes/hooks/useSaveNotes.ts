@@ -32,6 +32,7 @@ export default function useSaveNotes({
       await saveNote({ title, notes });
 
       await queryClient.refetchQueries({ queryKey: ["feed"], exact: true });
+      await queryClient.refetchQueries({ queryKey: ["myNotes"], exact: true });
 
       router.push("/dashboard");
       Toast.show({

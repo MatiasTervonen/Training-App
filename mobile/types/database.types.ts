@@ -1,6 +1,3 @@
-Need to install the following packages:
-supabase@2.72.8
-Ok to proceed? (y) 
 export type Json =
   | string
   | number
@@ -1104,25 +1101,31 @@ export type Database = {
       }
       notes: {
         Row: {
+          activity_at: string
           created_at: string
           id: string
           notes: string | null
+          pinned: boolean | null
           title: string | null
           updated_at: string | null
           user_id: string
         }
         Insert: {
+          activity_at?: string
           created_at?: string
           id?: string
           notes?: string | null
+          pinned?: boolean | null
           title?: string | null
           updated_at?: string | null
           user_id?: string
         }
         Update: {
+          activity_at?: string
           created_at?: string
           id?: string
           notes?: string | null
+          pinned?: boolean | null
           title?: string | null
           updated_at?: string | null
           user_id?: string

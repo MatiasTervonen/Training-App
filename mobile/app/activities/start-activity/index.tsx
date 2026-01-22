@@ -2,7 +2,7 @@ import PageContainer from "@/components/PageContainer";
 import AppText from "@/components/AppText";
 import AppInput from "@/components/AppInput";
 import ActivityDropdown from "@/Features/activities/components/activityDropdown";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { View, ScrollView, Linking, AppState } from "react-native";
 import SubNotesInput from "@/components/SubNotesInput";
 import Timer from "@/components/timer";
@@ -41,7 +41,7 @@ import { hasStepsPermission } from "@/Features/activities/stepToggle/stepPermiss
 import { useStepHydration } from "@/Features/activities/hooks/useStepHydration";
 import { updateNativeTimerLabel } from "@/native/android/NativeTimer";
 import { useTemplateRoute } from "@/Features/activities/hooks/useTemplateRoute";
-
+import { findWarmupStartIndex } from "@/Features/activities/lib/findWarmupStartIndex";
 
 export default function StartActivityScreen() {
   const now = formatDate(new Date());
@@ -62,7 +62,7 @@ export default function StartActivityScreen() {
   const [isHydrated, setIsHydrated] = useState(false);
 
   const gpsEnabledGlobally = useUserStore(
-    (state) => state.settings?.gps_tracking_enabled
+    (state) => state.settings?.gps_tracking_enabled,
   );
 
   const setSwipeEnabled = useModalPageConfig((state) => state.setSwipeEnabled);
@@ -161,11 +161,19 @@ export default function StartActivityScreen() {
     stepsAllowed,
   });
 
+  const warmupStartIndex = useMemo(() => findWarmupStartIndex(track), [track]);
+
+  const trustedPoints = useMemo(() => {
+    if (warmupStartIndex === null) return [];
+
+    return track.slice(warmupStartIndex).filter((p) => !p.isStationary);
+  }, [track, warmupStartIndex]);
+
   // useCountDistance hook to count the total distance
-  const { meters } = useDistanceFromTrack({ track });
+  const { meters } = useDistanceFromTrack(trustedPoints);
 
   // useMovingTimeFromTrack hook to count the moving time
-  const movingTimeSeconds = useMovingTimeFromTrack(track);
+  const movingTimeSeconds = useMovingTimeFromTrack(trustedPoints);
 
   // useCountAveragePace hook to count the average pace from moving time
   const averagePacePerKm = useAveragePace(meters, movingTimeSeconds ?? 0);
@@ -194,7 +202,7 @@ export default function StartActivityScreen() {
       replaceFromHydration(points);
       setIsHydrated(true);
     },
-    [replaceFromHydration]
+    [replaceFromHydration],
   );
 
   // when foreground resumes from background, hydrate the track from the database
@@ -224,7 +232,7 @@ export default function StartActivityScreen() {
     onPoint: (point) => {
       setTrack((prev) => [...prev, point]);
       addPoint(point);
-    }
+    },
   });
 
   const hasSessionStarted =
@@ -247,7 +255,7 @@ export default function StartActivityScreen() {
                 JSON.stringify({
                   activityId: activity.id,
                   activityName: activity.name,
-                })
+                }),
               );
             }}
           />
@@ -401,7 +409,7 @@ export default function StartActivityScreen() {
         onOpenSettings={async () => {
           try {
             const supported = await Linking.canOpenURL(
-              "healthconnect://settings"
+              "healthconnect://settings",
             );
 
             if (supported) {

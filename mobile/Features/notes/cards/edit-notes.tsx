@@ -4,10 +4,10 @@ import AppInput from "@/components/AppInput";
 import SaveButton from "@/components/buttons/SaveButton";
 import FullScreenLoader from "@/components/FullScreenLoader";
 import Toast from "react-native-toast-message";
-import AppText from "../../components/AppText";
+import AppText from "@/components/AppText";
 import { View, TouchableWithoutFeedback, Keyboard } from "react-native";
 import { editNotes } from "@/database/notes/edit-notes";
-import PageContainer from "../../components/PageContainer";
+import PageContainer from "@/components/PageContainer";
 
 import { Dot } from "lucide-react-native";
 import { FeedItemUI } from "@/types/session";

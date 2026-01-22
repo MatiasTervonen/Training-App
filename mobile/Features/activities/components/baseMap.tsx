@@ -3,9 +3,10 @@ import Mapbox from "@rnmapbox/maps";
 import AnimatedButton from "../../../components/buttons/animatedButton";
 import { Layers2, MapPin } from "lucide-react-native";
 import { TrackPoint } from "@/types/session";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import MapIcons from "./mapIcons";
 import useForeground from "../hooks/useForeground";
+import { findWarmupStartIndex } from "../lib/findWarmupStartIndex";
 
 type BaseMapProps = {
   track: TrackPoint[];
@@ -42,7 +43,6 @@ export default function BaseMap({
   const [mapStyle, setMapStyle] = useState(Mapbox.StyleURL.Dark);
   const { isForeground } = useForeground();
 
-
   useEffect(() => {
     if (isForeground) {
       setIsFollowingUser(true);
@@ -51,9 +51,16 @@ export default function BaseMap({
 
   const shouldShowTemplateRoute = templateRoute && templateRoute.length > 0;
 
-  const mapCoordinates = track
-    .filter((p) => !p.isStationary && (p.accuracy == null || p.accuracy <= 30))
-    .map((p) => [p.longitude, p.latitude]);
+  const warmupStartIndex = useMemo(() => findWarmupStartIndex(track), [track]);
+
+  const mapCoordinates = useMemo(() => {
+    if (warmupStartIndex === null) return [];
+
+    return track
+      .slice(warmupStartIndex)
+      .filter((p) => !p.isStationary)
+      .map((p) => [p.longitude, p.latitude]);
+  }, [track, warmupStartIndex]);
 
   const trackShape = {
     type: "Feature",
@@ -64,21 +71,19 @@ export default function BaseMap({
     },
   };
 
-  const lastMovingPoint = [...track]
-    .reverse()
-    .find((p) => !p.isStationary) || track[track.length - 1];
+  const lastPoint = track.length > 0 ? track[track.length - 1] : null;
 
-  const userFeature = lastMovingPoint
+  const userFeature = lastPoint
     ? {
-      type: "Feature",
-      properties: {
-        accuracy: lastMovingPoint.accuracy,
-      },
-      geometry: {
-        type: "Point",
-        coordinates: [lastMovingPoint.longitude, lastMovingPoint.latitude],
-      },
-    }
+        type: "Feature",
+        properties: {
+          accuracy: lastPoint.accuracy,
+        },
+        geometry: {
+          type: "Point",
+          coordinates: [lastPoint.longitude, lastPoint.latitude],
+        },
+      }
     : null;
 
   const MAP_STYLES = [
@@ -96,6 +101,9 @@ export default function BaseMap({
       return MAP_STYLES[nextIndex];
     });
   };
+
+  const lastMovingPoint =
+    [...track].reverse().find((p) => !p.isStationary) ?? null;
 
   return (
     <>
@@ -236,7 +244,6 @@ export default function BaseMap({
         <View className="absolute z-50" style={{ bottom: 15, right: 80 }}>
           <AnimatedButton
             onPress={() => setIsFollowingUser(true)}
-
             className="p-2 rounded-full bg-blue-700 border-2 border-blue-500"
             hitSlop={10}
           >
@@ -246,7 +253,7 @@ export default function BaseMap({
       </View>
       <MapIcons
         title={title || "Activity"}
-        lastPoint={lastMovingPoint as TrackPoint}
+        lastMovingPoint={lastMovingPoint as TrackPoint}
         startGPStracking={startGPStracking}
         stopGPStracking={stopGPStracking}
         totalDistance={totalDistance}

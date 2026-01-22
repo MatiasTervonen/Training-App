@@ -2,7 +2,7 @@ import { TrackPoint } from "@/types/session";
 import { useMemo } from "react";
 import { haversine } from "../lib/countDistance";
 
-export function useDistanceFromTrack({ track }: { track: TrackPoint[] }) {
+export function useDistanceFromTrack(track: TrackPoint[]) {
   const meters = useMemo(() => {
     if (track.length < 2) return 0;
 

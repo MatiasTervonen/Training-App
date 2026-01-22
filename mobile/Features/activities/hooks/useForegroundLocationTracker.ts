@@ -4,7 +4,11 @@ import * as Location from "expo-location";
 import { TrackPoint } from "@/types/session";
 import { haversine } from "../lib/countDistance";
 import { useTimerStore } from "@/lib/stores/timerStore";
-import { detectMovement, createInitialState, MovementState } from "../lib/stationaryDetection";
+import {
+  detectMovement,
+  createInitialState,
+  MovementState,
+} from "../lib/stationaryDetection";
 
 export function useForegroundLocationTracker({
   allowGPS,
@@ -33,13 +37,12 @@ export function useForegroundLocationTracker({
 
   const movementStateRef = useRef<MovementState>(createInitialState());
 
-  const hasStartedTrackingRef = useRef(false)
+  const hasStartedTrackingRef = useRef(false);
 
   // Keep onPoint stable
   useEffect(() => {
     onPointRef.current = onPoint;
   }, [onPoint]);
-
 
   useEffect(() => {
     hasStartedTrackingRef.current = hasStartedTracking;
@@ -62,19 +65,17 @@ export function useForegroundLocationTracker({
       const lastPoint = track[track.length - 1];
       lastAcceptedPointRef.current = lastPoint;
 
-
       // Find last moving point for proper state reconstruction
       const lastMovingPoint = [...track].reverse().find((p) => !p.isStationary);
-
 
       movementStateRef.current = {
         confidence: lastPoint.isStationary ? 0 : 3,
         lastMovingPoint: lastMovingPoint
           ? {
-            latitude: lastMovingPoint.latitude,
-            longitude: lastMovingPoint.longitude,
-            timestamp: lastMovingPoint.timestamp,
-          }
+              latitude: lastMovingPoint.latitude,
+              longitude: lastMovingPoint.longitude,
+              timestamp: lastMovingPoint.timestamp,
+            }
           : null,
         lastAcceptedTimestamp: lastPoint.timestamp,
       };
@@ -90,12 +91,11 @@ export function useForegroundLocationTracker({
     let sub: Location.LocationSubscription | null = null;
 
     const start = async () => {
-
       const newSub = await Location.watchPositionAsync(
         {
           accuracy: Location.Accuracy.High,
           timeInterval: 500, // 0.5 sec for smoother dot movement
-          distanceInterval: 1, 
+          distanceInterval: 1,
         },
         (location) => {
           if (cancelled) return;
@@ -111,23 +111,6 @@ export function useForegroundLocationTracker({
             isStationary: false,
           };
 
-
-          // ------- GPS warm-up -------
-          const isColdStart = (point.accuracy ?? Infinity) <= 20;
-
-          if (!gpsReadyRef.current) {
-            if (isColdStart) {
-              goodFixCountRef.current += 1;
-              if (goodFixCountRef.current >= 5) {
-                gpsReadyRef.current = true;
-              }
-            } else {
-              goodFixCountRef.current = 0;
-            }
-
-            return;
-          }
-
           // ---------- Timestamp sanity ----------
           if (
             lastAcceptedPointRef.current &&
@@ -136,12 +119,11 @@ export function useForegroundLocationTracker({
             return;
           }
 
-
           const result = detectMovement(
             point,
             lastAcceptedPointRef.current,
             movementStateRef.current,
-            haversine
+            haversine,
           );
 
           movementStateRef.current = result.newState;
@@ -159,12 +141,11 @@ export function useForegroundLocationTracker({
             isStationary: !result.isMoving,
           });
 
-
           lastAcceptedPointRef.current = {
             ...point,
             isStationary: !result.isMoving,
           };
-        }
+        },
       );
 
       if (cancelled) {
@@ -180,11 +161,5 @@ export function useForegroundLocationTracker({
       cancelled = true;
       sub?.remove(); // Clean up the subscription if it exists
     };
-  }, [
-    isForeground,
-    allowGPS,
-    isRunning,
-    isHydrated,
-    setHasStartedTracking,
-  ]);
+  }, [isForeground, allowGPS, isRunning, isHydrated, setHasStartedTracking]);
 }

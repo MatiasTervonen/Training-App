@@ -22,7 +22,7 @@ function mapDegreesToDirection(degrees: number): string {
 
 export default function MapIcons({
   title,
-  lastPoint,
+  lastMovingPoint,
   style,
   startGPStracking,
   stopGPStracking,
@@ -32,7 +32,7 @@ export default function MapIcons({
   currentStepCount,
 }: {
   title: string;
-  lastPoint: TrackPoint;
+  lastMovingPoint: TrackPoint;
   style?: StyleProp<ViewStyle>;
   startGPStracking: () => void;
   stopGPStracking: () => void;
@@ -45,10 +45,10 @@ export default function MapIcons({
   const opacity = useSharedValue(1);
 
   useEffect(() => {
-    if (typeof lastPoint?.heading === "number") {
-      heading.value = withTiming(lastPoint.heading, { duration: 300 });
+    if (typeof lastMovingPoint?.heading === "number") {
+      heading.value = withTiming(lastMovingPoint.heading, { duration: 300 });
     }
-  }, [lastPoint?.heading, heading]);
+  }, [lastMovingPoint?.heading, heading]);
 
   const headingAnimated = useAnimatedStyle(() => ({
     transform: [{ rotate: `${heading.value}deg` }],
@@ -101,12 +101,12 @@ export default function MapIcons({
       </View>
       <View className="gap-10 flex-row items-center justify-around">
         <View>
-          {hasStartedTracking && lastPoint?.speed != null ? (
+          {hasStartedTracking && lastMovingPoint?.speed != null ? (
             <View className="items-center justify-center">
               <View className="flex-row items-center gap-2">
                 <View className="border-2 border-blue-500 rounded-full w-14 h-14 items-center justify-center mb-2">
                   <AppText className="text-xl">
-                    {Math.round(lastPoint?.speed * 3.6)}
+                    {Math.round(lastMovingPoint?.speed * 3.6)}
                   </AppText>
                 </View>
                 <View>
@@ -128,16 +128,16 @@ export default function MapIcons({
         </View>
 
         <View>
-          {hasStartedTracking && lastPoint?.heading != null ? (
+          {hasStartedTracking && lastMovingPoint?.heading != null ? (
             <View className="items-center justify-center">
               <View className="flex-row items-center gap-2">
                 <View className="border-2 border-blue-500 rounded-full w-14 h-14 items-center justify-center mb-2">
                   <AppText className="text-xl">
-                    {Math.round(lastPoint.heading)}
+                    {Math.round(lastMovingPoint.heading)}
                   </AppText>
                 </View>
                 <View>
-                  <AppText>{mapDegreesToDirection(lastPoint.heading)}</AppText>
+                  <AppText>{mapDegreesToDirection(lastMovingPoint.heading)}</AppText>
                 </View>
               </View>
               <Animated.View style={headingAnimated}>
@@ -157,12 +157,12 @@ export default function MapIcons({
         </View>
 
         <View>
-          {hasStartedTracking && lastPoint?.altitude != null ? (
+          {hasStartedTracking && lastMovingPoint?.altitude != null ? (
             <View className="items-center justify-center">
               <View className="flex-row items-center gap-2">
                 <View className="border-2 border-blue-500 rounded-full w-14 h-14 items-center justify-center mb-2">
                   <AppText className="text-xl">
-                    {Math.round(lastPoint.altitude)}
+                    {Math.round(lastMovingPoint.altitude)}
                   </AppText>
                 </View>
                 <View>

@@ -1,4 +1,4 @@
-import NotesCard from "@/Features/feed-cards/NotesCard";
+import NotesCard from "@/Features/notes/cards/notes-feed";
 import WeightCard from "@/Features/feed-cards/WeightCard";
 import GymCard from "@/Features/feed-cards/GymCard";
 import LocalReminderCard from "@/Features/feed-cards/LocalReminderCard";

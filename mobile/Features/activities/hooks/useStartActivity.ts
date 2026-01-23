@@ -1,6 +1,6 @@
 import { useTimerStore } from "@/lib/stores/timerStore";
 import Toast from "react-native-toast-message";
-import { useStartGPStracking } from "@/Features/activities/lib/location-actions";
+import { useStartGPStracking, useStopGPStracking } from "@/Features/activities/lib/location-actions";
 import { getDatabase } from "@/database/local-database/database";
 import { clearLocalSessionDatabase } from "@/Features/activities/lib/database-actions";
 
@@ -18,6 +18,7 @@ export function useStartActivity({
   const setActiveSession = useTimerStore((state) => state.setActiveSession);
   const startSession = useTimerStore((state) => state.startSession);
   const { startGPStracking } = useStartGPStracking();
+  const { stopGPStracking } = useStopGPStracking();
 
   const startActivity = async () => {
     if (!activityName || activityName.trim() === "") {
@@ -28,6 +29,12 @@ export function useStartActivity({
       });
       return;
     }
+
+    // Stop any running GPS tracking first to prevent race conditions
+    await stopGPStracking();
+
+    // Wait briefly to ensure any pending database writes complete
+    await new Promise(resolve => setTimeout(resolve, 200));
 
     // Always clear old GPS data first to avoid loading stale points
     await clearLocalSessionDatabase();
@@ -45,7 +52,8 @@ export function useStartActivity({
               longitude REAL NOT NULL,
               altitude REAL,
               accuracy REAL,
-              is_stationary INTEGER DEFAULT 0
+              is_stationary INTEGER DEFAULT 0,
+              confidence INTEGER DEFAULT 0
             );
         `);
 

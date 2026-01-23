@@ -69,7 +69,7 @@ export function useForegroundLocationTracker({
       const lastMovingPoint = [...track].reverse().find((p) => !p.isStationary);
 
       movementStateRef.current = {
-        confidence: lastPoint.isStationary ? 0 : 3,
+        confidence: lastPoint.confidence ?? 0,
         lastMovingPoint: lastMovingPoint
           ? {
               latitude: lastMovingPoint.latitude,
@@ -139,6 +139,7 @@ export function useForegroundLocationTracker({
           onPointRef.current({
             ...point,
             isStationary: !result.isMoving,
+            confidence: result.newState.confidence,
           });
 
           lastAcceptedPointRef.current = {

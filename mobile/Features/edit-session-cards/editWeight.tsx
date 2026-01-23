@@ -22,7 +22,7 @@ type weightPayload = {
 };
 
 export default function EditWeight({ weight, onClose, onSave }: Props) {
-  const payload = weight.extra_fields as unknown as weightPayload;
+  const payload = weight.extra_fields as weightPayload;
 
   const [title, setValue] = useState(weight.title);
   const [notes, setNotes] = useState(payload.notes);

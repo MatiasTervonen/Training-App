@@ -127,6 +127,7 @@ export type TrackPoint = {
   heading?: number | null;
   timestamp: number;
   isStationary: boolean;
+  confidence?: number;
 };
 
 export type Location = {

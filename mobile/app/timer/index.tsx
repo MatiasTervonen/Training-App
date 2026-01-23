@@ -68,6 +68,7 @@ export default function TimerScreen() {
             href="/timer/empty-timer"
           />
           <LinkButton label="Start Stopwatch" href="/timer/start-stopwatch" />
+          <View className="border border-gray-400 rounded-md my-2" />
           <LinkButton label="Create Timer" href="/timer/create-timer" />
           <LinkButton label="My Timers" href="/timer/my-timers" />
         </View>

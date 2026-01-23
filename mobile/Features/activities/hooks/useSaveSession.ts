@@ -119,6 +119,9 @@ export default function useSaveActivitySession({
       // stop the GPS tracking
       if (allowGPS) {
         await stopGPStracking();
+
+        // Wait briefly to ensure any pending database writes complete
+        await new Promise(resolve => setTimeout(resolve, 200));
       }
 
       const rawTrack = allowGPS ? await loadTrackFromDatabase() : [];

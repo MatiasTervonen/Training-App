@@ -79,7 +79,7 @@ export default function useSaveSession({
                 feed: page.feed.map((item) =>
                   item.id === updatedFeedItem.id
                     ? { ...item, ...updatedFeedItem }
-                    : item
+                    : item,
                 ),
               })),
             };
@@ -98,6 +98,10 @@ export default function useSaveSession({
         });
 
         await queryClient.refetchQueries({ queryKey: ["feed"], exact: true });
+        await queryClient.refetchQueries({
+          queryKey: ["myGymSessions"],
+          exact: true,
+        });
       }
 
       if (isEditing) {

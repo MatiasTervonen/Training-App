@@ -137,6 +137,9 @@ export default function StartActivityScreen() {
     // stop the GPS tracking
     await stopGPStracking();
 
+    // Wait briefly to ensure any pending database writes complete
+    await new Promise(resolve => setTimeout(resolve, 200));
+
     await clearLocalSessionDatabase();
   };
 

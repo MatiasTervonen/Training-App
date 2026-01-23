@@ -31,7 +31,8 @@ import HandleEditLocalReminder from "@/Features/edit-session-cards/editLocalRemi
 import { useAppReadyStore } from "@/lib/stores/appReadyStore";
 import { FeedItemUI } from "@/types/session";
 import useUpdateFeedItem from "@/Features/feed/hooks/useUpdateFeedItem";
-import ActivitySession from "@/Features/activities/cards/actrivity-feed-expanded/activity";
+import ActivitySession from "@/Features/activities/cards/activity-feed-expanded/activity";
+import ActivitySessionEdit from "@/Features/activities/cards/activity-edit";
 
 export default function SessionFeed() {
   const setFeedReady = useAppReadyStore((state) => state.setFeedReady);
@@ -151,7 +152,12 @@ export default function SessionFeed() {
                     setExpandedItem(feedItem);
                   }}
                   onTogglePin={() =>
-                    togglePin(feedItem.id, feedItem.type, feedItem.feed_context, "main")
+                    togglePin(
+                      feedItem.id,
+                      feedItem.type,
+                      feedItem.feed_context,
+                      "main",
+                    )
                   }
                   onDelete={() => {
                     handleDelete(feedItem.source_id, feedItem.type);
@@ -333,6 +339,40 @@ export default function SessionFeed() {
                         updateFeedItem(updatedItem),
                         queryClient.invalidateQueries({
                           queryKey: ["fullTodoSession"],
+                        }),
+                      ]);
+                      setEditingItem(null);
+                    }}
+                  />
+                )
+              )}
+            </>
+          )}
+
+          {editingItem.type === "activity_sessions" && (
+            <>
+              {isLoadingActivitySession ? (
+                <View className="gap-5 items-center justify-center mt-40 px-10">
+                  <AppText className="text-lg">
+                    Loading activity session...
+                  </AppText>
+                  <ActivityIndicator />
+                </View>
+              ) : activitySessionError ? (
+                <AppText className="text-center text-xl mt-40 px-10">
+                  Failed to load activity session details. Please try again
+                  later.
+                </AppText>
+              ) : (
+                activitySessionFull && (
+                  <ActivitySessionEdit
+                    activity={activitySessionFull}
+                    onClose={() => setEditingItem(null)}
+                    onSave={async (updatedItem) => {
+                      await Promise.all([
+                        updateFeedItem(updatedItem),
+                        queryClient.invalidateQueries({
+                          queryKey: ["fullActivitySession"],
                         }),
                       ]);
                       setEditingItem(null);

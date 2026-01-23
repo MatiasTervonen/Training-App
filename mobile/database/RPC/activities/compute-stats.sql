@@ -12,27 +12,29 @@ declare
 begin
 
    with ordered_points as (
-        select 
-        recorded_at, 
-        latitude, 
-        longitude, 
+        select
+        recorded_at,
+        latitude,
+        longitude,
             lag(latitude) over w as prev_latitude,
             lag(longitude) over w as prev_longitude,
-            lag(recorded_at) over w as prev_time
+            lag(recorded_at) over w as prev_time,
+            is_stationary
         from activity_gps_points
         where session_id = p_session_id
         window w as (order by recorded_at)
-    ), 
+    ),
     deltas as (
-        select 
+        select
         extract(epoch from (recorded_at - prev_time)) as delta_time,
         6371000 * 2 * asin(
             sqrt(
                 power(sin(radians(latitude - prev_latitude) / 2), 2) +
-                cos(radians(latitude)) * cos(radians(prev_latitude)) * 
+                cos(radians(latitude)) * cos(radians(prev_latitude)) *
                 power(sin(radians(longitude - prev_longitude) / 2), 2)
             )
-        ) as delta_distance
+        ) as delta_distance,
+        is_stationary
         from ordered_points
         where prev_time is not null
     ),
@@ -41,8 +43,8 @@ begin
             delta_time,
             delta_distance
         from deltas
-        where delta_time > 0 
-        and delta_distance / delta_time > 0.6
+        where delta_time > 0
+        and is_stationary = false
         )
         select 
             coalesce(sum(delta_distance), 0),

@@ -22,8 +22,9 @@ TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
       longitude: number;
       timestamp: number;
       is_stationary: number;
+      confidence: number;
     }>(
-      `SELECT latitude, longitude, timestamp, is_stationary
+      `SELECT latitude, longitude, timestamp, is_stationary, confidence
        FROM gps_points
        ORDER BY timestamp DESC
        LIMIT 1`
@@ -43,7 +44,7 @@ TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
     );
 
     let state: MovementState = {
-      confidence: lastSaved?.is_stationary === 0 ? 3 : 0,
+      confidence: lastSaved?.confidence ?? 0,
       lastMovingPoint: lastMoving ?? null,
       lastAcceptedTimestamp: lastSaved?.timestamp ?? null,
     }
@@ -75,7 +76,7 @@ TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
       if (!result.shouldSave) continue;
 
       await db.runAsync(
-        `INSERT INTO gps_points (timestamp, latitude, longitude, altitude, accuracy, is_stationary) VALUES (?, ?, ?, ?, ?, ?)`,
+        `INSERT INTO gps_points (timestamp, latitude, longitude, altitude, accuracy, is_stationary, confidence) VALUES (?, ?, ?, ?, ?, ?, ?)`,
         [
           point.timestamp,
           point.latitude,
@@ -83,6 +84,7 @@ TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
           point.altitude ?? null,
           point.accuracy ?? null,
           result.isMoving ? 0 : 1,
+          state.confidence,
         ]
       );
 

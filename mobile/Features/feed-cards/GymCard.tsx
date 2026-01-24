@@ -62,18 +62,20 @@ export default function GymCard({
         />
       </View>
 
-      <View className="flex-row">
-        <AppText
-          className={`ml-4 ${pinned ? "text-slate-900" : "text-gray-100"}`}
-        >
-          Exercises: {payload.exercises_count}
-        </AppText>
-        <AppText
-          className={`ml-4 ${pinned ? "text-slate-900" : "text-gray-100"}`}
-        >
-          Sets: {payload.sets_count}
-        </AppText>
-      </View>
+      {payload.exercises_count > 0 && payload.sets_count > 0 && (
+        <View className="flex-row">
+          <AppText
+            className={`ml-4 ${pinned ? "text-slate-900" : "text-gray-100"}`}
+          >
+            Exercises: {payload.exercises_count}
+          </AppText>
+          <AppText
+            className={`ml-4 ${pinned ? "text-slate-900" : "text-gray-100"}`}
+          >
+            Sets: {payload.sets_count}
+          </AppText>
+        </View>
+      )}
 
       <View className="flex-row justify-between items-center mt-2 bg-black/40 rounded-b-md">
         <View className="flex-row items-center gap-4">

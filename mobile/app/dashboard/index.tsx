@@ -1,11 +1,12 @@
 import SessionFeed from "@/Features/feed/SessionFeed";
 import { useModalPageConfig } from "@/lib/stores/modalPageConfig";
 import { useEffect } from "react";
-import { useRouter } from "expo-router";
+import { useRouter, useLocalSearchParams } from "expo-router";
 
 export default function FeedScreen() {
   const router = useRouter();
   const { setModalPageConfig } = useModalPageConfig();
+  const { reminderId } = useLocalSearchParams<{ reminderId?: string }>();
 
   useEffect(() => {
     setModalPageConfig({
@@ -18,7 +19,7 @@ export default function FeedScreen() {
 
   return (
     <>
-      <SessionFeed />
+      <SessionFeed expandReminderId={reminderId} />
     </>
   );
 }

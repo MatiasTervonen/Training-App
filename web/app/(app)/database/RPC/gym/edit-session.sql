@@ -105,12 +105,11 @@ end loop;
 
 -- insert into feed item_id
 
-update feed_items 
+update feed_items
 set
   title = p_title,
   extra_fields = jsonb_build_object('duration', p_duration,'exercises_count', jsonb_array_length(p_exercises), 'sets_count', (select coalesce(sum(jsonb_array_length(e->'sets')), 0)
-  from jsonb_array_elements(p_exercises) as t(e))),
-  updated_at = now()
+  from jsonb_array_elements(p_exercises) as t(e)))
 where source_id = p_id
  and type = 'gym_sessions'
  returning * into v_feed_item;

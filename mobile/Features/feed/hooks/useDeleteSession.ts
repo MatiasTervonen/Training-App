@@ -58,9 +58,8 @@ export default function useDeleteSession() {
       }
 
       if (type === "global_reminders" || type === "local_reminders") {
-        queryClient.refetchQueries({
-          queryKey: ["get-reminders"],
-          exact: true,
+        queryClient.invalidateQueries({
+          queryKey: ["reminders"],
         });
       }
 

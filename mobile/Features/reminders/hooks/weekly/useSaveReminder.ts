@@ -9,6 +9,7 @@ export default function useSaveReminderWeekly({
   notes,
   notifyAt,
   weekdays,
+  mode,
   setIsSaving,
   setNotification,
   resetReminder,
@@ -17,8 +18,9 @@ export default function useSaveReminderWeekly({
   notes: string;
   notifyAt: Date;
   weekdays: number[];
+  mode?: "alarm" | "normal";
   setIsSaving: (isSaving: boolean) => void;
-  setNotification: (reminderId: string) => Promise<string[] | undefined>;
+  setNotification: (reminderId: string) => Promise<string | string[] | undefined>;
   resetReminder: () => void;
 }) {
   const queryClient = useQueryClient();
@@ -52,6 +54,7 @@ export default function useSaveReminderWeekly({
         notify_at_time: time,
         type: "weekly",
         notify_date: null,
+        mode,
       });
 
       const notificationId = await setNotification(reminder);

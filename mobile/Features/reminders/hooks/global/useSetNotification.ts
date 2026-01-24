@@ -30,7 +30,7 @@ export default function useSetNotification({
           sound: true,
           data: {
             reminderId: reminderId,
-            type: "local-reminders",
+            type: "global-reminder",
           },
         },
         trigger: {
@@ -42,12 +42,13 @@ export default function useSetNotification({
       return notificationId;
     } catch (error) {
       handleError(error, {
-        message: "Error scheduling notifications",
-        route: "/api/reminders/schedule-notifications",
+        message: "Error scheduling global notification",
+        route: "/features/reminders/hooks/global/useSetNotification",
         method: "POST",
       });
     }
   }
+
   return {
     setNotification,
   };

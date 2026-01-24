@@ -20,6 +20,9 @@ class AlarmService : Service() {
     private lateinit var mediaPlayer: MediaPlayer
 
     private var alarmTitle: String = "Alarm"
+    private var soundType: String = "default"
+    private var alarmContent: String = ""
+    private var reminderId: String = ""
 
     override fun onCreate() {
         super.onCreate()
@@ -28,15 +31,16 @@ class AlarmService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         alarmTitle = intent?.getStringExtra("TITLE") ?: "Alarm"
-
-        val soundType = intent?.getStringExtra("SOUND_TYPE") ?: "default"
+        soundType = intent?.getStringExtra("SOUND_TYPE") ?: "default"
+        alarmContent = intent?.getStringExtra("CONTENT") ?: ""
+        reminderId = intent?.getStringExtra("REMINDER_ID") ?: ""
 
         playSound(soundType)
 
         // Update the notification with the new title
-        startForeground(1, buildNotification())
+        startForeground(2, buildNotification())
 
-        return START_NOT_STICKY
+        return START_REDELIVER_INTENT
     }
 
     private fun playSound(soundType: String) {
@@ -76,24 +80,38 @@ class AlarmService : Service() {
             getSystemService(NotificationManager::class.java).createNotificationChannel(channel)
         }
 
-        // Create intent to open the timer page and stop the alarm
-        val openTimerIntent = Intent(this, MainActivity::class.java).apply {
+        // Determine route based on alarm type
+        val route = if (soundType == "reminder" && reminderId.isNotEmpty()) {
+            "mytrack://dashboard?reminderId=$reminderId"
+        } else if (soundType == "reminder") {
+            "mytrack://dashboard"
+        } else {
+            "mytrack://timer/empty-timer"
+        }
+        val contentText = if (soundType == "reminder") "Tap to open" else "Tap to open timer"
+
+        // Create intent to open the appropriate page and stop the alarm
+        val openIntent = Intent(this, MainActivity::class.java).apply {
             action = Intent.ACTION_VIEW
-            data = Uri.parse("mytrack://timer/empty-timer")
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or 
-                    Intent.FLAG_ACTIVITY_CLEAR_TOP or 
+            data = Uri.parse(route)
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or
+                    Intent.FLAG_ACTIVITY_CLEAR_TOP or
                     Intent.FLAG_ACTIVITY_SINGLE_TOP
             putExtra("stopAlarm", true)
         }
-        
-        val openTimerPendingIntent = PendingIntent.getActivity(
+
+        val openPendingIntent = PendingIntent.getActivity(
             this,
             0,
-            openTimerIntent,
+            openIntent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
         val fullScreenIntent = Intent(this, AlarmActivity::class.java).apply {
+            putExtra("SOUND_TYPE", soundType)
+            putExtra("TITLE", alarmTitle)
+            putExtra("CONTENT", alarmContent)
+            putExtra("REMINDER_ID", reminderId)
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or
                     Intent.FLAG_ACTIVITY_NO_USER_ACTION
         }
@@ -107,10 +125,10 @@ class AlarmService : Service() {
 
         val builder = NotificationCompat.Builder(this, channelId)
             .setContentTitle(alarmTitle)
-            .setContentText("Tap to open timer")
+            .setContentText(contentText)
             .setSmallIcon(R.drawable.small_notification_icon)
             .setOngoing(true)
-            .setContentIntent(openTimerPendingIntent)
+            .setContentIntent(openPendingIntent)
             .setFullScreenIntent(fullScreenPendingIntent, true)
             .setAutoCancel(false)
             .setCategory(NotificationCompat.CATEGORY_ALARM)

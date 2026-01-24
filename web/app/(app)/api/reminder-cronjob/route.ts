@@ -120,6 +120,11 @@ export async function POST(request: NextRequest) {
 
     // Send mobile push notifications via Expo
     for (const expoSub of expoTokens ?? []) {
+      // Skip the device that created this reminder (it has local notification scheduled)
+      if (item.created_from_token && expoSub.token === item.created_from_token) {
+        continue;
+      }
+
       try {
         const response = await fetch("https://exp.host/--/api/v2/push/send", {
           method: "POST",
@@ -132,7 +137,7 @@ export async function POST(request: NextRequest) {
             title: item.title,
             body: item.notes,
             channelId: "reminders",
-            data: { reminderId: item.id, type: "local_reminders" },
+            data: { reminderId: item.id, type: "global-reminder" },
           }),
         });
 

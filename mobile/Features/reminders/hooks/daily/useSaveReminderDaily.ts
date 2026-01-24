@@ -8,6 +8,7 @@ export default function useSaveReminderDaily({
   title,
   notes,
   notifyAt,
+  mode,
   setIsSaving,
   setNotification,
   resetReminder,
@@ -15,6 +16,7 @@ export default function useSaveReminderDaily({
   title: string;
   notes: string;
   notifyAt: Date;
+  mode?: "alarm" | "normal";
   setIsSaving: (isSaving: boolean) => void;
   setNotification: (reminder: string) => Promise<string | undefined>;
   resetReminder: () => void;
@@ -50,6 +52,7 @@ export default function useSaveReminderDaily({
         notify_at_time: time,
         type: "daily",
         notify_date: null,
+        mode,
       });
 
       const notificationId = await setNotification(reminder);
@@ -57,7 +60,7 @@ export default function useSaveReminderDaily({
       if (notificationId) {
         await AsyncStorage.setItem(
           `notification:${reminder}`,
-          JSON.stringify([notificationId])
+          JSON.stringify([notificationId]),
         );
       }
 

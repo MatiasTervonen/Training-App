@@ -2,7 +2,8 @@ create or replace function reminders_save_global_reminder(
   p_title text,
   p_notes text,
   p_notify_at timestamptz,
-  p_type text
+  p_type text,
+  p_created_from_token text default null
 )
 returns uuid
 language plpgsql
@@ -13,19 +14,21 @@ declare
  v_reminder_id uuid;
 begin
 
--- insert reminder 
+-- insert reminder
 
 insert into global_reminders (
-  title, 
+  title,
   notes,
   notify_at,
-  type
+  type,
+  created_from_token
 )
 values (
   p_title,
   p_notes,
   p_notify_at,
-  p_type
+  p_type,
+  p_created_from_token
 )
 returning id into v_reminder_id;
 

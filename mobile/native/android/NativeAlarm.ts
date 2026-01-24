@@ -6,16 +6,49 @@ export function scheduleNativeAlarm(
   timestamp: number,
   reminderId: string,
   title: string,
-  soundType: string
+  soundType: string,
+  content?: string
 ) {
   if (Platform.OS === "android" && nativeAlarm) {
-    nativeAlarm.scheduleAlarm(timestamp, reminderId, title, soundType);
+    nativeAlarm.scheduleAlarm(timestamp, reminderId, title, soundType, content || "");
+  }
+}
+
+export function scheduleRepeatingNativeAlarm(
+  timestamp: number,
+  reminderId: string,
+  title: string,
+  soundType: string,
+  content: string,
+  repeatType: "daily" | "weekly",
+  hour: number,
+  minute: number,
+  weekdays?: number[] // 1=Sun, 2=Mon, ..., 7=Sat (for weekly)
+) {
+  if (Platform.OS === "android" && nativeAlarm) {
+    nativeAlarm.scheduleRepeatingAlarm(
+      timestamp,
+      reminderId,
+      title,
+      soundType,
+      content,
+      repeatType,
+      weekdays || [],
+      hour,
+      minute
+    );
   }
 }
 
 export function cancelNativeAlarm(reminderId: string) {
   if (Platform.OS === "android" && nativeAlarm) {
     nativeAlarm.cancelAlarm(reminderId);
+  }
+}
+
+export function cancelAllNativeAlarms() {
+  if (Platform.OS === "android" && nativeAlarm) {
+    nativeAlarm.cancelAllAlarms();
   }
 }
 

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import AppText from "@/components/AppText";
 import {
   FlatList,
@@ -9,40 +9,43 @@ import {
 import FeedCard from "@/Features/feed-cards/FeedCard";
 import { FeedSkeleton } from "@/components/skeletetons";
 import { LinearGradient } from "expo-linear-gradient";
-import { useQueryClient } from "@tanstack/react-query";
 import FullScreenModal from "@/components/FullScreenModal";
 import GymSession from "@/Features/expand-session-cards/gym";
 import NotesSession from "@/Features/notes/cards/notes-expanded";
 import WeightSession from "@/Features/expand-session-cards/weight";
 import EditNotes from "@/Features/notes/cards/edit-notes";
 import EditWeight from "@/Features/edit-session-cards/editWeight";
-import HandleEditGlobalReminder from "@/Features/edit-session-cards/editGlobalReminder";
+import HandleEditGlobalReminder from "@/Features/reminders/cards/editGlobalReminder";
 import { useRouter } from "expo-router";
 import TodoSession from "@/Features/expand-session-cards/todo";
 import EditTodo from "@/Features/edit-session-cards/editTodo";
-import ReminderSession from "@/Features/expand-session-cards/reminder";
+import ReminderSession from "@/Features/reminders/cards/reminder-expanded-feed";
 import useDeleteSession from "@/Features/feed/hooks/useDeleteSession";
 import useTogglePin from "@/Features/feed/hooks/useTogglePin";
 import useFeed from "@/Features/feed/hooks/useFeed";
 import useFullSessions from "@/Features/feed/hooks/useFullSessions";
 import FeedHeader from "@/Features/feed/FeedHeader";
 import FeedFooter from "@/Features/feed/FeedFooter";
-import HandleEditLocalReminder from "@/Features/edit-session-cards/editLocalReminder";
+import HandleEditLocalReminder from "@/Features/reminders/cards/editLocalReminder";
 import { useAppReadyStore } from "@/lib/stores/appReadyStore";
 import { FeedItemUI } from "@/types/session";
 import useUpdateFeedItem from "@/Features/feed/hooks/useUpdateFeedItem";
 import ActivitySession from "@/Features/activities/cards/activity-feed-expanded/activity";
 import ActivitySessionEdit from "@/Features/activities/cards/activity-edit";
+import useUpdateFeedItemToTop from "./hooks/useUpdateFeedItemToTop";
 
-export default function SessionFeed() {
+type SessionFeedProps = {
+  expandReminderId?: string;
+};
+
+export default function SessionFeed({ expandReminderId }: SessionFeedProps) {
   const setFeedReady = useAppReadyStore((state) => state.setFeedReady);
   const feedReady = useAppReadyStore((state) => state.feedReady);
 
   const [expandedItem, setExpandedItem] = useState<FeedItemUI | null>(null);
   const [editingItem, setEditingItem] = useState<FeedItemUI | null>(null);
   const [refreshing, setRefreshing] = useState(false);
-
-  const queryClient = useQueryClient();
+  const expandedReminderRef = useRef<string | null>(null);
 
   const router = useRouter();
 
@@ -67,6 +70,29 @@ export default function SessionFeed() {
     }
   }, [isLoading, isSuccess, setFeedReady]);
 
+  // Auto-expand reminder when navigating from alarm
+  useEffect(() => {
+    if (
+      expandReminderId &&
+      isSuccess &&
+      !isLoading &&
+      expandedReminderRef.current !== expandReminderId
+    ) {
+      // Search in both pinned and unpinned feeds
+      const allItems = [...pinnedFeed, ...unpinnedFeed];
+      const reminderItem = allItems.find(
+        (item) =>
+          item.source_id === expandReminderId &&
+          (item.type === "local_reminders" || item.type === "global_reminders"),
+      );
+
+      if (reminderItem) {
+        expandedReminderRef.current = expandReminderId;
+        setExpandedItem(reminderItem);
+      }
+    }
+  }, [expandReminderId, isSuccess, isLoading, pinnedFeed, unpinnedFeed]);
+
   // handle feedItem pin toggling
 
   const { togglePin } = useTogglePin();
@@ -85,6 +111,7 @@ export default function SessionFeed() {
     todoSessionError,
     isLoadingTodoSession,
     refetchFullTodo,
+    refetchFullActivity,
     activitySessionFull,
     activitySessionError,
     isLoadingActivitySession,
@@ -92,6 +119,9 @@ export default function SessionFeed() {
 
   // useUpdateFeedItem hook to update feed item in cache
   const { updateFeedItem } = useUpdateFeedItem();
+
+  // useUpdateFeedItem hook to update feed item in cache and move it to top
+  const { updateFeedItemToTop } = useUpdateFeedItemToTop();
 
   if (!feedReady) {
     return null;
@@ -164,7 +194,7 @@ export default function SessionFeed() {
                   }}
                   onEdit={() => {
                     if (feedItem.type === "gym_sessions") {
-                      router.push(`/gym/gym/${feedItem.source_id}` as any);
+                      router.push(`/gym/gym/${feedItem.source_id}`);
                     } else {
                       setEditingItem({ ...feedItem, id: feedItem.source_id });
                     }
@@ -225,11 +255,9 @@ export default function SessionFeed() {
                 todoSessionFull && (
                   <TodoSession
                     initialTodo={todoSessionFull}
-                    onSave={async (updatedItem) => {
-                      await Promise.all([
-                        updateFeedItem(updatedItem),
-                        refetchFullTodo(),
-                      ]);
+                    onSave={(updatedItem) => {
+                      updateFeedItemToTop(updatedItem);
+                      refetchFullTodo();
                     }}
                   />
                 )
@@ -290,7 +318,7 @@ export default function SessionFeed() {
               note={editingItem}
               onClose={() => setEditingItem(null)}
               onSave={(updatedItem) => {
-                updateFeedItem(updatedItem);
+                updateFeedItemToTop(updatedItem);
                 setEditingItem(null);
               }}
             />
@@ -300,8 +328,8 @@ export default function SessionFeed() {
             <HandleEditGlobalReminder
               reminder={editingItem}
               onClose={() => setEditingItem(null)}
-              onSave={async () => {
-                await queryClient.invalidateQueries({ queryKey: ["feed"] });
+              onSave={(updatedItem) => {
+                updateFeedItemToTop(updatedItem);
                 setEditingItem(null);
               }}
             />
@@ -312,7 +340,7 @@ export default function SessionFeed() {
               reminder={editingItem}
               onClose={() => setEditingItem(null)}
               onSave={(updatedItem) => {
-                updateFeedItem(updatedItem);
+                updateFeedItemToTop(updatedItem);
                 setEditingItem(null);
               }}
             />
@@ -334,13 +362,9 @@ export default function SessionFeed() {
                   <EditTodo
                     todo_session={todoSessionFull}
                     onClose={() => setEditingItem(null)}
-                    onSave={async (updatedItem) => {
-                      await Promise.all([
-                        updateFeedItem(updatedItem),
-                        queryClient.invalidateQueries({
-                          queryKey: ["fullTodoSession"],
-                        }),
-                      ]);
+                    onSave={(updatedItem) => {
+                      updateFeedItemToTop(updatedItem);
+                      refetchFullTodo();
                       setEditingItem(null);
                     }}
                   />
@@ -368,13 +392,9 @@ export default function SessionFeed() {
                   <ActivitySessionEdit
                     activity={activitySessionFull}
                     onClose={() => setEditingItem(null)}
-                    onSave={async (updatedItem) => {
-                      await Promise.all([
-                        updateFeedItem(updatedItem),
-                        queryClient.invalidateQueries({
-                          queryKey: ["fullActivitySession"],
-                        }),
-                      ]);
+                    onSave={(updatedItem) => {
+                      updateFeedItem(updatedItem);
+                      refetchFullActivity();
                       setEditingItem(null);
                     }}
                   />

@@ -43,7 +43,7 @@ export default function EditNotes({ note, onClose, onSave }: Props) {
         updated_at: new Date().toISOString(),
       });
 
-      onSave(updatedFeedItem as FeedItemUI);
+      onSave(updatedFeedItem);
       onClose();
     } catch {
       Toast.show({

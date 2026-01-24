@@ -11,6 +11,8 @@ import { useUserStore } from "@/lib/stores/useUserStore";
 import Toast from "react-native-toast-message";
 import { syncNotifications } from "@/database/reminders/syncNotifications";
 import { useEffect } from "react";
+import { syncAlarms } from "@/database/reminders/syncAlarms";
+import { cancelAllNativeAlarms } from "@/native/android/NativeAlarm";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -44,7 +46,10 @@ export default function PushNotificationManager() {
         push_enabled: true,
       });
 
-      await syncNotifications().catch(() => {});
+      await Promise.all([
+        syncNotifications(),
+        platform === "android" ? syncAlarms() : Promise.resolve(),
+      ]);
 
       Toast.show({
         type: "success",
@@ -59,7 +64,6 @@ export default function PushNotificationManager() {
     }
   };
 
-  
   useEffect(() => {
     const sub = AppState.addEventListener("change", async (state) => {
       if (state !== "active") return;
@@ -85,7 +89,12 @@ export default function PushNotificationManager() {
       try {
         await deleteTokenFromServer();
 
-        await Notifications.cancelAllScheduledNotificationsAsync();
+        await Promise.all([
+          Notifications.cancelAllScheduledNotificationsAsync(),
+          Platform.OS === "android"
+            ? cancelAllNativeAlarms()
+            : Promise.resolve(),
+        ]);
 
         useUserStore.getState().setUserSettings({
           push_enabled: false,

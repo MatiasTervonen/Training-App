@@ -17,12 +17,15 @@ export async function editSession({
   title,
   id,
 }: editGymSessionProps) {
+  const updatedAt = new Date().toISOString();
+
   const { data, error } = await supabase.rpc("gym_edit_session", {
     p_exercises: exercises,
     p_notes: notes,
     p_duration: durationEdit,
     p_title: title,
     p_id: id,
+    p_updated_at: updatedAt,
   });
 
   if (error) {

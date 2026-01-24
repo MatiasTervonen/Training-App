@@ -1,10 +1,15 @@
-import { View, TouchableWithoutFeedback, Keyboard } from "react-native";
+import {
+  View,
+  TouchableWithoutFeedback,
+  Keyboard,
+  AppState,
+} from "react-native";
 import AppText from "@/components/AppText";
 import SaveButton from "@/components/buttons/SaveButton";
 import DeleteButton from "@/components/buttons/DeleteButton";
 import AppInput from "@/components/AppInput";
 import FullScreenLoader from "@/components/FullScreenLoader";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import PageContainer from "@/components/PageContainer";
 import DatePicker from "react-native-date-picker";
@@ -15,6 +20,9 @@ import SubNotesInput from "@/components/SubNotesInput";
 import useSaveDraftDaily from "@/Features/reminders/hooks/daily/useSaveDraftDaily";
 import useSaveReminderDaily from "@/Features/reminders/hooks/daily/useSaveReminderDaily";
 import useSetNotification from "@/Features/reminders/hooks/daily/useSetNotification";
+import Toggle from "@/components/toggle";
+import { canUseExactAlarm } from "@/native/android/EnsureExactAlarmPermission";
+import ExactAlarmPermissionModal from "@/components/ExactAlarmPermissionModal";
 
 export default function ReminderScreen() {
   const [open, setOpen] = useState(false);
@@ -22,8 +30,27 @@ export default function ReminderScreen() {
   const [title, setValue] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [notifyAt, setNotifyAt] = useState<Date | null>(null);
+  const [mode, setMode] = useState<"alarm" | "normal">("normal");
+  const [showModal, setShowModal] = useState(false);
 
   const formattedTime = formatTime(notifyAt!);
+
+  useEffect(() => {
+    const sub = AppState.addEventListener("change", async (state) => {
+      if (state !== "active") return;
+
+      const allowed = await canUseExactAlarm();
+
+      if (allowed) {
+        setShowModal(false);
+        setMode("alarm");
+      }
+    });
+
+    return () => {
+      sub.remove();
+    };
+  }, []);
 
   const resetReminder = () => {
     AsyncStorage.removeItem("daily_reminder_draft");
@@ -45,6 +72,7 @@ export default function ReminderScreen() {
     notifyAt: notifyAt!,
     title,
     notes,
+    mode,
   });
 
   // useSaveReminderDaily hook to save daily reminder
@@ -55,6 +83,7 @@ export default function ReminderScreen() {
     setIsSaving,
     setNotification,
     resetReminder,
+    mode,
   });
 
   return (
@@ -109,6 +138,26 @@ export default function ReminderScreen() {
                   setOpen(false);
                 }}
               />
+              <View className="flex-row items-center justify-between px-4 mt-5">
+                <View>
+                  <AppText>Enable high priority reminder</AppText>
+                  <AppText className="text-gray-400 text-sm">
+                    (Continue to alarm until dismissed)
+                  </AppText>
+                </View>
+                <Toggle
+                  isOn={mode === "alarm"}
+                  onToggle={async () => {
+                    const allowed = await canUseExactAlarm();
+                    if (!allowed) {
+                      setShowModal(true);
+                      return;
+                    }
+
+                    setMode(mode === "alarm" ? "normal" : "alarm");
+                  }}
+                />
+              </View>
             </View>
             <View className="gap-5">
               <SaveButton onPress={saveReminder} />
@@ -118,6 +167,11 @@ export default function ReminderScreen() {
           <FullScreenLoader visible={isSaving} message="Saving reminder..." />
         </PageContainer>
       </TouchableWithoutFeedback>
+
+      <ExactAlarmPermissionModal
+        visible={showModal}
+        onClose={() => setShowModal(false)}
+      />
     </>
   );
 }

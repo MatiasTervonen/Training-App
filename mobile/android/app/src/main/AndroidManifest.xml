@@ -17,6 +17,7 @@
   <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
   <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
   <uses-permission android:name="android.permission.health.READ_STEPS"/>
+  <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
   <queries>
     <intent>
       <action android:name="android.intent.action.VIEW"/>
@@ -80,7 +81,7 @@
     android:launchMode="singleTask"
     android:excludeFromRecents="true"
     android:taskAffinity=""
-    android:theme="@android:style/Theme.DeviceDefault.Light.NoActionBar" />
+    android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
       <service
   android:name=".timer.TimerService"
   android:foregroundServiceType="mediaPlayback"
@@ -92,5 +93,12 @@
   />
   <receiver android:name=".alarm.AlarmReceiver" android:exported="false" />
   <receiver android:name=".alarm.StopAlarmReceiver" android:exported="false" />
+  <receiver
+    android:name=".alarm.BootReceiver"
+    android:exported="true">
+    <intent-filter>
+      <action android:name="android.intent.action.BOOT_COMPLETED" />
+    </intent-filter>
+  </receiver>
   </application>
 </manifest>

@@ -36,14 +36,33 @@ class MainActivity : ReactActivity() {
     super.onNewIntent(intent)
     handleAlarmIntent(intent)
   }
-  
+
+  override fun onResume() {
+    super.onResume()
+    // When app comes to foreground, stop any active timer alarms
+    // (Reminders should continue playing until explicitly stopped)
+    stopTimerAlarmIfRunning()
+  }
+
+  private fun stopTimerAlarmIfRunning() {
+    // Check if AlarmService is running and stop it
+    // This handles the case where user manually opens the app while timer alarm is active
+    val alarmServiceIntent = Intent(this, AlarmService::class.java)
+    try {
+      stopService(alarmServiceIntent)
+      Log.d("MainActivity", "Stopped alarm service on app resume")
+    } catch (e: Exception) {
+      Log.d("MainActivity", "No alarm service to stop")
+    }
+  }
+
   private fun handleAlarmIntent(intent: Intent) {
     Log.d("MainActivity", "handleAlarmIntent: action=${intent.action}, data=${intent.data}, stopAlarm=${intent.getBooleanExtra("stopAlarm", false)}")
-    
+
     // Check for stopAlarm extra OR if opened via timer deep link from alarm notification
     val isFromAlarm = intent.getBooleanExtra("stopAlarm", false) ||
         (intent.data?.toString()?.contains("timer/empty-timer") == true && intent.action == Intent.ACTION_VIEW)
-    
+
     if (isFromAlarm) {
       Log.d("MainActivity", "Stopping alarm service and sending event to JS")
       stopService(Intent(this, AlarmService::class.java))

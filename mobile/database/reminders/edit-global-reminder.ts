@@ -9,6 +9,7 @@ type EditGlobalReminderParams = {
   seen_at?: string | null;
   updated_at: string;
   delivered?: boolean | null;
+  mode?: "alarm" | "normal";
 };
 
 export async function editGlobalReminder({
@@ -19,8 +20,9 @@ export async function editGlobalReminder({
   seen_at,
   updated_at,
   delivered,
+  mode,
 }: EditGlobalReminderParams) {
-  const { error } = await supabase.rpc("reminders_edit_global_reminder", {
+  const { data, error } = await supabase.rpc("reminders_edit_global_reminder", {
     p_id: id,
     p_title: title,
     p_notes: notes,
@@ -28,9 +30,11 @@ export async function editGlobalReminder({
     p_seen_at: seen_at,
     p_updated_at: updated_at,
     p_delivered: delivered,
+    p_mode: mode,
   });
 
   if (error) {
+    console.log("Error editing global reminder:", error);
     handleError(error, {
       message: "Error updating global reminder",
       route: "/database/reminders/edit-global-reminder",
@@ -39,5 +43,5 @@ export async function editGlobalReminder({
     throw new Error("Error updating global reminder");
   }
 
-  return { success: true };
+  return data;
 }

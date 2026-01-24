@@ -2,7 +2,9 @@ create or replace function reminders_save_global_reminder(
   p_title text,
   p_notes text,
   p_notify_at timestamptz,
-  p_type text
+  p_type text,
+  p_mode text,
+  p_created_from_device_id text default null
 )
 returns uuid
 language plpgsql
@@ -13,19 +15,23 @@ declare
  v_reminder_id uuid;
 begin
 
--- insert reminder 
+-- insert reminder
 
 insert into global_reminders (
-  title, 
+  title,
   notes,
   notify_at,
-  type
+  type,
+  mode,
+  created_from_device_id
 )
 values (
   p_title,
   p_notes,
   p_notify_at,
-  p_type
+  p_type,
+  p_mode,
+  p_created_from_device_id
 )
 returning id into v_reminder_id;
 
@@ -41,7 +47,7 @@ insert into feed_items (
 values (
   p_title,
   'global_reminders',
-  jsonb_build_object('notes', p_notes, 'notify_at', p_notify_at, 'type', 'global'),
+  jsonb_build_object('notes', p_notes, 'notify_at', p_notify_at, 'type', 'global', 'mode', p_mode),
   v_reminder_id,
   now()
 );

@@ -13,7 +13,7 @@ const getId = (fi: FeedItemUI | null) => fi?.source_id ?? null;
 
 export default function useFullSessions(
   expandedItem: FeedItemUI | null,
-  editingItem: FeedItemUI | null
+  editingItem: FeedItemUI | null,
 ) {
   const expandedId = getId(expandedItem);
   const editingId = getId(editingItem);
@@ -43,6 +43,7 @@ export default function useFullSessions(
     data: GymSessionFull,
     error: GymSessionError,
     isLoading: isLoadingGymSession,
+    refetch: refetchFullGym,
   } = useQuery<full_gym_session>({
     queryKey: ["fullGymSession", gymId],
     queryFn: () => getFullGymSession(gymId!),
@@ -74,6 +75,7 @@ export default function useFullSessions(
     data: activitySessionFull,
     error: activitySessionError,
     isLoading: isLoadingActivitySession,
+    refetch: refetchFullActivity,
   } = useQuery<FullActivitySession>({
     queryKey: ["fullActivitySession", activityId],
     queryFn: async () => await getFullActivitySession(activityId!),
@@ -93,6 +95,8 @@ export default function useFullSessions(
     todoSessionError,
     isLoadingTodoSession,
     refetchFullTodo,
+    refetchFullGym,
+    refetchFullActivity,
     activitySessionFull,
     activitySessionError,
     isLoadingActivitySession,

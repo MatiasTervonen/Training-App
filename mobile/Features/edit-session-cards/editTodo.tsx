@@ -87,7 +87,7 @@ export default function EditTodo({ todo_session, onClose, onSave }: Props) {
 
   const handleSave = async () => {
     const hasEmptyTasks = sessionData.todo_tasks.some(
-      (task) => task.task.trim().length === 0
+      (task) => task.task.trim().length === 0,
     );
 
     if (hasEmptyTasks) {
@@ -116,7 +116,7 @@ export default function EditTodo({ todo_session, onClose, onSave }: Props) {
         updated_at: updated,
       });
 
-      onSave(updatedFeedItem as FeedItemUI);
+      onSave(updatedFeedItem);
       onClose();
       Toast.show({
         type: "success",

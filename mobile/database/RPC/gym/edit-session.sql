@@ -3,7 +3,8 @@ create or replace function gym_edit_session(
   p_notes text,
   p_duration integer,
   p_title text,
-  p_id uuid
+  p_id uuid,
+  p_updated_at timestamptz
 )
 returns feed_items
 language plpgsql
@@ -26,7 +27,8 @@ update gym_sessions
 set 
   title = p_title,
   notes = p_notes,
-  duration = p_duration
+  duration = p_duration,
+  updated_at = p_updated_at
 where id = p_id
 returning id into v_session_id;
 
@@ -105,12 +107,11 @@ end loop;
 
 -- insert into feed item_id
 
-update feed_items 
+update feed_items
 set
   title = p_title,
   extra_fields = jsonb_build_object('duration', p_duration,'exercises_count', jsonb_array_length(p_exercises), 'sets_count', (select coalesce(sum(jsonb_array_length(e->'sets')), 0)
-  from jsonb_array_elements(p_exercises) as t(e))),
-  updated_at = now()
+  from jsonb_array_elements(p_exercises) as t(e)))
 where source_id = p_id
  and type = 'gym_sessions'
  returning * into v_feed_item;

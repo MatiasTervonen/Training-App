@@ -18,7 +18,7 @@ export async function saveLocalReminder({
   weekdays,
   notify_date,
   type,
-  mode,
+  mode = "normal",
 }: SaveReminderParams) {
   const { data, error } = await supabase.rpc("reminders_save_local_reminder", {
     p_title: title,
@@ -31,6 +31,7 @@ export async function saveLocalReminder({
   });
 
   if (error) {
+    console.error("Error saving local reminders:", error);
     handleError(error, {
       message: "Error saving local reminders",
       route: "/database/reminders/save-local-reminder",

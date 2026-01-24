@@ -68,7 +68,7 @@ export default function ActivitySession(activity_session: FullActivitySession) {
                 {formatTime(activity_session.session.end_time)}
               </AppText>
               {activity_session.session.notes && (
-                <AppText className="text-lg text-left">
+                <AppText className="text-lg text-left mt-5">
                   {activity_session.session.notes}
                 </AppText>
               )}

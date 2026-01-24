@@ -12,6 +12,7 @@ interface AppButtonProps extends PressableProps {
   onPress: () => void;
   className?: string;
   textClassName?: string;
+  tabClassName?: string;
 }
 
 export default function AnimatedButton({
@@ -20,6 +21,7 @@ export default function AnimatedButton({
   onPress,
   className,
   textClassName,
+  tabClassName,
   ...props
 }: AppButtonProps) {
   const scale = useSharedValue(1);
@@ -41,7 +43,7 @@ export default function AnimatedButton({
   };
 
   return (
-    <Animated.View style={animatedStyle}>
+    <Animated.View style={animatedStyle} className={`${tabClassName}`}>
       <Pressable
         onPress={onPress}
         onPressIn={handlePressIn}
@@ -50,7 +52,9 @@ export default function AnimatedButton({
         {...props}
       >
         {label && (
-          <AppText className={`text-lg ${textClassName}`}>{label}</AppText>
+          <AppText className={`text-lg text-gray-100 ${textClassName}`}>
+            {label}
+          </AppText>
         )}
         {children}
       </Pressable>

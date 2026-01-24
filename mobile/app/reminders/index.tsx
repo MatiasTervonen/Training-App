@@ -25,12 +25,11 @@ export default function SessionsScreen() {
           <LinkButton label="One-Time Global" href="/reminders/global-reminder">
             <Globe color="#f3f4f6" />
           </LinkButton>
-          <LinkButton
-            label="One-Time local"
-            href="/reminders/onetime-reminder"
-          />
+          <View className="border border-gray-400 rounded-md my-2" />
+          <LinkButton label="One-Time" href="/reminders/onetime-reminder" />
           <LinkButton label="Weekly" href="/reminders/weekly-reminder" />
           <LinkButton label="Daily" href="/reminders/daily-reminder" />
+          <View className="border border-gray-400 rounded-md my-2" />
           <LinkButton label="My Reminders" href="/reminders/my-reminders" />
         </View>
       </PageContainer>

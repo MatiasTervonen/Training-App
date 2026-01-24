@@ -16,14 +16,17 @@ import com.layer100crypto.MyTrack.ReactEventEmitter
 
 class AlarmActivity : AppCompatActivity() {
 
+    private var soundType: String = "default"
+    private var reminderId: String = ""
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        
+
         // Show on lock screen and turn screen on
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             setShowWhenLocked(true)
             setTurnScreenOn(true)
-            
+
             val keyguardManager = getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
             keyguardManager.requestDismissKeyguard(this, null)
         } else {
@@ -35,37 +38,69 @@ class AlarmActivity : AppCompatActivity() {
                 WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
             )
         }
-        
+
         setContentView(R.layout.activity_alarm)
-        
-        // Get title from intent
+
+        // Get title, soundType, content, and reminderId from intent
         val title = intent?.getStringExtra("TITLE") ?: "Timer"
+        soundType = intent?.getStringExtra("SOUND_TYPE") ?: "default"
+        val content = intent?.getStringExtra("CONTENT") ?: ""
+        reminderId = intent?.getStringExtra("REMINDER_ID") ?: ""
+
+        // Customize UI based on alarm type
+        if (soundType == "reminder") {
+            // Reminder: Show mail icon
+            findViewById<TextView>(R.id.alarmIcon).text = "📧"
+            findViewById<TextView>(R.id.alarmSubtitle).text = "Reminder"
+
+            // Show content if available
+            if (content.isNotEmpty()) {
+                findViewById<TextView>(R.id.alarmContent).apply {
+                    text = content
+                    visibility = android.view.View.VISIBLE
+                }
+            }
+        } else {
+            // Timer: Show alarm clock icon
+            findViewById<TextView>(R.id.alarmIcon).text = "⏰"
+            findViewById<TextView>(R.id.alarmSubtitle).text = "Time's up!"
+        }
+
         findViewById<TextView>(R.id.alarmTitle).text = title
-        
+
         // Handle stop button click
         findViewById<Button>(R.id.stopButton).setOnClickListener {
             stopAlarmAndOpenApp()
         }
     }
-    
+
     private fun stopAlarmAndOpenApp() {
         // Stop the alarm service
         stopService(Intent(this, AlarmService::class.java))
-        
+
         // Send event to JS to stop the alarm sound
         ReactEventEmitter.sendStopAlarmSound(this)
-        
-        // Open the main app with timer page
-        val openTimerIntent = Intent(this, MainActivity::class.java).apply {
+
+        // Determine route based on alarm type
+        val route = if (soundType == "reminder" && reminderId.isNotEmpty()) {
+            "mytrack://dashboard?reminderId=$reminderId"
+        } else if (soundType == "reminder") {
+            "mytrack://dashboard"
+        } else {
+            "mytrack://timer/empty-timer"
+        }
+
+        // Open the main app with appropriate page
+        val openIntent = Intent(this, MainActivity::class.java).apply {
             action = Intent.ACTION_VIEW
-            data = Uri.parse("mytrack://timer/empty-timer")
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or 
-                    Intent.FLAG_ACTIVITY_CLEAR_TOP or 
+            data = Uri.parse(route)
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or
+                    Intent.FLAG_ACTIVITY_CLEAR_TOP or
                     Intent.FLAG_ACTIVITY_SINGLE_TOP
             putExtra("stopAlarm", true)
         }
-        startActivity(openTimerIntent)
-        
+        startActivity(openIntent)
+
         // Close this activity
         finish()
     }

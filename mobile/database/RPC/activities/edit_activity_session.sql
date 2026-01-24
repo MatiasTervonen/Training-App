@@ -29,8 +29,7 @@ where id = p_id;
 update feed_items
 set
   title = p_title,
-  extra_fields = extra_fields || jsonb_build_object('notes', p_notes),
-  updated_at = p_updated_at
+  extra_fields = extra_fields || jsonb_build_object('notes', p_notes)
 where source_id = p_id
  and type = 'activity_sessions'
  returning * into v_feed_item; 

@@ -59,7 +59,7 @@ export default function GymForm({
           time_min: s.time_min ?? 0,
           distance_meters: s.distance_meters ?? 0,
         })) || [],
-    }))
+    })),
   );
   const [notes, setNotes] = useState("");
   const [exerciseInputs, setExerciseInputs] = useState<ExerciseInput[]>(
@@ -69,7 +69,7 @@ export default function GymForm({
       rpe: "Medium",
       time_min: "",
       distance_meters: "",
-    }))
+    })),
   );
   const [durationEdit, setDurationEdit] = useState(session.duration);
   const router = useRouter();
@@ -83,7 +83,7 @@ export default function GymForm({
     number | null
   >(null);
   const [exerciseHistoryId, setExerciseHistoryId] = useState<string | null>(
-    null
+    null,
   );
   const startTimestamp = useTimerStore((state) => state.startTimestamp);
   const mode = useTimerStore((state) => state.mode);
@@ -141,7 +141,7 @@ export default function GymForm({
 
   const historyMap = useMemo(() => {
     return Object.fromEntries(
-      (prefetchedHistory ?? []).map((h) => [h.exercise_id, h])
+      (prefetchedHistory ?? []).map((h) => [h.exercise_id, h]),
     );
   }, [prefetchedHistory]);
 
@@ -367,7 +367,7 @@ export default function GymForm({
                           if (!confirmDelete) return;
 
                           const updated = exercises.filter(
-                            (_, i) => i !== index
+                            (_, i) => i !== index,
                           );
                           setExercises(updated);
 
@@ -378,7 +378,7 @@ export default function GymForm({
                           };
                           AsyncStorage.setItem(
                             "gym_session_draft",
-                            JSON.stringify(sessionDraft)
+                            JSON.stringify(sessionDraft),
                           );
                         }}
                       />
@@ -470,9 +470,9 @@ export default function GymForm({
                 setNormalExercises([emptyExerciseEntry]);
                 setIsExerciseModalOpen(true);
               }}
-              className="mt-10 flex-row gap-3 w-2/4 mx-auto items-center justify-center bg-blue-800 py-2 rounded-md border-2 border-blue-500"
+              className="mt-10  w-2/4 mx-auto items-center justify-center bg-blue-800 py-2 rounded-md border-2 border-blue-500"
+              label="Add Exercise"
             >
-              <AppText className="text-lg">Add Exercise</AppText>
               <Plus size={20} color="#f3f4f6" />
             </AnimatedButton>
 

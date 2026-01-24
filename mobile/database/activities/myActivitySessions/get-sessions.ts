@@ -1,12 +1,8 @@
-import { handleError } from "@/utils/handleError";
 import { supabase } from "@/lib/supabase";
-import { feed_items } from "@/types/models";
+import { handleError } from "@/utils/handleError";
+import { FeedItemUI } from "@/types/session";
 
-export type FeedItemUI = feed_items & {
-  feed_context: "pinned" | "feed";
-};
-
-export default async function getFeed({
+export async function getActivitySessions({
   pageParam = 0,
   limit = 10,
 }: {
@@ -17,20 +13,35 @@ export default async function getFeed({
   nextPage: number | null;
 }> {
   const from = pageParam * limit;
+  const to = from + limit - 1;
 
   const pinnedPromise =
     pageParam === 0
       ? supabase
           .from("pinned_items")
           .select(`feed_items(*)`)
-          .eq("pinned_context", "main")
+          .eq("pinned_context", "activities")
           .order("created_at", { ascending: false })
       : Promise.resolve({ data: [], error: null });
 
-  const feedPromise = supabase.rpc("get_feed_sorted", {
-    p_limit: limit,
-    p_offset: from,
-  });
+  const feedPromise = supabase
+    .from("feed_items")
+    .select(
+      `
+    id,
+    title,
+    source_id,
+    activity_at,
+    created_at,
+    updated_at,
+    occurred_at,
+    type,
+    extra_fields
+`,
+    )
+    .eq("type", "activity_sessions")
+    .order("activity_at", { ascending: false })
+    .range(from, to);
 
   const [pinnedResult, feedResult] = await Promise.all([
     pinnedPromise,
@@ -39,15 +50,13 @@ export default async function getFeed({
 
   if (pinnedResult.error || feedResult.error) {
     const error = pinnedResult.error || feedResult.error;
-    console.error("Error fetching feed:", error);
+
     handleError(error, {
-      message: "Error fetching feed",
-      route: "server-action: getFeed",
+      message: "Error fetching activity feed",
+      route: "server-action: getActivitySessions",
       method: "direct",
     });
-    throw new Error(
-      "Error fetching feed, reminders, or local reminders, or local reminders",
-    );
+    throw new Error("Error fetching activity feed");
   }
 
   const pinned = (pinnedResult.data ?? []).map((item) => ({
@@ -59,13 +68,13 @@ export default async function getFeed({
 
   const feed = [
     ...pinned,
-    ...(feedResult.data as feed_items[])
-      .filter((i: feed_items) => !pinnedIds.has(i.id))
-      .map((item: feed_items) => ({
+    ...feedResult.data
+      .filter((i) => !pinnedIds.has(i.id))
+      .map((item) => ({
         ...item,
         feed_context: "feed" as const,
       })),
-  ];
+  ] as FeedItemUI[];
 
   const hasMore = (feedResult.data?.length ?? 0) === limit;
 

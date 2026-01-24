@@ -57,7 +57,7 @@ export default function NotesCard({
 
         {payload.notes && (
           <AppText
-            className={`ml-4 mr-5  ${
+            className={`ml-4 mr-5 ${
               pinned ? "text-slate-900" : "text-gray-100"
             }`}
             numberOfLines={2}
@@ -68,7 +68,7 @@ export default function NotesCard({
 
         {item.updated_at ? (
           <AppText
-            className={`ml-4 text-sm ${
+            className={`ml-4 text-sm  ${
               pinned ? "text-slate-900" : "text-yellow-500"
             } `}
           >

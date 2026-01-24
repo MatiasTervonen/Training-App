@@ -31,12 +31,26 @@
             android:layout_marginBottom="16dp" />
 
         <TextView
+            android:id="@+id/alarmSubtitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Time's up!"
             android:textColor="#aaaaaa"
             android:textSize="18sp"
-            android:layout_marginBottom="48dp" />
+            android:layout_marginBottom="24dp" />
+
+        <TextView
+            android:id="@+id/alarmContent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textColor="#d1d5db"
+            android:textSize="16sp"
+            android:gravity="center"
+            android:padding="16dp"
+            android:background="#2a2a3e"
+            android:layout_marginBottom="32dp"
+            android:visibility="gone" />
 
         <Button
             android:id="@+id/stopButton"

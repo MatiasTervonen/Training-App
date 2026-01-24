@@ -97,11 +97,13 @@ export default function useSaveSession({
           exercises,
         });
 
-        await queryClient.refetchQueries({ queryKey: ["feed"], exact: true });
-        await queryClient.refetchQueries({
-          queryKey: ["myGymSessions"],
-          exact: true,
-        });
+        await Promise.all([
+          queryClient.refetchQueries({ queryKey: ["feed"], exact: true }),
+          queryClient.refetchQueries({
+            queryKey: ["myGymSessions"],
+            exact: true,
+          }),
+        ]);
       }
 
       if (isEditing) {

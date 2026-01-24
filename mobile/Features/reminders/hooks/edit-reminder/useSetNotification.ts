@@ -25,7 +25,7 @@ export default function useSetNotification({
     try {
       if (type === "one-time") {
         if (mode === "alarm") {
-          scheduleNativeAlarm(notifyAt.getTime(), (reminder as FeedItemUI).source_id, title, "reminder");
+          scheduleNativeAlarm(notifyAt.getTime(), (reminder as FeedItemUI).source_id, title, "reminder", notes || (reminder as full_reminder).notes || "");
         }
 
         if (mode === "normal") {

@@ -33,6 +33,7 @@ import useUpdateFeedItem from "@/Features/feed/hooks/useUpdateFeedItem";
 import ActivitySession from "@/Features/activities/cards/activity-feed-expanded/activity";
 import ActivitySessionEdit from "@/Features/activities/cards/activity-edit";
 import useUpdateFeedItemToTop from "./hooks/useUpdateFeedItemToTop";
+import { useQueryClient } from "@tanstack/react-query";
 
 type SessionFeedProps = {
   expandReminderId?: string;
@@ -41,6 +42,7 @@ type SessionFeedProps = {
 export default function SessionFeed({ expandReminderId }: SessionFeedProps) {
   const setFeedReady = useAppReadyStore((state) => state.setFeedReady);
   const feedReady = useAppReadyStore((state) => state.feedReady);
+  const queryClient = useQueryClient();
 
   const [expandedItem, setExpandedItem] = useState<FeedItemUI | null>(null);
   const [editingItem, setEditingItem] = useState<FeedItemUI | null>(null);
@@ -115,6 +117,9 @@ export default function SessionFeed({ expandReminderId }: SessionFeedProps) {
     activitySessionFull,
     activitySessionError,
     isLoadingActivitySession,
+    notesSessionFull,
+    notesSessionError,
+    isLoadingNotesSession,
   } = useFullSessions(expandedItem, editingItem);
 
   // useUpdateFeedItem hook to update feed item in cache
@@ -226,7 +231,14 @@ export default function SessionFeed({ expandReminderId }: SessionFeedProps) {
           isOpen={!!expandedItem}
           onClose={() => setExpandedItem(null)}
         >
-          {expandedItem.type === "notes" && <NotesSession {...expandedItem} />}
+          {expandedItem.type === "notes" && (
+            <NotesSession
+              note={expandedItem}
+              voiceRecordings={notesSessionFull}
+              isLoadingVoice={isLoadingNotesSession}
+              error={notesSessionError}
+            />
+          )}
           {expandedItem.type === "weight" && (
             <WeightSession {...expandedItem} />
           )}
@@ -319,8 +331,13 @@ export default function SessionFeed({ expandReminderId }: SessionFeedProps) {
               onClose={() => setEditingItem(null)}
               onSave={(updatedItem) => {
                 updateFeedItemToTop(updatedItem);
+                queryClient.refetchQueries({
+                  queryKey: ["fullNotesSession", editingItem.source_id],
+                });
                 setEditingItem(null);
               }}
+              voiceRecordings={notesSessionFull}
+              isLoadingVoice={isLoadingNotesSession}
             />
           )}
 

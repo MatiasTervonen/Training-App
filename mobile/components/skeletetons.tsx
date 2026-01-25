@@ -38,3 +38,16 @@ export const FriendCardSkeleton = ({ count = 3 }: { count?: number }) => (
     ))}
   </>
 );
+
+export const NotesVoiceSkeleton = ({ count = 1 }: { count?: number }) => (
+  <>
+    {[...Array(count)].map((_, i) => (
+      <View
+        key={i}
+        className="items-center justify-center bg-gray-800 py-2 mb-4 rounded-xl border-2 border-gray-700 w-full animate-pulse h-[78px]"
+      >
+        <ActivityIndicator size="small" color="#6b7280" />
+      </View>
+    ))}
+  </>
+);

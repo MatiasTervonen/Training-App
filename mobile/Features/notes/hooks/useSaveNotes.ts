@@ -3,17 +3,26 @@ import { saveNote } from "@/database/notes/save-note";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 
+type saveNotesProps = {
+  title: string;
+  notes: string;
+  draftRecordings: {
+    id: string;
+    uri: string;
+    createdAt: number;
+    durationMs?: number;
+  }[];
+  setIsSaving: (isSaving: boolean) => void;
+  resetNote: () => void;
+};
+
 export default function useSaveNotes({
   title,
   notes,
+  draftRecordings,
   setIsSaving,
   resetNote,
-}: {
-  title: string;
-  notes: string;
-  setIsSaving: (isSaving: boolean) => void;
-  resetNote: () => void;
-}) {
+}: saveNotesProps) {
   const queryClient = useQueryClient();
   const router = useRouter();
 
@@ -29,10 +38,12 @@ export default function useSaveNotes({
     setIsSaving(true);
 
     try {
-      await saveNote({ title, notes });
+      await saveNote({ title, notes, draftRecordings });
 
-      await queryClient.refetchQueries({ queryKey: ["feed"], exact: true });
-      await queryClient.refetchQueries({ queryKey: ["myNotes"], exact: true });
+      await Promise.all([
+        queryClient.refetchQueries({ queryKey: ["feed"], exact: true }),
+        queryClient.refetchQueries({ queryKey: ["myNotes"], exact: true }),
+      ]);
 
       router.push("/dashboard");
       Toast.show({

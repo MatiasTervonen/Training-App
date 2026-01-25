@@ -3,16 +3,27 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDebouncedCallback } from "use-debounce";
 import { handleError } from "@/utils/handleError";
 
+type DraftRecording = {
+  id: string;
+  uri: string;
+  createdAt: number;
+  durationMs?: number;
+};
+
 export default function useSaveDraft({
   title,
   notes,
+  draftRecordings,
   setTitle,
   setNotes,
+  setDraftRecordings,
 }: {
   title: string;
   notes: string;
+  draftRecordings: DraftRecording[];
   setTitle: (title: string) => void;
   setNotes: (notes: string) => void;
+  setDraftRecordings: (recordings: DraftRecording[]) => void;
 }) {
   const [isLoaded, setIsLoaded] = useState(false);
 
@@ -24,6 +35,7 @@ export default function useSaveDraft({
           const draft = JSON.parse(storeDraft);
           setTitle(draft.title || "");
           setNotes(draft.notes || "");
+          setDraftRecordings(draft.draftRecordings || []);
         }
       } catch (error) {
         handleError(error, {
@@ -36,7 +48,7 @@ export default function useSaveDraft({
       }
     };
     loadDraft();
-  }, [setIsLoaded, setTitle, setNotes]);
+  }, [setIsLoaded, setTitle, setNotes, setDraftRecordings]);
 
   const saveNotesDraft = useDebouncedCallback(
     async () => {
@@ -45,17 +57,17 @@ export default function useSaveDraft({
       if (title.trim().length === 0 && notes.trim().length === 0) {
         await AsyncStorage.removeItem("notes_draft");
       } else {
-        const draft = { title, notes };
+        const draft = { title, notes, draftRecordings };
         await AsyncStorage.setItem("notes_draft", JSON.stringify(draft));
       }
     },
     500,
-    { maxWait: 3000 }
+    { maxWait: 3000 },
   );
 
   useEffect(() => {
     saveNotesDraft();
-  }, [notes, title, saveNotesDraft]);
+  }, [notes, title, draftRecordings, saveNotesDraft]);
 
   return {
     saveNotesDraft,

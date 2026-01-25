@@ -42,6 +42,7 @@ export default {
       "@rnmapbox/maps",
       "expo-router",
       "expo-dev-client",
+      "expo-font",
       [
         "expo-location",
         {
@@ -59,7 +60,13 @@ export default {
           backgroundColor: "#0f172a",
         },
       ],
-      "expo-font",
+      [
+        "expo-audio",
+        {
+          microphonePermission:
+            "Allow $(PRODUCT_NAME) to access your microphone.",
+        },
+      ],
       [
         "@sentry/react-native/expo",
         {
@@ -68,7 +75,6 @@ export default {
           organization: "matias-tervonen",
         },
       ],
-      "expo-audio",
       [
         "expo-notifications",
         {

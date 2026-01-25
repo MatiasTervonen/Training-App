@@ -1,6 +1,7 @@
 create or replace function notes_save_note(
   p_title text,
-  p_notes text
+  p_notes text,
+  p_draftRecordings jsonb default '[]'::jsonb
 )
 returns uuid
 language plpgsql
@@ -23,6 +24,17 @@ values (
 )
 returning id into v_note_id;
 
+insert into notes_voice (
+  storage_path,
+  note_id,
+  duration_ms
+)
+select
+  r->>'storage_path',
+  v_note_id,
+  (r->>'duration_ms')::integer
+from jsonb_array_elements(p_draftRecordings) as r;
+
 -- insert into feed item_id
 
 insert into feed_items (
@@ -35,7 +47,7 @@ insert into feed_items (
 values (
   p_title,
   'notes',
-  jsonb_build_object('notes', p_notes),
+  jsonb_build_object('notes', p_notes, 'voice-count', jsonb_array_length(p_draftRecordings)),
   v_note_id,
   now()
 );

@@ -8,6 +8,10 @@ import {
   FullActivitySession,
 } from "@/types/models";
 import { getFullActivitySession } from "@/database/activities/get-full-activity-session";
+import {
+  getFullNotesSession,
+  FullNotesSession,
+} from "@/database/notes/get-full-notes";
 
 const getId = (fi: FeedItemUI | null) => fi?.source_id ?? null;
 
@@ -38,6 +42,23 @@ export default function useFullSessions(
       : editingItem?.type === "activity_sessions"
         ? editingId
         : null;
+
+  // Only fetch notes if there are voice recordings
+  const notesItem =
+    expandedItem?.type === "notes"
+      ? expandedItem
+      : editingItem?.type === "notes"
+        ? editingItem
+        : null;
+
+  const voiceCount =
+    (notesItem?.extra_fields as { "voice-count"?: number } | undefined)?.[
+      "voice-count"
+    ] ?? 0;
+
+  const notesHasVoice = notesItem && voiceCount > 0;
+
+  const notesId = notesHasVoice ? getId(notesItem) : null;
 
   const {
     data: GymSessionFull,
@@ -87,6 +108,22 @@ export default function useFullSessions(
     gcTime: Infinity,
   });
 
+  const {
+    data: notesSessionFull,
+    error: notesSessionError,
+    isLoading: isLoadingNotesSession,
+    refetch: refetchFullNotes,
+  } = useQuery<FullNotesSession>({
+    queryKey: ["fullNotesSession", notesId],
+    queryFn: async () => await getFullNotesSession(notesId!),
+    enabled: !!notesId,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    refetchOnMount: false,
+    staleTime: Infinity,
+    gcTime: Infinity,
+  });
+
   return {
     GymSessionFull,
     GymSessionError,
@@ -100,5 +137,9 @@ export default function useFullSessions(
     activitySessionFull,
     activitySessionError,
     isLoadingActivitySession,
+    notesSessionFull,
+    notesSessionError,
+    isLoadingNotesSession,
+    refetchFullNotes,
   };
 }

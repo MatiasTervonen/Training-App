@@ -81,3 +81,10 @@ export const formatAveragePace = (paceSeconds: number) => {
   const seconds = Math.floor(paceSeconds % 60);
   return `${minutes}:${seconds.toString().padStart(2, "0")}`;
 };
+
+
+export function formatDurationNotesVoice(ms?: number) {
+  if (!ms) return "0:00";
+  const s = Math.floor(ms / 1000);
+  return `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, "0")}`;
+}

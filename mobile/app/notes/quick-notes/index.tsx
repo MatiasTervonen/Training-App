@@ -85,8 +85,8 @@ export default function NotesScreen() {
               label="Notes..."
             />
             {draftRecordings.length > 0 && (
-              <View className="mt-6">
-                <AppText className="text-lg mb-2">Recordings:</AppText>
+              <View className="mt-5">
+                <AppText className=" mb-2">Recordings:</AppText>
                 {draftRecordings.map((recording, index) => (
                   <DraftRecordingItem
                     key={recording.id}

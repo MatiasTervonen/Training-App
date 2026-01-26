@@ -1,15 +1,7 @@
 import { useQueryClient, useInfiniteQuery } from "@tanstack/react-query";
-import getNotes from "@/database/notes/get-notes";
+import { getNotes } from "@/database/notes/get-notes";
 import { useEffect, useMemo } from "react";
-import { notes } from "@/types/models";
-
-type FeedData = {
-  pageParams: number[];
-  pages: {
-    feed: notes[];
-    nextPage?: number | null;
-  }[];
-};
+import { FeedData } from "@/types/session";
 
 export default function useMyNotesFeed() {
   const queryClient = useQueryClient();
@@ -22,7 +14,6 @@ export default function useMyNotesFeed() {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-    isSuccess,
   } = useInfiniteQuery({
     queryKey: ["myNotes"],
     queryFn: ({ pageParam = 0 }) => getNotes({ pageParam, limit: 10 }),
@@ -50,18 +41,18 @@ export default function useMyNotesFeed() {
     };
   }, [queryClient]);
 
-  const pinnedNotes = useMemo(() => {
+  const pinnedFeed = useMemo(() => {
     return (
       data?.pages.flatMap((page) =>
-        page.feed.filter((item) => item.pinned)
+        page.feed.filter((item) => item.feed_context === "pinned"),
       ) ?? []
     );
   }, [data]);
 
-  const unpinnedNotes = useMemo(() => {
+  const unpinnedFeed = useMemo(() => {
     return (
       data?.pages.flatMap((page) =>
-        page.feed.filter((item) => !item.pinned)
+        page.feed.filter((item) => item.feed_context === "feed"),
       ) ?? []
     );
   }, [data]);
@@ -74,8 +65,7 @@ export default function useMyNotesFeed() {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-    isSuccess,
-    pinnedNotes,
-    unpinnedNotes,
+    pinnedFeed,
+    unpinnedFeed,
   };
 }

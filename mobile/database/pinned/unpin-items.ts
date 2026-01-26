@@ -16,7 +16,8 @@ export async function unpinItem({ id, type, pinned_context }: PinSessionProps) {
     .from("pinned_items")
     .delete()
     .eq("type", type)
-    .eq("feed_item_id", id);
+    .eq("feed_item_id", id)
+    .eq("pinned_context", pinned_context);
 
   if (error) {
     handleError(error, {

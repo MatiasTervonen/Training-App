@@ -1,26 +1,28 @@
 import AppText from "@/components/AppText";
 import { View, FlatList, RefreshControl } from "react-native";
 import { useState } from "react";
-import { notes } from "@/types/models";
 import { FeedSkeleton } from "@/components/skeletetons";
-import FeedFooter from "@/Features/feed/FeedFooter";
-import NotesFeedCard from "@/Features/notes/cards/FeedCardNotes";
 import FullScreenModal from "@/components/FullScreenModal";
-import EditNotesMyNotes from "@/Features/notes/cards/MyNotes-edit";
-import useUpdateMyNotes from "@/Features/notes/hooks/useUpdateMyNotes";
-import MyNotesExpanded from "@/Features/notes/cards/MyNotes-expanded";
-import useDeleteNotes from "@/Features/notes/hooks/useDeleteNotes";
 import { LinearGradient } from "expo-linear-gradient";
-import useTogglePinNotes from "@/Features/notes/hooks/useTogglePinNotes";
-import MyNotesFeedHeader from "@/Features/notes/components/MyNotesFeedHeader";
 import useMyNotesFeed from "@/Features/notes/hooks/useMyNotesFeed";
+import { FeedItemUI } from "@/types/session";
+import FeedCard from "@/Features/feed-cards/FeedCard";
+import useTogglePin from "@/Features/feed/hooks/useTogglePin";
+import FeedHeader from "@/Features/feed/FeedHeader";
+import FeedFooter from "@/Features/feed/FeedFooter";
+import NotesSession from "@/Features/notes/cards/notes-expanded";
+import EditNotes from "@/Features/notes/cards/edit-notes";
+import useUpdateFeedItemToTop from "@/Features/feed/hooks/useUpdateFeedItemToTop";
+import { useQueryClient } from "@tanstack/react-query";
+import useDeleteSession from "@/Features/feed/hooks/useDeleteSession";
+import useFullSessions from "@/Features/feed/hooks/useFullSessions";
 
 export default function MyNotesScreen() {
-  const [expandedItem, setExpandedItem] = useState<notes | null>(null);
-  const [editingItem, setEditingItem] = useState<notes | null>(null);
+  const [expandedItem, setExpandedItem] = useState<FeedItemUI | null>(null);
+  const [editingItem, setEditingItem] = useState<FeedItemUI | null>(null);
   const [refreshing, setRefreshing] = useState(false);
 
-  const { updateMyNotes } = useUpdateMyNotes();
+  const queryClient = useQueryClient();
 
   const {
     data,
@@ -30,13 +32,20 @@ export default function MyNotesScreen() {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-    pinnedNotes,
-    unpinnedNotes,
+    pinnedFeed,
+    unpinnedFeed,
   } = useMyNotesFeed();
 
-  const { handleDelete } = useDeleteNotes();
+  // handle feedItem deletion
+  const { handleDelete } = useDeleteSession();
 
-  const { togglePin } = useTogglePinNotes();
+  const { togglePin } = useTogglePin(["myNotes"]);
+
+  // useUpdateFeedItem hook to update feed item in cache and move it to top
+  const { updateFeedItemToTop } = useUpdateFeedItemToTop();
+
+  const { notesSessionFull, notesSessionError, isLoadingNotesSession } =
+    useFullSessions(expandedItem, editingItem);
 
   return (
     <LinearGradient
@@ -51,18 +60,18 @@ export default function MyNotesScreen() {
         <AppText className="text-center text-lg mt-10 mx-auto">
           Failed to load notes. Please try again later.
         </AppText>
-      ) : !data || (unpinnedNotes.length === 0 && pinnedNotes.length === 0) ? (
+      ) : !data || (unpinnedFeed.length === 0 && pinnedFeed.length === 0) ? (
         <AppText className="text-center text-lg mt-10 mx-auto">
           No notes yet. Add a note to get started!
         </AppText>
       ) : (
         <FlatList
-          data={unpinnedNotes}
+          data={unpinnedFeed}
           keyExtractor={(item) => item.id}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{
             paddingBottom: 100,
-            paddingTop: pinnedNotes.length === 0 ? 30 : 0,
+            paddingTop: pinnedFeed.length === 0 ? 30 : 0,
           }}
           onEndReached={() => {
             if (hasNextPage && !isFetchingNextPage) {
@@ -80,15 +89,28 @@ export default function MyNotesScreen() {
             />
           }
           onEndReachedThreshold={0.5}
-          renderItem={({ item }) => (
-            <View className="px-4 pb-10">
-              <NotesFeedCard
-                item={item as notes}
+          renderItem={({ item: feedItem }) => (
+            <View className={`px-4 ${unpinnedFeed ? "pb-10" : ""}`}>
+              <FeedCard
+                item={feedItem as FeedItemUI}
                 pinned={false}
-                onExpand={() => setExpandedItem(item)}
-                onTogglePin={() => togglePin(item.id, item.pinned ?? false)}
-                onDelete={() => handleDelete(item.id)}
-                onEdit={() => setEditingItem(item)}
+                onExpand={() => {
+                  setExpandedItem(feedItem);
+                }}
+                onTogglePin={() =>
+                  togglePin(
+                    feedItem.id,
+                    feedItem.type,
+                    feedItem.feed_context,
+                    "notes",
+                  )
+                }
+                onDelete={() => {
+                  handleDelete(feedItem.source_id, feedItem.type);
+                }}
+                onEdit={() => {
+                  setEditingItem(feedItem);
+                }}
               />
             </View>
           )}
@@ -100,10 +122,12 @@ export default function MyNotesScreen() {
             />
           }
           ListHeaderComponent={
-            <MyNotesFeedHeader
-              pinnedNotes={pinnedNotes}
+            <FeedHeader
+              pinnedFeed={pinnedFeed}
               setExpandedItem={setExpandedItem}
               setEditingItem={setEditingItem}
+              pinned_context="notes"
+              queryKey={["myNotes"]}
             />
           }
         />
@@ -112,9 +136,14 @@ export default function MyNotesScreen() {
       {expandedItem && (
         <FullScreenModal
           isOpen={!!expandedItem}
-          onClose={() =>  setExpandedItem(null)}
+          onClose={() => setExpandedItem(null)}
         >
-          <MyNotesExpanded {...expandedItem} />
+          <NotesSession
+            note={expandedItem}
+            voiceRecordings={notesSessionFull}
+            isLoadingVoice={isLoadingNotesSession}
+            error={notesSessionError}
+          />
         </FullScreenModal>
       )}
 
@@ -123,13 +152,18 @@ export default function MyNotesScreen() {
           isOpen={!!editingItem}
           onClose={() => setEditingItem(null)}
         >
-          <EditNotesMyNotes
+          <EditNotes
             note={editingItem}
             onClose={() => setEditingItem(null)}
             onSave={(updatedItem) => {
-              updateMyNotes(updatedItem);
+              updateFeedItemToTop(updatedItem);
+              queryClient.refetchQueries({
+                queryKey: ["fullNotesSession", editingItem.source_id],
+              });
               setEditingItem(null);
             }}
+            voiceRecordings={notesSessionFull}
+            isLoadingVoice={isLoadingNotesSession}
           />
         </FullScreenModal>
       )}

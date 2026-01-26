@@ -14,7 +14,6 @@ export default function useMyGymFeed() {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-    isSuccess,
   } = useInfiniteQuery({
     queryKey: ["myGymSessions"],
     queryFn: ({ pageParam = 0 }) => getGymSessions({ pageParam, limit: 10 }),
@@ -67,7 +66,6 @@ export default function useMyGymFeed() {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-    isSuccess,
     pinnedFeed,
     unpinnedFeed,
   };

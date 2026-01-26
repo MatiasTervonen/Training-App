@@ -173,8 +173,8 @@ export default function EditNotes({
             {(voiceCount > 0 ||
               existingRecordings.length > 0 ||
               newRecordings.length > 0) && (
-              <View className="mt-6">
-                <AppText className="text-lg mb-2">Voice Recordings:</AppText>
+              <View className="mt-5">
+                <AppText className="mb-2">Recordings:</AppText>
                 {isLoadingVoice ? (
                   <NotesVoiceSkeleton count={voiceCount} />
                 ) : (

@@ -22,7 +22,7 @@ export async function pinItem({ id, type, pinned_context }: PinSessionProps) {
           pinned_context: pinned_context,
         },
       ],
-      { onConflict: "user_id,type,feed_item_id" } // Ensure upsert on user_id, item_id, and type
+      { onConflict: "user_id,type,feed_item_id, pinned_context" }, // Ensure upsert on user_id, item_id, and type
     )
     .select()
     .single();

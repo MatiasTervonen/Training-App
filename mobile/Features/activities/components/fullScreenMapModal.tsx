@@ -5,8 +5,9 @@ import { CircleX, Layers2, MapPin } from "lucide-react-native";
 import MapIcons from "./mapIcons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { TrackPoint } from "@/types/session";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import useForeground from "../hooks/useForeground";
+import { findWarmupStartIndex } from "../lib/findWarmupStartIndex";
 
 export default function FullScreenMapModal({
   fullScreen,
@@ -44,12 +45,20 @@ export default function FullScreenMapModal({
 
   const shouldShowTemplateRoute = templateRoute && templateRoute.length > 0;
 
-  const mapCoordinates = track
-    .filter((p) => !p.isStationary && (p.accuracy == null || p.accuracy <= 30))
-    .map((p) => [p.longitude, p.latitude]);
+  const warmupStartIndex = useMemo(() => findWarmupStartIndex(track), [track]);
+
+  const mapCoordinates = useMemo(() => {
+    if (warmupStartIndex === null) return [];
+
+    return track
+      .slice(warmupStartIndex)
+      .filter((p) => !p.isStationary)
+      .map((p) => [p.longitude, p.latitude]);
+  }, [track, warmupStartIndex]);
 
   const trackShape = {
     type: "Feature",
+    properties: {},
     geometry: {
       type: "LineString",
       coordinates: mapCoordinates,
@@ -57,6 +66,9 @@ export default function FullScreenMapModal({
   };
 
   const lastPoint = track.length > 0 ? track[track.length - 1] : null;
+
+  const lastMovingPoint =
+    [...track].reverse().find((p) => !p.isStationary) ?? null;
 
   const userFeature = lastPoint
     ? {
@@ -201,7 +213,7 @@ export default function FullScreenMapModal({
         </View>
         <MapIcons
           title="Activity"
-          lastPoint={lastPoint as TrackPoint}
+          lastMovingPoint={lastMovingPoint as TrackPoint}
           style={{ bottom: insets.bottom }}
           startGPStracking={startGPStracking}
           stopGPStracking={stopGPStracking}

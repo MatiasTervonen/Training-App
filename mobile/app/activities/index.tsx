@@ -4,7 +4,7 @@ import PageContainer from "@/components/PageContainer";
 import { View } from "react-native";
 import Toast from "react-native-toast-message";
 import { useTimerStore } from "@/lib/stores/timerStore";
-import { List } from "lucide-react-native";
+import { ChartNoAxesCombined, List } from "lucide-react-native";
 
 export default function SessionsScreen() {
   const activeSession = useTimerStore((state) => state.activeSession);
@@ -37,6 +37,9 @@ export default function SessionsScreen() {
         <LinkButton label="Edit Activity" href="/activities/edit-activity" />
 
         <View className="border border-gray-400 rounded-md my-2" />
+        <LinkButton label="Analytics" href="/activities/analytics">
+          <ChartNoAxesCombined color="#f3f4f6" className="ml-2" />
+        </LinkButton>
         <LinkButton label="My Sessions" href="/activities/my-sessions">
           <List color="#f3f4f6" className="ml-2" />
         </LinkButton>

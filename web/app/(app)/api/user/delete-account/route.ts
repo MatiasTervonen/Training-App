@@ -1,4 +1,3 @@
-import { createClient } from "@/utils/supabase/server";
 import { createAdminClient } from "@/utils/supabase/admin";
 import { handleError } from "@/app/(app)/utils/handleError";
 
@@ -11,9 +10,7 @@ export async function POST(request: Request) {
     });
   }
 
-  const supabase = await createClient();
   const adminSupabase = createAdminClient();
-
   const token = authHeader.replace("Bearer ", "");
 
   const { data: userData, error } = await adminSupabase.auth.getUser(token);
@@ -22,19 +19,6 @@ export async function POST(request: Request) {
     return new Response(JSON.stringify({ error: "Unauthorized" }), {
       status: 401,
       headers: { "Content-Type": "application/json" },
-    });
-  }
-
-  const { error: usersTableError } = await supabase
-    .from("users")
-    .delete()
-    .eq("id", userData.user.id);
-
-  if (usersTableError) {
-    handleError(usersTableError, {
-      message: "Error fetching user",
-      route: "/api/user/delete-account",
-      method: "POST",
     });
   }
 

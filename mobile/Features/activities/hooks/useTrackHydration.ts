@@ -73,9 +73,15 @@ export function useTrackHydration({
     const wasForeground = prevForegroundRef.current;
     prevForegroundRef.current = isForeground;
 
+    // When going TO background, mark as not hydrated so the foreground tracker
+    // won't start until hydration completes when we return
+    if (wasForeground && !isForeground && activeSession) {
+      setIsHydrated(false);
+    }
+
     // Also hydrate when coming back to foreground (regardless of isRunning)
     if (!wasForeground && isForeground && activeSession) {
       hydrateFromDatabase();
     }
-  }, [isForeground, activeSession, hydrateFromDatabase]);
+  }, [isForeground, activeSession, hydrateFromDatabase, setIsHydrated]);
 }

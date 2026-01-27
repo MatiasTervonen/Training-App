@@ -62,6 +62,7 @@ export default function BaseMap({
       .map((p) => [p.longitude, p.latitude]);
   }, [track, warmupStartIndex]);
 
+  
   const trackShape = {
     type: "Feature",
     properties: {},

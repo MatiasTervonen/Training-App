@@ -12,68 +12,62 @@ type SessionStatsProps = {
   activity_session: FullActivitySession;
 };
 
+type StatCardProps = {
+  label: string;
+  sublabel?: string;
+  value: string;
+};
+
+function StatCard({ label, sublabel, value }: StatCardProps) {
+  return (
+    <View className="flex-1 min-w-[30%] items-center justify-between gap-1 border-blue-500 border py-3 px-2 rounded-lg bg-slate-950/50">
+      <View className="flex-row items-center justify-center gap-1">
+        <AppText className="text-gray-300">{label}</AppText>
+        {sublabel && (
+          <AppText className="text-gray-500 text-xs">{sublabel}</AppText>
+        )}
+      </View>
+      <AppText className="text-gray-100 text-base text-center">{value}</AppText>
+    </View>
+  );
+}
+
 export default function SessionStats({ activity_session }: SessionStatsProps) {
+  const stats = activity_session.stats;
+  const session = activity_session.session;
+
   return (
     <LinearGradient
       colors={["#1e3a8a", "#0f172a", "#0f172a"]}
-      start={{ x: 1, y: 0 }} // bottom-left
-      end={{ x: 0, y: 1 }} // top-right
-      className="items-center p-5 rounded-b-lg overflow-hidden shadow-md"
+      start={{ x: 1, y: 0 }}
+      end={{ x: 0, y: 1 }}
+      className="p-4 rounded-b-lg overflow-hidden shadow-md"
     >
-      <View className="flex-row justify-around flex-wrap gap-5">
-        <View className="items-center gap-2 border-blue-500 border-2 py-2 px-4 rounded-md bg-slate-950">
-          <AppText>Duration</AppText>
-          <AppText className="text-center">
-            {formatDurationLong(activity_session.session.duration ?? 0)}
-          </AppText>
-        </View>
-        <View className="items-center gap-2 border-blue-500 border-2 py-2 px-4 rounded-md bg-slate-950">
-          <AppText>Moving Time</AppText>
-          <AppText className="text-center">
-            {formatDurationLong(
-              activity_session.stats?.moving_time_seconds ?? 0,
-            )}
-          </AppText>
-        </View>
-        <View className="items-center gap-2 border-blue-500 border-2 py-2 px-4 rounded-md bg-slate-950">
-          <AppText>Distance</AppText>
-          <AppText className="text-center">
-            {formatMeters(activity_session.stats?.distance_meters ?? 0)}
-          </AppText>
-        </View>
-        <View className="items-center gap-2 border-blue-500 border-2 py-2 px-4 rounded-md bg-slate-950">
-          <View className="flex-row items-center gap-2">
-            <AppText>Avg Pace</AppText>
-            <AppText className="text-sm">(moving)</AppText>
-          </View>
-          <AppText className="text-center">
-            {formatAveragePace(activity_session.stats?.avg_pace ?? 0)} min/km
-          </AppText>
-        </View>
-        <View className="items-center gap-2 border-blue-500 border-2 py-2 px-4 rounded-md bg-slate-950">
-          <View className="flex-row items-center gap-2">
-            <AppText>Avg Speed</AppText>
-          </View>
-          <AppText className="text-center">
-            {activity_session.stats?.avg_speed ?? 0}
-          </AppText>
-        </View>
-        <View className="items-center gap-2 border-blue-500 border-2 py-2 px-4 rounded-md bg-slate-950">
-          <View className="flex-row items-center gap-2">
-            <AppText>Steps</AppText>
-          </View>
-          <AppText className="text-center">
-            {activity_session.stats?.steps ?? 0}
-          </AppText>
-        </View>
-        <View className="items-center gap-2 border-blue-500 border-2 py-2 px-4 rounded-md bg-slate-950">
-          <View className="flex-row items-center gap-2">
-            <AppText>Calories</AppText>
-          </View>
-          <AppText className="text-center">
-            {activity_session.stats?.calories ?? 0}
-          </AppText>
-        </View>
+      <View className="flex-row gap-2 mb-2">
+        <StatCard
+          label="Duration"
+          value={formatDurationLong(session.duration ?? 0)}
+        />
+        <StatCard
+          label="Moving Time"
+          value={formatDurationLong(stats?.moving_time_seconds ?? 0)}
+        />
+        <StatCard
+          label="Distance"
+          value={formatMeters(stats?.distance_meters ?? 0)}
+        />
+      </View>
+      <View className="flex-row gap-2 mb-2">
+        <StatCard
+          label="Avg Pace"
+          sublabel="(moving)"
+          value={`${formatAveragePace(stats?.avg_pace ?? 0)} min/km`}
+        />
+        <StatCard label="Avg Speed" value={`${stats?.avg_speed ?? 0} km/h`} />
+      </View>
+      <View className="flex-row gap-2">
+        <StatCard label="Steps" value={String(stats?.steps ?? 0)} />
+        <StatCard label="Calories" value={String(stats?.calories ?? 0)} />
       </View>
     </LinearGradient>
   );

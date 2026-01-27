@@ -1,4 +1,4 @@
-create or replace function activity_edit_activity_session(
+create or replace function activity_edit_session(
   p_id uuid,
   p_title text,
   p_notes text,
@@ -12,11 +12,12 @@ set search_path = public
 as $$
 declare
  v_feed_item feed_items;
+ v_activity_name text;
 begin
 
 -- update activity session
 
-update activity_sessions 
+update sessions 
 set 
   title = p_title,
   notes = p_notes,
@@ -24,12 +25,17 @@ set
   updated_at = p_updated_at  
 where id = p_id;
 
+select name
+into v_activity_name
+from activities
+where id = p_activity_id;
+
 -- update feed item
 
 update feed_items
 set
   title = p_title,
-  extra_fields = extra_fields || jsonb_build_object('notes', p_notes)
+  extra_fields = extra_fields || jsonb_build_object('notes', p_notes, 'activity_name', v_activity_name)
 where source_id = p_id
  and type = 'activity_sessions'
  returning * into v_feed_item; 

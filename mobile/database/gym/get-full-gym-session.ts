@@ -7,8 +7,8 @@ export async function getFullGymSession(sessionId: string) {
     throw new Error("Missing session ID");
   }
 
-  const { data: gymSession, error: gymSessionError } = await supabase
-    .from("gym_sessions")
+  const { data, error } = await supabase
+    .from("sessions")
     .select(`*, gym_session_exercises(*, gym_exercises(*), gym_sets(*))`)
     .order("position", {
       referencedTable: "gym_session_exercises",
@@ -17,14 +17,15 @@ export async function getFullGymSession(sessionId: string) {
     .eq("id", sessionId)
     .single<full_gym_session>();
 
-  gymSession?.gym_session_exercises.forEach((exercise) => {
+  data?.gym_session_exercises.forEach((exercise) => {
     if (Array.isArray(exercise.gym_sets)) {
       exercise.gym_sets.sort((a, b) => a.set_number - b.set_number);
     }
   });
 
-  if (gymSessionError || !gymSession) {
-    handleError(gymSessionError, {
+  if (error || !data) {
+    console.error("Error fetching gym session:", error);
+    handleError(error, {
       message: "Error fetching gym session",
       route: "/database/gym/get-full-gym-session",
       method: "GET",
@@ -32,5 +33,5 @@ export async function getFullGymSession(sessionId: string) {
     throw new Error("Error fetching gym session");
   }
 
-  return gymSession;
+  return data;
 }

@@ -32,16 +32,16 @@ export default function ExerciseHistoryModal({
     <FullScreenModal isOpen={isOpen} onClose={onClose}>
       <View className="max-w-lg mx-auto px-5">
         {isLoading ? (
-          <View className="justify-center items-center mt-20 gap-5 mx-4">
+          <View className="justify-center items-center mt-40 gap-5 mx-4">
             <AppText className="text-lg">Loading history</AppText>
             <ActivityIndicator size="large" />
           </View>
         ) : error ? (
-          <AppText className="text-center mt-20 mx-4 text-lg">
+          <AppText className="text-center mt-40 px-10 text-lg">
             Could not load exercise history. Please try again.
           </AppText>
         ) : history.length === 0 ? (
-          <AppText className="text-center mt-20 mx-4 text-lg">
+          <AppText className="text-center mt-40 px-10 text-lg">
             No history available for this exercise.
           </AppText>
         ) : (

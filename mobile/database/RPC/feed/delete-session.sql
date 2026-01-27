@@ -16,7 +16,6 @@ if p_type not in (
     'todo_lists',
     'global_reminders',
     'local_reminders',
-    'global_reminders',
     'activity_sessions'
 ) then 
  raise exception 'invalid feed type: %', p_type;
@@ -30,18 +29,23 @@ delete from pinned_items
     and type = p_type
  );
 
-
  delete from feed_items 
  where source_id = p_id
  and type = p_type;
 
+ -- Delete domain row
+if p_type in ('gym_sessions', 'activity_sessions') then
+  delete from sessions
+  where id = p_id;
+
+else
    -- 4. Delete domain row (dynamic table)
   execute format(
     'delete from %I where id = $1',
     p_type
   )
   using p_id;
-
+end if;
 
 
 end;

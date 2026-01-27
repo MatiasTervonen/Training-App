@@ -16,51 +16,65 @@ export type Database = {
     Tables: {
       activities: {
         Row: {
-          category: string
+          category_id: string | null
           created_at: string
           id: string
           is_active: boolean
           name: string
+          slug: string
           updated_at: string | null
           user_id: string | null
         }
         Insert: {
-          category: string
+          category_id?: string | null
           created_at?: string
           id?: string
           is_active?: boolean
           name: string
+          slug: string
           updated_at?: string | null
           user_id?: string | null
         }
         Update: {
-          category?: string
+          category_id?: string | null
           created_at?: string
           id?: string
           is_active?: boolean
           name?: string
+          slug?: string
           updated_at?: string | null
           user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "activities_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "activity_categories"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       activity_categories: {
         Row: {
           created_at: string
           id: string
           name: string
+          slug: string | null
           user_id: string | null
         }
         Insert: {
           created_at?: string
           id?: string
           name: string
+          slug?: string | null
           user_id?: string | null
         }
         Update: {
           created_at?: string
           id?: string
           name?: string
+          slug?: string | null
           user_id?: string | null
         }
         Relationships: []
@@ -101,130 +115,7 @@ export type Database = {
             foreignKeyName: "activity_gps_points_session_id_fkey"
             columns: ["session_id"]
             isOneToOne: false
-            referencedRelation: "activity_sessions"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      activity_session_stats: {
-        Row: {
-          avg_pace: number | null
-          avg_speed: number | null
-          calories: number | null
-          computed_at: string | null
-          created_at: string | null
-          distance_meters: number | null
-          elevation_gain: number | null
-          id: string
-          max_speed: number | null
-          moving_time_seconds: number | null
-          session_id: string
-          steps: number | null
-          updated_at: string | null
-        }
-        Insert: {
-          avg_pace?: number | null
-          avg_speed?: number | null
-          calories?: number | null
-          computed_at?: string | null
-          created_at?: string | null
-          distance_meters?: number | null
-          elevation_gain?: number | null
-          id?: string
-          max_speed?: number | null
-          moving_time_seconds?: number | null
-          session_id: string
-          steps?: number | null
-          updated_at?: string | null
-        }
-        Update: {
-          avg_pace?: number | null
-          avg_speed?: number | null
-          calories?: number | null
-          computed_at?: string | null
-          created_at?: string | null
-          distance_meters?: number | null
-          elevation_gain?: number | null
-          id?: string
-          max_speed?: number | null
-          moving_time_seconds?: number | null
-          session_id?: string
-          steps?: number | null
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "activity_session_stats_session_id_fkey"
-            columns: ["session_id"]
-            isOneToOne: true
-            referencedRelation: "activity_sessions"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      activity_sessions: {
-        Row: {
-          activity_id: string
-          created_at: string
-          duration: number
-          end_time: string
-          geom: unknown
-          id: string
-          notes: string | null
-          start_time: string
-          template_id: string | null
-          title: string
-          updated_at: string | null
-          user_id: string
-        }
-        Insert: {
-          activity_id: string
-          created_at?: string
-          duration: number
-          end_time: string
-          geom?: unknown
-          id?: string
-          notes?: string | null
-          start_time: string
-          template_id?: string | null
-          title: string
-          updated_at?: string | null
-          user_id?: string
-        }
-        Update: {
-          activity_id?: string
-          created_at?: string
-          duration?: number
-          end_time?: string
-          geom?: unknown
-          id?: string
-          notes?: string | null
-          start_time?: string
-          template_id?: string | null
-          title?: string
-          updated_at?: string | null
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "activity_session_activity_id_fkey"
-            columns: ["activity_id"]
-            isOneToOne: false
-            referencedRelation: "activities"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "activity_session_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "activity_sessions_template_id_fkey"
-            columns: ["template_id"]
-            isOneToOne: false
-            referencedRelation: "activity_templates"
+            referencedRelation: "sessions"
             referencedColumns: ["id"]
           },
         ]
@@ -681,8 +572,10 @@ export type Database = {
       global_reminders: {
         Row: {
           created_at: string
+          created_from_device_id: string | null
           delivered: boolean
           id: string
+          mode: string | null
           notes: string | null
           notify_at: string
           seen_at: string | null
@@ -693,8 +586,10 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          created_from_device_id?: string | null
           delivered?: boolean
           id?: string
+          mode?: string | null
           notes?: string | null
           notify_at: string
           seen_at?: string | null
@@ -705,8 +600,10 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          created_from_device_id?: string | null
           delivered?: boolean
           id?: string
+          mode?: string | null
           notes?: string | null
           notify_at?: string
           seen_at?: string | null
@@ -802,6 +699,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "gym_session_exercises_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "sessions"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "gym_session_exercises_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
@@ -813,13 +717,6 @@ export type Database = {
             columns: ["exercise_id"]
             isOneToOne: false
             referencedRelation: "gym_exercises"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "session_exercises_session_id_fkey"
-            columns: ["session_id"]
-            isOneToOne: false
-            referencedRelation: "gym_sessions"
             referencedColumns: ["id"]
           },
         ]
@@ -837,7 +734,7 @@ export type Database = {
         Insert: {
           created_at?: string
           duration: number
-          id?: string
+          id: string
           notes?: string | null
           title?: string | null
           updated_at?: string | null
@@ -861,6 +758,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      gym_sessions_backup: {
+        Row: {
+          created_at: string | null
+          duration: number | null
+          id: string | null
+          notes: string | null
+          title: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          duration?: number | null
+          id?: string | null
+          notes?: string | null
+          title?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          duration?: number | null
+          id?: string | null
+          notes?: string | null
+          title?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
       }
       gym_sets: {
         Row: {
@@ -1050,7 +977,6 @@ export type Database = {
       }
       local_reminders: {
         Row: {
-          active: boolean | null
           created_at: string
           delivered: boolean
           id: string
@@ -1066,7 +992,6 @@ export type Database = {
           weekdays: Json | null
         }
         Insert: {
-          active?: boolean | null
           created_at?: string
           delivered?: boolean
           id?: string
@@ -1082,7 +1007,6 @@ export type Database = {
           weekdays?: Json | null
         }
         Update: {
-          active?: boolean | null
           created_at?: string
           delivered?: boolean
           id?: string
@@ -1105,7 +1029,6 @@ export type Database = {
           created_at: string
           id: string
           notes: string | null
-          pinned: boolean | null
           title: string | null
           updated_at: string | null
           user_id: string
@@ -1115,7 +1038,6 @@ export type Database = {
           created_at?: string
           id?: string
           notes?: string | null
-          pinned?: boolean | null
           title?: string | null
           updated_at?: string | null
           user_id?: string
@@ -1125,7 +1047,6 @@ export type Database = {
           created_at?: string
           id?: string
           notes?: string | null
-          pinned?: boolean | null
           title?: string | null
           updated_at?: string | null
           user_id?: string
@@ -1136,6 +1057,41 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notes_voice: {
+        Row: {
+          created_at: string
+          duration_ms: number
+          id: string
+          note_id: string
+          storage_path: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          duration_ms: number
+          id?: string
+          note_id: string
+          storage_path: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          duration_ms?: number
+          id?: string
+          note_id?: string
+          storage_path?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notes_voice_note_id_fkey"
+            columns: ["note_id"]
+            isOneToOne: false
+            referencedRelation: "notes"
             referencedColumns: ["id"]
           },
         ]
@@ -1237,6 +1193,129 @@ export type Database = {
             columns: ["reminder_id"]
             isOneToOne: false
             referencedRelation: "local_reminders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      session_stats: {
+        Row: {
+          avg_pace: number | null
+          avg_speed: number | null
+          calories: number | null
+          computed_at: string | null
+          created_at: string | null
+          distance_meters: number | null
+          elevation_gain: number | null
+          id: string
+          max_speed: number | null
+          moving_time_seconds: number | null
+          session_id: string
+          steps: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          avg_pace?: number | null
+          avg_speed?: number | null
+          calories?: number | null
+          computed_at?: string | null
+          created_at?: string | null
+          distance_meters?: number | null
+          elevation_gain?: number | null
+          id?: string
+          max_speed?: number | null
+          moving_time_seconds?: number | null
+          session_id: string
+          steps?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          avg_pace?: number | null
+          avg_speed?: number | null
+          calories?: number | null
+          computed_at?: string | null
+          created_at?: string | null
+          distance_meters?: number | null
+          elevation_gain?: number | null
+          id?: string
+          max_speed?: number | null
+          moving_time_seconds?: number | null
+          session_id?: string
+          steps?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activity_session_stats_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: true
+            referencedRelation: "sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sessions: {
+        Row: {
+          activity_id: string
+          created_at: string
+          duration: number
+          end_time: string
+          geom: unknown
+          id: string
+          notes: string | null
+          start_time: string
+          template_id: string | null
+          title: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          activity_id: string
+          created_at?: string
+          duration: number
+          end_time: string
+          geom?: unknown
+          id?: string
+          notes?: string | null
+          start_time: string
+          template_id?: string | null
+          title: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Update: {
+          activity_id?: string
+          created_at?: string
+          duration?: number
+          end_time?: string
+          geom?: unknown
+          id?: string
+          notes?: string | null
+          start_time?: string
+          template_id?: string | null
+          title?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activity_session_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "activity_session_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "activity_sessions_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "activity_templates"
             referencedColumns: ["id"]
           },
         ]
@@ -1584,9 +1663,51 @@ export type Database = {
         Args: { p_name: string; p_notes: string; p_session_id: string }
         Returns: string
       }
+      activity_edit_session: {
+        Args: {
+          p_activity_id: string
+          p_id: string
+          p_notes: string
+          p_title: string
+          p_updated_at: string
+        }
+        Returns: {
+          activity_at: string | null
+          created_at: string
+          extra_fields: Json
+          id: string
+          occurred_at: string
+          source_id: string
+          title: string
+          type: string
+          updated_at: string | null
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "feed_items"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       feed_delete_session: {
         Args: { p_id: string; p_type: string }
         Returns: undefined
+      }
+      get_feed_sorted: {
+        Args: { p_limit: number; p_offset: number }
+        Returns: {
+          activity_at: string
+          created_at: string
+          extra_fields: Json
+          id: string
+          occurred_at: string
+          source_id: string
+          title: string
+          type: string
+          updated_at: string
+          user_id: string
+        }[]
       }
       get_jwt: { Args: never; Returns: Json }
       gym_edit_session: {
@@ -1596,6 +1717,7 @@ export type Database = {
           p_id: string
           p_notes: string
           p_title: string
+          p_updated_at: string
         }
         Returns: {
           activity_at: string | null
@@ -1634,9 +1756,10 @@ export type Database = {
       gym_save_session: {
         Args: {
           p_duration: number
+          p_end_time: string
           p_exercises: Json
           p_notes: string
-          p_occured_at: string
+          p_start_time: string
           p_title: string
         }
         Returns: string
@@ -1648,7 +1771,9 @@ export type Database = {
       last_30d_analytics: { Args: never; Returns: Json }
       notes_edit_note: {
         Args: {
+          p_deleted_recording_ids?: string[]
           p_id: string
+          p_new_recordings?: Json
           p_notes: string
           p_title: string
           p_updated_at: string
@@ -1673,7 +1798,7 @@ export type Database = {
         }
       }
       notes_save_note: {
-        Args: { p_notes: string; p_title: string }
+        Args: { p_draftrecordings?: Json; p_notes: string; p_title: string }
         Returns: string
       }
       reminders_delete_global_reminder: {
@@ -1688,6 +1813,7 @@ export type Database = {
         Args: {
           p_delivered: boolean
           p_id: string
+          p_mode: string
           p_notes: string
           p_notify_at: string
           p_seen_at: string
@@ -1745,8 +1871,28 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      reminders_get_by_tab: {
+        Args: { p_tab: string }
+        Returns: {
+          created_at: string
+          delivered: boolean
+          id: string
+          mode: string
+          notes: string
+          notify_at: string
+          notify_at_time: string
+          notify_date: string
+          seen_at: string
+          title: string
+          type: string
+          updated_at: string
+          weekdays: Json
+        }[]
+      }
       reminders_save_global_reminder: {
         Args: {
+          p_created_from_token?: string
+          p_mode: string
           p_notes: string
           p_notify_at: string
           p_title: string

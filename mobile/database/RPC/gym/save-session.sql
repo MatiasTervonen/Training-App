@@ -3,7 +3,8 @@ p_exercises jsonb,
 p_notes text,
 p_duration integer,
 p_title text,
-p_occured_at timestamptz
+p_start_time timestamptz,
+p_end_time timestamptz
 )
 returns uuid
 language plpgsql
@@ -19,17 +20,24 @@ declare
  v_set_number integer;
 begin
 
--- insert into gym session 
 
-insert into gym_sessions (
+-- insert in to base session table
+
+insert into sessions (
   title,
   notes,
-  duration
+  duration,
+  start_time,
+  end_time,
+  activity_id
 )
 values (
   p_title,
   p_notes,
-  p_duration
+  p_duration,
+  p_start_time,
+  p_end_time,
+  (select id from activities where slug = 'gym')
 )
 returning id into v_session_id;
 
@@ -87,6 +95,9 @@ values (
 
 end loop;
 
+-- compute session stats
+perform activities_compute_session_stats(v_session_id, null);
+
 
 -- insert into feed item_id
 
@@ -100,10 +111,10 @@ insert into feed_items (
 values (
   p_title,
   'gym_sessions',
-  jsonb_build_object('duration', p_duration,'exercises_count', jsonb_array_length(p_exercises), 'sets_count', (select coalesce(sum(jsonb_array_length(e->'sets')), 0)
+  jsonb_build_object('start_time', p_start_time, 'end_time', p_end_time, 'duration', p_duration,'exercises_count', jsonb_array_length(p_exercises), 'sets_count', (select coalesce(sum(jsonb_array_length(e->'sets')), 0)
   from jsonb_array_elements(p_exercises) as t(e))),
   v_session_id,
-  p_occured_at
+  p_start_time
 );
 
 

@@ -9,6 +9,10 @@ as $$
 declare
     v_distance numeric := 0;
     v_moving_time_seconds numeric := 0;
+    v_duration_seconds numeric;        
+    v_base_met numeric;                
+    v_user_weight_kg numeric;          
+    v_calories numeric;
 begin
 
    with ordered_points as (
@@ -55,12 +59,42 @@ begin
         from moving_segments;
 
 
-        insert into activity_session_stats (
+        -- Calculate calories here if needed
+        select 
+            s.duration,
+            a.base_met,
+            coalesce(
+            (select weight
+            from weight
+            where user_id = s.user_id
+            order by created_at desc
+            limit 1), 70    
+            )
+        into 
+            v_duration_seconds,
+            v_base_met,
+            v_user_weight_kg
+        from sessions s 
+        join activities a on s.activity_id = a.id
+        where s.id = p_session_id;       
+
+        if v_moving_time_seconds > 0 then
+            -- GPS tracked: use moving time (more accurate)
+            v_calories := v_base_met * v_user_weight_kg * (v_moving_time_seconds / 3600);
+        else
+            -- No GPS: use total session duration
+            v_calories := v_base_met * v_user_weight_kg * (v_total_duration_seconds / 3600);
+        end if;
+
+
+        insert into session_stats (
             session_id,
             distance_meters,
             moving_time_seconds,
             avg_pace,
+            avg_speed,
             steps,
+            calories,
             computed_at
         )
         values (
@@ -68,20 +102,27 @@ begin
             v_distance,
             v_moving_time_seconds,
             case
-                when v_distance > 0 
+                when v_distance > 0
                 then v_moving_time_seconds / (v_distance / 1000)
                 else null
             end,
+            case
+                when v_moving_time_seconds > 0
+                then (v_distance / 1000) / (v_moving_time_seconds / 3600)
+                else null
+            end,
             p_steps,
+            v_calories,
             now()
         )
-        on conflict (session_id) do update 
+        on conflict (session_id) do update
         set
             distance_meters = excluded.distance_meters,
             moving_time_seconds = excluded.moving_time_seconds,
             avg_pace = excluded.avg_pace,
+            avg_speed = excluded.avg_speed,
             steps = excluded.steps,
+            calories = excluded.calories,
             computed_at = excluded.computed_at;
-
 end;
 $$;

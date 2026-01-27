@@ -51,7 +51,7 @@ export default function ActivitySession(activity_session: FullActivitySession) {
         <View className="flex-1 justify-between">
           <View>
             <AppText className="text-gray-300 text-center text-sm">
-              created: {formatDate(activity_session.session.created_at!)}
+              {formatDate(activity_session.session.created_at!)}
             </AppText>
             <LinearGradient
               colors={["#1e3a8a", "#0f172a", "#0f172a"]}

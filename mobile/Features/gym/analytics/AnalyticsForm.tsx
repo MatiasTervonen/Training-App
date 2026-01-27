@@ -1,4 +1,4 @@
-import { View, ActivityIndicator } from "react-native";
+import { View } from "react-native";
 import AppText from "@/components/AppText";
 import { full_gym_session } from "@/types/models";
 import ChartTabSwitcher from "@/Features/gym/analytics/AnalytictsChartTabSwitcher";
@@ -11,12 +11,16 @@ import {
 import { HeatmapChart } from "echarts/charts";
 import { SkiaRenderer, SkiaChart } from "@wuba/react-native-echarts";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { formatDate } from "@/lib/formatDate";
+import { formatDate, formatDuration } from "@/lib/formatDate";
 
 type AnalyticsFormProps = {
-  data: full_gym_session[];
-  isLoading: boolean;
-  error: Error | null;
+  data: {
+    total_sessions: number;
+    avg_duration: number;
+    muscle_groups: { group: string; count: number }[];
+    sets_per_muscle_group: { group: string; count: number }[];
+  };
+  heatmap: full_gym_session[];
 };
 
 echarts.use([
@@ -27,18 +31,14 @@ echarts.use([
   TooltipComponent,
 ]);
 
-export default function AnalyticsForm({
-  data,
-  error,
-  isLoading,
-}: AnalyticsFormProps) {
+export default function AnalyticsForm({ data, heatmap }: AnalyticsFormProps) {
   const skiaRef = useRef<any>(null);
   const [chartSize, setChartSize] = useState({ width: 0, height: 0 });
 
   const heatmapData = useMemo(() => {
-    if (!data) return [];
+    if (!heatmap) return [];
 
-    return data.map((session) => {
+    return heatmap.map((session) => {
       const date = new Date(session.created_at).toISOString().split("T")[0]; // "YYYY-MM-DD"
       const durationMinutes = Math.round(session.duration / 60);
       const title = session.title;
@@ -48,7 +48,7 @@ export default function AnalyticsForm({
         title,
       };
     });
-  }, [data]);
+  }, [heatmap]);
 
   const calendarRange = useMemo(() => {
     const end = new Date();
@@ -120,88 +120,50 @@ export default function AnalyticsForm({
     return () => chart.dispose();
   }, [option, chartSize]);
 
-  function totalSessions30Days(data: full_gym_session[]) {
-    return data.length;
-  }
-
-  function averageDuration(data: full_gym_session[]) {
-    const totalDuration = data.reduce(
-      (acc, session) => acc + session.duration,
-      0,
-    );
-    return Math.round(totalDuration / 60 / data.length || 0);
-  }
-
   return (
     <View className=" bg-slate-800 rounded-xl">
-      {!error && isLoading && (
-        <View className="items-center gap-2 mt-20">
-          <AppText className="text-gray-300 text-center text-xl">
-            Loading...
-          </AppText>
-          <ActivityIndicator size="large" color="#ffffff" />
+      <View className="gap-4 bg-slate-900  rounded-2xl shadow-md pt-5">
+        <AppText className="text-xl mb-4 text-center">
+          Last 30 Days Analytics
+        </AppText>
+        <View className="sm:flex items-center justify-center gap-10 ml-4">
+          <View className="flex flex-col gap-5">
+            <AppText className="text-lg">
+              Total workouts: {data.total_sessions}
+            </AppText>
+            <AppText className="text-lg mb-5">
+              Average Duration: {formatDuration(data.avg_duration)}
+            </AppText>
+          </View>
         </View>
-      )}
-
-      {error && (
-        <AppText className="text-red-500 text-center mt-20 text-lg">
-          Error loading workout data. Try again!
+        <View
+          style={{
+            flex: 1,
+            width: "100%",
+            minHeight: 200,
+          }}
+          onLayout={(e) => {
+            const { width, height } = e.nativeEvent.layout;
+            setChartSize({ width, height });
+          }}
+        >
+          <SkiaChart ref={skiaRef} />
+        </View>
+        <View>
+          <AppText className="text-center mb-6">
+            Muscle Group Distribution
+          </AppText>
+          <ChartTabSwitcher data={data} />
+        </View>
+      </View>
+      <View className="mt-6 text-sm text-gray-400 px-4">
+        <AppText>
+          Note: Analytics are based on the last 30 days of workout data.
         </AppText>
-      )}
-
-      {!error && !isLoading && data.length === 0 && (
-        <AppText className="text-gray-300 text-center mt-20 text-lg">
-          No workout data available. Start logging your workouts to see
-          analytics!
-        </AppText>
-      )}
-
-      {!isLoading && !error && data.length > 0 && (
-        <>
-          <View className="gap-4 bg-slate-900  rounded-2xl shadow-md pt-5">
-            <AppText className="text-xl mb-4 text-center">
-              Last 30 Days Analytics
-            </AppText>
-            <View className="sm:flex items-center justify-center gap-10 ml-4">
-              <View className="flex flex-col gap-5">
-                <AppText className="text-lg">
-                  Total workouts: {totalSessions30Days(data)}
-                </AppText>
-                <AppText className="text-lg mb-5">
-                  Average Duration: {averageDuration(data)} minutes
-                </AppText>
-              </View>
-            </View>
-            <View
-              style={{
-                flex: 1,
-                width: "100%",
-                minHeight: 200,
-              }}
-              onLayout={(e) => {
-                const { width, height } = e.nativeEvent.layout;
-                setChartSize({ width, height });
-              }}
-            >
-              <SkiaChart ref={skiaRef} />
-            </View>
-            <View>
-              <AppText className="text-center mb-6">
-                Muscle Group Distribution
-              </AppText>
-              <ChartTabSwitcher data={data} />
-            </View>
-          </View>
-          <View className="mt-6 text-sm text-gray-400 px-4">
-            <AppText>
-              Note: Analytics are based on the last 30 days of workout data.
-            </AppText>
-          </View>
-          <View className="mt-6 text-sm text-gray-400 px-4 pb-20">
-            <AppText>More analytics coming soon!</AppText>
-          </View>
-        </>
-      )}
+      </View>
+      <View className="mt-6 text-sm text-gray-400 px-4 pb-20">
+        <AppText>More analytics coming soon!</AppText>
+      </View>
     </View>
   );
 }

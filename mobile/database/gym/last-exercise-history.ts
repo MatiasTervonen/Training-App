@@ -6,7 +6,7 @@ type SessionExercise = {
   session_id: string;
   exercise_id: string;
   gym_exercises: { main_group: string; name: string; equipment: string };
-  gym_sessions: { created_at: string; user_id: string };
+  sessions: { created_at: string; user_id: string };
 };
 
 export async function getLastExerciseHistory({
@@ -26,12 +26,20 @@ export async function getLastExerciseHistory({
   const { data: exercises, error: exerciseError } = await supabase
     .from("gym_session_exercises")
     .select(
-      "id, session_id, exercise_id, gym_exercises(main_group, name, equipment), gym_sessions(created_at, user_id)",
+      `
+      id,
+      session_id, 
+      exercise_id, 
+      gym_exercises(main_group, name, equipment), 
+      sessions!inner(created_at, user_id)
+      `,
     )
     .eq("exercise_id", exerciseId)
-    .eq("gym_sessions.user_id", session.user.id);
+    .eq("sessions.user_id", session.user.id);
+
 
   if (exerciseError) {
+    console.error("Error fetching exercise history:", exerciseError);
     handleError(exerciseError, {
       message: "Error fetching exercise history",
       route: "/database/gym/last-exercise-history/[exerciseId]",
@@ -47,6 +55,7 @@ export async function getLastExerciseHistory({
   }
 
   if (exerciseError) {
+    console.error("Error fetching exercise history:", exerciseError);
     handleError(exerciseError, {
       message: "Error fetching exercise history",
       route: "/database/gym/last-exercise-history",
@@ -57,8 +66,8 @@ export async function getLastExerciseHistory({
 
   const sorted = sessions.sort(
     (a, b) =>
-      new Date(b.gym_sessions.created_at || 0).getTime() -
-      new Date(a.gym_sessions.created_at || 0).getTime(),
+      new Date(b.sessions.created_at || 0).getTime() -
+      new Date(a.sessions.created_at || 0).getTime(),
   );
 
   const allSorted = await Promise.all(
@@ -70,6 +79,7 @@ export async function getLastExerciseHistory({
         .order("set_number", { ascending: true });
 
       if (setsError) {
+        console.error("Error fetching sets:", setsError);
         handleError(setsError, {
           message: "Error fetching sets",
           route: "/database/gym/last-exercise-history",
@@ -79,7 +89,7 @@ export async function getLastExerciseHistory({
       }
 
       return {
-        date: session.gym_sessions.created_at,
+        date: session.sessions.created_at,
         main_group: session.gym_exercises.main_group,
         name: session.gym_exercises.name,
         equipment: session.gym_exercises.equipment,

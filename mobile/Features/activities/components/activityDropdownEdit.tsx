@@ -9,28 +9,29 @@ import {
 } from "react-native";
 import AppInput from "@/components/AppInput";
 import { useState } from "react";
-import { activities } from "@/types/models";
+
 import AnimatedButton from "@/components/buttons/animatedButton";
 import { getUserActivities } from "@/database/activities/get-user-activities";
 import { useDebouncedCallback } from "use-debounce";
 
-
-type Props = {
-  onSelect: (activity: activities) => void;
+type UserActivity = {
+  id: string;
+  name: string;
+  activity_categories: { name: string }[];
 };
 
-export default function ActivityDropdownEdit({ onSelect }: Props) {
+type Props = {
+  onSelect: (activity: UserActivity) => void;
+};
+
+export default function UserActivityDropdownEdit({ onSelect }: Props) {
   const [inputValue, setInputValue] = useState("");
-  const [filteredActivities, setFilteredActivities] = useState<activities[]>(
-    []
+  const [filteredActivities, setFilteredActivities] = useState<UserActivity[]>(
+    [],
   );
   const [isSearching, setIsSearching] = useState(false);
 
-  const {
-    data,
-    error,
-    isLoading,
-  } = useQuery({
+  const { data, error, isLoading } = useQuery({
     queryKey: ["userActivities"],
     queryFn: () => getUserActivities(),
     refetchOnMount: false,
@@ -40,7 +41,6 @@ export default function ActivityDropdownEdit({ onSelect }: Props) {
     gcTime: Infinity,
   });
 
-
   const handleSearchChange = useDebouncedCallback((value: string) => {
     if (!value.trim()) {
       setFilteredActivities([]);
@@ -48,18 +48,19 @@ export default function ActivityDropdownEdit({ onSelect }: Props) {
       return;
     }
 
-    const filtered = data?.filter((activity) => {
-      const text = activity.name.toLowerCase();
-      return value.toLowerCase().split(" ").every((word) => text.includes(word));
-    }) || [];
+    const filtered =
+      data?.filter((activity) => {
+        const text = activity.name.toLowerCase();
+        return value
+          .toLowerCase()
+          .split(" ")
+          .every((word) => text.includes(word));
+      }) || [];
     setFilteredActivities(filtered);
     setIsSearching(false);
   }, 400);
 
-
-  const listData =
-    inputValue.length > 0 ? filteredActivities : data || [];
-
+  const listData = inputValue.length > 0 ? filteredActivities : data || [];
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
@@ -84,7 +85,6 @@ export default function ActivityDropdownEdit({ onSelect }: Props) {
             spellCheck={false}
           />
         </View>
-
 
         <View
           className="w-full  
@@ -142,7 +142,7 @@ export default function ActivityDropdownEdit({ onSelect }: Props) {
                           {item.name}
                         </AppText>
                         <AppText className="text-md text-gray-300 shrink-0">
-                          {item.category}
+                          {item.activity_categories[0]?.name}
                         </AppText>
                       </View>
                     </View>

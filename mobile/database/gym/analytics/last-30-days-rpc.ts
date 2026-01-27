@@ -1,7 +1,7 @@
 import { handleError } from "@/utils/handleError";
 import { supabase } from "@/lib/supabase";
 
-export async function last30DaysAnalytics() {
+export async function last30DaysAnalyticsRPC() {
   const {
     data: { session },
     error: sessionError,
@@ -11,23 +11,7 @@ export async function last30DaysAnalytics() {
     throw new Error("Unauthorized");
   }
 
-  const { data, error } = await supabase
-    .from("sessions")
-    .select(
-      `
-      *,
-      activities!inner(slug), 
-      gym_session_exercises(*, gym_exercises(*), 
-      gym_sets(*)
-      )
-      `,
-    )
-    .gte(
-      "created_at",
-      new Date(new Date().setDate(new Date().getDate() - 30)).toISOString(),
-    )
-    .eq("activities.slug", "gym")
-    .eq("user_id", session.user.id);
+  const { data, error } = await supabase.rpc("last_30d_analytics");
 
   if (error || !data) {
     handleError(error, {

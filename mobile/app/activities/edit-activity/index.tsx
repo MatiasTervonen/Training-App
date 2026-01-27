@@ -1,9 +1,14 @@
 import AppInput from "@/components/AppInput";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import SaveButton from "@/components/buttons/SaveButton";
 import Toast from "react-native-toast-message";
 import FullScreenLoader from "@/components/FullScreenLoader";
-import { View, TouchableWithoutFeedback, Keyboard, ScrollView } from "react-native";
+import {
+  View,
+  TouchableWithoutFeedback,
+  Keyboard,
+  ScrollView,
+} from "react-native";
 import AppText from "@/components/AppText";
 import { useQueryClient } from "@tanstack/react-query";
 import PageContainer from "@/components/PageContainer";
@@ -15,19 +20,20 @@ import AnimatedButton from "@/components/buttons/animatedButton";
 import CategoryDropdown from "@/Features/activities/components/categoryDropDown";
 import FullScreenModal from "@/components/FullScreenModal";
 
-type Activity = {
+export type UserActivity = {
   id: string;
   name: string;
-  category: string;
+  activity_categories: { name: string }[];
 };
 
 export default function EditActivity() {
   const [name, setName] = useState("");
-  const [category, setCategory] = useState("Cardio");
+  const [category, setCategory] = useState("");
+  const [categoryId, setCategoryId] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [selectedActivity, setSelectedActivity] = useState<Activity | null>(
-    null
+  const [selectedActivity, setSelectedActivity] = useState<UserActivity | null>(
+    null,
   );
   const [openCategoryModal, setOpenCategoryModal] = useState(false);
 
@@ -45,7 +51,7 @@ export default function EditActivity() {
 
     const activityData = {
       name,
-      category,
+      category_id: categoryId,
       id: selectedActivity!.id,
     };
 
@@ -57,7 +63,7 @@ export default function EditActivity() {
         type: "success",
         text1: "Activity edited successfully!",
       });
-      setName("");
+      resetFields();
     } catch {
       Toast.show({
         type: "error",
@@ -67,7 +73,6 @@ export default function EditActivity() {
       setIsSaving(false);
     }
   };
-
 
   const handleDeleteActivity = async (activityId: string) => {
     setIsDeleting(true);
@@ -96,19 +101,11 @@ export default function EditActivity() {
     }
   };
 
-  useEffect(() => {
-    if (selectedActivity) {
-      setName(selectedActivity.name);
-      setCategory(selectedActivity.category);
-    }
-  }, [selectedActivity]);
-
   const resetFields = () => {
     setName("");
-    setCategory("Cardio");
+    setCategory("");
     setSelectedActivity(null);
   };
-
 
   return (
     <>
@@ -116,6 +113,8 @@ export default function EditActivity() {
         <ActivityDropdownEdit
           onSelect={(activity) => {
             setSelectedActivity(activity);
+            setName(activity.name);
+            setCategory(activity.activity_categories[0]?.name ?? "");
           }}
         />
       ) : (
@@ -144,10 +143,13 @@ export default function EditActivity() {
                   isOpen={openCategoryModal}
                   onClose={() => setOpenCategoryModal(false)}
                 >
-                  <CategoryDropdown onSelect={(category) => {
-                    setCategory(category.name);
-                    setOpenCategoryModal(false);
-                  }} />
+                  <CategoryDropdown
+                    onSelect={(category) => {
+                      setCategoryId(category.id);
+                      setCategory(category.name);
+                      setOpenCategoryModal(false);
+                    }}
+                  />
                 </FullScreenModal>
               </View>
               <View className="mt-20 flex flex-col gap-5">
@@ -167,7 +169,10 @@ export default function EditActivity() {
               </View>
             </PageContainer>
           </TouchableWithoutFeedback>
-          <FullScreenLoader visible={isSaving} message={isDeleting ? "Deleting activity..." : "Saving activity..."} />
+          <FullScreenLoader
+            visible={isSaving}
+            message={isDeleting ? "Deleting activity..." : "Saving activity..."}
+          />
         </ScrollView>
       )}
     </>

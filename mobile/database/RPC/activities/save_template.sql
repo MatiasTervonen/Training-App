@@ -26,8 +26,8 @@ begin
         p_notes,
         s.geom,
         st.distance_meters
-    from activity_sessions s
-    join activity_session_stats st on st.session_id = s.id
+    from sessions s
+    join session_stats st on st.session_id = s.id
     where s.id = p_session_id
       and s.user_id = auth.uid()
       and s.geom is not null
@@ -40,7 +40,7 @@ begin
 
 -- update session with template id
 
-update activity_sessions s
+update sessions s
 set template_id = v_template_id
 where s.id = p_session_id
  and s.user_id = auth.uid();

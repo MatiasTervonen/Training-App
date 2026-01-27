@@ -3,13 +3,13 @@ import { handleError } from "@/utils/handleError";
 
 type Activity = {
   name: string;
-  category: string;
+  category_id: string;
 
 };
 
 export async function addActivity({
   name,
-  category,
+  category_id,
 }: Activity) {
 
 
@@ -18,7 +18,7 @@ export async function addActivity({
     .insert([
       {
         name,
-        category,
+        category_id,
       },
     ])
     .select()
@@ -26,6 +26,7 @@ export async function addActivity({
 
 
   if (error) {
+    console.error("Error adding new activity:", error);
     handleError(error, {
       message: "Error adding new activity",
       route: "/database/activities/add-activity",

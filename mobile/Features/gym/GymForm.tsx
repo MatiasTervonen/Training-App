@@ -470,7 +470,7 @@ export default function GymForm({
                 setNormalExercises([emptyExerciseEntry]);
                 setIsExerciseModalOpen(true);
               }}
-              className="mt-10  w-2/4 mx-auto items-center justify-center bg-blue-800 py-2 rounded-md border-2 border-blue-500"
+              className="mt-10 w-2/4 items-center justify-center mx-auto flex-row gap-2 bg-blue-800 py-2 rounded-md border-2 border-blue-500"
               label="Add Exercise"
             >
               <Plus size={20} color="#f3f4f6" />

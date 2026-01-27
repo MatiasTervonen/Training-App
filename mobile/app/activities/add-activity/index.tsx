@@ -16,6 +16,7 @@ import AnimatedButton from "@/components/buttons/animatedButton";
 export default function AddActivity() {
   const [name, setName] = useState("");
   const [category, setCategory] = useState("");
+  const [categoryId, setCategoryId] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [openCategoryModal, setOpenCategoryModal] = useState(false);
 
@@ -33,14 +34,14 @@ export default function AddActivity() {
 
     const activityData = {
       name,
-      category,
+      category_id: categoryId,
     };
 
     try {
       await addActivity(activityData);
 
       queryClient.refetchQueries({ queryKey: ["userActivities"], exact: true });
-      
+
       Toast.show({
         type: "success",
         text1: "Activity saved successfully!",
@@ -83,10 +84,13 @@ export default function AddActivity() {
               isOpen={openCategoryModal}
               onClose={() => setOpenCategoryModal(false)}
             >
-              <CategoryDropdown onSelect={(category) => {
-                setCategory(category.name);
-                setOpenCategoryModal(false);
-              }} />
+              <CategoryDropdown
+                onSelect={(category) => {
+                  setCategoryId(category.id);
+                  setCategory(category.name);
+                  setOpenCategoryModal(false);
+                }}
+              />
             </FullScreenModal>
           </View>
           <View className="mt-10">

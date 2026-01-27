@@ -15,13 +15,14 @@ set search_path = public, extensions
 as $$
 declare
     v_activity_id uuid;
+    v_activity_name text;
     v_track jsonb;
     v_position integer;
     v_distance numeric;
 begin 
 
 
-  insert into activity_sessions (
+  insert into sessions (
     title,
     notes,
     duration,
@@ -70,7 +71,7 @@ end loop;
 end if;
 
 if p_track is not null then 
-  update activity_sessions s 
+  update sessions s 
   set geom = (
     select ST_MakeLine(
       ST_SetSRID(
@@ -91,9 +92,14 @@ perform activities_compute_session_stats(v_activity_id, p_steps);
 -- Get distance only if we had track data
 if p_track is not null then
   select distance_meters into v_distance
-  from activity_session_stats
+  from session_stats
   where session_id = v_activity_id;
 end if;
+
+select name
+into v_activity_name
+from activities
+where id = p_activity_id;
 
 insert into feed_items (
   title,
@@ -105,7 +111,7 @@ insert into feed_items (
 values (
   p_title,
   'activity_sessions',
-  jsonb_build_object('duration', p_duration, 'start_time', p_start_time, 'end_time', p_end_time, 'distance', v_distance),
+  jsonb_build_object('duration', p_duration, 'start_time', p_start_time, 'end_time', p_end_time, 'distance', v_distance, 'activity_name', v_activity_name),
   v_activity_id,
   p_start_time
 );

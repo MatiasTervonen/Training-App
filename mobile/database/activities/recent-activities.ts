@@ -4,7 +4,7 @@ import { activities } from "@/types/models";
 
 export async function getRecentActivities() {
   const { data: activities, error } = await supabase
-    .from("activity_sessions")
+    .from("sessions")
     .select(`activity:activity_id (*)`)
     .order("id", { ascending: false })
     .limit(50);

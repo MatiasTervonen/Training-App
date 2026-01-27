@@ -1,4 +1,4 @@
-import { formatDate, formatDuration } from "@/lib/formatDate";
+import { formatDate, formatDuration, formatTime } from "@/lib/formatDate";
 import { useUserStore } from "@/lib/stores/useUserStore";
 import { full_gym_session, full_gym_exercises } from "@/types/models";
 import GroupExercises from "@/Features/gym/lib/GroupExercises";
@@ -18,7 +18,7 @@ export default function GymSession(gym_session: full_gym_session) {
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
 
   const groupedExercises = GroupExercises(
-    gym_session.gym_session_exercises || []
+    gym_session.gym_session_exercises || [],
   );
 
   const weightUnit =
@@ -50,21 +50,32 @@ export default function GymSession(gym_session: full_gym_session) {
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
       <PageContainer className="mb-10">
-        <View className="gap-2 justify-center items-center">
-          <AppText className="text-gray-400">
+        <View>
+          <AppText className="text-gray-400 text-center">
             {formatDate(gym_session.created_at)}
           </AppText>
-          <AppText className="text-2xl mt-2 text-center">
-            {gym_session.title}
-          </AppText>
-          <AppText className="text-lg mt-2">
-            Duration: {formatDuration(gym_session.duration)}
-          </AppText>
-          {gym_session.notes && (
-            <AppText className="text-lg mt-4 text-gray-200 whitespace-pre-wrap break-words overflow-hidden">
-              {gym_session.notes}
+          <LinearGradient
+            colors={["#1e3a8a", "#0f172a", "#0f172a"]}
+            start={{ x: 1, y: 0 }} // bottom-left
+            end={{ x: 0, y: 1 }} // top-right
+            className="items-center p-5 rounded-lg overflow-hidden shadow-md mt-5 gap-4"
+          >
+            <AppText className="text-2xl text-center">
+              {gym_session.title}
             </AppText>
-          )}
+            <AppText className="text-lg text-center">
+              {formatTime(gym_session.start_time)} -{" "}
+              {formatTime(gym_session.end_time)}
+            </AppText>
+            <AppText className="text-lg">
+              Duration: {formatDuration(gym_session.duration)}
+            </AppText>
+            {gym_session.notes && (
+              <AppText className="text-lg text-gray-200 whitespace-pre-wrap break-words overflow-hidden">
+                {gym_session.notes}
+              </AppText>
+            )}
+          </LinearGradient>
         </View>
         {Object.entries(groupedExercises).map(([superset_id, group]) => (
           <LinearGradient

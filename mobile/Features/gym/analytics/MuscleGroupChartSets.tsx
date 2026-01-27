@@ -1,37 +1,22 @@
-import { full_gym_session } from "@/types/models";
 import { useMemo } from "react";
 import { Dimensions, View } from "react-native";
 import AppText from "@/components/AppText";
 import AnimatedBar from "@/Features/gym/analytics/AnimatedBar";
 
+type sets_per_muscle_group = { group: string; count: number }[];
+
 export default function MuscleGroupChartSets({
   data,
 }: {
-  data: full_gym_session[];
+  data: sets_per_muscle_group;
 }) {
   const screenWidth = Dimensions.get("window").width;
 
-  function muscle_groupDataSets(data: full_gym_session[]) {
-    const muscleGroupSetCount: { [key: string]: number } = {};
-    data.forEach((session) => {
-      session.gym_session_exercises.forEach((exercise) => {
-        const name = exercise.gym_exercises.muscle_group;
-
-        exercise.gym_sets.forEach(() => {
-          muscleGroupSetCount[name] = (muscleGroupSetCount[name] || 0) + 1;
-        });
-      });
-    });
-    return muscleGroupSetCount;
-  }
-
   const chartData = useMemo(() => {
-    const entries = Object.entries(muscle_groupDataSets(data)).map(
-      ([name, value]) => ({
-        value,
-        label: name,
-      })
-    );
+    const entries = data.map(({ group, count }) => ({
+      value: count,
+      label: group,
+    }));
     return entries.sort((a, b) => b.value - a.value);
   }, [data]);
 

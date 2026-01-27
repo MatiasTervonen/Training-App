@@ -51,6 +51,8 @@ export type gym_sessions = Database["public"]["Tables"]["gym_sessions"]["Row"];
 
 export type gym_sets = Database["public"]["Tables"]["gym_sets"]["Row"];
 
+export type sessions = Database["public"]["Tables"]["sessions"]["Row"];
+
 export type gym_exercises =
   Database["public"]["Tables"]["gym_exercises"]["Row"];
 
@@ -71,14 +73,13 @@ export type ExercisePreview = Pick<
 
 export type activities = Pick<
   Database["public"]["Tables"]["activities"]["Row"],
-  "id" | "name" | "category" | "created_at"
+  "id" | "name" | "category_id" | "created_at"
 >;
 
-export type activity_session =
-  Database["public"]["Tables"]["activity_sessions"]["Row"];
+export type activity_session = Database["public"]["Tables"]["sessions"]["Row"];
 
-export type activity_session_stats =
-  Database["public"]["Tables"]["activity_session_stats"]["Row"];
+export type session_stats =
+  Database["public"]["Tables"]["session_stats"]["Row"];
 
 export type activity_gps_points =
   Database["public"]["Tables"]["activity_gps_points"]["Row"];
@@ -86,7 +87,7 @@ export type activity_gps_points =
 export type FullActivitySession = {
   session: activity_session;
   activity: activities | null;
-  stats: activity_session_stats | null;
+  stats: session_stats | null;
   route: {
     type: "LineString";
     coordinates: [number, number][];
@@ -109,6 +110,6 @@ export type full_gym_exercises = gym_session_exercises & {
   gym_sets: gym_sets[];
 };
 
-export type full_gym_session = gym_sessions & {
+export type full_gym_session = sessions & {
   gym_session_exercises: full_gym_exercises[];
 };

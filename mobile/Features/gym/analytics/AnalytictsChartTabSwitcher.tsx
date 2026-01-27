@@ -1,15 +1,19 @@
-import { full_gym_session } from "@/types/models";
 import { useState } from "react";
 import { View } from "react-native";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import MuscleGroupChart from "@/Features/gym/analytics/MuscleGroupChart";
 import MuscleGroupChartSets from "@/Features/gym/analytics/MuscleGroupChartSets";
 
-export default function ChartTabSwitcher({
-  data,
-}: {
-  data: full_gym_session[];
-}) {
+type ChartTabSwitcherProps = {
+  data: {
+    total_sessions: number;
+    avg_duration: number;
+    muscle_groups: { group: string; count: number }[];
+    sets_per_muscle_group: { group: string; count: number }[];
+  };
+};
+
+export default function ChartTabSwitcher({ data }: ChartTabSwitcherProps) {
   const [activeTab, setActiveTab] = useState<
     "muscleGroups" | "muscleGroupSets"
   >("muscleGroups");
@@ -40,9 +44,9 @@ export default function ChartTabSwitcher({
         />
       </View>
       <View className="mb-2">
-        {activeTab === "muscleGroups" && <MuscleGroupChart data={data} />}
+        {activeTab === "muscleGroups" && <MuscleGroupChart data={data.muscle_groups} />}
         {activeTab === "muscleGroupSets" && (
-          <MuscleGroupChartSets data={data} />
+          <MuscleGroupChartSets data={data.sets_per_muscle_group} />
         )}
       </View>
     </>

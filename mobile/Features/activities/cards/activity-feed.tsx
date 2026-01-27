@@ -8,6 +8,7 @@ import { FeedCardProps } from "@/types/session";
 type activityPayload = {
   duration: number;
   distance: number;
+  activity_name: string;
 };
 export default function ActivityCard({
   item,
@@ -65,7 +66,7 @@ export default function ActivityCard({
             <Activity size={20} color={pinned ? "#0f172a" : "#f3f4f6"} />
           </View>
           <AppText className={`${pinned ? "text-slate-900" : "text-gray-100"}`}>
-            Activity
+            {payload.activity_name || "Activity"}
           </AppText>
 
           <View>

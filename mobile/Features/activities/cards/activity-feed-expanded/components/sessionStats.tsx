@@ -31,7 +31,7 @@ export default function SessionStats({ activity_session }: SessionStatsProps) {
           <AppText>Moving Time</AppText>
           <AppText className="text-center">
             {formatDurationLong(
-              activity_session.stats?.moving_time_seconds ?? 0
+              activity_session.stats?.moving_time_seconds ?? 0,
             )}
           </AppText>
         </View>
@@ -52,10 +52,26 @@ export default function SessionStats({ activity_session }: SessionStatsProps) {
         </View>
         <View className="items-center gap-2 border-blue-500 border-2 py-2 px-4 rounded-md bg-slate-950">
           <View className="flex-row items-center gap-2">
+            <AppText>Avg Speed</AppText>
+          </View>
+          <AppText className="text-center">
+            {activity_session.stats?.avg_speed ?? 0}
+          </AppText>
+        </View>
+        <View className="items-center gap-2 border-blue-500 border-2 py-2 px-4 rounded-md bg-slate-950">
+          <View className="flex-row items-center gap-2">
             <AppText>Steps</AppText>
           </View>
           <AppText className="text-center">
             {activity_session.stats?.steps ?? 0}
+          </AppText>
+        </View>
+        <View className="items-center gap-2 border-blue-500 border-2 py-2 px-4 rounded-md bg-slate-950">
+          <View className="flex-row items-center gap-2">
+            <AppText>Calories</AppText>
+          </View>
+          <AppText className="text-center">
+            {activity_session.stats?.calories ?? 0}
           </AppText>
         </View>
       </View>

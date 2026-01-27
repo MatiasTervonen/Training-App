@@ -16,7 +16,7 @@ export async function editActivitySession({
 }: editActivity) {
   const updatedAt = new Date().toISOString();
 
-  const { data, error } = await supabase.rpc("activity_edit_activity_session", {
+  const { data, error } = await supabase.rpc("activity_edit_session", {
     p_id: id,
     p_title: title,
     p_notes: notes,

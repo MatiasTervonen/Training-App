@@ -25,9 +25,9 @@ create or replace function activities_get_full_session(
         'stats',
         to_jsonb(st)     
     )
-    from activity_sessions s
+    from sessions s
     left join activities a on s.activity_id = a.id
-    left join activity_session_stats st on s.id = st.session_id
+    left join session_stats st on s.id = st.session_id
     where s.id = p_session_id
     group by s.id, a.id, st.id;
     $$;

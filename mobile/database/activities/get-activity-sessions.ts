@@ -1,15 +1,7 @@
 import { supabase } from "@/lib/supabase";
 import { handleError } from "@/utils/handleError";
 
-export type ActivitySessionRecord = {
-  id: string;
-  created_at: string;
-  activity_name: string | null;
-};
-
-export async function getActivitySessions(
-  days: number = 90
-): Promise<ActivitySessionRecord[]> {
+export async function getActivitySessions(days: number = 90) {
   const {
     data: { session },
     error: sessionError,
@@ -24,13 +16,7 @@ export async function getActivitySessions(
 
   const { data, error } = await supabase
     .from("sessions")
-    .select(
-      `
-      id,
-      created_at,
-      activity:activity_id (name)
-    `
-    )
+    .select("id, created_at, activities(name)")
     .eq("user_id", session.user.id)
     .gte("created_at", startDate.toISOString())
     .order("created_at", { ascending: false });
@@ -47,8 +33,6 @@ export async function getActivitySessions(
   return (data ?? []).map((row) => ({
     id: row.id,
     created_at: row.created_at,
-    activity_name: Array.isArray(row.activity)
-      ? row.activity[0]?.name ?? null
-      : (row.activity as { name: string } | null)?.name ?? null,
+    activity_name: row.activities?.name ?? null,
   }));
 }

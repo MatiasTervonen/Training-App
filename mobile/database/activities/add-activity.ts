@@ -3,27 +3,22 @@ import { handleError } from "@/utils/handleError";
 
 type Activity = {
   name: string;
+  base_met: number;
   category_id: string;
-
 };
 
-export async function addActivity({
-  name,
-  category_id,
-}: Activity) {
-
-
+export async function addActivity({ name, base_met, category_id }: Activity) {
   const { error } = await supabase
     .from("activities")
     .insert([
       {
         name,
+        base_met,
         category_id,
       },
     ])
     .select()
     .single();
-
 
   if (error) {
     console.error("Error adding new activity:", error);

@@ -1,6 +1,5 @@
 import GymForm from "@/Features/gym/GymForm";
 import { useLocalSearchParams } from "expo-router";
-import { full_gym_session } from "@/types/models";
 import { useQuery } from "@tanstack/react-query";
 import { getFullGymSession } from "@/database/gym/get-full-gym-session";
 import Toast from "react-native-toast-message";
@@ -14,7 +13,7 @@ export default function EditGymScreen() {
     data: GymSessionFull,
     error: GymSessionError,
     isLoading: isLoadingGymSession,
-  } = useQuery<full_gym_session>({
+  } = useQuery({
     queryKey: ["fullGymSession", id],
     queryFn: () => getFullGymSession(id!),
     enabled: !!id,

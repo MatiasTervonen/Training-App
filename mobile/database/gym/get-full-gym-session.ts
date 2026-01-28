@@ -1,6 +1,5 @@
 import { supabase } from "@/lib/supabase";
 import { handleError } from "@/utils/handleError";
-import { full_gym_session } from "@/types/models";
 
 export async function getFullGymSession(sessionId: string) {
   if (!sessionId) {
@@ -15,13 +14,7 @@ export async function getFullGymSession(sessionId: string) {
       ascending: true,
     })
     .eq("id", sessionId)
-    .single<full_gym_session>();
-
-  data?.gym_session_exercises.forEach((exercise) => {
-    if (Array.isArray(exercise.gym_sets)) {
-      exercise.gym_sets.sort((a, b) => a.set_number - b.set_number);
-    }
-  });
+    .single();
 
   if (error || !data) {
     console.error("Error fetching gym session:", error);
@@ -33,5 +26,15 @@ export async function getFullGymSession(sessionId: string) {
     throw new Error("Error fetching gym session");
   }
 
+  data.gym_session_exercises.forEach((exercise) => {
+    if (Array.isArray(exercise.gym_sets)) {
+      exercise.gym_sets.sort((a, b) => a.set_number - b.set_number);
+    }
+  });
+
   return data;
 }
+
+export type FullGymSession = NonNullable<
+  Awaited<ReturnType<typeof getFullGymSession>>
+>;

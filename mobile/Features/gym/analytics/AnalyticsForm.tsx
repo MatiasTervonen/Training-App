@@ -1,6 +1,6 @@
 import { View } from "react-native";
 import AppText from "@/components/AppText";
-import { full_gym_session } from "@/types/models";
+import { FullGymSession } from "@/database/gym/get-full-gym-session";
 import ChartTabSwitcher from "@/Features/gym/analytics/AnalytictsChartTabSwitcher";
 import * as echarts from "echarts/core";
 import {
@@ -20,7 +20,7 @@ type AnalyticsFormProps = {
     muscle_groups: { group: string; count: number }[];
     sets_per_muscle_group: { group: string; count: number }[];
   };
-  heatmap: full_gym_session[];
+  heatmap: FullGymSession[];
 };
 
 echarts.use([

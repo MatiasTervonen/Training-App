@@ -10,6 +10,7 @@ import { getActivitySessions } from "@/database/activities/get-activity-sessions
 import { getTodaysSteps } from "@/Features/activities/analytics/getTodaysSteps";
 import Toast from "react-native-toast-message";
 import PageContainer from "@/components/PageContainer";
+import * as Device from "expo-device";
 
 type RangeType = "week" | "month" | "3months";
 
@@ -56,12 +57,15 @@ export default function ActivityAnalytics() {
   });
 
   useEffect(() => {
+    if (!Device.isDevice) return;
+
     const fetchTodaySteps = async () => {
       setLoadingToday(true);
       try {
         const steps = await getTodaysSteps();
         setTodaySteps(steps);
-      } catch {
+      } catch (error) {
+        console.error("Error fetching today's steps:", error);
         Toast.show({
           type: "error",
           text1: "Error fetching today's steps",
@@ -94,10 +98,7 @@ export default function ActivityAnalytics() {
   }
 
   return (
-    <ScrollView
-      className="flex-1"
-      showsVerticalScrollIndicator={false}
-    >
+    <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
       <PageContainer>
         <AppText className="text-2xl text-center mb-6">
           Activity Analytics

@@ -1,7 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import { handleError } from "@/utils/handleError";
 
-
 export async function getUserActivities() {
   const {
     data: { session },
@@ -14,7 +13,7 @@ export async function getUserActivities() {
 
   const { data, error } = await supabase
     .from("activities")
-    .select("id, name, activity_categories(name)")
+    .select("id, name, base_met, category_id, activity_categories(id, name)")
     .order("name", { ascending: true })
     .eq("user_id", session.user.id);
 
@@ -29,3 +28,5 @@ export async function getUserActivities() {
 
   return data ?? [];
 }
+
+export type UserActivity = Awaited<ReturnType<typeof getUserActivities>>[number];

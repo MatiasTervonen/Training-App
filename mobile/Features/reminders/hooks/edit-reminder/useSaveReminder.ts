@@ -1,6 +1,6 @@
 import Toast from "react-native-toast-message";
 import * as Notifications from "expo-notifications";
-import { FeedItemUI, full_reminder } from "@/types/session";
+import { FeedItemUI } from "@/types/session";
 import { editLocalReminder } from "@/database/reminders/edit-local-reminder";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -21,7 +21,7 @@ export default function useSaveReminder({
   notes: string;
   notifyAt: Date;
   setIsSaving: (isSaving: boolean) => void;
-  reminder: FeedItemUI | full_reminder;
+  reminder: FeedItemUI;
   onSave: (updateFeedItem: FeedItemUI) => void;
   onClose: () => void;
   scheduleNotifications: () => Promise<string | string[] | undefined>;
@@ -60,7 +60,7 @@ export default function useSaveReminder({
     try {
       // Cancel old notifications
       const stored = await AsyncStorage.getItem(
-        `notification:${(reminder as FeedItemUI).source_id ?? (reminder as full_reminder).id}`
+        `notification:${reminder.source_id ?? reminder.id}`
       );
       const oldIds: string[] = stored ? JSON.parse(stored) : [];
 
@@ -77,13 +77,13 @@ export default function useSaveReminder({
 
       if (normalizedIds.length) {
         await AsyncStorage.setItem(
-          `reminder:${(reminder as FeedItemUI).source_id ?? (reminder as full_reminder).id}`,
+          `reminder:${reminder.source_id ?? reminder.id}`,
           JSON.stringify(normalizedIds)
         );
       }
 
       const updatedFeedItem = await editLocalReminder({
-        id: (reminder as FeedItemUI).source_id ?? (reminder as full_reminder).id,
+        id: reminder.source_id,
         title,
         notes,
         seen_at: null,
@@ -100,7 +100,7 @@ export default function useSaveReminder({
         mode,
       });
 
-      await onSave(updatedFeedItem);
+      await onSave({ ...updatedFeedItem, feed_context: reminder.feed_context });
       onClose();
       Toast.show({
         type: "success",

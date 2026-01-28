@@ -19,15 +19,11 @@ import DeleteButton from "@/components/buttons/DeleteButton";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import CategoryDropdown from "@/Features/activities/components/categoryDropDown";
 import FullScreenModal from "@/components/FullScreenModal";
-
-export type UserActivity = {
-  id: string;
-  name: string;
-  activity_categories: { name: string }[];
-};
+import { UserActivity } from "@/database/activities/get-user-activities";
 
 export default function EditActivity() {
   const [name, setName] = useState("");
+  const [met, setMet] = useState("");
   const [category, setCategory] = useState("");
   const [categoryId, setCategoryId] = useState("");
   const [isSaving, setIsSaving] = useState(false);
@@ -47,10 +43,44 @@ export default function EditActivity() {
       });
       return;
     }
+
+    if (!category) {
+      Toast.show({
+        type: "error",
+        text1: "Please select a category",
+      });
+      return;
+    }
+
+    const metValue = parseFloat(met);
+
+    // Validate MET value
+    if (!met || met === "." || isNaN(metValue)) {
+      Toast.show({
+        type: "error",
+        text1: "Invalid MET value",
+        text2: "Please enter a valid number",
+      });
+      return;
+    }
+
+    if (metValue < 1 || metValue > 20) {
+      Toast.show({
+        type: "error",
+        text1: "MET out of range",
+        text2: "Please enter a value between 1.0 and 20.0",
+      });
+      return;
+    }
+
+    // Round to 2 decimals for consistency
+    const finalMet = Number(metValue.toFixed(2));
+
     setIsSaving(true);
 
     const activityData = {
       name,
+      base_met: finalMet,
       category_id: categoryId,
       id: selectedActivity!.id,
     };
@@ -103,7 +133,9 @@ export default function EditActivity() {
 
   const resetFields = () => {
     setName("");
+    setMet("");
     setCategory("");
+    setCategoryId("");
     setSelectedActivity(null);
   };
 
@@ -114,14 +146,16 @@ export default function EditActivity() {
           onSelect={(activity) => {
             setSelectedActivity(activity);
             setName(activity.name);
-            setCategory(activity.activity_categories[0]?.name ?? "");
+            setMet(activity.base_met?.toString() ?? "");
+            setCategoryId(activity.category_id ?? "");
+            setCategory(activity.activity_categories?.name ?? "");
           }}
         />
       ) : (
         <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
           <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <PageContainer className="justify-between flex-1">
-              <View className="gap-4">
+              <View>
                 <AppText className="text-2xl mb-10 text-center">
                   Edit Activity
                 </AppText>
@@ -132,6 +166,28 @@ export default function EditActivity() {
                     placeholder="Activity name"
                     label="Activity Name"
                   />
+                </View>
+                <View className="mb-5">
+                  <AppInput
+                    value={met}
+                    setValue={(text) => {
+                      // Only allow numbers and decimal point
+                      if (/^\d*\.?\d{0,2}$/.test(text) || text === "") {
+                        const numValue = parseFloat(text);
+
+                        if (text === "" || (numValue >= 1 && numValue <= 20)) {
+                          setMet(text);
+                        }
+                      }
+                    }}
+                    keyboardType="numeric"
+                    placeholder="e.g. 8.0"
+                    label="MET"
+                  />
+                  <AppText className="text-gray-400 text-sm mt-1">
+                    Used to estimate calories burned during the activity.
+                    Example: Rest 1.0 walking 3.5, running 7.5
+                  </AppText>
                 </View>
                 <AnimatedButton
                   onPress={() => setOpenCategoryModal(true)}

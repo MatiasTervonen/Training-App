@@ -28,7 +28,7 @@ import Timer from "@/components/timer";
 import PageContainer from "@/components/PageContainer";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import SubNotesInput from "@/components/SubNotesInput";
-import { full_gym_session } from "@/types/models";
+import { FullGymSession } from "@/database/gym/get-full-gym-session";
 import useSaveGymDraft from "@/Features/gym/hooks/useSaveGymDraft";
 import useStartExercise from "@/Features/gym/hooks/useStartExercise";
 import useLogSetForExercise from "@/Features/gym/hooks/useLogSetForExercise";
@@ -36,11 +36,12 @@ import useSaveSession from "@/Features/gym/hooks/useSaveSession";
 import { getPrefetchedHistoryPerCard } from "@/database/gym/prefetchedHistoryPerCard";
 import { updateNativeTimerLabel } from "@/native/android/NativeTimer";
 
-export default function GymForm({
-  initialData,
-}: {
-  initialData: full_gym_session;
-}) {
+type GymFormData = Pick<
+  FullGymSession,
+  "id" | "title" | "notes" | "duration" | "gym_session_exercises"
+>;
+
+export default function GymForm({ initialData }: { initialData: GymFormData }) {
   const session = initialData;
 
   const [title, setTitle] = useState(session.title ?? "");

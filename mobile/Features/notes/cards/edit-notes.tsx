@@ -56,7 +56,7 @@ export default function EditNotes({
   voiceRecordings,
   isLoadingVoice = false,
 }: Props) {
-  const payload = note.extra_fields as unknown as notesPayload;
+  const payload = note.extra_fields as notesPayload;
   const voiceCount = payload["voice-count"] ?? 0;
 
   const [title, setValue] = useState(note.title);
@@ -114,7 +114,7 @@ export default function EditNotes({
         newRecordings,
       });
 
-      onSave(updatedFeedItem);
+      onSave({ ...updatedFeedItem, feed_context: note.feed_context });
       onClose();
     } catch {
       Toast.show({

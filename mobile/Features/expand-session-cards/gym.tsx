@@ -1,6 +1,6 @@
 import { formatDate, formatDuration, formatTime } from "@/lib/formatDate";
 import { useUserStore } from "@/lib/stores/useUserStore";
-import { full_gym_session, full_gym_exercises } from "@/types/models";
+import { FullGymSession } from "@/database/gym/get-full-gym-session";
 import GroupExercises from "@/Features/gym/lib/GroupExercises";
 import { View, ScrollView } from "react-native";
 import AppText from "../../components/AppText";
@@ -13,7 +13,7 @@ import { useState } from "react";
 import AnimatedButton from "../../components/buttons/animatedButton";
 import ExerciseHistoryModal from "../gym/ExerciseHistoryModal";
 
-export default function GymSession(gym_session: full_gym_session) {
+export default function GymSession(gym_session: FullGymSession) {
   const [exerciseId, setExerciseId] = useState("");
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
 
@@ -24,8 +24,9 @@ export default function GymSession(gym_session: full_gym_session) {
   const weightUnit =
     useUserStore((state) => state.profile?.weight_unit) || "kg";
 
-  const isCardioExercise = (exercise: full_gym_exercises) =>
-    exercise.gym_exercises.main_group.toLowerCase() === "cardio";
+  const isCardioExercise = (
+    exercise: FullGymSession["gym_session_exercises"][number],
+  ) => exercise.gym_exercises?.main_group.toLowerCase() === "cardio";
 
   const {
     data: history = [],

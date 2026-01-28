@@ -3,15 +3,22 @@ import { handleError } from "@/utils/handleError";
 
 type Activity = {
   name: string;
+  base_met: number;
   category_id: string;
   id: string;
 };
 
-export async function editActivity({ name, category_id, id }: Activity) {
+export async function editActivity({
+  name,
+  base_met,
+  category_id,
+  id,
+}: Activity) {
   const { error } = await supabase
     .from("activities")
     .update({
       name,
+      base_met,
       category_id,
     })
     .eq("id", id);

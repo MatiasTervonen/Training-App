@@ -11,14 +11,8 @@ import AppInput from "@/components/AppInput";
 import { useState } from "react";
 
 import AnimatedButton from "@/components/buttons/animatedButton";
-import { getUserActivities } from "@/database/activities/get-user-activities";
+import { getUserActivities, UserActivity } from "@/database/activities/get-user-activities";
 import { useDebouncedCallback } from "use-debounce";
-
-type UserActivity = {
-  id: string;
-  name: string;
-  activity_categories: { name: string }[];
-};
 
 type Props = {
   onSelect: (activity: UserActivity) => void;
@@ -142,7 +136,7 @@ export default function UserActivityDropdownEdit({ onSelect }: Props) {
                           {item.name}
                         </AppText>
                         <AppText className="text-md text-gray-300 shrink-0">
-                          {item.activity_categories[0]?.name}
+                          {item.activity_categories?.name}
                         </AppText>
                       </View>
                     </View>

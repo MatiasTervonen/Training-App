@@ -1,14 +1,17 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { View } from "react-native";
 import AppText from "@/components/AppText";
-import { ActivitySessionRecord } from "@/database/activities/get-activity-sessions";
 import * as echarts from "echarts/core";
 import { PieChart } from "echarts/charts";
 import { LegendComponent } from "echarts/components";
 import { SkiaRenderer, SkiaChart } from "@wuba/react-native-echarts";
 
 type ActivityBreakdownChartProps = {
-  data: ActivitySessionRecord[];
+  data: {
+    id: string;
+    created_at: string;
+    activity_name: string | null;
+  }[];
   startDate: Date;
   endDate: Date;
 };
@@ -106,7 +109,7 @@ export default function ActivityBreakdownChart({
         },
       ],
     }),
-    [chartData]
+    [chartData],
   );
 
   useEffect(() => {
@@ -126,7 +129,9 @@ export default function ActivityBreakdownChart({
   if (totalSessions === 0) {
     return (
       <View className="bg-slate-900 rounded-2xl p-4 items-center justify-center min-h-[200px]">
-        <AppText className="text-gray-400">No activities in this period</AppText>
+        <AppText className="text-gray-400">
+          No activities in this period
+        </AppText>
       </View>
     );
   }

@@ -1,7 +1,6 @@
 import { Toast } from "react-native-toast-message/lib/src/Toast";
 import { confirmAction } from "@/lib/confirmAction";
 import { ExerciseEntry, FeedData } from "@/types/session";
-import { full_gym_session } from "@/types/models";
 import { editSession } from "@/database/gym/edit-session";
 import { saveSession } from "@/database/gym/save-session";
 import { useQueryClient } from "@tanstack/react-query";
@@ -25,7 +24,7 @@ export default function useSaveSession({
   isEditing: boolean;
   setIsSaving: (isSaving: boolean) => void;
   resetSession: () => void;
-  session: full_gym_session;
+  session: { id: string };
 }) {
   const router = useRouter();
   const queryClient = useQueryClient();

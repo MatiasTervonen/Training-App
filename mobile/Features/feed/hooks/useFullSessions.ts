@@ -2,11 +2,7 @@ import { FeedItemUI } from "@/types/session";
 import { useQuery } from "@tanstack/react-query";
 import { getFullGymSession } from "@/database/gym/get-full-gym-session";
 import { getFullTodoSession } from "@/database/todo/get-full-todo";
-import {
-  full_gym_session,
-  full_todo_session,
-  FullActivitySession,
-} from "@/types/models";
+import { FullActivitySession } from "@/types/models";
 import { getFullActivitySession } from "@/database/activities/get-full-activity-session";
 import {
   getFullNotesSession,
@@ -65,7 +61,7 @@ export default function useFullSessions(
     error: GymSessionError,
     isLoading: isLoadingGymSession,
     refetch: refetchFullGym,
-  } = useQuery<full_gym_session>({
+  } = useQuery({
     queryKey: ["fullGymSession", gymId],
     queryFn: () => getFullGymSession(gymId!),
     enabled: !!gymId,

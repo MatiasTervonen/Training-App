@@ -16,32 +16,35 @@ export type Database = {
     Tables: {
       activities: {
         Row: {
-          category_id: string | null
+          base_met: number
+          category_id: string
           created_at: string
           id: string
           is_active: boolean
           name: string
-          slug: string
+          slug: string | null
           updated_at: string | null
           user_id: string | null
         }
         Insert: {
-          category_id?: string | null
+          base_met: number
+          category_id: string
           created_at?: string
           id?: string
           is_active?: boolean
           name: string
-          slug: string
+          slug?: string | null
           updated_at?: string | null
           user_id?: string | null
         }
         Update: {
-          category_id?: string | null
+          base_met?: number
+          category_id?: string
           created_at?: string
           id?: string
           is_active?: boolean
           name?: string
-          slug?: string
+          slug?: string | null
           updated_at?: string | null
           user_id?: string | null
         }
@@ -51,6 +54,13 @@ export type Database = {
             columns: ["category_id"]
             isOneToOne: false
             referencedRelation: "activity_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "activities_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
             referencedColumns: ["id"]
           },
         ]
@@ -77,7 +87,15 @@ export type Database = {
           slug?: string | null
           user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "activity_categories_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       activity_gps_points: {
         Row: {
@@ -160,6 +178,13 @@ export type Database = {
             columns: ["activity_id"]
             isOneToOne: false
             referencedRelation: "activities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "activity_templates_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
             referencedColumns: ["id"]
           },
         ]
@@ -1021,7 +1046,15 @@ export type Database = {
           user_id?: string
           weekdays?: Json | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "local_reminders_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       notes: {
         Row: {
@@ -1094,6 +1127,13 @@ export type Database = {
             referencedRelation: "notes"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "notes_voice_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
         ]
       }
       pinned_items: {
@@ -1161,41 +1201,6 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: []
-      }
-      reminder_occurrences: {
-        Row: {
-          completed_at: string | null
-          created_at: string
-          id: string
-          reminder_id: string
-          scheduled_at: string
-          user_id: string
-        }
-        Insert: {
-          completed_at?: string | null
-          created_at?: string
-          id?: string
-          reminder_id: string
-          scheduled_at: string
-          user_id?: string
-        }
-        Update: {
-          completed_at?: string | null
-          created_at?: string
-          id?: string
-          reminder_id?: string
-          scheduled_at?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "reminder_occurrences_reminder_id_fkey"
-            columns: ["reminder_id"]
-            isOneToOne: false
-            referencedRelation: "local_reminders"
-            referencedColumns: ["id"]
-          },
-        ]
       }
       session_stats: {
         Row: {
@@ -1316,6 +1321,44 @@ export type Database = {
             columns: ["template_id"]
             isOneToOne: false
             referencedRelation: "activity_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      steps_daily: {
+        Row: {
+          created_at: string
+          day: string
+          id: string
+          steps: number
+          timezone: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          day: string
+          id?: string
+          steps: number
+          timezone: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          day?: string
+          id?: string
+          steps?: number
+          timezone?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "steps_daily_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
             referencedColumns: ["id"]
           },
         ]

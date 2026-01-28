@@ -123,7 +123,7 @@ export default function HandleEditGlobalReminder({
         await setNotification(reminder.source_id);
       }
 
-      onSave(updatedFeedItem);
+      onSave({ ...updatedFeedItem, feed_context: reminder.feed_context });
       onClose();
     } catch {
       Toast.show({

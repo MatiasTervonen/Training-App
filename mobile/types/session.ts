@@ -1,4 +1,3 @@
-import { Json } from "./database.types";
 import { feed_items, notes } from "./models";
 
 export type Template = {
@@ -24,8 +23,8 @@ type SessionSet = {
   reps: number | null;
   rpe: string | null;
   set_number: number;
-  time_min: number;
-  distance_meters: number;
+  time_min: number | null;
+  distance_meters: number | null;
 };
 
 export type HistoryResult = ({

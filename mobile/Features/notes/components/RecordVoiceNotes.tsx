@@ -22,7 +22,12 @@ export default function RecordVoiceNotes({
 }: RecordVoiceNotesProps) {
   const [isPaused, setIsPaused] = useState(false);
 
-  const audioRecorder = useAudioRecorder(RecordingPresets.LOW_QUALITY);
+  RecordingPresets.VOICE_HIGH_QUALITY = {
+    ...RecordingPresets.HIGH_QUALITY,
+    numberOfChannels: 1, // Only change this
+  };
+
+  const audioRecorder = useAudioRecorder(RecordingPresets.VOICE_HIGH_QUALITY);
   const recorderState = useAudioRecorderState(audioRecorder);
 
   const record = async () => {

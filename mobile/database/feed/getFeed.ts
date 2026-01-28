@@ -52,16 +52,16 @@ export default async function getFeed({
 
   const pinned = (pinnedResult.data ?? []).map((item) => ({
     ...item.feed_items,
-    feed_context: "pinned",
-  })) as unknown as FeedItemUI[];
+    feed_context: "pinned" as const,
+  }));
 
   const pinnedIds = new Set(pinned.map((item) => item.id));
 
   const feed = [
     ...pinned,
-    ...(feedResult.data as feed_items[])
-      .filter((i: feed_items) => !pinnedIds.has(i.id))
-      .map((item: feed_items) => ({
+    ...feedResult.data
+      .filter((i) => !pinnedIds.has(i.id))
+      .map((item) => ({
         ...item,
         feed_context: "feed" as const,
       })),

@@ -3,11 +3,18 @@ import AppText from "@/components/AppText";
 import { weight } from "@/types/session";
 import WeightChart from "@/Features/weight/WeightChart";
 import AnimatedButton from "@/components/buttons/animatedButton";
-import AppTextNC from "@/components/AppTextNC";
+
+type RangeType = "week" | "month" | "year";
+
+const ranges: { key: RangeType; label: string }[] = [
+  { key: "week", label: "7D" },
+  { key: "month", label: "30D" },
+  { key: "year", label: "1Y" },
+];
 
 type HeaderAllDataTableProps = {
-  range: "week" | "month" | "year";
-  setRange: (range: "week" | "month" | "year") => void;
+  range: RangeType;
+  setRange: (range: RangeType) => void;
   isLoading: boolean;
   error: unknown;
   data: weight[];
@@ -23,22 +30,23 @@ export default function HeaderAllDataTable({
   return (
     <>
       <AppText className="text-2xl my-5 text-center">Weight Analytics</AppText>
-      <View className="flex-row justify-center gap-3 mb-5">
-        {["week", "month", "year"].map((option) => (
+      <View className="flex-row bg-slate-800 rounded-lg p-1 mb-5 mx-4">
+        {ranges.map((option) => (
           <AnimatedButton
-            key={option}
-            className={`px-4 py-2 m-1 rounded-lg ${
-              range === option ? "bg-blue-600" : "bg-gray-600"
+            key={option.key}
+            onPress={() => setRange(option.key)}
+            tabClassName="flex-1"
+            className={`py-2 rounded-md ${
+              range === option.key ? "bg-slate-700" : ""
             }`}
-            onPress={() => setRange(option as "week" | "month" | "year")}
           >
-            <AppTextNC
-              className={`text-center ${
-                range === option ? "text-cyan-300" : "text-gray-100"
+            <AppText
+              className={`text-center font-medium ${
+                range === option.key ? "text-blue-400" : "text-gray-200"
               }`}
             >
-              {option.charAt(0).toUpperCase() + option.slice(1)}
-            </AppTextNC>
+              {option.label}
+            </AppText>
           </AnimatedButton>
         ))}
       </View>

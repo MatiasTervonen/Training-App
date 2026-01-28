@@ -2,7 +2,7 @@ import "@/Features/activities/lib/locationTask";
 import "@/lib/nativewindInterop";
 
 import { Slot, usePathname } from "expo-router";
-import { StatusBar } from "react-native";
+import { StatusBar, Platform } from "react-native";
 import { useFonts } from "expo-font";
 import { useEffect } from "react";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -32,6 +32,9 @@ import Mapbox from "@rnmapbox/maps";
 import TimerFinishListener from "@/Features/layout/TimerFinished";
 import AppStatePermissionListener from "@/Features/push-notifications/AppStatePermissionListener";
 import GpsTrackingPermission from "@/Features/activities/gpsToggle/gpsTrackingPermission";
+import { backfillMissingDaysThrottled } from "@/database/activities/syncStepsToDatabase";
+import * as Device from "expo-device";
+import { hasStepsPermission } from "@/Features/activities/stepToggle/stepPermission";
 
 Mapbox.setAccessToken(process.env.EXPO_PUBLIC_MAPBOX_PUBLIC_TOKEN!);
 
@@ -70,10 +73,23 @@ export default Sentry.wrap(function RootLayout() {
   // handle notification response when app is opened from notification
   useNotificationResponse();
 
-  // Configure Notification Channels for Android
+  // Configure Notification Channels for Android and Push Notifications
   useEffect(() => {
     configureNotificationChannels();
     configurePushNotificationsWhenAppIsOpen();
+
+    // Only run on physical Android devic
+    if (Platform.OS === "android" && Device.isDevice) {
+      const syncSteps = async () => {
+        const canReadSteps = await hasStepsPermission();
+
+        if (canReadSteps) {
+          backfillMissingDaysThrottled();
+        }
+      };
+
+      syncSteps();
+    }
   }, []);
 
   // reset feed ready when app is mounted

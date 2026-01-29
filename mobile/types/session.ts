@@ -178,6 +178,7 @@ export type full_todo_session_optional_id = {
     updated_at: string | null;
     user_id: string;
   }[];
+  feed_context: "pinned" | "feed";
 };
 
 export type LatestHistoryPerExercise = {

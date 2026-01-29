@@ -1,5 +1,6 @@
 import { View, ActivityIndicator } from "react-native";
 import AppText from "@/components/AppText";
+import AppTextNC from "@/components/AppTextNC";
 import { weight } from "@/types/session";
 import WeightChart from "@/Features/weight/WeightChart";
 import AnimatedButton from "@/components/buttons/animatedButton";
@@ -40,13 +41,13 @@ export default function HeaderAllDataTable({
               range === option.key ? "bg-slate-700" : ""
             }`}
           >
-            <AppText
+            <AppTextNC
               className={`text-center font-medium ${
-                range === option.key ? "text-blue-400" : "text-gray-200"
+                range === option.key ? "text-cyan-400" : "text-gray-200"
               }`}
             >
               {option.label}
-            </AppText>
+            </AppTextNC>
           </AnimatedButton>
         ))}
       </View>

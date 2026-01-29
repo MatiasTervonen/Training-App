@@ -2,7 +2,7 @@ import { useState } from "react";
 import SaveButton from "@/components/buttons/SaveButton";
 import FullScreenLoader from "@/components/FullScreenLoader";
 import Toast from "react-native-toast-message";
-import { full_todo_session_optional_id, FeedItemUI } from "../../types/session";
+import { full_todo_session_optional_id, FeedItemUI } from "@/types/session";
 import { editTodo } from "@/database/todo/edit-todo";
 import SubNotesInput from "@/components/SubNotesInput";
 import AppInput from "@/components/AppInput";
@@ -116,7 +116,7 @@ export default function EditTodo({ todo_session, onClose, onSave }: Props) {
         updated_at: updated,
       });
 
-      onSave(updatedFeedItem);
+      onSave({ ...updatedFeedItem, feed_context: todo_session.feed_context });
       onClose();
       Toast.show({
         type: "success",

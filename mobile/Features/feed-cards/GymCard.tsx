@@ -1,9 +1,8 @@
-import { Dumbbell, Ellipsis, SquareArrowOutUpRight } from "lucide-react-native";
-import { View, TouchableOpacity } from "react-native";
+import { Dumbbell, Timer } from "lucide-react-native";
+import { View } from "react-native";
 import AppText from "@/components/AppText";
-import DropdownMenu from "@/components/DropdownMenu";
-import { formatDate } from "@/lib/formatDate";
 import { FeedCardProps } from "@/types/session";
+import BaseFeedCard from "./BaseFeedCard";
 
 type gymPayload = {
   duration: number;
@@ -21,91 +20,44 @@ export default function GymCard({
 }: FeedCardProps) {
   const payload = item.extra_fields as gymPayload;
 
-  const formatDuration = (seconds: number) => {
-    const totalMinutes = Math.floor(seconds / 60);
-    const hours = Math.floor(totalMinutes / 60);
-    const minutes = totalMinutes % 60;
-    if (hours > 0) {
-      return `${hours}h ${minutes}m`;
-    } else {
-      return `${minutes}m`;
-    }
-  };
-
   return (
-    <View
-      className={`
-       border rounded-md flex-col justify-between transition-colors min-h-[159px] ${
-         pinned
-           ? `border-yellow-200 bg-yellow-200`
-           : "bg-slate-700 border-gray-100"
-       }`}
-    >
-      <View className="flex-row justify-between items-center mt-2 mx-4">
-        <AppText
-          className={`flex-1 mr-8 underline text-lg  ${
-            pinned
-              ? "text-slate-900 border-slate-900"
-              : "text-gray-100 border-gray-100"
-          }`}
-          numberOfLines={1}
-          ellipsizeMode="tail"
-        >
-          {item.title}
-        </AppText>
-        <DropdownMenu
-          button={<Ellipsis size={20} color={pinned ? "#0f172a" : "#f3f4f6"} />}
-          pinned={pinned}
-          onEdit={onEdit}
-          onTogglePin={onTogglePin}
-          onDelete={onDelete}
-        />
-      </View>
-
-      {payload.exercises_count > 0 && payload.sets_count > 0 && (
-        <View className="flex-row">
-          <AppText
-            className={`ml-4 ${pinned ? "text-slate-900" : "text-gray-100"}`}
-          >
-            Exercises: {payload.exercises_count}
-          </AppText>
-          <AppText
-            className={`ml-4 ${pinned ? "text-slate-900" : "text-gray-100"}`}
-          >
-            Sets: {payload.sets_count}
-          </AppText>
+    <BaseFeedCard
+      item={item}
+      pinned={pinned}
+      onTogglePin={onTogglePin}
+      onDelete={onDelete}
+      onExpand={onExpand}
+      onEdit={onEdit}
+      typeIcon={<Dumbbell size={20} color={pinned ? "#0f172a" : "#f3f4f6"} />}
+      typeName={"Gym"}
+      statsContent={
+        <View className="flex-row ml-4 rounded-md py-4 px-6 bg-slate-950/50 items-center gap-4">
+          {payload.exercises_count > 0 && payload.sets_count > 0 && (
+            <View className="gap-4 flex-row items-center">
+              <AppText
+                className={` ${pinned ? "text-slate-900" : "text-gray-100"}`}
+              >
+                Exercises: {payload.exercises_count}
+              </AppText>
+              <AppText
+                className={`${pinned ? "text-slate-900" : "text-gray-100"}`}
+              >
+                Sets: {payload.sets_count}
+              </AppText>
+            </View>
+          )}
+          {payload.duration > 0 && (
+            <View className="flex-row items-center gap-2">
+              <Timer size={20} color={pinned ? "#0f172a" : "#f3f4f6"} />
+              <AppText
+                className={` ${pinned ? "text-slate-900" : "text-gray-100"}`}
+              >
+                {Math.floor(payload.duration / 60)} min
+              </AppText>
+            </View>
+          )}
         </View>
-      )}
-
-      <View className="flex-row justify-between items-center mt-2 bg-black/40 rounded-b-md">
-        <View className="flex-row items-center gap-4">
-          <View className="pl-2">
-            <Dumbbell size={20} color={pinned ? "#0f172a" : "#f3f4f6"} />
-          </View>
-          <AppText className={`${pinned ? "text-slate-900" : "text-gray-100"}`}>
-            Gym
-          </AppText>
-
-          <View>
-            <AppText
-              className={`${pinned ? "text-slate-900" : "text-gray-100"}`}
-            >
-              {formatDate(item.created_at)}
-            </AppText>
-          </View>
-          <AppText className={`${pinned ? "text-slate-900" : "text-gray-100"}`}>
-            {formatDuration(payload.duration)}
-          </AppText>
-        </View>
-        <TouchableOpacity
-          onPress={() => {
-            onExpand();
-          }}
-          className="bg-blue-500 p-2 rounded-br-md"
-        >
-          <SquareArrowOutUpRight size={20} color="#f3f4f6" />
-        </TouchableOpacity>
-      </View>
-    </View>
+      }
+    />
   );
 }

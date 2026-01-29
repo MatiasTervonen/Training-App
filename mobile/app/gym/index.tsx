@@ -30,15 +30,15 @@ export default function SessionsScreen() {
         onPress={handleClick}
       />
 
-      <View className="border border-gray-400 rounded-md my-2" />
+      <View className="border border-gray-400 rounded-md" />
       <LinkButton label="Create template" href="/gym/create-template" />
       <LinkButton label="Templates" href="/gym/templates" />
 
-      <View className="border border-gray-400 rounded-md my-2" />
+      <View className="border border-gray-400 rounded-md" />
       <LinkButton label="Add Exercise" href="/gym/add-exercise" />
       <LinkButton label="Edit Exercise" href="/gym/edit-exercise" />
 
-      <View className="border border-gray-400 rounded-md my-2" />
+      <View className="border border-gray-400 rounded-md" />
       <LinkButton label="Workout Analytics" href="/gym/workout-analytics">
         <ChartNoAxesCombined color="#f3f4f6" className="ml-2" />
       </LinkButton>

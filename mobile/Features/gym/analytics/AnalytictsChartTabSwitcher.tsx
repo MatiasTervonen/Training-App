@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { View } from "react-native";
 import AnimatedButton from "@/components/buttons/animatedButton";
+import AppText from "@/components/AppTextNC";
 import MuscleGroupChart from "@/Features/gym/analytics/MuscleGroupChart";
 import MuscleGroupChartSets from "@/Features/gym/analytics/MuscleGroupChartSets";
 
@@ -26,25 +27,35 @@ export default function ChartTabSwitcher({ data }: ChartTabSwitcherProps) {
           className={`px-4 py-2 w-[150px] rounded-xl ${
             activeTab === "muscleGroups" ? "bg-gray-800" : ""
           }`}
-          textClassName={`text-center ${
-            activeTab === "muscleGroups" ? "text-cyan-400" : "text-gray-100"
-          }`}
-          label="exercises"
-        />
+        >
+          <AppText
+            className={`text-center text-lg ${
+              activeTab === "muscleGroups" ? "text-cyan-400" : "text-gray-100"
+            }`}
+          >
+            Exercises
+          </AppText>
+        </AnimatedButton>
 
         <AnimatedButton
           onPress={() => setActiveTab("muscleGroupSets")}
           className={`px-4 py-2 w-[150px] rounded-xl ${
             activeTab === "muscleGroupSets" ? "bg-gray-800" : ""
           }`}
-          textClassName={`text-center ${
-            activeTab === "muscleGroupSets" ? "text-cyan-400" : "text-gray-100"
-          }`}
-          label="Sets"
-        />
+        >
+          <AppText
+            className={`text-center text-lg ${
+              activeTab === "muscleGroupSets" ? "text-cyan-400" : "text-gray-100"
+            }`}
+          >
+            Sets
+          </AppText>
+        </AnimatedButton>
       </View>
       <View className="mb-2">
-        {activeTab === "muscleGroups" && <MuscleGroupChart data={data.muscle_groups} />}
+        {activeTab === "muscleGroups" && (
+          <MuscleGroupChart data={data.muscle_groups} />
+        )}
         {activeTab === "muscleGroupSets" && (
           <MuscleGroupChartSets data={data.sets_per_muscle_group} />
         )}

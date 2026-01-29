@@ -52,13 +52,13 @@ export default function AnalyticsScreen() {
           <AppText className="text-red-500 text-center mt-20 text-lg">
             Error loading workout data. Try again!
           </AppText>
-        ) : data.length === 0 ? (
+        ) : !data || data.total_sessions === 0 ? (
           <AppText className="text-gray-300 text-center mt-20 text-lg">
             No workout data available. Start logging your workouts to see
             analytics!
           </AppText>
         ) : (
-          <AnalyticsForm data={data ?? []} heatmap={heatMap ?? []} />
+          <AnalyticsForm data={data} heatmap={heatMap ?? []} />
         )}
       </PageContainer>
     </ScrollView>

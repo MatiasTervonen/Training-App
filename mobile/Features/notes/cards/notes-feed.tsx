@@ -1,13 +1,8 @@
-import {
-  NotebookPen,
-  Ellipsis,
-  SquareArrowOutUpRight,
-} from "lucide-react-native";
-import { View, TouchableOpacity } from "react-native";
+import { NotebookPen } from "lucide-react-native";
 import AppText from "@/components/AppText";
-import DropdownMenu from "@/components/DropdownMenu";
-import { formatDate } from "@/lib/formatDate";
 import { FeedCardProps } from "@/types/session";
+import BaseFeedCard from "@/Features/feed-cards/BaseFeedCard";
+import { View } from "react-native";
 
 type notesPayload = {
   notes: string;
@@ -24,84 +19,30 @@ export default function NotesCard({
   const payload = item.extra_fields as notesPayload;
 
   return (
-    <View
-      className={`
-       border rounded-md flex-col justify-between transition-colors min-h-[159px] ${
-         pinned
-           ? `border-yellow-200 bg-yellow-200`
-           : "bg-slate-700 border-gray-100"
-       }`}
-    >
-      <View className="justify-between flex-1">
-        <View className="flex-row justify-between items-center mt-2 mx-4">
-          <AppText
-            className={`flex-1 mr-8 underline text-lg ${
-              pinned ? "text-slate-900 border-slate-900" : "text-gray-100"
-            }`}
-            numberOfLines={1}
-            ellipsizeMode="tail"
-          >
-            {item.title}
-          </AppText>
-
-          <DropdownMenu
-            button={
-              <Ellipsis size={20} color={pinned ? "#0f172a" : "#f3f4f6"} />
-            }
-            pinned={pinned}
-            onEdit={onEdit}
-            onTogglePin={onTogglePin}
-            onDelete={onDelete}
-          />
-        </View>
-
-        {payload.notes && (
-          <AppText
-            className={`ml-4 mr-5 ${
-              pinned ? "text-slate-900" : "text-gray-100"
-            }`}
-            numberOfLines={2}
-          >
-            {payload.notes}
-          </AppText>
-        )}
-
-        {item.updated_at ? (
-          <AppText
-            className={`ml-4 text-sm  ${
-              pinned ? "text-slate-900" : "text-yellow-500"
-            } `}
-          >
-            updated: {formatDate(item.updated_at)}
-          </AppText>
-        ) : (
-          <AppText className="min-h-5"></AppText>
-        )}
-      </View>
-      <View className="flex-row justify-between items-center mt-2 bg-black/40 rounded-b-md">
-        <View className="flex-row items-center gap-4">
-          <View className="pl-2">
-            <NotebookPen size={20} color={pinned ? "#0f172a" : "#f3f4f6"} />
-          </View>
-          <AppText className={`${pinned ? "text-slate-900" : "text-gray-100"}`}>
-            Notes
-          </AppText>
-
-          <View>
+    <BaseFeedCard
+      item={item}
+      pinned={pinned}
+      onTogglePin={onTogglePin}
+      onDelete={onDelete}
+      onExpand={onExpand}
+      onEdit={onEdit}
+      typeIcon={
+        <NotebookPen size={20} color={pinned ? "#0f172a" : "#f3f4f6"} />
+      }
+      typeName={"Notes"}
+      statsContent={
+        <View>
+          {payload.notes && (
             <AppText
-              className={`${pinned ? "text-slate-900" : "text-gray-100"}`}
+              className={`ml-4 ${pinned ? "text-slate-900" : "text-gray-100"}`}
+              numberOfLines={2}
             >
-              {formatDate(item.created_at)}
+              {payload.notes}
             </AppText>
-          </View>
+          )}
         </View>
-        <TouchableOpacity
-          onPress={onExpand}
-          className="bg-blue-500 p-2 rounded-br-md"
-        >
-          <SquareArrowOutUpRight size={20} color="#f3f4f6" />
-        </TouchableOpacity>
-      </View>
-    </View>
+      }
+      showUpdatedAt={true}
+    />
   );
 }

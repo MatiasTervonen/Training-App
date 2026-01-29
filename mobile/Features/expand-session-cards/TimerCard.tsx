@@ -4,6 +4,7 @@ import { View } from "react-native";
 import AppText from "@/components/AppText";
 import SaveButton from "@/components/buttons/SaveButton";
 import DeleteButton from "@/components/buttons/DeleteButton";
+import EditButton from "@/components/buttons/EditButton";
 import PageContainer from "@/components/PageContainer";
 import { TimerIcon } from "lucide-react-native";
 
@@ -14,7 +15,7 @@ type Props = {
   onStarTimer: () => void;
 };
 
-export default function TimerCard({ item, onDelete, onStarTimer }: Props) {
+export default function TimerCard({ item, onDelete, onEdit, onStarTimer }: Props) {
   return (
     <PageContainer className="justify-between pb-5">
       <View>
@@ -44,6 +45,7 @@ export default function TimerCard({ item, onDelete, onStarTimer }: Props) {
 
       <View className="mt-10 gap-4">
         <SaveButton onPress={onStarTimer} label="Start" />
+        <EditButton onPress={onEdit} label="Edit" />
         <DeleteButton onPress={onDelete} label="Delete" />
       </View>
     </PageContainer>

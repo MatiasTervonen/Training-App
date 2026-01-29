@@ -205,7 +205,6 @@ export async function guestLogIn({
 }: GuestSignInProps) {
   setLoadingMessage("Logging in as guest...");
   setLoading(true);
-  await supabase.auth.signInAnonymously();
 
   const { error } = await supabase.auth.signInAnonymously();
 
@@ -216,6 +215,8 @@ export async function guestLogIn({
       method: "POST",
     });
     Alert.alert("Error logging in as guest");
+    setLoading(false);
+    return;
   }
 
   onSuccess();

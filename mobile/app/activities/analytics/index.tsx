@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { View, ActivityIndicator, ScrollView } from "react-native";
 import { useQuery } from "@tanstack/react-query";
 import AppText from "@/components/AppText";
+import AppTextNC from "@/components/AppTextNC";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import StepsChart from "@/Features/activities/analytics/StepsChart";
 import ActivityBreakdownChart from "@/Features/activities/analytics/ActivityBreakdownChart";
@@ -113,7 +114,7 @@ export default function ActivityAnalytics() {
                 selectedRange === range.key ? "bg-slate-700" : ""
               }`}
             >
-              <AppText
+              <AppTextNC
                 className={`text-center font-medium ${
                   selectedRange === range.key
                     ? "text-green-400"
@@ -121,7 +122,7 @@ export default function ActivityAnalytics() {
                 }`}
               >
                 {range.label}
-              </AppText>
+              </AppTextNC>
             </AnimatedButton>
           ))}
         </View>

@@ -1,7 +1,14 @@
 import { handleError } from "@/utils/handleError";
 import { supabase } from "@/lib/supabase";
 
-export async function last30DaysAnalyticsRPC() {
+export type Last30DaysAnalytics = {
+  total_sessions: number;
+  avg_duration: number;
+  muscle_groups: { group: string; count: number }[];
+  sets_per_muscle_group: { group: string; count: number }[];
+};
+
+export async function last30DaysAnalyticsRPC(): Promise<Last30DaysAnalytics> {
   const {
     data: { session },
     error: sessionError,

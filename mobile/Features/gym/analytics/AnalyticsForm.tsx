@@ -12,14 +12,10 @@ import { HeatmapChart } from "echarts/charts";
 import { SkiaRenderer, SkiaChart } from "@wuba/react-native-echarts";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { formatDate, formatDuration } from "@/lib/formatDate";
+import { Last30DaysAnalytics } from "@/database/gym/analytics/last-30-days-rpc";
 
 type AnalyticsFormProps = {
-  data: {
-    total_sessions: number;
-    avg_duration: number;
-    muscle_groups: { group: string; count: number }[];
-    sets_per_muscle_group: { group: string; count: number }[];
-  };
+  data: Last30DaysAnalytics;
   heatmap: FullGymSession[];
 };
 
@@ -65,7 +61,10 @@ export default function AnalyticsForm({ data, heatmap }: AnalyticsFormProps) {
         confine: true,
         position: "top",
         backgroundColor: "#020617",
-        textStyle: { color: "#f3f4f6" },
+        textStyle: {
+          color: "#f3f4f6",
+          fontFamily: "Russo-One",
+        },
         borderColor: "#2563eb",
         formatter: function (params: any) {
           const { value, title } = params.data || {};
@@ -81,9 +80,6 @@ export default function AnalyticsForm({ data, heatmap }: AnalyticsFormProps) {
           color: ["#2563eb"],
         },
       },
-      dayLabel: {
-        nameMap: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
-      },
       calendar: {
         top: 20,
         left: 45,
@@ -96,6 +92,13 @@ export default function AnalyticsForm({ data, heatmap }: AnalyticsFormProps) {
           borderWidth: 0.5,
         },
         yearLabel: { show: false },
+        dayLabel: {
+          nameMap: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+          color: "#e2e8f0",
+        },
+        monthLabel: {
+          color: "#e2e8f0",
+        },
       },
       series: {
         type: "heatmap",

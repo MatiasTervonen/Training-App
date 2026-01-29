@@ -32,11 +32,11 @@ export default function SessionsScreen() {
           onPress={handleClick}
         />
         <LinkButton label="Templates" href="/activities/templates" />
-        <View className="border border-gray-400 rounded-md my-2" />
+        <View className="border border-gray-400 rounded-md" />
         <LinkButton label="Add Activity" href="/activities/add-activity" />
         <LinkButton label="Edit Activity" href="/activities/edit-activity" />
 
-        <View className="border border-gray-400 rounded-md my-2" />
+        <View className="border border-gray-400 rounded-md" />
         <LinkButton label="Analytics" href="/activities/analytics">
           <ChartNoAxesCombined color="#f3f4f6" className="ml-2" />
         </LinkButton>

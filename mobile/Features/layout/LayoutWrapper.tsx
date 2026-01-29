@@ -32,8 +32,8 @@ export default function LayoutWrapper({
   const pathname = usePathname();
 
   const logoutUser = useUserStore((state) => state.logoutUser);
-
   const loginUser = useUserStore((state) => state.loginUser);
+  const hasHydrated = useUserStore((state) => state._hasHydrated);
 
   const { modalPageConfig, setModalPageConfig } = useModalPageConfig();
 
@@ -44,21 +44,15 @@ export default function LayoutWrapper({
       return;
     }
 
-    let profile = useUserStore.getState().profile;
-    let settings = useUserStore.getState().settings;
+    const { profile, settings } = useUserStore.getState();
 
     if (!profile || !settings) {
       const [profileData, settingsData] = await Promise.all([
         fetchUserProfile(),
         fetchUserSettings(),
       ]);
-      profile = profileData as UserProfile;
-      settings = settingsData as UserSettings;
-      loginUser(profile, settings);
+      loginUser(profileData as UserProfile, settingsData as UserSettings);
     }
-
-    useUserStore.getState().setUserProfile(profile);
-    useUserStore.getState().setUserSettings(settings);
 
     if (pathname !== "/dashboard") {
       router.replace("/dashboard");
@@ -66,15 +60,19 @@ export default function LayoutWrapper({
   };
 
   useEffect(() => {
+    if (!hasHydrated) return;
+
     supabase.auth.getSession().then(({ data: { session } }) => {
       handleSessionChange(session).finally(() => {
         setSessionChecked(true);
       });
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [hasHydrated]);
 
   useEffect(() => {
+    if (!hasHydrated) return;
+
     const { data: listener } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         if (event === "USER_UPDATED") {
@@ -89,7 +87,7 @@ export default function LayoutWrapper({
       listener.subscription.unsubscribe();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [hasHydrated]);
 
   useEffect(() => {
     if (pathname !== "/dashboard") {

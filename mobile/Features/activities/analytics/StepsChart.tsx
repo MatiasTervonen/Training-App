@@ -1,7 +1,8 @@
 import { ChevronLeft, ChevronRight } from "lucide-react-native";
 import { useState, useEffect, useRef, useMemo } from "react";
-import { View, Pressable } from "react-native";
+import { View } from "react-native";
 import AppText from "@/components/AppText";
+import AnimatedButton from "@/components/buttons/animatedButton";
 import { StepRecord } from "@/database/activities/get-steps";
 import * as echarts from "echarts/core";
 import { BarChart } from "echarts/charts";
@@ -262,25 +263,23 @@ export default function StepsChart({
         Daily Steps
       </AppText>
       <View className="flex-row justify-center items-center mb-4">
-        <Pressable
+        <AnimatedButton
           onPress={() => setOffset((prev) => prev + 1)}
           className="mr-4 bg-slate-800 p-1 rounded"
-          hitSlop={10}
         >
-          <ChevronLeft color="#f3f4f6" size={20} />
-        </Pressable>
+          <ChevronLeft color="#4ade80" size={20} />
+        </AnimatedButton>
         <AppText className="min-w-[200px] text-center text-sm">
           {formatDateRange(start, end)}
         </AppText>
-        <Pressable
+        <AnimatedButton
           onPress={() => setOffset((prev) => Math.max(0, prev - 1))}
           className="ml-4 bg-slate-800 p-1 rounded"
-          hitSlop={10}
           disabled={offset === 0}
           style={{ opacity: offset === 0 ? 0.5 : 1 }}
         >
-          <ChevronRight color="#f3f4f6" size={20} />
-        </Pressable>
+          <ChevronRight color={offset === 0 ? "#f3f4f6" : "#4ade80"} size={20} />
+        </AnimatedButton>
       </View>
 
       <View className="flex-row justify-around px-4 mb-4">

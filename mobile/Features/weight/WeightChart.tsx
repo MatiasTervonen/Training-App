@@ -1,8 +1,9 @@
 import { ChevronLeft, ChevronRight } from "lucide-react-native";
 import { useState, useEffect, useRef, useMemo } from "react";
 import { weight } from "@/types/session";
-import { View, Pressable } from "react-native";
+import { View } from "react-native";
 import AppText from "@/components/AppText";
+import AnimatedButton from "@/components/buttons/animatedButton";
 import { useUserStore } from "@/lib/stores/useUserStore";
 import * as echarts from "echarts/core";
 import { LineChart } from "echarts/charts";
@@ -42,11 +43,15 @@ function addOffsetToDate(
   return [start, end];
 }
 
-// This function retrieves the latest date from the weight data entries.
-
 function getLatestDate(data: weight[]) {
   return new Date(
     Math.max(...data.map((entry) => new Date(entry.created_at).getTime())),
+  );
+}
+
+function getOldestDate(data: weight[]) {
+  return new Date(
+    Math.min(...data.map((entry) => new Date(entry.created_at).getTime())),
   );
 }
 
@@ -85,11 +90,21 @@ echarts.use([SkiaRenderer, LineChart, GridComponent]);
 
 export default function WeightChart({ range, data }: WeightChartProps) {
   const [offset, setOffset] = useState(0);
-  const latestDate = getLatestDate(data); // Hakee viiemeissimmän päivämäärän datasta
+  const latestDate = getLatestDate(data);
+  const oldestDate = getOldestDate(data);
   const [size, setSize] = useState({ width: 0, height: 0 });
   const skiaRef = useRef<any>(null);
 
-  const [start, end] = addOffsetToDate(latestDate, range, offset);
+  const [calculatedStart, end] = addOffsetToDate(latestDate, range, offset);
+
+  // For year range, clamp start to oldest record if not enough data
+  const start = range === "year" && calculatedStart < oldestDate
+    ? oldestDate
+    : calculatedStart;
+
+  // Check if we can go back further (for disabling back button)
+  const [nextStart] = addOffsetToDate(latestDate, range, offset + 1);
+  const canGoBack = nextStart >= oldestDate;
 
   const weightUnit = useUserStore(
     (state) => state.profile?.weight_unit || "kg",
@@ -252,27 +267,25 @@ export default function WeightChart({ range, data }: WeightChartProps) {
   return (
     <View className="bg-slate-900 shadow-md w-full rounded-t-2xl">
       <View className="flex-row justify-center items-center my-4 text-gray-400">
-        <Pressable
-          onPress={() => {
-            setOffset((prev) => prev + 1);
-          }}
+        <AnimatedButton
+          onPress={() => setOffset((prev) => prev + 1)}
           className="mr-4 bg-slate-800 p-1 rounded"
-          hitSlop={10}
+          disabled={!canGoBack}
+          style={{ opacity: canGoBack ? 1 : 0.5 }}
         >
-          <ChevronLeft color="#f3f4f6" />
-        </Pressable>
+          <ChevronLeft color={canGoBack ? "#22d3ee" : "#f3f4f6"} />
+        </AnimatedButton>
         <AppText className="min-w-[200px] text-center">
           {formatDateRange(start, end)}
         </AppText>
-        <Pressable
-          onPress={() => {
-            setOffset((prev) => prev - 1);
-          }}
+        <AnimatedButton
+          onPress={() => setOffset((prev) => Math.max(0, prev - 1))}
           className="ml-4 bg-slate-800 p-1 rounded"
-          hitSlop={10}
+          disabled={offset === 0}
+          style={{ opacity: offset === 0 ? 0.5 : 1 }}
         >
-          <ChevronRight color="#f3f4f6" />
-        </Pressable>
+          <ChevronRight color={offset === 0 ? "#f3f4f6" : "#22d3ee"} />
+        </AnimatedButton>
       </View>
       <View>
         <AppText className="text-center mb-4 px-10">

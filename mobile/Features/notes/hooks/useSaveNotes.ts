@@ -27,11 +27,11 @@ export default function useSaveNotes({
   const router = useRouter();
 
   const handleSaveNotes = async () => {
-    if (!notes.trim()) {
+    if (!title.trim()) {
       Toast.show({
         type: "error",
         text1: "Error",
-        text2: "Notes cannot be empty.",
+        text2: "Title cannot be empty.",
       });
       return;
     }

@@ -17,6 +17,8 @@ interface UserSettings {
 interface UserStore {
   profile: UserProfile | null;
   settings: UserSettings | null;
+  _hasHydrated: boolean;
+  setHasHydrated: (state: boolean) => void;
   setUserProfile: (patch: Partial<UserProfile>) => void;
   setUserSettings: (patch: Partial<UserSettings>) => void;
   logoutUser: () => void; // Method to clear user state on logout
@@ -28,6 +30,8 @@ export const useUserStore = create<UserStore>()(
     (set) => ({
       profile: null,
       settings: null,
+      _hasHydrated: false,
+      setHasHydrated: (state) => set({ _hasHydrated: state }),
       setUserProfile: (patch) =>
         set((state) => ({
           profile: state.profile
@@ -61,6 +65,9 @@ export const useUserStore = create<UserStore>()(
           return rest;
         }
         return persistedState;
+      },
+      onRehydrateStorage: () => (state) => {
+        state?.setHasHydrated(true);
       },
       storage: {
         getItem: async (key) => {

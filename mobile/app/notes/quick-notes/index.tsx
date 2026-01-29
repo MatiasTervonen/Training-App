@@ -74,7 +74,7 @@ export default function NotesScreen() {
                 value={title}
                 setValue={setTitle}
                 label="Title.."
-                placeholder="Notes title...(optional)"
+                placeholder="Notes title..."
               />
             </View>
             <NotesInput

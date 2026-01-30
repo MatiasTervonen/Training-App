@@ -7,6 +7,7 @@ import { useState, useEffect, useMemo } from "react";
 import MapIcons from "./mapIcons";
 import useForeground from "../hooks/useForeground";
 import { findWarmupStartIndex } from "../lib/findWarmupStartIndex";
+import { processLiveTrack } from "../lib/smoothCoordinates";
 
 type BaseMapProps = {
   track: TrackPoint[];
@@ -22,6 +23,11 @@ type BaseMapProps = {
   currentStepCount: number;
   isLoadingTemplateRoute: boolean;
   isLoadingPosition: boolean;
+  currentPosition?: {
+    latitude: number;
+    longitude: number;
+    accuracy: number | null;
+  } | null;
 };
 
 export default function BaseMap({
@@ -38,6 +44,7 @@ export default function BaseMap({
   currentStepCount,
   isLoadingTemplateRoute,
   isLoadingPosition,
+  currentPosition,
 }: BaseMapProps) {
   const [isFollowingUser, setIsFollowingUser] = useState(true);
   const [mapStyle, setMapStyle] = useState(Mapbox.StyleURL.Dark);
@@ -53,36 +60,38 @@ export default function BaseMap({
 
   const warmupStartIndex = useMemo(() => findWarmupStartIndex(track), [track]);
 
-  const mapCoordinates = useMemo(() => {
+  const trackSegments = useMemo(() => {
     if (warmupStartIndex === null) return [];
 
-    return track
-      .slice(warmupStartIndex)
-      .filter((p) => !p.isStationary)
-      .map((p) => [p.longitude, p.latitude]);
+    // Pass full track including stationary points - processLiveTrack handles filtering
+    // This ensures gap detection works correctly when user stops for a while
+    return processLiveTrack(track.slice(warmupStartIndex));
   }, [track, warmupStartIndex]);
 
-  
   const trackShape = {
     type: "Feature",
     properties: {},
     geometry: {
-      type: "LineString",
-      coordinates: mapCoordinates,
+      type: "MultiLineString",
+      coordinates: trackSegments,
     },
   };
 
   const lastPoint = track.length > 0 ? track[track.length - 1] : null;
 
-  const userFeature = lastPoint
+  // Use currentPosition for user dot if available (updates during warmup),
+  // otherwise fall back to last track point
+  const userPosition = currentPosition ?? lastPoint;
+
+  const userFeature = userPosition
     ? {
         type: "Feature",
         properties: {
-          accuracy: lastPoint.accuracy,
+          accuracy: userPosition.accuracy,
         },
         geometry: {
           type: "Point",
-          coordinates: [lastPoint.longitude, lastPoint.latitude],
+          coordinates: [userPosition.longitude, userPosition.latitude],
         },
       }
     : null;
@@ -160,7 +169,7 @@ export default function BaseMap({
             animationDuration={isFollowingUser ? 0 : 600}
           />
 
-          {track.length > 0 && (
+          {trackSegments.length > 0 && (
             <Mapbox.ShapeSource id="track-source" shape={trackShape as any}>
               <Mapbox.LineLayer
                 id="track-layer"
@@ -227,7 +236,7 @@ export default function BaseMap({
             style={{ top: isLoadingTemplateRoute ? 35 : 10, left: 10 }}
           >
             <Text className="text-white text-xs ml-1.5">
-              Loading position...
+              {currentPosition ? "Stabilizing GPS..." : "Loading position..."}
             </Text>
             <ActivityIndicator size="small" color="#3b82f6" />
           </View>

@@ -70,18 +70,54 @@ loop
 end loop;
 end if;
 
-if p_track is not null then 
-  update sessions s 
+-- Create route geometry, splitting into segments at time gaps (>60 seconds)
+-- Uses ALL points for gap detection, but only NON-STATIONARY points in geometry
+if p_track is not null then
+  update sessions s
   set geom = (
-    select ST_MakeLine(
-      ST_SetSRID(
-        ST_MakePoint(p.longitude, p.latitude),
-        4326
-      )
-      order by p.recorded_at
-    )::geography
-    from activity_gps_points p
-    where p.session_id = s.id
+    with points_with_gaps as (
+      -- Use ALL points (including stationary) for gap detection
+      select
+        p.longitude,
+        p.latitude,
+        p.recorded_at,
+        p.is_stationary,
+        case
+          when extract(epoch from (p.recorded_at - lag(p.recorded_at) over (order by p.recorded_at))) > 60
+          then 1
+          else 0
+        end as is_gap
+      from activity_gps_points p
+      where p.session_id = v_activity_id
+    ),
+    points_with_segments as (
+      select
+        longitude,
+        latitude,
+        recorded_at,
+        is_stationary,
+        sum(is_gap) over (order by recorded_at) as segment_id
+      from points_with_gaps
+    ),
+    segment_lines as (
+      -- Only include NON-STATIONARY points in the geometry
+      select
+        segment_id,
+        ST_MakeLine(
+          ST_SetSRID(ST_MakePoint(longitude, latitude), 4326)
+          order by recorded_at
+        ) as line
+      from points_with_segments
+      where not is_stationary
+      group by segment_id
+      having count(*) >= 2
+    )
+    select
+      case
+        when count(*) = 1 then (array_agg(line))[1]::geography
+        else ST_Collect(line order by segment_id)::geography
+      end
+    from segment_lines
   )
   where s.id = v_activity_id;
 end if;

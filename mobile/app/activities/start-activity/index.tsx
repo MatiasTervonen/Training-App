@@ -225,7 +225,7 @@ export default function StartActivityScreen() {
   const { route, setRoute, isLoadingTemplateRoute } = useTemplateRoute();
 
   // When foreground watch gps
-  useForegroundLocationTracker({
+  const { isGpsWarmingUp, currentPosition } = useForegroundLocationTracker({
     allowGPS,
     isRunning,
     setHasStartedTracking,
@@ -373,7 +373,10 @@ export default function StartActivityScreen() {
                     averagePacePerKm={averagePacePerKm}
                     currentStepCount={steps}
                     isLoadingTemplateRoute={isLoadingTemplateRoute}
-                    isLoadingPosition={isRunning && track.length === 0}
+                    isLoadingPosition={
+                      (isRunning && track.length === 0) || isGpsWarmingUp
+                    }
+                    currentPosition={currentPosition}
                   />
                 )}
                 <View className="gap-5 mt-10">
@@ -401,6 +404,7 @@ export default function StartActivityScreen() {
           hasStartedTracking={hasStartedTracking}
           averagePacePerKm={averagePacePerKm}
           currentStepCount={steps}
+          currentPosition={currentPosition}
         />
       )}
 

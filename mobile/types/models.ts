@@ -88,10 +88,16 @@ export type FullActivitySession = {
   session: activity_session;
   activity: activities | null;
   stats: session_stats | null;
-  route: {
-    type: "LineString";
-    coordinates: [number, number][];
-  } | null;
+  route:
+    | {
+        type: "LineString";
+        coordinates: [number, number][];
+      }
+    | {
+        type: "MultiLineString";
+        coordinates: [number, number][][];
+      }
+    | null;
 };
 
 export type full_gym_template = template & {

@@ -1,7 +1,11 @@
 import { FullActivitySession } from "@/types/models";
 import Mapbox from "@rnmapbox/maps";
 import { View } from "react-native";
-// import { useState } from "react";
+import { useMemo } from "react";
+import {
+  processSavedRoute,
+  smoothMultiLineString,
+} from "@/Features/activities/lib/smoothCoordinates";
 
 type MapProps = {
   activity_session: FullActivitySession;
@@ -14,21 +18,39 @@ export default function Map({
   setScrollEnabled,
   setSwipeEnabled,
 }: MapProps) {
-  // const [mapStyle, setMapStyle] = useState(Mapbox.StyleURL.Dark);
+  const route = activity_session.route!;
+  const isMultiLine = route.type === "MultiLineString";
 
-  const coordinates = activity_session.route!.coordinates;
+  // Get all coordinates flattened for bounds calculation
+  const allCoordinates = useMemo(() => {
+    if (isMultiLine) {
+      return (route.coordinates as [number, number][][]).flat();
+    }
+    return route.coordinates as [number, number][];
+  }, [route, isMultiLine]);
+
+  // Process segments: MultiLineString already has segments, LineString needs gap detection
+  const routeSegments = useMemo(() => {
+    if (isMultiLine) {
+      return smoothMultiLineString(route.coordinates as [number, number][][]);
+    }
+    return processSavedRoute(route.coordinates as [number, number][]);
+  }, [route, isMultiLine]);
 
   const routeFeature = {
     type: "Feature",
-    geometry: activity_session.route,
+    geometry: {
+      type: "MultiLineString",
+      coordinates: routeSegments,
+    },
     properties: {},
   };
 
-  const start = coordinates[0]!;
-  const end = coordinates[coordinates.length - 1];
+  const start = allCoordinates[0]!;
+  const end = allCoordinates[allCoordinates.length - 1];
 
-  const lons = coordinates.map((c) => c[0]);
-  const lats = coordinates.map((c) => c[1]);
+  const lons = allCoordinates.map((c) => c[0]);
+  const lats = allCoordinates.map((c) => c[1]);
 
   const ne: [number, number] = [Math.max(...lons), Math.max(...lats)];
 

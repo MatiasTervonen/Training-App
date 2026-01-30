@@ -8,6 +8,7 @@ import { TrackPoint } from "@/types/session";
 import { useEffect, useMemo, useState } from "react";
 import useForeground from "../hooks/useForeground";
 import { findWarmupStartIndex } from "../lib/findWarmupStartIndex";
+import { processLiveTrack } from "../lib/smoothCoordinates";
 
 export default function FullScreenMapModal({
   fullScreen,
@@ -20,6 +21,7 @@ export default function FullScreenMapModal({
   hasStartedTracking,
   averagePacePerKm,
   currentStepCount,
+  currentPosition,
 }: {
   fullScreen: boolean;
   track: TrackPoint[];
@@ -31,6 +33,11 @@ export default function FullScreenMapModal({
   hasStartedTracking: boolean;
   averagePacePerKm: number;
   currentStepCount: number;
+  currentPosition?: {
+    latitude: number;
+    longitude: number;
+    accuracy: number | null;
+  } | null;
 }) {
   const insets = useSafeAreaInsets();
   const [isFollowingUser, setIsFollowingUser] = useState(true);
@@ -47,21 +54,20 @@ export default function FullScreenMapModal({
 
   const warmupStartIndex = useMemo(() => findWarmupStartIndex(track), [track]);
 
-  const mapCoordinates = useMemo(() => {
+  const trackSegments = useMemo(() => {
     if (warmupStartIndex === null) return [];
 
-    return track
-      .slice(warmupStartIndex)
-      .filter((p) => !p.isStationary)
-      .map((p) => [p.longitude, p.latitude]);
+    // Pass full track including stationary points - processLiveTrack handles filtering
+    // This ensures gap detection works correctly when user stops for a while
+    return processLiveTrack(track.slice(warmupStartIndex));
   }, [track, warmupStartIndex]);
 
   const trackShape = {
     type: "Feature",
     properties: {},
     geometry: {
-      type: "LineString",
-      coordinates: mapCoordinates,
+      type: "MultiLineString",
+      coordinates: trackSegments,
     },
   };
 
@@ -70,15 +76,19 @@ export default function FullScreenMapModal({
   const lastMovingPoint =
     [...track].reverse().find((p) => !p.isStationary) ?? null;
 
-  const userFeature = lastPoint
+  // Use currentPosition for user dot if available (updates during warmup),
+  // otherwise fall back to last track point
+  const userPosition = currentPosition ?? lastPoint;
+
+  const userFeature = userPosition
     ? {
         type: "Feature",
         properties: {
-          accuracy: lastPoint.accuracy,
+          accuracy: userPosition.accuracy,
         },
         geometry: {
           type: "Point",
-          coordinates: [lastPoint.longitude, lastPoint.latitude],
+          coordinates: [userPosition.longitude, userPosition.latitude],
         },
       }
     : null;
@@ -143,7 +153,7 @@ export default function FullScreenMapModal({
               animationDuration={isFollowingUser ? 0 : 600}
             />
 
-            {track.length > 0 && (
+            {trackSegments.length > 0 && (
               <Mapbox.ShapeSource id="track-source" shape={trackShape as any}>
                 <Mapbox.LineLayer
                   id="track-layer"

@@ -31,7 +31,7 @@ export default function GymCard({
       typeIcon={<Dumbbell size={20} color={pinned ? "#0f172a" : "#f3f4f6"} />}
       typeName={"Gym"}
       statsContent={
-        <View className="flex-row ml-4 rounded-md py-4 px-6 bg-slate-950/50 items-center gap-4">
+        <View className="flex-row gap-6 items-center">
           {payload.exercises_count > 0 && payload.sets_count > 0 && (
             <View className="gap-4 flex-row items-center">
               <AppText

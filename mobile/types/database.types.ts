@@ -1886,14 +1886,14 @@ export type Database = {
         Args: {
           p_id: string
           p_mode: string
-          p_notes: string
-          p_notify_at_time: string
-          p_notify_date: string
-          p_seen_at: string
+          p_notes?: string
+          p_notify_at_time?: string
+          p_notify_date?: string
+          p_seen_at?: string
           p_title: string
           p_type: string
           p_updated_at: string
-          p_weekdays: Json
+          p_weekdays?: Json
         }
         Returns: {
           activity_at: string | null
@@ -1934,7 +1934,7 @@ export type Database = {
       }
       reminders_save_global_reminder: {
         Args: {
-          p_created_from_token?: string
+          p_created_from_device_id?: string
           p_mode: string
           p_notes: string
           p_notify_at: string
@@ -1946,12 +1946,12 @@ export type Database = {
       reminders_save_local_reminder: {
         Args: {
           p_mode: string
-          p_notes: string
-          p_notify_at_time: string
-          p_notify_date: string
+          p_notes?: string
+          p_notify_at_time?: string
+          p_notify_date?: string
           p_title: string
           p_type: string
-          p_weekdays: Json
+          p_weekdays?: Json
         }
         Returns: string
       }

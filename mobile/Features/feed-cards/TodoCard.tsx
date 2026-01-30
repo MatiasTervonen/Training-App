@@ -33,7 +33,7 @@ export default function TodoCard({
         <>
           <View className="flex-row gap-2 items-center">
             <AppText
-              className={`ml-4 ${pinned ? "text-slate-900" : "text-gray-100"}`}
+              className={`${pinned ? "text-slate-900" : "text-gray-100"}`}
             >
               completed: {payload.completed} / {payload.total}
             </AppText>

@@ -36,7 +36,7 @@ export function useTrackHydration({
         is_stationary: number;
         confidence: number;
       }>(
-        "SELECT timestamp, latitude, longitude, altitude, accuracy, is_stationary, confidence FROM gps_points ORDER BY timestamp ASC"
+        "SELECT timestamp, latitude, longitude, altitude, accuracy, is_stationary, confidence FROM gps_points ORDER BY timestamp ASC",
       );
 
       const points: TrackPoint[] = result.map((point) => ({
@@ -80,8 +80,11 @@ export function useTrackHydration({
     }
 
     // Also hydrate when coming back to foreground (regardless of isRunning)
+    // Small delay to allow background task to finish any pending database writes
     if (!wasForeground && isForeground && activeSession) {
-      hydrateFromDatabase();
+      setTimeout(() => {
+        hydrateFromDatabase();
+      }, 300);
     }
   }, [isForeground, activeSession, hydrateFromDatabase, setIsHydrated]);
 }

@@ -1,11 +1,11 @@
-create or replace function reminders_save_local_reminder(                   
+create or replace function reminders_save_local_reminder(
   p_title text,
-  p_notes text,
-  p_notify_at_time time,
-  p_notify_date timestamptz,
-  p_weekdays json,
   p_type text,
-  p_mode text
+  p_mode text,
+  p_notes text default null,
+  p_notify_at_time time default null,
+  p_notify_date timestamptz default null,
+  p_weekdays json default null
 )
 returns uuid
 language plpgsql

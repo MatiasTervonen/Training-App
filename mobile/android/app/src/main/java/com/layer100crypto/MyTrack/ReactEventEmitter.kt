@@ -75,4 +75,44 @@ object ReactEventEmitter {
 
         return true
     }
+
+    fun sendAlarmPlaying(
+        context: Context,
+        reminderId: String,
+        soundType: String,
+        title: String,
+        content: String
+    ): Boolean {
+        val reactApplication = context.applicationContext as? ReactApplication
+            ?: return false
+
+        var reactContext: ReactContext? = try {
+            reactApplication.reactHost?.currentReactContext
+        } catch (e: Exception) {
+            null
+        }
+
+        if (reactContext == null) {
+            reactContext = try {
+                reactApplication.reactNativeHost
+                    ?.reactInstanceManager
+                    ?.currentReactContext
+            } catch (e: Exception) {
+                null
+            }
+        }
+
+        if (reactContext == null) return false
+
+        reactContext
+            .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
+            .emit("ALARM_PLAYING", Arguments.createMap().apply {
+                putString("reminderId", reminderId)
+                putString("soundType", soundType)
+                putString("title", title)
+                putString("content", content)
+            })
+
+        return true
+    }
 }

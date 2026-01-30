@@ -33,13 +33,13 @@ export default function WeightCard({
       typeIcon={<Scale size={20} color={pinned ? "#0f172a" : "#f3f4f6"} />}
       typeName={"Weight"}
       statsContent={
-        <View className="ml-4 rounded-md py-4 px-6 bg-slate-950/50">
+        <>
           <AppText
             className={` ${pinned ? "text-slate-900" : "text-gray-100"}`}
           >
             {payload.weight} {weightUnit}
           </AppText>
-        </View>
+        </>
       }
     />
   );

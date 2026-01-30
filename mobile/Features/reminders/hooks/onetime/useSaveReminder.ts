@@ -47,9 +47,9 @@ export default function useSaveReminderOnetime({
         title,
         notes,
         weekdays: [],
-        notify_at_time: null,
+        notify_at_time: undefined,
         type: "one-time",
-        notify_date: notifyAt ? notifyAt.toISOString() : null,
+        notify_date: notifyAt ? notifyAt.toISOString() : undefined,
         mode,
       });
 
@@ -58,7 +58,7 @@ export default function useSaveReminderOnetime({
       if (notificationId) {
         await AsyncStorage.setItem(
           `notification:${reminder}`,
-          JSON.stringify([notificationId])
+          JSON.stringify([notificationId]),
         );
       }
 

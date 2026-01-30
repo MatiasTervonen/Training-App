@@ -34,7 +34,7 @@ export default function NotesCard({
         <View>
           {payload.notes && (
             <AppText
-              className={`ml-4 ${pinned ? "text-slate-900" : "text-gray-100"}`}
+              className={`${pinned ? "text-slate-900" : "text-gray-100"}`}
               numberOfLines={2}
             >
               {payload.notes}

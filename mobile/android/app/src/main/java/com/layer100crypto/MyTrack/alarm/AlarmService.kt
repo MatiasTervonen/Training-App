@@ -17,6 +17,28 @@ import com.layer100crypto.MyTrack.R
 
 class AlarmService : Service() {
 
+    companion object {
+        // Static state to track current alarm
+        var isRunning: Boolean = false
+            private set
+        var currentReminderId: String? = null
+            private set
+        var currentSoundType: String? = null
+            private set
+        var currentTitle: String? = null
+            private set
+        var currentContent: String? = null
+            private set
+
+        fun clearState() {
+            isRunning = false
+            currentReminderId = null
+            currentSoundType = null
+            currentTitle = null
+            currentContent = null
+        }
+    }
+
     private lateinit var mediaPlayer: MediaPlayer
 
     private var alarmTitle: String = "Alarm"
@@ -34,6 +56,13 @@ class AlarmService : Service() {
         soundType = intent?.getStringExtra("SOUND_TYPE") ?: "default"
         alarmContent = intent?.getStringExtra("CONTENT") ?: ""
         reminderId = intent?.getStringExtra("REMINDER_ID") ?: ""
+
+        // Update static state
+        isRunning = true
+        currentReminderId = reminderId
+        currentSoundType = soundType
+        currentTitle = alarmTitle
+        currentContent = alarmContent
 
         playSound(soundType)
 
@@ -139,6 +168,7 @@ class AlarmService : Service() {
     }
 
     override fun onDestroy() {
+        clearState()
         mediaPlayer.stop()
         mediaPlayer.release()
         super.onDestroy()

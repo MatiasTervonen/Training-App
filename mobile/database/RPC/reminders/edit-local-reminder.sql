@@ -1,14 +1,14 @@
 create or replace function reminders_edit_local_reminder(
   p_id uuid,
   p_title text,
-  p_notes text,
-  p_notify_at_time time,
-  p_notify_date date,
-  p_weekdays json,
   p_type text,
   p_updated_at timestamptz,
-  p_seen_at timestamptz,
-  p_mode text
+  p_mode text,
+  p_notes text default null,
+  p_notify_at_time time default null,
+  p_notify_date timestamptz default null,
+  p_weekdays json default null,
+  p_seen_at timestamptz default null
 )
 returns feed_items
 language plpgsql

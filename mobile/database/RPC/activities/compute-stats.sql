@@ -83,7 +83,7 @@ begin
             v_calories := v_base_met * v_user_weight_kg * (v_moving_time_seconds / 3600);
         else
             -- No GPS: use total session duration
-            v_calories := v_base_met * v_user_weight_kg * (v_total_duration_seconds / 3600);
+            v_calories := v_base_met * v_user_weight_kg * (v_duration_seconds / 3600);
         end if;
 
 

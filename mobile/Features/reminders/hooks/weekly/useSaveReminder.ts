@@ -53,7 +53,7 @@ export default function useSaveReminderWeekly({
         weekdays,
         notify_at_time: time,
         type: "weekly",
-        notify_date: null,
+        notify_date: undefined,
         mode,
       });
 

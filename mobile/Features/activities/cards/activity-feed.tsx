@@ -31,7 +31,7 @@ export default function ActivityCard({
       typeIcon={<Activity size={20} color={pinned ? "#0f172a" : "#f3f4f6"} />}
       typeName={payload.activity_name}
       statsContent={
-        <View className="flex-row items-center gap-5 ml-4 rounded-md py-4 px-6 bg-slate-950/50">
+        <View className="flex-row items-center gap-5">
           {payload.distance > 0 && (
             <View className="flex-row items-center gap-2">
               <Route size={20} color={pinned ? "#0f172a" : "#f3f4f6"} />

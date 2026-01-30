@@ -4,6 +4,20 @@ import { FeedItemUI } from "@/types/session";
 import { editLocalReminder } from "@/database/reminders/edit-local-reminder";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+type useSaveReminderProps = {
+  title: string;
+  notes: string;
+  notifyAt: Date | null;
+  setIsSaving: (isSaving: boolean) => void;
+  reminder: FeedItemUI;
+  onSave: (updateFeedItem: FeedItemUI) => void;
+  onClose: () => void;
+  scheduleNotifications: () => Promise<string | string[] | undefined>;
+  weekdays: number[];
+  type: "weekly" | "daily" | "one-time";
+  mode: "alarm" | "normal";
+};
+
 export default function useSaveReminder({
   title,
   notes,
@@ -16,19 +30,7 @@ export default function useSaveReminder({
   weekdays,
   type,
   mode,
-}: {
-  title: string;
-  notes: string;
-  notifyAt: Date;
-  setIsSaving: (isSaving: boolean) => void;
-  reminder: FeedItemUI;
-  onSave: (updateFeedItem: FeedItemUI) => void;
-  onClose: () => void;
-  scheduleNotifications: () => Promise<string | string[] | undefined>;
-  weekdays: number[];
-  type: "weekly" | "daily" | "one-time";
-  mode?: "alarm" | "normal";
-}) {
+}: useSaveReminderProps) {
   const handleSave = async () => {
     if (title.trim().length === 0) {
       Toast.show({
@@ -60,7 +62,7 @@ export default function useSaveReminder({
     try {
       // Cancel old notifications
       const stored = await AsyncStorage.getItem(
-        `notification:${reminder.source_id ?? reminder.id}`
+        `notification:${reminder.source_id ?? reminder.id}`,
       );
       const oldIds: string[] = stored ? JSON.parse(stored) : [];
 
@@ -78,22 +80,22 @@ export default function useSaveReminder({
       if (normalizedIds.length) {
         await AsyncStorage.setItem(
           `reminder:${reminder.source_id ?? reminder.id}`,
-          JSON.stringify(normalizedIds)
+          JSON.stringify(normalizedIds),
         );
       }
+
+      console.log("notify_at", notifyAt);
 
       const updatedFeedItem = await editLocalReminder({
         id: reminder.source_id,
         title,
         notes,
-        seen_at: null,
+        seen_at: undefined,
         notify_at_time:
           type === "weekly" || type === "daily"
-            ? notifyAt
-              ? notifyAt.toTimeString().slice(0, 8)
-              : null
-            : null,
-        notify_date: type === "one-time" ? (notifyAt ? notifyAt : null) : null,
+            ? notifyAt.toTimeString().slice(0, 8)
+            : undefined,
+        notify_date: type === "one-time" ? notifyAt.toISOString() : undefined,
         weekdays,
         type: type as "weekly" | "daily" | "one-time",
         updated_at: updated,

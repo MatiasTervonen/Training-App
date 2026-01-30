@@ -34,18 +34,11 @@ export default function BaseFeedCard({
   showUpdatedAt = false,
 }: BaseCardProps) {
   return (
-    <LinearGradient
-      colors={
-        pinned
-          ? ["#fcd34d", "#fbbf24", "#f59e0b"] // yellow gradient when pinned
-          : ["#1e3a8a", "#0f172a", "#0f172a"] // blue gradient when not pinned
-      }
-      start={{ x: 1, y: 0 }} // bottom-left
-      end={{ x: 0, y: 1 }} // top-right
+    <View
       className={`
        border rounded-md flex-col justify-between transition-colors min-h-[159px] overflow-hidden ${
          pinned
-           ? `border-yellow-200 bg-yellow-200`
+           ? `border-yellow-200 bg-yellow-400`
            : "bg-slate-700 border-gray-100"
        }`}
     >
@@ -73,7 +66,7 @@ export default function BaseFeedCard({
 
       {/* Middle content - always centered */}
       <View className="flex-1 justify-center">
-        <View className={`flex-row items-center justify-start`}>
+        <View className={`flex-row items-center justify-start ml-4`}>
           {statsContent}
         </View>
       </View>
@@ -92,7 +85,7 @@ export default function BaseFeedCard({
           <AppText className="min-h-5"></AppText>
         ))}
 
-      <View className="flex-row justify-between items-center mt-2 bg-black/40 rounded-b-md ">
+      <View className="flex-row justify-between items-center mt-2 bg-slate-950/40 rounded-b-md ">
         <View className="flex-row items-center gap-2 pl-2">
           {typeIcon}
           <AppText className={`${pinned ? "text-slate-900" : "text-gray-100"}`}>
@@ -116,6 +109,6 @@ export default function BaseFeedCard({
           <SquareArrowOutUpRight size={20} color="#f3f4f6" />
         </AnimatedButton>
       </View>
-    </LinearGradient>
+    </View>
   );
 }

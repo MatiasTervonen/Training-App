@@ -3,15 +3,15 @@ import { supabase } from "@/lib/supabase";
 
 type EditLocalReminderParams = {
   id: string;
-  title: string | null | undefined;
-  notes: string | null | undefined;
-  notify_at_time: string | null;
-  notify_date: Date | null;
-  weekdays: number[];
+  title: string;
+  notes?: string;
+  notify_at_time?: string;
+  notify_date?: string;
+  weekdays?: number[];
   type: "weekly" | "daily" | "one-time";
-  seen_at: string | null;
+  seen_at?: string;
   updated_at: string;
-  mode?: "alarm" | "normal";
+  mode: "alarm" | "normal";
 };
 
 export async function editLocalReminder({
@@ -42,7 +42,7 @@ export async function editLocalReminder({
   if (error) {
     handleError(error, {
       message: "Error updating local reminder",
-      route: "/database/reminders/edit-reminders",
+      route: "/database/reminders/edit-local-reminder",
       method: "POST",
     });
     throw new Error("Error updating local reminder");

@@ -3,12 +3,12 @@ import { supabase } from "@/lib/supabase";
 
 type SaveReminderParams = {
   title: string;
-  notes: string;
-  notify_at_time: string | null;
-  notify_date: Date | string | null;
-  weekdays: number[];
   type: "weekly" | "daily" | "one-time";
   mode?: "alarm" | "normal";
+  notes?: string;
+  notify_at_time?: string;
+  notify_date?: string;
+  weekdays?: number[];
 };
 
 export async function saveLocalReminder({

@@ -113,9 +113,10 @@ export default function ActivityAnalytics() {
               className={`py-2 rounded-md ${
                 selectedRange === range.key ? "bg-slate-700" : ""
               }`}
+              hitSlop={10}
             >
               <AppTextNC
-                className={`text-center font-medium ${
+                className={`text-center ${
                   selectedRange === range.key
                     ? "text-green-400"
                     : "text-gray-200"

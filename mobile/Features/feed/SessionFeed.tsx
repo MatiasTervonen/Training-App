@@ -229,7 +229,11 @@ export default function SessionFeed({ expandReminderId }: SessionFeedProps) {
       {expandedItem && (
         <FullScreenModal
           isOpen={!!expandedItem}
-          onClose={() => setExpandedItem(null)}
+          onClose={() => {
+            setExpandedItem(null);
+            // Reset ref so same reminder can be expanded again from alarm
+            expandedReminderRef.current = null;
+          }}
         >
           {expandedItem.type === "notes" && (
             <NotesSession

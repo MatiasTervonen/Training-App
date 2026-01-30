@@ -16,6 +16,7 @@ import useDeleteReminder from "@/Features/reminders/hooks/my-reminders/useDelete
 import EditMyGlobalReminder from "@/Features/reminders/cards/editMyGlobalReminder";
 import MyReminderSession from "@/Features/reminders/cards/myReminder-expanded";
 import EditMyLocalReminder from "@/Features/reminders/cards/editMyLocalReminder";
+import AppTextNC from "@/components/AppTextNC";
 
 export default function RemindersPage() {
   const [expandedItem, setExpandedItem] = useState<ReminderByTab | null>(null);
@@ -54,34 +55,47 @@ export default function RemindersPage() {
             tabClassName={`flex-1 px-4 py-2 rounded-xl ${
               activeTab === "normal" ? "bg-gray-900" : ""
             }`}
-            textClassName={`text-center ${
-              activeTab === "normal" ? "text-blue-500" : "text-gray-100"
-            }`}
-            label="Normal"
             hitSlop={10}
-          />
+          >
+            <AppTextNC
+              className={`text-center ${
+                activeTab === "normal" ? "text-blue-500" : "text-gray-100"
+              }`}
+            >
+              Normal
+            </AppTextNC>
+          </AnimatedButton>
+
           <AnimatedButton
             onPress={() => setActiveTab("repeating")}
             tabClassName={`flex-1 px-4 py-2 rounded-xl  ${
               activeTab === "repeating" ? "bg-gray-900" : ""
             }`}
-            textClassName={`text-center  ${
-              activeTab === "repeating" ? "text-blue-500" : "text-gray-100"
-            }`}
-            label="Repeating"
             hitSlop={10}
-          />
+          >
+            <AppTextNC
+              className={`text-center ${
+                activeTab === "repeating" ? "text-blue-500" : "text-gray-100"
+              }`}
+            >
+              Repeating
+            </AppTextNC>
+          </AnimatedButton>
           <AnimatedButton
             onPress={() => setActiveTab("delivered")}
             tabClassName={`flex-1 px-4 py-2 rounded-xl  ${
               activeTab === "delivered" ? "bg-gray-900" : ""
             }`}
-            textClassName={`text-center  ${
-              activeTab === "delivered" ? "text-blue-500" : "text-gray-100"
-            }`}
-            label="Delivered"
             hitSlop={10}
-          />
+          >
+            <AppTextNC
+              className={`text-center font-medium  ${
+                activeTab === "delivered" ? "text-blue-500" : "text-gray-100"
+              }`}
+            >
+              Delivered
+            </AppTextNC>
+          </AnimatedButton>
         </View>
 
         {!error && isLoading && <TemplateSkeleton count={6} />}

@@ -30,6 +30,7 @@ import BootScreen from "@/Features/feed/fakeFeedLoader";
 import SaveAreaInset from "@/Features/layout/SaveAreaInset";
 import Mapbox from "@rnmapbox/maps";
 import TimerFinishListener from "@/Features/layout/TimerFinished";
+import AlarmPlayingListener from "@/Features/layout/AlarmPlayingListener";
 import AppStatePermissionListener from "@/Features/push-notifications/AppStatePermissionListener";
 import GpsTrackingPermission from "@/Features/activities/gpsToggle/gpsTrackingPermission";
 import { backfillMissingDaysThrottled } from "@/database/activities/syncStepsToDatabase";
@@ -112,6 +113,7 @@ export default Sentry.wrap(function RootLayout() {
           <MenuProvider>
             <PaperProvider>
               <TimerFinishListener />
+              <AlarmPlayingListener />
               <StatusBar
                 barStyle="light-content"
                 backgroundColor="#020617"

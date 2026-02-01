@@ -691,6 +691,38 @@ export type Database = {
           },
         ]
       }
+      gym_exercises_translations: {
+        Row: {
+          created_at: string
+          exercise_id: string
+          id: string
+          language: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          exercise_id: string
+          id?: string
+          language?: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          exercise_id?: string
+          id?: string
+          language?: string
+          name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gym_exercises_translations_exercise_id_fkey"
+            columns: ["exercise_id"]
+            isOneToOne: false
+            referencedRelation: "gym_exercises"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       gym_session_exercises: {
         Row: {
           created_at: string | null
@@ -1569,18 +1601,21 @@ export type Database = {
       user_settings: {
         Row: {
           gps_tracking_enabled: boolean
+          language: string | null
           push_enabled: boolean
           updated_at: string
           user_id: string
         }
         Insert: {
           gps_tracking_enabled?: boolean
+          language?: string | null
           push_enabled?: boolean
           updated_at?: string
           user_id?: string
         }
         Update: {
           gps_tracking_enabled?: boolean
+          language?: string | null
           push_enabled?: boolean
           updated_at?: string
           user_id?: string

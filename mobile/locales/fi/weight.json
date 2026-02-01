@@ -1,0 +1,30 @@
+{
+  "weight": {
+    "title": "Painonseuranta",
+    "tracking": "Seuranta",
+    "analytics": "Analytiikka",
+    "weightTracker": "Painoseuranta",
+    "titleLabel": "Painomerkinnän otsikko...",
+    "titlePlaceholder": "Painomerkinnän otsikko...",
+    "notesLabel": "Lisää muistiinpanosi tähän...",
+    "notesPlaceholder": "Lisää muistiinpanosi tähän...(valinnainen)",
+    "weightLabel": "Syötä painosi...",
+    "weightPlaceholder": "Syötä painosi tähän...",
+    "savingWeight": "Tallennetaan painoa...",
+    "analyticsScreen": {
+      "title": "Painoanalytiikka",
+      "loading": "Ladataan painotietoja...",
+      "error": "Tietojen lataus epäonnistui. Yritä uudelleen...",
+      "noData": "Ei tietoja saatavilla",
+      "week": "viikko",
+      "month": "kuukausi",
+      "year": "vuosi",
+      "deleteConfirm": "Haluatko varmasti poistaa tämän merkinnän?",
+      "deleted": "Poistettu",
+      "deletedMessage": "Merkintä on poistettu onnistuneesti.",
+      "deleteError": "Virhe",
+      "deleteErrorMessage": "Merkinnän poistaminen epäonnistui.",
+      "noNotes": "Ei muistiinpanoja..."
+    }
+  }
+}

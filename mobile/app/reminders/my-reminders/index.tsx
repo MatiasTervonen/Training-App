@@ -17,8 +17,10 @@ import EditMyGlobalReminder from "@/Features/reminders/cards/editMyGlobalReminde
 import MyReminderSession from "@/Features/reminders/cards/myReminder-expanded";
 import EditMyLocalReminder from "@/Features/reminders/cards/editMyLocalReminder";
 import AppTextNC from "@/components/AppTextNC";
+import { useTranslation } from "react-i18next";
 
 export default function RemindersPage() {
+  const { t } = useTranslation("reminders");
   const [expandedItem, setExpandedItem] = useState<ReminderByTab | null>(null);
   const [editingItem, setEditingItem] = useState<ReminderByTab | null>(null);
   const [activeTab, setActiveTab] = useState<ReminderTab>("normal");
@@ -48,7 +50,7 @@ export default function RemindersPage() {
       keyboardShouldPersistTaps="handled"
     >
       <PageContainer>
-        <AppText className="text-center mb-5 text-2xl">My Reminders</AppText>
+        <AppText className="text-center mb-5 text-2xl">{t("reminders.myReminders")}</AppText>
         <View className="flex-row gap-3 justify-center my-10 rounded-md">
           <AnimatedButton
             onPress={() => setActiveTab("normal")}
@@ -62,7 +64,7 @@ export default function RemindersPage() {
                 activeTab === "normal" ? "text-blue-500" : "text-gray-100"
               }`}
             >
-              Normal
+              {t("reminders.tabs.normal")}
             </AppTextNC>
           </AnimatedButton>
 
@@ -78,7 +80,7 @@ export default function RemindersPage() {
                 activeTab === "repeating" ? "text-blue-500" : "text-gray-100"
               }`}
             >
-              Repeating
+              {t("reminders.tabs.repeating")}
             </AppTextNC>
           </AnimatedButton>
           <AnimatedButton
@@ -93,7 +95,7 @@ export default function RemindersPage() {
                 activeTab === "delivered" ? "text-blue-500" : "text-gray-100"
               }`}
             >
-              Delivered
+              {t("reminders.tabs.delivered")}
             </AppTextNC>
           </AnimatedButton>
         </View>
@@ -102,13 +104,13 @@ export default function RemindersPage() {
 
         {error && (
           <AppText className="text-red-500 text-center mt-10">
-            Error loading reminders. Try again!
+            {t("reminders.errorLoading")}
           </AppText>
         )}
 
         {!error && !isLoading && reminders.length === 0 && (
           <AppText className="text-gray-300 text-center mt-10 text-lg">
-            No {activeTab} reminders.
+            {t("reminders.noReminders", { tab: t(`reminders.tabs.${activeTab}`) })}
           </AppText>
         )}
 

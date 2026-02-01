@@ -36,8 +36,10 @@ import PageContainer from "@/components/PageContainer";
 import useAddExercise from "@/Features/gym/hooks/template/useAddExercise";
 import useSaveTemplate from "@/Features/gym/hooks/template/useSaveTemplate";
 import useLogSetForExercise from "@/Features/gym/hooks/template/useLogSetForExercise";
+import { useTranslation } from "react-i18next";
 
 export default function TemplateForm() {
+  const { t } = useTranslation(["gym", "common"]);
   const [workoutName, setWorkoutName] = useState("");
   const [exercises, setExercises] = useState<ExerciseEntry[]>([]);
   const [isExerciseModalOpen, setIsExerciseModalOpen] = useState(false);
@@ -51,7 +53,7 @@ export default function TemplateForm() {
     number | null
   >(null);
   const [exerciseHistoryId, setExerciseHistoryId] = useState<string | null>(
-    null
+    null,
   );
 
   const { id } = useLocalSearchParams<{ id?: string }>();
@@ -130,7 +132,7 @@ export default function TemplateForm() {
             rpe: undefined,
           })),
           superset_id: ex.superset_id,
-        })
+        }),
       );
 
       setExercises(mappedExercises);
@@ -140,7 +142,7 @@ export default function TemplateForm() {
           weight: "",
           reps: "",
           rpe: "Medium",
-        }))
+        })),
       );
     }
   }, [existingTemplate]);
@@ -205,7 +207,9 @@ export default function TemplateForm() {
   if (templateId && (isLoading || !existingTemplate)) {
     return (
       <View className="flex-1 items-center justify-center">
-        <AppText className="mb-4 text-lg">Loading template details...</AppText>
+        <AppText className="mb-4 text-lg">
+          {t("gym.templateForm.loadingTemplate")}
+        </AppText>
         <ActivityIndicator size="large" />
       </View>
     );
@@ -221,14 +225,16 @@ export default function TemplateForm() {
           <PageContainer className="justify-between">
             <View>
               <AppText className="text-2xl text-center mb-5">
-                {templateId ? "Edit your template" : "Create your template"}
+                {templateId
+                  ? t("gym.templateForm.titleEdit")
+                  : t("gym.templateForm.titleCreate")}
               </AppText>
               <View className="mb-10">
                 <AppInput
                   value={workoutName}
                   onChangeText={setWorkoutName}
-                  placeholder="Workout Name..."
-                  label="Workout Name..."
+                  placeholder={t("gym.templateForm.workoutNamePlaceholder")}
+                  label={t("gym.templateForm.workoutNameLabel")}
                 />
               </View>
             </View>
@@ -247,7 +253,7 @@ export default function TemplateForm() {
                 >
                   {group.length > 1 && (
                     <AppText className="text-lg text-gray-100 my-2 text-center">
-                      Super-Set
+                      {t("gym.templateForm.superSetLabel")}
                     </AppText>
                   )}
                   {group.map(({ exercise, index }) => {
@@ -297,7 +303,7 @@ export default function TemplateForm() {
                             if (!confirmDelete) return;
 
                             const updated = exercises.filter(
-                              (_, i) => i !== index
+                              (_, i) => i !== index,
                             );
                             setExercises(updated);
 
@@ -307,7 +313,7 @@ export default function TemplateForm() {
                             };
                             AsyncStorage.setItem(
                               storageKey,
-                              JSON.stringify(sessionDraft)
+                              JSON.stringify(sessionDraft),
                             );
                           }}
                         />
@@ -354,8 +360,14 @@ export default function TemplateForm() {
                       }
                     }}
                     options={[
-                      { label: "Normal", value: "Normal" },
-                      { label: "Super-Set", value: "Super-Set" },
+                      {
+                        label: t("gym.templateForm.exerciseType.normal"),
+                        value: "Normal",
+                      },
+                      {
+                        label: t("gym.templateForm.exerciseType.superSet"),
+                        value: "Super-Set",
+                      },
                     ]}
                   />
                   <View className="absolute top-1/2 bottom-1/2 right-4 flex-row  items-center">
@@ -371,8 +383,8 @@ export default function TemplateForm() {
                 >
                   <AppText>
                     {exerciseType === "Super-Set"
-                      ? "Add Super-Set"
-                      : "Add Exercise"}
+                      ? t("gym.templateForm.addSuperSet")
+                      : t("gym.templateForm.addExercise")}
                   </AppText>
                 </Pressable>
               </View>
@@ -394,7 +406,7 @@ export default function TemplateForm() {
                   setNormalExercises([emptyExerciseEntry]);
                   setIsExerciseModalOpen(true);
                 }}
-                label="Add Exercise"
+                label={t("gym.templateForm.addExercise")}
               >
                 <Plus size={20} color="#f3f4f6" />
               </AppButton>
@@ -408,7 +420,7 @@ export default function TemplateForm() {
               {templateId ? (
                 <DeleteButton
                   confirm={false}
-                  label="Cancel"
+                  label={t("common.cancel")}
                   onPress={() => router.push("/gym/templates")}
                 />
               ) : (
@@ -418,7 +430,10 @@ export default function TemplateForm() {
           </PageContainer>
         </ScrollView>
       </TouchableWithoutFeedback>
-      <FullScreenLoader visible={isSaving} message="Saving template..." />
+      <FullScreenLoader
+        visible={isSaving}
+        message={t("gym.templateForm.savingTemplate")}
+      />
     </>
   );
 }

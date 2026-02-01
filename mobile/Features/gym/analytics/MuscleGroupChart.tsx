@@ -2,19 +2,21 @@ import { Dimensions, View } from "react-native";
 import { useMemo } from "react";
 import AppText from "@/components/AppText";
 import AnimatedBar from "@/Features/gym/analytics/AnimatedBar";
+import { useTranslation } from "react-i18next";
 
 type muscle_groups = { group: string; count: number }[];
 
 export default function MuscleGroupChart({ data }: { data: muscle_groups }) {
+  const { t } = useTranslation("gym");
   const screenWidth = Dimensions.get("window").width;
 
   const chartData = useMemo(() => {
     const entries = (data).map(({ group, count }) => ({
       value: count,
-      label: group,
+      label: t(`gym.muscleGroups.${group}`),
     }));
     return entries.sort((a, b) => b.value - a.value);
-  }, [data]);
+  }, [data, t]);
 
   const maxValue = Math.max(...chartData.map((item) => item.value));
 

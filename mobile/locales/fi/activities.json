@@ -1,0 +1,162 @@
+{
+  "activities": {
+    "title": "Aloita aktiviteetti",
+    "saveSession": {
+      "titleRequired": "Otsikko vaaditaan.",
+      "confirmTitle": "Vahvista sessio",
+      "confirmMessage": "Haluatko varmasti lopettaa tämän session?",
+      "saveError": "Session tallentaminen epäonnistui. Yritä uudelleen.",
+      "minDistanceError": "Sinun täytyy seurata vähintään 50 metriä tallentaaksesi session."
+    },
+    "startActivity": "Aloita aktiviteetti",
+    "templates": "Pohjat",
+    "addActivity": "Lisää aktiviteetti",
+    "editActivity": "Muokkaa aktiviteettia",
+    "analytics": "Analytiikka",
+    "mySessions": "Omat sessiot",
+    "activeSessionError": "Sinulla on jo aktiivinen sessio.",
+    "activeSessionErrorSub": "Lopeta se ennen uuden aloittamista.",
+    "activityDropdownEdit": {
+      "searchPlaceholder": "Etsi aktiviteetteja...",
+      "loadError": "Aktiviteettien lataus epäonnistui. Yritä uudelleen!",
+      "loading": "Ladataan aktiviteetteja...",
+      "searching": "Etsitään aktiviteetteja...",
+      "noActivities": "Aktiviteetteja ei löytynyt.",
+      "addNewActivity": "Aloita lisäämällä uusi aktiviteetti!",
+      "myActivities": "Omat aktiviteetit"
+    },
+    "activityDropdown": {
+      "searchPlaceholder": "Etsi aktiviteetteja...",
+      "loadError": "Aktiviteettien lataus epäonnistui. Yritä uudelleen!",
+      "loading": "Ladataan aktiviteetteja...",
+      "noActivities": "Aktiviteetteja ei löytynyt.",
+      "recentActivities": "Viimeaikaiset aktiviteetit",
+      "allActivities": "Kaikki aktiviteetit"
+    },
+    "categoryDropdown": {
+      "searchPlaceholder": "Etsi kategorioita...",
+      "loadError": "Kategorioiden lataus epäonnistui. Yritä uudelleen!",
+      "loading": "Ladataan kategorioita...",
+      "searching": "Etsitään kategorioita...",
+      "noCategories": "Kategorioita ei löytynyt.",
+      "addNewCategory": "Aloita lisäämällä uusi kategoria!",
+      "title": "Aktiviteettikategoriat"
+    },
+    "categories": {
+      "mobility": "Liikkuvuus",
+      "cardio": "Kardio",
+      "sports": "Urheilu",
+      "hiit": "HIIT",
+      "recreation": "Virkistys",
+      "gym": "Kuntosali",
+      "balance": "Tasapaino",
+      "transportation": "Liikenne",
+      "recovery": "Palautuminen",
+      "outdoor": "Ulkoilu",
+      "mindfulness": "Tietoisuus",
+      "strength": "Voima",
+      "swimming": "Uinti"
+    },
+    "activityNames": {
+      "sports": "Urheilu",
+      "stretching": "Venyttely",
+      "climbing": "Kiipeily",
+      "swimming": "Uinti",
+      "cycling": "Pyöräily",
+      "gym": "Kuntosali",
+      "pilates": "Pilates",
+      "dancing": "Tanssi",
+      "weight_training": "Painoharjoittelu",
+      "breathing_exercises": "Hengitysharjoitukset",
+      "meditation": "Meditaatio",
+      "hiking": "Vaellus",
+      "bodyweight_training": "Kehonpainoharjoittelu",
+      "running": "Juoksu",
+      "walking": "Kävely",
+      "driving": "Ajaminen",
+      "mindfulness": "Tietoisuus",
+      "cross_training": "Cross Training"
+    },
+    "analyticsScreen": {
+      "title": "Aktiviteetti-analytiikka",
+      "errorFetchingSteps": "Virhe haettaessa päivän askeleita",
+      "errorFetchingStepsDesc": "Päivän askelmäärää ei voitu hakea.",
+      "today": "Tänään",
+      "steps": "askelta",
+      "dailySteps": "Päivittäiset askeleet",
+      "weeklyTotal": "Viikon yhteensä",
+      "monthlyTotal": "Kuukauden yhteensä",
+      "threeMonthsTotal": "3 kuukauden yhteensä",
+      "dailyAvg": "Päivittäinen ka.",
+      "activityBreakdown": "Aktiviteettijakauma",
+      "session": "sessio",
+      "sessions": "sessiota",
+      "noActivitiesInPeriod": "Ei aktiviteetteja tällä ajanjaksolla",
+      "unknown": "Tuntematon"
+    },
+    "startActivityScreen": {
+      "selectActivity": "Valitse aktiviteetti",
+      "disableLocationTracking": "Poista sijaintiseuranta käytöstä",
+      "enableLocationTracking": "Ota sijaintiseuranta käyttöön",
+      "enableStepsTracking": "Ota askelseuranta käyttöön",
+      "startButton": "Aloita aktiviteetti",
+      "sessionNameLabel": "Session nimi",
+      "sessionNamePlaceholder": "Syötä session nimi",
+      "sessionNotesLabel": "Session muistiinpanot",
+      "sessionNotesPlaceholder": "Syötä session muistiinpanot",
+      "finishActivity": "Lopeta aktiviteetti",
+      "delete": "Poista",
+      "savingSession": "Tallennetaan sessiota..."
+    },
+    "sessionDetails": {
+      "duration": "Kesto",
+      "steps": "Askeleet",
+      "saveAsTemplate": "Tallenna pohjaksi",
+      "saveAsTemplateDesc": "Tallenna tämä aktiviteetti pohjaksi tulevaa käyttöä varten.",
+      "templateNamePlaceholder": "Syötä pohjan nimi",
+      "templateNameLabel": "Pohjan nimi",
+      "templateNotesPlaceholder": "Syötä pohjan muistiinpanot (valinnainen)",
+      "templateNotesLabel": "Pohjan muistiinpanot",
+      "cancel": "Peruuta",
+      "save": "Tallenna",
+      "savingTemplate": "Tallennetaan pohjaa..."
+    },
+    "sessionStats": {
+      "duration": "Kesto",
+      "movingTime": "Liikkumisaika",
+      "distance": "Matka",
+      "avgPace": "Ka. vauhti",
+      "moving": "(liikkuessa)",
+      "minPerKm": "min/km",
+      "avgSpeed": "Ka. nopeus",
+      "kmPerHour": "km/h",
+      "steps": "Askeleet",
+      "calories": "Kalorit"
+    },
+    "editSession": {
+      "title": "Muokkaa aktiviteettisessiota",
+      "sessionTitleLabel": "Session otsikko",
+      "sessionTitlePlaceholder": "Session otsikko...",
+      "sessionNotesLabel": "Session muistiinpanot",
+      "sessionNotesPlaceholder": "Session muistiinpanot...",
+      "selectActivity": "Valitse aktiviteetti",
+      "saveSession": "Tallenna sessio",
+      "savingSession": "Tallennetaan sessiota...",
+      "errorTitle": "Virhe tallennettaessa aktiviteettisessiota",
+      "errorEmptyTitle": "Syötä aktiviteettisession nimi",
+      "errorGeneric": "Yritä myöhemmin uudelleen"
+    },
+    "infoModal": {
+      "locationTrackingDisabled": "Sijaintiseuranta pois käytöstä.",
+      "enableLocationMessage": "Ota sijaintiseuranta käyttöön asetuksista seurataksesi aktiviteettiasi.",
+      "cancel": "Peruuta",
+      "settings": "Asetukset"
+    },
+    "stepInfoModal": {
+      "title": "Ota askelseuranta käyttöön",
+      "description": "MyTrack käyttää askeldataa Android Health Connectista näyttääkseen aktiviteettitietosi.\n\nOta askelpääsy käyttöön MyTrackille Health Connectin Käyttöoikeudet-kohdassa.",
+      "cancel": "Peruuta",
+      "openSettings": "Avaa asetukset"
+    }
+  }
+}

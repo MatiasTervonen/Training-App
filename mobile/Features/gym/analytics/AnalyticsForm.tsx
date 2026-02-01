@@ -13,6 +13,7 @@ import { SkiaRenderer, SkiaChart } from "@wuba/react-native-echarts";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { formatDate, formatDuration } from "@/lib/formatDate";
 import { Last30DaysAnalytics } from "@/database/gym/analytics/last-30-days-rpc";
+import { useTranslation } from "react-i18next";
 
 type AnalyticsFormProps = {
   data: Last30DaysAnalytics;
@@ -28,6 +29,7 @@ echarts.use([
 ]);
 
 export default function AnalyticsForm({ data, heatmap }: AnalyticsFormProps) {
+  const { t } = useTranslation("gym");
   const skiaRef = useRef<any>(null);
   const [chartSize, setChartSize] = useState({ width: 0, height: 0 });
 
@@ -55,6 +57,38 @@ export default function AnalyticsForm({ data, heatmap }: AnalyticsFormProps) {
     return [start.toISOString().split("T")[0], end.toISOString().split("T")[0]];
   }, []);
 
+  const durationLabel = t("gym.analytics.duration");
+  const dayNames = useMemo(
+    () => [
+      t("gym.analytics.days.sun"),
+      t("gym.analytics.days.mon"),
+      t("gym.analytics.days.tue"),
+      t("gym.analytics.days.wed"),
+      t("gym.analytics.days.thu"),
+      t("gym.analytics.days.fri"),
+      t("gym.analytics.days.sat"),
+    ],
+    [t],
+  );
+
+  const monthNames = useMemo(
+    () => [
+      t("gym.analytics.months.jan"),
+      t("gym.analytics.months.feb"),
+      t("gym.analytics.months.mar"),
+      t("gym.analytics.months.apr"),
+      t("gym.analytics.months.may"),
+      t("gym.analytics.months.jun"),
+      t("gym.analytics.months.jul"),
+      t("gym.analytics.months.aug"),
+      t("gym.analytics.months.sep"),
+      t("gym.analytics.months.oct"),
+      t("gym.analytics.months.nov"),
+      t("gym.analytics.months.dec"),
+    ],
+    [t],
+  );
+
   const option = useMemo(
     () => ({
       tooltip: {
@@ -71,7 +105,7 @@ export default function AnalyticsForm({ data, heatmap }: AnalyticsFormProps) {
           if (!value) return "";
           const date = formatDate(value[0]);
           const duration = value[1];
-          return `${date}\n${title}\nDuration: ${duration} min`;
+          return `${date}\n${title}\n${durationLabel}: ${duration} min`;
         },
       },
       visualMap: {
@@ -93,10 +127,11 @@ export default function AnalyticsForm({ data, heatmap }: AnalyticsFormProps) {
         },
         yearLabel: { show: false },
         dayLabel: {
-          nameMap: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+          nameMap: dayNames,
           color: "#e2e8f0",
         },
         monthLabel: {
+          nameMap: monthNames,
           color: "#e2e8f0",
         },
       },
@@ -106,7 +141,7 @@ export default function AnalyticsForm({ data, heatmap }: AnalyticsFormProps) {
         data: heatmapData,
       },
     }),
-    [heatmapData, calendarRange],
+    [heatmapData, calendarRange, durationLabel, dayNames, monthNames],
   );
 
   useEffect(() => {
@@ -127,15 +162,16 @@ export default function AnalyticsForm({ data, heatmap }: AnalyticsFormProps) {
     <View className=" bg-slate-800 rounded-xl">
       <View className="gap-4 bg-slate-900  rounded-2xl shadow-md pt-5">
         <AppText className="text-xl mb-4 text-center">
-          Last 30 Days Analytics
+          {t("gym.analytics.title")}
         </AppText>
         <View className="sm:flex items-center justify-center gap-10 ml-4">
           <View className="flex flex-col gap-5">
             <AppText className="text-lg">
-              Total workouts: {data.total_sessions}
+              {t("gym.analytics.totalWorkouts")}: {data.total_sessions}
             </AppText>
             <AppText className="text-lg mb-5">
-              Average Duration: {formatDuration(data.avg_duration)}
+              {t("gym.analytics.averageDuration")}:{" "}
+              {formatDuration(data.avg_duration)}
             </AppText>
           </View>
         </View>
@@ -154,18 +190,16 @@ export default function AnalyticsForm({ data, heatmap }: AnalyticsFormProps) {
         </View>
         <View>
           <AppText className="text-center mb-6">
-            Muscle Group Distribution
+            {t("gym.analytics.muscleGroupDistribution")}
           </AppText>
           <ChartTabSwitcher data={data} />
         </View>
       </View>
       <View className="mt-6 text-sm text-gray-400 px-4">
-        <AppText>
-          Note: Analytics are based on the last 30 days of workout data.
-        </AppText>
+        <AppText>{t("gym.analytics.note")}</AppText>
       </View>
       <View className="mt-6 text-sm text-gray-400 px-4 pb-20">
-        <AppText>More analytics coming soon!</AppText>
+        <AppText>{t("gym.analytics.comingSoon")}</AppText>
       </View>
     </View>
   );

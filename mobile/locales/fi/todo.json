@@ -1,0 +1,33 @@
+{
+  "todo": {
+    "title": "Tehtävät",
+    "createTodoList": "Luo tehtävälista",
+    "myTodoLists": "Omat tehtävälistat",
+    "todoList": "Tehtävälista",
+    "addTitleLabel": "Lisää otsikko tehtävälistallesi",
+    "titlePlaceholder": "Otsikko",
+    "addTaskLabel": "Lisää tehtävä tehtävälistallesi",
+    "taskPlaceholder": "Syötä tehtävä...",
+    "addNotesLabel": "Lisää muistiinpanoja tehtävääsi",
+    "notesPlaceholder": "Syötä muistiinpanot...(valinnainen)",
+    "add": "Lisää",
+    "myTodoListDefault": "Oma tehtävälistani",
+    "editTask": "Muokkaa tehtävää",
+    "editTaskLabel": "Muokkaa tehtävääsi",
+    "editTaskPlaceholder": "Muokkaa tehtävää...",
+    "addYourNotes": "Lisää muistiinpanosi",
+    "noNotesAvailable": "Ei muistiinpanoja",
+    "edit": "muokkaa",
+    "delete": "poista",
+    "deleteTaskTitle": "Poista tehtävä",
+    "deleteTaskMessage": "Haluatko varmasti poistaa tämän tehtävän?",
+    "savingTodoList": "Tallennetaan tehtävälistaa...",
+    "saveSuccess": "Tehtävälista tallennettu onnistuneesti",
+    "saveError": "Tehtävälistan tallennus epäonnistui",
+    "failedToLoad": "Tehtävälistojen lataaminen epäonnistui. Yritä myöhemmin uudelleen.",
+    "noTodoLists": "Ei vielä tehtävälistoja. Lisää ensimmäinen tehtävälistasi!",
+    "loadingDetails": "Ladataan tehtävälistan tietoja...",
+    "loadingTodoList": "Ladataan tehtävälistaa...",
+    "failedToLoadDetails": "Tehtävälistan tietojen lataaminen epäonnistui. Yritä myöhemmin uudelleen."
+  }
+}

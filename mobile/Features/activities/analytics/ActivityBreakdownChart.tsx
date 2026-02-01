@@ -5,12 +5,14 @@ import * as echarts from "echarts/core";
 import { PieChart } from "echarts/charts";
 import { LegendComponent } from "echarts/components";
 import { SkiaRenderer, SkiaChart } from "@wuba/react-native-echarts";
+import { useTranslation } from "react-i18next";
 
 type ActivityBreakdownChartProps = {
   data: {
     id: string;
     created_at: string;
     activity_name: string | null;
+    activity_slug: string | null;
   }[];
   startDate: Date;
   endDate: Date;
@@ -34,6 +36,7 @@ export default function ActivityBreakdownChart({
   startDate,
   endDate,
 }: ActivityBreakdownChartProps) {
+  const { t } = useTranslation("activities");
   const [size, setSize] = useState({ width: 0, height: 0 });
   const skiaRef = useRef<any>(null);
 
@@ -45,17 +48,32 @@ export default function ActivityBreakdownChart({
   }, [data, startDate, endDate]);
 
   const chartData = useMemo(() => {
+    const getActivityName = (slug: string | null, name: string | null) => {
+      if (slug) {
+        const translated = t(`activities.activityNames.${slug}`, {
+          defaultValue: "",
+        });
+        if (translated && translated !== `activities.activityNames.${slug}`) {
+          return translated;
+        }
+      }
+      return name || t("activities.analyticsScreen.unknown");
+    };
+
     const activityCounts: Record<string, number> = {};
 
     filteredData.forEach((session) => {
-      const name = session.activity_name || "Unknown";
+      const name = getActivityName(
+        session.activity_slug,
+        session.activity_name,
+      );
       activityCounts[name] = (activityCounts[name] || 0) + 1;
     });
 
     return Object.entries(activityCounts)
       .map(([name, value]) => ({ name, value }))
       .sort((a, b) => b.value - a.value);
-  }, [filteredData]);
+  }, [filteredData, t]);
 
   const totalSessions = filteredData.length;
 
@@ -94,7 +112,7 @@ export default function ActivityBreakdownChart({
               fontSize: 14,
               fontWeight: "bold",
               color: "#f3f4f6",
-              formatter: "{b}\n{c} sessions",
+              formatter: `{b}\n{c} ${t("activities.analyticsScreen.sessions")}`,
             },
           },
           labelLine: {
@@ -109,7 +127,7 @@ export default function ActivityBreakdownChart({
         },
       ],
     }),
-    [chartData],
+    [chartData, t],
   );
 
   useEffect(() => {
@@ -130,7 +148,7 @@ export default function ActivityBreakdownChart({
     return (
       <View className="bg-slate-900 rounded-2xl p-4 items-center justify-center min-h-[200px]">
         <AppText className="text-gray-400">
-          No activities in this period
+          {t("activities.analyticsScreen.noActivitiesInPeriod")}
         </AppText>
       </View>
     );
@@ -139,10 +157,13 @@ export default function ActivityBreakdownChart({
   return (
     <View className="bg-slate-900 rounded-2xl p-4">
       <AppText className="text-lg font-medium text-center mb-2">
-        Activity Breakdown
+        {t("activities.analyticsScreen.activityBreakdown")}
       </AppText>
       <AppText className="text-gray-400 text-center text-sm mb-4">
-        {totalSessions} {totalSessions === 1 ? "session" : "sessions"}
+        {totalSessions}{" "}
+        {totalSessions === 1
+          ? t("activities.analyticsScreen.session")
+          : t("activities.analyticsScreen.sessions")}
       </AppText>
 
       <View

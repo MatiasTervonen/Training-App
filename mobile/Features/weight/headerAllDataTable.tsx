@@ -4,6 +4,7 @@ import AppTextNC from "@/components/AppTextNC";
 import { weight } from "@/types/session";
 import WeightChart from "@/Features/weight/WeightChart";
 import AnimatedButton from "@/components/buttons/animatedButton";
+import { useTranslation } from "react-i18next";
 
 type RangeType = "week" | "month" | "year";
 
@@ -28,9 +29,13 @@ export default function HeaderAllDataTable({
   error,
   data,
 }: HeaderAllDataTableProps) {
+  const { t } = useTranslation("weight");
+
   return (
     <>
-      <AppText className="text-2xl my-5 text-center">Weight Analytics</AppText>
+      <AppText className="text-2xl my-5 text-center">
+        {t("weight.analyticsScreen.title")}
+      </AppText>
       <View className="flex-row bg-slate-800 rounded-lg p-1 mb-5 mx-4">
         {ranges.map((option) => (
           <AnimatedButton
@@ -55,14 +60,14 @@ export default function HeaderAllDataTable({
         {isLoading ? (
           <View className="flex-1 justify-center items-center mt-10">
             <AppText className="text-gray-400 text-lg">
-              Loading weight data...
+              {t("weight.analyticsScreen.loading")}
             </AppText>
             <ActivityIndicator className="mt-2" />
           </View>
         ) : error ? (
           <View className="flex-1 justify-center items-center mt-10">
             <AppText className="text-red-500">
-              Error loading data. Try again...
+              {t("weight.analyticsScreen.error")}
             </AppText>
           </View>
         ) : (

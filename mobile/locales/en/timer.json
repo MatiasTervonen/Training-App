@@ -1,0 +1,37 @@
+{
+  "timer": {
+    "title": "Timer",
+    "startTimer": "Start Timer",
+    "startStopwatch": "Start Stopwatch",
+    "createTimer": "Create Timer",
+    "myTimers": "My Timers",
+    "minutes": "Minutes",
+    "seconds": "Seconds",
+    "start": "Start",
+    "clear": "Clear",
+    "cancelTimerTitle": "Cancel Timer",
+    "cancelTimerMessage": "Are you sure you want to cancel the timer?",
+    "setDurationError": "Please set a duration for the timer.",
+    "titleLabel": "Title...",
+    "titlePlaceholder": "Timer Title",
+    "notesLabel": "Notes...",
+    "notesPlaceholder": "Timer notes...(optional)",
+    "savingTimer": "Saving timer...",
+    "updatingTimer": "Updating timer...",
+    "loadingTimers": "Loading timers...",
+    "errorLoadingTimers": "Error loading timers. Please try again.",
+    "noTimers": "No timers found. Create a new timer to get started!",
+    "editTimer": "Edit Timer",
+    "update": "Update",
+    "deleteSuccess": "Timer deleted successfully",
+    "deleteError": "Failed to delete timer. Please try again.",
+    "activeSessionError": "You already have an active session.",
+    "activeSessionErrorSub": "Finish it before starting a new one.",
+    "alarmPermission": {
+      "title": "Allow setting alarms and reminders",
+      "description": "This timer requires a high-priority alarm to work.\n\nThe alarm will ring continuously, even when your phone is locked, until you dismiss it. Without this permission, timers cannot start.",
+      "back": "Back",
+      "allow": "Allow"
+    }
+  }
+}

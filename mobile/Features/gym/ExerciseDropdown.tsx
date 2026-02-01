@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { gym_exercises } from "@/types/models";
-import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
+import { useState, useMemo } from "react";
+
+import { useQuery } from "@tanstack/react-query";
 import {
   ActivityIndicator,
   View,
@@ -13,29 +13,23 @@ import { getRecentExercises } from "@/database/gym/recent-exercises";
 import AppInput from "@/components/AppInput";
 import AppText from "@/components/AppText";
 import AnimatedButton from "@/components/buttons/animatedButton";
-import { useDebouncedCallback } from "use-debounce";
+import { useTranslation } from "react-i18next";
 
 type Props = {
-  onSelect: (exercise: gym_exercises) => void;
+  onSelect: (exercise: any) => void;
 };
 
 export default function ExerciseDropdown({ onSelect }: Props) {
+  const { t } = useTranslation("gym");
   const [searchQuery, setSearchQuery] = useState("");
-  const [inputValue, setInputValue] = useState("");
 
   const {
-    data,
+    data: allExercisesData,
     error: exercisesError,
     isLoading: isExercisesLoading,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-  } = useInfiniteQuery({
-    queryKey: ["exercises", searchQuery],
-    queryFn: ({ pageParam = 0 }) =>
-      getExercises({ pageParam, limit: 50, search: searchQuery }),
-    initialPageParam: 0,
-    getNextPageParam: (lastPage) => lastPage.nextPage,
+  } = useQuery({
+    queryKey: ["exercises"],
+    queryFn: () => getExercises(),
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     refetchOnMount: false,
@@ -56,27 +50,42 @@ export default function ExerciseDropdown({ onSelect }: Props) {
   const isLoading = isExercisesLoading || isRecentLoading;
   const isError = exercisesError || recentError;
 
-  const allExercises = data?.pages.flatMap((page) => page.data) || [];
+  // Filter exercises with translated values
+  const allExercises = useMemo(() => {
+    if (!allExercisesData) return [];
+    if (!searchQuery.trim()) return allExercisesData;
+
+    const query = searchQuery.toLowerCase();
+    return allExercisesData.filter((exercise) => {
+      const name = exercise.name?.toLowerCase() ?? "";
+      const equipment = t(`gym.equipment.${exercise.equipment}`)?.toLowerCase() ?? "";
+      const muscleGroup = t(`gym.muscleGroups.${exercise.muscle_group}`)?.toLowerCase() ?? "";
+      const mainGroup = t(`gym.mainGroups.${exercise.main_group}`)?.toLowerCase() ?? "";
+
+      return (
+        name.includes(query) ||
+        equipment.includes(query) ||
+        muscleGroup.includes(query) ||
+        mainGroup.includes(query)
+      );
+    });
+  }, [allExercisesData, searchQuery, t]);
 
   const recentExercisesList = recentExercises || [];
-
-  const handleSearchChange = useDebouncedCallback((value: string) => {
-    setSearchQuery(value);
-  }, 400);
 
   const sections = [];
 
   if (!isError && !isLoading) {
     if (recentExercisesList.length > 0 && searchQuery.length === 0) {
       sections.push({
-        title: "Recent Exercises",
+        title: t("gym.exerciseDropdown.recentExercises"),
         data: recentExercisesList,
         key: "recent",
       });
     }
 
     sections.push({
-      title: "All Exercises",
+      title: t("gym.exerciseDropdown.allExercises"),
       data: allExercises,
     });
   }
@@ -86,13 +95,10 @@ export default function ExerciseDropdown({ onSelect }: Props) {
       <View className="w-full z-50 flex-1">
         <View className="mt-10 w-full px-8">
           <AppInput
-            value={inputValue}
-            placeholder="Search exercises..."
+            value={searchQuery}
+            placeholder={t("gym.exerciseDropdown.searchPlaceholder")}
             autoComplete="off"
-            onChangeText={(text) => {
-              setInputValue(text);
-              handleSearchChange(text);
-            }}
+            onChangeText={setSearchQuery}
             spellCheck={false}
           />
         </View>
@@ -102,17 +108,19 @@ export default function ExerciseDropdown({ onSelect }: Props) {
                     bg-slate-900 border border-gray-100 mt-10 flex-1 rounded-md overflow-hidden"
         >
           {isError ? (
-            <AppText className="text-red-500 text-xl mt-20 text-center">
-              Failed to load exercises. Try again!
+            <AppText className="text-red-500 text-xl mt-20 text-center px-10">
+              {t("gym.exerciseDropdown.loadError")}
             </AppText>
           ) : isLoading ? (
             <View className="items-center justify-center gap-3 mt-20">
-              <AppText className="text-xl">Loading exercises...</AppText>
+              <AppText className="text-xl">
+                {t("gym.exerciseDropdown.loadingExercises")}
+              </AppText>
               <ActivityIndicator />
             </View>
           ) : allExercises.length === 0 ? (
-            <AppText className="text-lg text-gray-300 mt-20 text-center">
-              No exercises found.
+            <AppText className="text-lg text-gray-300 mt-20 text-center px-10">
+              {t("gym.exerciseDropdown.noExercisesFound")}
             </AppText>
           ) : (
             <SectionList
@@ -138,11 +146,11 @@ export default function ExerciseDropdown({ onSelect }: Props) {
                           {item.name}
                         </AppText>
                         <AppText className="text-md text-gray-300 shrink-0">
-                          {item.muscle_group}
+                          {t(`gym.muscleGroups.${item.muscle_group}`)}
                         </AppText>
                       </View>
                       <AppText className="text-md text-gray-400">
-                        {item.equipment}
+                        {t(`gym.equipment.${item.equipment}`)}
                       </AppText>
                     </View>
                   </AnimatedButton>
@@ -153,20 +161,6 @@ export default function ExerciseDropdown({ onSelect }: Props) {
                   {title}
                 </AppText>
               )}
-              onEndReached={() => {
-                if (hasNextPage && !isFetchingNextPage) {
-                  fetchNextPage();
-                }
-              }}
-              ListFooterComponent={
-                isFetchingNextPage ? (
-                  <View className="items-center justify-center gap-4 my-10">
-                    <ActivityIndicator size="large" color="#193cb8" />
-                  </View>
-                ) : hasNextPage ? (
-                  <View className="h-20" />
-                ) : null
-              }
             />
           )}
         </View>

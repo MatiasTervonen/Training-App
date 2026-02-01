@@ -9,6 +9,7 @@ import * as echarts from "echarts/core";
 import { LineChart } from "echarts/charts";
 import { GridComponent } from "echarts/components";
 import { SkiaRenderer, SkiaChart } from "@wuba/react-native-echarts";
+import { useTranslation } from "react-i18next";
 
 type WeightChartProps = {
   range: "week" | "month" | "year";
@@ -89,6 +90,7 @@ function generateDateRange(start: Date, end: Date): string[] {
 echarts.use([SkiaRenderer, LineChart, GridComponent]);
 
 export default function WeightChart({ range, data }: WeightChartProps) {
+  const { t } = useTranslation("weight");
   const [offset, setOffset] = useState(0);
   const latestDate = getLatestDate(data);
   const oldestDate = getOldestDate(data);
@@ -169,7 +171,7 @@ export default function WeightChart({ range, data }: WeightChartProps) {
     }));
 
   function formatDateRange(start: Date | null, end: Date | null) {
-    if (!start || !end) return "No data available";
+    if (!start || !end) return t("weight.analyticsScreen.noData");
     const startFormatted = start.toLocaleDateString("en-US", {
       year: "numeric",
       month: "short",
@@ -289,7 +291,7 @@ export default function WeightChart({ range, data }: WeightChartProps) {
       </View>
       <View>
         <AppText className="text-center mb-4 px-10">
-          {range}: {weightDifference} {weightUnit}
+          {t(`weight.analyticsScreen.${range}`)}: {weightDifference} {weightUnit}
         </AppText>
         <View
           style={{

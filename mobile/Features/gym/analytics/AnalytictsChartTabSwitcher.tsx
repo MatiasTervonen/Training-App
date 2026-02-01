@@ -4,6 +4,7 @@ import AnimatedButton from "@/components/buttons/animatedButton";
 import AppText from "@/components/AppTextNC";
 import MuscleGroupChart from "@/Features/gym/analytics/MuscleGroupChart";
 import MuscleGroupChartSets from "@/Features/gym/analytics/MuscleGroupChartSets";
+import { useTranslation } from "react-i18next";
 
 type ChartTabSwitcherProps = {
   data: {
@@ -15,6 +16,7 @@ type ChartTabSwitcherProps = {
 };
 
 export default function ChartTabSwitcher({ data }: ChartTabSwitcherProps) {
+  const { t } = useTranslation("gym");
   const [activeTab, setActiveTab] = useState<
     "muscleGroups" | "muscleGroupSets"
   >("muscleGroups");
@@ -33,7 +35,7 @@ export default function ChartTabSwitcher({ data }: ChartTabSwitcherProps) {
               activeTab === "muscleGroups" ? "text-cyan-400" : "text-gray-100"
             }`}
           >
-            Exercises
+            {t("gym.analytics.tabs.exercises")}
           </AppText>
         </AnimatedButton>
 
@@ -48,7 +50,7 @@ export default function ChartTabSwitcher({ data }: ChartTabSwitcherProps) {
               activeTab === "muscleGroupSets" ? "text-cyan-400" : "text-gray-100"
             }`}
           >
-            Sets
+            {t("gym.analytics.tabs.sets")}
           </AppText>
         </AnimatedButton>
       </View>

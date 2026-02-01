@@ -7,6 +7,7 @@ import {
   MenuOption,
 } from "react-native-popup-menu";
 import AppText from "@/components/AppText";
+import { useTranslation } from "react-i18next";
 
 type DropdownMenuProps = {
   button: React.ReactNode;
@@ -27,6 +28,8 @@ export default function DropdownMenu({
   onHistory,
   onChange,
 }: DropdownMenuProps) {
+  const { t } = useTranslation("common");
+
   return (
     <View>
       <Menu>
@@ -43,7 +46,7 @@ export default function DropdownMenu({
           {onEdit && (
             <View className="border-b border-blue-500">
               <MenuOption onSelect={onEdit}>
-                <AppText className="text-center">Edit</AppText>
+                <AppText className="text-center">{t("common.edit")}</AppText>
               </MenuOption>
             </View>
           )}
@@ -52,7 +55,7 @@ export default function DropdownMenu({
             <View className="border-b border-blue-500">
               <MenuOption onSelect={onTogglePin}>
                 <AppText className="text-center">
-                  {pinned ? "Unpin" : "Pin"}
+                  {pinned ? t("common.unpin") : t("common.pin")}
                 </AppText>
               </MenuOption>
             </View>
@@ -60,18 +63,18 @@ export default function DropdownMenu({
 
           {onDelete && (
             <MenuOption onSelect={onDelete}>
-              <AppText className="text-center">Delete</AppText>
+              <AppText className="text-center">{t("common.delete")}</AppText>
             </MenuOption>
           )}
 
           {onHistory && (
             <MenuOption onSelect={onHistory}>
-              <AppText className="text-center">History</AppText>
+              <AppText className="text-center">{t("common.history")}</AppText>
             </MenuOption>
           )}
           {onChange && (
             <MenuOption onSelect={onChange}>
-              <AppText className="text-center bg-slate-900">Change</AppText>
+              <AppText className="text-center bg-slate-900">{t("common.change")}</AppText>
             </MenuOption>
           )}
         </MenuOptions>

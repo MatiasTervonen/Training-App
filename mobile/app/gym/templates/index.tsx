@@ -17,6 +17,7 @@ import AppText from "@/components/AppText";
 import PageContainer from "@/components/PageContainer";
 import { full_gym_template } from "@/types/models";
 import { useTimerStore } from "@/lib/stores/timerStore";
+import { useTranslation } from "react-i18next";
 
 type templateSummary = {
   id: string;
@@ -25,8 +26,9 @@ type templateSummary = {
 };
 
 export default function TemplatesPage() {
+  const { t } = useTranslation(["gym", "common"]);
   const [expandedItem, setExpandedItem] = useState<full_gym_template | null>(
-    null
+    null,
   );
 
   const activeSession = useTimerStore((state) => state.activeSession);
@@ -53,8 +55,8 @@ export default function TemplatesPage() {
     if (activeSession) {
       Toast.show({
         type: "error",
-        text1: "You already have an active session.",
-        text2: "Finish it before starting a new one.",
+        text1: t("gym.activeSessionError"),
+        text2: t("gym.activeSessionErrorSub"),
       });
       return;
     }
@@ -79,7 +81,7 @@ export default function TemplatesPage() {
 
     await AsyncStorage.setItem(
       "gym_session_draft",
-      JSON.stringify(sessionDraft)
+      JSON.stringify(sessionDraft),
     );
     await AsyncStorage.setItem("startedFromTemplate", "true");
     router.push("/gym/gym");
@@ -87,9 +89,8 @@ export default function TemplatesPage() {
 
   const handleDeleteTemplate = async (templateId: string) => {
     const confirmDelete = await confirmAction({
-      message: "Delete Template",
-      title:
-        "Are you sure you want to delete this template? This action cannot be undone.",
+      title: t("gym.TemplatesScreen.confirmDeleteTitle"),
+      message: t("gym.TemplatesScreen.confirmDeleteMessage"),
     });
     if (!confirmDelete) return;
 
@@ -109,14 +110,14 @@ export default function TemplatesPage() {
 
       Toast.show({
         type: "success",
-        text1: "Template deleted successfully",
+        text1: t("gym.TemplatesScreen.deleteSuccess"),
       });
     } catch {
       queryClient.setQueryData(queryKey, previousFeed);
       Toast.show({
         type: "error",
-        text1: "Failed to delete template",
-        text2: "Please try again.",
+        text1: t("gym.TemplatesScreen.deleteError1"),
+        text2: t("gym.TemplatesScreen.deleteError2"),
       });
     }
   };
@@ -143,19 +144,21 @@ export default function TemplatesPage() {
       keyboardShouldPersistTaps="handled"
     >
       <PageContainer>
-        <AppText className="text-center mb-10 text-2xl">My Templates</AppText>
+        <AppText className="text-center mb-10 text-2xl">
+          {t("gym.TemplatesScreen.title")}
+        </AppText>
 
         {!error && isLoading && <TemplateSkeleton count={6} />}
 
         {error && (
           <AppText className="text-red-500 text-center">
-            Error loading templates. Try again!
+            {t("gym.TemplatesScreen.errorLoading")}
           </AppText>
         )}
 
         {!isLoading && templates.length === 0 && (
           <AppText className="text-gray-300 text-center">
-            No templates found. Create a new template to get started!
+            {t("gym.TemplatesScreen.noTemplates")}
           </AppText>
         )}
 
@@ -177,12 +180,12 @@ export default function TemplatesPage() {
           <FullScreenModal isOpen={true} onClose={() => setExpandedItem(null)}>
             {isLoadingTemplateSession ? (
               <View className="gap-5 items-center justify-center pt-40">
-                <AppText className="text-lg">Loading details...</AppText>
+                <AppText className="text-lg">{t("gym.TemplatesScreen.loadingExpanded")}</AppText>
                 <ActivityIndicator size="large" />
               </View>
             ) : TemplateSessionError ? (
               <AppText className="text-center text-lg mt-10">
-                Failed to load template details. Please try again later.
+                {t("gym.TemplatesScreen.errorLoadingExpanded")}
               </AppText>
             ) : (
               TemplateSessionFull && (

@@ -25,8 +25,10 @@ import NumberInput from "@/components/NumberInput";
 import SaveButton from "@/components/buttons/SaveButton";
 import FullScreenLoader from "@/components/FullScreenLoader";
 import useUpdateTimer from "@/Features/timer/hooks/useUpdateTimer";
+import { useTranslation } from "react-i18next";
 
 export default function MyTimersScreen() {
+  const { t } = useTranslation(["timer", "common"]);
   const [expandedItem, setExpandedItem] = useState<timers | null>(null);
   const [editingItem, setEditingItem] = useState<timers | null>(null);
 
@@ -62,11 +64,11 @@ export default function MyTimersScreen() {
       await deleteTimer(timerId);
 
       queryClient.refetchQueries({ queryKey: ["timers"], exact: true });
-      Toast.show({ type: "success", text1: "Timer deleted successfully" });
+      Toast.show({ type: "success", text1: t("timer.deleteSuccess") });
     } catch {
       Toast.show({
         type: "error",
-        text1: "Failed to delete timer. Please try again.",
+        text1: t("timer.deleteError"),
       });
     }
   };
@@ -105,8 +107,8 @@ export default function MyTimersScreen() {
     if (activeSession) {
       Toast.show({
         type: "error",
-        text1: "You already have an active session.",
-        text2: "Finish it before starting a new one.",
+        text1: t("timer.activeSessionError"),
+        text2: t("timer.activeSessionErrorSub"),
       });
       return;
     }
@@ -131,22 +133,22 @@ export default function MyTimersScreen() {
 
   return (
     <PageContainer>
-      <AppText className="text-2xl text-center mb-10">My Timers</AppText>
+      <AppText className="text-2xl text-center mb-10">{t("timer.myTimers")}</AppText>
 
       {isLoading ? (
         <View className="gap-3 items-center justify-center mt-20">
           <AppText className="text-center text-gray-300 text-xl">
-            Loading timers...
+            {t("timer.loadingTimers")}
           </AppText>
           <ActivityIndicator size="large" color="#ccc" />
         </View>
       ) : error ? (
         <AppText className="text-center text-red-500 mt-20 text-xl">
-          Error loading timers. Please try again.
+          {t("timer.errorLoadingTimers")}
         </AppText>
       ) : timers && timers.length === 0 ? (
         <AppText className="text-center text-gray-300 mt-20 text-xl">
-          No timers found. Create a new timer to get started!
+          {t("timer.noTimers")}
         </AppText>
       ) : (
         timers?.map((timer) => (
@@ -186,52 +188,52 @@ export default function MyTimersScreen() {
             <PageContainer className="justify-between">
               <View className="gap-5">
                 <AppText className="text-2xl text-center mb-5">
-                  Edit Timer
+                  {t("timer.editTimer")}
                 </AppText>
                 <AppInput
-                  label="Title..."
+                  label={t("timer.titleLabel")}
                   value={editTitle}
                   setValue={setEditTitle}
-                  placeholder="Timer Title"
+                  placeholder={t("timer.titlePlaceholder")}
                 />
                 <SubNotesInput
-                  label="Notes..."
+                  label={t("timer.notesLabel")}
                   value={editNotes}
                   setValue={setEditNotes}
-                  placeholder="Timer notes...(optional)"
+                  placeholder={t("timer.notesPlaceholder")}
                   className="min-h-[60px]"
                 />
                 <View className="flex-row gap-2 mb-4 w-full">
                   <View className="flex-1">
                     <NumberInput
-                      label="Minutes"
+                      label={t("timer.minutes")}
                       value={editMinutes}
                       onChangeText={setEditMinutes}
-                      placeholder="Minutes"
+                      placeholder={t("timer.minutes")}
                       keyboardType="numeric"
                     />
                   </View>
                   <View className="flex-1">
                     <NumberInput
-                      label="Seconds"
+                      label={t("timer.seconds")}
                       value={editSeconds}
                       onChangeText={setEditSeconds}
-                      placeholder="Seconds"
+                      placeholder={t("timer.seconds")}
                       keyboardType="numeric"
                     />
                   </View>
                 </View>
               </View>
               <View className="gap-4">
-                <SaveButton onPress={handleUpdateTimer} label="Update" />
+                <SaveButton onPress={handleUpdateTimer} label={t("timer.update")} />
                 <AnimatedButton
                   className="bg-gray-700 rounded-md shadow-md border-2 border-gray-500 py-2"
-                  label="Cancel"
+                  label={t("common.cancel")}
                   onPress={() => setEditingItem(null)}
                   textClassName="text-gray-100 text-center"
                 />
               </View>
-              <FullScreenLoader visible={isSaving} message="Updating timer..." />
+              <FullScreenLoader visible={isSaving} message={t("timer.updatingTimer")} />
             </PageContainer>
           </TouchableWithoutFeedback>
         </FullScreenModal>

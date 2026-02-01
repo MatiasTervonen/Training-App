@@ -4,6 +4,7 @@ import { View } from "react-native";
 import AppText from "@/components/AppText";
 import { FeedCardProps } from "@/types/session";
 import BaseFeedCard from "@/Features/feed-cards/BaseFeedCard";
+import { useTranslation } from "react-i18next";
 
 type reminderPayload = {
   notify_date: string;
@@ -22,11 +23,18 @@ export default function LocalReminderCard({
   onExpand,
   onEdit,
 }: FeedCardProps) {
+  const { t } = useTranslation("feed");
   const payload = item.extra_fields as reminderPayload;
 
-  console.log("Rendering LocalReminderCard with payload:", payload);
-
-  const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const days = [
+    t("feed.card.weekdays.sun"),
+    t("feed.card.weekdays.mon"),
+    t("feed.card.weekdays.tue"),
+    t("feed.card.weekdays.wed"),
+    t("feed.card.weekdays.thu"),
+    t("feed.card.weekdays.fri"),
+    t("feed.card.weekdays.sat"),
+  ];
 
   return (
     <BaseFeedCard
@@ -37,7 +45,7 @@ export default function LocalReminderCard({
       onExpand={onExpand}
       onEdit={onEdit}
       typeIcon={<Bell size={20} color={pinned ? "#0f172a" : "#f3f4f6"} />}
-      typeName={"Reminder"}
+      typeName={t("feed.card.types.reminder")}
       showUpdatedAt={true}
       statsContent={
         <>

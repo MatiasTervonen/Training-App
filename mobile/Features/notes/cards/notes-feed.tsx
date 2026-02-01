@@ -3,6 +3,7 @@ import AppText from "@/components/AppText";
 import { FeedCardProps } from "@/types/session";
 import BaseFeedCard from "@/Features/feed-cards/BaseFeedCard";
 import { View } from "react-native";
+import { useTranslation } from "react-i18next";
 
 type notesPayload = {
   notes: string;
@@ -16,6 +17,7 @@ export default function NotesCard({
   onExpand,
   onEdit,
 }: FeedCardProps) {
+  const { t } = useTranslation("feed");
   const payload = item.extra_fields as notesPayload;
 
   return (
@@ -29,7 +31,7 @@ export default function NotesCard({
       typeIcon={
         <NotebookPen size={20} color={pinned ? "#0f172a" : "#f3f4f6"} />
       }
-      typeName={"Notes"}
+      typeName={t("feed.card.types.notes")}
       statsContent={
         <View>
           {payload.notes && (

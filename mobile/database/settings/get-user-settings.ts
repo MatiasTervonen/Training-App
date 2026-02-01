@@ -13,7 +13,7 @@ export async function fetchUserSettings() {
 
   const { data, error } = await supabase
     .from("user_settings")
-    .select("push_enabled, gps_tracking_enabled")
+    .select("push_enabled, gps_tracking_enabled, language")
     .single();
 
   if (error) {

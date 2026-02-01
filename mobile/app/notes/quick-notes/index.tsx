@@ -20,6 +20,7 @@ import RecordVoiceNotes from "@/Features/notes/components/RecordVoiceNotes";
 import { nanoid } from "nanoid/non-secure";
 import { DraftRecordingItem } from "@/Features/notes/components/draftRecording";
 import { confirmAction } from "@/lib/confirmAction";
+import { useTranslation } from "react-i18next";
 
 type DraftRecording = {
   id: string;
@@ -29,6 +30,7 @@ type DraftRecording = {
 };
 
 export default function NotesScreen() {
+  const { t } = useTranslation("notes");
   const now = formatDate(new Date());
   const [title, setTitle] = useState(`Notes - ${now}`);
   const [notes, setNotes] = useState("");
@@ -67,26 +69,26 @@ export default function NotesScreen() {
         <PageContainer className="justify-between">
           <View>
             <AppText className="text-2xl text-center mb-10">
-              Add your notes here
+              {t("notes.addNotesHere")}
             </AppText>
             <View className="mb-5">
               <AppInput
                 value={title}
                 setValue={setTitle}
-                label="Title.."
-                placeholder="Notes title..."
+                label={t("notes.titleLabel")}
+                placeholder={t("notes.titlePlaceholder")}
               />
             </View>
             <NotesInput
               className="min-h-[120px]"
               value={notes}
               setValue={setNotes}
-              placeholder="Write your notes here..."
-              label="Notes..."
+              placeholder={t("notes.notesPlaceholder")}
+              label={t("notes.notesLabel")}
             />
             {draftRecordings.length > 0 && (
               <View className="mt-5">
-                <AppText className=" mb-2">Recordings:</AppText>
+                <AppText className=" mb-2">{t("notes.recordings")}</AppText>
                 {draftRecordings.map((recording, index) => (
                   <DraftRecordingItem
                     key={recording.id}
@@ -94,9 +96,8 @@ export default function NotesScreen() {
                     durationMs={recording.durationMs}
                     deleteRecording={async () => {
                       const confirm = await confirmAction({
-                        title: "Delete Recording",
-                        message:
-                          "Are you sure you want to delete this recording?",
+                        title: t("notes.deleteRecordingTitle"),
+                        message: t("notes.deleteRecordingMessage"),
                       });
                       if (!confirm) return;
 
@@ -129,7 +130,7 @@ export default function NotesScreen() {
           </View>
         </PageContainer>
       </TouchableWithoutFeedback>
-      <FullScreenLoader visible={isSaving} message="Saving your notes..." />
+      <FullScreenLoader visible={isSaving} message={t("notes.savingNotes")} />
     </ScrollView>
   );
 }

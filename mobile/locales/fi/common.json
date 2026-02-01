@@ -1,0 +1,46 @@
+{
+  "common": {
+    "save": "Tallenna",
+    "saving": "Tallennetaan...",
+    "cancel": "Peruuta",
+    "delete": "Poista",
+    "deleting": "Poistetaan...",
+    "edit": "Muokkaa",
+    "loading": "Ladataan...",
+    "error": "Virhe",
+    "success": "Onnistui",
+    "start": "Aloita",
+    "updated": "Päivitetty:",
+    "charLimitReached": "Merkkimäärän raja saavutettu (max 500)",
+    "pin": "Kiinnitä",
+    "pinned": "Kiinnitetty",
+    "unpin": "Irrota",
+    "history": "Historia",
+    "change": "Vaihda"
+  },
+  "navbar": {
+    "menu": "Valikko",
+    "feed": "Syöte",
+    "sessions": "Sessiot"
+  },
+  "sessions": {
+    "title": "Aloita sessio",
+    "gym": "Kuntosali",
+    "activities": "Aktiviteetit",
+    "notes": "Muistiinpanot",
+    "timer": "Ajastin",
+    "bodyWeight": "Paino",
+    "todoList": "Tehtävälista",
+    "reminders": "Muistutukset"
+  },
+  "deleteButton": {
+    "confirmDeleteTitle": "Vahvista poisto",
+    "confirmDeleteMessage": "Haluatko varmasti poistaa tämän?"
+  },
+  "confirmAction": {
+    "defaultTitle": "Oletko varma?",
+    "defaultMessage": "Tätä toimintoa ei voi peruuttaa.",
+    "confirm": "Kyllä",
+    "cancel": "Peruuta"
+  }
+}

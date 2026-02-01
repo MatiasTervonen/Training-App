@@ -13,8 +13,10 @@ import AppInput from "@/components/AppInput";
 import SubNotesInput from "@/components/SubNotesInput";
 import FullScreenLoader from "@/components/FullScreenLoader";
 import useSaveTemplate from "./hooks/useSaveTemplate";
+import { useTranslation } from "react-i18next";
 
 export default function ActivitySession(activity_session: FullActivitySession) {
+  const { t } = useTranslation("activities");
   const [scrollEnabled, setScrollEnabled] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [templateName, setTemplateName] = useState("");
@@ -74,12 +76,12 @@ export default function ActivitySession(activity_session: FullActivitySession) {
               )}
               {!hasRoute && (
                 <AppText className="text-lg text-center mt-5">
-                  Duration: {formatDuration(activity_session.session.duration)}
+                  {t("activities.sessionDetails.duration")}: {formatDuration(activity_session.session.duration)}
                 </AppText>
               )}
-              {!hasRoute && activity_session.stats?.steps && (
+              {!hasRoute && !!activity_session.stats?.steps && (
                 <AppText className="text-lg text-center mt-5">
-                  Steps: {activity_session.stats?.steps}
+                  {t("activities.sessionDetails.steps")}: {activity_session.stats?.steps}
                 </AppText>
               )}
             </LinearGradient>
@@ -98,7 +100,7 @@ export default function ActivitySession(activity_session: FullActivitySession) {
             <View className="mt-10">
               <AnimatedButton
                 onPress={() => setShowModal(true)}
-                label="Save as a Template"
+                label={t("activities.sessionDetails.saveAsTemplate")}
                 className="bg-blue-800 py-2 rounded-md shadow-md border-2 border-blue-500"
                 textClassName="text-gray-100 text-center"
               />
@@ -111,23 +113,23 @@ export default function ActivitySession(activity_session: FullActivitySession) {
         <View className="flex-1 justify-center items-center bg-black/50 px-5">
           <View className="bg-slate-700 rounded-lg p-6 w-full border-2 border-gray-100">
             <AppText className="text-xl mb-6 text-center">
-              Save as a Template
+              {t("activities.sessionDetails.saveAsTemplate")}
             </AppText>
             <AppText className="text-lg mb-6 text-center">
-              Save this activity as a template for future use.
+              {t("activities.sessionDetails.saveAsTemplateDesc")}
             </AppText>
             <AppInput
               value={templateName}
               setValue={setTemplateName}
-              placeholder="Enter template name"
-              label="Template name"
+              placeholder={t("activities.sessionDetails.templateNamePlaceholder")}
+              label={t("activities.sessionDetails.templateNameLabel")}
             />
             <View className="mt-5">
               <SubNotesInput
                 value={templateNotes}
                 setValue={setTemplateNotes}
-                placeholder="Enter template notes (optional)"
-                label="Template notes"
+                placeholder={t("activities.sessionDetails.templateNotesPlaceholder")}
+                label={t("activities.sessionDetails.templateNotesLabel")}
                 className="min-h-[60px]"
               />
             </View>
@@ -135,7 +137,7 @@ export default function ActivitySession(activity_session: FullActivitySession) {
               <View className="flex-1">
                 <AnimatedButton
                   onPress={() => setShowModal(false)}
-                  label="Cancel"
+                  label={t("activities.sessionDetails.cancel")}
                   className="bg-red-800 py-2 my-3 rounded-md shadow-md border-2 border-red-500"
                   textClassName="text-gray-100 text-center"
                 />
@@ -143,7 +145,7 @@ export default function ActivitySession(activity_session: FullActivitySession) {
               <View className="flex-1">
                 <AnimatedButton
                   onPress={saveAsTemplate}
-                  label="Save"
+                  label={t("activities.sessionDetails.save")}
                   className="bg-blue-800 py-2 my-3 rounded-md shadow-md border-2 border-blue-500"
                   textClassName="text-gray-100 text-center"
                 />
@@ -152,7 +154,7 @@ export default function ActivitySession(activity_session: FullActivitySession) {
           </View>
         </View>
       </Modal>
-      <FullScreenLoader visible={isSaving} message="Saving template..." />
+      <FullScreenLoader visible={isSaving} message={t("activities.sessionDetails.savingTemplate")} />
     </ScrollView>
   );
 }

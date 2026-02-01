@@ -11,34 +11,37 @@ import {
 import LinkButton from "@/components/buttons/LinkButton";
 import PageContainer from "@/components/PageContainer";
 import { View } from "react-native";
+import { useTranslation } from "react-i18next";
 
 export default function SessionsScreen() {
+   const { t } = useTranslation();
+
   return (
     <PageContainer>
-      <AppText className="text-2xl text-center mb-10">Start Sessions</AppText>
+      <AppText className="text-2xl text-center mb-10">{t("sessions.title")}</AppText>
       <View className="gap-4">
-        <LinkButton label="Gym" href="/gym">
+        <LinkButton label={t("sessions.gym")} href="/gym">
           <Dumbbell color="#f3f4f6" />
         </LinkButton>
-        <LinkButton label="Activities" href="/activities">
+        <LinkButton label={t("sessions.activities")} href="/activities">
           <Activity color="#f3f4f6" />
         </LinkButton>
-        <LinkButton label="Notes" href="/notes">
+        <LinkButton label={t("sessions.notes")} href="/notes">
           <NotebookPen color="#f3f4f6" />
         </LinkButton>
         {/* <LinkButton label="Disc-golf" href="/disc-golf">
           <Disc color="#f3f4f6" />
         </LinkButton> */}
-        <LinkButton label="Timer" href="/timer">
+        <LinkButton label={t("sessions.timer")} href="/timer">
           <Timer color="#f3f4f6" />
         </LinkButton>
-        <LinkButton label="Body Weight" href="/weight">
+        <LinkButton label={t("sessions.bodyWeight")} href="/weight">
           <Weight color="#f3f4f6" />
         </LinkButton>
-        <LinkButton label="Todo List" href="/todo">
+        <LinkButton label={t("sessions.todoList")} href="/todo">
           <ListTodo color="#f3f4f6" />
         </LinkButton>
-        <LinkButton label="Reminders" href="/reminders">
+        <LinkButton label={t("sessions.reminders")} href="/reminders">
           <Bell color="#f3f4f6" />
         </LinkButton>
       </View>

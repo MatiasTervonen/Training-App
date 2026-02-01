@@ -1,0 +1,46 @@
+{
+  "common": {
+    "save": "Save",
+    "saving": "Saving...",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "deleting": "Deleting...",
+    "edit": "Edit",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "start": "Start",
+    "updated": "Updated:",
+    "charLimitReached": "Reached the limit (500 chars max)",
+    "pin": "Pin",
+    "unpin": "Unpin",
+    "pinned": "Pinned",
+    "history": "History",
+    "change": "Change"
+  },
+  "navbar": {
+    "menu": "Menu",
+    "feed": "Feed",
+    "sessions": "Sessions"
+  },
+  "sessions": {
+    "title": "Start Sessions",
+    "gym": "Gym",
+    "activities": "Activities",
+    "notes": "Notes",
+    "timer": "Timer",
+    "bodyWeight": "Body Weight",
+    "todoList": "Todo List",
+    "reminders": "Reminders"
+  },
+  "deleteButton": {
+    "confirmDeleteTitle": "Confirm Deletion",
+    "confirmDeleteMessage": "Are you sure you want to delete this?"
+  },
+  "confirmAction": {
+    "defaultTitle": "Are you sure?",
+    "defaultMessage": "This action cannot be undone.",
+    "confirm": "Yes",
+    "cancel": "Cancel"
+  }
+}

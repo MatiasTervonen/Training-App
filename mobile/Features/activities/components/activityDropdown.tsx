@@ -12,20 +12,53 @@ import AppInput from "@/components/AppInput";
 import { useState } from "react";
 import { useDebouncedCallback } from "use-debounce";
 import { getRecentActivities } from "@/database/activities/recent-activities";
-import { activities } from "@/types/models";
+import { activities_with_category } from "@/types/models";
 import AnimatedButton from "@/components/buttons/animatedButton";
+import { useTranslation } from "react-i18next";
 
 type Props = {
-  onSelect: (activity: activities) => void;
-
+  onSelect: (activity: activities_with_category) => void;
 };
 
-export default function ActivityDropdown({ onSelect}: Props) {
+export default function ActivityDropdown({ onSelect }: Props) {
+  const { t } = useTranslation("activities");
   const [inputValue, setInputValue] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedActivity, setSelectedActivity] = useState<activities | null>(
-    null
-  );
+  const [selectedActivity, setSelectedActivity] =
+    useState<activities_with_category | null>(null);
+
+  // Helper function to get translated activity name
+  const getActivityName = (activity: activities_with_category) => {
+    if (activity.slug) {
+      const translated = t(`activities.activityNames.${activity.slug}`, {
+        defaultValue: "",
+      });
+      if (
+        translated &&
+        translated !== `activities.activityNames.${activity.slug}`
+      ) {
+        return translated;
+      }
+    }
+    return activity.name;
+  };
+
+  // Helper function to get translated category name
+  const getCategoryName = (activity: activities_with_category) => {
+    const categorySlug = activity.activity_categories?.slug;
+    if (categorySlug) {
+      const translated = t(`activities.categories.${categorySlug}`, {
+        defaultValue: "",
+      });
+      if (
+        translated &&
+        translated !== `activities.categories.${categorySlug}`
+      ) {
+        return translated;
+      }
+    }
+    return activity.activity_categories?.name || "";
+  };
 
   const {
     data: allActivities,
@@ -66,13 +99,13 @@ export default function ActivityDropdown({ onSelect}: Props) {
   if (!isError && !isLoading) {
     if (recentActivitiesList.length > 0 && searchQuery.length === 0) {
       sections.push({
-        title: "Recent Activities",
+        title: t("activities.activityDropdown.recentActivities"),
         data: recentActivitiesList,
       });
     }
 
     sections.push({
-      title: "All Activities",
+      title: t("activities.activityDropdown.allActivities"),
       data: allActivitiesList,
     });
   }
@@ -81,11 +114,11 @@ export default function ActivityDropdown({ onSelect}: Props) {
     setSearchQuery(value);
   }, 400);
 
-  const handleSelectActivity = (activity: activities) => {
+  const handleSelectActivity = (activity: activities_with_category) => {
     setSearchQuery("");
     onSelect(activity);
     setSelectedActivity(activity);
-    setInputValue(activity.name);
+    setInputValue(getActivityName(activity));
   };
 
   return (
@@ -94,7 +127,7 @@ export default function ActivityDropdown({ onSelect}: Props) {
         <View className="w-full px-4">
           <AppInput
             value={inputValue}
-            placeholder="Search activities..."
+            placeholder={t("activities.activityDropdown.searchPlaceholder")}
             autoComplete="off"
             onChangeText={(text) => {
               setInputValue(text);
@@ -109,16 +142,18 @@ export default function ActivityDropdown({ onSelect}: Props) {
         >
           {isError ? (
             <AppText className="text-red-500 text-xl">
-              Failed to load activities. Try again!
+              {t("activities.activityDropdown.loadError")}
             </AppText>
           ) : isLoading ? (
             <View className="items-center justify-center gap-3 mt-20">
-              <AppText className="text-xl">Loading activities...</AppText>
+              <AppText className="text-xl">
+                {t("activities.activityDropdown.loading")}
+              </AppText>
               <ActivityIndicator />
             </View>
           ) : allActivitiesList.length === 0 ? (
             <AppText className="text-lg text-gray-300 mt-20 text-center">
-              No activities found.
+              {t("activities.activityDropdown.noActivities")}
             </AppText>
           ) : (
             <SectionList
@@ -127,8 +162,8 @@ export default function ActivityDropdown({ onSelect}: Props) {
               }}
               showsVerticalScrollIndicator={false}
               sections={sections}
-              keyExtractor={(item: activities) => item.id}
-              renderItem={({ item }: { item: activities }) => {
+              keyExtractor={(item: activities_with_category) => item.id}
+              renderItem={({ item }: { item: activities_with_category }) => {
                 return (
                   <AnimatedButton
                     className={`w-full text-left px-4 py-2 z-40 border-b border-gray-400 ${selectedActivity?.id === item.id ? "bg-blue-800" : ""}`}
@@ -145,10 +180,10 @@ export default function ActivityDropdown({ onSelect}: Props) {
                           numberOfLines={1}
                           ellipsizeMode="tail"
                         >
-                          {item.name}
+                          {getActivityName(item)}
                         </AppText>
                         <AppText className="text-md text-gray-300 shrink-0">
-                          {item.category}
+                          {getCategoryName(item)}
                         </AppText>
                       </View>
                     </View>

@@ -12,6 +12,7 @@ import AppText from "@/components/AppText";
 import { useState } from "react";
 import { formatDurationNotesVoice } from "@/lib/formatDate";
 import { confirmAction } from "@/lib/confirmAction";
+import { useTranslation } from "react-i18next";
 
 type RecordVoiceNotesProps = {
   onRecordingComplete: (uri: string, durationMs?: number) => void;
@@ -20,6 +21,7 @@ type RecordVoiceNotesProps = {
 export default function RecordVoiceNotes({
   onRecordingComplete,
 }: RecordVoiceNotesProps) {
+  const { t } = useTranslation("notes");
   const [isPaused, setIsPaused] = useState(false);
 
   RecordingPresets.VOICE_HIGH_QUALITY = {
@@ -35,11 +37,14 @@ export default function RecordVoiceNotes({
 
     if (!status.granted) {
       Alert.alert(
-        "Microphone access needed",
-        "Enable microphone access to record voice notes.",
+        t("notes.voiceRecording.microphoneAccessTitle"),
+        t("notes.voiceRecording.microphoneAccessMessage"),
         [
-          { text: "Cancel", style: "cancel" },
-          { text: "Open Settings", onPress: () => Linking.openSettings() },
+          { text: t("notes.voiceRecording.cancel"), style: "cancel" },
+          {
+            text: t("notes.voiceRecording.openSettings"),
+            onPress: () => Linking.openSettings(),
+          },
         ],
       );
       return;
@@ -81,9 +86,9 @@ export default function RecordVoiceNotes({
   };
   const cancelRecording = async () => {
     const confirmed = await confirmAction({
-      title: "Cancel Recording",
-      message: "Are you sure you want to cancel this recording?",
-      confirmText: "Yes",
+      title: t("notes.voiceRecording.cancelRecordingTitle"),
+      message: t("notes.voiceRecording.cancelRecordingMessage"),
+      confirmText: t("notes.voiceRecording.yes"),
     });
     if (!confirmed) return;
 
@@ -96,10 +101,10 @@ export default function RecordVoiceNotes({
       <AnimatedButton
         label={
           recorderState.isRecording
-            ? "Pause Recording"
+            ? t("notes.voiceRecording.pauseRecording")
             : isPaused
-              ? "Resume Recording"
-              : "Record Voice Note"
+              ? t("notes.voiceRecording.resumeRecording")
+              : t("notes.voiceRecording.recordVoiceNote")
         }
         onPress={record}
         className="bg-blue-800 border-blue-500 border-2 py-2 justify-center items-center flex-row gap-2 rounded-md"
@@ -114,13 +119,13 @@ export default function RecordVoiceNotes({
       {(recorderState.isRecording || isPaused) && (
         <View className="flex-row gap-4 mt-5">
           <AnimatedButton
-            label="Cancel"
+            label={t("notes.voiceRecording.cancel")}
             onPress={cancelRecording}
             className="bg-red-800 py-2 rounded-md shadow-md border-2 border-red-500 justify-center items-center"
             tabClassName="flex-1"
           />
           <AnimatedButton
-            label="Finish"
+            label={t("notes.voiceRecording.finish")}
             onPress={stopRecording}
             className="bg-blue-800 border-blue-500 border-2 py-2 shadow-md justify-center items-center flex-row gap-2 rounded-md"
             tabClassName="flex-1"

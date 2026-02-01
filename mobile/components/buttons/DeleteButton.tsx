@@ -1,5 +1,6 @@
 import AnimatedButton from "@/components/buttons/animatedButton";
 import { Alert } from "react-native";
+import { useTranslation } from "react-i18next";
 
 type DeleteButtonProps = {
   onPress: () => void;
@@ -10,20 +11,22 @@ type DeleteButtonProps = {
 export default function DeleteButton({
   onPress,
   confirm = true,
-  label = "Delete",
+  label,
 }: DeleteButtonProps) {
+  const { t } = useTranslation("common");
+
   const handleDelete = () => {
     if (confirm) {
       Alert.alert(
-        "Confirm Deletion",
-        "Are you sure you want to delete this?",
+        t("deleteButton.confirmDeleteTitle"),
+        t("deleteButton.confirmDeleteMessage"),
         [
           {
-            text: "Cancel",
+            text: t("common.cancel"),
             style: "cancel",
           },
           {
-            text: "Delete",
+            text: t("common.delete"),
             style: "destructive",
             onPress: onPress,
           },
@@ -40,7 +43,7 @@ export default function DeleteButton({
       className="bg-red-800 py-2 rounded-md shadow-md border-2 border-red-500"
       onPress={handleDelete}
       textClassName="text-gray-100 text-center"
-      label={label}
+      label={label ?? t("common.delete")}
     />
   );
 }

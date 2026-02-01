@@ -1,3 +1,4 @@
+import "./i18n";
 import "@/Features/activities/lib/locationTask";
 import "@/lib/nativewindInterop";
 
@@ -37,6 +38,7 @@ import { backfillMissingDaysThrottled } from "@/database/activities/syncStepsToD
 import * as Device from "expo-device";
 import { hasStepsPermission } from "@/Features/activities/stepToggle/stepPermission";
 
+// Set Mapbox access token
 Mapbox.setAccessToken(process.env.EXPO_PUBLIC_MAPBOX_PUBLIC_TOKEN!);
 
 if (!__DEV__) {

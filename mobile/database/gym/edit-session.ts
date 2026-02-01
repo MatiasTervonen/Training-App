@@ -29,6 +29,7 @@ export async function editSession({
   });
 
   if (error) {
+    console.error("Error updating session:", error);
     handleError(error, {
       message: "Error updating session",
       route: "/database/gym/edit-session",

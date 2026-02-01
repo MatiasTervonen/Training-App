@@ -8,6 +8,7 @@ import AppText from "@/components/AppText";
 import { weight } from "@/types/session";
 import { View, Pressable } from "react-native";
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 type RowAllDataProps = {
   item: weight;
@@ -24,6 +25,7 @@ export default function WeightRow({
   onExpand,
   expanded,
 }: RowAllDataProps) {
+  const { t } = useTranslation("weight");
   const rotation = useSharedValue(0);
 
   useEffect(() => {
@@ -61,7 +63,7 @@ export default function WeightRow({
       {expanded && (
         <View className="bg-gray-800 px-6 py-3 flex-row justify-between items-center ">
           <AppText className="text-gray-300">
-            {item.notes || "No notes..."}
+            {item.notes || t("weight.analyticsScreen.noNotes")}
           </AppText>
           <Pressable onPress={async () => onDelete(item.id)}>
             <Trash2 size={20} color="#d1d5db" />

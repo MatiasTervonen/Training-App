@@ -18,8 +18,10 @@ import useRotation from "@/Features/timer/hooks/useRotation";
 import { confirmAction } from "@/lib/confirmAction";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
+import { useTranslation } from "react-i18next";
 
 export default function SettingsScreen() {
+  const { t } = useTranslation("timer");
   const [alarmMinutes, setAlarmMinutes] = useState("");
   const [alarmSeconds, setAlarmSeconds] = useState("");
   const [skipPlaying, setSkipPlaying] = useState(false);
@@ -57,37 +59,37 @@ export default function SettingsScreen() {
   const totalDurationMs = (totalDuration ?? 0) * 1000;
 
   const handleStartTimer = () => {
-    setActiveSession({
-      type: "timer",
-      label: "Timer",
-      path: "/timer/empty-timer",
-    });
-
     if (minutes === 0 && seconds === 0) {
       Toast.show({
         type: "error",
-        text1: "Please set a duration for the timer.",
+        text1: t("timer.setDurationError"),
       });
       return;
     }
 
     setAlarmFired(false);
     startTimer(totalDurationInSeconds, "Timer");
+
+    setActiveSession({
+      type: "timer",
+      label: "Timer",
+      path: "/timer/empty-timer",
+    });
+
     scheduleNativeAlarm(
       Date.now() + totalDurationInSeconds * 1000,
       "timer",
       "Timer",
-      "timer"
+      "timer",
     );
   };
 
   const cancelTimer = async () => {
     const confirmCancel = await confirmAction({
-      title: "Cancel Timer",
-      message: "Are you sure you want to cancel the timer?",
+      title: t("timer.cancelTimerTitle"),
+      message: t("timer.cancelTimerMessage"),
     });
     if (!confirmCancel) return;
-
 
     if (player) {
       try {
@@ -133,7 +135,7 @@ export default function SettingsScreen() {
       } catch (error) {
         console.error("Error stopping audio player:", error);
       }
-    } 
+    }
   };
 
   // Listen for STOP_ALARM_SOUND event from native (when notification is tapped)
@@ -189,7 +191,9 @@ export default function SettingsScreen() {
         ) : (
           <View className="flex-1 justify-between max-w-lg mx-auto w-full mt-5 mb-5">
             <View className="gap-5 flex-row justify-center items-center">
-              <AppText className="text-2xl text-center">Timer</AppText>
+              <AppText className="text-2xl text-center">
+                {t("timer.title")}
+              </AppText>
               <AlarmClock color="#d1d5db" size={30} />
             </View>
             <View
@@ -199,7 +203,7 @@ export default function SettingsScreen() {
             >
               <View className={`${isLandscape ? "w-1/2" : "w-full"}`}>
                 <NumberInput
-                  label="Minutes"
+                  label={t("timer.minutes")}
                   placeholder="0 min"
                   value={alarmMinutes}
                   onChangeText={(value) => setAlarmMinutes(value)}
@@ -207,7 +211,7 @@ export default function SettingsScreen() {
               </View>
               <View className={`${isLandscape ? "w-1/2" : "w-full"}`}>
                 <NumberInput
-                  label="Seconds"
+                  label={t("timer.seconds")}
                   placeholder="0 sec"
                   value={alarmSeconds}
                   onChangeText={(value) => setAlarmSeconds(value)}
@@ -221,7 +225,7 @@ export default function SettingsScreen() {
             >
               <View className={`${isLandscape ? "w-1/2" : "w-full"}`}>
                 <AnimatedButton
-                  label="Start"
+                  label={t("timer.start")}
                   onPress={handleStartTimer}
                   className="bg-blue-800 py-2 rounded-md shadow-md border-2 border-blue-500"
                   textClassName="text-gray-100 text-center"
@@ -229,7 +233,7 @@ export default function SettingsScreen() {
               </View>
               <View className={`${isLandscape ? "w-1/2" : "w-full pb-5"}`}>
                 <AnimatedButton
-                  label="Clear"
+                  label={t("timer.clear")}
                   onPress={handleReset}
                   className=" bg-red-600 border-2 border-red-400 py-2 shadow-md rounded-md"
                   textClassName="text-gray-100 text-center"

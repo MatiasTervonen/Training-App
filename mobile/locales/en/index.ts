@@ -1,0 +1,12 @@
+export { default as common } from "./common.json";
+export { default as gym } from "./gym.json";
+export { default as menu } from "./menu.json";
+export { default as notes } from "./notes.json";
+export { default as timer } from "./timer.json";
+export { default as weight } from "./weight.json";
+export { default as todo } from "./todo.json";
+export { default as reminders } from "./reminders.json";
+export { default as activities } from "./activities.json";
+export { default as login } from "./login.json";
+export { default as feed } from "./feed.json";
+

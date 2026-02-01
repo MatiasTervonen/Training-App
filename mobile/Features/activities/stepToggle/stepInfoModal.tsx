@@ -1,4 +1,5 @@
 import { View, Modal } from "react-native";
+import { useTranslation } from "react-i18next";
 import AppText from "@/components/AppText";
 import { Info } from "lucide-react-native";
 import AnimatedButton from "@/components/buttons/animatedButton";
@@ -14,6 +15,8 @@ export default function StepInfoModal({
   onCancel,
   onOpenSettings,
 }: StepInfoModalProps) {
+  const { t } = useTranslation("activities");
+
   return (
     <Modal visible={visible} transparent animationType="slide">
       <View className="flex-1 justify-center items-center bg-black/50 px-5">
@@ -23,20 +26,17 @@ export default function StepInfoModal({
           </View>
 
           <AppText className="text-xl mb-4 text-center">
-            Enable step tracking
+            {t("activities.stepInfoModal.title")}
           </AppText>
 
           <AppText className="text-base mb-6 text-center">
-            MyTrack uses step data from Android Health Connect to show your
-            activity insights.
-            {"\n\n"}
-            Please enable step access for MyTrack in Permissions under Health Connect.
+            {t("activities.stepInfoModal.description")}
           </AppText>
 
           <View className="flex-row gap-3 w-full">
             <View className="flex-1">
               <AnimatedButton
-                label="Cancel"
+                label={t("activities.stepInfoModal.cancel")}
                 onPress={onCancel}
                 className="bg-blue-800 border-2 border-blue-500 py-2 rounded-md"
                 textClassName="text-gray-300 text-center"
@@ -44,7 +44,7 @@ export default function StepInfoModal({
             </View>
             <View className="flex-1">
               <AnimatedButton
-                label="Open settings"
+                label={t("activities.stepInfoModal.openSettings")}
                 onPress={onOpenSettings}
                 className="bg-blue-800 border-2 border-blue-500 py-2 rounded-md"
                 textClassName="text-gray-100 text-center"

@@ -9,8 +9,10 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { handleError } from "@/utils/handleError";
 import AppButton from "@/components/buttons/AppButton";
 import { useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 
 export default function LogoutButton() {
+  const { t } = useTranslation("menu");
   const [isLoading, setIsLoading] = useState(false);
 
   const logoutUser = useUserStore((state) => state.logoutUser);
@@ -24,7 +26,7 @@ export default function LogoutButton() {
       const { error } = await supabase.auth.signOut({ scope: "local" });
 
       if (error) {
-        Alert.alert("Logout Failed", error.message);
+        Alert.alert(t("menu.logoutFailed"), error.message);
         setIsLoading(false);
         return;
       }
@@ -38,7 +40,7 @@ export default function LogoutButton() {
       setIsLoading(false);
       router.replace("/");
     } catch (error) {
-      Alert.alert("Logout Failed", "An unexpected error occurred.");
+      Alert.alert(t("menu.logoutFailed"), t("menu.logoutError"));
       handleError(error, {
         message: "Error during logout",
         route: "LogoutButton.tsx",
@@ -52,10 +54,10 @@ export default function LogoutButton() {
 
   return (
     <>
-      <AppButton onPress={handleLogout} label="Log Out">
+      <AppButton onPress={handleLogout} label={t("menu.logOut")}>
         <LogOut size={20} color="#f3f4f6" />
       </AppButton>
-      <FullScreenLoader visible={isLoading} message="Logging out..." />
+      <FullScreenLoader visible={isLoading} message={t("menu.loggingOut")} />
     </>
   );
 }

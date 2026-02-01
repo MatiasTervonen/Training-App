@@ -34,6 +34,7 @@ import ActivitySession from "@/Features/activities/cards/activity-feed-expanded/
 import ActivitySessionEdit from "@/Features/activities/cards/activity-edit";
 import useUpdateFeedItemToTop from "./hooks/useUpdateFeedItemToTop";
 import { useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 
 type SessionFeedProps = {
   expandReminderId?: string;
@@ -43,6 +44,7 @@ export default function SessionFeed({ expandReminderId }: SessionFeedProps) {
   const setFeedReady = useAppReadyStore((state) => state.setFeedReady);
   const feedReady = useAppReadyStore((state) => state.feedReady);
   const queryClient = useQueryClient();
+  const { t } = useTranslation("feed");
 
   const [expandedItem, setExpandedItem] = useState<FeedItemUI | null>(null);
   const [editingItem, setEditingItem] = useState<FeedItemUI | null>(null);
@@ -145,11 +147,11 @@ export default function SessionFeed({ expandReminderId }: SessionFeedProps) {
         </>
       ) : error ? (
         <AppText className="text-center text-lg mt-20 mx-auto px-10">
-          Failed to load sessions. Please try again later.
+          {t("feed.loadError")}
         </AppText>
       ) : !data || (unpinnedFeed.length === 0 && pinnedFeed.length === 0) ? (
         <AppText className="text-center text-lg mt-20 mx-auto px-10">
-          No sessions yet. Let's get started!
+          {t("feed.noSessions")}
         </AppText>
       ) : (
         <>
@@ -258,13 +260,13 @@ export default function SessionFeed({ expandReminderId }: SessionFeedProps) {
             <>
               {isLoadingTodoSession ? (
                 <View className="gap-2 justify-center items-center pt-40">
-                  <AppText className="text-lg">Loading todo session...</AppText>
+                  <AppText className="text-lg">{t("feed.loadingTodo")}</AppText>
                   <ActivityIndicator />
                 </View>
               ) : todoSessionError ? (
                 <View>
                   <AppText className="gap-2 justify-center mt-20 text-lg">
-                    Failed to load todo session details. Please try again later.
+                    {t("feed.todoError")}
                   </AppText>
                 </View>
               ) : (
@@ -285,14 +287,12 @@ export default function SessionFeed({ expandReminderId }: SessionFeedProps) {
             <>
               {isLoadingGymSession ? (
                 <View className="gap-5 items-center justify-center mt-40 px-10">
-                  <AppText className="text-lg">
-                    Loading gym session details...
-                  </AppText>
+                  <AppText className="text-lg">{t("feed.loadingGym")}</AppText>
                   <ActivityIndicator />
                 </View>
               ) : GymSessionError ? (
                 <AppText className="text-center text-xl mt-40 px-10">
-                  Failed to load gym session details. Please try again later.
+                  {t("feed.gymError")}
                 </AppText>
               ) : (
                 GymSessionFull && <GymSession {...GymSessionFull} />
@@ -305,14 +305,13 @@ export default function SessionFeed({ expandReminderId }: SessionFeedProps) {
               {isLoadingActivitySession ? (
                 <View className="gap-5 items-center justify-center mt-40 px-10">
                   <AppText className="text-lg">
-                    Loading activity session details...
+                    {t("feed.loadingActivity")}
                   </AppText>
                   <ActivityIndicator />
                 </View>
               ) : activitySessionError ? (
                 <AppText className="text-center text-xl mt-40 px-10">
-                  Failed to load activity session details. Please try again
-                  later.
+                  {t("feed.activityError")}
                 </AppText>
               ) : (
                 activitySessionFull && (
@@ -371,12 +370,12 @@ export default function SessionFeed({ expandReminderId }: SessionFeedProps) {
             <>
               {isLoadingTodoSession ? (
                 <View className="gap-5 items-center justify-center mt-40 px-10">
-                  <AppText className="text-lg">Loading todo session...</AppText>
+                  <AppText className="text-lg">{t("feed.loadingTodo")}</AppText>
                   <ActivityIndicator />
                 </View>
               ) : todoSessionError ? (
                 <AppText className="text-center text-xl mt-40 px-10">
-                  Failed to load todo session details. Please try again later.
+                  {t("feed.todoError")}
                 </AppText>
               ) : (
                 todoSessionFull && (
@@ -399,14 +398,13 @@ export default function SessionFeed({ expandReminderId }: SessionFeedProps) {
               {isLoadingActivitySession ? (
                 <View className="gap-5 items-center justify-center mt-40 px-10">
                   <AppText className="text-lg">
-                    Loading activity session...
+                    {t("feed.loadingActivity")}
                   </AppText>
                   <ActivityIndicator />
                 </View>
               ) : activitySessionError ? (
                 <AppText className="text-center text-xl mt-40 px-10">
-                  Failed to load activity session details. Please try again
-                  later.
+                  {t("feed.activityError")}
                 </AppText>
               ) : (
                 activitySessionFull && (

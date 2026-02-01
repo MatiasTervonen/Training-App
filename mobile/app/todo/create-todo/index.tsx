@@ -27,6 +27,7 @@ import {
 import AppText from "@/components/AppText";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import useSaveDraft from "@/Features/todo/hooks/useSaveDraft";
+import { useTranslation } from "react-i18next";
 
 type TodoItem = {
   task: string;
@@ -34,6 +35,7 @@ type TodoItem = {
 };
 
 export default function CreateTodo() {
+  const { t } = useTranslation("todo");
   const [loading, setLoading] = useState(false);
   const [title, setTitle] = useState("");
   const [task, setTask] = useState("");
@@ -65,8 +67,8 @@ export default function CreateTodo() {
 
   const handleDeleteItem = async (index: number) => {
     const confirmDelete = await confirmAction({
-      title: "Delete task",
-      message: "Are you sure you want to delete this task?",
+      title: t("todo.deleteTaskTitle"),
+      message: t("todo.deleteTaskMessage"),
     });
     if (!confirmDelete) return;
 
@@ -93,12 +95,12 @@ export default function CreateTodo() {
       handleDeleteAll();
       Toast.show({
         type: "success",
-        text1: "Todo saved successfully",
+        text1: t("todo.saveSuccess"),
       });
     } catch {
       Toast.show({
         type: "error",
-        text1: "Failed to save todo",
+        text1: t("todo.saveError"),
       });
       setLoading(false);
     }
@@ -109,19 +111,19 @@ export default function CreateTodo() {
       <PageContainer className="justify-between">
         <View>
           <View className="flex-row items-center gap-2 justify-center mb-10">
-            <AppText className="text-2xl">Todo List </AppText>
+            <AppText className="text-2xl">{t("todo.todoList")} </AppText>
             <ListTodo color="#f3f4f6" size={30} />
           </View>
           <AppInput
-            placeholder="Title"
-            label="Add title to your todo list"
+            placeholder={t("todo.titlePlaceholder")}
+            label={t("todo.addTitleLabel")}
             value={title}
             setValue={setTitle}
           />
           <View className="mt-5">
             <AppInput
-              placeholder="Enter task..."
-              label="Add task to your todo list"
+              placeholder={t("todo.taskPlaceholder")}
+              label={t("todo.addTaskLabel")}
               value={task}
               setValue={setTask}
             />
@@ -129,14 +131,14 @@ export default function CreateTodo() {
           <View className="mt-5">
             <SubNotesInput
               className="min-h-[60px]"
-              placeholder="Enter notes...(optional)"
-              label="Add notes to your task"
+              placeholder={t("todo.notesPlaceholder")}
+              label={t("todo.addNotesLabel")}
               value={notes}
               setValue={setNotes}
             />
           </View>
           <AnimatedButton
-            label="Add"
+            label={t("todo.add")}
             onPress={() => {
               if (task.trim() === "") return;
               setTodoList([...todoList, { task, notes }]);
@@ -154,7 +156,7 @@ export default function CreateTodo() {
                 numberOfLines={2}
                 ellipsizeMode="tail"
               >
-                {title || "My Todo List"}
+                {title || t("todo.myTodoListDefault")}
               </AppText>
 
               {todoList.map((item: TodoItem, index: number) => (
@@ -192,12 +194,12 @@ export default function CreateTodo() {
                             <View className="justify-between flex-1">
                               <View>
                                 <AppText className="my-5 text-2xl text-center">
-                                  Edit Task
+                                  {t("todo.editTask")}
                                 </AppText>
                                 <View className="my-5 w-full">
                                   <AppInput
-                                    placeholder="Edit task..."
-                                    label="Edit your task"
+                                    placeholder={t("todo.editTaskPlaceholder")}
+                                    label={t("todo.editTaskLabel")}
                                     value={modalDraft.task}
                                     setValue={(newTask) => {
                                       setModalDraft({
@@ -209,8 +211,8 @@ export default function CreateTodo() {
                                 </View>
                                 <SubNotesInput
                                   className="min-h-[60px]"
-                                  placeholder="Enter notes...(optional)"
-                                  label="Add your notes"
+                                  placeholder={t("todo.notesPlaceholder")}
+                                  label={t("todo.addYourNotes")}
                                   value={modalDraft.notes}
                                   setValue={(newNotes) => {
                                     setModalDraft({
@@ -222,7 +224,7 @@ export default function CreateTodo() {
                               </View>
                               <View className="gap-5 mt-20">
                                 <AnimatedButton
-                                  label="Save"
+                                  label={t("common:common.save")}
                                   onPress={() => {
                                     setTodoList((list: TodoItem[]) =>
                                       list.map((item, i) =>
@@ -238,7 +240,7 @@ export default function CreateTodo() {
                                 />
 
                                 <AnimatedButton
-                                  label="Cancel"
+                                  label={t("common:common.cancel")}
                                   onPress={() => {
                                     setEdit(null);
                                     setModalDraft({ task: "", notes: "" });
@@ -255,7 +257,7 @@ export default function CreateTodo() {
                               {item.task}
                             </AppText>
                             <AppText className="text-gray-300 text-lg bg-slate-900 p-10 rounded-md text-left w-full">
-                              {item.notes || "No notes available"}
+                              {item.notes || t("todo.noNotesAvailable")}
                             </AppText>
                             <View className="flex-row gap-5 mt-20">
                               <View className="w-1/2 flex-1">
@@ -270,7 +272,7 @@ export default function CreateTodo() {
                                   className="flex-row items-center justify-center gap-2 bg-blue-800 py-2 rounded-md shadow-md border-2 border-blue-500 text-lg"
                                   textClassName="text-gray-100"
                                 >
-                                  <AppText>edit</AppText>
+                                  <AppText>{t("todo.edit")}</AppText>
                                   <SquarePen size={20} color="#f3f4f6" />
                                 </AnimatedButton>
                               </View>
@@ -282,7 +284,7 @@ export default function CreateTodo() {
                                   className="flex-row items-center justify-center gap-2 bg-red-800 py-2 rounded-md shadow-md border-2 border-red-500 text-lg"
                                   textClassName="text-gray-100"
                                 >
-                                  <AppText>delete</AppText>
+                                  <AppText>{t("todo.delete")}</AppText>
                                   <Trash2 size={20} color="#f3f4f6" />
                                 </AnimatedButton>
                               </View>
@@ -302,7 +304,7 @@ export default function CreateTodo() {
           <SaveButton onPress={handleSaveTodo} />
           <DeleteButton onPress={handleDeleteAll} />
         </View>
-        <FullScreenLoader visible={loading} message="Saving todolist..." />
+        <FullScreenLoader visible={loading} message={t("todo.savingTodoList")} />
       </PageContainer>
     </ScrollView>
   );

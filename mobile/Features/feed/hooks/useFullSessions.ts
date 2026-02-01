@@ -32,12 +32,14 @@ export default function useFullSessions(
         ? editingId
         : null;
 
-  const activityId =
+  const activityItem =
     expandedItem?.type === "activity_sessions"
-      ? expandedId
+      ? expandedItem
       : editingItem?.type === "activity_sessions"
-        ? editingId
+        ? editingItem
         : null;
+
+  const activityId = activityItem ? getId(activityItem) : null;
 
   // Only fetch notes if there are voice recordings
   const notesItem =
@@ -93,9 +95,12 @@ export default function useFullSessions(
     error: activitySessionError,
     isLoading: isLoadingActivitySession,
     refetch: refetchFullActivity,
-  } = useQuery<FullActivitySession>({
+  } = useQuery<FullActivitySession & { feed_context: "pinned" | "feed" }>({
     queryKey: ["fullActivitySession", activityId],
-    queryFn: async () => await getFullActivitySession(activityId!),
+    queryFn: async () => {
+      const data = await getFullActivitySession(activityId!);
+      return { ...data, feed_context: activityItem!.feed_context };
+    },
     enabled: !!activityId,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,

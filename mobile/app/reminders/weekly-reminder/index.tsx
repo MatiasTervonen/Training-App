@@ -19,8 +19,10 @@ import useSetNotificationWeekly from "@/Features/reminders/hooks/weekly/useSetNo
 import Toggle from "@/components/toggle";
 import { canUseExactAlarm } from "@/native/android/EnsureExactAlarmPermission";
 import ExactAlarmPermissionModal from "@/components/ExactAlarmPermissionModal";
+import { useTranslation } from "react-i18next";
 
 export default function ReminderScreen() {
+  const { t } = useTranslation("reminders");
   const [open, setOpen] = useState(false);
   const [notes, setNotes] = useState("");
   const [title, setValue] = useState("");
@@ -30,7 +32,15 @@ export default function ReminderScreen() {
   const [mode, setMode] = useState<"alarm" | "normal">("normal");
   const [showModal, setShowModal] = useState(false);
 
-  const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const days = [
+    t("reminders.days.sun"),
+    t("reminders.days.mon"),
+    t("reminders.days.tue"),
+    t("reminders.days.wed"),
+    t("reminders.days.thu"),
+    t("reminders.days.fri"),
+    t("reminders.days.sat"),
+  ];
 
   const formattedTime = formatTime(notifyAt!);
 
@@ -95,32 +105,32 @@ export default function ReminderScreen() {
           <View className="justify-between flex-1">
             <View className="gap-5">
               <AppText className="text-xl text-center">
-                Weekly reminders
+                {t("reminders.weeklyReminders")}
               </AppText>
               <View className="flex-row items-center justify-center">
                 <Info color="#9ca3af" size={18} />
                 <AppText className="text-gray-400 text-sm ml-2">
-                  Repeats on selected days each week.
+                  {t("reminders.weeklyInfo")}
                 </AppText>
               </View>
               <View>
                 <AppInput
                   value={title}
                   setValue={setValue}
-                  placeholder="Title... (required)"
-                  label="Title..."
+                  placeholder={t("reminders.titlePlaceholder")}
+                  label={t("reminders.titleLabel")}
                 />
               </View>
               <SubNotesInput
                 value={notes}
                 setValue={setNotes}
                 className="min-h-[60px]"
-                placeholder="Notes... (optional)"
-                label="Notes..."
+                placeholder={t("reminders.notesPlaceholder")}
+                label={t("reminders.notesLabel")}
               />
               <View>
                 <AnimatedButton
-                  label={notifyAt ? formattedTime : "Set Notify Time"}
+                  label={notifyAt ? formattedTime : t("reminders.setNotifyTime")}
                   onPress={() => setOpen(true)}
                   className="bg-blue-800 py-2 rounded-md shadow-md border-2 border-blue-500 flex-row gap-2 justify-center items-center"
                   textClassName="text-gray-100"
@@ -145,7 +155,7 @@ export default function ReminderScreen() {
 
               <View className="mt-5">
                 <View className="flex-row gap-6">
-                  <AppText>Repeat on these days:</AppText>
+                  <AppText>{t("reminders.repeatOnDays")}</AppText>
                 </View>
                 <View className="flex-row justify-between mt-3 px-4">
                   {days.map((day, index) => {
@@ -176,9 +186,9 @@ export default function ReminderScreen() {
 
               <View className="flex-row items-center justify-between px-4 mt-5">
                 <View>
-                  <AppText>Enable high priority reminder</AppText>
+                  <AppText>{t("reminders.enableHighPriority")}</AppText>
                   <AppText className="text-gray-400 text-sm">
-                    (Continue to alarm until dismissed)
+                    {t("reminders.highPriorityDescription")}
                   </AppText>
                 </View>
                 <Toggle
@@ -200,7 +210,7 @@ export default function ReminderScreen() {
               <DeleteButton onPress={resetReminder} />
             </View>
           </View>
-          <FullScreenLoader visible={isSaving} message="Saving reminder..." />
+          <FullScreenLoader visible={isSaving} message={t("reminders.savingReminder")} />
         </PageContainer>
       </TouchableWithoutFeedback>
 

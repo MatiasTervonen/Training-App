@@ -16,8 +16,10 @@ import useUpdateFeedItemToTop from "@/Features/feed/hooks/useUpdateFeedItemToTop
 import { useQueryClient } from "@tanstack/react-query";
 import useDeleteSession from "@/Features/feed/hooks/useDeleteSession";
 import useFullSessions from "@/Features/feed/hooks/useFullSessions";
+import { useTranslation } from "react-i18next";
 
 export default function MyNotesScreen() {
+  const { t } = useTranslation("notes");
   const [expandedItem, setExpandedItem] = useState<FeedItemUI | null>(null);
   const [editingItem, setEditingItem] = useState<FeedItemUI | null>(null);
   const [refreshing, setRefreshing] = useState(false);
@@ -58,11 +60,11 @@ export default function MyNotesScreen() {
         <FeedSkeleton count={5} />
       ) : error ? (
         <AppText className="text-center text-lg mt-10 mx-auto">
-          Failed to load notes. Please try again later.
+          {t("notes.failedToLoad")}
         </AppText>
       ) : !data || (unpinnedFeed.length === 0 && pinnedFeed.length === 0) ? (
         <AppText className="text-center text-lg mt-10 mx-auto">
-          No notes yet. Add a note to get started!
+          {t("notes.noNotes")}
         </AppText>
       ) : (
         <FlatList

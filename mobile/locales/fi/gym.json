@@ -1,0 +1,229 @@
+{
+  "gym": {
+    "title": "Kuntosali",
+    "startEmptyWorkout": "Aloita tyhjä treeni",
+    "createTemplate": "Luo pohja",
+    "templates": "Pohjat",
+    "addExercise": "Lisää liike",
+    "editExercise": "Muokkaa liikettä",
+    "workoutAnalytics": "Treenin analytiikka",
+    "mySessions": "Omat sessiot",
+    "activeSessionError": "Sinulla on jo aktiivinen sessio.",
+    "activeSessionErrorSub": "Lopeta se ennen uuden aloittamista.",
+    "gymForm": {
+      "title": "Seuraa harjoittelun edistymistäsi",
+      "titleEdit": "Muokkaa harjoituskertaa",
+      "titlePlaceholder": "Harjoituksen otsikko...",
+      "titleLabel": "Harjoituksen otsikko...",
+      "editDurationPlaceholder": "Kesto sekunneissa...",
+      "editDurationLabel": "Kesto (sekuntia)...",
+      "notesPlaceholder": "Harjoituksen muistiinpanot...",
+      "notesLabel": "Harjoituksen muistiinpanot...",
+      "superSet": "Super-setti",
+      "confirmDeleteExerciseTitle": "Poista liike",
+      "confirmDeleteExerciseMessage": "Haluatko varmasti poistaa tämän liikkeen?",
+      "exerciseTypeSelector": {
+        "normal": "Normaali",
+        "superSet": "Super-setti"
+      },
+      "exerciseTypeButton": {
+        "addSuperSet": "Lisää super-setti",
+        "addExercise": "Lisää liike"
+      },
+      "addExerciseButtonLabel": "Lisää liike",
+      "editDeleteButtonLabel": "Peruuta",
+      "fullScreenLoaderLabel": "Tallennetaan harjoitusta..."
+    },
+    "templateForm": {
+      "titleCreate": "Luo harjoituspohja",
+      "titleEdit": "Muokkaa harjoituspohjaa",
+      "workoutNamePlaceholder": "Harjoituksen nimi...",
+      "workoutNameLabel": "Harjoituksen nimi...",
+      "loadingTemplate": "Ladataan harjoituspohjaa...",
+      "exerciseType": {
+        "normal": "Normaali",
+        "superSet": "Super-setti"
+      },
+      "addExercise": "Lisää liike",
+      "addSuperSet": "Lisää super-setti",
+      "superSetLabel": "Super-setti",
+      "deleteExerciseConfirm": {
+        "title": "Poista liike",
+        "message": "Haluatko varmasti poistaa tämän liikkeen harjoituspohjasta?"
+      },
+      "cancel": "Peruuta",
+      "savingTemplate": "Tallennetaan harjoituspohjaa..."
+    },
+    "TemplatesScreen": {
+      "confirmDeleteTitle": "Poista harjoituspohja",
+      "confirmDeleteMessage": "Haluatko varmasti poistaa tämän harjoituspohjan? Tätä toimintoa ei voi perua.",
+      "deleteSuccess": "Harjoituspohja poistettu onnistuneesti",
+      "deleteError1": "Harjoituspohjan poistaminen epäonnistui.",
+      "deleteError2": "Yritä uudelleen.",
+      "title": "Omat harjoituspohjat",
+      "errorLoading": "Virhe harjoituspohjien lataamisessa. Yritä uudelleen!",
+      "noTemplates": "Harjoituspohjia ei löytynyt. Luo ensimmäinen harjoituspohjasi!",
+      "errorLoadingExpanded": "Virhe harjoituspohjan tietojen lataamisessa. Yritä uudelleen!",
+      "loadingExpanded": "Ladataan tietoja...",
+      "createTemplate": "Luo harjoituspohja",
+      "loadingTemplates": "Ladataan harjoituspohjia..."
+    },
+    "addExerciseScreen": {
+      "title": "Lisää liikkeitä",
+      "exerciseName": "Liikkeen nimi",
+      "exerciseNamePlaceholder": "Liikkeen nimi",
+      "language": "Kieli",
+      "equipment": "Väline",
+      "muscleGroup": "Lihasryhmä",
+      "mainGroup": "Pääryhmä",
+      "saveExercise": "Tallenna liike",
+      "savingExercise": "Tallennetaan liikettä...",
+      "nameRequired": "Syötä liikkeen nimi",
+      "saveSuccess": "Liike tallennettu onnistuneesti!",
+      "saveError": "Liikkeen tallennus epäonnistui. Yritä uudelleen."
+    },
+    "exerciseDropdown": {
+      "recentExercises": "Äskettäiset liikkeet",
+      "allExercises": "Kaikki liikkeet",
+      "searchPlaceholder": "Etsi liikkeitä...",
+      "loadingExercises": "Ladataan liikkeitä...",
+      "loadError": "Liikkeiden lataus epäonnistui. Yritä uudelleen!",
+      "noExercisesFound": "Liikkeitä ei löytynyt."
+    },
+    "exerciseDropdownEdit": {
+      "myExercises": "Omat liikkeet",
+      "addNewExercise": "Aloita lisäämällä uusi liike!",
+      "noMatching": "Vastaavia liikkeitä ei löytynyt."
+    },
+    "equipment": {
+      "barbell": "Levytanko",
+      "dumbbell": "Käsipaino",
+      "machine": "Laite",
+      "smith": "Smith-laite",
+      "cable": "Kaapeli",
+      "rope": "Köysi",
+      "bodyweight": "Kehonpaino",
+      "gripper": "Puristin",
+      "band": "Vastuskumi",
+      "ball": "Pallo",
+      "wheel": "Pyörä"
+    },
+    "muscleGroups": {
+      "chest": "Rinta",
+      "quads": "Etureidet",
+      "hamstrings": "Takareidet",
+      "biceps": "Hauikset",
+      "triceps": "Ojentajat",
+      "lats": "Leveät selkälihakset",
+      "abs": "Vatsa",
+      "calves": "Pohkeet",
+      "upper_back": "Yläselkä",
+      "lower_back": "Alaselkä",
+      "forearms": "Kyynärvarret",
+      "full_body": "Koko keho",
+      "side_delts": "Sivuolkapäät",
+      "legs": "Jalat",
+      "obliques": "Vinot vatsalihakset",
+      "front_delts": "Etuolkapäät",
+      "traps": "Epäkäs",
+      "delts": "Olkapäät",
+      "glutes": "Pakarat",
+      "cardio": "Kardio",
+      "rear_delts": "Takaolkapäät",
+      "core": "Keskivartalo"
+    },
+    "mainGroups": {
+      "chest": "Rinta",
+      "legs": "Jalat",
+      "arms": "Kädet",
+      "shoulders": "Olkapäät",
+      "back": "Selkä",
+      "core": "Keskivartalo",
+      "cardio": "Kardio"
+    },
+    "exerciseCard": {
+      "delete": "Poista",
+      "change": "Vaihda",
+      "history": "Historia",
+      "addSet": "Lisää sarja",
+      "last": "Edellinen:",
+      "notesFor": "Muistiinpanot: {{name}}",
+      "notesPlaceholder": "Lisää muistiinpanosi tähän...",
+      "set": "Sarja",
+      "time": "Aika",
+      "length": "Matka",
+      "weight": "Paino",
+      "reps": "Toistot",
+      "rpe": "RPE",
+      "deleteSetTitle": "Poista sarja",
+      "deleteSetMessage": "Haluatko varmasti poistaa tämän sarjan?",
+      "timePlaceholder": "Aika (min)",
+      "lengthPlaceholder": "Matka (metriä)",
+      "weightPlaceholder": "Paino...",
+      "repsPlaceholder": "Toistot...",
+      "rpeOptions": {
+        "warmup": "Lämmittely",
+        "easy": "Helppo",
+        "medium": "Keskivaikea",
+        "hard": "Vaikea",
+        "failure": "Epäonnistuminen"
+      },
+      "missingData": "Puuttuvat tiedot",
+      "fillTime": "Täytä aika (min).",
+      "fillReps": "Täytä toistot."
+    },
+    "templateView": {
+      "created": "Luotu:",
+      "updated": "Päivitetty:",
+      "startWorkout": "Aloita treeni"
+    },
+    "analyticsScreen": {
+      "title": "Harjoitusanalytiikka",
+      "loading": "Ladataan...",
+      "error": "Virhe harjoitustietojen lataamisessa. Yritä uudelleen!",
+      "noData": "Harjoitustietoja ei saatavilla. Aloita harjoitusten kirjaaminen nähdäksesi analytiikkaa!"
+    },
+    "saveSession": {
+      "titleRequired": "Otsikko vaaditaan.",
+      "confirmTitle": "Vahvista sessio",
+      "confirmMessage": "Haluatko varmasti lopettaa tämän session?",
+      "saveError": "Session tallentaminen epäonnistui. Yritä uudelleen."
+    },
+    "analytics": {
+      "title": "Viimeisten 30 päivän analytiikka",
+      "totalWorkouts": "Treenejä yhteensä",
+      "averageDuration": "Keskimääräinen kesto",
+      "muscleGroupDistribution": "Lihasryhmien jakauma",
+      "duration": "Kesto",
+      "note": "Huom: Analytiikka perustuu viimeisten 30 päivän harjoitustietoihin.",
+      "comingSoon": "Lisää analytiikkaa tulossa pian!",
+      "tabs": {
+        "exercises": "Liikkeet",
+        "sets": "Sarjat"
+      },
+      "days": {
+        "sun": "Su",
+        "mon": "Ma",
+        "tue": "Ti",
+        "wed": "Ke",
+        "thu": "To",
+        "fri": "Pe",
+        "sat": "La"
+      },
+      "months": {
+        "jan": "Tammi",
+        "feb": "Helmi",
+        "mar": "Maalis",
+        "apr": "Huhti",
+        "may": "Touko",
+        "jun": "Kesä",
+        "jul": "Heinä",
+        "aug": "Elo",
+        "sep": "Syys",
+        "oct": "Loka",
+        "nov": "Marras",
+        "dec": "Joulu"
+      }
+    }
+  }
+}

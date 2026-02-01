@@ -4,6 +4,7 @@ import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
 import { useState, useEffect } from "react";
 import AppInput from "@/components/AppInput";
+import { useTranslation } from "react-i18next";
 
 type UploadFile = {
   uri: string;
@@ -17,6 +18,7 @@ type Props = {
 };
 
 export default function ProfilePicture({ data, onFileSelected }: Props) {
+  const { t } = useTranslation("menu");
   const [imageUri, setImageUri] = useState<string>("");
   const [fileName, setFileName] = useState<string>("");
   const [userPickedImage, setUserPickedImage] = useState(false);
@@ -32,7 +34,10 @@ export default function ProfilePicture({ data, onFileSelected }: Props) {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
     if (!permission.granted) {
-      Alert.alert("Permission Denied", "Please allow access to your photos.");
+      Alert.alert(
+        t("profile.profilePicturePermissionTitle"),
+        t("profile.profilePicturePermissionMessage"),
+      );
       return;
     }
 
@@ -72,7 +77,7 @@ export default function ProfilePicture({ data, onFileSelected }: Props) {
 
   return (
     <>
-      <AppText>Profile picture</AppText>
+      <AppText>{t("profile.profilePictureLabel")}</AppText>
       <View className="w-[80px] h-[80px] rounded-full border-2 border-blue-500 items-center justify-center my-4">
         <Image
           source={
@@ -89,7 +94,7 @@ export default function ProfilePicture({ data, onFileSelected }: Props) {
         <AppInput
           placeholderTextColor={"#f3f4f6"}
           editable={false}
-          placeholder="Change Profile Picture"
+          placeholder={t("profile.profilePicturePlaceholder")}
           value={userPickedImage ? fileName : ""}
         />
       </Pressable>

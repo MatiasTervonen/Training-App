@@ -1,0 +1,47 @@
+{
+  "reminders": {
+    "title": "Reminders",
+    "oneTimeGlobal": "One-Time Global",
+    "oneTime": "One-Time",
+    "weekly": "Weekly",
+    "daily": "Daily",
+    "myReminders": "My Reminders",
+    "oneTimeReminder": "One-Time Reminder",
+    "weeklyReminders": "Weekly reminders",
+    "dailyReminder": "Daily Reminder",
+    "globalReminder": "Global Reminder",
+    "oneTimeInfo": "Notifies only this device once at the set time.",
+    "weeklyInfo": "Repeats on selected days each week.",
+    "dailyInfo": "Repeats every day at the set time.",
+    "globalInfo": "Notifies all your devices once at the set time.",
+    "titleLabel": "Title...",
+    "titlePlaceholder": "Title... (required)",
+    "notesLabel": "Notes...",
+    "notesPlaceholder": "Notes... (optional)",
+    "setNotifyTime": "Set Notify Time",
+    "repeatOnDays": "Repeat on these days:",
+    "enableHighPriority": "Enable high priority reminder",
+    "highPriorityDescription": "(Continue to alarm until dismissed)",
+    "savingReminder": "Saving reminder...",
+    "pushDisabledTitle": "Push notifications disabled.",
+    "pushDisabledMessage": "Enable push notifications from settings to receive reminders.",
+    "back": "Back",
+    "settings": "Settings",
+    "tabs": {
+      "normal": "Normal",
+      "repeating": "Repeating",
+      "delivered": "Delivered"
+    },
+    "errorLoading": "Error loading reminders. Try again!",
+    "noReminders": "No {{tab}} reminders.",
+    "days": {
+      "sun": "Sun",
+      "mon": "Mon",
+      "tue": "Tue",
+      "wed": "Wed",
+      "thu": "Thu",
+      "fri": "Fri",
+      "sat": "Sat"
+    }
+  }
+}

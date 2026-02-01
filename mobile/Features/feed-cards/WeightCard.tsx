@@ -3,7 +3,7 @@ import AppText from "@/components/AppText";
 import { useUserStore } from "@/lib/stores/useUserStore";
 import { FeedCardProps } from "@/types/session";
 import BaseFeedCard from "./BaseFeedCard";
-import { View } from "react-native";
+import { useTranslation } from "react-i18next";
 
 type weightPayload = {
   weight: number;
@@ -17,6 +17,7 @@ export default function WeightCard({
   onExpand,
   onEdit,
 }: FeedCardProps) {
+  const { t } = useTranslation("feed");
   const payload = item.extra_fields as weightPayload;
 
   const weightUnit =
@@ -31,7 +32,7 @@ export default function WeightCard({
       onExpand={onExpand}
       onEdit={onEdit}
       typeIcon={<Scale size={20} color={pinned ? "#0f172a" : "#f3f4f6"} />}
-      typeName={"Weight"}
+      typeName={t("feed.card.types.weight")}
       statsContent={
         <>
           <AppText

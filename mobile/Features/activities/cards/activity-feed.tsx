@@ -4,11 +4,13 @@ import AppText from "@/components/AppText";
 import { formatMeters, formatDuration } from "@/lib/formatDate";
 import { FeedCardProps } from "@/types/session";
 import BaseFeedCard from "@/Features/feed-cards/BaseFeedCard";
+import { useTranslation } from "react-i18next";
 
 type activityPayload = {
   duration: number;
   distance: number;
   activity_name: string;
+  activity_slug?: string;
 };
 export default function ActivityCard({
   item,
@@ -18,7 +20,24 @@ export default function ActivityCard({
   onExpand,
   onEdit,
 }: FeedCardProps) {
+  const { t } = useTranslation("activities");
   const payload = item.extra_fields as activityPayload;
+
+  // Get translated activity name using slug, fallback to stored name
+  const getActivityTypeName = () => {
+    if (payload.activity_slug) {
+      const translated = t(`activities.activityNames.${payload.activity_slug}`, {
+        defaultValue: "",
+      });
+      if (
+        translated &&
+        translated !== `activities.activityNames.${payload.activity_slug}`
+      ) {
+        return translated;
+      }
+    }
+    return payload.activity_name;
+  };
 
   return (
     <BaseFeedCard
@@ -29,7 +48,7 @@ export default function ActivityCard({
       onExpand={onExpand}
       onEdit={onEdit}
       typeIcon={<Activity size={20} color={pinned ? "#0f172a" : "#f3f4f6"} />}
-      typeName={payload.activity_name}
+      typeName={getActivityTypeName()}
       statsContent={
         <View className="flex-row items-center gap-5">
           {payload.distance > 0 && (

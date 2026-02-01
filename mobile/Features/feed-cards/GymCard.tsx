@@ -3,6 +3,7 @@ import { View } from "react-native";
 import AppText from "@/components/AppText";
 import { FeedCardProps } from "@/types/session";
 import BaseFeedCard from "./BaseFeedCard";
+import { useTranslation } from "react-i18next";
 
 type gymPayload = {
   duration: number;
@@ -18,6 +19,7 @@ export default function GymCard({
   onExpand,
   onEdit,
 }: FeedCardProps) {
+  const { t } = useTranslation("feed");
   const payload = item.extra_fields as gymPayload;
 
   return (
@@ -29,7 +31,7 @@ export default function GymCard({
       onExpand={onExpand}
       onEdit={onEdit}
       typeIcon={<Dumbbell size={20} color={pinned ? "#0f172a" : "#f3f4f6"} />}
-      typeName={"Gym"}
+      typeName={t("feed.card.types.gym")}
       statsContent={
         <View className="flex-row gap-6 items-center">
           {payload.exercises_count > 0 && payload.sets_count > 0 && (
@@ -37,12 +39,12 @@ export default function GymCard({
               <AppText
                 className={` ${pinned ? "text-slate-900" : "text-gray-100"}`}
               >
-                Exercises: {payload.exercises_count}
+                {t("feed.card.exercises")}: {payload.exercises_count}
               </AppText>
               <AppText
                 className={`${pinned ? "text-slate-900" : "text-gray-100"}`}
               >
-                Sets: {payload.sets_count}
+                {t("feed.card.sets")}: {payload.sets_count}
               </AppText>
             </View>
           )}
@@ -52,7 +54,7 @@ export default function GymCard({
               <AppText
                 className={` ${pinned ? "text-slate-900" : "text-gray-100"}`}
               >
-                {Math.floor(payload.duration / 60)} min
+                {Math.floor(payload.duration / 60)} {t("feed.card.min")}
               </AppText>
             </View>
           )}

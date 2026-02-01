@@ -11,8 +11,10 @@ import PageContainer from "@/components/PageContainer";
 import SubNotesInput from "@/components/SubNotesInput";
 import useWeightDraft from "@/Features/weight/hooks/useDraft";
 import useSaveWeight from "@/Features/weight/hooks/useSaveWeight";
+import { useTranslation } from "react-i18next";
 
 export default function SettingsScreen() {
+  const { t } = useTranslation("weight");
   const now = formatDate(new Date());
   const [weight, setWeight] = useState("");
   const [isSaving, setIsSaving] = useState(false);
@@ -51,26 +53,26 @@ export default function SettingsScreen() {
         <PageContainer className="flex-col justify-between">
           <View className="gap-5">
             <AppText className="text-2xl text-center mb-5">
-              Weight Tracker
+              {t("weight.weightTracker")}
             </AppText>
             <AppInput
               value={title}
               onChangeText={setTitle}
-              label="Title for Weight..."
-              placeholder="Weight entry title..."
+              label={t("weight.titleLabel")}
+              placeholder={t("weight.titlePlaceholder")}
             />
             <SubNotesInput
               value={notes}
               setValue={setNotes}
               className="min-h-[60px]"
-              label="Enter your notes here..."
-              placeholder="Enter your notes here...(optional)"
+              label={t("weight.notesLabel")}
+              placeholder={t("weight.notesPlaceholder")}
             />
             <AppInput
               value={weight}
               onChangeText={setWeight}
-              label="Enter your weight..."
-              placeholder="Enter your weight here..."
+              label={t("weight.weightLabel")}
+              placeholder={t("weight.weightPlaceholder")}
               keyboardType="numeric"
             />
           </View>
@@ -81,7 +83,7 @@ export default function SettingsScreen() {
           </View>
         </PageContainer>
       </TouchableWithoutFeedback>
-      <FullScreenLoader visible={isSaving} message="Saving weight..." />
+      <FullScreenLoader visible={isSaving} message={t("weight.savingWeight")} />
     </>
   );
 }

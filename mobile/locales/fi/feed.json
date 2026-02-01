@@ -1,0 +1,46 @@
+{
+  "feed": {
+    "loadError": "Sessioiden lataaminen epäonnistui. Yritä myöhemmin uudelleen.",
+    "noSessions": "Ei vielä sessioita. Aloitetaan!",
+    "loadingTodo": "Ladataan tehtävälistaa...",
+    "todoError": "Tehtävälistan tietojen lataaminen epäonnistui. Yritä myöhemmin uudelleen.",
+    "loadingGym": "Ladataan harjoituksen tietoja...",
+    "gymError": "Harjoituksen tietojen lataaminen epäonnistui. Yritä myöhemmin uudelleen.",
+    "loadingActivity": "Ladataan aktiviteetin tietoja...",
+    "activityError": "Aktiviteetin tietojen lataaminen epäonnistui. Yritä myöhemmin uudelleen.",
+    "loadingNotes": "Ladataan muistiinpanoja...",
+    "card": {
+      "details": "Tiedot",
+      "updated": "päivitetty:",
+      "completed": "valmiina",
+      "exercises": "Liikkeet",
+      "sets": "Sarjat",
+      "min": "min",
+      "delivered": "Toimitettu",
+      "weekdays": {
+        "sun": "Su",
+        "mon": "Ma",
+        "tue": "Ti",
+        "wed": "Ke",
+        "thu": "To",
+        "fri": "Pe",
+        "sat": "La"
+      },
+      "types": {
+        "activity": "Aktiviteetti",
+        "weight": "Paino",
+        "todo": "Tehtävä",
+        "gym": "Kuntosali",
+        "notes": "Muistiinpanot",
+        "reminder": "Muistutus"
+      }
+    },
+    "deleteSession": {
+      "confirmTitle": "Haluatko varmasti poistaa tämän session?",
+      "successTitle": "Poistettu",
+      "successMessage": "Kohde on poistettu onnistuneesti.",
+      "errorTitle": "Virhe",
+      "errorMessage": "Kohteen poistaminen epäonnistui."
+    }
+  }
+}

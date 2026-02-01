@@ -12,6 +12,7 @@ import { useState } from "react";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import { getActivityCategories } from "@/database/activities/get-categories";
 import { useDebouncedCallback } from "use-debounce";
+import { useTranslation } from "react-i18next";
 
 type Props = {
     onSelect: (category: activityCategory) => void;
@@ -20,9 +21,11 @@ type Props = {
 type activityCategory = {
     id: string;
     name: string;
+    slug: string | null;
 };
 
 export default function CategoryDropdown({ onSelect }: Props) {
+    const { t } = useTranslation("activities");
     const [inputValue, setInputValue] = useState("")
     const [filteredCategories, setFilteredCategories] = useState<activityCategory[]>([]);
     const [isSearching, setIsSearching] = useState(false);
@@ -41,6 +44,17 @@ export default function CategoryDropdown({ onSelect }: Props) {
         gcTime: Infinity,
     });
 
+    // Helper function to get translated category name
+    const getCategoryName = (category: activityCategory) => {
+        if (category.slug) {
+            const translated = t(`activities.categories.${category.slug}`, { defaultValue: "" });
+            if (translated && translated !== `activities.categories.${category.slug}`) {
+                return translated;
+            }
+        }
+        return category.name;
+    };
+
     const handleSearchChange = useDebouncedCallback((value: string) => {
         if (!value.trim()) {
             setFilteredCategories([]);
@@ -49,8 +63,11 @@ export default function CategoryDropdown({ onSelect }: Props) {
         }
 
         const filtered = data?.filter((category) => {
-            const text = category.name.toLowerCase();
-            return value.toLowerCase().split(" ").every((word) => text.includes(word));
+            const translatedName = getCategoryName(category).toLowerCase();
+            const originalName = category.name.toLowerCase();
+            return value.toLowerCase().split(" ").every((word) =>
+                translatedName.includes(word) || originalName.includes(word)
+            );
         }) || [];
         setFilteredCategories(filtered);
         setIsSearching(false);
@@ -66,7 +83,7 @@ export default function CategoryDropdown({ onSelect }: Props) {
                 <View className="mt-10 w-full px-14">
                     <AppInput
                         value={inputValue}
-                        placeholder="Search categories..."
+                        placeholder={t("activities.categoryDropdown.searchPlaceholder")}
                         autoComplete="off"
                         onChangeText={(text) => {
                             setInputValue(text);
@@ -91,22 +108,26 @@ export default function CategoryDropdown({ onSelect }: Props) {
                 >
                     {error ? (
                         <AppText className="text-red-500 text-xl mt-20 text-center">
-                            Failed to load categories. Try again!
+                            {t("activities.categoryDropdown.loadError")}
                         </AppText>
                     ) : isLoading ? (
                         <View className="items-center justify-center gap-3 mt-20">
-                            <AppText className="text-xl">Loading categories...</AppText>
+                            <AppText className="text-xl">
+                                {t("activities.categoryDropdown.loading")}
+                            </AppText>
                             <ActivityIndicator />
                         </View>
                     ) : isSearching ? (
                         <View className="items-center justify-center gap-3 mt-20">
-                            <AppText className="text-xl">Searching for categories...</AppText>
+                            <AppText className="text-xl">
+                                {t("activities.categoryDropdown.searching")}
+                            </AppText>
                             <ActivityIndicator />
                         </View>
                     ) : inputValue.length > 0 && !isSearching && listData.length === 0 ? (
                         <View className="items-center self-center gap-3 text-lg px-5 mt-20">
-                            <AppText>No categories found.</AppText>
-                            <AppText>Get started by adding a new category!</AppText>
+                            <AppText>{t("activities.categoryDropdown.noCategories")}</AppText>
+                            <AppText>{t("activities.categoryDropdown.addNewCategory")}</AppText>
                         </View>
                     ) : (
                         <FlatList
@@ -118,16 +139,15 @@ export default function CategoryDropdown({ onSelect }: Props) {
                             keyExtractor={(item) => item.id}
                             ListHeaderComponent={
                                 <AppText className="text-center text-lg bg-blue-600 rounded-t-md">
-                                    Activity Categories
+                                    {t("activities.categoryDropdown.title")}
                                 </AppText>
                             }
                             renderItem={({ item }) => {
-                                console.log(item)
                                 return (
                                     <AnimatedButton
                                         className={`w-full text-left px-4 py-2 z-40 border-b border-gray-400`}
                                         onPress={() => {
-                                            setInputValue(item.name);
+                                            setInputValue(getCategoryName(item));
                                             setFilteredCategories([item]);
                                             onSelect(item);
                                         }}
@@ -139,7 +159,7 @@ export default function CategoryDropdown({ onSelect }: Props) {
                                                     numberOfLines={1}
                                                     ellipsizeMode="tail"
                                                 >
-                                                    {item.name}
+                                                    {getCategoryName(item)}
                                                 </AppText>
                                             </View>
                                         </View>

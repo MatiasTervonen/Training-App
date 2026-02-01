@@ -4,6 +4,7 @@ import AppText from "@/components/AppText";
 import Carousel from "react-native-reanimated-carousel";
 import { Pin } from "lucide-react-native";
 import FeedCard from "@/Features/feed-cards/FeedCard";
+import { useTranslation } from "react-i18next";
 
 interface PinnedCarouselProps {
   pinnedFeed: any[];
@@ -27,6 +28,7 @@ export default function PinnedCarousel({
   CardComponent = FeedCard,
 }: PinnedCarouselProps) {
   const [activeIndex, setActiveIndex] = useState(0);
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (activeIndex >= pinnedFeed.length && pinnedFeed.length > 0) {
@@ -38,7 +40,7 @@ export default function PinnedCarousel({
     <View>
       <View className="flex-row items-center mb-2 gap-2 ml-4 mt-3">
         <Pin size={20} color="#d1d5db" />
-        <AppText className="text-gray-300">Pinned</AppText>
+        <AppText className="text-gray-300">{t("common.pinned")}</AppText>
         <AppText className="text-gray-300">
           {activeIndex + 1} / {pinnedFeed.length}
         </AppText>

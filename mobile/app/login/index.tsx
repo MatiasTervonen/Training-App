@@ -33,8 +33,10 @@ import {
   guestLogIn,
 } from "@/Features/login-signup/actions";
 import { Confetti, ConfettiMethods } from "react-native-fast-confetti";
+import { useTranslation } from "react-i18next";
 
 export default function LoginScreen() {
+  const { t } = useTranslation("login");
   const [login, setLogin] = useState({ email: "", password: "" });
   const [signup, setSignup] = useState({
     email: "",
@@ -114,7 +116,7 @@ export default function LoginScreen() {
               <AnimatedButton onPress={() => router.push("/")} hitSlop={10}>
                 <View className="flex-row gap-2 items-center">
                   <ArrowLeft color="#f3f4f6" />
-                  <AppText>Back</AppText>
+                  <AppText>{t("login.back")}</AppText>
                 </View>
               </AnimatedButton>
 
@@ -141,13 +143,13 @@ export default function LoginScreen() {
                 className="justify-center max-w-md mx-auto w-full flex-1"
               >
                 <AppInput
-                  label="Email"
+                  label={t("login.email")}
                   setValue={(text) => {
                     setLogin({ ...login, email: text });
                     setSignup({ ...signup, email: "" });
                   }}
                   value={login.email}
-                  placeholder="Enter email..."
+                  placeholder={t("login.emailPlaceholder")}
                   autoCapitalize={"none"}
                   autoComplete="email"
                   textContentType="emailAddress"
@@ -155,11 +157,11 @@ export default function LoginScreen() {
                 />
                 <View className="mt-4">
                   <AppInput
-                    label="Password"
+                    label={t("login.password")}
                     setValue={(text) => setLogin({ ...login, password: text })}
                     value={login.password}
                     secureTextEntry={true}
-                    placeholder="Enter password..."
+                    placeholder={t("login.passwordPlaceholder")}
                     autoCapitalize={"none"}
                     autoComplete="password"
                     textContentType="password"
@@ -168,10 +170,10 @@ export default function LoginScreen() {
                 </View>
                 <View className="mt-10">
                   <GradientButton
-                    label="Log in"
+                    label={t("login.logIn")}
                     onPress={() => {
                       if (!isValidEmail(login.email)) {
-                        Alert.alert("Invalid email format.");
+                        Alert.alert(t("login.invalidEmail"));
                         return;
                       }
 
@@ -191,7 +193,7 @@ export default function LoginScreen() {
                     onPress={() => setGuestModalOpen(true)}
                     className="text-center text-lg mb-4 underline"
                   >
-                    Log in as a Guest
+                    {t("login.logInAsGuest")}
                   </AppText>
                 </View>
                 <View className="mt-6 items-center">
@@ -211,13 +213,13 @@ export default function LoginScreen() {
                 className="justify-center max-w-md mx-auto w-full"
               >
                 <AppInput
-                  label="Email"
+                  label={t("login.email")}
                   setValue={(text) => {
                     setSignup({ ...signup, email: text });
                     setLogin({ ...login, email: "" });
                   }}
                   value={signup.email}
-                  placeholder="Enter email..."
+                  placeholder={t("login.emailPlaceholder")}
                   autoCapitalize={"none"}
                   autoComplete="email"
                   textContentType="emailAddress"
@@ -225,13 +227,13 @@ export default function LoginScreen() {
                 />
                 <View className="mt-4">
                   <AppInput
-                    label="Password"
+                    label={t("login.password")}
                     setValue={(text) =>
                       setSignup({ ...signup, password: text })
                     }
                     value={signup.password}
                     secureTextEntry={true}
-                    placeholder="Enter password..."
+                    placeholder={t("login.passwordPlaceholder")}
                     autoCapitalize={"none"}
                     autoComplete="password"
                     textContentType="password"
@@ -240,22 +242,22 @@ export default function LoginScreen() {
                 </View>
                 <View className="mt-4">
                   <AppInput
-                    label="Confirm Password"
+                    label={t("login.confirmPassword")}
                     setValue={(text) =>
                       setSignup({ ...signup, confirmPassword: text })
                     }
                     value={signup.confirmPassword}
                     secureTextEntry={true}
-                    placeholder="Confirm Password..."
+                    placeholder={t("login.confirmPasswordPlaceholder")}
                     autoCapitalize={"none"}
                   />
                 </View>
                 <View className="mt-10">
                   <GradientButton
-                    label="Sign up"
+                    label={t("login.signUp")}
                     onPress={() => {
                       if (!isValidEmail(signup.email)) {
-                        Alert.alert("Invalid email format.");
+                        Alert.alert(t("login.invalidEmail"));
                         return;
                       }
 
@@ -283,12 +285,12 @@ export default function LoginScreen() {
             <View className="absolute bottom-0 left-0 w-full flex flex-col justify-center gap-2 pb-5 px-6">
               <AppText className="text-center mb-5 text-xl">
                 {activeForm
-                  ? "Already have an account?"
-                  : "Don't have an account?"}
+                  ? t("login.alreadyHaveAccount")
+                  : t("login.dontHaveAccount")}
               </AppText>
               <View className="max-w-md mx-auto w-full">
                 <GradientButton
-                  label={activeForm ? "Log in" : "Sign up"}
+                  label={activeForm ? t("login.logIn") : t("login.signUp")}
                   onPress={() => setActiveForm(!activeForm)}
                 />
               </View>
@@ -311,11 +313,10 @@ export default function LoginScreen() {
               MyTrack
             </GradientColorText>
             <AppText className="text-xl mt-5 text-center">
-              Thank you for signing up!
+              {t("login.signUpSuccess.title")}
             </AppText>
             <AppText className="text-green-500 text-center">
-              Email sent! Check your inbox (and spam folder) to verify your
-              account before logging in.
+              {t("login.signUpSuccess.message")}
             </AppText>
 
             <View className="mt-6 items-center">
@@ -338,21 +339,20 @@ export default function LoginScreen() {
           <View className="flex-1 justify-between items-center p-6">
             <View className="gap-5">
               <AppText className="text-xl underline mt-5 text-gray-100 text-center">
-                Resend Verification Email
+                {t("login.resendEmail.title")}
               </AppText>
               <AppText className="text-gray-300 text-center">
-                Enter your email and we&apos;ll send you a link to verify your
-                email.
+                {t("login.resendEmail.description")}
               </AppText>
               <AppInput
-                label="Email"
+                label={t("login.email")}
                 setValue={(text) => {
                   setResendEmail(text);
                   setLogin({ ...login, email: "" });
                   setSignup({ ...signup, email: "" });
                 }}
                 value={resendEmail}
-                placeholder="Enter email..."
+                placeholder={t("login.emailPlaceholder")}
                 autoComplete="email"
                 textContentType="emailAddress"
                 keyboardType="email-address"
@@ -361,10 +361,10 @@ export default function LoginScreen() {
             <View className="w-full">
               <GradientButton
                 disabled={!resendEmail}
-                label="Resend Verification Email"
+                label={t("login.resendEmail.resendButton")}
                 onPress={async () => {
                   if (!isValidEmail(login.email)) {
-                    Alert.alert("Invalid email format.");
+                    Alert.alert(t("login.invalidEmail"));
                     return;
                   }
 
@@ -396,21 +396,20 @@ export default function LoginScreen() {
           <View className="flex-1 justify-between items-center p-6">
             <View className="gap-5">
               <AppText className="text-xl underline mt-5 text-gray-100 text-center">
-                Reset your password
+                {t("login.forgotPassword.title")}
               </AppText>
               <AppText className="text-gray-300 text-center">
-                Enter your email and we&apos;ll send you a link to reset your
-                password.
+                {t("login.forgotPassword.description")}
               </AppText>
               <AppInput
-                label="Email"
+                label={t("login.email")}
                 setValue={(text) => {
                   setForgotPasswordEmail(text);
                   setLogin({ ...login, email: "" });
                   setSignup({ ...signup, email: "" });
                 }}
                 value={forgotPasswordEmail}
-                placeholder="Enter email..."
+                placeholder={t("login.emailPlaceholder")}
                 autoComplete="email"
                 textContentType="emailAddress"
                 keyboardType="email-address"
@@ -418,10 +417,10 @@ export default function LoginScreen() {
             </View>
             <View className="w-full">
               <GradientButton
-                label="Send Reset Link"
+                label={t("login.forgotPassword.sendResetLink")}
                 onPress={async () => {
                   if (!isValidEmail(login.email)) {
-                    Alert.alert("Invalid email format.");
+                    Alert.alert(t("login.invalidEmail"));
                     return;
                   }
 
@@ -451,18 +450,17 @@ export default function LoginScreen() {
             MyTrack
           </GradientColorText>
           <AppText className="text-2xl underline mt-5 text-gray-100 text-center">
-            Demo account
+            {t("login.guest.title")}
           </AppText>
           <AppText className="text-gray-300 text-center text-lg">
-            All features are available, but your data and account will be
-            deleted after you log out.
+            {t("login.guest.description")}
           </AppText>
           <AppText className="text-center text-gray-300">
-            You can test the app without creating an account.
+            {t("login.guest.testInfo")}
           </AppText>
           <View className="w-full">
             <GradientButton
-              label="Continue"
+              label={t("login.guest.continue")}
               onPress={() => {
                 guestLogIn({
                   setLoadingMessage,

@@ -35,6 +35,7 @@ import useLogSetForExercise from "@/Features/gym/hooks/useLogSetForExercise";
 import useSaveSession from "@/Features/gym/hooks/useSaveSession";
 import { getPrefetchedHistoryPerCard } from "@/database/gym/prefetchedHistoryPerCard";
 import { updateNativeTimerLabel } from "@/native/android/NativeTimer";
+import { useTranslation } from "react-i18next";
 
 type GymFormData = Pick<
   FullGymSession,
@@ -44,12 +45,14 @@ type GymFormData = Pick<
 export default function GymForm({ initialData }: { initialData: GymFormData }) {
   const session = initialData;
 
+  const { t } = useTranslation("gym");
   const [title, setTitle] = useState(session.title ?? "");
   const [exercises, setExercises] = useState<ExerciseEntry[]>(
     (session.gym_session_exercises || []).map((ex) => ({
       exercise_id: ex.exercise_id,
       name: ex.gym_exercises?.name,
-      muscle_group: ex.gym_exercises?.main_group,
+      muscle_group: ex.gym_exercises?.muscle_group,
+      main_group: ex.gym_exercises?.main_group,
       equipment: ex.gym_exercises?.equipment,
       superset_id: ex.superset_id ?? "",
       sets:
@@ -267,34 +270,34 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
           <View>
             {isEditing ? (
               <AppText className="text-2xl mb-5 text-center">
-                Edit your gym session
+                {t("gym.gymForm.titleEdit")}
               </AppText>
             ) : (
               <AppText className="text-2xl mb-5 text-center">
-                Track your training progress
+                {t("gym.gymForm.title")}
               </AppText>
             )}
             <View className="gap-5">
               <AppInput
                 value={title}
                 setValue={setTitle}
-                placeholder="Session Title..."
-                label="Session Title..."
+                placeholder={t("gym.gymForm.titlePlaceholder")}
+                label={t("gym.gymForm.titleLabel")}
               />
               {isEditing && (
                 <AppInput
                   value={String(durationEdit)}
                   setValue={() => String(setDurationEdit)}
-                  placeholder="Duration in seconds..."
-                  label="Duration (seconds)..."
+                  placeholder={t("gym.gymForm.editDurationPlaceholder")}
+                  label={t("gym.gymForm.editDurationLabel")}
                 />
               )}
               <SubNotesInput
                 value={notes}
                 setValue={setNotes}
                 className="min-h-[60px]"
-                placeholder="Session Notes..."
-                label="Session Notes..."
+                placeholder={t("gym.gymForm.notesPlaceholder")}
+                label={t("gym.gymForm.notesLabel")}
               />
             </View>
           </View>
@@ -314,7 +317,7 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
               >
                 {group.length > 1 && (
                   <AppText className="text-gray-100 text-lg text-center my-2">
-                    Super-Set
+                    {t("gym.gymForm.superSet")}
                   </AppText>
                 )}
 
@@ -361,9 +364,10 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
                         }}
                         onDeleteExercise={async (index) => {
                           const confirmDelete = await confirmAction({
-                            title: "Confirm Delete Exercise",
-                            message:
-                              "Are you sure you want to delete this exercise?",
+                            title: t("gym.gymForm.confirmDeleteExerciseTitle"),
+                            message: t(
+                              "gym.gymForm.confirmDeleteExerciseMessage",
+                            ),
                           });
                           if (!confirmDelete) return;
 
@@ -430,8 +434,14 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
                       }
                     }}
                     options={[
-                      { label: "Normal", value: "Normal" },
-                      { label: "Super-Set", value: "Super-Set" },
+                      {
+                        label: t("gym.gymForm.exerciseTypeSelector.normal"),
+                        value: "Normal",
+                      },
+                      {
+                        label: t("gym.gymForm.exerciseTypeSelector.superSet"),
+                        value: "Super-Set",
+                      },
                     ]}
                   />
                   <View className="absolute top-1/2 bottom-1/2 right-4 flex-row  items-center">
@@ -448,8 +458,8 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
                   >
                     <AppText className="text-lg">
                       {exerciseType === "Super-Set"
-                        ? "Add Super-Set"
-                        : "Add Exercise"}
+                        ? t("gym.gymForm.exerciseTypeButton.addSuperSet")
+                        : t("gym.gymForm.exerciseTypeButton.addExercise")}
                     </AppText>
                   </AnimatedButton>
                 </View>
@@ -472,7 +482,7 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
                 setIsExerciseModalOpen(true);
               }}
               className="mt-10 w-2/4 items-center justify-center mx-auto flex-row gap-2 bg-blue-800 py-2 rounded-md border-2 border-blue-500"
-              label="Add Exercise"
+              label={t("gym.gymForm.addExerciseButtonLabel")}
             >
               <Plus size={20} color="#f3f4f6" />
             </AnimatedButton>
@@ -482,7 +492,7 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
               {isEditing ? (
                 <DeleteButton
                   confirm={false}
-                  label="Cancel"
+                  label={t("gym.gymForm.editDeleteButtonLabel")}
                   onPress={() => router.push("/dashboard")}
                 />
               ) : (
@@ -493,7 +503,10 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
         </PageContainer>
       </ScrollView>
 
-      <FullScreenLoader visible={isSaving} message="Saving session..." />
+      <FullScreenLoader
+        visible={isSaving}
+        message={t("gym.gymForm.fullScreenLoaderLabel")}
+      />
     </>
   );
 }

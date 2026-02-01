@@ -23,7 +23,7 @@ begin
 
 -- insert into gym session 
 
-update gym_sessions 
+update sessions 
 set 
   title = p_title,
   notes = p_notes,

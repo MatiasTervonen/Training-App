@@ -12,6 +12,7 @@ import { getTodaysSteps } from "@/Features/activities/analytics/getTodaysSteps";
 import Toast from "react-native-toast-message";
 import PageContainer from "@/components/PageContainer";
 import * as Device from "expo-device";
+import { useTranslation } from "react-i18next";
 
 type RangeType = "week" | "month" | "3months";
 
@@ -33,6 +34,7 @@ function getRangeDays(range: RangeType): number {
 }
 
 export default function ActivityAnalytics() {
+  const { t } = useTranslation("activities");
   const [selectedRange, setSelectedRange] = useState<RangeType>("week");
   const [todaySteps, setTodaySteps] = useState(0);
   const [loadingToday, setLoadingToday] = useState(true);
@@ -69,8 +71,8 @@ export default function ActivityAnalytics() {
         console.error("Error fetching today's steps:", error);
         Toast.show({
           type: "error",
-          text1: "Error fetching today's steps",
-          text2: "Unable to retrieve today's step count.",
+          text1: t("activities.analyticsScreen.errorFetchingSteps"),
+          text2: t("activities.analyticsScreen.errorFetchingStepsDesc"),
         });
       } finally {
         setLoadingToday(false);
@@ -78,7 +80,7 @@ export default function ActivityAnalytics() {
     };
 
     fetchTodaySteps();
-  }, []);
+  }, [t]);
 
   const { startDate, endDate } = useMemo(() => {
     const end = new Date();
@@ -102,7 +104,7 @@ export default function ActivityAnalytics() {
     <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
       <PageContainer>
         <AppText className="text-2xl text-center mb-6">
-          Activity Analytics
+          {t("activities.analyticsScreen.title")}
         </AppText>
         <View className="flex-row bg-slate-800 rounded-lg p-1 mb-4">
           {ranges.map((range) => (
@@ -135,9 +137,11 @@ export default function ActivityAnalytics() {
         {todaySteps > 0 && (
           <View className="mt-4 bg-slate-900 rounded-xl p-4">
             <View className="flex-row justify-between items-center">
-              <AppText className="text-gray-400">Today</AppText>
+              <AppText className="text-gray-400">
+                {t("activities.analyticsScreen.today")}
+              </AppText>
               <AppText className="text-2xl font-bold text-green-400">
-                {todaySteps.toLocaleString()} steps
+                {todaySteps.toLocaleString()} {t("activities.analyticsScreen.steps")}
               </AppText>
             </View>
           </View>

@@ -1,0 +1,38 @@
+{
+  "login": {
+    "back": "Takaisin",
+    "email": "Sähköposti",
+    "emailPlaceholder": "Syötä sähköposti...",
+    "password": "Salasana",
+    "passwordPlaceholder": "Syötä salasana...",
+    "confirmPassword": "Vahvista salasana",
+    "confirmPasswordPlaceholder": "Vahvista salasana...",
+    "logIn": "Kirjaudu sisään",
+    "signUp": "Rekisteröidy",
+    "logInAsGuest": "Kirjaudu vieraana",
+    "alreadyHaveAccount": "Onko sinulla jo tili?",
+    "dontHaveAccount": "Eikö sinulla ole tiliä?",
+    "invalidEmail": "Virheellinen sähköpostiosoite.",
+    "forgotPassword": {
+      "link": "Unohditko salasanan?",
+      "title": "Nollaa salasanasi",
+      "description": "Syötä sähköpostisi ja lähetämme sinulle linkin salasanan nollaamiseen.",
+      "sendResetLink": "Lähetä nollauslinkki"
+    },
+    "resendEmail": {
+      "title": "Lähetä vahvistussähköposti uudelleen",
+      "description": "Syötä sähköpostisi ja lähetämme sinulle linkin sähköpostin vahvistamiseen.",
+      "resendButton": "Lähetä vahvistussähköposti uudelleen"
+    },
+    "signUpSuccess": {
+      "title": "Kiitos rekisteröitymisestä!",
+      "message": "Sähköposti lähetetty! Tarkista saapuneet (ja roskaposti) vahvistaaksesi tilisi ennen kirjautumista."
+    },
+    "guest": {
+      "title": "Demotili",
+      "description": "Kaikki ominaisuudet ovat käytettävissä, mutta tietosi ja tilisi poistetaan uloskirjautumisen jälkeen.",
+      "testInfo": "Voit testata sovellusta luomatta tiliä.",
+      "continue": "Jatka"
+    }
+  }
+}

@@ -13,6 +13,7 @@ import { syncNotifications } from "@/database/reminders/syncNotifications";
 import { useEffect } from "react";
 import { syncAlarms } from "@/database/reminders/syncAlarms";
 import { cancelAllNativeAlarms } from "@/native/android/NativeAlarm";
+import { useTranslation } from "react-i18next";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -24,6 +25,7 @@ Notifications.setNotificationHandler({
 });
 
 export default function PushNotificationManager() {
+  const { t } = useTranslation("menu");
   const pushEnabled = useUserStore((state) => state.settings?.push_enabled);
 
   const settings = useUserStore.getState().settings;
@@ -34,7 +36,7 @@ export default function PushNotificationManager() {
     if (!settings) return;
 
     try {
-      const token = await registerForPushNotificationsAsync();
+      const token = await registerForPushNotificationsAsync(t);
 
       if (!token) {
         throw new Error("No token received");
@@ -53,13 +55,13 @@ export default function PushNotificationManager() {
 
       Toast.show({
         type: "success",
-        text1: "Push notifications enabled",
+        text1: t("settings.pushNotifications.enabledToast"),
       });
     } catch {
       Toast.show({
         type: "error",
-        text1: "Error",
-        text2: "Failed to enable push notifications",
+        text1: t("common.error"),
+        text2: t("settings.pushNotifications.enableError"),
       });
     }
   };
@@ -102,13 +104,13 @@ export default function PushNotificationManager() {
 
         Toast.show({
           type: "success",
-          text1: "Push notifications disabled",
+          text1: t("settings.pushNotifications.disabledToast"),
         });
       } catch {
         Toast.show({
           type: "error",
-          text1: "Error",
-          text2: "Failed to disable push notifications",
+          text1: t("common.error"),
+          text2: t("settings.pushNotifications.disableError"),
         });
       }
     } else {
@@ -118,12 +120,14 @@ export default function PushNotificationManager() {
 
   return (
     <View className="bg-slate-900 p-4 rounded-md">
-      <AppText className="underline text-lg">Push Notifications</AppText>
+      <AppText className="underline text-lg">
+        {t("settings.pushNotifications.title")}
+      </AppText>
       <View className="flex-row mt-5 items-center justify-between">
         <AppText>
           {pushEnabled
-            ? "Push notifications enabled"
-            : "Allow push notifications"}
+            ? t("settings.pushNotifications.enabled")
+            : t("settings.pushNotifications.allow")}
         </AppText>
         <View className="mr-5">
           <Toggle isOn={!!pushEnabled} onToggle={handleToggle} />

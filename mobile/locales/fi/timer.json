@@ -1,0 +1,37 @@
+{
+  "timer": {
+    "title": "Ajastin",
+    "startTimer": "Kaynnista ajastin",
+    "startStopwatch": "Kaynnista sekuntikello",
+    "createTimer": "Luo ajastin",
+    "myTimers": "Omat ajastimet",
+    "minutes": "Minuutit",
+    "seconds": "Sekunnit",
+    "start": "Aloita",
+    "clear": "Tyhjenna",
+    "cancelTimerTitle": "Peruuta ajastin",
+    "cancelTimerMessage": "Haluatko varmasti peruuttaa ajastimen?",
+    "setDurationError": "Aseta ajastimen kesto.",
+    "titleLabel": "Otsikko...",
+    "titlePlaceholder": "Ajastimen otsikko",
+    "notesLabel": "Muistiinpanot...",
+    "notesPlaceholder": "Ajastimen muistiinpanot...(valinnainen)",
+    "savingTimer": "Tallennetaan ajastinta...",
+    "updatingTimer": "Paivitetaan ajastinta...",
+    "loadingTimers": "Ladataan ajastimia...",
+    "errorLoadingTimers": "Virhe ajastimien lataamisessa. Yrita uudelleen.",
+    "noTimers": "Ei ajastimia. Luo uusi ajastin aloittaaksesi!",
+    "editTimer": "Muokkaa ajastinta",
+    "update": "Paivita",
+    "deleteSuccess": "Ajastin poistettu onnistuneesti",
+    "deleteError": "Ajastimen poistaminen epaonnistui. Yrita uudelleen.",
+    "activeSessionError": "Sinulla on jo aktiivinen sessio.",
+    "activeSessionErrorSub": "Lopeta se ennen uuden aloittamista.",
+    "alarmPermission": {
+      "title": "Salli halytysten ja muistutusten asettaminen",
+      "description": "Tama ajastin vaatii korkeaprioriteettisen halytyksen toimiakseen.\n\nHalytys soi jatkuvasti, vaikka puhelimesi olisi lukittu, kunnes hylkaat sen. Ilman tata lupaa ajastimia ei voi kaynnistaa.",
+      "back": "Takaisin",
+      "allow": "Salli"
+    }
+  }
+}

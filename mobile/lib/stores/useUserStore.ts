@@ -2,16 +2,17 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-interface UserProfile {
+export interface UserProfile {
   display_name: string;
   weight_unit: string;
   profile_picture: string | null;
   role: string;
 }
 
-interface UserSettings {
+export interface UserSettings {
   push_enabled: boolean;
   gps_tracking_enabled: boolean;
+  language: "en" | "fi" | null;
 }
 
 interface UserStore {

@@ -3,9 +3,9 @@ import { handleError } from "@/utils/handleError";
 
 export async function getActivityCategories() {
   const { data, error } = await supabase
-  .from("activity_categories")
-  .select("name, id")
-  .order("name", { ascending: true });
+    .from("activity_categories")
+    .select("name, id, slug")
+    .order("name", { ascending: true });
 
   if (error) {
     handleError(error, {
@@ -15,9 +15,6 @@ export async function getActivityCategories() {
     });
     throw new Error("Error getting activity categories");
   }
-
-  console.log("data", data);
-
 
   return data;
 }

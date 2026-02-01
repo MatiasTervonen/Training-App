@@ -11,8 +11,10 @@ import {
 } from "@/native/android/EnsureExactAlarmPermission";
 import { Info } from "lucide-react-native";
 import AnimatedButton from "@/components/buttons/animatedButton";
+import { useTranslation } from "react-i18next";
 
 export default function TimerScreen() {
+  const { t } = useTranslation("timer");
   const [showModal, setShowModal] = useState(false);
 
   const activeSession = useTimerStore((state) => state.activeSession);
@@ -32,8 +34,8 @@ export default function TimerScreen() {
     if (activeSession) {
       Toast.show({
         type: "error",
-        text1: "You already have an active session.",
-        text2: "Finish it before starting a new one.",
+        text1: t("timer.activeSessionError"),
+        text2: t("timer.activeSessionErrorSub"),
       });
       return false;
     }
@@ -60,17 +62,17 @@ export default function TimerScreen() {
   return (
     <>
       <PageContainer>
-        <AppText className="text-2xl text-center mb-10">Timer</AppText>
+        <AppText className="text-2xl text-center mb-10">{t("timer.title")}</AppText>
         <View className="gap-4">
           <LinkButton
             onPress={handleClick}
-            label="Start Timer"
+            label={t("timer.startTimer")}
             href="/timer/empty-timer"
           />
-          <LinkButton label="Start Stopwatch" href="/timer/start-stopwatch" />
+          <LinkButton label={t("timer.startStopwatch")} href="/timer/start-stopwatch" />
           <View className="border border-gray-400 rounded-md my-2" />
-          <LinkButton label="Create Timer" href="/timer/create-timer" />
-          <LinkButton label="My Timers" href="/timer/my-timers" />
+          <LinkButton label={t("timer.createTimer")} href="/timer/create-timer" />
+          <LinkButton label={t("timer.myTimers")} href="/timer/my-timers" />
         </View>
       </PageContainer>
 
@@ -81,23 +83,19 @@ export default function TimerScreen() {
               <Info size={35} color="#fbbf24" />
             </View>
             <AppText className="text-xl mb-6 text-center">
-              Allow setting alarms and reminders
+              {t("timer.alarmPermission.title")}
             </AppText>
             <AppText className="text-lg mb-6 text-center">
-              This timer requires a high-priority alarm to work.
-              {"\n\n"}
-              The alarm will ring continuously, even when your phone is locked,
-              until you dismiss it. Without this permission, timers cannot
-              start.
+              {t("timer.alarmPermission.description")}
             </AppText>
             <View className="flex-row gap-4">
               <View className="flex-1">
-                <LinkButton href="/sessions" label="Back" />
+                <LinkButton href="/sessions" label={t("timer.alarmPermission.back")} />
               </View>
               <View className="flex-1">
                 <AnimatedButton
                   onPress={async () => await requestExactAlarm()}
-                  label="Allow"
+                  label={t("timer.alarmPermission.allow")}
                   className="bg-blue-800 rounded-md shadow-md border-2 border-blue-500 py-2"
                   textClassName="text-gray-100 text-center"
                 />

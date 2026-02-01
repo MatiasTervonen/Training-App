@@ -12,7 +12,7 @@ import SubNotesInput from "@/components/SubNotesInput";
 import ActivityDropdown from "@/Features/activities/components/activityDropdown";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import FullScreenModal from "@/components/FullScreenModal";
-import { activities } from "@/types/models";
+import { activities_with_category } from "@/types/models";
 import { useQueryClient } from "@tanstack/react-query";
 import { templateSummary } from "@/types/session";
 import DeleteButton from "@/components/buttons/DeleteButton";
@@ -31,9 +31,10 @@ export default function ActivityTemplateEditScreen() {
   const [notes, setNotes] = useState(template?.template.notes || "");
   const [isLoading, setIsLoading] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
-  const [selectedActivity, setSelectedActivity] = useState<activities>(
-    template?.activity as activities,
-  );
+  const [selectedActivity, setSelectedActivity] =
+    useState<activities_with_category>(
+      template?.activity as activities_with_category,
+    );
 
   const handleSave = async () => {
     if (!templateId) return;

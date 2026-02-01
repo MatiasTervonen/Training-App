@@ -1,5 +1,6 @@
 import { Modal, View } from "react-native";
 import { Info } from "lucide-react-native";
+import { useTranslation } from "react-i18next";
 import AppText from "../../../components/AppText";
 import LinkButton from "../../../components/buttons/LinkButton";
 import AnimatedButton from "@/components/buttons/animatedButton";
@@ -11,6 +12,8 @@ export default function InfoModal({
   showModal: boolean;
   onCancel: () => void;
 }) {
+  const { t } = useTranslation("activities");
+
   return (
     <Modal visible={showModal} transparent={true} animationType="slide">
       <View className="flex-1 justify-center items-center bg-black/50 px-5">
@@ -19,22 +22,22 @@ export default function InfoModal({
             <Info size={35} color="#fbbf24" />
           </View>
           <AppText className="text-xl mb-6 text-center">
-            Location tracking disabled.
+            {t("activities.infoModal.locationTrackingDisabled")}
           </AppText>
           <AppText className="text-lg mb-6 text-center">
-            Enable Location tracking from settings to track your activity.
+            {t("activities.infoModal.enableLocationMessage")}
           </AppText>
           <View className="flex-row gap-4 w-full">
             <View className="flex-1">
               <AnimatedButton
-                label="Cancel"
+                label={t("activities.infoModal.cancel")}
                 onPress={onCancel}
                 className="bg-blue-800 border-2 border-blue-500 py-2 rounded-md"
                 textClassName="text-gray-100 text-center"
               />
             </View>
             <View className="flex-1">
-              <LinkButton href="/menu/settings" label="Settings" />
+              <LinkButton href="/menu/settings" label={t("activities.infoModal.settings")} />
             </View>
           </View>
         </View>

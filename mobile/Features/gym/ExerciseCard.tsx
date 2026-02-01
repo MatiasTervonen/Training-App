@@ -14,6 +14,7 @@ import AppButton from "@/components/buttons/AppButton";
 import DropDownModal from "@/components/DropDownModal";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
 import SubNotesInput from "@/components/SubNotesInput";
+import { useTranslation } from "react-i18next";
 
 type ExerciseCardProps = {
   index: number;
@@ -25,7 +26,7 @@ type ExerciseCardProps = {
   onInputChange: (
     index: number,
     field: "weight" | "reps" | "rpe" | "time_min" | "distance_meters",
-    value: number | string
+    value: number | string,
   ) => void;
   onAddSet: (index: number) => void;
   onDeleteSet: (exerciseIndex: number, setIndex: number) => void;
@@ -57,6 +58,7 @@ export default function ExerciseCard({
   const weightUnit =
     useUserStore((state) => state.profile?.weight_unit) || "kg";
 
+  const { t } = useTranslation("gym");
   return (
     <View className="py-2 px-4">
       <View className="flex-row items-center justify-between">
@@ -70,7 +72,10 @@ export default function ExerciseCard({
           </AppText>
           <View className="flex-row items-center gap-3 mt-1">
             <AppText className="text-lg text-gray-400">
-              {exercise.equipment} / {exercise.muscle_group}
+              {t(`gym.equipment.${exercise.equipment?.toLowerCase()}`)} /{" "}
+              {t(
+                `gym.muscleGroups.${exercise.muscle_group?.toLowerCase().replace(/ /g, "_")}`,
+              )}
             </AppText>
           </View>
         </View>
@@ -79,9 +84,9 @@ export default function ExerciseCard({
             disabled={disabled}
             label={`${index + 1}. ${exercise.name}`}
             options={[
-              { value: "delete", label: "Delete" },
-              { value: "change", label: "Change" },
-              { value: "history", label: "History" },
+              { value: "delete", label: t("gym.exerciseCard.delete") },
+              { value: "change", label: t("gym.exerciseCard.change") },
+              { value: "history", label: t("gym.exerciseCard.history") },
             ]}
             onChange={(value) => {
               switch (value) {
@@ -104,12 +109,14 @@ export default function ExerciseCard({
       {history?.sets && history?.sets.length > 0 && (
         <View className="flex-row mt-2">
           <View className="flex-row items-center bg-gray-700/50 px-2 py-0.5 rounded flex-wrap">
-            <AppText className="text-sm text-gray-300">Last: </AppText>
+            <AppText className="text-sm text-gray-300">
+              {t("gym.exerciseCard.last")}{" "}
+            </AppText>
             <AppText className="text-sm text-green-400">
               {isCardioExercise(exercise)
                 ? history?.sets
                     .map(
-                      (set) => `${set.time_min}min / ${set.distance_meters}m`
+                      (set) => `${set.time_min}min / ${set.distance_meters}m`,
                     )
                     .join(" • ")
                 : history?.sets
@@ -123,9 +130,9 @@ export default function ExerciseCard({
         <>
           <View className="my-4">
             <SubNotesInput
-              label={`Notes for ${exercise.name}`}
+              label={t("gym.exerciseCard.notesFor", { name: exercise.name })}
               className="min-h-[60px]"
-              placeholder="Add your notes here..."
+              placeholder={t("gym.exerciseCard.notesPlaceholder")}
               value={exercise.notes || ""}
               setValue={(newNotes) =>
                 onUpdateExercise(index, { ...exercise, notes: newNotes })
@@ -137,36 +144,46 @@ export default function ExerciseCard({
             <View className="text-gray-300 border-b border-gray-300 flex-row">
               {isCardioExercise(exercise) ? (
                 <>
-                  <View className="w-[20%]">
-                    <AppText className="p-2 text-lg">Set</AppText>
+                  <View className="flex-1 items-center">
+                    <AppText className="p-2 text-lg">
+                      {t("gym.exerciseCard.set")}
+                    </AppText>
                   </View>
-                  <View className="w-[30%]">
-                    <AppText className="p-2 text-lg">Time</AppText>
+                  <View className="flex-1 items-center">
+                    <AppText className="p-2 text-lg">
+                      {t("gym.exerciseCard.time")}
+                    </AppText>
                   </View>
-                  <View className="w-[30%]">
-                    <AppText className="p-2 text-lg">Length</AppText>
+                  <View className="flex-1 items-center">
+                    <AppText className="p-2 text-lg">
+                      {t("gym.exerciseCard.length")}
+                    </AppText>
                   </View>
-                  <View className="w-[20%]">
-                    <AppText className="p-2 text-lg"></AppText>
-                  </View>
+                  <View className="w-8" />
                 </>
               ) : (
                 <>
-                  <View className="w-[17%] text-center">
-                    <AppText className="p-2 text-lg">Set</AppText>
+                  <View className="flex-1 items-center">
+                    <AppText className="p-2 text-lg">
+                      {t("gym.exerciseCard.set")}
+                    </AppText>
                   </View>
-                  <View className="w-[28%] text-center">
-                    <AppText className="p-2 text-lg">Weight</AppText>
+                  <View className="flex-1 items-center">
+                    <AppText className="p-2 text-lg">
+                      {t("gym.exerciseCard.weight")}
+                    </AppText>
                   </View>
-                  <View className="w-[20%] text-center">
-                    <AppText className="p-2 text-lg">Reps</AppText>
+                  <View className="flex-1 items-center">
+                    <AppText className="p-2 text-lg">
+                      {t("gym.exerciseCard.reps")}
+                    </AppText>
                   </View>
-                  <View className="w-[30%] text-center">
-                    <AppText className="p-2 text-lg">RPE</AppText>
+                  <View className="flex-1 items-center">
+                    <AppText className="p-2 text-lg">
+                      {t("gym.exerciseCard.rpe")}
+                    </AppText>
                   </View>
-                  <View className="w-[5%] text-center">
-                    <AppText className="p-2 text-lg"></AppText>
-                  </View>
+                  <View className="w-8" />
                 </>
               )}
             </View>
@@ -175,19 +192,19 @@ export default function ExerciseCard({
           {exercise.sets.map((set, setIndex) => (
             <View
               key={setIndex}
-              className={`border-b border-gray-300 flex-row  items-center  ${
+              className={`border-b border-gray-300 flex-row items-center ${
                 set.rpe === "Failure" ? "bg-red-800" : ""
               } ${set.rpe === "Warm-up" ? "bg-blue-500" : ""}`}
             >
               {isCardioExercise(exercise) ? (
                 <>
-                  <View className="w-[20%] text-center">
-                    <AppText className="p-2 text-lg ">{setIndex + 1}</AppText>
+                  <View className="flex-1 items-center">
+                    <AppText className="p-2 text-lg">{setIndex + 1}</AppText>
                   </View>
-                  <View className="w-[30%] text-center">
-                    <AppText className="p-2 text-lg ">{set.time_min}</AppText>
+                  <View className="flex-1 items-center">
+                    <AppText className="p-2 text-lg">{set.time_min}</AppText>
                   </View>
-                  <View className="w-[30%] text-center">
+                  <View className="flex-1 items-center">
                     <AppText className="p-2 text-lg">
                       {set.distance_meters}
                     </AppText>
@@ -195,28 +212,28 @@ export default function ExerciseCard({
                 </>
               ) : (
                 <>
-                  <View className="w-[17%] text-center">
+                  <View className="flex-1 items-center">
                     <AppText className="p-2 text-lg">{setIndex + 1}</AppText>
                   </View>
-                  <View className="w-[28%] text-center">
+                  <View className="flex-1 items-center">
                     <AppText className="p-2 text-lg">
                       {set.weight} {weightUnit}
                     </AppText>
                   </View>
-                  <View className="w-[20%] text-center">
+                  <View className="flex-1 items-center">
                     <AppText className="p-2 text-lg">{set.reps}</AppText>
                   </View>
-                  <View className="w-[30%] text-center">
+                  <View className="flex-1 items-center">
                     <AppText className="p-2 text-lg">{set.rpe}</AppText>
                   </View>
                 </>
               )}
-              <View className="w-[5%] items-end">
+              <View className="w-8 items-center">
                 <Pressable
                   onPress={async () => {
                     const confirmed = await confirmAction({
-                      title: "Delete Set",
-                      message: "Are you sure you want to delete this set?",
+                      title: t("gym.exerciseCard.deleteSetTitle"),
+                      message: t("gym.exerciseCard.deleteSetMessage"),
                     });
                     if (!confirmed) return;
 
@@ -235,7 +252,7 @@ export default function ExerciseCard({
                 <View className="flex-row items-center justify-center gap-2 px-2">
                   <View className="w-2/4">
                     <AppInput
-                      placeholder="Time (min)"
+                      placeholder={t("gym.exerciseCard.timePlaceholder")}
                       keyboardType="numeric"
                       value={input.time_min ?? ""}
                       onChangeText={(val) => {
@@ -246,7 +263,7 @@ export default function ExerciseCard({
                   </View>
                   <View className="w-2/4">
                     <AppInput
-                      placeholder="Length (meters)"
+                      placeholder={t("gym.exerciseCard.lengthPlaceholder")}
                       keyboardType="numeric"
                       value={input.distance_meters ?? ""}
                       onChangeText={(val) => {
@@ -261,7 +278,7 @@ export default function ExerciseCard({
               <View className="flex-row gap-2 items-center justify-center px-2">
                 <View className="w-1/3">
                   <AppInput
-                    placeholder="Weight..."
+                    placeholder={t("gym.exerciseCard.weightPlaceholder")}
                     keyboardType="numeric"
                     maxLength={5}
                     value={input.weight ?? ""}
@@ -273,7 +290,7 @@ export default function ExerciseCard({
                 </View>
                 <View className="w-1/3">
                   <AppInput
-                    placeholder="Reps..."
+                    placeholder={t("gym.exerciseCard.repsPlaceholder")}
                     keyboardType="numeric"
                     maxLength={5}
                     value={input.reps || ""}
@@ -291,11 +308,26 @@ export default function ExerciseCard({
                     value={input.rpe}
                     onChange={(val) => onInputChange(index, "rpe", val)}
                     options={[
-                      { value: "Warm-up", label: "Warm-up" },
-                      { value: "Easy", label: "Easy" },
-                      { value: "Medium", label: "Medium" },
-                      { value: "Hard", label: "Hard" },
-                      { value: "Failure", label: "Failure" },
+                      {
+                        value: "Warm-up",
+                        label: t("gym.exerciseCard.rpeOptions.warmup"),
+                      },
+                      {
+                        value: "Easy",
+                        label: t("gym.exerciseCard.rpeOptions.easy"),
+                      },
+                      {
+                        value: "Medium",
+                        label: t("gym.exerciseCard.rpeOptions.medium"),
+                      },
+                      {
+                        value: "Hard",
+                        label: t("gym.exerciseCard.rpeOptions.hard"),
+                      },
+                      {
+                        value: "Failure",
+                        label: t("gym.exerciseCard.rpeOptions.failure"),
+                      },
                     ]}
                   />
                 </View>
@@ -312,8 +344,8 @@ export default function ExerciseCard({
                   if (isTimeEmpty) {
                     Toast.show({
                       type: "error",
-                      text1: "Missing data",
-                      text2: "Please fill time (min).",
+                      text1: t("gym.exerciseCard.missingData"),
+                      text2: t("gym.exerciseCard.fillTime"),
                     });
                     return;
                   }
@@ -323,8 +355,8 @@ export default function ExerciseCard({
                   if (isRepsEmpty) {
                     Toast.show({
                       type: "error",
-                      text1: "Missing data",
-                      text2: "Please fill reps.",
+                      text1: t("gym.exerciseCard.missingData"),
+                      text2: t("gym.exerciseCard.fillReps"),
                     });
                     return;
                   }
@@ -332,7 +364,7 @@ export default function ExerciseCard({
 
                 onAddSet(index);
               }}
-              label="Add Set"
+              label={t("gym.exerciseCard.addSet")}
             />
           </View>
         </>

@@ -1,0 +1,47 @@
+{
+  "reminders": {
+    "title": "Muistutukset",
+    "oneTimeGlobal": "Kertaluonteinen globaali",
+    "oneTime": "Kertaluonteinen",
+    "weekly": "Viikoittainen",
+    "daily": "Päivittäinen",
+    "myReminders": "Omat muistutukset",
+    "oneTimeReminder": "Kertaluonteinen muistutus",
+    "weeklyReminders": "Viikoittaiset muistutukset",
+    "dailyReminder": "Päivittäinen muistutus",
+    "globalReminder": "Globaali muistutus",
+    "oneTimeInfo": "Ilmoittaa vain tähän laitteeseen kerran asetettuna aikana.",
+    "weeklyInfo": "Toistuu valittuina päivinä joka viikko.",
+    "dailyInfo": "Toistuu joka päivä asetettuna aikana.",
+    "globalInfo": "Ilmoittaa kaikkiin laitteisiisi kerran asetettuna aikana.",
+    "titleLabel": "Otsikko...",
+    "titlePlaceholder": "Otsikko... (pakollinen)",
+    "notesLabel": "Muistiinpanot...",
+    "notesPlaceholder": "Muistiinpanot... (valinnainen)",
+    "setNotifyTime": "Aseta ilmoitusaika",
+    "repeatOnDays": "Toista näinä päivinä:",
+    "enableHighPriority": "Ota käyttöön tärkeä muistutus",
+    "highPriorityDescription": "(Jatkaa hälyttämistä kunnes hylätty)",
+    "savingReminder": "Tallennetaan muistutusta...",
+    "pushDisabledTitle": "Push-ilmoitukset poistettu käytöstä.",
+    "pushDisabledMessage": "Ota push-ilmoitukset käyttöön asetuksista vastaanottaaksesi muistutuksia.",
+    "back": "Takaisin",
+    "settings": "Asetukset",
+    "tabs": {
+      "normal": "Normaalit",
+      "repeating": "Toistuvat",
+      "delivered": "Toimitetut"
+    },
+    "errorLoading": "Virhe muistutusten lataamisessa. Yritä uudelleen!",
+    "noReminders": "Ei {{tab}} muistutuksia.",
+    "days": {
+      "sun": "Su",
+      "mon": "Ma",
+      "tue": "Ti",
+      "wed": "Ke",
+      "thu": "To",
+      "fri": "Pe",
+      "sat": "La"
+    }
+  }
+}

@@ -20,8 +20,10 @@ import EditTodo from "@/Features/edit-session-cards/editTodo";
 import useTogglePin from "@/Features/feed/hooks/useTogglePin";
 import useDeleteSession from "@/Features/feed/hooks/useDeleteSession";
 import useUpdateFeedItem from "@/Features/feed/hooks/useUpdateFeedItem";
+import { useTranslation } from "react-i18next";
 
 export default function MyTodoListsScreen() {
+  const { t } = useTranslation("todo");
   const [expandedItem, setExpandedItem] = useState<FeedItemUI | null>(null);
   const [editingItem, setEditingItem] = useState<FeedItemUI | null>(null);
   const [refreshing, setRefreshing] = useState(false);
@@ -72,11 +74,11 @@ export default function MyTodoListsScreen() {
         <FeedSkeleton count={5} />
       ) : error ? (
         <AppText className="text-center text-lg mt-20 mx-auto px-10">
-          Failed to load todo lists. Please try again later.
+          {t("todo.failedToLoad")}
         </AppText>
       ) : !data || (unpinnedFeed.length === 0 && pinnedFeed.length === 0) ? (
         <AppText className="text-center text-lg mt-20 mx-auto px-10">
-          No todo lists yet. Add a todo list to get started!
+          {t("todo.noTodoLists")}
         </AppText>
       ) : (
         <FlatList
@@ -155,13 +157,13 @@ export default function MyTodoListsScreen() {
           {isLoadingTodoSession ? (
             <View className="gap-5 items-center justify-center mt-40 px-10">
               <AppText className="text-lg">
-                Loading todo list details...
+                {t("todo.loadingDetails")}
               </AppText>
               <ActivityIndicator />
             </View>
           ) : todoSessionError ? (
             <AppText className="text-center text-xl mt-40 px-10">
-              Failed to load todo list details. Please try again later.
+              {t("todo.failedToLoadDetails")}
             </AppText>
           ) : (
             todoSessionFull && (
@@ -178,12 +180,12 @@ export default function MyTodoListsScreen() {
         >
           {isLoadingTodoSession ? (
             <View className="gap-5 items-center justify-center mt-40 px-10">
-              <AppText className="text-lg">Loading todo list...</AppText>
+              <AppText className="text-lg">{t("todo.loadingTodoList")}</AppText>
               <ActivityIndicator />
             </View>
           ) : todoSessionError ? (
             <AppText className="text-center text-xl mt-40 px-10">
-              Failed to load todo list details. Please try again later.
+              {t("todo.failedToLoadDetails")}
             </AppText>
           ) : (
             todoSessionFull && (

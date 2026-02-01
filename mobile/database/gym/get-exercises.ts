@@ -1,30 +1,23 @@
+
+import { useUserStore } from "@/lib/stores/useUserStore";
 import { supabase } from "@/lib/supabase";
 import { handleError } from "@/utils/handleError";
 
-export async function getExercises({
-  pageParam = 0,
-  limit = 50,
-  search = "",
-}: {
-  pageParam?: number;
-  limit?: number;
-  search?: string;
-}) {
-  console.log("FETCHING:", search);
-  const from = pageParam * limit;
-  const to = from + limit - 1;
+export async function getExercises() {
+  const language = useUserStore.getState().settings?.language ?? "en";
 
-  let query = supabase
+  const query = supabase
     .from("gym_exercises")
-    .select("*", { count: "exact" })
-    .order("name", { ascending: true })
-    .range(from, to);
-
-  if (search.trim() !== "") {
-    query = query.or(
-      `name.ilike.%${search}%,equipment.ilike.%${search}%,muscle_group.ilike.%${search}%,main_group.ilike.%${search}%`,
-    );
-  }
+    .select(
+      `
+      id,
+      equipment,
+      main_group,
+      muscle_group,
+      gym_exercises_translations!inner(name)
+      `,
+    )
+    .eq("gym_exercises_translations.language", language);
 
   const { data, error } = await query;
 
@@ -37,7 +30,14 @@ export async function getExercises({
     throw new Error("Error fetching exercises");
   }
 
-  const hasMore = data && data.length === limit;
+  const exercises =
+    data?.map((exercise) => ({
+      ...exercise,
+      name: exercise.gym_exercises_translations[0]?.name ?? "Unknown",
+    })) ?? [];
 
-  return { data, nextPage: hasMore ? pageParam + 1 : undefined };
+  // Sort by name
+  exercises.sort((a, b) => a.name.localeCompare(b.name));
+
+  return exercises;
 }

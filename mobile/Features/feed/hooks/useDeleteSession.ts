@@ -5,13 +5,15 @@ import Toast from "react-native-toast-message";
 import * as Notifications from "expo-notifications";
 import { FeedData } from "@/types/session";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useTranslation } from "react-i18next";
 
 export default function useDeleteSession() {
   const queryClient = useQueryClient();
+  const { t } = useTranslation("feed");
 
   const handleDelete = async (id: string, type: string) => {
     const confirmed = await confirmAction({
-      title: "Are you sure you want to delete this session?",
+      title: t("feed.deleteSession.confirmTitle"),
     });
     if (!confirmed) return;
 
@@ -65,15 +67,15 @@ export default function useDeleteSession() {
 
       Toast.show({
         type: "success",
-        text1: "Deleted",
-        text2: "Item has been deleted successfully.",
+        text1: t("feed.deleteSession.successTitle"),
+        text2: t("feed.deleteSession.successMessage"),
       });
     } catch {
       queryClient.setQueryData(queryKey, previousFeed);
       Toast.show({
         type: "error",
-        text1: "Error",
-        text2: "Failed to delete item.",
+        text1: t("feed.deleteSession.errorTitle"),
+        text2: t("feed.deleteSession.errorMessage"),
       });
     }
   };

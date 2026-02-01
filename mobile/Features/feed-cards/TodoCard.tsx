@@ -3,6 +3,7 @@ import { View } from "react-native";
 import AppText from "@/components/AppText";
 import { FeedCardProps } from "@/types/session";
 import BaseFeedCard from "./BaseFeedCard";
+import { useTranslation } from "react-i18next";
 
 type todoPayload = {
   completed: number;
@@ -17,6 +18,7 @@ export default function TodoCard({
   onExpand,
   onEdit,
 }: FeedCardProps) {
+  const { t } = useTranslation("feed");
   const payload = item.extra_fields as todoPayload;
 
   return (
@@ -28,14 +30,14 @@ export default function TodoCard({
       onExpand={onExpand}
       onEdit={onEdit}
       typeIcon={<ListTodo size={20} color={pinned ? "#0f172a" : "#f3f4f6"} />}
-      typeName={"To-Do"}
+      typeName={t("feed.card.types.todo")}
       statsContent={
         <>
           <View className="flex-row gap-2 items-center">
             <AppText
               className={`${pinned ? "text-slate-900" : "text-gray-100"}`}
             >
-              completed: {payload.completed} / {payload.total}
+              {t("feed.card.completed")}: {payload.completed} / {payload.total}
             </AppText>
             {payload.completed === payload.total && <Check color="#22c55e" />}
           </View>

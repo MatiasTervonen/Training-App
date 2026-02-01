@@ -2,11 +2,11 @@ import { Ellipsis, SquareArrowOutUpRight, Calendar } from "lucide-react-native";
 import { View } from "react-native";
 import AppText from "@/components/AppText";
 import DropdownMenu from "@/components/DropdownMenu";
-import { formatDate } from "@/lib/formatDate";
+import { formatDateShort } from "@/lib/formatDate";
 import { FeedCardProps } from "@/types/session";
-import { LinearGradient } from "expo-linear-gradient";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import { ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 
 type BaseCardProps = {
   item: FeedCardProps["item"];
@@ -33,6 +33,8 @@ export default function BaseFeedCard({
   typeName,
   showUpdatedAt = false,
 }: BaseCardProps) {
+  const { t } = useTranslation("feed");
+
   return (
     <View
       className={`
@@ -79,7 +81,7 @@ export default function BaseFeedCard({
               pinned ? "text-slate-900" : "text-yellow-500"
             }`}
           >
-            updated: {formatDate(item.updated_at)}
+            {t("feed.card.updated")} {formatDateShort(item.updated_at)}
           </AppText>
         ) : (
           <AppText className="min-h-5"></AppText>
@@ -89,13 +91,13 @@ export default function BaseFeedCard({
         <View className="flex-row items-center gap-2 pl-2">
           {typeIcon}
           <AppText className={`${pinned ? "text-slate-900" : "text-gray-100"}`}>
-            {typeName || "Activity"}
+            {typeName || t("feed.card.types.activity")}
           </AppText>
         </View>
         <View className="flex-row gap-2 items-center">
           <Calendar size={20} color={pinned ? "#0f172a" : "#f3f4f6"} />
           <AppText className={`${pinned ? "text-slate-900" : "text-gray-100"}`}>
-            {formatDate(item.created_at)}
+            {formatDateShort(item.created_at)}
           </AppText>
         </View>
 
@@ -105,7 +107,7 @@ export default function BaseFeedCard({
           }}
           className="bg-blue-700 py-2 px-4  rounded-br-md flex-row items-center gap-2"
         >
-          <AppText>Details</AppText>
+          <AppText>{t("feed.card.details")}</AppText>
           <SquareArrowOutUpRight size={20} color="#f3f4f6" />
         </AnimatedButton>
       </View>

@@ -1,4 +1,4 @@
-import { useUserStore } from "@/lib/stores/useUserStore";
+import { useUserStore, UserProfile, UserSettings } from "@/lib/stores/useUserStore";
 import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "expo-router";
 import { supabase } from "@/lib/supabase";
@@ -7,19 +7,7 @@ import { fetchUserProfile } from "@/database/settings/get-user-profile";
 import ModalPageWrapper from "@/components/ModalPageWrapper";
 import { useModalPageConfig } from "@/lib/stores/modalPageConfig";
 import { fetchUserSettings } from "@/database/settings/get-user-settings";
-
-interface UserProfile {
-  id: string;
-  display_name: string;
-  weight_unit: string;
-  profile_picture: string | null;
-  role: string;
-}
-
-interface UserSettings {
-  push_enabled: boolean;
-  gps_tracking_enabled: boolean;
-}
+import i18n from "@/app/i18n";
 
 export default function LayoutWrapper({
   children,
@@ -52,6 +40,13 @@ export default function LayoutWrapper({
         fetchUserSettings(),
       ]);
       loginUser(profileData as UserProfile, settingsData as UserSettings);
+      // Only override device language if user explicitly set a preference
+      if (settingsData?.language) {
+        i18n.changeLanguage(settingsData.language);
+      }
+    } else if (settings?.language) {
+      // Only override device language if user explicitly set a preference (from cache)
+      i18n.changeLanguage(settings.language);
     }
 
     if (pathname !== "/dashboard") {
@@ -80,7 +75,7 @@ export default function LayoutWrapper({
           return;
         }
         handleSessionChange(session);
-      }
+      },
     );
 
     return () => {

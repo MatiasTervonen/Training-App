@@ -7,12 +7,14 @@ import { updateGpsTrackingStatus } from "@/Features/activities/gpsToggle/actions
 import { useState, useEffect } from "react";
 import * as Location from "expo-location";
 import InfoModal from "@/Features/activities/gpsToggle/infoModal";
+import { useTranslation } from "react-i18next";
 
 export default function GpsToggleManager() {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
 
   const gpsTrackingEnabled = useUserStore(
-    (state) => state.settings?.gps_tracking_enabled
+    (state) => state.settings?.gps_tracking_enabled,
   );
   const settings = useUserStore.getState().settings;
 
@@ -50,14 +52,14 @@ export default function GpsToggleManager() {
 
         Toast.show({
           type: "success",
-          text1: "Location Tracking disabled",
+          text1: t("menu:settings.locationTracking.disabledToast"),
         });
       } catch (error) {
         console.error(error);
         Toast.show({
           type: "error",
-          text1: "Error",
-          text2: "Failed to disable Location Tracking",
+          text1: t("common.error"),
+          text2: t("menu:settings.locationTracking.disableError"),
         });
       }
     } else {
@@ -80,14 +82,14 @@ export default function GpsToggleManager() {
 
         Toast.show({
           type: "success",
-          text1: "Location Tracking enabled",
+          text1: t("menu:settings.locationTracking.enabledToast"),
         });
       } catch (error) {
         console.error(error);
         Toast.show({
           type: "error",
-          text1: "Error",
-          text2: "Failed to enable Location Tracking",
+          text1: t("common.error"),
+          text2: t("menu:settings.locationTracking.enableError"),
         });
       }
     }
@@ -95,12 +97,14 @@ export default function GpsToggleManager() {
 
   return (
     <View className="bg-slate-900 p-4 rounded-md">
-      <AppText className="underline text-lg">Location Tracking</AppText>
+      <AppText className="underline text-lg">
+        {t("menu:settings.locationTracking.title")}
+      </AppText>
       <View className="flex-row mt-5 items-center justify-between">
         <AppText>
           {gpsTrackingEnabled
-            ? "Location Tracking Enabled"
-            : "Allow Location Tracking"}
+            ? t("menu:settings.locationTracking.enabled")
+            : t("menu:settings.locationTracking.allow")}
         </AppText>
         <View className="mr-5">
           <Toggle isOn={!!gpsTrackingEnabled} onToggle={handleToggle} />

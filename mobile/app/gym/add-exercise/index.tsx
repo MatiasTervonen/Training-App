@@ -9,10 +9,12 @@ import SelectInput from "@/components/Selectinput";
 import { addExercise } from "@/database/gym/add-exercise";
 import { useQueryClient } from "@tanstack/react-query";
 import PageContainer from "@/components/PageContainer";
+import { useTranslation } from "react-i18next";
 
 export default function AddExercises() {
+  const { t } = useTranslation(["gym", "common", "menu"]);
   const [name, setName] = useState("");
-  const [language, setLanguage] = useState("en");
+  const [exerciseLanguage, setExerciseLanguage] = useState("en");
   const [equipment, setEquipment] = useState("barbell");
   const [muscleGroup, setMuscleGroup] = useState("chest");
   const [mainGroup, setMainGroup] = useState("chest");
@@ -24,7 +26,7 @@ export default function AddExercises() {
     if (!name) {
       Toast.show({
         type: "error",
-        text1: "Please enter an exercise name",
+        text1: t("gym.addExerciseScreen.nameRequired"),
       });
       return;
     }
@@ -32,7 +34,7 @@ export default function AddExercises() {
 
     const exerciseData = {
       name,
-      language,
+      language: exerciseLanguage,
       equipment,
       muscle_group: muscleGroup,
       main_group: mainGroup,
@@ -44,13 +46,13 @@ export default function AddExercises() {
       queryClient.refetchQueries({ queryKey: ["userExercises"], exact: true });
       Toast.show({
         type: "success",
-        text1: "Exercise saved successfully!",
+        text1: t("gym.addExerciseScreen.saveSuccess"),
       });
       setName("");
     } catch {
       Toast.show({
         type: "error",
-        text1: "Failed to save exercise. Please try again.",
+        text1: t("gym.addExerciseScreen.saveError"),
       });
     } finally {
       setIsSaving(false);
@@ -63,89 +65,107 @@ export default function AddExercises() {
         <PageContainer className="justify-between flex-1">
           <View className="gap-4">
             <AppText className="text-2xl mb-5 text-center">
-              Add Exercises
+              {t("gym.addExerciseScreen.title")}
             </AppText>
             <AppInput
               value={name}
               setValue={setName}
-              placeholder="Exercise name"
-              label="Exercise Name"
+              placeholder={t("gym.addExerciseScreen.exerciseNamePlaceholder")}
+              label={t("gym.addExerciseScreen.exerciseName")}
             />
             <SelectInput
-              topLabel="Language"
-              value={language}
-              onChange={setLanguage}
+              topLabel={t("gym.addExerciseScreen.language")}
+              value={exerciseLanguage}
+              onChange={setExerciseLanguage}
               options={[
-                { value: "en", label: "English" },
-                { value: "fi", label: "Finland" },
+                { value: "en", label: t("menu:settings.languages.en") },
+                { value: "fi", label: t("menu:settings.languages.fi") },
               ]}
-              label="Language"
+              label={t("gym.addExerciseScreen.language")}
             />
             <SelectInput
-              topLabel="Equipment"
+              topLabel={t("gym.addExerciseScreen.equipment")}
               value={equipment}
               onChange={setEquipment}
               options={[
-                { value: "barbell", label: "Barbell" },
-                { value: "dumbbell", label: "Dumbbell" },
-                { value: "machine", label: "Machine" },
-                { value: "smith", label: "Smith" },
-                { value: "cable", label: "Cable" },
-                { value: "rope", label: "Rope" },
-                { value: "bodyweight", label: "Bodyweight" },
-                { value: "gripper", label: "Gripper" },
-                { value: "band", label: "Band" },
-                { value: "ball", label: "Ball" },
-                { value: "wheel", label: "Wheel" },
+                { value: "barbell", label: t("gym.equipment.barbell") },
+                { value: "dumbbell", label: t("gym.equipment.dumbbell") },
+                { value: "machine", label: t("gym.equipment.machine") },
+                { value: "smith", label: t("gym.equipment.smith") },
+                { value: "cable", label: t("gym.equipment.cable") },
+                { value: "rope", label: t("gym.equipment.rope") },
+                { value: "bodyweight", label: t("gym.equipment.bodyweight") },
+                { value: "gripper", label: t("gym.equipment.gripper") },
+                { value: "band", label: t("gym.equipment.band") },
+                { value: "ball", label: t("gym.equipment.ball") },
+                { value: "wheel", label: t("gym.equipment.wheel") },
               ]}
-              label="Equipment"
+              label={t("gym.addExerciseScreen.equipment")}
             />
             <SelectInput
-              topLabel="Muscle group"
+              topLabel={t("gym.addExerciseScreen.muscleGroup")}
               value={muscleGroup}
               onChange={setMuscleGroup}
               options={[
-                { value: "chest", label: "Chest" },
-                { value: "quads", label: "Quads" },
-                { value: "hamstrings", label: "Hamstrings" },
-                { value: "biceps", label: "Biceps" },
-                { value: "triceps", label: "Triceps" },
-                { value: "lats", label: "Lats" },
-                { value: "abs", label: "Abs" },
-                { value: "calves", label: "Calves" },
-                { value: "upper_back", label: "Upper back" },
-                { value: "forearms", label: "Forearms" },
-                { value: "full_body", label: "Full body" },
-                { value: "side_delts", label: "Side delts" },
-                { value: "legs", label: "Legs" },
-                { value: "obliques", label: "Obliques" },
-                { value: "front_delts", label: "Front delts" },
-                { value: "traps", label: "Traps" },
+                { value: "chest", label: t("gym.muscleGroups.chest") },
+                { value: "quads", label: t("gym.muscleGroups.quads") },
+                {
+                  value: "hamstrings",
+                  label: t("gym.muscleGroups.hamstrings"),
+                },
+                { value: "biceps", label: t("gym.muscleGroups.biceps") },
+                { value: "triceps", label: t("gym.muscleGroups.triceps") },
+                { value: "lats", label: t("gym.muscleGroups.lats") },
+                { value: "abs", label: t("gym.muscleGroups.abs") },
+                { value: "calves", label: t("gym.muscleGroups.calves") },
+                {
+                  value: "upper_back",
+                  label: t("gym.muscleGroups.upper_back"),
+                },
+                { value: "forearms", label: t("gym.muscleGroups.forearms") },
+                { value: "full_body", label: t("gym.muscleGroups.full_body") },
+                {
+                  value: "side_delts",
+                  label: t("gym.muscleGroups.side_delts"),
+                },
+                { value: "legs", label: t("gym.muscleGroups.legs") },
+                { value: "obliques", label: t("gym.muscleGroups.obliques") },
+                {
+                  value: "front_delts",
+                  label: t("gym.muscleGroups.front_delts"),
+                },
+                { value: "traps", label: t("gym.muscleGroups.traps") },
               ]}
-              label="Muscle group"
+              label={t("gym.addExerciseScreen.muscleGroup")}
             />
             <SelectInput
-              topLabel="Main group"
+              topLabel={t("gym.addExerciseScreen.mainGroup")}
               value={mainGroup}
               onChange={setMainGroup}
               options={[
-                { value: "chest", label: "Chest" },
-                { value: "legs", label: "Legs" },
-                { value: "arms", label: "Arms" },
-                { value: "shoulders", label: "Shoulders" },
-                { value: "back", label: "Back" },
-                { value: "core", label: "Core" },
-                { value: "cardio", label: "Cardio" },
+                { value: "chest", label: t("gym.mainGroups.chest") },
+                { value: "legs", label: t("gym.mainGroups.legs") },
+                { value: "arms", label: t("gym.mainGroups.arms") },
+                { value: "shoulders", label: t("gym.mainGroups.shoulders") },
+                { value: "back", label: t("gym.mainGroups.back") },
+                { value: "core", label: t("gym.mainGroups.core") },
+                { value: "cardio", label: t("gym.mainGroups.cardio") },
               ]}
-              label="Main group"
+              label={t("gym.addExerciseScreen.mainGroup")}
             />
           </View>
           <View className="mt-10">
-            <SaveButton onPress={handleSave} label="Save Exercise" />
+            <SaveButton
+              onPress={handleSave}
+              label={t("gym.addExerciseScreen.saveExercise")}
+            />
           </View>
         </PageContainer>
       </TouchableWithoutFeedback>
-      <FullScreenLoader visible={isSaving} message="Saving exercise..." />
+      <FullScreenLoader
+        visible={isSaving}
+        message={t("gym.addExerciseScreen.savingExercise")}
+      />
     </>
   );
 }

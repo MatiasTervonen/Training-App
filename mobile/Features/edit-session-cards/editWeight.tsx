@@ -27,7 +27,7 @@ export default function EditWeight({ weight, onClose, onSave }: Props) {
   const [title, setValue] = useState(weight.title);
   const [notes, setNotes] = useState(payload.notes);
   const [weightValue, setWeightValue] = useState(
-    payload.weight != null ? payload.weight.toString() : ""
+    payload.weight != null ? payload.weight.toString() : "",
   );
   const [isSaving, setIsSaving] = useState(false);
 
@@ -43,7 +43,7 @@ export default function EditWeight({ weight, onClose, onSave }: Props) {
         updated_at: new Date().toISOString(),
       });
 
-      onSave(updatedFeedItem);
+      onSave({ ...updatedFeedItem, feed_context: weight.feed_context });
       onClose();
     } catch {
       Toast.show({

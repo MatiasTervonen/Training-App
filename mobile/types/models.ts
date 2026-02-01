@@ -71,10 +71,13 @@ export type ExercisePreview = Pick<
   | "created_at"
 >;
 
-export type activities = Pick<
-  Database["public"]["Tables"]["activities"]["Row"],
-  "id" | "name" | "category_id" | "created_at"
->;
+export type activities = Database["public"]["Tables"]["activities"]["Row"];
+export type activity_categories =
+  Database["public"]["Tables"]["activity_categories"]["Row"];
+
+export type activities_with_category = activities & {
+  activity_categories?: Pick<activity_categories, "id" | "name" | "slug"> | null;
+};
 
 export type activity_session = Database["public"]["Tables"]["sessions"]["Row"];
 

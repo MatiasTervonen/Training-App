@@ -11,8 +11,10 @@ import NumberInput from "@/components/NumberInput";
 import SubNotesInput from "@/components/SubNotesInput";
 import useSaveDraft from "@/Features/timer/hooks/useSaveDraft";
 import useSaveTimer from "@/Features/timer/hooks/useSaveTimer";
+import { useTranslation } from "react-i18next";
 
 export default function SettingsScreen() {
+  const { t } = useTranslation("timer");
   const [title, setTitle] = useState("");
   const [alarmMinutes, setAlarmMinutes] = useState("");
   const [alarmSeconds, setAlarmSeconds] = useState("");
@@ -55,36 +57,36 @@ export default function SettingsScreen() {
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <PageContainer className="justify-between">
         <View className="gap-5">
-          <AppText className="text-2xl text-center mb-5">Create Timer</AppText>
+          <AppText className="text-2xl text-center mb-5">{t("timer.createTimer")}</AppText>
           <AppInput
-            label="Title..."
+            label={t("timer.titleLabel")}
             value={title}
             setValue={setTitle}
-            placeholder="Timer Title"
+            placeholder={t("timer.titlePlaceholder")}
           />
           <SubNotesInput
-            label="Notes..."
+            label={t("timer.notesLabel")}
             value={notes}
             setValue={setNotes}
-            placeholder="Timer notes...(optional)"
+            placeholder={t("timer.notesPlaceholder")}
             className="min-h-[60px]"
           />
           <View className="flex-row gap-2 mb-4 w-full">
             <View className="flex-1">
               <NumberInput
-                label="Minutes"
+                label={t("timer.minutes")}
                 value={alarmMinutes}
                 onChangeText={setAlarmMinutes}
-                placeholder="Minutes"
+                placeholder={t("timer.minutes")}
                 keyboardType="numeric"
               />
             </View>
             <View className="flex-1">
               <NumberInput
-                label="Seconds"
+                label={t("timer.seconds")}
                 value={alarmSeconds}
                 onChangeText={setAlarmSeconds}
-                placeholder="Seconds"
+                placeholder={t("timer.seconds")}
                 keyboardType="numeric"
               />
             </View>
@@ -94,7 +96,7 @@ export default function SettingsScreen() {
           <SaveButton onPress={handleSaveTimer} />
           <DeleteButton onPress={handleReset} />
         </View>
-        <FullScreenLoader visible={isSaving} message="Saving timer..." />
+        <FullScreenLoader visible={isSaving} message={t("timer.savingTimer")} />
       </PageContainer>
     </TouchableWithoutFeedback>
   );

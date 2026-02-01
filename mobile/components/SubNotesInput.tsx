@@ -1,6 +1,7 @@
 import { TextInputProps, View, TextInput } from "react-native";
 import AppText from "@/components/AppText";
 import { LinearGradient } from "expo-linear-gradient";
+import { useTranslation } from "react-i18next";
 
 type NotesInputProps = TextInputProps & {
   value: string;
@@ -16,6 +17,8 @@ export default function SubNotesInput({
   className,
   ...props
 }: NotesInputProps) {
+  const { t } = useTranslation();
+
   return (
     <View>
       {label && <AppText className="text-gray-300 mb-1">{label}</AppText>}
@@ -41,9 +44,9 @@ export default function SubNotesInput({
           {...props}
         />
         {value.length >= 500 ? (
-          <p className="text-yellow-400 mt-2">
-            Reached the limit (500 chars max)
-          </p>
+          <AppText className="text-yellow-400 mt-2">
+            {t("common.charLimitReached")}
+          </AppText>
         ) : null}
       </View>
     </View>

@@ -10,6 +10,7 @@ import { useTimerStore } from "@/lib/stores/timerStore";
 import { readRecords, initialize } from "react-native-health-connect";
 import { handleError } from "@/utils/handleError";
 import { filterTrackBeforeSaving } from "../lib/filterTrackBeforeSaving";
+import { useTranslation } from "react-i18next";
 
 async function loadTrackFromDatabase() {
   const db = await getDatabase();
@@ -79,6 +80,7 @@ export default function useSaveActivitySession({
   const router = useRouter();
   const queryClient = useQueryClient();
   const { stopGPStracking } = useStopGPStracking();
+  const { t } = useTranslation("activities");
 
   const handleSaveSession = async () => {
     // Get timer state only when saving, not on every render
@@ -88,8 +90,8 @@ export default function useSaveActivitySession({
     if (title.trim() === "") {
       Toast.show({
         type: "error",
-        text1: "Error",
-        text2: "Title is required.",
+        text1: t("common:common.error"),
+        text2: t("activities.saveSession.titleRequired"),
       });
       return;
     }
@@ -100,15 +102,15 @@ export default function useSaveActivitySession({
     if (allowGPS && meters <= 50) {
       Toast.show({
         type: "error",
-        text1: "Error",
-        text2: "You need to track at least 50 meters to save the session.",
+        text1: t("common:common.error"),
+        text2: t("activities.saveSession.minDistanceError"),
       });
       return;
     }
 
     const confirmSave = await confirmAction({
-      title: "Confirm Finish Session",
-      message: "Are you sure you want to finish this session?",
+      title: t("activities.saveSession.confirmTitle"),
+      message: t("activities.saveSession.confirmMessage"),
     });
 
     if (!confirmSave) return;
@@ -167,8 +169,8 @@ export default function useSaveActivitySession({
       console.error("Error saving activity session", error);
       Toast.show({
         type: "error",
-        text1: "Error",
-        text2: "Failed to save session. Please try again.",
+        text1: t("common:common.error"),
+        text2: t("activities.saveSession.saveError"),
       });
       setIsSaving(false);
     }

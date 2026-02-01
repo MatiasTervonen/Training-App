@@ -16,7 +16,7 @@ export async function getActivitySessions(days: number = 90) {
 
   const { data, error } = await supabase
     .from("sessions")
-    .select("id, created_at, activities(name)")
+    .select("id, created_at, activities(name, slug)")
     .eq("user_id", session.user.id)
     .gte("created_at", startDate.toISOString())
     .order("created_at", { ascending: false });
@@ -34,5 +34,6 @@ export async function getActivitySessions(days: number = 90) {
     id: row.id,
     created_at: row.created_at,
     activity_name: row.activities?.name ?? null,
+    activity_slug: row.activities?.slug ?? null,
   }));
 }

@@ -6,6 +6,7 @@ import { saveSession } from "@/database/gym/save-session";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import { useTimerStore } from "@/lib/stores/timerStore";
+import { useTranslation } from "react-i18next";
 
 export default function useSaveSession({
   title,
@@ -28,20 +29,21 @@ export default function useSaveSession({
 }) {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const { t } = useTranslation("gym");
 
   const handleSaveSession = async () => {
     if (title.trim() === "") {
       Toast.show({
         type: "error",
-        text1: "Error",
-        text2: "Title is required.",
+        text1: t("common:common.error"),
+        text2: t("gym.saveSession.titleRequired"),
       });
       return;
     }
 
     const confirmSave = await confirmAction({
-      title: "Confirm Finish Session",
-      message: "Are you sure you want to finish this session?",
+      title: t("gym.saveSession.confirmTitle"),
+      message: t("gym.saveSession.confirmMessage"),
     });
 
     if (!confirmSave) return;
@@ -115,8 +117,8 @@ export default function useSaveSession({
     } catch {
       Toast.show({
         type: "error",
-        text1: "Error",
-        text2: "Failed to save session. Please try again.",
+        text1: t("common:common.error"),
+        text2: t("gym.saveSession.saveError"),
       });
       setIsSaving(false);
     }

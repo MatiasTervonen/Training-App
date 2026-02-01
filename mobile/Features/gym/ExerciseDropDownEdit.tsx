@@ -11,6 +11,7 @@ import { useQuery } from "@tanstack/react-query";
 import AppInput from "@/components/AppInput";
 import AppText from "@/components/AppText";
 import AnimatedButton from "@/components/buttons/animatedButton";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   onSelect: (exercise: userExercise) => void;
@@ -29,6 +30,7 @@ type userExercise = {
 export default function ExerciseDropdownEdit({
   onSelect
 }: Props) {
+  const { t } = useTranslation("gym");
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredExercises, setFilteredExercises] = useState<userExercise[]>(
     []
@@ -79,7 +81,7 @@ export default function ExerciseDropdownEdit({
         <View className="mt-10 w-full px-14">
           <AppInput
             value={searchQuery}
-            placeholder="Search exercises..."
+            placeholder={t("gym.exerciseDropdown.searchPlaceholder")}
             autoComplete="off"
             setValue={handleSearchChange}
             spellCheck={false}
@@ -92,21 +94,21 @@ export default function ExerciseDropdownEdit({
         >
           {isError ? (
             <AppText className="text-red-500 text-xl mt-20 text-center">
-              Failed to load exercises. Try again!
+              {t("gym.exerciseDropdown.loadError")}
             </AppText>
           ) : isLoading ? (
             <View className="items-center justify-center gap-3 mt-20">
-              <AppText className=" text-xl">Loading exercises...</AppText>
+              <AppText className=" text-xl">{t("gym.exerciseDropdown.loadingExercises")}</AppText>
               <ActivityIndicator />
             </View>
           ) : exercises?.length === 0 ? (
             <View className="items-center self-center gap-3 text-lg px-5 mt-20">
-              <AppText>No exercises found.</AppText>
-              <AppText>Get started by adding a new exercise!</AppText>
+              <AppText>{t("gym.exerciseDropdown.noExercisesFound")}</AppText>
+              <AppText>{t("gym.exerciseDropdownEdit.addNewExercise")}</AppText>
             </View>
           ) : searchQuery.length > 0 && filteredExercises?.length === 0 ? (
             <View className="items-center self-center gap-3 text-lg px-5 mt-20">
-              <AppText>No matching exercises found.</AppText>
+              <AppText>{t("gym.exerciseDropdownEdit.noMatching")}</AppText>
             </View>
           ) : (
             <FlatList
@@ -114,7 +116,7 @@ export default function ExerciseDropdownEdit({
               keyExtractor={(item) => item.id}
               ListHeaderComponent={
                 <AppText className="text-center text-lg bg-blue-600 rounded-t-md">
-                  My Exercises
+                  {t("gym.exerciseDropdownEdit.myExercises")}
                 </AppText>
               }
               renderItem={({ item }) => {
@@ -133,11 +135,11 @@ export default function ExerciseDropdownEdit({
                           {item.name}
                         </AppText>
                         <AppText className="text-md text-gray-300 shrink-0">
-                          {item.muscle_group}
+                          {t(`gym.muscleGroups.${item.muscle_group}`)}
                         </AppText>
                       </View>
                       <AppText className="text-md text-gray-400">
-                        {item.equipment}
+                        {t(`gym.equipment.${item.equipment}`)}
                       </AppText>
                     </View>
                   </AnimatedButton>

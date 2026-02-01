@@ -7,12 +7,14 @@ import { useUserStore } from "@/lib/stores/useUserStore";
 import NotificationBell from "@/Features/navbar/notificationBell";
 import { LinearGradient } from "expo-linear-gradient";
 import ActiveSessionPopup from "@/components/ActiveSessionPopup";
+import { useTranslation } from "react-i18next";
 
 export default function Navbar() {
+  const { t } = useTranslation();
   const pathname = usePathname();
 
   const profilePictureRaw = useUserStore(
-    (state) => state.profile?.profile_picture || null
+    (state) => state.profile?.profile_picture || null,
   );
 
   if (pathname === "/login" || pathname === "/") return null; // Don't render the navbar on the login page
@@ -62,7 +64,7 @@ export default function Navbar() {
                   : "p-3 w-1/3 items-center"
               }
             >
-              <AppText className="pr-[1px]">Menu</AppText>
+              <AppText className="pr-[1px]">{t("navbar.menu")}</AppText>
             </Pressable>
           </Link>
 
@@ -74,7 +76,7 @@ export default function Navbar() {
                   : "p-3 w-1/3 items-center"
               }
             >
-              <AppText className="pr-[1px]">Feed</AppText>
+              <AppText className="pr-[1px]">{t("navbar.feed")}</AppText>
             </Pressable>
           </Link>
           <Link href="/sessions" asChild>
@@ -85,7 +87,7 @@ export default function Navbar() {
                   : "p-3 w-1/3 items-center"
               }
             >
-              <AppText className="pr-[1px]">Sessions</AppText>
+              <AppText className="pr-[1px]">{t("navbar.sessions")}</AppText>
             </Pressable>
           </Link>
         </View>

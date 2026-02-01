@@ -10,7 +10,9 @@ function handleRegistrationError(errorMessage: string) {
   throw new Error(errorMessage);
 }
 
-export async function registerForPushNotificationsAsync() {
+export async function registerForPushNotificationsAsync(
+  t: (key: string) => string,
+) {
   const { status: existingStatus } = await Notifications.getPermissionsAsync();
   let finalStatus = existingStatus;
 
@@ -21,12 +23,22 @@ export async function registerForPushNotificationsAsync() {
 
   if (finalStatus !== "granted") {
     Alert.alert(
-      "Notifications Disabled",
-      "Enable notifications from your device settings to receive updates.",
+      t("settings.pushNotifications.notifications_disabled_title"),
+      t("settings.pushNotifications.notifications_disabled_message"),
       [
-        { text: "Cancel", style: "cancel" },
-        { text: "Open Settings", onPress: () => Linking.openSettings() },
-      ]
+        {
+          text: t(
+            "settings.pushNotifications.notifications_disabled_button_cancel",
+          ),
+          style: "cancel",
+        },
+        {
+          text: t(
+            "settings.pushNotifications.notifications_disabled_button_open_settings",
+          ),
+          onPress: () => Linking.openSettings(),
+        },
+      ],
     );
     return;
   }
@@ -64,7 +76,7 @@ export async function SaveTokenToServer(token: string, platform: string) {
       },
       {
         onConflict: "user_id,device_id",
-      }
+      },
     );
 
   if (error) {

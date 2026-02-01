@@ -1,0 +1,31 @@
+{
+  "notes": {
+    "title": "Notes",
+    "quickNotes": "Quick Notes",
+    "myNotes": "My Notes",
+    "addNotesHere": "Add your notes here",
+    "titleLabel": "Title..",
+    "titlePlaceholder": "Notes title...",
+    "notesLabel": "Notes...",
+    "notesPlaceholder": "Write your notes here...",
+    "recordings": "Recordings:",
+    "deleteRecordingTitle": "Delete Recording",
+    "deleteRecordingMessage": "Are you sure you want to delete this recording?",
+    "savingNotes": "Saving your notes...",
+    "failedToLoad": "Failed to load notes. Please try again later.",
+    "noNotes": "No notes yet. Add a note to get started!",
+    "voiceRecording": {
+      "microphoneAccessTitle": "Microphone access needed",
+      "microphoneAccessMessage": "Enable microphone access to record voice notes.",
+      "cancel": "Cancel",
+      "openSettings": "Open Settings",
+      "cancelRecordingTitle": "Cancel Recording",
+      "cancelRecordingMessage": "Are you sure you want to cancel this recording?",
+      "yes": "Yes",
+      "pauseRecording": "Pause Recording",
+      "resumeRecording": "Resume Recording",
+      "recordVoiceNote": "Record Voice Note",
+      "finish": "Finish"
+    }
+  }
+}

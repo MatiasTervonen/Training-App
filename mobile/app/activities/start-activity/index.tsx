@@ -42,8 +42,10 @@ import { useStepHydration } from "@/Features/activities/hooks/useStepHydration";
 import { updateNativeTimerLabel } from "@/native/android/NativeTimer";
 import { useTemplateRoute } from "@/Features/activities/hooks/useTemplateRoute";
 import { findWarmupStartIndex } from "@/Features/activities/lib/findWarmupStartIndex";
+import { useTranslation } from "react-i18next";
 
 export default function StartActivityScreen() {
+  const { t } = useTranslation("activities");
   const now = formatDate(new Date());
   const [activityName, setActivityName] = useState("");
   const [title, setTitle] = useState("");
@@ -246,7 +248,7 @@ export default function StartActivityScreen() {
       {!hasSessionStarted ? (
         <PageContainer>
           <AppText className="text-2xl text-center mb-5">
-            Select Activity
+            {t("activities.startActivityScreen.selectActivity")}
           </AppText>
           <ActivityDropdown
             onSelect={async (activity) => {
@@ -264,10 +266,14 @@ export default function StartActivityScreen() {
           />
           <View className="flex-row items-center my-10  justify-between px-4">
             {allowGPS ? (
-              <AppText className="text-lg">Disable Location Tracking</AppText>
+              <AppText className="text-lg">
+                {t("activities.startActivityScreen.disableLocationTracking")}
+              </AppText>
             ) : (
               <Link href="/menu/settings">
-                <AppText className="text-lg">Enable Location Tracking</AppText>
+                <AppText className="text-lg">
+                  {t("activities.startActivityScreen.enableLocationTracking")}
+                </AppText>
               </Link>
             )}
             <Toggle
@@ -285,7 +291,9 @@ export default function StartActivityScreen() {
           </View>
           {showStepToggle && (
             <View className="flex-row items-center mb-10 justify-between px-4">
-              <AppText className="text-lg">Enable Steps Tracking</AppText>
+              <AppText className="text-lg">
+                {t("activities.startActivityScreen.enableStepsTracking")}
+              </AppText>
               <Toggle
                 disabled={isRunning}
                 isOn={false}
@@ -296,7 +304,7 @@ export default function StartActivityScreen() {
             </View>
           )}
           <AnimatedButton
-            label="Start Activity"
+            label={t("activities.startActivityScreen.startButton")}
             onPress={startActivity}
             className="justify-center items-center py-2 bg-blue-800 rounded-md shadow-md border-2 border-blue-500"
             textClassName="text-gray-100 text-center"
@@ -344,16 +352,20 @@ export default function StartActivityScreen() {
                   </View>
                   <View className="w-full gap-4">
                     <AppInput
-                      label="session name"
+                      label={t("activities.startActivityScreen.sessionNameLabel")}
                       value={title}
                       setValue={setTitle}
-                      placeholder="Enter session name"
+                      placeholder={t(
+                        "activities.startActivityScreen.sessionNamePlaceholder",
+                      )}
                     />
                     <SubNotesInput
-                      label="session notes"
+                      label={t("activities.startActivityScreen.sessionNotesLabel")}
                       value={notes}
                       setValue={setNotes}
-                      placeholder="Enter session notes"
+                      placeholder={t(
+                        "activities.startActivityScreen.sessionNotesPlaceholder",
+                      )}
                       className="min-h-[60px]"
                     />
                   </View>
@@ -381,10 +393,13 @@ export default function StartActivityScreen() {
                 )}
                 <View className="gap-5 mt-10">
                   <SaveButton
-                    label="Finish Activity"
+                    label={t("activities.startActivityScreen.finishActivity")}
                     onPress={handleSaveSession}
                   />
-                  <DeleteButton label="Delete" onPress={resetSession} />
+                  <DeleteButton
+                    label={t("activities.startActivityScreen.delete")}
+                    onPress={resetSession}
+                  />
                 </View>
               </View>
             </PageContainer>
@@ -432,7 +447,10 @@ export default function StartActivityScreen() {
         }}
       />
 
-      <FullScreenLoader visible={isSaving} message="Saving session..." />
+      <FullScreenLoader
+        visible={isSaving}
+        message={t("activities.startActivityScreen.savingSession")}
+      />
     </>
   );
 }

@@ -6,6 +6,7 @@ import AppText from "@/components/AppText";
 import AppButton from "@/components/buttons/AppButton";
 import PageContainer from "@/components/PageContainer";
 import { LinearGradient } from "expo-linear-gradient";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   item: full_gym_template;
@@ -13,6 +14,7 @@ type Props = {
 };
 
 export default function GymTemplate({ item, onStartWorkout }: Props) {
+  const { t } = useTranslation("gym");
   const groupedExercises = GroupTemplateExercise(
     item.gym_template_exercises || []
   );
@@ -27,11 +29,11 @@ export default function GymTemplate({ item, onStartWorkout }: Props) {
           <View>
             <View className="mb-5 justify-center items-center">
               <AppText className="text-sm text-gray-300">
-                Created: {formatDate(item.created_at)}
+                {t("gym.templateView.created")} {formatDate(item.created_at)}
               </AppText>
               {item.updated_at && (
                 <AppText className="text-sm text-yellow-500 mt-2 text-center">
-                  Updated: {formatDate(item.updated_at)}
+                  {t("gym.templateView.updated")} {formatDate(item.updated_at)}
                 </AppText>
               )}
               <AppText className="text-xl text-center mt-5">
@@ -52,7 +54,7 @@ export default function GymTemplate({ item, onStartWorkout }: Props) {
               >
                 {group.length > 1 && (
                   <AppText className="text-lg text-gray-100 mb-2 text-center">
-                    Super-Set
+                    {t("gym.gymForm.superSet")}
                   </AppText>
                 )}
                 {group.map((exercise) => (
@@ -66,11 +68,11 @@ export default function GymTemplate({ item, onStartWorkout }: Props) {
                         {exercise.gym_exercises.name}
                       </AppText>
                       <AppText className="text-gray-300">
-                        {exercise.gym_exercises.muscle_group}
+                        {t(`gym.muscleGroups.${exercise.gym_exercises.muscle_group}`)}
                       </AppText>
                     </View>
                     <AppText className="text-gray-300 mt-2">
-                      {exercise.gym_exercises.equipment}
+                      {t(`gym.equipment.${exercise.gym_exercises.equipment}`)}
                     </AppText>
                   </View>
                 ))}
@@ -78,7 +80,7 @@ export default function GymTemplate({ item, onStartWorkout }: Props) {
             ))}
           </View>
           <View className="mt-10">
-            <AppButton onPress={onStartWorkout} label="Start Workout" />
+            <AppButton onPress={onStartWorkout} label={t("gym.templateView.startWorkout")} />
           </View>
         </View>
       </PageContainer>

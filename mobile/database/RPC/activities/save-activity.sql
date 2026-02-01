@@ -16,6 +16,7 @@ as $$
 declare
     v_activity_id uuid;
     v_activity_name text;
+    v_activity_slug text;
     v_track jsonb;
     v_position integer;
     v_distance numeric;
@@ -132,8 +133,8 @@ if p_track is not null then
   where session_id = v_activity_id;
 end if;
 
-select name
-into v_activity_name
+select name, slug
+into v_activity_name, v_activity_slug
 from activities
 where id = p_activity_id;
 
@@ -147,7 +148,7 @@ insert into feed_items (
 values (
   p_title,
   'activity_sessions',
-  jsonb_build_object('duration', p_duration, 'start_time', p_start_time, 'end_time', p_end_time, 'distance', v_distance, 'activity_name', v_activity_name),
+  jsonb_build_object('duration', p_duration, 'start_time', p_start_time, 'end_time', p_end_time, 'distance', v_distance, 'activity_name', v_activity_name, 'activity_slug', v_activity_slug),
   v_activity_id,
   p_start_time
 );

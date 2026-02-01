@@ -7,6 +7,7 @@ import {
   formatAveragePace,
 } from "@/lib/formatDate";
 import { LinearGradient } from "expo-linear-gradient";
+import { useTranslation } from "react-i18next";
 
 type SessionStatsProps = {
   activity_session: FullActivitySession;
@@ -22,7 +23,13 @@ function StatCard({ label, sublabel, value }: StatCardProps) {
   return (
     <View className="flex-1 min-w-[30%] items-center justify-between gap-1 border-blue-500 border py-3 px-2 rounded-lg bg-slate-950/50">
       <View className="flex-row items-center justify-center gap-1">
-        <AppText className="text-gray-300">{label}</AppText>
+        <AppText
+          className="text-gray-300"
+          numberOfLines={1}
+          ellipsizeMode="tail"
+        >
+          {label}
+        </AppText>
         {sublabel && (
           <AppText className="text-gray-500 text-xs">{sublabel}</AppText>
         )}
@@ -33,6 +40,7 @@ function StatCard({ label, sublabel, value }: StatCardProps) {
 }
 
 export default function SessionStats({ activity_session }: SessionStatsProps) {
+  const { t } = useTranslation("activities");
   const stats = activity_session.stats;
   const session = activity_session.session;
 
@@ -45,29 +53,38 @@ export default function SessionStats({ activity_session }: SessionStatsProps) {
     >
       <View className="flex-row gap-2 mb-2">
         <StatCard
-          label="Duration"
+          label={t("activities.sessionStats.duration")}
           value={formatDurationLong(session.duration ?? 0)}
         />
         <StatCard
-          label="Moving Time"
+          label={t("activities.sessionStats.movingTime")}
           value={formatDurationLong(stats?.moving_time_seconds ?? 0)}
         />
         <StatCard
-          label="Distance"
+          label={t("activities.sessionStats.distance")}
           value={formatMeters(stats?.distance_meters ?? 0)}
         />
       </View>
       <View className="flex-row gap-2 mb-2">
         <StatCard
-          label="Avg Pace"
-          sublabel="(moving)"
-          value={`${formatAveragePace(stats?.avg_pace ?? 0)} min/km`}
+          label={t("activities.sessionStats.avgPace")}
+          sublabel={t("activities.sessionStats.moving")}
+          value={`${formatAveragePace(stats?.avg_pace ?? 0)} ${t("activities.sessionStats.minPerKm")}`}
         />
-        <StatCard label="Avg Speed" value={`${stats?.avg_speed ?? 0} km/h`} />
+        <StatCard
+          label={t("activities.sessionStats.avgSpeed")}
+          value={`${stats?.avg_speed ?? 0} ${t("activities.sessionStats.kmPerHour")}`}
+        />
       </View>
       <View className="flex-row gap-2">
-        <StatCard label="Steps" value={String(stats?.steps ?? 0)} />
-        <StatCard label="Calories" value={String(stats?.calories ?? 0)} />
+        <StatCard
+          label={t("activities.sessionStats.steps")}
+          value={String(stats?.steps ?? 0)}
+        />
+        <StatCard
+          label={t("activities.sessionStats.calories")}
+          value={String(stats?.calories ?? 0)}
+        />
       </View>
     </LinearGradient>
   );

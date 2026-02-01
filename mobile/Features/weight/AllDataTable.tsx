@@ -9,6 +9,7 @@ import Toast from "react-native-toast-message";
 import { useQueryClient } from "@tanstack/react-query";
 import HeaderAllDataTable from "@/Features/weight/headerAllDataTable";
 import WeightRow from "@/Features/weight/RowAllDataTable";
+import { useTranslation } from "react-i18next";
 
 type AllDataProps = {
   data: weight[];
@@ -17,6 +18,7 @@ type AllDataProps = {
 };
 
 export default function AllDataTable({ data, isLoading, error }: AllDataProps) {
+  const { t } = useTranslation("weight");
   const [expanded, setExpanded] = useState<string | null>(null);
   const [range, setRange] = useState<"week" | "month" | "year">("month");
 
@@ -64,7 +66,7 @@ export default function AllDataTable({ data, isLoading, error }: AllDataProps) {
 
   const handleDelete = async (item_id: string, table: string) => {
     const confirmed = await confirmAction({
-      title: "Are you sure you want to delete this session?",
+      title: t("weight.analyticsScreen.deleteConfirm"),
     });
     if (!confirmed) return;
 
@@ -85,15 +87,15 @@ export default function AllDataTable({ data, isLoading, error }: AllDataProps) {
 
       Toast.show({
         type: "success",
-        text1: "Deleted",
-        text2: "Item has been deleted successfully.",
+        text1: t("weight.analyticsScreen.deleted"),
+        text2: t("weight.analyticsScreen.deletedMessage"),
       });
     } catch {
       queryClient.setQueryData(queryKey, previousData);
       Toast.show({
         type: "error",
-        text1: "Error",
-        text2: "Failed to delete item.",
+        text1: t("weight.analyticsScreen.deleteError"),
+        text2: t("weight.analyticsScreen.deleteErrorMessage"),
       });
     }
   };

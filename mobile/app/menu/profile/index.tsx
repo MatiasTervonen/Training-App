@@ -15,6 +15,7 @@ import { handleError } from "@/utils/handleError";
 import { supabase } from "@/lib/supabase";
 import PageContainer from "@/components/PageContainer";
 import mime from "mime";
+import { useTranslation } from "react-i18next";
 
 type UploadFile = {
   uri: string;
@@ -23,6 +24,7 @@ type UploadFile = {
 };
 
 export default function ProfileScreen() {
+  const { t } = useTranslation();
   const [isSaving, setIsSaving] = useState(false);
   const [userName, setUserName] = useState("");
   const [weightUnit, setWeightUnit] = useState("");
@@ -66,8 +68,8 @@ export default function ProfileScreen() {
     if (fileSize > 5 * 1024 * 1024) {
       Toast.show({
         type: "error",
-        text1: "Error",
-        text2: "File size exceeds 5MB limit.",
+        text1: t("common.error"),
+        text2: t("profile.profilePictureSizeError"),
       });
       return profilePicZ || null;
     }
@@ -80,8 +82,8 @@ export default function ProfileScreen() {
     ) {
       Toast.show({
         type: "error",
-        text1: "Error",
-        text2: "Invalid file format. Only JPEG, PNG, and WEBP are allowed.",
+        text1: t("common.error"),
+        text2: t("profile.profilePictureFormatError"),
       });
       return profilePicZ || null;
     }
@@ -112,7 +114,7 @@ export default function ProfileScreen() {
             Authorization: `Bearer ${session.access_token}`,
           },
           body: formData,
-        }
+        },
       );
 
       const result = await response.json();
@@ -125,8 +127,8 @@ export default function ProfileScreen() {
     } catch {
       Toast.show({
         type: "error",
-        text1: "Error",
-        text2: "Failed to upload profile picture",
+        text1: t("common.error"),
+        text2: t("menu:profile.profilePictureUploadError"),
       });
       return profilePicZ || null;
     }
@@ -147,8 +149,8 @@ export default function ProfileScreen() {
       if (isTaken) {
         return Toast.show({
           type: "error",
-          text1: "Error",
-          text2: "User name is already taken. Please choose another.",
+          text1: t("common.error"),
+          text2: t("profile.userNameTaken"),
         });
       }
 
@@ -163,13 +165,13 @@ export default function ProfileScreen() {
       setUserProfile(payload);
       Toast.show({
         type: "success",
-        text1: "Settings updated successfully!",
+        text1: t("menu:profile.updateSuccess"),
       });
     } catch {
       Toast.show({
         type: "error",
-        text1: "Error",
-        text2: "An unexpected error occurred while saving settings.",
+        text1: t("common.error"),
+        text2: t("menu:profile.updateError"),
       });
     } finally {
       setIsSaving(false);
@@ -183,7 +185,7 @@ export default function ProfileScreen() {
           <View>
             <View>
               <AppText className="text-2xl text-center mb-10">
-                Profile Settings
+                {t("menu:profile.title")}
               </AppText>
             </View>
             <AppInput
@@ -193,14 +195,13 @@ export default function ProfileScreen() {
                   value
                     .toLowerCase()
                     .replace(/[^a-z0-9_]/g, "")
-                    .slice(0, 15)
+                    .slice(0, 15),
                 );
               }}
-              label="User Name"
+              label={t("menu:profile.userName")}
             />
             <AppText className="text-sm text-gray-500 mt-2">
-              Max 15 characters. Only lowercase letters, numbers, &quot;_&quot;
-              allowed.
+              {t("menu:profile.userNameHint")}
             </AppText>
             <View className="mt-10">
               <ProfilePicture
@@ -208,13 +209,13 @@ export default function ProfileScreen() {
                 onFileSelected={setSelectedProfilePic}
               />
               <AppText className="text-sm text-gray-500 mt-2">
-                Max size 5MB. JPEG, PNG or WEBP format.
+                {t("menu:profile.profilePictureHint")}
               </AppText>
             </View>
             <View className="mt-10">
               <SelectInput
-                topLabel="Weight unit"
-                label={"Weight Unit"}
+                topLabel={t("menu:profile.weightUnit")}
+                label={t("menu:profile.weightUnit")}
                 value={weightUnit}
                 onChange={setWeightUnit}
                 options={[
@@ -230,8 +231,8 @@ export default function ProfileScreen() {
                 if (!userName.trim()) {
                   Toast.show({
                     type: "error",
-                    text1: "Error",
-                    text2: "User name cannot be empty.",
+                    text1: t("common.error"),
+                    text2: t("menu:profile.userNameEmpty"),
                   });
                   return;
                 }
@@ -242,7 +243,10 @@ export default function ProfileScreen() {
           </View>
         </PageContainer>
       </TouchableWithoutFeedback>
-      <FullScreenLoader visible={isSaving} message="Saving profile..." />
+      <FullScreenLoader
+        visible={isSaving}
+        message={t("menu:profile.savingProfile")}
+      />
     </>
   );
 }

@@ -8,6 +8,7 @@ import * as echarts from "echarts/core";
 import { BarChart } from "echarts/charts";
 import { GridComponent } from "echarts/components";
 import { SkiaRenderer, SkiaChart } from "@wuba/react-native-echarts";
+import { useTranslation } from "react-i18next";
 
 type StepsChartProps = {
   range: "week" | "month" | "3months";
@@ -85,6 +86,7 @@ export default function StepsChart({
   data,
   todaySteps,
 }: StepsChartProps) {
+  const { t } = useTranslation("activities");
   const [offset, setOffset] = useState(0);
   const [size, setSize] = useState({ width: 0, height: 0 });
   const skiaRef = useRef<any>(null);
@@ -252,15 +254,15 @@ export default function StepsChart({
   }
 
   const rangeLabels = {
-    week: "Weekly",
-    month: "Monthly",
-    "3months": "3 Months",
+    week: t("activities.analyticsScreen.weeklyTotal"),
+    month: t("activities.analyticsScreen.monthlyTotal"),
+    "3months": t("activities.analyticsScreen.threeMonthsTotal"),
   };
 
   return (
     <View className="bg-slate-900 shadow-md w-full rounded-2xl p-4">
       <AppText className="text-lg font-medium text-center mb-2">
-        Daily Steps
+        {t("activities.analyticsScreen.dailySteps")}
       </AppText>
       <View className="flex-row justify-center items-center mb-4">
         <AnimatedButton
@@ -285,14 +287,16 @@ export default function StepsChart({
       <View className="flex-row justify-around px-4 mb-4">
         <View className="items-center">
           <AppText className="text-gray-400 text-xs">
-            {rangeLabels[range]} Total
+            {rangeLabels[range]} 
           </AppText>
           <AppText className="text-xl font-bold text-green-400">
             {formatNumber(totalSteps)}
           </AppText>
         </View>
         <View className="items-center">
-          <AppText className="text-gray-400 text-xs">Daily Avg</AppText>
+          <AppText className="text-gray-400 text-xs">
+            {t("activities.analyticsScreen.dailyAvg")}
+          </AppText>
           <AppText className="text-xl font-bold text-green-400">
             {formatNumber(avgSteps)}
           </AppText>

@@ -15,8 +15,10 @@ import SaveButtonSpinner from "@/components/buttons/SaveButtonSpinner";
 import PageContainer from "@/components/PageContainer";
 import { confirmAction } from "@/lib/confirmAction";
 import { useUserStore } from "@/lib/stores/useUserStore";
+import { useTranslation } from "react-i18next";
 
 export default function SecurityPage() {
+  const { t } = useTranslation();
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -33,12 +35,12 @@ export default function SecurityPage() {
 
   const handleSavePassword = async () => {
     if (password !== confirmPassword) {
-      setErrorMessage("Passwords do not match!");
+      setErrorMessage(t("security.resetPassword.passwordsDoNotMatch"));
       return;
     }
 
     if (password.length < 8) {
-      setErrorMessage("Password must be at least 8 characters long.");
+      setErrorMessage(t("security.resetPassword.passwordTooShort"));
       return;
     }
 
@@ -56,13 +58,13 @@ export default function SecurityPage() {
           method: "POST",
         });
         setErrorMessage(
-          error.message || "Failed to update password. Please try again."
+          error.message || t("menu:security.resetPassword.updateFailed"),
         );
         setLoading(false);
         return;
       }
 
-      setSuccessMessage("Password updated successfully! Logging you out...");
+      setSuccessMessage(t("menu:security.resetPassword.updateSuccess"));
       setPassword("");
       setConfirmPassword("");
 
@@ -75,23 +77,20 @@ export default function SecurityPage() {
         route: "security settings",
         method: "POST",
       });
-      Alert.alert("Failed to update password! Please try again.");
+      Alert.alert(t("menu:security.resetPassword.updateFailed"));
       setLoading(false);
     }
   };
 
   const handleDeleteAccount = async () => {
-    if (isDeleteAccount !== "DELETE ACCOUNT") {
-      setErrorMessage2(
-        "Incorrect confirmation text. Type “DELETE ACCOUNT” to proceed."
-      );
+    if (isDeleteAccount !== t("menu:security.deleteAccount.confirmationText")) {
+      setErrorMessage2(t("menu:security.deleteAccount.incorrectConfirmation"));
       return;
     }
 
     const confirmed = await confirmAction({
-      title: "Delete Account",
-      message:
-        "This action cannot be undone. Do you really want to delete your account?",
+      title: t("menu:security.deleteAccount.confirmTitle"),
+      message: t("menu:security.deleteAccount.confirmMessage"),
     });
     if (!confirmed) return;
 
@@ -114,7 +113,7 @@ export default function SecurityPage() {
           headers: {
             authorization: `Bearer ${session.access_token}`,
           },
-        }
+        },
       );
 
       if (!res.ok) {
@@ -122,7 +121,7 @@ export default function SecurityPage() {
         throw new Error(body.error || "Failed to delete account");
       }
 
-      setSuccessMessage2("Account deleted successfully! Logging you out...");
+      setSuccessMessage2(t("security.deleteAccount.deleteSuccess"));
 
       setTimeout(() => {
         signOut();
@@ -133,7 +132,7 @@ export default function SecurityPage() {
         route: "security settings",
         method: "POST",
       });
-      Alert.alert("Failed to delete account! Please try again.");
+      Alert.alert(t("security.deleteAccount.deleteFailed"));
       setLoading2(false);
     }
   };
@@ -142,34 +141,36 @@ export default function SecurityPage() {
     <ScrollView>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <PageContainer className="items-center">
-          <AppText className="text-2xl mb-10">Security Settings</AppText>
-          <AppText className="text-xl mb-5 underline">Reset Password</AppText>
+          <AppText className="text-2xl mb-10">{t("menu:security.title")}</AppText>
+          <AppText className="text-xl mb-5 underline">
+            {t("menu:security.resetPassword.title")}
+          </AppText>
           <AppText className="text-gray-300 mb-5 text-sm">
-            After resetting your password, you will be logged out from all
-            devices for security reasons. Any unsaved local data on this device
-            may be cleared.
+            {t("menu:security.resetPassword.description")}
           </AppText>
           <View className="w-full mb-5">
             <AppInput
-              label="New Password"
+              label={t("menu:security.resetPassword.newPassword")}
               value={password}
               setValue={(value) => {
                 setPassword(value);
                 setErrorMessage("");
               }}
-              placeholder="Enter new password"
+              placeholder={t("menu:security.resetPassword.newPasswordPlaceholder")}
               secureTextEntry
             />
           </View>
           <View className="w-full mb-5">
             <AppInput
-              label="Confirm Password"
+              label={t("menu:security.resetPassword.confirmPassword")}
               value={confirmPassword}
               setValue={(value) => {
                 setConfirmPassword(value);
                 setErrorMessage("");
               }}
-              placeholder="Confirm new password"
+              placeholder={t(
+                "menu:security.resetPassword.confirmPasswordPlaceholder",
+              )}
               secureTextEntry
             />
           </View>
@@ -190,7 +191,7 @@ export default function SecurityPage() {
             <View className="w-full">
               <SaveButtonSpinner
                 onPress={handleSavePassword}
-                label="Save (not allowed)"
+                label={t("menu:security.resetPassword.saveNotAllowed")}
                 disabled={isGuest}
                 loading={loading}
                 className="bg-gray-600 border-gray-400 hover:bg-gray-500"
@@ -200,22 +201,23 @@ export default function SecurityPage() {
             <View className="w-full">
               <SaveButtonSpinner
                 onPress={handleSavePassword}
-                label={loading ? "Saving..." : "Save"}
+                label={loading ? t("common.saving") : t("common.save")}
                 disabled={loading}
                 loading={loading}
               />
             </View>
           )}
 
-          <AppText className="mt-10 underline text-xl">Delete Account</AppText>
+          <AppText className="mt-10 underline text-xl">
+            {t("menu:security.deleteAccount.title")}
+          </AppText>
           <AppText className="my-5 text-gray-300">
-            Type “DELETE ACCOUNT” to confirm. All your data will be permanently
-            removed and cannot be recovered.
+            {t("menu:security.deleteAccount.description")}
           </AppText>
           <View className="w-full mb-5">
             <AppInput
-              label="Type: DELETE ACCOUNT"
-              placeholder="Type: DELETE ACCOUNT"
+              label={t("menu:security.deleteAccount.inputLabel")}
+              placeholder={t("menu:security.deleteAccount.inputPlaceholder")}
               value={isDeleteAccount}
               setValue={(value) => {
                 setIsDeleteAccount(value);
@@ -239,7 +241,7 @@ export default function SecurityPage() {
           <View className="w-full">
             <SaveButtonSpinner
               onPress={handleDeleteAccount}
-              label={loading2 ? "Deleting..." : "Delete"}
+              label={loading2 ? t("common.deleting") : t("common.delete")}
               disabled={loading2}
               loading={loading2}
               className="bg-red-600 border-red-400"

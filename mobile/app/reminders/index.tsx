@@ -5,8 +5,10 @@ import PageContainer from "@/components/PageContainer";
 import { useEffect, useState } from "react";
 import { useUserStore } from "@/lib/stores/useUserStore";
 import { Modal, View } from "react-native";
+import { useTranslation } from "react-i18next";
 
 export default function SessionsScreen() {
+  const { t } = useTranslation("reminders");
   const [showModal, setShowModal] = useState(false);
 
   const pushEnabled = useUserStore((state) => state.settings?.push_enabled);
@@ -20,17 +22,17 @@ export default function SessionsScreen() {
   return (
     <>
       <PageContainer>
-        <AppText className="text-2xl text-center mb-10">Reminders</AppText>
+        <AppText className="text-2xl text-center mb-10">{t("reminders.title")}</AppText>
         <View className="gap-4">
-          <LinkButton label="One-Time Global" href="/reminders/global-reminder">
+          <LinkButton label={t("reminders.oneTimeGlobal")} href="/reminders/global-reminder">
             <Globe color="#f3f4f6" />
           </LinkButton>
           <View className="border border-gray-400 rounded-md" />
-          <LinkButton label="One-Time" href="/reminders/onetime-reminder" />
-          <LinkButton label="Weekly" href="/reminders/weekly-reminder" />
-          <LinkButton label="Daily" href="/reminders/daily-reminder" />
+          <LinkButton label={t("reminders.oneTime")} href="/reminders/onetime-reminder" />
+          <LinkButton label={t("reminders.weekly")} href="/reminders/weekly-reminder" />
+          <LinkButton label={t("reminders.daily")} href="/reminders/daily-reminder" />
           <View className="border border-gray-400 rounded-md" />
-          <LinkButton label="My Reminders" href="/reminders/my-reminders" />
+          <LinkButton label={t("reminders.myReminders")} href="/reminders/my-reminders" />
         </View>
       </PageContainer>
 
@@ -41,17 +43,17 @@ export default function SessionsScreen() {
               <Info size={35} color="#fbbf24" />
             </View>
             <AppText className="text-xl mb-6 text-center">
-              Push notifications disabled.
+              {t("reminders.pushDisabledTitle")}
             </AppText>
             <AppText className="text-lg mb-6 text-center">
-              Enable push notifications from settings to receive reminders.
+              {t("reminders.pushDisabledMessage")}
             </AppText>
             <View className="flex-row gap-4">
               <View className="flex-1">
-                <LinkButton href="/sessions" label="Back" />
+                <LinkButton href="/sessions" label={t("reminders.back")} />
               </View>
               <View className="flex-1">
-                <LinkButton href="/menu/settings" label="Settings" />
+                <LinkButton href="/menu/settings" label={t("reminders.settings")} />
               </View>
             </View>
           </View>

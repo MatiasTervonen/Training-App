@@ -2,7 +2,7 @@ import { FeedItemUI } from "@/types/session";
 import { useQuery } from "@tanstack/react-query";
 import { getFullGymSession } from "@/database/gym/get-full-gym-session";
 import { getFullTodoSession } from "@/database/todo/get-full-todo";
-import { FullActivitySession } from "@/types/models";
+import { FullActivitySession, full_todo_session } from "@/types/models";
 import { getFullActivitySession } from "@/database/activities/get-full-activity-session";
 import {
   getFullNotesSession,
@@ -25,12 +25,14 @@ export default function useFullSessions(
         ? editingId
         : null;
 
-  const todoId =
+  const todoItem =
     expandedItem?.type === "todo_lists"
-      ? expandedId
+      ? expandedItem
       : editingItem?.type === "todo_lists"
-        ? editingId
+        ? editingItem
         : null;
+
+  const todoId = todoItem ? getId(todoItem) : null;
 
   const activityItem =
     expandedItem?.type === "activity_sessions"
@@ -79,9 +81,12 @@ export default function useFullSessions(
     error: todoSessionError,
     isLoading: isLoadingTodoSession,
     refetch: refetchFullTodo,
-  } = useQuery<full_todo_session>({
+  } = useQuery<full_todo_session & { feed_context: "pinned" | "feed" }>({
     queryKey: ["fullTodoSession", todoId],
-    queryFn: async () => await getFullTodoSession(todoId!),
+    queryFn: async () => {
+      const data = await getFullTodoSession(todoId!);
+      return { ...data, feed_context: todoItem!.feed_context };
+    },
     enabled: !!todoId,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,

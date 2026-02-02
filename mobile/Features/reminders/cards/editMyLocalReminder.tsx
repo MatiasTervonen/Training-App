@@ -14,6 +14,7 @@ import { Checkbox } from "expo-checkbox";
 import { full_reminder } from "@/types/session";
 import useSaveReminder from "@/Features/reminders/hooks/edit-reminder/useSaveReminder";
 import useSetNotification from "@/Features/reminders/hooks/edit-reminder/useSetNotification";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   reminder: full_reminder;
@@ -26,6 +27,7 @@ export default function HandleEditLocalReminder({
   onClose,
   onSave,
 }: Props) {
+  const { t } = useTranslation("reminders");
   const [title, setValue] = useState(reminder.title);
   const [notes, setNotes] = useState(reminder.notes);
   const [isSaving, setIsSaving] = useState(false);
@@ -49,7 +51,15 @@ export default function HandleEditLocalReminder({
   const [open, setOpen] = useState(false);
   const [weekdays, setWeekdays] = useState<number[]>(reminder.weekdays || []);
 
-  const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const days = [
+    t("reminders.days.sun"),
+    t("reminders.days.mon"),
+    t("reminders.days.tue"),
+    t("reminders.days.wed"),
+    t("reminders.days.thu"),
+    t("reminders.days.fri"),
+    t("reminders.days.sat"),
+  ];
 
   const formattedNotifyAt =
     reminder.type === "one-time"
@@ -84,26 +94,26 @@ export default function HandleEditLocalReminder({
       <PageContainer className="justify-between mb-5">
         <View>
           <AppText className=" text-xl text-center mb-10 mt-5">
-            Edit your reminder
+            {t("reminders.editReminder")}
           </AppText>
           <View className="mb-5">
             <AppInput
               value={title || ""}
               onChangeText={setValue}
-              placeholder="Reminder title..."
-              label="Title..."
+              placeholder={t("reminders.titlePlaceholder")}
+              label={t("reminders.titleLabel")}
             />
           </View>
           <SubNotesInput
             value={notes || ""}
             setValue={setNotes}
             className="min-h-[60px]"
-            placeholder="Notes... (optional)"
-            label="Notes..."
+            placeholder={t("reminders.notesPlaceholder")}
+            label={t("reminders.notesLabel")}
           />
           <View>
             <AnimatedButton
-              label={notifyAt ? formattedNotifyAt : "Set Notify Time"}
+              label={notifyAt ? formattedNotifyAt : t("reminders.setNotifyTime")}
               onPress={() => setOpen(true)}
               className="bg-blue-800 py-2 rounded-md shadow-md border-2 border-blue-500 flex-row gap-2 justify-center items-center mt-10"
               textClassName="text-gray-100"
@@ -129,7 +139,7 @@ export default function HandleEditLocalReminder({
           {reminder.type === "weekly" && (
             <View className="mt-5">
               <View className="flex-row gap-6">
-                <AppText>Repeat on these days:</AppText>
+                <AppText>{t("reminders.repeatOnDays")}</AppText>
               </View>
               <View className="flex-row justify-between mt-3 px-4">
                 {days.map((day, index) => {
@@ -162,7 +172,7 @@ export default function HandleEditLocalReminder({
         <View className="pt-10">
           <SaveButton onPress={handleSave} />
         </View>
-        <FullScreenLoader visible={isSaving} message="Saving reminder..." />
+        <FullScreenLoader visible={isSaving} message={t("reminders.savingReminder")} />
       </PageContainer>
     </TouchableWithoutFeedback>
   );

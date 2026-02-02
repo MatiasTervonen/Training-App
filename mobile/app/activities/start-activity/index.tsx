@@ -22,7 +22,7 @@ import {
   useStartGPStracking,
   useStopGPStracking,
 } from "@/Features/activities/lib/location-actions";
-import { formatDate } from "@/lib/formatDate";
+import { formatDateShort } from "@/lib/formatDate";
 import { useModalPageConfig } from "@/lib/stores/modalPageConfig";
 import FullScreenMapModal from "@/Features/activities/components/fullScreenMapModal";
 import BaseMap from "@/Features/activities/components/baseMap";
@@ -45,8 +45,21 @@ import { findWarmupStartIndex } from "@/Features/activities/lib/findWarmupStartI
 import { useTranslation } from "react-i18next";
 
 export default function StartActivityScreen() {
-  const { t } = useTranslation("activities");
-  const now = formatDate(new Date());
+  const { t } = useTranslation(["activities", "timer"]);
+  const now = formatDateShort(new Date());
+
+  // Helper function to get translated activity name
+  const getActivityName = (name: string, slug?: string | null) => {
+    if (slug) {
+      const translated = t(`activities.activityNames.${slug}`, {
+        defaultValue: "",
+      });
+      if (translated && translated !== `activities.activityNames.${slug}`) {
+        return translated;
+      }
+    }
+    return name;
+  };
   const [activityName, setActivityName] = useState("");
   const [title, setTitle] = useState("");
   const [notes, setNotes] = useState("");
@@ -90,7 +103,7 @@ export default function StartActivityScreen() {
   useEffect(() => {
     if (
       activeSession &&
-      activeSession.type === "activity" &&
+      activeSession.type === activityName &&
       activeSession.label !== title
     ) {
       setActiveSession({
@@ -99,9 +112,12 @@ export default function StartActivityScreen() {
       });
     }
     if (startTimestamp && mode) {
-      updateNativeTimerLabel(startTimestamp, title, mode);
+      const statusText = mode === "countdown"
+        ? t("timer:timer.notification.timeRemaining")
+        : t("timer:timer.notification.inProgress");
+      updateNativeTimerLabel(startTimestamp, title, mode, statusText);
     }
-  }, [title, activeSession, setActiveSession, startTimestamp, mode]);
+  }, [title, activeSession, setActiveSession, startTimestamp, mode, t, activityName]);
 
   // check if steps permission is granted and show/hide the step toggle
   useEffect(() => {
@@ -140,7 +156,7 @@ export default function StartActivityScreen() {
     await stopGPStracking();
 
     // Wait briefly to ensure any pending database writes complete
-    await new Promise(resolve => setTimeout(resolve, 200));
+    await new Promise((resolve) => setTimeout(resolve, 200));
 
     await clearLocalSessionDatabase();
   };
@@ -252,8 +268,12 @@ export default function StartActivityScreen() {
           </AppText>
           <ActivityDropdown
             onSelect={async (activity) => {
-              setActivityName(activity.name);
-              setTitle(`${activity.name} - ${now}`);
+              const translatedName = getActivityName(
+                activity.name,
+                activity.slug,
+              );
+              setActivityName(translatedName);
+              setTitle(`${translatedName} - ${now}`);
 
               await AsyncStorage.mergeItem(
                 "activity_draft",
@@ -352,7 +372,9 @@ export default function StartActivityScreen() {
                   </View>
                   <View className="w-full gap-4">
                     <AppInput
-                      label={t("activities.startActivityScreen.sessionNameLabel")}
+                      label={t(
+                        "activities.startActivityScreen.sessionNameLabel",
+                      )}
                       value={title}
                       setValue={setTitle}
                       placeholder={t(
@@ -360,7 +382,9 @@ export default function StartActivityScreen() {
                       )}
                     />
                     <SubNotesInput
-                      label={t("activities.startActivityScreen.sessionNotesLabel")}
+                      label={t(
+                        "activities.startActivityScreen.sessionNotesLabel",
+                      )}
                       value={notes}
                       setValue={setNotes}
                       placeholder={t(

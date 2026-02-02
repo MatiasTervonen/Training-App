@@ -54,7 +54,7 @@ export function usePersistToDatabase() {
       // Insert points without explicit transaction to avoid locking conflicts
       for (const point of pointsToPersist) {
         await db.runAsync(
-          `INSERT OR IGNORE INTO gps_points (timestamp, latitude, longitude, altitude, accuracy, is_stationary, confidence) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+          `INSERT OR IGNORE INTO gps_points (timestamp, latitude, longitude, altitude, accuracy, is_stationary, confidence, bad_signal) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
           [
             point.timestamp,
             point.latitude,
@@ -63,6 +63,7 @@ export function usePersistToDatabase() {
             point.accuracy ?? null,
             point.isStationary ? 1 : 0,
             point.confidence ?? 0,
+            point.isBadSignal ? 1 : 0,
           ]
         );
       }

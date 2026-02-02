@@ -7,7 +7,13 @@
     "addExercise": "Lisää liike",
     "editExercise": "Muokkaa liikettä",
     "workoutAnalytics": "Treenin analytiikka",
-    "mySessions": "Omat sessiot",
+    "mySessions": {
+      "title": "Omat sessiot",
+      "loadError": "Kuntosalisessioiden lataus epäonnistui. Yritä myöhemmin uudelleen.",
+      "noSessions": "Ei kuntosalisessioita vielä. Lisää sessio aloittaaksesi!",
+      "loadingDetails": "Ladataan kuntosalisession tietoja...",
+      "loadDetailsError": "Kuntosalisession tietojen lataus epäonnistui. Yritä myöhemmin uudelleen."
+    },
     "activeSessionError": "Sinulla on jo aktiivinen sessio.",
     "activeSessionErrorSub": "Lopeta se ennen uuden aloittamista.",
     "gymForm": {
@@ -88,7 +94,8 @@
       "searchPlaceholder": "Etsi liikkeitä...",
       "loadingExercises": "Ladataan liikkeitä...",
       "loadError": "Liikkeiden lataus epäonnistui. Yritä uudelleen!",
-      "noExercisesFound": "Liikkeitä ei löytynyt."
+      "noExercisesFound": "Liikkeitä ei löytynyt.",
+      "exerciseTypeTitle": "Liikkeen tyyppi"
     },
     "exerciseDropdownEdit": {
       "myExercises": "Omat liikkeet",

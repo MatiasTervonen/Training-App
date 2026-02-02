@@ -3,6 +3,16 @@ import * as Notifications from "expo-notifications";
 import { handleError } from "@/utils/handleError";
 import { FeedItemUI, full_reminder } from "@/types/session";
 import { cancelNativeAlarm, scheduleNativeAlarm } from "@/native/android/NativeAlarm";
+import { t } from "i18next";
+
+type ReminderInput = FeedItemUI | full_reminder;
+
+function getReminderId(reminder: ReminderInput): string {
+  if ("source_id" in reminder && reminder.source_id) {
+    return reminder.source_id;
+  }
+  return reminder.id;
+}
 
 export default function useSetNotification({
   notifyAt,
@@ -14,22 +24,33 @@ export default function useSetNotification({
   mode = "normal",
 }: {
   notifyAt: Date;
-  reminder: FeedItemUI | full_reminder;
+  reminder: ReminderInput;
   title: string;
   notes: string;
   weekdays: number[];
   type: "weekly" | "daily" | "one-time";
   mode?: "alarm" | "normal";
 }) {
+  const reminderId = getReminderId(reminder);
+
   const scheduleNotifications = async () => {
     try {
       if (type === "one-time") {
         if (mode === "alarm") {
-          scheduleNativeAlarm(notifyAt.getTime(), (reminder as FeedItemUI).source_id, title, "reminder", notes || (reminder as full_reminder).notes || "");
+          scheduleNativeAlarm(
+            notifyAt.getTime(),
+            reminderId,
+            title,
+            "reminder",
+            notes || (reminder as full_reminder).notes || "",
+            t("reminders:reminders.notification.tapToOpen"),
+            t("reminders:reminders.notification.reminder"),
+            t("reminders:reminders.notification.stopAlarm")
+          );
         }
 
         if (mode === "normal") {
-          cancelNativeAlarm((reminder as FeedItemUI).source_id);
+          cancelNativeAlarm(reminderId);
         }
 
         const id = await Notifications.scheduleNotificationAsync({
@@ -39,7 +60,7 @@ export default function useSetNotification({
             sound: true,
             data: {
               reminderId:
-                (reminder as FeedItemUI).source_id
+                reminderId
             },
           },
           trigger: { type: "date", date: notifyAt } as any,
@@ -70,7 +91,7 @@ export default function useSetNotification({
             body: notes || (reminder as full_reminder).notes || "",
             sound: true,
             data: {
-              reminderId: (reminder as FeedItemUI).source_id,
+              reminderId: reminderId,
             },
           },
           trigger,
@@ -103,7 +124,7 @@ export default function useSetNotification({
                 body: notes || (reminder as full_reminder).notes || "",
                 sound: true,
                 data: {
-                  reminderId: (reminder as FeedItemUI).source_id,
+                  reminderId: reminderId,
                 },
               },
               trigger,

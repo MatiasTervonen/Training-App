@@ -32,6 +32,13 @@
       "description": "This timer requires a high-priority alarm to work.\n\nThe alarm will ring continuously, even when your phone is locked, until you dismiss it. Without this permission, timers cannot start.",
       "back": "Back",
       "allow": "Allow"
+    },
+    "notification": {
+      "timeRemaining": "Time remaining",
+      "inProgress": "In progress",
+      "tapToOpenTimer": "Tap to open timer",
+      "timesUp": "Time's up!",
+      "stopAlarm": "Stop Alarm"
     }
   }
 }

@@ -1,6 +1,7 @@
 import { Alert } from "react-native";
 import { supabase } from "@/lib/supabase";
 import { handleError } from "@/utils/handleError";
+import { t } from "i18next";
 
 // LogIn
 
@@ -22,11 +23,11 @@ export async function signInWithEmail({
   onSuccess,
 }: SignInProps) {
   if (!email || !password) {
-    Alert.alert("Please enter your email and password.");
+    Alert.alert(t("login:login.actions.enterEmailAndPassword"));
     return;
   }
 
-  setLoadingMessage("Logging in...");
+  setLoadingMessage(t("login:login.actions.loggingIn"));
   setLoading(true);
 
   const { error } = await supabase.auth.signInWithPassword({
@@ -35,8 +36,8 @@ export async function signInWithEmail({
   });
 
   if (error && error.message === "Email not confirmed") {
-    setError("Please verify your email before logging in.");
-    Alert.alert("Please verify your email before logging in.");
+    setError(t("login:login.actions.verifyEmailFirst"));
+    Alert.alert(t("login:login.actions.verifyEmailFirst"));
   } else if (error) {
     Alert.alert(error.message);
   } else {
@@ -72,21 +73,21 @@ export async function signUpWithEmail({
   setSignup,
 }: SignUpProps) {
   if (!password) {
-    Alert.alert("Please enter your password.");
+    Alert.alert(t("login:login.actions.enterPassword"));
     return;
   }
 
   if (password !== confirmPassword) {
-    Alert.alert("Passwords do not match.");
+    Alert.alert(t("login:login.actions.passwordsDoNotMatch"));
     return;
   }
 
   if (password.length < 8) {
-    Alert.alert("Password must be at least 8 characters long.");
+    Alert.alert(t("login:login.actions.passwordTooShort"));
     return;
   }
 
-  setLoadingMessage("Signing up...");
+  setLoadingMessage(t("login:login.actions.signingUp"));
   setLoading(true);
   const { data: signUpData, error: signupError } = await supabase.auth.signUp({
     email: email,
@@ -95,7 +96,7 @@ export async function signUpWithEmail({
 
   if (signupError) {
     Alert.alert(
-      signupError.message || "Something went wrong. Please try again.",
+      signupError.message || t("login:login.actions.somethingWentWrong"),
     );
     handleError(signupError, {
       message: "Error logging in as guest",
@@ -110,7 +111,7 @@ export async function signUpWithEmail({
   const userExists = (signUpData?.user?.identities?.length ?? 0) === 0;
 
   if (userExists) {
-    Alert.alert("Email already registered. Please log in.");
+    Alert.alert(t("login:login.actions.emailAlreadyRegistered"));
     setSignup({ email: "", password: "", confirmPassword: "" });
     setLoading(false);
     return;
@@ -135,20 +136,20 @@ export async function sendPasswordResetEmail({
   setLoading,
 }: PasswordResetEmailProps) {
   if (!forgotPasswordEmail) {
-    Alert.alert("Please enter your email.");
+    Alert.alert(t("login:login.actions.enterEmail"));
     return;
   }
 
-  setLoadingMessage("Sending password reset email...");
+  setLoadingMessage(t("login:login.actions.sendingPasswordReset"));
   setLoading(true);
 
   const { error } =
     await supabase.auth.resetPasswordForEmail(forgotPasswordEmail);
 
   if (error) {
-    Alert.alert(error.message || "Something went wrong. Please try again.");
+    Alert.alert(error.message || t("login:login.actions.somethingWentWrong"));
   } else {
-    Alert.alert("Password reset email sent!");
+    Alert.alert(t("login:login.actions.passwordResetSent"));
   }
 
   setLoading(false);
@@ -170,11 +171,11 @@ export async function resendEmailVerification({
   setSuccess,
 }: ResendEmailVerificationProps) {
   if (!resendEmail) {
-    Alert.alert("Please enter your email.");
+    Alert.alert(t("login:login.actions.enterEmail"));
     return;
   }
 
-  setLoadingMessage("Resending verification email...");
+  setLoadingMessage(t("login:login.actions.resendingVerification"));
   setLoading(true);
 
   const { error } = await supabase.auth.resend({
@@ -184,12 +185,12 @@ export async function resendEmailVerification({
 
   if (error)
     Alert.alert(
-      error.message || "Could not resend verification email. Try again.",
+      error.message || t("login:login.actions.couldNotResend"),
     );
 
   setLoading(false);
   setSuccess(true);
-  Alert.alert("Verification email resent. Please check your inbox.");
+  Alert.alert(t("login:login.actions.verificationResent"));
 }
 
 type GuestSignInProps = {
@@ -203,7 +204,7 @@ export async function guestLogIn({
   setLoading,
   onSuccess,
 }: GuestSignInProps) {
-  setLoadingMessage("Logging in as guest...");
+  setLoadingMessage(t("login:login.actions.loggingInAsGuest"));
   setLoading(true);
 
   const { error } = await supabase.auth.signInAnonymously();
@@ -214,7 +215,7 @@ export async function guestLogIn({
       route: "actions: guest-login",
       method: "POST",
     });
-    Alert.alert("Error logging in as guest");
+    Alert.alert(t("login:login.actions.guestLoginError"));
     setLoading(false);
     return;
   }

@@ -1,6 +1,22 @@
 {
   "reminders": {
     "title": "Muistutukset",
+    "editReminder": "Muokkaa muistutusta",
+    "highPriorityReminder": "Tärkeä muistutus",
+    "global": "Globaali",
+    "created": "Luotu:",
+    "updated": "Päivitetty:",
+    "edit": "Muokkaa",
+    "delete": "Poista",
+    "validation": {
+      "titleRequired": "Otsikko vaaditaan",
+      "notifyTimeRequired": "Ilmoitusaika vaaditaan",
+      "notifyTimeFuture": "Ilmoitusajan on oltava tulevaisuudessa."
+    },
+    "errors": {
+      "editGlobalReminder": "Virhe muokattaessa globaalia muistutusta",
+      "tryAgainLater": "Yritä myöhemmin uudelleen."
+    },
     "oneTimeGlobal": "Kertaluonteinen globaali",
     "oneTime": "Kertaluonteinen",
     "weekly": "Viikoittainen",
@@ -42,6 +58,11 @@
       "thu": "To",
       "fri": "Pe",
       "sat": "La"
+    },
+    "notification": {
+      "tapToOpen": "Avaa napauttamalla",
+      "reminder": "Muistutus",
+      "stopAlarm": "Pysäytä hälytys"
     }
   }
 }

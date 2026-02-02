@@ -17,7 +17,7 @@ import GroupGymExercises from "@/Features/gym/lib/GroupGymExercises";
 import ExerciseCard from "@/Features/gym/ExerciseCard";
 import FullScreenModal from "@/components/FullScreenModal";
 import ExerciseSelectorList from "@/Features/gym/ExerciseSelectorList";
-import { ChevronDown, Plus } from "lucide-react-native";
+import { Plus } from "lucide-react-native";
 import SelectInput from "@/components/Selectinput";
 import ExerciseHistoryModal from "@/Features/gym/ExerciseHistoryModal";
 import SaveButton from "@/components/buttons/SaveButton";
@@ -36,6 +36,7 @@ import useSaveSession from "@/Features/gym/hooks/useSaveSession";
 import { getPrefetchedHistoryPerCard } from "@/database/gym/prefetchedHistoryPerCard";
 import { updateNativeTimerLabel } from "@/native/android/NativeTimer";
 import { useTranslation } from "react-i18next";
+import { formatDateShort } from "@/lib/formatDate";
 
 type GymFormData = Pick<
   FullGymSession,
@@ -44,9 +45,12 @@ type GymFormData = Pick<
 
 export default function GymForm({ initialData }: { initialData: GymFormData }) {
   const session = initialData;
+  const now = formatDateShort(new Date());
 
-  const { t } = useTranslation("gym");
-  const [title, setTitle] = useState(session.title ?? "");
+  const { t } = useTranslation(["gym", "timer"]);
+  const [title, setTitle] = useState(
+    session.title || `${t("gym.title")} - ${now}`,
+  );
   const [exercises, setExercises] = useState<ExerciseEntry[]>(
     (session.gym_session_exercises || []).map((ex) => ({
       exercise_id: ex.exercise_id,
@@ -156,13 +160,13 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
 
   const handleStartSession = useCallback(() => {
     setActiveSession({
-      type: "gym",
+      type: t("gym:gym.title"),
       label: title,
       path: "/gym/gym",
     });
 
     startSession(title);
-  }, [title, setActiveSession, startSession]);
+  }, [title, setActiveSession, startSession, t]);
 
   useEffect(() => {
     const checkTemplateFlag = async () => {
@@ -227,7 +231,7 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
   useEffect(() => {
     if (
       activeSession &&
-      activeSession.type === "gym" &&
+      activeSession.type === t("gym:gym.title") &&
       activeSession.label !== title
     ) {
       setActiveSession({
@@ -238,9 +242,12 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
 
     // Update native timer notification with new title
     if (startTimestamp && mode) {
-      updateNativeTimerLabel(startTimestamp, title, mode);
+      const statusText = mode === "countdown"
+        ? t("timer:timer.notification.timeRemaining")
+        : t("timer:timer.notification.inProgress");
+      updateNativeTimerLabel(startTimestamp, title, mode, statusText);
     }
-  }, [title, activeSession, setActiveSession, startTimestamp, mode]);
+  }, [title, activeSession, setActiveSession, startTimestamp, mode, t]);
 
   const groupedExercises = GroupGymExercises(exercises);
 
@@ -255,7 +262,7 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
             manualSession={{
               label: title,
               path: "/gym/gym",
-              type: "gym",
+              type: t("gym.title"),
             }}
           />
         </View>
@@ -421,8 +428,9 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
                 />
               </View>
               <View className="flex-row gap-3 px-2 mt-5 mb-10 z-50">
-                <View className="relative flex-1">
+                <View className="flex-1">
                   <SelectInput
+                    label={t("gym.exerciseDropdown.exerciseTypeTitle")}
                     value={exerciseType}
                     onChange={(value) => {
                       const type = value;
@@ -444,9 +452,6 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
                       },
                     ]}
                   />
-                  <View className="absolute top-1/2 bottom-1/2 right-4 flex-row  items-center">
-                    <ChevronDown className="text-gray-100" color="#f3f4f6" />
-                  </View>
                 </View>
                 <View className="flex-1">
                   <AnimatedButton

@@ -28,6 +28,35 @@
     "noTodoLists": "No todo lists yet. Add a todo list to get started!",
     "loadingDetails": "Loading todo list details...",
     "loadingTodoList": "Loading todo list...",
-    "failedToLoadDetails": "Failed to load todo list details. Please try again later."
+    "failedToLoadDetails": "Failed to load todo list details. Please try again later.",
+    "session": {
+      "unsavedChanges": "unsaved changes",
+      "created": "created:",
+      "updated": "updated:",
+      "sortTasks": "Sort tasks",
+      "originalOrder": "Original Order",
+      "completedStatus": "Completed Status",
+      "save": "Save",
+      "saveChanges": "Save Changes",
+      "savingChanges": "Saving changes...",
+      "saveSuccess": "Changes saved successfully",
+      "saveError": "Failed to save changes"
+    },
+    "editScreen": {
+      "title": "Edit your todo list",
+      "titleLabel": "Title...",
+      "titlePlaceholder": "Todo title...",
+      "taskLabel": "Task...",
+      "taskPlaceholder": "Todo title...",
+      "notesLabel": "Notes...",
+      "notesPlaceholder": "Todo notes (optional)",
+      "delete": "Delete",
+      "addTask": "Add Task",
+      "emptyTasksError": "You have empty tasks.",
+      "emptyTasksErrorSub": "Fill or delete all empty tasks before saving.",
+      "updateSuccess": "Session updated successfully",
+      "updateError": "Failed to update session",
+      "savingTodoList": "Saving todo list..."
+    }
   }
 }

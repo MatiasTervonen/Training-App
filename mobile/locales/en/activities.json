@@ -13,7 +13,14 @@
     "addActivity": "Add Activity",
     "editActivity": "Edit Activity",
     "analytics": "Analytics",
-    "mySessions": "My Sessions",
+    "mySessions": {
+      "title": "My Sessions",
+      "loadError": "Failed to load activity sessions. Please try again later.",
+      "noSessions": "No activity sessions yet. Add a session to get started!",
+      "loadingDetails": "Loading activity session details...",
+      "loadingSession": "Loading activity session...",
+      "loadDetailsError": "Failed to load activity session details. Please try again later."
+    },
     "activeSessionError": "You already have an active session.",
     "activeSessionErrorSub": "Finish it before starting a new one.",
     "activityDropdownEdit": {

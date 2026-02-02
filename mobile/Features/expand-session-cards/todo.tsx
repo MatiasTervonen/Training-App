@@ -24,6 +24,7 @@ import DraggableFlatList, {
 import PageContainer from "../../components/PageContainer";
 import CopyText from "../../components/CopyToClipboard";
 import { FeedItemUI } from "@/types/session";
+import { useTranslation } from "react-i18next";
 
 type TodoSessionProps = {
   initialTodo: full_todo_session;
@@ -31,6 +32,7 @@ type TodoSessionProps = {
 };
 
 export default function TodoSession({ initialTodo, onSave }: TodoSessionProps) {
+  const { t } = useTranslation("todo");
   const [open, setOpen] = useState<number | null>(null);
   const [sessionData, setSessionData] = useState(initialTodo);
   const [isSaving, setIsSaving] = useState(false);
@@ -94,10 +96,10 @@ export default function TodoSession({ initialTodo, onSave }: TodoSessionProps) {
       onSave(updatedFeedItem as FeedItemUI);
       Toast.show({
         type: "success",
-        text1: "Changes saved successfully",
+        text1: t("todo.session.saveSuccess"),
       });
     } catch {
-      Toast.show({ type: "error", text1: "Failed to save changes" });
+      Toast.show({ type: "error", text1: t("todo.session.saveError") });
     } finally {
       setIsSaving(false);
     }
@@ -149,7 +151,7 @@ export default function TodoSession({ initialTodo, onSave }: TodoSessionProps) {
       {hasChanges && (
         <View className="bg-slate-900 absolute top-5 left-5 z-50  py-1 px-4 flex-row items-center rounded-lg">
           <AppText className="text-sm text-yellow-500">
-            {hasChanges ? "unsaved changes" : ""}
+            {hasChanges ? t("todo.session.unsavedChanges") : ""}
           </AppText>
           <View className="animate-pulse">
             <Dot color="#eab308" />
@@ -162,11 +164,11 @@ export default function TodoSession({ initialTodo, onSave }: TodoSessionProps) {
           <View className="items-center">
             <View className="mb-10 gap-2">
               <AppText className="text-sm text-gray-300">
-                created: {formatDate(sessionData.created_at)}
+                {t("todo.session.created")} {formatDate(sessionData.created_at)}
               </AppText>
               {sessionData.updated_at && (
                 <AppText className="text-sm text-yellow-500">
-                  updated: {formatDate(sessionData.updated_at)}
+                  {t("todo.session.updated")} {formatDate(sessionData.updated_at)}
                 </AppText>
               )}
             </View>
@@ -180,12 +182,12 @@ export default function TodoSession({ initialTodo, onSave }: TodoSessionProps) {
                   {sessionData.title}
                 </AppText>
                 <DropDownModal
-                  label="Sort tasks"
+                  label={t("todo.session.sortTasks")}
                   value={sortField}
                   onChange={handleSortChange}
                   options={[
-                    { value: "original", label: "Original Order" },
-                    { value: "completed", label: "Completed Status" },
+                    { value: "original", label: t("todo.session.originalOrder") },
+                    { value: "completed", label: t("todo.session.completedStatus") },
                   ]}
                   icon={<ArrowDownUp size={24} color="#9ca3af" />}
                 />
@@ -259,11 +261,11 @@ export default function TodoSession({ initialTodo, onSave }: TodoSessionProps) {
                               >
                                 <PageContainer className="mb-10">
                                   <AppText className="text-sm text-gray-300 text-center">
-                                    created: {formatDate(task.created_at!)}
+                                    {t("todo.session.created")} {formatDate(task.created_at!)}
                                   </AppText>
                                   {task.updated_at && (
                                     <AppText className="text-sm text-yellow-500 mt-2 text-center">
-                                      updated: {formatDate(task.updated_at)}
+                                      {t("todo.session.updated")} {formatDate(task.updated_at)}
                                     </AppText>
                                   )}
                                   <View className="items-center bg-slate-900 pt-5 pb-10 px-5 rounded-md shadow-md mt-5">
@@ -271,7 +273,7 @@ export default function TodoSession({ initialTodo, onSave }: TodoSessionProps) {
                                       {task.task}
                                     </AppText>
                                     <AppText className="text-left text-lg">
-                                      {task.notes || "No notes available"}
+                                      {task.notes || t("todo.noNotesAvailable")}
                                     </AppText>
                                   </View>
                                   <View className="mt-10">
@@ -315,10 +317,10 @@ export default function TodoSession({ initialTodo, onSave }: TodoSessionProps) {
             <SaveButton
               onPress={saveChanges}
               disabled={!hasChanges}
-              label={!hasChanges ? "Save" : "Save Changes"}
+              label={!hasChanges ? t("todo.session.save") : t("todo.session.saveChanges")}
             />
           </View>
-          <FullScreenLoader visible={isSaving} message="Saving changes..." />
+          <FullScreenLoader visible={isSaving} message={t("todo.session.savingChanges")} />
         </View>
       </ScrollView>
     </View>

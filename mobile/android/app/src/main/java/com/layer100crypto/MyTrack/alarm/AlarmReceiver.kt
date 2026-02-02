@@ -16,6 +16,9 @@ class AlarmReceiver : BroadcastReceiver() {
         val title = intent.getStringExtra("TITLE") ?: "Alarm"
         val soundType = intent.getStringExtra("SOUND_TYPE") ?: "default"
         val content = intent.getStringExtra("CONTENT") ?: ""
+        val tapToOpenText = intent.getStringExtra("TAP_TO_OPEN_TEXT") ?: "Tap to open timer"
+        val timesUpText = intent.getStringExtra("TIMES_UP_TEXT") ?: "Time's up!"
+        val stopAlarmText = intent.getStringExtra("STOP_ALARM_TEXT") ?: "Stop Alarm"
 
         val isAppInForeground = AppForegroundState.isForeground()
 
@@ -33,6 +36,9 @@ class AlarmReceiver : BroadcastReceiver() {
                 putExtra("TITLE", title)
                 putExtra("SOUND_TYPE", soundType)
                 putExtra("CONTENT", content)
+                putExtra("TAP_TO_OPEN_TEXT", tapToOpenText)
+                putExtra("TIMES_UP_TEXT", timesUpText)
+                putExtra("STOP_ALARM_TEXT", stopAlarmText)
             }
             ContextCompat.startForegroundService(context, serviceIntent)
         }
@@ -46,6 +52,9 @@ class AlarmReceiver : BroadcastReceiver() {
                 putExtra("TITLE", title)
                 putExtra("SOUND_TYPE", soundType)
                 putExtra("CONTENT", content)
+                putExtra("TAP_TO_OPEN_TEXT", tapToOpenText)
+                putExtra("TIMES_UP_TEXT", timesUpText)
+                putExtra("STOP_ALARM_TEXT", stopAlarmText)
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK
             }
             context.startActivity(alarmActivityIntent)

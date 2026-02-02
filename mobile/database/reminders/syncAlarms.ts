@@ -7,6 +7,7 @@ import {
   scheduleRepeatingNativeAlarm,
 } from "@/native/android/NativeAlarm";
 import { getDeviceId } from "@/utils/deviceId";
+import { t } from "i18next";
 
 export async function syncAlarms() {
   // Only sync alarms on Android
@@ -151,7 +152,10 @@ export async function syncAlarms() {
             reminder.id,
             reminder.title,
             "reminder",
-            reminder.notes || ""
+            reminder.notes || "",
+            t("reminders:reminders.notification.tapToOpen"),
+            t("reminders:reminders.notification.reminder"),
+            t("reminders:reminders.notification.stopAlarm")
           );
           return;
         }
@@ -174,7 +178,10 @@ export async function syncAlarms() {
         reminder.id,
         reminder.title,
         "reminder",
-        reminder.notes || ""
+        reminder.notes || "",
+        t("reminders:reminders.notification.tapToOpen"),
+        t("reminders:reminders.notification.reminder"),
+        t("reminders:reminders.notification.stopAlarm")
       );
     })
   );

@@ -18,6 +18,7 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import { confirmAction } from "@/lib/confirmAction";
+import { useTranslation } from "react-i18next";
 
 type TimerProps = {
   className?: string;
@@ -30,6 +31,7 @@ export default function Timer({
   textClassName = "",
   onStopAlarmSound,
 }: TimerProps) {
+  const { t } = useTranslation("timer");
   const { width, height } = useWindowDimensions();
 
   const isLandscape = width > height;
@@ -210,12 +212,16 @@ export default function Timer({
                 scheduleNativeAlarm(
                   Date.now() + totalDuration * 1000,
                   "timer",
-                  "Timer",
-                  "timer"
+                  t("timer.title"),
+                  "timer",
+                  "",
+                  t("timer.notification.tapToOpenTimer"),
+                  t("timer.notification.timesUp"),
+                  t("timer.notification.stopAlarm")
                 );
                 startTimer(totalDuration, "Timer");
                 setActiveSession({
-                  type: "timer",
+                  type: t("timer.title"),
                   label: "Timer",
                   path: "/timer/empty-timer",
                 });

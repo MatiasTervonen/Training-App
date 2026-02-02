@@ -2,7 +2,7 @@ import { TrackPoint } from "@/types/session";
 
 export function findWarmupStartIndex(
   track: TrackPoint[],
-  accuracyThreshold = 20,
+  accuracyThreshold = 25,
   requiredGoodFixes = 5,
 ): number | null {
   let goodFixCount = 0;

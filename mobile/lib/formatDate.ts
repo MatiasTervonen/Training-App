@@ -9,8 +9,10 @@ const getLocale = () => {
 export const formatDate = (dateString: string | Date) => {
   const date = new Date(dateString);
   return new Intl.DateTimeFormat(getLocale(), {
-    month: "long",
+    month: "short",
     day: "numeric",
+    hour: "numeric",
+    minute: "numeric",
   }).format(date);
 };
 
@@ -101,7 +103,6 @@ export const formatAveragePace = (paceSeconds: number) => {
   const seconds = Math.floor(paceSeconds % 60);
   return `${minutes}:${seconds.toString().padStart(2, "0")}`;
 };
-
 
 export function formatDurationNotesVoice(ms?: number) {
   if (!ms) return "0:00";

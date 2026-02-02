@@ -7,6 +7,7 @@ import { FeedItemUI } from "@/types/session";
 import { FullNotesSession } from "@/database/notes/get-full-notes";
 import { DraftRecordingItem } from "../components/draftRecording";
 import { NotesVoiceSkeleton } from "@/components/skeletetons";
+import { useTranslation } from "react-i18next";
 
 type notesPayload = {
   notes: string;
@@ -26,6 +27,7 @@ export default function NotesSession({
   isLoadingVoice,
   error,
 }: NotesSessionProps) {
+  const { t } = useTranslation("notes");
   const payload = note.extra_fields as notesPayload;
   const voiceCount = payload["voice-count"] ?? 0;
 
@@ -33,11 +35,11 @@ export default function NotesSession({
     <ScrollView>
       <PageContainer className="mb-10">
         <AppText className="text-sm text-gray-300 text-center">
-          created: {formatDate(note.created_at!)}
+          {t("notes.expandedView.created")} {formatDate(note.created_at!)}
         </AppText>
         {note.updated_at && (
           <AppText className="text-sm text-yellow-500 mt-2 text-center">
-            updated: {formatDate(note.updated_at)}
+            {t("notes.expandedView.updated")} {formatDate(note.updated_at)}
           </AppText>
         )}
         <View className="bg-slate-900 px-5 pt-5 pb-10 rounded-md shadow-md mt-5">
@@ -52,7 +54,7 @@ export default function NotesSession({
                 <NotesVoiceSkeleton count={voiceCount} />
               ) : error ? (
                 <AppText className="text-center text-red-500 mt-10">
-                  Failed to load voice recordings.
+                  {t("notes.expandedView.voiceLoadError")}
                 </AppText>
               ) : (
                 voiceRecordings?.voiceRecordings.map((recording) => (

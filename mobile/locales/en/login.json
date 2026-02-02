@@ -1,5 +1,24 @@
 {
   "login": {
+    "actions": {
+      "enterEmailAndPassword": "Please enter your email and password.",
+      "loggingIn": "Logging in...",
+      "verifyEmailFirst": "Please verify your email before logging in.",
+      "enterPassword": "Please enter your password.",
+      "passwordsDoNotMatch": "Passwords do not match.",
+      "passwordTooShort": "Password must be at least 8 characters long.",
+      "signingUp": "Signing up...",
+      "somethingWentWrong": "Something went wrong. Please try again.",
+      "emailAlreadyRegistered": "Email already registered. Please log in.",
+      "enterEmail": "Please enter your email.",
+      "sendingPasswordReset": "Sending password reset email...",
+      "passwordResetSent": "Password reset email sent!",
+      "resendingVerification": "Resending verification email...",
+      "couldNotResend": "Could not resend verification email. Try again.",
+      "verificationResent": "Verification email resent. Please check your inbox.",
+      "loggingInAsGuest": "Logging in as guest...",
+      "guestLoginError": "Error logging in as guest"
+    },
     "back": "Back",
     "email": "Email",
     "emailPlaceholder": "Enter email...",
@@ -22,7 +41,8 @@
     "resendEmail": {
       "title": "Resend Verification Email",
       "description": "Enter your email and we'll send you a link to verify your email.",
-      "resendButton": "Resend Verification Email"
+      "resendButton": "Resend Verification Email",
+      "didntGetEmail": "Didn't get an email?"
     },
     "signUpSuccess": {
       "title": "Thank you for signing up!",

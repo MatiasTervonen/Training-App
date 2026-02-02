@@ -20,8 +20,8 @@ class AlarmModule(private val reactContext: ReactApplicationContext)
     override fun getName() = "NativeAlarm"
 
     @ReactMethod
-    fun scheduleAlarm(timestamp: Double, reminderId: String, title: String, soundType: String, content: String) {
-        AlarmScheduler(reactContext).schedule(timestamp.toLong(), reminderId, title, soundType, content)
+    fun scheduleAlarm(timestamp: Double, reminderId: String, title: String, soundType: String, content: String, tapToOpenText: String, timesUpText: String, stopAlarmText: String) {
+        AlarmScheduler(reactContext).schedule(timestamp.toLong(), reminderId, title, soundType, content, tapToOpenText, timesUpText, stopAlarmText)
     }
 
     @ReactMethod

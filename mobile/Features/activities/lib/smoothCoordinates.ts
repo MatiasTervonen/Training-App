@@ -34,7 +34,7 @@ function chaikinIteration(coords: Coordinate[]): Coordinate[] {
       0.25 * p0[1] + 0.75 * p1[1],
     ];
 
-    result.push(q, r);
+    result.push(q, r);  
   }
 
   result.push(coords[coords.length - 1]);
@@ -173,21 +173,22 @@ export function processLiveTrack(
   } = options;
 
   if (track.length < 2) {
-    if (track.length === 1 && !track[0].isStationary) {
+    if (track.length === 1 && !track[0].isStationary && !track[0].isBadSignal) {
       return [[[track[0].longitude, track[0].latitude]]];
     }
     return [];
   }
 
-  // Split by time gaps BEFORE filtering stationary points
+  // Split by time gaps BEFORE filtering stationary/bad signal points
   // This ensures stopping for a while doesn't create false gaps
   const trackSegments = splitTrackByTimeGaps(track, timeGapMs);
 
-  // Process each segment: filter stationary, then smooth
+  // Process each segment: filter stationary and bad signal, then smooth
   return trackSegments
     .map((segment) => {
-      // Filter out stationary points within each segment
-      const movingPoints = segment.filter((p) => !p.isStationary);
+      // Filter out stationary and bad signal points within each segment
+      // Only draw points where GPS was reliable and user was moving
+      const movingPoints = segment.filter((p) => !p.isStationary && !p.isBadSignal);
 
       if (movingPoints.length === 0) return [];
 

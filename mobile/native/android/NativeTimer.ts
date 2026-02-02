@@ -5,20 +5,22 @@ const nativeTimer = NativeModules.NativeTimer;
 export function startNativeTimer(
   startTime: number,
   label: string,
-  mode: string
+  mode: string,
+  statusText?: string
 ) {
   if (Platform.OS === "android" && nativeTimer) {
-    nativeTimer.startTimer(startTime, label, mode);
+    nativeTimer.startTimer(startTime, label, mode, statusText || "");
   }
 }
 
 export function updateNativeTimerLabel(
   startTime: number,
   label: string,
-  mode: string
+  mode: string,
+  statusText?: string
 ) {
   if (Platform.OS === "android" && nativeTimer) {
-    nativeTimer.updateTimerLabel(startTime, label, mode);
+    nativeTimer.updateTimerLabel(startTime, label, mode, statusText || "");
   }
 }
 

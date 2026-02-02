@@ -7,10 +7,22 @@ export function scheduleNativeAlarm(
   reminderId: string,
   title: string,
   soundType: string,
-  content?: string
+  content?: string,
+  tapToOpenText?: string,
+  timesUpText?: string,
+  stopAlarmText?: string
 ) {
   if (Platform.OS === "android" && nativeAlarm) {
-    nativeAlarm.scheduleAlarm(timestamp, reminderId, title, soundType, content || "");
+    nativeAlarm.scheduleAlarm(
+      timestamp,
+      reminderId,
+      title,
+      soundType,
+      content || "",
+      tapToOpenText || "Tap to open timer",
+      timesUpText || "Time's up!",
+      stopAlarmText || "Stop Alarm"
+    );
   }
 }
 

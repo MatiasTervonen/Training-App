@@ -3,6 +3,7 @@ import { View, Dimensions } from "react-native";
 import { SquareArrowLeft, SquareArrowRight } from "lucide-react-native";
 import { ReactNode, useState, useEffect } from "react";
 import { useRouter } from "expo-router";
+import { useTranslation } from "react-i18next";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -28,11 +29,15 @@ export default function ModalPageWrapper({
   children,
   onSwipeLeft,
   onSwipeRight,
-  leftLabel = "back",
-  rightLabel = "home",
+  leftLabel,
+  rightLabel,
 }: Props) {
+  const { t } = useTranslation("common");
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [isReady, setIsReady] = useState(false);
+
+  const resolvedLeftLabel = leftLabel ?? t("navigation.back");
+  const resolvedRightLabel = rightLabel ?? t("navigation.home");
 
   const router = useRouter();
   const direction = useTransitionDirectionStore((state) => state.direction);
@@ -143,11 +148,11 @@ export default function ModalPageWrapper({
     <View className="flex-1">
       <View className="flex-1 absolute inset-0 flex-row justify-between bg-slate-900 pt-[10px]">
         <View className="flex-col items-center gap-2 ml-2">
-          {isTransitioning && leftLabel && (
+          {isTransitioning && resolvedLeftLabel && (
             <>
               <View>
-                {leftLabel
-                  ?.toUpperCase()
+                {resolvedLeftLabel
+                  .toUpperCase()
                   .split("")
                   .map((letter, index) => (
                     <AppText className="text-center text-xl" key={index}>
@@ -161,11 +166,11 @@ export default function ModalPageWrapper({
         </View>
 
         <View className="flex-col items-center gap-2 mr-2">
-          {isTransitioning && rightLabel && (
+          {isTransitioning && resolvedRightLabel && (
             <>
               <View>
-                {rightLabel
-                  ?.toUpperCase()
+                {resolvedRightLabel
+                  .toUpperCase()
                   .split("")
                   .map((letter, index) => (
                     <AppText className="text-center text-xl" key={index}>

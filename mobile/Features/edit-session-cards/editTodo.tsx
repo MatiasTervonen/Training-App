@@ -13,6 +13,7 @@ import PageContainer from "@/components/PageContainer";
 import { confirmAction } from "@/lib/confirmAction";
 import { Dot } from "lucide-react-native";
 import * as Crypto from "expo-crypto";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   todo_session: full_todo_session_optional_id;
@@ -28,6 +29,7 @@ type Task = {
 };
 
 export default function EditTodo({ todo_session, onClose, onSave }: Props) {
+  const { t } = useTranslation("todo");
   const [originalData] = useState(todo_session);
   const [isSaving, setIsSaving] = useState(false);
   const [sessionData, setSessionData] = useState(todo_session);
@@ -67,8 +69,8 @@ export default function EditTodo({ todo_session, onClose, onSave }: Props) {
 
   const handleDeleteItem = async (index: number) => {
     const confirmed = await confirmAction({
-      title: "Delete task",
-      message: "Are you sure you want to delete this task ?",
+      title: t("todo.deleteTaskTitle"),
+      message: t("todo.deleteTaskMessage"),
     });
     if (!confirmed) return;
 
@@ -93,8 +95,8 @@ export default function EditTodo({ todo_session, onClose, onSave }: Props) {
     if (hasEmptyTasks) {
       Toast.show({
         type: "error",
-        text1: "You have empty tasks.",
-        text2: "Fill or delete all empty tasks before saving.",
+        text1: t("todo.editScreen.emptyTasksError"),
+        text2: t("todo.editScreen.emptyTasksErrorSub"),
       });
       return;
     }
@@ -120,12 +122,12 @@ export default function EditTodo({ todo_session, onClose, onSave }: Props) {
       onClose();
       Toast.show({
         type: "success",
-        text1: "Session updated successfully",
+        text1: t("todo.editScreen.updateSuccess"),
       });
     } catch {
       Toast.show({
         type: "error",
-        text1: "Failed to update session",
+        text1: t("todo.editScreen.updateError"),
       });
     } finally {
       setIsSaving(false);
@@ -140,7 +142,7 @@ export default function EditTodo({ todo_session, onClose, onSave }: Props) {
       {hasChanges && (
         <View className="bg-gray-900 absolute top-5 left-5 z-50  py-1 px-4 flex-row items-center rounded-lg">
           <AppText className="text-sm text-yellow-500">
-            {hasChanges ? "unsaved changes" : ""}
+            {hasChanges ? t("todo.session.unsavedChanges") : ""}
           </AppText>
           <View className="animate-pulse">
             <Dot color="#eab308" />
@@ -148,18 +150,18 @@ export default function EditTodo({ todo_session, onClose, onSave }: Props) {
         </View>
       )}
 
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ flexGrow: 1 }}>
         <PageContainer className="justify-between items-center gap-5 max-w-lg mb-5">
           <View className="w-full">
             <AppText className="text-lg text-center mb-10">
-              Edit your todo list
+              {t("todo.editScreen.title")}
             </AppText>
             <View className="w-full mb-10">
               <AppInput
                 value={sessionData.title}
                 setValue={handleTitleChange}
-                placeholder="Todo title..."
-                label="Title..."
+                placeholder={t("todo.editScreen.titlePlaceholder")}
+                label={t("todo.editScreen.titleLabel")}
               />
             </View>
             <View className="w-full">
@@ -172,23 +174,24 @@ export default function EditTodo({ todo_session, onClose, onSave }: Props) {
                     <AppText className="mb-2">{index + 1}.</AppText>
                     <AnimatedButton
                       onPress={() => handleDeleteItem(index)}
-                      label="Delete"
+                      label={t("todo.editScreen.delete")}
                       textClassName="text-red-500"
+                      hitSlop={10}
                     />
                   </View>
                   <AppInput
                     value={task.task}
                     setValue={(value) => updateTask(index, { task: value })}
-                    placeholder="Todo title..."
-                    label="Task..."
+                    placeholder={t("todo.editScreen.taskPlaceholder")}
+                    label={t("todo.editScreen.taskLabel")}
                   />
                   <View className="mt-5">
                     <SubNotesInput
                       value={task.notes || ""}
                       setValue={(value) => updateTask(index, { notes: value })}
                       className="min-h-[60px]"
-                      placeholder="Todo notes (optional)"
-                      label="Notes..."
+                      placeholder={t("todo.editScreen.notesPlaceholder")}
+                      label={t("todo.editScreen.notesLabel")}
                     />
                   </View>
                 </View>
@@ -198,19 +201,19 @@ export default function EditTodo({ todo_session, onClose, onSave }: Props) {
           <View className="w-full pt-10 flex flex-col gap-5">
             <AnimatedButton
               onPress={addNewTask}
-              label="Add Task"
+              label={t("todo.editScreen.addTask")}
               className="bg-blue-800 rounded-md shadow-md border-2 border-blue-500 py-2"
               textClassName="text-gray-100 text-center"
             />
             <SaveButton
               disabled={!hasChanges}
               onPress={handleSave}
-              label={!hasChanges ? "Save" : "Save Changes"}
+              label={!hasChanges ? t("todo.session.save") : t("todo.session.saveChanges")}
             />
           </View>
         </PageContainer>
 
-        <FullScreenLoader visible={isSaving} message="Saving todo list..." />
+        <FullScreenLoader visible={isSaving} message={t("todo.editScreen.savingTodoList")} />
       </ScrollView>
     </View>
   );

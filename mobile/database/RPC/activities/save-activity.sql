@@ -50,13 +50,14 @@ loop
 
 
   insert into activity_gps_points (
-    session_id, 
+    session_id,
     recorded_at,
     latitude,
     longitude,
     accuracy,
     altitude,
-    is_stationary
+    is_stationary,
+    bad_signal
   )
   values (
     v_activity_id,
@@ -65,24 +66,26 @@ loop
     (v_track->> 'longitude')::numeric,
     (v_track->> 'accuracy')::numeric,
     (v_track->> 'altitude')::numeric,
-    coalesce((v_track->> 'is_stationary')::boolean, false)
+    coalesce((v_track->> 'is_stationary')::boolean, false),
+    coalesce((v_track->> 'bad_signal')::boolean, false)
   );
 
 end loop;
 end if;
 
 -- Create route geometry, splitting into segments at time gaps (>60 seconds)
--- Uses ALL points for gap detection, but only NON-STATIONARY points in geometry
+-- Uses ALL points for gap detection, but only MOVING + GOOD SIGNAL points in geometry
 if p_track is not null then
   update sessions s
   set geom = (
     with points_with_gaps as (
-      -- Use ALL points (including stationary) for gap detection
+      -- Use ALL points (including stationary/bad_signal) for gap detection
       select
         p.longitude,
         p.latitude,
         p.recorded_at,
         p.is_stationary,
+        p.bad_signal,
         case
           when extract(epoch from (p.recorded_at - lag(p.recorded_at) over (order by p.recorded_at))) > 60
           then 1
@@ -97,11 +100,12 @@ if p_track is not null then
         latitude,
         recorded_at,
         is_stationary,
+        bad_signal,
         sum(is_gap) over (order by recorded_at) as segment_id
       from points_with_gaps
     ),
     segment_lines as (
-      -- Only include NON-STATIONARY points in the geometry
+      -- Only include MOVING + GOOD SIGNAL points in the geometry
       select
         segment_id,
         ST_MakeLine(
@@ -109,7 +113,7 @@ if p_track is not null then
           order by recorded_at
         ) as line
       from points_with_segments
-      where not is_stationary
+      where not is_stationary and not bad_signal
       group by segment_id
       having count(*) >= 2
     )

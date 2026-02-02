@@ -16,7 +16,8 @@
     "unpin": "Unpin",
     "pinned": "Pinned",
     "history": "History",
-    "change": "Change"
+    "change": "Change",
+    "created": "Created:"
   },
   "navbar": {
     "menu": "Menu",
@@ -42,5 +43,9 @@
     "defaultMessage": "This action cannot be undone.",
     "confirm": "Yes",
     "cancel": "Cancel"
+  },
+  "navigation": {
+    "back": "back",
+    "home": "home"
   }
 }

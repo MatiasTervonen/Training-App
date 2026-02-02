@@ -7,7 +7,13 @@
     "addExercise": "Add Exercise",
     "editExercise": "Edit Exercise",
     "workoutAnalytics": "Workout Analytics",
-    "mySessions": "My Sessions",
+    "mySessions": {
+      "title": "My Sessions",
+      "loadError": "Failed to load gym sessions. Please try again later.",
+      "noSessions": "No gym sessions yet. Add a session to get started!",
+      "loadingDetails": "Loading gym session details...",
+      "loadDetailsError": "Failed to load gym session details. Please try again later."
+    },
     "activeSessionError": "You already have an active session.",
     "activeSessionErrorSub": "Finish it before starting a new one.",
     "gymForm": {
@@ -88,7 +94,8 @@
       "searchPlaceholder": "Search exercises...",
       "loadingExercises": "Loading exercises...",
       "loadError": "Failed to load exercises. Try again!",
-      "noExercisesFound": "No exercises found."
+      "noExercisesFound": "No exercises found.",
+      "exerciseTypeTitle": "Exercise Type"
     },
     "exerciseDropdownEdit": {
       "myExercises": "My Exercises",

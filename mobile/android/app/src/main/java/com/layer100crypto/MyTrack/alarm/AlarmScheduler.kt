@@ -13,8 +13,8 @@ class AlarmScheduler(private val context: Context) {
         private const val ALARM_IDS_KEY = "all_alarm_ids"
     }
 
-    fun schedule(triggerAtMillis: Long, reminderId: String, title: String, soundType: String, content: String) {
-        scheduleInternal(triggerAtMillis, reminderId, title, soundType, content)
+    fun schedule(triggerAtMillis: Long, reminderId: String, title: String, soundType: String, content: String, tapToOpenText: String = "Tap to open timer", timesUpText: String = "Time's up!", stopAlarmText: String = "Stop Alarm") {
+        scheduleInternal(triggerAtMillis, reminderId, title, soundType, content, tapToOpenText, timesUpText, stopAlarmText)
         // Clear any repeat info for one-time alarms
         clearRepeatInfo(reminderId)
         // Track this alarm ID
@@ -30,20 +30,25 @@ class AlarmScheduler(private val context: Context) {
         repeatType: String, // "daily" or "weekly"
         weekdays: List<Int>? = null, // 1=Sun, 2=Mon, ..., 7=Sat (for weekly)
         hour: Int,
-        minute: Int
+        minute: Int,
+        tapToOpenText: String = "Tap to open",
+        timesUpText: String = "Reminder"
     ) {
-        scheduleInternal(triggerAtMillis, reminderId, title, soundType, content)
-        saveRepeatInfo(reminderId, title, soundType, content, repeatType, weekdays, hour, minute)
+        scheduleInternal(triggerAtMillis, reminderId, title, soundType, content, tapToOpenText, timesUpText)
+        saveRepeatInfo(reminderId, title, soundType, content, repeatType, weekdays, hour, minute, tapToOpenText, timesUpText)
         // Track this alarm ID
         addAlarmId(reminderId)
     }
 
-    private fun scheduleInternal(triggerAtMillis: Long, reminderId: String, title: String, soundType: String, content: String) {
+    private fun scheduleInternal(triggerAtMillis: Long, reminderId: String, title: String, soundType: String, content: String, tapToOpenText: String = "Tap to open timer", timesUpText: String = "Time's up!", stopAlarmText: String = "Stop Alarm") {
         val intent = Intent(context, AlarmReceiver::class.java).apply {
             putExtra("REMINDER_ID", reminderId)
             putExtra("TITLE", title)
             putExtra("SOUND_TYPE", soundType)
             putExtra("CONTENT", content)
+            putExtra("TAP_TO_OPEN_TEXT", tapToOpenText)
+            putExtra("TIMES_UP_TEXT", timesUpText)
+            putExtra("STOP_ALARM_TEXT", stopAlarmText)
         }
 
         val pendingIntent = PendingIntent.getBroadcast(
@@ -70,7 +75,9 @@ class AlarmScheduler(private val context: Context) {
         repeatType: String,
         weekdays: List<Int>?,
         hour: Int,
-        minute: Int
+        minute: Int,
+        tapToOpenText: String = "Tap to open",
+        timesUpText: String = "Reminder"
     ) {
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         val weekdaysJson = weekdays?.let { JSONArray(it).toString() } ?: "[]"
@@ -83,6 +90,8 @@ class AlarmScheduler(private val context: Context) {
             .putString("${reminderId}_title", title)
             .putString("${reminderId}_soundType", soundType)
             .putString("${reminderId}_content", content)
+            .putString("${reminderId}_tapToOpenText", tapToOpenText)
+            .putString("${reminderId}_timesUpText", timesUpText)
             .apply()
     }
 
@@ -104,7 +113,9 @@ class AlarmScheduler(private val context: Context) {
             minute = prefs.getInt("${reminderId}_minute", 0),
             title = prefs.getString("${reminderId}_title", "") ?: "",
             soundType = prefs.getString("${reminderId}_soundType", "reminder") ?: "reminder",
-            content = prefs.getString("${reminderId}_content", "") ?: ""
+            content = prefs.getString("${reminderId}_content", "") ?: "",
+            tapToOpenText = prefs.getString("${reminderId}_tapToOpenText", "Tap to open") ?: "Tap to open",
+            timesUpText = prefs.getString("${reminderId}_timesUpText", "Reminder") ?: "Reminder"
         )
     }
 
@@ -118,6 +129,8 @@ class AlarmScheduler(private val context: Context) {
             .remove("${reminderId}_title")
             .remove("${reminderId}_soundType")
             .remove("${reminderId}_content")
+            .remove("${reminderId}_tapToOpenText")
+            .remove("${reminderId}_timesUpText")
             .apply()
     }
 
@@ -185,7 +198,9 @@ class AlarmScheduler(private val context: Context) {
         val minute: Int,
         val title: String,
         val soundType: String,
-        val content: String
+        val content: String,
+        val tapToOpenText: String = "Tap to open",
+        val timesUpText: String = "Reminder"
     )
 }
 

@@ -30,21 +30,35 @@ TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
        LIMIT 1`
     );
 
-    // Get last moving point for anchor
+    // Get last moving point for anchor (exclude bad_signal points)
     const lastMoving = await db.getFirstAsync<{
       latitude: number;
       longitude: number;
       timestamp: number;
     }>(
       `SELECT latitude, longitude, timestamp
-           FROM gps_points
-           WHERE is_stationary = 0
-           ORDER BY timestamp DESC
-           LIMIT 1`
+       FROM gps_points
+       WHERE is_stationary = 0 AND bad_signal = 0
+       ORDER BY timestamp DESC
+       LIMIT 1`
     );
+
+    // Count consecutive bad_signal points at the end (simple approach)
+    const recentPoints = await db.getAllAsync<{ bad_signal: number }>(
+      `SELECT bad_signal FROM gps_points ORDER BY timestamp DESC LIMIT 10`
+    );
+    let badSignalCount = 0;
+    for (const p of recentPoints) {
+      if (p.bad_signal === 1) {
+        badSignalCount++;
+      } else {
+        break;
+      }
+    }
 
     let state: MovementState = {
       confidence: lastSaved?.confidence ?? 0,
+      badSignalCount: badSignalCount,
       lastMovingPoint: lastMoving ?? null,
       lastAcceptedTimestamp: lastSaved?.timestamp ?? null,
     }
@@ -76,15 +90,16 @@ TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
       if (!result.shouldSave) continue;
 
       await db.runAsync(
-        `INSERT INTO gps_points (timestamp, latitude, longitude, altitude, accuracy, is_stationary, confidence) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        `INSERT INTO gps_points (timestamp, latitude, longitude, altitude, accuracy, is_stationary, confidence, bad_signal) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           point.timestamp,
           point.latitude,
           point.longitude,
           point.altitude ?? null,
           point.accuracy ?? null,
-          result.isMoving ? 0 : 1,
+          result.isBadSignal ? 0 : (result.isMoving ? 0 : 1), // Only mark stationary if not bad signal
           state.confidence,
+          result.isBadSignal ? 1 : 0,
         ]
       );
 

@@ -5,7 +5,7 @@ import DeleteButton from "@/components/buttons/DeleteButton";
 import FullScreenLoader from "@/components/FullScreenLoader";
 import AppInput from "@/components/AppInput";
 import { useState } from "react";
-import { formatDate } from "@/lib/formatDate";
+import { formatDateShort } from "@/lib/formatDate";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import PageContainer from "@/components/PageContainer";
 import SubNotesInput from "@/components/SubNotesInput";
@@ -15,11 +15,11 @@ import { useTranslation } from "react-i18next";
 
 export default function SettingsScreen() {
   const { t } = useTranslation("weight");
-  const now = formatDate(new Date());
+  const now = formatDateShort(new Date());
   const [weight, setWeight] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [notes, setNotes] = useState("");
-  const [title, setTitle] = useState(`Weight - ${now}`);
+  const [title, setTitle] = useState(`${t("weight.defaultTitle")} - ${now}`);
 
   // useWeightDraft hook to save draft weight
   useWeightDraft({

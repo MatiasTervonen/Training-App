@@ -4,6 +4,7 @@ import { TrackPoint } from "@/types/session";
 import useForeground from "./useForeground";
 import { useTimerStore } from "@/lib/stores/timerStore";
 import { handleError } from "@/utils/handleError";
+import Toast from "react-native-toast-message";
 
 export function useTrackHydration({
   setTrack,
@@ -35,8 +36,9 @@ export function useTrackHydration({
         accuracy: number | null;
         is_stationary: number;
         confidence: number;
+        bad_signal: number;
       }>(
-        "SELECT timestamp, latitude, longitude, altitude, accuracy, is_stationary, confidence FROM gps_points ORDER BY timestamp ASC",
+        "SELECT timestamp, latitude, longitude, altitude, accuracy, is_stationary, confidence, bad_signal FROM gps_points ORDER BY timestamp ASC",
       );
 
       const points: TrackPoint[] = result.map((point) => ({
@@ -46,11 +48,19 @@ export function useTrackHydration({
         accuracy: point.accuracy,
         timestamp: point.timestamp,
         isStationary: point.is_stationary === 1,
+        isBadSignal: point.bad_signal === 1,
         confidence: point.confidence,
       }));
 
       setTrack(points);
       onHydrated(points);
+
+      // DEBUG: Remove after testing
+      Toast.show({
+        type: "info",
+        text1: `Hydrated: ${points.length} points`,
+        text2: points.length > 0 ? `Last: ${new Date(points[points.length - 1].timestamp).toLocaleTimeString()}` : "No points",
+      });
     } catch (error) {
       handleError(error, {
         message: "Error hydrating from database",
@@ -80,11 +90,18 @@ export function useTrackHydration({
     }
 
     // Also hydrate when coming back to foreground (regardless of isRunning)
-    // Small delay to allow background task to finish any pending database writes
+    // Delay to allow background task to finish any pending database writes
+    let timeoutId: NodeJS.Timeout | null = null;
     if (!wasForeground && isForeground && activeSession) {
-      setTimeout(() => {
+      timeoutId = setTimeout(() => {
         hydrateFromDatabase();
-      }, 300);
+      }, 500);
     }
+
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
   }, [isForeground, activeSession, hydrateFromDatabase, setIsHydrated]);
 }

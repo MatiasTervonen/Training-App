@@ -13,6 +13,7 @@ import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import com.layer100crypto.MyTrack.MainActivity
 import com.layer100crypto.MyTrack.R
+import com.layer100crypto.MyTrack.ReactEventEmitter
 
 
 class AlarmService : Service() {
@@ -45,6 +46,9 @@ class AlarmService : Service() {
     private var soundType: String = "default"
     private var alarmContent: String = ""
     private var reminderId: String = ""
+    private var tapToOpenText: String = "Tap to open timer"
+    private var timesUpText: String = "Time's up!"
+    private var stopAlarmText: String = "Stop Alarm"
 
     override fun onCreate() {
         super.onCreate()
@@ -56,6 +60,9 @@ class AlarmService : Service() {
         soundType = intent?.getStringExtra("SOUND_TYPE") ?: "default"
         alarmContent = intent?.getStringExtra("CONTENT") ?: ""
         reminderId = intent?.getStringExtra("REMINDER_ID") ?: ""
+        tapToOpenText = intent?.getStringExtra("TAP_TO_OPEN_TEXT") ?: "Tap to open timer"
+        timesUpText = intent?.getStringExtra("TIMES_UP_TEXT") ?: "Time's up!"
+        stopAlarmText = intent?.getStringExtra("STOP_ALARM_TEXT") ?: "Stop Alarm"
 
         // Update static state
         isRunning = true
@@ -117,7 +124,7 @@ class AlarmService : Service() {
         } else {
             "mytrack://timer/empty-timer"
         }
-        val contentText = if (soundType == "reminder") "Tap to open" else "Tap to open timer"
+        val contentText = tapToOpenText
 
         // Create intent to open the appropriate page and stop the alarm
         val openIntent = Intent(this, MainActivity::class.java).apply {
@@ -141,6 +148,8 @@ class AlarmService : Service() {
             putExtra("TITLE", alarmTitle)
             putExtra("CONTENT", alarmContent)
             putExtra("REMINDER_ID", reminderId)
+            putExtra("TIMES_UP_TEXT", timesUpText)
+            putExtra("STOP_ALARM_TEXT", stopAlarmText)
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or
                     Intent.FLAG_ACTIVITY_NO_USER_ACTION
         }
@@ -171,6 +180,8 @@ class AlarmService : Service() {
         clearState()
         mediaPlayer.stop()
         mediaPlayer.release()
+        // Notify JS to stop its alarm sound
+        ReactEventEmitter.sendStopAlarmSound(this)
         super.onDestroy()
     }
 

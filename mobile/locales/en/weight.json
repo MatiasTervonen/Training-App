@@ -1,6 +1,7 @@
 {
   "weight": {
     "title": "Weight Tracking",
+    "defaultTitle": "Weight",
     "tracking": "Tracking",
     "analytics": "Analytics",
     "weightTracker": "Weight Tracker",

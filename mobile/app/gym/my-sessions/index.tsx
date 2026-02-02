@@ -19,8 +19,10 @@ import useFullSessions from "@/Features/feed/hooks/useFullSessions";
 import GymSession from "@/Features/expand-session-cards/gym";
 import useTogglePin from "@/Features/feed/hooks/useTogglePin";
 import useDeleteSession from "@/Features/feed/hooks/useDeleteSession";
+import { useTranslation } from "react-i18next";
 
 export default function MyGymScreen() {
+  const { t } = useTranslation("gym");
   const [expandedItem, setExpandedItem] = useState<FeedItemUI | null>(null);
   const [editingItem, setEditingItem] = useState<FeedItemUI | null>(null);
   const [refreshing, setRefreshing] = useState(false);
@@ -61,11 +63,11 @@ export default function MyGymScreen() {
         <FeedSkeleton count={5} />
       ) : error ? (
         <AppText className="text-center text-lg mt-20 mx-auto px-10">
-          Failed to load gym sessions. Please try again later.
+          {t("gym.mySessions.loadError")}
         </AppText>
       ) : !data || (unpinnedFeed.length === 0 && pinnedFeed.length === 0) ? (
         <AppText className="text-center text-lg mt-20 mx-auto px-10">
-          No gym sessions yet. Add a session to get started!
+          {t("gym.mySessions.noSessions")}
         </AppText>
       ) : (
         <FlatList
@@ -144,13 +146,13 @@ export default function MyGymScreen() {
           {isLoadingGymSession ? (
             <View className="gap-5 items-center justify-center mt-40 px-10">
               <AppText className="text-lg">
-                Loading gym session details...
+                {t("gym.mySessions.loadingDetails")}
               </AppText>
               <ActivityIndicator />
             </View>
           ) : GymSessionError ? (
             <AppText className="text-center text-xl mt-40 px-10">
-              Failed to load gym session details. Please try again later.
+              {t("gym.mySessions.loadDetailsError")}
             </AppText>
           ) : (
             GymSessionFull && <GymSession {...GymSessionFull} />

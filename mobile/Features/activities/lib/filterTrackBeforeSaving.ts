@@ -5,6 +5,7 @@ type TrackPoint = {
   accuracy: number | null;
   timestamp: number;
   is_stationary: number;
+  bad_signal: number;
 };
 
 export function filterTrackBeforeSaving(

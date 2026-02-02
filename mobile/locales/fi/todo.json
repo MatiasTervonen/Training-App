@@ -28,6 +28,35 @@
     "noTodoLists": "Ei vielä tehtävälistoja. Lisää ensimmäinen tehtävälistasi!",
     "loadingDetails": "Ladataan tehtävälistan tietoja...",
     "loadingTodoList": "Ladataan tehtävälistaa...",
-    "failedToLoadDetails": "Tehtävälistan tietojen lataaminen epäonnistui. Yritä myöhemmin uudelleen."
+    "failedToLoadDetails": "Tehtävälistan tietojen lataaminen epäonnistui. Yritä myöhemmin uudelleen.",
+    "session": {
+      "unsavedChanges": "tallentamattomia muutoksia",
+      "created": "luotu:",
+      "updated": "päivitetty:",
+      "sortTasks": "Järjestä tehtävät",
+      "originalOrder": "Alkuperäinen järjestys",
+      "completedStatus": "Valmistumistila",
+      "save": "Tallenna",
+      "saveChanges": "Tallenna muutokset",
+      "savingChanges": "Tallennetaan muutoksia...",
+      "saveSuccess": "Muutokset tallennettu onnistuneesti",
+      "saveError": "Muutosten tallennus epäonnistui"
+    },
+    "editScreen": {
+      "title": "Muokkaa tehtävälistaa",
+      "titleLabel": "Otsikko...",
+      "titlePlaceholder": "Tehtävälistan otsikko...",
+      "taskLabel": "Tehtävä...",
+      "taskPlaceholder": "Tehtävälistan otsikko...",
+      "notesLabel": "Muistiinpanot...",
+      "notesPlaceholder": "Tehtävän muistiinpanot (valinnainen)",
+      "delete": "Poista",
+      "addTask": "Lisää tehtävä",
+      "emptyTasksError": "Sinulla on tyhjiä tehtäviä.",
+      "emptyTasksErrorSub": "Täytä tai poista kaikki tyhjät tehtävät ennen tallentamista.",
+      "updateSuccess": "Sessio päivitetty onnistuneesti",
+      "updateError": "Session päivitys epäonnistui",
+      "savingTodoList": "Tallennetaan tehtävälistaa..."
+    }
   }
 }

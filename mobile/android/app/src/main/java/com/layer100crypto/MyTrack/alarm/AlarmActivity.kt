@@ -41,17 +41,19 @@ class AlarmActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_alarm)
 
-        // Get title, soundType, content, and reminderId from intent
+        // Get title, soundType, content, reminderId, timesUpText, and stopAlarmText from intent
         val title = intent?.getStringExtra("TITLE") ?: "Timer"
         soundType = intent?.getStringExtra("SOUND_TYPE") ?: "default"
         val content = intent?.getStringExtra("CONTENT") ?: ""
         reminderId = intent?.getStringExtra("REMINDER_ID") ?: ""
+        val timesUpText = intent?.getStringExtra("TIMES_UP_TEXT") ?: if (soundType == "reminder") "Reminder" else "Time's up!"
+        val stopAlarmText = intent?.getStringExtra("STOP_ALARM_TEXT") ?: "Stop Alarm"
 
         // Customize UI based on alarm type
         if (soundType == "reminder") {
             // Reminder: Show mail icon
             findViewById<TextView>(R.id.alarmIcon).text = "📧"
-            findViewById<TextView>(R.id.alarmSubtitle).text = "Reminder"
+            findViewById<TextView>(R.id.alarmSubtitle).text = timesUpText
 
             // Show content if available
             if (content.isNotEmpty()) {
@@ -63,14 +65,17 @@ class AlarmActivity : AppCompatActivity() {
         } else {
             // Timer: Show alarm clock icon
             findViewById<TextView>(R.id.alarmIcon).text = "⏰"
-            findViewById<TextView>(R.id.alarmSubtitle).text = "Time's up!"
+            findViewById<TextView>(R.id.alarmSubtitle).text = timesUpText
         }
 
         findViewById<TextView>(R.id.alarmTitle).text = title
 
         // Handle stop button click
-        findViewById<Button>(R.id.stopButton).setOnClickListener {
-            stopAlarmAndOpenApp()
+        findViewById<Button>(R.id.stopButton).apply {
+            text = stopAlarmText
+            setOnClickListener {
+                stopAlarmAndOpenApp()
+            }
         }
     }
 

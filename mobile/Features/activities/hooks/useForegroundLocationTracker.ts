@@ -50,7 +50,8 @@ export function useForegroundLocationTracker({
   } | null>(null);
 
   // Warmup config for background->foreground transitions
-  const WARMUP_ACCURACY_THRESHOLD = 20; // meters
+  // Must match ACCURACY_THRESHOLD in stationaryDetection to prevent false gaps
+  const WARMUP_ACCURACY_THRESHOLD = 25; // meters
   const WARMUP_REQUIRED_FIXES = 3; // consecutive good fixes needed
 
   // Keep onPoint stable
@@ -82,10 +83,21 @@ export function useForegroundLocationTracker({
       lastAcceptedPointRef.current = lastPoint;
 
       // Find last moving point for proper state reconstruction
-      const lastMovingPoint = [...track].reverse().find((p) => !p.isStationary);
+      const lastMovingPoint = [...track].reverse().find((p) => !p.isStationary && !p.isBadSignal);
+
+      // Count consecutive bad signal points at the end of track
+      let badSignalCount = 0;
+      for (let i = track.length - 1; i >= 0; i--) {
+        if (track[i].isBadSignal) {
+          badSignalCount++;
+        } else {
+          break;
+        }
+      }
 
       movementStateRef.current = {
         confidence: lastPoint.confidence ?? 0,
+        badSignalCount,
         lastMovingPoint: lastMovingPoint
           ? {
               latitude: lastMovingPoint.latitude,
@@ -192,13 +204,15 @@ export function useForegroundLocationTracker({
           // ---------- Save point ----------
           onPointRef.current({
             ...point,
-            isStationary: !result.isMoving,
+            isStationary: result.isBadSignal ? false : !result.isMoving, // Don't mark as stationary if bad signal
+            isBadSignal: result.isBadSignal,
             confidence: result.newState.confidence,
           });
 
           lastAcceptedPointRef.current = {
             ...point,
-            isStationary: !result.isMoving,
+            isStationary: result.isBadSignal ? false : !result.isMoving,
+            isBadSignal: result.isBadSignal,
           };
         },
       );

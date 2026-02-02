@@ -1,6 +1,22 @@
 {
   "reminders": {
     "title": "Reminders",
+    "editReminder": "Edit your reminder",
+    "highPriorityReminder": "High-priority reminder",
+    "global": "Global",
+    "created": "Created:",
+    "updated": "Updated:",
+    "edit": "Edit",
+    "delete": "Delete",
+    "validation": {
+      "titleRequired": "Title is required",
+      "notifyTimeRequired": "Notify time is required",
+      "notifyTimeFuture": "Notify time must be in the future."
+    },
+    "errors": {
+      "editGlobalReminder": "Error editing global reminder",
+      "tryAgainLater": "Try again later."
+    },
     "oneTimeGlobal": "One-Time Global",
     "oneTime": "One-Time",
     "weekly": "Weekly",
@@ -42,6 +58,11 @@
       "thu": "Thu",
       "fri": "Fri",
       "sat": "Sat"
+    },
+    "notification": {
+      "tapToOpen": "Tap to open",
+      "reminder": "Reminder",
+      "stopAlarm": "Stop Alarm"
     }
   }
 }

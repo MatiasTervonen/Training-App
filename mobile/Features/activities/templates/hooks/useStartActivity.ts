@@ -60,8 +60,9 @@ export function useStartActivity() {
             longitude REAL NOT NULL,
             altitude REAL,
             accuracy REAL,
-             is_stationary INTEGER DEFAULT 0,
-             confidence INTEGER DEFAULT 0
+            is_stationary INTEGER DEFAULT 0,
+            confidence INTEGER DEFAULT 0,
+            bad_signal INTEGER DEFAULT 0
           );
       `);
 
@@ -98,7 +99,7 @@ export function useStartActivity() {
         if (!ok) return;
 
         setActiveSession({
-            type: "activity",
+            type: template.activity.name,
             label: template.template.name,
             path: "/activities/start-activity",
             gpsAllowed: true,
@@ -108,7 +109,7 @@ export function useStartActivity() {
 
         await startGPStracking();
 
-        startSession("Activity");
+        startSession(template.activity.name);
         router.push("/activities/start-activity");
         setIsStartingActivity(false);
     };

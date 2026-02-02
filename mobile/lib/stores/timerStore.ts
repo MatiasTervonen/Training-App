@@ -23,6 +23,7 @@ import {
   cancelNativeAlarm,
   scheduleNativeAlarm,
 } from "@/native/android/NativeAlarm";
+import { t } from "i18next";
 
 type ActiveSession = {
   label: string;
@@ -99,7 +100,7 @@ export const useTimerStore = create<TimerState>()(
           alarmFired: false,
         });
 
-        startNativeTimer(now, label, "countup");
+        startNativeTimer(now, label, "countup", t("timer:timer.notification.inProgress"));
 
         interval = setInterval(() => {
           set((state) => ({
@@ -124,7 +125,7 @@ export const useTimerStore = create<TimerState>()(
           totalDuration: totalDurationInSeconds,
         });
 
-        startNativeTimer(endTimestamp, label, "countdown");
+        startNativeTimer(endTimestamp, label, "countdown", t("timer:timer.notification.timeRemaining"));
 
         interval = setInterval(() => {
           const { isRunning, mode, endTimestamp } = get();
@@ -229,13 +230,22 @@ export const useTimerStore = create<TimerState>()(
         }
 
         if (mode === "countup") {
-          startNativeTimer(now - remainingMs, label, "countup");
+          startNativeTimer(now - remainingMs, label, "countup", t("timer:timer.notification.inProgress"));
         } else {
-          startNativeTimer(now + remainingMs, label, "countdown");
+          startNativeTimer(now + remainingMs, label, "countdown", t("timer:timer.notification.timeRemaining"));
         }
 
         if (get().activeSession?.type === "timer") {
-          scheduleNativeAlarm(now + remainingMs, "timer", "Timer", "timer");
+          scheduleNativeAlarm(
+            now + remainingMs,
+            "timer",
+            t("timer:timer.title"),
+            "timer",
+            "",
+            t("timer:timer.notification.tapToOpenTimer"),
+            t("timer:timer.notification.timesUp"),
+            t("timer:timer.notification.stopAlarm")
+          );
         }
 
         interval = setInterval(() => {

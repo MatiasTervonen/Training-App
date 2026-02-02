@@ -23,11 +23,11 @@ export default function ActivitySession(activity_session: FullActivitySession) {
   const [templateNotes, setTemplateNotes] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [savedTemplateId, setSavedTemplateId] = useState<string | null>(
-    activity_session.session.template_id
+    activity_session.session.template_id,
   );
 
   const setSwipeEnabled = useFullScreenModalConfig(
-    (state) => state.setSwipeEnabled
+    (state) => state.setSwipeEnabled,
   );
 
   const hasRoute = activity_session.route !== null;
@@ -48,6 +48,7 @@ export default function ActivitySession(activity_session: FullActivitySession) {
     <ScrollView
       scrollEnabled={scrollEnabled}
       contentContainerStyle={{ flexGrow: 1 }}
+      showsVerticalScrollIndicator={false}
     >
       <PageContainer className="mb-5">
         <View className="flex-1 justify-between">
@@ -76,12 +77,14 @@ export default function ActivitySession(activity_session: FullActivitySession) {
               )}
               {!hasRoute && (
                 <AppText className="text-lg text-center mt-5">
-                  {t("activities.sessionDetails.duration")}: {formatDuration(activity_session.session.duration)}
+                  {t("activities.sessionDetails.duration")}:{" "}
+                  {formatDuration(activity_session.session.duration)}
                 </AppText>
               )}
               {!hasRoute && !!activity_session.stats?.steps && (
                 <AppText className="text-lg text-center mt-5">
-                  {t("activities.sessionDetails.steps")}: {activity_session.stats?.steps}
+                  {t("activities.sessionDetails.steps")}:{" "}
+                  {activity_session.stats?.steps}
                 </AppText>
               )}
             </LinearGradient>
@@ -121,14 +124,18 @@ export default function ActivitySession(activity_session: FullActivitySession) {
             <AppInput
               value={templateName}
               setValue={setTemplateName}
-              placeholder={t("activities.sessionDetails.templateNamePlaceholder")}
+              placeholder={t(
+                "activities.sessionDetails.templateNamePlaceholder",
+              )}
               label={t("activities.sessionDetails.templateNameLabel")}
             />
             <View className="mt-5">
               <SubNotesInput
                 value={templateNotes}
                 setValue={setTemplateNotes}
-                placeholder={t("activities.sessionDetails.templateNotesPlaceholder")}
+                placeholder={t(
+                  "activities.sessionDetails.templateNotesPlaceholder",
+                )}
                 label={t("activities.sessionDetails.templateNotesLabel")}
                 className="min-h-[60px]"
               />
@@ -154,7 +161,10 @@ export default function ActivitySession(activity_session: FullActivitySession) {
           </View>
         </View>
       </Modal>
-      <FullScreenLoader visible={isSaving} message={t("activities.sessionDetails.savingTemplate")} />
+      <FullScreenLoader
+        visible={isSaving}
+        message={t("activities.sessionDetails.savingTemplate")}
+      />
     </ScrollView>
   );
 }

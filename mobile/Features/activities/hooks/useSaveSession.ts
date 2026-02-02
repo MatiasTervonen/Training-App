@@ -22,8 +22,9 @@ async function loadTrackFromDatabase() {
     altitude: number | null;
     accuracy: number | null;
     is_stationary: number;
+    bad_signal: number;
   }>(
-    "SELECT timestamp, latitude, longitude, altitude, accuracy, is_stationary FROM gps_points ORDER BY timestamp ASC",
+    "SELECT timestamp, latitude, longitude, altitude, accuracy, is_stationary, bad_signal FROM gps_points ORDER BY timestamp ASC",
   );
 }
 

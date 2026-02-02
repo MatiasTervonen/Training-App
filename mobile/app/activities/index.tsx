@@ -42,7 +42,7 @@ export default function SessionsScreen() {
         <LinkButton label={t("activities.analytics")} href="/activities/analytics">
           <ChartNoAxesCombined color="#f3f4f6" className="ml-2" />
         </LinkButton>
-        <LinkButton label={t("activities.mySessions")} href="/activities/my-sessions">
+        <LinkButton label={t("activities.mySessions.title")} href="/activities/my-sessions">
           <List color="#f3f4f6" className="ml-2" />
         </LinkButton>
       </View>

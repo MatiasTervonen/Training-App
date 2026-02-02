@@ -13,7 +13,14 @@
     "addActivity": "Lisää aktiviteetti",
     "editActivity": "Muokkaa aktiviteettia",
     "analytics": "Analytiikka",
-    "mySessions": "Omat sessiot",
+    "mySessions": {
+      "title": "Omat sessiot",
+      "loadError": "Aktiviteettisessioiden lataus epäonnistui. Yritä myöhemmin uudelleen.",
+      "noSessions": "Ei aktiviteettisessioita vielä. Lisää sessio aloittaaksesi!",
+      "loadingDetails": "Ladataan aktiviteettisession tietoja...",
+      "loadingSession": "Ladataan aktiviteettisessiota...",
+      "loadDetailsError": "Aktiviteettisession tietojen lataus epäonnistui. Yritä myöhemmin uudelleen."
+    },
     "activeSessionError": "Sinulla on jo aktiivinen sessio.",
     "activeSessionErrorSub": "Lopeta se ennen uuden aloittamista.",
     "activityDropdownEdit": {
@@ -123,7 +130,7 @@
     },
     "sessionStats": {
       "duration": "Kesto",
-      "movingTime": "Liikkumisaika",
+      "movingTime": "Liikkeessä",
       "distance": "Matka",
       "avgPace": "Ka. vauhti",
       "moving": "(liikkuessa)",

@@ -18,6 +18,9 @@ class TimerService : Service() {
         val startTime = intent?.getLongExtra("startTime", 0L) ?: 0L
         val label = intent?.getStringExtra("label") ?: "Session"
         val mode = intent?.getStringExtra("mode") ?: "countup"
+        val rawStatusText = intent?.getStringExtra("statusText")
+        val statusText = rawStatusText ?: if (mode == "countdown") "Time remaining" else "In progress"
+        Log.d("NativeTimer", "statusText received: '$rawStatusText', using: '$statusText'")
 
         val whenTime = startTime
 
@@ -41,19 +44,15 @@ class TimerService : Service() {
 
         val builder = NotificationCompat.Builder(this, "timer_channel")
             .setContentTitle(label)
-            .setContentText("In progress")
+            .setContentText(statusText)
             .setSmallIcon(R.drawable.small_notification_icon)
             .setOngoing(true)
             .setUsesChronometer(true)
             .setWhen(whenTime)
             .setContentIntent(pendingIntent)
-            
 
             if(mode == "countdown") {
               builder.setChronometerCountDown(true)
-              builder.setContentText("Time remaining")
-            } else {
-              builder.setContentText("In progress")
             }
 
         startForeground(1, builder.build())

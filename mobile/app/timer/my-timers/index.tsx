@@ -122,7 +122,7 @@ export default function MyTimersScreen() {
       })
     );
     setActiveSession({
-      type: "timer",
+      type: t("timer.title"),
       label: timer.title,
       path: "/timer/empty-timer",
     });

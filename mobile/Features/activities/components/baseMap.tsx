@@ -3,11 +3,12 @@ import Mapbox from "@rnmapbox/maps";
 import AnimatedButton from "../../../components/buttons/animatedButton";
 import { Layers2, MapPin } from "lucide-react-native";
 import { TrackPoint } from "@/types/session";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import MapIcons from "./mapIcons";
 import useForeground from "../hooks/useForeground";
 import { findWarmupStartIndex } from "../lib/findWarmupStartIndex";
 import { processLiveTrack } from "../lib/smoothCoordinates";
+import Toast from "react-native-toast-message";
 
 type BaseMapProps = {
   track: TrackPoint[];
@@ -56,6 +57,7 @@ export default function BaseMap({
     }
   }, [isForeground]);
 
+
   const shouldShowTemplateRoute = templateRoute && templateRoute.length > 0;
 
   const warmupStartIndex = useMemo(() => findWarmupStartIndex(track), [track]);
@@ -67,6 +69,23 @@ export default function BaseMap({
     // This ensures gap detection works correctly when user stops for a while
     return processLiveTrack(track.slice(warmupStartIndex));
   }, [track, warmupStartIndex]);
+
+  // DEBUG: Track what BaseMap receives after foreground transition
+  const prevTrackLengthRef = useRef(track.length);
+  useEffect(() => {
+    const prevLen = prevTrackLengthRef.current;
+    const newLen = track.length;
+    // Only toast if track length changed significantly (hydration)
+    if (newLen > prevLen + 5 || (prevLen === 0 && newLen > 0)) {
+      Toast.show({
+        type: "success",
+        text1: `BaseMap received: ${newLen} points`,
+        text2: `Segments: ${trackSegments.length}, warmupIdx: ${warmupStartIndex}`,
+        visibilityTime: 4000,
+      });
+    }
+    prevTrackLengthRef.current = newLen;
+  }, [track.length, trackSegments.length, warmupStartIndex]);
 
   const trackShape = {
     type: "Feature",
@@ -170,7 +189,11 @@ export default function BaseMap({
           />
 
           {trackSegments.length > 0 && (
-            <Mapbox.ShapeSource id="track-source" shape={trackShape as any}>
+            <Mapbox.ShapeSource
+              key={`track-${track.length}`}
+              id="track-source"
+              shape={trackShape as any}
+            >
               <Mapbox.LineLayer
                 id="track-layer"
                 style={{

@@ -1,6 +1,7 @@
 import * as Notifications from "expo-notifications";
 import { handleError } from "@/utils/handleError";
 import { scheduleNativeAlarm } from "@/native/android/NativeAlarm";
+import { t } from "i18next";
 
 export default function useSetNotification({
   notifyAt,
@@ -19,7 +20,16 @@ export default function useSetNotification({
     try {
       // Schedule native alarm for high priority mode (Android only)
       if (mode === "alarm") {
-        scheduleNativeAlarm(notifyAt.getTime(), reminderId, title, "reminder", notes);
+        scheduleNativeAlarm(
+          notifyAt.getTime(),
+          reminderId,
+          title,
+          "reminder",
+          notes,
+          t("reminders:reminders.notification.tapToOpen"),
+          t("reminders:reminders.notification.reminder"),
+          t("reminders:reminders.notification.stopAlarm")
+        );
       }
 
       // Always schedule a regular notification as backup / for iOS

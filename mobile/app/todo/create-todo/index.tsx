@@ -28,6 +28,7 @@ import AppText from "@/components/AppText";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import useSaveDraft from "@/Features/todo/hooks/useSaveDraft";
 import { useTranslation } from "react-i18next";
+import { formatDateShort } from "@/lib/formatDate";
 
 type TodoItem = {
   task: string;
@@ -36,8 +37,10 @@ type TodoItem = {
 
 export default function CreateTodo() {
   const { t } = useTranslation("todo");
+  const now = formatDateShort(new Date());
+
   const [loading, setLoading] = useState(false);
-  const [title, setTitle] = useState("");
+  const [title, setTitle] = useState(`${t("todo.title")} - ${now}`);
   const [task, setTask] = useState("");
   const [notes, setNotes] = useState("");
   const [todoList, setTodoList] = useState<TodoItem[]>([]);
@@ -47,7 +50,7 @@ export default function CreateTodo() {
     {
       task: "",
       notes: "",
-    }
+    },
   );
   const router = useRouter();
 
@@ -90,7 +93,10 @@ export default function CreateTodo() {
       await saveTodoToDB({ title, todoList });
 
       await queryClient.refetchQueries({ queryKey: ["feed"], exact: true });
-      await queryClient.refetchQueries({ queryKey: ["myTodoLists"], exact: true });
+      await queryClient.refetchQueries({
+        queryKey: ["myTodoLists"],
+        exact: true,
+      });
       router.push("/dashboard");
       handleDeleteAll();
       Toast.show({
@@ -230,8 +236,8 @@ export default function CreateTodo() {
                                       list.map((item, i) =>
                                         i === index
                                           ? { ...item, ...modalDraft }
-                                          : item
-                                      )
+                                          : item,
+                                      ),
                                     );
                                     setEdit(null);
                                   }}
@@ -304,7 +310,10 @@ export default function CreateTodo() {
           <SaveButton onPress={handleSaveTodo} />
           <DeleteButton onPress={handleDeleteAll} />
         </View>
-        <FullScreenLoader visible={loading} message={t("todo.savingTodoList")} />
+        <FullScreenLoader
+          visible={loading}
+          message={t("todo.savingTodoList")}
+        />
       </PageContainer>
     </ScrollView>
   );

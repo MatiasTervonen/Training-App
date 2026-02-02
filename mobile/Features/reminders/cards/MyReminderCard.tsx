@@ -1,9 +1,15 @@
-import { formatDate, formatDateTime, formatNotifyTime } from "@/lib/formatDate";
+import {
+  formatDateShort,
+  formatDate,
+  formatDateTime,
+  formatNotifyTime,
+} from "@/lib/formatDate";
 import { Bell, SquareArrowOutUpRight } from "lucide-react-native";
 import AppText from "@/components/AppText";
 import { View, Pressable } from "react-native";
 import DropDownModal from "@/components/DropDownModal";
 import { full_reminder } from "@/types/session";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   item: full_reminder;
@@ -20,7 +26,17 @@ export default function MyReminderCard({
   onExpand,
   onEdit,
 }: Props) {
-  const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const { t } = useTranslation("reminders");
+
+  const days = [
+    t("reminders.days.sun"),
+    t("reminders.days.mon"),
+    t("reminders.days.tue"),
+    t("reminders.days.wed"),
+    t("reminders.days.thu"),
+    t("reminders.days.fri"),
+    t("reminders.days.sat"),
+  ];
 
   return (
     <View className="border border-gray-700 rounded-md justify-between bg-slate-900 mb-10 h-[129.5px]">
@@ -36,8 +52,8 @@ export default function MyReminderCard({
           <DropDownModal
             label={`${item.title}`}
             options={[
-              { value: "edit", label: "Edit" },
-              { value: "delete", label: "Delete" },
+              { value: "edit", label: t("reminders.edit") },
+              { value: "delete", label: t("reminders.delete") },
             ]}
             onChange={(value) => {
               switch (value) {
@@ -78,7 +94,7 @@ export default function MyReminderCard({
 
         {item.updated_at ? (
           <AppText className="ml-4 text-yellow-500 text-sm mb-1">
-            updated at {formatDate(item.updated_at!)}
+            {t("common:updated")} {formatDate(item.updated_at!)}
           </AppText>
         ) : (
           <View className="h-[17.8px]" />
@@ -90,7 +106,7 @@ export default function MyReminderCard({
         className="flex-row items-center gap-5 justify-between px-5 bg-blue-600 p-2 rounded-b-md "
       >
         <AppText className="text-gray-100 text-sm">
-          {formatDate(item.created_at)}
+          {formatDateShort(item.created_at)}
         </AppText>
         <SquareArrowOutUpRight size={20} color="#f3f4f6" />
       </Pressable>

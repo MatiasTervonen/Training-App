@@ -15,7 +15,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import PageContainer from "@/components/PageContainer";
 import useSaveDraft from "@/Features/notes/hooks/useSaveDraft";
 import useSaveNotes from "@/Features/notes/hooks/useSaveNotes";
-import { formatDate } from "@/lib/formatDate";
+import { formatDateShort } from "@/lib/formatDate";
 import RecordVoiceNotes from "@/Features/notes/components/RecordVoiceNotes";
 import { nanoid } from "nanoid/non-secure";
 import { DraftRecordingItem } from "@/Features/notes/components/draftRecording";
@@ -31,8 +31,8 @@ type DraftRecording = {
 
 export default function NotesScreen() {
   const { t } = useTranslation("notes");
-  const now = formatDate(new Date());
-  const [title, setTitle] = useState(`Notes - ${now}`);
+   const now = formatDateShort(new Date());
+  const [title, setTitle] = useState(`${t("notes.title")} - ${now}`);
   const [notes, setNotes] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [draftRecordings, setDraftRecordings] = useState<DraftRecording[]>([]);

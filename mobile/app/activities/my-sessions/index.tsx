@@ -20,8 +20,10 @@ import ActivitySessionEdit from "@/Features/activities/cards/activity-edit";
 import useTogglePin from "@/Features/feed/hooks/useTogglePin";
 import useDeleteSession from "@/Features/feed/hooks/useDeleteSession";
 import useUpdateFeedItem from "@/Features/feed/hooks/useUpdateFeedItem";
+import { useTranslation } from "react-i18next";
 
 export default function MyActivitiesScreen() {
+  const { t } = useTranslation("activities");
   const [expandedItem, setExpandedItem] = useState<FeedItemUI | null>(null);
   const [editingItem, setEditingItem] = useState<FeedItemUI | null>(null);
   const [refreshing, setRefreshing] = useState(false);
@@ -65,11 +67,11 @@ export default function MyActivitiesScreen() {
         <FeedSkeleton count={5} />
       ) : error ? (
         <AppText className="text-center text-lg mt-20 mx-auto px-10">
-          Failed to load activity sessions. Please try again later.
+          {t("activities.mySessions.loadError")}
         </AppText>
       ) : !data || (unpinnedFeed.length === 0 && pinnedFeed.length === 0) ? (
         <AppText className="text-center text-lg mt-20 mx-auto px-10">
-          No activity sessions yet. Add a session to get started!
+          {t("activities.mySessions.noSessions")}
         </AppText>
       ) : (
         <FlatList
@@ -148,13 +150,13 @@ export default function MyActivitiesScreen() {
           {isLoadingActivitySession ? (
             <View className="gap-5 items-center justify-center mt-40 px-10">
               <AppText className="text-lg">
-                Loading activity session details...
+                {t("activities.mySessions.loadingDetails")}
               </AppText>
               <ActivityIndicator />
             </View>
           ) : activitySessionError ? (
             <AppText className="text-center text-xl mt-40 px-10">
-              Failed to load activity session details. Please try again later.
+              {t("activities.mySessions.loadDetailsError")}
             </AppText>
           ) : (
             activitySessionFull && <ActivitySession {...activitySessionFull} />
@@ -169,12 +171,14 @@ export default function MyActivitiesScreen() {
         >
           {isLoadingActivitySession ? (
             <View className="gap-5 items-center justify-center mt-40 px-10">
-              <AppText className="text-lg">Loading activity session...</AppText>
+              <AppText className="text-lg">
+                {t("activities.mySessions.loadingSession")}
+              </AppText>
               <ActivityIndicator />
             </View>
           ) : activitySessionError ? (
             <AppText className="text-center text-xl mt-40 px-10">
-              Failed to load activity session details. Please try again later.
+              {t("activities.mySessions.loadDetailsError")}
             </AppText>
           ) : (
             activitySessionFull && (

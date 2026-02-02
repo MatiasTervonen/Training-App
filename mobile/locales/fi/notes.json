@@ -26,6 +26,20 @@
       "resumeRecording": "Jatka nauhoitusta",
       "recordVoiceNote": "Nauhoita äänimuistiinpano",
       "finish": "Valmis"
+    },
+    "editScreen": {
+      "title": "Muokkaa muistiinpanoja",
+      "unsavedChanges": "tallentamattomia muutoksia",
+      "save": "Tallenna",
+      "saveChanges": "Tallenna muutokset",
+      "savingNotes": "Tallennetaan muistiinpanoja...",
+      "errorTitle": "Virhe muistiinpanojen muokkauksessa",
+      "errorMessage": "Yritä myöhemmin uudelleen."
+    },
+    "expandedView": {
+      "created": "luotu:",
+      "updated": "päivitetty:",
+      "voiceLoadError": "Ääninauhoitusten lataaminen epäonnistui."
     }
   }
 }

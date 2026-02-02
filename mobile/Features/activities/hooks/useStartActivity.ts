@@ -53,7 +53,8 @@ export function useStartActivity({
               altitude REAL,
               accuracy REAL,
               is_stationary INTEGER DEFAULT 0,
-              confidence INTEGER DEFAULT 0
+              confidence INTEGER DEFAULT 0,
+              bad_signal INTEGER DEFAULT 0
             );
         `);
 
@@ -75,7 +76,7 @@ export function useStartActivity({
     }
 
     setActiveSession({
-      type: "activity",
+      type: activityName,
       label: title,
       path: "/activities/start-activity",
       gpsAllowed: allowGPS,
@@ -86,7 +87,7 @@ export function useStartActivity({
       await startGPStracking();
     }
 
-    startSession("Activity");
+    startSession(activityName);
   };
 
   return {

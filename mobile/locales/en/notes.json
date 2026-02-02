@@ -26,6 +26,20 @@
       "resumeRecording": "Resume Recording",
       "recordVoiceNote": "Record Voice Note",
       "finish": "Finish"
+    },
+    "editScreen": {
+      "title": "Edit your notes",
+      "unsavedChanges": "unsaved changes",
+      "save": "Save",
+      "saveChanges": "Save Changes",
+      "savingNotes": "Saving notes...",
+      "errorTitle": "Error editing notes",
+      "errorMessage": "Please try again later."
+    },
+    "expandedView": {
+      "created": "created:",
+      "updated": "updated:",
+      "voiceLoadError": "Failed to load voice recordings."
     }
   }
 }

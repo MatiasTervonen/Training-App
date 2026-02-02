@@ -13,6 +13,7 @@ import { Plus } from "lucide-react-native";
 import { formatDateTime } from "@/lib/formatDate";
 import PageContainer from "@/components/PageContainer";
 import { full_reminder } from "@/types/session";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   reminder: full_reminder;
@@ -25,6 +26,7 @@ export default function HandleEditGlobalReminder({
   onClose,
   onSave,
 }: Props) {
+  const { t } = useTranslation("reminders");
   const [title, setValue] = useState(reminder.title);
   const [notes, setNotes] = useState(reminder.notes);
   const [isSaving, setIsSaving] = useState(false);
@@ -39,7 +41,7 @@ export default function HandleEditGlobalReminder({
     if (title.trim().length === 0) {
       Toast.show({
         type: "error",
-        text1: "Title is required",
+        text1: t("reminders.validation.titleRequired"),
       });
       return;
     }
@@ -47,7 +49,7 @@ export default function HandleEditGlobalReminder({
     if (!notifyAt) {
       Toast.show({
         type: "error",
-        text1: "Notify time is required",
+        text1: t("reminders.validation.notifyTimeRequired"),
       });
       return;
     }
@@ -55,7 +57,7 @@ export default function HandleEditGlobalReminder({
     if (notifyAt < new Date()) {
       Toast.show({
         type: "error",
-        text1: "Notify time must be in the future.",
+        text1: t("reminders.validation.notifyTimeFuture"),
       });
       return;
     }
@@ -82,8 +84,8 @@ export default function HandleEditGlobalReminder({
     } catch {
       Toast.show({
         type: "error",
-        text1: "Error editing global reminder",
-        text2: "Try again later.",
+        text1: t("reminders.errors.editGlobalReminder"),
+        text2: t("reminders.errors.tryAgainLater"),
       });
     } finally {
       setIsSaving(false);
@@ -95,26 +97,26 @@ export default function HandleEditGlobalReminder({
       <PageContainer className="justify-between mb-5">
         <View>
           <AppText className=" text-xl text-center mb-10 mt-5">
-            Edit your reminder
+            {t("reminders.editReminder")}
           </AppText>
           <View className="mb-5">
             <AppInput
               value={title || ""}
               onChangeText={setValue}
-              placeholder="Reminder title..."
-              label="Title..."
+              placeholder={t("reminders.titlePlaceholder")}
+              label={t("reminders.titleLabel")}
             />
           </View>
           <SubNotesInput
             value={notes || ""}
             setValue={setNotes}
             className="min-h-[60px]"
-            placeholder="Notes... (optional)"
-            label="Notes..."
+            placeholder={t("reminders.notesPlaceholder")}
+            label={t("reminders.notesLabel")}
           />
           <View>
             <AnimatedButton
-              label={notifyAt ? formattedNotifyAt : "Set Notify Time"}
+              label={notifyAt ? formattedNotifyAt : t("reminders.setNotifyTime")}
               onPress={() => setOpen(true)}
               className="bg-blue-800 py-2 rounded-md shadow-md border-2 border-blue-500 flex-row gap-2 justify-center items-center mt-10"
               textClassName="text-gray-100"
@@ -141,7 +143,7 @@ export default function HandleEditGlobalReminder({
         <View className="pt-10">
           <SaveButton onPress={handleSubmit} />
         </View>
-        <FullScreenLoader visible={isSaving} message="Saving reminder..." />
+        <FullScreenLoader visible={isSaving} message={t("reminders.savingReminder")} />
       </PageContainer>
     </TouchableWithoutFeedback>
   );

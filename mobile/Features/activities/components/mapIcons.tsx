@@ -12,6 +12,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { useEffect } from "react";
 import { formatAveragePace, formatMeters } from "@/lib/formatDate";
+import { useTimerStore } from "@/lib/stores/timerStore";
 
 function mapDegreesToDirection(degrees: number): string {
   const directions = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"];
@@ -41,6 +42,7 @@ export default function MapIcons({
   averagePacePerKm: number;
   currentStepCount: number;
 }) {
+  const activeSession = useTimerStore((state) => state.activeSession);
   const heading = useSharedValue(0);
   const opacity = useSharedValue(1);
 
@@ -79,7 +81,7 @@ export default function MapIcons({
             manualSession={{
               label: title || "Activity",
               path: "/activities/start-activity",
-              type: "activity",
+              type: activeSession?.type || "Activity",
             }}
             onStart={startGPStracking}
             onPause={stopGPStracking}

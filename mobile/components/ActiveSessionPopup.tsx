@@ -16,8 +16,10 @@ import {
   cancelNativeAlarm,
 } from "@/native/android/NativeAlarm";
 import { formatDurationLong } from "@/lib/formatDate";
+import { useTranslation } from "react-i18next";
 
 export default function ActiveSessionPopup() {
+  const { t } = useTranslation(["gym", "timer"]);
   const activeSession = useTimerStore((state) => state.activeSession);
   const alarmFired = useTimerStore((state) => state.alarmFired);
   const totalDuration = useTimerStore((state) => state.totalDuration);
@@ -41,11 +43,14 @@ export default function ActiveSessionPopup() {
 
   if (!activeSession) return null;
 
-  if (pathname === "/gym/gym" && activeSession.type === "gym") {
+  if (pathname === "/gym/gym" && activeSession.type === t("gym:gym.title")) {
     return null;
   }
 
-  if (pathname === "/timer/empty-timer" && activeSession.type === "timer") {
+  if (
+    pathname === "/timer/empty-timer" &&
+    activeSession.type === t("timer:timer.title")
+  ) {
     return null;
   }
   if (
@@ -61,7 +66,7 @@ export default function ActiveSessionPopup() {
 
   if (
     pathname === "/activities/start-activity" &&
-    activeSession.type === "activity"
+    activeSession.path === "/activities/start-activity"
   ) {
     return null;
   }
@@ -97,7 +102,7 @@ export default function ActiveSessionPopup() {
           </View>
           <View className="flex-row items-center gap-5">
             <Timer textClassName="text-xl" />
-            <AppText>{activeSession.type.toUpperCase()}</AppText>
+            <AppText>{activeSession.type}</AppText>
             {mode === "countdown" && (
               <AppText>{formatDurationLong(totalDuration)}</AppText>
             )}

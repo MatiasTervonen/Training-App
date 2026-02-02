@@ -68,10 +68,10 @@ export default function SettingsScreen() {
     }
 
     setAlarmFired(false);
-    startTimer(totalDurationInSeconds, "Timer");
+    startTimer(totalDurationInSeconds, t("timer.title"));
 
     setActiveSession({
-      type: "timer",
+      type: t("timer.title"),
       label: "Timer",
       path: "/timer/empty-timer",
     });
@@ -79,8 +79,12 @@ export default function SettingsScreen() {
     scheduleNativeAlarm(
       Date.now() + totalDurationInSeconds * 1000,
       "timer",
-      "Timer",
+      t("timer.title"),
       "timer",
+      "",
+      t("timer.notification.tapToOpenTimer"),
+      t("timer.notification.timesUp"),
+      t("timer.notification.stopAlarm")
     );
   };
 

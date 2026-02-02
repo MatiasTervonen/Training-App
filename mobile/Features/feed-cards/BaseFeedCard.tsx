@@ -2,7 +2,7 @@ import { Ellipsis, SquareArrowOutUpRight, Calendar } from "lucide-react-native";
 import { View } from "react-native";
 import AppText from "@/components/AppText";
 import DropdownMenu from "@/components/DropdownMenu";
-import { formatDateShort } from "@/lib/formatDate";
+import { formatDate, formatDateShort } from "@/lib/formatDate";
 import { FeedCardProps } from "@/types/session";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import { ReactNode } from "react";
@@ -81,7 +81,7 @@ export default function BaseFeedCard({
               pinned ? "text-slate-900" : "text-yellow-500"
             }`}
           >
-            {t("feed.card.updated")} {formatDateShort(item.updated_at)}
+            {t("feed.card.updated")} {formatDate(item.updated_at)}
           </AppText>
         ) : (
           <AppText className="min-h-5"></AppText>

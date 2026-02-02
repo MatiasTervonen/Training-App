@@ -1,6 +1,7 @@
 {
   "weight": {
     "title": "Painonseuranta",
+    "defaultTitle": "Paino",
     "tracking": "Seuranta",
     "analytics": "Analytiikka",
     "weightTracker": "Painoseuranta",

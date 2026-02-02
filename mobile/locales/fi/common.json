@@ -16,7 +16,8 @@
     "pinned": "Kiinnitetty",
     "unpin": "Irrota",
     "history": "Historia",
-    "change": "Vaihda"
+    "change": "Vaihda",
+    "created": "Luotu:"
   },
   "navbar": {
     "menu": "Valikko",
@@ -42,5 +43,9 @@
     "defaultMessage": "Tätä toimintoa ei voi peruuttaa.",
     "confirm": "Kyllä",
     "cancel": "Peruuta"
+  },
+  "navigation": {
+    "back": "takaisin",
+    "home": "koti"
   }
 }

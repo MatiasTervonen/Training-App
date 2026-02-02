@@ -1,5 +1,24 @@
 {
   "login": {
+    "actions": {
+      "enterEmailAndPassword": "Syötä sähköposti ja salasana.",
+      "loggingIn": "Kirjaudutaan...",
+      "verifyEmailFirst": "Vahvista sähköpostisi ennen kirjautumista.",
+      "enterPassword": "Syötä salasana.",
+      "passwordsDoNotMatch": "Salasanat eivät täsmää.",
+      "passwordTooShort": "Salasanan on oltava vähintään 8 merkkiä.",
+      "signingUp": "Rekisteröidään...",
+      "somethingWentWrong": "Jokin meni pieleen. Yritä uudelleen.",
+      "emailAlreadyRegistered": "Sähköposti on jo rekisteröity. Kirjaudu sisään.",
+      "enterEmail": "Syötä sähköposti.",
+      "sendingPasswordReset": "Lähetetään salasanan nollausviesti...",
+      "passwordResetSent": "Salasanan nollausviesti lähetetty!",
+      "resendingVerification": "Lähetetään vahvistusviesti uudelleen...",
+      "couldNotResend": "Vahvistusviestiä ei voitu lähettää. Yritä uudelleen.",
+      "verificationResent": "Vahvistusviesti lähetetty uudelleen. Tarkista saapuneet.",
+      "loggingInAsGuest": "Kirjaudutaan vieraana...",
+      "guestLoginError": "Virhe kirjautumisessa vieraana"
+    },
     "back": "Takaisin",
     "email": "Sähköposti",
     "emailPlaceholder": "Syötä sähköposti...",
@@ -22,7 +41,8 @@
     "resendEmail": {
       "title": "Lähetä vahvistussähköposti uudelleen",
       "description": "Syötä sähköpostisi ja lähetämme sinulle linkin sähköpostin vahvistamiseen.",
-      "resendButton": "Lähetä vahvistussähköposti uudelleen"
+      "resendButton": "Lähetä vahvistussähköposti uudelleen",
+      "didntGetEmail": "Etkö saanut sähköpostia?"
     },
     "signUpSuccess": {
       "title": "Kiitos rekisteröitymisestä!",

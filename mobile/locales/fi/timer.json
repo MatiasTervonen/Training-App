@@ -32,6 +32,13 @@
       "description": "Tama ajastin vaatii korkeaprioriteettisen halytyksen toimiakseen.\n\nHalytys soi jatkuvasti, vaikka puhelimesi olisi lukittu, kunnes hylkaat sen. Ilman tata lupaa ajastimia ei voi kaynnistaa.",
       "back": "Takaisin",
       "allow": "Salli"
+    },
+    "notification": {
+      "timeRemaining": "Aikaa jäljellä",
+      "inProgress": "Käynnissä",
+      "tapToOpenTimer": "Avaa ajastin napauttamalla",
+      "timesUp": "Aika loppui!",
+      "stopAlarm": "Pysäytä hälytys"
     }
   }
 }

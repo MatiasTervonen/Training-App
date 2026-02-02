@@ -7,6 +7,7 @@ import DeleteButton from "@/components/buttons/DeleteButton";
 import EditButton from "@/components/buttons/EditButton";
 import PageContainer from "@/components/PageContainer";
 import { TimerIcon } from "lucide-react-native";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   item: timers;
@@ -15,16 +16,23 @@ type Props = {
   onStarTimer: () => void;
 };
 
-export default function TimerCard({ item, onDelete, onEdit, onStarTimer }: Props) {
+export default function TimerCard({
+  item,
+  onDelete,
+  onEdit,
+  onStarTimer,
+}: Props) {
+  const { t } = useTranslation("common");
+
   return (
     <PageContainer className="justify-between pb-5">
       <View>
         <AppText className="text-sm text-gray-300  text-center">
-          created: {formatDate(item.created_at)}
+          {t("common.created")} {formatDate(item.created_at)}
         </AppText>
         {item.updated_at && (
           <AppText className="text-sm text-yellow-500 mt-2 text-center">
-            updated: {formatDate(item.updated_at)}
+            {t("common.updated")} {formatDate(item.updated_at)}
           </AppText>
         )}
         <View className="items-center bg-slate-900 p-5 rounded-md shadow-md mt-5">
@@ -44,9 +52,9 @@ export default function TimerCard({ item, onDelete, onEdit, onStarTimer }: Props
       </View>
 
       <View className="mt-10 gap-4">
-        <SaveButton onPress={onStarTimer} label="Start" />
-        <EditButton onPress={onEdit} label="Edit" />
-        <DeleteButton onPress={onDelete} label="Delete" />
+        <SaveButton onPress={onStarTimer} label={t("common.start")} />
+        <EditButton onPress={onEdit} label={t("common.edit")} />
+        <DeleteButton onPress={onDelete} label={t("common.delete")} />
       </View>
     </PageContainer>
   );

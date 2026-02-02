@@ -1,4 +1,4 @@
-import { formatDate } from "@/lib/formatDate";
+import { formatDate, formatDateShort } from "@/lib/formatDate";
 import { Dumbbell } from "lucide-react-native";
 import AppText from "@/components/AppText";
 import { View, Pressable } from "react-native";
@@ -73,7 +73,7 @@ export default function TemplateCard({
         className="flex-row items-center justify-between px-5 bg-blue-600 py-2 rounded-br-md rounded-bl-md "
       >
         <AppText className=" text-gray-200">
-          {formatDate(item.created_at)}
+          {formatDateShort(item.created_at)}
         </AppText>
 
         <View className="flex-row items-center gap-5">

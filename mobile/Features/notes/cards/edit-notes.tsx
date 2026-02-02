@@ -21,6 +21,7 @@ import RecordVoiceNotes from "../components/RecordVoiceNotes";
 import { nanoid } from "nanoid/non-secure";
 import { confirmAction } from "@/lib/confirmAction";
 import { NotesVoiceSkeleton } from "@/components/skeletetons";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   note: FeedItemUI;
@@ -56,6 +57,7 @@ export default function EditNotes({
   voiceRecordings,
   isLoadingVoice = false,
 }: Props) {
+  const { t } = useTranslation("notes");
   const payload = note.extra_fields as notesPayload;
   const voiceCount = payload["voice-count"] ?? 0;
 
@@ -82,8 +84,8 @@ export default function EditNotes({
 
   const handleDeleteExisting = async (recordingId: string) => {
     const confirmed = await confirmAction({
-      title: "Delete Recording",
-      message: "Are you sure you want to delete this recording?",
+      title: t("notes.deleteRecordingTitle"),
+      message: t("notes.deleteRecordingMessage"),
     });
     if (!confirmed) return;
 
@@ -93,8 +95,8 @@ export default function EditNotes({
 
   const handleDeleteNew = async (index: number) => {
     const confirmed = await confirmAction({
-      title: "Delete Recording",
-      message: "Are you sure you want to delete this recording?",
+      title: t("notes.deleteRecordingTitle"),
+      message: t("notes.deleteRecordingMessage"),
     });
     if (!confirmed) return;
 
@@ -119,8 +121,8 @@ export default function EditNotes({
     } catch {
       Toast.show({
         type: "error",
-        text1: "Error editing notes",
-        text2: "Please try again later.",
+        text1: t("notes.editScreen.errorTitle"),
+        text2: t("notes.editScreen.errorMessage"),
       });
     } finally {
       setIsSaving(false);
@@ -138,7 +140,7 @@ export default function EditNotes({
       {hasChanges && (
         <View className="bg-gray-900 absolute top-5 left-5 z-50 py-1 px-4 flex-row items-center rounded-lg">
           <AppText className="text-sm text-yellow-500">
-            {hasChanges ? "unsaved changes" : ""}
+            {hasChanges ? t("notes.editScreen.unsavedChanges") : ""}
           </AppText>
           <View className="animate-pulse">
             <Dot color="#eab308" />
@@ -149,14 +151,14 @@ export default function EditNotes({
         <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
           <PageContainer className="mb-5">
             <AppText className="text-xl text-center mt-5 mb-10">
-              Edit your notes
+              {t("notes.editScreen.title")}
             </AppText>
             <View className="mb-5">
               <AppInput
                 value={title || ""}
                 onChangeText={setValue}
-                placeholder="Notes title..."
-                label="Title..."
+                placeholder={t("notes.titlePlaceholder")}
+                label={t("notes.titleLabel")}
               />
             </View>
             <View>
@@ -164,8 +166,8 @@ export default function EditNotes({
                 className="min-h-[120px]"
                 value={notes || ""}
                 setValue={setNotes}
-                placeholder="Write your notes here..."
-                label="Notes..."
+                placeholder={t("notes.notesPlaceholder")}
+                label={t("notes.notesLabel")}
               />
             </View>
 
@@ -174,7 +176,7 @@ export default function EditNotes({
               existingRecordings.length > 0 ||
               newRecordings.length > 0) && (
               <View className="mt-5">
-                <AppText className="mb-2">Recordings:</AppText>
+                <AppText className="mb-2">{t("notes.recordings")}</AppText>
                 {isLoadingVoice ? (
                   <NotesVoiceSkeleton count={voiceCount} />
                 ) : (
@@ -225,10 +227,10 @@ export default function EditNotes({
         <SaveButton
           disabled={!hasChanges}
           onPress={handleSubmit}
-          label={!hasChanges ? "Save" : "Save Changes"}
+          label={!hasChanges ? t("notes.editScreen.save") : t("notes.editScreen.saveChanges")}
         />
       </View>
-      <FullScreenLoader visible={isSaving} message="Saving notes..." />
+      <FullScreenLoader visible={isSaving} message={t("notes.editScreen.savingNotes")} />
     </View>
   );
 }

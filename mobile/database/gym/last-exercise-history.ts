@@ -39,7 +39,6 @@ export async function getLastExerciseHistory({
 
 
   if (exerciseError) {
-    console.error("Error fetching exercise history:", exerciseError);
     handleError(exerciseError, {
       message: "Error fetching exercise history",
       route: "/database/gym/last-exercise-history/[exerciseId]",
@@ -55,7 +54,6 @@ export async function getLastExerciseHistory({
   }
 
   if (exerciseError) {
-    console.error("Error fetching exercise history:", exerciseError);
     handleError(exerciseError, {
       message: "Error fetching exercise history",
       route: "/database/gym/last-exercise-history",

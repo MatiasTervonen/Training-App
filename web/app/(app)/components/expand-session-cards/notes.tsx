@@ -8,7 +8,7 @@ type notesPayload = {
 
 export default function NotesSession(notes: FeedItemUI) {
   const payload = notes.extra_fields as notesPayload;
-  
+
   return (
     <div className="text-center max-w-lg mx-auto page-padding">
       <div className="flex flex-col gap-2 text-sm text-gray-400">
@@ -19,9 +19,14 @@ export default function NotesSession(notes: FeedItemUI) {
           </p>
         )}
       </div>
-      <div id="notes-id">
-        <div className="my-5 text-xl wrap-break-word">{notes.title}</div>
-        <div className="whitespace-pre-wrap wrap-break-word overflow-hidden max-w-full text-left bg-slate-900 p-4 rounded-md shadow-md">
+      <div
+        id="notes-id"
+        className="bg-slate-900 px-5 pt-5 pb-10 rounded-md shadow-md mt-5"
+      >
+        <div className="text-xl text-center mb-10 border-b border-gray-700 pb-2 wrap-break-word">
+          {notes.title}
+        </div>
+        <div className="whitespace-pre-wrap wrap-break-word overflow-hidden max-w-full text-left text-lg">
           {payload.notes}
         </div>
       </div>

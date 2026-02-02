@@ -1,12 +1,13 @@
-import { full_reminder } from "../../types/session";
-import DropdownMenu from "../dropdownMenu";
+import { full_reminder } from "@/app/(app)/types/session";
+import DropdownMenu from "@/app/(app)/components/dropdownMenu";
 import { Bell, Menu, SquareArrowOutUpRight } from "lucide-react";
 import {
   formatDate,
   formatDateTime,
   formatNotifyTime,
-} from "../../lib/formatDate";
-import { formatWeekdays } from "../../lib/formatDate";
+  formatDateShort,
+} from "@/app/(app)/lib/formatDate";
+import { formatWeekdays } from "@/app/(app)/lib/formatDate";
 
 type Props = {
   item: full_reminder;
@@ -69,7 +70,7 @@ export default function MyReminderCard({
         onClick={onExpand}
         className="flex items-center justify-between w-full px-5 bg-blue-600 p-2 rounded-br-md rounded-bl-md cursor-pointer"
       >
-        <p className=" text-gray-100 text-sm">{formatDate(item.created_at)}</p>
+        <p className=" text-gray-100 text-sm">{formatDateShort(item.created_at)}</p>
         <SquareArrowOutUpRight size={20} color="#f3f4f6" />
       </button>
     </div>

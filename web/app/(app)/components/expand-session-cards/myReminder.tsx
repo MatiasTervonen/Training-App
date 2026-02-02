@@ -13,23 +13,23 @@ export default function MyReminderSession(reminder: full_reminder) {
         id="reminder-id"
         className="max-w-lg mx-auto rounded-2xl border-2 border-slate-500 bg-linear-to-tr from-gray-900 via-slate-800 to-blue-900 shadow-xl p-4"
       >
-        <div className="flex justify-center gap-4">
-          <div className="flex flex-col items-center justify-center bg-gray-900 rounded-xl py-5 border-2 border-slate-600 w-full">
+        <div className="flex flex-col justify-center gap-4">
+          <div className="flex gap-2 items-center justify-center bg-gray-900 rounded-xl py-5 border-2 border-slate-600 w-full">
             <CalendarSync size={28} />
-            <p className="mt-2">
+            <p className="text-lg">
               {reminder.type === "global_reminders" ? "global" : reminder.type}
             </p>
           </div>
 
-          <div className="flex flex-col items-center justify-center bg-gray-900 rounded-xl py-5 border-2 border-slate-600 w-full px-2">
+          <div className="flex items-center gap-2 justify-center bg-gray-900 rounded-xl py-5 border-2 border-slate-600 w-full px-2">
             <Bell size={28} />
             {reminder.type === "one-time" ? (
-              <p className="mt-2">{formatDateTime(reminder.notify_date!)}</p>
+              <p className="text-lg">{formatDateTime(reminder.notify_date!)}</p>
             ) : reminder.type === "global" ||
               reminder.type === "global_reminders" ? (
-              <p className="mt-2">{formatDateTime(reminder.notify_at!)}</p>
+              <p className="text-lg">{formatDateTime(reminder.notify_at!)}</p>
             ) : (
-              <p className="mt-2">
+              <p className="text-lg">
                 {formatNotifyTime(reminder.notify_at_time!)}
               </p>
             )}

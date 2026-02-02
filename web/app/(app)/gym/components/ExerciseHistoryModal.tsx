@@ -2,7 +2,7 @@
 
 import Modal from "@/app/(app)/components/modal";
 import Spinner from "@/app/(app)/components/spinner";
-import { formatDate } from "@/app/(app)/lib/formatDate";
+import { formatDateShort } from "@/app/(app)/lib/formatDate";
 import { HistoryResult } from "@/app/(app)/types/session";
 import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
 
@@ -52,7 +52,7 @@ export default function ExerciseHistoryModal({
             {history.map((session, sessionIndex) => (
               <div key={sessionIndex} className="w-full">
                 <div className="flex flex-col items-center mt-10">
-                  <p className="text-lg">{formatDate(session!.date)}</p>
+                  <p className="text-lg">{formatDateShort(session!.date)}</p>
                   <div className="mt-6  bg-linear-to-tr from-gray-900 via-slate-900 to-blue-900 rounded-md px-4 pb-5 pt-2 shadow-md w-full  border-2 border-gray-600">
                     <table className="w-full text-left ">
                       <thead>

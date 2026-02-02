@@ -1,7 +1,6 @@
-import { ListTodo, Ellipsis, SquareArrowOutUpRight, Check } from "lucide-react";
-import DropdownMenu from "../dropdownMenu";
-import { formatDate } from "@/app/(app)/lib/formatDate";
+import { ListTodo, Check } from "lucide-react";
 import { FeedCardProps } from "@/app/(app)/types/session";
+import BaseFeedCard from "./BaseFeedCard";
 
 type todoPayload = {
   completed: number;
@@ -19,80 +18,24 @@ export default function TodoCard({
   const payload = item.extra_fields as todoPayload;
 
   return (
-    <div
-      className={`
-       border rounded-md flex flex-col justify-between transition-colors min-h-[159px] ${
-         pinned
-           ? `border-yellow-200 bg-yellow-200 text-slate-900`
-           : "bg-slate-700"
-       }`}
-    >
-      <div className="flex flex-col justify-between flex-1">
-        <div className="flex justify-between items-center mt-2  mx-4">
-          <div className="mr-8 line-clamp-1 border-b">{item.title}</div>
-          <DropdownMenu
-            button={
-              <div
-                aria-label="More options"
-                className={`cursor-pointer  ${
-                  pinned ? "text-slate-900" : "text-gray-100"
-                }`}
-              >
-                <Ellipsis size={20} />
-              </div>
-            }
-            pinned={pinned}
-            onTogglePin={onTogglePin}
-            onDelete={onDelete}
-            onEdit={onEdit}
-          />
-        </div>
-
-        <div className="flex gap-2">
-          <p className={`ml-4 ${pinned ? "text-slate-900" : "text-gray-100"}`}>
-            completed: {payload.completed} / {payload.total}
+    <BaseFeedCard
+      item={item}
+      pinned={pinned}
+      onTogglePin={onTogglePin}
+      onDelete={onDelete}
+      onExpand={onExpand}
+      onEdit={onEdit}
+      typeIcon={<ListTodo size={20} className={pinned ? "text-slate-900" : "text-gray-100"} />}
+      typeName="Todo"
+      showUpdatedAt={true}
+      statsContent={
+        <div className={`flex gap-2 items-center ${pinned ? "text-slate-900" : "text-gray-100"}`}>
+          <p>
+            Completed: {payload.completed} / {payload.total}
           </p>
-
-          {payload.completed === payload.total && <Check color="#22c55e" />}
+          {payload.completed === payload.total && <Check color="#22c55e" size={24} />}
         </div>
-
-        {item.updated_at ? (
-          <p
-            className={`text-sm ml-4 min-h-5 ${
-              pinned ? "text-slate-900" : "text-yellow-500"
-            } `}
-          >
-            updated: {formatDate(item.updated_at)}
-          </p>
-        ) : (
-          <p className="min-h-5 invisible"></p>
-        )}
-      </div>
-
-      <div className="flex justify-between items-center mt-2 bg-black/40 rounded-b-md">
-        <div className="flex items-center gap-4">
-          <div className="pl-2">
-            <ListTodo size={20} />
-          </div>
-          <span>Todo</span>
-
-          <div>
-            <p className={`${pinned ? "text-slate-900" : "text-gray-100"}`}>
-              {formatDate(item.created_at)}
-            </p>
-          </div>
-        </div>
-
-        <button
-          aria-label="Expand note"
-          onClick={onExpand}
-          className="bg-blue-500 text-gray-100 p-2 rounded-br-md hover:bg-blue-400 cursor-pointer"
-        >
-          <span>
-            <SquareArrowOutUpRight size={20} />
-          </span>
-        </button>
-      </div>
-    </div>
+      }
+    />
   );
 }

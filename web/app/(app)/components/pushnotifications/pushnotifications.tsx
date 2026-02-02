@@ -118,7 +118,7 @@ export function PushNotificationManager() {
   }
 
   return (
-    <div className="my-5 relative">
+    <div>
       <h2 className="mb-6 underline">Push Notifications</h2>
       <div className="flex items-center justify-between">
         <p>

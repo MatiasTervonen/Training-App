@@ -10,7 +10,7 @@ export async function getFullGymSession(sessionId: string) {
   }
 
   const { data: gymSession, error: gymSessionError } = await supabase
-    .from("gym_sessions")
+    .from("sessions")
     .select(`*, gym_session_exercises(*, gym_exercises(*), gym_sets(*))`)
     .order("position", {
       referencedTable: "gym_session_exercises",

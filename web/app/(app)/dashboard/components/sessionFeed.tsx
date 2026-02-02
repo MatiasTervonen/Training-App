@@ -22,6 +22,7 @@ import useFeed from "@/app/(app)/dashboard/hooks/useFeed";
 import useFullSessions from "@/app/(app)/dashboard/hooks/useFullSessions";
 import PinnedCarousel from "./pinnedCarousell";
 import useUpdateFeedItem from "@/app/(app)/dashboard/hooks/useUpdateFeedItem";
+import useUpdateFeedItemToTop from "@/app/(app)/dashboard/hooks/useUpdateFeedItemToTop";
 
 export default function SessionFeed() {
   const [expandedItem, setExpandedItem] = useState<FeedItemUI | null>(null);
@@ -67,6 +68,9 @@ export default function SessionFeed() {
 
   // useUpdateFeedItem hook to update feed item in cache
   const { updateFeedItem } = useUpdateFeedItem();
+
+  // useUpdateFeedItem hook to update feed item in cache and move it to top
+  const { updateFeedItemToTop } = useUpdateFeedItemToTop();
 
   return (
     <div className="h-full">
@@ -124,7 +128,7 @@ export default function SessionFeed() {
                       togglePin(
                         feedItem.id,
                         feedItem.type,
-                        feedItem.feed_context
+                        feedItem.feed_context,
                       )
                     }
                     onDelete={() =>
@@ -174,12 +178,12 @@ export default function SessionFeed() {
             {expandedItem.type === "gym_sessions" && (
               <>
                 {isLoadingGymSession ? (
-                  <div className="flex flex-col gap-5 items-center justify-center pt-40">
+                  <div className="flex flex-col gap-5 items-center justify-center pt-40 px-10">
                     <p>Loading gym session details...</p>
                     <Spinner />
                   </div>
                 ) : GymSessionError ? (
-                  <p className="text-center text-lg mt-10">
+                  <p className="text-center text-lg mt-40 px-10">
                     Failed to load gym session details. Please try again later.
                   </p>
                 ) : (
@@ -193,12 +197,12 @@ export default function SessionFeed() {
             {expandedItem.type === "todo_lists" && (
               <>
                 {isLoadingTodoSession ? (
-                  <div className="flex flex-col gap-5 items-center justify-center pt-40">
+                  <div className="flex flex-col gap-5 items-center justify-center pt-40 px-10">
                     <p>Loading todo session details...</p>
                     <Spinner />
                   </div>
                 ) : TodoSessionError ? (
-                  <p className="text-center text-lg mt-20">
+                  <p className="text-center text-lg mt-40 px-10">
                     Failed to load todo session details. Please try again later.
                   </p>
                 ) : (
@@ -207,7 +211,7 @@ export default function SessionFeed() {
                       initialTodo={TodoSessionFull}
                       onSave={async (updatedItem) => {
                         await Promise.all([
-                          updateFeedItem(updatedItem),
+                          updateFeedItemToTop(updatedItem),
                           refetchFullTodo(),
                         ]);
                       }}
@@ -231,7 +235,7 @@ export default function SessionFeed() {
                 note={editingItem}
                 onClose={() => setEditingItem(null)}
                 onSave={(updatedItem) => {
-                  updateFeedItem(updatedItem);
+                  updateFeedItemToTop(updatedItem);
                   setEditingItem(null);
                 }}
               />
@@ -241,7 +245,7 @@ export default function SessionFeed() {
                 reminder={editingItem}
                 onClose={() => setEditingItem(null)}
                 onSave={(updatedItem) => {
-                  updateFeedItem(updatedItem);
+                  updateFeedItemToTop(updatedItem);
                   setEditingItem(null);
                 }}
               />
@@ -249,12 +253,12 @@ export default function SessionFeed() {
             {editingItem.type === "todo_lists" && (
               <>
                 {isLoadingTodoSession ? (
-                  <div className="flex flex-col gap-5 items-center justify-center pt-40">
+                  <div className="flex flex-col gap-5 items-center justify-center pt-40 px-10">
                     <p>Loading todo session details...</p>
                     <Spinner />
                   </div>
                 ) : TodoSessionError ? (
-                  <p className="text-center text-lg mt-10">
+                  <p className="text-center text-lg mt-40 px-10">
                     Failed to load todo session details. Please try again later.
                   </p>
                 ) : (
@@ -264,7 +268,7 @@ export default function SessionFeed() {
                       onClose={() => setEditingItem(null)}
                       onSave={async (updatedItem) => {
                         await Promise.all([
-                          updateFeedItem(updatedItem),
+                          updateFeedItemToTop(updatedItem),
                           refetchFullTodo(),
                         ]);
                         setEditingItem(null);

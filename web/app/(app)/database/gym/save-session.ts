@@ -28,16 +28,19 @@ export async function saveSession({
 }: props) {
   const supabase = createClient();
 
-  const occured_at = new Date(
-    useTimerStore.getState().activeSession?.started_at ?? Date.now()
+  const start_time = new Date(
+    useTimerStore.getState().activeSession?.started_at ?? Date.now(),
   ).toISOString();
+
+  const end_time = new Date().toISOString();
 
   const { error } = await supabase.rpc("gym_save_session", {
     p_exercises: exercises,
     p_notes: notes,
     p_duration: duration,
     p_title: title,
-    p_occured_at: occured_at,
+    p_start_time: start_time,
+    p_end_time: end_time,
   });
 
   if (error) {

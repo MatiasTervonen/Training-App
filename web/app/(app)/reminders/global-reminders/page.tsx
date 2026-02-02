@@ -113,7 +113,7 @@ export default function GlobalReminder() {
           </p>
           <div className="flex gap-3">
             <LinkButton href="/sessions">Back</LinkButton>
-            <LinkButton href="/menu">Menu</LinkButton>
+            <LinkButton href="/menu/settings">Menu</LinkButton>
           </div>
         </div>
       </InfoModal>

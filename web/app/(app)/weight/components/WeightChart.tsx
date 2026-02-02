@@ -302,7 +302,7 @@ export default function WeightChart({ range, data }: WeightChartProps) {
                 day: "numeric",
               });
             }}
-            formatter={(value: number) => [`${value} ${weightUnit}`, "Weight"]}
+            formatter={(value: number) => [`${value} ${weightUnit}`]}
           />
           <Area
             type="monotone"

@@ -3,6 +3,7 @@
 import LinkButton from "../components/buttons/LinkButton";
 import toast from "react-hot-toast";
 import { useTimerStore } from "../lib/stores/timerStore";
+import { List } from "lucide-react";
 
 export default function TimerPage() {
   const activeSession = useTimerStore((state) => state.activeSession);
@@ -25,7 +26,10 @@ export default function TimerPage() {
           Start Timer
         </LinkButton>
         <LinkButton href="/timer/create-timer">Create Timer</LinkButton>
-        <LinkButton href="/timer/my-timers">My-Timers</LinkButton>
+        <LinkButton href="/timer/my-timers">
+        <p>My-Timers</p>
+        <List />
+        </LinkButton>
       </div>
     </div>
   );

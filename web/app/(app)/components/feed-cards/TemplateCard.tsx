@@ -1,4 +1,4 @@
-import { formatDate } from "@/app/(app)/lib/formatDate";
+import { formatDate, formatDateShort } from "@/app/(app)/lib/formatDate";
 import DropdownMenu from "../dropdownMenu";
 import { Dumbbell, Menu } from "lucide-react";
 
@@ -52,8 +52,8 @@ export default function TemplateCard({
         onClick={onExpand}
         className="flex justify-between items-center px-4 bg-blue-600 rounded-br-md rounded-bl-md hover:bg-blue-500 cursor-pointer py-1"
       >
-        <div className=" text-gray-200 text-sm">
-          {formatDate(item.created_at)}
+        <div className="text-gray-200 text-sm">
+          {formatDateShort(item.created_at)}
         </div>
         <div className="flex items-center gap-5">
           <p>start</p>

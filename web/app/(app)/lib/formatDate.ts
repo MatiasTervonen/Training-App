@@ -1,8 +1,9 @@
 export const formatDate = (dateString: string | Date) => {
   const date = new Date(dateString);
   return new Intl.DateTimeFormat("en-US", {
-    month: "long",
+    month: "short",
     day: "numeric",
+    hour: "numeric",
   }).format(date);
 };
 
@@ -29,7 +30,7 @@ export function formatDateFin(dateString: string): string {
 
   // Get weekday in Finnish (e.g., "torstai")
   const weekday = new Intl.DateTimeFormat("fi-FI", { weekday: "long" }).format(
-    date
+    date,
   );
 
   // Get date in dd.MM.yyyy with leading zeros
@@ -48,7 +49,8 @@ export const formatDateWeek = (dateString: string | Date) => {
 };
 
 export const formatNotifyTime = (time: string | null) => {
-  const [hourStr, minuteStr] = time!.split(":");
+  if (!time) return null;
+  const [hourStr, minuteStr] = time.split(":");
   const hour = parseInt(hourStr, 10);
   const minute = minuteStr.padStart(2, "0");
 

@@ -50,7 +50,9 @@ export default function RemindersPage() {
       keyboardShouldPersistTaps="handled"
     >
       <PageContainer>
-        <AppText className="text-center mb-5 text-2xl">{t("reminders.myReminders")}</AppText>
+        <AppText className="text-center mb-5 text-2xl">
+          {t("reminders.myReminders")}
+        </AppText>
         <View className="flex-row gap-3 justify-center my-10 rounded-md">
           <AnimatedButton
             onPress={() => setActiveTab("normal")}
@@ -110,7 +112,9 @@ export default function RemindersPage() {
 
         {!error && !isLoading && reminders.length === 0 && (
           <AppText className="text-gray-300 text-center mt-10 text-lg">
-            {t("reminders.noReminders", { tab: t(`reminders.tabs.${activeTab}`) })}
+            {t("reminders.noReminders", {
+              tab: t(`reminders.tabs.${activeTab}`),
+            })}
           </AppText>
         )}
 

@@ -4,9 +4,10 @@ import { handleError } from "@/app/(app)/utils/handleError";
 type PinSessionProps = {
   id: string;
   type: string;
+  pinned_context?: string;
 };
 
-export async function pinItem({ id, type }: PinSessionProps) {
+export async function pinItem({ id, type, pinned_context }: PinSessionProps) {
   const supabase = createClient();
 
   if (!id || !type) {
@@ -20,9 +21,10 @@ export async function pinItem({ id, type }: PinSessionProps) {
         {
           feed_item_id: id,
           type: type,
+          ...(pinned_context && { pinned_context }),
         },
       ],
-      { onConflict: "user_id,type,feed_item_id" } // Ensure upsert on user_id, item_id, and type
+      { onConflict: "user_id,type,feed_item_id,pinned_context" }
     )
     .select()
     .single();

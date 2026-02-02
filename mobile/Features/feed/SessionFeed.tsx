@@ -382,9 +382,11 @@ export default function SessionFeed({ expandReminderId }: SessionFeedProps) {
                   <EditTodo
                     todo_session={todoSessionFull}
                     onClose={() => setEditingItem(null)}
-                    onSave={(updatedItem) => {
-                      updateFeedItemToTop(updatedItem);
-                      refetchFullTodo();
+                    onSave={async (updatedItem) => {
+                      await Promise.all([
+                        updateFeedItemToTop(updatedItem),
+                        refetchFullTodo(),
+                      ]);
                       setEditingItem(null);
                     }}
                   />
@@ -411,9 +413,11 @@ export default function SessionFeed({ expandReminderId }: SessionFeedProps) {
                   <ActivitySessionEdit
                     activity={activitySessionFull}
                     onClose={() => setEditingItem(null)}
-                    onSave={(updatedItem) => {
-                      updateFeedItem(updatedItem);
-                      refetchFullActivity();
+                    onSave={async (updatedItem) => {
+                      await Promise.all([
+                        updateFeedItem(updatedItem),
+                        refetchFullActivity(),
+                      ]);
                       setEditingItem(null);
                     }}
                   />

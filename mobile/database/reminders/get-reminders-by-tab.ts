@@ -36,5 +36,5 @@ export async function getRemindersByTab(
     throw new Error(`Error getting ${tab} reminders`);
   }
 
-  return data ?? [];
+  return (data ?? []) as ReminderByTab[];
 }

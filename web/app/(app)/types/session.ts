@@ -126,15 +126,17 @@ export type full_reminder = {
   title: string;
   notes: string | null;
   type: string;
-  notify_at?: string;
+  notify_at: string | null;
+  notification_id?: string[] | string;
   created_at: string;
   updated_at?: string | null;
-  seen_at?: string | null;
-  weekdays?: Json;
-  active?: boolean | null;
+  weekdays?: number[] | null;
+  active?: boolean;
   notify_date?: string | null;
   notify_at_time?: string | null;
+  seen_at?: string | null;
   delivered?: boolean | null;
+  mode?: string | null;
 };
 
 export type FeedData = {

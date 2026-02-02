@@ -8,9 +8,19 @@ import { useTranslation } from "react-i18next";
 
 const typeTranslationKeys: Record<string, string> = {
   "one-time": "oneTime",
-  "weekly": "weekly",
-  "daily": "daily",
-  "global_reminders": "global",
+  weekly: "weekly",
+  daily: "daily",
+  global_reminders: "global",
+};
+
+type reminderPayload = {
+  notify_date: string;
+  notify_at: string;
+  notify_at_time: string;
+  weekdays: number[];
+  notes: string;
+  type: string;
+  mode: "alarm" | "normal";
 };
 
 export default function ReminderSession(reminder: FeedItemUI) {
@@ -26,16 +36,6 @@ export default function ReminderSession(reminder: FeedItemUI) {
     t("reminders.days.fri"),
     t("reminders.days.sat"),
   ];
-
-  type reminderPayload = {
-    notify_date: string;
-    notify_at: string;
-    notify_at_time: string;
-    weekdays: number[];
-    notes: string;
-    type: string;
-    mode: "alarm" | "normal";
-  };
 
   return (
     <LinearGradient

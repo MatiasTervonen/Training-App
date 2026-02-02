@@ -2,8 +2,7 @@ import MenuContext from "./components/MenuContext";
 import LinkButton from "../components/buttons/LinkButton";
 import SignOutButton from "../components/buttons/singOutButton";
 import InstallAppClient from "./components/installAppClient";
-import { PushNotificationManager } from "../components/pushnotifications/pushnotifications";
-import { ShieldUser, UserPen, ContactRound } from "lucide-react";
+import { ShieldUser, UserPen, ContactRound, Settings } from "lucide-react";
 
 export default function MenuPage() {
   return (
@@ -24,10 +23,12 @@ export default function MenuPage() {
             <ShieldUser />
           </LinkButton>
           <MenuContext />
+          <LinkButton href={"/menu/settings"}>
+            <p>Settings</p>
+            <Settings />
+          </LinkButton>
         </div>
-        <div className="mb-10">
-          <PushNotificationManager />
-        </div>
+  
       </div>
       <div className="flex flex-col gap-5 items-center ">
         <InstallAppClient />

@@ -8,10 +8,16 @@ import { weight } from "@/app/(app)/types/models";
 import { useQuery } from "@tanstack/react-query";
 import { getWeight } from "@/app/(app)/database/weight/get-weight";
 
+type RangeType = "week" | "month" | "year";
+
+const ranges: { key: RangeType; label: string }[] = [
+  { key: "week", label: "7D" },
+  { key: "month", label: "30D" },
+  { key: "year", label: "1Y" },
+];
+
 export default function Page() {
-  const [range, setRange] = useState<"week" | "month" | "year" | "all">(
-    "month"
-  );
+  const [range, setRange] = useState<RangeType>("month");
 
   const {
     data: weight = [],
@@ -28,25 +34,25 @@ export default function Page() {
   });
 
   return (
-    <div className="pt-5 pb-10">
-      <h1 className="text-2xl mb-5 text-center">Weight analytics</h1>
-      <div className="flex flex-col ">
-        <div className="flex justify-center gap-3 mb-5">
-          {["week", "month", "year", "all"].map((option) => (
-            <button
-              key={option}
-              onClick={() =>
-                setRange(option as "week" | "month" | "year" | "all")
-              }
-              className={`px-4 py-2 m-1 rounded-lg ${
-                range === option
-                  ? "bg-blue-600 text-gray-100"
-                  : "bg-gray-700 text-gray-300"
-              }`}
-            >
-              {option.charAt(0).toUpperCase() + option.slice(1)}
-            </button>
-          ))}
+    <div className="pt-8 pb-10">
+      <h1 className="text-2xl mb-5 text-center">Weight Analytics</h1>
+      <div className="flex flex-col">
+        <div className="flex justify-center mb-5 mx-4">
+          <div className="flex bg-slate-800 rounded-lg p-1">
+            {ranges.map((option) => (
+              <button
+                key={option.key}
+                onClick={() => setRange(option.key)}
+                className={`px-6 py-2 rounded-md font-medium transition-colors ${
+                  range === option.key
+                    ? "bg-slate-700 text-cyan-400"
+                    : "text-gray-200 hover:text-gray-100"
+                }`}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
         </div>
 
         <div>

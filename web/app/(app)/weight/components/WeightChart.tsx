@@ -1,28 +1,28 @@
+"use client";
+
 import {
-  LineChart,
-  Line,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   ResponsiveContainer,
+  Area,
+  AreaChart,
 } from "recharts";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
 import { weight } from "@/app/(app)/types/models";
 
 type WeightChartProps = {
-  range: "week" | "month" | "year" | "all";
+  range: "week" | "month" | "year";
   data: weight[];
 };
 
 function addOffsetToDate(
   base: Date,
   range: string,
-  offset: number,
-  earliest?: Date
+  offset: number
 ): [Date, Date] {
   const end = new Date(base);
   const start = new Date(base);
@@ -37,20 +37,15 @@ function addOffsetToDate(
     case "year":
       start.setFullYear(end.getFullYear() - 1);
       break;
-    case "all":
-      if (earliest) return [earliest, base];
-      return [new Date(0), base];
   }
 
   // Shift start and end based on offset
-  const diff = end.getTime() - start.getTime();
+  const diff = end.getTime() - start.getTime() + 1;
   end.setTime(end.getTime() - diff * offset);
   start.setTime(start.getTime() - diff * offset);
 
   return [start, end];
 }
-
-// This function retrieves the latest date from the weight data entries.
 
 function getLatestDate(data: weight[]) {
   return new Date(
@@ -58,9 +53,15 @@ function getLatestDate(data: weight[]) {
   );
 }
 
+function getOldestDate(data: weight[]) {
+  return new Date(
+    Math.min(...data.map((entry) => new Date(entry.created_at).getTime()))
+  );
+}
+
 function formatDatelabel(
   dateString: string,
-  range: "week" | "month" | "year" | "all"
+  range: "week" | "month" | "year"
 ): string {
   const date = new Date(dateString);
   switch (range) {
@@ -75,13 +76,6 @@ function formatDatelabel(
     case "year":
       return new Intl.DateTimeFormat("en-US", {
         month: "short",
-      })
-        .format(date)
-        .charAt(0);
-    case "all":
-      return new Intl.DateTimeFormat("en-US", {
-        year: "numeric",
-        month: "short",
       }).format(date);
   }
 }
@@ -90,13 +84,13 @@ function generateDateRange(start: Date, end: Date): string[] {
   const dateList: string[] = [];
   const currentDate = new Date(start);
   while (currentDate <= end) {
-    dateList.push(currentDate.toISOString().split("T")[0]); // Format as YYYY-MM-DD
-    currentDate.setDate(currentDate.getDate() + 1); // Increment by one day
+    dateList.push(currentDate.toISOString().split("T")[0]);
+    currentDate.setDate(currentDate.getDate() + 1);
   }
   return dateList;
 }
 
-function fillMissingDates(
+function fillMissingDatesWithCarry(
   fullDates: string[],
   entries: weight[]
 ): { date: string; weight: number | null }[] {
@@ -104,16 +98,17 @@ function fillMissingDates(
     entries.map((entry) => [entry.created_at.split("T")[0], entry.weight])
   );
 
-  return fullDates.map((date) => ({
-    date,
-    weight: weightMap.has(date) ? weightMap.get(date)! : null,
-  }));
-}
+  let lastKnownWeight: number | null = null;
 
-function getEarliestDate(data: weight[]) {
-  return new Date(
-    Math.min(...data.map((entry) => new Date(entry.created_at).getTime()))
-  );
+  return fullDates.map((date) => {
+    if (weightMap.has(date)) {
+      lastKnownWeight = weightMap.get(date)!;
+    }
+    return {
+      date,
+      weight: lastKnownWeight,
+    };
+  });
 }
 
 function generateXTicks(range: string, dateList: string[]): string[] {
@@ -124,21 +119,13 @@ function generateXTicks(range: string, dateList: string[]): string[] {
 
     switch (range) {
       case "week":
-        // Show every day (or every other day)
-        if (i % 1 === 0) result.push(dateList[i]);
+        result.push(dateList[i]);
         break;
       case "month":
-        // Show every 5th day
         if (date.getDate() % 5 === 0) result.push(dateList[i]);
         break;
       case "year":
-        // Show the 1st of each month
         if (date.getDate() === 1) result.push(dateList[i]);
-        break;
-      case "all":
-        // Show the 1st of each year
-        if (date.getDate() === 1 && date.getMonth() === 0)
-          result.push(dateList[i]);
         break;
     }
   }
@@ -148,18 +135,32 @@ function generateXTicks(range: string, dateList: string[]): string[] {
 
 export default function WeightChart({ range, data }: WeightChartProps) {
   const [offset, setOffset] = useState(0);
-  const latestDate = getLatestDate(data); // Hakee viiemeissimmän päivämäärän datasta
-  const earliestDate = getEarliestDate(data);
+  const [prevRange, setPrevRange] = useState(range);
 
-  const [start, end] = addOffsetToDate(latestDate, range, offset, earliestDate);
+  // Reset offset when range changes (during render, not in effect)
+  if (range !== prevRange) {
+    setPrevRange(range);
+    setOffset(0);
+  }
+
+  const latestDate = getLatestDate(data);
+  const oldestDate = getOldestDate(data);
+
+  const [calculatedStart, end] = addOffsetToDate(latestDate, range, offset);
+
+  // For year range, clamp start to oldest record if not enough data
+  const start =
+    range === "year" && calculatedStart < oldestDate
+      ? oldestDate
+      : calculatedStart;
+
+  // Check if we can go back further (for disabling back button)
+  const [nextStart] = addOffsetToDate(latestDate, range, offset + 1);
+  const canGoBack = nextStart >= oldestDate;
 
   const weightUnit = useUserStore(
     (state) => state.preferences?.weight_unit || "kg"
   );
-
-  useEffect(() => {
-    setOffset(0); // Reset offset whenever range changes
-  }, [range]);
 
   const filteredData = data.filter((entry) => {
     const entryDate = new Date(entry.created_at);
@@ -181,12 +182,18 @@ export default function WeightChart({ range, data }: WeightChartProps) {
       rounded > 0
         ? `+ ${rounded}`
         : rounded < 0
-        ? `- ${Math.abs(rounded)}`
-        : `${rounded}`;
+          ? `- ${Math.abs(rounded)}`
+          : `${rounded}`;
   }
 
   const fullDateRange = generateDateRange(start, end);
-  const chartData = fillMissingDates(fullDateRange, filteredData);
+  const chartData = fillMissingDatesWithCarry(fullDateRange, filteredData)
+    .filter((item) => item.weight !== null)
+    .map((item) => ({
+      date: item.date,
+      weight: item.weight,
+      label: formatDatelabel(item.date, range),
+    }));
 
   function formatDateRange(start: Date | null, end: Date | null) {
     if (!start || !end) return "No data available";
@@ -208,68 +215,111 @@ export default function WeightChart({ range, data }: WeightChartProps) {
   const weights = chartData
     .map((d) => d.weight)
     .filter((w): w is number => w !== null);
-  const maxWeight = Math.max(...weights);
-  const minWeight = Math.min(...weights);
+  const maxWeight = weights.length > 0 ? Math.max(...weights) : 100;
+  const minWeight = weights.length > 0 ? Math.min(...weights) : 0;
 
-  const padding = 5;
-  const yAxisDomain = [
-    Math.floor(minWeight - padding),
-    Math.ceil(maxWeight + padding),
-  ];
+  const yAxisDomain = [Math.floor(minWeight) - 1, Math.round(maxWeight) + 1];
+
+  const rangeLabels: Record<string, string> = {
+    week: "week",
+    month: "month",
+    year: "year",
+  };
 
   return (
-    <div className="bg-slate-700  shadow-md">
-      <div className="flex justify-center items-center mb-4 px-10 pt-4 text-center">
-        <button onClick={() => setOffset((prev) => prev + 1)} className="mr-4">
-          <ChevronLeft />
-        </button>
-        <h2>{formatDateRange(start, end)}</h2>
+    <div className="bg-slate-900 shadow-md rounded-t-2xl pt-4">
+      <div className="flex justify-center items-center my-4 text-gray-400">
         <button
-          onClick={() => setOffset((prev) => Math.max(prev - 1, 0))}
-          disabled={offset === 0}
-          className="ml-4"
+          onClick={() => setOffset((prev) => prev + 1)}
+          disabled={!canGoBack}
+          className={`mr-4 bg-slate-800 p-1 rounded transition-opacity ${
+            !canGoBack ? "opacity-50" : ""
+          }`}
         >
-          <ChevronRight />
+          <ChevronLeft color={canGoBack ? "#22d3ee" : "#f3f4f6"} />
+        </button>
+        <span className="min-w-[200px] text-center text-gray-100">
+          {formatDateRange(start, end)}
+        </span>
+        <button
+          onClick={() => setOffset((prev) => Math.max(0, prev - 1))}
+          disabled={offset === 0}
+          className={`ml-4 bg-slate-800 p-1 rounded transition-opacity ${
+            offset === 0 ? "opacity-50" : ""
+          }`}
+        >
+          <ChevronRight color={offset === 0 ? "#f3f4f6" : "#22d3ee"} />
         </button>
       </div>
       <div className="flex justify-center items-center mb-4 px-10">
-        <h3>
-          {range}: {weightDifference} {weightUnit}
-        </h3>
+        <span className="text-gray-100">
+          {rangeLabels[range]}: {weightDifference} {weightUnit}
+        </span>
       </div>
       <ResponsiveContainer width="100%" height={300}>
-        <LineChart
+        <AreaChart
           data={chartData}
-          margin={{ top: 10, right: 20, left: -20, bottom: 10 }}
+          margin={{ top: 20, right: 20, left: -20, bottom: 40 }}
         >
-          <CartesianGrid strokeDasharray="3 3" />
+          <defs>
+            <linearGradient id="weightGradient" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="rgba(56, 189, 248, 0.4)" />
+              <stop offset="100%" stopColor="rgba(56, 189, 248, 0.05)" />
+            </linearGradient>
+          </defs>
+          <CartesianGrid
+            strokeDasharray="3 3"
+            stroke="#9ca3af"
+            strokeWidth={0.5}
+            vertical={false}
+          />
           <XAxis
             dataKey="date"
             ticks={xTicks}
             tickFormatter={(value) => formatDatelabel(value, range)}
-            tick={{ fill: "#f9fafb", fontSize: 14 }}
+            tick={{ fill: "#f3f4f6", fontSize: 12 }}
+            axisLine={{ stroke: "#9ca3af" }}
+            tickLine={{ stroke: "#9ca3af" }}
           />
           <YAxis
-            tick={{ fill: "#f9fafb", fontSize: 14 }}
+            tick={{ fill: "#f3f4f6", fontSize: 12 }}
             domain={yAxisDomain}
+            axisLine={{ stroke: "#9ca3af" }}
+            tickLine={{ stroke: "#9ca3af" }}
           />
           <Tooltip
             contentStyle={{
               backgroundColor: "#0f172a",
-              borderColor: "#8884d8",
-              color: "#f9fafb",
+              borderColor: "#3b82f6",
+              color: "#f3f4f6",
+              borderRadius: "8px",
+            }}
+            labelFormatter={(value) => {
+              const date = new Date(value);
+              return date.toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+              });
+            }}
+            formatter={(value: number) => [`${value} ${weightUnit}`, "Weight"]}
+          />
+          <Area
+            type="monotone"
+            dataKey="weight"
+            stroke="#93c5fd"
+            strokeWidth={3}
+            fill="url(#weightGradient)"
+            connectNulls={true}
+            dot={false}
+            activeDot={{
+              r: 6,
+              fill: "#3b82f6",
+              stroke: "#60a5fa",
+              strokeWidth: 2,
             }}
           />
-          <Legend />
-          <Line
-            type="linear"
-            dataKey="weight"
-            stroke="#f5d163"
-            connectNulls={true}
-            strokeWidth={3}
-            activeDot={{ r: 10 }}
-          />
-        </LineChart>
+        </AreaChart>
       </ResponsiveContainer>
     </div>
   );

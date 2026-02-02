@@ -1,0 +1,32 @@
+{
+  "weight": {
+    "title": "Weight Tracking",
+    "defaultTitle": "Weight",
+    "tracking": "Tracking",
+    "analytics": "Analytics",
+    "weightTracker": "Weight Tracker",
+    "titleLabel": "Title for Weight...",
+    "titlePlaceholder": "Weight entry title...",
+    "notesLabel": "Enter your notes here...",
+    "notesPlaceholder": "Enter your notes here...(optional)",
+    "weightLabel": "Enter your weight...",
+    "weightPlaceholder": "Enter your weight here...",
+    "savingWeight": "Saving weight...",
+    "analyticsScreen": {
+      "title": "Weight Analytics",
+      "loading": "Loading weight data...",
+      "error": "Error loading data. Try again...",
+      "noData": "No data available",
+      "week": "week",
+      "month": "month",
+      "year": "year",
+      "deleteConfirm": "Are you sure you want to delete this session?",
+      "deleted": "Deleted",
+      "deletedMessage": "Item has been deleted successfully.",
+      "deleteError": "Error",
+      "deleteErrorMessage": "Failed to delete item.",
+      "noNotes": "No notes...",
+      "viewFullHistory": "View Full History"
+    }
+  }
+}

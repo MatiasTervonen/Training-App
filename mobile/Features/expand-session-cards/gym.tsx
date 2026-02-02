@@ -10,10 +10,12 @@ import { History } from "lucide-react-native";
 import { getLastExerciseHistory } from "@/database/gym/last-exercise-history";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import AnimatedButton from "../../components/buttons/animatedButton";
 import ExerciseHistoryModal from "../gym/ExerciseHistoryModal";
 
 export default function GymSession(gym_session: FullGymSession) {
+  const { t } = useTranslation("gym");
   const [exerciseId, setExerciseId] = useState("");
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
 
@@ -24,9 +26,20 @@ export default function GymSession(gym_session: FullGymSession) {
   const weightUnit =
     useUserStore((state) => state.profile?.weight_unit) || "kg";
 
-  const isCardioExercise = (
-    exercise: FullGymSession["gym_session_exercises"][number],
-  ) => exercise.gym_exercises?.main_group.toLowerCase() === "cardio";
+  const isCardioExercise = (exercise: {
+    gym_exercises: { main_group: string };
+  }) => exercise.gym_exercises?.main_group.toLowerCase() === "cardio";
+
+  const translateRpe = (rpe: string) => {
+    const rpeMap: Record<string, string> = {
+      "Warm-up": t("gym.exerciseCard.rpeOptions.warmup"),
+      "Easy": t("gym.exerciseCard.rpeOptions.easy"),
+      "Medium": t("gym.exerciseCard.rpeOptions.medium"),
+      "Hard": t("gym.exerciseCard.rpeOptions.hard"),
+      "Failure": t("gym.exerciseCard.rpeOptions.failure"),
+    };
+    return rpeMap[rpe] || rpe;
+  };
 
   const {
     data: history = [],
@@ -69,7 +82,8 @@ export default function GymSession(gym_session: FullGymSession) {
               {formatTime(gym_session.end_time)}
             </AppText>
             <AppText className="text-lg">
-              Duration: {formatDuration(gym_session.duration)}
+              {t("gym.session.duration")}:{" "}
+              {formatDuration(gym_session.duration)}
             </AppText>
             {gym_session.notes && (
               <AppText className="text-lg text-gray-200 whitespace-pre-wrap break-words overflow-hidden">
@@ -92,7 +106,7 @@ export default function GymSession(gym_session: FullGymSession) {
           >
             {group.length > 1 && (
               <AppText className="text-xl text-gray-100 my-2 text-center">
-                Super-Set
+                {t("gym.session.superSet")}
               </AppText>
             )}
             {group.map(({ exercise, index }) => (
@@ -115,8 +129,13 @@ export default function GymSession(gym_session: FullGymSession) {
                   </View>
                   <View className="flex-row items-center ">
                     <AppText className="text-md text-gray-400 mt-1">
-                      {exercise.gym_exercises.muscle_group} /{" "}
-                      {exercise.gym_exercises.equipment}
+                      {t(
+                        `gym.equipment.${exercise.gym_exercises.equipment?.toLowerCase()}`,
+                      )}{" "}
+                      /{" "}
+                      {t(
+                        `gym.muscleGroups.${exercise.gym_exercises.muscle_group?.toLowerCase().replace(/ /g, "_")}`,
+                      )}
                     </AppText>
                   </View>
                 </View>
@@ -128,38 +147,52 @@ export default function GymSession(gym_session: FullGymSession) {
                   <View className="text-gray-300 border-b border-gray-300 flex-row">
                     {isCardioExercise(exercise) ? (
                       <>
-                        <View className="w-[20%]">
-                          <AppText className="p-2 text-lg">Set</AppText>
+                        <View className="flex-1 items-center">
+                          <AppText className="p-2 text-lg">
+                            {t("gym.session.set")}
+                          </AppText>
                         </View>
-                        <View className="w-[30%] flex-row items-center">
-                          <AppText className="p-2 text-lg">Time</AppText>
-                          <AppText className="text-sm">(min)</AppText>
+                        <View className="flex-1 items-center">
+                          <AppText className="p-2 text-lg">
+                            {t("gym.session.time")}
+                          </AppText>
+                          <AppText className="text-sm">
+                            ({t("gym.session.min")})
+                          </AppText>
                         </View>
-                        <View className="w-[30%] flex-row items-center">
-                          <AppText className="p-2 text-lg">Distance</AppText>
-                          <AppText className="text-sm">(meters)</AppText>
+                        <View className="flex-1 items-center">
+                          <AppText className="p-2 text-lg">
+                            {t("gym.session.distance")}
+                          </AppText>
+                          <AppText className="text-sm">
+                            ({t("gym.session.meters")})
+                          </AppText>
                         </View>
-                        <View className="w-[20%]">
-                          <AppText className="p-2 text-lg"></AppText>
-                        </View>
+                        <View className="w-8" />
                       </>
                     ) : (
                       <>
-                        <View className="w-[17%] text-center">
-                          <AppText className="p-2 text-lg">Set</AppText>
+                        <View className="flex-1 items-center">
+                          <AppText className="p-2 text-lg">
+                            {t("gym.session.set")}
+                          </AppText>
                         </View>
-                        <View className="w-[28%] text-center">
-                          <AppText className="p-2 text-lg">Weight</AppText>
+                        <View className="flex-1 items-center">
+                          <AppText className="p-2 text-lg">
+                            {t("gym.session.weight")}
+                          </AppText>
                         </View>
-                        <View className="w-[20%] text-center">
-                          <AppText className="p-2 text-lg">Reps</AppText>
+                        <View className="flex-1 items-center">
+                          <AppText className="p-2 text-lg">
+                            {t("gym.session.reps")}
+                          </AppText>
                         </View>
-                        <View className="w-[30%] text-center">
-                          <AppText className="p-2 text-lg">RPE</AppText>
+                        <View className="flex-1 items-center">
+                          <AppText className="p-2 text-lg">
+                            {t("gym.session.rpe")}
+                          </AppText>
                         </View>
-                        <View className="w-[5%] text-center">
-                          <AppText className="p-2 text-lg"></AppText>
-                        </View>
+                        <View className="w-8" />
                       </>
                     )}
                   </View>
@@ -176,42 +209,44 @@ export default function GymSession(gym_session: FullGymSession) {
                     >
                       {isCardioExercise(exercise) ? (
                         <>
-                          <View className="w-[20%] text-center">
+                          <View className="flex-1 items-center">
                             <AppText className="p-2 text-lg ">
                               {setIndex + 1}
                             </AppText>
                           </View>
-                          <View className="w-[30%] text-center">
+                          <View className="flex-1 items-center">
                             <AppText className="p-2 text-lg ">
                               {set.time_min}
                             </AppText>
                           </View>
-                          <View className="w-[30%] text-center">
+                          <View className="flex-1 items-center">
                             <AppText className="p-2 text-lg">
                               {set.distance_meters}
                             </AppText>
                           </View>
+                          <View className="w-8" />
                         </>
                       ) : (
                         <>
-                          <View className="w-[17%] text-center">
+                          <View className="flex-1 items-center">
                             <AppText className="p-2 text-lg">
                               {setIndex + 1}
                             </AppText>
                           </View>
-                          <View className="w-[28%] text-center">
+                          <View className="flex-1 items-center">
                             <AppText className="p-2 text-lg">
                               {set.weight} {weightUnit}
                             </AppText>
                           </View>
-                          <View className="w-[20%] text-center">
+                          <View className="flex-1 items-center">
                             <AppText className="p-2 text-lg">
                               {set.reps}
                             </AppText>
                           </View>
-                          <View className="w-[30%] text-center">
-                            <AppText className="p-2 text-lg">{set.rpe}</AppText>
+                          <View className="flex-1 items-center">
+                            <AppText className="p-2 text-lg">{set.rpe ? translateRpe(set.rpe) : ""}</AppText>
                           </View>
+                          <View className="w-8" />
                         </>
                       )}
                     </View>

@@ -1,8 +1,11 @@
+"use client";
+
 import { formatDate, formatDateTime } from "@/app/(app)/lib/formatDate";
 import CopyButton from "@/app/(app)/components/buttons/CopyButton";
 import { Bell, CalendarSync } from "lucide-react";
 import { formatNotifyTime } from "@/app/(app)/lib/formatDate";
 import { FeedItemUI } from "../../types/session";
+import { useTranslation } from "react-i18next";
 
 type reminderPayload = {
   notify_date: string;
@@ -15,9 +18,18 @@ type reminderPayload = {
 };
 
 export default function ReminderSession(reminder: FeedItemUI) {
+  const { t } = useTranslation("reminders");
   const payload = reminder.extra_fields as reminderPayload;
 
-  const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const days = [
+    t("reminders.days.sun"),
+    t("reminders.days.mon"),
+    t("reminders.days.tue"),
+    t("reminders.days.wed"),
+    t("reminders.days.thu"),
+    t("reminders.days.fri"),
+    t("reminders.days.sat"),
+  ];
 
   return (
     <div className="page-padding mt-10">
@@ -26,14 +38,14 @@ export default function ReminderSession(reminder: FeedItemUI) {
         className={`max-w-lg mx-auto rounded-2xl border-2 border-slate-500 bg-linear-to-tr from-gray-900 via-slate-900 to-blue-900 shadow-xl px-4 pb-2 ${payload.mode === "alarm" ? "pt-0" : "pt-10"}`}
       >
         {payload.mode === "alarm" && (
-          <p className="text-sm text-yellow-500 my-4">High Priority Reminder</p>
+          <p className="text-sm text-yellow-500 my-4">{t("reminders.highPriorityReminder")}</p>
         )}
 
         <div className="flex flex-col justify-center gap-4">
           <div className="flex gap-2 items-center justify-center bg-gray-900 rounded-xl py-5 border-2 border-slate-600 w-full">
             <CalendarSync size={28} />
             <p className="text-lg">
-              {reminder.type === "global_reminders" ? "global" : reminder.type}
+              {reminder.type === "global_reminders" ? t("reminders.global") : reminder.type}
             </p>
           </div>
 
@@ -76,16 +88,16 @@ export default function ReminderSession(reminder: FeedItemUI) {
           </div>
         )}
         <p className="text-sm text-gray-400 mt-8">
-          Created: {formatDate(reminder.created_at)}
+          {t("reminders.created")} {formatDate(reminder.created_at)}
         </p>
         {reminder.updated_at && (
           <p className="text-sm text-yellow-500 mt-2">
-            Updated: {formatDate(reminder.updated_at!)}
+            {t("reminders.updated")} {formatDate(reminder.updated_at!)}
           </p>
         )}
       </div>
       <div className="flex justify-center mt-4">
-        <CopyButton targetId="reminder-id" label="Copy Reminder" />
+        <CopyButton targetId="reminder-id" label={t("reminders.copyReminder")} />
       </div>
     </div>
   );

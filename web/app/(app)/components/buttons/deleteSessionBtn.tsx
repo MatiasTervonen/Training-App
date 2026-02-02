@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "react-i18next";
+
 interface DeleteSessionBtnProps {
   onDelete: () => void;
   label?: string;
@@ -10,14 +12,19 @@ interface DeleteSessionBtnProps {
 
 export default function DeleteSessionBtn({
   onDelete,
-  label = "Delete",
+  label,
   confirm = true,
   disabled = false,
-  confirmMessage = "Are you sure you want to delete this session?",
+  confirmMessage,
 }: DeleteSessionBtnProps) {
+  const { t } = useTranslation("common");
+
+  const buttonLabel = label ?? t("common.delete");
+  const message = confirmMessage ?? t("deleteButton.confirmDeleteMessage");
+  
   const handleDelete = () => {
     if (confirm) {
-      const confirmed = window.confirm(confirmMessage);
+      const confirmed = window.confirm(message);
 
       if (!confirmed) return;
     }
@@ -31,7 +38,7 @@ export default function DeleteSessionBtn({
       onClick={handleDelete}
       disabled={disabled}
     >
-      {label}
+      {buttonLabel}
     </button>
   );
 }

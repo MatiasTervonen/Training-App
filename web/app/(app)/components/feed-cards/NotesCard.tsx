@@ -1,6 +1,9 @@
+"use client";
+
 import { NotebookPen } from "lucide-react";
 import { FeedCardProps } from "@/app/(app)/types/session";
 import BaseFeedCard from "./BaseFeedCard";
+import { useTranslation } from "react-i18next";
 
 type notesPayload = {
   notes: string;
@@ -14,6 +17,7 @@ export default function NotesCard({
   onExpand,
   onEdit,
 }: FeedCardProps) {
+  const { t } = useTranslation("feed");
   const payload = item.extra_fields as notesPayload;
 
   return (
@@ -25,11 +29,11 @@ export default function NotesCard({
       onExpand={onExpand}
       onEdit={onEdit}
       typeIcon={<NotebookPen size={20} className={pinned ? "text-slate-900" : "text-gray-100"} />}
-      typeName="Notes"
+      typeName={t("feed.card.types.notes")}
       showUpdatedAt={true}
       statsContent={
         <p
-          className={`line-clamp-2 break-words ${
+          className={`line-clamp-2 wrap-break-words ${
             pinned ? "text-slate-900" : "text-gray-100"
           }`}
         >

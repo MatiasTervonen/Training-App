@@ -1,7 +1,10 @@
+"use client";
+
 import { Bell, Check } from "lucide-react";
 import { formatDateTime } from "@/app/(app)/lib/formatDate";
 import { FeedCardProps } from "@/app/(app)/types/session";
 import BaseFeedCard from "./BaseFeedCard";
+import { useTranslation } from "react-i18next";
 
 type reminderPayload = {
   notify_at: string;
@@ -16,6 +19,7 @@ export default function GlobalReminderCard({
   onExpand,
   onEdit,
 }: FeedCardProps) {
+  const { t } = useTranslation("feed");
   const payload = item.extra_fields as reminderPayload;
 
   return (
@@ -27,7 +31,7 @@ export default function GlobalReminderCard({
       onExpand={onExpand}
       onEdit={onEdit}
       typeIcon={<Bell size={20} className={pinned ? "text-slate-900" : "text-gray-100"} />}
-      typeName="Reminder"
+      typeName={t("feed.card.types.reminder")}
       showUpdatedAt={!payload.delivered}
       statsContent={
         <div className={`flex flex-col gap-2 ${pinned ? "text-slate-900" : "text-gray-100"}`}>
@@ -38,7 +42,7 @@ export default function GlobalReminderCard({
           {payload.delivered && (
             <div className="flex items-center gap-2 bg-gray-900 rounded-md w-fit px-2 py-1">
               <Check size={20} className="text-green-400" />
-              <p className="text-gray-100">Delivered</p>
+              <p className="text-gray-100">{t("feed.card.delivered")}</p>
             </div>
           )}
         </div>

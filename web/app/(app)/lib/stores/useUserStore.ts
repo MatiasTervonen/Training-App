@@ -5,12 +5,14 @@ interface UserPreferences {
   display_name: string;
   weight_unit: string;
   profile_picture: string | null | undefined;
+  language: "en" | "fi" | null;
 }
 
 interface UserStore {
   preferences: UserPreferences | null;
   setUserPreferences: (preferences: UserPreferences) => void;
   clearUserPreferences: () => void;
+  setLanguage: (language: "en" | "fi") => void;
   role: "user" | "admin" | "super_admin" | "guest" | null; // keep role separate
   setRole: (role: UserStore["role"]) => void;
   logoutUser: () => void; // Method to clear user state on logout
@@ -26,6 +28,12 @@ export const useUserStore = create<UserStore>()(
       preferences: null,
       setUserPreferences: (preferences) => set({ preferences }),
       clearUserPreferences: () => set({ preferences: null }),
+      setLanguage: (language) =>
+        set((state) => ({
+          preferences: state.preferences
+            ? { ...state.preferences, language }
+            : null,
+        })),
       role: null, 
       setRole: (role) => set({ role }),
       logoutUser: () => {

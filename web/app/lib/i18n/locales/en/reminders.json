@@ -1,0 +1,69 @@
+{
+  "reminders": {
+    "title": "Reminders",
+    "editReminder": "Edit your reminder",
+    "highPriorityReminder": "High-priority reminder",
+    "global": "Global",
+    "created": "Created:",
+    "updated": "Updated:",
+    "edit": "Edit",
+    "delete": "Delete",
+    "validation": {
+      "titleRequired": "Title is required",
+      "notifyTimeRequired": "Notify time is required",
+      "notifyTimeFuture": "Notify time must be in the future."
+    },
+    "errors": {
+      "editGlobalReminder": "Error editing global reminder",
+      "tryAgainLater": "Try again later."
+    },
+    "oneTimeGlobal": "One-Time Global",
+    "oneTime": "One-Time",
+    "weekly": "Weekly",
+    "daily": "Daily",
+    "myReminders": "My Reminders",
+    "oneTimeReminder": "One-Time Reminder",
+    "weeklyReminders": "Weekly reminders",
+    "dailyReminder": "Daily Reminder",
+    "globalReminder": "Global Reminder",
+    "oneTimeInfo": "Notifies only this device once at the set time.",
+    "weeklyInfo": "Repeats on selected days each week.",
+    "dailyInfo": "Repeats every day at the set time.",
+    "globalInfo": "Notifies all your devices once at the set time.",
+    "titleLabel": "Title...",
+    "titlePlaceholder": "Title... (required)",
+    "notesLabel": "Notes...",
+    "notesPlaceholder": "Notes... (optional)",
+    "setNotifyTime": "Set Notify Time",
+    "repeatOnDays": "Repeat on these days:",
+    "enableHighPriority": "Enable high priority reminder",
+    "highPriorityDescription": "(Continue to alarm until dismissed)",
+    "savingReminder": "Saving reminder...",
+    "pushDisabledTitle": "Push notifications disabled.",
+    "pushDisabledMessage": "Enable push notifications from settings to receive reminders.",
+    "back": "Back",
+    "settings": "Settings",
+    "tabs": {
+      "normal": "Normal",
+      "repeating": "Repeating",
+      "delivered": "Delivered"
+    },
+    "errorLoading": "Error loading reminders. Try again!",
+    "noReminders": "No {{tab}} reminders.",
+    "days": {
+      "sun": "Sun",
+      "mon": "Mon",
+      "tue": "Tue",
+      "wed": "Wed",
+      "thu": "Thu",
+      "fri": "Fri",
+      "sat": "Sat"
+    },
+    "notification": {
+      "tapToOpen": "Tap to open",
+      "reminder": "Reminder",
+      "stopAlarm": "Stop Alarm"
+    },
+    "copyReminder": "Copy Reminder"
+  }
+}

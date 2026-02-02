@@ -1,21 +1,25 @@
+"use client";
+
 import { formatDate } from "@/app/(app)/lib/formatDate";
 import CopyButton from "../buttons/CopyButton";
 import { FeedItemUI } from "../../types/session";
+import { useTranslation } from "react-i18next";
 
 type notesPayload = {
   notes: string;
 };
 
 export default function NotesSession(notes: FeedItemUI) {
+  const { t } = useTranslation("common");
   const payload = notes.extra_fields as notesPayload;
 
   return (
     <div className="text-center max-w-lg mx-auto page-padding">
       <div className="flex flex-col gap-2 text-sm text-gray-400">
-        <p>Created: {formatDate(notes.created_at)}</p>
+        <p>{t("common.created")} {formatDate(notes.created_at)}</p>
         {notes.updated_at && (
           <p className="text-yellow-500">
-            Updated: {formatDate(notes.updated_at)}
+            {t("common.updated")} {formatDate(notes.updated_at)}
           </p>
         )}
       </div>

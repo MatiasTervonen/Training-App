@@ -1,0 +1,47 @@
+{
+  "feed": {
+    "loadError": "Failed to load sessions. Please try again later.",
+    "noSessions": "No sessions yet. Let's get started!",
+    "loadingTodo": "Loading todo session...",
+    "todoError": "Failed to load todo session details. Please try again later.",
+    "loadingGym": "Loading gym session details...",
+    "gymError": "Failed to load gym session details. Please try again later.",
+    "loadingActivity": "Loading activity session details...",
+    "activityError": "Failed to load activity session details. Please try again later.",
+    "loadingNotes": "Loading notes session...",
+    "card": {
+      "details": "Details",
+      "updated": "updated:",
+      "completed": "completed",
+      "exercises": "Exercises",
+      "sets": "Sets",
+      "min": "min",
+      "delivered": "Delivered",
+      "start": "start",
+      "weekdays": {
+        "sun": "Sun",
+        "mon": "Mon",
+        "tue": "Tue",
+        "wed": "Wed",
+        "thu": "Thu",
+        "fri": "Fri",
+        "sat": "Sat"
+      },
+      "types": {
+        "activity": "Activity",
+        "weight": "Weight",
+        "todo": "To-Do",
+        "gym": "Gym",
+        "notes": "Notes",
+        "reminder": "Reminder"
+      }
+    },
+    "deleteSession": {
+      "confirmTitle": "Are you sure you want to delete this session?",
+      "successTitle": "Deleted",
+      "successMessage": "Item has been deleted successfully.",
+      "errorTitle": "Error",
+      "errorMessage": "Failed to delete item."
+    }
+  }
+}

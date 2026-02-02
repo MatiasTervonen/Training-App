@@ -8,6 +8,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { ExerciseEntry } from "@/app/(app)/types/session";
 import { full_gym_session } from "@/app/(app)/types/models";
 import { FeedData } from "@/app/(app)/types/session";
+import { useTranslation } from "react-i18next";
 
 export default function useSaveSession({
   sessionTitle,
@@ -30,18 +31,17 @@ export default function useSaveSession({
   resetSession: () => void;
   session: full_gym_session;
 }) {
+  const { t } = useTranslation("gym");
   const router = useRouter();
   const queryClient = useQueryClient();
 
   const handleSaveSession = async () => {
     if (sessionTitle.trim() === "") {
-      toast.error("Please enter a session title before saving.");
+      toast.error(t("gym.saveSession.titleRequired"));
       return;
     }
 
-    const confirmSave = confirm(
-      "Are you sure you want to finish this session?"
-    );
+    const confirmSave = confirm(t("gym.saveSession.confirmMessage"));
 
     if (!confirmSave) return;
     if (exercises.length === 0 && notes.trim() === "") return;
@@ -99,7 +99,7 @@ export default function useSaveSession({
       }
       resetSession(); // Clear the session data
     } catch {
-      toast.error("Failed to save gym session. Please try again.");
+      toast.error(t("gym.saveSession.saveError"));
       setIsSaving(false);
     }
   };

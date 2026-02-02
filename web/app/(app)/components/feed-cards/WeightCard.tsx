@@ -1,7 +1,10 @@
+"use client";
+
 import { Scale } from "lucide-react";
 import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
 import { FeedCardProps } from "@/app/(app)/types/session";
 import BaseFeedCard from "./BaseFeedCard";
+import { useTranslation } from "react-i18next";
 
 type weightPayload = {
   weight: number;
@@ -15,6 +18,7 @@ export default function WeightCard({
   onExpand,
   onEdit,
 }: FeedCardProps) {
+  const { t } = useTranslation("feed");
   const payload = item.extra_fields as weightPayload;
 
   const weightUnit =
@@ -29,7 +33,7 @@ export default function WeightCard({
       onExpand={onExpand}
       onEdit={onEdit}
       typeIcon={<Scale size={20} className={pinned ? "text-slate-900" : "text-gray-100"} />}
-      typeName="Weight"
+      typeName={t("feed.card.types.weight")}
       statsContent={
         <p className={`text-lg ${pinned ? "text-slate-900" : "text-gray-100"}`}>
           {payload.weight} {weightUnit}

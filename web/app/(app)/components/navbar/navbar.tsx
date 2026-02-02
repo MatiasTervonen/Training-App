@@ -8,8 +8,10 @@ import NotificationBell from "@/app/(app)/components/navbar/NotificationBell";
 import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
 import { useRouter } from "next/navigation";
 import ActiveSessionPopup from "@/app/(app)/components/activeSessionPopup";
+import { useTranslation } from "react-i18next";
 
 export default function Navbar() {
+  const { t } = useTranslation("common");
   const pathname = usePathname();
   const router = useRouter();
 
@@ -50,7 +52,7 @@ export default function Navbar() {
                 : "p-2 w-1/3 hover:bg-slate-500"
             }
           >
-            Menu
+            {t("navbar.menu")}
           </Link>
 
           <Link
@@ -61,7 +63,7 @@ export default function Navbar() {
                 : "p-2 w-1/3 hover:bg-slate-500"
             }
           >
-            Feed
+            {t("navbar.feed")}
           </Link>
           <button
             onClick={() => router.push("/sessions")}
@@ -71,7 +73,7 @@ export default function Navbar() {
                 : "p-2 w-1/3 hover:bg-slate-500"
             }
           >
-            Sessions
+            {t("navbar.sessions")}
           </button>
         </div>
       )}

@@ -8,8 +8,10 @@ import { useQuery } from "@tanstack/react-query";
 import { getFriendRequest } from "@/app/(app)/database/friends/get-friend-request";
 import { acceptFriendRequest } from "@/app/(app)/database/friends/accept-friend-request";
 import CustomDropDown from "@/app/(app)/components/customDropDown";
+import { useTranslation } from "react-i18next";
 
 export default function NotificationBell() {
+  const { t } = useTranslation("common");
   const { data: friendRequest } = useQuery({
     queryKey: ["get-FriendRequest"],
     queryFn: getFriendRequest,
@@ -50,12 +52,14 @@ export default function NotificationBell() {
       >
         <div className=" p-4 w-96">
           <div className="flex items-center gap-2 mb-4 justify-center">
-            <h1>Notifications</h1>
+            <h1>{t("notifications.title")}</h1>
             <Bell size={20} />
           </div>
           <div>
             {requests.length === 0 && (
-              <p className="text-gray-400 text-center">No new notifications</p>
+              <p className="text-gray-400 text-center">
+                {t("notifications.noNotifications")}
+              </p>
             )}
             {requests.length > 0 &&
               requests.map((request: FriendRequest) => (
@@ -67,7 +71,7 @@ export default function NotificationBell() {
                     {formatDate(request.created_at)}
                   </p>
                   <div className="flex items-center gap-2 text-sm">
-                    <p>Friend request from</p>
+                    <p>{t("notifications.friendRequest")}</p>
                     <p>{request.sender?.display_name}</p>
                   </div>
                   <div className="flex gap-5 mt-4 text-sm text-gray-300">
@@ -77,10 +81,10 @@ export default function NotificationBell() {
                       }
                       className="bg-blue-600 px-3 py-1 rounded-md hover:bg-blue-500 transition-colors"
                     >
-                      Accept
+                      {t("notifications.accept")}
                     </button>
                     <button className="bg-red-600 px-3 py-1 rounded-md hover:bg-red-500 transition-colors">
-                      reject
+                      {t("notifications.reject")}
                     </button>
                   </div>
                 </div>

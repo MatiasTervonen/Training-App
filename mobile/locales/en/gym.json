@@ -154,7 +154,7 @@
       "history": "History",
       "addSet": "Add Set",
       "last": "Last:",
-      "notesFor": "Notes for {{name}}",
+      "notesFor": "Notes...",
       "notesPlaceholder": "Add your notes here...",
       "set": "Set",
       "time": "Time",
@@ -195,6 +195,23 @@
       "confirmTitle": "Confirm Finish Session",
       "confirmMessage": "Are you sure you want to finish this session?",
       "saveError": "Failed to save session. Please try again."
+    },
+    "session": {
+      "duration": "Duration",
+      "superSet": "Super-Set",
+      "set": "Set",
+      "time": "Time",
+      "min": "min",
+      "distance": "Distance",
+      "meters": "meters",
+      "weight": "Weight",
+      "reps": "Reps",
+      "rpe": "RPE"
+    },
+    "exerciseHistory": {
+      "loading": "Loading history...",
+      "loadError": "Could not load exercise history. Please try again.",
+      "noHistory": "No history available for this exercise."
     },
     "analytics": {
       "title": "Last 30 Days Analytics",

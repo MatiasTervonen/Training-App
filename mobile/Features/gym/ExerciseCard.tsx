@@ -130,7 +130,7 @@ export default function ExerciseCard({
         <>
           <View className="my-4">
             <SubNotesInput
-              label={t("gym.exerciseCard.notesFor", { name: exercise.name })}
+              label={t("gym.exerciseCard.notesFor")}
               className="min-h-[60px]"
               placeholder={t("gym.exerciseCard.notesPlaceholder")}
               value={exercise.notes || ""}

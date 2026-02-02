@@ -1,6 +1,9 @@
+"use client";
+
 import { Dumbbell, Timer } from "lucide-react";
 import { FeedCardProps } from "@/app/(app)/types/session";
 import BaseFeedCard from "./BaseFeedCard";
+import { useTranslation } from "react-i18next";
 
 type gymPayload = {
   duration: number;
@@ -27,6 +30,7 @@ export default function GymCard({
   onExpand,
   onEdit,
 }: FeedCardProps) {
+  const { t } = useTranslation("feed");
   const payload = item.extra_fields as gymPayload;
 
   return (
@@ -38,13 +42,13 @@ export default function GymCard({
       onExpand={onExpand}
       onEdit={onEdit}
       typeIcon={<Dumbbell size={20} className={pinned ? "text-slate-900" : "text-gray-100"} />}
-      typeName="Gym"
+      typeName={t("feed.card.types.gym")}
       statsContent={
         <div className={`flex gap-4 ${pinned ? "text-slate-900" : "text-gray-100"}`}>
           {payload.exercises_count > 0 && (
-            <p>Exercises: {payload.exercises_count}</p>
+            <p>{t("feed.card.exercises")}: {payload.exercises_count}</p>
           )}
-          {payload.sets_count > 0 && <p>Sets: {payload.sets_count}</p>}
+          {payload.sets_count > 0 && <p>{t("feed.card.sets")}: {payload.sets_count}</p>}
           {payload.duration > 0 && (
             <div className="flex items-center gap-1">
               <Timer size={16} />

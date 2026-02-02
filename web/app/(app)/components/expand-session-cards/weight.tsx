@@ -1,8 +1,10 @@
+"use client";
+
 import { formatDate } from "@/app/(app)/lib/formatDate";
 import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
-
 import LinkButton from "@/app/(app)/components/buttons/LinkButton";
 import { FeedItemUI } from "../../types/session";
+import { useTranslation } from "react-i18next";
 
 type weightPayload = {
   weight: number;
@@ -10,6 +12,7 @@ type weightPayload = {
 };
 
 export default function WeightSession(weight: FeedItemUI) {
+  const { t } = useTranslation("weight");
   const payload = weight.extra_fields as weightPayload;
 
   const weightUnit =
@@ -31,7 +34,7 @@ export default function WeightSession(weight: FeedItemUI) {
           </div>
         </div>
         <div className="mt-10">
-          <LinkButton href="/weight/analytics">View Full History</LinkButton>
+          <LinkButton href="/weight/analytics">{t("weight.analyticsScreen.viewFullHistory")}</LinkButton>
         </div>
       </div>
     </div>

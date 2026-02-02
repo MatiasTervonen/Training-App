@@ -8,6 +8,7 @@ import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
 import { ExerciseEntry, ExerciseInput } from "@/app/(app)/types/session";
 import toast from "react-hot-toast";
 import SubNotesInput from "@/app/(app)/ui/SubNotesInput";
+import { useTranslation } from "react-i18next";
 
 type ExerciseCardProps = {
   index: number;
@@ -19,7 +20,7 @@ type ExerciseCardProps = {
   onInputChange: (
     index: number,
     field: "weight" | "reps" | "rpe" | "time_min" | "distance_meters",
-    value: number | string
+    value: number | string,
   ) => void;
   onAddSet: (index: number) => void;
   onDeleteSet: (exerciseIndex: number, setIndex: number) => void;
@@ -44,6 +45,8 @@ export default function ExerciseCard({
   onChangeExercise,
   mode,
 }: ExerciseCardProps) {
+  const { t } = useTranslation("gym");
+
   const weightUnit =
     useUserStore((state) => state.preferences?.weight_unit) || "kg";
 
@@ -55,7 +58,10 @@ export default function ExerciseCard({
             {index + 1}. {exercise.name}
           </span>
           <span className="text-sm text-gray-400">
-            {exercise.equipment} / {exercise.muscle_group}
+            {t(`gym.equipment.${exercise.equipment?.toLowerCase()}`)} /{" "}
+            {t(
+              `gym.muscleGroups.${exercise.muscle_group?.toLowerCase().replace(/ /g, "_")}`,
+            )}
           </span>
         </div>
 
@@ -71,29 +77,41 @@ export default function ExerciseCard({
         <>
           <div className="my-4 ">
             <SubNotesInput
-              label={`Notes for ${exercise.name}...`}
+              label={t("gym.exerciseCard.notesFor")}
               notes={exercise.notes || ""}
               setNotes={(newNotes) => {
                 onUpdateExercise(index, { ...exercise, notes: newNotes });
               }}
-              placeholder="Add your notes here..."
+              placeholder={t("gym.exerciseCard.notesPlaceholder")}
             />
           </div>
 
           <table className="w-full text-left text-gray-100">
             <thead>
               <tr className="text-gray-300 border-b">
-                <th className="p-2 font-normal">Set</th>
+                <th className="p-2 font-normal">
+                  {t("gym.exerciseCard.set")}{" "}
+                </th>
                 {isCardioExercise(exercise) ? (
                   <>
-                    <th className="p-2 font-normal">Time (min)</th>
-                    <th className="p-2 font-normal">Length (meters)</th>
+                    <th className="p-2 font-normal">
+                      {t("gym.exerciseCard.timePlaceholder")}
+                    </th>
+                    <th className="p-2 font-normal">
+                      {t("gym.exerciseCard.lengthPlaceholder")}
+                    </th>
                   </>
                 ) : (
                   <>
-                    <th className="p-2 font-normal">Weight</th>
-                    <th className="p-2 font-normal">Reps</th>
-                    <th className="p-2 font-normal">Rpe</th>
+                    <th className="p-2 font-normal">
+                      {t("gym.exerciseCard.weight")}
+                    </th>
+                    <th className="p-2 font-normal">
+                      {t("gym.exerciseCard.reps")}
+                    </th>
+                    <th className="p-2 font-normal">
+                      {t("gym.exerciseCard.rpe")}
+                    </th>
                   </>
                 )}
               </tr>
@@ -128,7 +146,7 @@ export default function ExerciseCard({
                       className="bg-red-600 p-1 rounded text-gray-100 "
                       onClick={() => {
                         const confirmed = window.confirm(
-                          "Are you sure you want to delete this set?"
+                          "Are you sure you want to delete this set?",
                         );
                         if (!confirmed) return;
                         onDeleteSet(index, i);
@@ -196,11 +214,26 @@ export default function ExerciseCard({
                     value={input.rpe!}
                     onChange={(val) => onInputChange(index, "rpe", val)}
                     options={[
-                      { value: "Warm-up", label: "Warm-up" },
-                      { value: "Easy", label: "Easy" },
-                      { value: "Medium", label: "Medium" },
-                      { value: "Hard", label: "Hard" },
-                      { value: "Failure", label: "Failure" },
+                      {
+                        value: "Warm-up",
+                        label: t("gym.exerciseCard.rpeOptions.warmup"),
+                      },
+                      {
+                        value: "Easy",
+                        label: t("gym.exerciseCard.rpeOptions.easy"),
+                      },
+                      {
+                        value: "Medium",
+                        label: t("gym.exerciseCard.rpeOptions.medium"),
+                      },
+                      {
+                        value: "Hard",
+                        label: t("gym.exerciseCard.rpeOptions.hard"),
+                      },
+                      {
+                        value: "Failure",
+                        label: t("gym.exerciseCard.rpeOptions.failure"),
+                      },
                     ]}
                   />
                 </div>
@@ -215,14 +248,18 @@ export default function ExerciseCard({
                     !input.time_min || input.time_min.trim() === "";
 
                   if (isTimeEmpty) {
-                    toast.error("Missing data, please fill time (min).");
+                    toast.error(
+                      `${t("gym.exerciseCard.missingData")}, ${t("gym.exerciseCard.fillTime")}`,
+                    );
                     return;
                   }
                 } else {
                   const isRepsEmpty = !input.reps || input.reps.trim() === "";
 
                   if (isRepsEmpty) {
-                    toast.error("Missing data, please fill reps.");
+                    toast.error(
+                      `${t("gym.exerciseCard.missingData")}, ${t("gym.exerciseCard.fillReps")}`,
+                    );
                     return;
                   }
                 }
@@ -231,7 +268,7 @@ export default function ExerciseCard({
               }}
               className="px-10 bg-blue-900 py-2 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-105 transition-all duration-200"
             >
-              Add Set
+              {t("gym.exerciseCard.addSet")}
             </button>
           </div>
         </>

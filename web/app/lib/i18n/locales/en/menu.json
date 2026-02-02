@@ -1,0 +1,91 @@
+{
+  "profile": {
+    "title": "Profile Settings",
+    "userName": "User Name",
+    "userNameHint": "Max 15 characters. Only lowercase letters, numbers, \"_\" allowed.",
+    "userNameEmpty": "User name cannot be empty.",
+    "userNameTaken": "User name is already taken. Please choose another.",
+    "profilePicture": "Profile Picture",
+    "profilePictureHint": "Max size 5MB. JPEG, PNG or WEBP format.",
+    "profilePictureSizeError": "File size exceeds 5MB limit.",
+    "profilePictureFormatError": "Invalid file format. Only JPEG, PNG, and WEBP are allowed.",
+    "profilePictureUploadError": "Failed to upload profile picture",
+    "profilePictureLabel": "Profile picture",
+    "profilePicturePlaceholder": "Change Profile Picture",
+    "profilePicturePermissionTitle": "Permission Denied",
+    "profilePicturePermissionMessage": "Please allow access to your photos.",
+    "weightUnit": "Weight Unit",
+    "savingProfile": "Saving profile...",
+    "updateSuccess": "Settings updated successfully!",
+    "updateError": "An unexpected error occurred while saving settings."
+  },
+  "security": {
+    "title": "Security Settings",
+    "resetPassword": {
+      "title": "Reset Password",
+      "description": "After resetting your password, you will be logged out from all devices for security reasons. Any unsaved local data on this device may be cleared.",
+      "newPassword": "New Password",
+      "newPasswordPlaceholder": "Enter new password",
+      "confirmPassword": "Confirm Password",
+      "confirmPasswordPlaceholder": "Confirm new password",
+      "passwordsDoNotMatch": "Passwords do not match!",
+      "passwordTooShort": "Password must be at least 8 characters long.",
+      "updateFailed": "Failed to update password. Please try again.",
+      "updateSuccess": "Password updated successfully! Logging you out...",
+      "saveNotAllowed": "Save (not allowed)"
+    },
+    "deleteAccount": {
+      "title": "Delete Account",
+      "description": "Type \"DELETE ACCOUNT\" to confirm. All your data will be permanently removed and cannot be recovered.",
+      "inputLabel": "Type: DELETE ACCOUNT",
+      "inputPlaceholder": "Type: DELETE ACCOUNT",
+      "confirmationText": "DELETE ACCOUNT",
+      "incorrectConfirmation": "Incorrect confirmation text. Type \"DELETE ACCOUNT\" to proceed.",
+      "confirmTitle": "Delete Account",
+      "confirmMessage": "This action cannot be undone. Do you really want to delete your account?",
+      "deleteSuccess": "Account deleted successfully! Logging you out...",
+      "deleteFailed": "Failed to delete account! Please try again."
+    }
+  },
+  "menu": {
+    "title": "Menu",
+    "profile": "Profile",
+    "security": "Security",
+    "settings": "Settings",
+    "friends": "Friends",
+    "logOut": "Log Out",
+    "loggingOut": "Logging out...",
+    "logoutFailed": "Logout Failed",
+    "logoutError": "An unexpected error occurred."
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "languages": {
+      "en": "English",
+      "fi": "Finnish"
+    },
+    "pushNotifications": {
+      "title": "Push Notifications",
+      "enabled": "Push notifications enabled",
+      "allow": "Allow push notifications",
+      "enabledToast": "Push notifications enabled",
+      "disabledToast": "Push notifications disabled",
+      "enableError": "Failed to enable push notifications",
+      "disableError": "Failed to disable push notifications",
+      "notifications_disabled_title": "Notifications Disabled",
+      "notifications_disabled_message": "Enable notifications from your device settings to receive updates.",
+      "notifications_disabled_button_cancel": "Cancel",
+      "notifications_disabled_button_open_settings": "Open Settings"
+    },
+    "locationTracking": {
+      "title": "Location Tracking",
+      "enabled": "Location Tracking Enabled",
+      "allow": "Allow Location Tracking",
+      "enabledToast": "Location Tracking enabled",
+      "disabledToast": "Location Tracking disabled",
+      "enableError": "Failed to enable Location Tracking",
+      "disableError": "Failed to disable Location Tracking"
+    }
+  }
+}

@@ -1,0 +1,91 @@
+{
+  "profile": {
+    "title": "Profiiliasetukset",
+    "userName": "Käyttäjänimi",
+    "userNameHint": "Enintään 15 merkkiä. Vain pienet kirjaimet, numerot ja \"_\" sallittu.",
+    "userNameEmpty": "Käyttäjänimi ei voi olla tyhjä.",
+    "userNameTaken": "Käyttäjänimi on jo varattu. Valitse toinen.",
+    "profilePicture": "Profiilikuva",
+    "profilePictureHint": "Enintään 5MB. JPEG, PNG tai WEBP-muoto.",
+    "profilePictureSizeError": "Tiedoston koko ylittää 5MB rajan.",
+    "profilePictureFormatError": "Virheellinen tiedostomuoto. Vain JPEG, PNG ja WEBP sallittu.",
+    "profilePictureUploadError": "Profiilikuvan lataus epäonnistui",
+    "profilePictureLabel": "Profiilikuva",
+    "profilePicturePlaceholder": "Vaihda profiilikuva",
+    "profilePicturePermissionTitle": "Lupa evätty",
+    "profilePicturePermissionMessage": "Salli pääsy kuviisi.",
+    "weightUnit": "Painoyksikkö",
+    "savingProfile": "Tallennetaan profiilia...",
+    "updateSuccess": "Asetukset päivitetty onnistuneesti!",
+    "updateError": "Odottamaton virhe asetusten tallennuksessa."
+  },
+  "security": {
+    "title": "Turvallisuus",
+    "resetPassword": {
+      "title": "Vaihda salasana",
+      "description": "Salasanan vaihtamisen jälkeen sinut kirjataan ulos kaikilta laitteilta turvallisuussyistä. Tallentamattomat paikalliset tiedot tällä laitteella saatetaan poistaa.",
+      "newPassword": "Uusi salasana",
+      "newPasswordPlaceholder": "Syötä uusi salasana",
+      "confirmPassword": "Vahvista salasana",
+      "confirmPasswordPlaceholder": "Vahvista uusi salasana",
+      "passwordsDoNotMatch": "Salasanat eivät täsmää!",
+      "passwordTooShort": "Salasanan on oltava vähintään 8 merkkiä pitkä.",
+      "updateFailed": "Salasanan päivitys epäonnistui. Yritä uudelleen.",
+      "updateSuccess": "Salasana päivitetty onnistuneesti! Kirjataan ulos...",
+      "saveNotAllowed": "Tallenna (ei sallittu)"
+    },
+    "deleteAccount": {
+      "title": "Poista tili",
+      "description": "Kirjoita \"POISTA TILI\" vahvistaaksesi. Kaikki tietosi poistetaan pysyvästi eikä niitä voi palauttaa.",
+      "inputLabel": "Kirjoita: POISTA TILI",
+      "inputPlaceholder": "Kirjoita: POISTA TILI",
+      "confirmationText": "POISTA TILI",
+      "incorrectConfirmation": "Virheellinen vahvistusteksti. Kirjoita \"POISTA TILI\" jatkaaksesi.",
+      "confirmTitle": "Poista tili",
+      "confirmMessage": "Tätä toimintoa ei voi perua. Haluatko varmasti poistaa tilisi?",
+      "deleteSuccess": "Tili poistettu onnistuneesti! Kirjataan ulos...",
+      "deleteFailed": "Tilin poistaminen epäonnistui! Yritä uudelleen."
+    }
+  },
+  "menu": {
+    "title": "Valikko",
+    "profile": "Profiili",
+    "security": "Turvallisuus",
+    "settings": "Asetukset",
+    "friends": "Kaverit",
+    "logOut": "Kirjaudu ulos",
+    "loggingOut": "Kirjaudutaan ulos...",
+    "logoutFailed": "Uloskirjautuminen epäonnistui",
+    "logoutError": "Odottamaton virhe tapahtui."
+  },
+  "settings": {
+    "title": "Asetukset",
+    "language": "Kieli",
+    "languages": {
+      "en": "Englanti",
+      "fi": "Suomi"
+    },
+    "pushNotifications": {
+      "title": "Push-ilmoitukset",
+      "enabled": "Push-ilmoitukset käytössä",
+      "allow": "Salli push-ilmoitukset",
+      "enabledToast": "Push-ilmoitukset käytössä",
+      "disabledToast": "Push-ilmoitukset poistettu käytöstä",
+      "enableError": "Push-ilmoitusten käyttöönotto epäonnistui",
+      "disableError": "Push-ilmoitusten poistaminen epäonnistui",
+      "notifications_disabled_title": "Ilmoitukset poistettu käytöstä",
+      "notifications_disabled_message": "Ota ilmoitukset käyttöön laitteen asetuksista vastaanottaaksesi päivityksiä.",
+      "notifications_disabled_button_cancel": "Peruuta",
+      "notifications_disabled_button_open_settings": "Avaa asetukset"
+    },
+    "locationTracking": {
+      "title": "Sijaintiseuranta",
+      "enabled": "Sijaintiseuranta käytössä",
+      "allow": "Salli sijaintiseuranta",
+      "enabledToast": "Sijaintiseuranta käytössä",
+      "disabledToast": "Sijaintiseuranta poistettu käytöstä",
+      "enableError": "Sijaintiseurannan käyttöönotto epäonnistui",
+      "disableError": "Sijaintiseurannan poistaminen epäonnistui"
+    }
+  }
+}

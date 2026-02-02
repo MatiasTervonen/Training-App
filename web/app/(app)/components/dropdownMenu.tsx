@@ -2,6 +2,7 @@
 
 import React, { useRef, useState } from "react";
 import { useClickOutside } from "@/app/(app)/components/clickOutside";
+import { useTranslation } from "react-i18next";
 
 type DropdownMenuProps = {
   button: React.ReactNode;
@@ -24,6 +25,7 @@ export default function DropdownMenu({
   onChange,
   onTogglePin,
 }: DropdownMenuProps) {
+  const { t } = useTranslation("common");
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -43,7 +45,7 @@ export default function DropdownMenu({
               className="border-b py-2  border-blue-500 hover:bg-gray-600 hover:rounded-t"
               onClick={onEdit}
             >
-              Edit
+              {t("common.edit")}
             </button>
           )}
           {onTogglePin && (
@@ -51,7 +53,7 @@ export default function DropdownMenu({
               className="py-2  border-b border-blue-500 hover:bg-gray-600"
               onClick={onTogglePin}
             >
-              {pinned ? "Unpin" : "Pin"}
+              {pinned ? t("common.unpin") : t("common.pin")}
             </button>
           )}
           {onHistory && (
@@ -59,7 +61,7 @@ export default function DropdownMenu({
               className="py-2 border-b border-blue-500  hover:bg-gray-600 hover:rounded-t"
               onClick={onHistory}
             >
-              History
+              {t("common.history")}
             </button>
           )}
           {onChange && (
@@ -67,7 +69,7 @@ export default function DropdownMenu({
               className="py-2 border-b border-blue-500 hover:bg-gray-600"
               onClick={onChange}
             >
-              Change
+              {t("common.change")}
             </button>
           )}
           {onDelete && (
@@ -75,7 +77,7 @@ export default function DropdownMenu({
               className="py-2  hover:bg-gray-600 hover:rounded-b"
               onClick={onDelete}
             >
-              Delete
+              {t("common.delete")}
             </button>
           )}
         </div>

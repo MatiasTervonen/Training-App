@@ -9,8 +9,10 @@ import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
 import { clearLocalStorage } from "../../utils/clearLocalStorage";
 import toast from "react-hot-toast";
 import { useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 
 export default function SignOutButton() {
+  const { t } = useTranslation("menu");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
@@ -26,7 +28,7 @@ export default function SignOutButton() {
     const { error } = await supabase.auth.signOut({ scope: "local" });
 
     if (error) {
-      toast.error("Error logging out. Please try again!");
+      toast.error(t("menu.logoutError"));
       setIsLoading(false);
       return;
     }
@@ -45,16 +47,16 @@ export default function SignOutButton() {
   return (
     <>
       <button
-        aria-label="Log out"
+        aria-label={t("menu.logOut")}
         onClick={handleSignOut}
         className="w-full py-2 px-6 rounded-md shadow-xl bg-blue-900 border-2 border-blue-500 hover:bg-blue-700 hover:scale-105 transition-all duration-200"
       >
         <div className="flex items-center gap-2 justify-center">
           <LogOut />
-          <p>Log out</p>
+          <p>{t("menu.logOut")}</p>
         </div>
       </button>
-      {isLoading && <FullScreenLoader message="Logging out..." />}
+      {isLoading && <FullScreenLoader message={t("menu.loggingOut")} />}
     </>
   );
 }

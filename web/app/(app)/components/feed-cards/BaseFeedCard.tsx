@@ -1,8 +1,11 @@
+"use client";
+
 import { Ellipsis, SquareArrowOutUpRight, Calendar } from "lucide-react";
 import DropdownMenu from "../dropdownMenu";
 import { formatDate, formatDateShort } from "@/app/(app)/lib/formatDate";
 import { FeedCardProps } from "@/app/(app)/types/session";
 import { ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 
 type BaseCardProps = {
   item: FeedCardProps["item"];
@@ -29,6 +32,7 @@ export default function BaseFeedCard({
   typeName,
   showUpdatedAt = false,
 }: BaseCardProps) {
+  const { t } = useTranslation("feed");
   return (
     <div
       className={`
@@ -78,7 +82,7 @@ export default function BaseFeedCard({
               pinned ? "text-slate-900" : "text-yellow-500"
             }`}
           >
-            updated: {formatDate(item.updated_at)}
+            {t("feed.card.updated")} {formatDate(item.updated_at)}
           </p>
         ) : (
           <p className="min-h-5"></p>
@@ -100,11 +104,11 @@ export default function BaseFeedCard({
         </div>
 
         <button
-          aria-label="Expand details"
+          aria-label={t("feed.card.details")}
           onClick={onExpand}
           className="bg-blue-700 text-gray-100 py-2 px-4 rounded-br-md hover:bg-blue-600 cursor-pointer flex items-center gap-2"
         >
-          <span>Details</span>
+          <span>{t("feed.card.details")}</span>
           <SquareArrowOutUpRight size={20} />
         </button>
       </div>

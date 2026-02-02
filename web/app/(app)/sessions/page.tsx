@@ -1,3 +1,5 @@
+"use client";
+
 import {
   NotebookPen,
   Dumbbell,
@@ -8,19 +10,22 @@ import {
   Bell,
 } from "lucide-react";
 import LinkButton from "@/app/(app)/components/buttons/LinkButton";
+import { useTranslation } from "react-i18next";
 
 export default function Sessions() {
+  const { t } = useTranslation("common");
+
   return (
     <div className="page-padding min-h-full max-w-md mx-auto">
-      <h1 className="text-center mb-10 text-2xl ">Start Session</h1>
+      <h1 className="text-center mb-10 text-2xl ">{t("sessions.title")}</h1>
       <div className="flex flex-col gap-5">
         <LinkButton href="/gym">
-          Gym
+          {t("sessions.gym")}
           <Dumbbell />
         </LinkButton>
 
         <LinkButton href="/notes">
-          Notes
+          {t("sessions.notes")}
           <NotebookPen />
         </LinkButton>
         <LinkButton href="/disc-golf">
@@ -29,19 +34,19 @@ export default function Sessions() {
         </LinkButton>
 
         <LinkButton href="/timer">
-          Timer
+          {t("sessions.timer")}
           <Timer />
         </LinkButton>
         <LinkButton href="/weight">
-          Weight Tracker
+          {t("sessions.bodyWeight")}
           <Weight />
         </LinkButton>
         <LinkButton href="/todo">
-          Todo List
+          {t("sessions.todoList")}
           <ListTodo />
         </LinkButton>
         <LinkButton href="/reminders">
-          Reminders
+          {t("sessions.reminders")}
           <Bell />
         </LinkButton>
       </div>

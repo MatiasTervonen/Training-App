@@ -1,6 +1,5 @@
-import { formatDate } from "@/app/(app)/lib/formatDate";
+import { formatDate, formatTime } from "@/app/(app)/lib/formatDate";
 import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
-import { full_gym_session } from "../../types/models";
 import { GroupExercises } from "@/app/(app)/utils/GroupExercises";
 import { full_gym_exercises } from "../../types/models";
 import { History } from "lucide-react";
@@ -8,6 +7,9 @@ import { getLastExerciseHistory } from "@/app/(app)/database/gym/last-exercise-h
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import ExerciseHistoryModal from "@/app/(app)/gym/components/ExerciseHistoryModal";
+import { useTranslation } from "react-i18next";
+import { FullGymSession } from "@/app/(app)/database/gym/get-full-gym-session";
+
 
 const formatDuration = (seconds: number) => {
   const totalMinutes = Math.floor(seconds / 60);
@@ -20,12 +22,13 @@ const formatDuration = (seconds: number) => {
   }
 };
 
-export default function GymSession(gym_session: full_gym_session) {
+export default function GymSession(gym_session: FullGymSession) {
+  const { t } = useTranslation("gym");
   const [exerciseId, setExerciseId] = useState("");
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
 
   const groupedExercises = GroupExercises(
-    gym_session.gym_session_exercises || []
+    gym_session.gym_session_exercises || [],
   );
 
   const weightUnit =
@@ -33,6 +36,17 @@ export default function GymSession(gym_session: full_gym_session) {
 
   const isCardioExercise = (exercise: full_gym_exercises) =>
     exercise.gym_exercises.main_group.toLowerCase() === "cardio";
+
+  const translateRpe = (rpe: string) => {
+    const rpeMap: Record<string, string> = {
+      "Warm-up": t("gym.exerciseCard.rpeOptions.warmup"),
+      "Easy": t("gym.exerciseCard.rpeOptions.easy"),
+      "Medium": t("gym.exerciseCard.rpeOptions.medium"),
+      "Hard": t("gym.exerciseCard.rpeOptions.hard"),
+      "Failure": t("gym.exerciseCard.rpeOptions.failure"),
+    };
+    return rpeMap[rpe] || rpe;
+  };
 
   const {
     data: history,
@@ -56,17 +70,23 @@ export default function GymSession(gym_session: full_gym_session) {
 
   return (
     <div className="max-w-lg mx-auto page-padding">
-      <div className="flex flex-col gap-2 justify-center items-center">
-        <div className="text-sm text-gray-400">
-          {formatDate(gym_session.created_at)}
-        </div>
+      <div className="text-sm text-gray-400 text-center">
+        {formatDate(gym_session.created_at)}
+      </div>
+      <div className="flex flex-col gap-4 justify-center items-center bg-slate-900 rounded-md p-5 mt-5">
         <h2 className="text-xl mt-2">{gym_session.title}</h2>
-        <h3 className="mt-2">
-          Duration: {formatDuration(gym_session.duration)}
-        </h3>
-        <p className="mt-4 text-gray-200 whitespace-pre-wrap wrap-break-word overflow-hidden max-w-full">
-          {gym_session.notes}
+        <p className="text-lg text-center">
+          {formatTime(gym_session.start_time)} -{" "}
+          {formatTime(gym_session.end_time)}
         </p>
+        <h3 className="mt-2">
+          {t("gym.analytics.duration")}: {formatDuration(gym_session.duration)}
+        </h3>
+        {gym_session.notes && (
+          <p className="mt-4 text-gray-200 whitespace-pre-wrap wrap-break-word overflow-hidden max-w-full">
+            {gym_session.notes}
+          </p>
+        )}
       </div>
       {Object.entries(groupedExercises).map(([superset_id, group]) => (
         <div
@@ -78,7 +98,9 @@ export default function GymSession(gym_session: full_gym_session) {
           }`}
         >
           {group.length > 1 && (
-            <h3 className="text-lg my-2 text-center">Super-Set</h3>
+            <h3 className="text-lg my-2 text-center">
+              {t("gym.gymForm.superSet")}
+            </h3>
           )}
 
           {group.map(({ exercise, index }) => (
@@ -96,9 +118,14 @@ export default function GymSession(gym_session: full_gym_session) {
                     <History color="#f3f4f6" />
                   </button>
                 </div>
-                <h3 className="text-sm text-gray-300">
-                  {exercise.gym_exercises.muscle_group} /{" "}
-                  {exercise.gym_exercises.equipment}
+                <h3 className="text-sm text-gray-400">
+                  {t(
+                    `gym.equipment.${exercise.gym_exercises.equipment?.toLowerCase()}`,
+                  )}{" "}
+                  /{" "}
+                  {t(
+                    `gym.muscleGroups.${exercise.gym_exercises.muscle_group?.toLowerCase().replace(/ /g, "_")}`,
+                  )}
                 </h3>
               </div>
               <div className="py-2 whitespace-pre-wrap wrap-break-word overflow-hidden max-w-full">
@@ -107,17 +134,29 @@ export default function GymSession(gym_session: full_gym_session) {
               <table className="w-full text-left">
                 <thead>
                   <tr className="border-b">
-                    <th className="p-2 font-normal">Set</th>
+                    <th className="p-2 font-normal">
+                      {t("gym.exerciseCard.set")}
+                    </th>
                     {isCardioExercise(exercise) ? (
                       <>
-                        <th className="p-2 font-normal">Time (min)</th>
-                        <th className="p-2 font-normal">Distance (meters)</th>
+                        <th className="p-2 font-normal">
+                          {t("gym.exerciseCard.timePlaceholder")}
+                        </th>
+                        <th className="p-2 font-normal">
+                          {t("gym.exerciseCard.lengthPlaceholder")}
+                        </th>
                       </>
                     ) : (
                       <>
-                        <th className="p-2 font-normal">Weight</th>
-                        <th className="p-2 font-normal">Reps</th>
-                        <th className="p-2 font-normal">Rpe</th>
+                        <th className="p-2 font-normal">
+                          {t("gym.exerciseCard.weight")}
+                        </th>
+                        <th className="p-2 font-normal">
+                          {t("gym.exerciseCard.reps")}
+                        </th>
+                        <th className="p-2 font-normal">
+                          {t("gym.exerciseCard.rpe")}
+                        </th>
                       </>
                     )}
                   </tr>
@@ -143,7 +182,7 @@ export default function GymSession(gym_session: full_gym_session) {
                             {set.weight} {weightUnit}
                           </td>
                           <td className="p-2">{set.reps}</td>
-                          <td className="p-2">{set.rpe}</td>
+                          <td className="p-2">{set.rpe ? translateRpe(set.rpe) : ""}</td>
                         </>
                       )}
                     </tr>

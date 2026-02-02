@@ -1,3 +1,5 @@
+"use client";
+
 import { full_reminder } from "@/app/(app)/types/session";
 import DropdownMenu from "@/app/(app)/components/dropdownMenu";
 import { Bell, Menu, SquareArrowOutUpRight } from "lucide-react";
@@ -8,6 +10,7 @@ import {
   formatDateShort,
 } from "@/app/(app)/lib/formatDate";
 import { formatWeekdays } from "@/app/(app)/lib/formatDate";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   item: full_reminder;
@@ -24,6 +27,7 @@ export default function MyReminderCard({
   onExpand,
   onEdit,
 }: Props) {
+  const { t } = useTranslation("feed");
   const weekdays = formatWeekdays(item.weekdays as number[]);
 
   return (
@@ -62,7 +66,7 @@ export default function MyReminderCard({
 
       {item.updated_at && (
         <p className="ml-4 mb-1 text-yellow-500 text-sm">
-          updated: {formatDate(item.updated_at!)}
+          {t("feed.card.updated")} {formatDate(item.updated_at!)}
         </p>
       )}
       <button

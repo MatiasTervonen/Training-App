@@ -4,14 +4,14 @@ import { toast } from "react-hot-toast";
 import { useQueryClient } from "@tanstack/react-query";
 import { deleteSession } from "@/app/(app)/database/feed/deleteSession";
 import { FeedData } from "@/app/(app)/types/session";
+import { useTranslation } from "react-i18next";
 
 export default function useGymDeleteSession() {
+  const { t } = useTranslation("feed");
   const queryClient = useQueryClient();
 
   const handleDelete = async (id: string, type: string) => {
-    const confirmDelete = confirm(
-      "Are you sure you want to delete this session?"
-    );
+    const confirmDelete = confirm(t("feed.deleteSession.confirmTitle"));
     if (!confirmDelete) return;
 
     const queryKey = ["myGymSessions"];
@@ -33,13 +33,13 @@ export default function useGymDeleteSession() {
     try {
       await deleteSession(id, type);
 
-      toast.success("Session has been deleted successfully.");
+      toast.success(t("feed.deleteSession.successMessage"));
       queryClient.invalidateQueries({ queryKey });
       // Also invalidate the main feed
       queryClient.invalidateQueries({ queryKey: ["feed"] });
     } catch {
       queryClient.setQueryData(queryKey, previousFeed);
-      toast.error("Failed to delete session");
+      toast.error(t("feed.deleteSession.errorMessage"));
     }
   };
 

@@ -11,6 +11,7 @@ import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import { checkedTodo } from "@/app/(app)/database/todo/check-todo";
 import ExerciseTypeSelect from "@/app/(app)/gym/components/ExerciseTypeSelect";
 import { FeedItemUI } from "../../types/session";
+import { useTranslation } from "react-i18next";
 
 type TodoSessionProps = {
   initialTodo: full_todo_session;
@@ -18,6 +19,7 @@ type TodoSessionProps = {
 };
 
 export default function TodoSession({ initialTodo, onSave }: TodoSessionProps) {
+  const { t } = useTranslation("todo");
   const [open, setOpen] = useState<number | null>(null);
   const [sessionData, setSessionData] = useState(initialTodo);
   const [isSaving, setIsSaving] = useState(false);
@@ -131,9 +133,9 @@ export default function TodoSession({ initialTodo, onSave }: TodoSessionProps) {
       setOriginalOrder(sessionData.todo_tasks);
 
       onSave(updatedFeedItem as FeedItemUI);
-      toast.success("Changes saved successfully");
+      toast.success(t("todo.session.saveSuccess"));
     } catch {
-      toast.error("Failed to save changes");
+      toast.error(t("todo.session.saveError"));
     } finally {
       setIsSaving(false);
     }
@@ -148,7 +150,7 @@ export default function TodoSession({ initialTodo, onSave }: TodoSessionProps) {
       {hasChanges && (
         <div className="bg-slate-900 z-50 py-1 px-4 flex items-center rounded-lg fixed top-5 ml-5">
           <p className="text-sm text-yellow-500">
-            {hasChanges ? "unsaved changes" : ""}
+            {hasChanges ? t("todo.session.unsavedChanges") : ""}
           </p>
           <div className="animate-pulse">
             <Dot color="#eab308" />
@@ -159,22 +161,21 @@ export default function TodoSession({ initialTodo, onSave }: TodoSessionProps) {
         <div className="flex flex-col items-center w-full">
           <div className="flex w-full justify-between items-center mb-5">
             <div className="flex flex-col gap-2 text-sm text-gray-400">
-              <p> Created: {formatDate(sessionData.created_at)}</p>
+              <p>{t("todo.session.created")} {formatDate(sessionData.created_at)}</p>
               {sessionData.updated_at && (
                 <p className="text-yellow-500">
-                  {" "}
-                  Updated: {formatDate(sessionData.updated_at)}
+                  {t("todo.session.updated")} {formatDate(sessionData.updated_at)}
                 </p>
               )}
             </div>
             <div className="text-sm">
               <ExerciseTypeSelect
-                label="sort by"
+                label={t("todo.session.sortTasks")}
                 value={sortField}
                 onChange={handleSortChange}
                 options={[
-                  { value: "original", label: "Original" },
-                  { value: "completed", label: "Completed" },
+                  { value: "original", label: t("todo.session.originalOrder") },
+                  { value: "completed", label: t("todo.session.completedStatus") },
                 ]}
               />
             </div>
@@ -227,7 +228,7 @@ export default function TodoSession({ initialTodo, onSave }: TodoSessionProps) {
                             {task.task}
                           </h3>
                           <p className="bg-slate-900 p-5 sm:p-10 whitespace-pre-wrap wrap-break-word rounded-md text-left">
-                            {task.notes || "No notes available"}
+                            {task.notes || t("todo.noNotesAvailable")}
                           </p>
                         </div>
                       </Modal>
@@ -249,10 +250,10 @@ export default function TodoSession({ initialTodo, onSave }: TodoSessionProps) {
           <SaveButton
             onClick={saveChanges}
             disabled={!hasChanges}
-            label={!hasChanges ? "No changes" : "Save changes"}
+            label={!hasChanges ? t("todo.session.save") : t("todo.session.saveChanges")}
           />
         </div>
-        {isSaving && <FullScreenLoader message="Saving changes..." />}
+        {isSaving && <FullScreenLoader message={t("todo.session.savingChanges")} />}
       </div>
     </>
   );

@@ -1,15 +1,24 @@
+import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
+
+// Get locale based on user's language setting
+const getLocale = () => {
+  const language = useUserStore.getState().preferences?.language ?? "en";
+  return language === "fi" ? "fi-FI" : "en-US";
+};
+
 export const formatDate = (dateString: string | Date) => {
   const date = new Date(dateString);
-  return new Intl.DateTimeFormat("en-US", {
+  return new Intl.DateTimeFormat(getLocale(), {
     month: "short",
     day: "numeric",
     hour: "numeric",
+    minute: "numeric",
   }).format(date);
 };
 
 export const formatDateShort = (dateString: string | Date) => {
   const date = new Date(dateString);
-  return new Intl.DateTimeFormat("en-US", {
+  return new Intl.DateTimeFormat(getLocale(), {
     month: "short",
     day: "numeric",
   }).format(date);
@@ -17,7 +26,7 @@ export const formatDateShort = (dateString: string | Date) => {
 
 export const formatDateTime = (dateString: string | Date) => {
   const date = new Date(dateString);
-  return new Intl.DateTimeFormat("en-US", {
+  return new Intl.DateTimeFormat(getLocale(), {
     month: "long",
     day: "numeric",
     hour: "numeric",
@@ -25,45 +34,78 @@ export const formatDateTime = (dateString: string | Date) => {
   }).format(date);
 };
 
-export function formatDateFin(dateString: string): string {
+export const formatTime = (dateString: string | Date) => {
   const date = new Date(dateString);
-
-  // Get weekday in Finnish (e.g., "torstai")
-  const weekday = new Intl.DateTimeFormat("fi-FI", { weekday: "long" }).format(
-    date,
-  );
-
-  // Get date in dd.MM.yyyy with leading zeros
-  const day = String(date.getDate()).padStart(2, "0");
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const year = date.getFullYear();
-
-  return `${weekday.slice(0, 2)} ${day}.${month}.${year}`;
-}
-
-export const formatDateWeek = (dateString: string | Date) => {
-  const date = new Date(dateString);
-  return new Intl.DateTimeFormat("en-US", {
-    day: "numeric",
+  return new Intl.DateTimeFormat(getLocale(), {
+    hour: "numeric",
+    minute: "numeric",
   }).format(date);
 };
 
 export const formatNotifyTime = (time: string | null) => {
-  if (!time) return null;
-  const [hourStr, minuteStr] = time.split(":");
+  const locale = getLocale();
+  const [hourStr, minuteStr] = time!.split(":");
   const hour = parseInt(hourStr, 10);
   const minute = minuteStr.padStart(2, "0");
 
+  // Finnish uses 24-hour format, English uses 12-hour with AM/PM
+  if (locale === "fi-FI") {
+    return `${hour}:${minute}`;
+  }
+
   const isPM = hour >= 12;
   const period = isPM ? "PM" : "AM";
-
-  return `${hour}:${minute} ${period}`;
+  const hour12 = hour % 12 || 12;
+  return `${hour12}:${minute} ${period}`;
 };
 
-const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+export const formatMeters = (meters: number) => {
+  if (meters >= 1000) {
+    return `${(meters / 1000).toFixed(1)} km`;
+  } else {
+    return `${meters.toFixed(1)} m`;
+  }
+};
 
-export function formatWeekdays(weekdays: number[]) {
-  if (!weekdays || weekdays.length === 0) return null;
+export const formatDuration = (seconds: number) => {
+  const locale = getLocale();
+  const totalMinutes = Math.floor(seconds / 60);
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
 
-  return weekdays.map((day) => days[day - 1]).join(", ");
+  // Use localized abbreviations
+  const hourLabel = locale === "fi-FI" ? "t" : "h";
+  const minLabel = locale === "fi-FI" ? "min" : "m";
+
+  if (hours > 0) {
+    return `${hours} ${hourLabel} ${minutes} ${minLabel}`;
+  } else {
+    return `${minutes} ${minLabel}`;
+  }
+};
+
+export const formatDurationLong = (seconds: number) => {
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = seconds % 60;
+
+  if (h > 0) {
+    return `${h}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+  } else {
+    return `${m}:${String(s).padStart(2, "0")}`;
+  }
+};
+
+export const formatAveragePace = (paceSeconds: number) => {
+  if (!isFinite(paceSeconds) || paceSeconds <= 0) return "0:00";
+
+  const minutes = Math.floor(paceSeconds / 60);
+  const seconds = Math.floor(paceSeconds % 60);
+  return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+};
+
+export function formatDurationNotesVoice(ms?: number) {
+  if (!ms) return "0:00";
+  const s = Math.floor(ms / 1000);
+  return `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, "0")}`;
 }

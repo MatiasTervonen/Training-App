@@ -1,0 +1,169 @@
+{
+  "activities": {
+    "title": "Start Activity",
+    "saveSession": {
+      "titleRequired": "Title is required.",
+      "confirmTitle": "Confirm Finish Session",
+      "confirmMessage": "Are you sure you want to finish this session?",
+      "saveError": "Failed to save session. Please try again.",
+      "minDistanceError": "You need to track at least 50 meters to save the session."
+    },
+    "startActivity": "Start Activity",
+    "templates": "Templates",
+    "addActivity": "Add Activity",
+    "editActivity": "Edit Activity",
+    "analytics": "Analytics",
+    "mySessions": {
+      "title": "My Sessions",
+      "loadError": "Failed to load activity sessions. Please try again later.",
+      "noSessions": "No activity sessions yet. Add a session to get started!",
+      "loadingDetails": "Loading activity session details...",
+      "loadingSession": "Loading activity session...",
+      "loadDetailsError": "Failed to load activity session details. Please try again later."
+    },
+    "activeSessionError": "You already have an active session.",
+    "activeSessionErrorSub": "Finish it before starting a new one.",
+    "activityDropdownEdit": {
+      "searchPlaceholder": "Search activities...",
+      "loadError": "Failed to load activities. Try again!",
+      "loading": "Loading activities...",
+      "searching": "Searching for activities...",
+      "noActivities": "No activities found.",
+      "addNewActivity": "Get started by adding a new activity!",
+      "myActivities": "My Activities"
+    },
+    "activityDropdown": {
+      "searchPlaceholder": "Search activities...",
+      "loadError": "Failed to load activities. Try again!",
+      "loading": "Loading activities...",
+      "noActivities": "No activities found.",
+      "recentActivities": "Recent Activities",
+      "allActivities": "All Activities"
+    },
+    "categoryDropdown": {
+      "searchPlaceholder": "Search categories...",
+      "loadError": "Failed to load categories. Try again!",
+      "loading": "Loading categories...",
+      "searching": "Searching for categories...",
+      "noCategories": "No categories found.",
+      "addNewCategory": "Get started by adding a new category!",
+      "title": "Activity Categories"
+    },
+    "categories": {
+      "mobility": "Mobility",
+      "cardio": "Cardio",
+      "sports": "Sports",
+      "hiit": "HIIT",
+      "recreation": "Recreation",
+      "gym": "Gym",
+      "balance": "Balance",
+      "transportation": "Transportation",
+      "recovery": "Recovery",
+      "outdoor": "Outdoor",
+      "mindfulness": "Mindfulness",
+      "strength": "Strength",
+      "swimming": "Swimming"
+    },
+    "activityNames": {
+      "sports": "Sports",
+      "stretching": "Stretching",
+      "climbing": "Climbing",
+      "swimming": "Swimming",
+      "cycling": "Cycling",
+      "gym": "Gym",
+      "pilates": "Pilates",
+      "dancing": "Dancing",
+      "weight_training": "Weight Training",
+      "breathing_exercises": "Breathing Exercises",
+      "meditation": "Meditation",
+      "hiking": "Hiking",
+      "bodyweight_training": "Bodyweight Training",
+      "running": "Running",
+      "walking": "Walking",
+      "driving": "Driving",
+      "mindfulness": "Mindfulness",
+      "cross_training": "Cross Training"
+    },
+    "analyticsScreen": {
+      "title": "Activity Analytics",
+      "errorFetchingSteps": "Error fetching today's steps",
+      "errorFetchingStepsDesc": "Unable to retrieve today's step count.",
+      "today": "Today",
+      "steps": "steps",
+      "dailySteps": "Daily Steps",
+      "weeklyTotal": "Weekly Total",
+      "monthlyTotal": "Monthly Total",
+      "threeMonthsTotal": "3 Months Total",
+      "dailyAvg": "Daily Avg",
+      "activityBreakdown": "Activity Breakdown",
+      "session": "session",
+      "sessions": "sessions",
+      "noActivitiesInPeriod": "No activities in this period",
+      "unknown": "Unknown"
+    },
+    "startActivityScreen": {
+      "selectActivity": "Select Activity",
+      "disableLocationTracking": "Disable Location Tracking",
+      "enableLocationTracking": "Enable Location Tracking",
+      "enableStepsTracking": "Enable Steps Tracking",
+      "startButton": "Start Activity",
+      "sessionNameLabel": "Session name",
+      "sessionNamePlaceholder": "Enter session name",
+      "sessionNotesLabel": "Session notes",
+      "sessionNotesPlaceholder": "Enter session notes",
+      "finishActivity": "Finish Activity",
+      "delete": "Delete",
+      "savingSession": "Saving session..."
+    },
+    "sessionDetails": {
+      "duration": "Duration",
+      "steps": "Steps",
+      "saveAsTemplate": "Save as a Template",
+      "saveAsTemplateDesc": "Save this activity as a template for future use.",
+      "templateNamePlaceholder": "Enter template name",
+      "templateNameLabel": "Template name",
+      "templateNotesPlaceholder": "Enter template notes (optional)",
+      "templateNotesLabel": "Template notes",
+      "cancel": "Cancel",
+      "save": "Save",
+      "savingTemplate": "Saving template..."
+    },
+    "sessionStats": {
+      "duration": "Duration",
+      "movingTime": "Moving Time",
+      "distance": "Distance",
+      "avgPace": "Avg Pace",
+      "moving": "(moving)",
+      "minPerKm": "min/km",
+      "avgSpeed": "Avg Speed",
+      "kmPerHour": "km/h",
+      "steps": "Steps",
+      "calories": "Calories"
+    },
+    "editSession": {
+      "title": "Edit Activity Session",
+      "sessionTitleLabel": "Session Title",
+      "sessionTitlePlaceholder": "Session Title...",
+      "sessionNotesLabel": "Session Notes",
+      "sessionNotesPlaceholder": "Session Notes...",
+      "selectActivity": "Select Activity",
+      "saveSession": "Save Session",
+      "savingSession": "Saving session...",
+      "errorTitle": "Error saving activity session",
+      "errorEmptyTitle": "Please enter activity session name",
+      "errorGeneric": "Please try again later"
+    },
+    "infoModal": {
+      "locationTrackingDisabled": "Location tracking disabled.",
+      "enableLocationMessage": "Enable Location tracking from settings to track your activity.",
+      "cancel": "Cancel",
+      "settings": "Settings"
+    },
+    "stepInfoModal": {
+      "title": "Enable step tracking",
+      "description": "MyTrack uses step data from Android Health Connect to show your activity insights.\n\nPlease enable step access for MyTrack in Permissions under Health Connect.",
+      "cancel": "Cancel",
+      "openSettings": "Open settings"
+    }
+  }
+}

@@ -1,0 +1,57 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs
+.next/
+dist/
+build/
+out/
+.turbo/
+
+# Lock files
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+
+# Cache
+.cache/
+*.cache
+.eslintcache
+
+# IDE and editor
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+logs/
+
+# Test coverage
+coverage/
+
+# Generated types
+*.d.ts.map
+
+# Mobile build artifacts
+mobile/.expo/
+mobile/android/
+mobile/ios/
+*.apk
+*.ipa
+
+# Temporary files
+tmp/
+temp/
+*.tmp

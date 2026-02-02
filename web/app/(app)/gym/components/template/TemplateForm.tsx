@@ -18,6 +18,7 @@ import { getLastExerciseHistory } from "@/app/(app)/database/gym/last-exercise-h
 import useDraftTemplate from "@/app/(app)/gym/hooks/template/useDraftTemplate";
 import useAddExercise from "@/app/(app)/gym/hooks/template/useAddExercise";
 import useSaveTemplate from "@/app/(app)/gym/hooks/template/useSaveTemplate";
+import { useTranslation } from "react-i18next";
 
 export default function TemplateForm({
   initialData,
@@ -26,6 +27,7 @@ export default function TemplateForm({
   initialData: full_gym_template;
   errorMessage: string;
 }) {
+  const { t } = useTranslation("gym");
   const session = initialData;
 
   const [workoutName, setWorkoutName] = useState(session.name || "");
@@ -131,13 +133,13 @@ export default function TemplateForm({
     <div className="max-w-md mx-auto flex flex-col min-h-full justify-between page-padding">
       <div className="flex flex-col items-center gap-5 ">
         <h2 className="text-lg">
-          {isEditing ? "Edit your template" : "Create your template"}
+          {isEditing ? t("gym.templateForm.titleEdit") : t("gym.templateForm.titleCreate")}
         </h2>
         <TitleInput
           value={workoutName}
           setValue={setWorkoutName}
-          placeholder="Workout Name..."
-          label="Workout Name..."
+          placeholder={t("gym.templateForm.workoutNamePlaceholder")}
+          label={t("gym.templateForm.workoutNameLabel")}
           maxLength={100}
         />
       </div>
@@ -166,7 +168,7 @@ export default function TemplateForm({
           >
             {group.length > 1 && (
               <h2 className="text-lg text-gray-100 my-2 text-center">
-                Super-Set
+                {t("gym.templateForm.superSetLabel")}
               </h2>
             )}
             {group.map(({ exercise, index }) => {
@@ -194,7 +196,7 @@ export default function TemplateForm({
                     }}
                     onDeleteExercise={(index) => {
                       const confirmDelete = confirm(
-                        "Are you sure you want to delete this exercise?"
+                        t("gym.templateForm.deleteExerciseConfirm.message")
                       );
                       if (!confirmDelete) return;
 
@@ -255,8 +257,8 @@ export default function TemplateForm({
                 }
               }}
             >
-              <option value="Normal">Normal</option>
-              <option value="Super-Set">Super-Set</option>
+              <option value="Normal">{t("gym.templateForm.exerciseType.normal")}</option>
+              <option value="Super-Set">{t("gym.templateForm.exerciseType.superSet")}</option>
             </select>
             <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none">
               <ChevronDown className="text-gray-100" />
@@ -269,7 +271,7 @@ export default function TemplateForm({
             }}
             className="w-full px-2 bg-blue-800 py-2 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700"
           >
-            {exerciseType === "Super-Set" ? "Add Super-Set" : "Add Exercise"}
+            {exerciseType === "Super-Set" ? t("gym.templateForm.addSuperSet") : t("gym.templateForm.addExercise")}
           </button>
         </div>
       </Modal>
@@ -292,7 +294,7 @@ export default function TemplateForm({
           }}
           className="px-10 bg-blue-800 py-2 rounded-md shadow-md border-2 border-blue-500 text-lg cursor-pointer hover:bg-blue-700 hover:scale-105 transition-transform duration-200"
         >
-          Add Exercise
+          {t("gym.templateForm.addExercise")}
           <Plus className=" inline ml-2" size={20} />
         </button>
       </div>
@@ -300,7 +302,7 @@ export default function TemplateForm({
         <SaveButton onClick={handleSaveTemplate} />
         <DeleteSessionBtn onDelete={resetSession} />
       </div>
-      {isSaving && <FullScreenLoader message="Saving template..." />}
+      {isSaving && <FullScreenLoader message={t("gym.templateForm.savingTemplate")} />}
     </div>
   );
 }

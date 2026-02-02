@@ -1,6 +1,9 @@
+"use client";
+
 import { formatDate, formatDateShort } from "@/app/(app)/lib/formatDate";
 import DropdownMenu from "../dropdownMenu";
 import { Dumbbell, Menu } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 type templateSummary = {
   id: string;
@@ -22,6 +25,8 @@ export default function TemplateCard({
   onExpand,
   onEdit,
 }: Props) {
+  const { t } = useTranslation("feed");
+
   return (
     <div className="border rounded-md flex flex-col justify-center transition-colors bg-slate-900 mb-10">
       <div className=" flex justify-between items-center  my-2 mx-4">
@@ -41,7 +46,7 @@ export default function TemplateCard({
       </div>
       {item.updated_at ? (
         <div className=" text-yellow-500 text-sm ml-4 mb-2">
-          updated: {formatDate(item.updated_at)}
+          {t("feed.card.updated")} {formatDate(item.updated_at)}
         </div>
       ) : (
         <div className="h-5 invisible"></div>
@@ -56,7 +61,7 @@ export default function TemplateCard({
           {formatDateShort(item.created_at)}
         </div>
         <div className="flex items-center gap-5">
-          <p>start</p>
+          <p>{t("feed.card.start")}</p>
           <span>
             <Dumbbell size={20} />
           </span>

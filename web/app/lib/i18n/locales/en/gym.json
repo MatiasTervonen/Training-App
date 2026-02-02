@@ -1,0 +1,243 @@
+{
+  "gym": {
+    "title": "Gym",
+    "startEmptyWorkout": "Start empty workout",
+    "createTemplate": "Create template",
+    "templates": "Templates",
+    "addExercise": "Add Exercise",
+    "editExercise": "Edit Exercise",
+    "workoutAnalytics": "Workout Analytics",
+    "mySessions": {
+      "title": "My Sessions",
+      "loadError": "Failed to load gym sessions. Please try again later.",
+      "noSessions": "No gym sessions yet. Add a session to get started!",
+      "loadingDetails": "Loading gym session details...",
+      "loadDetailsError": "Failed to load gym session details. Please try again later."
+    },
+    "activeSessionError": "You already have an active session.",
+    "activeSessionErrorSub": "Finish it before starting a new one.",
+    "gymForm": {
+      "title": "Track your training progress",
+      "titleEdit": "Edit your gym session",
+      "titlePlaceholder": "Session Title...",
+      "titleLabel": "Session Title...",
+      "editDurationPlaceholder": "Duration in seconds...",
+      "editDurationLabel": "Duration (seconds)...",
+      "notesPlaceholder": "Session Notes...",
+      "notesLabel": "Session Notes...",
+      "superSet": "Super Set",
+      "confirmDeleteExerciseTitle": "Delete Exercise",
+      "confirmDeleteExerciseMessage": "Are you sure you want to delete this exercise?",
+      "exerciseTypeSelector": {
+        "normal": "Normal",
+        "superSet": "Super Set"
+      },
+      "exerciseTypeButton": {
+        "addSuperSet": "Add Super-Set",
+        "addExercise": "Add Exercise"
+      },
+      "addExerciseButtonLabel": "Add Exercise",
+      "editDeleteButtonLabel": "Cancel",
+      "fullScreenLoaderLabel": "Saving session..."
+    },
+    "templateForm": {
+      "titleCreate": "Create your template",
+      "titleEdit": "Edit your template",
+      "workoutNamePlaceholder": "Workout Name...",
+      "workoutNameLabel": "Workout Name...",
+      "loadingTemplate": "Loading template details...",
+      "exerciseType": {
+        "normal": "Normal",
+        "superSet": "Super-Set"
+      },
+      "addExercise": "Add Exercise",
+      "addSuperSet": "Add Super-Set",
+      "superSetLabel": "Super-Set",
+      "deleteExerciseConfirm": {
+        "title": "Delete Exercise",
+        "message": "Are you sure you want to delete this exercise from the template?"
+      },
+      "cancel": "Cancel",
+      "savingTemplate": "Saving template..."
+    },
+    "TemplatesScreen": {
+      "confirmDeleteTitle": "Delete Template",
+      "confirmDeleteMessage": "Are you sure you want to delete this template? This action cannot be undone.",
+      "deleteSuccess": "Template deleted successfully",
+      "deleteError1": "Failed to delete template.",
+      "deleteError2": "Please try again.",
+      "title": "My Templates",
+      "errorLoading": "Error loading templates. Please try again!",
+      "noTemplates": "No templates found. Create your first template!",
+      "errorLoadingExpanded": "Error loading template details. Please try again!",
+      "loadingExpanded": "Loading details...",
+      "createTemplate": "Create Template",
+      "loadingTemplates": "Loading templates..."
+    },
+    "addExerciseScreen": {
+      "title": "Add Exercises",
+      "exerciseName": "Exercise Name",
+      "exerciseNamePlaceholder": "Exercise name",
+      "language": "Language",
+      "equipment": "Equipment",
+      "muscleGroup": "Muscle group",
+      "mainGroup": "Main group",
+      "saveExercise": "Save Exercise",
+      "savingExercise": "Saving exercise...",
+      "nameRequired": "Please enter an exercise name",
+      "saveSuccess": "Exercise saved successfully!",
+      "saveError": "Failed to save exercise. Please try again."
+    },
+    "exerciseDropdown": {
+      "recentExercises": "Recent Exercises",
+      "allExercises": "All Exercises",
+      "searchPlaceholder": "Search exercises...",
+      "loadingExercises": "Loading exercises...",
+      "loadError": "Failed to load exercises. Try again!",
+      "noExercisesFound": "No exercises found.",
+      "exerciseTypeTitle": "Exercise Type"
+    },
+    "exerciseDropdownEdit": {
+      "myExercises": "My Exercises",
+      "addNewExercise": "Get started by adding a new exercise!",
+      "noMatching": "No matching exercises found."
+    },
+    "equipment": {
+      "barbell": "Barbell",
+      "dumbbell": "Dumbbell",
+      "machine": "Machine",
+      "smith": "Smith",
+      "cable": "Cable",
+      "rope": "Rope",
+      "bodyweight": "Bodyweight",
+      "gripper": "Gripper",
+      "band": "Band",
+      "ball": "Ball",
+      "wheel": "Wheel"
+    },
+    "muscleGroups": {
+      "chest": "Chest",
+      "quads": "Quads",
+      "hamstrings": "Hamstrings",
+      "biceps": "Biceps",
+      "triceps": "Triceps",
+      "lats": "Lats",
+      "abs": "Abs",
+      "calves": "Calves",
+      "upper_back": "Upper back",
+      "lower_back": "Lower back",
+      "forearms": "Forearms",
+      "full_body": "Full body",
+      "side_delts": "Side delts",
+      "legs": "Legs",
+      "obliques": "Obliques",
+      "front_delts": "Front delts",
+      "traps": "Traps",
+      "delts": "Delts",
+      "glutes": "Glutes",
+      "cardio": "Cardio",
+      "rear_delts": "Rear delts",
+      "core": "Core"
+    },
+    "mainGroups": {
+      "chest": "Chest",
+      "legs": "Legs",
+      "arms": "Arms",
+      "shoulders": "Shoulders",
+      "back": "Back",
+      "core": "Core",
+      "cardio": "Cardio"
+    },
+    "exerciseHistory": {
+      "loadingHistory": "Loading history",
+      "loadError": "Could not load exercise history. Please try again.",
+      "noHistory": "No history available for this exercise.",
+      "timeMin": "Time (min)",
+      "distanceMeters": "Distance (meters)"
+    },
+    "exerciseCard": {
+      "delete": "Delete",
+      "change": "Change",
+      "history": "History",
+      "addSet": "Add Set",
+      "last": "Last:",
+      "notesFor": "Notes...",
+      "notesPlaceholder": "Add your notes here...",
+      "set": "Set",
+      "time": "Time",
+      "length": "Length",
+      "weight": "Weight",
+      "reps": "Reps",
+      "rpe": "RPE",
+      "deleteSetTitle": "Delete Set",
+      "deleteSetMessage": "Are you sure you want to delete this set?",
+      "timePlaceholder": "Time (min)",
+      "lengthPlaceholder": "Length (meters)",
+      "weightPlaceholder": "Weight...",
+      "repsPlaceholder": "Reps...",
+      "rpeOptions": {
+        "warmup": "Warm-up",
+        "easy": "Easy",
+        "medium": "Medium",
+        "hard": "Hard",
+        "failure": "Failure"
+      },
+      "missingData": "Missing data",
+      "fillTime": "Please fill time (min).",
+      "fillReps": "Please fill reps."
+    },
+    "templateView": {
+      "created": "Created:",
+      "updated": "Updated:",
+      "startWorkout": "Start Workout"
+    },
+    "analyticsScreen": {
+      "title": "Workout Analytics",
+      "loading": "Loading...",
+      "error": "Error loading workout data. Try again!",
+      "noData": "No workout data available. Start logging your workouts to see analytics!"
+    },
+    "saveSession": {
+      "titleRequired": "Title is required.",
+      "confirmTitle": "Confirm Finish Session",
+      "confirmMessage": "Are you sure you want to finish this session?",
+      "saveError": "Failed to save session. Please try again."
+    },
+    "analytics": {
+      "title": "Last 30 Days Analytics",
+      "totalWorkouts": "Total workouts",
+      "averageDuration": "Average Duration",
+      "muscleGroupDistribution": "Muscle Group Distribution",
+      "duration": "Duration",
+      "note": "Note: Analytics are based on the last 30 days of workout data.",
+      "comingSoon": "More analytics coming soon!",
+      "tabs": {
+        "exercises": "Exercises",
+        "sets": "Sets"
+      },
+      "days": {
+        "sun": "Sun",
+        "mon": "Mon",
+        "tue": "Tue",
+        "wed": "Wed",
+        "thu": "Thu",
+        "fri": "Fri",
+        "sat": "Sat"
+      },
+      "months": {
+        "jan": "Jan",
+        "feb": "Feb",
+        "mar": "Mar",
+        "apr": "Apr",
+        "may": "May",
+        "jun": "Jun",
+        "jul": "Jul",
+        "aug": "Aug",
+        "sep": "Sep",
+        "oct": "Oct",
+        "nov": "Nov",
+        "dec": "Dec"
+      }
+    }
+  }
+}

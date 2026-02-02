@@ -28,15 +28,21 @@ import useSaveSession from "../hooks/useSaveSession";
 import useDraft from "../hooks/useDraftGym";
 import useStartExercise from "../hooks/useStartExercise";
 import useLogSetForExercise from "../hooks/useLogSetForExercise";
+import { useTranslation } from "react-i18next";
+import { formatDateShort } from "../../lib/formatDate";
 
 export default function GymForm({
   initialData,
 }: {
   initialData: full_gym_session;
 }) {
+  const { t } = useTranslation("gym");
+  const now = formatDateShort(new Date());
   const session = initialData;
 
-  const [sessionTitle, setSessionTitle] = useState(session.title || "");
+  const [sessionTitle, setSessionTitle] = useState(
+    session.title || `${t("gym.title")} - ${now}`,
+  );
   const [exercises, setExercises] = useState<ExerciseEntry[]>(
     (session.gym_session_exercises || []).map((ex) => ({
       exercise_id: ex.exercise_id,
@@ -54,7 +60,7 @@ export default function GymForm({
           time_min: s.time_min ?? 0,
           distance_meters: s.distance_meters ?? 0,
         })) || [],
-    }))
+    })),
   );
   const [notes, setNotes] = useState(session.notes || "");
   const [exerciseInputs, setExerciseInputs] = useState<ExerciseInput[]>(
@@ -64,7 +70,7 @@ export default function GymForm({
       rpe: "Medium",
       time_min: "",
       distance_meters: "",
-    }))
+    })),
   );
   const router = useRouter();
   const [isSaving, setIsSaving] = useState(false);
@@ -77,7 +83,7 @@ export default function GymForm({
     number | null
   >(null);
   const [exerciseHistoryId, setExerciseHistoryId] = useState<string | null>(
-    null
+    null,
   );
   const [durationEdit, setDurationEdit] = useState(session.duration);
 
@@ -217,16 +223,14 @@ export default function GymForm({
       <div className="flex flex-col justify-between relative min-h-[calc(100%-40px)] max-w-md mx-auto page-padding">
         <div className="flex flex-col items-center justify-center gap-5">
           <p className="text-xl text-center">
-            {isEditing
-              ? "Edit your gym session"
-              : "Track your training progress"}
+            {isEditing ? t("gym.gymForm.titleEdit") : t("gym.gymForm.title")}
           </p>
           <div className="w-full">
             <TitleInput
               value={sessionTitle}
               setValue={setSessionTitle}
-              placeholder="Session Title..."
-              label="Session Title..."
+              placeholder={t("gym.gymForm.titlePlaceholder")}
+              label={t("gym.gymForm.titleLabel")}
             />
           </div>
           {isEditing && (
@@ -234,8 +238,8 @@ export default function GymForm({
               <CustomInput
                 value={durationEdit || ""}
                 setValue={(value) => setDurationEdit(Number(value))}
-                placeholder="Duration in seconds..."
-                label="Duration (seconds)..."
+                placeholder={t("gym.gymForm.editDurationPlaceholder")}
+                label={t("gym.gymForm.editDurationLabel")}
                 type="number"
               />
             </div>
@@ -244,8 +248,8 @@ export default function GymForm({
             <SubNotesInput
               notes={notes}
               setNotes={setNotes}
-              placeholder="Add your notes here..."
-              label="Session notes..."
+              placeholder={t("gym.gymForm.notesPlaceholder")}
+              label={t("gym.gymForm.notesLabel")}
             />
           </div>
 
@@ -260,7 +264,7 @@ export default function GymForm({
             >
               {group.length > 1 && (
                 <h2 className="text-gray-100 text-lg text-center my-2">
-                  Super-Set
+                  {t("gym.gymForm.superSet")}
                 </h2>
               )}
               {group.map(({ exercise, index }) => {
@@ -304,7 +308,7 @@ export default function GymForm({
                       }}
                       onDeleteExercise={(index) => {
                         const confirmDelete = confirm(
-                          "Are you sure you want to delete this exercise?"
+                          t("gym.gymForm.confirmDeleteExerciseMessage"),
                         );
                         if (!confirmDelete) return;
 
@@ -318,7 +322,7 @@ export default function GymForm({
                         };
                         localStorage.setItem(
                           "gym_draft",
-                          JSON.stringify(sessionDraft)
+                          JSON.stringify(sessionDraft),
                         );
                       }}
                     />
@@ -368,8 +372,12 @@ export default function GymForm({
                     }
                   }}
                 >
-                  <option value="Normal">Normal</option>
-                  <option value="Super-Set">Super-Set</option>
+                  <option value="Normal">
+                    {t("gym.gymForm.exerciseTypeSelector.normal")}
+                  </option>
+                  <option value="Super-Set">
+                    {t("gym.gymForm.exerciseTypeSelector.superSet")}
+                  </option>
                 </select>
                 <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none">
                   <ChevronDown className="text-gray-100" />
@@ -383,8 +391,8 @@ export default function GymForm({
                 className="w-full px-2 bg-blue-800 py-2 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700"
               >
                 {exerciseType === "Super-Set"
-                  ? "Add Super-Set"
-                  : "Add Exercise"}
+                  ? t("gym.gymForm.exerciseTypeButton.addSuperSet")
+                  : t("gym.gymForm.exerciseTypeButton.addExercise")}
               </button>
             </div>
           </Modal>
@@ -407,7 +415,7 @@ export default function GymForm({
               }}
               className="w-full px-10 bg-blue-800 py-2 rounded-md shadow-xl border-2 border-blue-500 text-lg cursor-pointer hover:bg-blue-700 hover:scale-105 transition-transform duration-200"
             >
-              Add Exercise
+              {t("gym.gymForm.addExerciseButtonLabel")}
               <Plus className=" inline ml-2" size={20} />
             </button>
           </div>
@@ -417,7 +425,7 @@ export default function GymForm({
           <SaveButton onClick={handleSaveSession} />
           {isEditing ? (
             <DeleteSessionBtn
-              label="Cancel"
+              label={t("gym.gymForm.editDeleteButtonLabel")}
               confirm={false}
               onDelete={() => router.push("/dashboard")}
             />
@@ -426,7 +434,9 @@ export default function GymForm({
           )}
         </div>
       </div>
-      {isSaving && <FullScreenLoader message="Saving session..." />}
+      {isSaving && (
+        <FullScreenLoader message={t("gym.gymForm.fullScreenLoaderLabel")} />
+      )}
     </>
   );
 }

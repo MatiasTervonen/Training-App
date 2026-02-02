@@ -1,0 +1,58 @@
+{
+  "login": {
+    "actions": {
+      "enterEmailAndPassword": "Please enter your email and password.",
+      "loggingIn": "Logging in...",
+      "verifyEmailFirst": "Please verify your email before logging in.",
+      "enterPassword": "Please enter your password.",
+      "passwordsDoNotMatch": "Passwords do not match.",
+      "passwordTooShort": "Password must be at least 8 characters long.",
+      "signingUp": "Signing up...",
+      "somethingWentWrong": "Something went wrong. Please try again.",
+      "emailAlreadyRegistered": "Email already registered. Please log in.",
+      "enterEmail": "Please enter your email.",
+      "sendingPasswordReset": "Sending password reset email...",
+      "passwordResetSent": "Password reset email sent!",
+      "resendingVerification": "Resending verification email...",
+      "couldNotResend": "Could not resend verification email. Try again.",
+      "verificationResent": "Verification email resent. Please check your inbox.",
+      "loggingInAsGuest": "Logging in as guest...",
+      "guestLoginError": "Error logging in as guest"
+    },
+    "back": "Back",
+    "email": "Email",
+    "emailPlaceholder": "Enter email...",
+    "password": "Password",
+    "passwordPlaceholder": "Enter password...",
+    "confirmPassword": "Confirm Password",
+    "confirmPasswordPlaceholder": "Confirm Password...",
+    "logIn": "Log in",
+    "signUp": "Sign up",
+    "logInAsGuest": "Log in as a Guest",
+    "alreadyHaveAccount": "Already have an account?",
+    "dontHaveAccount": "Don't have an account?",
+    "invalidEmail": "Invalid email format.",
+    "forgotPassword": {
+      "link": "Forgot Password?",
+      "title": "Reset your password",
+      "description": "Enter your email and we'll send you a link to reset your password.",
+      "sendResetLink": "Send Reset Link"
+    },
+    "resendEmail": {
+      "title": "Resend Verification Email",
+      "description": "Enter your email and we'll send you a link to verify your email.",
+      "resendButton": "Resend Verification Email",
+      "didntGetEmail": "Didn't get an email?"
+    },
+    "signUpSuccess": {
+      "title": "Thank you for signing up!",
+      "message": "Email sent! Check your inbox (and spam folder) to verify your account before logging in."
+    },
+    "guest": {
+      "title": "Demo account",
+      "description": "All features are available, but your data and account will be deleted after you log out.",
+      "testInfo": "You can test the app without creating an account.",
+      "continue": "Continue"
+    }
+  }
+}

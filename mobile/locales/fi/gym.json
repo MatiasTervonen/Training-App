@@ -154,7 +154,7 @@
       "history": "Historia",
       "addSet": "Lisää sarja",
       "last": "Edellinen:",
-      "notesFor": "Muistiinpanot: {{name}}",
+      "notesFor": "Muistiinpanot...",
       "notesPlaceholder": "Lisää muistiinpanosi tähän...",
       "set": "Sarja",
       "time": "Aika",
@@ -195,6 +195,23 @@
       "confirmTitle": "Vahvista sessio",
       "confirmMessage": "Haluatko varmasti lopettaa tämän session?",
       "saveError": "Session tallentaminen epäonnistui. Yritä uudelleen."
+    },
+    "session": {
+      "duration": "Kesto",
+      "superSet": "Super-setti",
+      "set": "Sarja",
+      "time": "Aika",
+      "min": "min",
+      "distance": "Matka",
+      "meters": "metriä",
+      "weight": "Paino",
+      "reps": "Toistot",
+      "rpe": "RPE"
+    },
+    "exerciseHistory": {
+      "loading": "Ladataan historiaa...",
+      "loadError": "Historian lataus epäonnistui. Yritä uudelleen.",
+      "noHistory": "Tälle liikkeelle ei ole historiaa."
     },
     "analytics": {
       "title": "Viimeisten 30 päivän analytiikka",

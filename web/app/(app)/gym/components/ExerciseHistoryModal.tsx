@@ -5,6 +5,7 @@ import Spinner from "@/app/(app)/components/spinner";
 import { formatDateShort } from "@/app/(app)/lib/formatDate";
 import { HistoryResult } from "@/app/(app)/types/session";
 import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
+import { useTranslation } from "react-i18next";
 
 type ExerciseHistoryModalProps = {
   isOpen: boolean;
@@ -21,26 +22,38 @@ export default function ExerciseHistoryModal({
   history,
   error,
 }: ExerciseHistoryModalProps) {
+  const { t } = useTranslation("gym");
   const weightUnit =
     useUserStore((state) => state.preferences?.weight_unit) || "kg";
 
   const exerciseName = history?.[0]?.name;
   const equipment = history?.[0]?.equipment;
 
+  const translateRpe = (rpe: string) => {
+    const rpeMap: Record<string, string> = {
+      "Warm-up": t("gym.exerciseCard.rpeOptions.warmup"),
+      "Easy": t("gym.exerciseCard.rpeOptions.easy"),
+      "Medium": t("gym.exerciseCard.rpeOptions.medium"),
+      "Hard": t("gym.exerciseCard.rpeOptions.hard"),
+      "Failure": t("gym.exerciseCard.rpeOptions.failure"),
+    };
+    return rpeMap[rpe] || rpe;
+  };
+
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       {isLoading ? (
         <div className="text-lg flex flex-col justify-center items-center mt-20 gap-5 mx-4">
-          <p>Loading history</p>
+          <p>{t("gym.exerciseHistory.loadingHistory")}</p>
           <Spinner size="w-[30px] h-[30px]" />
         </div>
       ) : error ? (
         <p className="text-center mt-20 mx-4">
-          Could not load exercise history. Please try again.
+          {t("gym.exerciseHistory.loadError")}
         </p>
       ) : history.length === 0 ? (
         <p className="text-center mt-20 text-lg mx-4 ">
-          No history available for this exercise.
+          {t("gym.exerciseHistory.noHistory")}
         </p>
       ) : (
         <div className="px-6 max-w-lg mx-auto">
@@ -59,19 +72,19 @@ export default function ExerciseHistoryModal({
                         <tr className="border-b">
                           {session?.main_group === "cardio" ? (
                             <>
-                              <th className="p-2 font-normal">set</th>
-                              <th className="p-2 font-normal">Time (min)</th>
+                              <th className="p-2 font-normal">{t("gym.exerciseCard.set")}</th>
+                              <th className="p-2 font-normal">{t("gym.exerciseHistory.timeMin")}</th>
                               <th className="p-2 font-normal">
-                                Distance (meters)
+                                {t("gym.exerciseHistory.distanceMeters")}
                               </th>
                               <th className="p-2 font-normal"></th>
                             </>
                           ) : (
                             <>
-                              <th className="p-2 font-normal">Set</th>
-                              <th className="p-2 font-normal">Weight</th>
-                              <th className="p-2 font-normal">Reps</th>
-                              <th className="p-2 font-normal">Rpe</th>
+                              <th className="p-2 font-normal">{t("gym.exerciseCard.set")}</th>
+                              <th className="p-2 font-normal">{t("gym.exerciseCard.weight")}</th>
+                              <th className="p-2 font-normal">{t("gym.exerciseCard.reps")}</th>
+                              <th className="p-2 font-normal">{t("gym.exerciseCard.rpe")}</th>
                             </>
                           )}
                         </tr>
@@ -97,7 +110,7 @@ export default function ExerciseHistoryModal({
                                   {set.weight} {weightUnit}
                                 </td>
                                 <td className="p-2">{set.reps}</td>
-                                <td className="p-2">{set.rpe}</td>
+                                <td className="p-2">{set.rpe ? translateRpe(set.rpe) : ""}</td>
                               </>
                             )}
                           </tr>

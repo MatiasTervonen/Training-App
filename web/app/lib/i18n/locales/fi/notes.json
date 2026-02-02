@@ -1,0 +1,45 @@
+{
+  "notes": {
+    "title": "Muistiinpanot",
+    "quickNotes": "Pikamuistiinpanot",
+    "myNotes": "Omat muistiinpanot",
+    "addNotesHere": "Lisää muistiinpanosi tänne",
+    "titleLabel": "Otsikko..",
+    "titlePlaceholder": "Muistiinpanon otsikko...",
+    "notesLabel": "Muistiinpanot...",
+    "notesPlaceholder": "Kirjoita muistiinpanosi tänne...",
+    "recordings": "Ääniteet:",
+    "deleteRecordingTitle": "Poista äänite",
+    "deleteRecordingMessage": "Haluatko varmasti poistaa tämän äänitteen?",
+    "savingNotes": "Tallennetaan muistiinpanoja...",
+    "failedToLoad": "Muistiinpanojen lataaminen epäonnistui. Yritä myöhemmin uudelleen.",
+    "noNotes": "Ei vielä muistiinpanoja. Lisää ensimmäinen muistiinpanosi!",
+    "voiceRecording": {
+      "microphoneAccessTitle": "Mikrofonin käyttöoikeus tarvitaan",
+      "microphoneAccessMessage": "Salli mikrofonin käyttö äänimuistiinpanojen nauhoittamiseksi.",
+      "cancel": "Peruuta",
+      "openSettings": "Avaa asetukset",
+      "cancelRecordingTitle": "Peruuta nauhoitus",
+      "cancelRecordingMessage": "Haluatko varmasti peruuttaa tämän nauhoituksen?",
+      "yes": "Kyllä",
+      "pauseRecording": "Keskeytä nauhoitus",
+      "resumeRecording": "Jatka nauhoitusta",
+      "recordVoiceNote": "Nauhoita äänimuistiinpano",
+      "finish": "Valmis"
+    },
+    "editScreen": {
+      "title": "Muokkaa muistiinpanoja",
+      "unsavedChanges": "tallentamattomia muutoksia",
+      "save": "Tallenna",
+      "saveChanges": "Tallenna muutokset",
+      "savingNotes": "Tallennetaan muistiinpanoja...",
+      "errorTitle": "Virhe muistiinpanojen muokkauksessa",
+      "errorMessage": "Yritä myöhemmin uudelleen."
+    },
+    "expandedView": {
+      "created": "luotu:",
+      "updated": "päivitetty:",
+      "voiceLoadError": "Ääninauhoitusten lataaminen epäonnistui."
+    }
+  }
+}

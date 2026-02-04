@@ -5,20 +5,22 @@ import { useRouter } from "next/navigation";
 import { useModalPageConfig } from "@/app/(app)/lib/stores/modalPageConfig";
 import { useTimerStore } from "@/app/(app)/lib/stores/timerStore";
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 export default function Home() {
+  const { t } = useTranslation("common");
   const router = useRouter();
   const { setModalPageConfig } = useModalPageConfig();
   const activeSession = useTimerStore((state) => state.activeSession);
 
   useEffect(() => {
     setModalPageConfig({
-      leftLabel: "Menu",
-      rightLabel: "Sessions",
+      leftLabel: t("navbar.menu"),
+      rightLabel: t("navbar.sessions"),
       onSwipeLeft: () => router.push("/sessions"),
       onSwipeRight: () => router.push("/menu"),
     });
-  }, [router, setModalPageConfig, activeSession]);
+  }, [router, setModalPageConfig, activeSession, t]);
 
   return (
     <>

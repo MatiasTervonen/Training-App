@@ -3,8 +3,8 @@ create or replace function reminders_save_global_reminder(
   p_notes text,
   p_notify_at timestamptz,
   p_type text,
-  p_mode text,
-  p_created_from_device_id text default null
+  p_created_from_token text default null,
+  p_mode text default 'normal'
 )
 returns uuid
 language plpgsql
@@ -22,16 +22,16 @@ insert into global_reminders (
   notes,
   notify_at,
   type,
-  mode,
-  created_from_device_id
+  created_from_token,
+  mode
 )
 values (
   p_title,
   p_notes,
   p_notify_at,
   p_type,
-  p_mode,
-  p_created_from_device_id
+  p_created_from_token,
+  p_mode
 )
 returning id into v_reminder_id;
 

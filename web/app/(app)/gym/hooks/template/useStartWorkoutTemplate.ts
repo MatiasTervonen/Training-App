@@ -3,14 +3,14 @@
 import { useTimerStore } from "@/app/(app)/lib/stores/timerStore";
 import { toast } from "react-hot-toast";
 import { ExerciseEntry } from "@/app/(app)/types/session";
-import { full_gym_template } from "@/app/(app)/types/models";
 import { useRouter } from "next/navigation";
+import { FullGymTemplate } from "@/app/(app)/database/gym/templates/full-gym-template";
 
 export default function useStartWorkoutTemplate() {
   const activeSession = useTimerStore((state) => state.activeSession);
   const router = useRouter();
 
-  const startWorkout = (template: full_gym_template) => {
+  const startWorkout = (template: FullGymTemplate) => {
     if (activeSession) {
       toast.error("You already have an active workout!");
       return;

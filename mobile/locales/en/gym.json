@@ -88,6 +88,18 @@
       "saveSuccess": "Exercise saved successfully!",
       "saveError": "Failed to save exercise. Please try again."
     },
+    "editExerciseScreen": {
+      "title": "Edit exercise",
+      "fillAllFields": "Please fill in all fields.",
+      "updateSuccess": "Exercise updated successfully!",
+      "updateError": "Failed to update exercise. Please try again.",
+      "deleteSuccess": "Exercise deleted successfully!",
+      "deleteError": "Failed to delete exercise. Please try again.",
+      "updateExercise": "Update Exercise",
+      "deleteExercise": "Delete Exercise",
+      "savingExercise": "Saving exercise...",
+      "deletingExercise": "Deleting exercise..."
+    },
     "exerciseDropdown": {
       "recentExercises": "Recent Exercises",
       "allExercises": "All Exercises",

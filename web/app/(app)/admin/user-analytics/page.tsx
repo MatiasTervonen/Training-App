@@ -13,8 +13,10 @@ import { useQuery } from "@tanstack/react-query";
 import { getUsers } from "@/app/(app)/database/admin/get-users";
 import { getUserCount } from "@/app/(app)/database/admin/get-user-count";
 import { UserTableSkeleton } from "../../ui/loadingSkeletons/skeletons";
+import { useTranslation } from "react-i18next";
 
 export default function Sessions() {
+  const { t } = useTranslation("common");
   const [sortField, setSortField] = useState("created_at");
   const [reason, setReason] = useState<string>("");
   const [showBanReason, setShowBanReason] = useState<string | null>(null);
@@ -76,18 +78,18 @@ export default function Sessions() {
       mutateUsers();
 
       if (reason === "unban") {
-        toast.success("User unbanned succesfully!");
+        toast.success(t("admin.analytics.userUnbanned"));
       } else {
-        toast.success("User banned succesfully!");
+        toast.success(t("admin.analytics.userBanned"));
       }
     } catch {
-      toast.error("Error banning user. Please try again!");
+      toast.error(t("admin.analytics.errorBanning"));
     }
   };
 
   const handleDeleteUser = async (user_id: string) => {
     const confirmDelete = confirm(
-      `Are you sure you want to delete user: user_id ${user_id}`
+      `${t("admin.analytics.confirmDelete")} ${user_id}`
     );
     if (!confirmDelete) return;
 
@@ -95,9 +97,9 @@ export default function Sessions() {
       await deleteUser(user_id);
       mutateUsers();
 
-      toast.success("User deleted succesfully!");
+      toast.success(t("admin.analytics.userDeleted"));
     } catch {
-      toast.error("Error deleting user. Please try again!");
+      toast.error(t("admin.analytics.errorDeleting"));
     }
   };
 
@@ -108,7 +110,7 @@ export default function Sessions() {
 
   const handlePromoteUser = async ({ user_id, userRole }: PromoteUser) => {
     const confirmPromote = confirm(
-      `Are you sure you want to promote user: user_id ${user_id}`
+      `${t("admin.analytics.confirmPromote")} ${user_id}`
     );
     if (!confirmPromote) return;
 
@@ -116,9 +118,9 @@ export default function Sessions() {
       await promoteUser({ user_id, userRole });
       mutateUsers();
 
-      toast.success("User promoted succesfully!");
+      toast.success(t("admin.analytics.userPromoted"));
     } catch {
-      toast.error("Error promoting user. Please try again!");
+      toast.error(t("admin.analytics.errorPromoting"));
     }
   };
 
@@ -132,29 +134,31 @@ export default function Sessions() {
 
   return (
     <div className="relative max-w-7xl mx-auto page-padding">
-      <h1 className="text-2xl text-center mb-10">User Analytics</h1>
+      <h1 className="text-2xl text-center mb-10">
+        {t("admin.analytics.title")}
+      </h1>
 
       <div className="flex items-center justify-between mb-4">
         {userCountError ? (
-          <p>Error loading user count</p>
+          <p>{t("admin.analytics.errorLoadingCount")}</p>
         ) : (
           <div className="flex items-center gap-3">
-            <p>Total Users:</p>
+            <p>{t("admin.analytics.totalUsers")}:</p>
             {isLoadingUserCount ? <Spinner /> : <p>{userCount?.count}</p>}
           </div>
         )}
 
         <div className="w-fit text-sm">
           <ExerciseTypeSelect
-            label="sort by"
+            label={t("admin.analytics.sortBy")}
             value={sortField}
             onChange={(value) => {
               setSortField(value);
             }}
             options={[
-              { value: "created_at", label: "Created At" },
-              { value: "email", label: "Email" },
-              { value: "role", label: "Role" },
+              { value: "created_at", label: t("admin.analytics.createdAt") },
+              { value: "email", label: t("admin.analytics.email") },
+              { value: "role", label: t("admin.analytics.role") },
             ]}
           />
         </div>
@@ -163,7 +167,7 @@ export default function Sessions() {
         {isLoading && <UserTableSkeleton count={11} />}
         {error && (
           <div className="flex flex-col items-center justify-center h-full">
-            <p className="text-red-500">Failed to load user data.</p>
+            <p className="text-red-500">{t("admin.analytics.loadError")}</p>
           </div>
         )}
         {!isLoading && !error && data && data.length > 0 && (
@@ -171,12 +175,24 @@ export default function Sessions() {
             <table className="min-w-full bg-gray-900 rounded-md">
               <thead>
                 <tr className="text-left border-b border-gray-700">
-                  <th className="px-4 py-2 font-normal">id</th>
-                  <th className="px-4 py-2 font-normal">d.name</th>
-                  <th className="px-4 py-2 font-normal">Email</th>
-                  <th className="px-4 py-2 font-normal">Role</th>
-                  <th className="px-4 py-2 font-normal">Created</th>
-                  <th className="px-4 py-2 font-normal">Actions</th>
+                  <th className="px-4 py-2 font-normal">
+                    {t("admin.analytics.tableHeaders.id")}
+                  </th>
+                  <th className="px-4 py-2 font-normal">
+                    {t("admin.analytics.tableHeaders.displayName")}
+                  </th>
+                  <th className="px-4 py-2 font-normal">
+                    {t("admin.analytics.tableHeaders.email")}
+                  </th>
+                  <th className="px-4 py-2 font-normal">
+                    {t("admin.analytics.tableHeaders.role")}
+                  </th>
+                  <th className="px-4 py-2 font-normal">
+                    {t("admin.analytics.tableHeaders.created")}
+                  </th>
+                  <th className="px-4 py-2 font-normal">
+                    {t("admin.analytics.tableHeaders.actions")}
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -210,20 +226,22 @@ export default function Sessions() {
                         {user.role}
                         {user.banned_until &&
                           new Date(user.banned_until) > new Date() && (
-                            <span className="ml-2 text-">banned</span>
+                            <span className="ml-2 text-">
+                              {t("admin.analytics.banned")}
+                            </span>
                           )}
                       </span>
                       {user.banned_until &&
                         new Date(user.banned_until) > new Date() && (
                           <div className="absolute z-10 border left-0 top-full w-48 bg-gray-800  py-2 px-4 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
                             <p>
-                              Banned until: <br />
+                              {t("admin.analytics.bannedUntil")} <br />
                               {new Date(user.banned_until).toLocaleDateString()}
                             </p>
 
                             {user.ban_reason && (
                               <p className="mt-2">
-                                Reason: <br />
+                                {t("admin.analytics.reason")} <br />
                                 {user.ban_reason}
                               </p>
                             )}
@@ -240,7 +258,7 @@ export default function Sessions() {
                           await handleDeleteUser(user.id);
                         }}
                       >
-                        delete
+                        {t("admin.analytics.delete")}
                       </button>
 
                       <select
@@ -259,7 +277,7 @@ export default function Sessions() {
                             setShowBanReason(null); // no modal needed
 
                             const confirmed = confirm(
-                              `Are you sure you want to unban user: ${user.id}?`
+                              `${t("admin.analytics.confirmUnban")} ${user.id}?`
                             );
 
                             if (!confirmed) {
@@ -288,29 +306,44 @@ export default function Sessions() {
                         }}
                       >
                         <option value="ban" disabled>
-                          Ban
+                          {t("admin.analytics.ban")}
                         </option>
-                        <option value="24h">1 Day</option>
-                        <option value="168h">7 Day</option>
-                        <option value="720h">30 Day</option>
-                        <option value="876600h">Permanent</option>
-                        <option value="unban">Unban</option>
+                        <option value="24h">
+                          {t("admin.analytics.banDurations.1day")}
+                        </option>
+                        <option value="168h">
+                          {t("admin.analytics.banDurations.7day")}
+                        </option>
+                        <option value="720h">
+                          {t("admin.analytics.banDurations.30day")}
+                        </option>
+                        <option value="876600h">
+                          {t("admin.analytics.banDurations.permanent")}
+                        </option>
+                        <option value="unban">
+                          {t("admin.analytics.unban")}
+                        </option>
                       </select>
 
                       {showBanReason === user.id && (
                         <div className="fixed inset-0 z-50 left-1/2 -translate-x-1/2 h-fit top-30 w-fit rounded-lg  border-2 border-gray-700 bg-slate-900 p-10">
                           <div className="mb-4">
-                            <h3>Ban User:</h3>
+                            <h3>{t("admin.analytics.banModal.title")}</h3>
                             <p>{user.id}</p>
                             <p className="mt-2">
-                              Duration: {selectedDurations[user.id]}
+                              {t("admin.analytics.banModal.duration")}{" "}
+                              {selectedDurations[user.id]}
                             </p>
                           </div>
 
                           <div className="flex flex-col gap-1">
-                            <label htmlFor="">Give reason:</label>
+                            <label htmlFor="">
+                              {t("admin.analytics.banModal.giveReason")}
+                            </label>
                             <SubNotesInput
-                              placeholder="Ban reason..."
+                              placeholder={t(
+                                "admin.analytics.banModal.reasonPlaceholder"
+                              )}
                               notes={reason}
                               setNotes={setReason}
                             />
@@ -331,7 +364,7 @@ export default function Sessions() {
                               setReason("");
                             }}
                           >
-                            Ban
+                            {t("admin.analytics.ban")}
                           </button>
                           <button
                             className="w-28 mt-2 bg-gray-600 py-1 rounded-md shadow-xl border-2 border-gray-500 text-lg cursor-pointer hover:bg-gray-700 hover:scale-105 transition-all duration-200"
@@ -344,7 +377,7 @@ export default function Sessions() {
                               setReason("");
                             }}
                           >
-                            Cancel
+                            {t("common.cancel")}
                           </button>
                         </div>
                       )}
@@ -373,12 +406,20 @@ export default function Sessions() {
                         }}
                       >
                         <option value="role" disabled>
-                          Role
+                          {t("admin.analytics.role")}
                         </option>
-                        <option value="guest">Guest</option>
-                        <option value="user">User</option>
-                        <option value="admin">Admin</option>
-                        <option value="super_admin">Super admin</option>
+                        <option value="guest">
+                          {t("admin.analytics.roles.guest")}
+                        </option>
+                        <option value="user">
+                          {t("admin.analytics.roles.user")}
+                        </option>
+                        <option value="admin">
+                          {t("admin.analytics.roles.admin")}
+                        </option>
+                        <option value="super_admin">
+                          {t("admin.analytics.roles.superAdmin")}
+                        </option>
                       </select>
                     </td>
                   </tr>
@@ -396,10 +437,10 @@ export default function Sessions() {
               setPage((p) => p - 1);
             }}
           >
-            Previous
+            {t("admin.analytics.pagination.previous")}
           </button>
           <p className="border border-gray-100 p-2 bg-gray-600">
-            Page {page + 1}
+            {t("admin.analytics.pagination.page")} {page + 1}
           </p>
           <button
             className="border border-gray-100 p-2 bg-blue-700"
@@ -408,7 +449,7 @@ export default function Sessions() {
               if (page < lastPage) setPage((p) => p + 1);
             }}
           >
-            Next
+            {t("admin.analytics.pagination.next")}
           </button>
         </div>
       </div>

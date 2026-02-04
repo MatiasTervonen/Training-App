@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
 import { useModalPageConfig } from "@/app/(app)/lib/stores/modalPageConfig";
 import { useTimerStore } from "../lib/stores/timerStore";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   children: ReactNode;
@@ -23,10 +24,14 @@ export default function ModalPageWrapper({
   children,
   onSwipeLeft,
   onSwipeRight,
-  leftLabel = "back",
-  rightLabel = "home",
+  leftLabel,
+  rightLabel,
 }: Props) {
+  const { t } = useTranslation("common");
   const { direction, setDirection } = useTransitionDirectionStore();
+
+  const resolvedLeftLabel = leftLabel ?? t("navigation.back");
+  const resolvedRightLabel = rightLabel ?? t("navigation.home");
   const [isTransitioning, setIsTransitioning] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
@@ -82,11 +87,11 @@ export default function ModalPageWrapper({
     >
       <div className="absolute inset-0 z-0 h-screen flex justify-between bg-slate-900 pt-3">
         <div className="flex flex-col items-center gap-2 ml-2">
-          {isTransitioning && leftLabel && (
+          {isTransitioning && resolvedLeftLabel && (
             <>
               <div className="text-center text-xl">
-                {leftLabel
-                  ?.toUpperCase()
+                {resolvedLeftLabel
+                  .toUpperCase()
                   .split("")
                   .map((letter, index) => (
                     <p key={index}>{letter}</p>
@@ -98,11 +103,11 @@ export default function ModalPageWrapper({
         </div>
 
         <div className="flex flex-col items-center gap-2 mr-2">
-          {isTransitioning && rightLabel && (
+          {isTransitioning && resolvedRightLabel && (
             <>
               <div className="text-center text-xl">
-                {rightLabel
-                  ?.toUpperCase()
+                {resolvedRightLabel
+                  .toUpperCase()
                   .split("")
                   .map((letter, index) => (
                     <p key={index}>{letter}</p>

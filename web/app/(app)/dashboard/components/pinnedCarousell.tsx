@@ -8,6 +8,7 @@ import FeedCard from "@/app/(app)/components/feed-cards/FeedCard";
 import { useRouter } from "next/navigation";
 import { useModalPageConfig } from "@/app/(app)/lib/stores/modalPageConfig";
 import { FeedItemUI } from "../../types/session";
+import { useTranslation } from "react-i18next";
 
 interface PinnedCarouselProps {
   pinnedFeed: FeedItemUI[];
@@ -16,7 +17,7 @@ interface PinnedCarouselProps {
   togglePin: (
     id: string,
     type: string,
-    feed_context: "pinned" | "feed"
+    feed_context: "pinned" | "feed",
   ) => void;
   handleDelete: (id: string, type: string) => void;
 }
@@ -28,6 +29,7 @@ export default function PinnedCarousel({
   togglePin,
   handleDelete,
 }: PinnedCarouselProps) {
+  const { t } = useTranslation("common");
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [Autoplay()]);
   const [activeIndex, setActiveIndex] = useState(0);
   const router = useRouter();
@@ -66,7 +68,7 @@ export default function PinnedCarousel({
         <div>
           <div className="flex items-center gap-2 mb-2">
             <Pin size={20} />
-            <p className="text-gray-400">Pinned</p>
+            <p className="text-gray-400">{t("common.pinned")}</p>
             <p className="text-gray-400">
               {activeIndex + 1} / {pinnedFeed.length}
             </p>
@@ -89,7 +91,7 @@ export default function PinnedCarousel({
                       togglePin(
                         feedItem.id,
                         feedItem.type,
-                        feedItem.feed_context
+                        feedItem.feed_context,
                       )
                     }
                     onDelete={() =>
@@ -97,7 +99,7 @@ export default function PinnedCarousel({
                     }
                     onEdit={() => {
                       if (feedItem.type === "gym_sessions") {
-                        router.push(`/training/gym/${feedItem.source_id}/edit`);
+                        router.push(`/gym/gym/${feedItem.source_id}/edit`);
                       } else {
                         setEditingItem(feedItem);
                       }

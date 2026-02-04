@@ -13,6 +13,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useState } from "react";
 import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
 import { weight } from "@/app/(app)/types/models";
+import { useTranslation } from "react-i18next";
 
 type WeightChartProps = {
   range: "week" | "month" | "year";
@@ -61,20 +62,21 @@ function getOldestDate(data: weight[]) {
 
 function formatDatelabel(
   dateString: string,
-  range: "week" | "month" | "year"
+  range: "week" | "month" | "year",
+  locale: string
 ): string {
   const date = new Date(dateString);
   switch (range) {
     case "week":
-      return new Intl.DateTimeFormat("en-US", {
+      return new Intl.DateTimeFormat(locale, {
         weekday: "short",
       }).format(date);
     case "month":
-      return new Intl.DateTimeFormat("en-US", {
+      return new Intl.DateTimeFormat(locale, {
         day: "numeric",
       }).format(date);
     case "year":
-      return new Intl.DateTimeFormat("en-US", {
+      return new Intl.DateTimeFormat(locale, {
         month: "short",
       }).format(date);
   }
@@ -134,6 +136,8 @@ function generateXTicks(range: string, dateList: string[]): string[] {
 }
 
 export default function WeightChart({ range, data }: WeightChartProps) {
+  const { t, i18n } = useTranslation("weight");
+  const locale = i18n.language;
   const [offset, setOffset] = useState(0);
   const [prevRange, setPrevRange] = useState(range);
 
@@ -192,17 +196,17 @@ export default function WeightChart({ range, data }: WeightChartProps) {
     .map((item) => ({
       date: item.date,
       weight: item.weight,
-      label: formatDatelabel(item.date, range),
+      label: formatDatelabel(item.date, range, locale),
     }));
 
   function formatDateRange(start: Date | null, end: Date | null) {
-    if (!start || !end) return "No data available";
-    const startFormatted = start.toLocaleDateString("en-US", {
+    if (!start || !end) return t("weight.analyticsScreen.noData");
+    const startFormatted = start.toLocaleDateString(locale, {
       year: "numeric",
       month: "short",
       day: "numeric",
     });
-    const endFormatted = end.toLocaleDateString("en-US", {
+    const endFormatted = end.toLocaleDateString(locale, {
       year: "numeric",
       month: "short",
       day: "numeric",
@@ -221,13 +225,13 @@ export default function WeightChart({ range, data }: WeightChartProps) {
   const yAxisDomain = [Math.floor(minWeight) - 1, Math.round(maxWeight) + 1];
 
   const rangeLabels: Record<string, string> = {
-    week: "week",
-    month: "month",
-    year: "year",
+    week: t("weight.analyticsScreen.week"),
+    month: t("weight.analyticsScreen.month"),
+    year: t("weight.analyticsScreen.year"),
   };
 
   return (
-    <div className="bg-slate-900 shadow-md rounded-t-2xl pt-4">
+    <div className="bg-slate-900 shadow-md pt-4">
       <div className="flex justify-center items-center my-4 text-gray-400">
         <button
           onClick={() => setOffset((prev) => prev + 1)}
@@ -276,7 +280,7 @@ export default function WeightChart({ range, data }: WeightChartProps) {
           <XAxis
             dataKey="date"
             ticks={xTicks}
-            tickFormatter={(value) => formatDatelabel(value, range)}
+            tickFormatter={(value) => formatDatelabel(value, range, locale)}
             tick={{ fill: "#f3f4f6", fontSize: 12 }}
             axisLine={{ stroke: "#9ca3af" }}
             tickLine={{ stroke: "#9ca3af" }}
@@ -296,7 +300,7 @@ export default function WeightChart({ range, data }: WeightChartProps) {
             }}
             labelFormatter={(value) => {
               const date = new Date(value);
-              return date.toLocaleDateString("en-US", {
+              return date.toLocaleDateString(locale, {
                 year: "numeric",
                 month: "short",
                 day: "numeric",

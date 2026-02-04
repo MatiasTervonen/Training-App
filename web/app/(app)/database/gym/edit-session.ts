@@ -1,4 +1,3 @@
-
 import { handleError } from "@/app/(app)/utils/handleError";
 import { ExerciseEntry } from "@/app/(app)/types/session";
 import { createClient } from "@/utils/supabase/client";
@@ -26,6 +25,7 @@ export async function editSession({
     p_duration: durationEdit,
     p_title: title,
     p_id: id,
+    p_updated_at: new Date().toISOString(),
   });
 
   if (error) {

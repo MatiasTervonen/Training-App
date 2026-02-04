@@ -164,6 +164,25 @@
       "description": "MyTrack uses step data from Android Health Connect to show your activity insights.\n\nPlease enable step access for MyTrack in Permissions under Health Connect.",
       "cancel": "Cancel",
       "openSettings": "Open settings"
+    },
+    "addActivityScreen": {
+      "title": "Add Activity",
+      "activityNameLabel": "Activity Name",
+      "activityNamePlaceholder": "Activity name",
+      "metLabel": "MET",
+      "metPlaceholder": "e.g. 8.0",
+      "metDescription": "Used to estimate calories burned during the activity. Example: Rest 1.0 walking 3.5, running 7.5",
+      "selectCategory": "Select Category",
+      "saveButton": "Save Activity",
+      "savingActivity": "Saving activity...",
+      "errorNameRequired": "Please enter an activity name",
+      "errorCategoryRequired": "Please select a category",
+      "errorInvalidMet": "Invalid MET value",
+      "errorInvalidMetDesc": "Please enter a valid number",
+      "errorMetOutOfRange": "MET out of range",
+      "errorMetRangeDesc": "Please enter a value between 1.0 and 20.0",
+      "successSaved": "Activity saved successfully!",
+      "errorSaveFailed": "Failed to save activity. Please try again."
     }
   }
 }

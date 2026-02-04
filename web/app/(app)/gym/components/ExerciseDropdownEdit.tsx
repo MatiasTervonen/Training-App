@@ -6,17 +6,17 @@ import { gym_exercises } from "@/app/(app)/types/models";
 import Spinner from "@/app/(app)/components/spinner";
 import { useQuery } from "@tanstack/react-query";
 import { getUserExercises } from "@/app/(app)/database/gym/user-exercises";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   onSelect: (exercise: gym_exercises) => void;
 };
 
-export default function ExerciseDropdownEdit({
-  onSelect,
-}: Props) {
+export default function ExerciseDropdownEdit({ onSelect }: Props) {
+  const { t } = useTranslation("gym");
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredExercises, setFilteredExercises] = useState<gym_exercises[]>(
-    []
+    [],
   );
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
@@ -82,7 +82,6 @@ export default function ExerciseDropdownEdit({
     }
   };
 
-
   return (
     <>
       <div className="flex flex-col px-2 w-full h-[calc(100dvh-74px)] z-50">
@@ -91,7 +90,7 @@ export default function ExerciseDropdownEdit({
             className="p-2 rounded-md border-2 border-gray-100 z-10 placeholder-gray-500 text-gray-100 bg-gray-900 hover:border-blue-500 focus:outline-none focus:border-green-300"
             type="text"
             value={searchQuery}
-            placeholder="Search exercises..."
+            placeholder={t("gym.exerciseDropdown.searchPlaceholder")}
             autoComplete="off"
             onChange={handleSearchChange}
             onKeyDown={handleKeyDown}
@@ -109,25 +108,30 @@ export default function ExerciseDropdownEdit({
             <div className="h-[calc(100dvh-200px)] flex flex-col gap-6 items-center justify-center z-50 text-center">
               {isLoading && (
                 <>
-                  <p className="text-gray-100 text-xl">Loading exercises...</p>
+                  <p className="text-lg">
+                    {t("gym.exerciseDropdown.loadingExercises")}
+                  </p>
                   <Spinner size="h-10 w-10" />
                 </>
               )}
               {isError && (
-                <p className="text-red-500">
-                  Failed to load exercises. Try again!
+                <p className="text-red-500 px-5 text-lg">
+                  {t("gym.exerciseDropdown.loadError")}
                 </p>
               )}
               {exercises?.length === 0 && (
                 <div className="flex flex-col gap-3 text-lg px-5">
-                  <p>No exercises found.</p>
-                  <p>Get started by adding a new exercise!</p>
+                  <p>{t("gym.exerciseDropdown.noExercisesFound")}</p>
+                  <p>{t("gym.exerciseDropdownEdit.addNewExercise")}</p>
                 </div>
               )}
             </div>
           ) : (
             <>
-              <h2 className=" text-center bg-slate-600">All Exercises</h2>
+              <h2 className=" text-center bg-slate-600">
+                {" "}
+                {t("gym.exerciseDropdownEdit.myExercises")}
+              </h2>
               {(searchQuery.length > 0 ? filteredExercises : allExercises).map(
                 (exercise, index) => (
                   <button
@@ -143,15 +147,15 @@ export default function ExerciseDropdownEdit({
                       <div className="flex justify-between items-center">
                         <p className="truncate mr-5">{exercise.name} </p>
                         <p className="text-sm text-gray-300">
-                          {exercise.muscle_group}
+                          {t(`gym.muscleGroups.${exercise.muscle_group}`)}
                         </p>
                       </div>
                       <p className="text-sm text-gray-400">
-                        {exercise.equipment}
+                        {t(`gym.equipment.${exercise.equipment}`)}
                       </p>
                     </div>
                   </button>
-                )
+                ),
               )}
             </>
           )}

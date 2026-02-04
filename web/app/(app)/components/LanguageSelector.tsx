@@ -9,8 +9,13 @@ import toast from "react-hot-toast";
 export default function LanguageSelector() {
   const { t, i18n } = useTranslation("menu");
   const setLanguage = useUserStore((state) => state.setLanguage);
+  const preferences = useUserStore((state) => state.preferences);
+  const currentLanguage = preferences?.language;
+
+  console.log("LanguageSelector render - currentLanguage:", currentLanguage, "preferences:", preferences);
 
   const changeLanguage = async (lng: "en" | "fi") => {
+    console.log("changeLanguage called with:", lng);
     // Update i18n immediately for instant UI feedback
     i18n.changeLanguage(lng);
 
@@ -35,7 +40,7 @@ export default function LanguageSelector() {
         <button
           onClick={() => changeLanguage("en")}
           className={`px-4 py-2 rounded-md transition-colors ${
-            i18n.language === "en"
+            currentLanguage === "en"
               ? "bg-blue-600 text-white"
               : "bg-slate-700 text-gray-300 hover:bg-slate-600"
           }`}
@@ -45,7 +50,7 @@ export default function LanguageSelector() {
         <button
           onClick={() => changeLanguage("fi")}
           className={`px-4 py-2 rounded-md transition-colors ${
-            i18n.language === "fi"
+            currentLanguage === "fi"
               ? "bg-blue-600 text-white"
               : "bg-slate-700 text-gray-300 hover:bg-slate-600"
           }`}

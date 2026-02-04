@@ -23,7 +23,7 @@ export default function MyReminderSession(reminder: full_reminder) {
     <div className="page-padding mt-10">
       <div
         id="reminder-id"
-        className="max-w-lg mx-auto rounded-2xl border-2 border-slate-500 bg-linear-to-tr from-gray-900 via-slate-800 to-blue-900 shadow-xl p-4"
+        className="max-w-lg mx-auto rounded-2xl border-2 border-slate-500 bg-linear-to-tr from-gray-900 via-slate-900 to-blue-900 shadow-xl p-4"
       >
         <div className="flex flex-col justify-center gap-4">
           <div className="flex gap-2 items-center justify-center bg-gray-900 rounded-xl py-5 border-2 border-slate-600 w-full">
@@ -39,7 +39,7 @@ export default function MyReminderSession(reminder: full_reminder) {
               <p className="text-lg">{formatDateTime(reminder.notify_date!)}</p>
             ) : reminder.type === "global" ||
               reminder.type === "global_reminders" ? (
-              <p className="text-lg">{formatDateTime(reminder.notify_at!)}</p>
+              <p className="text-lg">{formatDateTime(reminder.notify_at!)}</p>  
             ) : (
               <p className="text-lg">
                 {formatNotifyTime(reminder.notify_at_time!)}
@@ -71,11 +71,11 @@ export default function MyReminderSession(reminder: full_reminder) {
             </div>
           </div>
         )}
-        <p className="text-sm text-gray-400 mt-8 text-center">
+        <p className="text-sm text-gray-400 mt-8">
           {t("reminders.created")} {formatDate(reminder.created_at)}
         </p>
         {reminder.updated_at && (
-          <p className="text-sm text-yellow-500 mt-2 text-center">
+          <p className="text-sm text-yellow-500 mt-2">
             {t("reminders.updated")} {formatDate(reminder.updated_at!)}
           </p>
         )}

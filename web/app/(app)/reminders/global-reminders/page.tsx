@@ -12,8 +12,10 @@ import TitleInput from "@/app/(app)/ui/TitleInput";
 import useDraft from "@/app/(app)/reminders/hooks/useDraft";
 import useSaveReminder from "@/app/(app)/reminders/hooks/useSaveReminder";
 import { Info } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export default function GlobalReminder() {
+  const { t } = useTranslation("reminders");
   const [notes, setNotes] = useState("");
   const [title, setTitle] = useState("");
   const [isSaving, setIsSaving] = useState(false);
@@ -68,34 +70,36 @@ export default function GlobalReminder() {
     <>
       <div className="page-padding flex flex-col h-full w-full max-w-md mx-auto">
         <div className="flex flex-col items-center gap-5 grow h-full">
-          <p className="text-lg text-center">Add your reminders here</p>
+          <p className="text-lg text-center">
+            {t("reminders.addRemindersHere")}
+          </p>
           <div className="flex items-center justify-center gap-2">
             <Info color="#9ca3af" size={18} />
             <p className="text-gray-400 text-sm">
-              Notifies all logged-in devices.
+              {t("reminders.notifiesAllDevices")}
             </p>
           </div>
           <div className="w-full">
             <TitleInput
               value={title}
               setValue={setTitle}
-              placeholder="Reminder title... (required)"
-              label="Title..."
+              placeholder={t("reminders.titlePlaceholder")}
+              label={t("reminders.titleLabel")}
             />
           </div>
           <div className="z-50 w-full">
             <DateTimePicker
               value={notifyAt}
               onChange={setNotifyAt}
-              label="Notify at:"
-              placeholder="Select date and time (required)"
+              label={t("reminders.notifyAtLabel")}
+              placeholder={t("reminders.selectDateTimePlaceholder")}
             />
           </div>
           <SubNotesInput
             notes={notes}
             setNotes={setNotes}
-            placeholder="Write your notes here... (optional)"
-            label="Notes..."
+            placeholder={t("reminders.notesPlaceholder")}
+            label={t("reminders.notesLabel")}
           />
         </div>
         <div className="flex flex-col gap-5">
@@ -103,17 +107,17 @@ export default function GlobalReminder() {
           <DeleteSessionBtn onDelete={resetReminder} />
         </div>
       </div>
-      {isSaving && <FullScreenLoader message="Saving reminder..." />}
+      {isSaving && <FullScreenLoader message={t("reminders.savingReminder")} />}
 
       <InfoModal isOpen={isOpen} onClose={() => setIsOpen(false)}>
         <div className="p-6 items-center text-center">
-          <h2 className="text-xl mb-4">Push Notifications Disabled</h2>
+          <h2 className="text-xl mb-4">{t("reminders.pushDisabledTitle")}</h2>
           <p className="mb-10 text-gray-300 text-lg">
-            Enable push notifications from menu to receive reminders.
+            {t("reminders.pushDisabledMessage")}
           </p>
           <div className="flex gap-3">
-            <LinkButton href="/sessions">Back</LinkButton>
-            <LinkButton href="/menu/settings">Menu</LinkButton>
+            <LinkButton href="/sessions">{t("reminders.back")}</LinkButton>
+            <LinkButton href="/menu/settings">{t("reminders.menu")}</LinkButton>
           </div>
         </div>
       </InfoModal>

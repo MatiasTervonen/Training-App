@@ -1,7 +1,8 @@
 "use client";
 
 import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
-import { useEffect } from "react";
+import { useAppReadyStore } from "@/app/(app)/lib/stores/useAppReadyStore";
+import { useEffect, useRef } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 
@@ -22,28 +23,48 @@ export default function HydrateUser({
   role: Role;
 }) {
   const loginUser = useUserStore((state) => state.loginUser);
+  const setAppReady = useAppReadyStore((state) => state.setAppReady);
   const { i18n } = useTranslation();
+  const hasHydrated = useRef(false);
 
   useEffect(() => {
-    if (preferences) {
-      loginUser(preferences, role);
-      // Set i18n language from user preferences
-      if (preferences.language) {
-        i18n.changeLanguage(preferences.language);
+    // Only hydrate once on initial mount
+    if (hasHydrated.current) return;
+    hasHydrated.current = true;
+
+    const hydrate = async () => {
+      if (preferences) {
+        loginUser(preferences, role);
+        // Set i18n language from user preferences, or detect from browser
+        if (preferences.language) {
+          await i18n.changeLanguage(preferences.language);
+        } else {
+          // Detect language from browser if user hasn't set a preference
+          const browserLang = navigator.language.split("-")[0];
+          const supportedLangs = ["en", "fi"];
+          const detectedLang = supportedLangs.includes(browserLang)
+            ? browserLang
+            : "en";
+          await i18n.changeLanguage(detectedLang);
+        }
+      } else {
+        toast.error("Failed to load user preferences. Using default values.");
+        loginUser(
+          {
+            display_name: "guest",
+            weight_unit: "kg",
+            profile_picture: null,
+            language: null,
+          },
+          role
+        );
       }
-    } else {
-      toast.error("Failed to load user preferences. Using default values.");
-      loginUser(
-        {
-          display_name: "guest",
-          weight_unit: "kg",
-          profile_picture: null,
-          language: null,
-        },
-        role
-      );
-    }
-  }, [loginUser, preferences, role, i18n]);
+      // Signal that app is ready after hydration and language is set
+      setAppReady(true);
+    };
+
+    hydrate();
+  }, [loginUser, preferences, role, i18n, setAppReady]);
 
   return null;
 }

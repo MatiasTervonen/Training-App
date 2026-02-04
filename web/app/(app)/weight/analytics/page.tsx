@@ -7,17 +7,19 @@ import Spinner from "@/app/(app)/components/spinner";
 import { weight } from "@/app/(app)/types/models";
 import { useQuery } from "@tanstack/react-query";
 import { getWeight } from "@/app/(app)/database/weight/get-weight";
+import { useTranslation } from "react-i18next";
 
 type RangeType = "week" | "month" | "year";
 
-const ranges: { key: RangeType; label: string }[] = [
-  { key: "week", label: "7D" },
-  { key: "month", label: "30D" },
-  { key: "year", label: "1Y" },
-];
-
 export default function Page() {
+  const { t } = useTranslation("weight");
   const [range, setRange] = useState<RangeType>("month");
+
+  const ranges: { key: RangeType; label: string }[] = [
+    { key: "week", label: t("weight.analyticsScreen.range7d") },
+    { key: "month", label: t("weight.analyticsScreen.range30d") },
+    { key: "year", label: t("weight.analyticsScreen.range1y") },
+  ];
 
   const {
     data: weight = [],
@@ -35,7 +37,9 @@ export default function Page() {
 
   return (
     <div className="pt-8 pb-10">
-      <h1 className="text-2xl mb-5 text-center">Weight Analytics</h1>
+      <h1 className="text-2xl mb-5 text-center">
+        {t("weight.analyticsScreen.title")}
+      </h1>
       <div className="flex flex-col">
         <div className="flex justify-center mb-5 mx-4">
           <div className="flex bg-slate-800 rounded-lg p-1">
@@ -58,13 +62,13 @@ export default function Page() {
         <div>
           {isLoading ? (
             <div className="flex flex-col items-center text-gray-400 justify-center h-[300px] w-full mb-5">
-              <p className="mb-4">Loading weight data...</p>
+              <p className="mb-4">{t("weight.analyticsScreen.loading")}</p>
               <Spinner />
             </div>
           ) : error ? (
             <div className="flex flex-col items-center justify-center h-[300px] w-full">
               <p className="mb-4 text-lg text-red-500">
-                Error loading data. Try again...
+                {t("weight.analyticsScreen.error")}
               </p>
             </div>
           ) : (

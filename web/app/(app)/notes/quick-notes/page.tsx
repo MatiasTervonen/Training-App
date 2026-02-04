@@ -8,10 +8,15 @@ import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import TitleInput from "@/app/(app)/ui/TitleInput";
 import useSaveDraft from "@/app/(app)/notes/hooks/useSaveDraft";
 import useSaveNotes from "@/app/(app)/notes/hooks/useSaveNotes";
+import { useTranslation } from "react-i18next";
+import { formatDateShort } from "../../lib/formatDate";
 
 export default function Notes() {
+  const { t } = useTranslation("notes");
+  const now = formatDateShort(new Date());
+
+  const [title, setTitle] = useState(`${t("notes.title")} - ${now}`);
   const [notes, setNotes] = useState("");
-  const [title, setTitle] = useState("");
   const [isLoaded, setIsLoaded] = useState(false);
 
   // useSaveDraft hook to save draft notes
@@ -38,18 +43,18 @@ export default function Notes() {
     <>
       <div className="flex flex-col h-full max-w-md mx-auto page-padding">
         <div className="flex flex-col items-center gap-5 grow mb-10">
-          <p className="text-lg text-center">Add your notes here</p>
+          <p className="text-lg text-center">{t("notes.addNotesHere")}</p>
           <TitleInput
             value={title}
             setValue={setTitle}
-            placeholder="Notes title..."
-            label="Title..."
+            placeholder={t("notes.titlePlaceholder")}
+            label={t("notes.titleLabel")}
           />
           <NotesInput
             notes={notes}
             setNotes={setNotes}
-            placeholder="Write your notes here..."
-            label="Notes..."
+            placeholder={t("notes.notesPlaceholder")}
+            label={t("notes.notesLabel")}
             fillAvailableSpace
           />
         </div>
@@ -65,7 +70,7 @@ export default function Notes() {
           <DeleteSessionBtn onDelete={resetNotes} />
         </div>
       </div>
-      {isPending && <FullScreenLoader message="Saving notes..." />}
+      {isPending && <FullScreenLoader message={t("notes.savingNotes")} />}
     </>
   );
 }

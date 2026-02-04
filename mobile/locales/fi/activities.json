@@ -164,6 +164,25 @@
       "description": "MyTrack käyttää askeldataa Android Health Connectista näyttääkseen aktiviteettitietosi.\n\nOta askelpääsy käyttöön MyTrackille Health Connectin Käyttöoikeudet-kohdassa.",
       "cancel": "Peruuta",
       "openSettings": "Avaa asetukset"
+    },
+    "addActivityScreen": {
+      "title": "Lisää aktiviteetti",
+      "activityNameLabel": "Aktiviteetin nimi",
+      "activityNamePlaceholder": "Aktiviteetin nimi",
+      "metLabel": "MET",
+      "metPlaceholder": "esim. 8.0",
+      "metDescription": "Käytetään aktiviteetin aikana kulutettujen kalorien arvioimiseen. Esimerkki: Lepo 1.0, kävely 3.5, juoksu 7.5",
+      "selectCategory": "Valitse kategoria",
+      "saveButton": "Tallenna aktiviteetti",
+      "savingActivity": "Tallennetaan aktiviteettia...",
+      "errorNameRequired": "Syötä aktiviteetin nimi",
+      "errorCategoryRequired": "Valitse kategoria",
+      "errorInvalidMet": "Virheellinen MET-arvo",
+      "errorInvalidMetDesc": "Syötä kelvollinen numero",
+      "errorMetOutOfRange": "MET-arvo rajojen ulkopuolella",
+      "errorMetRangeDesc": "Syötä arvo välillä 1.0 - 20.0",
+      "successSaved": "Aktiviteetti tallennettu onnistuneesti!",
+      "errorSaveFailed": "Aktiviteetin tallennus epäonnistui. Yritä uudelleen."
     }
   }
 }

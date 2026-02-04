@@ -88,6 +88,18 @@
       "saveSuccess": "Liike tallennettu onnistuneesti!",
       "saveError": "Liikkeen tallennus epäonnistui. Yritä uudelleen."
     },
+    "editExerciseScreen": {
+      "title": "Muokkaa liikettä",
+      "fillAllFields": "Täytä kaikki kentät.",
+      "updateSuccess": "Liike päivitetty onnistuneesti!",
+      "updateError": "Liikkeen päivitys epäonnistui. Yritä uudelleen.",
+      "deleteSuccess": "Liike poistettu onnistuneesti!",
+      "deleteError": "Liikkeen poistaminen epäonnistui. Yritä uudelleen.",
+      "updateExercise": "Päivitä liike",
+      "deleteExercise": "Poista liike",
+      "savingExercise": "Tallennetaan liikettä...",
+      "deletingExercise": "Poistetaan liikettä..."
+    },
     "exerciseDropdown": {
       "recentExercises": "Äskettäiset liikkeet",
       "allExercises": "Kaikki liikkeet",
@@ -216,7 +228,7 @@
     "analytics": {
       "title": "Viimeisten 30 päivän analytiikka",
       "totalWorkouts": "Treenejä yhteensä",
-      "averageDuration": "Keskimääräinen kesto",
+      "averageDuration": "Kesto ka",
       "muscleGroupDistribution": "Lihasryhmien jakauma",
       "duration": "Kesto",
       "note": "Huom: Analytiikka perustuu viimeisten 30 päivän harjoitustietoihin.",

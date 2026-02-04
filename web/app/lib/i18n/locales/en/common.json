@@ -17,7 +17,12 @@
     "pinned": "Pinned",
     "history": "History",
     "change": "Change",
-    "created": "Created:"
+    "created": "Created:",
+    "copyNotes": "Copy Notes",
+    "copiedToClipboard": "Copied to clipboard!",
+    "failedToCopy": "Failed to copy notes.",
+    "elementNotFound": "Element not found.",
+    "chat": "Chat"
   },
   "navbar": {
     "menu": "Menu",
@@ -54,5 +59,94 @@
     "friendRequest": "Friend request from",
     "accept": "Accept",
     "reject": "Reject"
+  },
+  "feed": {
+    "refreshing": "Refreshing...",
+    "pullToRefresh": "Pull to refresh...",
+    "failedToLoad": "Failed to load sessions. Please try again later.",
+    "noSessions": "No sessions yet. Let's get started!",
+    "loadingMore": "Loading more...",
+    "noMoreSessions": "No more sessions",
+    "loadingGymSession": "Loading gym session details...",
+    "failedToLoadGymSession": "Failed to load gym session details. Please try again later.",
+    "loadingTodoSession": "Loading todo session details...",
+    "failedToLoadTodoSession": "Failed to load todo session details. Please try again later."
+  },
+  "installApp": {
+    "downloadApp": "Download app",
+    "iosInstructions": "Tap the Share button in Safari, then choose",
+    "addToHomeScreen": "Add to Home Screen"
+  },
+  "pushNotifications": {
+    "title": "Push Notifications",
+    "notSupported": "Push notifications are not supported in this browser.",
+    "blocked": "You have blocked push notifications. Please enable them in your browser settings.",
+    "subscribeError": "Failed to subscribe to push notifications!",
+    "unsubscribeError": "Failed to unsubscribe from push notifications!",
+    "enabled": "Push notifications enabled",
+    "allow": "Allow web push notifications"
+  },
+  "admin": {
+    "title": "Admin panel",
+    "userAnalytics": "User analytics",
+    "addExercises": "Add exercises",
+    "editExercises": "Edit exercises",
+    "analytics": {
+      "title": "User Analytics",
+      "totalUsers": "Total Users",
+      "errorLoadingCount": "Error loading user count",
+      "sortBy": "Sort by",
+      "createdAt": "Created At",
+      "email": "Email",
+      "role": "Role",
+      "loadError": "Failed to load user data.",
+      "tableHeaders": {
+        "id": "id",
+        "displayName": "d.name",
+        "email": "Email",
+        "role": "Role",
+        "created": "Created",
+        "actions": "Actions"
+      },
+      "banned": "banned",
+      "bannedUntil": "Banned until:",
+      "reason": "Reason:",
+      "delete": "delete",
+      "ban": "Ban",
+      "unban": "Unban",
+      "banDurations": {
+        "1day": "1 Day",
+        "7day": "7 Day",
+        "30day": "30 Day",
+        "permanent": "Permanent"
+      },
+      "banModal": {
+        "title": "Ban User:",
+        "duration": "Duration:",
+        "giveReason": "Give reason:",
+        "reasonPlaceholder": "Ban reason..."
+      },
+      "roles": {
+        "guest": "Guest",
+        "user": "User",
+        "admin": "Admin",
+        "superAdmin": "Super admin"
+      },
+      "pagination": {
+        "previous": "Previous",
+        "next": "Next",
+        "page": "Page"
+      },
+      "confirmDelete": "Are you sure you want to delete user:",
+      "confirmUnban": "Are you sure you want to unban user:",
+      "confirmPromote": "Are you sure you want to promote user:",
+      "userBanned": "User banned successfully!",
+      "userUnbanned": "User unbanned successfully!",
+      "userDeleted": "User deleted successfully!",
+      "userPromoted": "User promoted successfully!",
+      "errorBanning": "Error banning user. Please try again!",
+      "errorDeleting": "Error deleting user. Please try again!",
+      "errorPromoting": "Error promoting user. Please try again!"
+    }
   }
 }

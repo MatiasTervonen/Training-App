@@ -12,8 +12,10 @@ import { addActivity } from "@/database/activities/add-activity";
 import CategoryDropdown from "@/Features/activities/components/categoryDropDown";
 import FullScreenModal from "@/components/FullScreenModal";
 import AnimatedButton from "@/components/buttons/animatedButton";
+import { useTranslation } from "react-i18next";
 
 export default function AddActivity() {
+  const { t } = useTranslation("activities");
   const [name, setName] = useState("");
   const [met, setMet] = useState("");
   const [category, setCategory] = useState("");
@@ -27,7 +29,7 @@ export default function AddActivity() {
     if (!name) {
       Toast.show({
         type: "error",
-        text1: "Please enter an activity name",
+        text1: t("activities.addActivityScreen.errorNameRequired"),
       });
       return;
     }
@@ -35,7 +37,7 @@ export default function AddActivity() {
     if (!category) {
       Toast.show({
         type: "error",
-        text1: "Please select a category",
+        text1: t("activities.addActivityScreen.errorCategoryRequired"),
       });
       return;
     }
@@ -46,8 +48,8 @@ export default function AddActivity() {
     if (!met || met === "." || isNaN(metValue)) {
       Toast.show({
         type: "error",
-        text1: "Invalid MET value",
-        text2: "Please enter a valid number",
+        text1: t("activities.addActivityScreen.errorInvalidMet"),
+        text2: t("activities.addActivityScreen.errorInvalidMetDesc"),
       });
       return;
     }
@@ -55,8 +57,8 @@ export default function AddActivity() {
     if (metValue < 1 || metValue > 20) {
       Toast.show({
         type: "error",
-        text1: "MET out of range",
-        text2: "Please enter a value between 1.0 and 20.0",
+        text1: t("activities.addActivityScreen.errorMetOutOfRange"),
+        text2: t("activities.addActivityScreen.errorMetRangeDesc"),
       });
       return;
     }
@@ -79,7 +81,7 @@ export default function AddActivity() {
 
       Toast.show({
         type: "success",
-        text1: "Activity saved successfully!",
+        text1: t("activities.addActivityScreen.successSaved"),
       });
       setName("");
       setMet("");
@@ -88,7 +90,7 @@ export default function AddActivity() {
     } catch {
       Toast.show({
         type: "error",
-        text1: "Failed to save activity. Please try again.",
+        text1: t("activities.addActivityScreen.errorSaveFailed"),
       });
     } finally {
       setIsSaving(false);
@@ -101,14 +103,14 @@ export default function AddActivity() {
         <PageContainer className="justify-between flex-1">
           <View>
             <AppText className="text-2xl mb-10 text-center">
-              Add Activity
+              {t("activities.addActivityScreen.title")}
             </AppText>
             <View className="mb-5">
               <AppInput
                 value={name}
                 setValue={setName}
-                placeholder="Activity name"
-                label="Activity Name"
+                placeholder={t("activities.addActivityScreen.activityNamePlaceholder")}
+                label={t("activities.addActivityScreen.activityNameLabel")}
               />
             </View>
             <View className="mb-5">
@@ -125,18 +127,17 @@ export default function AddActivity() {
                   }
                 }}
                 keyboardType="numeric"
-                placeholder="e.g. 8.0"
-                label="MET"
+                placeholder={t("activities.addActivityScreen.metPlaceholder")}
+                label={t("activities.addActivityScreen.metLabel")}
               />
               <AppText className="text-gray-400 text-sm mt-1">
-                Used to estimate calories burned during the activity. Example:
-                Rest 1.0 walking 3.5, running 7.5
+                {t("activities.addActivityScreen.metDescription")}
               </AppText>
             </View>
-            <AppText className="mb-2">Select Category</AppText>
+            <AppText className="mb-2">{t("activities.addActivityScreen.selectCategory")}</AppText>
             <AnimatedButton
               onPress={() => setOpenCategoryModal(true)}
-              label={category || "Select Category"}
+              label={category || t("activities.addActivityScreen.selectCategory")}
               className="bg-blue-800 py-2 w-full rounded-md shadow-md border-2 border-blue-500"
               textClassName="text-gray-100 text-center"
             />
@@ -154,11 +155,11 @@ export default function AddActivity() {
             </FullScreenModal>
           </View>
           <View className="mt-10">
-            <SaveButton onPress={handleSave} label="Save Activity" />
+            <SaveButton onPress={handleSave} label={t("activities.addActivityScreen.saveButton")} />
           </View>
         </PageContainer>
       </TouchableWithoutFeedback>
-      <FullScreenLoader visible={isSaving} message="Saving activity..." />
+      <FullScreenLoader visible={isSaving} message={t("activities.addActivityScreen.savingActivity")} />
     </>
   );
 }

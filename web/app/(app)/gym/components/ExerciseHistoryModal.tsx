@@ -67,7 +67,7 @@ export default function ExerciseHistoryModal({
                 <div className="flex flex-col items-center mt-10">
                   <p className="text-lg">{formatDateShort(session!.date)}</p>
                   <div className="mt-6  bg-linear-to-tr from-gray-900 via-slate-900 to-blue-900 rounded-md px-4 pb-5 pt-2 shadow-md w-full  border-2 border-gray-600">
-                    <table className="w-full text-left ">
+                    <table className="w-full text-center">
                       <thead>
                         <tr className="border-b">
                           {session?.main_group === "cardio" ? (
@@ -110,7 +110,7 @@ export default function ExerciseHistoryModal({
                                   {set.weight} {weightUnit}
                                 </td>
                                 <td className="p-2">{set.reps}</td>
-                                <td className="p-2">{set.rpe ? translateRpe(set.rpe) : ""}</td>
+                                <td className="p-2 max-w-[70px] truncate">{set.rpe ? translateRpe(set.rpe) : ""}</td>
                               </>
                             )}
                           </tr>

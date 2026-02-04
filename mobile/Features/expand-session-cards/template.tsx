@@ -16,7 +16,7 @@ type Props = {
 export default function GymTemplate({ item, onStartWorkout }: Props) {
   const { t } = useTranslation("gym");
   const groupedExercises = GroupTemplateExercise(
-    item.gym_template_exercises || []
+    item.gym_template_exercises || [],
   );
 
   return (
@@ -65,10 +65,12 @@ export default function GymTemplate({ item, onStartWorkout }: Props) {
                         numberOfLines={1}
                         ellipsizeMode="tail"
                       >
-                        {exercise.gym_exercises.name}
+                        {exercise.gym_exercises.gym_exercises_translations?.[0]}
                       </AppText>
                       <AppText className="text-gray-300">
-                        {t(`gym.muscleGroups.${exercise.gym_exercises.muscle_group}`)}
+                        {t(
+                          `gym.muscleGroups.${exercise.gym_exercises.muscle_group}`,
+                        )}
                       </AppText>
                     </View>
                     <AppText className="text-gray-300 mt-2">
@@ -80,7 +82,10 @@ export default function GymTemplate({ item, onStartWorkout }: Props) {
             ))}
           </View>
           <View className="mt-10">
-            <AppButton onPress={onStartWorkout} label={t("gym.templateView.startWorkout")} />
+            <AppButton
+              onPress={onStartWorkout}
+              label={t("gym.templateView.startWorkout")}
+            />
           </View>
         </View>
       </PageContainer>

@@ -3,7 +3,6 @@ import { handleError } from "@/utils/handleError";
 
 type Exercise = {
   name: string;
-  language: string;
   equipment: string;
   muscle_group: string;
   main_group: string;
@@ -11,7 +10,6 @@ type Exercise = {
 
 export async function addExercise({
   name,
-  language,
   equipment,
   muscle_group,
   main_group,
@@ -22,7 +20,6 @@ export async function addExercise({
     .insert([
       {
         name,
-        language,
         equipment,
         muscle_group,
         main_group,

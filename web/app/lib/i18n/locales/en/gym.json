@@ -58,7 +58,9 @@
         "message": "Are you sure you want to delete this exercise from the template?"
       },
       "cancel": "Cancel",
-      "savingTemplate": "Saving template..."
+      "savingTemplate": "Saving template...",
+      "startWorkout": "Start Workout"
+
     },
     "TemplatesScreen": {
       "confirmDeleteTitle": "Delete Template",
@@ -78,7 +80,12 @@
       "title": "Add Exercises",
       "exerciseName": "Exercise Name",
       "exerciseNamePlaceholder": "Exercise name",
+      "charLimit": "Reached the limit (50 chars max)",
       "language": "Language",
+      "languages": {
+        "en": "English",
+        "fi": "Finnish"
+      },
       "equipment": "Equipment",
       "muscleGroup": "Muscle group",
       "mainGroup": "Main group",
@@ -87,6 +94,19 @@
       "nameRequired": "Please enter an exercise name",
       "saveSuccess": "Exercise saved successfully!",
       "saveError": "Failed to save exercise. Please try again."
+    },
+    "editExerciseScreen": {
+      "title": "Edit exercise",
+      "fillAllFields": "Please fill in all fields.",
+      "updateSuccess": "Exercise updated successfully!",
+      "updateError": "Failed to update exercise. Please try again.",
+      "deleteSuccess": "Exercise deleted successfully!",
+      "deleteError": "Failed to delete exercise. Please try again.",
+      "updateExercise": "Update Exercise",
+      "deleteExercise": "Delete Exercise",
+      "savingExercise": "Saving exercise...",
+      "deletingExercise": "Deleting exercise...",
+      "confirmDelete": "Are you sure you want to delete this exercise?"
     },
     "exerciseDropdown": {
       "recentExercises": "Recent Exercises",
@@ -207,6 +227,7 @@
       "title": "Last 30 Days Analytics",
       "totalWorkouts": "Total workouts",
       "averageDuration": "Average Duration",
+      "minutes": "minutes",
       "muscleGroupDistribution": "Muscle Group Distribution",
       "duration": "Duration",
       "note": "Note: Analytics are based on the last 30 days of workout data.",

@@ -7,6 +7,7 @@ import { Pin } from "lucide-react";
 import FeedCard from "@/app/(app)/components/feed-cards/FeedCard";
 import { useModalPageConfig } from "@/app/(app)/lib/stores/modalPageConfig";
 import { FeedItemUI } from "@/app/(app)/types/session";
+import { useTranslation } from "react-i18next";
 
 interface PinnedCarouselProps {
   pinnedFeed: FeedItemUI[];
@@ -27,6 +28,7 @@ export default function PinnedCarousel({
   togglePin,
   handleDelete,
 }: PinnedCarouselProps) {
+  const { t } = useTranslation("common");
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [Autoplay()]);
   const [activeIndex, setActiveIndex] = useState(0);
   const setBlockSwipe = useModalPageConfig((s) => s.setBlockSwipe);
@@ -64,7 +66,7 @@ export default function PinnedCarousel({
         <div>
           <div className="flex items-center gap-2 mb-2">
             <Pin size={20} />
-            <p className="text-gray-400">Pinned</p>
+            <p className="text-gray-400">{t("common.pinned")}</p>
             <p className="text-gray-400">
               {activeIndex + 1} / {pinnedFeed.length}
             </p>

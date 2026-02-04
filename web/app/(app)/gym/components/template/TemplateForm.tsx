@@ -8,7 +8,6 @@ import DeleteSessionBtn from "@/app/(app)/components/buttons/deleteSessionBtn";
 import { ExerciseEntry, emptyExerciseEntry } from "@/app/(app)/types/session";
 import ExerciseHistoryModal from "@/app/(app)/gym/components/ExerciseHistoryModal";
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
-import { full_gym_template } from "@/app/(app)/types/models";
 import ExerciseSelectorList from "@/app/(app)/gym/components/ExerciseSelectorList";
 import TemplateCard from "@/app/(app)/gym/components/template/TemplateCard";
 import { GroupGymExercises } from "@/app/(app)/utils/GroupGymExercises";
@@ -19,12 +18,13 @@ import useDraftTemplate from "@/app/(app)/gym/hooks/template/useDraftTemplate";
 import useAddExercise from "@/app/(app)/gym/hooks/template/useAddExercise";
 import useSaveTemplate from "@/app/(app)/gym/hooks/template/useSaveTemplate";
 import { useTranslation } from "react-i18next";
+import { FullGymTemplate } from "@/app/(app)/database/gym/templates/full-gym-template";
 
 export default function TemplateForm({
   initialData,
   errorMessage,
 }: {
-  initialData: full_gym_template;
+  initialData: FullGymTemplate;
   errorMessage: string;
 }) {
   const { t } = useTranslation("gym");

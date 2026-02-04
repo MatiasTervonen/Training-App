@@ -1,13 +1,26 @@
 import { createClient } from "@/utils/supabase/client";
 import { handleError } from "@/app/(app)/utils/handleError";
-import { ExercisePreview } from "@/app/(app)/types/models";
+import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
+import { ExerciseWithTranslation } from "./get-exercises";
 
-export async function getRecentExercises() {
+export async function getRecentExercises(): Promise<ExerciseWithTranslation[]> {
   const supabase = createClient();
+  const language = useUserStore.getState().preferences?.language ?? "en";
 
   const { data: exercises, error } = await supabase
     .from("gym_session_exercises")
-    .select(`exercise:exercise_id (*)`)
+    .select(
+      `
+      exercise:exercise_id (
+        id,
+        equipment,
+        main_group,
+        muscle_group,
+        gym_exercises_translations!inner(name)
+      )
+    `
+    )
+    .eq("exercise.gym_exercises_translations.language", language)
     .order("id", { ascending: false })
     .limit(10);
 
@@ -20,16 +33,24 @@ export async function getRecentExercises() {
     throw new Error("Error fetching recent exercises");
   }
 
-  const uniqueExercises: ExercisePreview[] = [];
-  const seen = new Set<number>();
+  const uniqueExercises: ExerciseWithTranslation[] = [];
+  const seen = new Set<string>();
 
-  for (const row of exercises) {
+  for (const row of exercises ?? []) {
     const ex = Array.isArray(row.exercise) ? row.exercise[0] : row.exercise;
     if (ex && !seen.has(ex.id)) {
       seen.add(ex.id);
-      uniqueExercises.push(ex);
+      uniqueExercises.push({
+        id: ex.id,
+        equipment: ex.equipment,
+        main_group: ex.main_group,
+        muscle_group: ex.muscle_group,
+        name:
+          (ex.gym_exercises_translations as { name: string }[])?.[0]?.name ??
+          "Unknown",
+      });
     }
   }
 
-  return uniqueExercises ?? [];
+  return uniqueExercises;
 }

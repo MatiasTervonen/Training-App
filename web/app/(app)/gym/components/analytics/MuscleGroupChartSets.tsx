@@ -10,20 +10,23 @@ import {
 } from "recharts";
 import { useMemo } from "react";
 import { Last30DaysAnalytics } from "@/app/(app)/types/session";
+import { useTranslation } from "react-i18next";
 
 export default function MuscleGroupChart({
   data,
 }: {
   data: Last30DaysAnalytics;
 }) {
+  const { t } = useTranslation("gym");
+
   const chartDataSets = useMemo(() => {
     return data.analytics.sets_per_muscle_group
       .map((item) => ({
-        name: item.group,
+        name: t(`gym.muscleGroups.${item.group}`),
         sets: item.count,
       }))
       .sort((a, b) => b.sets - a.sets);
-  }, [data]);
+  }, [data, t]);
 
   return (
     <div>
@@ -48,7 +51,11 @@ export default function MuscleGroupChart({
             width={0}
           />
           <Legend />
-          <Bar dataKey="sets" fill="#8884d8" name="Sets">
+          <Bar
+            dataKey="sets"
+            fill="#8884d8"
+            name={t("gym.analytics.tabs.sets")}
+          >
             <LabelList dataKey="name" position="insideLeft" fill="#fff" />
           </Bar>
         </BarChart>

@@ -6,7 +6,7 @@ import { ExerciseEntry } from "@/app/(app)/types/session";
 import { toast } from "react-hot-toast";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { full_gym_template } from "@/app/(app)/types/models";
+import { FullGymTemplate } from "@/app/(app)/database/gym/templates/full-gym-template";
 
 export default function useSaveTemplate({
   workoutName,
@@ -21,7 +21,7 @@ export default function useSaveTemplate({
   isEditing: boolean;
   setIsSaving: (isSaving: boolean) => void;
   resetSession: () => void;
-  template: full_gym_template;
+  template: FullGymTemplate;
 }) {
   const router = useRouter();
   const queryClient = useQueryClient();

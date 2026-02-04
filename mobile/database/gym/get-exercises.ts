@@ -1,4 +1,3 @@
-
 import { useUserStore } from "@/lib/stores/useUserStore";
 import { supabase } from "@/lib/supabase";
 import { handleError } from "@/utils/handleError";
@@ -6,7 +5,7 @@ import { handleError } from "@/utils/handleError";
 export async function getExercises() {
   const language = useUserStore.getState().settings?.language ?? "en";
 
-  const query = supabase
+  const { data, error } = await supabase
     .from("gym_exercises")
     .select(
       `
@@ -18,8 +17,6 @@ export async function getExercises() {
       `,
     )
     .eq("gym_exercises_translations.language", language);
-
-  const { data, error } = await query;
 
   if (error) {
     handleError(error, {

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { useTranslation } from "react-i18next";
 
 interface NavigatorStandalone extends Navigator {
   standalone?: boolean;
@@ -35,6 +36,7 @@ export default function InstallApp({
 }: {
   promptEvent: BeforeInstallPromptEvent | null;
 }) {
+  const { t } = useTranslation("common");
   const [expanded, setExpanded] = useState(false);
   const [showIosPrompt] = useState(
     () => isIosSafari() && !isInStandaloneMode()
@@ -60,7 +62,7 @@ export default function InstallApp({
         >
           <div className="flex gap-2 items-center justify-center">
             <Image src="/Mobile.png" alt="Mobile" width={23} height={23} />
-            <p>Download app</p>
+            <p>{t("installApp.downloadApp")}</p>
           </div>
         </button>
       )}
@@ -83,7 +85,7 @@ export default function InstallApp({
                 height={23}
                 priority
               />
-              <p>Download app</p>
+              <p>{t("installApp.downloadApp")}</p>
             </div>
           </button>
           {expanded && (
@@ -92,11 +94,10 @@ export default function InstallApp({
               className="absolute left-1/2 -translate-x-1/2 md:-left-10 bg-slate-800 p-4 rounded-lg mt-2 w-max shadow-lg"
             >
               <p className="text-gray-300 mb-2">
-                Tap the <span className="">Share</span> button in Safari, then
-                choose
+                {t("installApp.iosInstructions")}
               </p>
               <span className="text-gray-400">
-                &quot;Add to Home Screen&quot;
+                &quot;{t("installApp.addToHomeScreen")}&quot;
               </span>
             </div>
           )}

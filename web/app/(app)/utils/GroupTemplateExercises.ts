@@ -1,12 +1,18 @@
-import { full_gym_template_exercise } from "@/app/(app)/types/models";
+import { FullGymTemplate } from "@/app/(app)/database/gym/templates/full-gym-template";
+
+type FullGymTemplateExercise =
+  FullGymTemplate["gym_template_exercises"][number];
 
 export function GroupTemplateExercises(
-  exercises: full_gym_template_exercise[]
-): Record<string, full_gym_template_exercise[]> {
-  return exercises.reduce((acc, exercise) => {
-    const key = exercise.superset_id ?? `solo-${exercise.id}`;
-    if (!acc[key]) acc[key] = [];
-    acc[key].push(exercise);
-    return acc;
-  }, {} as Record<string, full_gym_template_exercise[]>);
+  exercises: FullGymTemplateExercise[],
+): Record<string, FullGymTemplateExercise[]> {
+  return exercises.reduce(
+    (acc, exercise) => {
+      const key = exercise.superset_id ?? `solo-${exercise.id}`;
+      if (!acc[key]) acc[key] = [];
+      acc[key].push(exercise);
+      return acc;
+    },
+    {} as Record<string, FullGymTemplateExercise[]>,
+  );
 }

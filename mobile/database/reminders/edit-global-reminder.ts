@@ -3,13 +3,13 @@ import { supabase } from "@/lib/supabase";
 
 type EditGlobalReminderParams = {
   id: string;
-  title: string | null | undefined;
-  notes: string | null | undefined;
-  notify_at: string | null;
-  seen_at?: string | null;
+  title: string;
+  notes: string;
+  notify_at: string;
+  seen_at: string;
   updated_at: string;
-  delivered?: boolean | null;
-  mode?: "alarm" | "normal";
+  delivered: boolean;
+  mode: "alarm" | "normal";
 };
 
 export async function editGlobalReminder({

@@ -12,10 +12,11 @@ import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import { editExercise } from "@/app/(app)/database/gym/edit-exercise";
 import { deleteExercise } from "@/app/(app)/database/gym/delete-exercise";
 import { useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 
 export default function EditExercises() {
+  const { t } = useTranslation("gym");
   const [name, setName] = useState("");
-  const [language, setLanguage] = useState("");
   const [equipment, setEquipment] = useState("");
   const [muscle_group, setMuscleGroup] = useState("");
   const [main_group, setMainGroup] = useState("");
@@ -28,7 +29,7 @@ export default function EditExercises() {
 
   const handleUpdateExercise = async () => {
     if (!name || !equipment || !muscle_group || !main_group) {
-      toast.error("Please fill in all fields.");
+      toast.error(t("gym.editExerciseScreen.fillAllFields"));
       return;
     }
 
@@ -38,7 +39,6 @@ export default function EditExercises() {
     const exerciseData = {
       id: selectedExercise!.id,
       name,
-      language,
       equipment,
       muscle_group,
       main_group,
@@ -51,10 +51,10 @@ export default function EditExercises() {
         queryKey: ["user-exercises"],
         exact: true,
       });
-      toast.success("Exercise updated successfully!");
+      toast.success(t("gym.editExerciseScreen.updateSuccess"));
       resetFields();
     } catch {
-      toast.error("Failed to update exercise. Please try again.");
+      toast.error(t("gym.editExerciseScreen.updateError"));
     } finally {
       setIsSaving(false);
     }
@@ -71,10 +71,10 @@ export default function EditExercises() {
         queryKey: ["user-exercises"],
         exact: true,
       });
-      toast.success("Exercise deleted successfully!");
+      toast.success(t("gym.editExerciseScreen.deleteSuccess"));
       setSelectedExercise(null);
     } catch {
-      toast.error("Failed to delete exercise. Please try again.");
+      toast.error(t("gym.editExerciseScreen.deleteError"));
     } finally {
       setIsDeleting(false);
       setIsSaving(false);
@@ -84,7 +84,6 @@ export default function EditExercises() {
   useEffect(() => {
     if (selectedExercise) {
       setName(selectedExercise.name);
-      setLanguage(selectedExercise.language);
       setEquipment(selectedExercise.equipment);
       setMuscleGroup(selectedExercise.muscle_group);
       setMainGroup(selectedExercise.main_group);
@@ -93,7 +92,6 @@ export default function EditExercises() {
 
   const resetFields = () => {
     setName("");
-    setLanguage("");
     setEquipment("");
     setMuscleGroup("");
     setMainGroup("");
@@ -113,97 +111,90 @@ export default function EditExercises() {
         {selectedExercise && (
           <>
             <div className="flex flex-col gap-5 max-w-md mx-auto page-padding">
-              <h1 className="text-2xl text-center mb-5">Edit exercise</h1>
+              <h1 className="text-2xl text-center mb-5">
+                {t("gym.editExerciseScreen.title")}
+              </h1>
               <div>
                 <CustomInput
                   value={name}
                   setValue={setName}
-                  placeholder="Exercise name"
-                  label="Exercise Name"
+                  placeholder={t("gym.addExerciseScreen.exerciseNamePlaceholder")}
+                  label={t("gym.addExerciseScreen.exerciseName")}
                   maxLength={50}
                 />
                 {name.length >= 50 ? (
                   <p className="text-yellow-400 mt-2">
-                    Reached the limit (50 chars max)
+                    {t("gym.addExerciseScreen.charLimit")}
                   </p>
                 ) : null}
               </div>
               <ExerciseTypeSelect
-                value={language}
-                onChange={setLanguage}
-                options={[
-                  { value: "en", label: "English" },
-                  { value: "fi", label: "Finland" },
-                ]}
-                label="Language"
-              />
-              <ExerciseTypeSelect
                 value={equipment}
                 onChange={setEquipment}
                 options={[
-                  { value: "barbell", label: "Barbell" },
-                  { value: "dumbbell", label: "Dumbbell" },
-                  { value: "machine", label: "Machine" },
-                  { value: "smith", label: "Smith" },
-                  { value: "cable", label: "Cable" },
-                  { value: "rope", label: "Rope" },
-                  { value: "bodyweight", label: "Bodyweight" },
-                  { value: "gripper", label: "Gripper" },
-                  { value: "band", label: "Band" },
-                  { value: "ball", label: "Ball" },
-                  { value: "wheel", label: "Wheel" },
+                  { value: "barbell", label: t("gym.equipment.barbell") },
+                  { value: "dumbbell", label: t("gym.equipment.dumbbell") },
+                  { value: "machine", label: t("gym.equipment.machine") },
+                  { value: "smith", label: t("gym.equipment.smith") },
+                  { value: "cable", label: t("gym.equipment.cable") },
+                  { value: "rope", label: t("gym.equipment.rope") },
+                  { value: "bodyweight", label: t("gym.equipment.bodyweight") },
+                  { value: "gripper", label: t("gym.equipment.gripper") },
+                  { value: "band", label: t("gym.equipment.band") },
+                  { value: "ball", label: t("gym.equipment.ball") },
+                  { value: "wheel", label: t("gym.equipment.wheel") },
                 ]}
-                label="Equipment"
+                label={t("gym.addExerciseScreen.equipment")}
               />
 
               <ExerciseTypeSelect
                 value={muscle_group}
                 onChange={setMuscleGroup}
                 options={[
-                  { value: "chest", label: "Chest" },
-                  { value: "quads", label: "Quads" },
-                  { value: "hamstrings", label: "Hamstrings" },
-                  { value: "biceps", label: "Biceps" },
-                  { value: "triceps", label: "Triceps" },
-                  { value: "lats", label: "Lats" },
-                  { value: "abs", label: "Abs" },
-                  { value: "calves", label: "Calves" },
-                  { value: "upper_back", label: "Upper back" },
-                  { value: "forearms", label: "Forearms" },
-                  { value: "full_body", label: "Full body" },
-                  { value: "side_delts", label: "Side delts" },
-                  { value: "legs", label: "Legs" },
-                  { value: "obliques", label: "Obliques" },
-                  { value: "front_delts", label: "Front delts" },
-                  { value: "traps", label: "Traps" },
-                  { value: "delts", label: "Delts" },
-                  { value: "lower_back", label: "Lower back" },
+                  { value: "chest", label: t("gym.muscleGroups.chest") },
+                  { value: "quads", label: t("gym.muscleGroups.quads") },
+                  { value: "hamstrings", label: t("gym.muscleGroups.hamstrings") },
+                  { value: "biceps", label: t("gym.muscleGroups.biceps") },
+                  { value: "triceps", label: t("gym.muscleGroups.triceps") },
+                  { value: "lats", label: t("gym.muscleGroups.lats") },
+                  { value: "abs", label: t("gym.muscleGroups.abs") },
+                  { value: "calves", label: t("gym.muscleGroups.calves") },
+                  { value: "upper_back", label: t("gym.muscleGroups.upper_back") },
+                  { value: "forearms", label: t("gym.muscleGroups.forearms") },
+                  { value: "full_body", label: t("gym.muscleGroups.full_body") },
+                  { value: "side_delts", label: t("gym.muscleGroups.side_delts") },
+                  { value: "legs", label: t("gym.muscleGroups.legs") },
+                  { value: "obliques", label: t("gym.muscleGroups.obliques") },
+                  { value: "front_delts", label: t("gym.muscleGroups.front_delts") },
+                  { value: "traps", label: t("gym.muscleGroups.traps") },
+                  { value: "delts", label: t("gym.muscleGroups.delts") },
+                  { value: "lower_back", label: t("gym.muscleGroups.lower_back") },
                 ]}
-                label="Muscle group"
+                label={t("gym.addExerciseScreen.muscleGroup")}
               />
               <ExerciseTypeSelect
                 value={main_group}
                 onChange={setMainGroup}
                 options={[
-                  { value: "chest", label: "Chest" },
-                  { value: "legs", label: "Legs" },
-                  { value: "arms", label: "Arms" },
-                  { value: "shoulders", label: "Shoulders" },
-                  { value: "back", label: "Back" },
-                  { value: "core", label: "Core" },
-                  { value: "cardio", label: "Cardio" },
+                  { value: "chest", label: t("gym.mainGroups.chest") },
+                  { value: "legs", label: t("gym.mainGroups.legs") },
+                  { value: "arms", label: t("gym.mainGroups.arms") },
+                  { value: "shoulders", label: t("gym.mainGroups.shoulders") },
+                  { value: "back", label: t("gym.mainGroups.back") },
+                  { value: "core", label: t("gym.mainGroups.core") },
+                  { value: "cardio", label: t("gym.mainGroups.cardio") },
                 ]}
-                label="Main group"
+                label={t("gym.addExerciseScreen.mainGroup")}
               />
               <div className="mt-20 flex flex-col gap-5">
                 <SaveButton
                   onClick={handleUpdateExercise}
-                  label="Update Exercise"
+                  label={t("gym.editExerciseScreen.updateExercise")}
                 />
                 <DeleteSessionBtn
                   onDelete={() => handleDeleteExercise(selectedExercise.id)}
-                  label="Delete Exercise"
-                  confirmMessage="Are you sure you want to delete this exercise?"
+                  label={t("gym.editExerciseScreen.deleteExercise")}
+                  confirmMessage={t("gym.editExerciseScreen.confirmDelete")}
                 />
                 <button
                   onClick={() => {
@@ -211,7 +202,7 @@ export default function EditExercises() {
                   }}
                   className="bg-red-800 py-2 rounded-md shadow-md border-2 border-red-500 text-lg cursor-pointer hover:bg-red-700 hover:scale-105 transition-all duration-200"
                 >
-                  Cancel
+                  {t("common:common.cancel")}
                 </button>
               </div>
             </div>
@@ -220,7 +211,11 @@ export default function EditExercises() {
       </div>
       {isSaving && (
         <FullScreenLoader
-          message={isDeleting ? "Deleting exercise..." : "Saving exercise..."}
+          message={
+            isDeleting
+              ? t("gym.editExerciseScreen.deletingExercise")
+              : t("gym.editExerciseScreen.savingExercise")
+          }
         />
       )}
     </div>

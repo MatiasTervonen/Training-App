@@ -17,7 +17,12 @@
     "unpin": "Irrota",
     "history": "Historia",
     "change": "Vaihda",
-    "created": "Luotu:"
+    "created": "Luotu:",
+    "copyNotes": "Kopioi muistiinpanot",
+    "copiedToClipboard": "Kopioitu leikepöydälle!",
+    "failedToCopy": "Muistiinpanojen kopiointi epäonnistui.",
+    "elementNotFound": "Elementtiä ei löytynyt.",
+    "chat": "Keskustelu"
   },
   "navbar": {
     "menu": "Valikko",
@@ -54,5 +59,94 @@
     "friendRequest": "Kaveripyyntö käyttäjältä",
     "accept": "Hyväksy",
     "reject": "Hylkää"
+  },
+  "feed": {
+    "refreshing": "Päivitetään...",
+    "pullToRefresh": "Vedä päivittääksesi...",
+    "failedToLoad": "Sessioiden lataus epäonnistui. Yritä myöhemmin uudelleen.",
+    "noSessions": "Ei vielä sessioita. Aloitetaan!",
+    "loadingMore": "Ladataan lisää...",
+    "noMoreSessions": "Ei enempää sessioita",
+    "loadingGymSession": "Ladataan kuntosalisession tietoja...",
+    "failedToLoadGymSession": "Kuntosalisession lataus epäonnistui. Yritä myöhemmin uudelleen.",
+    "loadingTodoSession": "Ladataan tehtävälistan tietoja...",
+    "failedToLoadTodoSession": "Tehtävälistan lataus epäonnistui. Yritä myöhemmin uudelleen."
+  },
+  "installApp": {
+    "downloadApp": "Lataa sovellus",
+    "iosInstructions": "Napauta Jaa-painiketta Safarissa ja valitse",
+    "addToHomeScreen": "Lisää kotivalikkoon"
+  },
+  "pushNotifications": {
+    "title": "Push-ilmoitukset",
+    "notSupported": "Push-ilmoitukset eivät ole tuettuja tässä selaimessa.",
+    "blocked": "Olet estänyt push-ilmoitukset. Ole hyvä ja salli ne selaimen asetuksista.",
+    "subscribeError": "Push-ilmoitusten tilaaminen epäonnistui!",
+    "unsubscribeError": "Push-ilmoitusten peruuttaminen epäonnistui!",
+    "enabled": "Push-ilmoitukset käytössä",
+    "allow": "Salli push-ilmoitukset"
+  },
+  "admin": {
+    "title": "Hallintapaneeli",
+    "userAnalytics": "Käyttäjäanalytiikka",
+    "addExercises": "Lisää liikkeitä",
+    "editExercises": "Muokkaa liikkeitä",
+    "analytics": {
+      "title": "Käyttäjäanalytiikka",
+      "totalUsers": "Käyttäjiä yhteensä",
+      "errorLoadingCount": "Virhe käyttäjämäärän lataamisessa",
+      "sortBy": "Järjestä",
+      "createdAt": "Luotu",
+      "email": "Sähköposti",
+      "role": "Rooli",
+      "loadError": "Käyttäjätietojen lataus epäonnistui.",
+      "tableHeaders": {
+        "id": "id",
+        "displayName": "nimi",
+        "email": "Sähköposti",
+        "role": "Rooli",
+        "created": "Luotu",
+        "actions": "Toiminnot"
+      },
+      "banned": "estetty",
+      "bannedUntil": "Estetty asti:",
+      "reason": "Syy:",
+      "delete": "poista",
+      "ban": "Estä",
+      "unban": "Poista esto",
+      "banDurations": {
+        "1day": "1 Päivä",
+        "7day": "7 Päivää",
+        "30day": "30 Päivää",
+        "permanent": "Pysyvä"
+      },
+      "banModal": {
+        "title": "Estä käyttäjä:",
+        "duration": "Kesto:",
+        "giveReason": "Anna syy:",
+        "reasonPlaceholder": "Eston syy..."
+      },
+      "roles": {
+        "guest": "Vieras",
+        "user": "Käyttäjä",
+        "admin": "Ylläpitäjä",
+        "superAdmin": "Pääylläpitäjä"
+      },
+      "pagination": {
+        "previous": "Edellinen",
+        "next": "Seuraava",
+        "page": "Sivu"
+      },
+      "confirmDelete": "Haluatko varmasti poistaa käyttäjän:",
+      "confirmUnban": "Haluatko varmasti poistaa eston käyttäjältä:",
+      "confirmPromote": "Haluatko varmasti ylentää käyttäjän:",
+      "userBanned": "Käyttäjä estetty onnistuneesti!",
+      "userUnbanned": "Käyttäjän esto poistettu onnistuneesti!",
+      "userDeleted": "Käyttäjä poistettu onnistuneesti!",
+      "userPromoted": "Käyttäjä ylennetty onnistuneesti!",
+      "errorBanning": "Virhe käyttäjän estämisessä. Yritä uudelleen!",
+      "errorDeleting": "Virhe käyttäjän poistamisessa. Yritä uudelleen!",
+      "errorPromoting": "Virhe käyttäjän ylentämisessä. Yritä uudelleen!"
+    }
   }
 }

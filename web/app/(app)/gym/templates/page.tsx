@@ -4,7 +4,6 @@ import { useRouter } from "next/navigation";
 import { TemplateSkeleton } from "@/app/(app)/ui/loadingSkeletons/skeletons";
 import Modal from "@/app/(app)/components/modal";
 import { useState } from "react";
-import { full_gym_template } from "@/app/(app)/types/models";
 import TemplateCard from "@/app/(app)/components/feed-cards/TemplateCard";
 import Spinner from "@/app/(app)/components/spinner";
 import GymTemplate from "@/app/(app)/components/expand-session-cards/template";
@@ -13,6 +12,8 @@ import { getTemplates } from "@/app/(app)/database/gym/templates/get-templates";
 import { getFullTemplate } from "@/app/(app)/database/gym/templates/full-gym-template";
 import useDeleteTemplate from "@/app/(app)/gym/hooks/template/useDeleteTemplate";
 import useStartWorkoutTemplate from "@/app/(app)/gym/hooks/template/useStartWorkoutTemplate";
+import { useTranslation } from "react-i18next";
+import { FullGymTemplate } from "@/app/(app)/database/gym/templates/full-gym-template";
 
 type templateSummary = {
   id: string;
@@ -22,8 +23,9 @@ type templateSummary = {
 };
 
 export default function TemplatesPage() {
-  const [expandedItem, setExpandedItem] = useState<full_gym_template | null>(
-    null
+  const { t } = useTranslation("gym");
+  const [expandedItem, setExpandedItem] = useState<FullGymTemplate | null>(
+    null,
   );
 
   const router = useRouter();
@@ -67,21 +69,25 @@ export default function TemplatesPage() {
     gcTime: Infinity,
   });
 
+  console.log("templates", TemplateSessionFull);
+
   return (
     <div className="flex flex-col max-w-md mx-auto page-padding">
-      <h1 className="text-center mb-10 text-2xl">My Templates</h1>
+      <h1 className="text-center mb-10 text-2xl">
+        {t("gym.TemplatesScreen.title")}
+      </h1>
 
       {!templates && isLoading && <TemplateSkeleton count={6} />}
 
       {error && (
-        <p className="text-red-500 text-center">
-          Error loading templates. Try again!
+        <p className="text-red-500 text-center mt-20 px-10">
+          {t("gym.TemplatesScreen.errorLoading")}
         </p>
       )}
 
       {!isLoading && templates?.length === 0 && (
-        <p className="text-gray-300 text-center">
-          No templates found. Create a new template to get started!
+        <p className="text-gray-300 text-center mt-20 px-10">
+          {t("gym.TemplatesScreen.noTemplates")}
         </p>
       )}
 
@@ -91,7 +97,9 @@ export default function TemplatesPage() {
             key={template.id}
             item={template}
             onDelete={() => handleDeleteTemplate(template.id)}
-            onExpand={() => setExpandedItem(template as full_gym_template)}
+            onExpand={() =>
+              setExpandedItem(template as unknown as FullGymTemplate)
+            }
             onEdit={() => {
               router.push(`/gym/templates/${template.id}/edit`);
             }}
@@ -103,22 +111,18 @@ export default function TemplatesPage() {
           <>
             {isLoadingTemplateSession ? (
               <div className="flex flex-col gap-5 items-center justify-center pt-40">
-                <p>Loading template details...</p>
+                <p>{t("gym.TemplatesScreen.loadingExpanded")}</p>
                 <Spinner />
               </div>
             ) : TemplateSessionError ? (
               <p className="text-center text-lg mt-40 text-gray-300 px-10">
-                Failed to load template details. Please try again later.
+                {t("gym.TemplatesScreen.errorLoadingExpanded")}
               </p>
             ) : (
               TemplateSessionFull && (
                 <GymTemplate
-                  item={TemplateSessionFull as unknown as full_gym_template}
-                  onStartWorkout={() =>
-                    startWorkout(
-                      TemplateSessionFull as unknown as full_gym_template
-                    )
-                  }
+                  item={TemplateSessionFull}
+                  onStartWorkout={() => startWorkout(TemplateSessionFull)}
                 />
               )
             )}

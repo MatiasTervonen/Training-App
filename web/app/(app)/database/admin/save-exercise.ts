@@ -5,7 +5,6 @@ import { handleError } from "@/app/(app)/utils/handleError";
 
 type SaveExerciserops = {
   name: string;
-  language: string;
   equipment: string;
   muscle_group: string;
   main_group: string;
@@ -13,7 +12,6 @@ type SaveExerciserops = {
 
 export async function saveExercise({
   name,
-  language,
   equipment,
   muscle_group,
   main_group,
@@ -57,7 +55,6 @@ export async function saveExercise({
     .insert([
       {
         name,
-        language,
         equipment,
         muscle_group,
         main_group,

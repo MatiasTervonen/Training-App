@@ -7,6 +7,7 @@ import {
 } from "@/app/(app)/components/pushnotifications/actions";
 import Toggle from "@/app/(app)/components/toggle";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 
 function urlBase64ToUint8Array(base64String: string) {
   const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
@@ -35,6 +36,7 @@ function serializeSubscription(sub: PushSubscription) {
 }
 
 export function PushNotificationManager() {
+  const { t } = useTranslation("common");
   const [isSupported, setIsSupported] = useState(false);
   const [subscription, setSubscription] = useState<PushSubscription | null>(
     null
@@ -74,7 +76,7 @@ export function PushNotificationManager() {
       setSubscription(sub);
       await subscribeUser(serializeSubscription(sub));
     } catch {
-      toast.error("Failed to subscribe to push notifications!");
+      toast.error(t("pushNotifications.subscribeError"));
       setToggleState(false);
     }
   }
@@ -88,16 +90,14 @@ export function PushNotificationManager() {
         await unsubscribeUser(subscription.endpoint);
       }
     } catch {
-      toast.error("Failed to unsubscribe from push notifications!");
+      toast.error(t("pushNotifications.unsubscribeError"));
       setToggleState(true);
     }
   }
 
   function handleToggle() {
     if (Notification.permission === "denied") {
-      alert(
-        "You have blocked push notifications. Please enable them in your browser settings."
-      );
+      alert(t("pushNotifications.blocked"));
       return;
     }
 
@@ -111,20 +111,20 @@ export function PushNotificationManager() {
   if (!isSupported) {
     return (
       <div>
-        <h2 className="mb-6 underline">Push Notifications</h2>
-        <p>Push notifications are not supported in this browser.</p>
+        <h2 className="mb-6 underline">{t("pushNotifications.title")}</h2>
+        <p>{t("pushNotifications.notSupported")}</p>
       </div>
     );
   }
 
   return (
     <div>
-      <h2 className="mb-6 underline">Push Notifications</h2>
+      <h2 className="mb-6 underline">{t("pushNotifications.title")}</h2>
       <div className="flex items-center justify-between">
         <p>
           {subscription
-            ? "Push notifications enabled"
-            : "Allow web push notifications"}
+            ? t("pushNotifications.enabled")
+            : t("pushNotifications.allow")}
         </p>
         <Toggle isOn={toggleState} onToggle={handleToggle} />
       </div>

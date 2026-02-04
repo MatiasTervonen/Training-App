@@ -7,12 +7,15 @@ import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
 import { weight } from "@/app/(app)/types/models";
 import { deleteSession } from "@/app/(app)/database/feed/deleteSession";
 import { useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 
 type AllDataProps = {
   data: weight[];
 };
 
 export default function AllDataTable({ data }: AllDataProps) {
+  const { t, i18n } = useTranslation("weight");
+  const locale = i18n.language;
   const [expanded, setExpanded] = useState<string | null>(null);
 
   const queryClient = useQueryClient();
@@ -26,7 +29,7 @@ export default function AllDataTable({ data }: AllDataProps) {
 
   const groupedData = sortedData.reduce((acc, entry) => {
     const date = new Date(entry.created_at);
-    const monthYear = date.toLocaleString("default", {
+    const monthYear = date.toLocaleString(locale, {
       month: "long",
       year: "numeric",
     });
@@ -37,7 +40,7 @@ export default function AllDataTable({ data }: AllDataProps) {
   }, {} as Record<string, weight[]>);
 
   const handleDelete = async (id: string) => {
-    const confirmed = confirm("Are you sure you want to delete this entry?");
+    const confirmed = confirm(t("weight.analyticsScreen.deleteConfirm"));
     if (!confirmed) return;
 
     const queryKey = ["get-weight"];
@@ -57,9 +60,9 @@ export default function AllDataTable({ data }: AllDataProps) {
 
       queryClient.refetchQueries({ queryKey: ["feed"], exact: true });
 
-      toast.success("Item has been deleted successfully.");
+      toast.success(t("weight.analyticsScreen.deletedMessage"));
     } catch {
-      toast.error("Failed to delete weight entry");
+      toast.error(t("weight.analyticsScreen.deleteErrorMessage"));
       queryClient.setQueryData(queryKey, previousFeed);
     } finally {
       setExpanded(null); // Collapse any expanded row after deletion
@@ -104,7 +107,7 @@ export default function AllDataTable({ data }: AllDataProps) {
                         {entry.weight} {weightUnit}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                        {new Date(entry.created_at).toLocaleDateString()}
+                        {new Date(entry.created_at).toLocaleDateString(locale)}
                       </td>
                       <td className="px-6 py-4 text-right flex items-center justify-end">
                         <button
@@ -130,7 +133,7 @@ export default function AllDataTable({ data }: AllDataProps) {
                           className="px-6 py-4 text-sm text-gray-300"
                         >
                           <div className="flex justify-between items-center whitespace-pre-wrap wrap-break-word">
-                            <p>{entry.notes || "No notes..."}</p>
+                            <p>{entry.notes || t("weight.analyticsScreen.noNotes")}</p>
                             <button
                               onClick={() => {
                                 handleDelete(entry.id);

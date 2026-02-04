@@ -27,7 +27,10 @@ export async function getFullTemplate(sessionId: string) {
        )`,
     )
     .eq("id", sessionId)
-    .eq("gym_template_exercises.gym_exercises.gym_exercises_translations.language", language)
+    .eq(
+      "gym_template_exercises.gym_exercises.gym_exercises_translations.language",
+      language,
+    )
     .single();
 
   if (templateError || !template) {
@@ -42,14 +45,22 @@ export async function getFullTemplate(sessionId: string) {
   // Map the result to extract translated name from gym_exercises_translations
   const mappedTemplate = {
     ...template,
-    gym_template_exercises: template.gym_template_exercises?.map((exercise: any) => ({
-      ...exercise,
-      gym_exercises: {
-        ...exercise.gym_exercises,
-        name: exercise.gym_exercises?.gym_exercises_translations?.[0]?.name ?? "Unknown",
-      },
-    })),
+    gym_template_exercises: template.gym_template_exercises?.map(
+      (exercise: any) => ({
+        ...exercise,
+        gym_exercises: {
+          ...exercise.gym_exercises,
+          name:
+            exercise.gym_exercises?.gym_exercises_translations?.[0]?.name ??
+            "Unknown",
+        },
+      }),
+    ),
   };
 
   return mappedTemplate;
 }
+
+export type FullGymTemplate = NonNullable<
+  Awaited<ReturnType<typeof getFullTemplate>>
+>;

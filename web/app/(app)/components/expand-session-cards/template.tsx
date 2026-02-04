@@ -2,11 +2,11 @@
 
 import { formatDate } from "@/app/(app)/lib/formatDate";
 import { GroupTemplateExercises } from "@/app/(app)/utils/GroupTemplateExercises";
-import { full_gym_template } from "@/app/(app)/types/models";
 import { useTranslation } from "react-i18next";
+import { FullGymTemplate } from "@/app/(app)/database/gym/templates/full-gym-template";
 
 type Props = {
-  item: full_gym_template;
+  item: FullGymTemplate;
   onStartWorkout: () => void;
 };
 
@@ -14,8 +14,10 @@ export default function GymTemplate({ item, onStartWorkout }: Props) {
   const { t } = useTranslation("gym");
   const { t: tCommon } = useTranslation("common");
   const groupedExercises = GroupTemplateExercises(
-    item.gym_template_exercises || []
+    item.gym_template_exercises || [],
   );
+
+  console.log("groupedExercises", groupedExercises);
 
   return (
     <div className="page-padding max-w-lg mx-auto">
@@ -36,7 +38,9 @@ export default function GymTemplate({ item, onStartWorkout }: Props) {
           className="mt-6 bg-linear-to-tr from-gray-900 via-slate-900 to-blue-900 rounded-md px-4 py-2 shadow-md border-2 border-gray-600"
         >
           {group.length > 1 && (
-            <h3 className="text-lg mb-2 text-center">{t("gym.gymForm.superSet")}</h3>
+            <h3 className="text-lg mb-2 text-center">
+              {t("gym.gymForm.superSet")}
+            </h3>
           )}
           {group.map((exercise) => (
             <div key={exercise.id}>
@@ -46,11 +50,13 @@ export default function GymTemplate({ item, onStartWorkout }: Props) {
                     {exercise.gym_exercises.name}
                   </h3>
                   <h3 className="text-sm text-gray-300">
-                    {exercise.gym_exercises.muscle_group}
+                    {t(
+                      `gym.muscleGroups.${exercise.gym_exercises.muscle_group}`,
+                    )}
                   </h3>
                 </div>
                 <h2 className="text-sm text-gray-400 mt-2">
-                  {exercise.gym_exercises.equipment}
+                  {t(`gym.equipment.${exercise.gym_exercises.equipment}`)}
                 </h2>
               </div>
             </div>

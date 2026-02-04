@@ -5,18 +5,22 @@ import DeleteSessionBtn from "@/app/(app)/components/buttons/deleteSessionBtn";
 import { useState, useEffect } from "react";
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import { useRouter } from "next/navigation";
-import { formatDate } from "@/app/(app)/lib/formatDate";
+import { formatDateShort } from "@/app/(app)/lib/formatDate";
 import toast from "react-hot-toast";
 import { saveWeight } from "@/app/(app)/database/weight/save-weight";
 import TitleInput from "@/app/(app)/ui/TitleInput";
 import SubNotesInput from "@/app/(app)/ui/SubNotesInput";
 import { useQueryClient } from "@tanstack/react-query";
 import CustomInput from "@/app/(app)/ui/CustomInput";
+import { useTranslation } from "react-i18next";
 
 export default function WorkoutAnalyticsPage() {
-  const now = formatDate(new Date());
+  const { t } = useTranslation("weight");
+  const now = formatDateShort(new Date());
 
-  const [weightTitle, setWeightTitle] = useState(`Weight - ${now}`);
+  const [weightTitle, setWeightTitle] = useState(
+    `${t("weight.defaultTitle")} - ${now}`,
+  );
   const [weightNotes, setWeightNotes] = useState("");
   const [weight, setWeight] = useState("");
   const [isSaving, setIsSaving] = useState(false);
@@ -37,7 +41,6 @@ export default function WorkoutAnalyticsPage() {
       if (savedWeightNotes) setWeightNotes(savedWeightNotes);
       if (savedWeight) setWeight(savedWeight);
     }
-
     setIsLoaded(true);
   }, []);
 
@@ -67,7 +70,7 @@ export default function WorkoutAnalyticsPage() {
     const parsedWeight = Number(weight);
 
     if (isNaN(parsedWeight) || parsedWeight <= 0) {
-      toast.error("Please enter a valid weight value");
+      toast.error(t("weight.invalidWeight"));
       return;
     }
 
@@ -89,31 +92,31 @@ export default function WorkoutAnalyticsPage() {
       resetWeight();
     } catch {
       setIsSaving(false);
-      toast.error("Failed to save weight session. Please try again.");
+      toast.error(t("weight.saveError"));
     }
   };
 
   return (
     <div className="flex flex-col justify-between h-full max-w-md mx-auto pt-5 px-5 pb-10">
       <div className="flex flex-col gap-5">
-        <h1 className="text-2xl text-center mb-5">Track your body weight</h1>
+        <h1 className="text-2xl text-center mb-5">{t("weight.pageTitle")}</h1>
         <TitleInput
           value={weightTitle}
           setValue={setWeightTitle}
-          placeholder="Weight entry title..."
-          label="Title for Weight..."
+          placeholder={t("weight.titlePlaceholder")}
+          label={t("weight.titleLabel")}
         />
         <SubNotesInput
           notes={weightNotes}
           setNotes={setWeightNotes}
-          placeholder="Enter your notes here..."
-          label="Notes for Weight..."
+          placeholder={t("weight.notesPlaceholder")}
+          label={t("weight.notesLabel")}
         />
         <CustomInput
-          label="Weight..."
+          label={t("weight.weightLabel")}
           type="number"
           inputMode="decimal"
-          placeholder="Enter your weight here..."
+          placeholder={t("weight.weightPlaceholder")}
           onChange={(e) => setWeight(e.target.value)}
         />
       </div>
@@ -121,7 +124,7 @@ export default function WorkoutAnalyticsPage() {
         <SaveButton onClick={handleSaveWeight} />
         <DeleteSessionBtn onDelete={resetWeight} />
       </div>
-      {isSaving && <FullScreenLoader message="Saving weight..." />}
+      {isSaving && <FullScreenLoader message={t("weight.savingWeight")} />}
     </div>
   );
 }

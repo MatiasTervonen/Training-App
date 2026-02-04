@@ -13,8 +13,10 @@ import {
 } from "@/app/(app)/timer/components/alarmAudio";
 import BaseButton from "@/app/(app)/components/buttons/BaseButton";
 import DeleteSessionBtn from "@/app/(app)/components/buttons/deleteSessionBtn";
+import { useTranslation } from "react-i18next";
 
 export default function TimerPage() {
+  const { t } = useTranslation("timer");
   const [alarmMinutes, setAlarmMinutes] = useState("");
   const [alarmSeconds, setAlarmSeconds] = useState("");
   const [isCancelling, setIsCancelling] = useState(false);
@@ -38,7 +40,7 @@ export default function TimerPage() {
   };
 
   const cancelTimer = () => {
-    const confirmCancel = confirm("Are you sure you want to cancel the timer?");
+    const confirmCancel = confirm(t("timer.cancelTimerMessage"));
     if (!confirmCancel) return;
 
     setIsCancelling(true);
@@ -61,7 +63,7 @@ export default function TimerPage() {
     const seconds = parseInt(alarmSeconds) || 0;
 
     if (minutes === 0 && seconds === 0) {
-      alert("Please enter at least minutes or seconds.");
+      alert(t("timer.setDurationError"));
       return;
     }
 
@@ -99,7 +101,7 @@ export default function TimerPage() {
           <div className="flex flex-col h-full page-padding">
             <div>
               <p className="text-center text-xl text-gray-300">
-                {Math.floor(totalDuration / 60)} min {totalDuration % 60} sec
+                {Math.floor(totalDuration / 60)} {t("timer.minAbbr")} {totalDuration % 60} {t("timer.secAbbr")}
               </p>
 
               <Timer
@@ -129,14 +131,14 @@ export default function TimerPage() {
       ) : (
         <div className="max-w-md mx-auto flex flex-col gap-20 page-padding">
           <div className="flex justify-center items-center gap-5">
-            <h1 className="text-2xl text-center">Timer</h1>
+            <h1 className="text-2xl text-center">{t("timer.title")}</h1>
             <AlarmClock color="#d1d5db" size={30} />
           </div>
           <div className="flex flex-col items-center justify-center gap-4 mb-5">
             <div>
               <SetInput
-                label="Minutes"
-                placeholder="0 min"
+                label={t("timer.minutes")}
+                placeholder={`0 ${t("timer.minAbbr")}`}
                 value={alarmMinutes}
                 type="number"
                 min={0}
@@ -145,8 +147,8 @@ export default function TimerPage() {
             </div>
             <div>
               <SetInput
-                label="Seconds"
-                placeholder="0 sec"
+                label={t("timer.seconds")}
+                placeholder={`0 ${t("timer.secAbbr")}`}
                 value={alarmSeconds}
                 type="number"
                 min={0}
@@ -156,8 +158,8 @@ export default function TimerPage() {
           </div>
 
           <div className="flex flex-col gap-5">
-            <BaseButton onClick={handleStartTimer} label="Start Timer" />
-            <DeleteSessionBtn confirm={false} label="Clear" onDelete={clear} />
+            <BaseButton onClick={handleStartTimer} label={t("timer.startTimer")} />
+            <DeleteSessionBtn confirm={false} label={t("timer.clear")} onDelete={clear} />
           </div>
         </div>
       )}

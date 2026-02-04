@@ -10,6 +10,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import HeaderAllDataTable from "@/Features/weight/headerAllDataTable";
 import WeightRow from "@/Features/weight/RowAllDataTable";
 import { useTranslation } from "react-i18next";
+import i18n from "@/app/i18n";
 
 type AllDataProps = {
   data: weight[];
@@ -19,6 +20,7 @@ type AllDataProps = {
 
 export default function AllDataTable({ data, isLoading, error }: AllDataProps) {
   const { t } = useTranslation("weight");
+
   const [expanded, setExpanded] = useState<string | null>(null);
   const [range, setRange] = useState<"week" | "month" | "year">("month");
 
@@ -31,7 +33,7 @@ export default function AllDataTable({ data, isLoading, error }: AllDataProps) {
     return data.reduce(
       (acc, entry) => {
         const date = new Date(entry.created_at);
-        const monthYear = date.toLocaleString("default", {
+        const monthYear = date.toLocaleString(i18n.language, {
           month: "long",
           year: "numeric",
         });
@@ -40,7 +42,7 @@ export default function AllDataTable({ data, isLoading, error }: AllDataProps) {
         acc[monthYear].push(entry);
         return acc;
       },
-      {} as Record<string, weight[]>
+      {} as Record<string, weight[]>,
     );
   }, [data]);
 
@@ -77,7 +79,7 @@ export default function AllDataTable({ data, isLoading, error }: AllDataProps) {
     const previousData = queryClient.getQueryData(queryKey);
 
     queryClient.setQueryData<weight[]>(queryKey, (oldData) =>
-      oldData ? oldData.filter((item) => item.id !== item_id) : []
+      oldData ? oldData.filter((item) => item.id !== item_id) : [],
     );
 
     try {
@@ -111,7 +113,7 @@ export default function AllDataTable({ data, isLoading, error }: AllDataProps) {
         data={data}
       />
     ),
-    [range, setRange, isLoading, error, data]
+    [range, setRange, isLoading, error, data],
   );
 
   return (

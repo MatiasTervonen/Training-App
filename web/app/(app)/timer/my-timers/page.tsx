@@ -11,9 +11,25 @@ import { timers } from "@/app/(app)/types/models";
 import { deleteTimer } from "@/app/(app)/database/timer/delete-timer";
 import { getTimers } from "@/app/(app)/database/timer/get-timers";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
+import TitleInput from "@/app/(app)/ui/TitleInput";
+import SubNotesInput from "@/app/(app)/ui/SubNotesInput";
+import SetInput from "@/app/(app)/gym/components/SetInput";
+import SaveButton from "@/app/(app)/components/buttons/save-button";
+import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
+import useUpdateTimer from "../hooks/useUpdateTimer";
 
 export default function TimersPage() {
+  const { t } = useTranslation(["timer", "common"]);
   const [expandedItem, setExpandedItem] = useState<timers | null>(null);
+  const [editingItem, setEditingItem] = useState<timers | null>(null);
+
+  // Edit form state
+  const [editTitle, setEditTitle] = useState("");
+  const [editNotes, setEditNotes] = useState("");
+  const [editMinutes, setEditMinutes] = useState("");
+  const [editSeconds, setEditSeconds] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
 
   const router = useRouter();
 
@@ -37,6 +53,36 @@ export default function TimersPage() {
 
   const activeSession = useTimerStore((state) => state.activeSession);
 
+  const openEditModal = (timer: timers) => {
+    const minutes = Math.floor(timer.time_seconds / 60);
+    const seconds = timer.time_seconds % 60;
+
+    setEditTitle(timer.title);
+    setEditNotes(timer.notes || "");
+    setEditMinutes(String(minutes));
+    setEditSeconds(String(seconds));
+    setEditingItem(timer);
+    setExpandedItem(null);
+  };
+
+  const closeEditModal = () => {
+    setEditingItem(null);
+    setEditTitle("");
+    setEditNotes("");
+    setEditMinutes("");
+    setEditSeconds("");
+  };
+
+  const { handleUpdateTimer } = useUpdateTimer({
+    id: editingItem?.id || "",
+    title: editTitle,
+    notes: editNotes,
+    setIsSaving,
+    alarmMinutes: editMinutes,
+    alarmSeconds: editSeconds,
+    onSuccess: closeEditModal,
+  });
+
   const handleDeleteTimer = async (timerId: string) => {
     const queryKey = ["get-timers"];
 
@@ -53,17 +99,17 @@ export default function TimersPage() {
     try {
       await deleteTimer(timerId);
 
-      toast.success("Timer deleted succesfully!");
+      toast.success(t("timer.deleteSuccess"));
     } catch {
       queryClient.setQueryData(queryKey, previousTimers);
-      toast.error("Failed to delete timer. Please try again.");
+      toast.error(t("timer.deleteError"));
     }
   };
 
   const startSavedTimer = (timer: timers) => {
     if (activeSession) {
       toast.error(
-        "You already have an active session. Finish it before starting a new one."
+        `${t("timer.activeSessionError")} ${t("timer.activeSessionErrorSub")}`
       );
       return;
     }
@@ -89,19 +135,19 @@ export default function TimersPage() {
 
   return (
     <div className="flex flex-col max-w-md mx-auto page-padding">
-      <h1 className="text-center text-2xl mb-10">My Timers</h1>
+      <h1 className="text-center text-2xl mb-10">{t("timer.myTimers")}</h1>
 
       {!error && isLoading && <TemplateSkeleton count={3} />}
 
       {error && (
         <p className="text-red-500 text-center">
-          Error loading timers. Try again!
+          {t("timer.errorLoadingTimers")}
         </p>
       )}
 
       {!isLoading && timer.length === 0 && (
         <p className="text-gray-300 text-center">
-          No timers found. Create a new timer to get started!
+          {t("timer.noTimers")}
         </p>
       )}
 
@@ -124,16 +170,67 @@ export default function TimersPage() {
               handleDeleteTimer(expandedItem.id);
               setExpandedItem(null);
             }}
-            onExpand={() => {
-              // Handle expand logic here if needed
-              console.log("Expand template:", expandedItem.id);
-            }}
-            onEdit={() => {
-              // Handle edit logic here
-              console.log("Edit template:", expandedItem.id);
-            }}
+            onEdit={() => openEditModal(expandedItem)}
             onStarTimer={() => startSavedTimer(expandedItem)}
           />
+        </Modal>
+      )}
+
+      {editingItem && (
+        <Modal isOpen={true} onClose={closeEditModal}>
+          <div className="min-h-full max-w-md mx-auto flex flex-col justify-between page-padding">
+            <div className="flex flex-col gap-5">
+              <h1 className="text-2xl text-center mb-5">
+                {t("timer.editTimer")}
+              </h1>
+              <TitleInput
+                value={editTitle}
+                setValue={setEditTitle}
+                placeholder={t("timer.enterTimerTitle")}
+                label={t("timer.titlePlaceholder")}
+                maxLength={150}
+              />
+              <SubNotesInput
+                placeholder={t("timer.enterNotesOptional")}
+                label={t("timer.notesLabel")}
+                notes={editNotes}
+                setNotes={setEditNotes}
+              />
+              <div className="flex items-center justify-center gap-4">
+                <div>
+                  <SetInput
+                    label={t("timer.minutes")}
+                    placeholder={`0 ${t("timer.minAbbr")}`}
+                    value={editMinutes}
+                    type="number"
+                    onChange={(e) => setEditMinutes(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <SetInput
+                    label={t("timer.seconds")}
+                    placeholder={`0 ${t("timer.secAbbr")}`}
+                    value={editSeconds}
+                    type="number"
+                    onChange={(e) => setEditSeconds(e.target.value)}
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="flex flex-col gap-5 mt-10">
+              <SaveButton
+                onClick={handleUpdateTimer}
+                label={t("timer.update")}
+              />
+              <button
+                onClick={closeEditModal}
+                className="w-full bg-gray-700 py-2 rounded-md shadow-md border-2 border-gray-500 text-lg cursor-pointer hover:bg-gray-600 hover:scale-105 transition-all duration-200"
+              >
+                {t("common:common.cancel")}
+              </button>
+            </div>
+            {isSaving && <FullScreenLoader message={t("timer.updatingTimer")} />}
+          </div>
         </Modal>
       )}
     </div>

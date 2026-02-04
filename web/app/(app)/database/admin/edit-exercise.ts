@@ -6,7 +6,6 @@ import { handleError } from "@/app/(app)/utils/handleError";
 type Exercise = {
   id: string;
   name: string;
-  language: string;
   equipment: string;
   muscle_group: string;
   main_group: string;
@@ -15,7 +14,6 @@ type Exercise = {
 export async function editExercise({
   id,
   name,
-  language,
   equipment,
   muscle_group,
   main_group,
@@ -37,7 +35,7 @@ export async function editExercise({
 
   const { error } = await supabase
     .from("gym_exercises")
-    .update({ name, language, equipment, muscle_group, main_group })
+    .update({ name, equipment, muscle_group, main_group })
     .eq("id", id);
 
   if (error) {

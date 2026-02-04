@@ -14,8 +14,10 @@ import {
   ReminderTab,
   getRemindersByTab,
 } from "@/app/(app)/database/reminders/get-reminders-by-tab";
+import { useTranslation } from "react-i18next";
 
 export default function Sessions() {
+  const { t } = useTranslation("reminders");
   const [expandedItem, setExpandedItem] = useState<ReminderByTab | null>(null);
   const [editingItem, setEditingItem] = useState<ReminderByTab | null>(null);
   const [activeTab, setActiveTab] = useState<ReminderTab>("normal");
@@ -39,7 +41,9 @@ export default function Sessions() {
 
   return (
     <div className="page-padding max-w-md mx-auto">
-      <h1 className="text-center mb-10 text-2xl "> My Reminders</h1>
+      <h1 className="text-center mb-10 text-2xl ">
+        {t("reminders.myReminders")}
+      </h1>
       <div className="flex items-center justify-center gap-5 my-10">
         <button
           onClick={() => setActiveTab("normal")}
@@ -47,7 +51,7 @@ export default function Sessions() {
             activeTab === "normal" ? "bg-gray-900 text-cyan-500" : ""
           }`}
         >
-          Normal
+          {t("reminders.tabs.normal")}
         </button>
         <button
           onClick={() => setActiveTab("repeating")}
@@ -55,7 +59,7 @@ export default function Sessions() {
             activeTab === "repeating" ? "bg-gray-900 text-cyan-500" : ""
           }`}
         >
-          Repeating
+          {t("reminders.tabs.repeating")}
         </button>
         <button
           onClick={() => setActiveTab("delivered")}
@@ -63,18 +67,20 @@ export default function Sessions() {
             activeTab === "delivered" ? "bg-gray-900 text-cyan-500" : ""
           }`}
         >
-          Delivered
+          {t("reminders.tabs.delivered")}
         </button>
       </div>
       {!error && isLoading && <TemplateSkeleton count={6} />}
       {error && (
         <p className="text-red-500 text-center">
-          Error loading reminders. Try again!
+          {t("reminders.errorLoading")}
         </p>
       )}
       {!isLoading && reminders.length === 0 && (
         <p className="text-gray-300 text-center mt-10 text-lg">
-          No {activeTab} reminders.
+          {t("reminders.noReminders", {
+            tab: t(`reminders.tabs.${activeTab}`).toLowerCase(),
+          })}
         </p>
       )}
       {reminders.map((reminder, index) => (

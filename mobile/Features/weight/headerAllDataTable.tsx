@@ -8,10 +8,12 @@ import { useTranslation } from "react-i18next";
 
 type RangeType = "week" | "month" | "year";
 
-const ranges: { key: RangeType; label: string }[] = [
-  { key: "week", label: "7D" },
-  { key: "month", label: "30D" },
-  { key: "year", label: "1Y" },
+type RangeOption = { key: RangeType; translationKey: string };
+
+const ranges: RangeOption[] = [
+  { key: "week", translationKey: "weight.analyticsScreen.range7d" },
+  { key: "month", translationKey: "weight.analyticsScreen.range30d" },
+  { key: "year", translationKey: "weight.analyticsScreen.range1y" },
 ];
 
 type HeaderAllDataTableProps = {
@@ -51,7 +53,7 @@ export default function HeaderAllDataTable({
                 range === option.key ? "text-cyan-400" : "text-gray-200"
               }`}
             >
-              {option.label}
+              {t(option.translationKey)}
             </AppTextNC>
           </AnimatedButton>
         ))}

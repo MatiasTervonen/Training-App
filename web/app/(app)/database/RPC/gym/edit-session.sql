@@ -4,6 +4,7 @@ create or replace function gym_edit_session(
   p_duration integer,
   p_title text,
   p_id uuid
+  p_updated_at timestamptz
 )
 returns feed_items
 language plpgsql
@@ -22,11 +23,12 @@ begin
 
 -- insert into gym session 
 
-update gym_sessions 
+update sessions 
 set 
   title = p_title,
   notes = p_notes,
   duration = p_duration
+  updated_at = p_updated_at
 where id = p_id
 returning id into v_session_id;
 

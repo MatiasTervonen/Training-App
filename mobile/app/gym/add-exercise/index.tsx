@@ -14,7 +14,6 @@ import { useTranslation } from "react-i18next";
 export default function AddExercises() {
   const { t } = useTranslation(["gym", "common", "menu"]);
   const [name, setName] = useState("");
-  const [exerciseLanguage, setExerciseLanguage] = useState("en");
   const [equipment, setEquipment] = useState("barbell");
   const [muscleGroup, setMuscleGroup] = useState("chest");
   const [mainGroup, setMainGroup] = useState("chest");
@@ -34,7 +33,6 @@ export default function AddExercises() {
 
     const exerciseData = {
       name,
-      language: exerciseLanguage,
       equipment,
       muscle_group: muscleGroup,
       main_group: mainGroup,
@@ -72,16 +70,6 @@ export default function AddExercises() {
               setValue={setName}
               placeholder={t("gym.addExerciseScreen.exerciseNamePlaceholder")}
               label={t("gym.addExerciseScreen.exerciseName")}
-            />
-            <SelectInput
-              topLabel={t("gym.addExerciseScreen.language")}
-              value={exerciseLanguage}
-              onChange={setExerciseLanguage}
-              options={[
-                { value: "en", label: t("menu:settings.languages.en") },
-                { value: "fi", label: t("menu:settings.languages.fi") },
-              ]}
-              label={t("gym.addExerciseScreen.language")}
             />
             <SelectInput
               topLabel={t("gym.addExerciseScreen.equipment")}

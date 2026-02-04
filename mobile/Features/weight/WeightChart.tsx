@@ -59,21 +59,22 @@ function getOldestDate(data: weight[]) {
 function formatDatelabel(
   dateString: string,
   range: "week" | "month" | "year",
+  locale: string,
 ): string {
   const date = new Date(dateString);
   switch (range) {
     case "week":
-      return new Intl.DateTimeFormat("en-US", {
+      return new Intl.DateTimeFormat(locale, {
         weekday: "short",
       }).format(date);
     case "month":
-      return new Intl.DateTimeFormat("en-US", {
+      return new Intl.DateTimeFormat(locale, {
         day: "numeric",
       }).format(date);
     case "year":
-      return new Intl.DateTimeFormat("en-US", {
+      return new Intl.DateTimeFormat(locale, {
         month: "short",
-      }).format(date); // Return first letter of month
+      }).format(date);
   }
 }
 
@@ -90,7 +91,8 @@ function generateDateRange(start: Date, end: Date): string[] {
 echarts.use([SkiaRenderer, LineChart, GridComponent]);
 
 export default function WeightChart({ range, data }: WeightChartProps) {
-  const { t } = useTranslation("weight");
+  const { t, i18n } = useTranslation("weight");
+  const locale = i18n.language;
   const [offset, setOffset] = useState(0);
   const latestDate = getLatestDate(data);
   const oldestDate = getOldestDate(data);
@@ -167,17 +169,17 @@ export default function WeightChart({ range, data }: WeightChartProps) {
     .filter((item) => item.weight !== null)
     .map((item) => ({
       value: item.weight!,
-      label: formatDatelabel(item.date, range),
+      label: formatDatelabel(item.date, range, locale),
     }));
 
   function formatDateRange(start: Date | null, end: Date | null) {
     if (!start || !end) return t("weight.analyticsScreen.noData");
-    const startFormatted = start.toLocaleDateString("en-US", {
+    const startFormatted = start.toLocaleDateString(locale, {
       year: "numeric",
       month: "short",
       day: "numeric",
     });
-    const endFormatted = end.toLocaleDateString("en-US", {
+    const endFormatted = end.toLocaleDateString(locale, {
       year: "numeric",
       month: "short",
       day: "numeric",
@@ -267,7 +269,7 @@ export default function WeightChart({ range, data }: WeightChartProps) {
   }, [option, size]);
 
   return (
-    <View className="bg-slate-900 shadow-md w-full rounded-t-2xl">
+    <View className="bg-slate-900 shadow-md w-full">
       <View className="flex-row justify-center items-center my-4 text-gray-400">
         <AnimatedButton
           onPress={() => setOffset((prev) => prev + 1)}

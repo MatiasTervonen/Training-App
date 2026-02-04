@@ -3,6 +3,7 @@
 import type { HeatMapValue } from "@uiw/react-heat-map";
 import HeatMap from "@uiw/react-heat-map";
 import { Tooltip } from "react-tooltip";
+import { useTranslation } from "react-i18next";
 
 type SessionHeatMapValue = HeatMapValue & {
   title: string[];
@@ -14,6 +15,8 @@ type HeatMapData = {
 }[];
 
 export default function AnalyticsHeatMap({ data }: { data: HeatMapData }) {
+  const { t } = useTranslation("gym");
+
   function mapSessionDate(data: HeatMapData): SessionHeatMapValue[] {
     const uniqueDates: { [key: string]: string[] } = {};
     data.forEach((session) => {
@@ -38,20 +41,28 @@ export default function AnalyticsHeatMap({ data }: { data: HeatMapData }) {
       <HeatMap
         width={100}
         value={sessionData}
-        weekLabels={["", "Mon", "", "Wed", "", "Fri", ""]}
+        weekLabels={[
+          "",
+          t("gym.analytics.days.mon"),
+          "",
+          t("gym.analytics.days.wed"),
+          "",
+          t("gym.analytics.days.fri"),
+          "",
+        ]}
         monthLabels={[
-          "Jan",
-          "Feb",
-          "Mar",
-          "Apr",
-          "May",
-          "Jun",
-          "Jul",
-          "Aug",
-          "Sep",
-          "Oct",
-          "Nov",
-          "Dec",
+          t("gym.analytics.months.jan"),
+          t("gym.analytics.months.feb"),
+          t("gym.analytics.months.mar"),
+          t("gym.analytics.months.apr"),
+          t("gym.analytics.months.may"),
+          t("gym.analytics.months.jun"),
+          t("gym.analytics.months.jul"),
+          t("gym.analytics.months.aug"),
+          t("gym.analytics.months.sep"),
+          t("gym.analytics.months.oct"),
+          t("gym.analytics.months.nov"),
+          t("gym.analytics.months.dec"),
         ]}
         // startDate={new Date(new Date().getFullYear(), 0, 1)} // start from Jan 1 of current year
         // endDate={new Date()}

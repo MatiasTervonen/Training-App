@@ -9,7 +9,6 @@ import {
   formatNotifyTime,
   formatDateShort,
 } from "@/app/(app)/lib/formatDate";
-import { formatWeekdays } from "@/app/(app)/lib/formatDate";
 import { useTranslation } from "react-i18next";
 
 type Props = {
@@ -28,7 +27,16 @@ export default function MyReminderCard({
   onEdit,
 }: Props) {
   const { t } = useTranslation("feed");
-  const weekdays = formatWeekdays(item.weekdays as number[]);
+
+  const weekdays = [
+    t("feed.card.weekdays.sun"),
+    t("feed.card.weekdays.mon"),
+    t("feed.card.weekdays.tue"),
+    t("feed.card.weekdays.wed"),
+    t("feed.card.weekdays.thu"),
+    t("feed.card.weekdays.fri"),
+    t("feed.card.weekdays.sat"),
+  ];
 
   return (
     <div className="border border-gray-700 rounded-md flex flex-col justify-between bg-slate-900 mb-10 h-[138px]">
@@ -74,7 +82,9 @@ export default function MyReminderCard({
         onClick={onExpand}
         className="flex items-center justify-between w-full px-5 bg-blue-600 p-2 rounded-br-md rounded-bl-md cursor-pointer"
       >
-        <p className=" text-gray-100 text-sm">{formatDateShort(item.created_at)}</p>
+        <p className=" text-gray-100 text-sm">
+          {formatDateShort(item.created_at)}
+        </p>
         <SquareArrowOutUpRight size={20} color="#f3f4f6" />
       </button>
     </div>

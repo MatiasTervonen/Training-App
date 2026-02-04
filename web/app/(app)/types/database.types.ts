@@ -655,7 +655,6 @@ export type Database = {
           created_at: string
           equipment: string
           id: string
-          language: string
           main_group: string
           muscle_group: string
           name: string
@@ -666,7 +665,6 @@ export type Database = {
           created_at?: string
           equipment: string
           id?: string
-          language?: string
           main_group: string
           muscle_group: string
           name: string
@@ -677,7 +675,6 @@ export type Database = {
           created_at?: string
           equipment?: string
           id?: string
-          language?: string
           main_group?: string
           muscle_group?: string
           name?: string
@@ -1897,7 +1894,7 @@ export type Database = {
         Args: {
           p_delivered: boolean
           p_id: string
-          p_mode: string
+          p_mode?: string
           p_notes: string
           p_notify_at: string
           p_seen_at: string
@@ -1975,8 +1972,8 @@ export type Database = {
       }
       reminders_save_global_reminder: {
         Args: {
-          p_created_from_device_id?: string
-          p_mode: string
+          p_created_from_token?: string
+          p_mode?: string
           p_notes: string
           p_notify_at: string
           p_title: string

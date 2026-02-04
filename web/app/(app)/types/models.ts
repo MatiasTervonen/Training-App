@@ -42,13 +42,7 @@ export type gym_template_exercises =
 
 export type ExercisePreview = Pick<
   Database["public"]["Tables"]["gym_exercises"]["Row"],
-  | "id"
-  | "user_id"
-  | "name"
-  | "equipment"
-  | "muscle_group"
-  | "main_group"
-  | "language"
+  "id" | "user_id" | "name" | "equipment" | "muscle_group" | "main_group"
 >;
 
 export type full_gym_template = template & {
@@ -90,5 +84,3 @@ export type global_reminders =
 
 export type local_reminders =
   Database["public"]["Tables"]["local_reminders"]["Row"];
-
-

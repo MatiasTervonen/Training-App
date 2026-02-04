@@ -4,11 +4,12 @@ import { FeedItemUI } from "@/app/(app)/types/session";
 import { useQuery } from "@tanstack/react-query";
 import { getFullGymSession } from "@/app/(app)/database/gym/get-full-gym-session";
 import { getFullTodoSession } from "@/app/(app)/database/todo/get-full-todo";
-import { full_gym_session, full_todo_session } from "@/app/(app)/types/models";
+import { full_todo_session } from "@/app/(app)/types/models";
+import { FullGymSession } from "@/app/(app)/database/gym/get-full-gym-session";
 
 export default function useFullSessions(
   expandedItem: FeedItemUI | null,
-  editingItem: FeedItemUI | null
+  editingItem: FeedItemUI | null,
 ) {
   const getId = (fi: FeedItemUI | null) => fi?.source_id ?? null;
 
@@ -19,21 +20,21 @@ export default function useFullSessions(
     expandedItem?.type === "gym_sessions"
       ? expandedId
       : editingItem?.type === "gym_sessions"
-      ? editingId
-      : null;
+        ? editingId
+        : null;
 
   const todoId =
     expandedItem?.type === "todo_lists"
       ? expandedId
       : editingItem?.type === "todo_lists"
-      ? editingId
-      : null;
+        ? editingId
+        : null;
 
   const {
     data: GymSessionFull,
     error: GymSessionError,
     isLoading: isLoadingGymSession,
-  } = useQuery<full_gym_session>({
+  } = useQuery<FullGymSession>({
     queryKey: ["fullGymSession", gymId],
     queryFn: async () => await getFullGymSession(gymId!),
     enabled: !!gymId,

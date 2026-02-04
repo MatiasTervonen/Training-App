@@ -58,7 +58,8 @@
         "message": "Haluatko varmasti poistaa tämän liikkeen harjoituspohjasta?"
       },
       "cancel": "Peruuta",
-      "savingTemplate": "Tallennetaan harjoituspohjaa..."
+      "savingTemplate": "Tallennetaan harjoituspohjaa...",
+      "startWorkout": "Aloita treeni"
     },
     "TemplatesScreen": {
       "confirmDeleteTitle": "Poista harjoituspohja",
@@ -78,7 +79,12 @@
       "title": "Lisää liikkeitä",
       "exerciseName": "Liikkeen nimi",
       "exerciseNamePlaceholder": "Liikkeen nimi",
+      "charLimit": "Raja saavutettu (max 50 merkkiä)",
       "language": "Kieli",
+      "languages": {
+        "en": "Englanti",
+        "fi": "Suomi"
+      },
       "equipment": "Väline",
       "muscleGroup": "Lihasryhmä",
       "mainGroup": "Pääryhmä",
@@ -87,6 +93,19 @@
       "nameRequired": "Syötä liikkeen nimi",
       "saveSuccess": "Liike tallennettu onnistuneesti!",
       "saveError": "Liikkeen tallennus epäonnistui. Yritä uudelleen."
+    },
+    "editExerciseScreen": {
+      "title": "Muokkaa liikettä",
+      "fillAllFields": "Täytä kaikki kentät.",
+      "updateSuccess": "Liike päivitetty onnistuneesti!",
+      "updateError": "Liikkeen päivitys epäonnistui. Yritä uudelleen.",
+      "deleteSuccess": "Liike poistettu onnistuneesti!",
+      "deleteError": "Liikkeen poistaminen epäonnistui. Yritä uudelleen.",
+      "updateExercise": "Päivitä liike",
+      "deleteExercise": "Poista liike",
+      "savingExercise": "Tallennetaan liikettä...",
+      "deletingExercise": "Poistetaan liikettä...",
+      "confirmDelete": "Haluatko varmasti poistaa tämän liikkeen?"
     },
     "exerciseDropdown": {
       "recentExercises": "Äskettäiset liikkeet",
@@ -206,7 +225,8 @@
     "analytics": {
       "title": "Viimeisten 30 päivän analytiikka",
       "totalWorkouts": "Treenejä yhteensä",
-      "averageDuration": "Keskimääräinen kesto",
+      "averageDuration": "Kesto ka",
+      "minutes": "minuuttia",
       "muscleGroupDistribution": "Lihasryhmien jakauma",
       "duration": "Kesto",
       "note": "Huom: Analytiikka perustuu viimeisten 30 päivän harjoitustietoihin.",

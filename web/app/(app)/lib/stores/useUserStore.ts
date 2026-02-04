@@ -5,7 +5,7 @@ interface UserPreferences {
   display_name: string;
   weight_unit: string;
   profile_picture: string | null | undefined;
-  language: "en" | "fi" | null;
+  language?: "en" | "fi" | null;
 }
 
 interface UserStore {

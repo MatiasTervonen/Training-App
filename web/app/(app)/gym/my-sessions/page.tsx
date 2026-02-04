@@ -14,9 +14,10 @@ import useGymDeleteSession from "@/app/(app)/gym/hooks/useGymDeleteSession";
 import PinnedCarousel from "./components/PinnedCarousel";
 import { useQuery } from "@tanstack/react-query";
 import { getFullGymSession } from "@/app/(app)/database/gym/get-full-gym-session";
-import { full_gym_session } from "@/app/(app)/types/models";
+import { useTranslation } from "react-i18next";
 
 export default function MySessionsPage() {
+  const { t } = useTranslation(["gym", "common"]);
   const [expandedItem, setExpandedItem] = useState<FeedItemUI | null>(null);
 
   const router = useRouter();
@@ -44,7 +45,7 @@ export default function MySessionsPage() {
     data: GymSessionFull,
     error: GymSessionError,
     isLoading: isLoadingGymSession,
-  } = useQuery<full_gym_session>({
+  } = useQuery({
     queryKey: ["fullGymSession", gymId],
     queryFn: async () => await getFullGymSession(gymId!),
     enabled: !!gymId,
@@ -67,12 +68,12 @@ export default function MySessionsPage() {
         >
           {refreshing ? (
             <div className="flex text-xl items-center gap-4">
-              <p>Refreshing...</p>
+              <p>{t("common:feed.refreshing")}</p>
               <Spinner />
             </div>
           ) : pullDistance > 0 ? (
             <div className="flex text-xl items-center gap-2">
-              <p className="text-gray-100/70">Pull to refresh...</p>
+              <p className="text-gray-100/70">{t("common:feed.pullToRefresh")}</p>
             </div>
           ) : null}
         </div>
@@ -83,11 +84,11 @@ export default function MySessionsPage() {
           <FeedSkeleton count={6} />
         ) : error ? (
           <p className="text-center text-lg mt-10">
-            Failed to load sessions. Please try again later.
+            {t("gym:gym.mySessions.loadError")}
           </p>
         ) : !data || (unpinnedFeed.length === 0 && pinnedFeed.length === 0) ? (
           <p className="text-center text-lg mt-20">
-            No gym sessions yet. Start a workout to see your sessions here!
+            {t("gym:gym.mySessions.noSessions")}
           </p>
         ) : (
           <>
@@ -126,7 +127,7 @@ export default function MySessionsPage() {
             })}
             {isFetchingNextPage && (
               <div className="flex flex-col gap-2 items-center mt-10">
-                <p>Loading more...</p>
+                <p>{t("common:feed.loadingMore")}</p>
                 <Spinner />
               </div>
             )}
@@ -135,7 +136,7 @@ export default function MySessionsPage() {
 
             {!hasNextPage && data?.pages.length > 1 && (
               <p className="text-center justify-center mt-10 text-gray-300">
-                No more sessions
+                {t("common:feed.noMoreSessions")}
               </p>
             )}
           </>
@@ -145,12 +146,12 @@ export default function MySessionsPage() {
           <Modal onClose={() => setExpandedItem(null)} isOpen={true}>
             {isLoadingGymSession ? (
               <div className="flex flex-col gap-5 items-center justify-center pt-40 px-10">
-                <p>Loading gym session details...</p>
+                <p>{t("gym:gym.mySessions.loadingDetails")}</p>
                 <Spinner />
               </div>
             ) : GymSessionError ? (
               <p className="text-center text-lg mt-40 px-10">
-                Failed to load gym session details. Please try again later.
+                {t("gym:gym.mySessions.loadDetailsError")}
               </p>
             ) : (
               GymSessionFull && <GymSession {...GymSessionFull} />

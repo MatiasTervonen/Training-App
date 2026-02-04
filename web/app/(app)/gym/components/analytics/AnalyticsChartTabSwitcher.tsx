@@ -4,12 +4,14 @@ import MuscleGroupChart from "@/app/(app)/gym/components/analytics/MuscleGroupCh
 import MuscleGroupChartSets from "@/app/(app)/gym/components/analytics/MuscleGroupChartSets";
 import { useState } from "react";
 import { Last30DaysAnalytics } from "@/app/(app)/types/session";
+import { useTranslation } from "react-i18next";
 
 export default function ChartTabSwitcher({
   data,
 }: {
   data: Last30DaysAnalytics;
 }) {
+  const { t } = useTranslation("gym");
   const [activeTab, setActiveTab] = useState<
     "muscleGroups" | "muscleGroupSets"
   >("muscleGroups");
@@ -25,7 +27,7 @@ export default function ChartTabSwitcher({
               : ""
           } cursor-pointer`}
         >
-          exercises
+          {t("gym.analytics.tabs.exercises")}
         </button>
         <button
           onClick={() => setActiveTab("muscleGroupSets")}
@@ -35,7 +37,7 @@ export default function ChartTabSwitcher({
               : ""
           } cursor-pointer`}
         >
-          Sets
+          {t("gym.analytics.tabs.sets")}
         </button>
       </div>
       {activeTab === "muscleGroups" && <MuscleGroupChart data={data} />}

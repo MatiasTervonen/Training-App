@@ -1,7 +1,6 @@
-import { formatDate, formatTime } from "@/app/(app)/lib/formatDate";
+import { formatDate, formatTime, formatDuration } from "@/app/(app)/lib/formatDate";
 import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
 import { GroupExercises } from "@/app/(app)/utils/GroupExercises";
-import { full_gym_exercises } from "../../types/models";
 import { History } from "lucide-react";
 import { getLastExerciseHistory } from "@/app/(app)/database/gym/last-exercise-history";
 import { useQuery } from "@tanstack/react-query";
@@ -10,17 +9,6 @@ import ExerciseHistoryModal from "@/app/(app)/gym/components/ExerciseHistoryModa
 import { useTranslation } from "react-i18next";
 import { FullGymSession } from "@/app/(app)/database/gym/get-full-gym-session";
 
-
-const formatDuration = (seconds: number) => {
-  const totalMinutes = Math.floor(seconds / 60);
-  const hours = Math.floor(totalMinutes / 60);
-  const minutes = totalMinutes % 60;
-  if (hours > 0) {
-    return `${hours}h ${minutes}m`;
-  } else {
-    return `${minutes}m`;
-  }
-};
 
 export default function GymSession(gym_session: FullGymSession) {
   const { t } = useTranslation("gym");
@@ -34,16 +22,17 @@ export default function GymSession(gym_session: FullGymSession) {
   const weightUnit =
     useUserStore((state) => state.preferences?.weight_unit) || "kg";
 
-  const isCardioExercise = (exercise: full_gym_exercises) =>
-    exercise.gym_exercises.main_group.toLowerCase() === "cardio";
+  const isCardioExercise = (exercise: {
+    gym_exercises: { main_group: string };
+  }) => exercise.gym_exercises?.main_group.toLowerCase() === "cardio";
 
   const translateRpe = (rpe: string) => {
     const rpeMap: Record<string, string> = {
       "Warm-up": t("gym.exerciseCard.rpeOptions.warmup"),
-      "Easy": t("gym.exerciseCard.rpeOptions.easy"),
-      "Medium": t("gym.exerciseCard.rpeOptions.medium"),
-      "Hard": t("gym.exerciseCard.rpeOptions.hard"),
-      "Failure": t("gym.exerciseCard.rpeOptions.failure"),
+      Easy: t("gym.exerciseCard.rpeOptions.easy"),
+      Medium: t("gym.exerciseCard.rpeOptions.medium"),
+      Hard: t("gym.exerciseCard.rpeOptions.hard"),
+      Failure: t("gym.exerciseCard.rpeOptions.failure"),
     };
     return rpeMap[rpe] || rpe;
   };
@@ -74,7 +63,7 @@ export default function GymSession(gym_session: FullGymSession) {
         {formatDate(gym_session.created_at)}
       </div>
       <div className="flex flex-col gap-4 justify-center items-center bg-slate-900 rounded-md p-5 mt-5">
-        <h2 className="text-xl mt-2">{gym_session.title}</h2>
+        <h2 className="text-xl mt-2 text-center">{gym_session.title}</h2>
         <p className="text-lg text-center">
           {formatTime(gym_session.start_time)} -{" "}
           {formatTime(gym_session.end_time)}
@@ -131,7 +120,7 @@ export default function GymSession(gym_session: FullGymSession) {
               <div className="py-2 whitespace-pre-wrap wrap-break-word overflow-hidden max-w-full">
                 {exercise.notes || ""}
               </div>
-              <table className="w-full text-left">
+              <table className="w-full text-center">
                 <thead>
                   <tr className="border-b">
                     <th className="p-2 font-normal">
@@ -182,7 +171,9 @@ export default function GymSession(gym_session: FullGymSession) {
                             {set.weight} {weightUnit}
                           </td>
                           <td className="p-2">{set.reps}</td>
-                          <td className="p-2">{set.rpe ? translateRpe(set.rpe) : ""}</td>
+                          <td className="p-2 max-w-[70px] truncate">
+                            {set.rpe ? translateRpe(set.rpe) : ""}
+                          </td>
                         </>
                       )}
                     </tr>

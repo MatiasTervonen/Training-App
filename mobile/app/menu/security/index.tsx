@@ -13,7 +13,7 @@ import AppInput from "@/components/AppInput";
 import { handleError } from "@/utils/handleError";
 import SaveButtonSpinner from "@/components/buttons/SaveButtonSpinner";
 import PageContainer from "@/components/PageContainer";
-import { confirmAction } from "@/lib/confirmAction";
+import { useConfirmAction } from "@/lib/confirmAction";
 import { useUserStore } from "@/lib/stores/useUserStore";
 import { useTranslation } from "react-i18next";
 
@@ -28,6 +28,8 @@ export default function SecurityPage() {
   const [successMessage2, setSuccessMessage2] = useState("");
   const [errorMessage2, setErrorMessage2] = useState("");
   const [isDeleteAccount, setIsDeleteAccount] = useState("");
+
+  const confirmAction = useConfirmAction();
 
   const { signOut } = useSignOut();
 
@@ -141,7 +143,9 @@ export default function SecurityPage() {
     <ScrollView>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <PageContainer className="items-center">
-          <AppText className="text-2xl mb-10">{t("menu:security.title")}</AppText>
+          <AppText className="text-2xl mb-10">
+            {t("menu:security.title")}
+          </AppText>
           <AppText className="text-xl mb-5 underline">
             {t("menu:security.resetPassword.title")}
           </AppText>
@@ -156,7 +160,9 @@ export default function SecurityPage() {
                 setPassword(value);
                 setErrorMessage("");
               }}
-              placeholder={t("menu:security.resetPassword.newPasswordPlaceholder")}
+              placeholder={t(
+                "menu:security.resetPassword.newPasswordPlaceholder",
+              )}
               secureTextEntry
             />
           </View>

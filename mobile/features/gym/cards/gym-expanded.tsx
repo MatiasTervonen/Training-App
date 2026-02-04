@@ -1,18 +1,18 @@
 import { formatDate, formatDuration, formatTime } from "@/lib/formatDate";
 import { useUserStore } from "@/lib/stores/useUserStore";
 import { FullGymSession } from "@/database/gym/get-full-gym-session";
-import GroupExercises from "@/Features/gym/lib/GroupExercises";
+import GroupExercises from "@/features/gym/lib/GroupExercises";
 import { View, ScrollView } from "react-native";
-import AppText from "../../components/AppText";
+import AppText from "@/components/AppText";
 import { LinearGradient } from "expo-linear-gradient";
-import PageContainer from "../../components/PageContainer";
+import PageContainer from "@/components/PageContainer";
 import { History } from "lucide-react-native";
 import { getLastExerciseHistory } from "@/database/gym/last-exercise-history";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import AnimatedButton from "../../components/buttons/animatedButton";
-import ExerciseHistoryModal from "../gym/ExerciseHistoryModal";
+import AnimatedButton from "@/components/buttons/animatedButton";
+import ExerciseHistoryModal from "@/features/gym/ExerciseHistoryModal";
 
 export default function GymSession(gym_session: FullGymSession) {
   const { t } = useTranslation("gym");
@@ -33,10 +33,10 @@ export default function GymSession(gym_session: FullGymSession) {
   const translateRpe = (rpe: string) => {
     const rpeMap: Record<string, string> = {
       "Warm-up": t("gym.exerciseCard.rpeOptions.warmup"),
-      "Easy": t("gym.exerciseCard.rpeOptions.easy"),
-      "Medium": t("gym.exerciseCard.rpeOptions.medium"),
-      "Hard": t("gym.exerciseCard.rpeOptions.hard"),
-      "Failure": t("gym.exerciseCard.rpeOptions.failure"),
+      Easy: t("gym.exerciseCard.rpeOptions.easy"),
+      Medium: t("gym.exerciseCard.rpeOptions.medium"),
+      Hard: t("gym.exerciseCard.rpeOptions.hard"),
+      Failure: t("gym.exerciseCard.rpeOptions.failure"),
     };
     return rpeMap[rpe] || rpe;
   };
@@ -244,7 +244,9 @@ export default function GymSession(gym_session: FullGymSession) {
                             </AppText>
                           </View>
                           <View className="flex-1 items-center">
-                            <AppText className="p-2 text-lg">{set.rpe ? translateRpe(set.rpe) : ""}</AppText>
+                            <AppText className="p-2 text-lg" numberOfLines={1}>
+                              {set.rpe ? translateRpe(set.rpe) : ""}
+                            </AppText>
                           </View>
                           <View className="w-8" />
                         </>

@@ -4,7 +4,7 @@ import { supabase } from "@/lib/supabase";
 type SaveGlobalReminderParams = {
   title: string;
   notes: string;
-  notify_at: string | null;
+  notify_at: string;
   type: "global";
   created_from_device_id?: string | null;
   mode: "alarm" | "normal";

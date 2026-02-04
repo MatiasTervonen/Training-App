@@ -1,7 +1,7 @@
 import { NotebookPen } from "lucide-react-native";
 import AppText from "@/components/AppText";
 import { FeedCardProps } from "@/types/session";
-import BaseFeedCard from "@/Features/feed-cards/BaseFeedCard";
+import BaseFeedCard from "@/features/feed-cards/BaseFeedCard";
 import { View } from "react-native";
 import { useTranslation } from "react-i18next";
 

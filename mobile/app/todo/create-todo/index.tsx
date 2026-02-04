@@ -16,7 +16,7 @@ import AppInput from "@/components/AppInput";
 import SubNotesInput from "@/components/SubNotesInput";
 import { useQueryClient } from "@tanstack/react-query";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { confirmAction } from "@/lib/confirmAction";
+import { useConfirmAction } from "@/lib/confirmAction";
 import PageContainer from "@/components/PageContainer";
 import {
   View,
@@ -26,7 +26,7 @@ import {
 } from "react-native";
 import AppText from "@/components/AppText";
 import AnimatedButton from "@/components/buttons/animatedButton";
-import useSaveDraft from "@/Features/todo/hooks/useSaveDraft";
+import useSaveDraft from "@/features/todo/hooks/useSaveDraft";
 import { useTranslation } from "react-i18next";
 import { formatDateShort } from "@/lib/formatDate";
 
@@ -55,6 +55,8 @@ export default function CreateTodo() {
   const router = useRouter();
 
   const queryClient = useQueryClient();
+
+  const confirmAction = useConfirmAction();
 
   // useSaveDraft hook to save draft todo list
   useSaveDraft({

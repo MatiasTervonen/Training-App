@@ -3,14 +3,14 @@ import FullScreenModal from "@/components/FullScreenModal";
 import { useState } from "react";
 import { ExerciseEntry } from "@/types/session";
 import Toast from "react-native-toast-message";
-import TemplateCard from "@/Features/feed-cards/TemplateCard";
+import TemplateCard from "@/features/gym/cards/TemplateCard";
 import { ActivityIndicator, ScrollView, View } from "react-native";
-import GymTemplate from "@/Features/expand-session-cards/template";
+import GymTemplate from "@/features/expand-session-cards/template";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getTemplates } from "@/database/gym/get-templates";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { deleteTemplate } from "@/database/gym/delete-template";
-import { confirmAction } from "@/lib/confirmAction";
+import { useConfirmAction } from "@/lib/confirmAction";
 import { getFullTemplate } from "@/database/gym/get-full-template";
 import { TemplateSkeleton } from "@/components/skeletetons";
 import AppText from "@/components/AppText";
@@ -30,6 +30,8 @@ export default function TemplatesPage() {
   const [expandedItem, setExpandedItem] = useState<full_gym_template | null>(
     null,
   );
+
+  const confirmAction = useConfirmAction();
 
   const activeSession = useTimerStore((state) => state.activeSession);
 
@@ -180,7 +182,9 @@ export default function TemplatesPage() {
           <FullScreenModal isOpen={true} onClose={() => setExpandedItem(null)}>
             {isLoadingTemplateSession ? (
               <View className="gap-5 items-center justify-center pt-40">
-                <AppText className="text-lg">{t("gym.TemplatesScreen.loadingExpanded")}</AppText>
+                <AppText className="text-lg">
+                  {t("gym.TemplatesScreen.loadingExpanded")}
+                </AppText>
                 <ActivityIndicator size="large" />
               </View>
             ) : TemplateSessionError ? (

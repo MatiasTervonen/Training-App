@@ -19,7 +19,7 @@ import { FullNotesSession } from "@/database/notes/get-full-notes";
 import { DraftRecordingItem } from "../components/draftRecording";
 import RecordVoiceNotes from "../components/RecordVoiceNotes";
 import { nanoid } from "nanoid/non-secure";
-import { confirmAction } from "@/lib/confirmAction";
+import { useConfirmAction } from "@/lib/confirmAction";
 import { NotesVoiceSkeleton } from "@/components/skeletetons";
 import { useTranslation } from "react-i18next";
 
@@ -60,7 +60,7 @@ export default function EditNotes({
   const { t } = useTranslation("notes");
   const payload = note.extra_fields as notesPayload;
   const voiceCount = payload["voice-count"] ?? 0;
-
+  const confirmAction = useConfirmAction();
   const [title, setValue] = useState(note.title);
   const [notes, setNotes] = useState(payload.notes);
   const [isSaving, setIsSaving] = useState(false);
@@ -227,10 +227,17 @@ export default function EditNotes({
         <SaveButton
           disabled={!hasChanges}
           onPress={handleSubmit}
-          label={!hasChanges ? t("notes.editScreen.save") : t("notes.editScreen.saveChanges")}
+          label={
+            !hasChanges
+              ? t("notes.editScreen.save")
+              : t("notes.editScreen.saveChanges")
+          }
         />
       </View>
-      <FullScreenLoader visible={isSaving} message={t("notes.editScreen.savingNotes")} />
+      <FullScreenLoader
+        visible={isSaving}
+        message={t("notes.editScreen.savingNotes")}
+      />
     </View>
   );
 }

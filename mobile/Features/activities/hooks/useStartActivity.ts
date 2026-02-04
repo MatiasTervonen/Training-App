@@ -1,8 +1,11 @@
 import { useTimerStore } from "@/lib/stores/timerStore";
 import Toast from "react-native-toast-message";
-import { useStartGPStracking, useStopGPStracking } from "@/Features/activities/lib/location-actions";
+import {
+  useStartGPStracking,
+  useStopGPStracking,
+} from "@/features/activities/lib/location-actions";
 import { getDatabase } from "@/database/local-database/database";
-import { clearLocalSessionDatabase } from "@/Features/activities/lib/database-actions";
+import { clearLocalSessionDatabase } from "@/features/activities/lib/database-actions";
 
 export function useStartActivity({
   activityName,
@@ -34,7 +37,7 @@ export function useStartActivity({
     await stopGPStracking();
 
     // Wait briefly to ensure any pending database writes complete
-    await new Promise(resolve => setTimeout(resolve, 200));
+    await new Promise((resolve) => setTimeout(resolve, 200));
 
     // Always clear old GPS data first to avoid loading stale points
     await clearLocalSessionDatabase();

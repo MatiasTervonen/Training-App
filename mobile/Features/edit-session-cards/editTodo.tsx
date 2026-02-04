@@ -10,7 +10,7 @@ import AnimatedButton from "@/components/buttons/animatedButton";
 import { View, ScrollView } from "react-native";
 import AppText from "@/components/AppText";
 import PageContainer from "@/components/PageContainer";
-import { confirmAction } from "@/lib/confirmAction";
+import { useConfirmAction } from "@/lib/confirmAction";
 import { Dot } from "lucide-react-native";
 import * as Crypto from "expo-crypto";
 import { useTranslation } from "react-i18next";
@@ -34,6 +34,8 @@ export default function EditTodo({ todo_session, onClose, onSave }: Props) {
   const [isSaving, setIsSaving] = useState(false);
   const [sessionData, setSessionData] = useState(todo_session);
   const [deletedIds, setDeletedIds] = useState<string[]>([]);
+
+  const confirmAction = useConfirmAction();
 
   const handleTitleChange = (value: string) => {
     setSessionData((prev) => ({ ...prev, title: value }));
@@ -150,7 +152,10 @@ export default function EditTodo({ todo_session, onClose, onSave }: Props) {
         </View>
       )}
 
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ flexGrow: 1 }}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ flexGrow: 1 }}
+      >
         <PageContainer className="justify-between items-center gap-5 max-w-lg mb-5">
           <View className="w-full">
             <AppText className="text-lg text-center mb-10">
@@ -208,12 +213,19 @@ export default function EditTodo({ todo_session, onClose, onSave }: Props) {
             <SaveButton
               disabled={!hasChanges}
               onPress={handleSave}
-              label={!hasChanges ? t("todo.session.save") : t("todo.session.saveChanges")}
+              label={
+                !hasChanges
+                  ? t("todo.session.save")
+                  : t("todo.session.saveChanges")
+              }
             />
           </View>
         </PageContainer>
 
-        <FullScreenLoader visible={isSaving} message={t("todo.editScreen.savingTodoList")} />
+        <FullScreenLoader
+          visible={isSaving}
+          message={t("todo.editScreen.savingTodoList")}
+        />
       </ScrollView>
     </View>
   );

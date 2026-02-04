@@ -17,7 +17,7 @@
     "activeSessionError": "Sinulla on jo aktiivinen sessio.",
     "activeSessionErrorSub": "Lopeta se ennen uuden aloittamista.",
     "gymForm": {
-      "title": "Seuraa harjoittelun edistymistäsi",
+      "title": "Kuntosalitreeni",
       "titleEdit": "Muokkaa harjoituskertaa",
       "titlePlaceholder": "Harjoituksen otsikko...",
       "titleLabel": "Harjoituksen otsikko...",

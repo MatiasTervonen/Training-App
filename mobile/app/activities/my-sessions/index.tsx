@@ -7,19 +7,19 @@ import {
 } from "react-native";
 import { useState } from "react";
 import { FeedSkeleton } from "@/components/skeletetons";
-import FeedFooter from "@/Features/feed/FeedFooter";
+import FeedFooter from "@/features/feed/FeedFooter";
 import FullScreenModal from "@/components/FullScreenModal";
 import { LinearGradient } from "expo-linear-gradient";
-import useMyActivitiesFeed from "@/Features/activities/hooks/useMyActivitiesFeed";
-import FeedCard from "@/Features/feed-cards/FeedCard";
+import useMyActivitiesFeed from "@/features/activities/hooks/useMyActivitiesFeed";
+import FeedCard from "@/features/feed-cards/FeedCard";
 import { FeedItemUI } from "@/types/session";
-import FeedHeader from "@/Features/feed/FeedHeader";
-import useFullSessions from "@/Features/feed/hooks/useFullSessions";
-import ActivitySession from "@/Features/activities/cards/activity-feed-expanded/activity";
-import ActivitySessionEdit from "@/Features/activities/cards/activity-edit";
-import useTogglePin from "@/Features/feed/hooks/useTogglePin";
-import useDeleteSession from "@/Features/feed/hooks/useDeleteSession";
-import useUpdateFeedItem from "@/Features/feed/hooks/useUpdateFeedItem";
+import FeedHeader from "@/features/feed/FeedHeader";
+import useFullSessions from "@/features/feed/hooks/useFullSessions";
+import ActivitySession from "@/features/activities/cards/activity-feed-expanded/activity";
+import ActivitySessionEdit from "@/features/activities/cards/activity-edit";
+import useTogglePin from "@/features/feed/hooks/useTogglePin";
+import useDeleteSession from "@/features/feed/hooks/useDeleteSession";
+import useUpdateFeedItem from "@/features/feed/hooks/useUpdateFeedItem";
 import { useTranslation } from "react-i18next";
 
 export default function MyActivitiesScreen() {

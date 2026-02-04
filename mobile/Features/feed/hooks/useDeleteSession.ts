@@ -1,4 +1,4 @@
-import { confirmAction } from "@/lib/confirmAction";
+import { useConfirmAction } from "@/lib/confirmAction";
 import { useQueryClient } from "@tanstack/react-query";
 import { deleteSession } from "@/database/feed/deleteSession";
 import Toast from "react-native-toast-message";
@@ -10,6 +10,8 @@ import { useTranslation } from "react-i18next";
 export default function useDeleteSession() {
   const queryClient = useQueryClient();
   const { t } = useTranslation("feed");
+
+  const confirmAction = useConfirmAction();
 
   const handleDelete = async (id: string, type: string) => {
     const confirmed = await confirmAction({
@@ -28,7 +30,7 @@ export default function useDeleteSession() {
 
       const newPages = oldData.pages.map((page) => {
         const newFeed = page.feed.filter(
-          (feedItem) => feedItem.source_id !== id
+          (feedItem) => feedItem.source_id !== id,
         );
         return { ...page, feed: newFeed };
       });

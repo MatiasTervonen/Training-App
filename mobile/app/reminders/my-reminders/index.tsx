@@ -10,12 +10,12 @@ import {
   ReminderByTab,
   ReminderTab,
 } from "@/database/reminders/get-reminders-by-tab";
-import MyReminderCard from "@/Features/reminders/cards/MyReminderCard";
+import MyReminderCard from "@/features/reminders/cards/MyReminderCard";
 import AnimatedButton from "@/components/buttons/animatedButton";
-import useDeleteReminder from "@/Features/reminders/hooks/my-reminders/useDeleteReminder";
-import EditMyGlobalReminder from "@/Features/reminders/cards/editMyGlobalReminder";
-import MyReminderSession from "@/Features/reminders/cards/myReminder-expanded";
-import EditMyLocalReminder from "@/Features/reminders/cards/editMyLocalReminder";
+import useDeleteReminder from "@/features/reminders/hooks/my-reminders/useDeleteReminder";
+import EditMyGlobalReminder from "@/features/reminders/cards/editMyGlobalReminder";
+import MyReminderSession from "@/features/reminders/cards/myReminder-expanded";
+import EditMyLocalReminder from "@/features/reminders/cards/editMyLocalReminder";
 import AppTextNC from "@/components/AppTextNC";
 import { useTranslation } from "react-i18next";
 

@@ -1,7 +1,7 @@
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { View } from "react-native";
-import useScreenOrientation from "@/Features/layout/hooks/useScreenOrientation";
-import Navbar from "@/Features/navbar/Navbar";
+import useScreenOrientation from "@/features/layout/hooks/useScreenOrientation";
+import Navbar from "@/features/navbar/Navbar";
 
 export default function SaveAreaInset({
   children,

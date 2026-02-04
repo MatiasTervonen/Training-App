@@ -3,12 +3,12 @@ import { useUserStore } from "@/lib/stores/useUserStore";
 import { weight } from "@/types/session";
 import { View, SectionList } from "react-native";
 import AppText from "@/components/AppText";
-import { confirmAction } from "@/lib/confirmAction";
+import { useConfirmAction } from "@/lib/confirmAction";
 import { deleteSession } from "@/database/feed/deleteSession";
 import Toast from "react-native-toast-message";
 import { useQueryClient } from "@tanstack/react-query";
-import HeaderAllDataTable from "@/Features/weight/headerAllDataTable";
-import WeightRow from "@/Features/weight/RowAllDataTable";
+import HeaderAllDataTable from "@/features/weight/headerAllDataTable";
+import WeightRow from "@/features/weight/RowAllDataTable";
 import { useTranslation } from "react-i18next";
 import i18n from "@/app/i18n";
 
@@ -23,6 +23,8 @@ export default function AllDataTable({ data, isLoading, error }: AllDataProps) {
 
   const [expanded, setExpanded] = useState<string | null>(null);
   const [range, setRange] = useState<"week" | "month" | "year">("month");
+
+  const confirmAction = useConfirmAction();
 
   const queryClient = useQueryClient();
 

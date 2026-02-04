@@ -132,13 +132,13 @@ export default function GymForm({
     if (currentElapsed > 0) return;
 
     setActiveSession({
-      type: "gym",
+      type: t("gym.title"),
       label: sessionTitle,
       path: "/gym/gym",
     });
 
     startTimer(0);
-  }, [sessionTitle, setActiveSession, startTimer]);
+  }, [sessionTitle, setActiveSession, startTimer, t]);
 
   useEffect(() => {
     const flag = localStorage.getItem("startedFromTemplate");
@@ -214,7 +214,7 @@ export default function GymForm({
             manualSession={{
               label: sessionTitle,
               path: "/gym/gym",
-              type: "gym",
+              type: t("gym.title"),
             }}
           />
         </nav>

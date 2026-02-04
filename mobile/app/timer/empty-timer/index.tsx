@@ -7,15 +7,15 @@ import { useState, useEffect } from "react";
 import Toast from "react-native-toast-message";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import Animated from "react-native-reanimated";
-import Timer from "@/Features/timer/timer";
+import Timer from "@/features/timer/timer";
 import {
   scheduleNativeAlarm,
   stopNativeAlarm,
 } from "@/native/android/NativeAlarm";
 import { useAudioPlayer } from "expo-audio";
 import { formatDurationLong } from "@/lib/formatDate";
-import useRotation from "@/Features/timer/hooks/useRotation";
-import { confirmAction } from "@/lib/confirmAction";
+import useRotation from "@/features/timer/hooks/useRotation";
+import { useConfirmAction } from "@/lib/confirmAction";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
@@ -25,6 +25,8 @@ export default function SettingsScreen() {
   const [alarmMinutes, setAlarmMinutes] = useState("");
   const [alarmSeconds, setAlarmSeconds] = useState("");
   const [skipPlaying, setSkipPlaying] = useState(false);
+
+  const confirmAction = useConfirmAction();
 
   const audioSource = require("@/assets/audio/mixkit-classic-alarm-995.wav");
 
@@ -84,7 +86,7 @@ export default function SettingsScreen() {
       "",
       t("timer.notification.tapToOpenTimer"),
       t("timer.notification.timesUp"),
-      t("timer.notification.stopAlarm")
+      t("timer.notification.stopAlarm"),
     );
   };
 

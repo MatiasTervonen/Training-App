@@ -12,8 +12,8 @@ import { formatDateTime, formatTime } from "@/lib/formatDate";
 import PageContainer from "@/components/PageContainer";
 import { Checkbox } from "expo-checkbox";
 import { full_reminder } from "@/types/session";
-import useSaveReminder from "@/Features/reminders/hooks/edit-reminder/useSaveReminder";
-import useSetNotification from "@/Features/reminders/hooks/edit-reminder/useSetNotification";
+import useSaveReminder from "@/features/reminders/hooks/edit-reminder/useSaveReminder";
+import useSetNotification from "@/features/reminders/hooks/edit-reminder/useSetNotification";
 import { useTranslation } from "react-i18next";
 
 type Props = {
@@ -75,7 +75,6 @@ export default function HandleEditLocalReminder({
     type: reminder.type as "weekly" | "daily" | "one-time",
   });
 
-
   const { handleSave } = useSaveReminder({
     title,
     notes: notes || "",
@@ -113,7 +112,9 @@ export default function HandleEditLocalReminder({
           />
           <View>
             <AnimatedButton
-              label={notifyAt ? formattedNotifyAt : t("reminders.setNotifyTime")}
+              label={
+                notifyAt ? formattedNotifyAt : t("reminders.setNotifyTime")
+              }
               onPress={() => setOpen(true)}
               className="bg-blue-800 py-2 rounded-md shadow-md border-2 border-blue-500 flex-row gap-2 justify-center items-center mt-10"
               textClassName="text-gray-100"
@@ -156,7 +157,7 @@ export default function HandleEditLocalReminder({
                             setWeekdays([...weekdays, dayNumber]);
                           } else {
                             setWeekdays(
-                              weekdays.filter((day) => day !== dayNumber)
+                              weekdays.filter((day) => day !== dayNumber),
                             );
                           }
                         }}
@@ -172,7 +173,10 @@ export default function HandleEditLocalReminder({
         <View className="pt-10">
           <SaveButton onPress={handleSave} />
         </View>
-        <FullScreenLoader visible={isSaving} message={t("reminders.savingReminder")} />
+        <FullScreenLoader
+          visible={isSaving}
+          message={t("reminders.savingReminder")}
+        />
       </PageContainer>
     </TouchableWithoutFeedback>
   );

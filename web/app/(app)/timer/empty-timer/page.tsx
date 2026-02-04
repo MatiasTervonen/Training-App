@@ -14,6 +14,7 @@ import {
 import BaseButton from "@/app/(app)/components/buttons/BaseButton";
 import DeleteSessionBtn from "@/app/(app)/components/buttons/deleteSessionBtn";
 import { useTranslation } from "react-i18next";
+import { formatDateShort } from "@/app/(app)/lib/formatDate";
 
 export default function TimerPage() {
   const { t } = useTranslation("timer");
@@ -52,10 +53,12 @@ export default function TimerPage() {
     router.replace("/timer");
   };
 
+  const now = formatDateShort(new Date());
+
   const handleStartTimer = () => {
     setActiveSession({
-      type: "timer",
-      label: "Timer",
+      type: t("timer.title"),
+      label: `${t("timer.title")} - ${now}`,
       path: "/timer/empty-timer",
     });
 
@@ -89,19 +92,20 @@ export default function TimerPage() {
   const showTimerUI = isCancelling || totalDuration > 0;
 
   return (
-    <div
-      onClick={() => {
-        if (alarmSoundPlaying) {
-          handleStopTimer();
-        }
-      }}
-    >
+    <>
       {showTimerUI ? (
-        <>
+        <div
+          onClick={() => {
+            if (alarmSoundPlaying) {
+              handleStopTimer();
+            }
+          }}
+        >
           <div className="flex flex-col h-full page-padding">
             <div>
               <p className="text-center text-xl text-gray-300">
-                {Math.floor(totalDuration / 60)} {t("timer.minAbbr")} {totalDuration % 60} {t("timer.secAbbr")}
+                {Math.floor(totalDuration / 60)} {t("timer.minAbbr")}{" "}
+                {totalDuration % 60} {t("timer.secAbbr")}
               </p>
 
               <Timer
@@ -127,9 +131,9 @@ export default function TimerPage() {
               onClick={cancelTimer}
             />
           </button>
-        </>
+        </div>
       ) : (
-        <div className="max-w-md mx-auto flex flex-col gap-20 page-padding">
+        <div className="max-w-md mx-auto flex flex-col page-padding justify-between h-full">
           <div className="flex justify-center items-center gap-5">
             <h1 className="text-2xl text-center">{t("timer.title")}</h1>
             <AlarmClock color="#d1d5db" size={30} />
@@ -158,11 +162,18 @@ export default function TimerPage() {
           </div>
 
           <div className="flex flex-col gap-5">
-            <BaseButton onClick={handleStartTimer} label={t("timer.startTimer")} />
-            <DeleteSessionBtn confirm={false} label={t("timer.clear")} onDelete={clear} />
+            <BaseButton
+              onClick={handleStartTimer}
+              label={t("timer.startTimer")}
+            />
+            <DeleteSessionBtn
+              confirm={false}
+              label={t("timer.clear")}
+              onDelete={clear}
+            />
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }

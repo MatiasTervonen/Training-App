@@ -3,7 +3,7 @@ import { View } from "react-native";
 import AppText from "@/components/AppText";
 import Carousel from "react-native-reanimated-carousel";
 import { Pin } from "lucide-react-native";
-import FeedCard from "@/Features/feed-cards/FeedCard";
+import FeedCard from "@/features/feed-cards/FeedCard";
 import { useTranslation } from "react-i18next";
 
 interface PinnedCarouselProps {

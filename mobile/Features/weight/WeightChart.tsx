@@ -90,7 +90,10 @@ function generateDateRange(start: Date, end: Date): string[] {
 
 echarts.use([SkiaRenderer, LineChart, GridComponent]);
 
-export default function WeightChart({ range, data }: WeightChartProps) {
+export default function WeightChart({
+  range,
+  data,
+}: WeightChartProps) {
   const { t, i18n } = useTranslation("weight");
   const locale = i18n.language;
   const [offset, setOffset] = useState(0);
@@ -102,9 +105,10 @@ export default function WeightChart({ range, data }: WeightChartProps) {
   const [calculatedStart, end] = addOffsetToDate(latestDate, range, offset);
 
   // For year range, clamp start to oldest record if not enough data
-  const start = range === "year" && calculatedStart < oldestDate
-    ? oldestDate
-    : calculatedStart;
+  const start =
+    range === "year" && calculatedStart < oldestDate
+      ? oldestDate
+      : calculatedStart;
 
   // Check if we can go back further (for disabling back button)
   const [nextStart] = addOffsetToDate(latestDate, range, offset + 1);
@@ -269,13 +273,16 @@ export default function WeightChart({ range, data }: WeightChartProps) {
   }, [option, size]);
 
   return (
-    <View className="bg-slate-900 shadow-md w-full">
+    <View
+      className="bg-slate-900 shadow-md w-full"
+    >
       <View className="flex-row justify-center items-center my-4 text-gray-400">
         <AnimatedButton
           onPress={() => setOffset((prev) => prev + 1)}
           className="mr-4 bg-slate-800 p-1 rounded"
           disabled={!canGoBack}
           style={{ opacity: canGoBack ? 1 : 0.5 }}
+          hitSlop={20}
         >
           <ChevronLeft color={canGoBack ? "#22d3ee" : "#f3f4f6"} />
         </AnimatedButton>
@@ -287,27 +294,27 @@ export default function WeightChart({ range, data }: WeightChartProps) {
           className="ml-4 bg-slate-800 p-1 rounded"
           disabled={offset === 0}
           style={{ opacity: offset === 0 ? 0.5 : 1 }}
+          hitSlop={20}
         >
           <ChevronRight color={offset === 0 ? "#f3f4f6" : "#22d3ee"} />
         </AnimatedButton>
       </View>
-      <View>
-        <AppText className="text-center mb-4 px-10">
-          {t(`weight.analyticsScreen.${range}`)}: {weightDifference} {weightUnit}
-        </AppText>
-        <View
-          style={{
-            flex: 1,
-            width: "100%",
-            minHeight: 300,
-          }}
-          onLayout={(e) => {
-            const { width, height } = e.nativeEvent.layout;
-            setSize({ width, height });
-          }}
-        >
-          <SkiaChart ref={skiaRef} />
-        </View>
+      <AppText className="text-center mb-4 px-10">
+        {t(`weight.analyticsScreen.${range}`)}: {weightDifference} {weightUnit}
+      </AppText>
+      <View
+        className="bg-slate-900 shadow-md"
+        style={{
+          flex: 1,
+          width: "100%",
+          minHeight: 300,
+        }}
+        onLayout={(e) => {
+          const { width, height } = e.nativeEvent.layout;
+          setSize({ width, height });
+        }}
+      >
+        <SkiaChart ref={skiaRef} />
       </View>
     </View>
   );

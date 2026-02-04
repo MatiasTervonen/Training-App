@@ -1,3 +1,6 @@
+Need to install the following packages:
+supabase@2.75.3
+Ok to proceed? (y) 
 export type Json =
   | string
   | number
@@ -101,6 +104,7 @@ export type Database = {
         Row: {
           accuracy: number | null
           altitude: number | null
+          bad_signal: boolean | null
           id: string
           is_stationary: boolean | null
           latitude: number
@@ -111,6 +115,7 @@ export type Database = {
         Insert: {
           accuracy?: number | null
           altitude?: number | null
+          bad_signal?: boolean | null
           id?: string
           is_stationary?: boolean | null
           latitude: number
@@ -121,6 +126,7 @@ export type Database = {
         Update: {
           accuracy?: number | null
           altitude?: number | null
+          bad_signal?: boolean | null
           id?: string
           is_stationary?: boolean | null
           latitude?: number
@@ -652,7 +658,6 @@ export type Database = {
           created_at: string
           equipment: string
           id: string
-          language: string
           main_group: string
           muscle_group: string
           name: string
@@ -663,7 +668,6 @@ export type Database = {
           created_at?: string
           equipment: string
           id?: string
-          language?: string
           main_group: string
           muscle_group: string
           name: string
@@ -674,7 +678,6 @@ export type Database = {
           created_at?: string
           equipment?: string
           id?: string
-          language?: string
           main_group?: string
           muscle_group?: string
           name?: string
@@ -1238,6 +1241,7 @@ export type Database = {
         Row: {
           avg_pace: number | null
           avg_speed: number | null
+          bad_signal_time_seconds: number | null
           calories: number | null
           computed_at: string | null
           created_at: string | null
@@ -1253,6 +1257,7 @@ export type Database = {
         Insert: {
           avg_pace?: number | null
           avg_speed?: number | null
+          bad_signal_time_seconds?: number | null
           calories?: number | null
           computed_at?: string | null
           created_at?: string | null
@@ -1268,6 +1273,7 @@ export type Database = {
         Update: {
           avg_pace?: number | null
           avg_speed?: number | null
+          bad_signal_time_seconds?: number | null
           calories?: number | null
           computed_at?: string | null
           created_at?: string | null
@@ -1891,7 +1897,7 @@ export type Database = {
         Args: {
           p_delivered: boolean
           p_id: string
-          p_mode: string
+          p_mode?: string
           p_notes: string
           p_notify_at: string
           p_seen_at: string
@@ -1969,8 +1975,8 @@ export type Database = {
       }
       reminders_save_global_reminder: {
         Args: {
-          p_created_from_device_id?: string
-          p_mode: string
+          p_created_from_token?: string
+          p_mode?: string
           p_notes: string
           p_notify_at: string
           p_title: string

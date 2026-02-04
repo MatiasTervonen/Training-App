@@ -6,6 +6,8 @@ type SaveGlobalReminderParams = {
   notes: string;
   notify_at: string;
   type: "global";
+  created_from_device_id?: string | undefined;
+  mode?: "alarm" | "normal";
 };
 
 export async function saveGlobalReminder({
@@ -13,14 +15,18 @@ export async function saveGlobalReminder({
   notes,
   notify_at,
   type,
+  created_from_device_id,
+  mode,
 }: SaveGlobalReminderParams) {
   const supabase = createClient();
 
-  const { error } = await supabase.rpc("reminders_save_global_reminder", {
+  const { data, error } = await supabase.rpc("reminders_save_global_reminder", {
     p_title: title,
     p_notes: notes,
     p_notify_at: notify_at,
     p_type: type,
+    p_mode: mode,
+    p_created_from_device_id: created_from_device_id,
   });
 
   if (error) {
@@ -33,5 +39,5 @@ export async function saveGlobalReminder({
     throw new Error("Error saving global reminders");
   }
 
-  return { success: true };
+  return { success: true, reminderId: data as string };
 }

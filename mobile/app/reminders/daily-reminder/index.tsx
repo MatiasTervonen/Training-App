@@ -17,9 +17,9 @@ import AnimatedButton from "@/components/buttons/animatedButton";
 import { Plus, Info } from "lucide-react-native";
 import { formatTime } from "@/lib/formatDate";
 import SubNotesInput from "@/components/SubNotesInput";
-import useSaveDraftDaily from "@/Features/reminders/hooks/daily/useSaveDraftDaily";
-import useSaveReminderDaily from "@/Features/reminders/hooks/daily/useSaveReminderDaily";
-import useSetNotification from "@/Features/reminders/hooks/daily/useSetNotification";
+import useSaveDraftDaily from "@/features/reminders/hooks/daily/useSaveDraftDaily";
+import useSaveReminderDaily from "@/features/reminders/hooks/daily/useSaveReminderDaily";
+import useSetNotification from "@/features/reminders/hooks/daily/useSetNotification";
 import Toggle from "@/components/toggle";
 import { canUseExactAlarm } from "@/native/android/EnsureExactAlarmPermission";
 import ExactAlarmPermissionModal from "@/components/ExactAlarmPermissionModal";
@@ -94,7 +94,9 @@ export default function ReminderScreen() {
         <PageContainer>
           <View className="justify-between flex-1">
             <View className="gap-5">
-              <AppText className="text-xl text-center">{t("reminders.dailyReminder")}</AppText>
+              <AppText className="text-xl text-center">
+                {t("reminders.dailyReminder")}
+              </AppText>
               <View className="flex-row items-center justify-center">
                 <Info color="#9ca3af" size={18} />
                 <AppText className="text-gray-400 text-sm ml-2">
@@ -118,7 +120,9 @@ export default function ReminderScreen() {
               />
               <View>
                 <AnimatedButton
-                  label={notifyAt ? formattedTime : t("reminders.setNotifyTime")}
+                  label={
+                    notifyAt ? formattedTime : t("reminders.setNotifyTime")
+                  }
                   onPress={() => setOpen(true)}
                   className="bg-blue-800 py-2 rounded-md shadow-md border-2 border-blue-500 flex-row gap-2 justify-center items-center"
                   textClassName="text-gray-100"
@@ -166,7 +170,10 @@ export default function ReminderScreen() {
               <DeleteButton onPress={resetReminder} />
             </View>
           </View>
-          <FullScreenLoader visible={isSaving} message={t("reminders.savingReminder")} />
+          <FullScreenLoader
+            visible={isSaving}
+            message={t("reminders.savingReminder")}
+          />
         </PageContainer>
       </TouchableWithoutFeedback>
 

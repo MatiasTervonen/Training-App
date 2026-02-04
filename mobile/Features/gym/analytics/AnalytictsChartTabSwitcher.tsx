@@ -2,8 +2,8 @@ import { useState } from "react";
 import { View } from "react-native";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import AppText from "@/components/AppTextNC";
-import MuscleGroupChart from "@/Features/gym/analytics/MuscleGroupChart";
-import MuscleGroupChartSets from "@/Features/gym/analytics/MuscleGroupChartSets";
+import MuscleGroupChart from "@/features/gym/analytics/MuscleGroupChart";
+import MuscleGroupChartSets from "@/features/gym/analytics/MuscleGroupChartSets";
 import { useTranslation } from "react-i18next";
 
 type ChartTabSwitcherProps = {
@@ -47,7 +47,9 @@ export default function ChartTabSwitcher({ data }: ChartTabSwitcherProps) {
         >
           <AppText
             className={`text-center text-lg ${
-              activeTab === "muscleGroupSets" ? "text-cyan-400" : "text-gray-100"
+              activeTab === "muscleGroupSets"
+                ? "text-cyan-400"
+                : "text-gray-100"
             }`}
           >
             {t("gym.analytics.tabs.sets")}

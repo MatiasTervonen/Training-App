@@ -8,7 +8,7 @@ import {
 import { SquareX } from "lucide-react-native";
 import AppInput from "@/components/AppInput";
 import { useUserStore } from "@/lib/stores/useUserStore";
-import { confirmAction } from "@/lib/confirmAction";
+import { useConfirmAction } from "@/lib/confirmAction";
 import SelectInput from "@/components/Selectinput";
 import AppButton from "@/components/buttons/AppButton";
 import DropDownModal from "@/components/DropDownModal";
@@ -57,6 +57,8 @@ export default function ExerciseCard({
 }: ExerciseCardProps) {
   const weightUnit =
     useUserStore((state) => state.profile?.weight_unit) || "kg";
+
+  const confirmAction = useConfirmAction();
 
   const { t } = useTranslation("gym");
   return (
@@ -107,8 +109,8 @@ export default function ExerciseCard({
         </View>
       </View>
       {history?.sets && history?.sets.length > 0 && (
-        <View className="flex-row mt-2">
-          <View className="flex-row items-center bg-gray-700/50 px-2 py-0.5 rounded flex-wrap">
+        <View className="flex-row mt-2 flex-wrap">
+          <View className="flex-row items-center bg-gray-700/50 px-2 py-0.5 rounded">
             <AppText className="text-sm text-gray-300">
               {t("gym.exerciseCard.last")}{" "}
             </AppText>

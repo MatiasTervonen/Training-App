@@ -11,7 +11,7 @@ import {
 import AppText from "@/components/AppText";
 import { useState } from "react";
 import { formatDurationNotesVoice } from "@/lib/formatDate";
-import { confirmAction } from "@/lib/confirmAction";
+import { useConfirmAction } from "@/lib/confirmAction";
 import { useTranslation } from "react-i18next";
 
 type RecordVoiceNotesProps = {
@@ -23,6 +23,8 @@ export default function RecordVoiceNotes({
 }: RecordVoiceNotesProps) {
   const { t } = useTranslation("notes");
   const [isPaused, setIsPaused] = useState(false);
+
+  const confirmAction = useConfirmAction();
 
   RecordingPresets.VOICE_HIGH_QUALITY = {
     ...RecordingPresets.HIGH_QUALITY,

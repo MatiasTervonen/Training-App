@@ -1,6 +1,6 @@
 import { View } from "react-native";
-import Timer from "@/Features/timer/stopWatch";
-import useRotation from "@/Features/timer/hooks/useRotation";
+import Timer from "@/features/timer/stopWatch";
+import useRotation from "@/features/timer/hooks/useRotation";
 
 export default function StartStopwatch() {
   useRotation();

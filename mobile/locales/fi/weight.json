@@ -12,6 +12,9 @@
     "weightLabel": "Syötä painosi...",
     "weightPlaceholder": "Syötä painosi tähän...",
     "savingWeight": "Tallennetaan painoa...",
+    "created": "luotu",
+    "fullAnalytics": "Täysi analytiikka",
+    "chartError": "Virhe painotietojen latauksessa.",
     "analyticsScreen": {
       "title": "Painoanalytiikka",
       "loading": "Ladataan painotietoja...",

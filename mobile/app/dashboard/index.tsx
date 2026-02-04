@@ -1,4 +1,4 @@
-import SessionFeed from "@/Features/feed/SessionFeed";
+import SessionFeed from "@/features/feed/SessionFeed";
 import { useModalPageConfig } from "@/lib/stores/modalPageConfig";
 import { useEffect } from "react";
 import { useRouter, useLocalSearchParams } from "expo-router";

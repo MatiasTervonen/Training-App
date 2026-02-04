@@ -1,9 +1,9 @@
-import { confirmAction } from "@/lib/confirmAction";
+import { useConfirmAction } from "@/lib/confirmAction";
 import { useRouter } from "expo-router";
 import Toast from "react-native-toast-message";
 import { saveActivitySession } from "@/database/activities/save-session";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useStopGPStracking } from "@/Features/activities/lib/location-actions";
+import { useStopGPStracking } from "@/features/activities/lib/location-actions";
 import { useQueryClient } from "@tanstack/react-query";
 import { getDatabase } from "@/database/local-database/database";
 import { useTimerStore } from "@/lib/stores/timerStore";
@@ -82,6 +82,7 @@ export default function useSaveActivitySession({
   const queryClient = useQueryClient();
   const { stopGPStracking } = useStopGPStracking();
   const { t } = useTranslation("activities");
+  const confirmAction = useConfirmAction();
 
   const handleSaveSession = async () => {
     // Get timer state only when saving, not on every render
@@ -124,7 +125,7 @@ export default function useSaveActivitySession({
         await stopGPStracking();
 
         // Wait briefly to ensure any pending database writes complete
-        await new Promise(resolve => setTimeout(resolve, 200));
+        await new Promise((resolve) => setTimeout(resolve, 200));
       }
 
       const rawTrack = allowGPS ? await loadTrackFromDatabase() : [];

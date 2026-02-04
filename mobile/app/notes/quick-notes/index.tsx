@@ -13,13 +13,13 @@ import DeleteButton from "@/components/buttons/DeleteButton";
 import FullScreenLoader from "@/components/FullScreenLoader";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import PageContainer from "@/components/PageContainer";
-import useSaveDraft from "@/Features/notes/hooks/useSaveDraft";
-import useSaveNotes from "@/Features/notes/hooks/useSaveNotes";
+import useSaveDraft from "@/features/notes/hooks/useSaveDraft";
+import useSaveNotes from "@/features/notes/hooks/useSaveNotes";
 import { formatDateShort } from "@/lib/formatDate";
-import RecordVoiceNotes from "@/Features/notes/components/RecordVoiceNotes";
+import RecordVoiceNotes from "@/features/notes/components/RecordVoiceNotes";
 import { nanoid } from "nanoid/non-secure";
-import { DraftRecordingItem } from "@/Features/notes/components/draftRecording";
-import { confirmAction } from "@/lib/confirmAction";
+import { DraftRecordingItem } from "@/features/notes/components/draftRecording";
+import { useConfirmAction } from "@/lib/confirmAction";
 import { useTranslation } from "react-i18next";
 
 type DraftRecording = {
@@ -31,11 +31,13 @@ type DraftRecording = {
 
 export default function NotesScreen() {
   const { t } = useTranslation("notes");
-   const now = formatDateShort(new Date());
+  const now = formatDateShort(new Date());
   const [title, setTitle] = useState(`${t("notes.title")} - ${now}`);
   const [notes, setNotes] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [draftRecordings, setDraftRecordings] = useState<DraftRecording[]>([]);
+
+  const confirmAction = useConfirmAction();
 
   const resetNote = () => {
     setTitle("");

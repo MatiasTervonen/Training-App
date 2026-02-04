@@ -4,11 +4,11 @@ import { useQuery } from "@tanstack/react-query";
 import AppText from "@/components/AppText";
 import AppTextNC from "@/components/AppTextNC";
 import AnimatedButton from "@/components/buttons/animatedButton";
-import StepsChart from "@/Features/activities/analytics/StepsChart";
-import ActivityBreakdownChart from "@/Features/activities/analytics/ActivityBreakdownChart";
+import StepsChart from "@/features/activities/analytics/StepsChart";
+import ActivityBreakdownChart from "@/features/activities/analytics/ActivityBreakdownChart";
 import { getStepsData } from "@/database/activities/get-steps";
 import { getActivitySessions } from "@/database/activities/get-activity-sessions";
-import { getTodaysSteps } from "@/Features/activities/analytics/getTodaysSteps";
+import { getTodaysSteps } from "@/features/activities/analytics/getTodaysSteps";
 import Toast from "react-native-toast-message";
 import PageContainer from "@/components/PageContainer";
 import * as Device from "expo-device";
@@ -141,7 +141,8 @@ export default function ActivityAnalytics() {
                 {t("activities.analyticsScreen.today")}
               </AppText>
               <AppText className="text-2xl font-bold text-green-400">
-                {todaySteps.toLocaleString()} {t("activities.analyticsScreen.steps")}
+                {todaySteps.toLocaleString()}{" "}
+                {t("activities.analyticsScreen.steps")}
               </AppText>
             </View>
           </View>

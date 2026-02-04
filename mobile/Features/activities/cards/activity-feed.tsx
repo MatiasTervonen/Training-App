@@ -3,7 +3,7 @@ import { View } from "react-native";
 import AppText from "@/components/AppText";
 import { formatMeters, formatDuration } from "@/lib/formatDate";
 import { FeedCardProps } from "@/types/session";
-import BaseFeedCard from "@/Features/feed-cards/BaseFeedCard";
+import BaseFeedCard from "@/features/feed-cards/BaseFeedCard";
 import { useTranslation } from "react-i18next";
 
 type activityPayload = {
@@ -26,9 +26,12 @@ export default function ActivityCard({
   // Get translated activity name using slug, fallback to stored name
   const getActivityTypeName = () => {
     if (payload.activity_slug) {
-      const translated = t(`activities.activityNames.${payload.activity_slug}`, {
-        defaultValue: "",
-      });
+      const translated = t(
+        `activities.activityNames.${payload.activity_slug}`,
+        {
+          defaultValue: "",
+        },
+      );
       if (
         translated &&
         translated !== `activities.activityNames.${payload.activity_slug}`

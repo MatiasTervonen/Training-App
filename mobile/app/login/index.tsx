@@ -18,9 +18,9 @@ import Animated, {
 } from "react-native-reanimated";
 
 import GradientButton from "@/components/buttons/GradientButton";
-import ForgotPasswordText from "@/Features/login-signup/forgotPassword";
+import ForgotPasswordText from "@/features/login-signup/forgotPassword";
 import ModalLogin from "@/components/ModalLogin";
-import ResendEmailText from "@/Features/login-signup/resendEmail";
+import ResendEmailText from "@/features/login-signup/resendEmail";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import { ArrowLeft } from "lucide-react-native";
 import GradientColorText from "@/components/GradientColorText";
@@ -31,7 +31,7 @@ import {
   sendPasswordResetEmail,
   resendEmailVerification,
   guestLogIn,
-} from "@/Features/login-signup/actions";
+} from "@/features/login-signup/actions";
 import { Confetti, ConfettiMethods } from "react-native-fast-confetti";
 import { useTranslation } from "react-i18next";
 

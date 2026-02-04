@@ -1,7 +1,7 @@
 import { View } from "react-native";
 import AppText from "@/components/AppText";
 import { FullGymSession } from "@/database/gym/get-full-gym-session";
-import ChartTabSwitcher from "@/Features/gym/analytics/AnalytictsChartTabSwitcher";
+import ChartTabSwitcher from "@/features/gym/analytics/AnalytictsChartTabSwitcher";
 import * as echarts from "echarts/core";
 import {
   CalendarComponent,
@@ -11,7 +11,7 @@ import {
 import { HeatmapChart } from "echarts/charts";
 import { SkiaRenderer, SkiaChart } from "@wuba/react-native-echarts";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { formatDate, formatDuration } from "@/lib/formatDate";
+import { formatDateShort, formatDuration } from "@/lib/formatDate";
 import { Last30DaysAnalytics } from "@/database/gym/analytics/last-30-days-rpc";
 import { useTranslation } from "react-i18next";
 
@@ -103,7 +103,7 @@ export default function AnalyticsForm({ data, heatmap }: AnalyticsFormProps) {
         formatter: function (params: any) {
           const { value, title } = params.data || {};
           if (!value) return "";
-          const date = formatDate(value[0]);
+          const date = formatDateShort(value[0]);
           const duration = value[1];
           return `${date}\n${title}\n${durationLabel}: ${duration} min`;
         },

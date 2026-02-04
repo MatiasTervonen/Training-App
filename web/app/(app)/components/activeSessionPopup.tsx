@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import Timer from "./timer";
+import Timer from "@/app/(app)/components/timer";
 import { SquareArrowRight } from "lucide-react";
 import { useTimerStore } from "@/app/(app)/lib/stores/timerStore";
 import { useEffect } from "react";
@@ -10,8 +10,10 @@ import {
   stopAlarmAudio,
 } from "@/app/(app)/timer/components/alarmAudio";
 import { usePathname } from "next/navigation";
+import { useTranslation } from "react-i18next";
 
 export default function ActiveSessionPopup() {
+  const { t } = useTranslation(["gym", "timer"]);
   const pathname = usePathname();
 
   const {
@@ -37,15 +39,25 @@ export default function ActiveSessionPopup() {
 
   if (!activeSession) return null;
 
-  if (pathname === "/gym/gym" && activeSession.type === "gym") {
+  if (pathname === "/gym/gym" && activeSession.type === t("gym:gym.title")) {
     return null;
   }
 
-  if (pathname === "/timer/empty-timer" && activeSession.type === "timer") {
+  if (
+    pathname === "/timer/empty-timer" &&
+    activeSession.type === t("timer:timer.title")
+  ) {
     return null;
   }
 
   if (pathname === "/disc-golf/game" && activeSession.type === "disc-golf") {
+    return null;
+  }
+
+  if (
+    pathname === "/timer/start-stopwatch" &&
+    activeSession.type === t("timer:timer:stopwatchTitle")
+  ) {
     return null;
   }
 
@@ -60,9 +72,9 @@ export default function ActiveSessionPopup() {
         <p className="pb-2 text-start text-slate-900">{activeSession.label}</p>
         <div className="flex  gap-5 text-slate-900 text-start items-center">
           <Timer />
-          <p>{activeSession.type.toUpperCase()}</p>
+          <p>{activeSession.type}</p>
           {alarmFired && <p>ALARM!</p>}
-          {activeSession.type === "timer" && totalDuration && (
+          {activeSession.type === t("timer:timer.title") && totalDuration && (
             <p className="text-nowrap">
               {Math.floor(totalDuration / 60)} min {totalDuration % 60} sec
             </p>

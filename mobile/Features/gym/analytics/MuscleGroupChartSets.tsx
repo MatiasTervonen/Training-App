@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { Dimensions, View } from "react-native";
 import AppText from "@/components/AppText";
-import AnimatedBar from "@/Features/gym/analytics/AnimatedBar";
+import AnimatedBar from "@/features/gym/analytics/AnimatedBar";
 import { useTranslation } from "react-i18next";
 
 type sets_per_muscle_group = { group: string; count: number }[];

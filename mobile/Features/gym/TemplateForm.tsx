@@ -19,26 +19,27 @@ import {
   emptyExerciseEntry,
   ExerciseInput,
 } from "@/types/session";
-import ExerciseHistoryModal from "@/Features/gym/ExerciseHistoryModal";
+import ExerciseHistoryModal from "@/features/gym/ExerciseHistoryModal";
 import FullScreenLoader from "@/components/FullScreenLoader";
-import GroupGymExercises from "@/Features/gym/lib/GroupGymExercises";
-import ExerciseCard from "@/Features/gym/ExerciseCard";
-import ExerciseSelectorList from "@/Features/gym/ExerciseSelectorList";
+import GroupGymExercises from "@/features/gym/lib/GroupGymExercises";
+import ExerciseCard from "@/features/gym/ExerciseCard";
+import ExerciseSelectorList from "@/features/gym/ExerciseSelectorList";
 import { useQuery } from "@tanstack/react-query";
 import { getFullTemplate } from "@/database/gym/get-full-template";
 import { getLastExerciseHistory } from "@/database/gym/last-exercise-history";
 import SelectInput from "@/components/Selectinput";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { LinearGradient } from "expo-linear-gradient";
-import { confirmAction } from "@/lib/confirmAction";
+import { useConfirmAction } from "@/lib/confirmAction";
 import AppButton from "@/components/buttons/AppButton";
 import PageContainer from "@/components/PageContainer";
-import useAddExercise from "@/Features/gym/hooks/template/useAddExercise";
-import useSaveTemplate from "@/Features/gym/hooks/template/useSaveTemplate";
-import useLogSetForExercise from "@/Features/gym/hooks/template/useLogSetForExercise";
+import useAddExercise from "@/features/gym/hooks/template/useAddExercise";
+import useSaveTemplate from "@/features/gym/hooks/template/useSaveTemplate";
+import useLogSetForExercise from "@/features/gym/hooks/template/useLogSetForExercise";
 import { useTranslation } from "react-i18next";
 
 export default function TemplateForm() {
+  const confirmAction = useConfirmAction();
   const { t } = useTranslation(["gym", "common"]);
   const [workoutName, setWorkoutName] = useState("");
   const [exercises, setExercises] = useState<ExerciseEntry[]>([]);

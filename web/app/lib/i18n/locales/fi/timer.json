@@ -1,6 +1,7 @@
 {
   "timer": {
     "title": "Ajastin",
+    "stopwatchTitle": "Sekuntikello",
     "startTimer": "Käynnistä ajastin",
     "startStopwatch": "Käynnistä sekuntikello",
     "createTimer": "Luo ajastin",
@@ -10,6 +11,9 @@
     "minAbbr": "min",
     "secAbbr": "sek",
     "start": "Aloita",
+    "pause": "Tauko",
+    "resume": "Jatka",
+    "cancel": "Peruuta",
     "clear": "Tyhjennä",
     "cancelTimerTitle": "Peruuta ajastin",
     "cancelTimerMessage": "Haluatko varmasti peruuttaa ajastimen?",

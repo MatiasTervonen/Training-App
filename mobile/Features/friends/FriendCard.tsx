@@ -2,7 +2,7 @@ import { Image } from "expo-image";
 import { Trash2 } from "lucide-react-native";
 import Toast from "react-native-toast-message";
 import { Friends } from "@/types/models";
-import { confirmAction } from "@/lib/confirmAction";
+import { useConfirmAction } from "@/lib/confirmAction";
 import { handleError } from "@/utils/handleError";
 import { deleteFriend } from "@/database/friend/delete-friend";
 import { View } from "react-native";
@@ -13,33 +13,32 @@ type FriendCardProps = {
 };
 
 export default function FriendCard({ friend }: FriendCardProps) {
+  const confirmAction = useConfirmAction();
+
   const handleDeleteFriend = async () => {
-    await confirmAction({
+    const confirmed = await confirmAction({
       title: "Are you sure you want to delete this friend?",
-      message: "This action cannot be undone.",
-      confirmText: "Delete",
-      cancelText: "Cancel",
-      onConfirm: async () => {
-        try {
-          const response = await deleteFriend(friend.id);
-
-          if (response.error) {
-            throw new Error(response.message || "Failed to delete friend");
-          }
-
-          Toast.show({
-            type: "success",
-            text1: "Friend deleted successfully!",
-          });
-        } catch (error) {
-          handleError(error, {
-            message: "Error deleting friend",
-            route: "/api/friend/delete-friend",
-            method: "DELETE",
-          });
-        }
-      },
     });
+    if (!confirmed) return;
+
+    try {
+      const response = await deleteFriend(friend.id);
+
+      if (response.error) {
+        throw new Error(response.message || "Failed to delete friend");
+      }
+
+      Toast.show({
+        type: "success",
+        text1: "Friend deleted successfully!",
+      });
+    } catch (error) {
+      handleError(error, {
+        message: "Error deleting friend",
+        route: "/api/friend/delete-friend",
+        method: "DELETE",
+      });
+    }
   };
 
   return (

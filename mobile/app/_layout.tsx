@@ -1,5 +1,5 @@
 import "./i18n";
-import "@/Features/activities/lib/locationTask";
+import "@/features/activities/lib/locationTask";
 import "@/lib/nativewindInterop";
 
 import { Slot, usePathname } from "expo-router";
@@ -9,7 +9,7 @@ import { useEffect } from "react";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import "./global.css";
 import "react-native-url-polyfill/auto";
-import LayoutWrapper from "@/Features/layout/LayoutWrapper";
+import LayoutWrapper from "@/features/layout/LayoutWrapper";
 import Toast from "react-native-toast-message";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
@@ -19,24 +19,24 @@ import { Provider as PaperProvider } from "react-native-paper";
 import {
   configureNotificationChannels,
   configurePushNotificationsWhenAppIsOpen,
-} from "@/Features/push-notifications/actions";
+} from "@/features/push-notifications/actions";
 import {
   configureReanimatedLogger,
   ReanimatedLogLevel,
 } from "react-native-reanimated";
 import { toastConfig } from "@/lib/config/toast";
-import useNotificationResponse from "@/Features/feed/hooks/useNotificationResponse";
+import useNotificationResponse from "@/features/feed/hooks/useNotificationResponse";
 import { useAppReadyStore } from "@/lib/stores/appReadyStore";
-import BootScreen from "@/Features/feed/fakeFeedLoader";
-import SaveAreaInset from "@/Features/layout/SaveAreaInset";
+import BootScreen from "@/features/feed/fakeFeedLoader";
+import SaveAreaInset from "@/features/layout/SaveAreaInset";
 import Mapbox from "@rnmapbox/maps";
-import TimerFinishListener from "@/Features/layout/TimerFinished";
-import AlarmPlayingListener from "@/Features/layout/AlarmPlayingListener";
-import AppStatePermissionListener from "@/Features/push-notifications/AppStatePermissionListener";
-import GpsTrackingPermission from "@/Features/activities/gpsToggle/gpsTrackingPermission";
+import TimerFinishListener from "@/features/layout/TimerFinished";
+import AlarmPlayingListener from "@/features/layout/AlarmPlayingListener";
+import AppStatePermissionListener from "@/features/push-notifications/AppStatePermissionListener";
+import GpsTrackingPermission from "@/features/activities/gpsToggle/gpsTrackingPermission";
 import { backfillMissingDaysThrottled } from "@/database/activities/syncStepsToDatabase";
 import * as Device from "expo-device";
-import { hasStepsPermission } from "@/Features/activities/stepToggle/stepPermission";
+import { hasStepsPermission } from "@/features/activities/stepToggle/stepPermission";
 
 // Set Mapbox access token
 Mapbox.setAccessToken(process.env.EXPO_PUBLIC_MAPBOX_PUBLIC_TOKEN!);

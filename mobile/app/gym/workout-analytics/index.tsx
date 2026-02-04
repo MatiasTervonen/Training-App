@@ -2,7 +2,7 @@ import AppText from "@/components/AppText";
 import PageContainer from "@/components/PageContainer";
 import { last30DaysAnalytics } from "@/database/gym/analytics/last-30-days";
 import { useQuery } from "@tanstack/react-query";
-import AnalyticsForm from "@/Features/gym/analytics/AnalyticsForm";
+import AnalyticsForm from "@/features/gym/analytics/AnalyticsForm";
 import { ScrollView, ActivityIndicator, View } from "react-native";
 import { last30DaysAnalyticsRPC } from "@/database/gym/analytics/last-30-days-rpc";
 import { useTranslation } from "react-i18next";

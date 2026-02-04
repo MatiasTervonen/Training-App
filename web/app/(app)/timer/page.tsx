@@ -3,7 +3,7 @@
 import LinkButton from "../components/buttons/LinkButton";
 import toast from "react-hot-toast";
 import { useTimerStore } from "../lib/stores/timerStore";
-import { List } from "lucide-react";
+import { List, Timer } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 export default function TimerPage() {
@@ -14,7 +14,7 @@ export default function TimerPage() {
     if (activeSession) {
       e.preventDefault();
       toast.error(
-        `${t("timer.activeSessionError")} ${t("timer.activeSessionErrorSub")}`
+        `${t("timer.activeSessionError")} ${t("timer.activeSessionErrorSub")}`,
       );
       return;
     }
@@ -27,6 +27,11 @@ export default function TimerPage() {
         <LinkButton href="/timer/empty-timer" onClick={handleClick}>
           {t("timer.startTimer")}
         </LinkButton>
+        <LinkButton href="/timer/start-stopwatch" onClick={handleClick}>
+          <p>{t("timer.startStopwatch")}</p>
+          <Timer />
+        </LinkButton>
+        <div className="border border-gray-400 rounded-md" />
         <LinkButton href="/timer/create-timer">
           {t("timer.createTimer")}
         </LinkButton>

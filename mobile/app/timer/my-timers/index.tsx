@@ -11,7 +11,7 @@ import { getTimer } from "@/database/timer/get-timers";
 import { useState } from "react";
 import { timers } from "@/types/models";
 import FullScreenModal from "@/components/FullScreenModal";
-import TimerCard from "@/Features/expand-session-cards/TimerCard";
+import TimerCard from "@/features/expand-session-cards/TimerCard";
 import { deleteTimer } from "@/database/timer/delete-timer";
 import Toast from "react-native-toast-message";
 
@@ -24,7 +24,7 @@ import SubNotesInput from "@/components/SubNotesInput";
 import NumberInput from "@/components/NumberInput";
 import SaveButton from "@/components/buttons/SaveButton";
 import FullScreenLoader from "@/components/FullScreenLoader";
-import useUpdateTimer from "@/Features/timer/hooks/useUpdateTimer";
+import useUpdateTimer from "@/features/timer/hooks/useUpdateTimer";
 import { useTranslation } from "react-i18next";
 
 export default function MyTimersScreen() {
@@ -119,7 +119,7 @@ export default function MyTimersScreen() {
         title: timer.title,
         notes: timer.notes,
         durationInSeconds: timer.time_seconds,
-      })
+      }),
     );
     setActiveSession({
       type: t("timer.title"),
@@ -133,7 +133,9 @@ export default function MyTimersScreen() {
 
   return (
     <PageContainer>
-      <AppText className="text-2xl text-center mb-10">{t("timer.myTimers")}</AppText>
+      <AppText className="text-2xl text-center mb-10">
+        {t("timer.myTimers")}
+      </AppText>
 
       {isLoading ? (
         <View className="gap-3 items-center justify-center mt-20">
@@ -225,7 +227,10 @@ export default function MyTimersScreen() {
                 </View>
               </View>
               <View className="gap-4">
-                <SaveButton onPress={handleUpdateTimer} label={t("timer.update")} />
+                <SaveButton
+                  onPress={handleUpdateTimer}
+                  label={t("timer.update")}
+                />
                 <AnimatedButton
                   className="bg-gray-700 rounded-md shadow-md border-2 border-gray-500 py-2"
                   label={t("common.cancel")}
@@ -233,7 +238,10 @@ export default function MyTimersScreen() {
                   textClassName="text-gray-100 text-center"
                 />
               </View>
-              <FullScreenLoader visible={isSaving} message={t("timer.updatingTimer")} />
+              <FullScreenLoader
+                visible={isSaving}
+                message={t("timer.updatingTimer")}
+              />
             </PageContainer>
           </TouchableWithoutFeedback>
         </FullScreenModal>

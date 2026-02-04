@@ -1,7 +1,7 @@
 import { Dimensions, View } from "react-native";
 import { useMemo } from "react";
 import AppText from "@/components/AppText";
-import AnimatedBar from "@/Features/gym/analytics/AnimatedBar";
+import AnimatedBar from "@/features/gym/analytics/AnimatedBar";
 import { useTranslation } from "react-i18next";
 
 type muscle_groups = { group: string; count: number }[];
@@ -11,7 +11,7 @@ export default function MuscleGroupChart({ data }: { data: muscle_groups }) {
   const screenWidth = Dimensions.get("window").width;
 
   const chartData = useMemo(() => {
-    const entries = (data).map(({ group, count }) => ({
+    const entries = data.map(({ group, count }) => ({
       value: count,
       label: t(`gym.muscleGroups.${group}`),
     }));

@@ -7,18 +7,18 @@ import {
 } from "react-native";
 import { useState } from "react";
 import { FeedSkeleton } from "@/components/skeletetons";
-import FeedFooter from "@/Features/feed/FeedFooter";
+import FeedFooter from "@/features/feed/FeedFooter";
 import FullScreenModal from "@/components/FullScreenModal";
 import { LinearGradient } from "expo-linear-gradient";
-import useMyGymFeed from "@/Features/gym/hooks/useMyGymFeed";
-import FeedCard from "@/Features/feed-cards/FeedCard";
+import useMyGymFeed from "@/features/gym/hooks/useMyGymFeed";
+import FeedCard from "@/features/feed-cards/FeedCard";
 import { FeedItemUI } from "@/types/session";
 import { useRouter } from "expo-router";
-import FeedHeader from "@/Features/feed/FeedHeader";
-import useFullSessions from "@/Features/feed/hooks/useFullSessions";
-import GymSession from "@/Features/expand-session-cards/gym";
-import useTogglePin from "@/Features/feed/hooks/useTogglePin";
-import useDeleteSession from "@/Features/feed/hooks/useDeleteSession";
+import FeedHeader from "@/features/feed/FeedHeader";
+import useFullSessions from "@/features/feed/hooks/useFullSessions";
+import GymSession from "@/features/gym/cards/gym-expanded";
+import useTogglePin from "@/features/feed/hooks/useTogglePin";
+import useDeleteSession from "@/features/feed/hooks/useDeleteSession";
 import { useTranslation } from "react-i18next";
 
 export default function MyGymScreen() {

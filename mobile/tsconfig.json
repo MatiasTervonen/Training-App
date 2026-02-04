@@ -13,6 +13,6 @@
     ".expo/types/**/*.ts",
     "expo-env.d.ts",
     "nativewind-env.d.ts",
-    "Features/reminders/setNotifications"
+    "features/reminders/setNotifications"
   ]
 }

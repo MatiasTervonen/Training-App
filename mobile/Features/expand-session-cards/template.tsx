@@ -1,15 +1,15 @@
 import { formatDate } from "@/lib/formatDate";
-import GroupTemplateExercise from "@/Features/gym/lib/GroupTemplateExercises";
-import { full_gym_template } from "@/types/models";
+import GroupTemplateExercise from "@/features/gym/lib/GroupTemplateExercises";
 import { ScrollView, View } from "react-native";
 import AppText from "@/components/AppText";
 import AppButton from "@/components/buttons/AppButton";
 import PageContainer from "@/components/PageContainer";
 import { LinearGradient } from "expo-linear-gradient";
 import { useTranslation } from "react-i18next";
+import { FullGymTemplate } from "@/database/gym/get-full-template";
 
 type Props = {
-  item: full_gym_template;
+  item: FullGymTemplate;
   onStartWorkout: () => void;
 };
 
@@ -65,7 +65,7 @@ export default function GymTemplate({ item, onStartWorkout }: Props) {
                         numberOfLines={1}
                         ellipsizeMode="tail"
                       >
-                        {exercise.gym_exercises.gym_exercises_translations?.[0]}
+                        {exercise.gym_exercises.name}
                       </AppText>
                       <AppText className="text-gray-300">
                         {t(

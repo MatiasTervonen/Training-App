@@ -1,14 +1,13 @@
 import { handleError } from "@/utils/handleError";
 import { supabase } from "@/lib/supabase";
 import * as Notifications from "expo-notifications";
-import setDailyNotification from "@/Features/reminders/setNotificationsForSync/setDaily";
-import setWeeklyNotification from "@/Features/reminders/setNotificationsForSync/setWeekly";
-import setOneTimeNotification from "@/Features/reminders/setNotificationsForSync/setOneTime";
+import setDailyNotification from "@/features/reminders/setNotificationsForSync/setDaily";
+import setWeeklyNotification from "@/features/reminders/setNotificationsForSync/setWeekly";
+import setOneTimeNotification from "@/features/reminders/setNotificationsForSync/setOneTime";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getDeviceId } from "@/utils/deviceId";
 
 export async function syncNotifications() {
-
   // 1. Clear all existing scheduled notifications
   await Notifications.cancelAllScheduledNotificationsAsync();
 
@@ -62,7 +61,7 @@ export async function syncNotifications() {
           });
           await AsyncStorage.setItem(
             `notification:${reminder.id}`,
-            JSON.stringify([notificationId])
+            JSON.stringify([notificationId]),
           );
           return;
         }
@@ -77,7 +76,7 @@ export async function syncNotifications() {
           });
           await AsyncStorage.setItem(
             `notification:${reminder.id}`,
-            JSON.stringify(notificationId)
+            JSON.stringify(notificationId),
           );
           return;
         }
@@ -97,12 +96,12 @@ export async function syncNotifications() {
           });
           await AsyncStorage.setItem(
             `notification:${reminder.id}`,
-            JSON.stringify([notificationId])
+            JSON.stringify([notificationId]),
           );
           return;
         }
       }
-    })
+    }),
   );
 
   // 6. Schedule global reminders (one-time notifications)
@@ -123,9 +122,9 @@ export async function syncNotifications() {
       });
       await AsyncStorage.setItem(
         `notification:${reminder.id}`,
-        JSON.stringify([notificationId])
+        JSON.stringify([notificationId]),
       );
-    })
+    }),
   );
 
   return true;

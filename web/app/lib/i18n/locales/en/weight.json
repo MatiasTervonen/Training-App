@@ -15,6 +15,9 @@
     "savingWeight": "Saving weight...",
     "invalidWeight": "Please enter a valid weight value",
     "saveError": "Failed to save weight session. Please try again.",
+    "created": "created",
+    "fullAnalytics": "Full Analytics",
+    "chartError": "Error loading weight data.",
     "analyticsScreen": {
       "title": "Weight Analytics",
       "loading": "Loading weight data...",

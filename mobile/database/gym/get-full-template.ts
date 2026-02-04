@@ -46,7 +46,7 @@ export async function getFullTemplate(sessionId: string) {
   const mappedTemplate = {
     ...template,
     gym_template_exercises: template.gym_template_exercises?.map(
-      (exercise: any) => ({
+      (exercise) => ({
         ...exercise,
         gym_exercises: {
           ...exercise.gym_exercises,

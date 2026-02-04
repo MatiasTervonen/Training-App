@@ -14,7 +14,7 @@ import SelectInput from "@/components/Selectinput";
 import { gym_exercises } from "@/types/models";
 import { editExercise } from "@/database/gym/edit-exercise";
 import { deleteExercise } from "@/database/gym/delete-exercise";
-import ExerciseDropdownEdit from "@/Features/gym/ExerciseDropDownEdit";
+import ExerciseDropdownEdit from "@/features/gym/ExerciseDropDownEdit";
 import DeleteButton from "@/components/buttons/DeleteButton";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import { useQueryClient } from "@tanstack/react-query";
@@ -37,7 +37,7 @@ export default function EditExercises() {
   const [main_group, setMainGroup] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(
-    null
+    null,
   );
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -178,22 +178,37 @@ export default function EditExercises() {
               options={[
                 { value: "chest", label: t("gym.muscleGroups.chest") },
                 { value: "quads", label: t("gym.muscleGroups.quads") },
-                { value: "hamstrings", label: t("gym.muscleGroups.hamstrings") },
+                {
+                  value: "hamstrings",
+                  label: t("gym.muscleGroups.hamstrings"),
+                },
                 { value: "biceps", label: t("gym.muscleGroups.biceps") },
                 { value: "triceps", label: t("gym.muscleGroups.triceps") },
                 { value: "lats", label: t("gym.muscleGroups.lats") },
                 { value: "abs", label: t("gym.muscleGroups.abs") },
                 { value: "calves", label: t("gym.muscleGroups.calves") },
-                { value: "upper_back", label: t("gym.muscleGroups.upper_back") },
+                {
+                  value: "upper_back",
+                  label: t("gym.muscleGroups.upper_back"),
+                },
                 { value: "forearms", label: t("gym.muscleGroups.forearms") },
                 { value: "full_body", label: t("gym.muscleGroups.full_body") },
-                { value: "side_delts", label: t("gym.muscleGroups.side_delts") },
+                {
+                  value: "side_delts",
+                  label: t("gym.muscleGroups.side_delts"),
+                },
                 { value: "legs", label: t("gym.muscleGroups.legs") },
                 { value: "obliques", label: t("gym.muscleGroups.obliques") },
-                { value: "front_delts", label: t("gym.muscleGroups.front_delts") },
+                {
+                  value: "front_delts",
+                  label: t("gym.muscleGroups.front_delts"),
+                },
                 { value: "traps", label: t("gym.muscleGroups.traps") },
                 { value: "delts", label: t("gym.muscleGroups.delts") },
-                { value: "lower_back", label: t("gym.muscleGroups.lower_back") },
+                {
+                  value: "lower_back",
+                  label: t("gym.muscleGroups.lower_back"),
+                },
               ]}
               label={t("gym.addExerciseScreen.muscleGroup")}
             />

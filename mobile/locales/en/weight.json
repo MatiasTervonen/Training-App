@@ -12,6 +12,9 @@
     "weightLabel": "Enter your weight...",
     "weightPlaceholder": "Enter your weight here...",
     "savingWeight": "Saving weight...",
+    "created": "created",
+    "fullAnalytics": "Full Analytics",
+    "chartError": "Error loading weight data.",
     "analyticsScreen": {
       "title": "Weight Analytics",
       "loading": "Loading weight data...",

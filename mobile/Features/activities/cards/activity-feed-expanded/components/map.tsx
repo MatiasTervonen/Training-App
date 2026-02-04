@@ -5,7 +5,7 @@ import { useMemo } from "react";
 import {
   processSavedRoute,
   smoothMultiLineString,
-} from "@/Features/activities/lib/smoothCoordinates";
+} from "@/features/activities/lib/smoothCoordinates";
 
 type MapProps = {
   activity_session: FullActivitySession;
@@ -77,7 +77,6 @@ export default function Map({
       },
     ],
   };
-
 
   // const MAP_STYLES = [
   //   Mapbox.StyleURL.Dark,

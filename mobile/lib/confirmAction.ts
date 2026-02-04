@@ -10,7 +10,7 @@ type ConfirmActionParams = {
   cancelable?: boolean;
 };
 
-export function confirmAction({
+function confirmAction({
   title,
   message,
   confirmText,
@@ -50,10 +50,10 @@ export function useConfirmAction() {
       cancelable = false,
     }: ConfirmActionParams): Promise<boolean> => {
       return confirmAction({
-        title: title ?? t("common.confirmAction.defaultTitle"),
-        message: message ?? t("common.confirmAction.defaultMessage"),
-        confirmText: confirmText ?? t("common.confirmAction.confirm"),
-        cancelText: cancelText ?? t("common.confirmAction.cancel"),
+        title: title ?? t("confirmAction.defaultTitle"),
+        message: message ?? t("confirmAction.defaultMessage"),
+        confirmText: confirmText ?? t("confirmAction.confirm"),
+        cancelText: cancelText ?? t("confirmAction.cancel"),
         cancelable,
       });
     },

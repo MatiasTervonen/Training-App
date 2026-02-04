@@ -1,7 +1,7 @@
 import { View } from "react-native";
 import AppText from "@/components/AppText";
 import LinkButton from "@/components/buttons/LinkButton";
-import LogoutButton from "@/Features/login-signup/LogoutButton";
+import LogoutButton from "@/features/login-signup/LogoutButton";
 import { ShieldUser, UserPen, Settings } from "lucide-react-native";
 import PageContainer from "@/components/PageContainer";
 import { useTranslation } from "react-i18next";

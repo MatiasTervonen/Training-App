@@ -8,15 +8,14 @@ import AppText from "@/components/AppText";
 import PageContainer from "@/components/PageContainer";
 import { getActivityTemplates } from "@/database/activities/get-templates";
 import { templateSummary } from "@/types/session";
-import ActivityTemplateCard from "@/Features/activities/templates/cards/template-feed";
-import ActivityTemplateExpanded from "@/Features/activities/templates/cards/template-expanded";
-import { useStartActivity } from "@/Features/activities/templates/hooks/useStartActivity";
-import { useDeleteTemplate } from "@/Features/activities/templates/hooks/useDeleteTemplate";
-
+import ActivityTemplateCard from "@/features/activities/templates/cards/template-feed";
+import ActivityTemplateExpanded from "@/features/activities/templates/cards/template-expanded";
+import { useStartActivity } from "@/features/activities/templates/hooks/useStartActivity";
+import { useDeleteTemplate } from "@/features/activities/templates/hooks/useDeleteTemplate";
 
 export default function TemplatesPage() {
   const [expandedItem, setExpandedItem] = useState<templateSummary | null>(
-    null
+    null,
   );
 
   const router = useRouter();

@@ -12,14 +12,14 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getLastExerciseHistory } from "@/database/gym/last-exercise-history";
 import { useTimerStore } from "@/lib/stores/timerStore";
-import { confirmAction } from "@/lib/confirmAction";
-import GroupGymExercises from "@/Features/gym/lib/GroupGymExercises";
-import ExerciseCard from "@/Features/gym/ExerciseCard";
+import { useConfirmAction } from "@/lib/confirmAction";
+import GroupGymExercises from "@/features/gym/lib/GroupGymExercises";
+import ExerciseCard from "@/features/gym/ExerciseCard";
 import FullScreenModal from "@/components/FullScreenModal";
-import ExerciseSelectorList from "@/Features/gym/ExerciseSelectorList";
+import ExerciseSelectorList from "@/features/gym/ExerciseSelectorList";
 import { Plus } from "lucide-react-native";
 import SelectInput from "@/components/Selectinput";
-import ExerciseHistoryModal from "@/Features/gym/ExerciseHistoryModal";
+import ExerciseHistoryModal from "@/features/gym/ExerciseHistoryModal";
 import SaveButton from "@/components/buttons/SaveButton";
 import DeleteButton from "@/components/buttons/DeleteButton";
 import FullScreenLoader from "@/components/FullScreenLoader";
@@ -29,10 +29,10 @@ import PageContainer from "@/components/PageContainer";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import SubNotesInput from "@/components/SubNotesInput";
 import { FullGymSession } from "@/database/gym/get-full-gym-session";
-import useSaveGymDraft from "@/Features/gym/hooks/useSaveGymDraft";
-import useStartExercise from "@/Features/gym/hooks/useStartExercise";
-import useLogSetForExercise from "@/Features/gym/hooks/useLogSetForExercise";
-import useSaveSession from "@/Features/gym/hooks/useSaveSession";
+import useSaveGymDraft from "@/features/gym/hooks/useSaveGymDraft";
+import useStartExercise from "@/features/gym/hooks/useStartExercise";
+import useLogSetForExercise from "@/features/gym/hooks/useLogSetForExercise";
+import useSaveSession from "@/features/gym/hooks/useSaveSession";
 import { getPrefetchedHistoryPerCard } from "@/database/gym/prefetchedHistoryPerCard";
 import { updateNativeTimerLabel } from "@/native/android/NativeTimer";
 import { useTranslation } from "react-i18next";
@@ -44,6 +44,7 @@ type GymFormData = Pick<
 >;
 
 export default function GymForm({ initialData }: { initialData: GymFormData }) {
+  const confirmAction = useConfirmAction();
   const session = initialData;
   const now = formatDateShort(new Date());
 
@@ -242,9 +243,10 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
 
     // Update native timer notification with new title
     if (startTimestamp && mode) {
-      const statusText = mode === "countdown"
-        ? t("timer:timer.notification.timeRemaining")
-        : t("timer:timer.notification.inProgress");
+      const statusText =
+        mode === "countdown"
+          ? t("timer:timer.notification.timeRemaining")
+          : t("timer:timer.notification.inProgress");
       updateNativeTimerLabel(startTimestamp, title, mode, statusText);
     }
   }, [title, activeSession, setActiveSession, startTimestamp, mode, t]);

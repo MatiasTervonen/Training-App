@@ -9,8 +9,8 @@ import FullScreenLoader from "@/components/FullScreenLoader";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import NumberInput from "@/components/NumberInput";
 import SubNotesInput from "@/components/SubNotesInput";
-import useSaveDraft from "@/Features/timer/hooks/useSaveDraft";
-import useSaveTimer from "@/Features/timer/hooks/useSaveTimer";
+import useSaveDraft from "@/features/timer/hooks/useSaveDraft";
+import useSaveTimer from "@/features/timer/hooks/useSaveTimer";
 import { useTranslation } from "react-i18next";
 
 export default function SettingsScreen() {
@@ -57,7 +57,9 @@ export default function SettingsScreen() {
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <PageContainer className="justify-between">
         <View className="gap-5">
-          <AppText className="text-2xl text-center mb-5">{t("timer.createTimer")}</AppText>
+          <AppText className="text-2xl text-center mb-5">
+            {t("timer.createTimer")}
+          </AppText>
           <AppInput
             label={t("timer.titleLabel")}
             value={title}

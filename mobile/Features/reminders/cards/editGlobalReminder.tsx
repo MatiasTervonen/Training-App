@@ -5,7 +5,12 @@ import SaveButton from "@/components/buttons/SaveButton";
 import FullScreenLoader from "@/components/FullScreenLoader";
 import Toast from "react-native-toast-message";
 import AppText from "@/components/AppText";
-import { View, TouchableWithoutFeedback, Keyboard, AppState } from "react-native";
+import {
+  View,
+  TouchableWithoutFeedback,
+  Keyboard,
+  AppState,
+} from "react-native";
 import { editGlobalReminder } from "@/database/reminders/edit-global-reminder";
 import DatePicker from "react-native-date-picker";
 import AnimatedButton from "@/components/buttons/animatedButton";
@@ -16,7 +21,7 @@ import { FeedItemUI } from "@/types/session";
 import Toggle from "@/components/toggle";
 import { canUseExactAlarm } from "@/native/android/EnsureExactAlarmPermission";
 import ExactAlarmPermissionModal from "@/components/ExactAlarmPermissionModal";
-import useSetNotification from "@/Features/reminders/hooks/global/useSetNotification";
+import useSetNotification from "@/features/reminders/hooks/global/useSetNotification";
 
 type Props = {
   reminder: FeedItemUI;
@@ -45,7 +50,9 @@ export default function HandleEditGlobalReminder({
     payload.notify_at ? new Date(payload.notify_at) : null,
   );
   const [open, setOpen] = useState(false);
-  const [mode, setMode] = useState<"alarm" | "normal">(payload.mode || "normal");
+  const [mode, setMode] = useState<"alarm" | "normal">(
+    payload.mode || "normal",
+  );
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {

@@ -2,8 +2,8 @@ import PinnedCarousel from "./PinnedCarousel";
 import { Dimensions } from "react-native";
 import { FeedItemUI } from "@/types/session";
 import { useRouter } from "expo-router";
-import useTogglePin from "@/Features/feed/hooks/useTogglePin";
-import useDeleteSession from "@/Features/feed/hooks/useDeleteSession";
+import useTogglePin from "@/features/feed/hooks/useTogglePin";
+import useDeleteSession from "@/features/feed/hooks/useDeleteSession";
 
 export default function FeedHeader({
   pinnedFeed,

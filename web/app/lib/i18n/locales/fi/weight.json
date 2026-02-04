@@ -15,6 +15,9 @@
     "savingWeight": "Tallennetaan painoa...",
     "invalidWeight": "Syötä kelvollinen painoarvo",
     "saveError": "Painon tallennus epäonnistui. Yritä uudelleen.",
+    "created": "luotu",
+    "fullAnalytics": "Täysi analytiikka",
+    "chartError": "Virhe painotietojen latauksessa.",
     "analyticsScreen": {
       "title": "Painoanalytiikka",
       "loading": "Ladataan painotietoja...",

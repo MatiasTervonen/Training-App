@@ -1,4 +1,4 @@
-import GymForm from "@/Features/gym/GymForm";
+import GymForm from "@/features/gym/GymForm";
 import { useLocalSearchParams } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
 import { getFullGymSession } from "@/database/gym/get-full-gym-session";

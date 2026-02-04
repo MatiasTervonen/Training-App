@@ -17,7 +17,7 @@ import {
 } from "@/native/android/NativeAlarm";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
-import { confirmAction } from "@/lib/confirmAction";
+import { useConfirmAction } from "@/lib/confirmAction";
 import { useTranslation } from "react-i18next";
 
 type TimerProps = {
@@ -34,6 +34,8 @@ export default function Timer({
   const { t } = useTranslation("timer");
   const { width, height } = useWindowDimensions();
 
+  const confirmAction = useConfirmAction();
+
   const isLandscape = width > height;
 
   const colorProgress = useSharedValue(0);
@@ -42,7 +44,7 @@ export default function Timer({
     color: interpolateColor(
       colorProgress.value,
       [0, 1],
-      ["#f3f4f6", "#ef4444"] // gray-100 → red-500
+      ["#f3f4f6", "#ef4444"], // gray-100 → red-500
     ),
   }));
 
@@ -67,7 +69,7 @@ export default function Timer({
       colorProgress.value = withRepeat(
         withTiming(1, { duration: 500 }),
         -1,
-        true
+        true,
       );
     } else {
       colorProgress.value = withTiming(0, { duration: 300 });
@@ -78,7 +80,7 @@ export default function Timer({
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
     return `${String(minutes).padStart(2, "0")}:${String(
-      remainingSeconds
+      remainingSeconds,
     ).padStart(2, "0")}`;
   };
 
@@ -217,7 +219,7 @@ export default function Timer({
                   "",
                   t("timer.notification.tapToOpenTimer"),
                   t("timer.notification.timesUp"),
-                  t("timer.notification.stopAlarm")
+                  t("timer.notification.stopAlarm"),
                 );
                 startTimer(totalDuration, "Timer");
                 setActiveSession({

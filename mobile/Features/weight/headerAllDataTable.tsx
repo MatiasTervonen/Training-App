@@ -2,7 +2,7 @@ import { View, ActivityIndicator } from "react-native";
 import AppText from "@/components/AppText";
 import AppTextNC from "@/components/AppTextNC";
 import { weight } from "@/types/session";
-import WeightChart from "@/Features/weight/WeightChart";
+import WeightChart from "@/features/weight/WeightChart";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import { useTranslation } from "react-i18next";
 

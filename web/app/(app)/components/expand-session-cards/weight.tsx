@@ -5,6 +5,11 @@ import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
 import LinkButton from "@/app/(app)/components/buttons/LinkButton";
 import { FeedItemUI } from "../../types/session";
 import { useTranslation } from "react-i18next";
+import { ChartNoAxesCombined } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { getWeight } from "@/app/(app)/database/weight/get-weight";
+import WeightFeedChart from "@/app/(app)/weight/components/WeightFeedChart";
+import Spinner from "@/app/(app)/components/spinner";
 
 type weightPayload = {
   weight: number;
@@ -18,10 +23,24 @@ export default function WeightSession(weight: FeedItemUI) {
   const weightUnit =
     useUserStore((state) => state.preferences?.weight_unit) || "kg";
 
+  const {
+    data: weightData,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["get-weight"],
+    queryFn: getWeight,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    staleTime: Infinity,
+    gcTime: Infinity,
+  });
+
   return (
     <div className="text-center max-w-md mx-auto page-padding">
       <div className="text-sm text-gray-400">
-        {formatDate(weight.created_at!)}
+        {t("weight.created")}: {formatDate(weight.created_at!)}
       </div>
       <div id="notes-id">
         <div className="my-5 text-xl wrap-break-word">{weight.title}</div>
@@ -33,8 +52,33 @@ export default function WeightSession(weight: FeedItemUI) {
             </p>
           </div>
         </div>
+
+        {isLoading ? (
+          <div className="mt-5 bg-slate-900 shadow-md rounded-md p-4 h-[340px]">
+            <div className="flex justify-center items-center h-full">
+              <Spinner />
+            </div>
+          </div>
+        ) : error ? (
+          <div className="mt-5 bg-slate-900 shadow-md rounded-md p-4 h-[340px]">
+            <div className="flex justify-center items-center h-full">
+              <p className="text-red-500">{t("weight.chartError")}</p>
+            </div>
+          </div>
+        ) : (
+          weightData &&
+          weightData.length > 0 && (
+            <div className="mt-5">
+              <WeightFeedChart data={weightData} />
+            </div>
+          )
+        )}
+
         <div className="mt-10">
-          <LinkButton href="/weight/analytics">{t("weight.analyticsScreen.viewFullHistory")}</LinkButton>
+          <LinkButton href="/weight/analytics">
+            <p>{t("weight.fullAnalytics")}</p>
+            <ChartNoAxesCombined color="#f3f4f6" className="ml-2" />
+          </LinkButton>
         </div>
       </div>
     </div>

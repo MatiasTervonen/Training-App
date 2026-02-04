@@ -9,8 +9,8 @@ import { formatDateShort } from "@/lib/formatDate";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import PageContainer from "@/components/PageContainer";
 import SubNotesInput from "@/components/SubNotesInput";
-import useWeightDraft from "@/Features/weight/hooks/useDraft";
-import useSaveWeight from "@/Features/weight/hooks/useSaveWeight";
+import useWeightDraft from "@/features/weight/hooks/useDraft";
+import useSaveWeight from "@/features/weight/hooks/useSaveWeight";
 import { useTranslation } from "react-i18next";
 
 export default function SettingsScreen() {

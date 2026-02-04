@@ -1,7 +1,7 @@
 import { View } from "react-native";
 import { FeedSkeleton } from "@/components/skeletetons";
 import { LinearGradient } from "expo-linear-gradient";
-import Navbar from "@/Features/navbar/Navbar";
+import Navbar from "@/features/navbar/Navbar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function FakeFeedLoader() {

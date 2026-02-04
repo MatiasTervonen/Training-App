@@ -7,7 +7,7 @@ import SaveButton from "@/components/buttons/SaveButton";
 import FullScreenLoader from "@/components/FullScreenLoader";
 import Toast from "react-native-toast-message";
 import SubNotesInput from "@/components/SubNotesInput";
-import ActivityDropdown from "@/Features/activities/components/activityDropdown";
+import ActivityDropdown from "@/features/activities/components/activityDropdown";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import FullScreenModal from "@/components/FullScreenModal";
 import { activities_with_category, FullActivitySession } from "@/types/models";
@@ -90,11 +90,15 @@ export default function ActivitySessionEdit({
             className="min-h-[60px]"
           />
           <View>
-            <AppText className="mb-2">{t("activities.editSession.selectActivity")}</AppText>
+            <AppText className="mb-2">
+              {t("activities.editSession.selectActivity")}
+            </AppText>
             <AnimatedButton
               onPress={() => setShowDropdown(true)}
               label={
-                selectedActivity ? selectedActivity.name : t("activities.editSession.selectActivity")
+                selectedActivity
+                  ? selectedActivity.name
+                  : t("activities.editSession.selectActivity")
               }
               className="bg-blue-800 py-2 w-full rounded-md shadow-md border-2 border-blue-500"
               textClassName="text-gray-100 text-center"
@@ -116,8 +120,14 @@ export default function ActivitySessionEdit({
             <View className="h-5" />
           </FullScreenModal>
         </View>
-        <SaveButton onPress={handleSubmit} label={t("activities.editSession.saveSession")} />
-        <FullScreenLoader visible={isLoading} message={t("activities.editSession.savingSession")} />
+        <SaveButton
+          onPress={handleSubmit}
+          label={t("activities.editSession.saveSession")}
+        />
+        <FullScreenLoader
+          visible={isLoading}
+          message={t("activities.editSession.savingSession")}
+        />
       </PageContainer>
     </TouchableWithoutFeedback>
   );

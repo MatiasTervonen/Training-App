@@ -67,6 +67,13 @@ export function useTrackHydration({
         route: "/features/activities/hooks/useTrackHydration",
         method: "hydrateFromDatabase",
       });
+      // DEBUG: Show error toast so we know if hydration is failing
+      Toast.show({
+        type: "error",
+        text1: "Hydration failed",
+        text2: error instanceof Error ? error.message : "Unknown error",
+        visibilityTime: 5000,
+      });
     } finally {
       isHydratingRef.current = false;
     }
@@ -91,7 +98,7 @@ export function useTrackHydration({
 
     // Also hydrate when coming back to foreground (regardless of isRunning)
     // Delay to allow background task to finish any pending database writes
-    let timeoutId: NodeJS.Timeout | null = null;
+    let timeoutId: ReturnType<typeof setTimeout> | null = null;
     if (!wasForeground && isForeground && activeSession) {
       timeoutId = setTimeout(() => {
         hydrateFromDatabase();

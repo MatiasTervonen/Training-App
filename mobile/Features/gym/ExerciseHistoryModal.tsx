@@ -1,6 +1,6 @@
 import FullScreenModal from "@/components/FullScreenModal";
 import { ActivityIndicator, View } from "react-native";
-import { formatDate } from "@/lib/formatDate";
+import { formatDateShort } from "@/lib/formatDate";
 import AppText from "@/components/AppText";
 import { HistoryResult } from "@/types/session";
 import { FlatList } from "react-native-gesture-handler";
@@ -43,7 +43,7 @@ export default function ExerciseHistoryModal({
 
   return (
     <FullScreenModal isOpen={isOpen} onClose={onClose}>
-      <View className="max-w-lg mx-auto px-5">
+      <View className="flex-1 px-5">
         {isLoading ? (
           <View className="justify-center items-center mt-40 gap-5 mx-4">
             <AppText className="text-lg">
@@ -60,7 +60,7 @@ export default function ExerciseHistoryModal({
             {t("gym.exerciseHistory.noHistory")}
           </AppText>
         ) : (
-          <View>
+          <View className="flex-1">
             <FlatList
               data={history}
               keyExtractor={(item, index) => `${item!.date}-${index}`}
@@ -82,7 +82,7 @@ export default function ExerciseHistoryModal({
               renderItem={({ item: session }) => (
                 <>
                   <AppText className="text-lg mb-5 text-center">
-                    {formatDate(session!.date)}
+                    {formatDateShort(session!.date)}
                   </AppText>
                   <LinearGradient
                     colors={["#1e3a8a", "#0f172a", "#0f172a"]}
@@ -116,7 +116,6 @@ export default function ExerciseHistoryModal({
                                   ({t("gym.session.meters")})
                                 </AppText>
                               </View>
-                              <View className="w-8" />
                             </>
                           ) : (
                             <>
@@ -140,7 +139,6 @@ export default function ExerciseHistoryModal({
                                   {t("gym.session.rpe")}
                                 </AppText>
                               </View>
-                              <View className="w-8" />
                             </>
                           )}
                         </View>
@@ -170,7 +168,6 @@ export default function ExerciseHistoryModal({
                                     {set.distance_meters}
                                   </AppText>
                                 </View>
-                                <View className="w-8" />
                               </>
                             ) : (
                               <>
@@ -190,11 +187,10 @@ export default function ExerciseHistoryModal({
                                   </AppText>
                                 </View>
                                 <View className="flex-1 items-center">
-                                  <AppText className="p-2 text-lg">
+                                  <AppText className="p-2 text-lg" numberOfLines={1}>
                                     {set.rpe ? translateRpe(set.rpe) : ""}
                                   </AppText>
                                 </View>
-                                <View className="w-8" />
                               </>
                             )}
                           </View>

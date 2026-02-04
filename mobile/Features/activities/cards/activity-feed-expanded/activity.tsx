@@ -63,7 +63,7 @@ export default function ActivitySession(activity_session: FullActivitySession) {
               className="items-center p-5 rounded-lg overflow-hidden shadow-md mt-5"
             >
               <AppText className="text-xl text-center mb-5 border-b border-gray-700 pb-2">
-                {activity_session.activity?.name}
+                {activity_session.session.title}
               </AppText>
 
               <AppText className="text-lg text-center">

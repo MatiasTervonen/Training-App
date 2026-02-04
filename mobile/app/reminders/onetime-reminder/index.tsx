@@ -1,4 +1,9 @@
-import { View, TouchableWithoutFeedback, Keyboard, AppState } from "react-native";
+import {
+  View,
+  TouchableWithoutFeedback,
+  Keyboard,
+  AppState,
+} from "react-native";
 import AppText from "@/components/AppText";
 import SaveButton from "@/components/buttons/SaveButton";
 import DeleteButton from "@/components/buttons/DeleteButton";
@@ -12,9 +17,9 @@ import AnimatedButton from "@/components/buttons/animatedButton";
 import { Plus, Info } from "lucide-react-native";
 import { formatDateTime } from "@/lib/formatDate";
 import SubNotesInput from "@/components/SubNotesInput";
-import useSaveDraftOnetime from "@/Features/reminders/hooks/onetime/useSaveDraft";
-import useSaveReminderOnetime from "@/Features/reminders/hooks/onetime/useSaveReminder";
-import useSetNotification from "@/Features/reminders/hooks/onetime/useSetNotification";
+import useSaveDraftOnetime from "@/features/reminders/hooks/onetime/useSaveDraft";
+import useSaveReminderOnetime from "@/features/reminders/hooks/onetime/useSaveReminder";
+import useSetNotification from "@/features/reminders/hooks/onetime/useSetNotification";
 import Toggle from "@/components/toggle";
 import { canUseExactAlarm } from "@/native/android/EnsureExactAlarmPermission";
 import ExactAlarmPermissionModal from "@/components/ExactAlarmPermissionModal";
@@ -66,8 +71,6 @@ export default function ReminderScreen() {
     setNotification,
   });
 
-
-  
   useEffect(() => {
     const sub = AppState.addEventListener("change", async (state) => {
       if (state !== "active") return;
@@ -115,9 +118,11 @@ export default function ReminderScreen() {
                 placeholder={t("reminders.notesPlaceholder")}
                 label={t("reminders.notesLabel")}
               />
-              <View >
+              <View>
                 <AnimatedButton
-                  label={notifyAt ? formattedTime : t("reminders.setNotifyTime")}
+                  label={
+                    notifyAt ? formattedTime : t("reminders.setNotifyTime")
+                  }
                   onPress={() => setOpen(true)}
                   className="bg-blue-800 py-2 rounded-md shadow-md border-2 border-blue-500 flex-row gap-2 justify-center items-center"
                   textClassName="text-gray-100"
@@ -166,7 +171,10 @@ export default function ReminderScreen() {
               <DeleteButton onPress={resetReminder} />
             </View>
           </View>
-          <FullScreenLoader visible={isSaving} message={t("reminders.savingReminder")} />
+          <FullScreenLoader
+            visible={isSaving}
+            message={t("reminders.savingReminder")}
+          />
         </PageContainer>
       </TouchableWithoutFeedback>
 

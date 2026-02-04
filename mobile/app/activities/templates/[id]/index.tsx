@@ -9,7 +9,7 @@ import FullScreenLoader from "@/components/FullScreenLoader";
 import { editTemplate } from "@/database/activities/edit-template";
 import Toast from "react-native-toast-message";
 import SubNotesInput from "@/components/SubNotesInput";
-import ActivityDropdown from "@/Features/activities/components/activityDropdown";
+import ActivityDropdown from "@/features/activities/components/activityDropdown";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import FullScreenModal from "@/components/FullScreenModal";
 import { activities_with_category } from "@/types/models";

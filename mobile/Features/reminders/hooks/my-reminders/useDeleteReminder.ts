@@ -1,4 +1,4 @@
-import { confirmAction } from "@/lib/confirmAction";
+import { useConfirmAction } from "@/lib/confirmAction";
 import { full_reminder } from "@/types/session";
 import { useQueryClient } from "@tanstack/react-query";
 import * as Notifications from "expo-notifications";
@@ -9,6 +9,8 @@ import { cancelNativeAlarm } from "@/native/android/NativeAlarm";
 
 export default function useDeleteReminder() {
   const queryClient = useQueryClient();
+
+  const confirmAction = useConfirmAction();
 
   const handleDeleteReminder = async (reminder: full_reminder) => {
     const confirmDelete = await confirmAction({

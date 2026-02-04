@@ -1,5 +1,5 @@
 import { Toast } from "react-native-toast-message/lib/src/Toast";
-import { confirmAction } from "@/lib/confirmAction";
+import { useConfirmAction } from "@/lib/confirmAction";
 import { ExerciseEntry, FeedData } from "@/types/session";
 import { editSession } from "@/database/gym/edit-session";
 import { saveSession } from "@/database/gym/save-session";
@@ -30,7 +30,8 @@ export default function useSaveSession({
   const router = useRouter();
   const queryClient = useQueryClient();
   const { t } = useTranslation("gym");
-
+  const confirmAction = useConfirmAction();
+  
   const handleSaveSession = async () => {
     if (title.trim() === "") {
       Toast.show({

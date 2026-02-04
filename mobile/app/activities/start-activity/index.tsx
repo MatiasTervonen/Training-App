@@ -1,8 +1,9 @@
 import PageContainer from "@/components/PageContainer";
 import AppText from "@/components/AppText";
 import AppInput from "@/components/AppInput";
-import ActivityDropdown from "@/Features/activities/components/activityDropdown";
-import { useState, useEffect, useCallback, useMemo } from "react";
+import ActivityDropdown from "@/features/activities/components/activityDropdown";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import Toast from "react-native-toast-message";
 import { View, ScrollView, Linking, AppState } from "react-native";
 import SubNotesInput from "@/components/SubNotesInput";
 import Timer from "@/components/timer";
@@ -11,37 +12,37 @@ import { useUserStore } from "@/lib/stores/useUserStore";
 import { Link } from "expo-router";
 import { useTimerStore } from "@/lib/stores/timerStore";
 import AnimatedButton from "@/components/buttons/animatedButton";
-import useSaveDraft from "@/Features/activities/hooks/useSaveDraft";
+import useSaveDraft from "@/features/activities/hooks/useSaveDraft";
 import FullScreenLoader from "@/components/FullScreenLoader";
 import SaveButton from "@/components/buttons/SaveButton";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import useSaveActivitySession from "@/Features/activities/hooks/useSaveSession";
+import useSaveActivitySession from "@/features/activities/hooks/useSaveSession";
 import DeleteButton from "@/components/buttons/DeleteButton";
 import { Fullscreen } from "lucide-react-native";
 import {
   useStartGPStracking,
   useStopGPStracking,
-} from "@/Features/activities/lib/location-actions";
+} from "@/features/activities/lib/location-actions";
 import { formatDateShort } from "@/lib/formatDate";
 import { useModalPageConfig } from "@/lib/stores/modalPageConfig";
-import FullScreenMapModal from "@/Features/activities/components/fullScreenMapModal";
-import BaseMap from "@/Features/activities/components/baseMap";
+import FullScreenMapModal from "@/features/activities/components/fullScreenMapModal";
+import BaseMap from "@/features/activities/components/baseMap";
 import { TrackPoint } from "@/types/session";
-import InfoModal from "@/Features/activities/components/infoModal";
-import { useDistanceFromTrack } from "@/Features/activities/hooks/useCountDistance";
-import { useStartActivity } from "@/Features/activities/hooks/useStartActivity";
-import { clearLocalSessionDatabase } from "@/Features/activities/lib/database-actions";
-import { useTrackHydration } from "@/Features/activities/hooks/useTrackHydration";
-import { useForegroundLocationTracker } from "@/Features/activities/hooks/useForegroundLocationTracker";
-import { usePersistToDatabase } from "@/Features/activities/hooks/usePersistToDatabase";
-import { useMovingTimeFromTrack } from "@/Features/activities/hooks/useMovingTimeFromTrack";
-import { useAveragePace } from "@/Features/activities/hooks/useAveragePace";
-import StepInfoModal from "@/Features/activities/stepToggle/stepInfoModal";
-import { hasStepsPermission } from "@/Features/activities/stepToggle/stepPermission";
-import { useStepHydration } from "@/Features/activities/hooks/useStepHydration";
+import InfoModal from "@/features/activities/components/infoModal";
+import { useDistanceFromTrack } from "@/features/activities/hooks/useCountDistance";
+import { useStartActivity } from "@/features/activities/hooks/useStartActivity";
+import { clearLocalSessionDatabase } from "@/features/activities/lib/database-actions";
+import { useTrackHydration } from "@/features/activities/hooks/useTrackHydration";
+import { useForegroundLocationTracker } from "@/features/activities/hooks/useForegroundLocationTracker";
+import { usePersistToDatabase } from "@/features/activities/hooks/usePersistToDatabase";
+import { useMovingTimeFromTrack } from "@/features/activities/hooks/useMovingTimeFromTrack";
+import { useAveragePace } from "@/features/activities/hooks/useAveragePace";
+import StepInfoModal from "@/features/activities/stepToggle/stepInfoModal";
+import { hasStepsPermission } from "@/features/activities/stepToggle/stepPermission";
+import { useStepHydration } from "@/features/activities/hooks/useStepHydration";
 import { updateNativeTimerLabel } from "@/native/android/NativeTimer";
-import { useTemplateRoute } from "@/Features/activities/hooks/useTemplateRoute";
-import { findWarmupStartIndex } from "@/Features/activities/lib/findWarmupStartIndex";
+import { useTemplateRoute } from "@/features/activities/hooks/useTemplateRoute";
+import { findWarmupStartIndex } from "@/features/activities/lib/findWarmupStartIndex";
 import { useTranslation } from "react-i18next";
 
 export default function StartActivityScreen() {
@@ -75,6 +76,22 @@ export default function StartActivityScreen() {
   const [showStepToggle, setShowStepToggle] = useState(false);
   const [stepsAllowed, setStepsAllowed] = useState(false);
   const [isHydrated, setIsHydrated] = useState(false);
+
+  // DEBUG: Monitor track state changes - shows toast when track length changes
+  const prevTrackLenRef = useRef(track.length);
+  useEffect(() => {
+    const prevLen = prevTrackLenRef.current;
+    // Only toast on significant changes to avoid spam
+    if (track.length !== prevLen && (track.length === 0 || prevLen === 0 || Math.abs(track.length - prevLen) > 5)) {
+      Toast.show({
+        type: track.length > prevLen ? "success" : "error",
+        text1: `Track: ${prevLen} → ${track.length}`,
+        text2: `isHydrated: ${isHydrated}`,
+        visibilityTime: 3000,
+      });
+    }
+    prevTrackLenRef.current = track.length;
+  }, [track.length, isHydrated]);
 
   const gpsEnabledGlobally = useUserStore(
     (state) => state.settings?.gps_tracking_enabled,
@@ -112,12 +129,21 @@ export default function StartActivityScreen() {
       });
     }
     if (startTimestamp && mode) {
-      const statusText = mode === "countdown"
-        ? t("timer:timer.notification.timeRemaining")
-        : t("timer:timer.notification.inProgress");
+      const statusText =
+        mode === "countdown"
+          ? t("timer:timer.notification.timeRemaining")
+          : t("timer:timer.notification.inProgress");
       updateNativeTimerLabel(startTimestamp, title, mode, statusText);
     }
-  }, [title, activeSession, setActiveSession, startTimestamp, mode, t, activityName]);
+  }, [
+    title,
+    activeSession,
+    setActiveSession,
+    startTimestamp,
+    mode,
+    t,
+    activityName,
+  ]);
 
   // check if steps permission is granted and show/hide the step toggle
   useEffect(() => {

@@ -4,18 +4,18 @@ import { useState } from "react";
 import { FeedSkeleton } from "@/components/skeletetons";
 import FullScreenModal from "@/components/FullScreenModal";
 import { LinearGradient } from "expo-linear-gradient";
-import useMyNotesFeed from "@/Features/notes/hooks/useMyNotesFeed";
+import useMyNotesFeed from "@/features/notes/hooks/useMyNotesFeed";
 import { FeedItemUI } from "@/types/session";
-import FeedCard from "@/Features/feed-cards/FeedCard";
-import useTogglePin from "@/Features/feed/hooks/useTogglePin";
-import FeedHeader from "@/Features/feed/FeedHeader";
-import FeedFooter from "@/Features/feed/FeedFooter";
-import NotesSession from "@/Features/notes/cards/notes-expanded";
-import EditNotes from "@/Features/notes/cards/edit-notes";
-import useUpdateFeedItemToTop from "@/Features/feed/hooks/useUpdateFeedItemToTop";
+import FeedCard from "@/features/feed-cards/FeedCard";
+import useTogglePin from "@/features/feed/hooks/useTogglePin";
+import FeedHeader from "@/features/feed/FeedHeader";
+import FeedFooter from "@/features/feed/FeedFooter";
+import NotesSession from "@/features/notes/cards/notes-expanded";
+import EditNotes from "@/features/notes/cards/edit-notes";
+import useUpdateFeedItemToTop from "@/features/feed/hooks/useUpdateFeedItemToTop";
 import { useQueryClient } from "@tanstack/react-query";
-import useDeleteSession from "@/Features/feed/hooks/useDeleteSession";
-import useFullSessions from "@/Features/feed/hooks/useFullSessions";
+import useDeleteSession from "@/features/feed/hooks/useDeleteSession";
+import useFullSessions from "@/features/feed/hooks/useFullSessions";
 import { useTranslation } from "react-i18next";
 
 export default function MyNotesScreen() {

@@ -7,19 +7,19 @@ import {
 } from "react-native";
 import { useState } from "react";
 import { FeedSkeleton } from "@/components/skeletetons";
-import FeedFooter from "@/Features/feed/FeedFooter";
+import FeedFooter from "@/features/feed/FeedFooter";
 import FullScreenModal from "@/components/FullScreenModal";
 import { LinearGradient } from "expo-linear-gradient";
-import useMyTodoFeed from "@/Features/todo/hooks/useMyTodoFeed";
-import FeedCard from "@/Features/feed-cards/FeedCard";
+import useMyTodoFeed from "@/features/todo/hooks/useMyTodoFeed";
+import FeedCard from "@/features/feed-cards/FeedCard";
 import { FeedItemUI } from "@/types/session";
-import FeedHeader from "@/Features/feed/FeedHeader";
-import useFullSessions from "@/Features/feed/hooks/useFullSessions";
-import TodoSession from "@/Features/expand-session-cards/todo";
-import EditTodo from "@/Features/edit-session-cards/editTodo";
-import useTogglePin from "@/Features/feed/hooks/useTogglePin";
-import useDeleteSession from "@/Features/feed/hooks/useDeleteSession";
-import useUpdateFeedItem from "@/Features/feed/hooks/useUpdateFeedItem";
+import FeedHeader from "@/features/feed/FeedHeader";
+import useFullSessions from "@/features/feed/hooks/useFullSessions";
+import TodoSession from "@/features/expand-session-cards/todo";
+import EditTodo from "@/features/edit-session-cards/editTodo";
+import useTogglePin from "@/features/feed/hooks/useTogglePin";
+import useDeleteSession from "@/features/feed/hooks/useDeleteSession";
+import useUpdateFeedItem from "@/features/feed/hooks/useUpdateFeedItem";
 import { useTranslation } from "react-i18next";
 
 export default function MyTodoListsScreen() {
@@ -156,9 +156,7 @@ export default function MyTodoListsScreen() {
         >
           {isLoadingTodoSession ? (
             <View className="gap-5 items-center justify-center mt-40 px-10">
-              <AppText className="text-lg">
-                {t("todo.loadingDetails")}
-              </AppText>
+              <AppText className="text-lg">{t("todo.loadingDetails")}</AppText>
               <ActivityIndicator />
             </View>
           ) : todoSessionError ? (

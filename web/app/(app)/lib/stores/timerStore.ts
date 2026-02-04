@@ -9,6 +9,8 @@ type ActiveSession = {
   started_at: number;
 };
 
+type SessionMode = "countup" | "countdown";
+
 interface TimerState {
   activeSession: ActiveSession | null;
   isRunning: boolean;
@@ -17,8 +19,12 @@ interface TimerState {
   alarmFired: boolean;
   startTimestamp: number | null;
   alarmSoundPlaying: boolean;
+  mode: SessionMode | null;
+  remainingMs: number | null;
+  paused: boolean;
   setActiveSession: (session: NewSession) => void;
   startTimer: (totalDuration: number) => void;
+  startSession: () => void;
   stopTimer: () => void;
   clearEverything: () => void;
   pauseTimer: () => void;
@@ -41,6 +47,9 @@ export const useTimerStore = create<TimerState>()(
       alarmFired: false,
       alarmSoundPlaying: false,
       startTimestamp: null,
+      mode: null,
+      remainingMs: null,
+      paused: false,
 
       setActiveSession: (session: NewSession) =>
         set({
@@ -51,6 +60,30 @@ export const useTimerStore = create<TimerState>()(
         }),
       setAlarmSoundPlaying: (playing) => set({ alarmSoundPlaying: playing }),
 
+      startSession: () => {
+        if (interval) clearInterval(interval);
+
+        const now = Date.now();
+
+        set({
+          isRunning: true,
+          mode: "countup",
+          startTimestamp: now,
+          elapsedTime: 0,
+          remainingMs: null,
+          alarmFired: false,
+          paused: false,
+        });
+
+        interval = setInterval(() => {
+          const { startTimestamp, isRunning } = get();
+          if (!isRunning || !startTimestamp) return;
+
+          const newElapsed = Math.floor((Date.now() - startTimestamp) / 1000);
+          set({ elapsedTime: newElapsed });
+        }, 1000);
+      },
+
       startTimer: (totalDuration) => {
         if (interval) clearInterval(interval);
 
@@ -58,10 +91,12 @@ export const useTimerStore = create<TimerState>()(
 
         set({
           isRunning: true,
+          mode: "countdown",
           totalDuration,
           elapsedTime: 0,
           alarmFired: false,
           startTimestamp: now,
+          paused: false,
         });
 
         interval = setInterval(() => {
@@ -95,6 +130,8 @@ export const useTimerStore = create<TimerState>()(
           alarmSoundPlaying: false,
           activeSession: null,
           startTimestamp: null,
+          remainingMs: null,
+          paused: false,
         }));
       },
 
@@ -112,6 +149,9 @@ export const useTimerStore = create<TimerState>()(
           alarmSoundPlaying: false,
           activeSession: null,
           startTimestamp: null,
+          mode: null,
+          remainingMs: null,
+          paused: false,
         });
       },
 
@@ -121,13 +161,19 @@ export const useTimerStore = create<TimerState>()(
           interval = null;
         }
 
-        const { startTimestamp } = get();
+        const { startTimestamp, mode } = get();
         if (startTimestamp) {
           const elapsed = Math.floor((Date.now() - startTimestamp) / 1000);
+          const frozenMs = mode === "countup"
+            ? Date.now() - startTimestamp
+            : elapsed * 1000;
+
           set({
             elapsedTime: elapsed,
             isRunning: false,
             startTimestamp: null,
+            remainingMs: frozenMs,
+            paused: true,
           });
         }
       },
@@ -136,32 +182,37 @@ export const useTimerStore = create<TimerState>()(
         if (interval) clearInterval(interval);
 
         const now = Date.now();
-        const { elapsedTime, startTimestamp } = get();
+        const { elapsedTime, startTimestamp, mode, remainingMs } = get();
 
         let newElapsed = elapsedTime;
         let newStart = now;
 
         if (startTimestamp) {
           newElapsed = Math.floor((now - startTimestamp) / 1000);
-          newStart = startTimestamp; // continue from actual start
+          newStart = startTimestamp;
+        } else if (remainingMs !== null && mode === "countup") {
+          newStart = now - remainingMs;
+          newElapsed = Math.floor(remainingMs / 1000);
         } else {
-          newStart = now - elapsedTime * 1000; // fallback
+          newStart = now - elapsedTime * 1000;
         }
 
         set({
           isRunning: true,
           startTimestamp: newStart,
           elapsedTime: newElapsed,
+          remainingMs: null,
+          paused: false,
         });
 
         interval = setInterval(() => {
-          const { startTimestamp, totalDuration, isRunning } = get();
+          const { startTimestamp, totalDuration, isRunning, mode } = get();
           if (!isRunning || !startTimestamp) return;
 
           const newElapsed = Math.floor((Date.now() - startTimestamp) / 1000);
           set({ elapsedTime: newElapsed });
 
-          if (totalDuration > 0 && newElapsed >= totalDuration) {
+          if (mode === "countdown" && totalDuration > 0 && newElapsed >= totalDuration) {
             clearInterval(interval!);
             set({
               alarmFired: true,

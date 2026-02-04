@@ -1,4 +1,8 @@
-import { formatDate, formatTime, formatDuration } from "@/app/(app)/lib/formatDate";
+import {
+  formatDate,
+  formatTime,
+  formatDuration,
+} from "@/app/(app)/lib/formatDate";
 import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
 import { GroupExercises } from "@/app/(app)/utils/GroupExercises";
 import { History } from "lucide-react";
@@ -8,7 +12,7 @@ import { useState } from "react";
 import ExerciseHistoryModal from "@/app/(app)/gym/components/ExerciseHistoryModal";
 import { useTranslation } from "react-i18next";
 import { FullGymSession } from "@/app/(app)/database/gym/get-full-gym-session";
-
+import { Clock } from "lucide-react";
 
 export default function GymSession(gym_session: FullGymSession) {
   const { t } = useTranslation("gym");
@@ -64,10 +68,13 @@ export default function GymSession(gym_session: FullGymSession) {
       </div>
       <div className="flex flex-col gap-4 justify-center items-center bg-slate-900 rounded-md p-5 mt-5">
         <h2 className="text-xl mt-2 text-center">{gym_session.title}</h2>
-        <p className="text-lg text-center">
-          {formatTime(gym_session.start_time)} -{" "}
-          {formatTime(gym_session.end_time)}
-        </p>
+        <div className="flex items-center gap-2">
+          <Clock />
+          <p className="text-lg text-center">
+            {formatTime(gym_session.start_time)} -{" "}
+            {formatTime(gym_session.end_time)}
+          </p>
+        </div>
         <h3 className="mt-2">
           {t("gym.analytics.duration")}: {formatDuration(gym_session.duration)}
         </h3>

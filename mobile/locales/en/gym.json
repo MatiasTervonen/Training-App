@@ -17,7 +17,7 @@
     "activeSessionError": "You already have an active session.",
     "activeSessionErrorSub": "Finish it before starting a new one.",
     "gymForm": {
-      "title": "Track your training progress",
+      "title": "Gym Session",
       "titleEdit": "Edit your gym session",
       "titlePlaceholder": "Session Title...",
       "titleLabel": "Session Title...",

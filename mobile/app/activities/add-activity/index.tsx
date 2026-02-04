@@ -9,7 +9,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import PageContainer from "@/components/PageContainer";
 import { addActivity } from "@/database/activities/add-activity";
 
-import CategoryDropdown from "@/Features/activities/components/categoryDropDown";
+import CategoryDropdown from "@/features/activities/components/categoryDropDown";
 import FullScreenModal from "@/components/FullScreenModal";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import { useTranslation } from "react-i18next";
@@ -109,7 +109,9 @@ export default function AddActivity() {
               <AppInput
                 value={name}
                 setValue={setName}
-                placeholder={t("activities.addActivityScreen.activityNamePlaceholder")}
+                placeholder={t(
+                  "activities.addActivityScreen.activityNamePlaceholder",
+                )}
                 label={t("activities.addActivityScreen.activityNameLabel")}
               />
             </View>
@@ -134,10 +136,14 @@ export default function AddActivity() {
                 {t("activities.addActivityScreen.metDescription")}
               </AppText>
             </View>
-            <AppText className="mb-2">{t("activities.addActivityScreen.selectCategory")}</AppText>
+            <AppText className="mb-2">
+              {t("activities.addActivityScreen.selectCategory")}
+            </AppText>
             <AnimatedButton
               onPress={() => setOpenCategoryModal(true)}
-              label={category || t("activities.addActivityScreen.selectCategory")}
+              label={
+                category || t("activities.addActivityScreen.selectCategory")
+              }
               className="bg-blue-800 py-2 w-full rounded-md shadow-md border-2 border-blue-500"
               textClassName="text-gray-100 text-center"
             />
@@ -155,11 +161,17 @@ export default function AddActivity() {
             </FullScreenModal>
           </View>
           <View className="mt-10">
-            <SaveButton onPress={handleSave} label={t("activities.addActivityScreen.saveButton")} />
+            <SaveButton
+              onPress={handleSave}
+              label={t("activities.addActivityScreen.saveButton")}
+            />
           </View>
         </PageContainer>
       </TouchableWithoutFeedback>
-      <FullScreenLoader visible={isSaving} message={t("activities.addActivityScreen.savingActivity")} />
+      <FullScreenLoader
+        visible={isSaving}
+        message={t("activities.addActivityScreen.savingActivity")}
+      />
     </>
   );
 }

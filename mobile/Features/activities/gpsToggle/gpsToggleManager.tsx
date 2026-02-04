@@ -3,10 +3,10 @@ import { AppState, View } from "react-native";
 import AppText from "@/components/AppText";
 import { useUserStore } from "@/lib/stores/useUserStore";
 import Toast from "react-native-toast-message";
-import { updateGpsTrackingStatus } from "@/Features/activities/gpsToggle/actions";
+import { updateGpsTrackingStatus } from "@/features/activities/gpsToggle/actions";
 import { useState, useEffect } from "react";
 import * as Location from "expo-location";
-import InfoModal from "@/Features/activities/gpsToggle/infoModal";
+import InfoModal from "@/features/activities/gpsToggle/infoModal";
 import { useTranslation } from "react-i18next";
 
 export default function GpsToggleManager() {

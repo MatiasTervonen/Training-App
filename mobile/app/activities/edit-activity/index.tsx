@@ -13,11 +13,11 @@ import AppText from "@/components/AppText";
 import { useQueryClient } from "@tanstack/react-query";
 import PageContainer from "@/components/PageContainer";
 import { editActivity } from "@/database/activities/edit-activity";
-import ActivityDropdownEdit from "@/Features/activities/components/activityDropdownEdit";
+import ActivityDropdownEdit from "@/features/activities/components/activityDropdownEdit";
 import { deleteActivity } from "@/database/activities/delete-activity";
 import DeleteButton from "@/components/buttons/DeleteButton";
 import AnimatedButton from "@/components/buttons/animatedButton";
-import CategoryDropdown from "@/Features/activities/components/categoryDropDown";
+import CategoryDropdown from "@/features/activities/components/categoryDropDown";
 import FullScreenModal from "@/components/FullScreenModal";
 import { UserActivity } from "@/database/activities/get-user-activities";
 

@@ -3,7 +3,7 @@ import { ScrollView, View } from "react-native";
 import AppText from "@/components/AppText";
 import PageContainer from "@/components/PageContainer";
 import { templateSummary } from "@/types/session";
-import Map from "@/Features/activities/components/templateMap";
+import Map from "@/features/activities/components/templateMap";
 import { useFullScreenModalConfig } from "@/lib/stores/fullScreenModalConfig";
 import { useState } from "react";
 import SaveButtonSpinner from "@/components/buttons/SaveButtonSpinner";
@@ -22,7 +22,7 @@ export default function ActivityTemplateExpanded({
   const [scrollEnabled, setScrollEnabled] = useState(true);
 
   const setSwipeEnabled = useFullScreenModalConfig(
-    (state) => state.setSwipeEnabled
+    (state) => state.setSwipeEnabled,
   );
 
   return (

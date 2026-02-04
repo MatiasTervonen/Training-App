@@ -1,7 +1,7 @@
 import AppText from "@/components/AppText";
 import PageContainer from "@/components/PageContainer";
-import PushNotificationManager from "@/Features/push-notifications/pushNotificationManager";
-import GpsToggleManager from "@/Features/activities/gpsToggle/gpsToggleManager";
+import PushNotificationManager from "@/features/push-notifications/pushNotificationManager";
+import GpsToggleManager from "@/features/activities/gpsToggle/gpsToggleManager";
 import { View } from "react-native";
 import SelectInput from "@/components/Selectinput";
 import { useTranslation } from "react-i18next";

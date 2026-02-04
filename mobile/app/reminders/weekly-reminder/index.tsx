@@ -1,4 +1,9 @@
-import { View, TouchableWithoutFeedback, Keyboard, AppState } from "react-native";
+import {
+  View,
+  TouchableWithoutFeedback,
+  Keyboard,
+  AppState,
+} from "react-native";
 import AppText from "@/components/AppText";
 import SaveButton from "@/components/buttons/SaveButton";
 import DeleteButton from "@/components/buttons/DeleteButton";
@@ -13,9 +18,9 @@ import { Plus, Info } from "lucide-react-native";
 import { formatTime } from "@/lib/formatDate";
 import { Checkbox } from "expo-checkbox";
 import SubNotesInput from "@/components/SubNotesInput";
-import useSaveDraftWeekly from "@/Features/reminders/hooks/weekly/useSaveDraft";
-import useSaveReminderWeekly from "@/Features/reminders/hooks/weekly/useSaveReminder";
-import useSetNotificationWeekly from "@/Features/reminders/hooks/weekly/useSetNotification";
+import useSaveDraftWeekly from "@/features/reminders/hooks/weekly/useSaveDraft";
+import useSaveReminderWeekly from "@/features/reminders/hooks/weekly/useSaveReminder";
+import useSetNotificationWeekly from "@/features/reminders/hooks/weekly/useSetNotification";
 import Toggle from "@/components/toggle";
 import { canUseExactAlarm } from "@/native/android/EnsureExactAlarmPermission";
 import ExactAlarmPermissionModal from "@/components/ExactAlarmPermissionModal";
@@ -130,7 +135,9 @@ export default function ReminderScreen() {
               />
               <View>
                 <AnimatedButton
-                  label={notifyAt ? formattedTime : t("reminders.setNotifyTime")}
+                  label={
+                    notifyAt ? formattedTime : t("reminders.setNotifyTime")
+                  }
                   onPress={() => setOpen(true)}
                   className="bg-blue-800 py-2 rounded-md shadow-md border-2 border-blue-500 flex-row gap-2 justify-center items-center"
                   textClassName="text-gray-100"
@@ -172,7 +179,7 @@ export default function ReminderScreen() {
                               setWeekdays([...weekdays, dayNumber]);
                             } else {
                               setWeekdays(
-                                weekdays.filter((day) => day !== dayNumber)
+                                weekdays.filter((day) => day !== dayNumber),
                               );
                             }
                           }}
@@ -210,7 +217,10 @@ export default function ReminderScreen() {
               <DeleteButton onPress={resetReminder} />
             </View>
           </View>
-          <FullScreenLoader visible={isSaving} message={t("reminders.savingReminder")} />
+          <FullScreenLoader
+            visible={isSaving}
+            message={t("reminders.savingReminder")}
+          />
         </PageContainer>
       </TouchableWithoutFeedback>
 

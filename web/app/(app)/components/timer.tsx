@@ -57,7 +57,7 @@ export default function Timer({ className = "", manualSession }: TimerProps) {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
     return `${String(minutes).padStart(2, "0")}:${String(
-      remainingSeconds
+      remainingSeconds,
     ).padStart(2, "0")}`;
   };
 
@@ -80,8 +80,8 @@ export default function Timer({ className = "", manualSession }: TimerProps) {
   };
 
   return (
-    <div className={`flex items-center  gap-2 ${className}`}>
-      <p className="font-mono font-bold leading-none">
+    <div className={`flex items-center gap-2 ${className}`}>
+      <p className="font-mono font-bold leading-none text-lg">
         {formatTime(elapsedTime)}
       </p>
       {!alarmFired &&

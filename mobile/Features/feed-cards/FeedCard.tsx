@@ -1,10 +1,10 @@
-import NotesCard from "@/Features/notes/cards/notes-feed";
-import WeightCard from "@/Features/feed-cards/WeightCard";
-import GymCard from "@/Features/feed-cards/GymCard";
-import LocalReminderCard from "@/Features/reminders/cards/LocalReminderCard-feed";
-import TodoCard from "@/Features/feed-cards/TodoCard";
-import GlobalReminderCard from "@/Features/reminders/cards/GlobalReminderCard-feed";
-import ActivityCard from "@/Features/activities/cards/activity-feed";
+import NotesCard from "@/features/notes/cards/notes-feed";
+import WeightCard from "@/features/weight/cards/weight-feed";
+import GymCard from "@/features/gym/cards/gym-feed";
+import LocalReminderCard from "@/features/reminders/cards/LocalReminderCard-feed";
+import TodoCard from "@/features/feed-cards/TodoCard";
+import GlobalReminderCard from "@/features/reminders/cards/GlobalReminderCard-feed";
+import ActivityCard from "@/features/activities/cards/activity-feed";
 import { FeedCardProps } from "@/types/session";
 
 export default function FeedCard(props: FeedCardProps) {

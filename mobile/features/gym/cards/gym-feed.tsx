@@ -2,7 +2,7 @@ import { Dumbbell, Timer } from "lucide-react-native";
 import { View } from "react-native";
 import AppText from "@/components/AppText";
 import { FeedCardProps } from "@/types/session";
-import BaseFeedCard from "./BaseFeedCard";
+import BaseFeedCard from "@/features/feed-cards/BaseFeedCard";
 import { useTranslation } from "react-i18next";
 
 type gymPayload = {

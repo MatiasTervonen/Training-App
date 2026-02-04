@@ -4,7 +4,7 @@ import AppText from "@/components/AppText";
 import { MessageCircle } from "lucide-react-native";
 import { Image } from "expo-image";
 import { useUserStore } from "@/lib/stores/useUserStore";
-import NotificationBell from "@/Features/navbar/notificationBell";
+import NotificationBell from "@/features/navbar/notificationBell";
 import { LinearGradient } from "expo-linear-gradient";
 import ActiveSessionPopup from "@/components/ActiveSessionPopup";
 import { useTranslation } from "react-i18next";

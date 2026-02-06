@@ -8,6 +8,7 @@ import {
   Weight,
   ListTodo,
   Bell,
+  Activity,
 } from "lucide-react";
 import LinkButton from "@/app/(app)/components/buttons/LinkButton";
 import { useTranslation } from "react-i18next";
@@ -22,6 +23,10 @@ export default function Sessions() {
         <LinkButton href="/gym">
           {t("sessions.gym")}
           <Dumbbell />
+        </LinkButton>
+        <LinkButton href="/activities">
+          {t("sessions.activities")}
+          <Activity />
         </LinkButton>
 
         <LinkButton href="/notes">

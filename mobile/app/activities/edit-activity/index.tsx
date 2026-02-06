@@ -1,5 +1,5 @@
 import AppInput from "@/components/AppInput";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import SaveButton from "@/components/buttons/SaveButton";
 import Toast from "react-native-toast-message";
 import FullScreenLoader from "@/components/FullScreenLoader";
@@ -20,8 +20,10 @@ import AnimatedButton from "@/components/buttons/animatedButton";
 import CategoryDropdown from "@/features/activities/components/categoryDropDown";
 import FullScreenModal from "@/components/FullScreenModal";
 import { UserActivity } from "@/database/activities/get-user-activities";
+import { useTranslation } from "react-i18next";
 
 export default function EditActivity() {
+  const { t } = useTranslation("activities");
   const [name, setName] = useState("");
   const [met, setMet] = useState("");
   const [category, setCategory] = useState("");
@@ -35,11 +37,26 @@ export default function EditActivity() {
 
   const queryClient = useQueryClient();
 
+  const getCategoryName = useCallback(
+    (slug: string | null | undefined, fallbackName: string) => {
+      if (slug) {
+        const translated = t(`activities.categories.${slug}`, {
+          defaultValue: "",
+        });
+        if (translated && translated !== `activities.categories.${slug}`) {
+          return translated;
+        }
+      }
+      return fallbackName;
+    },
+    [t],
+  );
+
   const handleSave = async () => {
     if (!name) {
       Toast.show({
         type: "error",
-        text1: "Please enter an activity name",
+        text1: t("activities.editActivityScreen.errorNameRequired"),
       });
       return;
     }
@@ -47,7 +64,7 @@ export default function EditActivity() {
     if (!category) {
       Toast.show({
         type: "error",
-        text1: "Please select a category",
+        text1: t("activities.editActivityScreen.errorCategoryRequired"),
       });
       return;
     }
@@ -58,8 +75,8 @@ export default function EditActivity() {
     if (!met || met === "." || isNaN(metValue)) {
       Toast.show({
         type: "error",
-        text1: "Invalid MET value",
-        text2: "Please enter a valid number",
+        text1: t("activities.editActivityScreen.errorInvalidMet"),
+        text2: t("activities.editActivityScreen.errorInvalidMetDesc"),
       });
       return;
     }
@@ -67,8 +84,8 @@ export default function EditActivity() {
     if (metValue < 1 || metValue > 20) {
       Toast.show({
         type: "error",
-        text1: "MET out of range",
-        text2: "Please enter a value between 1.0 and 20.0",
+        text1: t("activities.editActivityScreen.errorMetOutOfRange"),
+        text2: t("activities.editActivityScreen.errorMetRangeDesc"),
       });
       return;
     }
@@ -91,13 +108,13 @@ export default function EditActivity() {
       queryClient.refetchQueries({ queryKey: ["userActivities"], exact: true });
       Toast.show({
         type: "success",
-        text1: "Activity edited successfully!",
+        text1: t("activities.editActivityScreen.successEdited"),
       });
       resetFields();
     } catch {
       Toast.show({
         type: "error",
-        text1: "Failed to edit activity. Please try again.",
+        text1: t("activities.editActivityScreen.errorEditFailed"),
       });
     } finally {
       setIsSaving(false);
@@ -117,13 +134,13 @@ export default function EditActivity() {
       });
       Toast.show({
         type: "success",
-        text1: "Activity deleted successfully!",
+        text1: t("activities.editActivityScreen.successDeleted"),
       });
       setSelectedActivity(null);
     } catch {
       Toast.show({
         type: "error",
-        text1: "Failed to delete activity. Please try again.",
+        text1: t("activities.editActivityScreen.errorDeleteFailed"),
       });
     } finally {
       setIsDeleting(false);
@@ -148,7 +165,12 @@ export default function EditActivity() {
             setName(activity.name);
             setMet(activity.base_met?.toString() ?? "");
             setCategoryId(activity.category_id ?? "");
-            setCategory(activity.activity_categories?.name ?? "");
+            setCategory(
+              getCategoryName(
+                activity.activity_categories?.slug,
+                activity.activity_categories?.name ?? "",
+              ),
+            );
           }}
         />
       ) : (
@@ -157,14 +179,14 @@ export default function EditActivity() {
             <PageContainer className="justify-between flex-1">
               <View>
                 <AppText className="text-2xl mb-10 text-center">
-                  Edit Activity
+                  {t("activities.editActivityScreen.title")}
                 </AppText>
                 <View className="mb-5">
                   <AppInput
                     value={name}
                     setValue={setName}
-                    placeholder="Activity name"
-                    label="Activity Name"
+                    placeholder={t("activities.editActivityScreen.activityNamePlaceholder")}
+                    label={t("activities.editActivityScreen.activityNameLabel")}
                   />
                 </View>
                 <View className="mb-5">
@@ -181,17 +203,16 @@ export default function EditActivity() {
                       }
                     }}
                     keyboardType="numeric"
-                    placeholder="e.g. 8.0"
-                    label="MET"
+                    placeholder={t("activities.editActivityScreen.metPlaceholder")}
+                    label={t("activities.editActivityScreen.metLabel")}
                   />
                   <AppText className="text-gray-400 text-sm mt-1">
-                    Used to estimate calories burned during the activity.
-                    Example: Rest 1.0 walking 3.5, running 7.5
+                    {t("activities.editActivityScreen.metDescription")}
                   </AppText>
                 </View>
                 <AnimatedButton
                   onPress={() => setOpenCategoryModal(true)}
-                  label={category || "Select Category"}
+                  label={category || t("activities.editActivityScreen.selectCategory")}
                   className="bg-blue-800 py-2 w-full rounded-md shadow-md border-2 border-blue-500"
                   textClassName="text-gray-100 text-center"
                 />
@@ -202,23 +223,23 @@ export default function EditActivity() {
                   <CategoryDropdown
                     onSelect={(category) => {
                       setCategoryId(category.id);
-                      setCategory(category.name);
+                      setCategory(getCategoryName(category.slug, category.name));
                       setOpenCategoryModal(false);
                     }}
                   />
                 </FullScreenModal>
               </View>
               <View className="mt-20 flex flex-col gap-5">
-                <SaveButton onPress={handleSave} label="Update Activity" />
+                <SaveButton onPress={handleSave} label={t("activities.editActivityScreen.updateButton")} />
                 <DeleteButton
                   onPress={() => handleDeleteActivity(selectedActivity!.id)}
-                  label="Delete Activity"
+                  label={t("activities.editActivityScreen.deleteButton")}
                 />
                 <AnimatedButton
                   onPress={() => {
                     resetFields();
                   }}
-                  label="Cancel"
+                  label={t("activities.editActivityScreen.cancelButton")}
                   className="bg-red-800 py-2 rounded-md shadow-md border-2 border-red-500 text-lg items-center"
                   textClassName="text-gray-100"
                 />
@@ -227,7 +248,7 @@ export default function EditActivity() {
           </TouchableWithoutFeedback>
           <FullScreenLoader
             visible={isSaving}
-            message={isDeleting ? "Deleting activity..." : "Saving activity..."}
+            message={isDeleting ? t("activities.editActivityScreen.deletingActivity") : t("activities.editActivityScreen.savingActivity")}
           />
         </ScrollView>
       )}

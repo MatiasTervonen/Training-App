@@ -304,7 +304,6 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
               <SubNotesInput
                 value={notes}
                 setValue={setNotes}
-                className="min-h-[60px]"
                 placeholder={t("gym.gymForm.notesPlaceholder")}
                 label={t("gym.gymForm.notesLabel")}
               />

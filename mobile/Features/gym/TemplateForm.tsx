@@ -40,7 +40,7 @@ import { useTranslation } from "react-i18next";
 
 export default function TemplateForm() {
   const confirmAction = useConfirmAction();
-  const { t } = useTranslation(["gym", "common"]);
+  const { t } = useTranslation("gym");
   const [workoutName, setWorkoutName] = useState("");
   const [exercises, setExercises] = useState<ExerciseEntry[]>([]);
   const [isExerciseModalOpen, setIsExerciseModalOpen] = useState(false);
@@ -421,7 +421,7 @@ export default function TemplateForm() {
               {templateId ? (
                 <DeleteButton
                   confirm={false}
-                  label={t("common.cancel")}
+                  label={t("common:common.cancel")}
                   onPress={() => router.push("/gym/templates")}
                 />
               ) : (

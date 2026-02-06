@@ -6,7 +6,7 @@ import { View, ScrollView } from "react-native";
 import AppText from "@/components/AppText";
 import { LinearGradient } from "expo-linear-gradient";
 import PageContainer from "@/components/PageContainer";
-import { History } from "lucide-react-native";
+import { History, Clock } from "lucide-react-native";
 import { getLastExerciseHistory } from "@/database/gym/last-exercise-history";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
@@ -77,10 +77,13 @@ export default function GymSession(gym_session: FullGymSession) {
             <AppText className="text-2xl text-center">
               {gym_session.title}
             </AppText>
-            <AppText className="text-lg text-center">
-              {formatTime(gym_session.start_time)} -{" "}
-              {formatTime(gym_session.end_time)}
-            </AppText>
+            <View className="flex-row items-center gap-3">
+              <Clock color="#f3f4f6" />
+              <AppText className="text-lg text-center">
+                {formatTime(gym_session.start_time)} -{" "}
+                {formatTime(gym_session.end_time)}
+              </AppText>
+            </View>
             <AppText className="text-lg">
               {t("gym.session.duration")}:{" "}
               {formatDuration(gym_session.duration)}

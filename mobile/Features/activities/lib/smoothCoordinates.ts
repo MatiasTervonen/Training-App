@@ -172,10 +172,8 @@ export function processLiveTrack(
     timeGapMs = TIME_GAP_MS,
   } = options;
 
+  // Need at least 2 points to draw a line
   if (track.length < 2) {
-    if (track.length === 1 && !track[0].isStationary && !track[0].isBadSignal) {
-      return [[[track[0].longitude, track[0].latitude]]];
-    }
     return [];
   }
 
@@ -196,7 +194,8 @@ export function processLiveTrack(
         (p) => [p.longitude, p.latitude] as Coordinate,
       );
 
-      if (coords.length < 2) return coords;
+      // Need at least 2 points to draw a line segment
+      if (coords.length < 2) return [];
 
       const sampled = downsample(coords, maxPointsPerSegment);
       return smoothCoordinates(sampled, smoothIterations);
@@ -226,8 +225,8 @@ export function processSavedRoute(
     distanceGapMeters = DISTANCE_GAP_METERS,
   } = options;
 
+  // Need at least 2 points to draw a line
   if (coords.length < 2) {
-    if (coords.length === 1) return [coords];
     return [];
   }
 
@@ -237,7 +236,8 @@ export function processSavedRoute(
   // Process each segment
   return segments
     .map((segment) => {
-      if (segment.length < 2) return segment;
+      // Need at least 2 points to draw a line segment
+      if (segment.length < 2) return [];
 
       const sampled = downsample(segment, maxPointsPerSegment);
       return smoothCoordinates(sampled, smoothIterations);
@@ -260,7 +260,8 @@ export function smoothMultiLineString(
 
   return segments
     .map((segment) => {
-      if (segment.length < 2) return segment;
+      // Need at least 2 points to draw a line segment
+      if (segment.length < 2) return [];
 
       const sampled = downsample(segment, maxPointsPerSegment);
       return smoothCoordinates(sampled, smoothIterations);

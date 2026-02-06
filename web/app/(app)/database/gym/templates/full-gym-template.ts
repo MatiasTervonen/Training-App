@@ -1,6 +1,8 @@
+"use server";
+
 import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
 import { handleError } from "@/app/(app)/utils/handleError";
-import { createClient } from "@/utils/supabase/client";
+import { createClient } from "@/utils/supabase/server";
 
 export async function getFullTemplate(sessionId: string) {
   const supabase = await createClient();

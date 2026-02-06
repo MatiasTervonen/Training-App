@@ -13,7 +13,7 @@ export async function getUserActivities() {
 
   const { data, error } = await supabase
     .from("activities")
-    .select("id, name, base_met, category_id, activity_categories(id, name)")
+    .select("id, name, base_met, category_id, activity_categories(id, name, slug)")
     .order("name", { ascending: true })
     .eq("user_id", session.user.id);
 

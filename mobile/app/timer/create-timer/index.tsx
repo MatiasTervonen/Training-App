@@ -71,7 +71,6 @@ export default function SettingsScreen() {
             value={notes}
             setValue={setNotes}
             placeholder={t("timer.notesPlaceholder")}
-            className="min-h-[60px]"
           />
           <View className="flex-row gap-2 mb-4 w-full">
             <View className="flex-1">

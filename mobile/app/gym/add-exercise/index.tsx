@@ -96,33 +96,44 @@ export default function AddExercises() {
               onChange={setMuscleGroup}
               options={[
                 { value: "chest", label: t("gym.muscleGroups.chest") },
-                { value: "quads", label: t("gym.muscleGroups.quads") },
-                {
-                  value: "hamstrings",
-                  label: t("gym.muscleGroups.hamstrings"),
-                },
-                { value: "biceps", label: t("gym.muscleGroups.biceps") },
-                { value: "triceps", label: t("gym.muscleGroups.triceps") },
                 { value: "lats", label: t("gym.muscleGroups.lats") },
-                { value: "abs", label: t("gym.muscleGroups.abs") },
-                { value: "calves", label: t("gym.muscleGroups.calves") },
                 {
                   value: "upper_back",
                   label: t("gym.muscleGroups.upper_back"),
                 },
-                { value: "forearms", label: t("gym.muscleGroups.forearms") },
-                { value: "full_body", label: t("gym.muscleGroups.full_body") },
                 {
-                  value: "side_delts",
-                  label: t("gym.muscleGroups.side_delts"),
+                  value: "lower_back",
+                  label: t("gym.muscleGroups.lower_back"),
                 },
-                { value: "legs", label: t("gym.muscleGroups.legs") },
-                { value: "obliques", label: t("gym.muscleGroups.obliques") },
+                { value: "traps", label: t("gym.muscleGroups.traps") },
                 {
                   value: "front_delts",
                   label: t("gym.muscleGroups.front_delts"),
                 },
-                { value: "traps", label: t("gym.muscleGroups.traps") },
+                {
+                  value: "side_delts",
+                  label: t("gym.muscleGroups.side_delts"),
+                },
+                {
+                  value: "rear_delts",
+                  label: t("gym.muscleGroups.rear_delts"),
+                },
+                { value: "biceps", label: t("gym.muscleGroups.biceps") },
+                { value: "triceps", label: t("gym.muscleGroups.triceps") },
+                { value: "forearms", label: t("gym.muscleGroups.forearms") },
+                {
+                  value: "quads",
+                  label: t("gym.muscleGroups.quads"),
+                },
+                {
+                  value: "hamstrings",
+                  label: t("gym.muscleGroups.hamstrings"),
+                },
+                { value: "glutes", label: t("gym.muscleGroups.glutes") },
+                { value: "calves", label: t("gym.muscleGroups.calves") },
+                { value: "abs", label: t("gym.muscleGroups.abs") },
+                { value: "obliques", label: t("gym.muscleGroups.obliques") },
+                { value: "full_body", label: t("gym.muscleGroups.full_body") },
               ]}
               label={t("gym.addExerciseScreen.muscleGroup")}
             />

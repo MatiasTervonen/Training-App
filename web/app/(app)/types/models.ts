@@ -84,3 +84,58 @@ export type global_reminders =
 
 export type local_reminders =
   Database["public"]["Tables"]["local_reminders"]["Row"];
+
+export type activities = Database["public"]["Tables"]["activities"]["Row"];
+export type activity_categories =
+  Database["public"]["Tables"]["activity_categories"]["Row"];
+
+export type activities_with_category = activities & {
+  activity_categories?: Pick<
+    activity_categories,
+    "id" | "name" | "slug"
+  > | null;
+};
+
+export type activity_session = Database["public"]["Tables"]["sessions"]["Row"];
+
+export type session_stats =
+  Database["public"]["Tables"]["session_stats"]["Row"];
+
+export type activity_gps_points =
+  Database["public"]["Tables"]["activity_gps_points"]["Row"];
+
+export type FullActivitySession = {
+  session: activity_session;
+  activity: activities | null;
+  stats: session_stats | null;
+  route:
+    | {
+        type: "LineString";
+        coordinates: [number, number][];
+      }
+    | {
+        type: "MultiLineString";
+        coordinates: [number, number][][];
+      }
+    | null;
+};
+
+export type templateSummary = {
+  template: {
+    id: string;
+    name: string;
+    notes: string | null;
+    created_at: string;
+    updated_at?: string | null;
+    distance_meters: number | null;
+  };
+  activity: {
+    id: string;
+    name: string;
+    slug: string | null;
+  };
+  route: {
+    type: "LineString";
+    coordinates: [number, number][];
+  } | null;
+};

@@ -240,7 +240,7 @@ export default function TemplateForm({
           setExercises={setExercises}
           setIsExerciseModalOpen={setIsExerciseModalOpen}
         />
-        <div className="sticky bottom-5 flex gap-3 w-full px-2">
+        <div className="flex gap-3 w-full px-2 my-5">
           <div className="relative w-full">
             <select
               className="appearance-none w-full px-10 bg-blue-800 py-2 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700"

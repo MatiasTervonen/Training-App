@@ -39,6 +39,14 @@
       "tapToOpenTimer": "Avaa ajastin napauttamalla",
       "timesUp": "Aika loppui!",
       "stopAlarm": "Pysäytä hälytys"
+    },
+    "stopwatch": {
+      "title": "Sekuntikello",
+      "cancelSessionTitle": "Peruuta sessio",
+      "cancelSessionMessage": "Haluatko varmasti peruuttaa session?",
+      "cancel": "Peruuta",
+      "pause": "Tauko",
+      "start": "Aloita"
     }
   }
 }

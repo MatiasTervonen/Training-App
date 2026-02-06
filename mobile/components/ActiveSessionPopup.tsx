@@ -55,7 +55,7 @@ export default function ActiveSessionPopup() {
   }
   if (
     pathname === "/timer/start-stopwatch" &&
-    activeSession.type === "stopwatch"
+    activeSession.type === t("timer:timer.stopwatch.title")
   ) {
     return null;
   }

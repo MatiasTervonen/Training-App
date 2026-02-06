@@ -203,7 +203,6 @@ export default function MyTimersScreen() {
                   value={editNotes}
                   setValue={setEditNotes}
                   placeholder={t("timer.notesPlaceholder")}
-                  className="min-h-[60px]"
                 />
                 <View className="flex-row gap-2 mb-4 w-full">
                   <View className="flex-1">

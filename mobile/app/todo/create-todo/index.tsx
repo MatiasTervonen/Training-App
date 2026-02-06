@@ -138,7 +138,6 @@ export default function CreateTodo() {
           </View>
           <View className="mt-5">
             <SubNotesInput
-              className="min-h-[60px]"
               placeholder={t("todo.notesPlaceholder")}
               label={t("todo.addNotesLabel")}
               value={notes}
@@ -218,7 +217,6 @@ export default function CreateTodo() {
                                   />
                                 </View>
                                 <SubNotesInput
-                                  className="min-h-[60px]"
                                   placeholder={t("todo.notesPlaceholder")}
                                   label={t("todo.addYourNotes")}
                                   value={modalDraft.notes}

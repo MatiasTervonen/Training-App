@@ -4,6 +4,7 @@ import AppText from "@/components/AppText";
 import { View, Pressable } from "react-native";
 import DropDownModal from "@/components/DropDownModal";
 import { templateSummary } from "@/types/session";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   item: templateSummary;
@@ -20,6 +21,8 @@ export default function ActivityTemplateCard({
   onExpand,
   onEdit,
 }: Props) {
+  const { t } = useTranslation("activities");
+
   return (
     <View className="border border-gray-700 rounded-md justify-center bg-slate-900 mb-10">
       <View className="flex-row justify-between items-center my-2 mx-4">
@@ -33,8 +36,8 @@ export default function ActivityTemplateCard({
         <DropDownModal
           label={`${item.template.name}`}
           options={[
-            { value: "edit", label: "Edit" },
-            { value: "delete", label: "Delete" },
+            { value: "edit", label: t("activities.templatesScreen.edit") },
+            { value: "delete", label: t("activities.templatesScreen.delete") },
           ]}
           onChange={(value) => {
             switch (value) {
@@ -56,7 +59,7 @@ export default function ActivityTemplateCard({
 
       {item.template.updated_at ? (
         <AppText className=" text-yellow-500 text-sm ml-4 my-2">
-          updated: {formatDate(item.template.updated_at)}
+          {t("activities.templatesScreen.updated")} {formatDate(item.template.updated_at)}
         </AppText>
       ) : (
         <View className="h-[17.8px]" />
@@ -71,7 +74,7 @@ export default function ActivityTemplateCard({
         </AppText>
 
         <View className="flex-row items-center gap-5">
-          <AppText>start</AppText>
+          <AppText>{t("activities.templatesScreen.start")}</AppText>
           <Activity size={20} color="#f3f4f6" />
         </View>
       </Pressable>

@@ -51,9 +51,19 @@ export default function BaseMap({
   const [mapStyle, setMapStyle] = useState(Mapbox.StyleURL.Dark);
   const { isForeground } = useForeground();
 
+  // Force ShapeSource remount on background→foreground to fix Mapbox native state desync
+  const prevForegroundRef = useRef(isForeground);
+  const [sourceKey, setSourceKey] = useState(0);
+
   useEffect(() => {
+    const wasForeground = prevForegroundRef.current;
+    prevForegroundRef.current = isForeground;
+
     if (isForeground) {
       setIsFollowingUser(true);
+      if (!wasForeground) {
+        setSourceKey((prev) => prev + 1);
+      }
     }
   }, [isForeground]);
 
@@ -71,21 +81,45 @@ export default function BaseMap({
   }, [track, warmupStartIndex]);
 
   // DEBUG: Track what BaseMap receives after foreground transition
+  // Delay to avoid collision with hydration toast
   const prevTrackLengthRef = useRef(track.length);
   useEffect(() => {
     const prevLen = prevTrackLengthRef.current;
     const newLen = track.length;
     // Only toast if track length changed significantly (hydration)
     if (newLen > prevLen + 5 || (prevLen === 0 && newLen > 0)) {
-      Toast.show({
-        type: "success",
-        text1: `BaseMap received: ${newLen} points`,
-        text2: `Segments: ${trackSegments.length}, warmupIdx: ${warmupStartIndex}`,
-        visibilityTime: 4000,
-      });
+      const totalCoords = trackSegments.reduce((sum, seg) => sum + seg.length, 0);
+      const timer = setTimeout(() => {
+        Toast.show({
+          type: trackSegments.length > 0 ? "success" : "error",
+          text1: `BaseMap: ${newLen}pts segs:${trackSegments.length} warmup:${warmupStartIndex}`,
+          text2: `coords:${totalCoords}`,
+          visibilityTime: 6000,
+        });
+      }, 1500); // Wait 1.5 seconds after hydration toast
+      prevTrackLengthRef.current = newLen;
+      return () => clearTimeout(timer);
     }
     prevTrackLengthRef.current = newLen;
-  }, [track.length, trackSegments.length, warmupStartIndex]);
+  }, [track.length, trackSegments, warmupStartIndex]);
+
+  // DEBUG: Alert when we have track data but can't draw (the bug!)
+  // Delay to avoid collision with hydration toast
+  useEffect(() => {
+    if (track.length >= 10 && trackSegments.length === 0) {
+      const stationary = track.filter(p => p.isStationary).length;
+      const badSignal = track.filter(p => p.isBadSignal).length;
+      const timer = setTimeout(() => {
+        Toast.show({
+          type: "error",
+          text1: `BUG: ${track.length}pts but 0 segs! warmup:${warmupStartIndex}`,
+          text2: `stat:${stationary} bad:${badSignal}`,
+          visibilityTime: 10000,
+        });
+      }, 2000); // Wait 2 seconds after hydration toast
+      return () => clearTimeout(timer);
+    }
+  }, [track, trackSegments, warmupStartIndex]);
 
   const trackShape = {
     type: "Feature",
@@ -188,34 +222,32 @@ export default function BaseMap({
             animationDuration={isFollowingUser ? 0 : 600}
           />
 
-          {trackSegments.length > 0 && (
-            <Mapbox.ShapeSource
-              key={`track-${track.length}`}
-              id="track-source"
-              shape={trackShape as any}
-            >
-              <Mapbox.LineLayer
-                id="track-layer"
-                style={{
-                  lineColor: "rgba(59,130,246,0.4)",
-                  lineCap: "round",
-                  lineJoin: "round",
-                  lineWidth: 10,
-                  lineBlur: 4,
-                }}
-              />
-              <Mapbox.LineLayer
-                id="track-core"
-                aboveLayerID="track-layer"
-                style={{
-                  lineColor: "#3b82f6",
-                  lineWidth: 4,
-                  lineCap: "round",
-                  lineJoin: "round",
-                }}
-              />
-            </Mapbox.ShapeSource>
-          )}
+          <Mapbox.ShapeSource
+            key={`track-${sourceKey}`}
+            id="track-source"
+            shape={trackShape as any}
+          >
+            <Mapbox.LineLayer
+              id="track-layer"
+              style={{
+                lineColor: "rgba(59,130,246,0.4)",
+                lineCap: "round",
+                lineJoin: "round",
+                lineWidth: 10,
+                lineBlur: 4,
+              }}
+            />
+            <Mapbox.LineLayer
+              id="track-core"
+              aboveLayerID="track-layer"
+              style={{
+                lineColor: "#3b82f6",
+                lineWidth: 4,
+                lineCap: "round",
+                lineJoin: "round",
+              }}
+            />
+          </Mapbox.ShapeSource>
 
           {shouldShowTemplateRoute && (
             <Mapbox.ShapeSource

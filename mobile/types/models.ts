@@ -67,7 +67,6 @@ export type ExercisePreview = Pick<
   | "equipment"
   | "muscle_group"
   | "main_group"
-  | "language"
   | "created_at"
 >;
 

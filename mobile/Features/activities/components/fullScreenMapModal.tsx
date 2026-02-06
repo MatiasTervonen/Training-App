@@ -5,7 +5,7 @@ import { CircleX, Layers2, MapPin } from "lucide-react-native";
 import MapIcons from "./mapIcons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { TrackPoint } from "@/types/session";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import useForeground from "../hooks/useForeground";
 import { findWarmupStartIndex } from "../lib/findWarmupStartIndex";
 import { processLiveTrack } from "../lib/smoothCoordinates";
@@ -44,9 +44,19 @@ export default function FullScreenMapModal({
   const [mapStyle, setMapStyle] = useState(Mapbox.StyleURL.Dark);
   const { isForeground } = useForeground();
 
+  // Force ShapeSource remount on background→foreground to fix Mapbox native state desync
+  const prevForegroundRef = useRef(isForeground);
+  const [sourceKey, setSourceKey] = useState(0);
+
   useEffect(() => {
+    const wasForeground = prevForegroundRef.current;
+    prevForegroundRef.current = isForeground;
+
     if (isForeground) {
       setIsFollowingUser(true);
+      if (!wasForeground) {
+        setSourceKey((prev) => prev + 1);
+      }
     }
   }, [isForeground]);
 
@@ -153,29 +163,31 @@ export default function FullScreenMapModal({
               animationDuration={isFollowingUser ? 0 : 600}
             />
 
-            {trackSegments.length > 0 && (
-              <Mapbox.ShapeSource id="track-source" shape={trackShape as any}>
-                <Mapbox.LineLayer
-                  id="track-layer"
-                  style={{
-                    lineColor: "rgba(59,130,246,0.4)",
-                    lineCap: "round",
-                    lineJoin: "round",
-                    lineWidth: 10,
-                    lineBlur: 4,
-                  }}
-                />
-                <Mapbox.LineLayer
-                  id="track-core"
-                  style={{
-                    lineColor: "#3b82f6",
-                    lineWidth: 4,
-                    lineCap: "round",
-                    lineJoin: "round",
-                  }}
-                />
-              </Mapbox.ShapeSource>
-            )}
+            <Mapbox.ShapeSource
+              key={`track-${sourceKey}`}
+              id="track-source"
+              shape={trackShape as any}
+            >
+              <Mapbox.LineLayer
+                id="track-layer"
+                style={{
+                  lineColor: "rgba(59,130,246,0.4)",
+                  lineCap: "round",
+                  lineJoin: "round",
+                  lineWidth: 10,
+                  lineBlur: 4,
+                }}
+              />
+              <Mapbox.LineLayer
+                id="track-core"
+                style={{
+                  lineColor: "#3b82f6",
+                  lineWidth: 4,
+                  lineCap: "round",
+                  lineJoin: "round",
+                }}
+              />
+            </Mapbox.ShapeSource>
 
             {shouldShowTemplateRoute && (
               <Mapbox.ShapeSource

@@ -119,9 +119,9 @@ export default function HandleEditGlobalReminder({
         title,
         notes,
         delivered,
-        notify_at: notifyAt ? notifyAt.toISOString() : null,
+        notify_at: notifyAt.toISOString(),
         updated_at: updated,
-        seen_at: null,
+        seen_at: updated,
         mode,
       });
 
@@ -162,7 +162,6 @@ export default function HandleEditGlobalReminder({
             <SubNotesInput
               value={notes || ""}
               setValue={setNotes}
-              className="min-h-[60px]"
               placeholder="Notes... (optional)"
               label="Notes..."
             />

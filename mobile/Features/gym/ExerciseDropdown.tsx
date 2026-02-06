@@ -14,6 +14,7 @@ import AppInput from "@/components/AppInput";
 import AppText from "@/components/AppText";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import { useTranslation } from "react-i18next";
+import { useUserStore } from "@/lib/stores/useUserStore";
 
 type Props = {
   onSelect: (exercise: any) => void;
@@ -22,13 +23,14 @@ type Props = {
 export default function ExerciseDropdown({ onSelect }: Props) {
   const { t } = useTranslation("gym");
   const [searchQuery, setSearchQuery] = useState("");
+  const language = useUserStore((state) => state.settings?.language ?? "en");
 
   const {
     data: allExercisesData,
     error: exercisesError,
     isLoading: isExercisesLoading,
   } = useQuery({
-    queryKey: ["exercises"],
+    queryKey: ["exercises", language],
     queryFn: () => getExercises(),
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
@@ -40,7 +42,7 @@ export default function ExerciseDropdown({ onSelect }: Props) {
     error: recentError,
     isLoading: isRecentLoading,
   } = useQuery({
-    queryKey: ["recentExercises"],
+    queryKey: ["recentExercises", language],
     queryFn: () => getRecentExercises(),
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,

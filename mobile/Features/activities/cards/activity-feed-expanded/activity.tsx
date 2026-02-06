@@ -14,6 +14,7 @@ import SubNotesInput from "@/components/SubNotesInput";
 import FullScreenLoader from "@/components/FullScreenLoader";
 import useSaveTemplate from "./hooks/useSaveTemplate";
 import { useTranslation } from "react-i18next";
+import { Clock } from "lucide-react-native";
 
 export default function ActivitySession(activity_session: FullActivitySession) {
   const { t } = useTranslation("activities");
@@ -66,10 +67,13 @@ export default function ActivitySession(activity_session: FullActivitySession) {
                 {activity_session.session.title}
               </AppText>
 
-              <AppText className="text-lg text-center">
-                {formatTime(activity_session.session.start_time)} -{" "}
-                {formatTime(activity_session.session.end_time)}
-              </AppText>
+              <View className="flex-row items-center gap-3">
+                <Clock size={24} color="#f3f4f6" />
+                <AppText className="text-lg text-center">
+                  {formatTime(activity_session.session.start_time)} -{" "}
+                  {formatTime(activity_session.session.end_time)}
+                </AppText>
+              </View>
               {activity_session.session.notes && (
                 <AppText className="text-lg text-left mt-5">
                   {activity_session.session.notes}
@@ -137,7 +141,6 @@ export default function ActivitySession(activity_session: FullActivitySession) {
                   "activities.sessionDetails.templateNotesPlaceholder",
                 )}
                 label={t("activities.sessionDetails.templateNotesLabel")}
-                className="min-h-[60px]"
               />
             </View>
             <View className="flex-row gap-3 w-full mt-10">

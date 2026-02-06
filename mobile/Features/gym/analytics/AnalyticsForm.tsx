@@ -1,6 +1,5 @@
 import { View } from "react-native";
 import AppText from "@/components/AppText";
-import { FullGymSession } from "@/database/gym/get-full-gym-session";
 import ChartTabSwitcher from "@/features/gym/analytics/AnalytictsChartTabSwitcher";
 import * as echarts from "echarts/core";
 import {
@@ -14,10 +13,11 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { formatDateShort, formatDuration } from "@/lib/formatDate";
 import { Last30DaysAnalytics } from "@/database/gym/analytics/last-30-days-rpc";
 import { useTranslation } from "react-i18next";
+import { full_gym_session } from "@/types/models";
 
 type AnalyticsFormProps = {
   data: Last30DaysAnalytics;
-  heatmap: FullGymSession[];
+  heatmap: full_gym_session[];
 };
 
 echarts.use([

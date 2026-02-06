@@ -71,7 +71,6 @@ export default function EditWeight({ weight, onClose, onSave }: Props) {
           <SubNotesInput
             value={notes || ""}
             setValue={setNotes}
-            className="min-h-[60px]"
             placeholder="Notes... (optional)"
             label="Notes..."
           />

@@ -30,7 +30,7 @@ as $$
       order by gs.set_number
     ) as sets
   from gym_session_exercises se
-  join gym_sessions s on s.id = se.session_id
+  join sessions s on s.id = se.session_id
   join gym_exercises e on e.id = se.exercise_id
   left join gym_sets gs on gs.session_exercise_id = se.id
   where se.exercise_id = any(exercise_ids)

@@ -416,7 +416,6 @@ export default function StartActivityScreen() {
                       placeholder={t(
                         "activities.startActivityScreen.sessionNotesPlaceholder",
                       )}
-                      className="min-h-[60px]"
                     />
                   </View>
                 </View>

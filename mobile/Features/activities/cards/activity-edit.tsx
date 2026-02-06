@@ -1,7 +1,7 @@
 import { Keyboard, TouchableWithoutFeedback, View } from "react-native";
 import AppText from "@/components/AppText";
 import PageContainer from "@/components/PageContainer";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import AppInput from "@/components/AppInput";
 import SaveButton from "@/components/buttons/SaveButton";
 import FullScreenLoader from "@/components/FullScreenLoader";
@@ -35,6 +35,25 @@ export default function ActivitySessionEdit({
     useState<activities_with_category>(
       activity?.activity as activities_with_category,
     );
+
+  const getActivityName = useCallback(
+    (act: activities_with_category | null) => {
+      if (!act) return t("activities.editSession.selectActivity");
+      if (act.slug) {
+        const translated = t(`activities.activityNames.${act.slug}`, {
+          defaultValue: "",
+        });
+        if (
+          translated &&
+          translated !== `activities.activityNames.${act.slug}`
+        ) {
+          return translated;
+        }
+      }
+      return act.name;
+    },
+    [t],
+  );
 
   const handleSubmit = async () => {
     if (title.trim() === "") {
@@ -87,7 +106,6 @@ export default function ActivitySessionEdit({
             setValue={setNotes}
             placeholder={t("activities.editSession.sessionNotesPlaceholder")}
             label={t("activities.editSession.sessionNotesLabel")}
-            className="min-h-[60px]"
           />
           <View>
             <AppText className="mb-2">
@@ -95,11 +113,7 @@ export default function ActivitySessionEdit({
             </AppText>
             <AnimatedButton
               onPress={() => setShowDropdown(true)}
-              label={
-                selectedActivity
-                  ? selectedActivity.name
-                  : t("activities.editSession.selectActivity")
-              }
+              label={getActivityName(selectedActivity)}
               className="bg-blue-800 py-2 w-full rounded-md shadow-md border-2 border-blue-500"
               textClassName="text-gray-100 text-center"
             />

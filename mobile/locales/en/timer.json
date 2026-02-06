@@ -39,6 +39,14 @@
       "tapToOpenTimer": "Tap to open timer",
       "timesUp": "Time's up!",
       "stopAlarm": "Stop Alarm"
+    },
+    "stopwatch": {
+      "title": "Stopwatch",
+      "cancelSessionTitle": "Cancel Session",
+      "cancelSessionMessage": "Are you sure you want to cancel the session?",
+      "cancel": "Cancel",
+      "pause": "Pause",
+      "start": "Start"
     }
   }
 }

@@ -1,3 +1,4 @@
+import { useUserStore } from "@/lib/stores/useUserStore";
 import { supabase } from "@/lib/supabase";
 import { handleError } from "@/utils/handleError";
 
@@ -5,7 +6,12 @@ type SessionExercise = {
   id: string;
   session_id: string;
   exercise_id: string;
-  gym_exercises: { main_group: string; name: string; equipment: string };
+  gym_exercises: {
+    main_group: string;
+    name: string;
+    equipment: string;
+    gym_exercises_translations: { name: string }[];
+  };
   sessions: { created_at: string; user_id: string };
 };
 
@@ -23,20 +29,27 @@ export async function getLastExerciseHistory({
     throw new Error("Unauthorized");
   }
 
+  const language = useUserStore.getState().settings?.language ?? "en";
+
   const { data: exercises, error: exerciseError } = await supabase
     .from("gym_session_exercises")
     .select(
       `
       id,
-      session_id, 
-      exercise_id, 
-      gym_exercises(main_group, name, equipment), 
+      session_id,
+      exercise_id,
+      gym_exercises(
+        main_group,
+        name,
+        equipment,
+        gym_exercises_translations!inner(name)
+      ),
       sessions!inner(created_at, user_id)
       `,
     )
     .eq("exercise_id", exerciseId)
-    .eq("sessions.user_id", session.user.id);
-
+    .eq("sessions.user_id", session.user.id)
+    .eq("gym_exercises.gym_exercises_translations.language", language);
 
   if (exerciseError) {
     handleError(exerciseError, {
@@ -89,7 +102,7 @@ export async function getLastExerciseHistory({
       return {
         date: session.sessions.created_at,
         main_group: session.gym_exercises.main_group,
-        name: session.gym_exercises.name,
+        name: session.gym_exercises.gym_exercises_translations?.[0]?.name ?? session.gym_exercises.name,
         equipment: session.gym_exercises.equipment,
         sets,
       };

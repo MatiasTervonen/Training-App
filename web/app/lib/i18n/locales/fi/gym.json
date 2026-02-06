@@ -17,7 +17,7 @@
     "activeSessionError": "Sinulla on jo aktiivinen sessio.",
     "activeSessionErrorSub": "Lopeta se ennen uuden aloittamista.",
     "gymForm": {
-      "title": "Seuraa harjoittelun edistymistäsi",
+      "title": "Kuntosalitreeni",
       "titleEdit": "Muokkaa harjoituskertaa",
       "titlePlaceholder": "Harjoituksen otsikko...",
       "titleLabel": "Harjoituksen otsikko...",
@@ -77,14 +77,10 @@
     },
     "addExerciseScreen": {
       "title": "Lisää liikkeitä",
-      "exerciseName": "Liikkeen nimi",
+      "exerciseName": "Liikkeen nimi (englanti)",
+      "fiExerciseName": "Liikkeen nimi (suomi)",
       "exerciseNamePlaceholder": "Liikkeen nimi",
       "charLimit": "Raja saavutettu (max 50 merkkiä)",
-      "language": "Kieli",
-      "languages": {
-        "en": "Englanti",
-        "fi": "Suomi"
-      },
       "equipment": "Väline",
       "muscleGroup": "Lihasryhmä",
       "mainGroup": "Pääryhmä",
@@ -224,7 +220,7 @@
     },
     "analytics": {
       "title": "Viimeisten 30 päivän analytiikka",
-      "totalWorkouts": "Treenejä yhteensä",
+      "totalWorkouts": "Treenejä yht",
       "averageDuration": "Kesto ka",
       "minutes": "minuuttia",
       "muscleGroupDistribution": "Lihasryhmien jakauma",

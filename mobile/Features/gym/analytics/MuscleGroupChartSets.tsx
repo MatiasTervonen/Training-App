@@ -24,31 +24,29 @@ export default function MuscleGroupChartSets({
 
   const maxValue = Math.max(...chartData.map((item) => item.value));
 
-  const maxBarWidth = screenWidth * 0.8; // max width for bars
-  const minLabelSpace = 90;
+  const maxBarWidth = screenWidth * 0.7; // max width for bars
 
   return (
-    <View className="gap-2 my-5 ml-4">
+    <View className="gap-2 my-5 mx-4">
       {chartData.map((item, index) => {
         const barWidth = (item.value / maxValue) * maxBarWidth;
 
-        const valueLeft = Math.max(barWidth + 8, minLabelSpace + 8);
-
         return (
-          <View key={index} className="flex-row items-center gap-5">
-            <View className="absolute z-50 ">
-              <AppText className="pl-2">{item.label}</AppText>
+          <View key={index} className="flex-row items-center justify-between border-b border-slate-700/50">
+            <View className="flex-row items-center flex-1">
+              <View className="absolute z-50">
+                <AppText className="pl-2">{item.label}</AppText>
+              </View>
+
+              <AnimatedBar
+                targetWidth={barWidth}
+                delay={index * 120}
+                color="#3b82f6"
+                style={{ height: 30 }}
+              />
             </View>
 
-            <AnimatedBar
-              targetWidth={barWidth}
-              delay={index * 120}
-              color="#3b82f6"
-              style={{ height: 30 }}
-            />
-            <View className="absolute" style={{ left: valueLeft }}>
-              <AppText className="text-gray-300">{item.value}</AppText>
-            </View>
+            <AppText className="ml-2 min-w-[40px] text-right text-gray-300">{item.value}</AppText>
           </View>
         );
       })}

@@ -5,6 +5,7 @@ import TodoCard from "@/app/(app)/components/feed-cards/TodoCard";
 import { FeedCardProps } from "@/app/(app)/types/session";
 import LocalReminderCard from "@/app/(app)/components/feed-cards/localReminderCard";
 import GlobalReminderCard from "@/app/(app)/components/feed-cards/globalReminderCard";
+import ActivityCard from "@/app/(app)/activities/cards/activity-feed";
 
 export default function FeedCard(props: FeedCardProps) {
   const { pinned, onTogglePin, onDelete, onExpand, onEdit } = props;
@@ -31,5 +32,7 @@ export default function FeedCard(props: FeedCardProps) {
       return <LocalReminderCard {...commomProps} />;
     case "todo_lists":
       return <TodoCard {...commomProps} />;
+    case "activity_sessions":
+      return <ActivityCard {...commomProps} />;
   }
 }

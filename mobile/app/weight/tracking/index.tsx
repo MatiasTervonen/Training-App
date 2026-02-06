@@ -64,7 +64,6 @@ export default function SettingsScreen() {
             <SubNotesInput
               value={notes}
               setValue={setNotes}
-              className="min-h-[60px]"
               label={t("weight.notesLabel")}
               placeholder={t("weight.notesPlaceholder")}
             />

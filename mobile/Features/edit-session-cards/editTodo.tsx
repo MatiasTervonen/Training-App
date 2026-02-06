@@ -194,7 +194,6 @@ export default function EditTodo({ todo_session, onClose, onSave }: Props) {
                     <SubNotesInput
                       value={task.notes || ""}
                       setValue={(value) => updateTask(index, { notes: value })}
-                      className="min-h-[60px]"
                       placeholder={t("todo.editScreen.notesPlaceholder")}
                       label={t("todo.editScreen.notesLabel")}
                     />

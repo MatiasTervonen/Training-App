@@ -8,10 +8,13 @@ import {
   FlatList,
 } from "react-native";
 import AppInput from "@/components/AppInput";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 
 import AnimatedButton from "@/components/buttons/animatedButton";
-import { getUserActivities, UserActivity } from "@/database/activities/get-user-activities";
+import {
+  getUserActivities,
+  UserActivity,
+} from "@/database/activities/get-user-activities";
 import { useDebouncedCallback } from "use-debounce";
 import { useTranslation } from "react-i18next";
 
@@ -26,6 +29,25 @@ export default function UserActivityDropdownEdit({ onSelect }: Props) {
     [],
   );
   const [isSearching, setIsSearching] = useState(false);
+
+  const getCategoryName = useCallback(
+    (activity: UserActivity) => {
+      const categorySlug = activity.activity_categories?.slug;
+      if (categorySlug) {
+        const translated = t(`activities.categories.${categorySlug}`, {
+          defaultValue: "",
+        });
+        if (
+          translated &&
+          translated !== `activities.categories.${categorySlug}`
+        ) {
+          return translated;
+        }
+      }
+      return activity.activity_categories?.name || "";
+    },
+    [t],
+  );
 
   const { data, error, isLoading } = useQuery({
     queryKey: ["userActivities"],
@@ -106,8 +128,12 @@ export default function UserActivityDropdownEdit({ onSelect }: Props) {
             </View>
           ) : !isSearching && listData.length === 0 ? (
             <View className="items-center self-center gap-3 text-lg px-5 mt-20">
-              <AppText>{t("activities.activityDropdownEdit.noActivities")}</AppText>
-              <AppText>{t("activities.activityDropdownEdit.addNewActivity")}</AppText>
+              <AppText>
+                {t("activities.activityDropdownEdit.noActivities")}
+              </AppText>
+              <AppText>
+                {t("activities.activityDropdownEdit.addNewActivity")}
+              </AppText>
             </View>
           ) : (
             <FlatList
@@ -142,7 +168,7 @@ export default function UserActivityDropdownEdit({ onSelect }: Props) {
                           {item.name}
                         </AppText>
                         <AppText className="text-md text-gray-300 shrink-0">
-                          {item.activity_categories?.name}
+                          {getCategoryName(item)}
                         </AppText>
                       </View>
                     </View>

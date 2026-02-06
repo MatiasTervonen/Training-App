@@ -7,6 +7,7 @@ import Map from "@/features/activities/components/templateMap";
 import { useFullScreenModalConfig } from "@/lib/stores/fullScreenModalConfig";
 import { useState } from "react";
 import SaveButtonSpinner from "@/components/buttons/SaveButtonSpinner";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   item: templateSummary;
@@ -19,6 +20,7 @@ export default function ActivityTemplateExpanded({
   onStartActivity,
   isStartingActivity,
 }: Props) {
+  const { t } = useTranslation("activities");
   const [scrollEnabled, setScrollEnabled] = useState(true);
 
   const setSwipeEnabled = useFullScreenModalConfig(
@@ -32,11 +34,11 @@ export default function ActivityTemplateExpanded({
     >
       <PageContainer className="mb-10">
         <AppText className="text-sm text-gray-300 text-center">
-          Created: {formatDate(item.template.created_at)}
+          {t("activities.templatesScreen.created")} {formatDate(item.template.created_at)}
         </AppText>
         {item.template.updated_at && (
           <AppText className="text-sm text-yellow-500 mt-2 text-center">
-            Updated: {formatDate(item.template.updated_at)}
+            {t("activities.templatesScreen.updated")} {formatDate(item.template.updated_at)}
           </AppText>
         )}
         <View className="items-center bg-slate-900 p-5 rounded-md shadow-md mt-5">
@@ -48,7 +50,7 @@ export default function ActivityTemplateExpanded({
           </AppText>
           {item.template.distance_meters && (
             <AppText className="text-xl text-center mb-5">
-              Distance: {formatMeters(item.template.distance_meters)}
+              {t("activities.templatesScreen.distance")} {formatMeters(item.template.distance_meters)}
             </AppText>
           )}
           {item.template.notes && (
@@ -68,7 +70,7 @@ export default function ActivityTemplateExpanded({
           <SaveButtonSpinner
             disabled={isStartingActivity}
             onPress={onStartActivity}
-            label="Start Activity"
+            label={t("activities.templatesScreen.startActivity")}
             loading={isStartingActivity}
           />
         </View>

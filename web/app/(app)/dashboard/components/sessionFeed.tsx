@@ -24,6 +24,8 @@ import PinnedCarousel from "./pinnedCarousell";
 import useUpdateFeedItem from "@/app/(app)/dashboard/hooks/useUpdateFeedItem";
 import useUpdateFeedItemToTop from "@/app/(app)/dashboard/hooks/useUpdateFeedItemToTop";
 import { useTranslation } from "react-i18next";
+import ActivitySession from "@/app/(app)/activities/cards/activity-feed-expanded/activity";
+import EditActivity from "@/app/(app)/activities/cards/activity-edit";
 
 export default function SessionFeed() {
   const { t } = useTranslation("common");
@@ -66,6 +68,10 @@ export default function SessionFeed() {
     TodoSessionError,
     isLoadingTodoSession,
     refetchFullTodo,
+    activitySessionFull,
+    activitySessionError,
+    isLoadingActivitySession,
+    refetchFullActivity,
   } = useFullSessions(expandedItem, editingItem);
 
   // useUpdateFeedItem hook to update feed item in cache
@@ -100,13 +106,9 @@ export default function SessionFeed() {
             <FeedSkeleton count={6} />
           </>
         ) : error ? (
-          <p className="text-center text-lg mt-10">
-            {t("feed.failedToLoad")}
-          </p>
+          <p className="text-center text-lg mt-10">{t("feed.failedToLoad")}</p>
         ) : !data || (unpinnedFeed.length === 0 && pinnedFeed.length === 0) ? (
-          <p className="text-center text-lg mt-20">
-            {t("feed.noSessions")}
-          </p>
+          <p className="text-center text-lg mt-20">{t("feed.noSessions")}</p>
         ) : (
           <>
             <PinnedCarousel
@@ -181,7 +183,7 @@ export default function SessionFeed() {
               <>
                 {isLoadingGymSession ? (
                   <div className="flex flex-col gap-5 items-center justify-center pt-40 px-10">
-                    <p>{t("feed.loadingGymSession")}</p>
+                    <p className="text-lg">{t("feed.loadingGymSession")}</p>
                     <Spinner />
                   </div>
                 ) : GymSessionError ? (
@@ -193,9 +195,30 @@ export default function SessionFeed() {
                 )}
               </>
             )}
+
+            {expandedItem.type === "activity_sessions" && (
+              <>
+                {isLoadingActivitySession ? (
+                  <div className="flex flex-col gap-5 items-center justify-center pt-40 px-10">
+                    <p className="text-lg">{t("feed.loadingActivity")}</p>
+                    <Spinner />
+                  </div>
+                ) : activitySessionError ? (
+                  <p className="text-center text-lg mt-40 px-10">
+                    {t("feed.activityError")}
+                  </p>
+                ) : (
+                  activitySessionFull && (
+                    <ActivitySession {...activitySessionFull} />
+                  )
+                )}
+              </>
+            )}
+
             {expandedItem.type === "weight" && (
               <WeightSession {...expandedItem} />
             )}
+
             {expandedItem.type === "todo_lists" && (
               <>
                 {isLoadingTodoSession ? (
@@ -289,6 +312,34 @@ export default function SessionFeed() {
                   setEditingItem(null);
                 }}
               />
+            )}
+            {editingItem.type === "activity_sessions" && (
+              <>
+                {isLoadingActivitySession ? (
+                  <div className="flex flex-col gap-5 items-center justify-center pt-40 px-10">
+                    <p>{t("feed.loadingActivity")}</p>
+                    <Spinner />
+                  </div>
+                ) : activitySessionError ? (
+                  <p className="text-center text-lg mt-40 px-10">
+                    {t("feed.activityError")}
+                  </p>
+                ) : (
+                  activitySessionFull && (
+                    <EditActivity
+                      activity={activitySessionFull}
+                      onClose={() => setEditingItem(null)}
+                      onSave={async (updatedItem) => {
+                        await Promise.all([
+                          updateFeedItem(updatedItem),
+                          refetchFullActivity(),
+                        ]);
+                        setEditingItem(null);
+                      }}
+                    />
+                  )
+                )}
+              </>
             )}
           </Modal>
         )}

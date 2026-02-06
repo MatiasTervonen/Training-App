@@ -158,6 +158,7 @@ export const useTimerStore = create<TimerState>()(
         }
 
         stopNativeTimer();
+        cancelNativeAlarm("timer");
 
         set({
           isRunning: false,

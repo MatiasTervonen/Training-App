@@ -1,3 +1,6 @@
+Need to install the following packages:
+supabase@2.75.5
+Ok to proceed? (y) 
 export type Json =
   | string
   | number
@@ -1972,7 +1975,7 @@ export type Database = {
       }
       reminders_save_global_reminder: {
         Args: {
-          p_created_from_token?: string
+          p_created_from_device_id?: string
           p_mode?: string
           p_notes: string
           p_notify_at: string

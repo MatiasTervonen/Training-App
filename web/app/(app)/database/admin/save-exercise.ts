@@ -5,6 +5,7 @@ import { handleError } from "@/app/(app)/utils/handleError";
 
 type SaveExerciserops = {
   name: string;
+  fiName: string;
   equipment: string;
   muscle_group: string;
   main_group: string;
@@ -12,6 +13,7 @@ type SaveExerciserops = {
 
 export async function saveExercise({
   name,
+  fiName,
   equipment,
   muscle_group,
   main_group,
@@ -50,7 +52,7 @@ export async function saveExercise({
     throw new Error("Exercise with this name already exists.");
   }
 
-  const { error: exerciseError } = await supabase
+  const { data: exercise, error: exerciseError } = await supabase
     .from("gym_exercises")
     .insert([
       {
@@ -60,7 +62,7 @@ export async function saveExercise({
         main_group,
       },
     ])
-    .select()
+    .select("id")
     .single();
 
   if (exerciseError) {
@@ -70,6 +72,22 @@ export async function saveExercise({
       method: "direct",
     });
     throw new Error("Error adding new exercise");
+  }
+
+  const { error: translationError } = await supabase
+    .from("gym_exercises_translations")
+    .insert([
+      { exercise_id: exercise.id, language: "en", name: name },
+      { exercise_id: exercise.id, language: "fi", name: fiName },
+    ]);
+
+  if (translationError) {
+    handleError(translationError, {
+      message: "Error adding exercise translation",
+      route: "server-action: saveExerciseToDB-Admin",
+      method: "direct",
+    });
+    throw new Error("Error adding exercise translation");
   }
 
   return { success: true };

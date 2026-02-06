@@ -13,6 +13,7 @@ import { useTranslation } from "react-i18next";
 export default function AddExercises() {
   const { t } = useTranslation("gym");
   const [name, setName] = useState("");
+  const [fiName, setFiName] = useState("");
   const [equipment, setEquipment] = useState("barbell");
   const [muscleGroup, setMuscleGroup] = useState("chest");
   const [mainGroup, setMainGroup] = useState("chest");
@@ -32,6 +33,7 @@ export default function AddExercises() {
 
     const exerciseData = {
       name,
+      fiName,
       equipment,
       muscle_group: muscleGroup,
       main_group: mainGroup,
@@ -47,6 +49,7 @@ export default function AddExercises() {
 
       toast.success(t("gym.addExerciseScreen.saveSuccess"));
       setName("");
+      setFiName("");
     } catch {
       toast.error(t("gym.addExerciseScreen.saveError"));
     } finally {
@@ -69,6 +72,20 @@ export default function AddExercises() {
             maxLength={50}
           />
           {name.length >= 50 ? (
+            <p className="text-yellow-400 mt-2">
+              {t("gym.addExerciseScreen.charLimit")}
+            </p>
+          ) : null}
+        </div>
+        <div>
+          <CustomInput
+            value={fiName}
+            setValue={setFiName}
+            placeholder={t("gym.addExerciseScreen.fiExerciseName")}
+            label={t("gym.addExerciseScreen.fiExerciseName")}
+            maxLength={50}
+          />
+          {fiName.length >= 50 ? (
             <p className="text-yellow-400 mt-2">
               {t("gym.addExerciseScreen.charLimit")}
             </p>
@@ -97,21 +114,44 @@ export default function AddExercises() {
           onChange={setMuscleGroup}
           options={[
             { value: "chest", label: t("gym.muscleGroups.chest") },
-            { value: "quads", label: t("gym.muscleGroups.quads") },
-            { value: "hamstrings", label: t("gym.muscleGroups.hamstrings") },
+            { value: "lats", label: t("gym.muscleGroups.lats") },
+            {
+              value: "upper_back",
+              label: t("gym.muscleGroups.upper_back"),
+            },
+            {
+              value: "lower_back",
+              label: t("gym.muscleGroups.lower_back"),
+            },
+            { value: "traps", label: t("gym.muscleGroups.traps") },
+            {
+              value: "front_delts",
+              label: t("gym.muscleGroups.front_delts"),
+            },
+            {
+              value: "side_delts",
+              label: t("gym.muscleGroups.side_delts"),
+            },
+            {
+              value: "rear_delts",
+              label: t("gym.muscleGroups.rear_delts"),
+            },
             { value: "biceps", label: t("gym.muscleGroups.biceps") },
             { value: "triceps", label: t("gym.muscleGroups.triceps") },
-            { value: "lats", label: t("gym.muscleGroups.lats") },
-            { value: "abs", label: t("gym.muscleGroups.abs") },
-            { value: "calves", label: t("gym.muscleGroups.calves") },
-            { value: "upper_back", label: t("gym.muscleGroups.upper_back") },
             { value: "forearms", label: t("gym.muscleGroups.forearms") },
-            { value: "full_body", label: t("gym.muscleGroups.full_body") },
-            { value: "side_delts", label: t("gym.muscleGroups.side_delts") },
-            { value: "legs", label: t("gym.muscleGroups.legs") },
+            {
+              value: "quads",
+              label: t("gym.muscleGroups.quads"),
+            },
+            {
+              value: "hamstrings",
+              label: t("gym.muscleGroups.hamstrings"),
+            },
+            { value: "glutes", label: t("gym.muscleGroups.glutes") },
+            { value: "calves", label: t("gym.muscleGroups.calves") },
+            { value: "abs", label: t("gym.muscleGroups.abs") },
             { value: "obliques", label: t("gym.muscleGroups.obliques") },
-            { value: "front_delts", label: t("gym.muscleGroups.front_delts") },
-            { value: "traps", label: t("gym.muscleGroups.traps") },
+            { value: "full_body", label: t("gym.muscleGroups.full_body") },
           ]}
           label={t("gym.addExerciseScreen.muscleGroup")}
         />

@@ -82,7 +82,6 @@ export default function NotesScreen() {
               />
             </View>
             <NotesInput
-              className="min-h-[120px]"
               value={notes}
               setValue={setNotes}
               placeholder={t("notes.notesPlaceholder")}

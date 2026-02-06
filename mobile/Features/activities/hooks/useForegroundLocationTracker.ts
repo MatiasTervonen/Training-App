@@ -77,37 +77,43 @@ export function useForegroundLocationTracker({
   }, [activeSession, setHasStartedTracking]);
 
   // Sync lastAcceptedPointRef with the last point from hydrated track
+  // Only runs on hydration transition (false→true), not on every track change
+  const prevHydratedRef = useRef(false);
   useEffect(() => {
-    if (isHydrated && track.length > 0) {
-      const lastPoint = track[track.length - 1];
-      lastAcceptedPointRef.current = lastPoint;
+    const wasHydrated = prevHydratedRef.current;
+    prevHydratedRef.current = isHydrated;
 
-      // Find last moving point for proper state reconstruction
-      const lastMovingPoint = [...track].reverse().find((p) => !p.isStationary && !p.isBadSignal);
+    // Skip if not a hydration transition or already synced
+    if (wasHydrated || !isHydrated || track.length === 0) return;
 
-      // Count consecutive bad signal points at the end of track
-      let badSignalCount = 0;
-      for (let i = track.length - 1; i >= 0; i--) {
-        if (track[i].isBadSignal) {
-          badSignalCount++;
-        } else {
-          break;
-        }
+    const lastPoint = track[track.length - 1];
+    lastAcceptedPointRef.current = lastPoint;
+
+    // Find last moving point for proper state reconstruction
+    const lastMovingPoint = [...track].reverse().find((p) => !p.isStationary && !p.isBadSignal);
+
+    // Count consecutive bad signal points at the end of track
+    let badSignalCount = 0;
+    for (let i = track.length - 1; i >= 0; i--) {
+      if (track[i].isBadSignal) {
+        badSignalCount++;
+      } else {
+        break;
       }
-
-      movementStateRef.current = {
-        confidence: lastPoint.confidence ?? 0,
-        badSignalCount,
-        lastMovingPoint: lastMovingPoint
-          ? {
-              latitude: lastMovingPoint.latitude,
-              longitude: lastMovingPoint.longitude,
-              timestamp: lastMovingPoint.timestamp,
-            }
-          : null,
-        lastAcceptedTimestamp: lastPoint.timestamp,
-      };
     }
+
+    movementStateRef.current = {
+      confidence: lastPoint.confidence ?? 0,
+      badSignalCount,
+      lastMovingPoint: lastMovingPoint
+        ? {
+            latitude: lastMovingPoint.latitude,
+            longitude: lastMovingPoint.longitude,
+            timestamp: lastMovingPoint.timestamp,
+          }
+        : null,
+      lastAcceptedTimestamp: lastPoint.timestamp,
+    };
   }, [isHydrated, track]);
 
   // Start the location tracking when the component is in the foreground and the GPS is allowed and the activity is running

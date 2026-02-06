@@ -140,17 +140,6 @@ export default function RemindersPage() {
             <EditMyGlobalReminder
               reminder={editingItem}
               onClose={() => setEditingItem(null)}
-              onSave={async () => {
-                await Promise.all([
-                  queryClient.invalidateQueries({
-                    queryKey: ["reminders"],
-                  }),
-                  queryClient.refetchQueries({
-                    queryKey: ["feed"],
-                  }),
-                ]);
-                setEditingItem(null);
-              }}
             />
           </FullScreenModal>
         )}

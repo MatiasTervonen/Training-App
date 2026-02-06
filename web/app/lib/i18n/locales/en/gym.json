@@ -78,14 +78,10 @@
     },
     "addExerciseScreen": {
       "title": "Add Exercises",
-      "exerciseName": "Exercise Name",
+      "exerciseName": "Exercise Name (English)",
+      "fiExerciseName": "Exercise Name (Finnish)",
       "exerciseNamePlaceholder": "Exercise name",
       "charLimit": "Reached the limit (50 chars max)",
-      "language": "Language",
-      "languages": {
-        "en": "English",
-        "fi": "Finnish"
-      },
       "equipment": "Equipment",
       "muscleGroup": "Muscle group",
       "mainGroup": "Main group",

@@ -9,8 +9,7 @@ import {
   SectionList,
 } from "react-native";
 import AppInput from "@/components/AppInput";
-import { useState } from "react";
-import { useDebouncedCallback } from "use-debounce";
+import { useCallback, useState, useMemo } from "react";
 import { getRecentActivities } from "@/database/activities/recent-activities";
 import { activities_with_category } from "@/types/models";
 import AnimatedButton from "@/components/buttons/animatedButton";
@@ -27,46 +26,50 @@ export default function ActivityDropdown({ onSelect }: Props) {
   const [selectedActivity, setSelectedActivity] =
     useState<activities_with_category | null>(null);
 
-  // Helper function to get translated activity name
-  const getActivityName = (activity: activities_with_category) => {
-    if (activity.slug) {
-      const translated = t(`activities.activityNames.${activity.slug}`, {
-        defaultValue: "",
-      });
-      if (
-        translated &&
-        translated !== `activities.activityNames.${activity.slug}`
-      ) {
-        return translated;
+  const getActivityName = useCallback(
+    (activity: activities_with_category) => {
+      if (activity.slug) {
+        const translated = t(`activities.activityNames.${activity.slug}`, {
+          defaultValue: "",
+        });
+        if (
+          translated &&
+          translated !== `activities.activityNames.${activity.slug}`
+        ) {
+          return translated;
+        }
       }
-    }
-    return activity.name;
-  };
+      return activity.name;
+    },
+    [t],
+  );
 
-  // Helper function to get translated category name
-  const getCategoryName = (activity: activities_with_category) => {
-    const categorySlug = activity.activity_categories?.slug;
-    if (categorySlug) {
-      const translated = t(`activities.categories.${categorySlug}`, {
-        defaultValue: "",
-      });
-      if (
-        translated &&
-        translated !== `activities.categories.${categorySlug}`
-      ) {
-        return translated;
+  const getCategoryName = useCallback(
+    (activity: activities_with_category) => {
+      const categorySlug = activity.activity_categories?.slug;
+      if (categorySlug) {
+        const translated = t(`activities.categories.${categorySlug}`, {
+          defaultValue: "",
+        });
+        if (
+          translated &&
+          translated !== `activities.categories.${categorySlug}`
+        ) {
+          return translated;
+        }
       }
-    }
-    return activity.activity_categories?.name || "";
-  };
+      return activity.activity_categories?.name || "";
+    },
+    [t],
+  );
 
   const {
     data: allActivities,
     error: activitiesError,
     isLoading: isActivitiesLoading,
   } = useQuery({
-    queryKey: ["activities", searchQuery],
-    queryFn: () => getActivities(searchQuery),
+    queryKey: ["activities"],
+    queryFn: () => getActivities(),
     refetchOnMount: false,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
@@ -91,8 +94,22 @@ export default function ActivityDropdown({ onSelect }: Props) {
   const isLoading = isActivitiesLoading || isRecentLoading;
   const isError = activitiesError || recentError;
 
-  const allActivitiesList = allActivities || [];
   const recentActivitiesList = recentActivities || [];
+
+  const filteredActivities = useMemo(() => {
+    const list = allActivities || [];
+    if (!searchQuery.trim()) return list;
+    const query = searchQuery.toLowerCase();
+    return list.filter((activity) => {
+      const translatedName = getActivityName(activity).toLowerCase();
+      const translatedCategory = getCategoryName(activity).toLowerCase();
+      return (
+        translatedName.includes(query) ||
+        translatedCategory.includes(query) ||
+        activity.name.toLowerCase().includes(query)
+      );
+    });
+  }, [allActivities, searchQuery, getActivityName, getCategoryName]);
 
   const sections = [];
 
@@ -106,13 +123,9 @@ export default function ActivityDropdown({ onSelect }: Props) {
 
     sections.push({
       title: t("activities.activityDropdown.allActivities"),
-      data: allActivitiesList,
+      data: filteredActivities,
     });
   }
-
-  const handleSearchChange = useDebouncedCallback((value: string) => {
-    setSearchQuery(value);
-  }, 400);
 
   const handleSelectActivity = (activity: activities_with_category) => {
     setSearchQuery("");
@@ -131,7 +144,7 @@ export default function ActivityDropdown({ onSelect }: Props) {
             autoComplete="off"
             onChangeText={(text) => {
               setInputValue(text);
-              handleSearchChange(text);
+              setSearchQuery(text);
             }}
             spellCheck={false}
           />
@@ -151,7 +164,7 @@ export default function ActivityDropdown({ onSelect }: Props) {
               </AppText>
               <ActivityIndicator />
             </View>
-          ) : allActivitiesList.length === 0 ? (
+          ) : filteredActivities.length === 0 ? (
             <AppText className="text-lg text-gray-300 mt-20 text-center">
               {t("activities.activityDropdown.noActivities")}
             </AppText>

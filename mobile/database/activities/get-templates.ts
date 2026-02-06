@@ -1,7 +1,8 @@
 import { supabase } from "@/lib/supabase";
 import { handleError } from "@/utils/handleError";
+import { templateSummary } from "@/types/session";
 
-export async function getActivityTemplates() {
+export async function getActivityTemplates(): Promise<templateSummary[]> {
   const { data, error } = await supabase.rpc("activities_get_templates");
 
   if (error) {
@@ -13,5 +14,5 @@ export async function getActivityTemplates() {
     throw new Error("Error fetching templates");
   }
 
-  return data;
+  return (data ?? []) as templateSummary[];
 }

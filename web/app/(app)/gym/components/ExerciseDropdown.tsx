@@ -9,6 +9,7 @@ import {
 } from "@/app/(app)/database/gym/get-exercises";
 import { getRecentExercises } from "@/app/(app)/database/gym/recent-exercises";
 import { useTranslation } from "react-i18next";
+import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
 
 type Props = {
   onSelect: (exercise: ExerciseWithTranslation) => void;
@@ -17,13 +18,14 @@ type Props = {
 export default function ExerciseDropdown({ onSelect }: Props) {
   const { t } = useTranslation("gym");
   const [searchQuery, setSearchQuery] = useState("");
+  const language = useUserStore((state) => state.preferences?.language ?? "en");
 
   const {
     data: allExercisesData,
     error: exercisesError,
     isLoading: isExercisesLoading,
   } = useQuery({
-    queryKey: ["exercises"],
+    queryKey: ["exercises", language],
     queryFn: getExercises,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
@@ -35,7 +37,7 @@ export default function ExerciseDropdown({ onSelect }: Props) {
     error: recentError,
     isLoading: isRecentLoading,
   } = useQuery({
-    queryKey: ["recentExercises"],
+    queryKey: ["recentExercises", language],
     queryFn: getRecentExercises,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
@@ -87,7 +89,7 @@ export default function ExerciseDropdown({ onSelect }: Props) {
   }
 
   return (
-    <div className="flex flex-col px-2 w-full h-[calc(100dvh-120px)] z-50">
+    <div className="flex flex-col px-2 w-full h-full z-50">
       <div className="flex flex-col mt-8 px-20">
         <input
           className="p-2 rounded-md border-2 border-gray-100 z-10 placeholder-gray-500 bg-gray-900 hover:border-blue-500 focus:outline-none focus:border-green-300"

@@ -75,7 +75,7 @@ export default function ExerciseHistoryModal({
                     {exerciseName}
                   </AppText>
                   <AppText className="text-center text-gray-300 mt-2">
-                    {equipment}
+                    {t(`gym.equipment.${equipment?.toLowerCase()}`)}
                   </AppText>
                 </View>
               }

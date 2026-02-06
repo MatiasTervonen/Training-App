@@ -4,8 +4,12 @@ import { FeedItemUI } from "@/app/(app)/types/session";
 import { useQuery } from "@tanstack/react-query";
 import { getFullGymSession } from "@/app/(app)/database/gym/get-full-gym-session";
 import { getFullTodoSession } from "@/app/(app)/database/todo/get-full-todo";
-import { full_todo_session } from "@/app/(app)/types/models";
+import {
+  full_todo_session,
+  FullActivitySession,
+} from "@/app/(app)/types/models";
 import { FullGymSession } from "@/app/(app)/database/gym/get-full-gym-session";
+import { getFullActivitySession } from "@/app/(app)/database/activities/get-full-activity-session";
 
 export default function useFullSessions(
   expandedItem: FeedItemUI | null,
@@ -29,6 +33,15 @@ export default function useFullSessions(
       : editingItem?.type === "todo_lists"
         ? editingId
         : null;
+
+  const activityItem =
+    expandedItem?.type === "activity_sessions"
+      ? expandedItem
+      : editingItem?.type === "activity_sessions"
+        ? editingItem
+        : null;
+
+  const activityId = activityItem ? getId(activityItem) : null;
 
   const {
     data: GymSessionFull,
@@ -61,6 +74,25 @@ export default function useFullSessions(
     gcTime: Infinity,
   });
 
+  const {
+    data: activitySessionFull,
+    error: activitySessionError,
+    isLoading: isLoadingActivitySession,
+    refetch: refetchFullActivity,
+  } = useQuery<FullActivitySession & { feed_context: "pinned" | "feed" }>({
+    queryKey: ["fullActivitySession", activityId],
+    queryFn: async () => {
+      const data = await getFullActivitySession(activityId!);
+      return { ...data, feed_context: activityItem!.feed_context };
+    },
+    enabled: !!activityId,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    refetchOnMount: false,
+    staleTime: Infinity,
+    gcTime: Infinity,
+  });
+
   return {
     GymSessionFull,
     GymSessionError,
@@ -69,5 +101,9 @@ export default function useFullSessions(
     TodoSessionError,
     isLoadingTodoSession,
     refetchFullTodo,
+    activitySessionFull,
+    activitySessionError,
+    isLoadingActivitySession,
+    refetchFullActivity,
   };
 }

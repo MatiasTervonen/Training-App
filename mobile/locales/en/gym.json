@@ -141,15 +141,13 @@
       "forearms": "Forearms",
       "full_body": "Full body",
       "side_delts": "Side delts",
-      "legs": "Legs",
       "obliques": "Obliques",
       "front_delts": "Front delts",
       "traps": "Traps",
       "delts": "Delts",
       "glutes": "Glutes",
       "cardio": "Cardio",
-      "rear_delts": "Rear delts",
-      "core": "Core"
+      "rear_delts": "Rear delts"
     },
     "mainGroups": {
       "chest": "Chest",

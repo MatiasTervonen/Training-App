@@ -12,8 +12,10 @@ import ActivityTemplateCard from "@/features/activities/templates/cards/template
 import ActivityTemplateExpanded from "@/features/activities/templates/cards/template-expanded";
 import { useStartActivity } from "@/features/activities/templates/hooks/useStartActivity";
 import { useDeleteTemplate } from "@/features/activities/templates/hooks/useDeleteTemplate";
+import { useTranslation } from "react-i18next";
 
 export default function TemplatesPage() {
+  const { t } = useTranslation("activities");
   const [expandedItem, setExpandedItem] = useState<templateSummary | null>(
     null,
   );
@@ -46,25 +48,27 @@ export default function TemplatesPage() {
       keyboardShouldPersistTaps="handled"
     >
       <PageContainer>
-        <AppText className="text-center mb-10 text-2xl">My Templates</AppText>
+        <AppText className="text-center mb-10 text-2xl">
+          {t("activities.templatesScreen.title")}
+        </AppText>
 
         {!error && isLoading && <TemplateSkeleton count={6} />}
 
         {error && (
-          <View className="bg-slate-900 rounded-md py-10 px-10 items-center justify-center">
+          <View className="bg-slate-900 rounded-md mt-20 px-10 items-center justify-center">
             <AppText className="text-red-500 text-center text-lg">
-              Error loading templates. Try again!
+              {t("activities.templatesScreen.loadError")}
             </AppText>
           </View>
         )}
 
         {!isLoading && templates.length === 0 && (
-          <View className="bg-slate-900 rounded-md py-10 px-10 items-center justify-center gap-2">
+          <View className="bg-slate-900 rounded-md mt-20 px-10 items-center justify-center gap-2">
             <AppText className="text-gray-300 text-lg">
-              No templates found.
+              {t("activities.templatesScreen.noTemplates")}
             </AppText>
             <AppText className="text-gray-300 text-lg">
-              Create a new template to get started!
+              {t("activities.templatesScreen.noTemplatesHint")}
             </AppText>
           </View>
         )}

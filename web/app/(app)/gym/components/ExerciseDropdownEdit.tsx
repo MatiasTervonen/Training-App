@@ -128,7 +128,7 @@ export default function ExerciseDropdownEdit({ onSelect }: Props) {
             </div>
           ) : (
             <>
-              <h2 className=" text-center bg-slate-600">
+              <h2 className=" text-center bg-blue-600">
                 {" "}
                 {t("gym.exerciseDropdownEdit.myExercises")}
               </h2>

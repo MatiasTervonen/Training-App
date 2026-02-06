@@ -126,7 +126,6 @@ export default function HandleEditLocalReminder({
           <SubNotesInput
             value={notes || ""}
             setValue={setNotes}
-            className="min-h-[60px]"
             placeholder={t("reminders.notesPlaceholder")}
             label={t("reminders.notesLabel")}
           />

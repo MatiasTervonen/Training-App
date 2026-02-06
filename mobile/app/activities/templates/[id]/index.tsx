@@ -2,7 +2,7 @@ import { Keyboard, TouchableWithoutFeedback, View } from "react-native";
 import AppText from "@/components/AppText";
 import PageContainer from "@/components/PageContainer";
 import { router, useLocalSearchParams } from "expo-router";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import AppInput from "@/components/AppInput";
 import SaveButton from "@/components/buttons/SaveButton";
 import FullScreenLoader from "@/components/FullScreenLoader";
@@ -16,8 +16,10 @@ import { activities_with_category } from "@/types/models";
 import { useQueryClient } from "@tanstack/react-query";
 import { templateSummary } from "@/types/session";
 import DeleteButton from "@/components/buttons/DeleteButton";
+import { useTranslation } from "react-i18next";
 
 export default function ActivityTemplateEditScreen() {
+  const { t } = useTranslation("activities");
   const { id } = useLocalSearchParams<{ id?: string }>();
   const templateId = id;
 
@@ -36,14 +38,30 @@ export default function ActivityTemplateEditScreen() {
       template?.activity as activities_with_category,
     );
 
+  const getActivityName = useCallback(
+    (activity: activities_with_category | null) => {
+      if (!activity) return t("activities.editTemplateScreen.selectActivity");
+      if (activity.slug) {
+        const translated = t(`activities.activityNames.${activity.slug}`, {
+          defaultValue: "",
+        });
+        if (translated && translated !== `activities.activityNames.${activity.slug}`) {
+          return translated;
+        }
+      }
+      return activity.name;
+    },
+    [t],
+  );
+
   const handleSave = async () => {
     if (!templateId) return;
 
     if (name.trim() === "") {
       Toast.show({
         type: "error",
-        text1: "Error saving template",
-        text2: "Please enter a template name",
+        text1: t("activities.editTemplateScreen.errorTitle"),
+        text2: t("activities.editTemplateScreen.errorEmptyName"),
       });
       return;
     }
@@ -64,16 +82,16 @@ export default function ActivityTemplateEditScreen() {
 
       Toast.show({
         type: "success",
-        text1: "Template saved",
-        text2: "Template has been saved successfully.",
+        text1: t("activities.editTemplateScreen.successTitle"),
+        text2: t("activities.editTemplateScreen.successMessage"),
       });
       router.push("/activities/templates");
     } catch (error) {
       console.error("Error saving template", error);
       Toast.show({
         type: "error",
-        text1: "Error saving template",
-        text2: "Please try again later",
+        text1: t("activities.editTemplateScreen.errorTitle"),
+        text2: t("activities.editTemplateScreen.errorGeneric"),
       });
     } finally {
       setIsLoading(false);
@@ -83,9 +101,11 @@ export default function ActivityTemplateEditScreen() {
   if (!template) {
     return (
       <PageContainer>
-        <AppText className="text-2xl text-center mb-10">Edit Template</AppText>
+        <AppText className="text-2xl text-center mb-10">
+          {t("activities.editTemplateScreen.title")}
+        </AppText>
         <AppText className="text-center text-red-500 mt-20">
-          Template not found
+          {t("activities.editTemplateScreen.templateNotFound")}
         </AppText>
       </PageContainer>
     );
@@ -96,32 +116,31 @@ export default function ActivityTemplateEditScreen() {
       <PageContainer className="justify-between">
         <View>
           <AppText className="text-2xl text-center mb-10">
-            Edit Template
+            {t("activities.editTemplateScreen.title")}
           </AppText>
           <View className="mb-5">
             <AppInput
               value={name}
               onChangeText={setName}
-              placeholder="Template Name..."
-              label="Template Name..."
+              placeholder={t("activities.editTemplateScreen.templateNamePlaceholder")}
+              label={t("activities.editTemplateScreen.templateNameLabel")}
             />
           </View>
           <View className="mb-5">
             <SubNotesInput
               value={notes}
               setValue={setNotes}
-              placeholder="Template Notes..."
-              label="Template Notes..."
-              className="min-h-[60px]"
+              placeholder={t("activities.editTemplateScreen.templateNotesPlaceholder")}
+              label={t("activities.editTemplateScreen.templateNotesLabel")}
             />
           </View>
           <View className="mt-5">
-            <AppText className="mb-2">Select Activity</AppText>
+            <AppText className="mb-2">
+              {t("activities.editTemplateScreen.selectActivity")}
+            </AppText>
             <AnimatedButton
               onPress={() => setShowDropdown(true)}
-              label={
-                selectedActivity ? selectedActivity.name : "Select Activity"
-              }
+              label={getActivityName(selectedActivity)}
               className="bg-blue-800 py-2 w-full rounded-md shadow-md border-2 border-blue-500"
               textClassName="text-gray-100 text-center"
             />
@@ -131,7 +150,7 @@ export default function ActivityTemplateEditScreen() {
             onClose={() => setShowDropdown(false)}
           >
             <AppText className="text-2xl text-center my-10">
-              Select Activity
+              {t("activities.editTemplateScreen.selectActivity")}
             </AppText>
             <ActivityDropdown
               onSelect={(activity) => {
@@ -143,16 +162,16 @@ export default function ActivityTemplateEditScreen() {
           </FullScreenModal>
         </View>
         <View className="gap-5">
-          <SaveButton onPress={handleSave} label="Save Template" />
+          <SaveButton onPress={handleSave} label={t("activities.editTemplateScreen.saveButton")} />
           <DeleteButton
             onPress={() => {
               router.push("/activities/templates");
             }}
-            label="Cancel"
+            label={t("activities.editTemplateScreen.cancelButton")}
             confirm={false}
           />
         </View>
-        <FullScreenLoader visible={isLoading} message="Saving template..." />
+        <FullScreenLoader visible={isLoading} message={t("activities.editTemplateScreen.savingTemplate")} />
       </PageContainer>
     </TouchableWithoutFeedback>
   );

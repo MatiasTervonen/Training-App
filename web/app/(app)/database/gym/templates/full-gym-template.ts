@@ -1,11 +1,9 @@
-"use server";
-
 import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
 import { handleError } from "@/app/(app)/utils/handleError";
-import { createClient } from "@/utils/supabase/server";
+import { createClient } from "@/utils/supabase/client";
 
 export async function getFullTemplate(sessionId: string) {
-  const supabase = await createClient();
+  const supabase = createClient();
 
   if (!sessionId) {
     throw new Error("Missing session ID");
@@ -40,7 +38,6 @@ export async function getFullTemplate(sessionId: string) {
     .single();
 
   if (templateError || !template) {
-    console.log("error fetching template", templateError);
     handleError(templateError, {
       message: "Error fetching template",
       route: "/database/gym/templates/full-gym-template",

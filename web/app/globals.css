@@ -2,7 +2,6 @@
 
 @theme {
   --color-primary: #f3f4f6;
-  --font-primary: "Russo One", sans-serif;
   --breakpoint-xs: 26rem;
   --page-padding: 1.25rem 1.25rem 2.5rem;
 }

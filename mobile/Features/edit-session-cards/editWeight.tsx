@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import SubNotesInput from "../../components/SubNotesInput";
 import AppInput from "@/components/AppInput";
 import SaveButton from "@/components/buttons/SaveButton";
@@ -9,11 +9,14 @@ import { View, TouchableWithoutFeedback, Keyboard } from "react-native";
 import { editWeight } from "@/database/weight/edit-weight";
 import PageContainer from "../../components/PageContainer";
 import { FeedItemUI } from "@/types/session";
+import { Dot } from "lucide-react-native";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   weight: FeedItemUI;
   onClose: () => void;
   onSave: (updateFeedItem: FeedItemUI) => void;
+  onDirtyChange?: (isDirty: boolean) => void;
 };
 
 type weightPayload = {
@@ -21,7 +24,8 @@ type weightPayload = {
   weight: number;
 };
 
-export default function EditWeight({ weight, onClose, onSave }: Props) {
+export default function EditWeight({ weight, onClose, onSave, onDirtyChange }: Props) {
+  const { t } = useTranslation("common");
   const payload = weight.extra_fields as weightPayload;
 
   const [title, setValue] = useState(weight.title);
@@ -30,6 +34,15 @@ export default function EditWeight({ weight, onClose, onSave }: Props) {
     payload.weight != null ? payload.weight.toString() : "",
   );
   const [isSaving, setIsSaving] = useState(false);
+
+  const hasChanges =
+    title !== weight.title ||
+    notes !== payload.notes ||
+    weightValue !== (payload.weight != null ? payload.weight.toString() : "");
+
+  useEffect(() => {
+    onDirtyChange?.(hasChanges);
+  }, [hasChanges, onDirtyChange]);
 
   const handleSubmit = async () => {
     setIsSaving(true);
@@ -56,9 +69,18 @@ export default function EditWeight({ weight, onClose, onSave }: Props) {
   };
 
   return (
-    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-      <PageContainer className="justify-between mb-10 mt-5">
-        <View className="gap-5">
+    <View className="flex-1">
+      {hasChanges && (
+        <View className="bg-gray-900 absolute top-5 left-5 z-50 py-1 px-4 flex-row items-center rounded-lg">
+          <AppText className="text-sm text-yellow-500">{t("common.unsavedChanges")}</AppText>
+          <View className="animate-pulse">
+            <Dot color="#eab308" />
+          </View>
+        </View>
+      )}
+      <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+        <PageContainer className="justify-between mb-10 mt-5">
+          <View className="gap-5">
           <AppText className="text-xl text-center mb-5">
             Edit your weight session
           </AppText>
@@ -88,5 +110,6 @@ export default function EditWeight({ weight, onClose, onSave }: Props) {
         <FullScreenLoader visible={isSaving} message="Saving weight..." />
       </PageContainer>
     </TouchableWithoutFeedback>
+    </View>
   );
 }

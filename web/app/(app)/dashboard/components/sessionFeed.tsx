@@ -28,9 +28,11 @@ import ActivitySession from "@/app/(app)/activities/cards/activity-feed-expanded
 import EditActivity from "@/app/(app)/activities/cards/activity-edit";
 
 export default function SessionFeed() {
-  const { t } = useTranslation("common");
+  const { t } = useTranslation("feed");
   const [expandedItem, setExpandedItem] = useState<FeedItemUI | null>(null);
   const [editingItem, setEditingItem] = useState<FeedItemUI | null>(null);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [hasUnsavedExpandedChanges, setHasUnsavedExpandedChanges] = useState(false);
 
   const router = useRouter();
 
@@ -167,7 +169,14 @@ export default function SessionFeed() {
         )}
 
         {expandedItem && (
-          <Modal onClose={() => setExpandedItem(null)} isOpen={true}>
+          <Modal
+            onClose={() => {
+              setHasUnsavedExpandedChanges(false);
+              setExpandedItem(null);
+            }}
+            isOpen={true}
+            confirmBeforeClose={hasUnsavedExpandedChanges}
+          >
             {expandedItem.type === "notes" && (
               <NotesSession {...expandedItem} />
             )}
@@ -183,7 +192,7 @@ export default function SessionFeed() {
               <>
                 {isLoadingGymSession ? (
                   <div className="flex flex-col gap-5 items-center justify-center pt-40 px-10">
-                    <p className="text-lg">{t("feed.loadingGymSession")}</p>
+                    <p className="text-lg">{t("feed.loadingGym")}</p>
                     <Spinner />
                   </div>
                 ) : GymSessionError ? (
@@ -239,7 +248,9 @@ export default function SessionFeed() {
                           updateFeedItemToTop(updatedItem),
                           refetchFullTodo(),
                         ]);
+                        setHasUnsavedExpandedChanges(false);
                       }}
+                      onDirtyChange={setHasUnsavedExpandedChanges}
                     />
                   )
                 )}
@@ -253,15 +264,18 @@ export default function SessionFeed() {
             isOpen={true}
             onClose={() => {
               setEditingItem(null);
+              setHasUnsavedChanges(false);
             }}
+            confirmBeforeClose={hasUnsavedChanges}
           >
             {editingItem.type === "notes" && (
               <EditNote
                 note={editingItem}
-                onClose={() => setEditingItem(null)}
+                onDirtyChange={setHasUnsavedChanges}
                 onSave={(updatedItem) => {
                   updateFeedItemToTop(updatedItem);
                   setEditingItem(null);
+                  setHasUnsavedChanges(false);
                 }}
               />
             )}
@@ -269,9 +283,11 @@ export default function SessionFeed() {
               <EditReminder
                 reminder={editingItem}
                 onClose={() => setEditingItem(null)}
+                onDirtyChange={setHasUnsavedChanges}
                 onSave={(updatedItem) => {
                   updateFeedItemToTop(updatedItem);
                   setEditingItem(null);
+                  setHasUnsavedChanges(false);
                 }}
               />
             )}
@@ -291,12 +307,14 @@ export default function SessionFeed() {
                     <EditTodo
                       todo_session={TodoSessionFull}
                       onClose={() => setEditingItem(null)}
+                      onDirtyChange={setHasUnsavedChanges}
                       onSave={async (updatedItem) => {
                         await Promise.all([
                           updateFeedItemToTop(updatedItem),
                           refetchFullTodo(),
                         ]);
                         setEditingItem(null);
+                        setHasUnsavedChanges(false);
                       }}
                     />
                   )
@@ -307,9 +325,11 @@ export default function SessionFeed() {
               <EditWeight
                 weight={editingItem}
                 onClose={() => setEditingItem(null)}
+                onDirtyChange={setHasUnsavedChanges}
                 onSave={(updatedItem) => {
                   updateFeedItem(updatedItem);
                   setEditingItem(null);
+                  setHasUnsavedChanges(false);
                 }}
               />
             )}
@@ -329,12 +349,14 @@ export default function SessionFeed() {
                     <EditActivity
                       activity={activitySessionFull}
                       onClose={() => setEditingItem(null)}
+                      onDirtyChange={setHasUnsavedChanges}
                       onSave={async (updatedItem) => {
                         await Promise.all([
                           updateFeedItem(updatedItem),
                           refetchFullActivity(),
                         ]);
                         setEditingItem(null);
+                        setHasUnsavedChanges(false);
                       }}
                     />
                   )

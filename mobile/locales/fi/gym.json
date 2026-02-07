@@ -220,10 +220,23 @@
       "reps": "Toistot",
       "rpe": "RPE"
     },
+    "editScreen": {
+      "loadingSession": "Ladataan kuntosalisessiota...",
+      "loadError": "Session lataus epäonnistui",
+      "loadErrorSub": "Jokin meni pieleen. Yritä uudelleen."
+    },
     "exerciseHistory": {
       "loading": "Ladataan historiaa...",
       "loadError": "Historian lataus epäonnistui. Yritä uudelleen.",
-      "noHistory": "Tälle liikkeelle ei ole historiaa."
+      "noHistory": "Tälle liikkeelle ei ole historiaa.",
+      "personalBest": "Ennätys",
+      "timeMin": "Aika (min)",
+      "distanceMeters": "Matka (metriä)",
+      "range1m": "1K",
+      "range3m": "3K",
+      "range6m": "6K",
+      "range1y": "1V",
+      "noChartData": "Ei tarpeeksi dataa kaaviolle"
     },
     "analytics": {
       "title": "Viimeisten 30 päivän analytiikka",

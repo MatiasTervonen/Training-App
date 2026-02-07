@@ -63,7 +63,7 @@ export default function ActivityAnalytics() {
 
   if (isLoading) {
     return (
-      <div className="flex-1 flex justify-center items-center min-h-[400px]">
+      <div className="flex-1 flex justify-center items-center min-h-[403.6px]">
         <div className="w-8 h-8 border-4 border-green-500 border-t-transparent rounded-full animate-spin" />
       </div>
     );

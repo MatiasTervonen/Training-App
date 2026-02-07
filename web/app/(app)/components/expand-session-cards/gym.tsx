@@ -9,13 +9,13 @@ import { History } from "lucide-react";
 import { getLastExerciseHistory } from "@/app/(app)/database/gym/last-exercise-history";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import ExerciseHistoryModal from "@/app/(app)/gym/components/ExerciseHistoryModal";
+import ExerciseHistoryModal from "@/app/(app)/gym/components/ExerciseHistory/ExerciseHistoryModal";
 import { useTranslation } from "react-i18next";
 import { FullGymSession } from "@/app/(app)/database/gym/get-full-gym-session";
 import { Clock } from "lucide-react";
 
 export default function GymSession(gym_session: FullGymSession) {
-  const { t } = useTranslation("gym");
+  const { t, i18n } = useTranslation("gym");
   const [exerciseId, setExerciseId] = useState("");
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
 
@@ -47,7 +47,7 @@ export default function GymSession(gym_session: FullGymSession) {
     isLoading,
   } = useQuery({
     queryKey: ["exerciseHistory", exerciseId],
-    queryFn: () => getLastExerciseHistory({ exerciseId }),
+    queryFn: () => getLastExerciseHistory({ exerciseId, language: i18n.language }),
     enabled: !!exerciseId,
     refetchOnMount: false,
     refetchOnWindowFocus: false,
@@ -67,7 +67,7 @@ export default function GymSession(gym_session: FullGymSession) {
         {formatDate(gym_session.created_at)}
       </div>
       <div className="flex flex-col gap-4 justify-center items-center bg-slate-900 rounded-md p-5 mt-5">
-        <h2 className="text-xl mt-2 text-center">{gym_session.title}</h2>
+        <h2 className="text-xl text-center border-b border-gray-400">{gym_session.title}</h2>
         <div className="flex items-center gap-2">
           <Clock />
           <p className="text-lg text-center">
@@ -75,7 +75,7 @@ export default function GymSession(gym_session: FullGymSession) {
             {formatTime(gym_session.end_time)}
           </p>
         </div>
-        <h3 className="mt-2">
+        <h3>
           {t("gym.analytics.duration")}: {formatDuration(gym_session.duration)}
         </h3>
         {gym_session.notes && (

@@ -17,7 +17,8 @@
     "unpin": "Irrota",
     "history": "Historia",
     "change": "Vaihda",
-    "created": "Luotu:"
+    "created": "Luotu:",
+    "unsavedChanges": "tallentamattomia muutoksia"
   },
   "navbar": {
     "menu": "Valikko",

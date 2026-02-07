@@ -36,7 +36,7 @@ export default function BaseFeedCard({
   return (
     <div
       className={`
-        border rounded-md flex flex-col justify-between transition-colors min-h-[159px] overflow-hidden ${
+        border rounded-md flex flex-col justify-between transition-colors min-h-[170px] overflow-hidden ${
           pinned
             ? "border-yellow-200 bg-yellow-400"
             : "bg-slate-700 border-gray-100"

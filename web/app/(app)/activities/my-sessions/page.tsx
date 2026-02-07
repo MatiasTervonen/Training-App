@@ -22,6 +22,7 @@ export default function MyActivitySessionsPage() {
   const { t } = useTranslation(["activities", "common"]);
   const [expandedItem, setExpandedItem] = useState<FeedItemUI | null>(null);
   const [editingItem, setEditingItem] = useState<FeedItemUI | null>(null);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const queryClient = useQueryClient();
 
   const {
@@ -188,7 +189,9 @@ export default function MyActivitySessionsPage() {
             isOpen={true}
             onClose={() => {
               setEditingItem(null);
+              setHasUnsavedChanges(false);
             }}
+            confirmBeforeClose={hasUnsavedChanges}
           >
             {isLoadingActivitySession ? (
               <div className="flex flex-col gap-5 items-center justify-center pt-40 px-10">
@@ -204,12 +207,14 @@ export default function MyActivitySessionsPage() {
                 <EditActivity
                   activity={activitySessionFull}
                   onClose={() => setEditingItem(null)}
+                  onDirtyChange={setHasUnsavedChanges}
                   onSave={async (updatedItem) => {
                     await Promise.all([
                       updateFeedItem(updatedItem),
                       refetchFullActivity(),
                     ]);
                     setEditingItem(null);
+                    setHasUnsavedChanges(false);
                   }}
                 />
               )

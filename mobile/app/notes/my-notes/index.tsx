@@ -23,6 +23,7 @@ export default function MyNotesScreen() {
   const [expandedItem, setExpandedItem] = useState<FeedItemUI | null>(null);
   const [editingItem, setEditingItem] = useState<FeedItemUI | null>(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   const queryClient = useQueryClient();
 
@@ -152,7 +153,11 @@ export default function MyNotesScreen() {
       {editingItem && (
         <FullScreenModal
           isOpen={!!editingItem}
-          onClose={() => setEditingItem(null)}
+          onClose={() => {
+            setHasUnsavedChanges(false);
+            setEditingItem(null);
+          }}
+          confirmBeforeClose={hasUnsavedChanges}
         >
           <EditNotes
             note={editingItem}
@@ -162,10 +167,12 @@ export default function MyNotesScreen() {
               queryClient.refetchQueries({
                 queryKey: ["fullNotesSession", editingItem.source_id],
               });
+              setHasUnsavedChanges(false);
               setEditingItem(null);
             }}
             voiceRecordings={notesSessionFull}
             isLoadingVoice={isLoadingNotesSession}
+            onDirtyChange={setHasUnsavedChanges}
           />
         </FullScreenModal>
       )}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import SaveButton from "@/app/(app)/components/buttons/save-button";
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import toast from "react-hot-toast";
@@ -9,11 +9,14 @@ import { FeedItemUI } from "@/app/(app)/types/session";
 import SubNotesInput from "@/app/(app)/ui/SubNotesInput";
 import TitleInput from "@/app/(app)/ui/TitleInput";
 import CustomInput from "@/app/(app)/ui/CustomInput";
+import { Dot } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   weight: FeedItemUI;
   onClose: () => void;
   onSave: (updatedItem: FeedItemUI) => void;
+  onDirtyChange?: (isDirty: boolean) => void;
 };
 
 type WeightPayload = {
@@ -21,7 +24,8 @@ type WeightPayload = {
   weight: number;
 };
 
-export default function EditWeight({ weight, onClose, onSave }: Props) {
+export default function EditWeight({ weight, onClose, onSave, onDirtyChange }: Props) {
+  const { t } = useTranslation("common");
   const payload = weight.extra_fields as unknown as WeightPayload;
 
   const [title, setValue] = useState(weight.title);
@@ -58,10 +62,28 @@ export default function EditWeight({ weight, onClose, onSave }: Props) {
     }
   };
 
+  const hasChanges =
+    title !== weight.title ||
+    notes !== payload.notes ||
+    weightValue !== (payload.weight?.toString() ?? "");
+
+  useEffect(() => {
+    onDirtyChange?.(hasChanges);
+  }, [hasChanges, onDirtyChange]);
+
   return (
-    <div className="flex flex-col justify-between h-full max-w-lg mx-auto page-padding">
-      <div className="flex flex-col gap-5">
-        <h2 className="text-lg text-center mb-5">Edit your weight session</h2>
+    <>
+      {hasChanges && (
+        <div className="bg-slate-900 z-50 py-1 px-4 flex items-center rounded-lg fixed top-5 self-start ml-5">
+          <p className="text-sm text-yellow-500">{t("common.unsavedChanges")}</p>
+          <div className="animate-pulse">
+            <Dot color="#eab308" />
+          </div>
+        </div>
+      )}
+      <div className="flex flex-col justify-between h-full max-w-lg mx-auto page-padding">
+        <div className="flex flex-col gap-5">
+          <h2 className="text-lg text-center mb-5">Edit your weight session</h2>
         <TitleInput
           value={title || ""}
           setValue={setValue}
@@ -89,5 +111,6 @@ export default function EditWeight({ weight, onClose, onSave }: Props) {
       </div>
       {isSaving && <FullScreenLoader message="Saving weight..." />}
     </div>
+    </>
   );
 }

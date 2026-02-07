@@ -22,7 +22,8 @@
     "copiedToClipboard": "Copied to clipboard!",
     "failedToCopy": "Failed to copy notes.",
     "elementNotFound": "Element not found.",
-    "chat": "Chat"
+    "chat": "Chat",
+    "unsavedChanges": "unsaved changes"
   },
   "navbar": {
     "menu": "Menu",

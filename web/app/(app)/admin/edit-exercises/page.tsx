@@ -12,17 +12,22 @@ import { deleteExercise } from "@/app/(app)/database/admin/delete-exercise";
 import { editExercise } from "@/app/(app)/database/admin/edit-exercise";
 import { useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
-import { ExerciseWithTranslation } from "@/app/(app)/database/gym/get-exercises";
+import { ExerciseForEdit } from "@/app/(app)/database/admin/get-fullExercise";
+import { getFullExercise } from "@/app/(app)/database/admin/get-fullExercise";
+import { useUserStore } from "../../lib/stores/useUserStore";
 
 export default function EditExercises() {
   const { t } = useTranslation("gym");
   const [name, setName] = useState("");
+  const [fiName, setFiName] = useState("");
   const [equipment, setEquipment] = useState("");
   const [muscle_group, setMuscleGroup] = useState("");
   const [main_group, setMainGroup] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [selectedExercise, setSelectedExercise] =
-    useState<ExerciseWithTranslation | null>(null);
+    useState<ExerciseForEdit | null>(null);
+
+  const language = useUserStore((state) => state.preferences?.language ?? "en");
 
   const queryClient = useQueryClient();
 
@@ -32,13 +37,14 @@ export default function EditExercises() {
       return;
     }
 
-    if (name.length >= 50) return;
+    if (name.length >= 50 || fiName.length >= 50) return;
 
     setIsSaving(true);
 
     const exerciseData = {
       id: selectedExercise!.id,
       name,
+      fiName,
       equipment,
       muscle_group,
       main_group,
@@ -48,7 +54,11 @@ export default function EditExercises() {
       await editExercise(exerciseData);
 
       queryClient.refetchQueries({
-        queryKey: ["exercises", ""],
+        queryKey: ["exercises", language],
+        exact: true,
+      });
+      queryClient.refetchQueries({
+        queryKey: ["recentExercises", language],
         exact: true,
       });
 
@@ -84,6 +94,7 @@ export default function EditExercises() {
   useEffect(() => {
     if (selectedExercise) {
       setName(selectedExercise.name);
+      setFiName(selectedExercise.fiName);
       setEquipment(selectedExercise.equipment);
       setMuscleGroup(selectedExercise.muscle_group);
       setMainGroup(selectedExercise.main_group);
@@ -92,6 +103,7 @@ export default function EditExercises() {
 
   const resetFields = () => {
     setName("");
+    setFiName("");
     setEquipment("");
     setMuscleGroup("");
     setMainGroup("");
@@ -102,8 +114,9 @@ export default function EditExercises() {
     <div>
       {!selectedExercise && (
         <ExerciseDropdown
-          onSelect={(exercise) => {
-            setSelectedExercise(exercise);
+          onSelect={async (exercise) => {
+            const fullExercise = await getFullExercise(exercise.id);
+            setSelectedExercise(fullExercise);
           }}
         />
       )}
@@ -118,11 +131,29 @@ export default function EditExercises() {
                 <CustomInput
                   value={name}
                   setValue={setName}
-                  placeholder={t("gym.addExerciseScreen.exerciseNamePlaceholder")}
+                  placeholder={t(
+                    "gym.addExerciseScreen.exerciseNamePlaceholder",
+                  )}
                   label={t("gym.addExerciseScreen.exerciseName")}
                   maxLength={50}
                 />
                 {name.length >= 50 ? (
+                  <p className="text-yellow-400 mt-2">
+                    {t("gym.addExerciseScreen.charLimit")}
+                  </p>
+                ) : null}
+              </div>
+              <div>
+                <CustomInput
+                  value={fiName}
+                  setValue={setFiName}
+                  placeholder={t(
+                    "gym.addExerciseScreen.exerciseNamePlaceholder",
+                  )}
+                  label={t("gym.addExerciseScreen.fiExerciseName")}
+                  maxLength={50}
+                />
+                {fiName.length >= 50 ? (
                   <p className="text-yellow-400 mt-2">
                     {t("gym.addExerciseScreen.charLimit")}
                   </p>
@@ -153,22 +184,40 @@ export default function EditExercises() {
                 options={[
                   { value: "chest", label: t("gym.muscleGroups.chest") },
                   { value: "quads", label: t("gym.muscleGroups.quads") },
-                  { value: "hamstrings", label: t("gym.muscleGroups.hamstrings") },
+                  {
+                    value: "hamstrings",
+                    label: t("gym.muscleGroups.hamstrings"),
+                  },
                   { value: "biceps", label: t("gym.muscleGroups.biceps") },
                   { value: "triceps", label: t("gym.muscleGroups.triceps") },
                   { value: "lats", label: t("gym.muscleGroups.lats") },
                   { value: "abs", label: t("gym.muscleGroups.abs") },
                   { value: "calves", label: t("gym.muscleGroups.calves") },
-                  { value: "upper_back", label: t("gym.muscleGroups.upper_back") },
+                  {
+                    value: "upper_back",
+                    label: t("gym.muscleGroups.upper_back"),
+                  },
                   { value: "forearms", label: t("gym.muscleGroups.forearms") },
-                  { value: "full_body", label: t("gym.muscleGroups.full_body") },
-                  { value: "side_delts", label: t("gym.muscleGroups.side_delts") },
+                  {
+                    value: "full_body",
+                    label: t("gym.muscleGroups.full_body"),
+                  },
+                  {
+                    value: "side_delts",
+                    label: t("gym.muscleGroups.side_delts"),
+                  },
                   { value: "legs", label: t("gym.muscleGroups.legs") },
                   { value: "obliques", label: t("gym.muscleGroups.obliques") },
-                  { value: "front_delts", label: t("gym.muscleGroups.front_delts") },
+                  {
+                    value: "front_delts",
+                    label: t("gym.muscleGroups.front_delts"),
+                  },
                   { value: "traps", label: t("gym.muscleGroups.traps") },
                   { value: "delts", label: t("gym.muscleGroups.delts") },
-                  { value: "lower_back", label: t("gym.muscleGroups.lower_back") },
+                  {
+                    value: "lower_back",
+                    label: t("gym.muscleGroups.lower_back"),
+                  },
                 ]}
                 label={t("gym.addExerciseScreen.muscleGroup")}
               />
@@ -209,7 +258,9 @@ export default function EditExercises() {
         )}
       </div>
       {isSaving && (
-        <FullScreenLoader message={t("gym.editExerciseScreen.savingExercise")} />
+        <FullScreenLoader
+          message={t("gym.editExerciseScreen.savingExercise")}
+        />
       )}
     </div>
   );

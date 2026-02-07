@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import SaveButton from "@/app/(app)/components/buttons/save-button";
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import toast from "react-hot-toast";
@@ -21,9 +21,10 @@ type Props = {
   activity: FullActivitySession & { feed_context: "pinned" | "feed" };
   onClose: () => void;
   onSave: (updatedItem: FeedItemUI) => void;
+  onDirtyChange?: (isDirty: boolean) => void;
 };
 
-export default function EditActivity({ activity, onClose, onSave }: Props) {
+export default function EditActivity({ activity, onClose, onSave, onDirtyChange }: Props) {
   const { t } = useTranslation("activities");
 
   const [originalData] = useState({
@@ -49,6 +50,10 @@ export default function EditActivity({ activity, onClose, onSave }: Props) {
 
   const hasChanges =
     JSON.stringify(originalData) !== JSON.stringify(currentData);
+
+  useEffect(() => {
+    onDirtyChange?.(hasChanges);
+  }, [hasChanges, onDirtyChange]);
 
   const getActivityName = (act: activities_with_category | null) => {
     if (!act) return t("activities.editSession.selectActivity");
@@ -96,7 +101,7 @@ export default function EditActivity({ activity, onClose, onSave }: Props) {
     <>
       {hasChanges && (
         <div className="bg-slate-900 z-50 py-1 px-4 flex items-center rounded-lg fixed top-5 self-start ml-5">
-          <p className="text-sm text-yellow-500">unsaved changes</p>
+          <p className="text-sm text-yellow-500">{t("common:common.unsavedChanges")}</p>
           <div className="animate-pulse">
             <Dot color="#eab308" />
           </div>

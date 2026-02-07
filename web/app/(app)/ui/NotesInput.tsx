@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import { useEffect, useRef } from "react";
+import { ModalSwipeBlocker } from "@/app/(app)/components/modal";
 
 type NotesInputProps = {
   notes: string;
@@ -9,7 +10,10 @@ type NotesInputProps = {
   cols?: number;
   label?: string;
   fillAvailableSpace?: boolean;
+  minHeight?: number;
 };
+
+const DEFAULT_MIN_HEIGHT = 120;
 
 export default function NotesInput({
   notes,
@@ -19,17 +23,17 @@ export default function NotesInput({
   cols,
   label,
   fillAvailableSpace = false,
+  minHeight = DEFAULT_MIN_HEIGHT,
 }: NotesInputProps) {
   const shouldGrow = !rows && !cols;
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   useEffect(() => {
     if (!shouldGrow || !textareaRef.current || fillAvailableSpace) return;
-    {
-      textareaRef.current.style.height = "auto";
-      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
-    }
-  }, [notes, shouldGrow, fillAvailableSpace]);
+    textareaRef.current.style.height = "auto";
+    const newHeight = Math.max(minHeight, textareaRef.current.scrollHeight);
+    textareaRef.current.style.height = `${newHeight}px`;
+  }, [notes, shouldGrow, fillAvailableSpace, minHeight]);
 
   return (
     <div
@@ -40,23 +44,26 @@ export default function NotesInput({
       <div className="flex items-center">
         <label className="text-sm text-gray-300 mb-1">{label}</label>
       </div>
-      <textarea
-        ref={textareaRef}
-        className={clsx(
-          "text-md touch-pan-y p-2 rounded-md border-2 border-gray-100 z-10 placeholder-gray-500 bg-[linear-gradient(50deg,#0f172a,#1e293b,#333333)] text-gray-100 hover:border-blue-500 focus:outline-none focus:border-green-300 resize-none overflow-hidden",
-          {
-            "h-full flex-1": fillAvailableSpace,
-          }
-        )}
-        placeholder={placeholder}
-        value={notes}
-        autoComplete="off"
-        spellCheck={false}
-        rows={rows}
-        cols={cols}
-        onChange={(e) => setNotes(e.target.value)}
-        maxLength={10000}
-      />
+      <ModalSwipeBlocker>
+        <textarea
+          ref={textareaRef}
+          className={clsx(
+            "w-full text-md touch-pan-y p-2 rounded-md border-2 border-gray-100 z-10 placeholder-gray-500 bg-[linear-gradient(50deg,#0f172a,#1e293b,#333333)] text-gray-100 hover:border-blue-500 focus:outline-none focus:border-green-300 resize-none overflow-hidden",
+            {
+              "h-full flex-1": fillAvailableSpace,
+            },
+          )}
+          style={shouldGrow && !fillAvailableSpace ? { minHeight } : undefined}
+          placeholder={placeholder}
+          value={notes}
+          autoComplete="off"
+          spellCheck={false}
+          rows={rows}
+          cols={cols}
+          onChange={(e) => setNotes(e.target.value)}
+          maxLength={10000}
+        />
+      </ModalSwipeBlocker>
       {notes.length >= 10000 ? (
         <p className="text-yellow-400 mt-2">
           Reached the limit (10000 chars max)

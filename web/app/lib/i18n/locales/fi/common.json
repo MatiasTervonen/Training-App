@@ -22,7 +22,8 @@
     "copiedToClipboard": "Kopioitu leikepöydälle!",
     "failedToCopy": "Muistiinpanojen kopiointi epäonnistui.",
     "elementNotFound": "Elementtiä ei löytynyt.",
-    "chat": "Keskustelu"
+    "chat": "Keskustelu",
+    "unsavedChanges": "tallentamattomia muutoksia"
   },
   "navbar": {
     "menu": "Valikko",

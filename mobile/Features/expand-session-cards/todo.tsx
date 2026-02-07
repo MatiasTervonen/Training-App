@@ -29,9 +29,10 @@ import { useTranslation } from "react-i18next";
 type TodoSessionProps = {
   initialTodo: full_todo_session;
   onSave: (updatedItem: FeedItemUI) => void;
+  onDirtyChange?: (dirty: boolean) => void;
 };
 
-export default function TodoSession({ initialTodo, onSave }: TodoSessionProps) {
+export default function TodoSession({ initialTodo, onSave, onDirtyChange }: TodoSessionProps) {
   const { t } = useTranslation("todo");
   const [open, setOpen] = useState<number | null>(null);
   const [sessionData, setSessionData] = useState(initialTodo);
@@ -108,6 +109,10 @@ export default function TodoSession({ initialTodo, onSave }: TodoSessionProps) {
   const hasChanges =
     JSON.stringify(sessionData.todo_tasks) !==
     JSON.stringify(lastSavedRef.current);
+
+  useEffect(() => {
+    onDirtyChange?.(hasChanges);
+  }, [hasChanges, onDirtyChange]);
 
   const sortTodoByCompleted = () => {
     setSessionData((prev) => {

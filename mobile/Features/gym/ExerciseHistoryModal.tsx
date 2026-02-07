@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import FullScreenModal from "@/components/FullScreenModal";
 import { ActivityIndicator, View } from "react-native";
 import { formatDateShort } from "@/lib/formatDate";
@@ -7,6 +8,8 @@ import { FlatList } from "react-native-gesture-handler";
 import { LinearGradient } from "expo-linear-gradient";
 import { useUserStore } from "@/lib/stores/useUserStore";
 import { useTranslation } from "react-i18next";
+import ExerciseHistoryChart from "./ExerciseHistoryChart";
+import AppTextNC from "@/components/AppTextNC";
 
 type ExerciseHistoryModalProps = {
   isOpen: boolean;
@@ -23,22 +26,72 @@ export default function ExerciseHistoryModal({
   history,
   error,
 }: ExerciseHistoryModalProps) {
-  const { t } = useTranslation("gym");
+  const { t, i18n } = useTranslation("gym");
+  const locale = i18n.language;
   const weightUnit =
     useUserStore((state) => state.profile?.weight_unit) || "kg";
 
   const exerciseName = history?.[0]?.name;
   const equipment = history?.[0]?.equipment;
+  const isCardio = history?.[0]?.main_group === "cardio";
 
   const translateRpe = (rpe: string) => {
     const rpeMap: Record<string, string> = {
       "Warm-up": t("gym.exerciseCard.rpeOptions.warmup"),
-      "Easy": t("gym.exerciseCard.rpeOptions.easy"),
-      "Medium": t("gym.exerciseCard.rpeOptions.medium"),
-      "Hard": t("gym.exerciseCard.rpeOptions.hard"),
-      "Failure": t("gym.exerciseCard.rpeOptions.failure"),
+      Easy: t("gym.exerciseCard.rpeOptions.easy"),
+      Medium: t("gym.exerciseCard.rpeOptions.medium"),
+      Hard: t("gym.exerciseCard.rpeOptions.hard"),
+      Failure: t("gym.exerciseCard.rpeOptions.failure"),
     };
     return rpeMap[rpe] || rpe;
+  };
+
+  // Personal best calculation
+  const personalBest = useMemo(() => {
+    if (!history || history.length === 0) return null;
+
+    if (isCardio) {
+      let bestDistance = 0;
+      let bestTime = 0;
+      let bestDate = "";
+      for (const session of history) {
+        if (!session) continue;
+        for (const set of session.sets) {
+          if (set.distance_meters && set.distance_meters > bestDistance) {
+            bestDistance = set.distance_meters;
+            bestTime = set.time_min || 0;
+            bestDate = session.date;
+          }
+        }
+      }
+      if (bestDistance === 0) return null;
+      return { distance: bestDistance, time: bestTime, date: bestDate };
+    } else {
+      let bestWeight = 0;
+      let bestReps = 0;
+      let bestDate = "";
+      for (const session of history) {
+        if (!session) continue;
+        for (const set of session.sets) {
+          if (set.weight && set.weight > bestWeight) {
+            bestWeight = set.weight;
+            bestReps = set.reps || 0;
+            bestDate = session.date;
+          }
+        }
+      }
+      if (bestWeight === 0) return null;
+      return { weight: bestWeight, reps: bestReps, date: bestDate };
+    }
+  }, [history, isCardio]);
+
+  const formatDateWithYear = (dateString: string) => {
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat(locale, {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    }).format(date);
   };
 
   return (
@@ -71,12 +124,50 @@ export default function ExerciseHistoryModal({
               showsVerticalScrollIndicator={false}
               ListHeaderComponent={
                 <View className="mb-10">
+                  {/* Header */}
                   <AppText className="text-center text-xl">
                     {exerciseName}
                   </AppText>
                   <AppText className="text-center text-gray-300 mt-2">
                     {t(`gym.equipment.${equipment?.toLowerCase()}`)}
                   </AppText>
+
+                  {/* Chart */}
+                  <ExerciseHistoryChart
+                    history={history}
+                    isCardio={isCardio}
+                    valueUnit={weightUnit}
+                  />
+
+                  {/* Personal Best */}
+                  {personalBest && (
+                    <LinearGradient
+                      colors={["#1e3a8a", "#0f172a", "#0f172a"]}
+                      start={{ x: 1, y: 0 }}
+                      end={{ x: 0, y: 1 }}
+                      className="mt-6 rounded-md px-4 py-4 overflow-hidden border-2 border-gray-600"
+                    >
+                      <AppText className="text-center text-gray-400 text-sm mb-2">
+                        {t("gym.exerciseHistory.personalBest")}
+                      </AppText>
+                      {"weight" in personalBest ? (
+                        <AppTextNC className="text-center text-xl text-cyan-400">
+                          {personalBest.weight} {weightUnit} x{" "}
+                          {personalBest.reps}{" "}
+                          {t("gym.exerciseCard.reps").toLowerCase()}
+                        </AppTextNC>
+                      ) : (
+                        <AppTextNC className="text-center text-2xl text-cyan-400">
+                          {personalBest.distance} m &middot;{" "}
+                          {personalBest.time}{" "}
+                          {t("gym.exerciseHistory.timeMin").toLowerCase()}
+                        </AppTextNC>
+                      )}
+                      <AppText className="text-center text-gray-400 text-sm mt-1">
+                        {formatDateWithYear(personalBest.date)}
+                      </AppText>
+                    </LinearGradient>
+                  )}
                 </View>
               }
               renderItem={({ item: session }) => (

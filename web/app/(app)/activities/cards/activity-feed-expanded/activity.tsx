@@ -9,6 +9,8 @@ import {
 import RouteMap from "./components/Map";
 import SessionStats from "./components/SessionStats";
 import { useTranslation } from "react-i18next";
+import { ModalSwipeBlocker } from "@/app/(app)/components/modal";
+import { Clock } from "lucide-react";
 
 type ActivitySessionProps = FullActivitySession & {
   feed_context: "pinned" | "feed";
@@ -33,13 +35,16 @@ export default function ActivitySession(
             {activity_session.session.title}
           </h2>
 
-          <p className="text-lg text-center text-gray-100">
-            {formatTime(activity_session.session.start_time!)} -{" "}
-            {formatTime(activity_session.session.end_time!)}
-          </p>
+          <div className="flex items-center justify-center gap-3">
+            <Clock />
+            <p className="text-lg text-center text-gray-100">
+              {formatTime(activity_session.session.start_time!)} -{" "}
+              {formatTime(activity_session.session.end_time!)}
+            </p>
+          </div>
 
           {activity_session.session.notes && (
-            <p className="text-lg text-left mt-5 text-gray-300 whitespace-pre-wrap">
+            <p className="text-center mt-5 text-gray-300 whitespace-pre-wrap">
               {activity_session.session.notes}
             </p>
           )}
@@ -62,7 +67,9 @@ export default function ActivitySession(
 
       {hasRoute && (
         <div className="mt-10">
-          <RouteMap activity_session={activity_session} />
+          <ModalSwipeBlocker>
+            <RouteMap activity_session={activity_session} />
+          </ModalSwipeBlocker>
           <SessionStats activity_session={activity_session} />
         </div>
       )}

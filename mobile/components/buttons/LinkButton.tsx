@@ -71,7 +71,7 @@ export default function LinkButton({
     >
       <Animated.View
         style={animatedStyle}
-        className="bg-blue-800 py-2 rounded-md shadow-md border-2 border-blue-500 text-lg"
+        className="btn-base"
       >
         {/* Light sweep gradient */}
         <Animated.View

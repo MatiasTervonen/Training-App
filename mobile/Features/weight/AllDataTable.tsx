@@ -125,10 +125,10 @@ export default function AllDataTable({ data, isLoading, error }: AllDataProps) {
       keyExtractor={(item) => item.id}
       renderSectionHeader={({ section }) => (
         <View className="bg-gray-800 px-4 py-2 flex-row justify-between items-center">
-          <AppText className="text-lg font-bold text-white">
+          <AppText className="text-lg">
             {section.title}
           </AppText>
-          <AppText className="text-white">
+          <AppText>
             {section.difference} {weightUnit}
           </AppText>
         </View>

@@ -169,7 +169,13 @@
       "loadError": "Could not load exercise history. Please try again.",
       "noHistory": "No history available for this exercise.",
       "timeMin": "Time (min)",
-      "distanceMeters": "Distance (meters)"
+      "distanceMeters": "Distance (meters)",
+      "personalBest": "Personal Best",
+      "range1m": "1M",
+      "range3m": "3M",
+      "range6m": "6M",
+      "range1y": "1Y",
+      "noChartData": "Not enough data for chart"
     },
     "exerciseCard": {
       "delete": "Delete",

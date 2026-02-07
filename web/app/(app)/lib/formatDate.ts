@@ -24,6 +24,15 @@ export const formatDateShort = (dateString: string | Date) => {
   }).format(date);
 };
 
+export const formatDateWithYear = (dateString: string | Date) => {
+  const date = new Date(dateString);
+  return new Intl.DateTimeFormat(getLocale(), {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  }).format(date);
+};
+
 export const formatDateTime = (dateString: string | Date) => {
   const date = new Date(dateString);
   return new Intl.DateTimeFormat(getLocale(), {

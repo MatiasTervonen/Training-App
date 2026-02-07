@@ -168,8 +168,8 @@ export default function ActivityDropdown({
                 <button
                   key={item.id}
                   onClick={() => handleSelectActivity(item)}
-                  className={`w-full text-left px-4 py-3 border-b border-gray-600 hover:bg-slate-800 transition-colors ${
-                    selectedActivity?.id === item.id ? "bg-blue-800" : ""
+                  className={`w-full text-left px-4 py-3 border-b border-gray-600 transition-colors ${
+                    selectedActivity?.id === item.id ? "bg-blue-800" : "hover:bg-slate-800"
                   }`}
                 >
                   <div className="flex justify-between items-center">

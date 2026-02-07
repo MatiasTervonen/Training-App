@@ -54,6 +54,10 @@ export default function ActiveSessionPopup() {
     return null;
   }
 
+  if (pathname === "/activities/start-activity" && activeSession.path === "/activities/start-activity") {
+    return null;
+  }
+
   if (
     pathname === "/timer/start-stopwatch" &&
     activeSession.type === t("timer:timer:stopwatchTitle")

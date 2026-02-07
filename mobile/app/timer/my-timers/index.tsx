@@ -93,6 +93,13 @@ export default function MyTimersScreen() {
     setEditSeconds("");
   };
 
+  const hasUnsavedChanges = editingItem
+    ? editTitle !== editingItem.title ||
+      editNotes !== (editingItem.notes || "") ||
+      editMinutes !== String(Math.floor(editingItem.time_seconds / 60)) ||
+      editSeconds !== String(editingItem.time_seconds % 60)
+    : false;
+
   const { handleUpdateTimer } = useUpdateTimer({
     id: editingItem?.id || "",
     title: editTitle,
@@ -185,7 +192,11 @@ export default function MyTimersScreen() {
       )}
 
       {editingItem && (
-        <FullScreenModal isOpen={!!editingItem} onClose={closeEditModal}>
+        <FullScreenModal
+          isOpen={!!editingItem}
+          onClose={closeEditModal}
+          confirmBeforeClose={hasUnsavedChanges}
+        >
           <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <PageContainer className="justify-between">
               <View className="gap-5">

@@ -17,7 +17,8 @@
     "pinned": "Pinned",
     "history": "History",
     "change": "Change",
-    "created": "Created:"
+    "created": "Created:",
+    "unsavedChanges": "unsaved changes"
   },
   "navbar": {
     "menu": "Menu",

@@ -9,7 +9,7 @@ import CustomInput from "@/app/(app)/ui/CustomInput";
 import { ChevronDown, Plus } from "lucide-react";
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import Modal from "@/app/(app)/components/modal";
-import ExerciseHistoryModal from "./ExerciseHistoryModal";
+import ExerciseHistoryModal from "./ExerciseHistory/ExerciseHistoryModal";
 import {
   ExerciseEntry,
   emptyExerciseEntry,
@@ -36,7 +36,7 @@ export default function GymForm({
 }: {
   initialData: full_gym_session;
 }) {
-  const { t } = useTranslation("gym");
+  const { t, i18n } = useTranslation("gym");
   const now = formatDateShort(new Date());
   const session = initialData;
 
@@ -113,7 +113,7 @@ export default function GymForm({
     isLoading,
   } = useQuery({
     queryKey: ["exerciseHistory", exerciseHistoryId],
-    queryFn: () => getLastExerciseHistory({ exerciseId: exerciseHistoryId! }),
+    queryFn: () => getLastExerciseHistory({ exerciseId: exerciseHistoryId!, language: i18n.language }),
     enabled: !!exerciseHistoryId,
     refetchOnMount: false,
     refetchOnWindowFocus: false,

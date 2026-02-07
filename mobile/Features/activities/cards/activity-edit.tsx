@@ -1,7 +1,7 @@
 import { Keyboard, TouchableWithoutFeedback, View } from "react-native";
 import AppText from "@/components/AppText";
 import PageContainer from "@/components/PageContainer";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import AppInput from "@/components/AppInput";
 import SaveButton from "@/components/buttons/SaveButton";
 import FullScreenLoader from "@/components/FullScreenLoader";
@@ -14,17 +14,20 @@ import { activities_with_category, FullActivitySession } from "@/types/models";
 import { editActivitySession } from "@/database/activities/edit-session";
 import { FeedItemUI } from "@/types/session";
 import { useTranslation } from "react-i18next";
+import { Dot } from "lucide-react-native";
 
 type Props = {
   activity: FullActivitySession & { feed_context: "pinned" | "feed" };
   onClose: () => void;
   onSave: (updateFeedItem: FeedItemUI) => void;
+  onDirtyChange?: (isDirty: boolean) => void;
 };
 
 export default function ActivitySessionEdit({
   activity,
   onClose,
   onSave,
+  onDirtyChange,
 }: Props) {
   const { t } = useTranslation("activities");
   const [title, setTitle] = useState(activity?.session.title || "");
@@ -35,6 +38,21 @@ export default function ActivitySessionEdit({
     useState<activities_with_category>(
       activity?.activity as activities_with_category,
     );
+
+  const [originalData] = useState({
+    title: activity?.session.title || "",
+    notes: activity?.session.notes || "",
+    activityId: activity?.activity?.id,
+  });
+
+  const hasChanges =
+    title !== originalData.title ||
+    notes !== originalData.notes ||
+    selectedActivity?.id !== originalData.activityId;
+
+  useEffect(() => {
+    onDirtyChange?.(hasChanges);
+  }, [hasChanges, onDirtyChange]);
 
   const getActivityName = useCallback(
     (act: activities_with_category | null) => {
@@ -89,9 +107,18 @@ export default function ActivitySessionEdit({
   };
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <PageContainer className="justify-between mb-10 mt-5">
-        <View className="gap-5">
+    <View className="flex-1">
+      {hasChanges && (
+        <View className="bg-gray-900 absolute top-5 left-5 z-50 py-1 px-4 flex-row items-center rounded-lg">
+          <AppText className="text-sm text-yellow-500">{t("common:common.unsavedChanges")}</AppText>
+          <View className="animate-pulse">
+            <Dot color="#eab308" />
+          </View>
+        </View>
+      )}
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <PageContainer className="justify-between mb-10 mt-5">
+          <View className="gap-5">
           <AppText className="text-xl text-center mb-5">
             {t("activities.editSession.title")}
           </AppText>
@@ -144,5 +171,6 @@ export default function ActivitySessionEdit({
         />
       </PageContainer>
     </TouchableWithoutFeedback>
+    </View>
   );
 }

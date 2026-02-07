@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from "react";
-import { View } from "react-native";
+import { ActivityIndicator, View } from "react-native";
 import AppText from "@/components/AppText";
 import * as echarts from "echarts/core";
 import { PieChart } from "echarts/charts";
@@ -79,6 +79,7 @@ export default function ActivityBreakdownChart({
 
   const option = useMemo(
     () => ({
+      animation: false,
       legend: {
         orient: "horizontal",
         bottom: 0,
@@ -94,7 +95,7 @@ export default function ActivityBreakdownChart({
         {
           type: "pie",
           radius: ["45%", "70%"],
-          center: ["50%", "45%"],
+          center: ["50%", "48%"],
           avoidLabelOverlap: false,
           itemStyle: {
             borderRadius: 6,
@@ -112,6 +113,12 @@ export default function ActivityBreakdownChart({
               fontSize: 14,
               fontWeight: "bold",
               color: "#f3f4f6",
+              backgroundColor: "#0f172a",
+              borderColor: "#22c55e",
+              borderWidth: 1,
+              borderRadius: 8,
+              padding: [8, 12],
+              lineHeight: 18,
               formatter: `{b}\n{c} ${t("activities.analyticsScreen.sessions")}`,
             },
           },
@@ -144,9 +151,17 @@ export default function ActivityBreakdownChart({
     return () => chart.dispose();
   }, [option, size]);
 
+  if (data.length === 0) {
+    return (
+      <View className="bg-slate-900 rounded-2xl p-4 items-center justify-center min-h-[360.8px]">
+        <ActivityIndicator size="small" color="#22c55e" />
+      </View>
+    );
+  }
+
   if (totalSessions === 0) {
     return (
-      <View className="bg-slate-900 rounded-2xl p-4 items-center justify-center min-h-[200px]">
+      <View className="bg-slate-900 rounded-2xl p-4 items-center justify-center min-h-[360.8px]">
         <AppText className="text-gray-400">
           {t("activities.analyticsScreen.noActivitiesInPeriod")}
         </AppText>
@@ -159,7 +174,7 @@ export default function ActivityBreakdownChart({
       <AppText className="text-lg font-medium text-center mb-2">
         {t("activities.analyticsScreen.activityBreakdown")}
       </AppText>
-      <AppText className="text-gray-400 text-center text-sm mb-4">
+      <AppText className="text-gray-400 text-center text-sm mb-1">
         {totalSessions}{" "}
         {totalSessions === 1
           ? t("activities.analyticsScreen.session")

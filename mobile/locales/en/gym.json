@@ -218,10 +218,23 @@
       "reps": "Reps",
       "rpe": "RPE"
     },
+    "editScreen": {
+      "loadingSession": "Loading gym session...",
+      "loadError": "Failed to load session",
+      "loadErrorSub": "Something went wrong. Please try again."
+    },
     "exerciseHistory": {
       "loading": "Loading history...",
       "loadError": "Could not load exercise history. Please try again.",
-      "noHistory": "No history available for this exercise."
+      "noHistory": "No history available for this exercise.",
+      "personalBest": "Personal Best",
+      "timeMin": "Time (min)",
+      "distanceMeters": "Distance (meters)",
+      "range1m": "1M",
+      "range3m": "3M",
+      "range6m": "6M",
+      "range1y": "1Y",
+      "noChartData": "Not enough data for chart"
     },
     "analytics": {
       "title": "Last 30 Days Analytics",

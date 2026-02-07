@@ -40,7 +40,7 @@ export default function DeleteButton({
 
   return (
     <AnimatedButton
-      className="bg-red-800 py-2 rounded-md shadow-md border-2 border-red-500"
+      className="btn-danger"
       onPress={handleDelete}
       textClassName="text-gray-100 text-center"
       label={label ?? t("common.delete")}

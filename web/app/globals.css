@@ -33,6 +33,15 @@ body {
   .custom-login-input:-webkit-autofill::first-line {
     color: #f3f4f6 !important;
   }
+
+  /* all the basic button variables */
+  .btn-base {
+    @apply bg-blue-800 py-2 rounded-md shadow-md border-2 border-blue-500 text-lg cursor-pointer hover:bg-blue-700 hover:scale-105 transition-all duration-200;
+  }
+
+  .btn-danger {
+    @apply bg-red-800 py-2 rounded-md shadow-xl border-2 border-red-500 text-gray-100 text-lg cursor-pointer hover:bg-red-700 hover:scale-105 transition-all duration-200;
+  }
 }
 
 .my-heatmap .w-heatmap-week {

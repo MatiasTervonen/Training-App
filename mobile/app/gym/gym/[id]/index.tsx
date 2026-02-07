@@ -5,8 +5,10 @@ import { getFullGymSession } from "@/database/gym/get-full-gym-session";
 import Toast from "react-native-toast-message";
 import { View, ActivityIndicator } from "react-native";
 import AppText from "@/components/AppText";
+import { useTranslation } from "react-i18next";
 
 export default function EditGymScreen() {
+  const { t } = useTranslation("gym");
   const { id } = useLocalSearchParams<{ id?: string }>();
 
   const {
@@ -28,7 +30,7 @@ export default function EditGymScreen() {
     return (
       <View className="gap-3">
         <AppText className="text-xl text-center mt-20">
-          Loading gym session...
+          {t("gym.editScreen.loadingSession")}
         </AppText>
         <ActivityIndicator />
       </View>
@@ -38,8 +40,8 @@ export default function EditGymScreen() {
   if (GymSessionError) {
     Toast.show({
       type: "error",
-      text1: "Failed to load session",
-      text2: "Something went wrong. Please try again.",
+      text1: t("gym.editScreen.loadError"),
+      text2: t("gym.editScreen.loadErrorSub"),
     });
   }
 

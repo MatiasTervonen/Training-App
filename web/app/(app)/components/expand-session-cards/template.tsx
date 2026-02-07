@@ -12,7 +12,6 @@ type Props = {
 
 export default function GymTemplate({ item, onStartWorkout }: Props) {
   const { t } = useTranslation("gym");
-  const { t: tCommon } = useTranslation("common");
   const groupedExercises = GroupTemplateExercises(
     item.gym_template_exercises || [],
   );
@@ -23,11 +22,11 @@ export default function GymTemplate({ item, onStartWorkout }: Props) {
     <div className="page-padding max-w-lg mx-auto">
       <div className="flex flex-col gap-2 justify-center items-center">
         <h2 className="text-sm text-gray-300">
-          {tCommon("common.created")} {formatDate(item.created_at)}
+          {t("common:common.created")} {formatDate(item.created_at)}
         </h2>
         {item.updated_at && (
           <h2 className=" text-yellow-500 text-sm">
-            {tCommon("common.updated")} {formatDate(item.updated_at)}
+            {t("common:common.updated")} {formatDate(item.updated_at)}
           </h2>
         )}
         <h2 className="text-lg">{item.name}</h2>

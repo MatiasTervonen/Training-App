@@ -5,14 +5,21 @@ type SessionExercise = {
   id: string;
   session_id: string;
   exercise_id: string;
-  gym_exercises: { main_group: string; name: string; equipment: string };
+  gym_exercises: {
+    main_group: string;
+    name: string;
+    equipment: string;
+    gym_exercises_translations: { name: string; language: string }[];
+  };
   sessions: { created_at: string; user_id: string };
 };
 
 export async function getLastExerciseHistory({
   exerciseId,
+  language = "en",
 }: {
   exerciseId: string;
+  language?: string;
 }) {
   const supabase = createClient();
 
@@ -28,9 +35,9 @@ export async function getLastExerciseHistory({
     .select(
       `
       id,
-      session_id, 
-      exercise_id, 
-      gym_exercises(main_group, name, equipment), 
+      session_id,
+      exercise_id,
+      gym_exercises(main_group, name, equipment, gym_exercises_translations(name, language)),
       sessions!inner(created_at, user_id)
       `,
     )
@@ -85,10 +92,15 @@ export async function getLastExerciseHistory({
         throw new Error("Error fetching sets");
       }
 
+      const translatedName =
+        session.gym_exercises.gym_exercises_translations.find(
+          (t) => t.language === language,
+        )?.name ?? session.gym_exercises.name;
+
       return {
         date: session.sessions.created_at,
         main_group: session.gym_exercises.main_group,
-        name: session.gym_exercises.name,
+        name: translatedName,
         equipment: session.gym_exercises.equipment,
         sets,
       };

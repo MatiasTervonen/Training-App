@@ -73,6 +73,13 @@ export default function TimersPage() {
     setEditSeconds("");
   };
 
+  const hasUnsavedChanges = editingItem
+    ? editTitle !== editingItem.title ||
+      editNotes !== (editingItem.notes || "") ||
+      editMinutes !== String(Math.floor(editingItem.time_seconds / 60)) ||
+      editSeconds !== String(editingItem.time_seconds % 60)
+    : false;
+
   const { handleUpdateTimer } = useUpdateTimer({
     id: editingItem?.id || "",
     title: editTitle,
@@ -177,7 +184,7 @@ export default function TimersPage() {
       )}
 
       {editingItem && (
-        <Modal isOpen={true} onClose={closeEditModal}>
+        <Modal isOpen={true} onClose={closeEditModal} confirmBeforeClose={hasUnsavedChanges}>
           <div className="min-h-full max-w-md mx-auto flex flex-col justify-between page-padding">
             <div className="flex flex-col gap-5">
               <h1 className="text-2xl text-center mb-5">

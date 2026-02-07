@@ -23,6 +23,7 @@ export default function RemindersPage() {
   const { t } = useTranslation("reminders");
   const [expandedItem, setExpandedItem] = useState<ReminderByTab | null>(null);
   const [editingItem, setEditingItem] = useState<ReminderByTab | null>(null);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [activeTab, setActiveTab] = useState<ReminderTab>("normal");
 
   const queryClient = useQueryClient();
@@ -59,10 +60,10 @@ export default function RemindersPage() {
             tabClassName={`flex-1 px-4 py-2 rounded-xl ${
               activeTab === "normal" ? "bg-gray-900" : ""
             }`}
-            hitSlop={10}
+            hitSlop={20}
           >
             <AppTextNC
-              className={`text-center ${
+              className={`text-center text-lg ${
                 activeTab === "normal" ? "text-blue-500" : "text-gray-100"
               }`}
             >
@@ -75,10 +76,10 @@ export default function RemindersPage() {
             tabClassName={`flex-1 px-4 py-2 rounded-xl  ${
               activeTab === "repeating" ? "bg-gray-900" : ""
             }`}
-            hitSlop={10}
+            hitSlop={20}
           >
             <AppTextNC
-              className={`text-center ${
+              className={`text-center text-lg ${
                 activeTab === "repeating" ? "text-blue-500" : "text-gray-100"
               }`}
             >
@@ -90,10 +91,10 @@ export default function RemindersPage() {
             tabClassName={`flex-1 px-4 py-2 rounded-xl  ${
               activeTab === "delivered" ? "bg-gray-900" : ""
             }`}
-            hitSlop={10}
+            hitSlop={20}
           >
             <AppTextNC
-              className={`text-center font-medium  ${
+              className={`text-center text-lg ${
                 activeTab === "delivered" ? "text-blue-500" : "text-gray-100"
               }`}
             >
@@ -136,16 +137,34 @@ export default function RemindersPage() {
         )}
 
         {editingItem && editingItem.type === "global" && (
-          <FullScreenModal isOpen={true} onClose={() => setEditingItem(null)}>
+          <FullScreenModal
+            isOpen={true}
+            onClose={() => {
+              setHasUnsavedChanges(false);
+              setEditingItem(null);
+            }}
+            confirmBeforeClose={hasUnsavedChanges}
+          >
             <EditMyGlobalReminder
               reminder={editingItem}
-              onClose={() => setEditingItem(null)}
+              onClose={() => {
+                setHasUnsavedChanges(false);
+                setEditingItem(null);
+              }}
+              onDirtyChange={setHasUnsavedChanges}
             />
           </FullScreenModal>
         )}
 
         {editingItem && editingItem.type !== "global" && (
-          <FullScreenModal isOpen={true} onClose={() => setEditingItem(null)}>
+          <FullScreenModal
+            isOpen={true}
+            onClose={() => {
+              setHasUnsavedChanges(false);
+              setEditingItem(null);
+            }}
+            confirmBeforeClose={hasUnsavedChanges}
+          >
             <EditMyLocalReminder
               reminder={editingItem}
               onClose={() => setEditingItem(null)}
@@ -161,8 +180,10 @@ export default function RemindersPage() {
                     queryKey: ["feed"],
                   }),
                 ]);
+                setHasUnsavedChanges(false);
                 setEditingItem(null);
               }}
+              onDirtyChange={setHasUnsavedChanges}
             />
           </FullScreenModal>
         )}

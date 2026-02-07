@@ -9,6 +9,8 @@
     "loadingActivity": "Loading activity session details...",
     "activityError": "Failed to load activity session details. Please try again later.",
     "loadingNotes": "Loading notes session...",
+    "loadingMore": "Loading more",
+    "noMoreSessions": "No more sessions to load.",
     "card": {
       "details": "Details",
       "updated": "updated:",

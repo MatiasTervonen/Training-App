@@ -6,7 +6,7 @@ import Modal from "@/app/(app)/components/modal";
 import SaveButton from "@/app/(app)/components/buttons/save-button";
 import DeleteSessionBtn from "@/app/(app)/components/buttons/deleteSessionBtn";
 import { ExerciseEntry, emptyExerciseEntry } from "@/app/(app)/types/session";
-import ExerciseHistoryModal from "@/app/(app)/gym/components/ExerciseHistoryModal";
+import ExerciseHistoryModal from "@/app/(app)/gym/components/ExerciseHistory/ExerciseHistoryModal";
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import ExerciseSelectorList from "@/app/(app)/gym/components/ExerciseSelectorList";
 import TemplateCard from "@/app/(app)/gym/components/template/TemplateCard";
@@ -27,7 +27,7 @@ export default function TemplateForm({
   initialData: FullGymTemplate;
   errorMessage: string;
 }) {
-  const { t } = useTranslation("gym");
+  const { t, i18n } = useTranslation("gym");
   const session = initialData;
 
   const [workoutName, setWorkoutName] = useState(session.name || "");
@@ -42,7 +42,7 @@ export default function TemplateForm({
       equipment: ex.gym_exercises?.equipment,
       superset_id: ex.superset_id,
       sets: [],
-    }))
+    })),
   );
   const [isExerciseModalOpen, setIsExerciseModalOpen] = useState(false);
   const [exerciseType, setExerciseType] = useState("Normal");
@@ -78,7 +78,7 @@ export default function TemplateForm({
   } = useQuery({
     queryKey: ["exerciseHistory", exerciseHistoryId],
     queryFn: async () =>
-      getLastExerciseHistory({ exerciseId: exerciseHistoryId! }),
+      getLastExerciseHistory({ exerciseId: exerciseHistoryId!, language: i18n.language }),
     enabled: !!exerciseHistoryId,
     refetchOnMount: false,
     refetchOnWindowFocus: false,
@@ -133,7 +133,9 @@ export default function TemplateForm({
     <div className="max-w-md mx-auto flex flex-col min-h-full justify-between page-padding">
       <div className="flex flex-col items-center gap-5 ">
         <h2 className="text-lg">
-          {isEditing ? t("gym.templateForm.titleEdit") : t("gym.templateForm.titleCreate")}
+          {isEditing
+            ? t("gym.templateForm.titleEdit")
+            : t("gym.templateForm.titleCreate")}
         </h2>
         <TitleInput
           value={workoutName}
@@ -196,7 +198,7 @@ export default function TemplateForm({
                     }}
                     onDeleteExercise={(index) => {
                       const confirmDelete = confirm(
-                        t("gym.templateForm.deleteExerciseConfirm.message")
+                        t("gym.templateForm.deleteExerciseConfirm.message"),
                       );
                       if (!confirmDelete) return;
 
@@ -209,7 +211,7 @@ export default function TemplateForm({
                       };
                       localStorage.setItem(
                         "template_draft",
-                        JSON.stringify(sessionDraft)
+                        JSON.stringify(sessionDraft),
                       );
                     }}
                   />
@@ -257,8 +259,12 @@ export default function TemplateForm({
                 }
               }}
             >
-              <option value="Normal">{t("gym.templateForm.exerciseType.normal")}</option>
-              <option value="Super-Set">{t("gym.templateForm.exerciseType.superSet")}</option>
+              <option value="Normal">
+                {t("gym.templateForm.exerciseType.normal")}
+              </option>
+              <option value="Super-Set">
+                {t("gym.templateForm.exerciseType.superSet")}
+              </option>
             </select>
             <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none">
               <ChevronDown className="text-gray-100" />
@@ -271,7 +277,9 @@ export default function TemplateForm({
             }}
             className="w-full px-2 bg-blue-800 py-2 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700"
           >
-            {exerciseType === "Super-Set" ? t("gym.templateForm.addSuperSet") : t("gym.templateForm.addExercise")}
+            {exerciseType === "Super-Set"
+              ? t("gym.templateForm.addSuperSet")
+              : t("gym.templateForm.addExercise")}
           </button>
         </div>
       </Modal>
@@ -302,7 +310,9 @@ export default function TemplateForm({
         <SaveButton onClick={handleSaveTemplate} />
         <DeleteSessionBtn onDelete={resetSession} />
       </div>
-      {isSaving && <FullScreenLoader message={t("gym.templateForm.savingTemplate")} />}
+      {isSaving && (
+        <FullScreenLoader message={t("gym.templateForm.savingTemplate")} />
+      )}
     </div>
   );
 }

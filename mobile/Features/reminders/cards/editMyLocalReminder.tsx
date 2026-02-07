@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import SubNotesInput from "@/components/SubNotesInput";
 import AppInput from "@/components/AppInput";
 import SaveButton from "@/components/buttons/SaveButton";
@@ -15,17 +15,20 @@ import { full_reminder } from "@/types/session";
 import useSaveReminder from "@/features/reminders/hooks/edit-reminder/useSaveReminder";
 import useSetNotification from "@/features/reminders/hooks/edit-reminder/useSetNotification";
 import { useTranslation } from "react-i18next";
+import { Dot } from "lucide-react-native";
 
 type Props = {
   reminder: full_reminder;
   onClose: () => void;
   onSave: () => void;
+  onDirtyChange?: (isDirty: boolean) => void;
 };
 
 export default function HandleEditLocalReminder({
   reminder,
   onClose,
   onSave,
+  onDirtyChange,
 }: Props) {
   const { t } = useTranslation("reminders");
   const [title, setValue] = useState(reminder.title);
@@ -61,6 +64,21 @@ export default function HandleEditLocalReminder({
     t("reminders.days.sat"),
   ];
 
+  const originalNotifyAt = reminder.notify_date
+    ? new Date(reminder.notify_date).getTime()
+    : reminder.notify_at_time
+      ? (() => { const b = new Date(); const [h, m, s] = reminder.notify_at_time.split(":").map(Number); b.setHours(h, m, s || 0); return b.getTime(); })()
+      : new Date().getTime();
+  const hasChanges =
+    title !== reminder.title ||
+    notes !== reminder.notes ||
+    notifyAt.getTime() !== originalNotifyAt ||
+    JSON.stringify(weekdays) !== JSON.stringify(reminder.weekdays || []);
+
+  useEffect(() => {
+    onDirtyChange?.(hasChanges);
+  }, [hasChanges, onDirtyChange]);
+
   const formattedNotifyAt =
     reminder.type === "one-time"
       ? formatDateTime(notifyAt!)
@@ -89,11 +107,20 @@ export default function HandleEditLocalReminder({
   });
 
   return (
-    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-      <PageContainer className="justify-between mb-5">
-        <View>
-          <AppText className=" text-xl text-center mb-10 mt-5">
-            {t("reminders.editReminder")}
+    <View className="flex-1">
+      {hasChanges && (
+        <View className="bg-gray-900 absolute top-5 left-5 z-50 py-1 px-4 flex-row items-center rounded-lg">
+          <AppText className="text-sm text-yellow-500">{t("common:common.unsavedChanges")}</AppText>
+          <View className="animate-pulse">
+            <Dot color="#eab308" />
+          </View>
+        </View>
+      )}
+      <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+        <PageContainer className="justify-between mb-5">
+          <View>
+            <AppText className=" text-xl text-center mb-10 mt-5">
+              {t("reminders.editReminder")}
           </AppText>
           <View className="mb-5">
             <AppInput
@@ -178,5 +205,6 @@ export default function HandleEditLocalReminder({
         />
       </PageContainer>
     </TouchableWithoutFeedback>
+    </View>
   );
 }

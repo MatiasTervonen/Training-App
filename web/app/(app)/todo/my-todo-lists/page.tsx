@@ -20,6 +20,8 @@ import { full_todo_session } from "@/app/(app)/types/models";
 export default function MyTodoListsPage() {
   const [expandedItem, setExpandedItem] = useState<FeedItemUI | null>(null);
   const [editingItem, setEditingItem] = useState<FeedItemUI | null>(null);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [hasUnsavedExpandedChanges, setHasUnsavedExpandedChanges] = useState(false);
 
   const {
     data,
@@ -143,7 +145,14 @@ export default function MyTodoListsPage() {
         )}
 
         {expandedItem && (
-          <Modal onClose={() => setExpandedItem(null)} isOpen={true}>
+          <Modal
+            onClose={() => {
+              setHasUnsavedExpandedChanges(false);
+              setExpandedItem(null);
+            }}
+            isOpen={true}
+            confirmBeforeClose={hasUnsavedExpandedChanges}
+          >
             {isLoadingTodoSession ? (
               <div className="flex flex-col gap-5 items-center justify-center pt-40 px-10">
                 <p>Loading todo session details...</p>
@@ -162,7 +171,9 @@ export default function MyTodoListsPage() {
                       updateFeedItemToTop(updatedItem),
                       refetchFullTodo(),
                     ]);
+                    setHasUnsavedExpandedChanges(false);
                   }}
+                  onDirtyChange={setHasUnsavedExpandedChanges}
                 />
               )
             )}
@@ -174,7 +185,9 @@ export default function MyTodoListsPage() {
             isOpen={true}
             onClose={() => {
               setEditingItem(null);
+              setHasUnsavedChanges(false);
             }}
+            confirmBeforeClose={hasUnsavedChanges}
           >
             {isLoadingTodoSession ? (
               <div className="flex flex-col gap-5 items-center justify-center pt-40 px-10">
@@ -190,12 +203,14 @@ export default function MyTodoListsPage() {
                 <EditTodo
                   todo_session={TodoSessionFull}
                   onClose={() => setEditingItem(null)}
+                  onDirtyChange={setHasUnsavedChanges}
                   onSave={async (updatedItem) => {
                     await Promise.all([
                       updateFeedItemToTop(updatedItem),
                       refetchFullTodo(),
                     ]);
                     setEditingItem(null);
+                    setHasUnsavedChanges(false);
                   }}
                 />
               )

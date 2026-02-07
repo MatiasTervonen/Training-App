@@ -20,6 +20,7 @@ export default function Sessions() {
   const { t } = useTranslation("reminders");
   const [expandedItem, setExpandedItem] = useState<ReminderByTab | null>(null);
   const [editingItem, setEditingItem] = useState<ReminderByTab | null>(null);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [activeTab, setActiveTab] = useState<ReminderTab>("normal");
 
   const {
@@ -110,13 +111,17 @@ export default function Sessions() {
           isOpen={true}
           onClose={() => {
             setEditingItem(null);
+            setHasUnsavedChanges(false);
           }}
+          confirmBeforeClose={hasUnsavedChanges}
         >
           <EditMyGlobalReminder
             reminder={editingItem}
             onClose={() => setEditingItem(null)}
+            onDirtyChange={setHasUnsavedChanges}
             onSave={async () => {
               setEditingItem(null);
+              setHasUnsavedChanges(false);
             }}
           />
         </Modal>

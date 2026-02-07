@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import SaveButton from "@/components/buttons/SaveButton";
 import FullScreenLoader from "@/components/FullScreenLoader";
 import Toast from "react-native-toast-message";
@@ -19,6 +19,7 @@ type Props = {
   todo_session: full_todo_session_optional_id;
   onClose: () => void;
   onSave: (updateFeedItem: FeedItemUI) => void;
+  onDirtyChange?: (isDirty: boolean) => void;
 };
 
 type Task = {
@@ -28,7 +29,7 @@ type Task = {
   updated_at: string;
 };
 
-export default function EditTodo({ todo_session, onClose, onSave }: Props) {
+export default function EditTodo({ todo_session, onClose, onSave, onDirtyChange }: Props) {
   const { t } = useTranslation("todo");
   const [originalData] = useState(todo_session);
   const [isSaving, setIsSaving] = useState(false);
@@ -138,6 +139,10 @@ export default function EditTodo({ todo_session, onClose, onSave }: Props) {
 
   const hasChanges =
     JSON.stringify(sessionData) !== JSON.stringify(originalData);
+
+  useEffect(() => {
+    onDirtyChange?.(hasChanges);
+  }, [hasChanges, onDirtyChange]);
 
   return (
     <View className="flex-1">

@@ -29,6 +29,7 @@ type Props = {
   onSave: (updateFeedItem: FeedItemUI) => void;
   voiceRecordings?: FullNotesSession | null;
   isLoadingVoice?: boolean;
+  onDirtyChange?: (isDirty: boolean) => void;
 };
 
 type notesPayload = {
@@ -56,6 +57,7 @@ export default function EditNotes({
   onSave,
   voiceRecordings,
   isLoadingVoice = false,
+  onDirtyChange,
 }: Props) {
   const { t } = useTranslation("notes");
   const payload = note.extra_fields as notesPayload;
@@ -134,6 +136,10 @@ export default function EditNotes({
     notes !== initialNotes ||
     deletedRecordingIds.length > 0 ||
     newRecordings.length > 0;
+
+  useEffect(() => {
+    onDirtyChange?.(hasChanges);
+  }, [hasChanges, onDirtyChange]);
 
   return (
     <View className="flex-1">

@@ -168,7 +168,13 @@
       "loadError": "Liikkeen historian lataus epäonnistui. Yritä uudelleen.",
       "noHistory": "Tälle liikkeelle ei ole historiaa.",
       "timeMin": "Aika (min)",
-      "distanceMeters": "Matka (metriä)"
+      "distanceMeters": "Matka (metriä)",
+      "personalBest": "Ennätys",
+      "range1m": "1kk",
+      "range3m": "3kk",
+      "range6m": "6kk",
+      "range1y": "1v",
+      "noChartData": "Ei tarpeeksi dataa kaaviolle"
     },
     "exerciseCard": {
       "delete": "Poista",

@@ -120,6 +120,7 @@ export default function ActivityBreakdownChart({
               color: "#f3f4f6",
               borderRadius: "8px",
             }}
+            itemStyle={{ color: "#f3f4f6" }}
             formatter={(value: number, name: string) => [
               `${value} ${
                 value === 1
@@ -137,7 +138,7 @@ export default function ActivityBreakdownChart({
               paddingTop: "20px",
             }}
             formatter={(value) => (
-              <span style={{ color: "#f3f4f6", fontSize: "11px" }}>{value}</span>
+              <span style={{ color: "#f3f4f6", fontSize: "13px" }}>{value}</span>
             )}
           />
         </PieChart>

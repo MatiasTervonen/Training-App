@@ -22,11 +22,14 @@ import Toggle from "@/components/toggle";
 import { canUseExactAlarm } from "@/native/android/EnsureExactAlarmPermission";
 import ExactAlarmPermissionModal from "@/components/ExactAlarmPermissionModal";
 import useSetNotification from "@/features/reminders/hooks/global/useSetNotification";
+import { Dot } from "lucide-react-native";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   reminder: FeedItemUI;
   onClose: () => void;
   onSave: (updatedFeedItem: FeedItemUI) => void;
+  onDirtyChange?: (isDirty: boolean) => void;
 };
 
 type reminderPayload = {
@@ -40,7 +43,9 @@ export default function HandleEditGlobalReminder({
   reminder,
   onClose,
   onSave,
+  onDirtyChange,
 }: Props) {
+  const { t } = useTranslation("common");
   const payload = reminder.extra_fields as unknown as reminderPayload;
 
   const [title, setValue] = useState(reminder.title);
@@ -78,6 +83,18 @@ export default function HandleEditGlobalReminder({
     notes,
     mode,
   });
+
+  const originalNotifyAt = payload.notify_at ? new Date(payload.notify_at).getTime() : null;
+  const currentNotifyAt = notifyAt ? notifyAt.getTime() : null;
+  const hasChanges =
+    title !== reminder.title ||
+    notes !== payload.notes ||
+    currentNotifyAt !== originalNotifyAt ||
+    mode !== (payload.mode || "normal");
+
+  useEffect(() => {
+    onDirtyChange?.(hasChanges);
+  }, [hasChanges, onDirtyChange]);
 
   const formattedNotifyAt = formatDateTime(notifyAt!);
 
@@ -145,6 +162,14 @@ export default function HandleEditGlobalReminder({
 
   return (
     <>
+      {hasChanges && (
+        <View className="bg-gray-900 absolute top-5 left-5 z-50 py-1 px-4 flex-row items-center rounded-lg">
+          <AppText className="text-sm text-yellow-500">{t("common.unsavedChanges")}</AppText>
+          <View className="animate-pulse">
+            <Dot color="#eab308" />
+          </View>
+        </View>
+      )}
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
         <PageContainer className="justify-between mb-5">
           <View>

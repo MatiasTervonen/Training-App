@@ -30,7 +30,7 @@ export default function NotesSession(notes: FeedItemUI) {
         <div className="text-xl text-center mb-10 border-b border-gray-700 pb-2 wrap-break-word">
           {notes.title}
         </div>
-        <div className="whitespace-pre-wrap wrap-break-word overflow-hidden max-w-full text-left text-lg">
+        <div className="whitespace-pre-wrap wrap-break-word overflow-hidden max-w-full text-left">
           {payload.notes}
         </div>
       </div>

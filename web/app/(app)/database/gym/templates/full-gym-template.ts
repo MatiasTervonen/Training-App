@@ -13,6 +13,8 @@ export async function getFullTemplate(sessionId: string) {
 
   const language = useUserStore.getState().preferences?.language ?? "en";
 
+  console.log("Fetching template with ID:", sessionId, "for language:", language);
+
   const { data: template, error: templateError } = await supabase
     .from("gym_templates")
     .select(

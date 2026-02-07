@@ -16,15 +16,16 @@ import { useTranslation } from "react-i18next";
 type TodoSessionProps = {
   initialTodo: full_todo_session;
   onSave: (updatedItem: FeedItemUI) => Promise<void>;
+  onDirtyChange?: (dirty: boolean) => void;
 };
 
-export default function TodoSession({ initialTodo, onSave }: TodoSessionProps) {
+export default function TodoSession({ initialTodo, onSave, onDirtyChange }: TodoSessionProps) {
   const { t } = useTranslation("todo");
   const [open, setOpen] = useState<number | null>(null);
   const [sessionData, setSessionData] = useState(initialTodo);
   const [isSaving, setIsSaving] = useState(false);
   const [sortField, setSortField] = useState<"original" | "completed">(
-    "original"
+    "original",
   );
   const [originalOrder, setOriginalOrder] = useState(initialTodo.todo_tasks);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
@@ -71,7 +72,7 @@ export default function TodoSession({ initialTodo, onSave }: TodoSessionProps) {
     setSessionData((prev) => {
       const restoredTasks = originalOrder.map((originalTask) => {
         const currentTask = prev.todo_tasks.find(
-          (t) => t.id === originalTask.id
+          (t) => t.id === originalTask.id,
         );
         return currentTask || originalTask;
       });
@@ -145,6 +146,10 @@ export default function TodoSession({ initialTodo, onSave }: TodoSessionProps) {
     JSON.stringify(sessionData.todo_tasks) !==
     JSON.stringify(lastSavedRef.current);
 
+  useEffect(() => {
+    onDirtyChange?.(hasChanges);
+  }, [hasChanges, onDirtyChange]);
+
   return (
     <>
       {hasChanges && (
@@ -161,10 +166,13 @@ export default function TodoSession({ initialTodo, onSave }: TodoSessionProps) {
         <div className="flex flex-col items-center w-full">
           <div className="flex w-full justify-between items-center mb-5">
             <div className="flex flex-col gap-2 text-sm text-gray-400">
-              <p>{t("todo.session.created")} {formatDate(sessionData.created_at)}</p>
+              <p>
+                {t("todo.session.created")} {formatDate(sessionData.created_at)}
+              </p>
               {sessionData.updated_at && (
                 <p className="text-yellow-500">
-                  {t("todo.session.updated")} {formatDate(sessionData.updated_at)}
+                  {t("todo.session.updated")}{" "}
+                  {formatDate(sessionData.updated_at)}
                 </p>
               )}
             </div>
@@ -175,7 +183,10 @@ export default function TodoSession({ initialTodo, onSave }: TodoSessionProps) {
                 onChange={handleSortChange}
                 options={[
                   { value: "original", label: t("todo.session.originalOrder") },
-                  { value: "completed", label: t("todo.session.completedStatus") },
+                  {
+                    value: "completed",
+                    label: t("todo.session.completedStatus"),
+                  },
                 ]}
               />
             </div>
@@ -223,13 +234,15 @@ export default function TodoSession({ initialTodo, onSave }: TodoSessionProps) {
                         }}
                         isOpen={true}
                       >
-                        <div className="flex flex-col max-w-lg mx-auto mt-10 px-4">
-                          <h3 className="text-xl mb-10 wrap-break-word text-center">
-                            {task.task}
-                          </h3>
-                          <p className="bg-slate-900 p-5 sm:p-10 whitespace-pre-wrap wrap-break-word rounded-md text-left">
-                            {task.notes || t("todo.noNotesAvailable")}
-                          </p>
+                        <div className="text-center max-w-lg mx-auto page-padding">
+                          <div className="bg-slate-900 px-5 pt-5 pb-10 rounded-md shadow-md mt-5">
+                            <h3 className="text-xl text-center mb-10 border-b border-gray-700 pb-2 wrap-break-word">
+                              {task.task}
+                            </h3>
+                            <p className="whitespace-pre-wrap wrap-break-word overflow-hidden max-w-full text-left">
+                              {task.notes || t("todo.noNotesAvailable")}
+                            </p>
+                          </div>
                         </div>
                       </Modal>
                     )}
@@ -250,10 +263,16 @@ export default function TodoSession({ initialTodo, onSave }: TodoSessionProps) {
           <SaveButton
             onClick={saveChanges}
             disabled={!hasChanges}
-            label={!hasChanges ? t("todo.session.save") : t("todo.session.saveChanges")}
+            label={
+              !hasChanges
+                ? t("todo.session.save")
+                : t("todo.session.saveChanges")
+            }
           />
         </div>
-        {isSaving && <FullScreenLoader message={t("todo.session.savingChanges")} />}
+        {isSaving && (
+          <FullScreenLoader message={t("todo.session.savingChanges")} />
+        )}
       </div>
     </>
   );

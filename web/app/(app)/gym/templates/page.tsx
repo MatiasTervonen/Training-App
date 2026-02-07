@@ -110,8 +110,10 @@ export default function TemplatesPage() {
         <Modal isOpen={true} onClose={() => setExpandedItem(null)}>
           <>
             {isLoadingTemplateSession ? (
-              <div className="flex flex-col gap-5 items-center justify-center pt-40">
-                <p>{t("gym.TemplatesScreen.loadingExpanded")}</p>
+              <div className="flex flex-col gap-5 items-center justify-center pt-40 px-10">
+                <p className="text-lg">
+                  {t("gym.TemplatesScreen.loadingExpanded")}
+                </p>
                 <Spinner />
               </div>
             ) : TemplateSessionError ? (

@@ -59,7 +59,7 @@ export default function AppButton({
     >
       <Animated.View
         style={animatedStyle}
-        className="flex-row items-center justify-center gap-2 bg-blue-800 py-2 w-full my-3 rounded-md shadow-md border-2 border-blue-500"
+        className="flex-row items-center justify-center gap-2 btn-base"
       >
         {/* Light sweep gradient */}
         <Animated.View

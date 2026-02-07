@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import {
   BarChart,
   Bar,
@@ -181,7 +181,7 @@ export default function StepsChart({ range, data }: StepsChartProps) {
     "3months": t("activities.analyticsScreen.threeMonthsTotal"),
   };
 
-  const xAxisInterval = range === "month" ? 4 : 0;
+  const xAxisInterval = range === "month" ? 4 : range === "3months" ? 2 : 0;
 
   return (
     <div className="bg-slate-900 shadow-md w-full rounded-2xl p-4">
@@ -212,7 +212,7 @@ export default function StepsChart({ range, data }: StepsChartProps) {
       <div className="flex justify-around px-4 mb-4">
         <div className="text-center">
           <span className="text-gray-400 text-xs block">{rangeLabels[range]}</span>
-          <span className="text-xl font-bold text-green-400">
+          <span className="text-xl text-green-400">
             {formatNumber(totalSteps)}
           </span>
         </div>
@@ -220,7 +220,7 @@ export default function StepsChart({ range, data }: StepsChartProps) {
           <span className="text-gray-400 text-xs block">
             {t("activities.analyticsScreen.dailyAvg")}
           </span>
-          <span className="text-xl font-bold text-green-400">
+          <span className="text-xl text-green-400">
             {formatNumber(avgSteps)}
           </span>
         </div>
@@ -242,19 +242,20 @@ export default function StepsChart({ range, data }: StepsChartProps) {
           />
           <XAxis
             dataKey="label"
-            tick={{ fill: "#f3f4f6", fontSize: 10 }}
+            tick={{ fill: "#f3f4f6", fontSize: 12 }}
             axisLine={false}
             tickLine={false}
             interval={xAxisInterval}
           />
           <YAxis
-            tick={{ fill: "#9ca3af", fontSize: 10 }}
+            tick={{ fill: "#9ca3af", fontSize: 12 }}
             axisLine={false}
             tickLine={false}
             tickFormatter={formatNumber}
             domain={[0, Math.ceil(maxSteps / 1000) * 1000]}
           />
           <Tooltip
+            cursor={false}
             contentStyle={{
               backgroundColor: "#0f172a",
               borderColor: "#22c55e",

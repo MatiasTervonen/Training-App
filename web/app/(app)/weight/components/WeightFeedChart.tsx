@@ -126,7 +126,7 @@ export default function WeightFeedChart({ data }: WeightFeedChartProps) {
       <ResponsiveContainer width="100%" height={250}>
         <AreaChart
           data={chartData}
-          margin={{ top: 20, right: 20, left: -20, bottom: 40 }}
+          margin={{ top: 20, right: 20, left: -20, bottom: 10 }}
         >
           <defs>
             <linearGradient id="weightGradientFeed" x1="0" y1="0" x2="0" y2="1">

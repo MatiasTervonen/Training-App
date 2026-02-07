@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import SaveButton from "@/app/(app)/components/buttons/save-button";
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import toast from "react-hot-toast";
@@ -17,12 +17,14 @@ type Props = {
   reminder: full_reminder;
   onClose: () => void;
   onSave: () => void;
+  onDirtyChange?: (isDirty: boolean) => void;
 };
 
 export default function EditMyGlobalReminder({
   reminder,
   onClose,
   onSave,
+  onDirtyChange,
 }: Props) {
   const [title, setValue] = useState(reminder.title);
   const [notes, setNotes] = useState(reminder.notes);
@@ -32,6 +34,17 @@ export default function EditMyGlobalReminder({
   const [isSaving, setIsSaving] = useState(false);
 
   const queryClient = useQueryClient();
+
+  const originalNotifyAt = reminder.notify_at ? new Date(reminder.notify_at).getTime() : null;
+  const currentNotifyAt = notify_at ? notify_at.getTime() : null;
+  const hasChanges =
+    title !== reminder.title ||
+    notes !== reminder.notes ||
+    currentNotifyAt !== originalNotifyAt;
+
+  useEffect(() => {
+    onDirtyChange?.(hasChanges);
+  }, [hasChanges, onDirtyChange]);
 
   const formattedNotifyAt = formatDateTime(reminder.notify_at!);
 

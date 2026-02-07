@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import SaveButton from "@/app/(app)/components/buttons/save-button";
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import toast from "react-hot-toast";
@@ -17,6 +17,7 @@ type Props = {
   reminder: FeedItemUI;
   onClose: () => void;
   onSave: (updatedItem: FeedItemUI) => void;
+  onDirtyChange?: (isDirty: boolean) => void;
 };
 
 type ReminderPayload = {
@@ -29,6 +30,7 @@ export default function EditGlobalReminder({
   reminder,
   onClose,
   onSave,
+  onDirtyChange,
 }: Props) {
   const payload = reminder.extra_fields as unknown as ReminderPayload;
 
@@ -40,6 +42,17 @@ export default function EditGlobalReminder({
   const [isSaving, setIsSaving] = useState(false);
 
   const queryClient = useQueryClient();
+
+  const originalNotifyAt = payload.notify_at ? new Date(payload.notify_at).getTime() : null;
+  const currentNotifyAt = notify_at ? notify_at.getTime() : null;
+  const hasChanges =
+    title !== reminder.title ||
+    notes !== payload.notes ||
+    currentNotifyAt !== originalNotifyAt;
+
+  useEffect(() => {
+    onDirtyChange?.(hasChanges);
+  }, [hasChanges, onDirtyChange]);
 
   const formattedNotifyAt = formatDateTime(payload.notify_at!);
 

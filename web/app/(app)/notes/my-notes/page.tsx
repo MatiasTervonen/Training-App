@@ -17,6 +17,7 @@ import PinnedCarousel from "./components/PinnedCarousel";
 export default function MyNotesPage() {
   const [expandedItem, setExpandedItem] = useState<FeedItemUI | null>(null);
   const [editingItem, setEditingItem] = useState<FeedItemUI | null>(null);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   const {
     data,
@@ -132,14 +133,17 @@ export default function MyNotesPage() {
             isOpen={true}
             onClose={() => {
               setEditingItem(null);
+              setHasUnsavedChanges(false);
             }}
+            confirmBeforeClose={hasUnsavedChanges}
           >
             <EditNote
               note={editingItem}
-              onClose={() => setEditingItem(null)}
+              onDirtyChange={setHasUnsavedChanges}
               onSave={(updatedItem) => {
                 updateFeedItemToTop(updatedItem);
                 setEditingItem(null);
+                setHasUnsavedChanges(false);
               }}
             />
           </Modal>

@@ -1,4 +1,4 @@
-import { ReactNode, useEffect } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -11,17 +11,22 @@ import { CircleX } from "lucide-react-native";
 import { View, Pressable, Dimensions } from "react-native";
 import { Portal } from "react-native-paper";
 import { useFullScreenModalConfig } from "@/lib/stores/fullScreenModalConfig";
+import AppText from "@/components/AppText";
+import AnimatedButton from "@/components/buttons/animatedButton";
 
 export default function FullScreenModal({
   isOpen,
   onClose,
   children,
+  confirmBeforeClose = false,
 }: {
   isOpen: boolean;
   onClose: () => void;
   children: ReactNode;
+  confirmBeforeClose?: boolean;
 }) {
   const translateX = useSharedValue(0);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   const fullScreenModalConfig = useFullScreenModalConfig(
     (state) => state.fullScreenModalConfig
@@ -37,11 +42,20 @@ export default function FullScreenModal({
     if (isOpen) {
       // reset modal position when reopened
       translateX.value = 0;
+      setShowConfirm(false);
     }
   }, [isOpen, translateX]);
 
+  const handleClose = () => {
+    if (confirmBeforeClose) {
+      setShowConfirm(true);
+    } else {
+      onClose();
+    }
+  };
+
   const pan = Gesture.Pan()
-    .enabled(swipeEnabled ?? true)
+    .enabled((swipeEnabled ?? true) && !showConfirm)
     .activeOffsetX([-30, 30])
     .onChange((event) => {
       translateX.value = event.translationX * 0.7;
@@ -51,14 +65,24 @@ export default function FullScreenModal({
       const exitDistance = screenWidth * 1.2; // Distance to move off-screen
 
       if (Math.abs(translateX.value) > threshold) {
-        // If swipe distance exceeds threshold, close the modal
-        translateX.value = withTiming(
-          translateX.value > 0 ? exitDistance : -exitDistance,
-          { duration: 300 },
-          () => {
-            runOnJS(onClose)();
-          }
-        );
+        if (confirmBeforeClose) {
+          // Spring back to center and show confirmation immediately
+          translateX.value = withSpring(0, {
+            stiffness: 220,
+            damping: 15,
+            mass: 1,
+          });
+          runOnJS(handleClose)();
+        } else {
+          // Animate off-screen and close
+          translateX.value = withTiming(
+            translateX.value > 0 ? exitDistance : -exitDistance,
+            { duration: 300 },
+            () => {
+              runOnJS(onClose)();
+            }
+          );
+        }
       } else {
         // Otherwise, spring back to original position
         translateX.value = withSpring(0, {
@@ -84,13 +108,42 @@ export default function FullScreenModal({
             style={[animatedStyle]}
           >
             <Pressable
-              onPress={onClose}
+              onPress={handleClose}
               className="absolute top-4 right-4 z-[999]"
               hitSlop={10}
             >
               <CircleX size={30} color="#f3f4f6" />
             </Pressable>
             <View className="flex-1 max-w-xl px-2 w-full">{children}</View>
+
+            {showConfirm && (
+              <View className="absolute inset-0 bg-black/70 items-center justify-center z-50 rounded-t-2xl">
+                <View className="bg-slate-800 border border-slate-600 rounded-xl p-6 mx-4 w-full max-w-sm">
+                  <AppText className="text-lg text-center mb-6">
+                    You have unsaved changes. Discard them?
+                  </AppText>
+                  <View className="flex-row gap-3">
+                    <AnimatedButton
+                      onPress={() => setShowConfirm(false)}
+                      tabClassName="flex-1"
+                      className="btn-base py-3"
+                      label="Keep editing"
+                      textClassName="text-center text-gray-100"
+                    />
+                    <AnimatedButton
+                      onPress={() => {
+                        setShowConfirm(false);
+                        onClose();
+                      }}
+                      tabClassName="flex-1"
+                      className="btn-danger py-3"
+                      label="Discard"
+                      textClassName="text-center text-gray-100"
+                    />
+                  </View>
+                </View>
+              </View>
+            )}
           </Animated.View>
         </View>
       </GestureDetector>

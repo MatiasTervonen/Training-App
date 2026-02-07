@@ -27,6 +27,8 @@ export default function MyTodoListsScreen() {
   const [expandedItem, setExpandedItem] = useState<FeedItemUI | null>(null);
   const [editingItem, setEditingItem] = useState<FeedItemUI | null>(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [hasUnsavedExpandedChanges, setHasUnsavedExpandedChanges] = useState(false);
 
   const {
     data,
@@ -152,7 +154,11 @@ export default function MyTodoListsScreen() {
       {expandedItem && (
         <FullScreenModal
           isOpen={!!expandedItem}
-          onClose={() => setExpandedItem(null)}
+          onClose={() => {
+            setHasUnsavedExpandedChanges(false);
+            setExpandedItem(null);
+          }}
+          confirmBeforeClose={hasUnsavedExpandedChanges}
         >
           {isLoadingTodoSession ? (
             <View className="gap-5 items-center justify-center mt-40 px-10">
@@ -165,7 +171,14 @@ export default function MyTodoListsScreen() {
             </AppText>
           ) : (
             todoSessionFull && (
-              <TodoSession initialTodo={todoSessionFull} onSave={handleSave} />
+              <TodoSession
+                initialTodo={todoSessionFull}
+                onSave={(updatedItem) => {
+                  handleSave(updatedItem);
+                  setHasUnsavedExpandedChanges(false);
+                }}
+                onDirtyChange={setHasUnsavedExpandedChanges}
+              />
             )
           )}
         </FullScreenModal>
@@ -174,7 +187,11 @@ export default function MyTodoListsScreen() {
       {editingItem && (
         <FullScreenModal
           isOpen={!!editingItem}
-          onClose={() => setEditingItem(null)}
+          onClose={() => {
+            setHasUnsavedChanges(false);
+            setEditingItem(null);
+          }}
+          confirmBeforeClose={hasUnsavedChanges}
         >
           {isLoadingTodoSession ? (
             <View className="gap-5 items-center justify-center mt-40 px-10">
@@ -193,8 +210,10 @@ export default function MyTodoListsScreen() {
                 onSave={(updatedItem) => {
                   updateFeedItem(updatedItem);
                   refetchFullTodo();
+                  setHasUnsavedChanges(false);
                   setEditingItem(null);
                 }}
+                onDirtyChange={setHasUnsavedChanges}
               />
             )
           )}

@@ -49,6 +49,8 @@ export default function SessionFeed({ expandReminderId }: SessionFeedProps) {
   const [expandedItem, setExpandedItem] = useState<FeedItemUI | null>(null);
   const [editingItem, setEditingItem] = useState<FeedItemUI | null>(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [hasUnsavedExpandedChanges, setHasUnsavedExpandedChanges] = useState(false);
   const expandedReminderRef = useRef<string | null>(null);
 
   const router = useRouter();
@@ -232,10 +234,12 @@ export default function SessionFeed({ expandReminderId }: SessionFeedProps) {
         <FullScreenModal
           isOpen={!!expandedItem}
           onClose={() => {
+            setHasUnsavedExpandedChanges(false);
             setExpandedItem(null);
             // Reset ref so same reminder can be expanded again from alarm
             expandedReminderRef.current = null;
           }}
+          confirmBeforeClose={hasUnsavedExpandedChanges}
         >
           {expandedItem.type === "notes" && (
             <NotesSession
@@ -276,7 +280,9 @@ export default function SessionFeed({ expandReminderId }: SessionFeedProps) {
                     onSave={(updatedItem) => {
                       updateFeedItemToTop(updatedItem);
                       refetchFullTodo();
+                      setHasUnsavedExpandedChanges(false);
                     }}
+                    onDirtyChange={setHasUnsavedExpandedChanges}
                   />
                 )
               )}
@@ -326,7 +332,11 @@ export default function SessionFeed({ expandReminderId }: SessionFeedProps) {
       {editingItem && (
         <FullScreenModal
           isOpen={!!editingItem}
-          onClose={() => setEditingItem(null)}
+          onClose={() => {
+            setHasUnsavedChanges(false);
+            setEditingItem(null);
+          }}
+          confirmBeforeClose={hasUnsavedChanges}
         >
           {editingItem.type === "notes" && (
             <EditNotes
@@ -337,10 +347,12 @@ export default function SessionFeed({ expandReminderId }: SessionFeedProps) {
                 queryClient.refetchQueries({
                   queryKey: ["fullNotesSession", editingItem.source_id],
                 });
+                setHasUnsavedChanges(false);
                 setEditingItem(null);
               }}
               voiceRecordings={notesSessionFull}
               isLoadingVoice={isLoadingNotesSession}
+              onDirtyChange={setHasUnsavedChanges}
             />
           )}
 
@@ -350,8 +362,10 @@ export default function SessionFeed({ expandReminderId }: SessionFeedProps) {
               onClose={() => setEditingItem(null)}
               onSave={(updatedItem) => {
                 updateFeedItemToTop(updatedItem);
+                setHasUnsavedChanges(false);
                 setEditingItem(null);
               }}
+              onDirtyChange={setHasUnsavedChanges}
             />
           )}
 
@@ -361,8 +375,10 @@ export default function SessionFeed({ expandReminderId }: SessionFeedProps) {
               onClose={() => setEditingItem(null)}
               onSave={(updatedItem) => {
                 updateFeedItemToTop(updatedItem);
+                setHasUnsavedChanges(false);
                 setEditingItem(null);
               }}
+              onDirtyChange={setHasUnsavedChanges}
             />
           )}
 
@@ -387,8 +403,10 @@ export default function SessionFeed({ expandReminderId }: SessionFeedProps) {
                         updateFeedItemToTop(updatedItem),
                         refetchFullTodo(),
                       ]);
+                      setHasUnsavedChanges(false);
                       setEditingItem(null);
                     }}
+                    onDirtyChange={setHasUnsavedChanges}
                   />
                 )
               )}
@@ -418,8 +436,10 @@ export default function SessionFeed({ expandReminderId }: SessionFeedProps) {
                         updateFeedItem(updatedItem),
                         refetchFullActivity(),
                       ]);
+                      setHasUnsavedChanges(false);
                       setEditingItem(null);
                     }}
+                    onDirtyChange={setHasUnsavedChanges}
                   />
                 )
               )}
@@ -432,8 +452,10 @@ export default function SessionFeed({ expandReminderId }: SessionFeedProps) {
               onClose={() => setEditingItem(null)}
               onSave={(updatedItem) => {
                 updateFeedItem(updatedItem);
+                setHasUnsavedChanges(false);
                 setEditingItem(null);
               }}
+              onDirtyChange={setHasUnsavedChanges}
             />
           )}
         </FullScreenModal>

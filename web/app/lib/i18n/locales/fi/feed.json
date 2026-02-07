@@ -9,6 +9,8 @@
     "loadingActivity": "Ladataan aktiviteetin tietoja...",
     "activityError": "Aktiviteetin tietojen lataaminen epäonnistui. Yritä myöhemmin uudelleen.",
     "loadingNotes": "Ladataan muistiinpanoja...",
+    "loadingMore": "Ladataan lisää",
+    "noMoreSessions": "Ei enempää sessioita ladattavaksi.",
     "card": {
       "details": "Tiedot",
       "updated": "päivitetty:",

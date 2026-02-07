@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import SaveButton from "@/app/(app)/components/buttons/save-button";
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import toast from "react-hot-toast";
@@ -9,30 +9,25 @@ import { FeedItemUI } from "@/app/(app)/types/session";
 import NotesInput from "@/app/(app)/ui/NotesInput";
 import TitleInput from "@/app/(app)/ui/TitleInput";
 import { Dot } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   note: FeedItemUI;
-  onClose: () => void;
   onSave: (updatedItem: FeedItemUI) => void;
+  onDirtyChange?: (isDirty: boolean) => void;
 };
 
 type NotesPayload = {
   notes: string;
 };
 
-export default function EditNotes({ note, onClose, onSave }: Props) {
+export default function EditNotes({ note, onSave, onDirtyChange }: Props) {
+  const { t } = useTranslation("common");
   const payload = note.extra_fields as unknown as NotesPayload;
 
-  const [originalData] = useState(note);
   const [title, setValue] = useState(note.title);
   const [notes, setNotes] = useState(payload.notes);
   const [isSaving, setIsSaving] = useState(false);
-
-  const currentData = {
-    ...originalData,
-    title,
-    notes,
-  };
 
   const updated = new Date().toISOString();
 
@@ -47,22 +42,24 @@ export default function EditNotes({ note, onClose, onSave }: Props) {
       });
 
       onSave(updatedFeedItem as FeedItemUI);
-      onClose();
     } catch {
       setIsSaving(false);
       toast.error("Failed to update notes");
     }
   };
 
-  const hasChanges =
-    JSON.stringify(originalData) !== JSON.stringify(currentData);
+  const hasChanges = title !== note.title || notes !== payload.notes;
+
+  useEffect(() => {
+    onDirtyChange?.(hasChanges);
+  }, [hasChanges, onDirtyChange]);
 
   return (
     <>
       {hasChanges && (
         <div className="bg-slate-900 z-50 py-1 px-4 flex items-center rounded-lg fixed top-5 self-start ml-5">
           <p className="text-sm text-yellow-500">
-            {hasChanges ? "unsaved changes" : ""}
+            {hasChanges ? t("common.unsavedChanges") : ""}
           </p>
           <div className="animate-pulse">
             <Dot color="#eab308" />
@@ -83,11 +80,10 @@ export default function EditNotes({ note, onClose, onSave }: Props) {
             setNotes={setNotes}
             placeholder="Write your notes here..."
             label="Notes..."
-            fillAvailableSpace
           />
-          <div className="w-full mt-5">
-            <SaveButton onClick={handleSubmit} />
-          </div>
+        </div>
+        <div className="w-full mt-5">
+          <SaveButton onClick={handleSubmit} />
         </div>
       </div>
 

@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { russoOne } from "./ui/fonts";
 import Provider from "./components/provider";
 
 export const metadata: Metadata = {
@@ -35,7 +34,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${russoOne.className} antialiased`}>
+    <html lang="en">
       <body className="bg-gray-950 font-primary text-gray-100">
         <Provider>{children}</Provider>
       </body>

@@ -122,7 +122,7 @@ export default function ExerciseDropdown({ onSelect }: Props) {
                 >
                   <div className="flex justify-between flex-col">
                     <div className="flex justify-between items-center">
-                      <span className="truncate mr-5">{exercise.name}</span>
+                      <span className="truncate mr-5">{exercise.name}</span> 
                       <span className="text-sm text-gray-300">
                         {t(`gym.muscleGroups.${exercise.muscle_group}`)}
                       </span>

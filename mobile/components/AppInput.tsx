@@ -2,6 +2,7 @@ import { useState } from "react";
 import { View, TextInput, TextInputProps } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import AppText from "@/components/AppText";
+import { useTranslation } from "react-i18next";
 
 type AppInputProps = TextInputProps & {
   value: string;
@@ -15,17 +16,12 @@ export default function AppInput({
   label,
   ...props
 }: AppInputProps) {
-  const [focused, setFocused] = useState(false);
+  const { t } = useTranslation("common");
 
   return (
     <View>
       {label && <AppText className="mb-1">{label}</AppText>}
-      <View
-        style={{
-          borderColor: focused ? "#22c55e" : "#d1d5db", // green-500 / gray-300
-        }}
-        className="border-2 rounded-lg overflow-hidden"
-      >
+      <View className="border-2 rounded-lg overflow-hidden border-gray-400 focus:border-green-500">
         <LinearGradient
           colors={["#0f172a", "#1e293b", "#333333"]}
           start={{ x: 0, y: 0 }}
@@ -39,16 +35,14 @@ export default function AppInput({
           autoCorrect={false}
           spellCheck={false}
           allowFontScaling={false}
-          onFocus={() => setFocused(true)}
-          onBlur={() => setFocused(false)}
-          className="bg-transparent text-gray-100 text-xl px-4 py-2 h-12 font-russo"
+          className="bg-transparent text-gray-100 text-lg px-4 py-2 h-12 font-russo"
           maxLength={150}
           {...props}
         />
       </View>
       {value.length >= 150 ? (
         <AppText className="text-yellow-500 mt-2">
-          Reached the limit (150 chars max)
+          {t("common.charLimitReached", { max: 150 })}
         </AppText>
       ) : null}
     </View>

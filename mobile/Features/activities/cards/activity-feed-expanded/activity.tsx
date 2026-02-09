@@ -15,6 +15,7 @@ import FullScreenLoader from "@/components/FullScreenLoader";
 import useSaveTemplate from "./hooks/useSaveTemplate";
 import { useTranslation } from "react-i18next";
 import { Clock } from "lucide-react-native";
+import FullScreenMapModal from "./components/fullScreenMap";
 
 export default function ActivitySession(activity_session: FullActivitySession) {
   const { t } = useTranslation("activities");
@@ -23,6 +24,7 @@ export default function ActivitySession(activity_session: FullActivitySession) {
   const [templateName, setTemplateName] = useState("");
   const [templateNotes, setTemplateNotes] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+  const [fullScreen, setFullScreen] = useState(false);
   const [savedTemplateId, setSavedTemplateId] = useState<string | null>(
     activity_session.session.template_id,
   );
@@ -51,7 +53,7 @@ export default function ActivitySession(activity_session: FullActivitySession) {
       contentContainerStyle={{ flexGrow: 1 }}
       showsVerticalScrollIndicator={false}
     >
-      <PageContainer className="mb-5">
+      <PageContainer>
         <View className="flex-1 justify-between">
           <View>
             <AppText className="text-gray-300 text-center text-sm">
@@ -98,18 +100,18 @@ export default function ActivitySession(activity_session: FullActivitySession) {
                   activity_session={activity_session}
                   setScrollEnabled={setScrollEnabled}
                   setSwipeEnabled={setSwipeEnabled}
+                  setFullScreen={setFullScreen}
                 />
                 <SessionStats activity_session={activity_session} />
               </View>
             )}
           </View>
           {hasRoute && savedTemplateId === null && (
-            <View className="mt-10">
+            <View className="mt-20">
               <AnimatedButton
                 onPress={() => setShowModal(true)}
                 label={t("activities.sessionDetails.saveAsTemplate")}
-                className="bg-blue-800 py-2 rounded-md shadow-md border-2 border-blue-500"
-                textClassName="text-gray-100 text-center"
+                className="btn-base"
               />
             </View>
           )}
@@ -148,7 +150,7 @@ export default function ActivitySession(activity_session: FullActivitySession) {
                 <AnimatedButton
                   onPress={() => setShowModal(false)}
                   label={t("activities.sessionDetails.cancel")}
-                  className="bg-red-800 py-2 my-3 rounded-md shadow-md border-2 border-red-500"
+                  className="btn-danger"
                   textClassName="text-gray-100 text-center"
                 />
               </View>
@@ -156,7 +158,7 @@ export default function ActivitySession(activity_session: FullActivitySession) {
                 <AnimatedButton
                   onPress={saveAsTemplate}
                   label={t("activities.sessionDetails.save")}
-                  className="bg-blue-800 py-2 my-3 rounded-md shadow-md border-2 border-blue-500"
+                  className="btn-base"
                   textClassName="text-gray-100 text-center"
                 />
               </View>
@@ -164,6 +166,13 @@ export default function ActivitySession(activity_session: FullActivitySession) {
           </View>
         </View>
       </Modal>
+      {hasRoute && (
+        <FullScreenMapModal
+          activity_session={activity_session}
+          fullScreen={fullScreen}
+          setFullScreen={setFullScreen}
+        />
+      )}
       <FullScreenLoader
         visible={isSaving}
         message={t("activities.sessionDetails.savingTemplate")}

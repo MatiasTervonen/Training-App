@@ -11,14 +11,16 @@
     "success": "Success",
     "start": "Start",
     "updated": "Updated:",
-    "charLimitReached": "Reached the limit (500 chars max)",
+    "charLimitReached": "Reached the limit ({{max}} chars max)",
     "pin": "Pin",
     "unpin": "Unpin",
     "pinned": "Pinned",
     "history": "History",
     "change": "Change",
     "created": "Created:",
-    "unsavedChanges": "unsaved changes"
+    "unsavedChanges": "unsaved changes",
+    "copyToClipboard": "Copy to Clipboard",
+    "copiedToClipboard": "Copied to Clipboard"
   },
   "navbar": {
     "menu": "Menu",

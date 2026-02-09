@@ -159,9 +159,16 @@
       "cancel": "Peruuta",
       "settings": "Asetukset"
     },
+    "gpsInfoModal": {
+      "title": "Salli sijainnin käyttö \"Aina\"",
+      "description1": "Aktiviteetin tallentamiseksi sijaintiseurannan on pysyttävä aktiivisena myös sovelluksen ollessa suljettuna tai näytön lukittuna.",
+      "description2": "Sijaintia seurataan vain aktiviteetin aikana, ja seuranta loppuu heti kun lopetat tai poistat sen.",
+      "cancel": "Peruuta",
+      "openSettings": "Avaa asetukset"
+    },
     "stepInfoModal": {
       "title": "Ota askelseuranta käyttöön",
-      "description": "MyTrack käyttää askeldataa Android Health Connectista näyttääkseen aktiviteettitietosi.\n\nOta askelpääsy käyttöön MyTrackille Health Connectin Käyttöoikeudet-kohdassa.",
+      "description": "MyTrack käyttää askeldataa Android Health Connectista näyttääkseen aktiviteettitietosi.\n\nAskelten saamiseksi tarvitset askelseurantasovelluksen (esim. Google Fit tai Samsung Health) asennettuna ja synkronoituna Health Connectiin.\n\nOta sen jälkeen askelpääsy käyttöön MyTrackille Health Connectin Käyttöoikeudet-kohdassa.",
       "cancel": "Peruuta",
       "openSettings": "Avaa asetukset"
     },

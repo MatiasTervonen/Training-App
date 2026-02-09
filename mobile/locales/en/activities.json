@@ -159,9 +159,16 @@
       "cancel": "Cancel",
       "settings": "Settings"
     },
+    "gpsInfoModal": {
+      "title": "Allow Location Access \"Always\"",
+      "description1": "To record your activity correctly, location tracking needs to stay active even when the app is closed or your screen is locked.",
+      "description2": "Location is tracked only while an activity is running and stops as soon as you finish or delete it.",
+      "cancel": "Cancel",
+      "openSettings": "Open Settings"
+    },
     "stepInfoModal": {
       "title": "Enable step tracking",
-      "description": "MyTrack uses step data from Android Health Connect to show your activity insights.\n\nPlease enable step access for MyTrack in Permissions under Health Connect.",
+      "description": "MyTrack uses step data from Android Health Connect to show your activity insights.\n\nTo get steps, you need a step tracking app (e.g. Google Fit or Samsung Health) installed and syncing with Health Connect.\n\nThen enable step access for MyTrack in Permissions under Health Connect.",
       "cancel": "Cancel",
       "openSettings": "Open settings"
     },

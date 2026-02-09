@@ -32,7 +32,11 @@ type TodoSessionProps = {
   onDirtyChange?: (dirty: boolean) => void;
 };
 
-export default function TodoSession({ initialTodo, onSave, onDirtyChange }: TodoSessionProps) {
+export default function TodoSession({
+  initialTodo,
+  onSave,
+  onDirtyChange,
+}: TodoSessionProps) {
   const { t } = useTranslation("todo");
   const [open, setOpen] = useState<number | null>(null);
   const [sessionData, setSessionData] = useState(initialTodo);
@@ -165,7 +169,7 @@ export default function TodoSession({ initialTodo, onSave, onDirtyChange }: Todo
       )}
 
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-        <View className="max-w-lg justify-between pt-5 pb-10 flex-1 px-2">
+        <View className="max-w-lg justify-between pt-5 pb-5 flex-1 px-1">
           <View className="items-center">
             <View className="mb-10 gap-2">
               <AppText className="text-sm text-gray-300">
@@ -173,11 +177,12 @@ export default function TodoSession({ initialTodo, onSave, onDirtyChange }: Todo
               </AppText>
               {sessionData.updated_at && (
                 <AppText className="text-sm text-yellow-500">
-                  {t("todo.session.updated")} {formatDate(sessionData.updated_at)}
+                  {t("todo.session.updated")}{" "}
+                  {formatDate(sessionData.updated_at)}
                 </AppText>
               )}
             </View>
-            <View className="bg-slate-950  rounded-xl pb-5 w-full">
+            <View className="bg-slate-950 rounded-xl pb-5 w-full">
               <View className="flex-row justify-between items-center my-5 gap-3 px-[30px] flex-1">
                 <AppText
                   className="text-xl flex-1"
@@ -191,8 +196,14 @@ export default function TodoSession({ initialTodo, onSave, onDirtyChange }: Todo
                   value={sortField}
                   onChange={handleSortChange}
                   options={[
-                    { value: "original", label: t("todo.session.originalOrder") },
-                    { value: "completed", label: t("todo.session.completedStatus") },
+                    {
+                      value: "original",
+                      label: t("todo.session.originalOrder"),
+                    },
+                    {
+                      value: "completed",
+                      label: t("todo.session.completedStatus"),
+                    },
                   ]}
                   icon={<ArrowDownUp size={24} color="#9ca3af" />}
                 />
@@ -212,7 +223,7 @@ export default function TodoSession({ initialTodo, onSave, onDirtyChange }: Todo
                     (t) => t.id === task.id,
                   );
                   return (
-                    <ScaleDecorator>
+                    <ScaleDecorator activeScale={1.07}>
                       <TouchableOpacity
                         onLongPress={drag}
                         delayLongPress={300}
@@ -221,19 +232,16 @@ export default function TodoSession({ initialTodo, onSave, onDirtyChange }: Todo
                           opacity: isActive ? 0.8 : 1,
                         }}
                       >
-                        <View
-                          className="flex-row gap-4 items-center mb-3"
-                          style={{ position: "relative" }}
-                        >
+                        <View className="flex-row gap-4 items-center mb-3">
                           <Checkbox
-                            hitSlop={10}
+                            hitSlop={20}
                             onValueChange={() => {
                               toggleCompleted(task.id);
                             }}
                             value={task.is_completed}
                             className="bg-slate-800"
                           />
-                          <View className="flex-row flex-1 items-center border border-gray-100 py-2 pl-2 rounded-md justify-between bg-slate-900">
+                          <View className="flex-row flex-1 items-center border border-gray-100 py-2 pl-1 rounded-md justify-between bg-slate-900">
                             <AppText
                               className="text-left mr-2 ml-1 flex-1"
                               numberOfLines={1}
@@ -266,11 +274,13 @@ export default function TodoSession({ initialTodo, onSave, onDirtyChange }: Todo
                               >
                                 <PageContainer className="mb-10">
                                   <AppText className="text-sm text-gray-300 text-center">
-                                    {t("todo.session.created")} {formatDate(task.created_at!)}
+                                    {t("todo.session.created")}{" "}
+                                    {formatDate(task.created_at!)}
                                   </AppText>
                                   {task.updated_at && (
                                     <AppText className="text-sm text-yellow-500 mt-2 text-center">
-                                      {t("todo.session.updated")} {formatDate(task.updated_at)}
+                                      {t("todo.session.updated")}{" "}
+                                      {formatDate(task.updated_at)}
                                     </AppText>
                                   )}
                                   <View className="items-center bg-slate-900 pt-5 pb-10 px-5 rounded-md shadow-md mt-5">
@@ -296,8 +306,8 @@ export default function TodoSession({ initialTodo, onSave, onDirtyChange }: Todo
                             <View
                               className="absolute pointer-events-none bg-gray-400/30 rounded-md items-center justify-center"
                               style={{
-                                left: -12,
-                                right: -12,
+                                left: -7,
+                                right: -7,
                                 top: -4,
                                 bottom: -4,
                               }}
@@ -312,7 +322,7 @@ export default function TodoSession({ initialTodo, onSave, onDirtyChange }: Todo
                 }}
                 contentContainerStyle={{
                   paddingBottom: 10,
-                  paddingHorizontal: 30,
+                  paddingHorizontal: 20,
                   paddingTop: 10,
                 }}
               />
@@ -322,10 +332,17 @@ export default function TodoSession({ initialTodo, onSave, onDirtyChange }: Todo
             <SaveButton
               onPress={saveChanges}
               disabled={!hasChanges}
-              label={!hasChanges ? t("todo.session.save") : t("todo.session.saveChanges")}
+              label={
+                !hasChanges
+                  ? t("todo.session.save")
+                  : t("todo.session.saveChanges")
+              }
             />
           </View>
-          <FullScreenLoader visible={isSaving} message={t("todo.session.savingChanges")} />
+          <FullScreenLoader
+            visible={isSaving}
+            message={t("todo.session.savingChanges")}
+          />
         </View>
       </ScrollView>
     </View>

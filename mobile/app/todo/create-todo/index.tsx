@@ -115,28 +115,29 @@ export default function CreateTodo() {
   };
 
   return (
-    <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+    <ScrollView
+      contentContainerStyle={{ flexGrow: 1 }}
+      showsVerticalScrollIndicator={false}
+    >
       <PageContainer className="justify-between">
         <View>
           <View className="flex-row items-center gap-2 justify-center mb-10">
             <AppText className="text-2xl">{t("todo.todoList")} </AppText>
             <ListTodo color="#f3f4f6" size={30} />
           </View>
-          <AppInput
-            placeholder={t("todo.titlePlaceholder")}
-            label={t("todo.addTitleLabel")}
-            value={title}
-            setValue={setTitle}
-          />
-          <View className="mt-5">
+          <View className="gap-5">
+            <AppInput
+              placeholder={t("todo.titlePlaceholder")}
+              label={t("todo.addTitleLabel")}
+              value={title}
+              setValue={setTitle}
+            />
             <AppInput
               placeholder={t("todo.taskPlaceholder")}
               label={t("todo.addTaskLabel")}
               value={task}
               setValue={setTask}
             />
-          </View>
-          <View className="mt-5">
             <SubNotesInput
               placeholder={t("todo.notesPlaceholder")}
               label={t("todo.addNotesLabel")}
@@ -159,7 +160,7 @@ export default function CreateTodo() {
           <View className=" items-center mb-10">
             <View className="bg-slate-950 px-4 rounded-xl pb-5 w-full">
               <AppText
-                className="my-10 text-2xl text-center"
+                className="mt-5 mb-10 text-xl text-center"
                 numberOfLines={2}
                 ellipsizeMode="tail"
               >

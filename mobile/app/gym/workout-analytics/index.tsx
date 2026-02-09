@@ -37,7 +37,7 @@ export default function AnalyticsScreen() {
   const unifiedError = error || heatMapError;
 
   return (
-    <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
+    <ScrollView contentContainerStyle={{ paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
       <PageContainer>
         <AppText className="text-2xl mb-10 text-center">
           {t("gym.analyticsScreen.title")}

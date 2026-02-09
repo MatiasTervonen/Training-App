@@ -25,6 +25,12 @@
     "chat": "Chat",
     "unsavedChanges": "unsaved changes"
   },
+  "modal": {
+    "closeAlt": "Close modal",
+    "unsavedPrompt": "You have unsaved changes. Discard them?",
+    "keepEditing": "Keep editing",
+    "discard": "Discard"
+  },
   "navbar": {
     "menu": "Menu",
     "feed": "Feed",

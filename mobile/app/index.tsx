@@ -33,7 +33,7 @@ export default function Index() {
             <GradientColorText style={{ width: 200, height: 50 }}>
               MyTrack!
             </GradientColorText>
-            <AppText className="text-xl mt-4">
+            <AppText className="text-xl mt-4 text-center">
               The Only Tracking App You&apos;ll Ever Need
             </AppText>
           </View>

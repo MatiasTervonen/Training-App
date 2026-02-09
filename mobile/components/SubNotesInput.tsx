@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import { TextInputProps, View, TextInput } from "react-native";
 import AppText from "@/components/AppText";
 import { LinearGradient } from "expo-linear-gradient";
@@ -30,6 +30,15 @@ export default function SubNotesInput({
   const { t } = useTranslation();
   const textRef = useRef(value);
   const animatedHeight = useSharedValue(minHeight);
+  const [inputKey, setInputKey] = useState(0);
+
+  useEffect(() => {
+    if (value.length === 0 && textRef.current.length > 0) {
+      textRef.current = "";
+      animatedHeight.value = withTiming(minHeight, { duration: 100 });
+      setInputKey((k) => k + 1);
+    }
+  }, [value, animatedHeight, minHeight]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     height: animatedHeight.value,
@@ -39,7 +48,7 @@ export default function SubNotesInput({
   return (
     <View>
       {label && <AppText className="text-gray-300 mb-1">{label}</AppText>}
-      <View className="border-2 rounded-lg overflow-hidden border-gray-300 focus:border-green-500">
+      <View className="border-2 rounded-lg overflow-hidden border-gray-400 focus:border-green-500">
         <LinearGradient
           colors={["#0f172a", "#1e293b", "#333333"]}
           start={{ x: 0, y: 0 }}
@@ -48,6 +57,7 @@ export default function SubNotesInput({
         />
         <Animated.View style={animatedStyle}>
           <TextInput
+            key={inputKey}
             placeholderTextColor={"#9ca3af"}
             autoComplete="off"
             spellCheck={false}
@@ -78,7 +88,7 @@ export default function SubNotesInput({
         </Animated.View>
         {value.length >= 500 ? (
           <AppText className="text-yellow-400 mt-2">
-            {t("common.charLimitReached")}
+            {t("common.charLimitReached", { max: 500 })}
           </AppText>
         ) : null}
       </View>

@@ -181,6 +181,10 @@ export default function BaseMap({
           setScrollEnabled(true);
           setSwipeEnabled(true);
         }}
+        onTouchCancel={() => {
+          setScrollEnabled(true);
+          setSwipeEnabled(true);
+        }}
       >
         <Mapbox.MapView
           style={{ flex: 1 }}

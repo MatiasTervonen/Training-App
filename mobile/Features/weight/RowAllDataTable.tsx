@@ -40,7 +40,7 @@ export default function WeightRow({
     <View key={item.id}>
       <View className="border-b border-gray-700 px-4 py-3 bg-gray-900">
         <View className="flex-row justify-between items-center">
-          <AppText className="text-white text-lg min-w-[70px]">
+          <AppText className="text-base min-w-[70px]">
             {item.weight} {weightUnit}
           </AppText>
           <AppText className="text-gray-400">
@@ -55,7 +55,7 @@ export default function WeightRow({
             hitSlop={10}
           >
             <Animated.View style={[chevronStyle]}>
-              <ChevronRight size={20} color="white" />
+              <ChevronRight size={20} color="#f3f4f6" />
             </Animated.View>
           </Pressable>
         </View>

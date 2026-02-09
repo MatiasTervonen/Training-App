@@ -179,11 +179,11 @@
       "weightPlaceholder": "Weight...",
       "repsPlaceholder": "Reps...",
       "rpeOptions": {
-        "warmup": "Warm-up",
-        "easy": "Easy",
-        "medium": "Medium",
-        "hard": "Hard",
-        "failure": "Failure"
+        "warmup": "1 - Warm-up",
+        "easy": "2 - Easy",
+        "medium": "3 - Medium",
+        "hard": "4 - Hard",
+        "failure": "5 - Failure"
       },
       "missingData": "Missing data",
       "fillTime": "Please fill time (min).",

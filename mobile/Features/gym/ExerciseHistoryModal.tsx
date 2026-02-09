@@ -37,11 +37,11 @@ export default function ExerciseHistoryModal({
 
   const translateRpe = (rpe: string) => {
     const rpeMap: Record<string, string> = {
-      "Warm-up": t("gym.exerciseCard.rpeOptions.warmup"),
-      Easy: t("gym.exerciseCard.rpeOptions.easy"),
-      Medium: t("gym.exerciseCard.rpeOptions.medium"),
-      Hard: t("gym.exerciseCard.rpeOptions.hard"),
-      Failure: t("gym.exerciseCard.rpeOptions.failure"),
+      "Warm-up": "1",
+      Easy: "2",
+      Medium: "3",
+      Hard: "4",
+      Failure: "5",
     };
     return rpeMap[rpe] || rpe;
   };

@@ -11,14 +11,16 @@
     "success": "Onnistui",
     "start": "Aloita",
     "updated": "Päivitetty:",
-    "charLimitReached": "Merkkimäärän raja saavutettu (max 500)",
+    "charLimitReached": "Merkkimäärän raja saavutettu (max {{max}})",
     "pin": "Kiinnitä",
     "pinned": "Kiinnitetty",
     "unpin": "Irrota",
     "history": "Historia",
     "change": "Vaihda",
     "created": "Luotu:",
-    "unsavedChanges": "tallentamattomia muutoksia"
+    "unsavedChanges": "tallentamattomia muutoksia",
+    "copyToClipboard": "Kopioi leikepöydälle",
+    "copiedToClipboard": "Kopioitu leikepöydälle"
   },
   "navbar": {
     "menu": "Valikko",

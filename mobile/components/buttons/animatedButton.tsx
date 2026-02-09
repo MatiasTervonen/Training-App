@@ -52,7 +52,7 @@ export default function AnimatedButton({
         {...props}
       >
         {label && (
-          <AppText className={`text-lg ${textClassName}`}>
+          <AppText className={`text-lg text-center ${textClassName}`}>
             {label}
           </AppText>
         )}

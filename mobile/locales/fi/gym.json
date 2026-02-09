@@ -181,11 +181,11 @@
       "weightPlaceholder": "Paino...",
       "repsPlaceholder": "Toistot...",
       "rpeOptions": {
-        "warmup": "Lämmittely",
-        "easy": "Helppo",
-        "medium": "Keskivaikea",
-        "hard": "Vaikea",
-        "failure": "Epäonnistuminen"
+        "warmup": "1 - Lämmittely",
+        "easy": "2 - Helppo",
+        "medium": "3 - Keskivaikea",
+        "hard": "4 - Vaikea",
+        "failure": "5 - Epäonnistuminen"
       },
       "missingData": "Puuttuvat tiedot",
       "fillTime": "Täytä aika (min).",

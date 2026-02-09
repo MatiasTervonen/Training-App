@@ -32,11 +32,11 @@ export default function GymSession(gym_session: FullGymSession) {
 
   const translateRpe = (rpe: string) => {
     const rpeMap: Record<string, string> = {
-      "Warm-up": t("gym.exerciseCard.rpeOptions.warmup"),
-      Easy: t("gym.exerciseCard.rpeOptions.easy"),
-      Medium: t("gym.exerciseCard.rpeOptions.medium"),
-      Hard: t("gym.exerciseCard.rpeOptions.hard"),
-      Failure: t("gym.exerciseCard.rpeOptions.failure"),
+      "Warm-up": "1",
+      Easy: "2",
+      Medium: "3",
+      Hard: "4",
+      Failure: "5",
     };
     return rpeMap[rpe] || rpe;
   };
@@ -108,7 +108,7 @@ export default function GymSession(gym_session: FullGymSession) {
             }`}
           >
             {group.length > 1 && (
-              <AppText className="text-xl text-gray-100 my-2 text-center">
+              <AppText className="text-lg text-gray-100 my-2 text-center">
                 {t("gym.session.superSet")}
               </AppText>
             )}
@@ -117,7 +117,7 @@ export default function GymSession(gym_session: FullGymSession) {
                 <View className="justify-between flex-col mb-2">
                   <View className="flex-row items-center">
                     <AppText
-                      className="text-xl text-gray-100 flex-1 mr-4"
+                      className="text-lg text-gray-100 flex-1 mr-4"
                       numberOfLines={1}
                       ellipsizeMode="tail"
                     >
@@ -131,7 +131,7 @@ export default function GymSession(gym_session: FullGymSession) {
                     </AnimatedButton>
                   </View>
                   <View className="flex-row items-center ">
-                    <AppText className="text-md text-gray-400 mt-1">
+                    <AppText className="text-gray-400 mt-1">
                       {t(
                         `gym.equipment.${exercise.gym_exercises.equipment?.toLowerCase()}`,
                       )}{" "}
@@ -142,9 +142,11 @@ export default function GymSession(gym_session: FullGymSession) {
                     </AppText>
                   </View>
                 </View>
-                <AppText className="py-2 whitespace-pre-wrap break-words overflow-hidden">
-                  {exercise.notes || ""}
-                </AppText>
+                {exercise.notes && (
+                  <AppText className="py-2 overflow-hidden">
+                    {exercise.notes || ""}
+                  </AppText>
+                )}
 
                 <View className="w-full">
                   <View className="text-gray-300 border-b border-gray-300 flex-row">
@@ -159,7 +161,7 @@ export default function GymSession(gym_session: FullGymSession) {
                           <AppText className="p-2 text-lg">
                             {t("gym.session.time")}
                           </AppText>
-                          <AppText className="text-sm">
+                          <AppText>
                             ({t("gym.session.min")})
                           </AppText>
                         </View>
@@ -167,7 +169,7 @@ export default function GymSession(gym_session: FullGymSession) {
                           <AppText className="p-2 text-lg">
                             {t("gym.session.distance")}
                           </AppText>
-                          <AppText className="text-sm">
+                          <AppText className="text-lg">
                             ({t("gym.session.meters")})
                           </AppText>
                         </View>
@@ -204,7 +206,7 @@ export default function GymSession(gym_session: FullGymSession) {
                   {exercise.gym_sets.map((set, setIndex) => (
                     <View
                       key={setIndex}
-                      className={`border-b border-gray-300 flex-row  items-center  ${
+                      className={`border-b border-gray-300 flex-row items-center  ${
                         set.rpe === "Failure"
                           ? "bg-red-500 text-white"
                           : "text-gray-100"
@@ -213,17 +215,17 @@ export default function GymSession(gym_session: FullGymSession) {
                       {isCardioExercise(exercise) ? (
                         <>
                           <View className="flex-1 items-center">
-                            <AppText className="p-2 text-lg ">
+                            <AppText className="p-2">
                               {setIndex + 1}
                             </AppText>
                           </View>
                           <View className="flex-1 items-center">
-                            <AppText className="p-2 text-lg ">
+                            <AppText className="p-2">
                               {set.time_min}
                             </AppText>
                           </View>
                           <View className="flex-1 items-center">
-                            <AppText className="p-2 text-lg">
+                            <AppText className="p-2">
                               {set.distance_meters}
                             </AppText>
                           </View>
@@ -232,22 +234,22 @@ export default function GymSession(gym_session: FullGymSession) {
                       ) : (
                         <>
                           <View className="flex-1 items-center">
-                            <AppText className="p-2 text-lg">
+                            <AppText className="p-2">
                               {setIndex + 1}
                             </AppText>
                           </View>
                           <View className="flex-1 items-center">
-                            <AppText className="p-2 text-lg">
+                            <AppText className="p-2">
                               {set.weight} {weightUnit}
                             </AppText>
                           </View>
                           <View className="flex-1 items-center">
-                            <AppText className="p-2 text-lg">
+                            <AppText className="p-2">
                               {set.reps}
                             </AppText>
                           </View>
                           <View className="flex-1 items-center">
-                            <AppText className="p-2 text-lg" numberOfLines={1}>
+                            <AppText className="p-2" numberOfLines={1}>
                               {set.rpe ? translateRpe(set.rpe) : ""}
                             </AppText>
                           </View>

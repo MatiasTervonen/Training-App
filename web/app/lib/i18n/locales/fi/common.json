@@ -25,6 +25,12 @@
     "chat": "Keskustelu",
     "unsavedChanges": "tallentamattomia muutoksia"
   },
+  "modal": {
+    "closeAlt": "Sulje ikkuna",
+    "unsavedPrompt": "Sinulla on tallentamattomia muutoksia. Hylätäänkö ne?",
+    "keepEditing": "Jatka muokkausta",
+    "discard": "Hylkää"
+  },
   "navbar": {
     "menu": "Valikko",
     "feed": "Syöte",

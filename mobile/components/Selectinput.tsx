@@ -12,6 +12,7 @@ type SelectInputProps = {
   onChange?: (value: string) => void;
   disabled?: boolean;
   topLabel?: string;
+  selectedDisplay?: string;
 };
 
 export default function SelectInput({
@@ -22,6 +23,7 @@ export default function SelectInput({
   disabled,
   topLabel,
   placeholder,
+  selectedDisplay,
 }: SelectInputProps) {
   const [isOpen, setIsOpen] = useState(false);
   const selectedlabel = options.find((option) => option.value === value)?.label;
@@ -48,7 +50,7 @@ export default function SelectInput({
           end={{ x: 1, y: 1 }}
           className="absolute inset-0 items-center justify-center"
         >
-          <AppText className="text-lg ">{selectedlabel || placeholder}</AppText>
+          <AppText className="text-lg ">{selectedDisplay || selectedlabel || placeholder}</AppText>
         </LinearGradient>
       </Pressable>
 

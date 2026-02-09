@@ -9,7 +9,9 @@ import android.content.Intent
 import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Build
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import androidx.core.app.NotificationCompat
 import com.layer100crypto.MyTrack.MainActivity
 import com.layer100crypto.MyTrack.R
@@ -41,6 +43,8 @@ class AlarmService : Service() {
     }
 
     private lateinit var mediaPlayer: MediaPlayer
+    private val handler = Handler(Looper.getMainLooper())
+    private var notifyCount = 0
 
     private var alarmTitle: String = "Alarm"
     private var soundType: String = "default"
@@ -76,6 +80,12 @@ class AlarmService : Service() {
         // Update the notification with the new title
         startForeground(2, buildNotification())
 
+        // Re-post notification periodically to keep heads-up visible on Samsung One UI.
+        // Samsung auto-collapses heads-up after ~5 seconds; re-notifying brings it back.
+        notifyCount = 0
+        handler.removeCallbacksAndMessages(null)
+        scheduleHeadsUpRefresh()
+
         return START_REDELIVER_INTENT
     }
 
@@ -97,6 +107,17 @@ class AlarmService : Service() {
         mediaPlayer.prepare()
         mediaPlayer.isLooping = true
         mediaPlayer.start()
+    }
+
+    private fun scheduleHeadsUpRefresh() {
+        handler.postDelayed({
+            if (isRunning && notifyCount < 6) { // Re-trigger up to 6 times (~30s total)
+                notifyCount++
+                val nm = getSystemService(NotificationManager::class.java)
+                nm.notify(2, buildNotification())
+                scheduleHeadsUpRefresh()
+            }
+        }, 5000) // Every 5 seconds
     }
 
     private fun buildNotification(): Notification {
@@ -161,6 +182,15 @@ class AlarmService : Service() {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
+        // Stop action button on the notification itself (fallback for Samsung lock screen)
+        val stopIntent = Intent(this, StopAlarmReceiver::class.java)
+        val stopPendingIntent = PendingIntent.getBroadcast(
+            this,
+            2,
+            stopIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
         val builder = NotificationCompat.Builder(this, channelId)
             .setContentTitle(alarmTitle)
             .setContentText(contentText)
@@ -172,12 +202,17 @@ class AlarmService : Service() {
             .setCategory(NotificationCompat.CATEGORY_ALARM)
             .setPriority(NotificationCompat.PRIORITY_MAX)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            .addAction(0, stopAlarmText, stopPendingIntent)
+            .setUsesChronometer(true)
+            .setWhen(System.currentTimeMillis())
+            .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
 
         return builder.build()
     }
 
     override fun onDestroy() {
         clearState()
+        handler.removeCallbacksAndMessages(null)
         mediaPlayer.stop()
         mediaPlayer.release()
         // Notify JS to stop its alarm sound

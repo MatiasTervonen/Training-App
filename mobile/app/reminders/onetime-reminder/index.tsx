@@ -97,9 +97,9 @@ export default function ReminderScreen() {
               <AppText className="text-xl text-center">
                 {t("reminders.oneTimeReminder")}
               </AppText>
-              <View className="flex-row items-center justify-center">
+              <View className="flex-row items-center ">
                 <Info color="#9ca3af" size={18} />
-                <AppText className="text-gray-400 text-sm ml-2">
+                <AppText className="text-gray-400 text-sm ml-2 text">
                   {t("reminders.oneTimeInfo")}
                 </AppText>
               </View>

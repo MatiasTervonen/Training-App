@@ -7,6 +7,7 @@ import android.os.PowerManager
 import androidx.core.content.ContextCompat
 import com.layer100crypto.MyTrack.AppForegroundState
 import com.layer100crypto.MyTrack.ReactEventEmitter
+import com.layer100crypto.MyTrack.timer.TimerService
 import java.util.Calendar
 
 class AlarmReceiver : BroadcastReceiver() {
@@ -26,6 +27,11 @@ class AlarmReceiver : BroadcastReceiver() {
         val powerManager = context.getSystemService(Context.POWER_SERVICE) as PowerManager
         val isScreenOn = powerManager.isInteractive
 
+        // Stop the timer countdown notification — the alarm replaces it
+        if (soundType == "timer") {
+            context.stopService(Intent(context, TimerService::class.java))
+        }
+
         // For timers: JS handles the alarm when in foreground AND screen is on
         // For reminders: Always use native alarm (no JS handling exists)
         val shouldStartService = soundType == "reminder" || !isAppInForeground || !isScreenOn
@@ -43,10 +49,13 @@ class AlarmReceiver : BroadcastReceiver() {
             ContextCompat.startForegroundService(context, serviceIntent)
         }
 
-        // For reminders: Launch AlarmActivity directly when screen is on
-        // This ensures the full-screen alarm UI shows even when the app is in background
-        // When screen is off/locked, the fullScreenIntent from notification handles it
-        if (soundType == "reminder" && isScreenOn) {
+        // Launch AlarmActivity directly when screen is on for ALL alarm types.
+        // On Samsung One UI the heads-up notification auto-collapses after a few seconds,
+        // so we bypass it and show the full-screen alarm UI directly.
+        // When screen is off/locked, the fullScreenIntent from the notification handles it.
+        // For timers with the app in foreground, JS already handles the UI (see above).
+        val jsHandlesAlarm = isAppInForeground && isScreenOn && soundType != "reminder"
+        if (isScreenOn && !jsHandlesAlarm) {
             val alarmActivityIntent = Intent(context, AlarmActivity::class.java).apply {
                 putExtra("REMINDER_ID", reminderId)
                 putExtra("TITLE", title)

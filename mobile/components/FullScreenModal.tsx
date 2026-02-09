@@ -9,6 +9,7 @@ import Animated, {
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { CircleX } from "lucide-react-native";
 import { View, Pressable, Dimensions } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Portal } from "react-native-paper";
 import { useFullScreenModalConfig } from "@/lib/stores/fullScreenModalConfig";
 import AppText from "@/components/AppText";
@@ -27,6 +28,7 @@ export default function FullScreenModal({
 }) {
   const translateX = useSharedValue(0);
   const [showConfirm, setShowConfirm] = useState(false);
+  const insets = useSafeAreaInsets();
 
   const fullScreenModalConfig = useFullScreenModalConfig(
     (state) => state.fullScreenModalConfig
@@ -57,6 +59,7 @@ export default function FullScreenModal({
   const pan = Gesture.Pan()
     .enabled((swipeEnabled ?? true) && !showConfirm)
     .activeOffsetX([-30, 30])
+    .failOffsetY([-15, 15])
     .onChange((event) => {
       translateX.value = event.translationX * 0.7;
     })
@@ -114,7 +117,12 @@ export default function FullScreenModal({
             >
               <CircleX size={30} color="#f3f4f6" />
             </Pressable>
-            <View className="flex-1 max-w-xl px-2 w-full">{children}</View>
+            <View
+              className="flex-1 max-w-xl px-2 w-full"
+              style={{ paddingBottom: insets.bottom }}
+            >
+              {children}
+            </View>
 
             {showConfirm && (
               <View className="absolute inset-0 bg-black/70 items-center justify-center z-50 rounded-t-2xl">

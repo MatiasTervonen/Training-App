@@ -210,6 +210,7 @@ export default function SecurityPage() {
                 label={loading ? t("common.saving") : t("common.save")}
                 disabled={loading}
                 loading={loading}
+                className="btn-base"
               />
             </View>
           )}
@@ -250,7 +251,7 @@ export default function SecurityPage() {
               label={loading2 ? t("common.deleting") : t("common.delete")}
               disabled={loading2}
               loading={loading2}
-              className="bg-red-600 border-red-400"
+              className="btn-danger"
             />
           </View>
         </PageContainer>

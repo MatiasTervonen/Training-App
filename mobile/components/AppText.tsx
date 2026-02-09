@@ -5,6 +5,10 @@ export default function AppText({
   ...props
 }: TextProps & { className?: string }) {
   return (
-    <Text className={`font-russo text-gray-100 ${className}`} {...props} />
+    <Text
+      maxFontSizeMultiplier={1.2}
+      className={`font-russo text-gray-100 ${className}`}
+      {...props}
+    />
   );
 }

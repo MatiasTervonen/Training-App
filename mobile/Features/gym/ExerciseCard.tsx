@@ -10,11 +10,11 @@ import AppInput from "@/components/AppInput";
 import { useUserStore } from "@/lib/stores/useUserStore";
 import { useConfirmAction } from "@/lib/confirmAction";
 import SelectInput from "@/components/Selectinput";
-import AppButton from "@/components/buttons/AppButton";
 import DropDownModal from "@/components/DropDownModal";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
 import SubNotesInput from "@/components/SubNotesInput";
 import { useTranslation } from "react-i18next";
+import AnimatedButton from "@/components/buttons/animatedButton";
 
 type ExerciseCardProps = {
   index: number;
@@ -73,7 +73,7 @@ export default function ExerciseCard({
             {index + 1}. {exercise.name}
           </AppText>
           <View className="flex-row items-center gap-3 mt-1">
-            <AppText className="text-lg text-gray-400">
+            <AppText className="text-gray-400">
               {t(`gym.equipment.${exercise.equipment?.toLowerCase()}`)} /{" "}
               {t(
                 `gym.muscleGroups.${exercise.muscle_group?.toLowerCase().replace(/ /g, "_")}`,
@@ -225,7 +225,9 @@ export default function ExerciseCard({
                     <AppText className="p-2 text-lg">{set.reps}</AppText>
                   </View>
                   <View className="flex-1 items-center">
-                    <AppText className="p-2 text-lg">{set.rpe}</AppText>
+                    <AppText className="p-2 text-lg">
+                      {set.rpe ? ({"Warm-up": "1", Easy: "2", Medium: "3", Hard: "4", Failure: "5"} as Record<string, string>)[set.rpe] || set.rpe : ""}
+                    </AppText>
                   </View>
                 </>
               )}
@@ -307,6 +309,7 @@ export default function ExerciseCard({
                     disabled={disabled}
                     label={`${index + 1}. ${exercise.name}`}
                     value={input.rpe}
+                    selectedDisplay={input.rpe ? ({"Warm-up": "1", Easy: "2", Medium: "3", Hard: "4", Failure: "5"} as Record<string, string>)[input.rpe] : undefined}
                     onChange={(val) => onInputChange(index, "rpe", val)}
                     options={[
                       {
@@ -336,7 +339,7 @@ export default function ExerciseCard({
             )}
           </View>
           <View className="mx-auto mt-2">
-            <AppButton
+            <AnimatedButton
               onPress={() => {
                 if (isCardioExercise(exercise)) {
                   const isTimeEmpty =
@@ -366,6 +369,7 @@ export default function ExerciseCard({
                 onAddSet(index);
               }}
               label={t("gym.exerciseCard.addSet")}
+              className="btn-base px-10 my-4"
             />
           </View>
         </>

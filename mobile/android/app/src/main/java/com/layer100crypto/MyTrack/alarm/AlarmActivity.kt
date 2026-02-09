@@ -26,18 +26,21 @@ class AlarmActivity : AppCompatActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             setShowWhenLocked(true)
             setTurnScreenOn(true)
-
-            val keyguardManager = getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
-            keyguardManager.requestDismissKeyguard(this, null)
+            // NOTE: Do NOT call requestDismissKeyguard here — on Samsung One UI it
+            // triggers an invisible overlay that steals touch focus, making the
+            // Stop button unresponsive. Keyguard is dismissed later in
+            // stopAlarmAndOpenApp() only when we actually need to open MainActivity.
         } else {
             @Suppress("DEPRECATION")
             window.addFlags(
                 WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
-                WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD or
                 WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON or
                 WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
             )
         }
+
+        // Keep screen on while alarm is showing (needed for Samsung power management)
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
         setContentView(R.layout.activity_alarm)
 
@@ -104,10 +107,28 @@ class AlarmActivity : AppCompatActivity() {
                     Intent.FLAG_ACTIVITY_SINGLE_TOP
             putExtra("stopAlarm", true)
         }
-        startActivity(openIntent)
 
-        // Close this activity
-        finish()
+        // Dismiss keyguard now (when user actually wants to open the app)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+            val keyguardManager = getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
+            keyguardManager.requestDismissKeyguard(this, object : KeyguardManager.KeyguardDismissCallback() {
+                override fun onDismissSucceeded() {
+                    startActivity(openIntent)
+                    finish()
+                }
+                override fun onDismissCancelled() {
+                    // User cancelled unlock — still stop alarm but stay on lock screen
+                    finish()
+                }
+                override fun onDismissError() {
+                    startActivity(openIntent)
+                    finish()
+                }
+            })
+        } else {
+            startActivity(openIntent)
+            finish()
+        }
     }
     
     override fun onBackPressed() {

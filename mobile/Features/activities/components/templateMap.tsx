@@ -1,8 +1,8 @@
-
 import Mapbox from "@rnmapbox/maps";
-import { View } from "react-native";
+import { Pressable, View } from "react-native";
 import { useState } from "react";
 import { templateSummary } from "@/types/session";
+import { Move, Lock } from "lucide-react-native";
 
 
 type MapProps = {
@@ -16,6 +16,7 @@ export default function TemplateMap({
   setScrollEnabled,
   setSwipeEnabled,
 }: MapProps) {
+  const [mapActive, setMapActive] = useState(false);
   const [mapStyle, setMapStyle] = useState(Mapbox.StyleURL.Dark);
 
   const coordinates = template.route!.coordinates;
@@ -74,19 +75,17 @@ export default function TemplateMap({
     });
   };
 
+  const toggleMapActive = () => {
+    const next = !mapActive;
+    setMapActive(next);
+    setScrollEnabled(!next);
+    setSwipeEnabled(!next);
+  };
+
   return (
-    <View
-      style={{ height: 300 }}
-      onTouchStart={() => {
-        setScrollEnabled(false);
-        setSwipeEnabled(false);
-      }}
-      onTouchEnd={() => {
-        setScrollEnabled(true);
-        setSwipeEnabled(true);
-      }}
-    >
-      <Mapbox.MapView
+    <View style={{ height: 300 }}>
+      <View pointerEvents={mapActive ? "auto" : "none"} style={{ flex: 1 }}>
+        <Mapbox.MapView
         style={{ flex: 1 }}
         styleURL={mapStyle}
         scaleBarEnabled={false}
@@ -151,6 +150,19 @@ export default function TemplateMap({
           />
         </Mapbox.ShapeSource>
       </Mapbox.MapView>
+      </View>
+      <Pressable
+        onPress={toggleMapActive}
+        className="absolute z-50 p-2 rounded-full bg-blue-700 border-2 border-blue-500"
+        style={{ bottom: 15, right: 25 }}
+        hitSlop={10}
+      >
+        {mapActive ? (
+          <Lock size={22} color="#f3f4f6" />
+        ) : (
+          <Move size={22} color="#f3f4f6" />
+        )}
+      </Pressable>
     </View>
   );
 }

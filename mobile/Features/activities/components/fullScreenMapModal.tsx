@@ -121,137 +121,135 @@ export default function FullScreenMapModal({
 
   return (
     <Modal visible={fullScreen} transparent={true} animationType="slide">
-      <View className="bg-slate-950 w-full h-full">
-        <View className="flex-1">
-          <Mapbox.MapView
-            style={{ flex: 1 }}
-            styleURL={mapStyle}
-            scaleBarEnabled={false}
-            logoEnabled={false}
-            attributionEnabled={false}
-            onTouchStart={() => {
-              setIsFollowingUser(false);
-            }}
-          >
-            {userFeature && (
-              <Mapbox.ShapeSource id="user-location" shape={userFeature as any}>
-                <Mapbox.CircleLayer
-                  id="user-dot-outer-blur"
-                  style={{
-                    circleColor: "#3b82f6",
-                    circleRadius: 18,
-                    circleOpacity: 0.25,
-                  }}
-                />
-                <Mapbox.CircleLayer
-                  id="user-dot-core"
-                  style={{
-                    circleColor: "#3b82f6",
-                    circleRadius: 9,
-                    circleOpacity: 1,
-                    circleStrokeColor: "#ffffff",
-                    circleStrokeWidth: 2,
-                  }}
-                />
-              </Mapbox.ShapeSource>
-            )}
-
-            <Mapbox.Camera
-              followUserLocation={isFollowingUser}
-              followZoomLevel={15}
-              animationMode={isFollowingUser ? "linearTo" : "easeTo"}
-              animationDuration={isFollowingUser ? 0 : 600}
-            />
-
-            <Mapbox.ShapeSource
-              key={`track-${sourceKey}`}
-              id="track-source"
-              shape={trackShape as any}
-            >
-              <Mapbox.LineLayer
-                id="track-layer"
+      <View className="flex-1">
+        <Mapbox.MapView
+          style={{ flex: 1 }}
+          styleURL={mapStyle}
+          scaleBarEnabled={false}
+          logoEnabled={false}
+          attributionEnabled={false}
+          onTouchStart={() => {
+            setIsFollowingUser(false);
+          }}
+        >
+          {userFeature && (
+            <Mapbox.ShapeSource id="user-location" shape={userFeature as any}>
+              <Mapbox.CircleLayer
+                id="user-dot-outer-blur"
                 style={{
-                  lineColor: "rgba(59,130,246,0.4)",
-                  lineCap: "round",
-                  lineJoin: "round",
-                  lineWidth: 10,
-                  lineBlur: 4,
+                  circleColor: "#3b82f6",
+                  circleRadius: 18,
+                  circleOpacity: 0.25,
                 }}
               />
-              <Mapbox.LineLayer
-                id="track-core"
+              <Mapbox.CircleLayer
+                id="user-dot-core"
                 style={{
-                  lineColor: "#3b82f6",
-                  lineWidth: 4,
-                  lineCap: "round",
-                  lineJoin: "round",
+                  circleColor: "#3b82f6",
+                  circleRadius: 9,
+                  circleOpacity: 1,
+                  circleStrokeColor: "#ffffff",
+                  circleStrokeWidth: 2,
                 }}
               />
             </Mapbox.ShapeSource>
+          )}
 
-            {shouldShowTemplateRoute && (
-              <Mapbox.ShapeSource
-                id="template-route"
-                shape={{
-                  type: "Feature",
-                  geometry: {
-                    type: "LineString",
-                    coordinates: templateRoute,
-                  },
-                  properties: {},
+          <Mapbox.Camera
+            followUserLocation={isFollowingUser}
+            followZoomLevel={15}
+            animationMode={isFollowingUser ? "linearTo" : "easeTo"}
+            animationDuration={isFollowingUser ? 0 : 600}
+          />
+
+          <Mapbox.ShapeSource
+            key={`track-${sourceKey}`}
+            id="track-source"
+            shape={trackShape as any}
+          >
+            <Mapbox.LineLayer
+              id="track-layer"
+              style={{
+                lineColor: "rgba(59,130,246,0.4)",
+                lineCap: "round",
+                lineJoin: "round",
+                lineWidth: 10,
+                lineBlur: 4,
+              }}
+            />
+            <Mapbox.LineLayer
+              id="track-core"
+              style={{
+                lineColor: "#3b82f6",
+                lineWidth: 4,
+                lineCap: "round",
+                lineJoin: "round",
+              }}
+            />
+          </Mapbox.ShapeSource>
+
+          {shouldShowTemplateRoute && (
+            <Mapbox.ShapeSource
+              id="template-route"
+              shape={{
+                type: "Feature",
+                geometry: {
+                  type: "LineString",
+                  coordinates: templateRoute,
+                },
+                properties: {},
+              }}
+            >
+              <Mapbox.LineLayer
+                id="template-route-layer"
+                style={{
+                  lineColor: "rgba(255,255,255,0.35)",
+                  lineWidth: 4,
+                  lineCap: "round",
+                  lineJoin: "round",
+                  lineDasharray: [2, 2],
                 }}
-              >
-                <Mapbox.LineLayer
-                  id="template-route-layer"
-                  style={{
-                    lineColor: "rgba(255,255,255,0.35)",
-                    lineWidth: 4,
-                    lineCap: "round",
-                    lineJoin: "round",
-                    lineDasharray: [2, 2],
-                  }}
-                />
-              </Mapbox.ShapeSource>
-            )}
-          </Mapbox.MapView>
-          <View className="absolute z-50" style={{ bottom: 50, right: 25 }}>
-            <AnimatedButton
-              onPress={toggleMapStyle}
-              className="p-2 rounded-full bg-blue-700 border-2 border-blue-500"
-              hitSlop={10}
-            >
-              <Layers2 size={25} color="#f3f4f6" />
-            </AnimatedButton>
-          </View>
-          <View className="absolute z-50" style={{ bottom: 50, right: 80 }}>
-            <AnimatedButton
-              onPress={() => setIsFollowingUser(true)}
-              className="p-2 rounded-full bg-blue-700 border-2 border-blue-500"
-              hitSlop={10}
-            >
-              <MapPin size={25} color="#f3f4f6" />
-            </AnimatedButton>
-          </View>
-        </View>
-        <MapIcons
-          title="Activity"
-          lastMovingPoint={lastMovingPoint as TrackPoint}
-          style={{ bottom: insets.bottom }}
-          startGPStracking={startGPStracking}
-          stopGPStracking={stopGPStracking}
-          totalDistance={totalDistance}
-          hasStartedTracking={hasStartedTracking}
-          averagePacePerKm={averagePacePerKm}
-          currentStepCount={currentStepCount}
-        />
-        <View
-          className="absolute z-50 top-5 right-10"
-          style={{ top: insets.top }}
-        >
-          <AnimatedButton onPress={() => setFullScreen(false)} hitSlop={10}>
-            <CircleX size={35} color="#3b82f6" />
+              />
+            </Mapbox.ShapeSource>
+          )}
+        </Mapbox.MapView>
+        <View className="absolute z-50" style={{ bottom: 60, right: 20 }}>
+          <AnimatedButton
+            onPress={toggleMapStyle}
+            className="p-2 rounded-full bg-blue-700 border-2 border-blue-500"
+            hitSlop={10}
+          >
+            <Layers2 size={25} color="#f3f4f6" />
           </AnimatedButton>
         </View>
+        <View className="absolute z-50" style={{ bottom: 60, right: 75 }}>
+          <AnimatedButton
+            onPress={() => setIsFollowingUser(true)}
+            className="p-2 rounded-full bg-blue-700 border-2 border-blue-500"
+            hitSlop={10}
+          >
+            <MapPin size={25} color="#f3f4f6" />
+          </AnimatedButton>
+        </View>
+      </View>
+      <MapIcons
+        title="Activity"
+        lastMovingPoint={lastMovingPoint as TrackPoint}
+        style={{ bottom: insets.bottom }}
+        startGPStracking={startGPStracking}
+        stopGPStracking={stopGPStracking}
+        totalDistance={totalDistance}
+        hasStartedTracking={hasStartedTracking}
+        averagePacePerKm={averagePacePerKm}
+        currentStepCount={currentStepCount}
+      />
+      <View
+        className="absolute z-50 top-5 right-10"
+        style={{ top: insets.top }}
+      >
+        <AnimatedButton onPress={() => setFullScreen(false)} hitSlop={10}>
+          <CircleX size={35} color="#3b82f6" />
+        </AnimatedButton>
       </View>
     </Modal>
   );

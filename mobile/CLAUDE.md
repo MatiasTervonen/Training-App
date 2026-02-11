@@ -3,7 +3,7 @@
 ## Key Paths
 - Tailwind classes: `app/global.css`
 - Input field components: `components`
-- Translation files: `alocales`
+- Translation files: `locales`
 - Text components: `components`
 - Button components: `components/buttons`
 
@@ -23,9 +23,12 @@
 ## Components
 - Small notes field: `SubNotesInput`
 - Large notes field: `NotesInput`
-- Title fields: `TitleInput`
+- Title fields: `AppInput`
 - Always check `app/components` for existing components before creating new ones.
+
+## Imports
+- Always use absolute paths when importing — never use relative paths.
 
 ## Translations
 - Always add translations when creating new pages or user-facing text.
-- Translation files are in `app/lib`.
+- Translation files are in `locales`.

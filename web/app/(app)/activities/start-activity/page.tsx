@@ -170,7 +170,6 @@ export default function StartActivity() {
       </div>
     );
   }
-1
   return (
     <div className="min-h-full mx-auto flex flex-col">
       <div className="flex items-center  bg-gray-600 p-2 px-4 w-full sticky top-0 z-40">

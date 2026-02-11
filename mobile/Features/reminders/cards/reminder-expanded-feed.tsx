@@ -1,6 +1,7 @@
 import { Bell, CalendarSync } from "lucide-react-native";
 import { View } from "react-native";
 import AppText from "@/components/AppText";
+import BodyText from "@/components/BodyText";
 import { FeedItemUI } from "@/types/session";
 import { formatNotifyTime, formatDate, formatDateTime } from "@/lib/formatDate";
 import { LinearGradient } from "expo-linear-gradient";
@@ -86,7 +87,7 @@ export default function ReminderSession(reminder: FeedItemUI) {
       </View>
       {payload.notes && (
         <View className="whitespace-pre-wrap break-words bg-slate-700 p-4 rounded-md shadow-md mt-5 border border-gray-400">
-          <AppText className="text-center">{payload.notes}</AppText>
+          <BodyText className="text-center">{payload.notes}</BodyText>
         </View>
       )}
 

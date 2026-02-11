@@ -30,7 +30,7 @@ export default function HandleEditLocalReminder({
   onSave,
   onDirtyChange,
 }: Props) {
-  const { t } = useTranslation("reminders");
+  const { t, i18n } = useTranslation("reminders");
   const [title, setValue] = useState(reminder.title);
   const [notes, setNotes] = useState(reminder.notes);
   const [isSaving, setIsSaving] = useState(false);
@@ -155,6 +155,10 @@ export default function HandleEditLocalReminder({
             modal
             minimumDate={reminder.type === "one-time" ? new Date() : undefined}
             open={open}
+            locale={i18n.language}
+            title={reminder.type === "one-time" ? t("common:datePicker.selectDateTime") : t("common:datePicker.selectTime")}
+            confirmText={t("common:datePicker.confirm")}
+            cancelText={t("common:datePicker.cancel")}
             onConfirm={(date) => {
               setOpen(false);
               setNotifyAt(date);

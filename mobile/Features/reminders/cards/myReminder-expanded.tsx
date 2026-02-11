@@ -1,6 +1,7 @@
 import { Bell, CalendarSync } from "lucide-react-native";
 import { View } from "react-native";
 import AppText from "@/components/AppText";
+import BodyText from "@/components/BodyText";
 import { full_reminder } from "@/types/session";
 import { formatNotifyTime, formatDate, formatDateTime } from "@/lib/formatDate";
 import { LinearGradient } from "expo-linear-gradient";
@@ -69,7 +70,7 @@ export default function MyReminderSession(reminder: full_reminder) {
       </View>
       {reminder.notes && (
         <View className="whitespace-pre-wrap break-words bg-slate-700 p-4 rounded-md shadow-md mt-5 border border-gray-400">
-          <AppText className="text-center">{reminder.notes}</AppText>
+          <BodyText className="text-center">{reminder.notes}</BodyText>
         </View>
       )}
 

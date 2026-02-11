@@ -121,6 +121,9 @@ export default function SessionFeed({ expandReminderId }: SessionFeedProps) {
     activitySessionFull,
     activitySessionError,
     isLoadingActivitySession,
+    activityVoiceRecordings,
+    activityVoiceError,
+    isLoadingActivityVoice,
     notesSessionFull,
     notesSessionError,
     isLoadingNotesSession,
@@ -321,7 +324,12 @@ export default function SessionFeed({ expandReminderId }: SessionFeedProps) {
                 </AppText>
               ) : (
                 activitySessionFull && (
-                  <ActivitySession {...activitySessionFull} />
+                  <ActivitySession
+                    {...activitySessionFull}
+                    voiceRecordings={activityVoiceRecordings}
+                    isLoadingVoice={isLoadingActivityVoice}
+                    voiceError={activityVoiceError}
+                  />
                 )
               )}
             </>

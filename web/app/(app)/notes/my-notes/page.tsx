@@ -12,7 +12,7 @@ import useMyNotesFeed from "@/app/(app)/notes/hooks/useMyNotesFeed";
 import useNotesTogglePin from "@/app/(app)/notes/hooks/useNotesTogglePin";
 import useNotesDeleteSession from "@/app/(app)/notes/hooks/useNotesDeleteSession";
 import useNotesUpdateFeedItemToTop from "@/app/(app)/notes/hooks/useNotesUpdateFeedItemToTop";
-import PinnedCarousel from "./components/PinnedCarousel";
+import FeedHeader from "../../dashboard/components/feedHeader";
 
 export default function MyNotesPage() {
   const [expandedItem, setExpandedItem] = useState<FeedItemUI | null>(null);
@@ -71,12 +71,12 @@ export default function MyNotesPage() {
           </p>
         ) : (
           <>
-            <PinnedCarousel
+            <FeedHeader
               pinnedFeed={pinnedFeed}
               setExpandedItem={setExpandedItem}
               setEditingItem={setEditingItem}
-              togglePin={togglePin}
-              handleDelete={handleDelete}
+              pinned_context="notes"
+              queryKey={["myNotes"]}
             />
 
             {unpinnedFeed.map((feedItem) => {
@@ -92,7 +92,7 @@ export default function MyNotesPage() {
                       togglePin(
                         feedItem.id,
                         feedItem.type,
-                        feedItem.feed_context
+                        feedItem.feed_context,
                       )
                     }
                     onDelete={() =>

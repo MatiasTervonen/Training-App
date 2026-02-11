@@ -78,6 +78,7 @@
     "addExerciseScreen": {
       "title": "Lisää liikkeitä",
       "exerciseName": "Liikkeen nimi (englanti)",
+      "exerciseNameUser": "Liikkeen nimi",
       "fiExerciseName": "Liikkeen nimi (suomi)",
       "exerciseNamePlaceholder": "Liikkeen nimi",
       "charLimit": "Raja saavutettu (max 50 merkkiä)",

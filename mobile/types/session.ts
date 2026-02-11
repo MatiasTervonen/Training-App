@@ -237,3 +237,10 @@ export type editMyNotes = {
   notes: string;
   updated_at: string;
 };
+
+export type DraftRecording = {
+  id: string;
+  uri: string;
+  createdAt: number;
+  durationMs?: number;
+};

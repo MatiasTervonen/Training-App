@@ -2,12 +2,12 @@ import PageContainer from "@/components/PageContainer";
 import AppText from "@/components/AppText";
 import AppInput from "@/components/AppInput";
 import ActivityDropdown from "@/features/activities/components/activityDropdown";
-import { useState, useEffect, useCallback, useMemo, useRef } from "react";
-import Toast from "react-native-toast-message";
-import { View, ScrollView, Linking, AppState } from "react-native";
+import { useState, useEffect, useCallback, useMemo } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { View, AppState, ScrollView } from "react-native";
 import SubNotesInput from "@/components/SubNotesInput";
-import Timer from "@/components/timer";
 import Toggle from "@/components/toggle";
+import SessionStats from "@/features/activities/components/sessionStats";
 import { useUserStore } from "@/lib/stores/useUserStore";
 import { Link } from "expo-router";
 import { useTimerStore } from "@/lib/stores/timerStore";
@@ -18,16 +18,13 @@ import SaveButton from "@/components/buttons/SaveButton";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import useSaveActivitySession from "@/features/activities/hooks/useSaveSession";
 import DeleteButton from "@/components/buttons/DeleteButton";
-import { Fullscreen } from "lucide-react-native";
 import {
   useStartGPStracking,
   useStopGPStracking,
 } from "@/features/activities/lib/location-actions";
 import { formatDateShort } from "@/lib/formatDate";
-import { useModalPageConfig } from "@/lib/stores/modalPageConfig";
-import FullScreenMapModal from "@/features/activities/components/fullScreenMapModal";
-import BaseMap from "@/features/activities/components/baseMap";
-import { TrackPoint } from "@/types/session";
+import FullScreenMap from "@/features/activities/components/fullScreenMap";
+import { TrackPoint, DraftRecording } from "@/types/session";
 import InfoModal from "@/features/activities/components/infoModal";
 import { useDistanceFromTrack } from "@/features/activities/hooks/useCountDistance";
 import { useStartActivity } from "@/features/activities/hooks/useStartActivity";
@@ -40,10 +37,24 @@ import { useAveragePace } from "@/features/activities/hooks/useAveragePace";
 import StepInfoModal from "@/features/activities/stepToggle/stepInfoModal";
 import { hasStepsPermission } from "@/features/activities/stepToggle/stepPermission";
 import { useStepHydration } from "@/features/activities/hooks/useStepHydration";
+import {
+  requestStepPermission,
+  hasStepSensor,
+  isStepPermissionPermanentlyDenied,
+} from "@/native/android/NativeStepCounter";
 import { updateNativeTimerLabel } from "@/native/android/NativeTimer";
 import { useTemplateRoute } from "@/features/activities/hooks/useTemplateRoute";
 import { findWarmupStartIndex } from "@/features/activities/lib/findWarmupStartIndex";
+import { useModalPageConfig } from "@/lib/stores/modalPageConfig";
 import { useTranslation } from "react-i18next";
+import NotesModal from "@/features/activities/components/notesModal";
+import { nanoid } from "nanoid/non-secure";
+import RecordVoiceNotes from "@/features/notes/components/RecordVoiceNotes";
+import { DraftRecordingItem } from "@/features/notes/components/draftRecording";
+import { useConfirmAction } from "@/lib/confirmAction";
+import { debugLog } from "@/features/activities/lib/debugLogger";
+import DebugOverlay from "@/features/activities/components/debugOverlay";
+import { getWeight } from "@/database/weight/get-weight";
 
 export default function StartActivityScreen() {
   const { t } = useTranslation(["activities", "timer"]);
@@ -68,30 +79,18 @@ export default function StartActivityScreen() {
   const [isSaving, setIsSaving] = useState(false);
   const [track, setTrack] = useState<TrackPoint[]>([]);
   const [showModal, setShowModal] = useState(false);
-  const [scrollEnabled, setScrollEnabled] = useState(true);
-  const [fullScreen, setFullScreen] = useState(false);
+  const [showNotesModal, setShowNotesModal] = useState(false);
   const [hasStartedTracking, setHasStartedTracking] = useState(false);
   const [showStepsModal, setShowStepsModal] = useState(false);
   const [steps, setSteps] = useState(0);
   const [showStepToggle, setShowStepToggle] = useState(false);
   const [stepsAllowed, setStepsAllowed] = useState(false);
+  const [stepsPermanentlyDenied, setStepsPermanentlyDenied] = useState(false);
   const [isHydrated, setIsHydrated] = useState(false);
+  const [draftRecordings, setDraftRecordings] = useState<DraftRecording[]>([]);
+  const [baseMet, setBaseMet] = useState(0);
 
-  // DEBUG: Monitor track state changes - shows toast when track length changes
-  const prevTrackLenRef = useRef(track.length);
-  useEffect(() => {
-    const prevLen = prevTrackLenRef.current;
-    // Only toast on significant changes to avoid spam
-    if (track.length !== prevLen && (track.length === 0 || prevLen === 0 || Math.abs(track.length - prevLen) > 5)) {
-      Toast.show({
-        type: track.length > prevLen ? "success" : "error",
-        text1: `Track: ${prevLen} → ${track.length}`,
-        text2: `isHydrated: ${isHydrated}`,
-        visibilityTime: 3000,
-      });
-    }
-    prevTrackLenRef.current = track.length;
-  }, [track.length, isHydrated]);
+  const confirmAction = useConfirmAction();
 
   const gpsEnabledGlobally = useUserStore(
     (state) => state.settings?.gps_tracking_enabled,
@@ -145,12 +144,38 @@ export default function StartActivityScreen() {
     activityName,
   ]);
 
+  // Fetch latest user weight (cached by React Query, default 70kg matching RPC)
+  const { data: weightData } = useQuery({
+    queryKey: ["latestWeight"],
+    queryFn: getWeight,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    staleTime: Infinity,
+    gcTime: Infinity,
+  });
+  const userWeight = weightData?.[0]?.weight ?? 70;
+
   // check if steps permission is granted and show/hide the step toggle
   useEffect(() => {
     const checkStepsPermission = async () => {
+      const sensorExists = await hasStepSensor();
+      if (!sensorExists) {
+        setShowStepToggle(false);
+        setStepsAllowed(false);
+        return;
+      }
+
       const granted = await hasStepsPermission();
       setShowStepToggle(!granted);
       setStepsAllowed(granted);
+
+      if (!granted) {
+        const denied = await isStepPermissionPermanentlyDenied();
+        setStepsPermanentlyDenied(denied);
+      } else {
+        setStepsPermanentlyDenied(false);
+      }
     };
 
     // Initial check when screen mounts
@@ -172,6 +197,7 @@ export default function StartActivityScreen() {
     setTitle("");
     setNotes("");
     setActivityName("");
+    setBaseMet(0);
     setAllowGPS(false);
     setTrack([]);
     setSteps(0);
@@ -191,9 +217,12 @@ export default function StartActivityScreen() {
   useSaveDraft({
     title,
     notes,
+    draftRecordings,
     setTitle,
     setNotes,
     setActivityName,
+    setDraftRecordings,
+    setBaseMet,
   });
 
   // useStartGPStracking hook to start the GPS tracking and useStopGPStracking hook to stop the GPS tracking
@@ -225,20 +254,21 @@ export default function StartActivityScreen() {
   // useCountAveragePace hook to count the average pace from moving time
   const averagePacePerKm = useAveragePace(meters, movingTimeSeconds ?? 0);
 
+  // Live calorie estimation: same formula as RPC compute-stats.sql
+  const liveCalories = useMemo(() => {
+    if (!baseMet || !userWeight) return 0;
+    return Math.round(baseMet * userWeight * ((movingTimeSeconds ?? 0) / 3600));
+  }, [baseMet, userWeight, movingTimeSeconds]);
+
   // useSaveActivitySession hook to save the activity session
   const { handleSaveSession } = useSaveActivitySession({
     title,
     notes,
     meters,
+    draftRecordings,
     setIsSaving,
     resetSession,
   });
-
-  useEffect(() => {
-    return () => {
-      setSwipeEnabled(true);
-    };
-  }, [setSwipeEnabled]);
 
   // when point arrives add it to the track and persist it to the database
   const { addPoint, replaceFromHydration } = usePersistToDatabase();
@@ -246,6 +276,10 @@ export default function StartActivityScreen() {
   // Memoize the hydration callback to prevent unnecessary database calls
   const handleHydrated = useCallback(
     (points: TrackPoint[]) => {
+      debugLog(
+        "MAIN",
+        `handleHydrated: ${points.length} pts, setting isHydrated=true`,
+      );
       replaceFromHydration(points);
       setIsHydrated(true);
     },
@@ -277,13 +311,24 @@ export default function StartActivityScreen() {
     isHydrated,
     track,
     onPoint: (point) => {
-      setTrack((prev) => [...prev, point]);
+      setTrack((prev) => {
+        debugLog("MAIN", `onPoint: track ${prev.length} → ${prev.length + 1}`);
+        return [...prev, point];
+      });
       addPoint(point);
     },
   });
 
   const hasSessionStarted =
     remainingMs !== null || startTimestamp !== null || route.length > 0;
+
+  // Disable swipe navigation when GPS session is active (map needs all touch gestures)
+  useEffect(() => {
+    if (hasSessionStarted && allowGPS) {
+      setSwipeEnabled(false);
+    }
+    return () => setSwipeEnabled(true);
+  }, [hasSessionStarted, allowGPS, setSwipeEnabled]);
 
   return (
     <>
@@ -300,17 +345,20 @@ export default function StartActivityScreen() {
               );
               setActivityName(translatedName);
               setTitle(`${translatedName} - ${now}`);
+              setBaseMet(activity.base_met);
 
               await AsyncStorage.mergeItem(
                 "activity_draft",
                 JSON.stringify({
                   activityId: activity.id,
-                  activityName: activity.name,
+                  activityName: translatedName,
+                  activitySlug: activity.slug ?? null,
+                  baseMet: activity.base_met,
                 }),
               );
             }}
           />
-          <View className="flex-row items-center my-10  justify-between px-4">
+          <View className="flex-row items-center my-7  justify-between px-4">
             {allowGPS ? (
               <AppText className="text-lg">
                 {t("activities.startActivityScreen.disableLocationTracking")}
@@ -356,144 +404,168 @@ export default function StartActivityScreen() {
             textClassName="text-gray-100 text-center"
           />
         </PageContainer>
+      ) : allowGPS ? (
+        <View className="flex-1">
+          <FullScreenMap
+            track={track}
+            templateRoute={route}
+            startGPStracking={startGPStracking}
+            stopGPStracking={stopGPStracking}
+            totalDistance={meters}
+            title={title}
+            hasStartedTracking={hasStartedTracking}
+            averagePacePerKm={averagePacePerKm}
+            currentStepCount={steps}
+            isLoadingTemplateRoute={isLoadingTemplateRoute}
+            isLoadingPosition={
+              (isRunning && track.length === 0) || isGpsWarmingUp
+            }
+            currentPosition={currentPosition}
+            liveCalories={liveCalories}
+            onNotesPress={() => setShowNotesModal(true)}
+          />
+          <DebugOverlay
+            trackLength={track.length}
+            isHydrated={isHydrated}
+            isGpsWarmingUp={isGpsWarmingUp}
+          />
+          <View className="flex-row gap-5 px-5 pt-2 pb-3 bg-slate-950">
+            <View className="flex-1 shrink-0">
+              <DeleteButton
+                label={t("activities.startActivityScreen.delete")}
+                onPress={resetSession}
+              />
+            </View>
+            <View className="flex-1 shrink-0">
+              <SaveButton
+                label={t("activities.startActivityScreen.finishActivity")}
+                onPress={handleSaveSession}
+              />
+            </View>
+          </View>
+        </View>
       ) : (
         <>
-          <View className="flex items-center bg-gray-600 p-2 px-4 w-full z-40 ticky top-0">
-            <Timer
-              textClassName="text-xl"
-              manualSession={{
-                label: title,
-                path: "/activities/start-activity",
-                type: "activity",
-              }}
-              onStart={allowGPS ? startGPStracking : undefined}
-              onPause={allowGPS ? stopGPStracking : undefined}
-            />
-          </View>
-          <ScrollView
-            keyboardShouldPersistTaps="handled"
-            contentContainerStyle={{ flexGrow: 1 }}
-            scrollEnabled={scrollEnabled}
-            showsVerticalScrollIndicator={false}
-          >
-            <PageContainer className="justify-between">
-              <View className="flex-1 justify-between">
-                <View>
-                  <View className="flex-row items-center justify-between mb-5">
-                    {allowGPS ? (
-                      <AnimatedButton
-                        onPress={() => setFullScreen(!fullScreen)}
-                        className="p-2 rounded-full bg-blue-700"
-                        hitSlop={10}
-                      >
-                        <Fullscreen size={20} color="#f3f4f6" />
-                      </AnimatedButton>
-                    ) : (
-                      <View className="w-10" />
-                    )}
-                    <AppText className="text-2xl text-center">
-                      {activityName}
-                    </AppText>
-                    <View className="w-10" />
-                  </View>
-                  <View className="w-full gap-4">
-                    <AppInput
-                      label={t(
-                        "activities.startActivityScreen.sessionNameLabel",
-                      )}
-                      value={title}
-                      setValue={setTitle}
-                      placeholder={t(
-                        "activities.startActivityScreen.sessionNamePlaceholder",
-                      )}
-                    />
-                    <SubNotesInput
-                      label={t(
-                        "activities.startActivityScreen.sessionNotesLabel",
-                      )}
-                      value={notes}
-                      setValue={setNotes}
-                      placeholder={t(
-                        "activities.startActivityScreen.sessionNotesPlaceholder",
-                      )}
-                    />
-                  </View>
-                </View>
+          <SessionStats
+            title={title || "Activity"}
+            currentStepCount={steps}
+            liveCalories={liveCalories}
+          />
 
-                {allowGPS && (
-                  <BaseMap
-                    track={track}
-                    templateRoute={route}
-                    setScrollEnabled={setScrollEnabled}
-                    setSwipeEnabled={setSwipeEnabled}
-                    title={title}
-                    startGPStracking={startGPStracking}
-                    stopGPStracking={stopGPStracking}
-                    totalDistance={meters}
-                    hasStartedTracking={hasStartedTracking}
-                    averagePacePerKm={averagePacePerKm}
-                    currentStepCount={steps}
-                    isLoadingTemplateRoute={isLoadingTemplateRoute}
-                    isLoadingPosition={
-                      (isRunning && track.length === 0) || isGpsWarmingUp
-                    }
-                    currentPosition={currentPosition}
+          <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+            <View className="flex-1 justify-between p-5 ">
+              <View>
+                <View className="flex-row items-center justify-between mb-5">
+                  <AppText className="text-2xl text-center flex-1">
+                    {activityName}
+                  </AppText>
+                  <View className="w-10" />
+                </View>
+                <View className="w-full gap-4">
+                  <AppInput
+                    label={t("activities.startActivityScreen.sessionNameLabel")}
+                    value={title}
+                    setValue={setTitle}
+                    placeholder={t(
+                      "activities.startActivityScreen.sessionNamePlaceholder",
+                    )}
                   />
+                  <SubNotesInput
+                    label={t(
+                      "activities.startActivityScreen.sessionNotesLabel",
+                    )}
+                    value={notes}
+                    setValue={setNotes}
+                    placeholder={t(
+                      "activities.startActivityScreen.sessionNotesPlaceholder",
+                    )}
+                  />
+                </View>
+                {draftRecordings.length > 0 && (
+                  <View className="mt-5">
+                    <AppText className=" mb-2">
+                      {t("notes:notes.recordings")}
+                    </AppText>
+                    {draftRecordings.map((recording, index) => (
+                      <DraftRecordingItem
+                        key={recording.id}
+                        uri={recording.uri}
+                        durationMs={recording.durationMs}
+                        deleteRecording={async () => {
+                          const confirm = await confirmAction({
+                            title: t("notes:notes.deleteRecordingTitle"),
+                            message: t("notes:notes.deleteRecordingMessage"),
+                          });
+                          if (!confirm) return;
+
+                          setDraftRecordings((prev) =>
+                            prev.filter((_, i) => i !== index),
+                          );
+                        }}
+                      />
+                    ))}
+                  </View>
                 )}
-                <View className="gap-5 mt-10">
-                  <SaveButton
-                    label={t("activities.startActivityScreen.finishActivity")}
-                    onPress={handleSaveSession}
+                <View className="mt-6">
+                  <RecordVoiceNotes
+                    onRecordingComplete={(uri, duration) => {
+                      const newRecording = {
+                        id: nanoid(),
+                        uri,
+                        createdAt: Date.now(),
+                        durationMs: duration,
+                      };
+                      setDraftRecordings((prev) => [...prev, newRecording]);
+                    }}
                   />
+                </View>
+              </View>
+              <View className="flex-row gap-5 mt-20">
+                <View className="flex-1 shrink-0">
                   <DeleteButton
                     label={t("activities.startActivityScreen.delete")}
                     onPress={resetSession}
                   />
                 </View>
+                <View className="flex-1 shrink-0">
+                  <SaveButton
+                    label={t("activities.startActivityScreen.finishActivity")}
+                    onPress={handleSaveSession}
+                  />
+                </View>
               </View>
-            </PageContainer>
+            </View>
           </ScrollView>
         </>
-      )}
-
-      {allowGPS && (
-        <FullScreenMapModal
-          fullScreen={fullScreen}
-          track={track}
-          templateRoute={route}
-          setFullScreen={setFullScreen}
-          startGPStracking={startGPStracking}
-          stopGPStracking={stopGPStracking}
-          totalDistance={meters}
-          hasStartedTracking={hasStartedTracking}
-          averagePacePerKm={averagePacePerKm}
-          currentStepCount={steps}
-          currentPosition={currentPosition}
-        />
       )}
 
       <InfoModal showModal={showModal} onCancel={() => setShowModal(false)} />
 
       <StepInfoModal
         visible={showStepsModal}
+        permanentlyDenied={stepsPermanentlyDenied}
         onCancel={() => setShowStepsModal(false)}
         onOpenSettings={async () => {
           try {
-            const supported = await Linking.canOpenURL(
-              "healthconnect://settings",
-            );
-
-            if (supported) {
-              await Linking.openURL("healthconnect://settings");
-            } else {
-              await Linking.openSettings();
-            }
+            await requestStepPermission();
           } catch {
-            await Linking.openSettings();
+            // Permission request failed
           } finally {
             setShowStepsModal(false);
           }
         }}
+      />
+
+      <NotesModal
+        isOpen={showNotesModal}
+        onClose={() => setShowNotesModal(false)}
+        activityName={activityName}
+        title={title}
+        setTitle={setTitle}
+        notes={notes}
+        setNotes={setNotes}
+        draftRecordings={draftRecordings}
+        setDraftRecordings={setDraftRecordings}
       />
 
       <FullScreenLoader

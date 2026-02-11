@@ -4,7 +4,7 @@ import AnimatedButton from "../../../components/buttons/animatedButton";
 import { Layers2, MapPin } from "lucide-react-native";
 import { TrackPoint } from "@/types/session";
 import { useState, useEffect, useMemo, useRef } from "react";
-import MapIcons from "./mapIcons";
+import SessionStats from "./sessionStats";
 import useForeground from "../hooks/useForeground";
 import { findWarmupStartIndex } from "../lib/findWarmupStartIndex";
 import { processLiveTrack } from "../lib/smoothCoordinates";
@@ -320,8 +320,9 @@ export default function BaseMap({
           </AnimatedButton>
         </View>
       </View>
-      <MapIcons
+      <SessionStats
         title={title || "Activity"}
+        gpsEnabled
         lastMovingPoint={lastMovingPoint as TrackPoint}
         startGPStracking={startGPStracking}
         stopGPStracking={stopGPStracking}

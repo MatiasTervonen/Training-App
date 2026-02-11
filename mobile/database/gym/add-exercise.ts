@@ -14,6 +14,14 @@ export async function addExercise({
   muscle_group,
   main_group,
 }: Exercise) {
+  const {
+    data: { session },
+    error: sessionError,
+  } = await supabase.auth.getSession();
+
+  if (sessionError || !session || !session.user) {
+    throw new Error("Unauthorized");
+  }
 
   const { error } = await supabase
     .from("gym_exercises")
@@ -23,11 +31,11 @@ export async function addExercise({
         equipment,
         muscle_group,
         main_group,
+        user_id: session.user.id,
       },
     ])
     .select()
     .single();
-
 
   if (error) {
     handleError(error, {

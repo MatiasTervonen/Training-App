@@ -11,14 +11,14 @@ import { FeedItemUI } from "@/app/(app)/types/session";
 import useMyGymFeed from "@/app/(app)/gym/hooks/useMyGymFeed";
 import useGymTogglePin from "@/app/(app)/gym/hooks/useGymTogglePin";
 import useGymDeleteSession from "@/app/(app)/gym/hooks/useGymDeleteSession";
-import PinnedCarousel from "./components/PinnedCarousel";
-import { useQuery } from "@tanstack/react-query";
-import { getFullGymSession } from "@/app/(app)/database/gym/get-full-gym-session";
 import { useTranslation } from "react-i18next";
+import FeedHeader from "../../dashboard/components/feedHeader";
+import useFullSessions from "../../dashboard/hooks/useFullSessions";
 
 export default function MySessionsPage() {
   const { t } = useTranslation(["gym", "common"]);
   const [expandedItem, setExpandedItem] = useState<FeedItemUI | null>(null);
+  const [editingItem, setEditingItem] = useState<FeedItemUI | null>(null);
 
   const router = useRouter();
 
@@ -39,22 +39,8 @@ export default function MySessionsPage() {
   const { togglePin } = useGymTogglePin();
   const { handleDelete } = useGymDeleteSession();
 
-  const gymId = expandedItem?.source_id ?? null;
-
-  const {
-    data: GymSessionFull,
-    error: GymSessionError,
-    isLoading: isLoadingGymSession,
-  } = useQuery({
-    queryKey: ["fullGymSession", gymId],
-    queryFn: async () => await getFullGymSession(gymId!),
-    enabled: !!gymId,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    refetchOnMount: false,
-    staleTime: Infinity,
-    gcTime: Infinity,
-  });
+  const { GymSessionFull, GymSessionError, isLoadingGymSession } =
+    useFullSessions(expandedItem, editingItem);
 
   return (
     <div className="h-full">
@@ -73,12 +59,12 @@ export default function MySessionsPage() {
             </div>
           ) : pullDistance > 0 ? (
             <div className="flex text-xl items-center gap-2">
-              <p className="text-gray-100/70">{t("common:feed.pullToRefresh")}</p>
+              <p className="text-gray-100/70">
+                {t("common:feed.pullToRefresh")}
+              </p>
             </div>
           ) : null}
         </div>
-
-
 
         {isLoading && !data ? (
           <FeedSkeleton count={6} />
@@ -92,11 +78,12 @@ export default function MySessionsPage() {
           </p>
         ) : (
           <>
-            <PinnedCarousel
+            <FeedHeader
               pinnedFeed={pinnedFeed}
               setExpandedItem={setExpandedItem}
-              togglePin={togglePin}
-              handleDelete={handleDelete}
+              setEditingItem={setEditingItem}
+              pinned_context="gym"
+              queryKey={["myGymSessions"]}
             />
 
             {unpinnedFeed.map((feedItem) => {
@@ -112,7 +99,7 @@ export default function MySessionsPage() {
                       togglePin(
                         feedItem.id,
                         feedItem.type,
-                        feedItem.feed_context
+                        feedItem.feed_context,
                       )
                     }
                     onDelete={() =>

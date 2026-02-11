@@ -1,9 +1,8 @@
 import Mapbox from "@rnmapbox/maps";
 import { Pressable, View } from "react-native";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { templateSummary } from "@/types/session";
 import { Move, Lock } from "lucide-react-native";
-
 
 type MapProps = {
   template: templateSummary;
@@ -17,7 +16,6 @@ export default function TemplateMap({
   setSwipeEnabled,
 }: MapProps) {
   const [mapActive, setMapActive] = useState(false);
-  const [mapStyle, setMapStyle] = useState(Mapbox.StyleURL.Dark);
 
   const coordinates = template.route!.coordinates;
 
@@ -59,22 +57,6 @@ export default function TemplateMap({
     ],
   };
 
-  const MAP_STYLES = [
-    Mapbox.StyleURL.Dark,
-    Mapbox.StyleURL.SatelliteStreet,
-    Mapbox.StyleURL.Street,
-  ];
-
-  const toggleMapStyle = () => {
-    setMapStyle((prev) => {
-      const currentIndex = MAP_STYLES.indexOf(prev);
-      const nextIndex =
-        currentIndex === -1 ? 0 : (currentIndex + 1) % MAP_STYLES.length;
-
-      return MAP_STYLES[nextIndex];
-    });
-  };
-
   const toggleMapActive = () => {
     const next = !mapActive;
     setMapActive(next);
@@ -82,74 +64,81 @@ export default function TemplateMap({
     setSwipeEnabled(!next);
   };
 
+  useEffect(() => {
+    return () => {
+      setSwipeEnabled(true);
+      setScrollEnabled(true);
+    };
+  }, [setSwipeEnabled, setScrollEnabled]);
+
   return (
     <View style={{ height: 300 }}>
       <View pointerEvents={mapActive ? "auto" : "none"} style={{ flex: 1 }}>
         <Mapbox.MapView
-        style={{ flex: 1 }}
-        styleURL={mapStyle}
-        scaleBarEnabled={false}
-        logoEnabled={false}
-        attributionEnabled={false}
-      >
-        <Mapbox.Images
-          images={{
-            start: require("@/assets/images/start-image.png"),
-            end: require("@/assets/images/finnish-image.png"),
-          }}
-        />
-        <Mapbox.Camera
-          bounds={{
-            ne,
-            sw,
-            paddingTop: 50,
-            paddingBottom: 50,
-            paddingLeft: 50,
-            paddingRight: 50,
-          }}
-          animationMode="flyTo"
-          animationDuration={2000}
-        />
-        <Mapbox.ShapeSource id="track-source" shape={routeFeature as any}>
-          <Mapbox.LineLayer
-            id="track-layer"
-            style={{
-              lineColor: "rgba(59,130,246,0.4)",
-              lineCap: "round",
-              lineJoin: "round",
-              lineWidth: 10,
-              lineBlur: 4,
+          style={{ flex: 1 }}
+          styleURL={Mapbox.StyleURL.Dark}
+          scaleBarEnabled={false}
+          logoEnabled={false}
+          attributionEnabled={false}
+        >
+          <Mapbox.Images
+            images={{
+              start: require("@/assets/images/start-image.png"),
+              end: require("@/assets/images/finnish-image.png"),
             }}
           />
-          <Mapbox.LineLayer
-            id="track-core"
-            aboveLayerID="track-layer"
-            style={{
-              lineColor: "#3b82f6",
-              lineWidth: 4,
-              lineCap: "round",
-              lineJoin: "round",
+          <Mapbox.Camera
+            bounds={{
+              ne,
+              sw,
+              paddingTop: 50,
+              paddingBottom: 50,
+              paddingLeft: 50,
+              paddingRight: 50,
             }}
+            animationMode="flyTo"
+            animationDuration={2000}
           />
-        </Mapbox.ShapeSource>
-        <Mapbox.ShapeSource id="points" shape={startEndGeoJSON as any}>
-          <Mapbox.SymbolLayer
-            id="points-layer"
-            style={{
-              iconImage: [
-                "case",
-                ["==", ["get", "type"], "start"],
-                "start",
-                "end",
-              ],
-              iconSize: 0.12,
-              iconAnchor: "bottom",
-              iconAllowOverlap: true,
-              iconIgnorePlacement: true,
-            }}
-          />
-        </Mapbox.ShapeSource>
-      </Mapbox.MapView>
+          <Mapbox.ShapeSource id="track-source" shape={routeFeature as any}>
+            <Mapbox.LineLayer
+              id="track-layer"
+              style={{
+                lineColor: "rgba(59,130,246,0.4)",
+                lineCap: "round",
+                lineJoin: "round",
+                lineWidth: 10,
+                lineBlur: 4,
+              }}
+            />
+            <Mapbox.LineLayer
+              id="track-core"
+              aboveLayerID="track-layer"
+              style={{
+                lineColor: "#3b82f6",
+                lineWidth: 4,
+                lineCap: "round",
+                lineJoin: "round",
+              }}
+            />
+          </Mapbox.ShapeSource>
+          <Mapbox.ShapeSource id="points" shape={startEndGeoJSON as any}>
+            <Mapbox.SymbolLayer
+              id="points-layer"
+              style={{
+                iconImage: [
+                  "case",
+                  ["==", ["get", "type"], "start"],
+                  "start",
+                  "end",
+                ],
+                iconSize: 0.12,
+                iconAnchor: "bottom",
+                iconAllowOverlap: true,
+                iconIgnorePlacement: true,
+              }}
+            />
+          </Mapbox.ShapeSource>
+        </Mapbox.MapView>
       </View>
       <Pressable
         onPress={toggleMapActive}

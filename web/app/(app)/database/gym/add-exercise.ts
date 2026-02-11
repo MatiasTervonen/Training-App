@@ -16,6 +16,13 @@ export async function addExercise({
 }: Exercise) {
   const supabase = createClient();
 
+  const { data, error: authError } = await supabase.auth.getClaims();
+  const user = data?.claims;
+
+  if (authError || !user) {
+    throw new Error("Unauthorized");
+  }
+
   const { error: exerciseError } = await supabase
     .from("gym_exercises")
     .insert([
@@ -24,6 +31,7 @@ export async function addExercise({
         equipment,
         muscle_group,
         main_group,
+        user_id: user.sub,
       },
     ])
     .select()

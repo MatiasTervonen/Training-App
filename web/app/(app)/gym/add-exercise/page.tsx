@@ -69,7 +69,7 @@ export default function AddExercise() {
             value={name}
             setValue={setName}
             placeholder={t("gym.addExerciseScreen.exerciseNamePlaceholder")}
-            label={t("gym.addExerciseScreen.exerciseName")}
+            label={t("gym.addExerciseScreen.exerciseNameUser")}
             maxLength={50}
           />
           {name.length >= 50 ? (

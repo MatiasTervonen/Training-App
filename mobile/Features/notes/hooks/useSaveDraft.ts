@@ -2,13 +2,7 @@ import { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDebouncedCallback } from "use-debounce";
 import { handleError } from "@/utils/handleError";
-
-type DraftRecording = {
-  id: string;
-  uri: string;
-  createdAt: number;
-  durationMs?: number;
-};
+import { DraftRecording } from "@/types/session";
 
 export default function useSaveDraft({
   title,

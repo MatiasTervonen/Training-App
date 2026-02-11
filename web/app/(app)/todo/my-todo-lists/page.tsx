@@ -12,16 +12,17 @@ import useMyTodoFeed from "@/app/(app)/todo/hooks/useMyTodoFeed";
 import useTodoTogglePin from "@/app/(app)/todo/hooks/useTodoTogglePin";
 import useTodoDeleteSession from "@/app/(app)/todo/hooks/useTodoDeleteSession";
 import useTodoUpdateFeedItemToTop from "@/app/(app)/todo/hooks/useTodoUpdateFeedItemToTop";
-import PinnedCarousel from "./components/PinnedCarousel";
 import { useQuery } from "@tanstack/react-query";
 import { getFullTodoSession } from "@/app/(app)/database/todo/get-full-todo";
 import { full_todo_session } from "@/app/(app)/types/models";
+import FeedHeader from "../../dashboard/components/feedHeader";
 
 export default function MyTodoListsPage() {
   const [expandedItem, setExpandedItem] = useState<FeedItemUI | null>(null);
   const [editingItem, setEditingItem] = useState<FeedItemUI | null>(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-  const [hasUnsavedExpandedChanges, setHasUnsavedExpandedChanges] = useState(false);
+  const [hasUnsavedExpandedChanges, setHasUnsavedExpandedChanges] =
+    useState(false);
 
   const {
     data,
@@ -93,14 +94,13 @@ export default function MyTodoListsPage() {
           </p>
         ) : (
           <>
-            <PinnedCarousel
+            <FeedHeader
               pinnedFeed={pinnedFeed}
               setExpandedItem={setExpandedItem}
               setEditingItem={setEditingItem}
-              togglePin={togglePin}
-              handleDelete={handleDelete}
+              pinned_context="todo"
+              queryKey={["myTodoLists"]}
             />
-
             {unpinnedFeed.map((feedItem) => {
               return (
                 <div className="mt-8" key={feedItem.id}>
@@ -114,7 +114,7 @@ export default function MyTodoListsPage() {
                       togglePin(
                         feedItem.id,
                         feedItem.type,
-                        feedItem.feed_context
+                        feedItem.feed_context,
                       )
                     }
                     onDelete={() =>

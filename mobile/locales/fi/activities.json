@@ -6,7 +6,7 @@
       "confirmTitle": "Vahvista sessio",
       "confirmMessage": "Haluatko varmasti lopettaa tämän session?",
       "saveError": "Session tallentaminen epäonnistui. Yritä uudelleen.",
-      "minDistanceError": "Sinun täytyy seurata vähintään 50 metriä tallentaaksesi session."
+      "minDistanceError": "Liiku vähintään 50m tallentaaksesi."
     },
     "startActivity": "Aloita aktiviteetti",
     "templates": "Pohjat",
@@ -107,13 +107,15 @@
       "enableLocationTracking": "Ota sijaintiseuranta käyttöön",
       "enableStepsTracking": "Ota askelseuranta käyttöön",
       "startButton": "Aloita aktiviteetti",
-      "sessionNameLabel": "Session nimi",
+      "sessionNameLabel": "Nimi",
       "sessionNamePlaceholder": "Syötä session nimi",
-      "sessionNotesLabel": "Session muistiinpanot",
+      "sessionNotesLabel": "Muistiinpanot",
       "sessionNotesPlaceholder": "Syötä session muistiinpanot",
-      "finishActivity": "Lopeta aktiviteetti",
+      "finishActivity": "Tallenna",
       "delete": "Poista",
-      "savingSession": "Tallennetaan sessiota..."
+      "savingSession": "Tallennetaan sessiota...",
+      "sessionDetails": "Session tiedot",
+      "close": "Sulje"
     },
     "sessionDetails": {
       "duration": "Kesto",
@@ -126,7 +128,9 @@
       "templateNotesLabel": "Pohjan muistiinpanot",
       "cancel": "Peruuta",
       "save": "Tallenna",
-      "savingTemplate": "Tallennetaan pohjaa..."
+      "savingTemplate": "Tallennetaan pohjaa...",
+      "recordings": "Äänitallenteet",
+      "voiceLoadError": "Äänitallenteiden lataaminen epäonnistui."
     },
     "sessionStats": {
       "duration": "Kesto",
@@ -144,7 +148,7 @@
       "title": "Muokkaa aktiviteettisessiota",
       "sessionTitleLabel": "Session otsikko",
       "sessionTitlePlaceholder": "Session otsikko...",
-      "sessionNotesLabel": "Session muistiinpanot",
+      "sessionNotesLabel": "Muistiinpanot",
       "sessionNotesPlaceholder": "Session muistiinpanot...",
       "selectActivity": "Valitse aktiviteetti",
       "saveSession": "Tallenna sessio",
@@ -168,9 +172,11 @@
     },
     "stepInfoModal": {
       "title": "Ota askelseuranta käyttöön",
-      "description": "MyTrack käyttää askeldataa Android Health Connectista näyttääkseen aktiviteettitietosi.\n\nAskelten saamiseksi tarvitset askelseurantasovelluksen (esim. Google Fit tai Samsung Health) asennettuna ja synkronoituna Health Connectiin.\n\nOta sen jälkeen askelpääsy käyttöön MyTrackille Health Connectin Käyttöoikeudet-kohdassa.",
+      "description": "MyTrack käyttää laitteesi sisäänrakennettua askelmittaria askelten seuraamiseen.\n\nSalli liiketunnistuksen käyttöoikeus pyydettäessä.",
+      "descriptionSettings": "Askelseurannan käyttöoikeus evättiin. Ota se käyttöön manuaalisesti sovelluksen asetuksista.",
       "cancel": "Peruuta",
-      "openSettings": "Avaa asetukset"
+      "openSettings": "Salli",
+      "goToSettings": "Avaa asetukset"
     },
     "addActivityScreen": {
       "title": "Lisää aktiviteetti",

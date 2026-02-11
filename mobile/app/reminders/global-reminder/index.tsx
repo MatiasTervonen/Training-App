@@ -26,7 +26,7 @@ import ExactAlarmPermissionModal from "@/components/ExactAlarmPermissionModal";
 import { useTranslation } from "react-i18next";
 
 export default function ReminderScreen() {
-  const { t } = useTranslation("reminders");
+  const { t, i18n } = useTranslation("reminders");
   const [open, setOpen] = useState(false);
   const [notes, setNotes] = useState("");
   const [title, setValue] = useState("");
@@ -136,6 +136,10 @@ export default function ReminderScreen() {
                 modal
                 minimumDate={new Date()}
                 open={open}
+                locale={i18n.language}
+                title={t("common:datePicker.selectDateTime")}
+                confirmText={t("common:datePicker.confirm")}
+                cancelText={t("common:datePicker.cancel")}
                 onConfirm={(date) => {
                   setOpen(false);
                   setNotifyAt(date);

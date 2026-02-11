@@ -2,6 +2,7 @@ import { formatDate } from "@/lib/formatDate";
 import { useUserStore } from "@/lib/stores/useUserStore";
 import { View, ActivityIndicator } from "react-native";
 import AppText from "@/components/AppText";
+import BodyText from "@/components/BodyText";
 import PageContainer from "@/components/PageContainer";
 import LinkButton from "@/components/buttons/LinkButton";
 import { FeedItemUI } from "@/types/session";
@@ -50,9 +51,9 @@ export default function WeightSession(weight: FeedItemUI) {
           <View className="bg-slate-900 p-4 rounded-md shadow-md mt-5">
             <View className="flex flex-col">
               {payload.notes && (
-                <AppText className="mb-5 text-lg text-center">
+                <BodyText className="mb-5 text-center">
                   {payload.notes}
-                </AppText>
+                </BodyText>
               )}
               <AppText className="text-center text-xl">
                 {payload.weight} {weightUnit}

@@ -64,11 +64,11 @@ export default function NotesInput({
               }
               const newHeight = Math.max(
                 minHeight,
-                e.nativeEvent.contentSize.height
+                e.nativeEvent.contentSize.height,
               );
               animatedHeight.value = withTiming(newHeight, { duration: 100 });
             }}
-            className={`pl-3 text-gray-100 font-russo text-lg ${className}`}
+            className={`pl-3 text-gray-100 font-lexend text-[15px] leading-[24px] ${className ?? ""}`}
             style={{ height: 3000, lineHeight: 20 }}
             maxLength={10000}
             {...props}

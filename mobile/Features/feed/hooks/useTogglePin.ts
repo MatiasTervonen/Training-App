@@ -3,9 +3,11 @@ import Toast from "react-native-toast-message";
 import { FeedData } from "@/types/session";
 import { unpinItem } from "@/database/pinned/unpin-items";
 import { pinItem } from "@/database/pinned/pin-items";
+import { useTranslation } from "react-i18next";
 
 export default function useTogglePin(queryKey: string[] = ["feed"]) {
   const queryClient = useQueryClient();
+  const { t } = useTranslation("feed");
 
   const togglePin = async (
     id: string,
@@ -23,8 +25,8 @@ export default function useTogglePin(queryKey: string[] = ["feed"]) {
     if (feed_context === "feed" && pinnedFeed.length >= 10) {
       Toast.show({
         type: "error",
-        text1: "Error",
-        text2: "You can only pin 10 items. Unpin something first.",
+        text1: t("common:common.error"),
+        text2: t("feed.togglePin.maxPinned"),
       });
       return;
     }
@@ -61,17 +63,15 @@ export default function useTogglePin(queryKey: string[] = ["feed"]) {
 
       Toast.show({
         type: "success",
-        text1: feed_context === "pinned" ? "Unpinned" : "Pinned",
-        text2: `Item has been ${
-          feed_context === "pinned" ? "unpinned" : "pinned"
-        } successfully.`,
+        text1: feed_context === "pinned" ? t("feed.togglePin.unpinned") : t("feed.togglePin.pinned"),
+        text2: feed_context === "pinned" ? t("feed.togglePin.unpinnedMessage") : t("feed.togglePin.pinnedMessage"),
       });
     } catch {
       queryClient.setQueryData(queryKey, previousFeed);
       Toast.show({
         type: "error",
-        text1: "Error",
-        text2: "Failed to toggle pin status.",
+        text1: t("common:common.error"),
+        text2: t("feed.togglePin.errorMessage"),
       });
     }
   };

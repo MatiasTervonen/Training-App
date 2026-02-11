@@ -21,16 +21,15 @@ export async function pinItem({ id, type, pinned_context }: PinSessionProps) {
         {
           feed_item_id: id,
           type: type,
-          ...(pinned_context && { pinned_context }),
+          pinned_context: pinned_context,
         },
       ],
-      { onConflict: "user_id,type,feed_item_id,pinned_context" }
+      { onConflict: "user_id,type,feed_item_id,pinned_context" },
     )
     .select()
     .single();
 
   if (error) {
-    console.log("error pinning item", error);
     handleError(error, {
       message: "Error pinning item",
       route: "/database/pinned/pin-items",

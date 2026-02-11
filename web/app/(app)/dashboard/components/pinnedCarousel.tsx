@@ -11,33 +11,30 @@ import { useTranslation } from "react-i18next";
 
 interface PinnedCarouselProps {
   pinnedFeed: FeedItemUI[];
-  setExpandedItem: (item: FeedItemUI) => void;
-  setEditingItem: (item: FeedItemUI) => void;
-  togglePin: (
-    id: string,
-    type: string,
-    feed_context: "pinned" | "feed"
-  ) => void;
-  handleDelete: (id: string, type: string) => void;
+  onExpand: (item: FeedItemUI) => void;
+  onEdit: (item: FeedItemUI) => void;
+  onDelete: (item: FeedItemUI) => void;
+  onTogglePin: (item: FeedItemUI) => void;
 }
 
 export default function PinnedCarousel({
   pinnedFeed,
-  setExpandedItem,
-  setEditingItem,
-  togglePin,
-  handleDelete,
+  onExpand,
+  onEdit,
+  onDelete,
+  onTogglePin,
 }: PinnedCarouselProps) {
   const { t } = useTranslation("common");
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [Autoplay()]);
   const [activeIndex, setActiveIndex] = useState(0);
+
   const setBlockSwipe = useModalPageConfig((s) => s.setBlockSwipe);
 
   useEffect(() => {
     if (!emblaApi) return;
 
     const onSelect = () => {
-      setActiveIndex(emblaApi!.selectedScrollSnap());
+      setActiveIndex(emblaApi!.selectedScrollSnap);
     };
 
     const onPointerDown = () => setBlockSwipe(true);
@@ -82,22 +79,10 @@ export default function PinnedCarousel({
                   <FeedCard
                     item={feedItem}
                     pinned={true}
-                    onExpand={() => {
-                      setExpandedItem(feedItem);
-                    }}
-                    onTogglePin={() =>
-                      togglePin(
-                        feedItem.id,
-                        feedItem.type,
-                        feedItem.feed_context
-                      )
-                    }
-                    onDelete={() =>
-                      handleDelete(feedItem.source_id, feedItem.type)
-                    }
-                    onEdit={() => {
-                      setEditingItem(feedItem);
-                    }}
+                    onExpand={() => onExpand(feedItem)}
+                    onTogglePin={() => onTogglePin(feedItem)}
+                    onDelete={() => onDelete(feedItem)}
+                    onEdit={() => onEdit(feedItem)}
                   />
                 </div>
               ))}

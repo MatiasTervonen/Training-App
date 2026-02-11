@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { View, TextInput, TextInputProps } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import AppText from "@/components/AppText";

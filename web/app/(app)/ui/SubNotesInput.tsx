@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { ModalSwipeBlocker } from "@/app/(app)/components/modal";
 
 type NotesInputProps = {
@@ -18,6 +19,7 @@ export default function SubNotesInput({
   cols,
   label,
 }: NotesInputProps) {
+  const { t } = useTranslation("common");
   const shouldGrow = !rows && !cols;
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
@@ -50,7 +52,7 @@ export default function SubNotesInput({
       </ModalSwipeBlocker>
       {notes.length >= 500 ? (
         <p className="text-yellow-400 mt-2">
-          Reached the limit (500 chars max)
+          {t("common.charLimitReached", { max: 500 })}
         </p>
       ) : null}
     </div>

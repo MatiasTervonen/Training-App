@@ -68,7 +68,7 @@ export default function BaseFeedCard({
 
       {/* Middle content - always centered */}
       <View className="flex-1 justify-center">
-        <View className={`flex-row items-center justify-start ml-4`}>
+        <View className={`flex-row items-center justify-start mx-4`}>
           {statsContent}
         </View>
       </View>

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { ModalSwipeBlocker } from "@/app/(app)/components/modal";
 
 type TitleInputProps = Omit<
@@ -17,6 +18,8 @@ export default function TitleInput({
   className,
   ...props
 }: TitleInputProps) {
+  const { t } = useTranslation("common");
+
   return (
     <div className="flex flex-col w-full">
       {label && (
@@ -38,7 +41,7 @@ export default function TitleInput({
       </ModalSwipeBlocker>
       {typeof value === "string" && value.length >= 150 ? (
         <p className="text-yellow-400 mt-2">
-          Reached the limit (150 chars max)
+          {t("common.charLimitReached", { max: 150 })}
         </p>
       ) : null}
     </div>

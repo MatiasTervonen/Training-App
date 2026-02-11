@@ -8,6 +8,10 @@ import {
   getFullNotesSession,
   FullNotesSession,
 } from "@/database/notes/get-full-notes";
+import {
+  getActivityVoiceRecordings,
+  ActivityVoiceRecording,
+} from "@/database/activities/get-activity-voice-recordings";
 
 const getId = (fi: FeedItemUI | null) => fi?.source_id ?? null;
 
@@ -42,6 +46,15 @@ export default function useFullSessions(
         : null;
 
   const activityId = activityItem ? getId(activityItem) : null;
+
+  // Only fetch activity voice recordings if there are any
+  const activityVoiceCount =
+    (activityItem?.extra_fields as { voice_count?: number } | undefined)?.[
+      "voice_count"
+    ] ?? 0;
+
+  const activityHasVoice = activityItem && activityVoiceCount > 0;
+  const activityVoiceId = activityHasVoice ? getId(activityItem) : null;
 
   // Only fetch notes if there are voice recordings
   const notesItem =
@@ -115,6 +128,21 @@ export default function useFullSessions(
   });
 
   const {
+    data: activityVoiceRecordings,
+    error: activityVoiceError,
+    isLoading: isLoadingActivityVoice,
+  } = useQuery<ActivityVoiceRecording[]>({
+    queryKey: ["activityVoiceRecordings", activityVoiceId],
+    queryFn: async () => await getActivityVoiceRecordings(activityVoiceId!),
+    enabled: !!activityVoiceId,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    refetchOnMount: false,
+    staleTime: Infinity,
+    gcTime: Infinity,
+  });
+
+  const {
     data: notesSessionFull,
     error: notesSessionError,
     isLoading: isLoadingNotesSession,
@@ -143,6 +171,9 @@ export default function useFullSessions(
     activitySessionFull,
     activitySessionError,
     isLoadingActivitySession,
+    activityVoiceRecordings,
+    activityVoiceError,
+    isLoadingActivityVoice,
     notesSessionFull,
     notesSessionError,
     isLoadingNotesSession,

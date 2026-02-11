@@ -1,11 +1,11 @@
 import { FeedItemUI, FeedData } from "@/app/(app)/types/session";
 import { useQueryClient } from "@tanstack/react-query";
 
-export default function useUpdateFeedItem() {
+export default function useUpdateFeedItem(queryKey: string[] = ["feed"]) {
   const queryClient = useQueryClient();
 
   const updateFeedItem = (updateFeedItem: FeedItemUI) => {
-    return queryClient.setQueryData<FeedData>(["feed"], (oldData) => {
+    return queryClient.setQueryData<FeedData>(queryKey, (oldData) => {
       if (!oldData) return oldData;
 
       return {
@@ -15,7 +15,7 @@ export default function useUpdateFeedItem() {
           feed: page.feed.map((item) =>
             item.id === updateFeedItem.id
               ? { ...item, ...updateFeedItem }
-              : item
+              : item,
           ),
         })),
       };

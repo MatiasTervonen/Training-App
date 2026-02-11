@@ -37,6 +37,7 @@ import GpsTrackingPermission from "@/features/activities/gpsToggle/gpsTrackingPe
 import { backfillMissingDaysThrottled } from "@/database/activities/syncStepsToDatabase";
 import * as Device from "expo-device";
 import { hasStepsPermission } from "@/features/activities/stepToggle/stepPermission";
+import { initializeStepCounter } from "@/native/android/NativeStepCounter";
 
 // Set Mapbox access token
 Mapbox.setAccessToken(process.env.EXPO_PUBLIC_MAPBOX_PUBLIC_TOKEN!);
@@ -66,6 +67,7 @@ configureReanimatedLogger({
 export default Sentry.wrap(function RootLayout() {
   const [fontsLoaded] = useFonts({
     "Russo-One": require("../assets/fonts/RussoOne-Regular.ttf"),
+    "Lexend-Medium": require("../assets/fonts/Lexend-Medium.ttf"),
   });
 
   const feedReady = useAppReadyStore((state) => state.feedReady);
@@ -81,8 +83,10 @@ export default Sentry.wrap(function RootLayout() {
     configureNotificationChannels();
     configurePushNotificationsWhenAppIsOpen();
 
-    // Only run on physical Android devic
+    // Only run on physical Android device
     if (Platform.OS === "android" && Device.isDevice) {
+      initializeStepCounter(); // Start WorkManager periodic step counting
+
       const syncSteps = async () => {
         const canReadSteps = await hasStepsPermission();
 

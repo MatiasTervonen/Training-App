@@ -19,6 +19,9 @@ export default function AdminPage() {
         <LinkButton href={"/admin/edit-exercises"}>
           {t("admin.editExercises")}
         </LinkButton>
+        <LinkButton href={"/admin/docs"}>
+          {t("admin.devDocs")}
+        </LinkButton>
       </div>
     </div>
   );

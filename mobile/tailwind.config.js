@@ -12,8 +12,9 @@ module.exports = {
       colors: {
         primary: "#1DA1F2",
       },
-      fontFamily: {
+fontFamily: {
         russo: ["Russo-One"],
+        lexend: ["Lexend-Medium"],
       },
     },
   },

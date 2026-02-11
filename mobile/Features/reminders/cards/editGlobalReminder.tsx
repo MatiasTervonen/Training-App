@@ -45,7 +45,7 @@ export default function HandleEditGlobalReminder({
   onSave,
   onDirtyChange,
 }: Props) {
-  const { t } = useTranslation("common");
+  const { t, i18n } = useTranslation("common");
   const payload = reminder.extra_fields as unknown as reminderPayload;
 
   const [title, setValue] = useState(reminder.title);
@@ -207,6 +207,10 @@ export default function HandleEditGlobalReminder({
               modal
               minimumDate={new Date()}
               open={open}
+              locale={i18n.language}
+              title={t("datePicker.selectDateTime")}
+              confirmText={t("datePicker.confirm")}
+              cancelText={t("datePicker.cancel")}
               onConfirm={(date) => {
                 setOpen(false);
                 setNotifyAt(date);

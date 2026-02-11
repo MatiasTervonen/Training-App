@@ -77,9 +77,10 @@ export default function ModalPageWrapper({
       : "h-[calc(100dvh-72px)]";
   }
 
-  const fullPage = ["/admin/user-analytics"].includes(pathname)
-    ? "w-full"
-    : "max-w-3xl";
+  const fullPage =
+    pathname === "/admin/user-analytics" || pathname.startsWith("/admin/docs")
+      ? "w-full"
+      : "max-w-3xl";
 
   return (
     <div

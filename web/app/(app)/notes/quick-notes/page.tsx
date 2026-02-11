@@ -55,7 +55,6 @@ export default function Notes() {
             setNotes={setNotes}
             placeholder={t("notes.notesPlaceholder")}
             label={t("notes.notesLabel")}
-            fillAvailableSpace
           />
         </div>
         <div className="flex flex-col items-center gap-5">

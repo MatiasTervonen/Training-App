@@ -35,6 +35,16 @@
         "reminder": "Muistutus"
       }
     },
+    "loadingMore": "Ladataan lisää...",
+    "noMoreSessions": "Ei enempää sessioita",
+    "togglePin": {
+      "pinned": "Kiinnitetty",
+      "unpinned": "Irrotettu",
+      "pinnedMessage": "Kohde on kiinnitetty onnistuneesti.",
+      "unpinnedMessage": "Kohde on irrotettu onnistuneesti.",
+      "maxPinned": "Voit kiinnittää enintään 10 kohdetta. Irrota ensin jokin.",
+      "errorMessage": "Kiinnityksen muuttaminen epäonnistui."
+    },
     "deleteSession": {
       "confirmTitle": "Haluatko varmasti poistaa tämän session?",
       "successTitle": "Poistettu",

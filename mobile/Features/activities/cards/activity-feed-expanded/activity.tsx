@@ -1,8 +1,9 @@
 import { FullActivitySession } from "@/types/models";
 import { View, ScrollView, Modal } from "react-native";
 import AppText from "@/components/AppText";
+import BodyText from "@/components/BodyText";
 import PageContainer from "@/components/PageContainer";
-import { formatDate, formatTime, formatDuration } from "@/lib/formatDate";
+import { formatDate, formatTime } from "@/lib/formatDate";
 import { useState } from "react";
 import { useFullScreenModalConfig } from "@/lib/stores/fullScreenModalConfig";
 import Map from "./components/map";
@@ -16,8 +17,17 @@ import useSaveTemplate from "./hooks/useSaveTemplate";
 import { useTranslation } from "react-i18next";
 import { Clock } from "lucide-react-native";
 import FullScreenMapModal from "./components/fullScreenMap";
+import { ActivityVoiceRecording } from "@/database/activities/get-activity-voice-recordings";
+import { DraftRecordingItem } from "@/features/notes/components/draftRecording";
+import { NotesVoiceSkeleton } from "@/components/skeletetons";
 
-export default function ActivitySession(activity_session: FullActivitySession) {
+type ActivitySessionProps = FullActivitySession & {
+  voiceRecordings?: ActivityVoiceRecording[];
+  isLoadingVoice?: boolean;
+  voiceError?: unknown;
+};
+
+export default function ActivitySession(activity_session: ActivitySessionProps) {
   const { t } = useTranslation("activities");
   const [scrollEnabled, setScrollEnabled] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -77,21 +87,9 @@ export default function ActivitySession(activity_session: FullActivitySession) {
                 </AppText>
               </View>
               {activity_session.session.notes && (
-                <AppText className="text-lg text-left mt-5">
+                <BodyText className="text-left mt-5">
                   {activity_session.session.notes}
-                </AppText>
-              )}
-              {!hasRoute && (
-                <AppText className="text-lg text-center mt-5">
-                  {t("activities.sessionDetails.duration")}:{" "}
-                  {formatDuration(activity_session.session.duration)}
-                </AppText>
-              )}
-              {!hasRoute && !!activity_session.stats?.steps && (
-                <AppText className="text-lg text-center mt-5">
-                  {t("activities.sessionDetails.steps")}:{" "}
-                  {activity_session.stats?.steps}
-                </AppText>
+                </BodyText>
               )}
             </LinearGradient>
             {hasRoute && (
@@ -102,8 +100,33 @@ export default function ActivitySession(activity_session: FullActivitySession) {
                   setSwipeEnabled={setSwipeEnabled}
                   setFullScreen={setFullScreen}
                 />
-                <SessionStats activity_session={activity_session} />
               </View>
+            )}
+            <SessionStats activity_session={activity_session} hasRoute={hasRoute} />
+
+            {activity_session.voiceRecordings && activity_session.voiceRecordings.length > 0 && (
+              <View className="mt-10">
+                <AppText className="mb-3">{t("activities.sessionDetails.recordings")}</AppText>
+                {activity_session.voiceRecordings.map((recording) => (
+                  <DraftRecordingItem
+                    key={recording.id}
+                    uri={recording.uri}
+                    durationMs={recording.duration_ms ?? undefined}
+                  />
+                ))}
+              </View>
+            )}
+
+            {activity_session.isLoadingVoice && (
+              <View className="mt-10">
+                <NotesVoiceSkeleton />
+              </View>
+            )}
+
+            {!!activity_session.voiceError && (
+              <AppText className="text-center text-red-500 mt-10">
+                {t("activities.sessionDetails.voiceLoadError")}
+              </AppText>
             )}
           </View>
           {hasRoute && savedTemplateId === null && (
@@ -171,6 +194,7 @@ export default function ActivitySession(activity_session: FullActivitySession) {
           activity_session={activity_session}
           fullScreen={fullScreen}
           setFullScreen={setFullScreen}
+          hasRoute={hasRoute}
         />
       )}
       <FullScreenLoader

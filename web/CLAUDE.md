@@ -17,6 +17,9 @@
 - Title fields: use `TitleInput` component
 
 
+## Imports
+- Always use absolute paths when importing — never use relative paths.
+
 ## Translations
 - Always add translations when creating new pages or user-facing text.
 - Translation files are in `app/lib`.

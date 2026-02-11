@@ -47,6 +47,13 @@
     "confirm": "Yes",
     "cancel": "Cancel"
   },
+  "datePicker": {
+    "selectTime": "Select Time",
+    "selectDate": "Select Date",
+    "selectDateTime": "Select Date & Time",
+    "confirm": "Confirm",
+    "cancel": "Cancel"
+  },
   "navigation": {
     "back": "back",
     "home": "home"

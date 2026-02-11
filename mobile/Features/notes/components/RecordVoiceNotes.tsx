@@ -99,7 +99,7 @@ export default function RecordVoiceNotes({
   };
 
   return (
-    <View>
+    <View className="min-h-[103px]">
       <AnimatedButton
         label={
           recorderState.isRecording
@@ -118,6 +118,7 @@ export default function RecordVoiceNotes({
           </AppText>
         )}
       </AnimatedButton>
+
       {(recorderState.isRecording || isPaused) && (
         <View className="flex-row gap-4 mt-5">
           <AnimatedButton

@@ -1,4 +1,3 @@
-import type { Json } from "./database.types";
 import { feed_items } from "./models";
 
 export type Template = {

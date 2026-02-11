@@ -1,9 +1,9 @@
-import { Modal, View } from "react-native";
+import { Image, Modal, View } from "react-native";
 import Mapbox from "@rnmapbox/maps";
 import AnimatedButton from "@/components/buttons/animatedButton";
-import { CircleX } from "lucide-react-native";
+import { CircleX, Layers2, LocateFixed, Route, X } from "lucide-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useMemo } from "react";
+import { useMemo, useRef, useState } from "react";
 import {
   processSavedRoute,
   smoothMultiLineString,
@@ -15,12 +15,14 @@ type MapProps = {
   activity_session: FullActivitySession;
   fullScreen: boolean;
   setFullScreen: (value: boolean) => void;
+  hasRoute: boolean;
 };
 
 export default function FullScreenMapModal({
   activity_session,
   fullScreen,
   setFullScreen,
+  hasRoute,
 }: MapProps) {
   const insets = useSafeAreaInsets();
   const route = activity_session.route!;
@@ -82,7 +84,43 @@ export default function FullScreenMapModal({
       },
     ],
   };
-  
+
+  const LINE_COLORS = [
+    { glow: "rgba(59,130,246,0.4)", core: "#3b82f6" },
+    { glow: "rgba(239,68,68,0.4)", core: "#ef4444" },
+    { glow: "rgba(34,197,94,0.4)", core: "#22c55e" },
+    { glow: "rgba(168,85,247,0.4)", core: "#a855f7" },
+    { glow: "rgba(234,179,8,0.4)", core: "#eab308" },
+  ];
+
+  const MAP_STYLES = [
+    Mapbox.StyleURL.Dark,
+    Mapbox.StyleURL.SatelliteStreet,
+    Mapbox.StyleURL.Street,
+  ];
+
+  const [mapStyle, setMapStyle] = useState(Mapbox.StyleURL.Dark);
+  const [colorIndex, setColorIndex] = useState(0);
+  const [expanded, setExpanded] = useState(false);
+  const cameraRef = useRef<Mapbox.Camera>(null);
+  const lineColor = LINE_COLORS[colorIndex];
+
+  const toggleMapStyle = () => {
+    setMapStyle((prev) => {
+      const currentIndex = MAP_STYLES.indexOf(prev);
+      const nextIndex =
+        currentIndex === -1 ? 0 : (currentIndex + 1) % MAP_STYLES.length;
+      return MAP_STYLES[nextIndex];
+    });
+  };
+
+  const toggleLineColor = () => {
+    setColorIndex((prev) => (prev + 1) % LINE_COLORS.length);
+  };
+
+  const recenter = () => {
+    cameraRef.current?.fitBounds(ne, sw, [50, 50, 50, 50], 1000);
+  };
 
   return (
     <Modal visible={fullScreen} transparent={true} animationType="slide">
@@ -90,7 +128,7 @@ export default function FullScreenMapModal({
         <View className="flex-1">
           <Mapbox.MapView
             style={{ flex: 1 }}
-            styleURL={Mapbox.StyleURL.Dark}
+            styleURL={mapStyle}
             scaleBarEnabled={false}
             logoEnabled={false}
             attributionEnabled={false}
@@ -102,6 +140,7 @@ export default function FullScreenMapModal({
               }}
             />
             <Mapbox.Camera
+              ref={cameraRef}
               bounds={{
                 ne,
                 sw,
@@ -117,7 +156,7 @@ export default function FullScreenMapModal({
               <Mapbox.LineLayer
                 id="track-layer"
                 style={{
-                  lineColor: "rgba(59,130,246,0.4)",
+                  lineColor: lineColor.glow,
                   lineCap: "round",
                   lineJoin: "round",
                   lineWidth: 10,
@@ -128,7 +167,7 @@ export default function FullScreenMapModal({
                 id="track-core"
                 aboveLayerID="track-layer"
                 style={{
-                  lineColor: "#3b82f6",
+                  lineColor: lineColor.core,
                   lineWidth: 4,
                   lineCap: "round",
                   lineJoin: "round",
@@ -154,18 +193,65 @@ export default function FullScreenMapModal({
               />
             </Mapbox.ShapeSource>
           </Mapbox.MapView>
+
+          {!expanded && (
+            <AnimatedButton
+              onPress={() => setExpanded(true)}
+              className="absolute z-50"
+              style={{ bottom: 15, right: 25 }}
+              hitSlop={10}
+            >
+              <Image
+                source={require("@/assets/images/ios-tinted-icon.png")}
+                style={{ width: 40, height: 40, borderRadius: 10 }}
+              />
+            </AnimatedButton>
+          )}
         </View>
 
-        <View
-          className="absolute z-50 top-5 right-10"
-          style={{ top: insets.top }}
-        >
+        <View className="absolute z-50 right-5" style={{ top: insets.top }}>
           <AnimatedButton onPress={() => setFullScreen(false)} hitSlop={10}>
             <CircleX size={35} color="#3b82f6" />
           </AnimatedButton>
         </View>
+
+        {expanded ? (
+          <View className="flex-row items-center justify-between px-4 py-3 bg-slate-900">
+            <AnimatedButton
+              onPress={toggleMapStyle}
+              className="p-2 rounded-full bg-blue-700 border-2 border-blue-500"
+              hitSlop={10}
+            >
+              <Layers2 size={22} color="#f3f4f6" />
+            </AnimatedButton>
+            <AnimatedButton
+              onPress={toggleLineColor}
+              className="p-2 rounded-full bg-blue-700 border-2 border-blue-500"
+              hitSlop={10}
+            >
+              <Route size={22} color="#f3f4f6" />
+            </AnimatedButton>
+            <AnimatedButton
+              onPress={recenter}
+              className="p-2 rounded-full bg-blue-700 border-2 border-blue-500"
+              hitSlop={10}
+            >
+              <LocateFixed size={22} color="#f3f4f6" />
+            </AnimatedButton>
+            <AnimatedButton
+              onPress={() => setExpanded(false)}
+              className="p-2 rounded-full bg-slate-700 border-2 border-slate-500"
+              hitSlop={10}
+            >
+              <X size={22} color="#f3f4f6" />
+            </AnimatedButton>
+          </View>
+        ) : null}
         <View style={{ paddingBottom: insets.bottom }}>
-          <SessionStats activity_session={activity_session} />
+          <SessionStats
+            activity_session={activity_session}
+            hasRoute={hasRoute}
+          />
         </View>
       </View>
     </Modal>

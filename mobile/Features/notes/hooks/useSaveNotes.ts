@@ -2,16 +2,12 @@ import Toast from "react-native-toast-message";
 import { saveNote } from "@/database/notes/save-note";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
+import { DraftRecording } from "@/types/session";
 
 type saveNotesProps = {
   title: string;
   notes: string;
-  draftRecordings: {
-    id: string;
-    uri: string;
-    createdAt: number;
-    durationMs?: number;
-  }[];
+  draftRecordings: DraftRecording[];
   setIsSaving: (isSaving: boolean) => void;
   resetNote: () => void;
 };

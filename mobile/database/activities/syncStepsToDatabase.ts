@@ -1,7 +1,6 @@
-import { readRecords, initialize } from "react-native-health-connect";
 import { supabase } from "@/lib/supabase";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-// On app open - backfill any missing days
+import { getDailyStepsHistory } from "@/native/android/NativeStepCounter";
 
 async function backfillMissingDays() {
   const {
@@ -22,67 +21,19 @@ async function backfillMissingDays() {
     .limit(1)
     .maybeSingle();
 
-  const lastSavedDate = lastSaved
-    ? new Date(lastSaved.day)
-    : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  const lastSavedDay = lastSaved?.day ?? "1970-01-01";
+  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-  // Collect all days to save
-  const daysToSave = [];
-  let currentDate = new Date(lastSavedDate);
-  currentDate.setDate(currentDate.getDate() + 1);
+  // Get last 30 days of step data from native SharedPreferences
+  const stepsHistory = await getDailyStepsHistory(30);
 
-  while (currentDate < today) {
-    const stepsData = await getStepsForDate(new Date(currentDate));
-    if (stepsData) {
-      daysToSave.push(stepsData);
-    }
-    currentDate.setDate(currentDate.getDate() + 1);
-  }
+  // Filter to only days after the last saved day with steps > 0
+  const daysToSave = Object.entries(stepsHistory)
+    .filter(([day, steps]) => day > lastSavedDay && steps > 0)
+    .map(([day, steps]) => ({ day, steps, timezone }));
 
-
-  // Single batch insert (1 database call instead of 30!)
   if (daysToSave.length > 0) {
     await saveBatchDailySteps(daysToSave);
-  }
-}
-
-async function getStepsForDate(date: Date) {
-  const startOfDay = new Date(date);
-  startOfDay.setHours(0, 0, 0, 0);
-
-  const endOfDay = new Date(date);
-  endOfDay.setHours(23, 59, 59, 999);
-
-  try {
-    const result = await readRecords("Steps", {
-      timeRangeFilter: {
-        operator: "between",
-        startTime: startOfDay.toISOString(),
-        endTime: endOfDay.toISOString(),
-      },
-    });
-
-    const totalSteps = result.records.reduce(
-      (sum, record) => sum + record.count,
-      0,
-    );
-
-    if (totalSteps === 0) {
-      return null;
-    }
-
-    const dayString = date.toLocaleDateString("en-CA");
-    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
-    return {
-      day: dayString,
-      timezone,
-      steps: totalSteps,
-    };
-  } catch  {
-    return null;
   }
 }
 
@@ -92,7 +43,6 @@ type DailyStepsData = {
   steps: number;
 };
 
-// New function for batch insert
 async function saveBatchDailySteps(daysData: DailyStepsData[]) {
   const { error } = await supabase
     .from("steps_daily")
@@ -113,14 +63,6 @@ export async function backfillMissingDaysThrottled() {
   // Already ran today, skip
   if (lastCheck === today) {
     return { skipped: true };
-  }
-
-  //  Initialize Health Connect first!
-  const isInitialized = await initialize();
-
-  if (!isInitialized) {
-    console.log("Health Connect not available");
-    return { error: "Health Connect not available" };
   }
 
   // Run backfill

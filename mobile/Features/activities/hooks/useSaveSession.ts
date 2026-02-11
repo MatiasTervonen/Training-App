@@ -7,10 +7,11 @@ import { useStopGPStracking } from "@/features/activities/lib/location-actions";
 import { useQueryClient } from "@tanstack/react-query";
 import { getDatabase } from "@/database/local-database/database";
 import { useTimerStore } from "@/lib/stores/timerStore";
-import { readRecords, initialize } from "react-native-health-connect";
 import { handleError } from "@/utils/handleError";
+import { getSessionSteps } from "@/native/android/NativeStepCounter";
 import { filterTrackBeforeSaving } from "../lib/filterTrackBeforeSaving";
 import { useTranslation } from "react-i18next";
+import { DraftRecording } from "@/types/session";
 
 async function loadTrackFromDatabase() {
   const db = await getDatabase();
@@ -28,39 +29,15 @@ async function loadTrackFromDatabase() {
   );
 }
 
-async function loadStepsFromHealthConnect(
-  start_time: string,
-  end_time: string,
-): Promise<number> {
+async function loadStepsFromNative(): Promise<number> {
   try {
-    // Ensure Health Connect is initialized before reading
-    const initialized = await initialize();
-    if (!initialized) {
-      console.warn("Health Connect not initialized, returning 0 steps");
-      return 0;
-    }
-
-    const steps = await readRecords("Steps", {
-      timeRangeFilter: {
-        operator: "between",
-        startTime: start_time,
-        endTime: end_time,
-      },
-    });
-
-    const totalSteps = steps.records.reduce(
-      (acc, record) => acc + record.count,
-      0,
-    );
-
-    return totalSteps;
+    return await getSessionSteps();
   } catch (error) {
     handleError(error, {
-      message: "Error loading steps from Health Connect",
+      message: "Error loading steps from native step counter",
       route: "/Features/activities/hooks/useSaveSession",
-      method: "loadStepsFromHealthConnect",
+      method: "loadStepsFromNative",
     });
-    // Return 0 steps as fallback instead of crashing
     return 0;
   }
 }
@@ -69,12 +46,14 @@ export default function useSaveActivitySession({
   title,
   notes,
   meters,
+  draftRecordings,
   setIsSaving,
   resetSession,
 }: {
   title: string;
   notes: string;
   meters: number;
+  draftRecordings: DraftRecording[];
   setIsSaving: (isSaving: boolean) => void;
   resetSession: () => void;
 }) {
@@ -148,9 +127,7 @@ export default function useSaveActivitySession({
 
       const activityId = parsedDraft?.activityId ?? null;
 
-      const steps = stepsAllowed
-        ? await loadStepsFromHealthConnect(start_time, end_time)
-        : 0;
+      const steps = stepsAllowed ? await loadStepsFromNative() : 0;
 
       await saveActivitySession({
         title,
@@ -161,6 +138,7 @@ export default function useSaveActivitySession({
         track: cleanTrack,
         activityId,
         steps: steps ?? 0,
+        draftRecordings,
       });
 
       await queryClient.refetchQueries({ queryKey: ["feed"], exact: true });

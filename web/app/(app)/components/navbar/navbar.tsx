@@ -17,8 +17,13 @@ export default function Navbar() {
 
   const preferences = useUserStore((state) => state.preferences);
 
+  const fullPage =
+    pathname === "/admin/user-analytics" || pathname.startsWith("/admin/docs")
+      ? "w-full"
+      : "max-w-3xl";
+
   return (
-    <div className="w-full md:max-w-3xl sticky top-0 mx-auto z-50">
+    <div className={`w-full  ${fullPage} sticky top-0 mx-auto z-50`}>
       <nav className="w-full flex items-center justify-between p-4 bg-linear-to-tr from-gray-900 via-slate-900 to-blue-900">
         <Link href="/dashboard" className=" text-2xl sm:text-3xl">
           MyTrack

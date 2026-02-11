@@ -106,7 +106,7 @@ export function DraftRecordingItem({
   return (
     <View className="bg-slate-950 rounded-xl border-2 border-blue-500 mb-4">
       {/* Play/Pause Button */}
-      <View className="bg-slate-900 px-4 py-3 rounded-t-xl flex-row justify-between items-center">
+      <View className="px-4 py-3 rounded-t-xl flex-row justify-between items-center">
         <AnimatedButton
           hitSlop={10}
           accessibilityLabel={isPlaying ? "Pause" : "Play"}
@@ -125,9 +125,7 @@ export function DraftRecordingItem({
         >
           <View className="flex-row gap-4">
             <View className="flex-row items-center gap-2">
-              <AppText className="text-gray-100">
-                {isPlaying ? "Pause" : "Play"}
-              </AppText>
+              <AppText>{isPlaying ? "Pause" : "Play"}</AppText>
               {isPlaying ? (
                 <Pause size={18} color="white" fill="white" />
               ) : (
@@ -146,9 +144,10 @@ export function DraftRecordingItem({
           </AnimatedButton>
         )}
       </View>
+
       <GestureDetector gesture={combinedGesture}>
         <View
-          className="flex-1 h-6 justify-center mx-4 py-6"
+          className=" h-6 justify-center mx-4 py-6"
           onLayout={onBarLayout}
         >
           {/* Track background */}

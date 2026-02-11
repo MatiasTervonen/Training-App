@@ -1,6 +1,7 @@
 import { View, ActivityIndicator } from "react-native";
 import AppText from "@/components/AppText";
 import { FeedData } from "@/types/session";
+import { useTranslation } from "react-i18next";
 
 export default function FeedFooter({
   isFetchingNextPage,
@@ -11,11 +12,13 @@ export default function FeedFooter({
   hasNextPage: boolean;
   data: FeedData;
 }) {
+  const { t } = useTranslation("feed");
+
   if (isFetchingNextPage) {
     return (
       <View className="items-center justify-center gap-2">
         <AppText className="text-center text-gray-300 text-lg">
-          Loading more...
+          {t("feed.loadingMore")}
         </AppText>
         <ActivityIndicator size="large" color="#193cb8" className="my-5" />
       </View>
@@ -29,7 +32,7 @@ export default function FeedFooter({
   if (!hasNextPage && data?.pages.length > 1) {
     return (
       <AppText className="text-center justify-center mt-10 text-gray-300">
-        No more sessions
+        {t("feed.noMoreSessions")}
       </AppText>
     );
   }

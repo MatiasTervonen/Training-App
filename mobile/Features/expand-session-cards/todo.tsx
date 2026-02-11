@@ -1,6 +1,7 @@
 import { formatDate } from "@/lib/formatDate";
 import { View, ScrollView, TouchableOpacity } from "react-native";
 import AppText from "../../components/AppText";
+import BodyText from "../../components/BodyText";
 import AnimatedButton from "../../components/buttons/animatedButton";
 import {
   Check,
@@ -287,9 +288,9 @@ export default function TodoSession({
                                     <AppText className="text-xl text-center mb-10 border-b border-gray-700 pb-2">
                                       {task.task}
                                     </AppText>
-                                    <AppText className="text-left text-lg">
+                                    <BodyText className="text-left">
                                       {task.notes || t("todo.noNotesAvailable")}
-                                    </AppText>
+                                    </BodyText>
                                   </View>
                                   <View className="mt-10">
                                     <CopyText

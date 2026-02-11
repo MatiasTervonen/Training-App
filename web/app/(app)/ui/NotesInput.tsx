@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import { useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { ModalSwipeBlocker } from "@/app/(app)/components/modal";
 
 type NotesInputProps = {
@@ -25,6 +26,7 @@ export default function NotesInput({
   fillAvailableSpace = false,
   minHeight = DEFAULT_MIN_HEIGHT,
 }: NotesInputProps) {
+  const { t } = useTranslation("common");
   const shouldGrow = !rows && !cols;
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
@@ -44,7 +46,9 @@ export default function NotesInput({
       <div className="flex items-center">
         <label className="text-sm text-gray-300 mb-1">{label}</label>
       </div>
-      <ModalSwipeBlocker>
+      <ModalSwipeBlocker
+        className={fillAvailableSpace ? "flex-1 flex flex-col" : undefined}
+      >
         <textarea
           ref={textareaRef}
           className={clsx(
@@ -66,7 +70,7 @@ export default function NotesInput({
       </ModalSwipeBlocker>
       {notes.length >= 10000 ? (
         <p className="text-yellow-400 mt-2">
-          Reached the limit (10000 chars max)
+          {t("common.charLimitReached", { max: 10000 })}
         </p>
       ) : null}
     </div>

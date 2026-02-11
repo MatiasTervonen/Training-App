@@ -34,7 +34,7 @@ export default function Stopwatch({ className = "" }: StopwatchProps) {
     if (isRunning && startTimestamp) {
       resumeTimer();
     }
-  }, []);
+  }, [isRunning, startTimestamp, resumeTimer]);
 
   useEffect(() => {
     const handleVisibilityChange = () => {

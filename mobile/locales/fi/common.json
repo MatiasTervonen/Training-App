@@ -47,6 +47,13 @@
     "confirm": "Kyllä",
     "cancel": "Peruuta"
   },
+  "datePicker": {
+    "selectTime": "Valitse aika",
+    "selectDate": "Valitse päivämäärä",
+    "selectDateTime": "Valitse päivä ja aika",
+    "confirm": "Vahvista",
+    "cancel": "Peruuta"
+  },
   "navigation": {
     "back": "takaisin",
     "home": "koti"

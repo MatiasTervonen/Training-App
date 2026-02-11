@@ -35,6 +35,16 @@
         "reminder": "Reminder"
       }
     },
+    "loadingMore": "Loading more...",
+    "noMoreSessions": "No more sessions",
+    "togglePin": {
+      "pinned": "Pinned",
+      "unpinned": "Unpinned",
+      "pinnedMessage": "Item has been pinned successfully.",
+      "unpinnedMessage": "Item has been unpinned successfully.",
+      "maxPinned": "You can only pin 10 items. Unpin something first.",
+      "errorMessage": "Failed to toggle pin status."
+    },
     "deleteSession": {
       "confirmTitle": "Are you sure you want to delete this session?",
       "successTitle": "Deleted",

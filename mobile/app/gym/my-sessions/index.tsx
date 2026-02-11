@@ -114,7 +114,7 @@ export default function MyGymScreen() {
                   handleDelete(feedItem.source_id, feedItem.type);
                 }}
                 onEdit={() => {
-                  router.push(`/gym/gym/${feedItem.source_id}` as any);
+                  router.push(`/gym/gym/${feedItem.source_id}`);
                 }}
               />
             </View>
@@ -123,7 +123,7 @@ export default function MyGymScreen() {
             <FeedFooter
               isFetchingNextPage={isFetchingNextPage}
               hasNextPage={hasNextPage}
-              data={data as any}
+              data={data}
             />
           }
           ListHeaderComponent={

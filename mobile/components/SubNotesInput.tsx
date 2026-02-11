@@ -80,7 +80,7 @@ export default function SubNotesInput({
               );
               animatedHeight.value = withTiming(newHeight, { duration: 100 });
             }}
-            className={`pl-3 text-gray-100 font-russo text-lg ${className}`}
+            className={`pl-3 text-gray-100 font-lexend text-[15px] leading-[24px] ${className ?? ""}`}
             style={{ height: 1000, lineHeight: 20 }}
             maxLength={500}
             {...props}

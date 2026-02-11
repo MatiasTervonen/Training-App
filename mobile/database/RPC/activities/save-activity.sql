@@ -6,7 +6,8 @@ create or replace function activities_save_activity(
     p_end_time timestamptz,
     p_track jsonb,
     p_activity_id uuid,
-    p_steps integer
+    p_steps integer,
+    p_draftRecordings jsonb default '[]'::jsonb
 )
 returns uuid
 language plpgsql
@@ -40,6 +41,17 @@ begin
     p_activity_id
   )
   returning id into v_activity_id;
+
+  insert into sessions_voice (
+  storage_path,
+  session_id,
+  duration_ms
+)
+select
+  r->>'storage_path',
+  v_activity_id,
+  (r->>'duration_ms')::integer
+from jsonb_array_elements(p_draftRecordings) as r;
 
 -- insert into activity_gps_points if track is not null
 if p_track is not null then
@@ -152,7 +164,7 @@ insert into feed_items (
 values (
   p_title,
   'activity_sessions',
-  jsonb_build_object('duration', p_duration, 'start_time', p_start_time, 'end_time', p_end_time, 'distance', v_distance, 'activity_name', v_activity_name, 'activity_slug', v_activity_slug),
+  jsonb_build_object('duration', p_duration, 'start_time', p_start_time, 'end_time', p_end_time, 'distance', v_distance, 'activity_name', v_activity_name, 'activity_slug', v_activity_slug, 'voice_count', jsonb_array_length(p_draftRecordings)),
   v_activity_id,
   p_start_time
 );

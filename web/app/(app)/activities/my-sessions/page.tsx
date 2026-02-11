@@ -9,21 +9,18 @@ import { FeedItemUI } from "@/app/(app)/types/session";
 import useMyActivityFeed from "@/app/(app)/activities/hooks/useMyActivityFeed";
 import useActivityTogglePin from "@/app/(app)/activities/hooks/useActivityTogglePin";
 import useActivityDeleteSession from "@/app/(app)/activities/hooks/useActivityDeleteSession";
-import PinnedCarousel from "./components/PinnedCarousel";
-import { useQuery } from "@tanstack/react-query";
-import { getFullActivitySession } from "@/app/(app)/database/activities/get-full-activity-session";
 import { useTranslation } from "react-i18next";
 import ActivitySession from "@/app/(app)/activities/cards/activity-feed-expanded/activity";
 import EditActivity from "@/app/(app)/activities/cards/activity-edit";
-import { FullActivitySession } from "@/app/(app)/types/models";
-import { useQueryClient } from "@tanstack/react-query";
+import FeedHeader from "../../dashboard/components/feedHeader";
+import useFullSessions from "../../dashboard/hooks/useFullSessions";
+import useUpdateFeedItem from "../../dashboard/hooks/useUpdateFeedItem";
 
 export default function MyActivitySessionsPage() {
   const { t } = useTranslation(["activities", "common"]);
   const [expandedItem, setExpandedItem] = useState<FeedItemUI | null>(null);
   const [editingItem, setEditingItem] = useState<FeedItemUI | null>(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-  const queryClient = useQueryClient();
 
   const {
     data,
@@ -42,45 +39,15 @@ export default function MyActivitySessionsPage() {
   const { togglePin } = useActivityTogglePin();
   const { handleDelete } = useActivityDeleteSession();
 
-  const activeItem = expandedItem || editingItem;
-  const activityId = activeItem?.source_id ?? null;
-
   const {
-    data: activitySessionFull,
-    error: activitySessionError,
-    isLoading: isLoadingActivitySession,
-    refetch: refetchFullActivity,
-  } = useQuery<FullActivitySession & { feed_context: "pinned" | "feed" }>({
-    queryKey: ["fullActivitySession", activityId],
-    queryFn: async () => {
-      const data = await getFullActivitySession(activityId!);
-      return { ...data, feed_context: activeItem!.feed_context };
-    },
-    enabled: !!activityId,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    refetchOnMount: false,
-    staleTime: Infinity,
-    gcTime: Infinity,
-  });
+    activitySessionFull,
+    activitySessionError,
+    isLoadingActivitySession,
+    refetchFullActivity,
+  } = useFullSessions(expandedItem, editingItem);
 
-  const updateFeedItem = (updatedItem: FeedItemUI) => {
-    queryClient.setQueryData(
-      ["activitySessions"],
-      (oldData: { pages: { items: FeedItemUI[] }[] } | undefined) => {
-        if (!oldData) return oldData;
-        return {
-          ...oldData,
-          pages: oldData.pages.map((page) => ({
-            ...page,
-            items: page.items.map((item) =>
-              item.id === updatedItem.id ? updatedItem : item
-            ),
-          })),
-        };
-      }
-    );
-  };
+  // handle feed item updates
+  const { updateFeedItem } = useUpdateFeedItem(["myActivitySessions"]);
 
   return (
     <div className="h-full">
@@ -99,7 +66,9 @@ export default function MyActivitySessionsPage() {
             </div>
           ) : pullDistance > 0 ? (
             <div className="flex text-xl items-center gap-2">
-              <p className="text-gray-100/70">{t("common:feed.pullToRefresh")}</p>
+              <p className="text-gray-100/70">
+                {t("common:feed.pullToRefresh")}
+              </p>
             </div>
           ) : null}
         </div>
@@ -116,12 +85,12 @@ export default function MyActivitySessionsPage() {
           </p>
         ) : (
           <>
-            <PinnedCarousel
+            <FeedHeader
               pinnedFeed={pinnedFeed}
               setExpandedItem={setExpandedItem}
               setEditingItem={setEditingItem}
-              togglePin={togglePin}
-              handleDelete={handleDelete}
+              pinned_context="activities"
+              queryKey={["myActivitySessions"]}
             />
 
             {unpinnedFeed.map((feedItem) => {
@@ -137,7 +106,7 @@ export default function MyActivitySessionsPage() {
                       togglePin(
                         feedItem.id,
                         feedItem.type,
-                        feedItem.feed_context
+                        feedItem.feed_context,
                       )
                     }
                     onDelete={() =>
@@ -179,7 +148,9 @@ export default function MyActivitySessionsPage() {
                 {t("activities:activities.mySessions.loadDetailsError")}
               </p>
             ) : (
-              activitySessionFull && <ActivitySession {...activitySessionFull} />
+              activitySessionFull && (
+                <ActivitySession {...activitySessionFull} />
+              )
             )}
           </Modal>
         )}

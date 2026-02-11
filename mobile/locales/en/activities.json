@@ -6,7 +6,7 @@
       "confirmTitle": "Confirm Finish Session",
       "confirmMessage": "Are you sure you want to finish this session?",
       "saveError": "Failed to save session. Please try again.",
-      "minDistanceError": "You need to track at least 50 meters to save the session."
+      "minDistanceError": "Move at least 50 meters to save the session."
     },
     "startActivity": "Start Activity",
     "templates": "Templates",
@@ -111,9 +111,11 @@
       "sessionNamePlaceholder": "Enter session name",
       "sessionNotesLabel": "Session notes",
       "sessionNotesPlaceholder": "Enter session notes",
-      "finishActivity": "Finish Activity",
+      "finishActivity": "Save",
       "delete": "Delete",
-      "savingSession": "Saving session..."
+      "savingSession": "Saving session...",
+      "sessionDetails": "Session Details",
+      "close": "Close"
     },
     "sessionDetails": {
       "duration": "Duration",
@@ -126,7 +128,9 @@
       "templateNotesLabel": "Template notes",
       "cancel": "Cancel",
       "save": "Save",
-      "savingTemplate": "Saving template..."
+      "savingTemplate": "Saving template...",
+      "recordings": "Recordings",
+      "voiceLoadError": "Failed to load voice recordings."
     },
     "sessionStats": {
       "duration": "Duration",
@@ -168,9 +172,11 @@
     },
     "stepInfoModal": {
       "title": "Enable step tracking",
-      "description": "MyTrack uses step data from Android Health Connect to show your activity insights.\n\nTo get steps, you need a step tracking app (e.g. Google Fit or Samsung Health) installed and syncing with Health Connect.\n\nThen enable step access for MyTrack in Permissions under Health Connect.",
+      "description": "MyTrack uses your device's built-in step counter to track your steps.\n\nPlease allow the activity recognition permission when prompted.",
+      "descriptionSettings": "Step tracking permission was denied. Please enable it manually in the app settings.",
       "cancel": "Cancel",
-      "openSettings": "Open settings"
+      "openSettings": "Allow",
+      "goToSettings": "Open Settings"
     },
     "addActivityScreen": {
       "title": "Add Activity",

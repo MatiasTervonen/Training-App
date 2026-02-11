@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef } from "react";
 import useForeground from "./useForeground";
 import { useTimerStore } from "@/lib/stores/timerStore";
 import { handleError } from "@/utils/handleError";
-import { readRecords } from "react-native-health-connect";
+import { getSessionSteps } from "@/native/android/NativeStepCounter";
 
 export function useStepHydration({
   setSteps,
@@ -22,21 +22,7 @@ export function useStepHydration({
     isHydratingRef.current = true;
 
     try {
-      const now = new Date().toISOString();
-
-      const steps = await readRecords("Steps", {
-        timeRangeFilter: {
-          operator: "between",
-          startTime: new Date(activeSession.started_at).toISOString(),
-          endTime: now,
-        },
-      });
-
-      const totalSteps = steps.records.reduce(
-        (acc, record) => acc + record.count,
-        0
-      );
-
+      const totalSteps = await getSessionSteps();
       setSteps(totalSteps);
     } catch (error) {
       handleError(error, {

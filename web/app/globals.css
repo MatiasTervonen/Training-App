@@ -1,9 +1,11 @@
 @import "tailwindcss";
-
+@plugin "@tailwindcss/typography";
+  
 @theme {
   --color-primary: #f3f4f6;
   --breakpoint-xs: 26rem;
   --page-padding: 1.25rem 1.25rem 2.5rem;
+  --font-body: var(--font-body);
 }
 
 html,

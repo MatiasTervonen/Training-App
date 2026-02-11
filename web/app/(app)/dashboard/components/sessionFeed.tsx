@@ -20,19 +20,20 @@ import useTogglePin from "@/app/(app)/dashboard/hooks/useTogglePin";
 import { FeedItemUI } from "@/app/(app)/types/session";
 import useFeed from "@/app/(app)/dashboard/hooks/useFeed";
 import useFullSessions from "@/app/(app)/dashboard/hooks/useFullSessions";
-import PinnedCarousel from "./pinnedCarousell";
 import useUpdateFeedItem from "@/app/(app)/dashboard/hooks/useUpdateFeedItem";
 import useUpdateFeedItemToTop from "@/app/(app)/dashboard/hooks/useUpdateFeedItemToTop";
 import { useTranslation } from "react-i18next";
 import ActivitySession from "@/app/(app)/activities/cards/activity-feed-expanded/activity";
 import EditActivity from "@/app/(app)/activities/cards/activity-edit";
+import FeedHeader from "./feedHeader";
 
 export default function SessionFeed() {
   const { t } = useTranslation("feed");
   const [expandedItem, setExpandedItem] = useState<FeedItemUI | null>(null);
   const [editingItem, setEditingItem] = useState<FeedItemUI | null>(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-  const [hasUnsavedExpandedChanges, setHasUnsavedExpandedChanges] = useState(false);
+  const [hasUnsavedExpandedChanges, setHasUnsavedExpandedChanges] =
+    useState(false);
 
   const router = useRouter();
 
@@ -113,12 +114,11 @@ export default function SessionFeed() {
           <p className="text-center text-lg mt-20">{t("feed.noSessions")}</p>
         ) : (
           <>
-            <PinnedCarousel
+            <FeedHeader
               pinnedFeed={pinnedFeed}
               setExpandedItem={setExpandedItem}
               setEditingItem={setEditingItem}
-              togglePin={togglePin}
-              handleDelete={handleDelete}
+              pinned_context="main"
             />
 
             {unpinnedFeed.map((feedItem) => {
@@ -135,6 +135,7 @@ export default function SessionFeed() {
                         feedItem.id,
                         feedItem.type,
                         feedItem.feed_context,
+                        "main",
                       )
                     }
                     onDelete={() =>

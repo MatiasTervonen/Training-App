@@ -1,6 +1,5 @@
 "use client";
 
-import { useMemo } from "react";
 import Image from "next/image";
 import Map, { Source, Layer, Marker } from "react-map-gl/mapbox";
 import { templateSummary } from "@/app/(app)/types/models";
@@ -19,10 +18,7 @@ export default function TemplateMap({ template }: TemplateMapProps) {
   }
 
   const allCoordinates = route.coordinates as [number, number][];
-
-  const routeSegments = useMemo(() => {
-    return processSavedRoute(allCoordinates);
-  }, [allCoordinates]);
+  const routeSegments = processSavedRoute(allCoordinates);
 
   const routeFeature = {
     type: "Feature" as const,

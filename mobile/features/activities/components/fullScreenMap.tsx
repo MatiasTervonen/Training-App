@@ -1,48 +1,61 @@
-import { Modal, View } from "react-native";
+import { ActivityIndicator, View } from "react-native";
 import Mapbox from "@rnmapbox/maps";
 import AnimatedButton from "../../../components/buttons/animatedButton";
-import { CircleX, Layers2, MapPin } from "lucide-react-native";
-import MapIcons from "./mapIcons";
+import { CircleX, Layers2, MapPin, NotebookPen } from "lucide-react-native";
+import SessionStats from "./sessionStats";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { TrackPoint } from "@/types/session";
 import { useEffect, useMemo, useRef, useState } from "react";
 import useForeground from "../hooks/useForeground";
 import { findWarmupStartIndex } from "../lib/findWarmupStartIndex";
 import { processLiveTrack } from "../lib/smoothCoordinates";
+import AppText from "@/components/AppText";
+import { useRouter } from "expo-router";
+import { debugLog } from "../lib/debugLogger";
 
-export default function FullScreenMapModal({
-  fullScreen,
-  track,
-  templateRoute,
-  setFullScreen,
-  startGPStracking,
-  stopGPStracking,
-  totalDistance,
-  hasStartedTracking,
-  averagePacePerKm,
-  currentStepCount,
-  currentPosition,
-}: {
-  fullScreen: boolean;
+type FullScreenMapProps = {
   track: TrackPoint[];
   templateRoute: [number, number][] | null;
-  setFullScreen: (value: boolean) => void;
   startGPStracking: () => void;
   stopGPStracking: () => void;
   totalDistance: number;
-  hasStartedTracking: boolean;
+  title: string;
   averagePacePerKm: number;
+  hasStartedTracking: boolean;
   currentStepCount: number;
+  isLoadingTemplateRoute: boolean;
+  isLoadingPosition: boolean;
+  liveCalories?: number;
+  onNotesPress?: () => void;
   currentPosition?: {
     latitude: number;
     longitude: number;
     accuracy: number | null;
   } | null;
-}) {
+};
+
+export default function FullScreenMap({
+  track,
+  templateRoute,
+  startGPStracking,
+  stopGPStracking,
+  totalDistance,
+  title,
+  hasStartedTracking,
+  averagePacePerKm,
+  currentStepCount,
+  currentPosition,
+  isLoadingTemplateRoute,
+  isLoadingPosition,
+  liveCalories,
+  onNotesPress,
+}: FullScreenMapProps) {
   const insets = useSafeAreaInsets();
   const [isFollowingUser, setIsFollowingUser] = useState(true);
   const [mapStyle, setMapStyle] = useState(Mapbox.StyleURL.Dark);
   const { isForeground } = useForeground();
+
+  const router = useRouter();
 
   // Force ShapeSource remount on background→foreground to fix Mapbox native state desync
   const prevForegroundRef = useRef(isForeground);
@@ -55,7 +68,10 @@ export default function FullScreenMapModal({
     if (isForeground) {
       setIsFollowingUser(true);
       if (!wasForeground) {
-        setSourceKey((prev) => prev + 1);
+        setSourceKey((prev) => {
+          debugLog("MAP", `sourceKey incremented to ${prev + 1}`);
+          return prev + 1;
+        });
       }
     }
   }, [isForeground]);
@@ -65,11 +81,17 @@ export default function FullScreenMapModal({
   const warmupStartIndex = useMemo(() => findWarmupStartIndex(track), [track]);
 
   const trackSegments = useMemo(() => {
-    if (warmupStartIndex === null) return [];
+    if (warmupStartIndex === null) {
+      debugLog("MAP", `trackSegments: warmupStartIndex=null, track=${track.length} pts → 0 segments`);
+      return [];
+    }
 
     // Pass full track including stationary points - processLiveTrack handles filtering
     // This ensures gap detection works correctly when user stops for a while
-    return processLiveTrack(track.slice(warmupStartIndex));
+    const segments = processLiveTrack(track.slice(warmupStartIndex));
+    const totalPts = segments.reduce((sum, s) => sum + s.length, 0);
+    debugLog("MAP", `trackSegments: ${segments.length} segment(s), ${totalPts} rendered pts (from ${track.length} track pts, warmup=${warmupStartIndex})`);
+    return segments;
   }, [track, warmupStartIndex]);
 
   const trackShape = {
@@ -120,7 +142,7 @@ export default function FullScreenMapModal({
   };
 
   return (
-    <Modal visible={fullScreen} transparent={true} animationType="slide">
+    <>
       <View className="flex-1">
         <Mapbox.MapView
           style={{ flex: 1 }}
@@ -212,45 +234,73 @@ export default function FullScreenMapModal({
               />
             </Mapbox.ShapeSource>
           )}
+
+          {isLoadingTemplateRoute && (
+            <View
+              className="absolute z-50 flex-row gap-2 items-center px-2 py-1 rounded"
+              style={{ top: 10, left: 10 }}
+            >
+              <AppText className="text-xs ml-1.5">Loading route...</AppText>
+              <ActivityIndicator size="small" color="#3b82f6" />
+            </View>
+          )}
+
+          {isLoadingPosition && (
+            <View
+              className="absolute z-50 flex-row gap-2 items-center px-2 py-1 rounded"
+              style={{ top: isLoadingTemplateRoute ? 35 : 10, left: 10 }}
+            >
+              <AppText className="text-xs ml-1.5">
+                {currentPosition ? "Stabilizing GPS..." : "Loading position..."}
+              </AppText>
+              <ActivityIndicator size="small" color="#3b82f6" />
+            </View>
+          )}
         </Mapbox.MapView>
-        <View className="absolute z-50" style={{ bottom: 60, right: 20 }}>
-          <AnimatedButton
-            onPress={toggleMapStyle}
-            className="p-2 rounded-full bg-blue-700 border-2 border-blue-500"
-            hitSlop={10}
-          >
-            <Layers2 size={25} color="#f3f4f6" />
-          </AnimatedButton>
-        </View>
-        <View className="absolute z-50" style={{ bottom: 60, right: 75 }}>
+        <View className="absolute z-50 gap-3" style={{ bottom: 15, right: 15 }}>
           <AnimatedButton
             onPress={() => setIsFollowingUser(true)}
             className="p-2 rounded-full bg-blue-700 border-2 border-blue-500"
             hitSlop={10}
           >
-            <MapPin size={25} color="#f3f4f6" />
+            <MapPin size={22} color="#f3f4f6" />
+          </AnimatedButton>
+          <AnimatedButton
+            onPress={toggleMapStyle}
+            className="p-2 rounded-full bg-blue-700 border-2 border-blue-500"
+            hitSlop={10}
+          >
+            <Layers2 size={22} color="#f3f4f6" />
+          </AnimatedButton>
+          <AnimatedButton
+            onPress={() => onNotesPress?.()}
+            className="p-2 rounded-full bg-blue-700 border-2 border-blue-500"
+            hitSlop={10}
+          >
+            <NotebookPen size={22} color="#f3f4f6" />
           </AnimatedButton>
         </View>
       </View>
-      <MapIcons
-        title="Activity"
+      <SessionStats
+        title={title || "Activity"}
+        gpsEnabled
         lastMovingPoint={lastMovingPoint as TrackPoint}
-        style={{ bottom: insets.bottom }}
         startGPStracking={startGPStracking}
         stopGPStracking={stopGPStracking}
         totalDistance={totalDistance}
         hasStartedTracking={hasStartedTracking}
         averagePacePerKm={averagePacePerKm}
         currentStepCount={currentStepCount}
+        liveCalories={liveCalories}
       />
       <View
         className="absolute z-50 top-5 right-10"
         style={{ top: insets.top }}
       >
-        <AnimatedButton onPress={() => setFullScreen(false)} hitSlop={10}>
+        <AnimatedButton onPress={() => router.back()} hitSlop={10}>
           <CircleX size={35} color="#3b82f6" />
         </AnimatedButton>
       </View>
-    </Modal>
+    </>
   );
 }

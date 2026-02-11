@@ -4,6 +4,7 @@ import { handleError } from "@/utils/handleError";
 import { LocationObject } from "expo-location";
 import { haversine } from "./countDistance";
 import { detectMovement, MovementState } from "./stationaryDetection";
+import { debugLog } from "./debugLogger";
 
 export const LOCATION_TASK_NAME = "location-task";
 
@@ -12,6 +13,8 @@ TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
 
   const { locations } = data as { locations: LocationObject[] };
   if (!locations.length) return;
+
+  debugLog("BG_TASK", `Task fired, ${locations.length} location(s)`);
 
   try {
     const db = await getDatabase();
@@ -87,7 +90,10 @@ TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
       const result = detectMovement(point, lastPoint, state, haversine);
       state = result.newState;
 
-      if (!result.shouldSave) continue;
+      if (!result.shouldSave) {
+        debugLog("BG_TASK", `Skipped (acc=${(point.accuracy ?? 0).toFixed(0)}m, moving=${result.isMoving}, badSig=${result.isBadSignal})`);
+        continue;
+      }
 
       await db.runAsync(
         `INSERT INTO gps_points (timestamp, latitude, longitude, altitude, accuracy, is_stationary, confidence, bad_signal) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
@@ -103,10 +109,13 @@ TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
         ]
       );
 
+      debugLog("BG_TASK", `Saved (acc=${(point.accuracy ?? 0).toFixed(0)}m, moving=${result.isMoving}, badSig=${result.isBadSignal})`);
 
       lastPoint = { latitude: point.latitude, longitude: point.longitude };
     }
   } catch (error) {
+    const msg = error instanceof Error ? error.message : "Unknown error";
+    debugLog("BG_TASK", `ERROR: ${msg}`);
     handleError(error, {
       message: "Error persisting points to database",
       route: "/features/activities/lib/locationTask",

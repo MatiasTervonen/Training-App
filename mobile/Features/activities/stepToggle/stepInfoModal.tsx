@@ -6,12 +6,14 @@ import AnimatedButton from "@/components/buttons/animatedButton";
 
 type StepInfoModalProps = {
   visible: boolean;
+  permanentlyDenied?: boolean;
   onCancel: () => void;
   onOpenSettings: () => void;
 };
 
 export default function StepInfoModal({
   visible,
+  permanentlyDenied = false,
   onCancel,
   onOpenSettings,
 }: StepInfoModalProps) {
@@ -30,7 +32,9 @@ export default function StepInfoModal({
           </AppText>
 
           <AppText className="text-base mb-6 text-center">
-            {t("activities.stepInfoModal.description")}
+            {permanentlyDenied
+              ? t("activities.stepInfoModal.descriptionSettings")
+              : t("activities.stepInfoModal.description")}
           </AppText>
 
           <View className="flex-row gap-3 w-full">
@@ -44,7 +48,11 @@ export default function StepInfoModal({
             </View>
             <View className="flex-1">
               <AnimatedButton
-                label={t("activities.stepInfoModal.openSettings")}
+                label={
+                  permanentlyDenied
+                    ? t("activities.stepInfoModal.goToSettings")
+                    : t("activities.stepInfoModal.openSettings")
+                }
                 onPress={onOpenSettings}
                 className="bg-blue-800 border-2 border-blue-500 py-2 rounded-md"
                 textClassName="text-gray-100 text-center"

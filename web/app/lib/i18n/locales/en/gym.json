@@ -79,6 +79,7 @@
     "addExerciseScreen": {
       "title": "Add Exercises",
       "exerciseName": "Exercise Name (English)",
+      "exerciseNameUser": "Exercise Name",
       "fiExerciseName": "Exercise Name (Finnish)",
       "exerciseNamePlaceholder": "Exercise name",
       "charLimit": "Reached the limit (50 chars max)",

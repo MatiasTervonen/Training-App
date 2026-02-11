@@ -6,6 +6,8 @@ import {
 } from "@/features/activities/lib/location-actions";
 import { getDatabase } from "@/database/local-database/database";
 import { clearLocalSessionDatabase } from "@/features/activities/lib/database-actions";
+import { startStepSession } from "@/native/android/NativeStepCounter";
+import { clearLog, debugLog } from "@/features/activities/lib/debugLogger";
 
 export function useStartActivity({
   activityName,
@@ -32,6 +34,10 @@ export function useStartActivity({
       });
       return;
     }
+
+    // Clear debug log from previous session
+    clearLog();
+    debugLog("SESSION", `Starting activity: ${activityName}, gps=${allowGPS}, steps=${stepsAllowed}`);
 
     // Stop any running GPS tracking first to prevent race conditions
     await stopGPStracking();
@@ -85,6 +91,10 @@ export function useStartActivity({
       gpsAllowed: allowGPS,
       stepsAllowed: stepsAllowed,
     });
+
+    if (stepsAllowed) {
+      await startStepSession();
+    }
 
     if (allowGPS) {
       await startGPStracking();

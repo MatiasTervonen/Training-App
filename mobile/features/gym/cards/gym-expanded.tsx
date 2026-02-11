@@ -4,6 +4,7 @@ import { FullGymSession } from "@/database/gym/get-full-gym-session";
 import GroupExercises from "@/features/gym/lib/GroupExercises";
 import { View, ScrollView } from "react-native";
 import AppText from "@/components/AppText";
+import BodyText from "@/components/BodyText";
 import { LinearGradient } from "expo-linear-gradient";
 import PageContainer from "@/components/PageContainer";
 import { History, Clock } from "lucide-react-native";
@@ -89,9 +90,9 @@ export default function GymSession(gym_session: FullGymSession) {
               {formatDuration(gym_session.duration)}
             </AppText>
             {gym_session.notes && (
-              <AppText className="text-lg text-gray-200 whitespace-pre-wrap break-words overflow-hidden">
+              <BodyText className="text-gray-200 whitespace-pre-wrap break-words overflow-hidden">
                 {gym_session.notes}
-              </AppText>
+              </BodyText>
             )}
           </LinearGradient>
         </View>
@@ -143,9 +144,9 @@ export default function GymSession(gym_session: FullGymSession) {
                   </View>
                 </View>
                 {exercise.notes && (
-                  <AppText className="py-2 overflow-hidden">
+                  <BodyText className="py-2 overflow-hidden">
                     {exercise.notes || ""}
-                  </AppText>
+                  </BodyText>
                 )}
 
                 <View className="w-full">

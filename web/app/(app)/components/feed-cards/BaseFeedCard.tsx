@@ -70,8 +70,10 @@ export default function BaseFeedCard({
       </div>
 
       {/* Middle content - always centered */}
-      <div className="flex-1 flex items-center">
-        <div className="flex items-center justify-start ml-4">{statsContent}</div>
+      <div className="flex-1 flex items-center font-body">
+        <div className="flex items-center justify-start ml-4">
+          {statsContent}
+        </div>
       </div>
 
       {/* Updated timestamp (optional) */}
@@ -97,7 +99,10 @@ export default function BaseFeedCard({
           </span>
         </div>
         <div className="flex gap-2 items-center">
-          <Calendar size={20} className={pinned ? "text-slate-900" : "text-gray-100"} />
+          <Calendar
+            size={20}
+            className={pinned ? "text-slate-900" : "text-gray-100"}
+          />
           <span className={pinned ? "text-slate-900" : "text-gray-100"}>
             {formatDateShort(item.created_at)}
           </span>

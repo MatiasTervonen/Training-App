@@ -5,15 +5,16 @@ import Carousel from "react-native-reanimated-carousel";
 import { Pin } from "lucide-react-native";
 import FeedCard from "@/features/feed-cards/FeedCard";
 import { useTranslation } from "react-i18next";
+import { FeedItemUI } from "@/types/session";
 
 interface PinnedCarouselProps {
-  pinnedFeed: any[];
+  pinnedFeed: FeedItemUI[];
   width: number;
   height: number;
-  onExpand: (item: any) => void;
-  onEdit: (item: any) => void;
-  onDelete: (item: any) => void;
-  onTogglePin: (item: any) => void;
+  onExpand: (item: FeedItemUI) => void;
+  onEdit: (item: FeedItemUI) => void;
+  onDelete: (item: FeedItemUI) => void;
+  onTogglePin: (item: FeedItemUI) => void;
   CardComponent?: React.ComponentType<any>;
 }
 

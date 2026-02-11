@@ -1,19 +1,12 @@
 import { FullActivitySession } from "@/types/models";
 import Mapbox from "@rnmapbox/maps";
 import { Image, View } from "react-native";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   processSavedRoute,
   smoothMultiLineString,
 } from "@/features/activities/lib/smoothCoordinates";
-import {
-  Move,
-  Lock,
-  Fullscreen,
-  X,
-  Layers2,
-  Route,
-} from "lucide-react-native";
+import { Move, Lock, Fullscreen, X, Layers2, Route } from "lucide-react-native";
 import AnimatedButton from "@/components/buttons/animatedButton";
 
 type MapProps = {
@@ -33,11 +26,11 @@ export default function Map({
   const [mapActive, setMapActive] = useState(false);
   const [mapStyle, setMapStyle] = useState(Mapbox.StyleURL.Dark);
   const LINE_COLORS = [
-    { glow: "rgba(59,130,246,0.4)", core: "#3b82f6" },   // blue
-    { glow: "rgba(239,68,68,0.4)", core: "#ef4444" },     // red
-    { glow: "rgba(34,197,94,0.4)", core: "#22c55e" },     // green
-    { glow: "rgba(168,85,247,0.4)", core: "#a855f7" },    // purple
-    { glow: "rgba(234,179,8,0.4)", core: "#eab308" },     // yellow
+    { glow: "rgba(59,130,246,0.4)", core: "#3b82f6" }, // blue
+    { glow: "rgba(239,68,68,0.4)", core: "#ef4444" }, // red
+    { glow: "rgba(34,197,94,0.4)", core: "#22c55e" }, // green
+    { glow: "rgba(168,85,247,0.4)", core: "#a855f7" }, // purple
+    { glow: "rgba(234,179,8,0.4)", core: "#eab308" }, // yellow
   ];
   const [colorIndex, setColorIndex] = useState(0);
   const lineColor = LINE_COLORS[colorIndex];
@@ -121,6 +114,13 @@ export default function Map({
       return MAP_STYLES[nextIndex];
     });
   };
+
+  useEffect(() => {
+    return () => {
+      setSwipeEnabled(true);
+      setScrollEnabled(true);
+    };
+  }, [setSwipeEnabled, setScrollEnabled]);
 
   const toggleMapActive = () => {
     const next = !mapActive;

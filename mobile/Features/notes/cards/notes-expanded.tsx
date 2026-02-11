@@ -8,6 +8,7 @@ import { FullNotesSession } from "@/database/notes/get-full-notes";
 import { DraftRecordingItem } from "../components/draftRecording";
 import { NotesVoiceSkeleton } from "@/components/skeletetons";
 import { useTranslation } from "react-i18next";
+import BodyText from "@/components/BodyText";
 
 type notesPayload = {
   notes: string;
@@ -46,7 +47,7 @@ export default function NotesSession({
           <AppText className="text-xl text-center mb-10 border-b border-gray-700 pb-2">
             {note.title}
           </AppText>
-          <AppText className="text-lg text-left">{payload.notes}</AppText>
+          <BodyText className="text-left">{payload.notes}</BodyText>
           {/* Voice Recordings */}
           {voiceCount > 0 && (
             <View className="mt-14">

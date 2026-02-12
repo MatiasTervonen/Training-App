@@ -23,7 +23,7 @@ export default function Navbar() {
       : "max-w-3xl";
 
   return (
-    <div className={`w-full  ${fullPage} sticky top-0 mx-auto z-50`}>
+    <div className={`w-full lg:max-w-[1600px] ${fullPage} sticky top-0 mx-auto z-50`}>
       <nav className="w-full flex items-center justify-between p-4 bg-linear-to-tr from-gray-900 via-slate-900 to-blue-900">
         <Link href="/dashboard" className=" text-2xl sm:text-3xl">
           MyTrack
@@ -48,7 +48,7 @@ export default function Navbar() {
         </div>
       </nav>
       {["/dashboard", "/menu", "/sessions"].includes(pathname) && (
-        <div className="flex justify-between bg-slate-600 w-full text-center text-gray-100">
+        <div className="flex justify-between bg-slate-600 w-full text-center text-gray-100 lg:hidden">
           <Link
             href={"/menu"}
             className={
@@ -82,7 +82,9 @@ export default function Navbar() {
           </button>
         </div>
       )}
-      <ActiveSessionPopup />
+      <div className="lg:hidden">
+        <ActiveSessionPopup />
+      </div>
     </div>
   );
 }

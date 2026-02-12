@@ -11,6 +11,7 @@ import { usePathname } from "next/navigation";
 import { useModalPageConfig } from "@/app/(app)/lib/stores/modalPageConfig";
 import { useTimerStore } from "../lib/stores/timerStore";
 import { useTranslation } from "react-i18next";
+import { useMedia } from "react-use";
 
 type Props = {
   children: ReactNode;
@@ -37,6 +38,7 @@ export default function ModalPageWrapper({
   const pathname = usePathname();
 
   const { blockSwipe } = useModalPageConfig();
+  const isDesktop = useMedia("(min-width: 1024px)", false);
 
   const activeSession = useTimerStore((state) => state.activeSession);
 
@@ -82,6 +84,14 @@ export default function ModalPageWrapper({
       ? "w-full"
       : "max-w-3xl";
 
+  if (isDesktop) {
+    return (
+      <div className="relative h-[calc(100dvh-72px)] w-full overflow-y-auto bg-linear-to-b from-slate-950 via-slate-900 to-slate-800">
+        {children}
+      </div>
+    );
+  }
+
   return (
     <div
       className={`relative ${heightClass} overflow-hidden ${fullPage} mx-auto`}
@@ -122,7 +132,7 @@ export default function ModalPageWrapper({
 
       <motion.div
         key={pathname}
-        className="absolute z-30 w-full h-full overflow-y-auto bg-slate-800 grow"
+        className="absolute z-30 w-full h-full overflow-y-auto bg-linear-to-b from-slate-950 via-slate-900 to-slate-800 grow"
         custom={direction}
         drag={blockSwipe ? false : "x"}
         onAnimationComplete={() => {

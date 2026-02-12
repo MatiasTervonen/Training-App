@@ -2,6 +2,7 @@ import { useRef } from "react";
 import { TextInputProps, View, TextInput } from "react-native";
 import AppText from "@/components/AppText";
 import { LinearGradient } from "expo-linear-gradient";
+import { useTranslation } from "react-i18next";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -26,6 +27,7 @@ export default function NotesInput({
   minHeight = DEFAULT_MIN_HEIGHT,
   ...props
 }: NotesInputProps) {
+  const { t } = useTranslation();
   const textRef = useRef(value);
   const animatedHeight = useSharedValue(minHeight);
 
@@ -70,13 +72,13 @@ export default function NotesInput({
             }}
             className={`pl-3 text-gray-100 font-lexend text-[15px] leading-[24px] ${className ?? ""}`}
             style={{ height: 3000, lineHeight: 20 }}
-            maxLength={10000}
+            maxLength={500000}
             {...props}
           />
         </Animated.View>
-        {value.length >= 10000 ? (
+        {value.length >= 500000 ? (
           <AppText className="text-yellow-400 mt-2">
-            Reached the limit (10000 chars max)
+            {t("common.charLimitReached", { max: 500000 })}
           </AppText>
         ) : null}
       </View>

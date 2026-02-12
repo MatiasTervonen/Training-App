@@ -82,13 +82,13 @@ export default function SubNotesInput({
             }}
             className={`pl-3 text-gray-100 font-lexend text-[15px] leading-[24px] ${className ?? ""}`}
             style={{ height: 1000, lineHeight: 20 }}
-            maxLength={500}
+            maxLength={500000}
             {...props}
           />
         </Animated.View>
-        {value.length >= 500 ? (
+        {value.length >= 500000 ? (
           <AppText className="text-yellow-400 mt-2">
-            {t("common.charLimitReached", { max: 500 })}
+            {t("common.charLimitReached", { max: 500000 })}
           </AppText>
         ) : null}
       </View>

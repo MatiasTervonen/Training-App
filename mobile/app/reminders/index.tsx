@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { useUserStore } from "@/lib/stores/useUserStore";
 import { Modal, View } from "react-native";
 import { useTranslation } from "react-i18next";
+import BodyText from "@/components/BodyText";
 
 export default function SessionsScreen() {
   const { t } = useTranslation("reminders");
@@ -22,17 +23,34 @@ export default function SessionsScreen() {
   return (
     <>
       <PageContainer>
-        <AppText className="text-2xl text-center mb-10">{t("reminders.title")}</AppText>
+        <AppText className="text-2xl text-center mb-10">
+          {t("reminders.title")}
+        </AppText>
         <View className="gap-4">
-          <LinkButton label={t("reminders.oneTimeGlobal")} href="/reminders/global-reminder">
+          <LinkButton
+            label={t("reminders.oneTimeGlobal")}
+            href="/reminders/global-reminder"
+          >
             <Globe color="#f3f4f6" />
           </LinkButton>
           <View className="border border-gray-400 rounded-md" />
-          <LinkButton label={t("reminders.oneTime")} href="/reminders/onetime-reminder" />
-          <LinkButton label={t("reminders.weekly")} href="/reminders/weekly-reminder" />
-          <LinkButton label={t("reminders.daily")} href="/reminders/daily-reminder" />
+          <LinkButton
+            label={t("reminders.oneTime")}
+            href="/reminders/onetime-reminder"
+          />
+          <LinkButton
+            label={t("reminders.weekly")}
+            href="/reminders/weekly-reminder"
+          />
+          <LinkButton
+            label={t("reminders.daily")}
+            href="/reminders/daily-reminder"
+          />
           <View className="border border-gray-400 rounded-md" />
-          <LinkButton label={t("reminders.myReminders")} href="/reminders/my-reminders" />
+          <LinkButton
+            label={t("reminders.myReminders")}
+            href="/reminders/my-reminders"
+          />
         </View>
       </PageContainer>
 
@@ -45,15 +63,18 @@ export default function SessionsScreen() {
             <AppText className="text-xl mb-6 text-center">
               {t("reminders.pushDisabledTitle")}
             </AppText>
-            <AppText className="text-lg mb-6 text-center">
+            <BodyText className="text-lg mb-6 text-center">
               {t("reminders.pushDisabledMessage")}
-            </AppText>
+            </BodyText>
             <View className="flex-row gap-4">
               <View className="flex-1">
                 <LinkButton href="/sessions" label={t("reminders.back")} />
               </View>
               <View className="flex-1">
-                <LinkButton href="/menu/settings" label={t("reminders.settings")} />
+                <LinkButton
+                  href="/menu/settings"
+                  label={t("reminders.settings")}
+                />
               </View>
             </View>
           </View>

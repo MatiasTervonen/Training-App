@@ -96,7 +96,7 @@ TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
       }
 
       await db.runAsync(
-        `INSERT INTO gps_points (timestamp, latitude, longitude, altitude, accuracy, is_stationary, confidence, bad_signal) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+        `INSERT OR IGNORE INTO gps_points (timestamp, latitude, longitude, altitude, accuracy, is_stationary, confidence, bad_signal) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           point.timestamp,
           point.latitude,

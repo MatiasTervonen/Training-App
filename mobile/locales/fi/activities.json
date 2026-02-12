@@ -115,7 +115,12 @@
       "delete": "Poista",
       "savingSession": "Tallennetaan sessiota...",
       "sessionDetails": "Session tiedot",
-      "close": "Sulje"
+      "close": "Sulje",
+      "batteryOptTitle": "Akun optimointi",
+      "batteryOptMessage": "Poista akun optimointi käytöstä tämän sovelluksen osalta, jotta GPS-seuranta toimii luotettavasti taustalla.",
+      "batteryOptDisable": "Poista käytöstä",
+      "batteryOptSkip": "Ohita",
+      "batteryOptHint": "Akun optimointi on päällä. Napauta poistaaksesi luotettavan GPS-seurannan varmistamiseksi."
     },
     "sessionDetails": {
       "duration": "Kesto",

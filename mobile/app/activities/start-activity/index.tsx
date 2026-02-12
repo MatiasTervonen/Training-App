@@ -4,7 +4,7 @@ import AppInput from "@/components/AppInput";
 import ActivityDropdown from "@/features/activities/components/activityDropdown";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { View, AppState, ScrollView } from "react-native";
+import { View, AppState, ScrollView, Pressable } from "react-native";
 import SubNotesInput from "@/components/SubNotesInput";
 import Toggle from "@/components/toggle";
 import SessionStats from "@/features/activities/components/sessionStats";
@@ -55,6 +55,11 @@ import { useConfirmAction } from "@/lib/confirmAction";
 import { debugLog } from "@/features/activities/lib/debugLogger";
 import DebugOverlay from "@/features/activities/components/debugOverlay";
 import { getWeight } from "@/database/weight/get-weight";
+import {
+  isIgnoringBatteryOptimizations,
+  requestIgnoreBatteryOptimizations,
+} from "@/native/android/NativeBatteryOptimization";
+import AppTextNC from "@/components/AppTextNC";
 
 export default function StartActivityScreen() {
   const { t } = useTranslation(["activities", "timer"]);
@@ -89,6 +94,7 @@ export default function StartActivityScreen() {
   const [isHydrated, setIsHydrated] = useState(false);
   const [draftRecordings, setDraftRecordings] = useState<DraftRecording[]>([]);
   const [baseMet, setBaseMet] = useState(0);
+  const [showBatteryHint, setShowBatteryHint] = useState(false);
 
   const confirmAction = useConfirmAction();
 
@@ -114,6 +120,28 @@ export default function StartActivityScreen() {
       setStepsAllowed(activeSession.stepsAllowed ?? false);
     }
   }, [activeSession]);
+
+  // Check battery optimization status when GPS is enabled or app returns to foreground
+  useEffect(() => {
+    if (!allowGPS) {
+      setShowBatteryHint(false);
+      return;
+    }
+
+    const check = () => {
+      isIgnoringBatteryOptimizations().then((ignoring) => {
+        setShowBatteryHint(!ignoring);
+      });
+    };
+
+    check();
+
+    const sub = AppState.addEventListener("change", (state) => {
+      if (state === "active") check();
+    });
+
+    return () => sub.remove();
+  }, [allowGPS]);
 
   // Sync title changes to activeSession and native timer notification
   useEffect(() => {
@@ -383,6 +411,16 @@ export default function StartActivityScreen() {
               }}
             />
           </View>
+          {showBatteryHint && (
+            <Pressable
+              className="px-4 -mt-4 mb-4"
+              onPress={() => requestIgnoreBatteryOptimizations()}
+            >
+              <AppTextNC className="text-sm text-blue-500 underline">
+                {t("activities.startActivityScreen.batteryOptHint")}
+              </AppTextNC>
+            </Pressable>
+          )}
           {showStepToggle && (
             <View className="flex-row items-center mb-10 justify-between px-4">
               <AppText className="text-lg">
@@ -421,6 +459,7 @@ export default function StartActivityScreen() {
               (isRunning && track.length === 0) || isGpsWarmingUp
             }
             currentPosition={currentPosition}
+            isHydrated={isHydrated}
             liveCalories={liveCalories}
             onNotesPress={() => setShowNotesModal(true)}
           />

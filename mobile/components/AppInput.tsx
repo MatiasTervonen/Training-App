@@ -35,13 +35,13 @@ export default function AppInput({
           spellCheck={false}
           allowFontScaling={false}
           className="bg-transparent text-gray-100 text-lg px-4 py-2 h-12 font-russo"
-          maxLength={150}
+          maxLength={5000}
           {...props}
         />
       </View>
-      {value.length >= 150 ? (
+      {value.length >= 5000 ? (
         <AppText className="text-yellow-500 mt-2">
-          {t("common.charLimitReached", { max: 150 })}
+          {t("common.charLimitReached", { max: 5000 })}
         </AppText>
       ) : null}
     </View>

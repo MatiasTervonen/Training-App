@@ -13,6 +13,7 @@ import Toast from "react-native-toast-message";
 import PageContainer from "@/components/PageContainer";
 import * as Device from "expo-device";
 import { useTranslation } from "react-i18next";
+import { hasStepsPermission } from "@/features/activities/stepToggle/stepPermission";
 
 type RangeType = "week" | "month" | "3months";
 
@@ -38,10 +39,12 @@ export default function ActivityAnalytics() {
   const [selectedRange, setSelectedRange] = useState<RangeType>("week");
   const [todaySteps, setTodaySteps] = useState(0);
   const [loadingToday, setLoadingToday] = useState(true);
+  const [stepsPermitted, setStepsPermitted] = useState(false);
 
   const { data: stepsData = [], isLoading: isLoadingSteps } = useQuery({
     queryKey: ["steps-analytics"],
     queryFn: () => getStepsData(90),
+    enabled: stepsPermitted,
     refetchOnMount: false,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
@@ -60,11 +63,18 @@ export default function ActivityAnalytics() {
   });
 
   useEffect(() => {
-    if (!Device.isDevice) return;
+    if (!Device.isDevice) {
+      setLoadingToday(false);
+      return;
+    }
 
     const fetchTodaySteps = async () => {
       setLoadingToday(true);
       try {
+        const permitted = await hasStepsPermission();
+        setStepsPermitted(permitted);
+        if (!permitted) return;
+
         const steps = await getTodaysSteps();
         setTodaySteps(steps);
       } catch (error) {
@@ -129,23 +139,27 @@ export default function ActivityAnalytics() {
             </AnimatedButton>
           ))}
         </View>
-        <StepsChart
-          range={selectedRange}
-          data={stepsData}
-          todaySteps={todaySteps}
-        />
-        {todaySteps > 0 && (
-          <View className="mt-4 bg-slate-900 rounded-xl p-4">
-            <View className="flex-row justify-between items-center">
-              <AppText className="text-gray-400">
-                {t("activities.analyticsScreen.today")}
-              </AppText>
-              <AppText className="text-2xl font-bold text-green-400">
-                {todaySteps.toLocaleString()}{" "}
-                {t("activities.analyticsScreen.steps")}
-              </AppText>
-            </View>
-          </View>
+        {stepsPermitted && (
+          <>
+            <StepsChart
+              range={selectedRange}
+              data={stepsData}
+              todaySteps={todaySteps}
+            />
+            {todaySteps > 0 && (
+              <View className="mt-4 bg-slate-900 rounded-xl p-4">
+                <View className="flex-row justify-between items-center">
+                  <AppText className="text-gray-400">
+                    {t("activities.analyticsScreen.today")}
+                  </AppText>
+                  <AppText className="text-2xl font-bold text-green-400">
+                    {todaySteps.toLocaleString()}{" "}
+                    {t("activities.analyticsScreen.steps")}
+                  </AppText>
+                </View>
+              </View>
+            )}
+          </>
         )}
         <View className="mt-4">
           <ActivityBreakdownChart

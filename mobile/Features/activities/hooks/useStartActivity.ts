@@ -8,6 +8,13 @@ import { getDatabase } from "@/database/local-database/database";
 import { clearLocalSessionDatabase } from "@/features/activities/lib/database-actions";
 import { startStepSession } from "@/native/android/NativeStepCounter";
 import { clearLog, debugLog } from "@/features/activities/lib/debugLogger";
+import { Alert } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import {
+  isIgnoringBatteryOptimizations,
+  requestIgnoreBatteryOptimizations,
+} from "@/native/android/NativeBatteryOptimization";
+import i18n from "i18next";
 
 export function useStartActivity({
   activityName,
@@ -97,6 +104,35 @@ export function useStartActivity({
     }
 
     if (allowGPS) {
+      // One-time battery optimization check for reliable background GPS
+      const hasAsked = await AsyncStorage.getItem("has_asked_battery_opt");
+      if (!hasAsked) {
+        await AsyncStorage.setItem("has_asked_battery_opt", "true");
+        const isIgnoring = await isIgnoringBatteryOptimizations();
+        if (!isIgnoring) {
+          await new Promise<void>((resolve) => {
+            Alert.alert(
+              i18n.t("activities:activities.startActivityScreen.batteryOptTitle"),
+              i18n.t("activities:activities.startActivityScreen.batteryOptMessage"),
+              [
+                {
+                  text: i18n.t("activities:activities.startActivityScreen.batteryOptSkip"),
+                  style: "cancel",
+                  onPress: () => resolve(),
+                },
+                {
+                  text: i18n.t("activities:activities.startActivityScreen.batteryOptDisable"),
+                  onPress: async () => {
+                    await requestIgnoreBatteryOptimizations();
+                    resolve();
+                  },
+                },
+              ],
+            );
+          });
+        }
+      }
+
       await startGPStracking();
     }
 

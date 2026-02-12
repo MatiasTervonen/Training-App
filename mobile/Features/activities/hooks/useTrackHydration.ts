@@ -19,6 +19,7 @@ export function useTrackHydration({
   const prevForegroundRef = useRef(false);
   const activeSession = useTimerStore((state) => state.activeSession);
   const isHydratingRef = useRef(false);
+  const lastHydratedCountRef = useRef(0);
 
   const hydrateFromDatabase = useCallback(async () => {
     if (isHydratingRef.current) {
@@ -67,6 +68,7 @@ export function useTrackHydration({
         `Loaded ${points.length} pts (stationary=${stationaryCount}, badSignal=${badSignalCount}, last=${lastTs})`,
       );
 
+      lastHydratedCountRef.current = points.length;
       setTrack(points);
       onHydrated(points);
     } catch (error) {
@@ -102,20 +104,51 @@ export function useTrackHydration({
     }
 
     // Also hydrate when coming back to foreground (regardless of isRunning)
-    // Delay to allow background task to finish any pending database writes
+    // Two-phase hydration:
+    //   1. First hydration at 500ms — loads most points quickly
+    //   2. Verification at 3s — catches late background saves the OS queued up
     let timeoutId: ReturnType<typeof setTimeout> | null = null;
+    let verifyTimeoutId: ReturnType<typeof setTimeout> | null = null;
+
     if (!wasForeground && isForeground && activeSession?.gpsAllowed) {
       debugLog("HYDRATION", "Foreground detected, starting 500ms timer");
+
       timeoutId = setTimeout(() => {
         debugLog("HYDRATION", "500ms timer fired, calling hydrateFromDatabase");
         hydrateFromDatabase();
       }, 500);
+
+      // Verification: catch any late background saves from OS batch delivery
+      verifyTimeoutId = setTimeout(async () => {
+        try {
+          const db = await getDatabase();
+          const result = await db.getFirstAsync<{ cnt: number }>(
+            "SELECT COUNT(*) as cnt FROM gps_points",
+          );
+          const dbCount = result?.cnt ?? 0;
+
+          debugLog("HYDRATION", `Verification: DB has ${dbCount} pts`);
+
+          if (dbCount > lastHydratedCountRef.current) {
+            debugLog(
+              "HYDRATION",
+              `Late saves detected (${lastHydratedCountRef.current} → ${dbCount}), re-hydrating`,
+            );
+            hydrateFromDatabase();
+          }
+        } catch (error) {
+          debugLog("HYDRATION", `Verification error: ${error}`);
+        }
+      }, 3000);
     }
 
     return () => {
       if (timeoutId) {
         debugLog("HYDRATION", "Timer cancelled (effect cleanup)");
         clearTimeout(timeoutId);
+      }
+      if (verifyTimeoutId) {
+        clearTimeout(verifyTimeoutId);
       }
     };
   }, [isForeground, activeSession, hydrateFromDatabase, setIsHydrated]);

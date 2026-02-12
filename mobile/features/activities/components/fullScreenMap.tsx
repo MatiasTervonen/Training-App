@@ -6,7 +6,6 @@ import SessionStats from "./sessionStats";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { TrackPoint } from "@/types/session";
 import { useEffect, useMemo, useRef, useState } from "react";
-import useForeground from "../hooks/useForeground";
 import { findWarmupStartIndex } from "../lib/findWarmupStartIndex";
 import { processLiveTrack } from "../lib/smoothCoordinates";
 import AppText from "@/components/AppText";
@@ -25,6 +24,7 @@ type FullScreenMapProps = {
   currentStepCount: number;
   isLoadingTemplateRoute: boolean;
   isLoadingPosition: boolean;
+  isHydrated: boolean;
   liveCalories?: number;
   onNotesPress?: () => void;
   currentPosition?: {
@@ -47,34 +47,34 @@ export default function FullScreenMap({
   currentPosition,
   isLoadingTemplateRoute,
   isLoadingPosition,
+  isHydrated,
   liveCalories,
   onNotesPress,
 }: FullScreenMapProps) {
   const insets = useSafeAreaInsets();
   const [isFollowingUser, setIsFollowingUser] = useState(true);
   const [mapStyle, setMapStyle] = useState(Mapbox.StyleURL.Dark);
-  const { isForeground } = useForeground();
 
   const router = useRouter();
 
-  // Force ShapeSource remount on background→foreground to fix Mapbox native state desync
-  const prevForegroundRef = useRef(isForeground);
+  // Force ShapeSource remount after hydration completes
+  // Mapbox ShapeSource doesn't always pick up shape prop changes
   const [sourceKey, setSourceKey] = useState(0);
+  const prevHydratedRef = useRef(isHydrated);
 
   useEffect(() => {
-    const wasForeground = prevForegroundRef.current;
-    prevForegroundRef.current = isForeground;
+    const wasHydrated = prevHydratedRef.current;
+    prevHydratedRef.current = isHydrated;
 
-    if (isForeground) {
+    // isHydrated goes false→true after returning from background
+    if (isHydrated && !wasHydrated) {
       setIsFollowingUser(true);
-      if (!wasForeground) {
-        setSourceKey((prev) => {
-          debugLog("MAP", `sourceKey incremented to ${prev + 1}`);
-          return prev + 1;
-        });
-      }
+      setSourceKey((prev) => {
+        debugLog("MAP", `Hydration complete, remounting ShapeSource (key=${prev + 1})`);
+        return prev + 1;
+      });
     }
-  }, [isForeground]);
+  }, [isHydrated]);
 
   const shouldShowTemplateRoute = templateRoute && templateRoute.length > 0;
 

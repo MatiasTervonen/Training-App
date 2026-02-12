@@ -12,6 +12,7 @@ import {
 import { Info } from "lucide-react-native";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import { useTranslation } from "react-i18next";
+import * as Notifications from "expo-notifications";
 
 export default function TimerScreen() {
   const { t } = useTranslation("timer");
@@ -25,6 +26,11 @@ export default function TimerScreen() {
       if (!allowed) {
         setShowModal(true);
         return;
+      }
+
+      const { status } = await Notifications.getPermissionsAsync();
+      if (status !== "granted") {
+        await Notifications.requestPermissionsAsync();
       }
     };
     checkPermission();
@@ -51,6 +57,11 @@ export default function TimerScreen() {
 
       if (allowed) {
         setShowModal(false);
+
+        const { status } = await Notifications.getPermissionsAsync();
+        if (status !== "granted") {
+          await Notifications.requestPermissionsAsync();
+        }
       }
     });
 
@@ -62,16 +73,24 @@ export default function TimerScreen() {
   return (
     <>
       <PageContainer>
-        <AppText className="text-2xl text-center mb-10">{t("timer.title")}</AppText>
+        <AppText className="text-2xl text-center mb-10">
+          {t("timer.title")}
+        </AppText>
         <View className="gap-4">
           <LinkButton
             onPress={handleClick}
             label={t("timer.startTimer")}
             href="/timer/empty-timer"
           />
-          <LinkButton label={t("timer.startStopwatch")} href="/timer/start-stopwatch" />
+          <LinkButton
+            label={t("timer.startStopwatch")}
+            href="/timer/start-stopwatch"
+          />
           <View className="border border-gray-400 rounded-md my-2" />
-          <LinkButton label={t("timer.createTimer")} href="/timer/create-timer" />
+          <LinkButton
+            label={t("timer.createTimer")}
+            href="/timer/create-timer"
+          />
           <LinkButton label={t("timer.myTimers")} href="/timer/my-timers" />
         </View>
       </PageContainer>
@@ -90,7 +109,10 @@ export default function TimerScreen() {
             </AppText>
             <View className="flex-row gap-4">
               <View className="flex-1">
-                <LinkButton href="/sessions" label={t("timer.alarmPermission.back")} />
+                <LinkButton
+                  href="/sessions"
+                  label={t("timer.alarmPermission.back")}
+                />
               </View>
               <View className="flex-1">
                 <AnimatedButton

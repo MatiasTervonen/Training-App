@@ -10,7 +10,7 @@ export function CopyBlock({ children }: { children: string }) {
   };
 
   return (
-    <pre className="relative">
+    <pre className="relative whitespace-pre-wrap wrap-break-word">
       <button
         onClick={handleCopy}
         className="absolute top-2 right-2 px-2 py-1 text-xs rounded hover:scale-105 transition-all duration-200 cursor-pointer "

@@ -23,6 +23,7 @@ import expo.modules.ReactNativeHostWrapper
 import com.layer100crypto.MyTrack.timer.TimerPackage
 import com.layer100crypto.MyTrack.alarm.AlarmPackage
 import com.layer100crypto.MyTrack.step.StepCounterPackage
+import com.layer100crypto.MyTrack.battery.BatteryOptimizationPackage
 
 class MainApplication : Application(), ReactApplication {
 
@@ -37,6 +38,7 @@ class MainApplication : Application(), ReactApplication {
               add(TimerPackage())
               add(AlarmPackage())
               add(StepCounterPackage())
+              add(BatteryOptimizationPackage())
             }
 
           override fun getJSMainModuleName(): String = ".expo/.virtual-metro-entry"

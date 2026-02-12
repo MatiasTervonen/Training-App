@@ -66,6 +66,7 @@ export default function SettingsScreen() {
               setValue={setNotes}
               label={t("weight.notesLabel")}
               placeholder={t("weight.notesPlaceholder")}
+              maxLength={5000}
             />
             <AppInput
               value={weight}

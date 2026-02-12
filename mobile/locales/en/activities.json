@@ -115,7 +115,12 @@
       "delete": "Delete",
       "savingSession": "Saving session...",
       "sessionDetails": "Session Details",
-      "close": "Close"
+      "close": "Close",
+      "batteryOptTitle": "Battery Optimization",
+      "batteryOptMessage": "For reliable GPS tracking in the background, disable battery optimization for this app.",
+      "batteryOptDisable": "Disable",
+      "batteryOptSkip": "Skip",
+      "batteryOptHint": "Battery optimization is on. Tap to disable for reliable GPS tracking."
     },
     "sessionDetails": {
       "duration": "Duration",

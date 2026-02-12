@@ -35,8 +35,8 @@ export default function DocsLayout({
   const pathname = usePathname();
 
   return (
-    <div className="flex max-w-7xl w-full mx-auto gap-16 p-4">
-      <nav className="w-60 shrink-0 flex flex-col gap-6">
+    <div className="flex max-w-7xl w-full mx-auto p-4  md:gap-4">
+      <nav className="w-60 shrink-0 flex flex-col gap-6 bg-slate-900 p-8 rounded-lg ">
         {docGroups.map((group) => (
           <div key={group.group}>
             <h2 className="text-sm font-semibold uppercase tracking-wider text-gray-400 mb-3">

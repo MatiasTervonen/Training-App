@@ -37,7 +37,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${russoOne.className} ${lexend.variable} antialiased`}
+      className={`${russoOne.className} ${russoOne.variable} ${lexend.variable} antialiased`}
     >
       <body className="bg-gray-950 text-gray-100">
         <Provider>{children}</Provider>

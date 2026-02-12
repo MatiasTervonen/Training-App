@@ -3,7 +3,7 @@
 import { useState } from "react";
 import SaveButton from "@/app/(app)/components/buttons/save-button";
 import DeleteSessionBtn from "@/app/(app)/components/buttons/deleteSessionBtn";
-import NotesInput from "@/app/(app)/ui/NotesInput";
+import TiptapEditor from "@/app/(app)/notes/components/TiptapEditor";
 import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import TitleInput from "@/app/(app)/ui/TitleInput";
 import useSaveDraft from "@/app/(app)/notes/hooks/useSaveDraft";
@@ -41,7 +41,7 @@ export default function Notes() {
 
   return (
     <>
-      <div className="flex flex-col h-full max-w-md mx-auto page-padding">
+      <div className="flex flex-col h-full max-w-3xl mx-auto page-padding">
         <div className="flex flex-col items-center gap-5 grow mb-10">
           <p className="text-lg text-center">{t("notes.addNotesHere")}</p>
           <TitleInput
@@ -50,9 +50,9 @@ export default function Notes() {
             placeholder={t("notes.titlePlaceholder")}
             label={t("notes.titleLabel")}
           />
-          <NotesInput
-            notes={notes}
-            setNotes={setNotes}
+          <TiptapEditor
+            content={notes}
+            onChange={setNotes}
             placeholder={t("notes.notesPlaceholder")}
             label={t("notes.notesLabel")}
           />

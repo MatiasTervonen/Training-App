@@ -40,6 +40,20 @@
       "created": "created:",
       "updated": "updated:",
       "voiceLoadError": "Failed to load voice recordings."
+    },
+    "toolbar": {
+      "bold": "Bold",
+      "italic": "Italic",
+      "strikethrough": "Strikethrough",
+      "heading1": "Heading 1",
+      "heading2": "Heading 2",
+      "heading3": "Heading 3",
+      "bulletList": "Bullet list",
+      "orderedList": "Ordered list",
+      "code": "Code",
+      "codeBlock": "Code block",
+      "blockquote": "Blockquote",
+      "horizontalRule": "Horizontal rule"
     }
   }
 }

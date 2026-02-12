@@ -68,27 +68,29 @@ export default function ActiveSessionPopup() {
   return (
     <div
       onClick={handleStopTimer}
-      className={`sticky flex flex-row justify-between max-w-3xl items-center text-center w-full bg-gray-300 py-4 mx-auto z-1000 border-2 border-green-500 ${
+      className={`sticky w-full bg-slate-800 py-4 z-1000 border-2 border-blue-500 ${
         alarmFired ? "bg-red-500 animate-pulse" : ""
       }`}
     >
-      <div className="ml-10">
-        <p className="pb-2 text-start text-slate-900">{activeSession.label}</p>
-        <div className="flex  gap-5 text-slate-900 text-start items-center">
-          <Timer />
-          <p>{activeSession.type}</p>
-          {alarmFired && <p>ALARM!</p>}
-          {activeSession.type === t("timer:timer.title") && totalDuration && (
-            <p className="text-nowrap">
-              {Math.floor(totalDuration / 60)} min {totalDuration % 60} sec
-            </p>
-          )}
+      <div className="flex flex-row justify-between max-w-3xl items-center mx-auto">
+        <div className="ml-10">
+          <p className="pb-2 text-start text-gray-100">{activeSession.label}</p>
+          <div className="flex gap-5 text-gray-300 text-start items-center">
+            <Timer />
+            <p>{activeSession.type}</p>
+            {alarmFired && <p>ALARM!</p>}
+            {activeSession.type === t("timer:timer.title") && totalDuration && (
+              <p className="text-nowrap">
+                {Math.floor(totalDuration / 60)} min {totalDuration % 60} sec
+              </p>
+            )}
+          </div>
         </div>
-      </div>
-      <div className="mr-5">
-        <Link onClick={handleStopTimer} href={activeSession.path}>
-          <SquareArrowRight size={40} color="#0f172b" />
-        </Link>
+        <div className="mr-5">
+          <Link onClick={handleStopTimer} href={activeSession.path}>
+            <SquareArrowRight size={40} className="text-gray-100" />
+          </Link>
+        </div>
       </div>
     </div>
   );

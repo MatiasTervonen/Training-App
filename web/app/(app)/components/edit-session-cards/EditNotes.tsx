@@ -6,7 +6,7 @@ import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
 import toast from "react-hot-toast";
 import { editNotes } from "@/app/(app)/database/notes/edit-notes";
 import { FeedItemUI } from "@/app/(app)/types/session";
-import NotesInput from "@/app/(app)/ui/NotesInput";
+import TiptapEditor from "@/app/(app)/notes/components/TiptapEditor";
 import TitleInput from "@/app/(app)/ui/TitleInput";
 import { Dot } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -66,7 +66,7 @@ export default function EditNotes({ note, onSave, onDirtyChange }: Props) {
           </div>
         </div>
       )}
-      <div className="flex flex-col h-full max-w-lg mx-auto page-padding">
+      <div className="flex flex-col h-full max-w-3xl mx-auto page-padding">
         <div className="flex flex-col items-center grow gap-5">
           <h2 className="text-lg text-center mb-5">Edit your notes</h2>
           <TitleInput
@@ -75,9 +75,9 @@ export default function EditNotes({ note, onSave, onDirtyChange }: Props) {
             placeholder="Notes title..."
             label="Title..."
           />
-          <NotesInput
-            notes={notes || ""}
-            setNotes={setNotes}
+          <TiptapEditor
+            content={notes || ""}
+            onChange={setNotes}
             placeholder="Write your notes here..."
             label="Notes..."
           />

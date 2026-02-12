@@ -40,6 +40,20 @@
       "created": "luotu:",
       "updated": "päivitetty:",
       "voiceLoadError": "Ääninauhoitusten lataaminen epäonnistui."
+    },
+    "toolbar": {
+      "bold": "Lihavointi",
+      "italic": "Kursivointi",
+      "strikethrough": "Yliviivaus",
+      "heading1": "Otsikko 1",
+      "heading2": "Otsikko 2",
+      "heading3": "Otsikko 3",
+      "bulletList": "Luettelo",
+      "orderedList": "Numeroitu luettelo",
+      "code": "Koodi",
+      "codeBlock": "Koodilohko",
+      "blockquote": "Lainaus",
+      "horizontalRule": "Vaakaviiva"
     }
   }
 }

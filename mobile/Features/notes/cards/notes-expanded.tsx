@@ -44,7 +44,10 @@ export default function NotesSession({
             {t("notes.expandedView.updated")} {formatDate(note.updated_at)}
           </AppText>
         )}
-        <View className="bg-slate-900 px-5 pt-5 pb-10 rounded-md shadow-md mt-5">
+        <View className="relative bg-slate-900 px-5 pt-5 pb-10 rounded-md shadow-md mt-5">
+          <View className="absolute top-2 right-2 z-10">
+            <CopyText textToCopy={note.title + "\n\n" + payload.notes} />
+          </View>
           <AppText className="text-xl text-center mb-10 border-b border-gray-700 pb-2">
             {note.title}
           </AppText>
@@ -77,9 +80,6 @@ export default function NotesSession({
           )}
         </View>
 
-        <View className="mt-10">
-          <CopyText textToCopy={note.title + "\n\n" + payload.notes} />
-        </View>
       </PageContainer>
     </ScrollView>
   );

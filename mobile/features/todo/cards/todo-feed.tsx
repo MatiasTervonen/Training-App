@@ -2,7 +2,7 @@ import { ListTodo, Check } from "lucide-react-native";
 import { View } from "react-native";
 import AppText from "@/components/AppText";
 import { FeedCardProps } from "@/types/session";
-import BaseFeedCard from "./BaseFeedCard";
+import BaseFeedCard from "@/features/feed-cards/BaseFeedCard";
 import { useTranslation } from "react-i18next";
 
 type todoPayload = {
@@ -29,13 +29,13 @@ export default function TodoCard({
       onDelete={onDelete}
       onExpand={onExpand}
       onEdit={onEdit}
-      typeIcon={<ListTodo size={20} color={pinned ? "#0f172a" : "#f3f4f6"} />}
+      typeIcon={<ListTodo size={20} color={pinned ? "#0f172a" : "#cbd5e1"} />}
       typeName={t("feed.card.types.todo")}
       statsContent={
         <>
           <View className="flex-row gap-2 items-center">
             <AppText
-              className={`${pinned ? "text-slate-900" : "text-gray-100"}`}
+              className={`${pinned ? "text-slate-900" : "text-slate-300"}`}
             >
               {t("feed.card.completed")}: {payload.completed} / {payload.total}
             </AppText>

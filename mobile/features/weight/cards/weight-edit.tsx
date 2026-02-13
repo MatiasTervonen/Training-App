@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
-import SubNotesInput from "../../components/SubNotesInput";
+import SubNotesInput from "@/components/SubNotesInput";
 import AppInput from "@/components/AppInput";
 import SaveButton from "@/components/buttons/SaveButton";
 import FullScreenLoader from "@/components/FullScreenLoader";
 import Toast from "react-native-toast-message";
-import AppText from "../../components/AppText";
+import AppText from "@/components/AppText";
 import { View, TouchableWithoutFeedback, Keyboard } from "react-native";
 import { editWeight } from "@/database/weight/edit-weight";
-import PageContainer from "../../components/PageContainer";
+import PageContainer from "@/components/PageContainer";
 import { FeedItemUI } from "@/types/session";
 import { Dot } from "lucide-react-native";
 import { useTranslation } from "react-i18next";

@@ -1,4 +1,4 @@
-import ExerciseDropdown from "@/features/gym/ExerciseDropdown";
+import ExerciseDropdown from "@/features/gym/components/ExerciseDropdown";
 import { CircleX } from "lucide-react-native";
 import { ExerciseEntry, emptyExerciseEntry } from "@/types/session";
 import { generateUUID } from "@/utils/generateUUID";

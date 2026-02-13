@@ -30,7 +30,7 @@ export default function GlobalReminderCard({
       onDelete={onDelete}
       onExpand={onExpand}
       onEdit={onEdit}
-      typeIcon={<Bell size={20} color={pinned ? "#0f172a" : "#f3f4f6"} />}
+      typeIcon={<Bell size={20} color={pinned ? "#0f172a" : "#cbd5e1"} />}
       typeName={t("feed.card.types.reminder")}
       showUpdatedAt={true}
       statsContent={
@@ -38,7 +38,7 @@ export default function GlobalReminderCard({
           {payload.delivered && (
             <View className="flex-row items-center gap-2 bg-gray-900 rounded-md px-2">
               <Check size={30} color="#4ade80" />
-              <AppText className="text-gray-100">
+              <AppText className="text-slate-300">
                 {t("feed.card.delivered")}
               </AppText>
             </View>
@@ -46,11 +46,11 @@ export default function GlobalReminderCard({
           {payload.notify_at && (
             <View className="flex-row items-center gap-2">
               <AppText
-                className={`${pinned ? "text-slate-900" : "text-gray-100"}`}
+                className={`${pinned ? "text-slate-900" : "text-slate-300"}`}
               >
                 {formatDateTime(payload.notify_at)}
               </AppText>
-              <Bell size={20} color={pinned ? "#0f172a" : "#f3f4f6"} />
+              <Bell size={20} color={pinned ? "#0f172a" : "#cbd5e1"} />
             </View>
           )}
         </>

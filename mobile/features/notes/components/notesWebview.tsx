@@ -59,15 +59,20 @@ export default function RichContent({ html }: RichContentProps) {
             a { color: #60a5fa; }
             img { max-width: 100%; height: auto; }
           </style>
-          ${html}
+          <div id="content" style="padding-bottom: 16px;">${html}</div>
           <script>
+            var lastHeight = 0;
             function sendHeight() {
-              window.ReactNativeWebView.postMessage(
-                JSON.stringify({ height: document.body.scrollHeight })
-              );
+              var h = document.getElementById('content').scrollHeight;
+              if (h !== lastHeight && h > 0) {
+                lastHeight = h;
+                window.ReactNativeWebView.postMessage(
+                  JSON.stringify({ height: h })
+                );
+              }
             }
             sendHeight();
-            new ResizeObserver(sendHeight).observe(document.body);
+            new ResizeObserver(sendHeight).observe(document.getElementById('content'));
           </script>
         `,
       }}

@@ -8,7 +8,16 @@
       "Bash(findstr:*)",
       "WebFetch(domain:10play.github.io)",
       "WebFetch(domain:github.com)",
-      "WebFetch(domain:api.github.com)"
+      "WebFetch(domain:api.github.com)",
+      "Bash(git rm:*)",
+      "Bash(node fix-imports.js:*)",
+      "Bash(for dir in activities/analytics/components activities/cards activities/cards/activity-feed-expanded/components activities/components activities/hooks activities/lib activities/templates/components admin/components dashboard/components dashboard/hooks disc-golf/components disc-golf/Types gym/components gym/components/ExerciseHistory/components gym/hooks gym/hooks/template gym/my-sessions/components menu/components menu/friends/components notes/components notes/hooks notes/lib reminders/hooks timer/components timer/hooks todo/hooks weight/components)",
+      "Bash(do)",
+      "Bash(if [ -d \"$dir\" ])",
+      "Bash(then)",
+      "Bash(echo:*)",
+      "Bash(fi)",
+      "Bash(done)"
     ]
   }
 }

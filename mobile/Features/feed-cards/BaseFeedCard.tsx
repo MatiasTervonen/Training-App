@@ -87,16 +87,20 @@ export default function BaseFeedCard({
           <AppText className="min-h-5"></AppText>
         ))}
 
-      <View className="flex-row justify-between items-center mt-2 bg-slate-950/40 rounded-b-md ">
+      <View className="flex-row justify-between items-center mt-2 bg-slate-950/60 rounded-b-md ">
         <View className="flex-row items-center gap-2 pl-2">
           {typeIcon}
-          <AppText className={`${pinned ? "text-slate-900" : "text-gray-100"}`}>
+          <AppText
+            className={`${pinned ? "text-slate-900" : "text-slate-300"}`}
+          >
             {typeName || t("feed.card.types.activity")}
           </AppText>
         </View>
         <View className="flex-row gap-2 items-center">
-          <Calendar size={20} color={pinned ? "#0f172a" : "#f3f4f6"} />
-          <AppText className={`${pinned ? "text-slate-900" : "text-gray-100"}`}>
+          <Calendar size={20} color={pinned ? "#0f172a" : "#94a3b8"} />
+          <AppText
+            className={`${pinned ? "text-slate-900" : "text-slate-300"}`}
+          >
             {formatDateShort(item.created_at)}
           </AppText>
         </View>
@@ -107,7 +111,7 @@ export default function BaseFeedCard({
           }}
           className="bg-blue-700 py-2 px-4  rounded-br-md flex-row items-center gap-2"
         >
-          <AppText>{t("feed.card.details")}</AppText>
+          <AppText className="text-gray-100">{t("feed.card.details")}</AppText>
           <SquareArrowOutUpRight size={20} color="#f3f4f6" />
         </AnimatedButton>
       </View>

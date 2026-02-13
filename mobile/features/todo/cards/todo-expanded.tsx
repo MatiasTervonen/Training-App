@@ -1,29 +1,29 @@
 import { formatDate } from "@/lib/formatDate";
 import { View, ScrollView, TouchableOpacity } from "react-native";
-import AppText from "../../components/AppText";
-import BodyText from "../../components/BodyText";
-import AnimatedButton from "../../components/buttons/animatedButton";
+import AppText from "@/components/AppText";
+import BodyText from "@/components/BodyText";
+import AnimatedButton from "@/components/buttons/animatedButton";
 import {
   Check,
   SquareArrowOutUpRight,
   Dot,
   ArrowDownUp,
 } from "lucide-react-native";
-import FullScreenModal from "../../components/FullScreenModal";
-import SaveButton from "../../components/buttons/SaveButton";
-import FullScreenLoader from "../../components/FullScreenLoader";
+import FullScreenModal from "@/components/FullScreenModal";
+import SaveButton from "@/components/buttons/SaveButton";
+import FullScreenLoader from "@/components/FullScreenLoader";
 import { Checkbox } from "expo-checkbox";
 import { checkedTodo } from "@/database/todo/check-todo";
 import { full_todo_session, todo_tasks } from "@/types/models";
 import { useState, useEffect, useRef, useCallback } from "react";
 import Toast from "react-native-toast-message";
-import DropDownModal from "../../components/DropDownModal";
+import DropDownModal from "@/components/DropDownModal";
 import DraggableFlatList, {
   RenderItemParams,
   ScaleDecorator,
 } from "react-native-draggable-flatlist";
-import PageContainer from "../../components/PageContainer";
-import CopyText from "../../components/CopyToClipboard";
+import PageContainer from "@/components/PageContainer";
+import CopyText from "@/components/CopyToClipboard";
 import { FeedItemUI } from "@/types/session";
 import { useTranslation } from "react-i18next";
 
@@ -284,20 +284,20 @@ export default function TodoSession({
                                       {formatDate(task.updated_at)}
                                     </AppText>
                                   )}
-                                  <View className="items-center bg-slate-900 pt-5 pb-10 px-5 rounded-md shadow-md mt-5">
+                                  <View className="relative items-center bg-slate-900 pt-5 pb-10 px-5 rounded-md shadow-md mt-5">
+                                    <View className="absolute top-2 right-2 z-10">
+                                      <CopyText
+                                        textToCopy={
+                                          task.task + "\n\n" + task.notes || ""
+                                        }
+                                      />
+                                    </View>
                                     <AppText className="text-xl text-center mb-10 border-b border-gray-700 pb-2">
                                       {task.task}
                                     </AppText>
                                     <BodyText className="text-left">
                                       {task.notes || t("todo.noNotesAvailable")}
                                     </BodyText>
-                                  </View>
-                                  <View className="mt-10">
-                                    <CopyText
-                                      textToCopy={
-                                        task.task + "\n\n" + task.notes || ""
-                                      }
-                                    />
                                   </View>
                                 </PageContainer>
                               </FullScreenModal>

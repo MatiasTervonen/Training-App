@@ -7,7 +7,7 @@ export default function BodyText({
   return (
     <Text
       maxFontSizeMultiplier={1.2}
-      className={`font-lexend text-gray-200 text-[15px] leading-[24px]  ${className ?? ""}`}
+      className={`font-lexend text-gray-200 text-[14.5px] leading-[24px]  ${className ?? ""}`}
       {...props}
     />
   );

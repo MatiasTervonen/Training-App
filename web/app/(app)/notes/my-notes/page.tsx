@@ -1,18 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import Modal from "@/app/(app)/components/modal";
-import FeedCard from "@/app/(app)/components/feed-cards/FeedCard";
-import NotesSession from "@/app/(app)/components/expand-session-cards/notes";
-import EditNote from "@/app/(app)/components/edit-session-cards/EditNotes";
-import Spinner from "@/app/(app)/components/spinner";
-import { FeedSkeleton } from "@/app/(app)/ui/loadingSkeletons/skeletons";
-import { FeedItemUI } from "@/app/(app)/types/session";
-import useMyNotesFeed from "@/app/(app)/notes/hooks/useMyNotesFeed";
-import useNotesTogglePin from "@/app/(app)/notes/hooks/useNotesTogglePin";
-import useNotesDeleteSession from "@/app/(app)/notes/hooks/useNotesDeleteSession";
-import useNotesUpdateFeedItemToTop from "@/app/(app)/notes/hooks/useNotesUpdateFeedItemToTop";
-import FeedHeader from "../../dashboard/components/feedHeader";
+import Modal from "@/components/modal";
+import FeedCard from "@/features/feed-cards/FeedCard";
+import NotesSession from "@/features/notes/cards/notes-expanded";
+import EditNote from "@/features/notes/cards/EditNotes";
+import Spinner from "@/components/spinner";
+import { FeedSkeleton } from "@/ui/loadingSkeletons/skeletons";
+import { FeedItemUI } from "@/types/session";
+import useMyNotesFeed from "@/features/notes/hooks/useMyNotesFeed";
+import useNotesTogglePin from "@/features/notes/hooks/useNotesTogglePin";
+import useNotesDeleteSession from "@/features/notes/hooks/useNotesDeleteSession";
+import useNotesUpdateFeedItemToTop from "@/features/notes/hooks/useNotesUpdateFeedItemToTop";
+import FeedHeader from "@/features/dashboard/components/feedHeader";
 
 export default function MyNotesPage() {
   const [expandedItem, setExpandedItem] = useState<FeedItemUI | null>(null);

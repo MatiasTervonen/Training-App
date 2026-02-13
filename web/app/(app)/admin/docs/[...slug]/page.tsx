@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import { notFound } from "next/navigation";
 import ReactMarkdown from "react-markdown";
-import { CopyBlock } from "./copy-block";
+import { CopyBlock } from "@/app/(app)/admin/docs/[...slug]/copy-block";
 
 // Pre-build all doc pages during "next build" so they are served as static HTML.
 // Without this, Vercel doesn't include the .md files in the deployment and the pages crash.

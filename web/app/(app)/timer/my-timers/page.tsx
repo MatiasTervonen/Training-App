@@ -1,23 +1,23 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { TemplateSkeleton } from "@/app/(app)/ui/loadingSkeletons/skeletons";
-import Modal from "@/app/(app)/components/modal";
+import { TemplateSkeleton } from "@/ui/loadingSkeletons/skeletons";
+import Modal from "@/components/modal";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import TimerCard from "../components/TimerCard";
-import { useTimerStore } from "@/app/(app)/lib/stores/timerStore";
-import { timers } from "@/app/(app)/types/models";
-import { deleteTimer } from "@/app/(app)/database/timer/delete-timer";
-import { getTimers } from "@/app/(app)/database/timer/get-timers";
+import TimerCard from "@/features/timer/components/TimerCard";
+import { useTimerStore } from "@/lib/stores/timerStore";
+import { timers } from "@/types/models";
+import { deleteTimer } from "@/database/timer/delete-timer";
+import { getTimers } from "@/database/timer/get-timers";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
-import TitleInput from "@/app/(app)/ui/TitleInput";
-import SubNotesInput from "@/app/(app)/ui/SubNotesInput";
-import SetInput from "@/app/(app)/gym/components/SetInput";
-import SaveButton from "@/app/(app)/components/buttons/save-button";
-import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
-import useUpdateTimer from "../hooks/useUpdateTimer";
+import TitleInput from "@/ui/TitleInput";
+import SubNotesInput from "@/ui/SubNotesInput";
+import SetInput from "@/features/gym/components/SetInput";
+import SaveButton from "@/components/buttons/save-button";
+import FullScreenLoader from "@/components/FullScreenLoader";
+import useUpdateTimer from "@/features/timer/hooks/useUpdateTimer";
 
 export default function TimersPage() {
   const { t } = useTranslation(["timer", "common"]);

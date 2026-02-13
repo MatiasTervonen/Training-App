@@ -1,9 +1,9 @@
 "use client";
 
-import SessionFeed from "@/app/(app)/dashboard/components/sessionFeed";
+import SessionFeed from "@/features/dashboard/components/sessionFeed";
 import { useRouter } from "next/navigation";
-import { useModalPageConfig } from "@/app/(app)/lib/stores/modalPageConfig";
-import { useTimerStore } from "@/app/(app)/lib/stores/timerStore";
+import { useModalPageConfig } from "@/lib/stores/modalPageConfig";
+import { useTimerStore } from "@/lib/stores/timerStore";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useMedia } from "react-use";

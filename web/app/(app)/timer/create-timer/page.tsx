@@ -2,16 +2,16 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import SetInput from "@/app/(app)/gym/components/SetInput";
-import SaveButton from "@/app/(app)/components/buttons/save-button";
+import SetInput from "@/features/gym/components/SetInput";
+import SaveButton from "@/components/buttons/save-button";
 import toast from "react-hot-toast";
-import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
-import DeleteSessionBtn from "@/app/(app)/components/buttons/deleteSessionBtn";
-import { saveTimer } from "@/app/(app)/database/timer/save-timer";
-import SubNotesInput from "@/app/(app)/ui/SubNotesInput";
-import TitleInput from "@/app/(app)/ui/TitleInput";
+import FullScreenLoader from "@/components/FullScreenLoader";
+import DeleteSessionBtn from "@/components/buttons/deleteSessionBtn";
+import { saveTimer } from "@/database/timer/save-timer";
+import SubNotesInput from "@/ui/SubNotesInput";
+import TitleInput from "@/ui/TitleInput";
 import { useQueryClient } from "@tanstack/react-query";
-import useSaveDraft from "@/app/(app)/timer/hooks/useSaveDraft";
+import useSaveDraft from "@/features/timer/hooks/useSaveDraft";
 import { useTranslation } from "react-i18next";
 
 export default function TimerPage() {

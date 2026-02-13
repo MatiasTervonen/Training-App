@@ -10,7 +10,7 @@ import {
   Bell,
   Activity,
 } from "lucide-react";
-import LinkButton from "@/app/(app)/components/buttons/LinkButton";
+import LinkButton from "@/components/buttons/LinkButton";
 import { useTranslation } from "react-i18next";
 
 export default function Sessions() {

@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslation } from "react-i18next";
-import LinkButton from "../components/buttons/LinkButton";
+import LinkButton from "@/components/buttons/LinkButton";
 
 export default function AdminPage() {
   const { t } = useTranslation("common");

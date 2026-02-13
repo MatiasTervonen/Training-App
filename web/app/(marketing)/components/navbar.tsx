@@ -1,11 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import InstallApp from "@/app/(app)/components/installApp";
+import InstallApp from "@/components/installApp";
 import { Menu, CircleX } from "lucide-react";
 import { useState, useRef } from "react";
-import { useClickOutside } from "@/app/(app)/components/clickOutside";
-import { useInstallPrompt } from "@/app/(app)/lib/useInstallPrompt";
+import { useClickOutside } from "@/components/clickOutside";
+import { useInstallPrompt } from "@/lib/useInstallPrompt";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);

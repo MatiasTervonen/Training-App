@@ -1,8 +1,8 @@
 "use client";
 
-import LinkButton from "../components/buttons/LinkButton";
+import LinkButton from "@/components/buttons/LinkButton";
 import toast from "react-hot-toast";
-import { useTimerStore } from "../lib/stores/timerStore";
+import { useTimerStore } from "@/lib/stores/timerStore";
 import { List, Timer } from "lucide-react";
 import { useTranslation } from "react-i18next";
 

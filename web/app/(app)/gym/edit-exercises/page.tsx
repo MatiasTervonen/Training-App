@@ -1,16 +1,16 @@
 "use client";
 
-import CustomInput from "@/app/(app)/ui/CustomInput";
+import CustomInput from "@/ui/CustomInput";
 import { useState, useEffect } from "react";
-import ExerciseTypeSelect from "@/app/(app)/gym/components/ExerciseTypeSelect";
-import SaveButton from "@/app/(app)/components/buttons/save-button";
+import ExerciseTypeSelect from "@/features/gym/components/ExerciseTypeSelect";
+import SaveButton from "@/components/buttons/save-button";
 import toast from "react-hot-toast";
-import ExerciseDropdownEdit from "@/app/(app)/gym/components/ExerciseDropdownEdit";
-import DeleteSessionBtn from "@/app/(app)/components/buttons/deleteSessionBtn";
-import { gym_exercises } from "../../types/models";
-import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
-import { editExercise } from "@/app/(app)/database/gym/edit-exercise";
-import { deleteExercise } from "@/app/(app)/database/gym/delete-exercise";
+import ExerciseDropdownEdit from "@/features/gym/components/ExerciseDropdownEdit";
+import DeleteSessionBtn from "@/components/buttons/deleteSessionBtn";
+import { gym_exercises } from "@/types/models";
+import FullScreenLoader from "@/components/FullScreenLoader";
+import { editExercise } from "@/database/gym/edit-exercise";
+import { deleteExercise } from "@/database/gym/delete-exercise";
 import { useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 

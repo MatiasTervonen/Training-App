@@ -11,14 +11,14 @@ import React from "react";
 import LoginButton from "@/app/login/components/loginbutton";
 import SignupButton from "@/app/login/components/signupbutton";
 import ModalLogin from "./components/modalLogin";
-import CustomInput from "../(app)/ui/CustomInput";
+import CustomInput from "@/ui/CustomInput";
 import ResetPasswordButton from "./components/resetPasswordButton";
 import ResendButton from "./components/resendButton";
 import { ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { guestLogin } from "@/app/login/guest-login/action";
-import FullScreenLoader from "../(app)/components/FullScreenLoader";
+import FullScreenLoader from "@/components/FullScreenLoader";
 
 const ConfettiAnimation = dynamic(() => import("../components/confetti"), {
   ssr: false,

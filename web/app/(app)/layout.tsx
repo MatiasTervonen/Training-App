@@ -1,13 +1,13 @@
 import { Toaster } from "react-hot-toast";
 import "../globals.css";
-import UserLoader from "@/app/(app)/components/UserLoader";
+import UserLoader from "@/components/UserLoader";
 import { Suspense } from "react";
-import Navbar from "@/app/(app)/components/navbar/navbar";
-import LayoutWrapper from "@/app/(app)/components/LayoutWrapper";
-import SplashScreen from "@/app/(app)/components/SplashScreen";
-import MenuSidebar from "@/app/(app)/components/sidebar/MenuSidebar";
-import SessionsSidebar from "@/app/(app)/components/sidebar/SessionsSidebar";
-import ActiveSessionPopup from "@/app/(app)/components/activeSessionPopup";
+import Navbar from "@/components/navbar/navbar";
+import LayoutWrapper from "@/components/LayoutWrapper";
+import SplashScreen from "@/components/SplashScreen";
+import MenuSidebar from "@/components/sidebar/MenuSidebar";
+import SessionsSidebar from "@/components/sidebar/SessionsSidebar";
+import ActiveSessionPopup from "@/components/activeSessionPopup";
 
 export default function appLayout({ children }: { children: React.ReactNode }) {
   return (

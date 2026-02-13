@@ -1,21 +1,21 @@
 "use client";
 
 import { useState } from "react";
-import Modal from "@/app/(app)/components/modal";
-import FeedCard from "@/app/(app)/components/feed-cards/FeedCard";
-import TodoSession from "@/app/(app)/components/expand-session-cards/todo";
-import EditTodo from "@/app/(app)/components/edit-session-cards/EditTodo";
-import Spinner from "@/app/(app)/components/spinner";
-import { FeedSkeleton } from "@/app/(app)/ui/loadingSkeletons/skeletons";
-import { FeedItemUI } from "@/app/(app)/types/session";
-import useMyTodoFeed from "@/app/(app)/todo/hooks/useMyTodoFeed";
-import useTodoTogglePin from "@/app/(app)/todo/hooks/useTodoTogglePin";
-import useTodoDeleteSession from "@/app/(app)/todo/hooks/useTodoDeleteSession";
-import useTodoUpdateFeedItemToTop from "@/app/(app)/todo/hooks/useTodoUpdateFeedItemToTop";
+import Modal from "@/components/modal";
+import FeedCard from "@/features/feed-cards/FeedCard";
+import TodoSession from "@/features/todo/cards/todo-expanded";
+import EditTodo from "@/features/todo/cards/EditTodo";
+import Spinner from "@/components/spinner";
+import { FeedSkeleton } from "@/ui/loadingSkeletons/skeletons";
+import { FeedItemUI } from "@/types/session";
+import useMyTodoFeed from "@/features/todo/hooks/useMyTodoFeed";
+import useTodoTogglePin from "@/features/todo/hooks/useTodoTogglePin";
+import useTodoDeleteSession from "@/features/todo/hooks/useTodoDeleteSession";
+import useTodoUpdateFeedItemToTop from "@/features/todo/hooks/useTodoUpdateFeedItemToTop";
 import { useQuery } from "@tanstack/react-query";
-import { getFullTodoSession } from "@/app/(app)/database/todo/get-full-todo";
-import { full_todo_session } from "@/app/(app)/types/models";
-import FeedHeader from "../../dashboard/components/feedHeader";
+import { getFullTodoSession } from "@/database/todo/get-full-todo";
+import { full_todo_session } from "@/types/models";
+import FeedHeader from "@/features/dashboard/components/feedHeader";
 
 export default function MyTodoListsPage() {
   const [expandedItem, setExpandedItem] = useState<FeedItemUI | null>(null);

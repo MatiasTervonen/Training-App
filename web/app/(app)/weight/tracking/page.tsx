@@ -1,17 +1,17 @@
 "use client";
 
-import SaveButton from "@/app/(app)/components/buttons/save-button";
-import DeleteSessionBtn from "@/app/(app)/components/buttons/deleteSessionBtn";
+import SaveButton from "@/components/buttons/save-button";
+import DeleteSessionBtn from "@/components/buttons/deleteSessionBtn";
 import { useState, useEffect } from "react";
-import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
+import FullScreenLoader from "@/components/FullScreenLoader";
 import { useRouter } from "next/navigation";
-import { formatDateShort } from "@/app/(app)/lib/formatDate";
+import { formatDateShort } from "@/lib/formatDate";
 import toast from "react-hot-toast";
-import { saveWeight } from "@/app/(app)/database/weight/save-weight";
-import TitleInput from "@/app/(app)/ui/TitleInput";
-import SubNotesInput from "@/app/(app)/ui/SubNotesInput";
+import { saveWeight } from "@/database/weight/save-weight";
+import TitleInput from "@/ui/TitleInput";
+import SubNotesInput from "@/ui/SubNotesInput";
 import { useQueryClient } from "@tanstack/react-query";
-import CustomInput from "@/app/(app)/ui/CustomInput";
+import CustomInput from "@/ui/CustomInput";
 import { useTranslation } from "react-i18next";
 
 export default function WorkoutAnalyticsPage() {

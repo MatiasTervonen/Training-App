@@ -1,10 +1,22 @@
 # Project Rules
 
+## Architecture
+- `app/(app)/` — pages only (page.tsx, layout.tsx, route.ts)
+- `features/` — feature-specific code (components, hooks, cards, lib per feature)
+- `components/` — shared UI components (buttons, navbar, sidebar, modals)
+- `database/` — all database queries (organized by feature)
+- `lib/` — shared utilities and stores
+- `types/` — shared TypeScript types
+- `ui/` — shared input components
+- `utils/` — shared utility functions
+
 ## Key Paths
 - Tailwind classes: `app/global.css`
-- Input field components: `app/(app)/ui`
+- Input field components: `ui/`
 - Translation files: `app/lib`
-- Button components: `app/(app)/components/buttons`
+- Button components: `components/buttons`
+- Feed cards (base): `features/feed-cards/`
+- Feature cards: `features/{feature}/cards/`
 
 ## Styling
 - Always use `page-padding` tailwind class on the outer div of every new page.

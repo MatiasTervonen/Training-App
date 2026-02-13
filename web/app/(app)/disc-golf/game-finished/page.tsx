@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { clearLocalStorage } from "../components/ClearLocalStorage";
-import SaveButton from "@/app/(app)/components/buttons/save-button";
+import { clearLocalStorage } from "@/features/disc-golf/components/ClearLocalStorage";
+import SaveButton from "@/components/buttons/save-button";
 import { useRouter } from "next/navigation";
 
 export default function GameFinished() {

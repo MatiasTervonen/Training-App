@@ -1,5 +1,5 @@
 import Image from "next/image";
-import LinkButton from "../../components/buttons/LinkButton";
+import LinkButton from "@/components/buttons/LinkButton";
 
 export default function TrainingFinished() {
   return (

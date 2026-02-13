@@ -1,20 +1,20 @@
 "use client";
 
-import CustomInput from "@/app/(app)/ui/CustomInput";
+import CustomInput from "@/ui/CustomInput";
 import { useState, useEffect } from "react";
-import ExerciseTypeSelect from "@/app/(app)/gym/components/ExerciseTypeSelect";
-import SaveButton from "@/app/(app)/components/buttons/save-button";
+import ExerciseTypeSelect from "@/features/gym/components/ExerciseTypeSelect";
+import SaveButton from "@/components/buttons/save-button";
 import toast from "react-hot-toast";
-import ExerciseDropdown from "@/app/(app)/gym/components/ExerciseDropdown";
-import DeleteSessionBtn from "@/app/(app)/components/buttons/deleteSessionBtn";
-import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
-import { deleteExercise } from "@/app/(app)/database/admin/delete-exercise";
-import { editExercise } from "@/app/(app)/database/admin/edit-exercise";
+import ExerciseDropdown from "@/features/gym/components/ExerciseDropdown";
+import DeleteSessionBtn from "@/components/buttons/deleteSessionBtn";
+import FullScreenLoader from "@/components/FullScreenLoader";
+import { deleteExercise } from "@/database/admin/delete-exercise";
+import { editExercise } from "@/database/admin/edit-exercise";
 import { useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
-import { ExerciseForEdit } from "@/app/(app)/database/admin/get-fullExercise";
-import { getFullExercise } from "@/app/(app)/database/admin/get-fullExercise";
-import { useUserStore } from "../../lib/stores/useUserStore";
+import { ExerciseForEdit } from "@/database/admin/get-fullExercise";
+import { getFullExercise } from "@/database/admin/get-fullExercise";
+import { useUserStore } from "@/lib/stores/useUserStore";
 
 export default function EditExercises() {
   const { t } = useTranslation("gym");

@@ -1,7 +1,7 @@
 "use client";
 
-import { PushNotificationManager } from "@/app/(app)/components/pushnotifications/pushnotifications";
-import LanguageSelector from "@/app/(app)/components/LanguageSelector";
+import { PushNotificationManager } from "@/components/pushnotifications/pushnotifications";
+import LanguageSelector from "@/components/LanguageSelector";
 import { useTranslation } from "react-i18next";
 
 export default function SettingsPage() {

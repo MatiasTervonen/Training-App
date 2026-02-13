@@ -1,19 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { TemplateSkeleton } from "../../ui/loadingSkeletons/skeletons";
-import MyReminderCard from "@/app/(app)/components/feed-cards/MyReminderCard";
-import Modal from "../../components/modal";
-import EditMyGlobalReminder from "@/app/(app)/components/edit-session-cards/EditMyReminder";
+import { TemplateSkeleton } from "@/ui/loadingSkeletons/skeletons";
+import MyReminderCard from "@/features/reminders/cards/MyReminderCard";
+import Modal from "@/components/modal";
+import EditMyGlobalReminder from "@/features/reminders/cards/EditMyReminder";
 import { useQuery } from "@tanstack/react-query";
 
-import useDeleteReminder from "@/app/(app)/reminders/hooks/useDeleteReminder";
-import MyReminderSession from "@/app/(app)/components/expand-session-cards/myReminder";
+import useDeleteReminder from "@/features/reminders/hooks/useDeleteReminder";
+import MyReminderSession from "@/features/reminders/cards/myReminder-expanded";
 import {
   ReminderByTab,
   ReminderTab,
   getRemindersByTab,
-} from "@/app/(app)/database/reminders/get-reminders-by-tab";
+} from "@/database/reminders/get-reminders-by-tab";
 import { useTranslation } from "react-i18next";
 
 export default function Sessions() {

@@ -5,14 +5,14 @@ import { useParams, useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
-import SaveButton from "@/app/(app)/components/buttons/save-button";
-import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
-import Modal from "@/app/(app)/components/modal";
-import TitleInput from "@/app/(app)/ui/TitleInput";
-import SubNotesInput from "@/app/(app)/ui/SubNotesInput";
-import ActivityDropdown from "@/app/(app)/activities/components/ActivityDropdown";
-import { editTemplate } from "@/app/(app)/database/activities/edit-template";
-import { templateSummary, activities_with_category } from "@/app/(app)/types/models";
+import SaveButton from "@/components/buttons/save-button";
+import FullScreenLoader from "@/components/FullScreenLoader";
+import Modal from "@/components/modal";
+import TitleInput from "@/ui/TitleInput";
+import SubNotesInput from "@/ui/SubNotesInput";
+import ActivityDropdown from "@/features/activities/components/ActivityDropdown";
+import { editTemplate } from "@/database/activities/edit-template";
+import { templateSummary, activities_with_category } from "@/types/models";
 
 export default function EditTemplatePage() {
   const { t } = useTranslation("activities");

@@ -1,18 +1,18 @@
 "use client";
 
-import Spinner from "@/app/(app)/components/spinner";
-import ExerciseTypeSelect from "@/app/(app)/gym/components/ExerciseTypeSelect";
+import Spinner from "@/components/spinner";
+import ExerciseTypeSelect from "@/features/gym/components/ExerciseTypeSelect";
 import { useState } from "react";
-import { users } from "@/app/(app)/types/models";
-import { banUser } from "@/app/(app)/database/admin/ban-user";
+import { users } from "@/types/models";
+import { banUser } from "@/database/admin/ban-user";
 import toast from "react-hot-toast";
-import SubNotesInput from "../../ui/SubNotesInput";
-import { deleteUser } from "@/app/(app)/database/admin/delete-user";
-import { promoteUser } from "@/app/(app)/database/admin/promote-user";
+import SubNotesInput from "@/ui/SubNotesInput";
+import { deleteUser } from "@/database/admin/delete-user";
+import { promoteUser } from "@/database/admin/promote-user";
 import { useQuery } from "@tanstack/react-query";
-import { getUsers } from "@/app/(app)/database/admin/get-users";
-import { getUserCount } from "@/app/(app)/database/admin/get-user-count";
-import { UserTableSkeleton } from "../../ui/loadingSkeletons/skeletons";
+import { getUsers } from "@/database/admin/get-users";
+import { getUserCount } from "@/database/admin/get-user-count";
+import { UserTableSkeleton } from "@/ui/loadingSkeletons/skeletons";
 import { useTranslation } from "react-i18next";
 
 export default function Sessions() {

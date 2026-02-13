@@ -1,19 +1,19 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { TemplateSkeleton } from "@/app/(app)/ui/loadingSkeletons/skeletons";
-import Modal from "@/app/(app)/components/modal";
+import { TemplateSkeleton } from "@/ui/loadingSkeletons/skeletons";
+import Modal from "@/components/modal";
 import { useState } from "react";
-import TemplateCard from "@/app/(app)/components/feed-cards/TemplateCard";
-import Spinner from "@/app/(app)/components/spinner";
-import GymTemplate from "@/app/(app)/components/expand-session-cards/template";
+import TemplateCard from "@/features/gym/cards/TemplateCard";
+import Spinner from "@/components/spinner";
+import GymTemplate from "@/features/gym/cards/template-expanded";
 import { useQuery } from "@tanstack/react-query";
-import { getTemplates } from "@/app/(app)/database/gym/templates/get-templates";
-import { getFullTemplate } from "@/app/(app)/database/gym/templates/full-gym-template";
-import useDeleteTemplate from "@/app/(app)/gym/hooks/template/useDeleteTemplate";
-import useStartWorkoutTemplate from "@/app/(app)/gym/hooks/template/useStartWorkoutTemplate";
+import { getTemplates } from "@/database/gym/templates/get-templates";
+import { getFullTemplate } from "@/database/gym/templates/full-gym-template";
+import useDeleteTemplate from "@/features/gym/hooks/template/useDeleteTemplate";
+import useStartWorkoutTemplate from "@/features/gym/hooks/template/useStartWorkoutTemplate";
 import { useTranslation } from "react-i18next";
-import { FullGymTemplate } from "@/app/(app)/database/gym/templates/full-gym-template";
+import { FullGymTemplate } from "@/database/gym/templates/full-gym-template";
 
 type templateSummary = {
   id: string;

@@ -1,4 +1,4 @@
-import LinkButton from "../(app)/components/buttons/LinkButton";
+import LinkButton from "@/components/buttons/LinkButton";
 
 export default function ErrorPage() {
   return (

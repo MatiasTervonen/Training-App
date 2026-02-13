@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslation } from "react-i18next";
-import Stopwatch from "../components/stopwatch";
+import Stopwatch from "@/features/timer/components/stopwatch";
 
 export default function StartStopwatchPage() {
   const { t } = useTranslation("timer");

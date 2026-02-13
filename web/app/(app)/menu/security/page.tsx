@@ -1,13 +1,13 @@
 "use client";
 
-import CustomInput from "@/app/(app)/ui/CustomInput";
+import CustomInput from "@/ui/CustomInput";
 import { useState } from "react";
-import SaveButtonSpinner from "@/app/(app)/components/buttons/save-button-spinner";
+import SaveButtonSpinner from "@/components/buttons/save-button-spinner";
 import { createClient } from "@/utils/supabase/client";
-import { useSignOut } from "@/app/(app)/lib/handleSignOut";
-import { handleError } from "@/app/(app)/utils/handleError";
-import { deleteAccount } from "@/app/(app)/database/user/delete-account";
-import { useUserStore } from "../../lib/stores/useUserStore";
+import { useSignOut } from "@/lib/handleSignOut";
+import { handleError } from "@/utils/handleError";
+import { deleteAccount } from "@/database/user/delete-account";
+import { useUserStore } from "@/lib/stores/useUserStore";
 
 export default function Page() {
   const [password, setPassword] = useState("");

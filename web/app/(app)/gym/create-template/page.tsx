@@ -1,4 +1,4 @@
-import TemplateForm from "@/app/(app)/gym/components/template/TemplateForm";
+import TemplateForm from "@/features/gym/components/template/TemplateForm";
 
 export default function CreateTemplatePage() {
   const emptySession = {

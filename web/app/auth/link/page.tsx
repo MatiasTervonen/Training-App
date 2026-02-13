@@ -1,6 +1,6 @@
 import ClientSearch from "./components/ClientSearch";
 import { Suspense } from "react";
-import Spinner from "@/app/(app)/components/spinner";
+import Spinner from "@/components/spinner";
 
 export default function ResetPassword() {
   return (

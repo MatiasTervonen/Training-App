@@ -5,13 +5,13 @@ import { useRouter } from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
-import Modal from "@/app/(app)/components/modal";
-import Spinner from "@/app/(app)/components/spinner";
-import { getActivityTemplates } from "@/app/(app)/database/activities/get-templates";
-import { deleteActivityTemplate } from "@/app/(app)/database/activities/delete-template";
-import { templateSummary } from "@/app/(app)/types/models";
-import ActivityTemplateCard from "./components/ActivityTemplateCard";
-import ActivityTemplateExpanded from "./components/ActivityTemplateExpanded";
+import Modal from "@/components/modal";
+import Spinner from "@/components/spinner";
+import { getActivityTemplates } from "@/database/activities/get-templates";
+import { deleteActivityTemplate } from "@/database/activities/delete-template";
+import { templateSummary } from "@/types/models";
+import ActivityTemplateCard from "@/features/activities/templates/ActivityTemplateCard";
+import ActivityTemplateExpanded from "@/features/activities/templates/ActivityTemplateExpanded";
 
 export default function TemplatesPage() {
   const { t } = useTranslation("activities");

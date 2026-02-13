@@ -1,5 +1,5 @@
-import GymForm from "../components/GymForm";
-import { full_gym_session } from "../../types/models";
+import GymForm from "@/features/gym/components/GymForm";
+import { full_gym_session } from "@/types/models";
 
 export default function TrainingSessionPage() {
   const emptySession: full_gym_session = {

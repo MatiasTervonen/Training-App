@@ -1,9 +1,9 @@
 "use client";
 
 import { List, ChartNoAxesCombined } from "lucide-react";
-import LinkButton from "@/app/(app)/components/buttons/LinkButton";
+import LinkButton from "@/components/buttons/LinkButton";
 import { useTranslation } from "react-i18next";
-import { useTimerStore } from "../lib/stores/timerStore";
+import { useTimerStore } from "@/lib/stores/timerStore";
 import toast from "react-hot-toast";
 
 export default function Sessions() {

@@ -1,16 +1,16 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import SaveButton from "@/app/(app)/components/buttons/save-button";
-import DeleteSessionBtn from "@/app/(app)/components/buttons/deleteSessionBtn";
-import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
-import DateTimePicker from "@/app/(app)/components/DateTimePicker";
-import InfoModal from "@/app/(app)/components/InfoModal";
-import LinkButton from "@/app/(app)/components/buttons/LinkButton";
-import SubNotesInput from "@/app/(app)/ui/SubNotesInput";
-import TitleInput from "@/app/(app)/ui/TitleInput";
-import useDraft from "@/app/(app)/reminders/hooks/useDraft";
-import useSaveReminder from "@/app/(app)/reminders/hooks/useSaveReminder";
+import SaveButton from "@/components/buttons/save-button";
+import DeleteSessionBtn from "@/components/buttons/deleteSessionBtn";
+import FullScreenLoader from "@/components/FullScreenLoader";
+import DateTimePicker from "@/components/DateTimePicker";
+import InfoModal from "@/components/InfoModal";
+import LinkButton from "@/components/buttons/LinkButton";
+import SubNotesInput from "@/ui/SubNotesInput";
+import TitleInput from "@/ui/TitleInput";
+import useDraft from "@/features/reminders/hooks/useDraft";
+import useSaveReminder from "@/features/reminders/hooks/useSaveReminder";
 import { Info } from "lucide-react";
 import { useTranslation } from "react-i18next";
 

@@ -4,13 +4,13 @@ import { useState, useCallback } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
-import SaveButton from "@/app/(app)/components/buttons/save-button";
-import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
-import Modal from "@/app/(app)/components/modal";
-import TitleInput from "@/app/(app)/ui/TitleInput";
-import CategoryDropdown from "../components/CategoryDropdown";
-import { addActivity } from "@/app/(app)/database/activities/add-activity";
-import { ActivityCategory } from "@/app/(app)/database/activities/get-categories";
+import SaveButton from "@/components/buttons/save-button";
+import FullScreenLoader from "@/components/FullScreenLoader";
+import Modal from "@/components/modal";
+import TitleInput from "@/ui/TitleInput";
+import CategoryDropdown from "@/features/activities/components/CategoryDropdown";
+import { addActivity } from "@/database/activities/add-activity";
+import { ActivityCategory } from "@/database/activities/get-categories";
 
 export default function AddActivity() {
   const { t } = useTranslation("activities");

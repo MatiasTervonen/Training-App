@@ -1,7 +1,7 @@
 "use client";
 
 import { useFormStatus } from "react-dom";
-import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
+import FullScreenLoader from "@/components/FullScreenLoader";
 
 export default function SingupButton() {
   const { pending } = useFormStatus();

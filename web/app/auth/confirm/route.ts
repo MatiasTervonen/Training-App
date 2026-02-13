@@ -1,6 +1,6 @@
 import { type EmailOtpType } from "@supabase/supabase-js";
 import { type NextRequest, NextResponse } from "next/server";
-import { handleError } from "@/app/(app)/utils/handleError";
+import { handleError } from "@/utils/handleError";
 
 import { createClient } from "@/utils/supabase/server";
 

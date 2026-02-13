@@ -3,10 +3,10 @@
 import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
-import { getStepsData } from "@/app/(app)/database/activities/get-steps";
-import { getActivitySessionsAnalytics } from "@/app/(app)/database/activities/get-activity-sessions-analytics";
-import StepsChart from "./components/StepsChart";
-import ActivityBreakdownChart from "./components/ActivityBreakdownChart";
+import { getStepsData } from "@/database/activities/get-steps";
+import { getActivitySessionsAnalytics } from "@/database/activities/get-activity-sessions-analytics";
+import StepsChart from "@/features/activities/analytics/StepsChart";
+import ActivityBreakdownChart from "@/features/activities/analytics/ActivityBreakdownChart";
 
 type RangeType = "week" | "month" | "3months";
 

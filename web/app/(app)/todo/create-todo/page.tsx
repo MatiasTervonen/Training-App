@@ -7,15 +7,15 @@ import {
   SquareArrowOutUpRight,
 } from "lucide-react";
 import { useState } from "react";
-import DeleteSessionBtn from "@/app/(app)/components/buttons/deleteSessionBtn";
-import Modal from "@/app/(app)/components/modal";
-import SaveButton from "@/app/(app)/components/buttons/save-button";
-import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
-import TitleInput from "@/app/(app)/ui/TitleInput";
-import SubNotesInput from "@/app/(app)/ui/SubNotesInput";
-import useSaveDraft from "@/app/(app)/todo/hooks/useSaveDraft";
-import useDeleteItem from "@/app/(app)/todo/hooks/useDeleteItem";
-import useSaveTodo from "@/app/(app)/todo/hooks/useSaveTodo";
+import DeleteSessionBtn from "@/components/buttons/deleteSessionBtn";
+import Modal from "@/components/modal";
+import SaveButton from "@/components/buttons/save-button";
+import FullScreenLoader from "@/components/FullScreenLoader";
+import TitleInput from "@/ui/TitleInput";
+import SubNotesInput from "@/ui/SubNotesInput";
+import useSaveDraft from "@/features/todo/hooks/useSaveDraft";
+import useDeleteItem from "@/features/todo/hooks/useDeleteItem";
+import useSaveTodo from "@/features/todo/hooks/useSaveTodo";
 
 type TodoItem = {
   task: string;

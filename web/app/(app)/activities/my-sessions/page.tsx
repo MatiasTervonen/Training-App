@@ -1,20 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import Modal from "@/app/(app)/components/modal";
-import FeedCard from "@/app/(app)/components/feed-cards/FeedCard";
-import Spinner from "@/app/(app)/components/spinner";
-import { FeedSkeleton } from "@/app/(app)/ui/loadingSkeletons/skeletons";
-import { FeedItemUI } from "@/app/(app)/types/session";
-import useMyActivityFeed from "@/app/(app)/activities/hooks/useMyActivityFeed";
-import useActivityTogglePin from "@/app/(app)/activities/hooks/useActivityTogglePin";
-import useActivityDeleteSession from "@/app/(app)/activities/hooks/useActivityDeleteSession";
+import Modal from "@/components/modal";
+import FeedCard from "@/features/feed-cards/FeedCard";
+import Spinner from "@/components/spinner";
+import { FeedSkeleton } from "@/ui/loadingSkeletons/skeletons";
+import { FeedItemUI } from "@/types/session";
+import useMyActivityFeed from "@/features/activities/hooks/useMyActivityFeed";
+import useActivityTogglePin from "@/features/activities/hooks/useActivityTogglePin";
+import useActivityDeleteSession from "@/features/activities/hooks/useActivityDeleteSession";
 import { useTranslation } from "react-i18next";
-import ActivitySession from "@/app/(app)/activities/cards/activity-feed-expanded/activity";
-import EditActivity from "@/app/(app)/activities/cards/activity-edit";
-import FeedHeader from "../../dashboard/components/feedHeader";
-import useFullSessions from "../../dashboard/hooks/useFullSessions";
-import useUpdateFeedItem from "../../dashboard/hooks/useUpdateFeedItem";
+import ActivitySession from "@/features/activities/cards/activity-feed-expanded/activity";
+import EditActivity from "@/features/activities/cards/activity-edit";
+import FeedHeader from "@/features/dashboard/components/feedHeader";
+import useFullSessions from "@/features/dashboard/hooks/useFullSessions";
+import useUpdateFeedItem from "@/features/dashboard/hooks/useUpdateFeedItem";
 
 export default function MyActivitySessionsPage() {
   const { t } = useTranslation(["activities", "common"]);

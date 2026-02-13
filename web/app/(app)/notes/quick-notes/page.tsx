@@ -1,15 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import SaveButton from "@/app/(app)/components/buttons/save-button";
-import DeleteSessionBtn from "@/app/(app)/components/buttons/deleteSessionBtn";
-import TiptapEditor from "@/app/(app)/notes/components/TiptapEditor";
-import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
-import TitleInput from "@/app/(app)/ui/TitleInput";
-import useSaveDraft from "@/app/(app)/notes/hooks/useSaveDraft";
-import useSaveNotes from "@/app/(app)/notes/hooks/useSaveNotes";
+import SaveButton from "@/components/buttons/save-button";
+import DeleteSessionBtn from "@/components/buttons/deleteSessionBtn";
+import TiptapEditor from "@/features/notes/components/TiptapEditor";
+import FullScreenLoader from "@/components/FullScreenLoader";
+import TitleInput from "@/ui/TitleInput";
+import useSaveDraft from "@/features/notes/hooks/useSaveDraft";
+import useSaveNotes from "@/features/notes/hooks/useSaveNotes";
 import { useTranslation } from "react-i18next";
-import { formatDateShort } from "../../lib/formatDate";
+import { formatDateShort } from "@/lib/formatDate";
 
 export default function Notes() {
   const { t } = useTranslation("notes");

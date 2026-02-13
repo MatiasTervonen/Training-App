@@ -1,6 +1,6 @@
-import TemplateForm from "@/app/(app)/gym/components/template/TemplateForm";
-import { getFullTemplate } from "@/app/(app)/database/gym/templates/full-gym-template";
-import { FullGymTemplate } from "@/app/(app)/database/gym/templates/full-gym-template";
+import TemplateForm from "@/features/gym/components/template/TemplateForm";
+import { getFullTemplate } from "@/database/gym/templates/full-gym-template";
+import { FullGymTemplate } from "@/database/gym/templates/full-gym-template";
 
 export default async function EditTemplatePage({
   params,

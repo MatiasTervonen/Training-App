@@ -1,13 +1,13 @@
 "use client";
 
-import CustomInput from "@/app/(app)/ui/CustomInput";
+import CustomInput from "@/ui/CustomInput";
 import { useState } from "react";
-import ExerciseTypeSelect from "@/app/(app)/gym/components/ExerciseTypeSelect";
-import SaveButton from "@/app/(app)/components/buttons/save-button";
+import ExerciseTypeSelect from "@/features/gym/components/ExerciseTypeSelect";
+import SaveButton from "@/components/buttons/save-button";
 import toast from "react-hot-toast";
-import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
-import { handleError } from "@/app/(app)/utils/handleError";
-import { addExercise } from "@/app/(app)/database/gym/add-exercise";
+import FullScreenLoader from "@/components/FullScreenLoader";
+import { handleError } from "@/utils/handleError";
+import { addExercise } from "@/database/gym/add-exercise";
 import { useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 

@@ -1,19 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import Modal from "@/app/(app)/components/modal";
-import FeedCard from "@/app/(app)/components/feed-cards/FeedCard";
-import GymSession from "@/app/(app)/components/expand-session-cards/gym";
-import Spinner from "@/app/(app)/components/spinner";
-import { FeedSkeleton } from "@/app/(app)/ui/loadingSkeletons/skeletons";
+import Modal from "@/components/modal";
+import FeedCard from "@/features/feed-cards/FeedCard";
+import GymSession from "@/features/gym/cards/gym-expanded";
+import Spinner from "@/components/spinner";
+import { FeedSkeleton } from "@/ui/loadingSkeletons/skeletons";
 import { useRouter } from "next/navigation";
-import { FeedItemUI } from "@/app/(app)/types/session";
-import useMyGymFeed from "@/app/(app)/gym/hooks/useMyGymFeed";
-import useGymTogglePin from "@/app/(app)/gym/hooks/useGymTogglePin";
-import useGymDeleteSession from "@/app/(app)/gym/hooks/useGymDeleteSession";
+import { FeedItemUI } from "@/types/session";
+import useMyGymFeed from "@/features/gym/hooks/useMyGymFeed";
+import useGymTogglePin from "@/features/gym/hooks/useGymTogglePin";
+import useGymDeleteSession from "@/features/gym/hooks/useGymDeleteSession";
 import { useTranslation } from "react-i18next";
-import FeedHeader from "../../dashboard/components/feedHeader";
-import useFullSessions from "../../dashboard/hooks/useFullSessions";
+import FeedHeader from "@/features/dashboard/components/feedHeader";
+import useFullSessions from "@/features/dashboard/hooks/useFullSessions";
 
 export default function MySessionsPage() {
   const { t } = useTranslation(["gym", "common"]);

@@ -1,5 +1,5 @@
 import { createAdminClient } from "@/utils/supabase/admin";
-import { handleError } from "@/app/(app)/utils/handleError";
+import { handleError } from "@/utils/handleError";
 
 export async function POST(request: Request) {
   const authHeader = request.headers.get("authorization");

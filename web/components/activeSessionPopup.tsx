@@ -1,0 +1,97 @@
+"use client";
+
+import Link from "next/link";
+import Timer from "@/components/timer";
+import { SquareArrowRight } from "lucide-react";
+import { useTimerStore } from "@/lib/stores/timerStore";
+import { useEffect } from "react";
+import {
+  playAlarmAudio,
+  stopAlarmAudio,
+} from "@/features/timer/components/alarmAudio";
+import { usePathname } from "next/navigation";
+import { useTranslation } from "react-i18next";
+
+export default function ActiveSessionPopup() {
+  const { t } = useTranslation(["gym", "timer"]);
+  const pathname = usePathname();
+
+  const {
+    activeSession,
+    alarmFired,
+    totalDuration,
+    alarmSoundPlaying,
+    setAlarmSoundPlaying,
+  } = useTimerStore();
+
+  useEffect(() => {
+    if (alarmSoundPlaying) {
+      playAlarmAudio();
+    } else {
+      stopAlarmAudio();
+    }
+  }, [alarmSoundPlaying]);
+
+  const handleStopTimer = () => {
+    setAlarmSoundPlaying(false);
+    stopAlarmAudio();
+  };
+
+  if (!activeSession) return null;
+
+  if (pathname === "/gym/gym" && activeSession.type === t("gym:gym.title")) {
+    return null;
+  }
+
+  if (
+    pathname === "/timer/empty-timer" &&
+    activeSession.type === t("timer:timer.title")
+  ) {
+    return null;
+  }
+
+  if (pathname === "/disc-golf/game" && activeSession.type === "disc-golf") {
+    return null;
+  }
+
+  if (pathname === "/activities/start-activity" && activeSession.path === "/activities/start-activity") {
+    return null;
+  }
+
+  if (
+    pathname === "/timer/start-stopwatch" &&
+    activeSession.type === t("timer:timer:stopwatchTitle")
+  ) {
+    return null;
+  }
+
+  return (
+    <div
+      onClick={handleStopTimer}
+      className={`sticky w-full bg-slate-800 py-4 z-1000 border-2 border-blue-500 ${
+        alarmFired ? "bg-red-500 animate-pulse" : ""
+      }`}
+    >
+      <div className="flex flex-row justify-between max-w-3xl items-center mx-auto">
+        <div className="ml-10">
+          <p className="pb-2 text-start text-gray-100">{activeSession.label}</p>
+          <div className="flex gap-5 text-gray-300 text-start items-center">
+            <Timer />
+            <p>{activeSession.type}</p>
+            {alarmFired && <p>ALARM!</p>}
+            {activeSession.type === t("timer:timer.title") && totalDuration && (
+              <p className="text-nowrap">
+                {Math.floor(totalDuration / 60)} min {totalDuration % 60} sec
+              </p>
+            )}
+          </div>
+        </div>
+        <div className="mr-5">
+          <Link onClick={handleStopTimer} href={activeSession.path}>
+            <SquareArrowRight size={40} className="text-gray-100" />
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}

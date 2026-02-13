@@ -1,7 +1,7 @@
 import { NextResponse, NextRequest } from "next/server";
 import { createAdminClient } from "@/utils/supabase/admin";
 import webpush from "web-push";
-import { handleError } from "@/app/(app)/utils/handleError";
+import { handleError } from "@/utils/handleError";
 
 
 export async function POST(request: NextRequest) {

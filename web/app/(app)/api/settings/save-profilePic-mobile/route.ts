@@ -1,4 +1,4 @@
-import { handleError } from "@/app/(app)/utils/handleError";
+import { handleError } from "@/utils/handleError";
 import { createClient } from "@/utils/supabase/server";
 import { NextRequest } from "next/server";
 import { fileTypeFromBuffer } from "file-type";

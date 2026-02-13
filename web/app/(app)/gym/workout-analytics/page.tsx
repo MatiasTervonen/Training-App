@@ -1,9 +1,9 @@
 "use client";
 
-import AnalyticsForm from "@/app/(app)/gym/components/analytics/AnalyticsForm";
+import AnalyticsForm from "@/features/gym/components/analytics/AnalyticsForm";
 import { useQuery } from "@tanstack/react-query";
-import { get30dAnalytics } from "@/app/(app)/database/gym/analytics/last-30-days";
-import Spinner from "@/app/(app)/components/spinner";
+import { get30dAnalytics } from "@/database/gym/analytics/last-30-days";
+import Spinner from "@/components/spinner";
 import { useTranslation } from "react-i18next";
 
 export default function WorkoutAnalyticsPage() {

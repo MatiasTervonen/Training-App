@@ -1,16 +1,16 @@
 "use client";
 
-import SaveButton from "@/app/(app)/components/buttons/save-button";
+import SaveButton from "@/components/buttons/save-button";
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
-import ExerciseTypeSelect from "@/app/(app)/gym/components/ExerciseTypeSelect";
-import CustomInput from "@/app/(app)/ui/CustomInput";
-import FullScreenLoader from "@/app/(app)/components/FullScreenLoader";
-import { useUserStore } from "@/app/(app)/lib/stores/useUserStore";
-import ProfilePicture from "@/app/(app)/menu/components/profile-picture";
+import ExerciseTypeSelect from "@/features/gym/components/ExerciseTypeSelect";
+import CustomInput from "@/ui/CustomInput";
+import FullScreenLoader from "@/components/FullScreenLoader";
+import { useUserStore } from "@/lib/stores/useUserStore";
+import ProfilePicture from "@/features/menu/components/profile-picture";
 import { fileTypeFromBlob } from "file-type";
-import { saveUserProfile } from "@/app/(app)/database/settings/save-user-profile";
-import { validateUserName } from "@/app/(app)/database/settings/validateUserName";
+import { saveUserProfile } from "@/database/settings/save-user-profile";
+import { validateUserName } from "@/database/settings/validateUserName";
 
 export default function Settings() {
   const [isSaving, setIsSaving] = useState(false);

@@ -1,9 +1,9 @@
 "use client";
 
-import MenuContext from "./components/MenuContext";
-import LinkButton from "../components/buttons/LinkButton";
-import SignOutButton from "../components/buttons/singOutButton";
-import InstallAppClient from "./components/installAppClient";
+import MenuContext from "@/features/menu/components/MenuContext";
+import LinkButton from "@/components/buttons/LinkButton";
+import SignOutButton from "@/components/buttons/singOutButton";
+import InstallAppClient from "@/features/menu/components/installAppClient";
 import { ShieldUser, UserPen, ContactRound, Settings } from "lucide-react";
 import { useTranslation } from "react-i18next";
 

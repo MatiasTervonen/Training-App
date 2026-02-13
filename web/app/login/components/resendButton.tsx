@@ -1,7 +1,7 @@
 "use client";
 
 import { useFormStatus } from "react-dom";
-import Spinner from "@/app/(app)/components/spinner";
+import Spinner from "@/components/spinner";
 
 export default function ResendButton() {
   const { pending } = useFormStatus();

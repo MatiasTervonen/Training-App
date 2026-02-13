@@ -3,7 +3,7 @@
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import { checkBotId } from "botid/server";
-import { handleError } from "@/app/(app)/utils/handleError";
+import { handleError } from "@/utils/handleError";
 
 type GuestLoginResult = { success: false; message: string } | { success: true };
 

@@ -1,12 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import WeightChart from "@/app/(app)/weight/components/WeightChart";
-import AllDataTable from "@/app/(app)/weight/components/AllDataTable";
-import Spinner from "@/app/(app)/components/spinner";
-import { weight } from "@/app/(app)/types/models";
+import WeightChart from "@/features/weight/components/WeightChart";
+import AllDataTable from "@/features/weight/components/AllDataTable";
+import Spinner from "@/components/spinner";
+import { weight } from "@/types/models";
 import { useQuery } from "@tanstack/react-query";
-import { getWeight } from "@/app/(app)/database/weight/get-weight";
+import { getWeight } from "@/database/weight/get-weight";
 import { useTranslation } from "react-i18next";
 
 type RangeType = "week" | "month" | "year";

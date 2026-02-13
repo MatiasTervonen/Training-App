@@ -2,7 +2,7 @@
 
 import { useSearchParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import SaveButtonSpinner from "@/app/(app)/components/buttons/save-button-spinner";
+import SaveButtonSpinner from "@/components/buttons/save-button-spinner";
 
 export default function ClientSearch() {
   const searchParams = useSearchParams();

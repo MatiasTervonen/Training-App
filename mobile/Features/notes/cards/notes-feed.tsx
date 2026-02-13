@@ -1,5 +1,4 @@
 import { NotebookPen } from "lucide-react-native";
-import AppText from "@/components/AppText";
 import { FeedCardProps } from "@/types/session";
 import BaseFeedCard from "@/features/feed-cards/BaseFeedCard";
 import { View } from "react-native";
@@ -31,14 +30,14 @@ export default function NotesCard({
       onExpand={onExpand}
       onEdit={onEdit}
       typeIcon={
-        <NotebookPen size={20} color={pinned ? "#0f172a" : "#f3f4f6"} />
+        <NotebookPen size={20} color={pinned ? "#0f172a" : "#cbd5e1"} />
       }
       typeName={t("feed.card.types.notes")}
       statsContent={
         <View>
           {payload.notes && (
             <BodyText
-              className={` ${pinned ? "text-slate-900" : "text-gray-100"}`}
+              className={` ${pinned ? "text-slate-900" : "text-slate-300"}`}
               numberOfLines={2}
             >
               {stripHtml(payload.notes)}

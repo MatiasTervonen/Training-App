@@ -14,11 +14,11 @@ import GymSession from "@/features/gym/cards/gym-expanded";
 import NotesSession from "@/features/notes/cards/notes-expanded";
 import WeightSession from "@/features/weight/cards/weight-expanded";
 import EditNotes from "@/features/notes/cards/edit-notes";
-import EditWeight from "@/features/edit-session-cards/editWeight";
+import EditWeight from "@/features/weight/cards/weight-edit";
 import HandleEditGlobalReminder from "@/features/reminders/cards/editGlobalReminder";
 import { useRouter } from "expo-router";
-import TodoSession from "@/features/expand-session-cards/todo";
-import EditTodo from "@/features/edit-session-cards/editTodo";
+import TodoSession from "@/features/todo/cards/todo-expanded";
+import EditTodo from "@/features/todo/cards/todo-edit";
 import ReminderSession from "@/features/reminders/cards/reminder-expanded-feed";
 import useDeleteSession from "@/features/feed/hooks/useDeleteSession";
 import useTogglePin from "@/features/feed/hooks/useTogglePin";
@@ -50,7 +50,8 @@ export default function SessionFeed({ expandReminderId }: SessionFeedProps) {
   const [editingItem, setEditingItem] = useState<FeedItemUI | null>(null);
   const [refreshing, setRefreshing] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-  const [hasUnsavedExpandedChanges, setHasUnsavedExpandedChanges] = useState(false);
+  const [hasUnsavedExpandedChanges, setHasUnsavedExpandedChanges] =
+    useState(false);
   const expandedReminderRef = useRef<string | null>(null);
 
   const router = useRouter();

@@ -31,12 +31,12 @@ export default function WeightCard({
       onDelete={onDelete}
       onExpand={onExpand}
       onEdit={onEdit}
-      typeIcon={<Scale size={20} color={pinned ? "#0f172a" : "#f3f4f6"} />}
+      typeIcon={<Scale size={20} color={pinned ? "#0f172a" : "#cbd5e1"} />}
       typeName={t("feed.card.types.weight")}
       statsContent={
         <>
           <AppText
-            className={` ${pinned ? "text-slate-900" : "text-gray-100"}`}
+            className={` ${pinned ? "text-slate-900" : "text-slate-300"}`}
           >
             {payload.weight} {weightUnit}
           </AppText>

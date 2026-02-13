@@ -16,7 +16,7 @@ import { FeedItemUI } from "@/types/session";
 import FeedHeader from "@/features/feed/FeedHeader";
 import useFullSessions from "@/features/feed/hooks/useFullSessions";
 import TodoSession from "@/features/expand-session-cards/todo";
-import EditTodo from "@/features/edit-session-cards/editTodo";
+import EditTodo from "@/features/todo/cards/todo-edit";
 import useTogglePin from "@/features/feed/hooks/useTogglePin";
 import useDeleteSession from "@/features/feed/hooks/useDeleteSession";
 import useUpdateFeedItem from "@/features/feed/hooks/useUpdateFeedItem";
@@ -28,7 +28,8 @@ export default function MyTodoListsScreen() {
   const [editingItem, setEditingItem] = useState<FeedItemUI | null>(null);
   const [refreshing, setRefreshing] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-  const [hasUnsavedExpandedChanges, setHasUnsavedExpandedChanges] = useState(false);
+  const [hasUnsavedExpandedChanges, setHasUnsavedExpandedChanges] =
+    useState(false);
 
   const {
     data,

@@ -10,6 +10,8 @@
     "activityError": "Aktiviteetin tietojen lataaminen epäonnistui. Yritä myöhemmin uudelleen.",
     "loadingNotes": "Ladataan muistiinpanoja...",
     "loadingMore": "Ladataan lisää",
+    "pullToRefresh": "Vedä päivittääksesi",
+    "refreshing": "Päivitetään...",
     "noMoreSessions": "Ei enempää sessioita ladattavaksi.",
     "card": {
       "details": "Tiedot",

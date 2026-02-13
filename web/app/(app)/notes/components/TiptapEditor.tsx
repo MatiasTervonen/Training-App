@@ -2,7 +2,6 @@
 
 import { useEditor, useEditorState, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import { Markdown } from "tiptap-markdown";
 import Placeholder from "@tiptap/extension-placeholder";
 import { ModalSwipeBlocker } from "@/app/(app)/components/modal";
 import { useTranslation } from "react-i18next";
@@ -22,10 +21,11 @@ import {
 } from "lucide-react";
 import clsx from "clsx";
 import { useRef, useEffect } from "react";
+import { ensureHtml } from "@/app/(app)/notes/lib/ensureHtml";
 
 type TiptapEditorProps = {
   content: string;
-  onChange: (markdown: string) => void;
+  onChange: (html: string) => void;
   placeholder?: string;
   label?: string;
   maxLength?: number;
@@ -40,28 +40,22 @@ export default function TiptapEditor({
 }: TiptapEditorProps) {
   const { t } = useTranslation("common");
   const isInternalUpdate = useRef(false);
-  const prevContent = useRef(content);
+  const htmlContent = ensureHtml(content);
+  const prevContent = useRef(htmlContent);
 
   const editor = useEditor({
     extensions: [
       StarterKit,
-      Markdown.configure({
-        html: false,
-        breaks: true,
-        transformCopiedText: true,
-        transformPastedText: true,
-      }),
       Placeholder.configure({
         placeholder,
       }),
     ],
     immediatelyRender: false,
-    content,
+    content: htmlContent,
     onUpdate: ({ editor }) => {
       isInternalUpdate.current = true;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const md = (editor.storage as any).markdown.getMarkdown() as string;
-      onChange(md);
+      const html = editor.getHTML();
+      onChange(html);
     },
   });
 
@@ -71,11 +65,11 @@ export default function TiptapEditor({
       isInternalUpdate.current = false;
       return;
     }
-    if (content !== prevContent.current) {
-      editor.commands.setContent(content);
-      prevContent.current = content;
+    if (htmlContent !== prevContent.current) {
+      editor.commands.setContent(htmlContent);
+      prevContent.current = htmlContent;
     }
-  }, [content, editor]);
+  }, [htmlContent, editor]);
 
   const active = useEditorState({
     editor,
@@ -99,14 +93,14 @@ export default function TiptapEditor({
 
   if (!editor) return null;
 
-  const mdLength = content.length;
+  const contentLength = content.length;
 
   return (
-    <div className="flex flex-col w-full flex-1">
+    <div className="flex flex-col w-full flex-1 min-h-0">
       {label && <label className="text-sm text-gray-300 mb-1">{label}</label>}
-      <ModalSwipeBlocker className="flex-1 flex flex-col">
-        <div className="tiptap-editor rounded-md border-2 border-gray-100 hover:border-blue-500 focus-within:border-blue-500 overflow-hidden flex flex-col flex-1">
-          <div className="bg-slate-800 border-b border-gray-700 p-1 flex flex-wrap gap-1">
+      <ModalSwipeBlocker className="flex-1 flex flex-col min-h-0">
+        <div className="tiptap-editor rounded-md border-2 border-gray-100 hover:border-blue-500 focus-within:border-blue-500 overflow-hidden flex flex-col flex-1 min-h-0">
+          <div className="bg-slate-800 border-b border-gray-700 p-1 flex flex-wrap gap-1 shrink-0">
             <ToolbarButton
               onClick={() => editor.chain().focus().toggleBold().run()}
               isActive={active?.bold ?? false}
@@ -196,12 +190,12 @@ export default function TiptapEditor({
             />
           </div>
 
-          <div className="bg-[linear-gradient(50deg,#0f172a,#1e293b,#333333)] text-gray-100 p-2 flex-1">
-            <EditorContent editor={editor} className="h-full" />
+          <div className="bg-[linear-gradient(50deg,#0f172a,#1e293b,#333333)] text-gray-100 p-2 flex-1 min-h-0 overflow-y-auto">
+            <EditorContent editor={editor} />
           </div>
         </div>
       </ModalSwipeBlocker>
-      {mdLength >= maxLength && (
+      {contentLength >= maxLength && (
         <p className="text-yellow-400 mt-2">
           {t("common.charLimitReached", { max: maxLength })}
         </p>

@@ -5,7 +5,6 @@ import BodyText from "@/components/BodyText";
 import PageContainer from "@/components/PageContainer";
 import { formatDate, formatTime } from "@/lib/formatDate";
 import { useState } from "react";
-import { useFullScreenModalConfig } from "@/lib/stores/fullScreenModalConfig";
 import Map from "./components/map";
 import SessionStats from "./components/sessionStats";
 import { LinearGradient } from "expo-linear-gradient";
@@ -39,9 +38,7 @@ export default function ActivitySession(activity_session: ActivitySessionProps) 
     activity_session.session.template_id,
   );
 
-  const setSwipeEnabled = useFullScreenModalConfig(
-    (state) => state.setSwipeEnabled,
-  );
+
 
   const hasRoute = activity_session.route !== null;
 
@@ -97,7 +94,6 @@ export default function ActivitySession(activity_session: ActivitySessionProps) 
                 <Map
                   activity_session={activity_session}
                   setScrollEnabled={setScrollEnabled}
-                  setSwipeEnabled={setSwipeEnabled}
                   setFullScreen={setFullScreen}
                 />
               </View>

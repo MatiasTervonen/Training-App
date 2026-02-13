@@ -58,8 +58,8 @@ export default function FullScreenModal({
 
   const pan = Gesture.Pan()
     .enabled((swipeEnabled ?? true) && !showConfirm)
-    .activeOffsetX([-30, 30])
-    .failOffsetY([-15, 15])
+    .activeOffsetX([-40, 40])
+    .failOffsetY([-12, 12])
     .onChange((event) => {
       translateX.value = event.translationX * 0.7;
     })

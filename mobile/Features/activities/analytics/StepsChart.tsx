@@ -47,18 +47,17 @@ function addOffsetToDate(
 
 function formatDateLabel(
   dateString: string,
-  range: "week" | "month" | "3months"
+  range: "week" | "month" | "3months",
+  locale: string
 ): string {
   const date = new Date(dateString);
   switch (range) {
     case "week":
-      return new Intl.DateTimeFormat("en-US", { weekday: "short" }).format(
-        date
-      );
+      return new Intl.DateTimeFormat(locale, { weekday: "short" }).format(date);
     case "month":
-      return new Intl.DateTimeFormat("en-US", { day: "numeric" }).format(date);
+      return new Intl.DateTimeFormat(locale, { day: "numeric" }).format(date);
     case "3months":
-      return new Intl.DateTimeFormat("en-US", { month: "short" }).format(date);
+      return new Intl.DateTimeFormat(locale, { month: "short" }).format(date);
   }
 }
 
@@ -86,7 +85,7 @@ export default function StepsChart({
   data,
   todaySteps,
 }: StepsChartProps) {
-  const { t } = useTranslation("activities");
+  const { t, i18n } = useTranslation("activities");
   const [offset, setOffset] = useState(0);
   const [size, setSize] = useState({ width: 0, height: 0 });
   const skiaRef = useRef<any>(null);
@@ -125,7 +124,7 @@ export default function StepsChart({
         if (steps > 0) weekCount++;
 
         if (index % 7 === 0) {
-          currentWeekLabel = formatDateLabel(date, range);
+          currentWeekLabel = formatDateLabel(date, range, i18n.language);
         }
 
         if ((index + 1) % 7 === 0 || index === fullDateRange.length - 1) {
@@ -143,10 +142,10 @@ export default function StepsChart({
     }
 
     return fullDateRange.map((date) => ({
-      label: formatDateLabel(date, range),
+      label: formatDateLabel(date, range, i18n.language),
       value: stepsMap.get(date) || 0,
     }));
-  }, [fullDateRange, stepsMap, range]);
+  }, [fullDateRange, stepsMap, range, i18n.language]);
 
   const totalSteps = useMemo(() => {
     return fullDateRange.reduce((sum, date) => {
@@ -241,11 +240,12 @@ export default function StepsChart({
   }, [option, size]);
 
   function formatDateRange(start: Date, end: Date) {
-    const startFormatted = start.toLocaleDateString("en-US", {
+    const locale = i18n.language;
+    const startFormatted = start.toLocaleDateString(locale, {
       month: "short",
       day: "numeric",
     });
-    const endFormatted = end.toLocaleDateString("en-US", {
+    const endFormatted = end.toLocaleDateString(locale, {
       year: "numeric",
       month: "short",
       day: "numeric",

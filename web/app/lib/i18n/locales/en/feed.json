@@ -10,6 +10,8 @@
     "activityError": "Failed to load activity session details. Please try again later.",
     "loadingNotes": "Loading notes session...",
     "loadingMore": "Loading more",
+    "pullToRefresh": "Pull to refresh",
+    "refreshing": "Refreshing...",
     "noMoreSessions": "No more sessions to load.",
     "card": {
       "details": "Details",

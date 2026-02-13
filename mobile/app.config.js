@@ -21,7 +21,7 @@ export default {
       },
       edgeToEdgeEnabled: true,
       package: "com.layer100crypto.MyTrack",
-      softwareKeyboardLayoutMode: "pan",
+      softwareKeyboardLayoutMode: "resize",
       permissions: [
         "android.permission.RECORD_AUDIO",
         "android.permission.MODIFY_AUDIO_SETTINGS",

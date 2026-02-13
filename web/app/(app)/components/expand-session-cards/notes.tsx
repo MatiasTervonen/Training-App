@@ -4,7 +4,7 @@ import { formatDate } from "@/app/(app)/lib/formatDate";
 import CopyButton from "../buttons/CopyButton";
 import { FeedItemUI } from "../../types/session";
 import { useTranslation } from "react-i18next";
-import ReactMarkdown from "react-markdown";
+import { ensureHtml } from "@/app/(app)/notes/lib/ensureHtml";
 
 type notesPayload = {
   notes: string;
@@ -33,9 +33,10 @@ export default function NotesSession(notes: FeedItemUI) {
         <div className="text-xl text-center mb-10 border-b border-gray-700 pb-2 wrap-break-words">
           {notes.title}
         </div>
-        <div className="prose prose-invert max-w-none text-left font-body">
-          <ReactMarkdown>{payload.notes}</ReactMarkdown>
-        </div>
+        <div
+          className="prose prose-invert max-w-none text-left font-body"
+          dangerouslySetInnerHTML={{ __html: ensureHtml(payload.notes) }}
+        />
       </div>
       <CopyButton targetId="notes-id" />
     </div>

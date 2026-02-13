@@ -43,10 +43,11 @@ where t.id = src.id
 
 -- update feed item
 
-update feed_items 
+update feed_items
 set
   extra_fields = jsonb_build_object('completed', (select count(*) from todo_tasks where list_id = p_list_id and is_completed = true), 'total', (select count(*) from todo_tasks where list_id = p_list_id)),
-  updated_at = p_updated_at
+  updated_at = p_updated_at,
+  occurred_at = p_updated_at
 where source_id = p_list_id
  and type = 'todo_lists'
  returning * into v_feed_item;

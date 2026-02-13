@@ -245,7 +245,7 @@ export default function TodoSession({
                             <h3 className="text-xl text-center mb-10 border-b border-gray-700 pb-2 wrap-break-word">
                               {task.task}
                             </h3>
-                            <p className="whitespace-pre-wrap wrap-break-word overflow-hidden max-w-full text-left">
+                            <p className="whitespace-pre-wrap wrap-break-word overflow-hidden max-w-full text-left font-body">
                               {task.notes || t("todo.noNotesAvailable")}
                             </p>
                           </div>

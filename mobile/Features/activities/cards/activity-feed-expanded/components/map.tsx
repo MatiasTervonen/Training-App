@@ -12,14 +12,12 @@ import AnimatedButton from "@/components/buttons/animatedButton";
 type MapProps = {
   activity_session: FullActivitySession;
   setScrollEnabled: (value: boolean) => void;
-  setSwipeEnabled: (value: boolean) => void;
   setFullScreen: (value: boolean) => void;
 };
 
 export default function Map({
   activity_session,
   setScrollEnabled,
-  setSwipeEnabled,
   setFullScreen,
 }: MapProps) {
   const [expanded, setExpanded] = useState(false);
@@ -117,16 +115,14 @@ export default function Map({
 
   useEffect(() => {
     return () => {
-      setSwipeEnabled(true);
       setScrollEnabled(true);
     };
-  }, [setSwipeEnabled, setScrollEnabled]);
+  }, [setScrollEnabled]);
 
   const toggleMapActive = () => {
     const next = !mapActive;
     setMapActive(next);
     setScrollEnabled(!next);
-    setSwipeEnabled(!next);
   };
 
   return (

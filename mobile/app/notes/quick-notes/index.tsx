@@ -1,9 +1,4 @@
-import {
-  View,
-  TouchableWithoutFeedback,
-  Keyboard,
-  ScrollView,
-} from "react-native";
+import { View, ScrollView } from "react-native";
 import AppText from "@/components/AppText";
 import AppInput from "@/components/AppInput";
 import { useState } from "react";
@@ -66,8 +61,8 @@ export default function NotesScreen() {
   });
 
   return (
-    <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+    <View className="flex-1">
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <PageContainer className="justify-between">
           <View>
             <AppText className="text-2xl text-center mb-10">
@@ -84,8 +79,8 @@ export default function NotesScreen() {
             <NotesInput
               value={notes}
               setValue={setNotes}
-              placeholder={t("notes.notesPlaceholder")}
               label={t("notes.notesLabel")}
+              placeholder={t("notes.notesPlaceholder")}
             />
             {draftRecordings.length > 0 && (
               <View className="mt-5">
@@ -130,8 +125,8 @@ export default function NotesScreen() {
             <DeleteButton onPress={resetNote} />
           </View>
         </PageContainer>
-      </TouchableWithoutFeedback>
+      </ScrollView>
       <FullScreenLoader visible={isSaving} message={t("notes.savingNotes")} />
-    </ScrollView>
+    </View>
   );
 }

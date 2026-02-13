@@ -5,6 +5,7 @@ import BaseFeedCard from "@/features/feed-cards/BaseFeedCard";
 import { View } from "react-native";
 import { useTranslation } from "react-i18next";
 import BodyText from "@/components/BodyText";
+import { stripHtml } from "@/lib/stripHtml";
 
 type notesPayload = {
   notes: string;
@@ -40,7 +41,7 @@ export default function NotesCard({
               className={` ${pinned ? "text-slate-900" : "text-gray-100"}`}
               numberOfLines={2}
             >
-              {payload.notes}
+              {stripHtml(payload.notes)}
             </BodyText>
           )}
         </View>

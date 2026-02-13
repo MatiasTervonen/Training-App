@@ -9,6 +9,7 @@ import { DraftRecordingItem } from "../components/draftRecording";
 import { NotesVoiceSkeleton } from "@/components/skeletetons";
 import { useTranslation } from "react-i18next";
 import BodyText from "@/components/BodyText";
+import RichContent from "../components/notesWebview";
 
 type notesPayload = {
   notes: string;
@@ -33,7 +34,7 @@ export default function NotesSession({
   const voiceCount = payload["voice-count"] ?? 0;
 
   return (
-    <ScrollView>
+    <ScrollView showsVerticalScrollIndicator={false}>
       <PageContainer className="mb-10">
         <AppText className="text-sm text-gray-300 text-center">
           {t("notes.expandedView.created")} {formatDate(note.created_at!)}
@@ -47,7 +48,13 @@ export default function NotesSession({
           <AppText className="text-xl text-center mb-10 border-b border-gray-700 pb-2">
             {note.title}
           </AppText>
-          <BodyText className="text-left">{payload.notes}</BodyText>
+          {payload.notes.startsWith("<") ? (
+            <RichContent html={payload.notes} />
+          ) : (
+            <BodyText className="text-[15px] leading-6 text-gray-200">
+              {payload.notes}
+            </BodyText>
+          )}
           {/* Voice Recordings */}
           {voiceCount > 0 && (
             <View className="mt-14">

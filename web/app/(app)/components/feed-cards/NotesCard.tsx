@@ -9,21 +9,10 @@ type notesPayload = {
   notes: string;
 };
 
-function stripMarkdown(md: string): string {
-  return md
-    .replace(/#{1,6}\s+/g, "")
-    .replace(/\*\*(.+?)\*\*/g, "$1")
-    .replace(/\*(.+?)\*/g, "$1")
-    .replace(/~~(.+?)~~/g, "$1")
-    .replace(/`{3}[\s\S]*?`{3}/g, "")
-    .replace(/`(.+?)`/g, "$1")
-    .replace(/^>\s+/gm, "")
-    .replace(/^[-*+]\s+/gm, "")
-    .replace(/^\d+\.\s+/gm, "")
-    .replace(/^---+$/gm, "")
-    .replace(/\[(.+?)\]\(.+?\)/g, "$1")
-    .replace(/!\[.*?\]\(.+?\)/g, "")
-    .replace(/\n{2,}/g, " ")
+function stripForPreview(content: string): string {
+  return content
+    .replace(/<[^>]+>/g, " ")
+    .replace(/\s{2,}/g, " ")
     .trim();
 }
 
@@ -55,7 +44,7 @@ export default function NotesCard({
             pinned ? "text-slate-900" : "text-gray-100"
           }`}
         >
-          {stripMarkdown(payload.notes)}
+          {stripForPreview(payload.notes)}
         </p>
       }
     />

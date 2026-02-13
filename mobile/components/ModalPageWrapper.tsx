@@ -1,5 +1,6 @@
 import AppText from "@/components/AppText";
 import { View, Dimensions } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 import { SquareArrowLeft, SquareArrowRight } from "lucide-react-native";
 import { ReactNode, useState, useEffect } from "react";
 import { useRouter } from "expo-router";
@@ -97,19 +98,19 @@ export default function ModalPageWrapper({
     }
   };
 
-  const dragThreshold = screenWidth * 0.4;
+  const dragThreshold = screenWidth * 0.3;
   const velocityThreshold = 700;
 
   const pan = Gesture.Pan()
     .enabled(swipeEnabled ?? true)
     // Restrict gesture to horizontal swipes only
-    .activeOffsetX([-30, 30]) // Activate only if horizontal movement exceeds 30 pixels
-    .activeOffsetY([-1000, 1000]) // Prevent activation for vertical movements
+    .activeOffsetX([-40, 40]) // Activate only if horizontal movement exceeds 40 pixels
+    .failOffsetY([-12, 12]) // Cancel if vertical movement exceeds 12 pixels first
     .onStart(() => {
       runOnJS(setIsTransitioning)(true);
     })
     .onUpdate((e) => {
-      translateX.value = e.translationX * 0.2; // follow finger a bit
+      translateX.value = e.translationX * 0.35; // follow finger
     })
     .onEnd((event) => {
       const swipedRight =
@@ -184,8 +185,15 @@ export default function ModalPageWrapper({
         </View>
       </View>
       <GestureDetector gesture={isReady ? swipeGesture : Gesture.Tap()}>
-        <Animated.View className="flex-1 bg-slate-800" style={[animatedStyle]}>
-          {children}
+        <Animated.View className="flex-1" style={[animatedStyle]}>
+          <LinearGradient
+            className="flex-1"
+            colors={["#020618", "#1d293d"]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+          >
+            {children}
+          </LinearGradient>
         </Animated.View>
       </GestureDetector>
     </View>

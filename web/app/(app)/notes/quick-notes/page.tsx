@@ -42,7 +42,7 @@ export default function Notes() {
   return (
     <>
       <div className="flex flex-col h-full max-w-3xl mx-auto page-padding">
-        <div className="flex flex-col items-center gap-5 grow mb-10">
+        <div className="flex flex-col items-center gap-5 grow min-h-0 mb-10">
           <p className="text-lg text-center">{t("notes.addNotesHere")}</p>
           <TitleInput
             value={title}
@@ -57,7 +57,8 @@ export default function Notes() {
             label={t("notes.notesLabel")}
           />
         </div>
-        <div className="flex flex-col items-center gap-5">
+        <div className="flex  items-center gap-5">
+          <DeleteSessionBtn onDelete={resetNotes} />
           <SaveButton
             onClick={() => {
               if (notes.trim().length === 0) return;
@@ -66,7 +67,6 @@ export default function Notes() {
               resetNotes();
             }}
           />
-          <DeleteSessionBtn onDelete={resetNotes} />
         </div>
       </div>
       {isPending && <FullScreenLoader message={t("notes.savingNotes")} />}

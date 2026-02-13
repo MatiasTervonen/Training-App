@@ -5,12 +5,7 @@ import SaveButton from "@/components/buttons/SaveButton";
 import FullScreenLoader from "@/components/FullScreenLoader";
 import Toast from "react-native-toast-message";
 import AppText from "@/components/AppText";
-import {
-  View,
-  TouchableWithoutFeedback,
-  Keyboard,
-  ScrollView,
-} from "react-native";
+import { View, ScrollView } from "react-native";
 import { editNotes } from "@/database/notes/edit-notes";
 import PageContainer from "@/components/PageContainer";
 import { Dot } from "lucide-react-native";
@@ -154,80 +149,75 @@ export default function EditNotes({
         </View>
       )}
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-        <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-          <PageContainer className="mb-5">
-            <AppText className="text-xl text-center mt-5 mb-10">
-              {t("notes.editScreen.title")}
-            </AppText>
-            <View className="mb-5">
-              <AppInput
-                value={title || ""}
-                onChangeText={setValue}
-                placeholder={t("notes.titlePlaceholder")}
-                label={t("notes.titleLabel")}
-              />
-            </View>
-            <View>
-              <NotesInput
-                className="min-h-[120px]"
-                value={notes || ""}
-                setValue={setNotes}
-                placeholder={t("notes.notesPlaceholder")}
-                label={t("notes.notesLabel")}
-              />
-            </View>
+        <PageContainer className="mb-5">
+          <AppText className="text-xl text-center mt-5 mb-10">
+            {t("notes.editScreen.title")}
+          </AppText>
+          <View className="mb-5">
+            <AppInput
+              value={title || ""}
+              onChangeText={setValue}
+              placeholder={t("notes.titlePlaceholder")}
+              label={t("notes.titleLabel")}
+            />
+          </View>
+          <NotesInput
+            value={notes}
+            setValue={setNotes}
+            label={t("notes.notesLabel")}
+            minHeight={200}
+          />
 
-            {/* Existing Voice Recordings */}
-            {(voiceCount > 0 ||
-              existingRecordings.length > 0 ||
-              newRecordings.length > 0) && (
-              <View className="mt-5">
-                <AppText className="mb-2">{t("notes.recordings")}</AppText>
-                {isLoadingVoice ? (
-                  <NotesVoiceSkeleton count={voiceCount} />
-                ) : (
-                  existingRecordings.map((recording) => (
-                    <DraftRecordingItem
-                      key={recording.id}
-                      uri={recording.uri}
-                      durationMs={recording.duration_ms ?? undefined}
-                      deleteRecording={() => handleDeleteExisting(recording.id)}
-                    />
-                  ))
-                )}
-              </View>
-            )}
-
-            {/* New Voice Recordings */}
-            {newRecordings.length > 0 && (
-              <View>
-                {newRecordings.map((recording, index) => (
+          {/* Existing Voice Recordings */}
+          {(voiceCount > 0 ||
+            existingRecordings.length > 0 ||
+            newRecordings.length > 0) && (
+            <View className="mt-5">
+              <AppText className="mb-2">{t("notes.recordings")}</AppText>
+              {isLoadingVoice ? (
+                <NotesVoiceSkeleton count={voiceCount} />
+              ) : (
+                existingRecordings.map((recording) => (
                   <DraftRecordingItem
                     key={recording.id}
                     uri={recording.uri}
-                    durationMs={recording.durationMs}
-                    deleteRecording={() => handleDeleteNew(index)}
+                    durationMs={recording.duration_ms ?? undefined}
+                    deleteRecording={() => handleDeleteExisting(recording.id)}
                   />
-                ))}
-              </View>
-            )}
-
-            {/* Record New Voice Note */}
-            <View className="mt-6">
-              <RecordVoiceNotes
-                onRecordingComplete={(uri, duration) => {
-                  const newRecording = {
-                    id: nanoid(),
-                    uri,
-                    createdAt: Date.now(),
-                    durationMs: duration,
-                  };
-                  setNewRecordings((prev) => [...prev, newRecording]);
-                }}
-              />
+                ))
+              )}
             </View>
-          </PageContainer>
-        </TouchableWithoutFeedback>
+          )}
+
+          {/* New Voice Recordings */}
+          {newRecordings.length > 0 && (
+            <View>
+              {newRecordings.map((recording, index) => (
+                <DraftRecordingItem
+                  key={recording.id}
+                  uri={recording.uri}
+                  durationMs={recording.durationMs}
+                  deleteRecording={() => handleDeleteNew(index)}
+                />
+              ))}
+            </View>
+          )}
+
+          {/* Record New Voice Note */}
+          <View className="mt-6">
+            <RecordVoiceNotes
+              onRecordingComplete={(uri, duration) => {
+                const newRecording = {
+                  id: nanoid(),
+                  uri,
+                  createdAt: Date.now(),
+                  durationMs: duration,
+                };
+                setNewRecordings((prev) => [...prev, newRecording]);
+              }}
+            />
+          </View>
+        </PageContainer>
       </ScrollView>
       <View className="px-5 pb-10 pt-3">
         <SaveButton

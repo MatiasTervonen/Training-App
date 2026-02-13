@@ -5,7 +5,10 @@
       "Bash(dir:*)",
       "Bash(find:*)",
       "Bash(grep:*)",
-      "Bash(findstr:*)"
+      "Bash(findstr:*)",
+      "WebFetch(domain:10play.github.io)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:api.github.com)"
     ]
   }
 }

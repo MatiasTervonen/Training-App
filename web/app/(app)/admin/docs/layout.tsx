@@ -39,7 +39,7 @@ export default function DocsLayout({
       <nav className="w-60 shrink-0 flex flex-col gap-6 bg-slate-900 p-8 rounded-lg ">
         {docGroups.map((group) => (
           <div key={group.group}>
-            <h2 className="text-sm font-semibold uppercase tracking-wider text-gray-400 mb-3">
+            <h2 className="text-sm  uppercase tracking-wider text-gray-400 mb-3">
               {group.group}
             </h2>
             {group.sections.map((section) => (

@@ -32,7 +32,7 @@
   "modal": {
     "closeAlt": "Sulje ikkuna",
     "unsavedPrompt": "Sinulla on tallentamattomia muutoksia. Hylätäänkö ne?",
-    "keepEditing": "Jatka muokkausta",
+    "keepEditing": "Jatka",
     "discard": "Hylkää"
   },
   "navbar": {

@@ -118,9 +118,9 @@ export default function TimerPage() {
           </div>
         </div>
       </div>
-      <div className="flex flex-col gap-5 mt-10">
-        <SaveButton onClick={handleSaveTimer} label={t("timer.saveTimer")} />
+      <div className="flex flex-row gap-5 mt-10">
         <DeleteSessionBtn onDelete={handleReset} label={t("timer.delete")} />
+        <SaveButton onClick={handleSaveTimer} label={t("timer.saveTimer")} />
       </div>
       {isSaving && <FullScreenLoader message={t("timer.savingTimer")} />}
     </div>

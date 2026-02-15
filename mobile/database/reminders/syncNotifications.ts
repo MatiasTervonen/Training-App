@@ -8,20 +8,19 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getDeviceId } from "@/utils/deviceId";
 
 export async function syncNotifications() {
-  // 1. Clear all existing scheduled notifications
-  await Notifications.cancelAllScheduledNotificationsAsync();
-
-  const keys = await AsyncStorage.getAllKeys();
-  const reminderIds = keys.filter((key) => key.startsWith("notification:"));
-  await AsyncStorage.multiRemove(reminderIds);
-
-  // 2. Get device ID for global reminders
-  const deviceId = await getDeviceId();
-
-  // 3. Fetch all local reminders
-  const { data: localReminders, error: localRemindersError } = await supabase
-    .from("local_reminders")
-    .select("*");
+  // 1. Clear notifications, AsyncStorage, get deviceId, and fetch local reminders in parallel
+  const [, , deviceId, { data: localReminders, error: localRemindersError }] =
+    await Promise.all([
+      Notifications.cancelAllScheduledNotificationsAsync(),
+      AsyncStorage.getAllKeys().then((keys) => {
+        const reminderIds = keys.filter((key) =>
+          key.startsWith("notification:"),
+        );
+        return AsyncStorage.multiRemove(reminderIds);
+      }),
+      getDeviceId(),
+      supabase.from("local_reminders").select("*"),
+    ]);
 
   if (localRemindersError) {
     handleError(localRemindersError, {
@@ -32,7 +31,7 @@ export async function syncNotifications() {
     throw new Error("Failed to sync reminders");
   }
 
-  // 4. Fetch global reminders created from this device
+  // 3. Fetch global reminders (needs deviceId)
   let globalReminders: any[] = [];
   const { data, error: globalRemindersError } = await supabase
     .from("global_reminders")

@@ -4,7 +4,7 @@ import { useState } from "react";
 import Modal from "@/components/modal";
 import FeedCard from "@/features/feed-cards/FeedCard";
 import TodoSession from "@/features/todo/cards/todo-expanded";
-import EditTodo from "@/features/todo/cards/EditTodo";
+import EditTodo from "@/features/todo/cards/todo-edit";
 import Spinner from "@/components/spinner";
 import { FeedSkeleton } from "@/ui/loadingSkeletons/skeletons";
 import { FeedItemUI } from "@/types/session";
@@ -53,11 +53,6 @@ export default function MyTodoListsPage() {
     queryKey: ["fullTodoSession", todoId],
     queryFn: async () => await getFullTodoSession(todoId!),
     enabled: !!todoId,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    refetchOnMount: false,
-    staleTime: Infinity,
-    gcTime: Infinity,
   });
 
   return (

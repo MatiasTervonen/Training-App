@@ -48,21 +48,21 @@ export default function ActivityCard({
       onDelete={onDelete}
       onExpand={onExpand}
       onEdit={onEdit}
-      typeIcon={<Activity size={20} color={pinned ? "#0f172a" : "#f3f4f6"} />}
+      typeIcon={<Activity size={20} color={pinned ? "#0f172a" : "#cad5e2"} />}
       typeName={getActivityTypeName()}
       statsContent={
         <div className="flex items-center gap-5">
           {payload.distance > 0 && (
             <div className="flex items-center gap-2">
-              <Route size={20} color={pinned ? "#0f172a" : "#f3f4f6"} />
-              <p className={`${pinned ? "text-slate-900" : "text-gray-100"}`}>
+              <Route size={20} color={pinned ? "#0f172a" : "#cad5e2"} />
+              <p className={`${pinned ? "text-slate-900" : "text-slate-300"}`}>
                 {formatMeters(payload.distance)}
               </p>
             </div>
           )}
           <div className="flex items-center gap-2">
-            <Timer size={20} color={pinned ? "#0f172a" : "#f3f4f6"} />
-            <p className={`${pinned ? "text-slate-900" : "text-gray-100"}`}>
+            <Timer size={20} color={pinned ? "#0f172a" : "#cad5e2"} />
+            <p className={`${pinned ? "text-slate-900" : "#cad5e2"}`}>
               {formatDuration(payload.duration)}
             </p>
           </div>

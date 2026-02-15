@@ -1,4 +1,4 @@
-import GymForm from "@/features/gym/GymForm";
+import GymForm from "@/features/gym/components/GymForm";
 import { useLocalSearchParams } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
 import { getFullGymSession } from "@/database/gym/get-full-gym-session";
@@ -19,11 +19,6 @@ export default function EditGymScreen() {
     queryKey: ["fullGymSession", id],
     queryFn: () => getFullGymSession(id!),
     enabled: !!id,
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    staleTime: Infinity,
-    gcTime: Infinity,
   });
 
   if (isLoadingGymSession) {

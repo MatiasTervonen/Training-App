@@ -21,6 +21,8 @@
     "delete": "poista",
     "deleteTaskTitle": "Poista tehtävä",
     "deleteTaskMessage": "Haluatko varmasti poistaa tämän tehtävän?",
+    "emptyListError": "Lisää vähintään yksi tehtävä",
+    "emptyTitleError": "Lisää otsikko tehtävälistallesi",
     "savingTodoList": "Tallennetaan tehtävälistaa...",
     "saveSuccess": "Tehtävälista tallennettu onnistuneesti",
     "saveError": "Tehtävälistan tallennus epäonnistui",

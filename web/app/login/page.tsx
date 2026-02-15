@@ -47,12 +47,12 @@ export default function LoginPage() {
 
   const [state3, formAction3] = React.useActionState(
     sendPasswordResetEmail,
-    initialState
+    initialState,
   );
 
   const [state4, formAction4] = React.useActionState(
     resendEmailVerification,
-    initialState
+    initialState,
   );
 
   useEffect(() => {
@@ -391,6 +391,7 @@ export default function LoginPage() {
                     const result = await guestLogin();
                     if (!result.success) {
                       setError(result.message ?? "Login failded");
+                      setGuestModalOpen(false);
                     }
                   })
                 }

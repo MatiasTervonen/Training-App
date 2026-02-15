@@ -164,7 +164,7 @@ export default function MyNotesScreen() {
             onClose={() => setEditingItem(null)}
             onSave={(updatedItem) => {
               updateFeedItemToTop(updatedItem);
-              queryClient.refetchQueries({
+              queryClient.invalidateQueries({
                 queryKey: ["fullNotesSession", editingItem.source_id],
               });
               setHasUnsavedChanges(false);

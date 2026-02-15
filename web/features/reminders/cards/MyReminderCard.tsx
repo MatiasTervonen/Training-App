@@ -58,7 +58,7 @@ export default function MyReminderCard({
         )}
       </div>
 
-      <div className="flex items-center gap-2 ml-4">
+      <div className="flex items-center gap-2 ml-4 text-slate-300">
         {item.type === "one-time" ? (
           <p>{formatDateTime(item.notify_date!)}</p>
         ) : item.type === "global_reminders" || item.type === "global" ? (
@@ -69,7 +69,7 @@ export default function MyReminderCard({
             {weekdays && <p>{weekdays}</p>}
           </>
         )}
-        <Bell size={20} color="#f3f4f6" />
+        <Bell size={20} color="#cad5e2 " />
       </div>
 
       {item.updated_at && (
@@ -82,7 +82,7 @@ export default function MyReminderCard({
         onClick={onExpand}
         className="flex items-center justify-between w-full px-5 bg-blue-600 p-2 rounded-br-md rounded-bl-md cursor-pointer"
       >
-        <p className=" text-gray-100 text-sm">
+        <p className=" text-slate-300 text-sm">
           {formatDateShort(item.created_at)}
         </p>
         <SquareArrowOutUpRight size={20} color="#f3f4f6" />

@@ -49,11 +49,6 @@ export default function GymSession(gym_session: FullGymSession) {
     queryKey: ["exerciseHistory", exerciseId],
     queryFn: () => getLastExerciseHistory({ exerciseId, language: i18n.language }),
     enabled: !!exerciseId,
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    staleTime: Infinity,
-    gcTime: Infinity,
   });
 
   const openHistory = (exerciseId: string) => {

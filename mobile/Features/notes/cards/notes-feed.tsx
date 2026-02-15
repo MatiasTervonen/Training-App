@@ -20,6 +20,7 @@ export default function NotesCard({
 }: FeedCardProps) {
   const { t } = useTranslation("feed");
   const payload = item.extra_fields as notesPayload;
+  const isHtmlNote = payload.notes?.startsWith("<");
 
   return (
     <BaseFeedCard
@@ -28,7 +29,7 @@ export default function NotesCard({
       onTogglePin={onTogglePin}
       onDelete={onDelete}
       onExpand={onExpand}
-      onEdit={onEdit}
+      onEdit={isHtmlNote ? undefined : onEdit}
       typeIcon={
         <NotebookPen size={20} color={pinned ? "#0f172a" : "#cbd5e1"} />
       }

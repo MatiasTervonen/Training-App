@@ -68,7 +68,7 @@ export default function Todo() {
 
   // useSaveTodo hook to save todo list
 
-  const { handleSaveTodo, isSaving } = useSaveTodo({ title, todoList });
+  const { handleSaveTodo, isSaving } = useSaveTodo({ title, todoList, onSuccess: handleDeleteAll });
 
   return (
     <div className="flex flex-col justify-between min-h-full max-w-md mx-auto page-padding">
@@ -240,14 +240,13 @@ export default function Todo() {
           </div>
         </div>
       </div>
-      <div className="flex flex-col gap-5">
+      <div className="flex flex-row gap-5">
+        <DeleteSessionBtn onDelete={handleDeleteAll} />
         <SaveButton
           onClick={() => {
             handleSaveTodo();
-            handleDeleteAll();
           }}
         />
-        <DeleteSessionBtn onDelete={handleDeleteAll} />
       </div>
       {isSaving && <FullScreenLoader message="Saving todolist..." />}
     </div>

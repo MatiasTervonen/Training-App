@@ -4,6 +4,7 @@ import { useDebouncedCallback } from "use-debounce";
 import { handleError } from "@/utils/handleError";
 
 type TodoItem = {
+  tempId: string;
   task: string;
   notes: string | null;
 };

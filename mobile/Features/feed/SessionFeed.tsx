@@ -353,7 +353,7 @@ export default function SessionFeed({ expandReminderId }: SessionFeedProps) {
               onClose={() => setEditingItem(null)}
               onSave={(updatedItem) => {
                 updateFeedItemToTop(updatedItem);
-                queryClient.refetchQueries({
+                queryClient.invalidateQueries({
                   queryKey: ["fullNotesSession", editingItem.source_id],
                 });
                 setHasUnsavedChanges(false);

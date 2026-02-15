@@ -178,7 +178,7 @@
     "stepInfoModal": {
       "title": "Enable step tracking",
       "description": "MyTrack uses your device's built-in step counter to track your steps.\n\nPlease allow the activity recognition permission when prompted.",
-      "descriptionSettings": "Step tracking permission was denied. Please enable it manually in the app settings.",
+      "descriptionSettings": "Step tracking permission was denied.\n\nGo to Permissions > Physical Activity and set it to Allow.",
       "cancel": "Cancel",
       "openSettings": "Allow",
       "goToSettings": "Open Settings"

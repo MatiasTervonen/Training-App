@@ -1,6 +1,9 @@
-import { NativeModules, Platform } from "react-native";
+import { NativeModules, Platform, DeviceEventEmitter } from "react-native";
+import type { EmitterSubscription } from "react-native";
 
 const nativeStepCounter = NativeModules.NativeStepCounter;
+
+export const LIVE_STEP_EVENT = "LIVE_STEP_UPDATE";
 
 export function initializeStepCounter(): void {
   if (Platform.OS === "android" && nativeStepCounter) {
@@ -53,4 +56,22 @@ export async function getDailyStepsHistory(
 ): Promise<Record<string, number>> {
   if (Platform.OS !== "android" || !nativeStepCounter) return {};
   return nativeStepCounter.getDailyStepsHistory(days);
+}
+
+export function startLiveStepUpdates(): void {
+  if (Platform.OS === "android" && nativeStepCounter) {
+    nativeStepCounter.startLiveStepUpdates();
+  }
+}
+
+export function stopLiveStepUpdates(): void {
+  if (Platform.OS === "android" && nativeStepCounter) {
+    nativeStepCounter.stopLiveStepUpdates();
+  }
+}
+
+export function addLiveStepListener(
+  callback: (steps: number) => void,
+): EmitterSubscription {
+  return DeviceEventEmitter.addListener(LIVE_STEP_EVENT, callback);
 }

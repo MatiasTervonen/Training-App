@@ -34,21 +34,11 @@ export default function ActivityAnalytics() {
   const { data: stepsData = [], isLoading: isLoadingSteps } = useQuery({
     queryKey: ["steps-analytics"],
     queryFn: () => getStepsData(90),
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    staleTime: Infinity,
-    gcTime: Infinity,
   });
 
   const { data: sessionsData = [], isLoading: isLoadingSessions } = useQuery({
     queryKey: ["activity-sessions-analytics"],
     queryFn: () => getActivitySessionsAnalytics(90),
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    staleTime: Infinity,
-    gcTime: Infinity,
   });
 
   const { startDate, endDate } = useMemo(() => {

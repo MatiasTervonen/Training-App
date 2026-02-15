@@ -120,9 +120,13 @@ export default function NotesScreen() {
             </View>
           </View>
 
-          <View className="mt-10 flex-col gap-4">
-            <SaveButton onPress={handleSaveNotes} />
-            <DeleteButton onPress={resetNote} />
+          <View className="mt-10 flex-row gap-4">
+            <View className="flex-1">
+              <DeleteButton onPress={resetNote} />
+            </View>
+            <View className="flex-1">
+              <SaveButton onPress={handleSaveNotes} />
+            </View>
           </View>
         </PageContainer>
       </ScrollView>

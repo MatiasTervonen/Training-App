@@ -2,7 +2,7 @@ import { View, Pressable, Alert } from "react-native";
 import AppText from "@/components/AppText";
 import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import AppInput from "@/components/AppInput";
 import { useTranslation } from "react-i18next";
 
@@ -23,12 +23,14 @@ export default function ProfilePicture({ data, onFileSelected }: Props) {
   const [fileName, setFileName] = useState<string>("");
   const [userPickedImage, setUserPickedImage] = useState(false);
 
-  useEffect(() => {
+  const [prevData, setPrevData] = useState(data);
+  if (data !== prevData) {
+    setPrevData(data);
     if (data) {
       setImageUri(data);
       setFileName(data.split("/").pop() || "image.jpg");
     }
-  }, [data]);
+  }
 
   const pickImage = async () => {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();

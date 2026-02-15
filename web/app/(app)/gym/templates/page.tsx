@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { TemplateSkeleton } from "@/ui/loadingSkeletons/skeletons";
 import Modal from "@/components/modal";
 import { useState } from "react";
-import TemplateCard from "@/features/gym/cards/TemplateCard";
+import TemplateCard from "@/features/gym/cards/template-feed";
 import Spinner from "@/components/spinner";
 import GymTemplate from "@/features/gym/cards/template-expanded";
 import { useQuery } from "@tanstack/react-query";
@@ -37,11 +37,6 @@ export default function TemplatesPage() {
   } = useQuery<templateSummary[]>({
     queryKey: ["templates"],
     queryFn: getTemplates,
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    staleTime: Infinity,
-    gcTime: Infinity,
   });
 
   // useStartWorkoutTemplate hook to start a workout from a template
@@ -62,11 +57,6 @@ export default function TemplatesPage() {
     queryKey: ["fullTemplate", templateId],
     queryFn: () => getFullTemplate(templateId!),
     enabled: !!templateId,
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    staleTime: Infinity,
-    gcTime: Infinity,
   });
 
   console.log("templates", TemplateSessionFull);

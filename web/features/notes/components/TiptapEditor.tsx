@@ -63,6 +63,7 @@ export default function TiptapEditor({
     if (!editor) return;
     if (isInternalUpdate.current) {
       isInternalUpdate.current = false;
+      prevContent.current = htmlContent;
       return;
     }
     if (htmlContent !== prevContent.current) {

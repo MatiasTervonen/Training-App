@@ -42,11 +42,6 @@ export default function TimersPage() {
   } = useQuery<timers[]>({
     queryKey: ["get-timers"],
     queryFn: getTimers,
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    staleTime: Infinity,
-    gcTime: Infinity,
   });
 
   const { startTimer, setActiveSession } = useTimerStore();

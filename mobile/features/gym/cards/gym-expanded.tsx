@@ -13,7 +13,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import AnimatedButton from "@/components/buttons/animatedButton";
-import ExerciseHistoryModal from "@/features/gym/ExerciseHistoryModal";
+import ExerciseHistoryModal from "@/features/gym/components/ExerciseHistoryModal";
 
 export default function GymSession(gym_session: FullGymSession) {
   const { t } = useTranslation("gym");
@@ -50,11 +50,6 @@ export default function GymSession(gym_session: FullGymSession) {
     queryKey: ["last-exercise-history", exerciseId],
     queryFn: () => getLastExerciseHistory({ exerciseId }),
     enabled: isHistoryOpen && !!exerciseId,
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    staleTime: Infinity,
-    gcTime: Infinity,
   });
 
   const openHistory = (exerciseId: string) => {
@@ -114,7 +109,7 @@ export default function GymSession(gym_session: FullGymSession) {
               </AppText>
             )}
             {group.map(({ exercise, index }) => (
-              <View key={index} className="py-2 px-4 mb-4">
+              <View key={exercise.id} className="py-2 px-4 mb-4">
                 <View className="justify-between flex-col mb-2">
                   <View className="flex-row items-center">
                     <AppText
@@ -162,9 +157,7 @@ export default function GymSession(gym_session: FullGymSession) {
                           <AppText className="p-2 text-lg">
                             {t("gym.session.time")}
                           </AppText>
-                          <AppText>
-                            ({t("gym.session.min")})
-                          </AppText>
+                          <AppText>({t("gym.session.min")})</AppText>
                         </View>
                         <View className="flex-1 items-center">
                           <AppText className="p-2 text-lg">
@@ -216,14 +209,10 @@ export default function GymSession(gym_session: FullGymSession) {
                       {isCardioExercise(exercise) ? (
                         <>
                           <View className="flex-1 items-center">
-                            <AppText className="p-2">
-                              {setIndex + 1}
-                            </AppText>
+                            <AppText className="p-2">{setIndex + 1}</AppText>
                           </View>
                           <View className="flex-1 items-center">
-                            <AppText className="p-2">
-                              {set.time_min}
-                            </AppText>
+                            <AppText className="p-2">{set.time_min}</AppText>
                           </View>
                           <View className="flex-1 items-center">
                             <AppText className="p-2">
@@ -235,9 +224,7 @@ export default function GymSession(gym_session: FullGymSession) {
                       ) : (
                         <>
                           <View className="flex-1 items-center">
-                            <AppText className="p-2">
-                              {setIndex + 1}
-                            </AppText>
+                            <AppText className="p-2">{setIndex + 1}</AppText>
                           </View>
                           <View className="flex-1 items-center">
                             <AppText className="p-2">
@@ -245,9 +232,7 @@ export default function GymSession(gym_session: FullGymSession) {
                             </AppText>
                           </View>
                           <View className="flex-1 items-center">
-                            <AppText className="p-2">
-                              {set.reps}
-                            </AppText>
+                            <AppText className="p-2">{set.reps}</AppText>
                           </View>
                           <View className="flex-1 items-center">
                             <AppText className="p-2" numberOfLines={1}>

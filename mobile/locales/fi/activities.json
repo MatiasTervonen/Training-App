@@ -178,7 +178,7 @@
     "stepInfoModal": {
       "title": "Ota askelseuranta käyttöön",
       "description": "MyTrack käyttää laitteesi sisäänrakennettua askelmittaria askelten seuraamiseen.\n\nSalli liiketunnistuksen käyttöoikeus pyydettäessä.",
-      "descriptionSettings": "Askelseurannan käyttöoikeus evättiin. Ota se käyttöön manuaalisesti sovelluksen asetuksista.",
+      "descriptionSettings": "Askelseurannan käyttöoikeus evättiin.\n\nValitse Käyttöoikeudet > Fyysinen aktiivisuus ja aseta se tilaan Salli.",
       "cancel": "Peruuta",
       "openSettings": "Salli",
       "goToSettings": "Avaa asetukset"

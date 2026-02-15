@@ -95,7 +95,11 @@ export default function DiscGolfGame() {
   useEffect(() => {
     const savedHoles = localStorage.getItem("holes");
     if (savedHoles) {
-      setHoleHistory(JSON.parse(savedHoles));
+      try {
+        setHoleHistory(JSON.parse(savedHoles));
+      } catch {
+        localStorage.removeItem("holes");
+      }
     }
   }, []);
 
@@ -184,25 +188,30 @@ export default function DiscGolfGame() {
     const trackStats = localStorage.getItem("trackStats");
     const numHoles = localStorage.getItem("numHoles");
 
-    if (setup) {
-      const { courseName, players } = JSON.parse(setup);
-      setCourseName(courseName);
-      setPlayers(players);
-    }
+    try {
+      if (setup) {
+        const { courseName, players } = JSON.parse(setup);
+        setCourseName(courseName);
+        setPlayers(players);
+      }
 
-    if (savedHoles) {
-      const parsedHoles = JSON.parse(savedHoles);
-      setHoleHistory(parsedHoles);
+      if (savedHoles) {
+        const parsedHoles = JSON.parse(savedHoles);
+        setHoleHistory(parsedHoles);
+      }
+
+      if (trackStats) {
+        setTrackStats(JSON.parse(trackStats));
+      }
+    } catch {
+      // Corrupted localStorage — clear and start fresh
+      clearLocalStorage();
     }
 
     const holeToLoad = parseInt(currentHole || savedViewingHole || "1");
 
     setViewingHoleNumber(holeToLoad);
     setPreviousHoleNumber(holeToLoad); // <--- ensure this is initialized here
-
-    if (trackStats) {
-      setTrackStats(JSON.parse(trackStats));
-    }
 
     if (numHoles) {
       setTotalHoles(parseInt(numHoles));
@@ -266,9 +275,15 @@ export default function DiscGolfGame() {
       })),
     };
 
-    const existingHoles = JSON.parse(
-      localStorage.getItem("holes") || "[]"
-    ) as HoleData[];
+    let existingHoles: HoleData[] = [];
+    try {
+      existingHoles = JSON.parse(
+        localStorage.getItem("holes") || "[]"
+      ) as HoleData[];
+    } catch {
+      // If corrupted, use current in-memory state
+      existingHoles = holeHistory;
+    }
 
     const updatedHoles = [...existingHoles, finalHoleData];
 
@@ -456,9 +471,9 @@ export default function DiscGolfGame() {
                   <BaseButton onClick={handleNextHole} label="Next Hole" />
                 )}
               </div>
-              <div className="flex flex-col gap-5 items-center justify-center">
-                <SaveButton onClick={handleFinishGame} />
+              <div className="flex flex-row gap-5">
                 <DeleteSessionBtn onDelete={deleteSession} />
+                <SaveButton onClick={handleFinishGame} />
               </div>
             </div>
           </div>

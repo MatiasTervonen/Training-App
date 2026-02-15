@@ -33,6 +33,12 @@
       "back": "Takaisin",
       "allow": "Salli"
     },
+    "pushPermission": {
+      "title": "Ota push-ilmoitukset käyttöön",
+      "description": "Push-ilmoitukset tarvitaan, jotta ajastin voi ilmoittaa sinulle ajan loppuessa.\n\nVoit ottaa ne käyttöön asetussivulta.",
+      "skip": "Ohita",
+      "settings": "Siirry asetuksiin"
+    },
     "notification": {
       "timeRemaining": "Aikaa jäljellä",
       "inProgress": "Käynnissä",

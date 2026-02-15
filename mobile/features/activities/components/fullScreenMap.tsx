@@ -104,9 +104,7 @@ export default function FullScreenMap({
   };
 
   const lastPoint = track.length > 0 ? track[track.length - 1] : null;
-
-  const lastMovingPoint =
-    [...track].reverse().find((p) => !p.isStationary) ?? null;
+  const lastMovingPoint = track.findLast((p) => !p.isStationary) ?? null;
 
   // Use currentPosition for user dot if available (updates during warmup),
   // otherwise fall back to last track point
@@ -235,28 +233,29 @@ export default function FullScreenMap({
             </Mapbox.ShapeSource>
           )}
 
-          {isLoadingTemplateRoute && (
-            <View
-              className="absolute z-50 flex-row gap-2 items-center px-2 py-1 rounded"
-              style={{ top: 10, left: 10 }}
-            >
-              <AppText className="text-xs ml-1.5">Loading route...</AppText>
-              <ActivityIndicator size="small" color="#3b82f6" />
-            </View>
-          )}
-
-          {isLoadingPosition && (
-            <View
-              className="absolute z-50 flex-row gap-2 items-center px-2 py-1 rounded"
-              style={{ top: isLoadingTemplateRoute ? 35 : 10, left: 10 }}
-            >
-              <AppText className="text-xs ml-1.5">
-                {currentPosition ? "Stabilizing GPS..." : "Loading position..."}
-              </AppText>
-              <ActivityIndicator size="small" color="#3b82f6" />
-            </View>
-          )}
         </Mapbox.MapView>
+
+        {isLoadingTemplateRoute && (
+          <View
+            className="absolute z-50 flex-row gap-2 items-center px-2 py-1 rounded"
+            style={{ top: 10, left: 10 }}
+          >
+            <AppText className="text-xs ml-1.5">Loading route...</AppText>
+            <ActivityIndicator size="small" color="#3b82f6" />
+          </View>
+        )}
+
+        {isLoadingPosition && (
+          <View
+            className="absolute z-50 flex-row gap-2 items-center px-2 py-1 rounded"
+            style={{ top: isLoadingTemplateRoute ? 35 : 10, left: 10 }}
+          >
+            <AppText className="text-xs ml-1.5">
+              {currentPosition ? "Stabilizing GPS..." : "Loading position..."}
+            </AppText>
+            <ActivityIndicator size="small" color="#3b82f6" />
+          </View>
+        )}
         <View className="absolute z-50 gap-3" style={{ bottom: 15, right: 15 }}>
           <AnimatedButton
             onPress={() => setIsFollowingUser(true)}

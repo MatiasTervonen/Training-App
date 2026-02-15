@@ -67,11 +67,8 @@ export default function useSaveReminderWeekly({
       }
 
       await Promise.all([
-        queryClient.refetchQueries({ queryKey: ["feed"], exact: true }),
-        queryClient.refetchQueries({
-          queryKey: ["get-reminders"],
-          exact: true,
-        }),
+        queryClient.invalidateQueries({ queryKey: ["feed"], exact: true }),
+        queryClient.invalidateQueries({ queryKey: ["reminders"] }),
       ]);
       router.push("/dashboard");
       resetReminder();

@@ -35,7 +35,7 @@ export default function ExerciseSelectorList({
           // Show dropdown only for the last, empty item
           return (
             <ExerciseDropdown
-              key={index}
+              key="empty-selector"
               onSelect={(selected) => {
                 const newExercise: ExerciseEntry = {
                   exercise_id: String(selected.id),
@@ -75,7 +75,7 @@ export default function ExerciseSelectorList({
         // All others: just show a summary
         return (
           <View
-            key={index}
+            key={exercise.exercise_id}
             className="bg-slate-700 p-2 my-2 px-4 flex-row justify-between items-center mr-20 ml-0"
           >
             <View>

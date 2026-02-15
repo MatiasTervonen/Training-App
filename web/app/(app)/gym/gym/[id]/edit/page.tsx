@@ -19,11 +19,6 @@ export default function EditGymPage() {
     queryKey: ["fullGymSession", id],
     queryFn: () => getFullGymSession(id!),
     enabled: !!id,
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    staleTime: Infinity,
-    gcTime: Infinity,
   });
 
   if (isLoadingGymSession) {

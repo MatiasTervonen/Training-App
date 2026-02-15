@@ -5,6 +5,7 @@ import {
   SquareArrowOutUpRight,
 } from "lucide-react-native";
 import { useState } from "react";
+import { nanoid } from "nanoid/non-secure";
 import DeleteButton from "@/components/buttons/DeleteButton";
 import FullScreenModal from "@/components/FullScreenModal";
 import SaveButton from "@/components/buttons/SaveButton";
@@ -31,6 +32,7 @@ import { useTranslation } from "react-i18next";
 import { formatDateShort } from "@/lib/formatDate";
 
 type TodoItem = {
+  tempId: string;
   task: string;
   notes: string | null;
 };
@@ -90,12 +92,20 @@ export default function CreateTodo() {
   };
 
   const handleSaveTodo = async () => {
+    if (!title.trim()) {
+      Toast.show({ type: "error", text1: t("todo.emptyTitleError") });
+      return;
+    }
+    if (todoList.length === 0) {
+      Toast.show({ type: "error", text1: t("todo.emptyListError") });
+      return;
+    }
     setLoading(true);
     try {
       await saveTodoToDB({ title, todoList });
 
-      await queryClient.refetchQueries({ queryKey: ["feed"], exact: true });
-      await queryClient.refetchQueries({
+      await queryClient.invalidateQueries({ queryKey: ["feed"], exact: true });
+      await queryClient.invalidateQueries({
         queryKey: ["myTodoLists"],
         exact: true,
       });
@@ -103,12 +113,14 @@ export default function CreateTodo() {
       handleDeleteAll();
       Toast.show({
         type: "success",
-        text1: t("todo.saveSuccess"),
+        text1: t("common:common.success"),
+        text2: t("todo.saveSuccess"),
       });
     } catch {
       Toast.show({
         type: "error",
-        text1: t("todo.saveError"),
+        text1: t("common:common.error"),
+        text2: t("todo.saveError"),
       });
       setLoading(false);
     }
@@ -149,7 +161,7 @@ export default function CreateTodo() {
             label={t("todo.add")}
             onPress={() => {
               if (task.trim() === "") return;
-              setTodoList([...todoList, { task, notes }]);
+              setTodoList((prev) => [...prev, { tempId: nanoid(), task, notes }]);
               setNotes("");
               setTask("");
             }}
@@ -170,7 +182,7 @@ export default function CreateTodo() {
               {todoList.map((item: TodoItem, index: number) => (
                 <View
                   className="border border-gray-100 p-2 rounded-md flex-row justify-between items-center gap-2 bg-slate-900 mb-3"
-                  key={index}
+                  key={item.tempId}
                 >
                   <AppText
                     className="text-lg ml-2 mr-2 flex-1"
@@ -307,9 +319,13 @@ export default function CreateTodo() {
           </View>
         </View>
 
-        <View className="gap-5">
-          <SaveButton onPress={handleSaveTodo} />
-          <DeleteButton onPress={handleDeleteAll} />
+        <View className="gap-5 flex-row">
+          <View className="flex-1">
+            <DeleteButton onPress={handleDeleteAll} />
+          </View>
+          <View className="flex-1">
+            <SaveButton onPress={handleSaveTodo} />
+          </View>
         </View>
         <FullScreenLoader
           visible={loading}

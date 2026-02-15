@@ -51,11 +51,6 @@ export default function useFullSessions(
     queryKey: ["fullGymSession", gymId],
     queryFn: async () => await getFullGymSession(gymId!),
     enabled: !!gymId,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    refetchOnMount: false,
-    staleTime: Infinity,
-    gcTime: Infinity,
   });
 
   const {
@@ -67,11 +62,6 @@ export default function useFullSessions(
     queryKey: ["fullTodoSession", todoId],
     queryFn: async () => await getFullTodoSession(todoId!),
     enabled: !!todoId,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    refetchOnMount: false,
-    staleTime: Infinity,
-    gcTime: Infinity,
   });
 
   const {
@@ -86,11 +76,6 @@ export default function useFullSessions(
       return { ...data, feed_context: activityItem!.feed_context };
     },
     enabled: !!activityId,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    refetchOnMount: false,
-    staleTime: Infinity,
-    gcTime: Infinity,
   });
 
   return {

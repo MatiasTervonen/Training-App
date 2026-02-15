@@ -43,9 +43,6 @@ export default function ExerciseDropdownEdit({
   } = useQuery<userExercise[]>({
     queryKey: ["userExercises"],
     queryFn: getUserExercises,
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
   });
 
   const isLoading = isExercisesLoading;

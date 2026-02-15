@@ -19,6 +19,9 @@
     "change": "Vaihda",
     "created": "Luotu:",
     "unsavedChanges": "tallentamattomia muutoksia",
+    "unsavedChangesDiscard": "Sinulla on tallentamattomia muutoksia. Hylätäänkö ne?",
+    "keepEditing": "Jatka",
+    "discard": "Hylkää",
     "copyToClipboard": "Kopioi leikepöydälle",
     "copiedToClipboard": "Kopioitu leikepöydälle"
   },

@@ -28,11 +28,6 @@ export default function ExerciseDropdownEdit({ onSelect }: Props) {
   } = useQuery<gym_exercises[]>({
     queryKey: ["user-exercises"],
     queryFn: () => getUserExercises(),
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    staleTime: Infinity,
-    gcTime: Infinity,
   });
 
   const isLoading = isExercisesLoading;

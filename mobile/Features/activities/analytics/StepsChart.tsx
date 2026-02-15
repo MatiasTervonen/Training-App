@@ -94,9 +94,11 @@ export default function StepsChart({
   const today = useMemo(() => new Date(), []);
   const [start, end] = addOffsetToDate(today, range, offset);
 
-  useEffect(() => {
+  const [prevRange, setPrevRange] = useState(range);
+  if (range !== prevRange) {
+    setPrevRange(range);
     setOffset(0);
-  }, [range]);
+  }
 
   const fullDateRange = generateDateRange(start, end);
 

@@ -43,11 +43,11 @@ export default function useSaveWeight({
       await saveWeight({ title, notes, weight: Number(weight) });
 
       await Promise.all([
-        queryClient.refetchQueries({
+        queryClient.invalidateQueries({
           queryKey: ["get-weight"],
           exact: true,
         }),
-        queryClient.refetchQueries({ queryKey: ["feed"], exact: true }),
+        queryClient.invalidateQueries({ queryKey: ["feed"], exact: true }),
       ]);
 
       router.push("/dashboard");

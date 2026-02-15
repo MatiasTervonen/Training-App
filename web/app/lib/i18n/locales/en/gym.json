@@ -59,7 +59,9 @@
       },
       "cancel": "Cancel",
       "savingTemplate": "Saving template...",
-      "startWorkout": "Start Workout"
+      "startWorkout": "Start Workout",
+      "titleRequired": "Title is required",
+      "exercisesRequired": "Add at least one exercise"
 
     },
     "TemplatesScreen": {

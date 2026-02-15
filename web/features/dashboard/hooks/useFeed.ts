@@ -24,11 +24,6 @@ export default function useFeed() {
     queryFn: ({ pageParam = 0 }) => getFeed({ pageParam, limit: 15 }),
     initialPageParam: 0,
     getNextPageParam: (lastPage) => lastPage.nextPage,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    refetchOnMount: false,
-    staleTime: Infinity,
-    gcTime: Infinity,
   });
 
   // Keep only first page in cahce when user leaves feed

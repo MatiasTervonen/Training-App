@@ -59,6 +59,12 @@
       "fri": "Pe",
       "sat": "La"
     },
+    "alarmPermission": {
+      "title": "Salli hälytysten ja muistutusten asettaminen",
+      "description": "Tämä muistutus voi käyttää korkeaprioriteettista hälytystä, joka soi jatkuvasti, vaikka puhelimesi olisi lukittu, kunnes hylkäät sen.\n\nVoit jatkaa ilman tätä, mutta muistutukset voivat viivästyä tai olla epäluotettavampia.",
+      "cancel": "Peruuta",
+      "allow": "Salli"
+    },
     "notification": {
       "tapToOpen": "Avaa napauttamalla",
       "reminder": "Muistutus",

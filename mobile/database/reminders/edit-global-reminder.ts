@@ -34,7 +34,6 @@ export async function editGlobalReminder({
   });
 
   if (error) {
-    console.log("Error editing global reminder:", error);
     handleError(error, {
       message: "Error updating global reminder",
       route: "/database/reminders/edit-global-reminder",

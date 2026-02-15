@@ -24,7 +24,7 @@ export default function Navbar() {
 
   return (
     <div className={`w-full lg:max-w-[1600px] ${fullPage} sticky top-0 mx-auto z-50`}>
-      <nav className="w-full flex items-center justify-between p-4 bg-linear-to-tr from-gray-900 via-slate-900 to-blue-900">
+      <nav className="w-full flex items-center justify-between p-4 bg-linear-to-tr from-gray-900 via-slate-900 to-blue-900 shadow-lg">
         <Link href="/dashboard" className=" text-2xl sm:text-3xl">
           MyTrack
         </Link>

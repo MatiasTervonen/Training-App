@@ -54,11 +54,11 @@ export default function useSaveTemplate({
         onSuccess(templateId);
       }
 
-      queryClient.refetchQueries({
+      queryClient.invalidateQueries({
         queryKey: ["fullActivitySession", sessionId],
         exact: true,
       });
-      queryClient.refetchQueries({
+      queryClient.invalidateQueries({
         queryKey: ["get-activity-templates"],
         exact: true,
       });

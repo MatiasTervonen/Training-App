@@ -91,7 +91,7 @@ export function useForegroundLocationTracker({
     lastAcceptedPointRef.current = lastPoint;
 
     // Find last moving point for proper state reconstruction
-    const lastMovingPoint = [...track].reverse().find((p) => !p.isStationary && !p.isBadSignal);
+    const lastMovingPoint = track.findLast((p) => !p.isStationary && !p.isBadSignal);
 
     // Count consecutive bad signal points at the end of track
     let badSignalCount = 0;

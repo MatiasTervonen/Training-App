@@ -26,11 +26,6 @@ export default function TemplatesPage() {
   } = useQuery({
     queryKey: ["get-activity-templates"],
     queryFn: getActivityTemplates,
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    staleTime: Infinity,
-    gcTime: Infinity,
   });
 
   const handleDeleteTemplate = async (templateId: string) => {

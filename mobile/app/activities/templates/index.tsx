@@ -29,11 +29,6 @@ export default function TemplatesPage() {
   } = useQuery({
     queryKey: ["get-activity-templates"],
     queryFn: getActivityTemplates,
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    staleTime: Infinity,
-    gcTime: Infinity,
   });
 
   // useStartActivity hook to start an activity from a template

@@ -14,6 +14,7 @@ import { Portal } from "react-native-paper";
 import { useFullScreenModalConfig } from "@/lib/stores/fullScreenModalConfig";
 import AppText from "@/components/AppText";
 import AnimatedButton from "@/components/buttons/animatedButton";
+import { useTranslation } from "react-i18next";
 
 export default function FullScreenModal({
   isOpen,
@@ -26,6 +27,7 @@ export default function FullScreenModal({
   children: ReactNode;
   confirmBeforeClose?: boolean;
 }) {
+  const { t } = useTranslation("common");
   const translateX = useSharedValue(0);
   const [showConfirm, setShowConfirm] = useState(false);
   const insets = useSafeAreaInsets();
@@ -128,14 +130,14 @@ export default function FullScreenModal({
               <View className="absolute inset-0 bg-black/70 items-center justify-center z-50 rounded-t-2xl">
                 <View className="bg-slate-800 border border-slate-600 rounded-xl p-6 mx-4 w-full max-w-sm">
                   <AppText className="text-lg text-center mb-6">
-                    You have unsaved changes. Discard them?
+                    {t("common.unsavedChangesDiscard")}
                   </AppText>
                   <View className="flex-row gap-3">
                     <AnimatedButton
                       onPress={() => setShowConfirm(false)}
                       tabClassName="flex-1"
                       className="btn-base py-3"
-                      label="Keep editing"
+                      label={t("common.keepEditing")}
                       textClassName="text-center text-gray-100"
                     />
                     <AnimatedButton
@@ -145,7 +147,7 @@ export default function FullScreenModal({
                       }}
                       tabClassName="flex-1"
                       className="btn-danger py-3"
-                      label="Discard"
+                      label={t("common.discard")}
                       textClassName="text-center text-gray-100"
                     />
                   </View>

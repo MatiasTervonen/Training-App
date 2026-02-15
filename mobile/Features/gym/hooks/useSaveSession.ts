@@ -86,7 +86,7 @@ export default function useSaveSession({
               })),
             };
           }),
-          queryClient.refetchQueries({
+          queryClient.invalidateQueries({
             queryKey: ["fullGymSession", session.id],
             exact: true,
           }),
@@ -100,8 +100,8 @@ export default function useSaveSession({
         });
 
         await Promise.all([
-          queryClient.refetchQueries({ queryKey: ["feed"], exact: true }),
-          queryClient.refetchQueries({
+          queryClient.invalidateQueries({ queryKey: ["feed"], exact: true }),
+          queryClient.invalidateQueries({
             queryKey: ["myGymSessions"],
             exact: true,
           }),

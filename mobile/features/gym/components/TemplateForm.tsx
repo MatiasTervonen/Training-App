@@ -19,11 +19,11 @@ import {
   emptyExerciseEntry,
   ExerciseInput,
 } from "@/types/session";
-import ExerciseHistoryModal from "@/features/gym/ExerciseHistoryModal";
+import ExerciseHistoryModal from "@/features/gym/components/ExerciseHistoryModal";
 import FullScreenLoader from "@/components/FullScreenLoader";
 import GroupGymExercises from "@/features/gym/lib/GroupGymExercises";
-import ExerciseCard from "@/features/gym/ExerciseCard";
-import ExerciseSelectorList from "@/features/gym/ExerciseSelectorList";
+import ExerciseCard from "@/features/gym/components/ExerciseCard";
+import ExerciseSelectorList from "@/features/gym/components/ExerciseSelectorList";
 import { useQuery } from "@tanstack/react-query";
 import { getFullTemplate } from "@/database/gym/get-full-template";
 import { getLastExerciseHistory } from "@/database/gym/last-exercise-history";
@@ -109,11 +109,6 @@ export default function TemplateForm() {
 
       return await getFullTemplate(templateId);
     },
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    staleTime: Infinity,
-    gcTime: Infinity,
   });
 
   useEffect(() => {
@@ -158,11 +153,6 @@ export default function TemplateForm() {
       if (!exerciseHistoryId) return [];
       return await getLastExerciseHistory({ exerciseId: exerciseHistoryId });
     },
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    staleTime: Infinity,
-    gcTime: Infinity,
   });
 
   const openHistory = (exerciseId: string) => {
@@ -259,7 +249,7 @@ export default function TemplateForm() {
                   )}
                   {group.map(({ exercise, index }) => {
                     return (
-                      <View key={index}>
+                      <View key={exercise.exercise_id}>
                         <ExerciseCard
                           exercise={exercise}
                           lastExerciseHistory={(index) => {
@@ -412,21 +402,24 @@ export default function TemplateForm() {
                 <Plus size={20} color="#f3f4f6" />
               </AppButton>
             </View>
-            <View className="justify-center mt-14 gap-5">
-              <SaveButton
-                disabled={exercises.length === 0}
-                onPress={handleSaveTemplate}
-              />
-              {templateId ? "" : <DeleteButton onPress={resetSession} />}
-              {templateId ? (
-                <DeleteButton
-                  confirm={false}
-                  label={t("common:common.cancel")}
-                  onPress={() => router.push("/gym/templates")}
+            <View className="flex-row gap-4 mt-14">
+              <View className="flex-1">
+                {templateId ? (
+                  <DeleteButton
+                    confirm={false}
+                    label={t("common:common.cancel")}
+                    onPress={() => router.push("/gym/templates")}
+                  />
+                ) : (
+                  <DeleteButton onPress={resetSession} />
+                )}
+              </View>
+              <View className="flex-1">
+                <SaveButton
+                  disabled={exercises.length === 0}
+                  onPress={handleSaveTemplate}
                 />
-              ) : (
-                ""
-              )}
+              </View>
             </View>
           </PageContainer>
         </ScrollView>

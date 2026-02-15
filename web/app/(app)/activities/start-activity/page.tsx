@@ -206,14 +206,14 @@ export default function StartActivity() {
           </div>
         </div>
 
-        <div className="flex flex-col gap-5 mt-10 pb-5">
-          <SaveButton
-            onClick={handleFinishActivity}
-            label={t("activities.startActivityScreen.finishActivity")}
-          />
+        <div className="flex flex-row gap-5 mt-10 pb-5">
           <DeleteSessionBtn
             onDelete={handleDeleteSession}
             label={t("activities.startActivityScreen.delete")}
+          />
+          <SaveButton
+            onClick={handleFinishActivity}
+            label={t("activities.startActivityScreen.finishActivity")}
           />
         </div>
       </div>

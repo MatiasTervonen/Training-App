@@ -3,7 +3,8 @@ import "@/features/activities/lib/locationTask";
 import "@/lib/nativewindInterop";
 
 import { Slot, usePathname } from "expo-router";
-import { StatusBar, Platform } from "react-native";
+import { StatusBar, Platform, AppState } from "react-native";
+import type { AppStateStatus } from "react-native";
 import { useFonts } from "expo-font";
 import { useEffect } from "react";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -12,7 +13,13 @@ import "react-native-url-polyfill/auto";
 import LayoutWrapper from "@/features/layout/LayoutWrapper";
 import Toast from "react-native-toast-message";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
+import {
+  QueryClientProvider,
+  QueryClient,
+  focusManager,
+  onlineManager,
+} from "@tanstack/react-query";
+import NetInfo from "@react-native-community/netinfo";
 import * as Sentry from "@sentry/react-native";
 import { MenuProvider } from "react-native-popup-menu";
 import { Provider as PaperProvider } from "react-native-paper";
@@ -57,7 +64,34 @@ if (__DEV__) {
   import("../ReactotronConfig");
 }
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5, // 5 minutes
+      gcTime: 1000 * 60 * 30, // 30 minutes
+      retry: 2,
+      refetchOnWindowFocus: true, // now works with focusManager above
+      refetchOnReconnect: true, // now works with onlineManager above
+    },
+    mutations: {
+      retry: 0,
+    },
+  },
+});
+
+// React Native Focus Manager: refetch stale queries when app returns from background
+function onAppStateChange(status: AppStateStatus) {
+  if (Platform.OS !== "web") {
+    focusManager.setFocused(status === "active");
+  }
+}
+
+// React Native Online Manager: pause/resume queries based on network status
+onlineManager.setEventListener((setOnline) => {
+  return NetInfo.addEventListener((state) => {
+    setOnline(!!state.isConnected);
+  });
+});
 
 configureReanimatedLogger({
   level: ReanimatedLogLevel.error,
@@ -77,6 +111,12 @@ export default Sentry.wrap(function RootLayout() {
 
   // handle notification response when app is opened from notification
   useNotificationResponse();
+
+  // Subscribe to AppState changes for TanStack Query focus refetching
+  useEffect(() => {
+    const subscription = AppState.addEventListener("change", onAppStateChange);
+    return () => subscription.remove();
+  }, []);
 
   // Configure Notification Channels for Android and Push Notifications
   useEffect(() => {

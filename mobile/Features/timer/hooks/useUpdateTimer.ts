@@ -44,7 +44,7 @@ export default function useUpdateTimer({
         notes,
       });
 
-      queryClient.refetchQueries({ queryKey: ["timers"], exact: true });
+      queryClient.invalidateQueries({ queryKey: ["timers"], exact: true });
       Toast.show({
         type: "success",
         text1: "Timer updated successfully",

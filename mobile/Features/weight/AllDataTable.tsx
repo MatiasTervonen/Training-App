@@ -87,7 +87,7 @@ export default function AllDataTable({ data, isLoading, error }: AllDataProps) {
     try {
       await deleteSession(item_id, table);
 
-      queryClient.refetchQueries({ queryKey: ["feed"], exact: true });
+      queryClient.invalidateQueries({ queryKey: ["feed"], exact: true });
 
       Toast.show({
         type: "success",

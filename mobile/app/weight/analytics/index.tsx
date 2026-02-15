@@ -10,11 +10,6 @@ export default function AnalyticsScreen() {
   } = useQuery({
     queryKey: ["get-weight"],
     queryFn: getWeight,
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    staleTime: Infinity,
-    gcTime: Infinity,
   });
 
   return (

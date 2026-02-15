@@ -59,7 +59,9 @@
       },
       "cancel": "Peruuta",
       "savingTemplate": "Tallennetaan harjoituspohjaa...",
-      "startWorkout": "Aloita treeni"
+      "startWorkout": "Aloita treeni",
+      "titleRequired": "Nimi on pakollinen",
+      "exercisesRequired": "Lisää vähintään yksi liike"
     },
     "TemplatesScreen": {
       "confirmDeleteTitle": "Poista harjoituspohja",

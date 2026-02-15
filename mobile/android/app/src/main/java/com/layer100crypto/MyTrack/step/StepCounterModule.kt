@@ -4,6 +4,10 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
@@ -18,6 +22,7 @@ import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
+import com.facebook.react.modules.core.DeviceEventManagerModule
 import com.facebook.react.modules.core.PermissionAwareActivity
 import com.facebook.react.modules.core.PermissionListener
 import com.facebook.react.module.annotations.ReactModule
@@ -33,9 +38,14 @@ class StepCounterModule(private val reactContext: ReactApplicationContext)
         private const val WORK_NAME = "step_counter_periodic"
         private const val PREFS_NAME = "step_permission_prefs"
         private const val KEY_HAS_ASKED = "has_asked_step_permission"
+        private const val STEP_PREFS_NAME = "step_counter_prefs"
+        private const val KEY_SESSION_START_VALUE = "session_start_value"
+        private const val EVENT_LIVE_STEPS = "LIVE_STEP_UPDATE"
     }
 
     private var permissionPromise: Promise? = null
+    private var sensorManager: SensorManager? = null
+    private var liveListener: SensorEventListener? = null
 
     override fun getName() = "NativeStepCounter"
 
@@ -232,5 +242,55 @@ class StepCounterModule(private val reactContext: ReactApplicationContext)
         } catch (e: Exception) {
             promise.reject("STEP_ERROR", e.message, e)
         }
+    }
+
+    @ReactMethod
+    fun startLiveStepUpdates() {
+        // Stop any existing listener first
+        stopLiveListenerInternal()
+
+        val sm = reactContext.getSystemService(Context.SENSOR_SERVICE) as? SensorManager ?: return
+        val stepSensor = sm.getDefaultSensor(Sensor.TYPE_STEP_COUNTER) ?: return
+
+        val sessionStart = reactContext
+            .getSharedPreferences(STEP_PREFS_NAME, Context.MODE_PRIVATE)
+            .getLong(KEY_SESSION_START_VALUE, -1L)
+
+        val listener = object : SensorEventListener {
+            override fun onSensorChanged(event: SensorEvent) {
+                val currentValue = event.values[0].toLong()
+                val steps = if (sessionStart == -1L) {
+                    0
+                } else if (currentValue < sessionStart) {
+                    // Reboot during session
+                    currentValue.toInt()
+                } else {
+                    (currentValue - sessionStart).toInt()
+                }
+
+                reactContext
+                    .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
+                    .emit(EVENT_LIVE_STEPS, steps)
+            }
+
+            override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
+        }
+
+        sm.registerListener(listener, stepSensor, SensorManager.SENSOR_DELAY_NORMAL, 0)
+        sensorManager = sm
+        liveListener = listener
+    }
+
+    @ReactMethod
+    fun stopLiveStepUpdates() {
+        stopLiveListenerInternal()
+    }
+
+    private fun stopLiveListenerInternal() {
+        liveListener?.let { listener ->
+            sensorManager?.unregisterListener(listener)
+        }
+        liveListener = null
+        sensorManager = null
     }
 }

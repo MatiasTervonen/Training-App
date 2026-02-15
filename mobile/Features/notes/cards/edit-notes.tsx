@@ -77,7 +77,7 @@ export default function EditNotes({
     if (voiceRecordings?.voiceRecordings) {
       setExistingRecordings(voiceRecordings.voiceRecordings);
     }
-  }, [voiceRecordings]);
+  }, [voiceRecordings?.voiceRecordings]);
 
   const handleDeleteExisting = async (recordingId: string) => {
     const confirmed = await confirmAction({

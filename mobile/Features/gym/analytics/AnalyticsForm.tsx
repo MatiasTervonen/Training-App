@@ -159,17 +159,17 @@ export default function AnalyticsForm({ data, heatmap }: AnalyticsFormProps) {
   }, [option, chartSize]);
 
   return (
-    <View className=" bg-slate-800 rounded-xl">
+    <View>
       <View className="gap-4 bg-slate-900  rounded-2xl shadow-md pt-5">
         <AppText className="text-xl mb-4 text-center">
           {t("gym.analytics.title")}
         </AppText>
         <View className="sm:flex items-center justify-center gap-10 ml-4">
           <View className="flex flex-col gap-5">
-            <AppText className="text-lg">
+            <AppText className="text-lg text-slate-200">
               {t("gym.analytics.totalWorkouts")}: {data.total_sessions}
             </AppText>
-            <AppText className="text-lg mb-5">
+            <AppText className="text-lg mb-5 text-slate-200">
               {t("gym.analytics.averageDuration")}:{" "}
               {formatDuration(data.avg_duration)}
             </AppText>
@@ -189,17 +189,19 @@ export default function AnalyticsForm({ data, heatmap }: AnalyticsFormProps) {
           <SkiaChart ref={skiaRef} />
         </View>
         <View>
-          <AppText className="text-center mb-6">
+          <AppText className="text-center mb-6 text-lg text-slate-200">
             {t("gym.analytics.muscleGroupDistribution")}
           </AppText>
           <ChartTabSwitcher data={data} />
         </View>
       </View>
-      <View className="mt-6 text-sm text-gray-400 px-4">
-        <AppText>{t("gym.analytics.note")}</AppText>
-      </View>
-      <View className="mt-6 text-sm text-gray-400 px-4 pb-20">
-        <AppText>{t("gym.analytics.comingSoon")}</AppText>
+      <View className="mt-6 px-4 gap-4">
+        <AppText className="text-slate-300 text-sm">
+          {t("gym.analytics.note")}
+        </AppText>
+        <AppText className="text-slate-300 text-sm">
+          {t("gym.analytics.comingSoon")}
+        </AppText>
       </View>
     </View>
   );

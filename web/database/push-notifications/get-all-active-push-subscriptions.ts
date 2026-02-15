@@ -6,6 +6,13 @@ import { handleError } from "@/utils/handleError";
 export async function getAllActivePushSubscriptions() {
   const supabase = await createClient();
 
+  const { data, error: authError } = await supabase.auth.getClaims();
+  const user = data?.claims;
+
+  if (authError || !user) {
+    throw new Error("Unauthorized");
+  }
+
   const { data: subscriptions, error } = await supabase
     .from("user_push_subscriptions")
     .select("*")

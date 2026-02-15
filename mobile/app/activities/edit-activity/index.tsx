@@ -105,7 +105,7 @@ export default function EditActivity() {
     try {
       await editActivity(activityData);
 
-      queryClient.refetchQueries({ queryKey: ["userActivities"], exact: true });
+      queryClient.invalidateQueries({ queryKey: ["userActivities"], exact: true });
       Toast.show({
         type: "success",
         text1: t("activities.editActivityScreen.successEdited"),
@@ -128,7 +128,7 @@ export default function EditActivity() {
     try {
       await deleteActivity(activityId);
 
-      await queryClient.refetchQueries({
+      await queryClient.invalidateQueries({
         queryKey: ["userActivities"],
         exact: true,
       });
@@ -230,11 +230,17 @@ export default function EditActivity() {
                 </FullScreenModal>
               </View>
               <View className="mt-20 flex flex-col gap-5">
-                <SaveButton onPress={handleSave} label={t("activities.editActivityScreen.updateButton")} />
-                <DeleteButton
-                  onPress={() => handleDeleteActivity(selectedActivity!.id)}
-                  label={t("activities.editActivityScreen.deleteButton")}
-                />
+                <View className="flex-row gap-4">
+                  <View className="flex-1">
+                    <DeleteButton
+                      onPress={() => handleDeleteActivity(selectedActivity!.id)}
+                      label={t("activities.editActivityScreen.deleteButton")}
+                    />
+                  </View>
+                  <View className="flex-1">
+                    <SaveButton onPress={handleSave} label={t("activities.editActivityScreen.updateButton")} />
+                  </View>
+                </View>
                 <AnimatedButton
                   onPress={() => {
                     resetFields();

@@ -64,11 +64,6 @@ export default function ActivityDropdown({
   } = useQuery({
     queryKey: ["activities"],
     queryFn: () => getActivities(),
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    staleTime: Infinity,
-    gcTime: Infinity,
   });
 
   const {
@@ -78,11 +73,6 @@ export default function ActivityDropdown({
   } = useQuery({
     queryKey: ["recentActivities"],
     queryFn: getRecentActivities,
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    staleTime: Infinity,
-    gcTime: Infinity,
   });
 
   const isLoading = isActivitiesLoading || isRecentLoading;

@@ -1,6 +1,7 @@
 "use server";
 
 import webpush from "web-push";
+import { createClient } from "@/utils/supabase/server";
 import { savePushSubscription } from "@/database/push-notifications/save-push-subscription";
 import { deletePushSubscription } from "@/database/push-notifications/delete-push-subscription";
 import { getAllActivePushSubscriptions } from "@/database/push-notifications/get-all-active-push-subscriptions";
@@ -21,6 +22,14 @@ type WebPushSubscription = {
 };
 
 export async function subscribeUser(sub: WebPushSubscription) {
+  const supabase = await createClient();
+  const { data, error: authError } = await supabase.auth.getClaims();
+  const user = data?.claims;
+
+  if (authError || !user) {
+    throw new Error("Unauthorized");
+  }
+
   await savePushSubscription({
     endpoint: sub.endpoint,
     p256dh: sub.keys.p256dh,
@@ -32,12 +41,28 @@ export async function subscribeUser(sub: WebPushSubscription) {
 }
 
 export async function unsubscribeUser(endpoint: string) {
-  await deletePushSubscription(endpoint);
+  const supabase = await createClient();
+  const { data, error: authError } = await supabase.auth.getClaims();
+  const user = data?.claims;
+
+  if (authError || !user) {
+    throw new Error("Unauthorized");
+  }
+
+  await deletePushSubscription(endpoint, user.sub as string);
 
   return { success: true };
 }
 
 export async function sendNotification(message: string) {
+  const supabase = await createClient();
+  const { data, error: authError } = await supabase.auth.getClaims();
+  const user = data?.claims;
+
+  if (authError || !user) {
+    throw new Error("Unauthorized");
+  }
+
   const { subscriptions, error } = await getAllActivePushSubscriptions();
 
   if (error || subscriptions?.length === 0) {
@@ -70,7 +95,7 @@ export async function sendNotification(message: string) {
       console.error("Error sending push notification:", error);
 
       if (e.statusCode === 410 || e.statusCode === 404) {
-        await deletePushSubscription(sub.endpoint);
+        await deletePushSubscription(sub.endpoint, sub.user_id);
       }
 
       return { success: false, error: "Failed to send notification" };

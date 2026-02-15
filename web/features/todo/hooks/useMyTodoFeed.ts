@@ -23,11 +23,6 @@ export default function useMyTodoFeed() {
     queryFn: ({ pageParam = 0 }) => getTodoLists({ pageParam, limit: 10 }),
     initialPageParam: 0,
     getNextPageParam: (lastPage) => lastPage.nextPage,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    refetchOnMount: false,
-    staleTime: Infinity,
-    gcTime: Infinity,
   });
 
   // Keep only first page in cache when user leaves feed

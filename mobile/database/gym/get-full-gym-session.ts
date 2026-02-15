@@ -57,7 +57,7 @@ export async function getFullGymSession(sessionId: string) {
 
   data.gym_session_exercises.forEach((exercise: any) => {
     if (Array.isArray(exercise.gym_sets)) {
-      exercise.gym_sets.sort(
+      exercise.gym_sets = [...exercise.gym_sets].sort(
         (a: { set_number: number }, b: { set_number: number }) =>
           a.set_number - b.set_number,
       );

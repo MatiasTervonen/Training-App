@@ -34,7 +34,5 @@ export async function getExercises() {
     })) ?? [];
 
   // Sort by name
-  exercises.sort((a, b) => a.name.localeCompare(b.name));
-
-  return exercises;
+  return [...exercises].sort((a, b) => a.name.localeCompare(b.name));
 }

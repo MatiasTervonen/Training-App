@@ -1,5 +1,5 @@
 import AppInput from "@/components/AppInput";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import SaveButton from "@/components/buttons/SaveButton";
 import Toast from "react-native-toast-message";
 import FullScreenLoader from "@/components/FullScreenLoader";
@@ -14,7 +14,7 @@ import SelectInput from "@/components/Selectinput";
 import { gym_exercises } from "@/types/models";
 import { editExercise } from "@/database/gym/edit-exercise";
 import { deleteExercise } from "@/database/gym/delete-exercise";
-import ExerciseDropdownEdit from "@/features/gym/ExerciseDropDownEdit";
+import ExerciseDropdownEdit from "@/features/gym/components/ExerciseDropDownEdit";
 import DeleteButton from "@/components/buttons/DeleteButton";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import { useQueryClient } from "@tanstack/react-query";
@@ -64,7 +64,7 @@ export default function EditExercises() {
     try {
       await editExercise(exerciseData);
 
-      await queryClient.refetchQueries({
+      await queryClient.invalidateQueries({
         queryKey: ["userExercises"],
         exact: true,
       });
@@ -90,7 +90,7 @@ export default function EditExercises() {
     try {
       await deleteExercise(exerciseId);
 
-      await queryClient.refetchQueries({
+      await queryClient.invalidateQueries({
         queryKey: ["userExercises"],
         exact: true,
       });
@@ -110,15 +110,6 @@ export default function EditExercises() {
     }
   };
 
-  useEffect(() => {
-    if (selectedExercise) {
-      setName(selectedExercise.name);
-      setEquipment(selectedExercise.equipment);
-      setMuscleGroup(selectedExercise.muscle_group);
-      setMainGroup(selectedExercise.main_group);
-    }
-  }, [selectedExercise]);
-
   const resetFields = () => {
     setName("");
     setEquipment("");
@@ -131,7 +122,12 @@ export default function EditExercises() {
     return (
       <ExerciseDropdownEdit
         onSelect={(exercise) => {
-          setSelectedExercise(exercise as gym_exercises);
+          const ex = exercise as gym_exercises;
+          setSelectedExercise(ex);
+          setName(ex.name);
+          setEquipment(ex.equipment);
+          setMuscleGroup(ex.muscle_group);
+          setMainGroup(ex.main_group);
         }}
       />
     );
@@ -229,14 +225,20 @@ export default function EditExercises() {
             />
           </View>
           <View className="mt-20 flex flex-col gap-5">
-            <SaveButton
-              onPress={handleUpdateExercise}
-              label={t("gym.editExerciseScreen.updateExercise")}
-            />
-            <DeleteButton
-              onPress={() => handleDeleteExercise(selectedExercise.id)}
-              label={t("gym.editExerciseScreen.deleteExercise")}
-            />
+            <View className="flex-row gap-4">
+              <View className="flex-1">
+                <DeleteButton
+                  onPress={() => handleDeleteExercise(selectedExercise.id)}
+                  label={t("gym.editExerciseScreen.deleteExercise")}
+                />
+              </View>
+              <View className="flex-1">
+                <SaveButton
+                  onPress={handleUpdateExercise}
+                  label={t("gym.editExerciseScreen.updateExercise")}
+                />
+              </View>
+            </View>
             <AnimatedButton
               onPress={() => {
                 resetFields();

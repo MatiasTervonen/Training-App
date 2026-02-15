@@ -33,6 +33,12 @@
       "back": "Back",
       "allow": "Allow"
     },
+    "pushPermission": {
+      "title": "Enable push notifications",
+      "description": "Push notifications need to be enabled for timers to notify you when time is up.\n\nYou can enable them from the settings page.",
+      "skip": "Skip",
+      "settings": "Go to Settings"
+    },
     "notification": {
       "timeRemaining": "Time remaining",
       "inProgress": "In progress",

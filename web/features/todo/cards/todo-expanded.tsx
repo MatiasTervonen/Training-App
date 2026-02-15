@@ -213,7 +213,7 @@ export default function TodoSession({
                       }}
                       checked={task.is_completed}
                       type="checkbox"
-                      className=" h-6 w-6 rounded-md border border-gray-400 cursor-pointer transition-colors"
+                      className="h-6 w-6 shrink-0 rounded-md border border-gray-400 cursor-pointer transition-colors appearance-none bg-slate-700 checked:bg-blue-500 grid place-content-center before:content-['✓']  before:scale-0 checked:before:scale-100 before:transition-transform"
                     />
                     <li
                       className="w-full items-center border p-2 rounded-md flex justify-between gap-2 bg-slate-900 min-w-0 cursor-move"

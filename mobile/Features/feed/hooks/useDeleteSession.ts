@@ -55,7 +55,7 @@ export default function useDeleteSession() {
       await deleteSession(id, type);
 
       if (type === "weight") {
-        queryClient.refetchQueries({
+        queryClient.invalidateQueries({
           queryKey: ["get-weight"],
           exact: true,
         });

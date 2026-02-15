@@ -22,6 +22,7 @@ export async function guestLogin(): Promise<GuestLoginResult> {
   const { error } = await supabase.auth.signInAnonymously();
 
   if (error) {
+    console.error("Error logging in as guest:", error);
     handleError(error, {
       message: "Error logging in as guest",
       route: "/api/auth/guest-login",

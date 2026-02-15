@@ -18,14 +18,12 @@ export async function syncAlarms() {
   // 1. Clear all existing alarms
   cancelAllNativeAlarms();
 
-  // 2. Get device ID for global reminders
-  const deviceId = await getDeviceId();
-
-  // 3. Fetch all local reminders with alarm mode
-  const { data: localReminders, error: localRemindersError } = await supabase
-    .from("local_reminders")
-    .select("*")
-    .eq("mode", "alarm");
+  // 2. Fetch local reminders and get deviceId in parallel
+  const [{ data: localReminders, error: localRemindersError }, deviceId] =
+    await Promise.all([
+      supabase.from("local_reminders").select("*").eq("mode", "alarm"),
+      getDeviceId(),
+    ]);
 
   if (localRemindersError) {
     handleError(localRemindersError, {
@@ -36,7 +34,7 @@ export async function syncAlarms() {
     throw new Error("Failed to sync alarms");
   }
 
-  // 4. Fetch global reminders created from this device with alarm mode
+  // 3. Fetch global reminders (needs deviceId)
   let globalReminders: any[] = [];
   const { data, error: globalRemindersError } = await supabase
     .from("global_reminders")

@@ -11,9 +11,6 @@ export default function WorkoutAnalyticsPage() {
   const { data, error, isLoading } = useQuery({
     queryKey: ["last-30d-analytics"],
     queryFn: get30dAnalytics,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    refetchOnMount: false,
   });
 
   return (

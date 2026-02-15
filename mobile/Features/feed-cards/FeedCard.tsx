@@ -2,7 +2,7 @@ import NotesCard from "@/features/notes/cards/notes-feed";
 import WeightCard from "@/features/weight/cards/weight-feed";
 import GymCard from "@/features/gym/cards/gym-feed";
 import LocalReminderCard from "@/features/reminders/cards/LocalReminderCard-feed";
-import TodoCard from "@/features/feed-cards/TodoCard";
+import TodoCard from "@/features/todo/cards/todo-feed";
 import GlobalReminderCard from "@/features/reminders/cards/GlobalReminderCard-feed";
 import ActivityCard from "@/features/activities/cards/activity-feed";
 import { FeedCardProps } from "@/types/session";

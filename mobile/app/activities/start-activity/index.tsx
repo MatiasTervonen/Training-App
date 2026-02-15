@@ -2,14 +2,14 @@ import PageContainer from "@/components/PageContainer";
 import AppText from "@/components/AppText";
 import AppInput from "@/components/AppInput";
 import ActivityDropdown from "@/features/activities/components/activityDropdown";
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { View, AppState, ScrollView, Pressable } from "react-native";
 import SubNotesInput from "@/components/SubNotesInput";
 import Toggle from "@/components/toggle";
 import SessionStats from "@/features/activities/components/sessionStats";
 import { useUserStore } from "@/lib/stores/useUserStore";
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 import { useTimerStore } from "@/lib/stores/timerStore";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import useSaveDraft from "@/features/activities/hooks/useSaveDraft";
@@ -25,7 +25,7 @@ import {
 import { formatDateShort } from "@/lib/formatDate";
 import FullScreenMap from "@/features/activities/components/fullScreenMap";
 import { TrackPoint, DraftRecording } from "@/types/session";
-import InfoModal from "@/features/activities/components/infoModal";
+import InfoModal from "@/components/InfoModal";
 import { useDistanceFromTrack } from "@/features/activities/hooks/useCountDistance";
 import { useStartActivity } from "@/features/activities/hooks/useStartActivity";
 import { clearLocalSessionDatabase } from "@/features/activities/lib/database-actions";
@@ -34,9 +34,9 @@ import { useForegroundLocationTracker } from "@/features/activities/hooks/useFor
 import { usePersistToDatabase } from "@/features/activities/hooks/usePersistToDatabase";
 import { useMovingTimeFromTrack } from "@/features/activities/hooks/useMovingTimeFromTrack";
 import { useAveragePace } from "@/features/activities/hooks/useAveragePace";
-import StepInfoModal from "@/features/activities/stepToggle/stepInfoModal";
 import { hasStepsPermission } from "@/features/activities/stepToggle/stepPermission";
 import { useStepHydration } from "@/features/activities/hooks/useStepHydration";
+import { useLiveStepCounter } from "@/features/activities/hooks/useLiveStepCounter";
 import {
   requestStepPermission,
   hasStepSensor,
@@ -114,12 +114,16 @@ export default function StartActivityScreen() {
   const mode = useTimerStore((state) => state.mode);
 
   // Restore GPS and steps settings from persisted activeSession on mount
+  const hasActiveSession = !!activeSession;
+  const sessionGpsAllowed = activeSession?.gpsAllowed ?? false;
+  const sessionStepsAllowed = activeSession?.stepsAllowed ?? false;
+
   useEffect(() => {
-    if (activeSession) {
-      setAllowGPS(activeSession.gpsAllowed ?? false);
-      setStepsAllowed(activeSession.stepsAllowed ?? false);
+    if (hasActiveSession) {
+      setAllowGPS(sessionGpsAllowed);
+      setStepsAllowed(sessionStepsAllowed);
     }
-  }, [activeSession]);
+  }, [hasActiveSession, sessionGpsAllowed, sessionStepsAllowed]);
 
   // Check battery optimization status when GPS is enabled or app returns to foreground
   useEffect(() => {
@@ -143,15 +147,20 @@ export default function StartActivityScreen() {
     return () => sub.remove();
   }, [allowGPS]);
 
+  // Keep a ref to the latest activeSession for use inside effects
+  const activeSessionRef = useRef(activeSession);
+  activeSessionRef.current = activeSession;
+
   // Sync title changes to activeSession and native timer notification
   useEffect(() => {
+    const session = activeSessionRef.current;
     if (
-      activeSession &&
-      activeSession.type === activityName &&
-      activeSession.label !== title
+      session &&
+      session.type === activityName &&
+      session.label !== title
     ) {
       setActiveSession({
-        ...activeSession,
+        ...session,
         label: title,
       });
     }
@@ -162,25 +171,12 @@ export default function StartActivityScreen() {
           : t("timer:timer.notification.inProgress");
       updateNativeTimerLabel(startTimestamp, title, mode, statusText);
     }
-  }, [
-    title,
-    activeSession,
-    setActiveSession,
-    startTimestamp,
-    mode,
-    t,
-    activityName,
-  ]);
+  }, [title, setActiveSession, startTimestamp, mode, t, activityName]);
 
   // Fetch latest user weight (cached by React Query, default 70kg matching RPC)
   const { data: weightData } = useQuery({
     queryKey: ["latestWeight"],
     queryFn: getWeight,
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    staleTime: Infinity,
-    gcTime: Infinity,
   });
   const userWeight = weightData?.[0]?.weight ?? 70;
 
@@ -325,6 +321,12 @@ export default function StartActivityScreen() {
   useStepHydration({
     setSteps,
     stepsAllowed,
+  });
+
+  // Live step-by-step updates while in the foreground
+  useLiveStepCounter({
+    enabled: stepsAllowed && !!activeSession,
+    setSteps,
   });
 
   // useTemplateRoute hook to get the template route
@@ -578,13 +580,35 @@ export default function StartActivityScreen() {
         </>
       )}
 
-      <InfoModal showModal={showModal} onCancel={() => setShowModal(false)} />
+      <InfoModal
+        visible={showModal}
+        onClose={() => setShowModal(false)}
+        title={t("activities.infoModal.locationTrackingDisabled")}
+        description={t("activities.infoModal.enableLocationMessage")}
+        cancelLabel={t("activities.infoModal.cancel")}
+        confirmLabel={t("activities.infoModal.settings")}
+        onConfirm={() => {
+          setShowModal(false);
+          router.push("/menu/settings");
+        }}
+      />
 
-      <StepInfoModal
+      <InfoModal
         visible={showStepsModal}
-        permanentlyDenied={stepsPermanentlyDenied}
-        onCancel={() => setShowStepsModal(false)}
-        onOpenSettings={async () => {
+        onClose={() => setShowStepsModal(false)}
+        title={t("activities.stepInfoModal.title")}
+        description={
+          stepsPermanentlyDenied
+            ? t("activities.stepInfoModal.descriptionSettings")
+            : t("activities.stepInfoModal.description")
+        }
+        cancelLabel={t("activities.stepInfoModal.cancel")}
+        confirmLabel={
+          stepsPermanentlyDenied
+            ? t("activities.stepInfoModal.goToSettings")
+            : t("activities.stepInfoModal.openSettings")
+        }
+        onConfirm={async () => {
           try {
             await requestStepPermission();
           } catch {

@@ -59,6 +59,12 @@
       "fri": "Fri",
       "sat": "Sat"
     },
+    "alarmPermission": {
+      "title": "Allow setting alarms and reminders",
+      "description": "This reminder can use a high-priority alarm that rings continuously, even when your phone is locked, until you dismiss it.\n\nYou can continue without enabling this, but reminders may be delayed or less reliable.",
+      "cancel": "Cancel",
+      "allow": "Allow"
+    },
     "notification": {
       "tapToOpen": "Tap to open",
       "reminder": "Reminder",

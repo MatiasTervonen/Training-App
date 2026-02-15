@@ -94,16 +94,16 @@ export default function BaseFeedCard({
       <div className="flex justify-between items-center mt-2 bg-slate-950/40 rounded-b-md">
         <div className="flex items-center gap-2 pl-2">
           {typeIcon}
-          <span className={pinned ? "text-slate-900" : "text-gray-100"}>
+          <span className={pinned ? "text-slate-900" : "text-slate-300"}>
             {typeName}
           </span>
         </div>
         <div className="flex gap-2 items-center">
           <Calendar
             size={20}
-            className={pinned ? "text-slate-900" : "text-gray-100"}
+            className={pinned ? "text-slate-900" : "text-slate-300"}
           />
-          <span className={pinned ? "text-slate-900" : "text-gray-100"}>
+          <span className={pinned ? "text-slate-900" : "text-slate-300"}>
             {formatDateShort(item.created_at)}
           </span>
         </div>

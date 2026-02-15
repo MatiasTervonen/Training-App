@@ -70,7 +70,6 @@ export async function saveNote({ title, notes, draftRecordings = [] }: props) {
         .from("notes-voice")
         .remove(uploadedRecordings.map((r) => r.storage_path));
     }
-    console.log("Error saving note:", error);
     handleError(error, {
       message: "Error saving note",
       route: "/database/notes/save-note",

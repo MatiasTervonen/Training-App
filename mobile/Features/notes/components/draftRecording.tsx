@@ -133,8 +133,10 @@ export function DraftRecordingItem({
               )}
             </View>
             <AppText className="text-slate-400">
-              {formatDurationNotesVoice(status.currentTime * 1000)} /{" "}
-              {formatDurationNotesVoice(durationMs)}
+              {formatDurationNotesVoice(
+                Math.min(status.currentTime * 1000, durationMs ?? 0),
+              )}{" "}
+              / {formatDurationNotesVoice(durationMs)}
             </AppText>
           </View>
         </AnimatedButton>

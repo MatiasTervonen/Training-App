@@ -102,9 +102,9 @@ export default function GlobalReminder() {
             label={t("reminders.notesLabel")}
           />
         </div>
-        <div className="flex flex-col gap-5">
-          <SaveButton onClick={saveReminder} />
+        <div className="flex flex-row gap-5">
           <DeleteSessionBtn onDelete={resetReminder} />
+          <SaveButton onClick={saveReminder} />
         </div>
       </div>
       {isSaving && <FullScreenLoader message={t("reminders.savingReminder")} />}

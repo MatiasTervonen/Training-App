@@ -35,11 +35,6 @@ export default function RemindersPage() {
   } = useQuery({
     queryKey: ["reminders", activeTab],
     queryFn: () => getRemindersByTab(activeTab),
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    staleTime: Infinity,
-    gcTime: Infinity,
   });
 
   // useDeleteReminder hook to delete reminder
@@ -176,7 +171,7 @@ export default function RemindersPage() {
                   queryClient.invalidateQueries({
                     queryKey: ["fullLocalReminder"],
                   }),
-                  queryClient.refetchQueries({
+                  queryClient.invalidateQueries({
                     queryKey: ["feed"],
                   }),
                 ]);

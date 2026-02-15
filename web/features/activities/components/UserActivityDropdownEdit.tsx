@@ -39,11 +39,6 @@ export default function UserActivityDropdownEdit({ onSelect }: Props) {
   const { data, error, isLoading } = useQuery({
     queryKey: ["userActivities"],
     queryFn: () => getUserActivities(),
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    staleTime: Infinity,
-    gcTime: Infinity,
   });
 
   const filteredActivities = useMemo(() => {

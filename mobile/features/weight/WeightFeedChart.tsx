@@ -59,9 +59,7 @@ export default function WeightFeedChart({ data }: WeightFeedChartProps) {
   });
 
   const firstEntry = filteredData.find((entry) => entry.weight !== null);
-  const lastEntry = [...filteredData]
-    .reverse()
-    .find((entry) => entry.weight !== null);
+  const lastEntry = filteredData.findLast((entry) => entry.weight !== null);
 
   let weightDifference: string | number = "N/A";
 

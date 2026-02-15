@@ -37,11 +37,6 @@ export default function CategoryDropdown({ onSelect }: Props) {
     } = useQuery<activityCategory[]>({
         queryKey: ["activityCategories"],
         queryFn: getActivityCategories,
-        refetchOnMount: false,
-        refetchOnWindowFocus: false,
-        refetchOnReconnect: false,
-        staleTime: Infinity,
-        gcTime: Infinity,
     });
 
     // Helper function to get translated category name

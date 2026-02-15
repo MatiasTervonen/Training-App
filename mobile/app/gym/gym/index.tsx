@@ -1,4 +1,4 @@
-import GymForm from "@/features/gym/GymForm";
+import GymForm from "@/features/gym/components/GymForm";
 
 export default function GymScreen() {
   return (

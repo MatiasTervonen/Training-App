@@ -12,7 +12,17 @@ import ActiveSessionPopup from "@/components/activeSessionPopup";
 export default function appLayout({ children }: { children: React.ReactNode }) {
   return (
     <div>
-      <Toaster position="top-center" reverseOrder={false} />
+      <Toaster
+        position="top-center"
+        reverseOrder={false}
+        toastOptions={{
+          style: {
+            background: "#1e293b",
+            color: "#f1f5f9",
+            border: "1px solid #334155",
+          },
+        }}
+      />
       <SplashScreen>
         <Navbar />
         <div className="flex w-full max-w-[1600px] mx-auto">

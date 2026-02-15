@@ -42,7 +42,7 @@ export default function SelectInput({
 
       <Pressable
         onPressIn={handlePress}
-        className="border-2 border-gray-100 p-2 rounded-md px-4 py-2 h-12 overflow-hidden"
+        className="border-2 border-gray-400 p-2 rounded-md px-4 py-2 h-12 overflow-hidden"
       >
         <LinearGradient
           colors={["#0f172a", "#1e293b", "#333333"]}

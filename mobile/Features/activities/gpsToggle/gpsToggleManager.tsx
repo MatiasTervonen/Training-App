@@ -1,12 +1,12 @@
 import Toggle from "@/components/toggle";
-import { AppState, View } from "react-native";
+import { AppState, Linking, View } from "react-native";
 import AppText from "@/components/AppText";
 import { useUserStore } from "@/lib/stores/useUserStore";
 import Toast from "react-native-toast-message";
 import { updateGpsTrackingStatus } from "@/features/activities/gpsToggle/actions";
 import { useState, useEffect } from "react";
 import * as Location from "expo-location";
-import InfoModal from "@/features/activities/gpsToggle/infoModal";
+import InfoModal from "@/components/InfoModal";
 import { useTranslation } from "react-i18next";
 
 export default function GpsToggleManager() {
@@ -110,7 +110,21 @@ export default function GpsToggleManager() {
           <Toggle isOn={!!gpsTrackingEnabled} onToggle={handleToggle} />
         </View>
       </View>
-      <InfoModal isOpen={isOpen} setIsOpen={setIsOpen} />
+      <InfoModal
+        visible={isOpen}
+        onClose={() => setIsOpen(false)}
+        title={t("activities:activities.gpsInfoModal.title")}
+        description={[
+          t("activities:activities.gpsInfoModal.description1"),
+          t("activities:activities.gpsInfoModal.description2"),
+        ]}
+        cancelLabel={t("activities:activities.gpsInfoModal.cancel")}
+        confirmLabel={t("activities:activities.gpsInfoModal.openSettings")}
+        onConfirm={() => {
+          Linking.openSettings();
+          setIsOpen(false);
+        }}
+      />
     </View>
   );
 }

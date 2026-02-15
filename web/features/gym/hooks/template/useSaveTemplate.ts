@@ -6,6 +6,7 @@ import { ExerciseEntry } from "@/types/session";
 import { toast } from "react-hot-toast";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
+import { useTranslation } from "react-i18next";
 import { FullGymTemplate } from "@/database/gym/templates/full-gym-template";
 
 export default function useSaveTemplate({
@@ -23,11 +24,19 @@ export default function useSaveTemplate({
   resetSession: () => void;
   template: FullGymTemplate;
 }) {
+  const { t } = useTranslation("gym");
   const router = useRouter();
   const queryClient = useQueryClient();
 
   const handleSaveTemplate = async () => {
-    if (workoutName.trim() === "" || exercises.length === 0) return;
+    if (workoutName.trim() === "") {
+      toast.error(t("gym.templateForm.titleRequired"));
+      return;
+    }
+    if (exercises.length === 0) {
+      toast.error(t("gym.templateForm.exercisesRequired"));
+      return;
+    }
 
     setIsSaving(true);
 

@@ -77,9 +77,13 @@ export default function SettingsScreen() {
             />
           </View>
 
-          <View className="gap-5">
-            <SaveButton onPress={handleSaveWeight} />
-            <DeleteButton onPress={resetWeight} />
+          <View className="flex-row gap-4">
+            <View className="flex-1">
+              <DeleteButton onPress={resetWeight} />
+            </View>
+            <View className="flex-1">
+              <SaveButton onPress={handleSaveWeight} />
+            </View>
           </View>
         </PageContainer>
       </TouchableWithoutFeedback>

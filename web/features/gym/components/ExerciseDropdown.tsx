@@ -27,9 +27,6 @@ export default function ExerciseDropdown({ onSelect }: Props) {
   } = useQuery({
     queryKey: ["exercises", language],
     queryFn: getExercises,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    refetchOnMount: false,
   });
 
   const {
@@ -39,9 +36,6 @@ export default function ExerciseDropdown({ onSelect }: Props) {
   } = useQuery({
     queryKey: ["recentExercises", language],
     queryFn: getRecentExercises,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    refetchOnMount: false,
   });
 
   const isLoading = isExercisesLoading || isRecentLoading;

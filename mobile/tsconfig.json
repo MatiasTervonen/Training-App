@@ -14,5 +14,5 @@
     "expo-env.d.ts",
     "nativewind-env.d.ts",
     "features/reminders/setNotifications"
-, "features/gym/cards/template.-expanded.tsx"  ]
+, "features/gym/cards/template-expanded.tsx"  ]
 }

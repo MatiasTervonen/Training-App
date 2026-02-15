@@ -205,10 +205,10 @@ export default function HandleEditLocalReminder({
                         value={isChecked}
                         onValueChange={(newValue) => {
                           if (newValue) {
-                            setWeekdays([...weekdays, dayNumber]);
+                            setWeekdays((prev) => [...prev, dayNumber]);
                           } else {
-                            setWeekdays(
-                              weekdays.filter((day) => day !== dayNumber),
+                            setWeekdays((prev) =>
+                              prev.filter((day) => day !== dayNumber),
                             );
                           }
                         }}

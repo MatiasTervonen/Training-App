@@ -19,6 +19,9 @@
     "change": "Change",
     "created": "Created:",
     "unsavedChanges": "unsaved changes",
+    "unsavedChangesDiscard": "You have unsaved changes. Discard them?",
+    "keepEditing": "Keep editing",
+    "discard": "Discard",
     "copyToClipboard": "Copy to Clipboard",
     "copiedToClipboard": "Copied to Clipboard"
   },

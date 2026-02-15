@@ -20,8 +20,8 @@ import { formatDateTime } from "@/lib/formatDate";
 import PageContainer from "@/components/PageContainer";
 import { useTranslation } from "react-i18next";
 import Toggle from "@/components/toggle";
-import { canUseExactAlarm } from "@/native/android/EnsureExactAlarmPermission";
-import ExactAlarmPermissionModal from "@/components/ExactAlarmPermissionModal";
+import { canUseExactAlarm, requestExactAlarm } from "@/native/android/EnsureExactAlarmPermission";
+import InfoModal from "@/components/InfoModal";
 import useSetNotification from "@/features/reminders/hooks/global/useSetNotification";
 import { Dot } from "lucide-react-native";
 import { FeedItemUI } from "@/types/session";
@@ -251,9 +251,17 @@ export default function HandleEditGlobalReminder({
         </PageContainer>
       </TouchableWithoutFeedback>
 
-      <ExactAlarmPermissionModal
+      <InfoModal
         visible={showModal}
         onClose={() => setShowModal(false)}
+        title={t("reminders.alarmPermission.title")}
+        description={t("reminders.alarmPermission.description")}
+        cancelLabel={t("reminders.alarmPermission.cancel")}
+        confirmLabel={t("reminders.alarmPermission.allow")}
+        onConfirm={async () => {
+          await requestExactAlarm();
+          setShowModal(false);
+        }}
       />
     </>
   );

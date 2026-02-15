@@ -80,11 +80,6 @@ export default function TemplateForm({
     queryFn: async () =>
       getLastExerciseHistory({ exerciseId: exerciseHistoryId!, language: i18n.language }),
     enabled: !!exerciseHistoryId,
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    staleTime: Infinity,
-    gcTime: Infinity,
   });
 
   const openHistory = (exerciseId: string) => {
@@ -147,13 +142,13 @@ export default function TemplateForm({
       </div>
 
       {hasError && (
-        <div className="border border-red-500 text-red-300 rounded-md mt-5 p-3 text-center">
+        <div className="border border-red-500 text-red-300 rounded-md mt-20 p-3 text-center">
           {errorMessage}
         </div>
       )}
 
       {hasNoData && (
-        <div className="border border-gray-600 text-gray-300 rounded-md mt-5 p-3 text-center">
+        <div className="border border-gray-600 text-gray-300 rounded-md p-3 text-center mt-20">
           No session data found.
         </div>
       )}
@@ -306,9 +301,9 @@ export default function TemplateForm({
           <Plus className=" inline ml-2" size={20} />
         </button>
       </div>
-      <div className="flex flex-col justify-center items-center mt-14 gap-5">
-        <SaveButton onClick={handleSaveTemplate} />
+      <div className="flex flex-row gap-5 mt-14">
         <DeleteSessionBtn onDelete={resetSession} />
+        <SaveButton onClick={handleSaveTemplate} />
       </div>
       {isSaving && (
         <FullScreenLoader message={t("gym.templateForm.savingTemplate")} />

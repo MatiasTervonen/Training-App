@@ -75,7 +75,7 @@ export async function getLastExerciseHistory({
     throw new Error("Error fetching exercise history");
   }
 
-  const sorted = sessions.sort(
+  const sorted = [...sessions].sort(
     (a, b) =>
       new Date(b.sessions.created_at || 0).getTime() -
       new Date(a.sessions.created_at || 0).getTime(),

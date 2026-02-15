@@ -93,9 +93,13 @@ export default function SettingsScreen() {
             </View>
           </View>
         </View>
-        <View className="gap-4">
-          <SaveButton onPress={handleSaveTimer} />
-          <DeleteButton onPress={handleReset} />
+        <View className="flex-row gap-4">
+          <View className="flex-1">
+            <DeleteButton onPress={handleReset} />
+          </View>
+          <View className="flex-1">
+            <SaveButton onPress={handleSaveTimer} />
+          </View>
         </View>
         <FullScreenLoader visible={isSaving} message={t("timer.savingTimer")} />
       </PageContainer>

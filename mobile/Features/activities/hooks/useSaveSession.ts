@@ -141,7 +141,7 @@ export default function useSaveActivitySession({
         draftRecordings,
       });
 
-      await queryClient.refetchQueries({ queryKey: ["feed"], exact: true });
+      await queryClient.invalidateQueries({ queryKey: ["feed"], exact: true });
 
       resetSession();
       router.push("/dashboard");

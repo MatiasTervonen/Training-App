@@ -21,11 +21,6 @@ export default function useMyActivitiesFeed() {
       getActivitySessions({ pageParam, limit: 10 }),
     initialPageParam: 0,
     getNextPageParam: (lastPage) => lastPage.nextPage,
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    staleTime: Infinity,
-    gcTime: Infinity,
   });
 
   // Keep only first page in cache when user leaves feed
@@ -44,20 +39,16 @@ export default function useMyActivitiesFeed() {
     };
   }, [queryClient]);
 
-  const pinnedFeed = useMemo(() => {
-    return (
-      data?.pages.flatMap((page) =>
-        page.feed.filter((item) => item.feed_context === "pinned"),
-      ) ?? []
-    );
-  }, [data]);
-
-  const unpinnedFeed = useMemo(() => {
-    return (
-      data?.pages.flatMap((page) =>
-        page.feed.filter((item) => item.feed_context === "feed"),
-      ) ?? []
-    );
+  const { pinnedFeed, unpinnedFeed } = useMemo(() => {
+    const pinned: NonNullable<typeof data>["pages"][0]["feed"] = [];
+    const unpinned: typeof pinned = [];
+    data?.pages.forEach((page) => {
+      for (const item of page.feed) {
+        if (item.feed_context === "pinned") pinned.push(item);
+        else unpinned.push(item);
+      }
+    });
+    return { pinnedFeed: pinned, unpinnedFeed: unpinned };
   }, [data]);
 
   return {

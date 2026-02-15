@@ -44,10 +44,19 @@ export async function POST(request: NextRequest) {
   }
 
   for (const item of items) {
-    const { data: subscriptions, error: subError } = await supabase
-      .from("user_push_subscriptions")
-      .select("*")
-      .eq("user_id", item.user_id);
+    const [
+      { data: subscriptions, error: subError },
+      { data: expoTokens, error: expoError },
+    ] = await Promise.all([
+      supabase
+        .from("user_push_subscriptions")
+        .select("*")
+        .eq("user_id", item.user_id),
+      supabase
+        .from("user_push_mobile_subscriptions")
+        .select("*")
+        .eq("user_id", item.user_id),
+    ]);
 
     if (subError) {
       handleError(subError, {
@@ -55,13 +64,7 @@ export async function POST(request: NextRequest) {
         route: "/api/reminder-cronjob",
         method: "POST",
       });
-      continue;
     }
-
-    const { data: expoTokens, error: expoError } = await supabase
-      .from("user_push_mobile_subscriptions")
-      .select("*")
-      .eq("user_id", item.user_id);
 
     if (expoError) {
       handleError(expoError, {
@@ -69,8 +72,9 @@ export async function POST(request: NextRequest) {
         route: "/api/reminder-cronjob",
         method: "POST",
       });
-      continue;
     }
+
+    if (subError && expoError) continue;
 
     let allSent = true;
 
@@ -163,10 +167,17 @@ export async function POST(request: NextRequest) {
     }
 
     if (allSent) {
-      const { error: updateError } = await supabase
-        .from("global_reminders")
-        .update({ delivered: true })
-        .eq("id", item.id);
+      const [{ error: updateError }, { error: localUpdateError }] =
+        await Promise.all([
+          supabase
+            .from("global_reminders")
+            .update({ delivered: true })
+            .eq("id", item.id),
+          supabase
+            .from("local_reminders")
+            .update({ delivered: true })
+            .eq("id", item.id),
+        ]);
 
       if (updateError) {
         handleError(updateError, {
@@ -175,11 +186,6 @@ export async function POST(request: NextRequest) {
           method: "POST",
         });
       }
-
-      const { error: localUpdateError } = await supabase
-        .from("local_reminders")
-        .update({ delivered: true })
-        .eq("id", item.id);
 
       if (localUpdateError) {
         handleError(localUpdateError, {

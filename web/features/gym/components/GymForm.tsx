@@ -115,11 +115,6 @@ export default function GymForm({
     queryKey: ["exerciseHistory", exerciseHistoryId],
     queryFn: () => getLastExerciseHistory({ exerciseId: exerciseHistoryId!, language: i18n.language }),
     enabled: !!exerciseHistoryId,
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    staleTime: Infinity,
-    gcTime: Infinity,
   });
 
   const openHistory = (exerciseId: string) => {
@@ -421,8 +416,7 @@ export default function GymForm({
           </div>
         </div>
 
-        <div className="flex flex-col justify-center items-center mt-14 gap-5">
-          <SaveButton onClick={handleSaveSession} />
+        <div className="flex flex-row gap-5 mt-14">
           {isEditing ? (
             <DeleteSessionBtn
               label={t("gym.gymForm.editDeleteButtonLabel")}
@@ -432,6 +426,7 @@ export default function GymForm({
           ) : (
             <DeleteSessionBtn onDelete={resetSession} />
           )}
+          <SaveButton onClick={handleSaveSession} />
         </div>
       </div>
       {isSaving && (

@@ -19,16 +19,6 @@ export default function useDeleteReminder() {
     });
     if (!confirmDelete) return;
 
-    const queryKey = ["get-reminders"];
-
-    const previousFeed = queryClient.getQueryData<full_reminder[]>(queryKey);
-
-    queryClient.setQueryData<full_reminder[]>(queryKey, (oldData) => {
-      if (!oldData) return oldData;
-
-      return oldData.filter((item) => item.id !== reminder.id);
-    });
-
     try {
       const ids = Array.isArray(reminder.notification_id)
         ? reminder.notification_id
@@ -49,14 +39,14 @@ export default function useDeleteReminder() {
         await deleteLocalReminder(reminder.id);
       }
 
-      queryClient.refetchQueries({ queryKey: ["feed"], exact: true });
+      queryClient.invalidateQueries({ queryKey: ["reminders"] });
+      queryClient.invalidateQueries({ queryKey: ["feed"], exact: true });
 
       Toast.show({
         type: "success",
         text1: "Reminder deleted successfully",
       });
     } catch {
-      queryClient.setQueryData(queryKey, previousFeed);
       Toast.show({
         type: "error",
         text1: "Failed to delete reminder",

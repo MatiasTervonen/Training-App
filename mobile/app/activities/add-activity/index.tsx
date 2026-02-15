@@ -77,7 +77,7 @@ export default function AddActivity() {
     try {
       await addActivity(activityData);
 
-      queryClient.refetchQueries({ queryKey: ["userActivities"], exact: true });
+      queryClient.invalidateQueries({ queryKey: ["userActivities"], exact: true });
 
       Toast.show({
         type: "success",

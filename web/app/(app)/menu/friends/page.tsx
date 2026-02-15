@@ -24,11 +24,6 @@ export default function FriendsPage() {
   } = useQuery<Friends[]>({
     queryKey: ["get-friends"],
     queryFn: getFirends,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    refetchOnMount: false,
-    staleTime: Infinity,
-    gcTime: Infinity,
   });
 
   return (

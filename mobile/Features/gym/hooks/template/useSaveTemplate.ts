@@ -48,12 +48,12 @@ export default function useSaveTemplate({
       }
 
       if (templateId) {
-        await queryClient.refetchQueries({
+        await queryClient.invalidateQueries({
           queryKey: ["full_gym_template", templateId],
           exact: true,
         });
       } else {
-        await queryClient.refetchQueries({
+        await queryClient.invalidateQueries({
           queryKey: ["get-templates"],
           exact: true,
         });

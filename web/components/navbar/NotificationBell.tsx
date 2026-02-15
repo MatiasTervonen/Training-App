@@ -15,11 +15,6 @@ export default function NotificationBell() {
   const { data: friendRequest } = useQuery({
     queryKey: ["get-FriendRequest"],
     queryFn: getFriendRequest,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    refetchOnMount: false,
-    staleTime: Infinity,
-    gcTime: Infinity,
   });
 
   const requests = friendRequest ?? [];

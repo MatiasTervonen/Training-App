@@ -1,7 +1,7 @@
 import AppText from "@/components/AppText";
 import LinkButton from "@/components/buttons/LinkButton";
 import PageContainer from "@/components/PageContainer";
-import { View, Modal, AppState } from "react-native";
+import { View, AppState } from "react-native";
 import { useTimerStore } from "@/lib/stores/timerStore";
 import Toast from "react-native-toast-message";
 import { useEffect, useState } from "react";
@@ -9,14 +9,15 @@ import {
   canUseExactAlarm,
   requestExactAlarm,
 } from "@/native/android/EnsureExactAlarmPermission";
-import { Info } from "lucide-react-native";
-import AnimatedButton from "@/components/buttons/animatedButton";
+import InfoModal from "@/components/InfoModal";
 import { useTranslation } from "react-i18next";
-import * as Notifications from "expo-notifications";
+import { useUserStore } from "@/lib/stores/useUserStore";
+import { router } from "expo-router";
 
 export default function TimerScreen() {
   const { t } = useTranslation("timer");
   const [showModal, setShowModal] = useState(false);
+  const [showPushModal, setShowPushModal] = useState(false);
 
   const activeSession = useTimerStore((state) => state.activeSession);
 
@@ -25,12 +26,6 @@ export default function TimerScreen() {
       const allowed = await canUseExactAlarm();
       if (!allowed) {
         setShowModal(true);
-        return;
-      }
-
-      const { status } = await Notifications.getPermissionsAsync();
-      if (status !== "granted") {
-        await Notifications.requestPermissionsAsync();
       }
     };
     checkPermission();
@@ -54,13 +49,10 @@ export default function TimerScreen() {
       if (state !== "active") return;
 
       const allowed = await canUseExactAlarm();
-
-      if (allowed) {
+      if (allowed && showModal) {
         setShowModal(false);
-
-        const { status } = await Notifications.getPermissionsAsync();
-        if (status !== "granted") {
-          await Notifications.requestPermissionsAsync();
+        if (!useUserStore.getState().settings?.push_enabled) {
+          setShowPushModal(true);
         }
       }
     });
@@ -68,7 +60,7 @@ export default function TimerScreen() {
     return () => {
       sub.remove();
     };
-  }, []);
+  }, [showModal]);
 
   return (
     <>
@@ -95,37 +87,31 @@ export default function TimerScreen() {
         </View>
       </PageContainer>
 
-      <Modal visible={showModal} transparent={true} animationType="slide">
-        <View className="flex-1 justify-center items-center bg-black/50 px-5">
-          <View className="bg-slate-700 rounded-lg p-6 w-full border-2 border-gray-100">
-            <View className="mb-5">
-              <Info size={35} color="#fbbf24" />
-            </View>
-            <AppText className="text-xl mb-6 text-center">
-              {t("timer.alarmPermission.title")}
-            </AppText>
-            <AppText className="text-lg mb-6 text-center">
-              {t("timer.alarmPermission.description")}
-            </AppText>
-            <View className="flex-row gap-4">
-              <View className="flex-1">
-                <LinkButton
-                  href="/sessions"
-                  label={t("timer.alarmPermission.back")}
-                />
-              </View>
-              <View className="flex-1">
-                <AnimatedButton
-                  onPress={async () => await requestExactAlarm()}
-                  label={t("timer.alarmPermission.allow")}
-                  className="bg-blue-800 rounded-md shadow-md border-2 border-blue-500 py-2"
-                  textClassName="text-gray-100 text-center"
-                />
-              </View>
-            </View>
-          </View>
-        </View>
-      </Modal>
+      <InfoModal
+        visible={showModal}
+        onClose={() => {
+          setShowModal(false);
+          router.back();
+        }}
+        title={t("timer.alarmPermission.title")}
+        description={t("timer.alarmPermission.description")}
+        cancelLabel={t("timer.alarmPermission.back")}
+        confirmLabel={t("timer.alarmPermission.allow")}
+        onConfirm={() => requestExactAlarm()}
+      />
+
+      <InfoModal
+        visible={showPushModal}
+        onClose={() => setShowPushModal(false)}
+        title={t("timer.pushPermission.title")}
+        description={t("timer.pushPermission.description")}
+        cancelLabel={t("timer.pushPermission.skip")}
+        confirmLabel={t("timer.pushPermission.settings")}
+        onConfirm={() => {
+          setShowPushModal(false);
+          router.push("/menu/settings");
+        }}
+      />
     </>
   );
 }

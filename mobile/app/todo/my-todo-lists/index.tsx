@@ -15,7 +15,7 @@ import FeedCard from "@/features/feed-cards/FeedCard";
 import { FeedItemUI } from "@/types/session";
 import FeedHeader from "@/features/feed/FeedHeader";
 import useFullSessions from "@/features/feed/hooks/useFullSessions";
-import TodoSession from "@/features/expand-session-cards/todo";
+import TodoSession from "@/features/todo/cards/todo-expanded";
 import EditTodo from "@/features/todo/cards/todo-edit";
 import useTogglePin from "@/features/feed/hooks/useTogglePin";
 import useDeleteSession from "@/features/feed/hooks/useDeleteSession";

@@ -3,5 +3,8 @@
     "allow": [
       "Bash(find:*)"
     ]
+  },
+  "enabledPlugins": {
+    "react-native-best-practices@callstack-agent-skills": true
   }
 }

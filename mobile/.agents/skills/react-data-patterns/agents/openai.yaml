@@ -1,0 +1,4 @@
+interface:
+  display_name: "React Data Patterns"
+  short_description: "Data fetching, React Query, re-render and JS performance patterns for React Native"
+  default_prompt: "Use $react-data-patterns for TanStack Query, data fetching, re-render optimization, and JS performance patterns in React Native."

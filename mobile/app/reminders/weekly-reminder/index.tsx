@@ -22,8 +22,8 @@ import useSaveDraftWeekly from "@/features/reminders/hooks/weekly/useSaveDraft";
 import useSaveReminderWeekly from "@/features/reminders/hooks/weekly/useSaveReminder";
 import useSetNotificationWeekly from "@/features/reminders/hooks/weekly/useSetNotification";
 import Toggle from "@/components/toggle";
-import { canUseExactAlarm } from "@/native/android/EnsureExactAlarmPermission";
-import ExactAlarmPermissionModal from "@/components/ExactAlarmPermissionModal";
+import { canUseExactAlarm, requestExactAlarm } from "@/native/android/EnsureExactAlarmPermission";
+import InfoModal from "@/components/InfoModal";
 import { useTranslation } from "react-i18next";
 
 export default function ReminderScreen() {
@@ -179,10 +179,10 @@ export default function ReminderScreen() {
                           value={isChecked}
                           onValueChange={(newValue) => {
                             if (newValue) {
-                              setWeekdays([...weekdays, dayNumber]);
+                              setWeekdays((prev) => [...prev, dayNumber]);
                             } else {
-                              setWeekdays(
-                                weekdays.filter((day) => day !== dayNumber),
+                              setWeekdays((prev) =>
+                                prev.filter((day) => day !== dayNumber),
                               );
                             }
                           }}
@@ -215,9 +215,13 @@ export default function ReminderScreen() {
                 />
               </View>
             </View>
-            <View className="gap-5">
-              <SaveButton onPress={saveReminder} />
-              <DeleteButton onPress={resetReminder} />
+            <View className="flex-row gap-4">
+              <View className="flex-1">
+                <DeleteButton onPress={resetReminder} />
+              </View>
+              <View className="flex-1">
+                <SaveButton onPress={saveReminder} />
+              </View>
             </View>
           </View>
           <FullScreenLoader
@@ -227,9 +231,17 @@ export default function ReminderScreen() {
         </PageContainer>
       </TouchableWithoutFeedback>
 
-      <ExactAlarmPermissionModal
+      <InfoModal
         visible={showModal}
         onClose={() => setShowModal(false)}
+        title={t("reminders.alarmPermission.title")}
+        description={t("reminders.alarmPermission.description")}
+        cancelLabel={t("reminders.alarmPermission.cancel")}
+        confirmLabel={t("reminders.alarmPermission.allow")}
+        onConfirm={async () => {
+          await requestExactAlarm();
+          setShowModal(false);
+        }}
       />
     </>
   );

@@ -37,8 +37,8 @@ export default function useSaveNotes({
       await saveNote({ title, notes, draftRecordings });
 
       await Promise.all([
-        queryClient.refetchQueries({ queryKey: ["feed"], exact: true }),
-        queryClient.refetchQueries({ queryKey: ["myNotes"], exact: true }),
+        queryClient.invalidateQueries({ queryKey: ["feed"], exact: true }),
+        queryClient.invalidateQueries({ queryKey: ["myNotes"], exact: true }),
       ]);
 
       router.push("/dashboard");

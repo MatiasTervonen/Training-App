@@ -10,6 +10,7 @@ import { NotesVoiceSkeleton } from "@/components/skeletetons";
 import { useTranslation } from "react-i18next";
 import BodyText from "@/components/BodyText";
 import RichContent from "../components/notesWebview";
+import { stripHtml } from "@/lib/stripHtml";
 
 type notesPayload = {
   notes: string;
@@ -46,7 +47,7 @@ export default function NotesSession({
         )}
         <View className="relative bg-slate-900 px-5 pt-5 pb-10 rounded-md shadow-md mt-5">
           <View className="absolute top-2 right-2 z-10">
-            <CopyText textToCopy={note.title + "\n\n" + payload.notes} />
+            <CopyText textToCopy={note.title + "\n\n" + stripHtml(payload.notes)} />
           </View>
           <AppText className="text-xl text-center mb-10 border-b border-gray-700 pb-2">
             {note.title}

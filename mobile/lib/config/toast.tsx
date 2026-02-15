@@ -11,18 +11,18 @@ export const toastConfig = {
   success: (props: JSX.IntrinsicAttributes & BaseToastProps) => (
     <BaseToast
       {...props}
-      style={{ borderLeftColor: "green" }}
+      style={{ borderWidth: 1, borderColor: "#3b82f6", borderLeftWidth: 5, borderLeftColor: "green", backgroundColor: "#0f1520", overflow: "hidden" }}
       contentContainerStyle={{
         paddingHorizontal: 15,
         paddingVertical: 10,
-        backgroundColor: "#1C2431",
       }}
       text1Style={{
+        fontFamily: "Lexend-Medium",
         fontSize: 18,
-        fontWeight: "400",
         color: "#f3f4f6",
       }}
       text2Style={{
+        fontFamily: "Lexend-Medium",
         fontSize: 15,
         color: "#f3f4f6",
       }}
@@ -32,18 +32,18 @@ export const toastConfig = {
   info: (props: JSX.IntrinsicAttributes & BaseToastProps) => (
     <BaseToast
       {...props}
-      style={{ borderLeftColor: "#3b82f6" }}
+      style={{ borderWidth: 1, borderColor: "#3b82f6", borderLeftWidth: 5, borderLeftColor: "#3b82f6", backgroundColor: "#0f1520", overflow: "hidden" }}
       contentContainerStyle={{
         paddingHorizontal: 15,
         paddingVertical: 10,
-        backgroundColor: "#1C2431",
       }}
       text1Style={{
+        fontFamily: "Lexend-Medium",
         fontSize: 18,
-        fontWeight: "400",
         color: "#f3f4f6",
       }}
       text2Style={{
+        fontFamily: "Lexend-Medium",
         fontSize: 15,
         color: "#f3f4f6",
       }}
@@ -53,18 +53,18 @@ export const toastConfig = {
   error: (props: JSX.IntrinsicAttributes & BaseToastProps) => (
     <ErrorToast
       {...props}
-      style={{ borderLeftColor: "#ef4444" }}
+      style={{ borderWidth: 1, borderColor: "#3b82f6", borderLeftWidth: 5, borderLeftColor: "#ef4444", backgroundColor: "#0f1520", overflow: "hidden" }}
       contentContainerStyle={{
         paddingHorizontal: 15,
         paddingVertical: 10,
-        backgroundColor: "#1C2431",
       }}
       text1Style={{
+        fontFamily: "Lexend-Medium",
         fontSize: 18,
-        fontWeight: "400",
         color: "#ef4444",
       }}
       text2Style={{
+        fontFamily: "Lexend-Medium",
         fontSize: 15,
         color: "#f3f4f6",
       }}

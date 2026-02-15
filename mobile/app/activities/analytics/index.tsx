@@ -45,21 +45,11 @@ export default function ActivityAnalytics() {
     queryKey: ["steps-analytics"],
     queryFn: () => getStepsData(90),
     enabled: stepsPermitted,
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    staleTime: Infinity,
-    gcTime: Infinity,
   });
 
   const { data: sessionsData = [], isLoading: isLoadingSessions } = useQuery({
     queryKey: ["activity-sessions-analytics"],
     queryFn: () => getActivitySessions(90),
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    staleTime: Infinity,
-    gcTime: Infinity,
   });
 
   useEffect(() => {

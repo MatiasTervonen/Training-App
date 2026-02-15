@@ -118,9 +118,11 @@ export default function WeightChart({
     (state) => state.profile?.weight_unit || "kg",
   );
 
-  useEffect(() => {
-    setOffset(0); // Reset offset whenever range changes
-  }, [range]);
+  const [prevRange, setPrevRange] = useState(range);
+  if (range !== prevRange) {
+    setPrevRange(range);
+    setOffset(0);
+  }
 
   const filteredData = data.filter((entry) => {
     const entryDate = new Date(entry.created_at);
@@ -128,9 +130,7 @@ export default function WeightChart({
   });
 
   const firstEntry = filteredData.find((entry) => entry.weight !== null);
-  const lastEntry = [...filteredData]
-    .reverse()
-    .find((entry) => entry.weight !== null);
+  const lastEntry = filteredData.findLast((entry) => entry.weight !== null);
 
   let weightDifference: string | number = "N/A";
 

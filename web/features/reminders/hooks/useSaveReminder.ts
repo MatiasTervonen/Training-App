@@ -44,11 +44,13 @@ export default function useSaveReminder({
         notify_at: notifyAt.toISOString(),
       });
 
-      await queryClient.refetchQueries({
-        queryKey: ["get-reminders"],
-        exact: true,
-      });
-      await queryClient.refetchQueries({ queryKey: ["feed"], exact: true });
+      await Promise.all([
+        queryClient.refetchQueries({
+          queryKey: ["get-reminders"],
+          exact: true,
+        }),
+        queryClient.refetchQueries({ queryKey: ["feed"], exact: true }),
+      ]);
       router.push("/dashboard");
       resetReminder();
     } catch {

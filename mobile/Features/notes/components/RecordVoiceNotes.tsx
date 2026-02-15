@@ -52,11 +52,6 @@ export default function RecordVoiceNotes({
       return;
     }
 
-    setAudioModeAsync({
-      playsInSilentMode: true,
-      allowsRecording: true,
-    });
-
     if (recorderState.isRecording) {
       await audioRecorder.pause();
       setIsPaused(true);
@@ -64,10 +59,20 @@ export default function RecordVoiceNotes({
     }
 
     if (isPaused) {
-      audioRecorder.record();
+      try {
+        await audioRecorder.record();
+      } catch {
+        // Android throws IllegalStateException during pause→resume transition
+        // but the recording works correctly — safe to ignore
+      }
       setIsPaused(false);
       return;
     }
+
+    await setAudioModeAsync({
+      playsInSilentMode: true,
+      allowsRecording: true,
+    });
 
     await audioRecorder.prepareToRecordAsync();
     audioRecorder.record();

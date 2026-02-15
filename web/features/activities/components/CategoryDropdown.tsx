@@ -38,11 +38,6 @@ export default function CategoryDropdown({ onSelect }: Props) {
   const { data, error, isLoading } = useQuery({
     queryKey: ["activityCategories"],
     queryFn: getActivityCategories,
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    staleTime: Infinity,
-    gcTime: Infinity,
   });
 
   const filteredCategories = useMemo(() => {

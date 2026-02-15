@@ -30,11 +30,6 @@ export default function Sessions() {
   } = useQuery({
     queryKey: ["get-reminders", activeTab],
     queryFn: () => getRemindersByTab(activeTab),
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    refetchOnMount: false,
-    staleTime: Infinity,
-    gcTime: Infinity,
   });
 
   // useDeleteReminder hook to delete reminder

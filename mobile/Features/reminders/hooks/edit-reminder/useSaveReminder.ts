@@ -93,8 +93,6 @@ export default function useSaveReminder({
         );
       }
 
-      console.log("notify_at", notifyAt);
-
       const updatedFeedItem = await editLocalReminder({
         id: reminderId,
         title,

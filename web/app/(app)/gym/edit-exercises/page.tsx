@@ -187,15 +187,17 @@ export default function EditExercises() {
                 label={t("gym.addExerciseScreen.mainGroup")}
               />
               <div className="mt-20 flex flex-col gap-5">
-                <SaveButton
-                  onClick={handleUpdateExercise}
-                  label={t("gym.editExerciseScreen.updateExercise")}
-                />
-                <DeleteSessionBtn
-                  onDelete={() => handleDeleteExercise(selectedExercise.id)}
-                  label={t("gym.editExerciseScreen.deleteExercise")}
-                  confirmMessage={t("gym.editExerciseScreen.confirmDelete")}
-                />
+                <div className="flex flex-row gap-5">
+                  <DeleteSessionBtn
+                    onDelete={() => handleDeleteExercise(selectedExercise.id)}
+                    label={t("gym.editExerciseScreen.deleteExercise")}
+                    confirmMessage={t("gym.editExerciseScreen.confirmDelete")}
+                  />
+                  <SaveButton
+                    onClick={handleUpdateExercise}
+                    label={t("gym.editExerciseScreen.updateExercise")}
+                  />
+                </div>
                 <button
                   onClick={() => {
                     resetFields();

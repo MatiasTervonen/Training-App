@@ -1,7 +1,7 @@
 import { View, ScrollView } from "react-native";
 import AppText from "@/components/AppText";
 import AppInput from "@/components/AppInput";
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { useRouter } from "expo-router";
 import {
   ExerciseEntry,
@@ -128,11 +128,6 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
     queryKey: ["last-exercise-history", exerciseHistoryId],
     queryFn: () => getLastExerciseHistory({ exerciseId: exerciseHistoryId! }),
     enabled: isHistoryOpen && !!exerciseHistoryId,
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    staleTime: Infinity,
-    gcTime: Infinity,
   });
 
   const exerciseIds = exercises.map((ex) => ex.exercise_id!);
@@ -141,11 +136,6 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
     queryKey: ["prefetched-history", exerciseIds],
     queryFn: () => getPrefetchedHistoryPerCard(exerciseIds),
     enabled: exerciseIds.length > 0,
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    staleTime: Infinity,
-    gcTime: Infinity,
   });
 
   const historyMap = useMemo(() => {
@@ -229,14 +219,19 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
     session,
   });
 
+  // Keep a ref to the latest activeSession for use inside effects
+  const activeSessionRef = useRef(activeSession);
+  activeSessionRef.current = activeSession;
+
   useEffect(() => {
+    const session = activeSessionRef.current;
     if (
-      activeSession &&
-      activeSession.type === t("gym:gym.title") &&
-      activeSession.label !== title
+      session &&
+      session.type === t("gym:gym.title") &&
+      session.label !== title
     ) {
       setActiveSession({
-        ...activeSession,
+        ...session,
         label: title,
       });
     }
@@ -249,7 +244,7 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
           : t("timer:timer.notification.inProgress");
       updateNativeTimerLabel(startTimestamp, title, mode, statusText);
     }
-  }, [title, activeSession, setActiveSession, startTimestamp, mode, t]);
+  }, [title, setActiveSession, startTimestamp, mode, t]);
 
   const groupedExercises = GroupGymExercises(exercises);
 
@@ -331,7 +326,7 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
 
                 {group.map(({ exercise, index }) => {
                   return (
-                    <View key={index}>
+                    <View key={exercise.exercise_id}>
                       <ExerciseCard
                         disabled={false}
                         mode="session"
@@ -493,17 +488,21 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
               <Plus size={20} color="#f3f4f6" />
             </AnimatedButton>
 
-            <View className="gap-5 mt-20">
-              <SaveButton onPress={handleSaveSession} />
-              {isEditing ? (
-                <DeleteButton
-                  confirm={false}
-                  label={t("gym.gymForm.editDeleteButtonLabel")}
-                  onPress={() => router.push("/dashboard")}
-                />
-              ) : (
-                <DeleteButton onPress={resetSession} />
-              )}
+            <View className="flex-row gap-4 mt-20">
+              <View className="flex-1">
+                {isEditing ? (
+                  <DeleteButton
+                    confirm={false}
+                    label={t("gym.gymForm.editDeleteButtonLabel")}
+                    onPress={() => router.push("/dashboard")}
+                  />
+                ) : (
+                  <DeleteButton onPress={resetSession} />
+                )}
+              </View>
+              <View className="flex-1">
+                <SaveButton onPress={handleSaveSession} />
+              </View>
             </View>
           </>
         </PageContainer>

@@ -35,7 +35,7 @@ export function useDeleteTemplate() {
         text1: "Template deleted successfully",
       });
 
-      queryClient.refetchQueries({ queryKey: ["fullActivitySession"] });
+      queryClient.invalidateQueries({ queryKey: ["fullActivitySession"] });
     } catch {
       queryClient.setQueryData(queryKey, previousTemplates);
       Toast.show({

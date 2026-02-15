@@ -82,11 +82,6 @@ export default function useFullSessions(
     queryKey: ["fullGymSession", gymId],
     queryFn: () => getFullGymSession(gymId!),
     enabled: !!gymId,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    refetchOnMount: false,
-    staleTime: Infinity,
-    gcTime: Infinity,
   });
 
   const {
@@ -101,11 +96,6 @@ export default function useFullSessions(
       return { ...data, feed_context: todoItem!.feed_context };
     },
     enabled: !!todoId,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    refetchOnMount: false,
-    staleTime: Infinity,
-    gcTime: Infinity,
   });
 
   const {
@@ -120,11 +110,6 @@ export default function useFullSessions(
       return { ...data, feed_context: activityItem!.feed_context };
     },
     enabled: !!activityId,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    refetchOnMount: false,
-    staleTime: Infinity,
-    gcTime: Infinity,
   });
 
   const {
@@ -135,11 +120,6 @@ export default function useFullSessions(
     queryKey: ["activityVoiceRecordings", activityVoiceId],
     queryFn: async () => await getActivityVoiceRecordings(activityVoiceId!),
     enabled: !!activityVoiceId,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    refetchOnMount: false,
-    staleTime: Infinity,
-    gcTime: Infinity,
   });
 
   const {
@@ -151,11 +131,6 @@ export default function useFullSessions(
     queryKey: ["fullNotesSession", notesId],
     queryFn: async () => await getFullNotesSession(notesId!),
     enabled: !!notesId,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    refetchOnMount: false,
-    staleTime: Infinity,
-    gcTime: Infinity,
   });
 
   return {

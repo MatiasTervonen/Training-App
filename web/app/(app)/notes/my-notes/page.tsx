@@ -4,7 +4,7 @@ import { useState } from "react";
 import Modal from "@/components/modal";
 import FeedCard from "@/features/feed-cards/FeedCard";
 import NotesSession from "@/features/notes/cards/notes-expanded";
-import EditNote from "@/features/notes/cards/EditNotes";
+import EditNote from "@/features/notes/cards/notes-edit";
 import Spinner from "@/components/spinner";
 import { FeedSkeleton } from "@/ui/loadingSkeletons/skeletons";
 import { FeedItemUI } from "@/types/session";

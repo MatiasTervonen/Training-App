@@ -120,9 +120,9 @@ export default function WorkoutAnalyticsPage() {
           onChange={(e) => setWeight(e.target.value)}
         />
       </div>
-      <div className="flex flex-col items-center gap-5">
-        <SaveButton onClick={handleSaveWeight} />
+      <div className="flex flex-row gap-5">
         <DeleteSessionBtn onDelete={resetWeight} />
+        <SaveButton onClick={handleSaveWeight} />
       </div>
       {isSaving && <FullScreenLoader message={t("weight.savingWeight")} />}
     </div>

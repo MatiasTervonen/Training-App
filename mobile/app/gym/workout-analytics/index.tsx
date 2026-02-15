@@ -16,21 +16,11 @@ export default function AnalyticsScreen() {
   } = useQuery({
     queryKey: ["heatmap-analytics"],
     queryFn: last30DaysAnalytics,
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    staleTime: Infinity,
-    gcTime: Infinity,
   });
 
   const { data, error, isLoading } = useQuery({
     queryKey: ["last-30-days-analytics"],
     queryFn: last30DaysAnalyticsRPC,
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    staleTime: Infinity,
-    gcTime: Infinity,
   });
 
   const isUnifiedLoading = isLoading || heatMapLoading;

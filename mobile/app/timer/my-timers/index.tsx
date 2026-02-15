@@ -52,18 +52,13 @@ export default function MyTimersScreen() {
   } = useQuery({
     queryKey: ["timers"],
     queryFn: getTimer,
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    staleTime: Infinity,
-    gcTime: Infinity,
   });
 
   const handleDeleteTimer = async (timerId: string) => {
     try {
       await deleteTimer(timerId);
 
-      queryClient.refetchQueries({ queryKey: ["timers"], exact: true });
+      queryClient.invalidateQueries({ queryKey: ["timers"], exact: true });
       Toast.show({ type: "success", text1: t("timer.deleteSuccess") });
     } catch {
       Toast.show({

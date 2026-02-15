@@ -31,11 +31,6 @@ export default function WeightSession(weight: FeedItemUI) {
   } = useQuery({
     queryKey: ["get-weight"],
     queryFn: getWeight,
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    staleTime: Infinity,
-    gcTime: Infinity,
   });
 
   return (

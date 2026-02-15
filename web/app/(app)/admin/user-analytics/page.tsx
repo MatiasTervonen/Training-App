@@ -38,7 +38,6 @@ export default function Sessions() {
     queryKey: ["get-users", page],
     queryFn: () => getUsers({ pageParam: page, limit }),
     placeholderData: (previousData) => previousData,
-    refetchOnMount: true,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
   });
@@ -50,7 +49,6 @@ export default function Sessions() {
   } = useQuery({
     queryKey: ["get-user-count"],
     queryFn: () => getUserCount(),
-    refetchOnMount: true,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
   });

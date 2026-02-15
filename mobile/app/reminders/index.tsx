@@ -2,7 +2,6 @@ import AppText from "@/components/AppText";
 import { Globe, Info } from "lucide-react-native";
 import LinkButton from "@/components/buttons/LinkButton";
 import PageContainer from "@/components/PageContainer";
-import { useEffect, useState } from "react";
 import { useUserStore } from "@/lib/stores/useUserStore";
 import { Modal, View } from "react-native";
 import { useTranslation } from "react-i18next";
@@ -10,15 +9,8 @@ import BodyText from "@/components/BodyText";
 
 export default function SessionsScreen() {
   const { t } = useTranslation("reminders");
-  const [showModal, setShowModal] = useState(false);
-
   const pushEnabled = useUserStore((state) => state.settings?.push_enabled);
-
-  useEffect(() => {
-    if (pushEnabled === false) {
-      setShowModal(true);
-    }
-  }, [pushEnabled]);
+  const showModal = pushEnabled === false;
 
   return (
     <>

@@ -75,7 +75,7 @@ export default function ActivityTemplateEditScreen() {
         activityId: selectedActivity!.id,
       });
 
-      queryClient.refetchQueries({
+      queryClient.invalidateQueries({
         queryKey: ["get-activity-templates"],
         exact: true,
       });
@@ -161,15 +161,19 @@ export default function ActivityTemplateEditScreen() {
             <View className="h-5" />
           </FullScreenModal>
         </View>
-        <View className="gap-5">
-          <SaveButton onPress={handleSave} label={t("activities.editTemplateScreen.saveButton")} />
-          <DeleteButton
-            onPress={() => {
-              router.push("/activities/templates");
-            }}
-            label={t("activities.editTemplateScreen.cancelButton")}
-            confirm={false}
-          />
+        <View className="flex-row gap-4">
+          <View className="flex-1">
+            <DeleteButton
+              onPress={() => {
+                router.push("/activities/templates");
+              }}
+              label={t("activities.editTemplateScreen.cancelButton")}
+              confirm={false}
+            />
+          </View>
+          <View className="flex-1">
+            <SaveButton onPress={handleSave} label={t("activities.editTemplateScreen.saveButton")} />
+          </View>
         </View>
         <FullScreenLoader visible={isLoading} message={t("activities.editTemplateScreen.savingTemplate")} />
       </PageContainer>

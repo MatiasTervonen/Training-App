@@ -43,7 +43,7 @@ export default function useSaveTimer({
         notes,
       });
 
-      queryClient.refetchQueries({ queryKey: ["timers"], exact: true });
+      queryClient.invalidateQueries({ queryKey: ["timers"], exact: true });
       router.push("/timer/my-timers");
       Toast.show({
         type: "success",

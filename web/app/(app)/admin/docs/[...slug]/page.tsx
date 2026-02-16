@@ -4,12 +4,8 @@ import { notFound } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import { CopyBlock } from "@/app/(app)/admin/docs/[...slug]/copy-block";
 
-// Next.js 16: force static generation — without these the parent layout's
-// dynamic auth makes the route render on-demand where the .md files don't exist.
-export const dynamicParams = false;
-export const dynamic = "force-static";
-
 // Pre-build all doc pages during "next build" so they are served as static HTML.
+// Without this, Vercel doesn't include the .md files in the deployment and the pages crash.
 export async function generateStaticParams() {
   const docsDir = path.join(process.cwd(), "app", "content", "docs");
 
@@ -25,11 +21,7 @@ export async function generateStaticParams() {
       }
     }
   }
-
   scanDir(docsDir, []);
-  console.log("[docs] generateStaticParams cwd:", process.cwd());
-  console.log("[docs] generateStaticParams docsDir:", docsDir);
-  console.log("[docs] generateStaticParams found:", JSON.stringify(params));
   return params;
 }
 

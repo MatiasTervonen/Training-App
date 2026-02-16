@@ -1,5 +1,5 @@
 import { ActivityIndicator, View } from "react-native";
-import Mapbox from "@rnmapbox/maps";
+import Mapbox, { AnimatedPoint } from "@rnmapbox/maps";
 import AnimatedButton from "../../../components/buttons/animatedButton";
 import { CircleX, Layers2, MapPin, NotebookPen } from "lucide-react-native";
 import SessionStats from "./sessionStats";
@@ -94,34 +94,50 @@ export default function FullScreenMap({
     return segments;
   }, [track, warmupStartIndex]);
 
-  const trackShape = {
-    type: "Feature",
-    properties: {},
-    geometry: {
-      type: "MultiLineString",
-      coordinates: trackSegments,
-    },
-  };
+  const trackShape = useMemo(() => {
+    let segments = trackSegments;
+    if (currentPosition && segments.length > 0) {
+      const last = segments[segments.length - 1];
+      if (last.length > 0) {
+        segments = [
+          ...segments.slice(0, -1),
+          [...last, [currentPosition.longitude, currentPosition.latitude]],
+        ];
+      }
+    }
+    return {
+      type: "Feature",
+      properties: {},
+      geometry: {
+        type: "MultiLineString",
+        coordinates: segments,
+      },
+    };
+  }, [trackSegments, currentPosition]);
 
   const lastPoint = track.length > 0 ? track[track.length - 1] : null;
   const lastMovingPoint = track.findLast((p) => !p.isStationary) ?? null;
 
-  // Use currentPosition for user dot if available (updates during warmup),
-  // otherwise fall back to last track point
   const userPosition = currentPosition ?? lastPoint;
 
-  const userFeature = userPosition
-    ? {
-        type: "Feature",
-        properties: {
-          accuracy: userPosition.accuracy,
-        },
-        geometry: {
-          type: "Point",
-          coordinates: [userPosition.longitude, userPosition.latitude],
-        },
-      }
-    : null;
+  const animatedUserPoint = useRef(
+    new AnimatedPoint({ type: "Point", coordinates: [0, 0] })
+  ).current;
+  const hasInitialPosition = useRef(false);
+
+  useEffect(() => {
+    if (!userPosition) return;
+    const coords = [userPosition.longitude, userPosition.latitude];
+
+    if (!hasInitialPosition.current) {
+      // First position — snap immediately, no animation
+      animatedUserPoint.setValue({ type: "Point", coordinates: coords });
+      hasInitialPosition.current = true;
+    } else {
+      // Subsequent updates — animate smoothly
+      animatedUserPoint.timing({ coordinates: coords }).start();
+    }
+  }, [userPosition?.longitude, userPosition?.latitude, animatedUserPoint, userPosition]);
 
   const MAP_STYLES = [
     Mapbox.StyleURL.Dark,
@@ -152,29 +168,6 @@ export default function FullScreenMap({
             setIsFollowingUser(false);
           }}
         >
-          {userFeature && (
-            <Mapbox.ShapeSource id="user-location" shape={userFeature as any}>
-              <Mapbox.CircleLayer
-                id="user-dot-outer-blur"
-                style={{
-                  circleColor: "#3b82f6",
-                  circleRadius: 18,
-                  circleOpacity: 0.25,
-                }}
-              />
-              <Mapbox.CircleLayer
-                id="user-dot-core"
-                style={{
-                  circleColor: "#3b82f6",
-                  circleRadius: 9,
-                  circleOpacity: 1,
-                  circleStrokeColor: "#ffffff",
-                  circleStrokeWidth: 2,
-                }}
-              />
-            </Mapbox.ShapeSource>
-          )}
-
           <Mapbox.Camera
             followUserLocation={isFollowingUser}
             followZoomLevel={15}
@@ -233,6 +226,28 @@ export default function FullScreenMap({
             </Mapbox.ShapeSource>
           )}
 
+          {hasInitialPosition.current && (
+            <Mapbox.ShapeSource id="user-location" shape={animatedUserPoint as any}>
+              <Mapbox.CircleLayer
+                id="user-dot-outer-blur"
+                style={{
+                  circleColor: "#3b82f6",
+                  circleRadius: 18,
+                  circleOpacity: 0.25,
+                }}
+              />
+              <Mapbox.CircleLayer
+                id="user-dot-core"
+                style={{
+                  circleColor: "#3b82f6",
+                  circleRadius: 9,
+                  circleOpacity: 1,
+                  circleStrokeColor: "#ffffff",
+                  circleStrokeWidth: 2,
+                }}
+              />
+            </Mapbox.ShapeSource>
+          )}
         </Mapbox.MapView>
 
         {isLoadingTemplateRoute && (

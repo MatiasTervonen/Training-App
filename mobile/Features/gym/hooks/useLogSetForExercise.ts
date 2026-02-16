@@ -33,7 +33,7 @@ export default function useLogSetForExercise({
 
       setExerciseInputs(updatedInputs);
     } else {
-      const safeWeight = input.weight === "" ? 0 : Number(input.weight);
+      const safeWeight = !input.weight ? 0 : Number(input.weight.replace(",", "."));
       const safeReps = input.reps === "" ? 0 : Number(input.reps);
 
       updated[index].sets.push({

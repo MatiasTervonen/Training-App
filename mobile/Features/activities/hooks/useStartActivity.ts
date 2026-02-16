@@ -91,6 +91,14 @@ export function useStartActivity({
       if (!ok) return;
     }
 
+    // Start step session BEFORE setActiveSession to avoid race condition:
+    // setActiveSession triggers useLiveStepCounter which calls startLiveStepUpdates(),
+    // which reads the session start value from SharedPreferences once.
+    // If startStepSession hasn't written it yet, steps will always report 0.
+    if (stepsAllowed) {
+      await startStepSession();
+    }
+
     setActiveSession({
       type: activityName,
       label: title,
@@ -98,10 +106,6 @@ export function useStartActivity({
       gpsAllowed: allowGPS,
       stepsAllowed: stepsAllowed,
     });
-
-    if (stepsAllowed) {
-      await startStepSession();
-    }
 
     if (allowGPS) {
       // One-time battery optimization check for reliable background GPS

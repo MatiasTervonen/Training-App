@@ -286,7 +286,7 @@ export default function ExerciseCard({
                     maxLength={5}
                     value={input.weight ?? ""}
                     onChangeText={(val) => {
-                      const numbersOnly = val.replace(/[^0-9.]/g, "");
+                      const numbersOnly = val.replace(/[^0-9.,]/g, "");
                       onInputChange(index, "weight", numbersOnly);
                     }}
                   />

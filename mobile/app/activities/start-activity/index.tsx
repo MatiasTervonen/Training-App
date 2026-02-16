@@ -95,6 +95,7 @@ export default function StartActivityScreen() {
   const [draftRecordings, setDraftRecordings] = useState<DraftRecording[]>([]);
   const [baseMet, setBaseMet] = useState(0);
   const [showBatteryHint, setShowBatteryHint] = useState(false);
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
 
   const confirmAction = useConfirmAction();
 
@@ -278,11 +279,39 @@ export default function StartActivityScreen() {
   // useCountAveragePace hook to count the average pace from moving time
   const averagePacePerKm = useAveragePace(meters, movingTimeSeconds ?? 0);
 
+  // Live elapsed time for non-GPS calorie calculation
+  useEffect(() => {
+    if (allowGPS) return;
+
+    // When paused, compute from remainingMs (stores elapsed ms in countup mode)
+    if (!isRunning) {
+      if (remainingMs !== null) {
+        setElapsedSeconds(Math.floor(remainingMs / 1000));
+      }
+      return;
+    }
+
+    if (!startTimestamp) return;
+
+    setElapsedSeconds(Math.floor((Date.now() - startTimestamp) / 1000));
+
+    const interval = setInterval(() => {
+      setElapsedSeconds(Math.floor((Date.now() - startTimestamp) / 1000));
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [allowGPS, startTimestamp, isRunning, remainingMs]);
+
+  // Use GPS-based moving time when tracking, otherwise use elapsed timer time
+  const effectiveMovingTime = allowGPS
+    ? (movingTimeSeconds ?? 0)
+    : elapsedSeconds;
+
   // Live calorie estimation: same formula as RPC compute-stats.sql
   const liveCalories = useMemo(() => {
     if (!baseMet || !userWeight) return 0;
-    return Math.round(baseMet * userWeight * ((movingTimeSeconds ?? 0) / 3600));
-  }, [baseMet, userWeight, movingTimeSeconds]);
+    return Math.round(baseMet * userWeight * (effectiveMovingTime / 3600));
+  }, [baseMet, userWeight, effectiveMovingTime]);
 
   // useSaveActivitySession hook to save the activity session
   const { handleSaveSession } = useSaveActivitySession({

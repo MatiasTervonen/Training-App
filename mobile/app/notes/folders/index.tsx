@@ -1,4 +1,4 @@
-import { View, ScrollView, Pressable } from "react-native";
+import { View, ScrollView } from "react-native";
 import AppText from "@/components/AppText";
 import AppInput from "@/components/AppInput";
 import { useState } from "react";
@@ -67,7 +67,7 @@ export default function ManageFoldersScreen() {
           </AppText>
 
           {/* Create folder input */}
-          <View className="flex-row items-end gap-3 mb-8">
+          <View className="gap-4 mb-8">
             <View className="flex-1">
               <AppInput
                 value={newFolderName}
@@ -79,9 +79,9 @@ export default function ManageFoldersScreen() {
             <AnimatedButton
               onPress={handleCreate}
               disabled={!newFolderName.trim() || isCreating}
-              className="btn-base px-4 py-3"
+              className="btn-base"
             >
-              <AppText className="text-gray-100">
+              <AppText className="text-gray-100 text-center">
                 {t("notes.folders.createFolder")}
               </AppText>
             </AnimatedButton>
@@ -123,12 +123,12 @@ export default function ManageFoldersScreen() {
                           autoFocus
                         />
                       </View>
-                      <Pressable onPress={confirmRename} className="p-2">
+                      <AnimatedButton onPress={confirmRename} className="p-2">
                         <Check size={20} color="#22c55e" />
-                      </Pressable>
-                      <Pressable onPress={cancelRename} className="p-2">
+                      </AnimatedButton>
+                      <AnimatedButton onPress={cancelRename} className="p-2">
                         <X size={20} color="#94a3b8" />
-                      </Pressable>
+                      </AnimatedButton>
                     </View>
                   ) : (
                     <>
@@ -143,18 +143,18 @@ export default function ManageFoldersScreen() {
                         </AppText>
                       </View>
                       <View className="flex-row items-center gap-2">
-                        <Pressable
+                        <AnimatedButton
                           onPress={() => startRename(folder)}
                           className="p-2"
                         >
                           <Pencil size={18} color="#94a3b8" />
-                        </Pressable>
-                        <Pressable
+                        </AnimatedButton>
+                        <AnimatedButton
                           onPress={() => handleDelete(folder)}
                           className="p-2"
                         >
                           <Trash2 size={18} color="#ef4444" />
-                        </Pressable>
+                        </AnimatedButton>
                       </View>
                     </>
                   )}

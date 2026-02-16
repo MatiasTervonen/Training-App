@@ -4,7 +4,6 @@ import { FeedItemUI } from "@/types/session";
 
 export type FolderFilter =
   | { type: "all" }
-  | { type: "unfiled" }
   | { type: "folder"; folderId: string };
 
 export async function getNotes({
@@ -25,9 +24,8 @@ export async function getNotes({
   // When filtering by folder, use the RPC
   if (folderFilter && folderFilter.type !== "all") {
     const { data, error } = await supabase.rpc("notes_get_by_folder", {
-      p_folder_id:
-        folderFilter.type === "folder" ? folderFilter.folderId : undefined,
-      p_unfiled_only: folderFilter.type === "unfiled",
+      p_folder_id: folderFilter.folderId,
+      p_unfiled_only: false,
       p_limit: limit,
       p_offset: from,
     });

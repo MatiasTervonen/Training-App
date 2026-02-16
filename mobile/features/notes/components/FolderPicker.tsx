@@ -1,5 +1,6 @@
-import { View, Pressable } from "react-native";
+import { View } from "react-native";
 import AppText from "@/components/AppText";
+import AnimatedButton from "@/components/buttons/animatedButton";
 import { ChevronDown, ChevronUp, Check } from "lucide-react-native";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -22,7 +23,7 @@ export default function FolderPicker({
   const [isOpen, setIsOpen] = useState(false);
 
   const selectedFolder = folders.find((f) => f.id === selectedFolderId);
-  const displayName = selectedFolder?.name ?? t("notes.folders.unfiled");
+  const displayName = selectedFolder?.name ?? t("notes.folders.noFolder");
 
   if (isLoading) {
     return (
@@ -44,7 +45,7 @@ export default function FolderPicker({
       <AppText className="text-sm text-slate-400 mb-1">
         {t("notes.folders.saveToFolder")}
       </AppText>
-      <Pressable
+      <AnimatedButton
         onPress={() => setIsOpen(!isOpen)}
         className="bg-slate-800 border border-slate-600 rounded-lg px-4 py-3 flex-row items-center justify-between"
       >
@@ -54,11 +55,11 @@ export default function FolderPicker({
         ) : (
           <ChevronDown size={18} color="#94a3b8" />
         )}
-      </Pressable>
+      </AnimatedButton>
 
       {isOpen && (
         <View className="bg-slate-800 border border-slate-600 rounded-lg mt-1 overflow-hidden">
-          <Pressable
+          <AnimatedButton
             onPress={() => {
               onSelect(null);
               setIsOpen(false);
@@ -68,13 +69,13 @@ export default function FolderPicker({
             }`}
           >
             <AppText className="text-slate-200">
-              {t("notes.folders.unfiled")}
+              {t("notes.folders.noFolder")}
             </AppText>
             {!selectedFolderId && <Check size={16} color="#3b82f6" />}
-          </Pressable>
+          </AnimatedButton>
 
           {folders.map((folder) => (
-            <Pressable
+            <AnimatedButton
               key={folder.id}
               onPress={() => {
                 onSelect(folder.id);
@@ -88,7 +89,7 @@ export default function FolderPicker({
               {selectedFolderId === folder.id && (
                 <Check size={16} color="#3b82f6" />
               )}
-            </Pressable>
+            </AnimatedButton>
           ))}
         </View>
       )}

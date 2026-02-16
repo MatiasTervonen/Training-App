@@ -27,7 +27,7 @@ export default function MoveToFolderDropdown({
   useClickOutside(dropdownRef, () => setIsOpen(false));
 
   const currentFolder = folders.find((f) => f.id === currentFolderId);
-  const displayName = currentFolder?.name ?? t("notes.folders.unfiled");
+  const displayName = currentFolder?.name ?? t("notes.folders.noFolder");
 
   const onSelect = async (folderId: string | null, folderName?: string) => {
     if (folderId === currentFolderId) {
@@ -70,7 +70,7 @@ export default function MoveToFolderDropdown({
               !currentFolderId ? "bg-slate-700" : ""
             }`}
           >
-            <span className="text-slate-300">{t("notes.folders.unfiled")}</span>
+            <span className="text-slate-300">{t("notes.folders.noFolder")}</span>
             {!currentFolderId && (
               <Check size={14} className="text-blue-500" />
             )}

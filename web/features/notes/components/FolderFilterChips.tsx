@@ -8,22 +8,18 @@ import type { FolderWithCount } from "@/database/notes/get-folders";
 type FolderFilterChipsProps = {
   folders: FolderWithCount[];
   selectedFolderId: string | null;
-  isUnfiledSelected: boolean;
   onSelectAll: () => void;
-  onSelectUnfiled: () => void;
   onSelectFolder: (folderId: string) => void;
 };
 
 export default function FolderFilterChips({
   folders,
   selectedFolderId,
-  isUnfiledSelected,
   onSelectAll,
-  onSelectUnfiled,
   onSelectFolder,
 }: FolderFilterChipsProps) {
   const { t } = useTranslation("notes");
-  const isAllSelected = !selectedFolderId && !isUnfiledSelected;
+  const isAllSelected = !selectedFolderId;
 
   const chipBase =
     "px-4 py-1.5 rounded-full text-sm transition-colors cursor-pointer whitespace-nowrap";
@@ -38,13 +34,6 @@ export default function FolderFilterChips({
         className={`${chipBase} ${isAllSelected ? activeChip : inactiveChip}`}
       >
         {t("notes.folders.all")}
-      </button>
-
-      <button
-        onClick={onSelectUnfiled}
-        className={`${chipBase} ${isUnfiledSelected ? activeChip : inactiveChip}`}
-      >
-        {t("notes.folders.unfiled")}
       </button>
 
       {folders.map((folder) => {

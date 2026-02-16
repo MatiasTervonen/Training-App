@@ -12,7 +12,6 @@ export default function useMyNotesFeed(folderFilter?: FolderFilter) {
 
   const queryKey = useMemo(() => {
     if (!folderFilter || folderFilter.type === "all") return ["myNotes"];
-    if (folderFilter.type === "unfiled") return ["myNotes", "unfiled"];
     return ["myNotes", folderFilter.folderId];
   }, [folderFilter]);
 

@@ -30,13 +30,11 @@ export default function MyNotesPage() {
 
   // Folder filter state
   const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
-  const [isUnfiledSelected, setIsUnfiledSelected] = useState(false);
 
   const folderFilter: FolderFilter | undefined = useMemo(() => {
-    if (isUnfiledSelected) return { type: "unfiled" };
     if (selectedFolderId) return { type: "folder", folderId: selectedFolderId };
     return undefined;
-  }, [selectedFolderId, isUnfiledSelected]);
+  }, [selectedFolderId]);
 
   const { folders } = useFolders();
 
@@ -60,7 +58,6 @@ export default function MyNotesPage() {
 
 
   const getEmptyMessage = () => {
-    if (isUnfiledSelected) return t("notes.folders.noUnfiled");
     if (selectedFolderId) return t("notes.folders.folderEmpty");
     return t("notes.noNotes");
   };
@@ -92,18 +89,11 @@ export default function MyNotesPage() {
           <FolderFilterChips
             folders={folders}
             selectedFolderId={selectedFolderId}
-            isUnfiledSelected={isUnfiledSelected}
             onSelectAll={() => {
               setSelectedFolderId(null);
-              setIsUnfiledSelected(false);
-            }}
-            onSelectUnfiled={() => {
-              setSelectedFolderId(null);
-              setIsUnfiledSelected(true);
             }}
             onSelectFolder={(id) => {
               setSelectedFolderId(id);
-              setIsUnfiledSelected(false);
             }}
           />
         )}

@@ -16,6 +16,7 @@
 - Never write custom button styles — use existing ones from `app/components/buttons`.
 
 ## Buttons
+- Always use `AnimatedButton` instead of `Pressable` — never use raw `Pressable`.
 - Always check `app/components/buttons` for existing buttons before creating new ones.
 - If no matching button exists, use `AnimatedButton` with the correct style class.
 - Use `btn-base` for standard buttons, `btn-danger` for delete/cancel actions.

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo } from "react";
 import Modal from "@/components/modal";
 import FeedCard from "@/features/feed-cards/FeedCard";
 import NotesSession from "@/features/notes/cards/notes-expanded";
@@ -58,21 +58,6 @@ export default function MyNotesPage() {
   const { handleDelete } = useNotesDeleteSession();
   const { updateFeedItemToTop } = useNotesUpdateFeedItemToTop();
 
-  // Build folder name lookup
-  const folderMap = useMemo(() => {
-    const map = new Map<string, string>();
-    folders.forEach((f) => map.set(f.id, f.name));
-    return map;
-  }, [folders]);
-
-  const getFolderName = useCallback(
-    (item: FeedItemUI) => {
-      const folderId = (item.extra_fields as { folder_id?: string } | null)?.folder_id;
-      if (!folderId) return null;
-      return folderMap.get(folderId) ?? null;
-    },
-    [folderMap],
-  );
 
   const getEmptyMessage = () => {
     if (isUnfiledSelected) return t("notes.folders.noUnfiled");

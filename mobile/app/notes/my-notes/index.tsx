@@ -1,6 +1,6 @@
 import AppText from "@/components/AppText";
 import { View, FlatList, RefreshControl } from "react-native";
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo } from "react";
 import { FeedSkeleton } from "@/components/skeletetons";
 import FullScreenModal from "@/components/FullScreenModal";
 import { LinearGradient } from "expo-linear-gradient";
@@ -64,21 +64,6 @@ export default function MyNotesScreen() {
   const { notesSessionFull, notesSessionError, isLoadingNotesSession } =
     useFullSessions(expandedItem, editingItem);
 
-  // Build folder name lookup from folders
-  const folderMap = useMemo(() => {
-    const map = new Map<string, string>();
-    folders.forEach((f) => map.set(f.id, f.name));
-    return map;
-  }, [folders]);
-
-  const getFolderName = useCallback(
-    (item: FeedItemUI) => {
-      const folderId = (item.extra_fields as { folder_id?: string } | null)?.folder_id;
-      if (!folderId) return null;
-      return folderMap.get(folderId) ?? null;
-    },
-    [folderMap],
-  );
 
   const getEmptyMessage = () => {
     if (isUnfiledSelected) return t("notes.folders.noUnfiled");

@@ -9,7 +9,7 @@ export async function moveNoteToFolder(
 
   const { error } = await supabase.rpc("notes_move_to_folder", {
     p_note_id: noteId,
-    p_folder_id: folderId,
+    p_folder_id: folderId ?? undefined,
   });
 
   if (error) {

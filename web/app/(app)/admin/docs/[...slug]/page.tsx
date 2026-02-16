@@ -4,8 +4,11 @@ import { notFound } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import { CopyBlock } from "@/app/(app)/admin/docs/[...slug]/copy-block";
 
+// Only serve pages pre-built by generateStaticParams — never attempt dynamic rendering,
+// because the .md source files aren't available at runtime on Vercel.
+export const dynamicParams = false;
+
 // Pre-build all doc pages during "next build" so they are served as static HTML.
-// Without this, Vercel doesn't include the .md files in the deployment and the pages crash.
 export async function generateStaticParams() {
   const docsDir = path.join(process.cwd(), "app", "content", "docs");
 

@@ -8,6 +8,7 @@ import {
   useStartGPStracking,
   useStopGPStracking,
 } from "../../lib/location-actions";
+import { startStepSession } from "@/native/android/NativeStepCounter";
 import { useState } from "react";
 import { useRouter } from "expo-router";
 
@@ -98,6 +99,10 @@ export function useStartActivity() {
     const ok = await initializeDatabase();
 
     if (!ok) return;
+
+    // Reset native step counter baseline before setActiveSession,
+    // otherwise useLiveStepCounter picks up stale steps from the previous session
+    await startStepSession();
 
     setActiveSession({
       type: template.activity.name,

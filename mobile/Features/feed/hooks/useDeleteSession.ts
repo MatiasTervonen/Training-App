@@ -13,13 +13,11 @@ export default function useDeleteSession() {
 
   const confirmAction = useConfirmAction();
 
-  const handleDelete = async (id: string, type: string) => {
+  const handleDelete = async (id: string, type: string, queryKey: string[] = ["feed"]) => {
     const confirmed = await confirmAction({
       title: t("feed.deleteSession.confirmTitle"),
     });
     if (!confirmed) return;
-
-    const queryKey = ["feed"];
 
     await queryClient.cancelQueries({ queryKey });
 

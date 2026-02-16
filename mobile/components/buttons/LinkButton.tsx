@@ -69,10 +69,7 @@ export default function LinkButton({
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
     >
-      <Animated.View
-        style={animatedStyle}
-        className="btn-base"
-      >
+      <Animated.View style={animatedStyle} className="btn-base">
         {/* Light sweep gradient */}
         <Animated.View
           style={[

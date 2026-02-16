@@ -23,7 +23,7 @@ export default function LinkButton({
         onClick?.(e);
         setDirection(0);
       }}
-      className="flex items-center justify-center gap-2 bg-blue-800 py-2 w-full rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-105 transition-all duration-200"
+      className="btn-base flex items-center gap-2 justify-center"
     >
       {children}
     </Link>

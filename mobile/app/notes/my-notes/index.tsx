@@ -1,6 +1,7 @@
 import AppText from "@/components/AppText";
 import { View, FlatList, RefreshControl } from "react-native";
 import { useState, useMemo } from "react";
+import { useLocalSearchParams } from "expo-router";
 import { FeedSkeleton } from "@/components/skeletetons";
 import FullScreenModal from "@/components/FullScreenModal";
 import { LinearGradient } from "expo-linear-gradient";
@@ -32,8 +33,11 @@ export default function MyNotesScreen() {
     null,
   );
 
-  // Folder filter state
-  const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
+  // Folder filter state — initialise from ?folder= route param
+  const { folder } = useLocalSearchParams<{ folder?: string }>();
+  const [selectedFolderId, setSelectedFolderId] = useState<string | null>(
+    () => folder ?? null,
+  );
 
   const folderFilter: FolderFilter | undefined = useMemo(() => {
     if (selectedFolderId) return { type: "folder", folderId: selectedFolderId };
@@ -53,10 +57,12 @@ export default function MyNotesScreen() {
     isFetchingNextPage,
     pinnedFeed,
     unpinnedFeed,
+    queryKey,
+    pinnedContext,
   } = useMyNotesFeed(folderFilter);
 
   const { handleDelete } = useDeleteSession();
-  const { togglePin } = useTogglePin(["myNotes"]);
+  const { togglePin } = useTogglePin(queryKey);
   const { updateFeedItemToTop } = useUpdateFeedItemToTop();
 
   const { notesSessionFull, notesSessionError, isLoadingNotesSession } =
@@ -137,11 +143,11 @@ export default function MyNotesScreen() {
                     feedItem.id,
                     feedItem.type,
                     feedItem.feed_context,
-                    "notes",
+                    pinnedContext,
                   )
                 }
                 onDelete={() => {
-                  handleDelete(feedItem.source_id, feedItem.type);
+                  handleDelete(feedItem.source_id, feedItem.type, queryKey);
                 }}
                 onEdit={() => {
                   setEditingItem(feedItem);
@@ -162,23 +168,25 @@ export default function MyNotesScreen() {
           ListHeaderComponent={
             <View>
               {folders.length > 0 && (
-                <FolderFilterChips
-                  folders={folders}
-                  selectedFolderId={selectedFolderId}
-                  onSelectAll={() => {
-                    setSelectedFolderId(null);
-                  }}
-                  onSelectFolder={(id) => {
-                    setSelectedFolderId(id);
-                  }}
-                />
+                <View className={pinnedFeed.length === 0 ? "mb-4" : ""}>
+                  <FolderFilterChips
+                    folders={folders}
+                    selectedFolderId={selectedFolderId}
+                    onSelectAll={() => {
+                      setSelectedFolderId(null);
+                    }}
+                    onSelectFolder={(id) => {
+                      setSelectedFolderId(id);
+                    }}
+                  />
+                </View>
               )}
               <FeedHeader
                 pinnedFeed={pinnedFeed}
                 setExpandedItem={setExpandedItem}
                 setEditingItem={setEditingItem}
-                pinned_context="notes"
-                queryKey={["myNotes"]}
+                pinned_context={pinnedContext}
+                queryKey={queryKey}
               />
             </View>
           }

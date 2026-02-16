@@ -6,6 +6,11 @@ export type FolderFilter =
   | { type: "all" }
   | { type: "folder"; folderId: string };
 
+export function getPinnedContext(folderFilter?: FolderFilter): string {
+  if (!folderFilter || folderFilter.type === "all") return "notes";
+  return `notes:folder:${folderFilter.folderId}`;
+}
+
 export async function getNotes({
   pageParam = 0,
   limit = 10,
@@ -19,17 +24,33 @@ export async function getNotes({
   nextPage: number | null;
 }> {
   const from = pageParam * limit;
+  const pinnedContext = getPinnedContext(folderFilter);
 
-  // When filtering by folder, use the RPC
+  // When filtering by folder, use the RPC + pinned items
   if (folderFilter && folderFilter.type !== "all") {
-    const { data, error } = await supabase.rpc("notes_get_by_folder", {
+    const pinnedPromise =
+      pageParam === 0
+        ? supabase
+            .from("pinned_items")
+            .select(`feed_items(*)`)
+            .eq("pinned_context", pinnedContext)
+            .order("created_at", { ascending: false })
+        : Promise.resolve({ data: [], error: null });
+
+    const feedPromise = supabase.rpc("notes_get_by_folder", {
       p_folder_id: folderFilter.folderId,
       p_unfiled_only: false,
       p_limit: limit,
       p_offset: from,
     });
 
-    if (error) {
+    const [pinnedResult, feedResult] = await Promise.all([
+      pinnedPromise,
+      feedPromise,
+    ]);
+
+    if (pinnedResult.error || feedResult.error) {
+      const error = pinnedResult.error || feedResult.error;
       handleError(error, {
         message: "Error fetching notes feed",
         route: "/database/notes/get-notes",
@@ -38,12 +59,24 @@ export async function getNotes({
       throw new Error("Error fetching notes feed");
     }
 
-    const feed = (data ?? []).map((item) => ({
-      ...item,
-      feed_context: "feed" as const,
-    })) as FeedItemUI[];
+    const pinned = (pinnedResult.data ?? []).map((item) => ({
+      ...item.feed_items,
+      feed_context: "pinned",
+    })) as unknown as FeedItemUI[];
 
-    const hasMore = (data?.length ?? 0) === limit;
+    const pinnedIds = new Set(pinned.map((item) => item.id));
+
+    const feed = [
+      ...pinned,
+      ...(feedResult.data ?? [])
+        .filter((item) => !pinnedIds.has(item.id))
+        .map((item) => ({
+          ...item,
+          feed_context: "feed" as const,
+        })),
+    ] as FeedItemUI[];
+
+    const hasMore = (feedResult.data?.length ?? 0) === limit;
     return { feed, nextPage: hasMore ? pageParam + 1 : null };
   }
 
@@ -55,7 +88,7 @@ export async function getNotes({
       ? supabase
           .from("pinned_items")
           .select(`feed_items(*)`)
-          .eq("pinned_context", "notes")
+          .eq("pinned_context", pinnedContext)
           .order("created_at", { ascending: false })
       : Promise.resolve({ data: [], error: null });
 

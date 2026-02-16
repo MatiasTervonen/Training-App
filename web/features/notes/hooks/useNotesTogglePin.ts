@@ -7,7 +7,10 @@ import { unpinItem } from "@/database/pinned/unpin-items";
 import { pinItem } from "@/database/pinned/pin-items";
 import { handleError } from "@/utils/handleError";
 
-export default function useNotesTogglePin() {
+export default function useNotesTogglePin(
+  queryKey: string[] = ["myNotes"],
+  pinnedContext: string = "notes",
+) {
   const queryClient = useQueryClient();
 
   const togglePin = async (
@@ -15,7 +18,7 @@ export default function useNotesTogglePin() {
     type: string,
     feed_context: "pinned" | "feed"
   ) => {
-    const feedData = queryClient.getQueryData<FeedData>(["myNotes"]);
+    const feedData = queryClient.getQueryData<FeedData>(queryKey);
 
     const pinnedFeed =
       feedData?.pages
@@ -27,13 +30,11 @@ export default function useNotesTogglePin() {
       return;
     }
 
-    const queryKey = ["myNotes"];
-
     await queryClient.cancelQueries({ queryKey });
 
     const previousFeed = queryClient.getQueryData(queryKey);
 
-    queryClient.setQueryData<FeedData>(["myNotes"], (oldData) => {
+    queryClient.setQueryData<FeedData>(queryKey, (oldData) => {
       if (!oldData) return oldData;
 
       return {
@@ -54,9 +55,9 @@ export default function useNotesTogglePin() {
 
     try {
       if (feed_context === "pinned") {
-        await unpinItem({ id, type, pinned_context: "notes" });
+        await unpinItem({ id, type, pinned_context: pinnedContext });
       } else {
-        await pinItem({ id, type, pinned_context: "notes" });
+        await pinItem({ id, type, pinned_context: pinnedContext });
       }
 
       toast.success(

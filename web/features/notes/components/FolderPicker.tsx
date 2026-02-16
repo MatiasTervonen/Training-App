@@ -1,6 +1,8 @@
 "use client";
 
+import { useState, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { ChevronDown } from "lucide-react";
 import type { FolderWithCount } from "@/database/notes/get-folders";
 
 type FolderPickerProps = {
@@ -17,14 +19,29 @@ export default function FolderPicker({
   isLoading,
 }: FolderPickerProps) {
   const { t } = useTranslation("notes");
+  const [isOpen, setIsOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const selectedFolder = folders.find((f) => f.id === selectedFolderId);
+  const displayName = selectedFolder?.name ?? t("notes.folders.noFolder");
 
   if (isLoading) {
     return (
-      <div className="w-full">
-        <label className="text-sm text-slate-400 mb-1 block">
+      <div className="flex flex-col w-full">
+        <label className="text-gray-300 mb-1 text-sm">
           {t("notes.folders.saveToFolder")}
         </label>
-        <div className="w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-2.5 animate-pulse">
+        <div className="w-full p-2 rounded-md border-2 border-gray-400 bg-[linear-gradient(50deg,#0f172a,#1e293b,#333333)] animate-pulse">
           <div className="h-5 bg-slate-700 rounded w-32" />
         </div>
       </div>
@@ -33,23 +50,50 @@ export default function FolderPicker({
 
   if (folders.length === 0) return null;
 
+  const options = [
+    { id: null, name: t("notes.folders.noFolder") },
+    ...folders,
+  ];
+
   return (
-    <div className="w-full">
-      <label className="text-sm text-slate-400 mb-1 block">
+    <div className="flex flex-col w-full relative" ref={ref}>
+      <label className="text-gray-300 mb-1 text-sm">
         {t("notes.folders.saveToFolder")}
       </label>
-      <select
-        value={selectedFolderId ?? ""}
-        onChange={(e) => onSelect(e.target.value || null)}
-        className="w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-2.5 text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full p-2 rounded-md border-2 border-gray-400 text-gray-100 bg-[linear-gradient(50deg,#0f172a,#1e293b,#333333)] hover:border-blue-500 focus:outline-none focus:border-green-300 flex items-center justify-between cursor-pointer"
       >
-        <option value="">{t("notes.folders.noFolder")}</option>
-        {folders.map((folder) => (
-          <option key={folder.id} value={folder.id}>
-            {folder.name}
-          </option>
-        ))}
-      </select>
+        <span>{displayName}</span>
+        <ChevronDown
+          size={16}
+          className={`text-gray-400 transition-transform ${isOpen ? "rotate-180" : ""}`}
+        />
+      </button>
+
+      {isOpen && (
+        <div className="absolute top-full left-0 right-0 mt-1 rounded-md border-2 border-gray-400 bg-slate-800 overflow-hidden z-50">
+          {options.map((option) => {
+            const isActive = option.id === selectedFolderId;
+            return (
+              <button
+                key={option.id ?? "none"}
+                type="button"
+                onClick={() => {
+                  onSelect(option.id);
+                  setIsOpen(false);
+                }}
+                className={`w-full px-3 py-2 text-left text-gray-100 cursor-pointer hover:bg-blue-900/50 ${
+                  isActive ? "bg-blue-900/70" : ""
+                }`}
+              >
+                {option.name}
+              </button>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

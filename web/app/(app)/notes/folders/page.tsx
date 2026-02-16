@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Pencil, Trash2, Check, X } from "lucide-react";
+import { Pencil, Trash2, Check, X, ArrowRight } from "lucide-react";
+import Link from "next/link";
 import { useTranslation } from "react-i18next";
 import TitleInput from "@/ui/TitleInput";
 import useFolders from "@/features/notes/hooks/useFolders";
@@ -58,12 +59,10 @@ export default function ManageFoldersPage() {
 
   return (
     <div className="max-w-2xl mx-auto page-padding">
-      <h1 className="text-2xl text-center mb-8">
-        {t("notes.folders.title")}
-      </h1>
+      <h1 className="text-2xl text-center mb-8">{t("notes.folders.title")}</h1>
 
       {/* Create folder input */}
-      <div className="flex items-end gap-3 mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-end gap-3 sm:gap-5 mb-8">
         <div className="flex-1">
           <TitleInput
             value={newFolderName}
@@ -76,7 +75,7 @@ export default function ManageFoldersPage() {
         <button
           onClick={handleCreate}
           disabled={!newFolderName.trim() || isCreating}
-          className="btn-base px-4 py-2.5 disabled:opacity-50"
+          className="btn-base px-10 w-full sm:w-auto"
         >
           {t("notes.folders.createFolder")}
         </button>
@@ -135,27 +134,36 @@ export default function ManageFoldersPage() {
                 </div>
               ) : (
                 <>
-                  <div className="flex-1 mr-3">
+                  <Link
+                    href={`/notes/my-notes?folder=${folder.id}`}
+                    className="flex-1 mr-3 hover:opacity-80 transition-opacity"
+                  >
                     <p className="text-slate-200">{folder.name}</p>
                     <p className="text-xs text-slate-400">
                       {t("notes.folders.noteCount", {
                         count: folder.note_count,
                       })}
                     </p>
-                  </div>
+                  </Link>
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => startRename(folder)}
-                      className="p-2 hover:bg-slate-700 rounded"
+                      className="p-2 hover:bg-slate-700 rounded cursor-pointer"
                     >
                       <Pencil size={16} className="text-slate-400" />
                     </button>
                     <button
                       onClick={() => handleDelete(folder)}
-                      className="p-2 hover:bg-slate-700 rounded"
+                      className="p-2 hover:bg-slate-700 rounded cursor-pointer"
                     >
                       <Trash2 size={16} className="text-red-500" />
                     </button>
+                    <Link
+                      href={`/notes/my-notes?folder=${folder.id}`}
+                      className="p-2 hover:bg-slate-700 rounded"
+                    >
+                      <ArrowRight size={16} className="text-slate-400" />
+                    </Link>
                   </div>
                 </>
               )}

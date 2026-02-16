@@ -1,8 +1,14 @@
-import { ScrollView } from "react-native";
-import AppText from "@/components/AppText";
+import { useEffect, useRef } from "react";
+import { ScrollView, View, useWindowDimensions } from "react-native";
+import AppTextNC from "@/components/AppTextNC";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import { useTranslation } from "react-i18next";
 import type { FolderWithCount } from "@/database/notes/get-folders";
+
+const TAB_WIDTH = 100;
+const GAP = 8;
+const CONTAINER_PADDING = 4;
+const SCROLL_PADDING = 16;
 
 type FolderFilterChipsProps = {
   folders: FolderWithCount[];
@@ -19,54 +25,69 @@ export default function FolderFilterChips({
 }: FolderFilterChipsProps) {
   const { t } = useTranslation("notes");
   const isAllSelected = !selectedFolderId;
+  const scrollRef = useRef<ScrollView>(null);
+  const { width: screenWidth } = useWindowDimensions();
+
+  useEffect(() => {
+    const activeIndex = selectedFolderId
+      ? folders.findIndex((f) => f.id === selectedFolderId) + 1
+      : 0;
+
+    const tabCenter =
+      SCROLL_PADDING +
+      CONTAINER_PADDING +
+      activeIndex * (TAB_WIDTH + GAP) +
+      TAB_WIDTH / 2;
+
+    const scrollX = Math.max(0, tabCenter - screenWidth / 2);
+    scrollRef.current?.scrollTo({ x: scrollX, animated: true });
+  }, [selectedFolderId, folders, screenWidth]);
 
   return (
     <ScrollView
+      ref={scrollRef}
       horizontal
       showsHorizontalScrollIndicator={false}
-      contentContainerStyle={{ paddingHorizontal: 16, gap: 8 }}
-      className="py-3"
+      contentContainerStyle={{ paddingHorizontal: SCROLL_PADDING }}
+      className="my-3 mx-4 bg-slate-800 rounded-lg"
     >
-      <AnimatedButton
-        onPress={onSelectAll}
-        className={`px-4 py-1.5 rounded-full ${
-          isAllSelected
-            ? "bg-blue-600"
-            : "bg-slate-800 border border-slate-600"
-        }`}
-      >
-        <AppText
-          className={`text-sm ${
-            isAllSelected ? "text-white" : "text-slate-300"
-          }`}
+      <View className="flex-row p-1 gap-2">
+        <AnimatedButton
+          onPress={onSelectAll}
+          tabClassName="w-[100px]"
+          className={`py-2 px-3 rounded-md ${isAllSelected ? "bg-slate-700" : ""}`}
         >
-          {t("notes.folders.all")}
-        </AppText>
-      </AnimatedButton>
-
-      {folders.map((folder) => {
-        const isActive = selectedFolderId === folder.id;
-        return (
-          <AnimatedButton
-            key={folder.id}
-            onPress={() => onSelectFolder(folder.id)}
-            className={`px-4 py-1.5 rounded-full ${
-              isActive
-                ? "bg-blue-600"
-                : "bg-slate-800 border border-slate-600"
+          <AppTextNC
+            numberOfLines={1}
+            className={`text-center font-medium ${
+              isAllSelected ? "text-cyan-400" : "text-gray-200"
             }`}
           >
-            <AppText
-              className={`text-sm ${
-                isActive ? "text-white" : "text-slate-300"
-              }`}
-              numberOfLines={1}
+            {t("notes.folders.all")}
+          </AppTextNC>
+        </AnimatedButton>
+
+        {folders.map((folder) => {
+          const isActive = selectedFolderId === folder.id;
+          return (
+            <AnimatedButton
+              key={folder.id}
+              onPress={() => onSelectFolder(folder.id)}
+              tabClassName="w-[100px]"
+              className={`py-2 px-3 rounded-md ${isActive ? "bg-slate-700" : ""}`}
             >
-              {folder.name}
-            </AppText>
-          </AnimatedButton>
-        );
-      })}
+              <AppTextNC
+                numberOfLines={1}
+                className={`text-center font-medium ${
+                  isActive ? "text-cyan-400" : "text-gray-200"
+                }`}
+              >
+                {folder.name}
+              </AppTextNC>
+            </AnimatedButton>
+          );
+        })}
+      </View>
     </ScrollView>
   );
 }

@@ -13,6 +13,7 @@ export async function moveNoteToFolder(
   });
 
   if (error) {
+    console.error("Error moving note to folder:", error);
     handleError(error, {
       message: "Error moving note to folder",
       route: "/database/notes/move-note-to-folder",

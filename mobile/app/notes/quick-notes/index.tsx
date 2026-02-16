@@ -17,7 +17,7 @@ import { DraftRecordingItem } from "@/features/notes/components/draftRecording";
 import { useConfirmAction } from "@/lib/confirmAction";
 import { useTranslation } from "react-i18next";
 import useFolders from "@/features/notes/hooks/useFolders";
-import FolderPicker from "@/features/notes/components/FolderPicker";
+import SelectInput from "@/components/Selectinput";
 
 type DraftRecording = {
   id: string;
@@ -88,12 +88,21 @@ export default function NotesScreen() {
               label={t("notes.notesLabel")}
               placeholder={t("notes.notesPlaceholder")}
             />
-            <FolderPicker
-              folders={folders}
-              selectedFolderId={selectedFolderId}
-              onSelect={setSelectedFolderId}
-              isLoading={isFoldersLoading}
-            />
+            {!isFoldersLoading && folders.length > 0 && (
+              <View className="mt-4">
+                <SelectInput
+                  topLabel={t("notes.folders.saveToFolder")}
+                  label={t("notes.folders.saveToFolder")}
+                  placeholder={t("notes.folders.noFolder")}
+                  options={[
+                    { value: "", label: t("notes.folders.noFolder") },
+                    ...folders.map((f) => ({ value: f.id, label: f.name })),
+                  ]}
+                  value={selectedFolderId ?? ""}
+                  onChange={(val) => setSelectedFolderId(val || null)}
+                />
+              </View>
+            )}
             {draftRecordings.length > 0 && (
               <View className="mt-5">
                 <AppText className=" mb-2">{t("notes.recordings")}</AppText>

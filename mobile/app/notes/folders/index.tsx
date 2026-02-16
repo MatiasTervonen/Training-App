@@ -7,8 +7,9 @@ import useFolders from "@/features/notes/hooks/useFolders";
 import useCreateFolder from "@/features/notes/hooks/useCreateFolder";
 import useRenameFolder from "@/features/notes/hooks/useRenameFolder";
 import useDeleteFolder from "@/features/notes/hooks/useDeleteFolder";
-import { Trash2, Pencil, Check, X } from "lucide-react-native";
+import { Trash2, Pencil, Check, X, ArrowRight } from "lucide-react-native";
 import AnimatedButton from "@/components/buttons/animatedButton";
+import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import type { FolderWithCount } from "@/database/notes/get-folders";
 
@@ -18,6 +19,7 @@ export default function ManageFoldersScreen() {
   const { createFolder } = useCreateFolder();
   const { handleRename } = useRenameFolder();
   const { handleDelete } = useDeleteFolder();
+  const router = useRouter();
 
   const [newFolderName, setNewFolderName] = useState("");
   const [isCreating, setIsCreating] = useState(false);
@@ -132,7 +134,15 @@ export default function ManageFoldersScreen() {
                     </View>
                   ) : (
                     <>
-                      <View className="flex-1 mr-3">
+                      <AnimatedButton
+                        onPress={() =>
+                          router.push({
+                            pathname: "/notes/my-notes",
+                            params: { folder: folder.id },
+                          })
+                        }
+                        className="flex-1 mr-3"
+                      >
                         <AppText className="text-slate-200" numberOfLines={1}>
                           {folder.name}
                         </AppText>
@@ -141,7 +151,7 @@ export default function ManageFoldersScreen() {
                             count: folder.note_count,
                           })}
                         </AppText>
-                      </View>
+                      </AnimatedButton>
                       <View className="flex-row items-center gap-2">
                         <AnimatedButton
                           onPress={() => startRename(folder)}
@@ -154,6 +164,17 @@ export default function ManageFoldersScreen() {
                           className="p-2"
                         >
                           <Trash2 size={18} color="#ef4444" />
+                        </AnimatedButton>
+                        <AnimatedButton
+                          onPress={() =>
+                            router.push({
+                              pathname: "/notes/my-notes",
+                              params: { folder: folder.id },
+                            })
+                          }
+                          className="p-2"
+                        >
+                          <ArrowRight size={18} color="#94a3b8" />
                         </AnimatedButton>
                       </View>
                     </>

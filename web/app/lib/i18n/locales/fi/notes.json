@@ -45,7 +45,7 @@
       "title": "Hallitse kansioita",
       "folderName": "Kansion nimi",
       "folderNamePlaceholder": "Uuden kansion nimi...",
-      "createFolder": "Luo",
+      "createFolder": "Luo kansio",
       "noFolders": "Ei vielä kansioita. Luo kansio järjestääksesi muistiinpanosi!",
       "noteCount_one": "{{count}} muistiinpano",
       "noteCount_other": "{{count}} muistiinpanoa",

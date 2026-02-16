@@ -1,7 +1,7 @@
 "use client";
 
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
-import { getNotes, FolderFilter } from "@/database/notes/get-notes";
+import { getNotes, FolderFilter, getPinnedContext } from "@/database/notes/get-notes";
 import { FeedData } from "@/types/session";
 import { useEffect, useMemo, useRef } from "react";
 import usePullToRefresh from "@/lib/usePullToRefresh";
@@ -13,6 +13,10 @@ export default function useMyNotesFeed(folderFilter?: FolderFilter) {
   const queryKey = useMemo(() => {
     if (!folderFilter || folderFilter.type === "all") return ["myNotes"];
     return ["myNotes", folderFilter.folderId];
+  }, [folderFilter]);
+
+  const pinnedContext = useMemo(() => {
+    return getPinnedContext(folderFilter);
   }, [folderFilter]);
 
   const {
@@ -102,5 +106,7 @@ export default function useMyNotesFeed(folderFilter?: FolderFilter) {
     pullDistance,
     refreshing,
     loadMoreRef,
+    queryKey,
+    pinnedContext,
   };
 }

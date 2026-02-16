@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { useSearchParams } from "next/navigation";
 import Modal from "@/components/modal";
 import FeedCard from "@/features/feed-cards/FeedCard";
 import NotesSession from "@/features/notes/cards/notes-expanded";
@@ -28,8 +29,11 @@ export default function MyNotesPage() {
     null,
   );
 
-  // Folder filter state
-  const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
+  // Folder filter state — initialise from ?folder= search param
+  const searchParams = useSearchParams();
+  const [selectedFolderId, setSelectedFolderId] = useState<string | null>(
+    () => searchParams.get("folder"),
+  );
 
   const folderFilter: FolderFilter | undefined = useMemo(() => {
     if (selectedFolderId) return { type: "folder", folderId: selectedFolderId };
@@ -50,9 +54,11 @@ export default function MyNotesPage() {
     pullDistance,
     refreshing,
     loadMoreRef,
+    queryKey,
+    pinnedContext,
   } = useMyNotesFeed(folderFilter);
 
-  const { togglePin } = useNotesTogglePin();
+  const { togglePin } = useNotesTogglePin(queryKey, pinnedContext);
   const { handleDelete } = useNotesDeleteSession();
   const { updateFeedItemToTop } = useNotesUpdateFeedItemToTop();
 
@@ -86,16 +92,18 @@ export default function MyNotesPage() {
 
         {/* Folder filter chips */}
         {folders.length > 0 && (
-          <FolderFilterChips
-            folders={folders}
-            selectedFolderId={selectedFolderId}
-            onSelectAll={() => {
-              setSelectedFolderId(null);
-            }}
-            onSelectFolder={(id) => {
-              setSelectedFolderId(id);
-            }}
-          />
+          <div className={pinnedFeed.length === 0 ? "mb-4" : ""}>
+            <FolderFilterChips
+              folders={folders}
+              selectedFolderId={selectedFolderId}
+              onSelectAll={() => {
+                setSelectedFolderId(null);
+              }}
+              onSelectFolder={(id) => {
+                setSelectedFolderId(id);
+              }}
+            />
+          </div>
         )}
 
         {isLoading && !data ? (
@@ -112,8 +120,8 @@ export default function MyNotesPage() {
               pinnedFeed={pinnedFeed}
               setExpandedItem={setExpandedItem}
               setEditingItem={setEditingItem}
-              pinned_context="notes"
-              queryKey={["myNotes"]}
+              pinned_context={pinnedContext}
+              queryKey={queryKey}
             />
 
             {unpinnedFeed.map((feedItem) => {
@@ -194,7 +202,7 @@ export default function MyNotesPage() {
             isOpen={true}
             onClose={() => setMoveToFolderItem(null)}
           >
-            <div className="max-w-md mx-auto page-padding">
+            <div className="max-w-md mx-auto pt-12 px-5">
               <h2 className="text-xl text-center mb-6">
                 {t("notes.folders.moveToFolder")}
               </h2>

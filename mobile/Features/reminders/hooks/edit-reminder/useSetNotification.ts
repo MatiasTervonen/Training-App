@@ -63,20 +63,19 @@ export default function useSetNotification({
                 reminderId
             },
           },
-          trigger: { type: "date", date: notifyAt } as any,
+          trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: notifyAt },
         });
         return id;
       } else if (type === "daily") {
         const hour = notifyAt.getHours();
         const minute = notifyAt.getMinutes();
 
-        const trigger: any =
+        const trigger: Notifications.NotificationTriggerInput =
           Platform.OS === "android"
             ? {
-                type: "daily",
+                type: Notifications.SchedulableTriggerInputTypes.DAILY,
                 hour,
                 minute,
-                repeat: true,
               }
             : {
                 type: Notifications.SchedulableTriggerInputTypes.CALENDAR,
@@ -103,10 +102,10 @@ export default function useSetNotification({
 
         const notifications = await Promise.all(
           weekdays.map((day) => {
-            const trigger: any =
+            const trigger: Notifications.NotificationTriggerInput =
               Platform.OS === "android"
                 ? {
-                    type: "weekly",
+                    type: Notifications.SchedulableTriggerInputTypes.WEEKLY,
                     weekday: day,
                     hour,
                     minute,

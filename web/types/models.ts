@@ -75,6 +75,8 @@ export type todo_lists = Database["public"]["Tables"]["todo_lists"]["Row"];
 
 export type notes = Database["public"]["Tables"]["notes"]["Row"];
 
+export type note_folders = Database["public"]["Tables"]["note_folders"]["Row"];
+
 export type weight = Database["public"]["Tables"]["weight"]["Row"];
 
 export type gym_sessions = Database["public"]["Tables"]["gym_sessions"]["Row"];

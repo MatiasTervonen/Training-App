@@ -8,6 +8,8 @@ import { editNotes } from "@/database/notes/edit-notes";
 import { FeedItemUI } from "@/types/session";
 import TiptapEditor from "@/features/notes/components/TiptapEditor";
 import TitleInput from "@/ui/TitleInput";
+import FolderPicker from "@/features/notes/components/FolderPicker";
+import useFolders from "@/features/notes/hooks/useFolders";
 import { Dot } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
@@ -19,6 +21,7 @@ type Props = {
 
 type NotesPayload = {
   notes: string;
+  folder_id?: string | null;
 };
 
 export default function EditNotes({ note, onSave, onDirtyChange }: Props) {
@@ -27,7 +30,12 @@ export default function EditNotes({ note, onSave, onDirtyChange }: Props) {
 
   const [title, setValue] = useState(note.title);
   const [notes, setNotes] = useState(payload.notes);
+  const [selectedFolderId, setSelectedFolderId] = useState<string | null>(
+    payload.folder_id ?? null,
+  );
   const [isSaving, setIsSaving] = useState(false);
+
+  const { folders, isLoading: foldersLoading } = useFolders();
 
   const updated = new Date().toISOString();
 
@@ -39,6 +47,7 @@ export default function EditNotes({ note, onSave, onDirtyChange }: Props) {
         title,
         notes,
         updated_at: updated,
+        folderId: selectedFolderId,
       });
 
       onSave(updatedFeedItem as FeedItemUI);
@@ -48,7 +57,10 @@ export default function EditNotes({ note, onSave, onDirtyChange }: Props) {
     }
   };
 
-  const hasChanges = title !== note.title || notes !== payload.notes;
+  const hasChanges =
+    title !== note.title ||
+    notes !== payload.notes ||
+    selectedFolderId !== (payload.folder_id ?? null);
 
   useEffect(() => {
     onDirtyChange?.(hasChanges);
@@ -74,6 +86,12 @@ export default function EditNotes({ note, onSave, onDirtyChange }: Props) {
             setValue={setValue}
             placeholder="Notes title..."
             label="Title..."
+          />
+          <FolderPicker
+            folders={folders}
+            selectedFolderId={selectedFolderId}
+            onSelect={setSelectedFolderId}
+            isLoading={foldersLoading}
           />
           <TiptapEditor
             content={notes || ""}

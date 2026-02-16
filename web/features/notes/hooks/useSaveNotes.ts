@@ -13,6 +13,8 @@ export default function useSaveNotes() {
     mutationFn: saveNote,
     onSuccess: () => {
       queryClient.refetchQueries({ queryKey: ["feed"], exact: true });
+      queryClient.invalidateQueries({ queryKey: ["myNotes"] });
+      queryClient.invalidateQueries({ queryKey: ["folders"] });
       toast.success("Notes saved successfully");
       router.push("/dashboard");
     },

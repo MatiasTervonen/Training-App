@@ -44,7 +44,7 @@ export async function getFullGymSession(sessionId: string) {
 
   // Map the result to extract translated name from gym_exercises_translations
   data.gym_session_exercises = data.gym_session_exercises.map(
-    (exercise: any) => ({
+    (exercise) => ({
       ...exercise,
       gym_exercises: {
         ...exercise.gym_exercises,
@@ -55,11 +55,10 @@ export async function getFullGymSession(sessionId: string) {
     }),
   );
 
-  data.gym_session_exercises.forEach((exercise: any) => {
+  data.gym_session_exercises.forEach((exercise) => {
     if (Array.isArray(exercise.gym_sets)) {
       exercise.gym_sets = [...exercise.gym_sets].sort(
-        (a: { set_number: number }, b: { set_number: number }) =>
-          a.set_number - b.set_number,
+        (a, b) => a.set_number - b.set_number,
       );
     }
   });

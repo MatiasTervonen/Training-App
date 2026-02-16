@@ -8,7 +8,7 @@ import GlobalReminderCard from "@/features/reminders/cards/globalReminderCard";
 import ActivityCard from "@/features/activities/cards/activity-feed";
 
 export default function FeedCard(props: FeedCardProps) {
-  const { pinned, onTogglePin, onDelete, onExpand, onEdit } = props;
+  const { pinned, onTogglePin, onDelete, onExpand, onEdit, onMoveToFolder } = props;
 
   const commomProps = {
     item: props.item,
@@ -21,7 +21,7 @@ export default function FeedCard(props: FeedCardProps) {
 
   switch (props.item.type) {
     case "notes":
-      return <NotesCard {...commomProps} />;
+      return <NotesCard {...commomProps} onMoveToFolder={onMoveToFolder} />;
     case "weight":
       return <WeightCard {...commomProps} />;
     case "gym_sessions":

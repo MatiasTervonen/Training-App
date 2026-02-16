@@ -27,7 +27,8 @@
     "failedToCopy": "Failed to copy notes.",
     "elementNotFound": "Element not found.",
     "chat": "Chat",
-    "unsavedChanges": "unsaved changes"
+    "unsavedChanges": "unsaved changes",
+    "moveToFolder": "Move to Folder"
   },
   "modal": {
     "closeAlt": "Close modal",

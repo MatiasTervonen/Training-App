@@ -116,7 +116,7 @@ export default function TemplateForm() {
       setWorkoutName(existingTemplate.name);
 
       const mappedExercises = existingTemplate.gym_template_exercises.map(
-        (ex: any) => ({
+        (ex) => ({
           exercise_id: ex.exercise_id,
           name: ex.gym_exercises.name,
           equipment: ex.gym_exercises.equipment,

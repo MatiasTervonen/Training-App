@@ -7,6 +7,7 @@ import { DraftRecording } from "@/types/session";
 type saveNotesProps = {
   title: string;
   notes: string;
+  folderId?: string | null;
   draftRecordings: DraftRecording[];
   setIsSaving: (isSaving: boolean) => void;
   resetNote: () => void;
@@ -15,6 +16,7 @@ type saveNotesProps = {
 export default function useSaveNotes({
   title,
   notes,
+  folderId,
   draftRecordings,
   setIsSaving,
   resetNote,
@@ -34,11 +36,12 @@ export default function useSaveNotes({
     setIsSaving(true);
 
     try {
-      await saveNote({ title, notes, draftRecordings });
+      await saveNote({ title, notes, folderId, draftRecordings });
 
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ["feed"], exact: true }),
-        queryClient.invalidateQueries({ queryKey: ["myNotes"], exact: true }),
+        queryClient.invalidateQueries({ queryKey: ["myNotes"] }),
+        queryClient.invalidateQueries({ queryKey: ["folders"] }),
       ]);
 
       router.push("/dashboard");

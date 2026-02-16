@@ -32,11 +32,11 @@ export async function syncNotifications() {
   }
 
   // 3. Fetch global reminders (needs deviceId)
-  let globalReminders: any[] = [];
-  const { data, error: globalRemindersError } = await supabase
-    .from("global_reminders")
-    .select("*")
-    .eq("created_from_device_id", deviceId);
+  const { data: globalRemindersData, error: globalRemindersError } =
+    await supabase
+      .from("global_reminders")
+      .select("*")
+      .eq("created_from_device_id", deviceId);
 
   if (globalRemindersError) {
     handleError(globalRemindersError, {
@@ -44,9 +44,9 @@ export async function syncNotifications() {
       route: "/database/reminders/syncNotifications",
       method: "GET",
     });
-  } else {
-    globalReminders = data || [];
   }
+
+  const globalReminders = globalRemindersData || [];
 
   await Promise.all(
     (localReminders || []).map(async (reminder) => {

@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "lint:fix": "eslint --fix",
-    "gen:types": "npx supabase gen types typescript --project-id gqcqrstelckkkhhunchm --schema public > app/(app)/types/database.types.ts"
+    "gen:types": "npx supabase gen types typescript --project-id gqcqrstelckkkhhunchm --schema public > types/database.types.ts"
   },
   "dependencies": {
     "@sentry/nextjs": "^10.17.0",

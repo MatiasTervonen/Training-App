@@ -1,5 +1,5 @@
 import AppText from "@/components/AppText";
-import { NotebookPen, List } from "lucide-react-native";
+import { NotebookPen, List, FolderOpen } from "lucide-react-native";
 import LinkButton from "@/components/buttons/LinkButton";
 import PageContainer from "@/components/PageContainer";
 import { View } from "react-native";
@@ -18,6 +18,10 @@ export default function SessionsScreen() {
         <View className="border border-gray-400 rounded-md" />
         <LinkButton label={t("notes.myNotes")} href="/notes/my-notes">
           <List color="#f3f4f6" />
+        </LinkButton>
+        <View className="border border-gray-400 rounded-md" />
+        <LinkButton label={t("notes.folders.manageFolders")} href={"/notes/folders" as any}>
+          <FolderOpen color="#f3f4f6" />
         </LinkButton>
       </View>
     </PageContainer>

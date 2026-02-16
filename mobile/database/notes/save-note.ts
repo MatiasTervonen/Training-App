@@ -6,6 +6,7 @@ import { File } from "expo-file-system/next";
 type props = {
   title: string;
   notes: string;
+  folderId?: string | null;
   draftRecordings?: {
     id: string;
     uri: string;
@@ -14,7 +15,7 @@ type props = {
   }[];
 };
 
-export async function saveNote({ title, notes, draftRecordings = [] }: props) {
+export async function saveNote({ title, notes, folderId, draftRecordings = [] }: props) {
   const {
     data: { session },
     error: sessionError,
@@ -56,6 +57,7 @@ export async function saveNote({ title, notes, draftRecordings = [] }: props) {
       p_title: title,
       p_notes: notes,
       p_draftrecordings: uploadedRecordings ?? [],
+      p_folder_id: folderId ?? null,
     });
 
     if (error) {

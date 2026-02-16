@@ -77,7 +77,7 @@ export type FeedItemUI = feed_items & {
 };
 
 export type FeedData = {
-  pageParams: any[];
+  pageParams: number[];
   pages: {
     feed: FeedItemUI[];
     nextPage?: number | null;
@@ -148,6 +148,7 @@ export type FeedCardProps = {
   onDelete: () => void;
   onExpand: () => void;
   onEdit: () => void;
+  onMoveToFolder?: () => void;
 };
 
 export type NotesFeedCardProps = {

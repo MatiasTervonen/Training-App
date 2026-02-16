@@ -71,10 +71,10 @@ export default function useSetNotificationWeekly({
       // Use Expo Notifications for normal mode
       const notifications = await Promise.all(
         weekdays.map((day) => {
-          const trigger: any =
+          const trigger: Notifications.NotificationTriggerInput =
             Platform.OS === "android"
               ? {
-                  type: "weekly",
+                  type: Notifications.SchedulableTriggerInputTypes.WEEKLY,
                   weekday: day,
                   hour,
                   minute,

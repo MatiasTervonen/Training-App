@@ -16,8 +16,10 @@ import AnimatedButton from "@/components/buttons/animatedButton";
 import { useTranslation } from "react-i18next";
 import { useUserStore } from "@/lib/stores/useUserStore";
 
+type ExerciseItem = Awaited<ReturnType<typeof getExercises>>[number];
+
 type Props = {
-  onSelect: (exercise: any) => void;
+  onSelect: (exercise: ExerciseItem) => void;
 };
 
 export default function ExerciseDropdown({ onSelect }: Props) {

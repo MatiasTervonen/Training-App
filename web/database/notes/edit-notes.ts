@@ -6,6 +6,7 @@ type Props = {
   title: string;
   notes: string;
   updated_at: string;
+  folderId?: string | null;
 };
 
 export async function editNotes({
@@ -13,6 +14,7 @@ export async function editNotes({
   title,
   notes,
   updated_at,
+  folderId,
 }: Props) {
   const supabase = createClient();
 
@@ -21,6 +23,7 @@ export async function editNotes({
     p_title: title,
     p_notes: notes,
     p_updated_at: updated_at,
+    p_folder_id: folderId ?? null,
   });
 
   if (error) {

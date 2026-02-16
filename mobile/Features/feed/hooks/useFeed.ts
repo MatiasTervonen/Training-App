@@ -39,10 +39,13 @@ export default function useFeed() {
   }, [queryClient]);
 
   const { pinnedFeed, unpinnedFeed } = useMemo(() => {
+    const seen = new Set<string>();
     const pinned: NonNullable<typeof data>["pages"][0]["feed"] = [];
     const unpinned: typeof pinned = [];
     data?.pages.forEach((page) => {
       for (const item of page.feed) {
+        if (seen.has(item.id)) continue;
+        seen.add(item.id);
         if (item.feed_context === "pinned") pinned.push(item);
         else unpinned.push(item);
       }

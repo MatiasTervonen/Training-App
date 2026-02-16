@@ -15,13 +15,12 @@ export default function setDailyNotification({
   const hour = notifyAt.getHours();
   const minute = notifyAt.getMinutes();
 
-  const trigger: any =
+  const trigger: Notifications.NotificationTriggerInput =
     Platform.OS === "android"
       ? {
-          type: "daily",
+          type: Notifications.SchedulableTriggerInputTypes.DAILY,
           hour,
           minute,
-          repeat: true,
         }
       : {
           type: Notifications.SchedulableTriggerInputTypes.CALENDAR,

@@ -48,13 +48,12 @@ export default function useSetNotification({
       }
 
       // Use Expo Notifications for normal mode
-      const trigger: any =
+      const trigger: Notifications.NotificationTriggerInput =
         Platform.OS === "android"
           ? {
-              type: "daily",
+              type: Notifications.SchedulableTriggerInputTypes.DAILY,
               hour,
               minute,
-              repeat: true,
             }
           : {
               type: Notifications.SchedulableTriggerInputTypes.CALENDAR,

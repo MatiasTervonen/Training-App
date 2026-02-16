@@ -1,14 +1,20 @@
 "use client";
 
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
-import { getNotes } from "@/database/notes/get-notes";
+import { getNotes, FolderFilter } from "@/database/notes/get-notes";
 import { FeedData } from "@/types/session";
 import { useEffect, useMemo, useRef } from "react";
 import usePullToRefresh from "@/lib/usePullToRefresh";
 
-export default function useMyNotesFeed() {
+export default function useMyNotesFeed(folderFilter?: FolderFilter) {
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
   const queryClient = useQueryClient();
+
+  const queryKey = useMemo(() => {
+    if (!folderFilter || folderFilter.type === "all") return ["myNotes"];
+    if (folderFilter.type === "unfiled") return ["myNotes", "unfiled"];
+    return ["myNotes", folderFilter.folderId];
+  }, [folderFilter]);
 
   const {
     data,
@@ -19,8 +25,9 @@ export default function useMyNotesFeed() {
     hasNextPage,
     isFetchingNextPage,
   } = useInfiniteQuery({
-    queryKey: ["myNotes"],
-    queryFn: ({ pageParam = 0 }) => getNotes({ pageParam, limit: 10 }),
+    queryKey,
+    queryFn: ({ pageParam = 0 }) =>
+      getNotes({ pageParam, limit: 10, folderFilter }),
     initialPageParam: 0,
     getNextPageParam: (lastPage) => lastPage.nextPage,
   });
@@ -28,7 +35,7 @@ export default function useMyNotesFeed() {
   // Keep only first page in cache when user leaves feed
   useEffect(() => {
     return () => {
-      queryClient.setQueryData<FeedData>(["myNotes"], (old) => {
+      queryClient.setQueryData<FeedData>(queryKey, (old) => {
         if (!old) return old;
 
         return {
@@ -38,7 +45,7 @@ export default function useMyNotesFeed() {
         };
       });
     };
-  }, [queryClient]);
+  }, [queryClient, queryKey]);
 
   // Load more when the bottom of the feed is in view
   useEffect(() => {

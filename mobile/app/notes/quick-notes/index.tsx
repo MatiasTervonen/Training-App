@@ -16,6 +16,8 @@ import { nanoid } from "nanoid/non-secure";
 import { DraftRecordingItem } from "@/features/notes/components/draftRecording";
 import { useConfirmAction } from "@/lib/confirmAction";
 import { useTranslation } from "react-i18next";
+import useFolders from "@/features/notes/hooks/useFolders";
+import FolderPicker from "@/features/notes/components/FolderPicker";
 
 type DraftRecording = {
   id: string;
@@ -31,13 +33,16 @@ export default function NotesScreen() {
   const [notes, setNotes] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [draftRecordings, setDraftRecordings] = useState<DraftRecording[]>([]);
+  const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
 
   const confirmAction = useConfirmAction();
+  const { folders, isLoading: isFoldersLoading } = useFolders();
 
   const resetNote = () => {
     setTitle("");
     setNotes("");
     setDraftRecordings([]);
+    setSelectedFolderId(null);
     AsyncStorage.removeItem("notes_draft");
   };
 
@@ -55,6 +60,7 @@ export default function NotesScreen() {
   const { handleSaveNotes } = useSaveNotes({
     title,
     notes,
+    folderId: selectedFolderId,
     draftRecordings,
     setIsSaving,
     resetNote,
@@ -81,6 +87,12 @@ export default function NotesScreen() {
               setValue={setNotes}
               label={t("notes.notesLabel")}
               placeholder={t("notes.notesPlaceholder")}
+            />
+            <FolderPicker
+              folders={folders}
+              selectedFolderId={selectedFolderId}
+              onSelect={setSelectedFolderId}
+              isLoading={isFoldersLoading}
             />
             {draftRecordings.length > 0 && (
               <View className="mt-5">

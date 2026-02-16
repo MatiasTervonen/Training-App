@@ -17,6 +17,7 @@ type DropdownMenuProps = {
   onDelete?: () => void;
   onHistory?: () => void;
   onChange?: () => void;
+  onMoveToFolder?: () => void;
 };
 
 export default function DropdownMenu({
@@ -27,6 +28,7 @@ export default function DropdownMenu({
   onDelete,
   onHistory,
   onChange,
+  onMoveToFolder,
 }: DropdownMenuProps) {
   const { t } = useTranslation("common");
 
@@ -57,6 +59,14 @@ export default function DropdownMenu({
                 <AppText className="text-center">
                   {pinned ? t("common.unpin") : t("common.pin")}
                 </AppText>
+              </MenuOption>
+            </View>
+          )}
+
+          {onMoveToFolder && (
+            <View className="border-b border-blue-500">
+              <MenuOption onSelect={onMoveToFolder}>
+                <AppText className="text-center">{t("common.moveToFolder")}</AppText>
               </MenuOption>
             </View>
           )}

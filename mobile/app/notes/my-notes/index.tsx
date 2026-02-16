@@ -1,6 +1,6 @@
 import AppText from "@/components/AppText";
 import { View, FlatList, RefreshControl } from "react-native";
-import { useState } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { FeedSkeleton } from "@/components/skeletetons";
 import FullScreenModal from "@/components/FullScreenModal";
 import { LinearGradient } from "expo-linear-gradient";
@@ -17,6 +17,10 @@ import { useQueryClient } from "@tanstack/react-query";
 import useDeleteSession from "@/features/feed/hooks/useDeleteSession";
 import useFullSessions from "@/features/feed/hooks/useFullSessions";
 import { useTranslation } from "react-i18next";
+import useFolders from "@/features/notes/hooks/useFolders";
+import FolderFilterChips from "@/features/notes/components/FolderFilterChips";
+import MoveToFolderSheet from "@/features/notes/components/MoveToFolderSheet";
+import type { FolderFilter } from "@/database/notes/get-notes";
 
 export default function MyNotesScreen() {
   const { t } = useTranslation("notes");
@@ -24,8 +28,22 @@ export default function MyNotesScreen() {
   const [editingItem, setEditingItem] = useState<FeedItemUI | null>(null);
   const [refreshing, setRefreshing] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [moveToFolderItem, setMoveToFolderItem] = useState<FeedItemUI | null>(
+    null,
+  );
+
+  // Folder filter state
+  const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
+  const [isUnfiledSelected, setIsUnfiledSelected] = useState(false);
+
+  const folderFilter: FolderFilter | undefined = useMemo(() => {
+    if (isUnfiledSelected) return { type: "unfiled" };
+    if (selectedFolderId) return { type: "folder", folderId: selectedFolderId };
+    return undefined;
+  }, [selectedFolderId, isUnfiledSelected]);
 
   const queryClient = useQueryClient();
+  const { folders } = useFolders();
 
   const {
     data,
@@ -37,18 +55,36 @@ export default function MyNotesScreen() {
     isFetchingNextPage,
     pinnedFeed,
     unpinnedFeed,
-  } = useMyNotesFeed();
+  } = useMyNotesFeed(folderFilter);
 
-  // handle feedItem deletion
   const { handleDelete } = useDeleteSession();
-
   const { togglePin } = useTogglePin(["myNotes"]);
-
-  // useUpdateFeedItem hook to update feed item in cache and move it to top
   const { updateFeedItemToTop } = useUpdateFeedItemToTop();
 
   const { notesSessionFull, notesSessionError, isLoadingNotesSession } =
     useFullSessions(expandedItem, editingItem);
+
+  // Build folder name lookup from folders
+  const folderMap = useMemo(() => {
+    const map = new Map<string, string>();
+    folders.forEach((f) => map.set(f.id, f.name));
+    return map;
+  }, [folders]);
+
+  const getFolderName = useCallback(
+    (item: FeedItemUI) => {
+      const folderId = (item.extra_fields as { folder_id?: string } | null)?.folder_id;
+      if (!folderId) return null;
+      return folderMap.get(folderId) ?? null;
+    },
+    [folderMap],
+  );
+
+  const getEmptyMessage = () => {
+    if (isUnfiledSelected) return t("notes.folders.noUnfiled");
+    if (selectedFolderId) return t("notes.folders.folderEmpty");
+    return t("notes.noNotes");
+  };
 
   return (
     <LinearGradient
@@ -64,9 +100,30 @@ export default function MyNotesScreen() {
           {t("notes.failedToLoad")}
         </AppText>
       ) : !data || (unpinnedFeed.length === 0 && pinnedFeed.length === 0) ? (
-        <AppText className="text-center text-lg mt-10 mx-auto">
-          {t("notes.noNotes")}
-        </AppText>
+        <View>
+          {folders.length > 0 && (
+            <FolderFilterChips
+              folders={folders}
+              selectedFolderId={selectedFolderId}
+              isUnfiledSelected={isUnfiledSelected}
+              onSelectAll={() => {
+                setSelectedFolderId(null);
+                setIsUnfiledSelected(false);
+              }}
+              onSelectUnfiled={() => {
+                setSelectedFolderId(null);
+                setIsUnfiledSelected(true);
+              }}
+              onSelectFolder={(id) => {
+                setSelectedFolderId(id);
+                setIsUnfiledSelected(false);
+              }}
+            />
+          )}
+          <AppText className="text-center text-lg mt-10 mx-auto">
+            {getEmptyMessage()}
+          </AppText>
+        </View>
       ) : (
         <FlatList
           data={unpinnedFeed}
@@ -74,7 +131,7 @@ export default function MyNotesScreen() {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{
             paddingBottom: 100,
-            paddingTop: pinnedFeed.length === 0 ? 30 : 0,
+            paddingTop: pinnedFeed.length === 0 && folders.length === 0 ? 30 : 0,
           }}
           onEndReached={() => {
             if (hasNextPage && !isFetchingNextPage) {
@@ -114,6 +171,9 @@ export default function MyNotesScreen() {
                 onEdit={() => {
                   setEditingItem(feedItem);
                 }}
+                onMoveToFolder={() => {
+                  setMoveToFolderItem(feedItem);
+                }}
               />
             </View>
           )}
@@ -125,13 +185,34 @@ export default function MyNotesScreen() {
             />
           }
           ListHeaderComponent={
-            <FeedHeader
-              pinnedFeed={pinnedFeed}
-              setExpandedItem={setExpandedItem}
-              setEditingItem={setEditingItem}
-              pinned_context="notes"
-              queryKey={["myNotes"]}
-            />
+            <View>
+              {folders.length > 0 && (
+                <FolderFilterChips
+                  folders={folders}
+                  selectedFolderId={selectedFolderId}
+                  isUnfiledSelected={isUnfiledSelected}
+                  onSelectAll={() => {
+                    setSelectedFolderId(null);
+                    setIsUnfiledSelected(false);
+                  }}
+                  onSelectUnfiled={() => {
+                    setSelectedFolderId(null);
+                    setIsUnfiledSelected(true);
+                  }}
+                  onSelectFolder={(id) => {
+                    setSelectedFolderId(id);
+                    setIsUnfiledSelected(false);
+                  }}
+                />
+              )}
+              <FeedHeader
+                pinnedFeed={pinnedFeed}
+                setExpandedItem={setExpandedItem}
+                setEditingItem={setEditingItem}
+                pinned_context="notes"
+                queryKey={["myNotes"]}
+              />
+            </View>
           }
         />
       )}
@@ -175,6 +256,18 @@ export default function MyNotesScreen() {
             onDirtyChange={setHasUnsavedChanges}
           />
         </FullScreenModal>
+      )}
+
+      {moveToFolderItem && (
+        <MoveToFolderSheet
+          isOpen={!!moveToFolderItem}
+          onClose={() => setMoveToFolderItem(null)}
+          noteId={moveToFolderItem.source_id}
+          currentFolderId={
+            (moveToFolderItem.extra_fields as { folder_id?: string } | null)?.folder_id ?? null
+          }
+          folders={folders}
+        />
       )}
     </LinearGradient>
   );

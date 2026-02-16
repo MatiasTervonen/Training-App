@@ -27,6 +27,7 @@
 - Small notes field: use `SubNotes` component
 - Large notes field: use `NotesInput` component
 - Title fields: use `TitleInput` component
+- Never use raw `<input>` elements — always use existing input components from `ui/`.
 
 
 ## Imports
@@ -35,3 +36,6 @@
 ## Translations
 - Always add translations when creating new pages or user-facing text.
 - Translation files are in `app/lib`.
+
+## TypeScript
+- Never use `any` type. Fix TypeScript errors with proper types. If you're unsure of the type, read the codebase to find the correct one.

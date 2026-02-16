@@ -27,7 +27,8 @@
     "failedToCopy": "Muistiinpanojen kopiointi epäonnistui.",
     "elementNotFound": "Elementtiä ei löytynyt.",
     "chat": "Keskustelu",
-    "unsavedChanges": "tallentamattomia muutoksia"
+    "unsavedChanges": "tallentamattomia muutoksia",
+    "moveToFolder": "Siirrä kansioon"
   },
   "modal": {
     "closeAlt": "Sulje ikkuna",

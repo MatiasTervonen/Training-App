@@ -1,6 +1,6 @@
 "use client";
 
-import { NotebookPen, List } from "lucide-react";
+import { NotebookPen, List, FolderOpen } from "lucide-react";
 import LinkButton from "@/components/buttons/LinkButton";
 import { useTranslation } from "react-i18next";
 
@@ -19,6 +19,11 @@ export default function Sessions() {
         <LinkButton href="/notes/my-notes">
           {t("notes.myNotes")}
           <List />
+        </LinkButton>
+
+        <LinkButton href="/notes/folders">
+          {t("notes.folders.manageFolders")}
+          <FolderOpen />
         </LinkButton>
       </div>
     </div>

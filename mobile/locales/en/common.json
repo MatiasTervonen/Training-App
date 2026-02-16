@@ -17,6 +17,7 @@
     "pinned": "Pinned",
     "history": "History",
     "change": "Change",
+    "moveToFolder": "Move to Folder",
     "created": "Created:",
     "unsavedChanges": "unsaved changes",
     "unsavedChangesDiscard": "You have unsaved changes. Discard them?",

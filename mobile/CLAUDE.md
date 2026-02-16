@@ -32,3 +32,6 @@
 ## Translations
 - Always add translations when creating new pages or user-facing text.
 - Translation files are in `locales`.
+
+## TypeScript
+- Never use `any` type. Fix TypeScript errors with proper types. If you're unsure of the type, read the codebase to find the correct one.

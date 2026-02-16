@@ -1088,10 +1088,43 @@ export type Database = {
           },
         ]
       }
+      note_folders: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "note_folders_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notes: {
         Row: {
           activity_at: string
           created_at: string
+          folder_id: string | null
           id: string
           notes: string | null
           title: string | null
@@ -1101,6 +1134,7 @@ export type Database = {
         Insert: {
           activity_at?: string
           created_at?: string
+          folder_id?: string | null
           id?: string
           notes?: string | null
           title?: string | null
@@ -1110,6 +1144,7 @@ export type Database = {
         Update: {
           activity_at?: string
           created_at?: string
+          folder_id?: string | null
           id?: string
           notes?: string | null
           title?: string | null
@@ -1117,6 +1152,13 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "notes_folder_id_fkey"
+            columns: ["folder_id"]
+            isOneToOne: false
+            referencedRelation: "note_folders"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "notes_user_id_fkey"
             columns: ["user_id"]
@@ -1356,6 +1398,48 @@ export type Database = {
             columns: ["template_id"]
             isOneToOne: false
             referencedRelation: "activity_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sessions_voice: {
+        Row: {
+          created_at: string
+          duration_ms: number
+          id: string
+          session_id: string
+          storage_path: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          duration_ms: number
+          id?: string
+          session_id: string
+          storage_path: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          duration_ms?: number
+          id?: string
+          session_id?: string
+          storage_path?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sessions_voice_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sessions_voice_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
             referencedColumns: ["id"]
           },
         ]
@@ -1604,21 +1688,21 @@ export type Database = {
       user_settings: {
         Row: {
           gps_tracking_enabled: boolean
-          language: string | null
+          language: string
           push_enabled: boolean
           updated_at: string
           user_id: string
         }
         Insert: {
           gps_tracking_enabled?: boolean
-          language?: string | null
+          language?: string
           push_enabled?: boolean
           updated_at?: string
           user_id?: string
         }
         Update: {
           gps_tracking_enabled?: boolean
-          language?: string | null
+          language?: string
           push_enabled?: boolean
           updated_at?: string
           user_id?: string
@@ -1730,6 +1814,7 @@ export type Database = {
       activities_save_activity: {
         Args: {
           p_activity_id: string
+          p_draftrecordings?: Json
           p_duration: number
           p_end_time: string
           p_notes: string
@@ -1850,14 +1935,97 @@ export type Database = {
         Returns: string
       }
       last_30d_analytics: { Args: never; Returns: Json }
-      notes_edit_note: {
+      notes_edit_note:
+        | {
+            Args: {
+              p_deleted_recording_ids?: string[]
+              p_id: string
+              p_new_recordings?: Json
+              p_notes: string
+              p_title: string
+              p_updated_at: string
+            }
+            Returns: {
+              activity_at: string | null
+              created_at: string
+              extra_fields: Json
+              id: string
+              occurred_at: string
+              source_id: string
+              title: string
+              type: string
+              updated_at: string | null
+              user_id: string
+            }
+            SetofOptions: {
+              from: "*"
+              to: "feed_items"
+              isOneToOne: true
+              isSetofReturn: false
+            }
+          }
+        | {
+            Args: {
+              p_deleted_recording_ids?: string[]
+              p_folder_id?: string
+              p_id: string
+              p_new_recordings?: Json
+              p_notes: string
+              p_title: string
+              p_updated_at: string
+            }
+            Returns: {
+              activity_at: string | null
+              created_at: string
+              extra_fields: Json
+              id: string
+              occurred_at: string
+              source_id: string
+              title: string
+              type: string
+              updated_at: string | null
+              user_id: string
+            }
+            SetofOptions: {
+              from: "*"
+              to: "feed_items"
+              isOneToOne: true
+              isSetofReturn: false
+            }
+          }
+        | {
+            Args: {
+              p_folder_id?: string
+              p_id: string
+              p_notes: string
+              p_title: string
+              p_updated_at: string
+            }
+            Returns: {
+              activity_at: string | null
+              created_at: string
+              extra_fields: Json
+              id: string
+              occurred_at: string
+              source_id: string
+              title: string
+              type: string
+              updated_at: string | null
+              user_id: string
+            }
+            SetofOptions: {
+              from: "*"
+              to: "feed_items"
+              isOneToOne: true
+              isSetofReturn: false
+            }
+          }
+      notes_get_by_folder: {
         Args: {
-          p_deleted_recording_ids?: string[]
-          p_id: string
-          p_new_recordings?: Json
-          p_notes: string
-          p_title: string
-          p_updated_at: string
+          p_folder_id?: string
+          p_limit?: number
+          p_offset?: number
+          p_unfiled_only?: boolean
         }
         Returns: {
           activity_at: string | null
@@ -1870,18 +2038,36 @@ export type Database = {
           type: string
           updated_at: string | null
           user_id: string
-        }
+        }[]
         SetofOptions: {
           from: "*"
           to: "feed_items"
-          isOneToOne: true
-          isSetofReturn: false
+          isOneToOne: false
+          isSetofReturn: true
         }
       }
-      notes_save_note: {
-        Args: { p_draftrecordings?: Json; p_notes: string; p_title: string }
-        Returns: string
+      notes_move_to_folder: {
+        Args: { p_folder_id?: string; p_note_id: string }
+        Returns: undefined
       }
+      notes_save_note:
+        | {
+            Args: { p_draftrecordings?: Json; p_notes: string; p_title: string }
+            Returns: string
+          }
+        | {
+            Args: {
+              p_draftrecordings?: Json
+              p_folder_id?: string
+              p_notes: string
+              p_title: string
+            }
+            Returns: string
+          }
+        | {
+            Args: { p_folder_id?: string; p_notes: string; p_title: string }
+            Returns: string
+          }
       reminders_delete_global_reminder: {
         Args: { p_id: string }
         Returns: undefined

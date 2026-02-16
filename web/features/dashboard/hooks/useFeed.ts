@@ -70,18 +70,32 @@ export default function useFeed() {
   });
 
   const pinnedFeed = useMemo(() => {
+    const seen = new Set<string>();
     return (
-      data?.pages.flatMap((page) =>
-        page.feed.filter((item) => item.feed_context === "pinned")
-      ) ?? []
+      data?.pages
+        .flatMap((page) =>
+          page.feed.filter((item) => item.feed_context === "pinned")
+        )
+        .filter((item) => {
+          if (seen.has(item.id)) return false;
+          seen.add(item.id);
+          return true;
+        }) ?? []
     );
   }, [data]);
 
   const unpinnedFeed = useMemo(() => {
+    const seen = new Set<string>();
     return (
-      data?.pages.flatMap((page) =>
-        page.feed.filter((item) => item.feed_context === "feed")
-      ) ?? []
+      data?.pages
+        .flatMap((page) =>
+          page.feed.filter((item) => item.feed_context === "feed")
+        )
+        .filter((item) => {
+          if (seen.has(item.id)) return false;
+          seen.add(item.id);
+          return true;
+        }) ?? []
     );
   }, [data]);
 

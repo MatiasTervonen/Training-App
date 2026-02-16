@@ -14,6 +14,7 @@ type BaseCardProps = {
   onDelete?: () => void;
   onExpand: () => void;
   onEdit?: () => void;
+  onMoveToFolder?: () => void;
   statsContent: ReactNode;
   typeIcon: ReactNode;
   typeName: string;
@@ -27,6 +28,7 @@ export default function BaseFeedCard({
   onDelete,
   onExpand,
   onEdit,
+  onMoveToFolder,
   statsContent,
   typeIcon,
   typeName,
@@ -36,7 +38,7 @@ export default function BaseFeedCard({
   return (
     <div
       className={`
-        border rounded-md flex flex-col justify-between transition-colors min-h-[170px] overflow-hidden ${
+        border rounded-md flex flex-col justify-between transition-colors min-h-[170px] ${
           pinned
             ? "border-yellow-200 bg-yellow-400"
             : "bg-slate-700 border-gray-100"
@@ -66,6 +68,7 @@ export default function BaseFeedCard({
           onEdit={onEdit}
           onTogglePin={onTogglePin}
           onDelete={onDelete}
+          onMoveToFolder={onMoveToFolder}
         />
       </div>
 

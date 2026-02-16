@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo, useCallback } from "react";
 import Modal from "@/components/modal";
 import FeedCard from "@/features/feed-cards/FeedCard";
 import NotesSession from "@/features/notes/cards/notes-expanded";
@@ -13,11 +13,32 @@ import useNotesTogglePin from "@/features/notes/hooks/useNotesTogglePin";
 import useNotesDeleteSession from "@/features/notes/hooks/useNotesDeleteSession";
 import useNotesUpdateFeedItemToTop from "@/features/notes/hooks/useNotesUpdateFeedItemToTop";
 import FeedHeader from "@/features/dashboard/components/feedHeader";
+import useFolders from "@/features/notes/hooks/useFolders";
+import FolderFilterChips from "@/features/notes/components/FolderFilterChips";
+import MoveToFolderDropdown from "@/features/notes/components/MoveToFolderDropdown";
+import { useTranslation } from "react-i18next";
+import type { FolderFilter } from "@/database/notes/get-notes";
 
 export default function MyNotesPage() {
+  const { t } = useTranslation("notes");
   const [expandedItem, setExpandedItem] = useState<FeedItemUI | null>(null);
   const [editingItem, setEditingItem] = useState<FeedItemUI | null>(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [moveToFolderItem, setMoveToFolderItem] = useState<FeedItemUI | null>(
+    null,
+  );
+
+  // Folder filter state
+  const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
+  const [isUnfiledSelected, setIsUnfiledSelected] = useState(false);
+
+  const folderFilter: FolderFilter | undefined = useMemo(() => {
+    if (isUnfiledSelected) return { type: "unfiled" };
+    if (selectedFolderId) return { type: "folder", folderId: selectedFolderId };
+    return undefined;
+  }, [selectedFolderId, isUnfiledSelected]);
+
+  const { folders } = useFolders();
 
   const {
     data,
@@ -31,11 +52,33 @@ export default function MyNotesPage() {
     pullDistance,
     refreshing,
     loadMoreRef,
-  } = useMyNotesFeed();
+  } = useMyNotesFeed(folderFilter);
 
   const { togglePin } = useNotesTogglePin();
   const { handleDelete } = useNotesDeleteSession();
   const { updateFeedItemToTop } = useNotesUpdateFeedItemToTop();
+
+  // Build folder name lookup
+  const folderMap = useMemo(() => {
+    const map = new Map<string, string>();
+    folders.forEach((f) => map.set(f.id, f.name));
+    return map;
+  }, [folders]);
+
+  const getFolderName = useCallback(
+    (item: FeedItemUI) => {
+      const folderId = (item.extra_fields as { folder_id?: string } | null)?.folder_id;
+      if (!folderId) return null;
+      return folderMap.get(folderId) ?? null;
+    },
+    [folderMap],
+  );
+
+  const getEmptyMessage = () => {
+    if (isUnfiledSelected) return t("notes.folders.noUnfiled");
+    if (selectedFolderId) return t("notes.folders.folderEmpty");
+    return t("notes.noNotes");
+  };
 
   return (
     <div className="h-full">
@@ -59,16 +102,35 @@ export default function MyNotesPage() {
           ) : null}
         </div>
 
+        {/* Folder filter chips */}
+        {folders.length > 0 && (
+          <FolderFilterChips
+            folders={folders}
+            selectedFolderId={selectedFolderId}
+            isUnfiledSelected={isUnfiledSelected}
+            onSelectAll={() => {
+              setSelectedFolderId(null);
+              setIsUnfiledSelected(false);
+            }}
+            onSelectUnfiled={() => {
+              setSelectedFolderId(null);
+              setIsUnfiledSelected(true);
+            }}
+            onSelectFolder={(id) => {
+              setSelectedFolderId(id);
+              setIsUnfiledSelected(false);
+            }}
+          />
+        )}
+
         {isLoading && !data ? (
           <FeedSkeleton count={6} />
         ) : error ? (
           <p className="text-center text-lg mt-10">
-            Failed to load notes. Please try again later.
+            {t("notes.failedToLoad")}
           </p>
         ) : !data || (unpinnedFeed.length === 0 && pinnedFeed.length === 0) ? (
-          <p className="text-center text-lg mt-20">
-            No notes yet. Create a note to see it here!
-          </p>
+          <p className="text-center text-lg mt-20">{getEmptyMessage()}</p>
         ) : (
           <>
             <FeedHeader
@@ -100,6 +162,9 @@ export default function MyNotesPage() {
                     }
                     onEdit={() => {
                       setEditingItem(feedItem);
+                    }}
+                    onMoveToFolder={() => {
+                      setMoveToFolderItem(feedItem);
                     }}
                   />
                 </div>
@@ -148,6 +213,27 @@ export default function MyNotesPage() {
             />
           </Modal>
         )}
+
+        {moveToFolderItem && (
+          <Modal
+            isOpen={true}
+            onClose={() => setMoveToFolderItem(null)}
+          >
+            <div className="max-w-md mx-auto page-padding">
+              <h2 className="text-xl text-center mb-6">
+                {t("notes.folders.moveToFolder")}
+              </h2>
+              <MoveToFolderDropdown
+                noteId={moveToFolderItem.source_id}
+                currentFolderId={
+                  (moveToFolderItem.extra_fields as { folder_id?: string } | null)?.folder_id ?? null
+                }
+                onMoved={() => setMoveToFolderItem(null)}
+              />
+            </div>
+          </Modal>
+        )}
+
       </div>
     </div>
   );

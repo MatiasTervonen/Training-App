@@ -15,6 +15,7 @@ type BaseCardProps = {
   onDelete: () => void;
   onExpand: () => void;
   onEdit: () => void;
+  onMoveToFolder?: () => void;
   statsContent: ReactNode; // Middle section with stats
   typeIcon: ReactNode; // Icon for activity type
   typeName: string; // Name of the activity type
@@ -28,6 +29,7 @@ export default function BaseFeedCard({
   onDelete,
   onExpand,
   onEdit,
+  onMoveToFolder,
   statsContent,
   typeIcon,
   typeName,
@@ -63,6 +65,7 @@ export default function BaseFeedCard({
           onEdit={onEdit}
           onTogglePin={onTogglePin}
           onDelete={onDelete}
+          onMoveToFolder={onMoveToFolder}
         />
       </View>
 

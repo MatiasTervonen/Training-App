@@ -45,6 +45,8 @@ export type template = Database["public"]["Tables"]["gym_templates"]["Row"];
 
 export type notes = Database["public"]["Tables"]["notes"]["Row"];
 
+export type note_folders = Database["public"]["Tables"]["note_folders"]["Row"];
+
 export type weight = Database["public"]["Tables"]["weight"]["Row"];
 
 export type gym_sessions = Database["public"]["Tables"]["gym_sessions"]["Row"];

@@ -4,14 +4,16 @@ import { handleError } from "@/utils/handleError";
 type props = {
   title: string;
   notes: string;
+  folderId?: string | null;
 };
 
-export async function saveNote({ title, notes }: props) {
+export async function saveNote({ title, notes, folderId }: props) {
   const supabase = createClient();
 
   const { error } = await supabase.rpc("notes_save_note", {
     p_title: title,
     p_notes: notes,
+    p_folder_id: folderId ?? null,
   });
 
   if (error) {

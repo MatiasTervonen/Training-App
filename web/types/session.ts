@@ -157,6 +157,7 @@ export type FeedCardProps = {
   onDelete: () => void;
   onExpand: () => void;
   onEdit: () => void;
+  onMoveToFolder?: () => void;
 };
 
 // For editing todo sessions

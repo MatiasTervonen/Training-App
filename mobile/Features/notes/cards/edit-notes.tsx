@@ -17,6 +17,8 @@ import { nanoid } from "nanoid/non-secure";
 import { useConfirmAction } from "@/lib/confirmAction";
 import { NotesVoiceSkeleton } from "@/components/skeletetons";
 import { useTranslation } from "react-i18next";
+import useFolders from "@/features/notes/hooks/useFolders";
+import FolderPicker from "@/features/notes/components/FolderPicker";
 
 type Props = {
   note: FeedItemUI;
@@ -30,6 +32,7 @@ type Props = {
 type notesPayload = {
   notes: string;
   "voice-count"?: number;
+  folder_id?: string | null;
 };
 
 type DraftRecording = {
@@ -61,6 +64,11 @@ export default function EditNotes({
   const [title, setValue] = useState(note.title);
   const [notes, setNotes] = useState(payload.notes);
   const [isSaving, setIsSaving] = useState(false);
+  const [selectedFolderId, setSelectedFolderId] = useState<string | null>(
+    payload.folder_id ?? null,
+  );
+  const initialFolderId = payload.folder_id ?? null;
+  const { folders, isLoading: isFoldersLoading } = useFolders();
 
   // Voice recordings state - initialize from props
   const [existingRecordings, setExistingRecordings] = useState<
@@ -109,6 +117,7 @@ export default function EditNotes({
         title,
         notes,
         updated_at: new Date().toISOString(),
+        folderId: selectedFolderId,
         deletedRecordingIds,
         newRecordings,
       });
@@ -129,6 +138,7 @@ export default function EditNotes({
   const hasChanges =
     title !== initialTitle ||
     notes !== initialNotes ||
+    selectedFolderId !== initialFolderId ||
     deletedRecordingIds.length > 0 ||
     newRecordings.length > 0;
 
@@ -166,6 +176,12 @@ export default function EditNotes({
             setValue={setNotes}
             label={t("notes.notesLabel")}
             minHeight={200}
+          />
+          <FolderPicker
+            folders={folders}
+            selectedFolderId={selectedFolderId}
+            onSelect={setSelectedFolderId}
+            isLoading={isFoldersLoading}
           />
 
           {/* Existing Voice Recordings */}

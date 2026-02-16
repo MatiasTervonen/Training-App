@@ -1,3 +1,4 @@
+import React from "react";
 import { View } from "react-native";
 import AppText from "@/components/AppText";
 import ChartTabSwitcher from "@/features/gym/analytics/AnalytictsChartTabSwitcher";
@@ -30,7 +31,7 @@ echarts.use([
 
 export default function AnalyticsForm({ data, heatmap }: AnalyticsFormProps) {
   const { t } = useTranslation("gym");
-  const skiaRef = useRef<any>(null);
+  const skiaRef = useRef<React.ComponentRef<typeof SkiaChart>>(null);
   const [chartSize, setChartSize] = useState({ width: 0, height: 0 });
 
   const heatmapData = useMemo(() => {
@@ -100,7 +101,9 @@ export default function AnalyticsForm({ data, heatmap }: AnalyticsFormProps) {
           fontFamily: "Russo-One",
         },
         borderColor: "#2563eb",
-        formatter: function (params: any) {
+        formatter: function (params: {
+          data?: { value?: [string, number]; title?: string };
+        }) {
           const { value, title } = params.data || {};
           if (!value) return "";
           const date = formatDateShort(value[0]);

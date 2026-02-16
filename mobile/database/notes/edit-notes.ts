@@ -15,6 +15,7 @@ type Props = {
   title: string;
   notes: string;
   updated_at: string;
+  folderId?: string | null;
   deletedRecordingIds?: string[];
   newRecordings?: DraftRecording[];
 };
@@ -24,6 +25,7 @@ export async function editNotes({
   title,
   notes,
   updated_at,
+  folderId,
   deletedRecordingIds = [],
   newRecordings = [],
 }: Props) {
@@ -72,6 +74,7 @@ export async function editNotes({
       p_updated_at: updated_at,
       p_deleted_recording_ids: deletedRecordingIds,
       p_new_recordings: uploadedRecordings,
+      p_folder_id: folderId ?? null,
     });
 
     if (error) {

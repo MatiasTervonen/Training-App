@@ -13,6 +13,7 @@ type DropdownMenuProps = {
   onHistory?: () => void;
   onChange?: () => void;
   onTogglePin?: () => void;
+  onMoveToFolder?: () => void;
 };
 
 export default function DropdownMenu({
@@ -24,6 +25,7 @@ export default function DropdownMenu({
   onHistory,
   onChange,
   onTogglePin,
+  onMoveToFolder,
 }: DropdownMenuProps) {
   const { t } = useTranslation("common");
   const [open, setOpen] = useState(false);
@@ -70,6 +72,14 @@ export default function DropdownMenu({
               onClick={onChange}
             >
               {t("common.change")}
+            </button>
+          )}
+          {onMoveToFolder && (
+            <button
+              className="py-2 border-b border-blue-500 hover:bg-gray-600"
+              onClick={onMoveToFolder}
+            >
+              {t("common.moveToFolder")}
             </button>
           )}
           {onDelete && (

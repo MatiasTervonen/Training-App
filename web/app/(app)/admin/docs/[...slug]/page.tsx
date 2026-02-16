@@ -27,6 +27,9 @@ export async function generateStaticParams() {
   }
 
   scanDir(docsDir, []);
+  console.log("[docs] generateStaticParams cwd:", process.cwd());
+  console.log("[docs] generateStaticParams docsDir:", docsDir);
+  console.log("[docs] generateStaticParams found:", JSON.stringify(params));
   return params;
 }
 

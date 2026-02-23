@@ -155,11 +155,7 @@ export default function StartActivityScreen() {
   // Sync title changes to activeSession and native timer notification
   useEffect(() => {
     const session = activeSessionRef.current;
-    if (
-      session &&
-      session.type === activityName &&
-      session.label !== title
-    ) {
+    if (session && session.type === activityName && session.label !== title) {
       setActiveSession({
         ...session,
         label: title,
@@ -346,7 +342,7 @@ export default function StartActivityScreen() {
     setIsHydrated,
   });
 
-  // when foreground resumes from background, hydrate the steps from the health connect
+  // when foreground resumes from background, hydrate the steps from the native step counter
   useStepHydration({
     setSteps,
     stepsAllowed,

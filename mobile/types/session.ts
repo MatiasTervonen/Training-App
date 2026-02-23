@@ -225,6 +225,8 @@ export type templateSummary = {
   activity: {
     id: string;
     name: string;
+    slug: string | null;
+    base_met: number;
   };
   route: {
     type: "LineString";

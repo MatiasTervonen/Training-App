@@ -2,7 +2,7 @@ import { View } from "react-native";
 import AppText from "@/components/AppText";
 import LinkButton from "@/components/buttons/LinkButton";
 import LogoutButton from "@/features/login-signup/LogoutButton";
-import { ShieldUser, UserPen, Settings } from "lucide-react-native";
+import { ShieldUser, UserPen, Settings, LayoutGrid } from "lucide-react-native";
 import PageContainer from "@/components/PageContainer";
 import { useTranslation } from "react-i18next";
 
@@ -24,6 +24,9 @@ export default function SettingsScreen() {
           </LinkButton>
           <LinkButton label={t("menu.security")} href="/menu/security">
             <ShieldUser color="#f3f4f6" />
+          </LinkButton>
+          <LinkButton label={t("menu.widgets")} href="/menu/widgets">
+            <LayoutGrid color="#f3f4f6" />
           </LinkButton>
           <LinkButton label={t("menu.settings")} href="/menu/settings">
             <Settings color="#f3f4f6" />

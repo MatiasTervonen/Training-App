@@ -1,21 +1,28 @@
 {
   "widgets": {
+    "hub": {
+      "title": "Widgets",
+      "quickLinks": "Quick Links",
+      "steps": "Steps"
+    },
     "quickLinks": {
       "title": "Quick Links",
       "configTitle": "Configure Quick Links",
       "selectPages": "Select pages to show",
       "save": "Save",
-      "noLinksSelected": "Select at least one link"
+      "noLinksSelected": "Select at least one link",
+      "saved": "Quick Links saved"
     },
     "steps": {
       "title": "Steps Today",
       "configTitle": "Configure Steps Widget",
       "showGoal": "Show daily goal",
       "dailyGoal": "Daily goal",
-      "showTrend": "Show trend indicator",
       "save": "Save",
       "goal": "Goal",
-      "stepsUnit": "steps"
+      "stepsUnit": "steps",
+      "saved": "Steps widget saved",
+      "invalidGoal": "Goal must be a positive number"
     }
   }
 }

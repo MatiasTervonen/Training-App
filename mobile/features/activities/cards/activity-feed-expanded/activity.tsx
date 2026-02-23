@@ -34,12 +34,6 @@ export default function ActivitySession(activity_session: ActivitySessionProps) 
   const [templateNotes, setTemplateNotes] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [fullScreen, setFullScreen] = useState(false);
-  const [savedTemplateId, setSavedTemplateId] = useState<string | null>(
-    activity_session.session.template_id,
-  );
-
-
-
   const hasRoute = activity_session.route !== null;
 
   // hook to save the activity as a template
@@ -51,7 +45,6 @@ export default function ActivitySession(activity_session: ActivitySessionProps) 
     setShowModal,
     setTemplateName,
     setTemplateNotes,
-    onSuccess: (templateId) => setSavedTemplateId(templateId),
   });
 
   return (
@@ -125,7 +118,7 @@ export default function ActivitySession(activity_session: ActivitySessionProps) 
               </AppText>
             )}
           </View>
-          {hasRoute && savedTemplateId === null && (
+          {hasRoute && (
             <View className="mt-20">
               <AnimatedButton
                 onPress={() => setShowModal(true)}

@@ -50,6 +50,7 @@ import {
 } from "@/native/android/NativeStepCounter";
 import { requestWidgetUpdate } from "react-native-android-widget";
 import { StepsWidget } from "@/features/widgets/StepsWidget";
+import { getGlobalStepsConfig } from "@/features/widgets/widget-storage";
 
 // Set Mapbox access token
 Mapbox.setAccessToken(process.env.EXPO_PUBLIC_MAPBOX_PUBLIC_TOKEN!);
@@ -90,13 +91,16 @@ async function onAppStateChange(status: AppStateStatus) {
     focusManager.setFocused(status === "active");
   }
 
-  // Update Steps widget with fresh data when app comes to foreground
+  // Update Steps widget with fresh data and saved config when app comes to foreground
   if (status === "active" && Platform.OS === "android") {
     try {
-      const steps = await getTodaySteps();
+      const [steps, config] = await Promise.all([
+        getTodaySteps(),
+        getGlobalStepsConfig(),
+      ]);
       requestWidgetUpdate({
         widgetName: "Steps",
-        renderWidget: () => <StepsWidget steps={steps} />,
+        renderWidget: () => <StepsWidget steps={steps} config={config} />,
       }).catch(() => {
         // Widget may not be placed, ignore
       });

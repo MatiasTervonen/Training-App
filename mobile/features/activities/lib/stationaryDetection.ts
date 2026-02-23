@@ -17,11 +17,11 @@ export type MovementResult = {
 };
 
 const CONFIG = {
-  ACCURACY_THRESHOLD: 30, // meters - increased from 25 to reduce false bad signals
+  ACCURACY_THRESHOLD: 25, // meters - increased from 25 to reduce false bad signals
   BAD_SIGNAL_THRESHOLD: 3, // consecutive bad readings before marking as bad signal
   MIN_SPEED: 0.5, // m/s (~1.8 km/h) - slow walking threshold
   MIN_DISTANCE: 5, // meters - raised from 2 to filter indoor GPS drift
-  CONFIDENCE_THRESHOLD: 4, // raised from 3 - needs 4 consecutive moving readings
+  CONFIDENCE_THRESHOLD: 3, // raised from 3 - needs 4 consecutive moving readings
   CONFIDENCE_INCREMENT: 1, // lowered from 2 - slower ramp prevents drift false positives
   CONFIDENCE_DECAY: 1,
   STATIONARY_THROTTLE_MS: 5000,
@@ -60,7 +60,8 @@ export function detectMovement(
   }
 
   // Check if current reading has bad accuracy
-  const hasLowAccuracy = (point.accuracy ?? Infinity) > CONFIG.ACCURACY_THRESHOLD;
+  const hasLowAccuracy =
+    (point.accuracy ?? Infinity) > CONFIG.ACCURACY_THRESHOLD;
 
   // Update bad signal count (consecutive bad readings)
   const newBadSignalCount = hasLowAccuracy ? state.badSignalCount + 1 : 0;
@@ -88,7 +89,9 @@ export function detectMovement(
         ...state,
         badSignalCount: newBadSignalCount,
         // Don't update lastMovingPoint - keep the last known good position
-        lastAcceptedTimestamp: shouldSave ? point.timestamp : state.lastAcceptedTimestamp,
+        lastAcceptedTimestamp: shouldSave
+          ? point.timestamp
+          : state.lastAcceptedTimestamp,
       },
     };
   }
@@ -118,7 +121,7 @@ export function detectMovement(
     const exceedsAccuracy = distance > (point.accuracy ?? 0);
     const exceedsMinDistance = distance > CONFIG.MIN_DISTANCE;
     const exceedsSpeed = dtIsValid && speed > CONFIG.MIN_SPEED;
-    const exceedsFallbackDistance = distance > CONFIG.MIN_DISTANCE * 2; // 4m fallback
+    const exceedsFallbackDistance = distance > CONFIG.MIN_DISTANCE * 2; // 10m fallback
 
     isMoving =
       exceedsAccuracy &&

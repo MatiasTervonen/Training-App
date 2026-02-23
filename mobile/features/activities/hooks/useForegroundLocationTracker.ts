@@ -150,8 +150,8 @@ export function useForegroundLocationTracker({
       const newSub = await Location.watchPositionAsync(
         {
           accuracy: Location.Accuracy.High,
-          timeInterval: 500, // 0.5 sec for smoother dot movement
-          distanceInterval: 1,
+          timeInterval: 300, // 0.3 sec for smoother dot movement
+          distanceInterval: 0,
         },
         (location) => {
           if (cancelled) return;

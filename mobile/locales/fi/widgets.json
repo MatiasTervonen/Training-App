@@ -1,21 +1,28 @@
 {
   "widgets": {
+    "hub": {
+      "title": "Widgetit",
+      "quickLinks": "Pikalinkit",
+      "steps": "Askeleet"
+    },
     "quickLinks": {
       "title": "Pikalinkit",
       "configTitle": "Muokkaa pikalinkkejä",
       "selectPages": "Valitse näytettävät sivut",
       "save": "Tallenna",
-      "noLinksSelected": "Valitse vähintään yksi linkki"
+      "noLinksSelected": "Valitse vähintään yksi linkki",
+      "saved": "Pikalinkit tallennettu"
     },
     "steps": {
       "title": "Askeleet tänään",
       "configTitle": "Muokkaa askelwidgettiä",
       "showGoal": "Näytä päivätavoite",
       "dailyGoal": "Päivätavoite",
-      "showTrend": "Näytä trendi-indikaattori",
       "save": "Tallenna",
       "goal": "Tavoite",
-      "stepsUnit": "askelta"
+      "stepsUnit": "askelta",
+      "saved": "Askelwidget tallennettu",
+      "invalidGoal": "Tavoitteen on oltava positiivinen luku"
     }
   }
 }

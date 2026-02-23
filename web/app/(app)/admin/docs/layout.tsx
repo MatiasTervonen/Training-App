@@ -33,6 +33,12 @@ const docGroups = [
         name: "Core Systems",
         links: [{ name: "Authentication", slug: "mobile/auth" }],
       },
+      {
+        name: "Features",
+        links: [{
+          name: "Activities", slug: "mobile/activities"
+        }],
+      },
     ],
   },
   {

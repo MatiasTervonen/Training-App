@@ -37,15 +37,15 @@ export function useStartActivity() {
       title: template.template.name,
       notes: template.template.notes,
       activityName: template.activity.name,
+      activityId: template.activity.id,
+      activitySlug: template.activity.slug ?? null,
+      baseMet: template.activity.base_met,
     };
 
     await AsyncStorage.setItem("activity_draft", JSON.stringify(sessionDraft));
 
     // Stop any running GPS tracking first to prevent race conditions
     await stopGPStracking();
-
-    // Wait briefly to ensure any pending database writes complete
-    await new Promise((resolve) => setTimeout(resolve, 200));
 
     const initializeDatabase = async () => {
       const db = await getDatabase();

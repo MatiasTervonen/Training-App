@@ -16,18 +16,23 @@ supabase/
 
 ## Commands
 
+Supabase CLI is installed as a local npm dependency. Use `npx` to run it:
+
 ```bash
 # Create a new migration
-supabase migration new my_migration_name
+npx supabase migration new my_migration_name
 
 # Apply migrations to local database
-supabase db reset
+npx supabase db reset
 
 # Push migrations to remote (production)
-supabase db push
+npx supabase db push
 
 # Pull remote schema changes into a migration
-supabase db pull
+npx supabase db pull
+
+# Repair a failed migration (mark as reverted so it can be re-pushed)
+npx supabase migration repair <timestamp> --status reverted
 ```
 
 ## Important Rules

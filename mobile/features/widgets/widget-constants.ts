@@ -96,7 +96,6 @@ export interface QuickLinksConfig {
 export interface StepsConfig {
   showGoal: boolean;
   dailyGoal: number;
-  showTrend: boolean;
 }
 
 export const DEFAULT_QUICK_LINKS_CONFIG: QuickLinksConfig = {
@@ -106,5 +105,4 @@ export const DEFAULT_QUICK_LINKS_CONFIG: QuickLinksConfig = {
 export const DEFAULT_STEPS_CONFIG: StepsConfig = {
   showGoal: true,
   dailyGoal: 10000,
-  showTrend: true,
 };

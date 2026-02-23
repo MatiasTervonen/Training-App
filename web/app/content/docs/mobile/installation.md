@@ -27,4 +27,20 @@ Run the development server:
 pnpm start
 ```
 
+## Development build
+
+To create a development build of the mobile application, run the following command:
+
+```bash
+npx expo run android
+```
+
+## Production build
+
+To create a production build of the mobile application, run the following command:
+
+```bash
+npx expo run:android --variant=release
+```
+
 That's it! You're ready to go.

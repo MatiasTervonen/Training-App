@@ -20,9 +20,9 @@ const CONFIG = {
   ACCURACY_THRESHOLD: 30, // meters - increased from 25 to reduce false bad signals
   BAD_SIGNAL_THRESHOLD: 3, // consecutive bad readings before marking as bad signal
   MIN_SPEED: 0.5, // m/s (~1.8 km/h) - slow walking threshold
-  MIN_DISTANCE: 2, // meters - minimum to filter GPS noise when stationary
-  CONFIDENCE_THRESHOLD: 3,
-  CONFIDENCE_INCREMENT: 2,
+  MIN_DISTANCE: 5, // meters - raised from 2 to filter indoor GPS drift
+  CONFIDENCE_THRESHOLD: 4, // raised from 3 - needs 4 consecutive moving readings
+  CONFIDENCE_INCREMENT: 1, // lowered from 2 - slower ramp prevents drift false positives
   CONFIDENCE_DECAY: 1,
   STATIONARY_THROTTLE_MS: 5000,
 };

@@ -74,9 +74,15 @@ export default function Notes() {
             onClick={() => {
               if (notes.trim().length === 0) return;
 
-              saveNotes({ title, notes, folderId: selectedFolderId });
-              resetNotes();
-              setSelectedFolderId(null);
+              saveNotes(
+                { title, notes, folderId: selectedFolderId },
+                {
+                  onSuccess: () => {
+                    resetNotes();
+                    setSelectedFolderId(null);
+                  },
+                }
+              );
             }}
           />
         </div>

@@ -6,8 +6,7 @@ export const isUserNameTaken = async (
 ): Promise<boolean | null> => {
   try {
     const response = await fetch(
-      "https://training-app-bay.vercel.app/api/settings/userName-available?name=" +
-        encodeURIComponent(name),
+      `${process.env.EXPO_PUBLIC_API_URL}/api/settings/userName-available?name=${encodeURIComponent(name)}`,
       {
         headers: {
           Authorization: `Bearer ${session?.access_token}`,

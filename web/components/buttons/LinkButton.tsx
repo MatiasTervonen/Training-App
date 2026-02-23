@@ -23,7 +23,7 @@ export default function LinkButton({
         onClick?.(e);
         setDirection(0);
       }}
-      className="btn-base flex items-center gap-2 justify-center"
+      className="btn-base flex items-center gap-2 justify-center w-full"
     >
       {children}
     </Link>

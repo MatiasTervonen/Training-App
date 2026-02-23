@@ -4,8 +4,10 @@ import CustomInput from "@/ui/CustomInput";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { sendFriendRequest } from "@/database/friends/send-friend-request";
+import { useTranslation } from "react-i18next";
 
 export default function FriendRequestForm() {
+  const { t } = useTranslation("menu");
   const [identifier, setIdentifier] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -14,29 +16,29 @@ export default function FriendRequestForm() {
       const result = await sendFriendRequest(identifier);
 
       if (result.message === "You cannot send a friend request to yourself") {
-        setErrorMessage("You cannot send a friend request to yourself");
+        setErrorMessage(t("friends.cannotSendToSelf"));
         return;
       }
 
       if (result.message === "Friend request already exists") {
-        setErrorMessage("Friend request already exists");
+        setErrorMessage(t("friends.requestAlreadyExists"));
         return;
       }
 
       if (result.message === "You are already friends") {
-        setErrorMessage("You are already friends");
+        setErrorMessage(t("friends.alreadyFriends"));
         return;
       }
 
       if (result.message === "User does not exist") {
-        setErrorMessage("User does not exist");
+        setErrorMessage(t("friends.userNotFound"));
         return;
       }
 
-      toast.success("Friend request sent successfully!");
+      toast.success(t("friends.requestSentSuccess"));
       setIdentifier(""); // Clear the input field after sending the request
     } catch {
-      toast.error("Failed to send friend request. Please try again.");
+      toast.error(t("friends.requestSentError"));
     }
   };
 
@@ -44,8 +46,8 @@ export default function FriendRequestForm() {
     <div className="flex flex-col max-w-md mx-auto bg-slate-950 p-5 rounded-md shadow-md border-slate-700 border-2">
       <CustomInput
         id="friend-identifier"
-        label="Send Friend Request"
-        placeholder="Enter friend's username or id"
+        label={t("friends.sendFriendRequest")}
+        placeholder={t("friends.placeholder")}
         value={identifier}
         setValue={(val) => {
           setIdentifier(val);
@@ -64,7 +66,7 @@ export default function FriendRequestForm() {
         onClick={() => handleSendFriendRequest(identifier)}
         className="bg-blue-800 py-2 px-10 rounded-md shadow-md border-2 border-blue-500 text-md cursor-pointer hover:bg-blue-700 hover:scale-105 transition-transform duration-200"
       >
-        Send Request
+        {t("friends.sendRequest")}
       </button>
     </div>
   );

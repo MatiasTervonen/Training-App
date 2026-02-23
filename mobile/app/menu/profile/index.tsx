@@ -107,7 +107,7 @@ export default function ProfileScreen() {
       } as any);
 
       const response = await fetch(
-        "https://training-app-bay.vercel.app/api/settings/save-profilePic",
+        `${process.env.EXPO_PUBLIC_API_URL}/api/settings/save-profilePic`,
         {
           method: "POST",
           headers: {

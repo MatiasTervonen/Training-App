@@ -15,6 +15,8 @@
     "profilePicturePermissionTitle": "Permission Denied",
     "profilePicturePermissionMessage": "Please allow access to your photos.",
     "weightUnit": "Weight Unit",
+    "userNamePlaceholder": "Enter your user name...",
+    "saveChanges": "Save Changes",
     "savingProfile": "Saving profile...",
     "updateSuccess": "Settings updated successfully!",
     "updateError": "An unexpected error occurred while saving settings."
@@ -87,5 +89,24 @@
       "enableError": "Failed to enable Location Tracking",
       "disableError": "Failed to disable Location Tracking"
     }
+  },
+  "friends": {
+    "title": "Friends",
+    "myFriends": "My Friends",
+    "failedToLoad": "Failed to load friends",
+    "noFriendsFound": "No friends found",
+    "sendRequest": "Send Request",
+    "sendFriendRequest": "Send Friend Request",
+    "placeholder": "Enter friend's username or id",
+    "requestSentSuccess": "Friend request sent successfully!",
+    "requestSentError": "Failed to send friend request. Please try again.",
+    "cannotSendToSelf": "You cannot send a friend request to yourself",
+    "requestAlreadyExists": "Friend request already exists",
+    "alreadyFriends": "You are already friends",
+    "userNotFound": "User does not exist",
+    "profilePicture": "Profile Picture",
+    "deleteConfirmation": "Are you sure you want to delete this friend? This action cannot be undone.",
+    "deleteSuccess": "Friend deleted successfully!",
+    "deleteError": "Failed to delete friend"
   }
 }

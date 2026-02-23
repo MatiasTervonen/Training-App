@@ -15,6 +15,8 @@
     "profilePicturePermissionTitle": "Lupa evätty",
     "profilePicturePermissionMessage": "Salli pääsy kuviisi.",
     "weightUnit": "Painoyksikkö",
+    "userNamePlaceholder": "Syötä käyttäjänimi...",
+    "saveChanges": "Tallenna muutokset",
     "savingProfile": "Tallennetaan profiilia...",
     "updateSuccess": "Asetukset päivitetty onnistuneesti!",
     "updateError": "Odottamaton virhe asetusten tallennuksessa."
@@ -87,5 +89,24 @@
       "enableError": "Sijaintiseurannan käyttöönotto epäonnistui",
       "disableError": "Sijaintiseurannan poistaminen epäonnistui"
     }
+  },
+  "friends": {
+    "title": "Kaverit",
+    "myFriends": "Omat kaverit",
+    "failedToLoad": "Kavereiden lataaminen epäonnistui",
+    "noFriendsFound": "Kavereita ei löytynyt",
+    "sendRequest": "Lähetä pyyntö",
+    "sendFriendRequest": "Lähetä kaveripyyntö",
+    "placeholder": "Syötä kaverin käyttäjänimi tai id",
+    "requestSentSuccess": "Kaveripyyntö lähetetty onnistuneesti!",
+    "requestSentError": "Kaveripyynnön lähettäminen epäonnistui. Yritä uudelleen.",
+    "cannotSendToSelf": "Et voi lähettää kaveripyyntöä itsellesi",
+    "requestAlreadyExists": "Kaveripyyntö on jo olemassa",
+    "alreadyFriends": "Olette jo kavereita",
+    "userNotFound": "Käyttäjää ei löytynyt",
+    "profilePicture": "Profiilikuva",
+    "deleteConfirmation": "Haluatko varmasti poistaa tämän kaverin? Tätä toimintoa ei voi perua.",
+    "deleteSuccess": "Kaveri poistettu onnistuneesti!",
+    "deleteError": "Kaverin poistaminen epäonnistui"
   }
 }

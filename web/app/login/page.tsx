@@ -10,21 +10,23 @@ import {
 import React from "react";
 import LoginButton from "@/app/login/components/loginbutton";
 import SignupButton from "@/app/login/components/signupbutton";
-import ModalLogin from "./components/modalLogin";
+import ModalLogin from "@/app/login/components/modalLogin";
 import CustomInput from "@/ui/CustomInput";
-import ResetPasswordButton from "./components/resetPasswordButton";
-import ResendButton from "./components/resendButton";
+import ResetPasswordButton from "@/app/login/components/resetPasswordButton";
+import ResendButton from "@/app/login/components/resendButton";
 import { ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { guestLogin } from "@/app/login/guest-login/action";
 import FullScreenLoader from "@/components/FullScreenLoader";
+import { useTranslation } from "react-i18next";
 
 const ConfettiAnimation = dynamic(() => import("../components/confetti"), {
   ssr: false,
 });
 
 export default function LoginPage() {
+  const { t } = useTranslation("login");
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const [guestModalOpen, setGuestModalOpen] = useState(false);
@@ -76,7 +78,7 @@ export default function LoginPage() {
             onClick={() => router.push("/")}
           >
             <ArrowLeft size={30} />
-            <p>back</p>
+            <p>{t("login.back")}</p>
           </button>
           <p className="text-3xl sm:text-4xl lg:text-5xl text-center bg-linear-to-tr from-[#27aee4] via-[#66ece1] to-[#f3f18d] text-transparent bg-clip-text">
             MyTrack
@@ -98,10 +100,10 @@ export default function LoginPage() {
               id="email-login"
               name="email"
               type="email"
-              placeholder="Enter email..."
+              placeholder={t("login.emailPlaceholder")}
               autoComplete="email"
               required
-              label="Email:"
+              label={`${t("login.email")}:`}
               maxLength={128}
               onChange={() => setHideErrorMessage(true)}
             />
@@ -110,10 +112,10 @@ export default function LoginPage() {
               id="password-login"
               name="password"
               type="password"
-              placeholder="Enter password..."
+              placeholder={t("login.passwordPlaceholder")}
               autoComplete="current-password"
               required
-              label="Password:"
+              label={`${t("login.password")}:`}
               maxLength={128}
               onChange={() => setHideErrorMessage(true)}
             />
@@ -137,7 +139,7 @@ export default function LoginPage() {
                   onClick={() => setModal2Open(true)}
                   className="cursor-pointer text-center hover:underline mt-2"
                 >
-                  Didn&apos;t get an email?
+                  {t("login.resendEmail.didntGetEmail")}
                 </p>
               )}
             </div>
@@ -151,7 +153,7 @@ export default function LoginPage() {
                 className="flex items-center justify-center gap-2 px-10  border-2 border-blue-500 p-2 rounded-md bg-linear-to-tr from-slate-950  to-blue-700 hover:from-blue-700 hover:to-slate-950 transform hover:scale-105 transition duration-200 cursor-pointer"
                 disabled={isPending}
               >
-                <span>Log in as a Guest</span>
+                <span>{t("login.logInAsGuest")}</span>
               </button>
               <div className="h-6">
                 {error && (
@@ -166,7 +168,7 @@ export default function LoginPage() {
               onClick={() => setModalOpen(true)}
               className="cursor-pointer text-center hover:underline"
             >
-              Forgot password?
+              {t("login.forgotPassword.link")}
             </p>
           </form>
 
@@ -185,11 +187,10 @@ export default function LoginPage() {
             >
               <div className="flex flex-col gap-5 ">
                 <h3 className="text-xl underline mt-5 text-gray-100">
-                  Reset Password
+                  {t("login.forgotPassword.title")}
                 </h3>
                 <p className="text-gray-300">
-                  Enter your email and we&apos;ll send you a link to reset your
-                  password.
+                  {t("login.forgotPassword.description")}
                 </p>
                 <div className="w-full">
                   <CustomInput
@@ -197,7 +198,7 @@ export default function LoginPage() {
                     id="email-forgot-password"
                     name="email"
                     type="email"
-                    placeholder="Enter email..."
+                    placeholder={t("login.emailPlaceholder")}
                     spellCheck={false}
                     required
                     maxLength={128}
@@ -237,10 +238,10 @@ export default function LoginPage() {
               id="email-signup"
               name="email"
               type="email"
-              placeholder="Enter email..."
+              placeholder={t("login.emailPlaceholder")}
               autoComplete="email"
               required
-              label="Email:"
+              label={`${t("login.email")}:`}
               maxLength={128}
               onChange={() => setHideErrorMessage(true)}
             />
@@ -249,10 +250,10 @@ export default function LoginPage() {
               id="password-signup"
               name="password"
               type="password"
-              placeholder="Enter password..."
+              placeholder={t("login.passwordPlaceholder")}
               autoComplete="new-password"
               required
-              label="Password:"
+              label={`${t("login.password")}:`}
               maxLength={128}
               onChange={() => setHideErrorMessage(true)}
             />
@@ -261,10 +262,10 @@ export default function LoginPage() {
               id="confirmPassword"
               name="confirmPassword"
               type="password"
-              placeholder="Confirm password..."
+              placeholder={t("login.confirmPasswordPlaceholder")}
               autoComplete="new-password"
               required
-              label="Confirm Password:"
+              label={`${t("login.confirmPassword")}:`}
               maxLength={128}
               onChange={() => setHideErrorMessage(true)}
             />
@@ -283,7 +284,7 @@ export default function LoginPage() {
                   onClick={() => setModal2Open(true)}
                   className="cursor-pointer text-center hover:underline"
                 >
-                  Didn&apos;t get an email?
+                  {t("login.resendEmail.didntGetEmail")}
                 </p>
               )}
             </div>
@@ -303,14 +304,14 @@ export default function LoginPage() {
                 <h1 className="text-3xl sm:text-4xl lg:text-5xl text-center bg-linear-to-tr from-[#27aee4] via-[#66ece1] to-[#f3f18d] text-transparent bg-clip-text">
                   MyTrack
                 </h1>
-                <h3 className="text-xl  mt-5">Thank you for signing up!</h3>
-                <p className="text-green-500 ">{state.message}</p>
+                <h3 className="text-xl  mt-5">{t("login.signUpSuccess.title")}</h3>
+                <p className="text-green-500 ">{t("login.signUpSuccess.message")}</p>
 
                 <p
                   onClick={() => setModal2Open(true)}
                   className="cursor-pointer hover:underline"
                 >
-                  Didn&apos;t get an email?
+                  {t("login.resendEmail.didntGetEmail")}
                 </p>
               </div>
             </ModalLogin>
@@ -330,11 +331,10 @@ export default function LoginPage() {
             >
               <div className="flex flex-col gap-5">
                 <h3 className="text-xl underline mt-5">
-                  Resend Verification Email
+                  {t("login.resendEmail.title")}
                 </h3>
                 <p className="text-gray-300">
-                  Enter your email and we&apos;ll send you a link to verify your
-                  email.
+                  {t("login.resendEmail.description")}
                 </p>
                 <div className="w-full">
                   <CustomInput
@@ -343,7 +343,7 @@ export default function LoginPage() {
                     name="email"
                     type="email"
                     autoComplete="email"
-                    placeholder="Enter email..."
+                    placeholder={t("login.emailPlaceholder")}
                     required
                     maxLength={128}
                   />
@@ -376,12 +376,11 @@ export default function LoginPage() {
                 MyTrack
               </h1>
               <div className="flex flex-col text-center gap-10">
-                <h2 className="text-2xl underline">Demo account</h2>
+                <h2 className="text-2xl underline">{t("login.guest.title")}</h2>
                 <p className="text-lg">
-                  All features are available, but your data and account will be
-                  deleted after you log out.
+                  {t("login.guest.description")}
                 </p>
-                <p>You can test the app without creating an account.</p>
+                <p>{t("login.guest.testInfo")}</p>
               </div>
               <button
                 type="button"
@@ -390,7 +389,7 @@ export default function LoginPage() {
                     setError(null);
                     const result = await guestLogin();
                     if (!result.success) {
-                      setError(result.message ?? "Login failded");
+                      setError(result.message ?? t("login.actions.guestLoginError"));
                       setGuestModalOpen(false);
                     }
                   })
@@ -398,18 +397,18 @@ export default function LoginPage() {
                 className="w-full border-2 border-blue-500 p-2 rounded-md bg-linear-to-tr from-slate-950  to-blue-700 hover:from-blue-700 hover:to-slate-950 transform hover:scale-105 transition duration-200 cursor-pointer"
                 disabled={isPending}
               >
-                <span>Continue</span>
+                <span>{t("login.guest.continue")}</span>
               </button>
             </div>
           </ModalLogin>
-          {isPending && <FullScreenLoader message="Logging in as guest..." />}
+          {isPending && <FullScreenLoader message={t("login.actions.loggingInAsGuest")} />}
         </div>
         <div className="flex justify-center items-center w-full  pb-10">
           <div className="flex flex-col items-center justify-center gap-5">
             <p className="text-center text-lg">
               {activeForm
-                ? "Already have an account?"
-                : "Don't have an account?"}
+                ? t("login.alreadyHaveAccount")
+                : t("login.dontHaveAccount")}
             </p>
             <button
               onClick={() => {
@@ -418,7 +417,7 @@ export default function LoginPage() {
               }}
               className="border-2 border-blue-400 py-2 px-10 rounded-md bg-linear-to-tr from-slate-950  to-blue-700 hover:from-blue-700 hover:to-slate-950 transform hover:scale-105 transition-all duration-200 cursor-pointer"
             >
-              {activeForm ? "Log in" : "Sign up"}
+              {activeForm ? t("login.logIn") : t("login.signUp")}
             </button>
           </div>
         </div>

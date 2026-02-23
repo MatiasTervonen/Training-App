@@ -99,8 +99,8 @@ export async function signUpWithEmail({
       signupError.message || t("login:login.actions.somethingWentWrong"),
     );
     handleError(signupError, {
-      message: "Error logging in as guest",
-      route: "guest-login",
+      message: "Error signing up",
+      route: "signup",
       method: "POST",
     });
     setSignup({ email: "", password: "", confirmPassword: "" });

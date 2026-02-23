@@ -2,6 +2,7 @@
 
 import SaveButton from "@/components/buttons/save-button";
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import ExerciseTypeSelect from "@/features/gym/components/ExerciseTypeSelect";
 import CustomInput from "@/ui/CustomInput";
@@ -13,6 +14,7 @@ import { saveUserProfile } from "@/database/settings/save-user-profile";
 import { validateUserName } from "@/database/settings/validateUserName";
 
 export default function Settings() {
+  const { t } = useTranslation("menu");
   const [isSaving, setIsSaving] = useState(false);
   const [userName, setUserName] = useState("");
   const [weightUnit, setWeightUnit] = useState("kg");
@@ -47,14 +49,12 @@ export default function Settings() {
       !fileType ||
       !["image/jpeg", "image/png", "image/webp"].includes(fileType.mime)
     ) {
-      toast.error(
-        "Invalid file type. Please upload a JPEG, PNG, or WEBP image."
-      );
+      toast.error(t("profile.profilePictureFormatError"));
       return null;
     }
 
     if (fileSize > 5 * 1024 * 1024) {
-      toast.error("File size exceeds 5MB limit.");
+      toast.error(t("profile.profilePictureSizeError"));
       return null;
     }
 
@@ -76,7 +76,7 @@ export default function Settings() {
       return `${data.publicUrl}?v=${Date.now()}`;
     } catch (error) {
       console.log("error uploading image", error);
-      toast.error("Failed to upload image");
+      toast.error(t("profile.profilePictureUploadError"));
       return profilePicZ || null;
     }
   };
@@ -96,9 +96,7 @@ export default function Settings() {
       const isTaken = await validateUserName(userName);
 
       if (isTaken) {
-        return toast.error(
-          "User name is already taken. Please choose another."
-        );
+        return toast.error(t("profile.userNameTaken"));
       }
 
       const payload = {
@@ -110,9 +108,9 @@ export default function Settings() {
       await saveUserProfile(payload);
 
       setPreferences(payload);
-      toast.success("Settings updated successfully!");
+      toast.success(t("profile.updateSuccess"));
     } catch {
-      toast.error("Error updating settings");
+      toast.error(t("profile.updateError"));
     } finally {
       setIsSaving(false);
     }
@@ -120,11 +118,11 @@ export default function Settings() {
 
   return (
     <div className="page-padding max-w-md mx-auto">
-      <h1 className="flex justify-center my-5 text-2xl">Profile Settings</h1>
+      <h1 className="flex justify-center my-5 text-2xl">{t("profile.title")}</h1>
       <div>
         <CustomInput
-          label="User Name"
-          placeholder="Enter your user name..."
+          label={t("profile.userName")}
+          placeholder={t("profile.userNamePlaceholder")}
           spellCheck={false}
           value={userName}
           setValue={(value) =>
@@ -132,7 +130,7 @@ export default function Settings() {
           }
         />
         <p className="text-sm text-gray-500 mt-2">
-          Max 15 characters. Only letters numbers, and &quot;_&quot; allowed.
+          {t("profile.userNameHint")}
         </p>
       </div>
       <div className="mt-5">
@@ -148,14 +146,14 @@ export default function Settings() {
           }}
         />
         <p className="text-sm text-gray-500 mt-2">
-          Max size 5MB. JPEG, PNG, and WEBP formats allowed.
+          {t("profile.profilePictureHint")}
         </p>
       </div>
       <div className="mt-5 w-fit">
         <ExerciseTypeSelect
           onChange={(value) => setWeightUnit(value)}
           value={weightUnit}
-          label="Weight Unit"
+          label={t("profile.weightUnit")}
           options={[
             { value: "kg", label: "kg" },
             { value: "lbs", label: "lbs" },
@@ -165,10 +163,10 @@ export default function Settings() {
       <div className="mt-10">
         <SaveButton
           onClick={async () => updateSettings()}
-          label="Save Changes"
+          label={t("profile.saveChanges")}
         />
       </div>
-      {isSaving && <FullScreenLoader message="Saving settings..." />}
+      {isSaving && <FullScreenLoader message={t("profile.savingProfile")} />}
     </div>
   );
 }

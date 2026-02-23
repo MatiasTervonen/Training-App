@@ -9,3 +9,4 @@ export { default as reminders } from "./reminders.json";
 export { default as activities } from "./activities.json";
 export { default as login } from "./login.json";
 export { default as feed } from "./feed.json";
+export { default as widgets } from "./widgets.json";

@@ -36,7 +36,6 @@
     "next": "16.0.7",
     "next-auth": "5.0.0-beta.25",
     "react": "19.2.1",
-    "react-calendar": "^5.1.0",
     "react-confetti": "^6.4.0",
     "react-datepicker": "^8.7.0",
     "react-dom": "19.2.1",

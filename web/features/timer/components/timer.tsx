@@ -3,6 +3,8 @@
 import { CirclePlay, CirclePause, RotateCcw } from "lucide-react";
 import { useTimerStore } from "@/lib/stores/timerStore";
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { formatDateShort } from "@/lib/formatDate";
 
 type TimerProps = {
   className?: string;
@@ -28,6 +30,7 @@ export default function Timer({
   const containerRef = useRef<HTMLDivElement>(null);
   const textRef = useRef<HTMLParagraphElement>(null);
   const [fontSize, setFontSize] = useState(16);
+  const { t } = useTranslation("timer");
 
   useEffect(() => {
     if (isRunning && startTimestamp) {
@@ -55,7 +58,7 @@ export default function Timer({
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
     return `${String(minutes).padStart(2, "0")}:${String(
-      remainingSeconds
+      remainingSeconds,
     ).padStart(2, "0")}`;
   };
 
@@ -146,9 +149,12 @@ export default function Timer({
               onClick={() => {
                 stopTimer();
                 startTimer(totalDuration);
+
+                const now = formatDateShort(new Date());
+
                 setActiveSession({
-                  type: "timer",
-                  label: "Timer",
+                  type: t("timer.title"),
+                  label: `${t("timer.title")} - ${now}`,
                   path: "/timer/empty-timer",
                 });
               }}

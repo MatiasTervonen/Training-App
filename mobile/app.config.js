@@ -1,5 +1,36 @@
 import "dotenv/config";
 
+/** @type {import('react-native-android-widget').WithAndroidWidgetsParams} */
+const widgetConfig = {
+  widgets: [
+    {
+      name: "QuickLinks",
+      label: "MyTrack Quick Links",
+      minWidth: "180dp",
+      minHeight: "60dp",
+      targetCellWidth: 3,
+      targetCellHeight: 1,
+      description: "Quick shortcuts to app pages",
+      previewImage: "./assets/widget-preview/quick-links.png",
+      resizeMode: "horizontal|vertical",
+      widgetFeatures: "reconfigurable|configuration_optional",
+    },
+    {
+      name: "Steps",
+      label: "MyTrack Steps",
+      minWidth: "180dp",
+      minHeight: "110dp",
+      targetCellWidth: 2,
+      targetCellHeight: 2,
+      description: "Today's step count",
+      previewImage: "./assets/widget-preview/steps.png",
+      updatePeriodMillis: 1800000,
+      resizeMode: "horizontal|vertical",
+      widgetFeatures: "reconfigurable|configuration_optional",
+    },
+  ],
+};
+
 export default {
   expo: {
     name: "MyTrack",
@@ -83,6 +114,8 @@ export default {
           androidCollapsedTitle: "{appName} Notifications",
         },
       ],
+      ["react-native-android-widget", widgetConfig],
+      "./plugins/withStepWidgetReceiver",
     ],
     experiments: {
       typedRoutes: true,

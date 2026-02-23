@@ -77,16 +77,16 @@ export default function ManageFoldersScreen() {
                 label={t("notes.folders.folderName")}
                 placeholder={t("notes.folders.folderNamePlaceholder")}
               />
-            </View>
-            <AnimatedButton
-              onPress={handleCreate}
-              disabled={!newFolderName.trim() || isCreating}
-              className="btn-base"
-            >
-              <AppText className="text-gray-100 text-center">
-                {t("notes.folders.createFolder")}
-              </AppText>
-            </AnimatedButton>
+            </View>    
+              <AnimatedButton
+                onPress={handleCreate}
+                disabled={!newFolderName.trim() || isCreating}
+                className="btn-base"
+              >
+                <AppText className="text-gray-100 text-center">
+                  {t("notes.folders.createFolder")}
+                </AppText>
+              </AnimatedButton>
           </View>
 
           {/* Loading state */}

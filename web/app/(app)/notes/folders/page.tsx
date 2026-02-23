@@ -75,7 +75,7 @@ export default function ManageFoldersPage() {
         <button
           onClick={handleCreate}
           disabled={!newFolderName.trim() || isCreating}
-          className="btn-base px-10 w-full sm:w-auto"
+          className="bg-blue-800 py-1.5 rounded-md shadow-md border-2 border-blue-500 text-lg cursor-pointer hover:bg-blue-700 hover:scale-105 transition-all duration-200 px-10"
         >
           {t("notes.folders.createFolder")}
         </button>

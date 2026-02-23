@@ -1,0 +1,21 @@
+{
+  "widgets": {
+    "quickLinks": {
+      "title": "Pikalinkit",
+      "configTitle": "Muokkaa pikalinkkejä",
+      "selectPages": "Valitse näytettävät sivut",
+      "save": "Tallenna",
+      "noLinksSelected": "Valitse vähintään yksi linkki"
+    },
+    "steps": {
+      "title": "Askeleet tänään",
+      "configTitle": "Muokkaa askelwidgettiä",
+      "showGoal": "Näytä päivätavoite",
+      "dailyGoal": "Päivätavoite",
+      "showTrend": "Näytä trendi-indikaattori",
+      "save": "Tallenna",
+      "goal": "Tavoite",
+      "stepsUnit": "askelta"
+    }
+  }
+}

@@ -5,37 +5,40 @@ export default function useNotesUpdateFeedItemToTop() {
   const queryClient = useQueryClient();
 
   const updateFeedItemToTop = (updateFeedItem: FeedItemUI) => {
-    // Update notes feed
-    queryClient.setQueryData<FeedData>(["myNotes"], (oldData) => {
-      if (!oldData) return oldData;
+    // Update all notes feed caches (both "all" view and folder-specific views)
+    queryClient.setQueriesData<FeedData>(
+      { queryKey: ["myNotes"] },
+      (oldData) => {
+        if (!oldData) return oldData;
 
-      let updatedItem: FeedItemUI | null = null;
+        let updatedItem: FeedItemUI | null = null;
 
-      // Remove the item from its current position and update it
-      const newPages = oldData.pages.map((page) => ({
-        ...page,
-        feed: page.feed.filter((item) => {
-          if (item.id === updateFeedItem.id) {
-            updatedItem = { ...item, ...updateFeedItem };
-            return false; // Remove from current position
-          }
-          return true;
-        }),
-      }));
+        // Remove the item from its current position and update it
+        const newPages = oldData.pages.map((page) => ({
+          ...page,
+          feed: page.feed.filter((item) => {
+            if (item.id === updateFeedItem.id) {
+              updatedItem = { ...item, ...updateFeedItem };
+              return false; // Remove from current position
+            }
+            return true;
+          }),
+        }));
 
-      // Add the updated item to the first position of the first page
-      if (updatedItem && newPages.length > 0) {
-        newPages[0] = {
-          ...newPages[0],
-          feed: [updatedItem, ...newPages[0].feed],
+        // Add the updated item to the first position of the first page
+        if (updatedItem && newPages.length > 0) {
+          newPages[0] = {
+            ...newPages[0],
+            feed: [updatedItem, ...newPages[0].feed],
+          };
+        }
+
+        return {
+          ...oldData,
+          pages: newPages,
         };
-      }
-
-      return {
-        ...oldData,
-        pages: newPages,
-      };
-    });
+      },
+    );
 
     // Also update the main feed
     queryClient.setQueryData<FeedData>(["feed"], (oldData) => {

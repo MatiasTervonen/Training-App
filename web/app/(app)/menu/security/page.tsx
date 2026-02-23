@@ -8,6 +8,8 @@ import { useSignOut } from "@/lib/handleSignOut";
 import { handleError } from "@/utils/handleError";
 import { deleteAccount } from "@/database/user/delete-account";
 import { useUserStore } from "@/lib/stores/useUserStore";
+import DeleteButtonSpinner from "@/components/buttons/delete-button-spinner";
+import { useTranslation } from "react-i18next";
 
 export default function Page() {
   const [password, setPassword] = useState("");
@@ -20,17 +22,18 @@ export default function Page() {
   const [errorMessage2, setErrorMessage2] = useState("");
   const [isDeleteAccount, setIsDeleteAccount] = useState("");
 
+  const { t } = useTranslation("menu");
   const isGuest = useUserStore((state) => state.role === "guest");
 
   const { signOut } = useSignOut();
 
   const handleSavePassword = async () => {
     if (password !== confirmPassword) {
-      setErrorMessage("Passwords do not match!");
+      setErrorMessage(t("security.resetPassword.passwordsDoNotMatch"));
       return;
     }
     if (password.length < 8) {
-      setErrorMessage("Password must be at least 8 characters long.");
+      setErrorMessage(t("security.resetPassword.passwordTooShort"));
       return;
     }
 
@@ -50,13 +53,13 @@ export default function Page() {
           method: "POST",
         });
         setErrorMessage(
-          error.message || "Failed to update password. Please try again."
+          error.message || t("security.resetPassword.updateFailed"),
         );
         setLoading(false);
         return;
       }
 
-      setSuccessMessage("Password updated successfully! Logging you out...");
+      setSuccessMessage(t("security.resetPassword.updateSuccess"));
       setErrorMessage("");
       setPassword("");
       setConfirmPassword("");
@@ -70,21 +73,17 @@ export default function Page() {
         route: "/api/auth/update-password",
         method: "POST",
       });
-      setErrorMessage("An unexpected error occurred. Please try again.");
+      setErrorMessage(t("security.resetPassword.updateFailed"));
       setLoading(false);
     }
   };
 
   const handleDeleteAccount = async () => {
-    const confirmed = confirm(
-      "This action cannot be undone. Do you really want to delete your account?"
-    );
+    const confirmed = confirm(t("security.deleteAccount.confirmMessage"));
     if (!confirmed) return;
 
-    if (isDeleteAccount !== "DELETE ACCOUNT") {
-      setErrorMessage2(
-        "Incorrect confirmation text. Type “DELETE ACCOUNT” to proceed."
-      );
+    if (isDeleteAccount !== t("security.deleteAccount.confirmationText")) {
+      setErrorMessage2(t("security.deleteAccount.incorrectConfirmation"));
       return;
     }
 
@@ -93,31 +92,29 @@ export default function Page() {
 
       await deleteAccount();
 
-      setSuccessMessage2("Account deleted successfully! Logging you out...");
+      setSuccessMessage2(t("security.deleteAccount.deleteSuccess"));
 
       setTimeout(() => {
         signOut();
       }, 3000);
     } catch {
-      setErrorMessage2("Failed to delete account! Please try again.");
+      setErrorMessage2(t("security.deleteAccount.deleteFailed"));
       setLoading2(false);
     }
   };
 
   return (
     <div className="page-padding max-w-md mx-auto">
-      <h1 className="flex justify-center mb-10 text-2xl">Security Settings</h1>
-      <h2 className="mb-5 underline">Reset Password</h2>
+      <h1 className="flex justify-center mb-10 text-2xl">{t("security.title")}</h1>
+      <h2 className="mb-5 underline">{t("security.resetPassword.title")}</h2>
       <p className="text-gray-300 mb-5 text-sm">
-        After resetting your password, you will be logged out from all devices
-        for security reasons. Any unsaved local data on this device may be
-        cleared.
+        {t("security.resetPassword.description")}
       </p>
       <div className="mb-5">
         <CustomInput
           type="password"
-          label="New Password"
-          placeholder="Enter your new password..."
+          label={t("security.resetPassword.newPassword")}
+          placeholder={t("security.resetPassword.newPasswordPlaceholder")}
           value={password}
           setValue={(value) => {
             setPassword(value);
@@ -130,8 +127,8 @@ export default function Page() {
       </div>
       <CustomInput
         type="password"
-        label="Confirm New Password"
-        placeholder="Confirm your new password..."
+        label={t("security.resetPassword.confirmPassword")}
+        placeholder={t("security.resetPassword.confirmPasswordPlaceholder")}
         value={confirmPassword}
         setValue={(value) => {
           setConfirmPassword(value);
@@ -154,7 +151,7 @@ export default function Page() {
           loading={loading}
           onClick={handleSavePassword}
           className="bg-gray-600 border-gray-400 hover:bg-gray-500"
-          label="Save (not allowed)"
+          label={t("security.resetPassword.saveNotAllowed")}
         />
       ) : (
         <SaveButtonSpinner
@@ -163,16 +160,15 @@ export default function Page() {
           onClick={handleSavePassword}
         />
       )}
-      <h2 className="mt-10 underline">Delete Account</h2>
+      <h2 className="mt-10 underline">{t("security.deleteAccount.title")}</h2>
       <p className="my-5 text-gray-300">
-        Type “DELETE ACCOUNT” to confirm. All your data will be permanently
-        removed and cannot be recovered.
+        {t("security.deleteAccount.description")}
       </p>
       <div>
         <CustomInput
           type="text"
-          label="Type: DELETE ACCOUNT"
-          placeholder="Type: DELETE ACCOUNT"
+          label={t("security.deleteAccount.inputLabel")}
+          placeholder={t("security.deleteAccount.inputPlaceholder")}
           value={isDeleteAccount}
           setValue={(value) => {
             setIsDeleteAccount(value);
@@ -189,8 +185,8 @@ export default function Page() {
       ) : (
         <p className="mb-5 text-center invisible">Placeholder</p>
       )}
-      <SaveButtonSpinner
-        label="Delete account"
+      <DeleteButtonSpinner
+        label={t("security.deleteAccount.title")}
         onClick={handleDeleteAccount}
         className="bg-red-600 border-red-400 hover:bg-red-500"
         loading={loading2}

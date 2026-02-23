@@ -44,7 +44,12 @@ import GpsTrackingPermission from "@/features/activities/gpsToggle/gpsTrackingPe
 import { backfillMissingDaysThrottled } from "@/database/activities/syncStepsToDatabase";
 import * as Device from "expo-device";
 import { hasStepsPermission } from "@/features/activities/stepToggle/stepPermission";
-import { initializeStepCounter } from "@/native/android/NativeStepCounter";
+import {
+  initializeStepCounter,
+  getTodaySteps,
+} from "@/native/android/NativeStepCounter";
+import { requestWidgetUpdate } from "react-native-android-widget";
+import { StepsWidget } from "@/features/widgets/StepsWidget";
 
 // Set Mapbox access token
 Mapbox.setAccessToken(process.env.EXPO_PUBLIC_MAPBOX_PUBLIC_TOKEN!);
@@ -80,9 +85,24 @@ const queryClient = new QueryClient({
 });
 
 // React Native Focus Manager: refetch stale queries when app returns from background
-function onAppStateChange(status: AppStateStatus) {
+async function onAppStateChange(status: AppStateStatus) {
   if (Platform.OS !== "web") {
     focusManager.setFocused(status === "active");
+  }
+
+  // Update Steps widget with fresh data when app comes to foreground
+  if (status === "active" && Platform.OS === "android") {
+    try {
+      const steps = await getTodaySteps();
+      requestWidgetUpdate({
+        widgetName: "Steps",
+        renderWidget: () => <StepsWidget steps={steps} />,
+      }).catch(() => {
+        // Widget may not be placed, ignore
+      });
+    } catch {
+      // Step data unavailable, ignore
+    }
   }
 }
 

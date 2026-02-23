@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 import { Friends } from "@/types/models";
 import { deleteFriend } from "@/database/friends/delete-friend";
 import { useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 
 type FriendCardProps = {
   id: string;
@@ -18,12 +19,11 @@ type FriendCardProps = {
 };
 
 export default function FriendCard({ id, user }: FriendCardProps) {
+  const { t } = useTranslation("menu");
   const queryClient = useQueryClient();
 
   const handleDeleteFriend = async () => {
-    const confirmation = confirm(
-      "Are you sure you want to delete this friend? This action cannot be undone."
-    );
+    const confirmation = confirm(t("friends.deleteConfirmation"));
     if (!confirmation) return;
 
     const queryKey = ["get-friends"];
@@ -44,10 +44,10 @@ export default function FriendCard({ id, user }: FriendCardProps) {
 
       await deleteFriend(id);
 
-      toast.success("Friend deleted successfully!");
+      toast.success(t("friends.deleteSuccess"));
     } catch (error) {
       console.log("failed to delete friend", error);
-      toast.error("Failed to delete friend");
+      toast.error(t("friends.deleteError"));
       queryClient.setQueryData(queryKey, previousData);
     }
   };
@@ -58,7 +58,7 @@ export default function FriendCard({ id, user }: FriendCardProps) {
         <div className="flex items-center gap-5">
           <Image
             src={user.profile_picture || "/default-avatar.png"}
-            alt="Profile Picture"
+            alt={t("friends.profilePicture")}
             width={40}
             height={40}
             className="rounded-full border-2 border-blue-500 w-10 h-10"

@@ -9,6 +9,10 @@ class StepCounterWorker(context: Context, params: WorkerParameters) : Worker(con
         val helper = StepCounterHelper(applicationContext)
         if (!helper.hasSensor()) return Result.success()
         helper.recordReading()
+
+        // Trigger Steps widget refresh after recording
+        StepWidgetUpdateReceiver.triggerWidgetUpdate(applicationContext)
+
         return Result.success()
     }
 }

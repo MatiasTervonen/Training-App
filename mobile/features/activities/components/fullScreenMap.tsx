@@ -95,25 +95,15 @@ export default function FullScreenMap({
   }, [track, warmupStartIndex]);
 
   const trackShape = useMemo(() => {
-    let segments = trackSegments;
-    if (currentPosition && segments.length > 0) {
-      const last = segments[segments.length - 1];
-      if (last.length > 0) {
-        segments = [
-          ...segments.slice(0, -1),
-          [...last, [currentPosition.longitude, currentPosition.latitude]],
-        ];
-      }
-    }
     return {
       type: "Feature",
       properties: {},
       geometry: {
         type: "MultiLineString",
-        coordinates: segments,
+        coordinates: trackSegments,
       },
     };
-  }, [trackSegments, currentPosition]);
+  }, [trackSegments]);
 
   const lastPoint = track.length > 0 ? track[track.length - 1] : null;
   const lastMovingPoint = track.findLast((p) => !p.isStationary) ?? null;

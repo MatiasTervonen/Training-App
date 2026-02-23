@@ -37,12 +37,12 @@ export default function SecurityPage() {
 
   const handleSavePassword = async () => {
     if (password !== confirmPassword) {
-      setErrorMessage(t("security.resetPassword.passwordsDoNotMatch"));
+      setErrorMessage(t("menu:security.resetPassword.passwordsDoNotMatch"));
       return;
     }
 
     if (password.length < 8) {
-      setErrorMessage(t("security.resetPassword.passwordTooShort"));
+      setErrorMessage(t("menu:security.resetPassword.passwordTooShort"));
       return;
     }
 
@@ -109,7 +109,7 @@ export default function SecurityPage() {
       }
 
       const res = await fetch(
-        "https://training-app-bay.vercel.app/api/user/delete-account",
+        `${process.env.EXPO_PUBLIC_API_URL}/api/user/delete-account`,
         {
           method: "POST",
           headers: {
@@ -123,7 +123,7 @@ export default function SecurityPage() {
         throw new Error(body.error || "Failed to delete account");
       }
 
-      setSuccessMessage2(t("security.deleteAccount.deleteSuccess"));
+      setSuccessMessage2(t("menu:security.deleteAccount.deleteSuccess"));
 
       setTimeout(() => {
         signOut();
@@ -134,7 +134,7 @@ export default function SecurityPage() {
         route: "security settings",
         method: "POST",
       });
-      Alert.alert(t("security.deleteAccount.deleteFailed"));
+      Alert.alert(t("menu:security.deleteAccount.deleteFailed"));
       setLoading2(false);
     }
   };

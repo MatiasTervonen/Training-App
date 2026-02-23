@@ -5,6 +5,7 @@ import FriendCard from "@/features/menu/friends/FriendCard";
 import { FriendCardSkeleton } from "@/ui/loadingSkeletons/skeletons";
 import { getFirends } from "@/database/friends/get-friends";
 import { useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 
 type Friends = {
   id: string;
@@ -17,6 +18,7 @@ type Friends = {
 };
 
 export default function FriendsPage() {
+  const { t } = useTranslation("menu");
   const {
     data,
     error: friendsError,
@@ -28,18 +30,18 @@ export default function FriendsPage() {
 
   return (
     <div className="page-padding max-w-md mx-auto">
-      <h1 className=" text-center mb-10 text-2xl">Friends</h1>
+      <h1 className=" text-center mb-10 text-2xl">{t("friends.title")}</h1>
       <FriendRequestForm />
       <div className="flex flex-col items-center justify-center mt-5 px-2 rounded-md shadow-md bg-slate-950 border-slate-700 border-2">
         <div className="flex items-center justify-center mt-5 mb-10">
-          <h2 className="text-2xl">My Friends</h2>
+          <h2 className="text-2xl">{t("friends.myFriends")}</h2>
         </div>
         {friendsError ? (
-          <p className="text-red-500">Failed to load friends</p>
+          <p className="text-red-500">{t("friends.failedToLoad")}</p>
         ) : isLoading ? (
           <FriendCardSkeleton count={3} />
         ) : data?.length === 0 ? (
-          <p className="text-gray-400 my-10">No friends found</p>
+          <p className="text-gray-400 my-10">{t("friends.noFriendsFound")}</p>
         ) : (
           data!.map((friend) => {
             return (

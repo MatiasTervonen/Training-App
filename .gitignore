@@ -48,6 +48,12 @@ coverage/
 /build
 /dist
 
+# Claude Code
+.claude/
+
+# Next.js (root level)
+.next/
+
 # misc
 .DS_Store
 *.pem

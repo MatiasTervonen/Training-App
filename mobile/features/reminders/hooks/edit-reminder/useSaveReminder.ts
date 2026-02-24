@@ -3,6 +3,7 @@ import * as Notifications from "expo-notifications";
 import { FeedItemUI, full_reminder } from "@/types/session";
 import { editLocalReminder } from "@/database/reminders/edit-local-reminder";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useTranslation } from "react-i18next";
 
 type ReminderInput = FeedItemUI | full_reminder;
 
@@ -40,13 +41,14 @@ export default function useSaveReminder({
   type,
   mode = "normal",
 }: useSaveReminderProps) {
+  const { t } = useTranslation("reminders");
   const reminderId = getReminderId(reminder);
 
   const handleSave = async () => {
     if (title.trim().length === 0) {
       Toast.show({
         type: "error",
-        text1: "Title is required",
+        text1: t("reminders.validation.titleRequired"),
       });
       return;
     }
@@ -54,7 +56,7 @@ export default function useSaveReminder({
     if (!notifyAt) {
       Toast.show({
         type: "error",
-        text1: "Notify time is required",
+        text1: t("reminders.validation.notifyTimeRequired"),
       });
       return;
     }
@@ -62,7 +64,7 @@ export default function useSaveReminder({
     if (type === "one-time" && notifyAt < new Date()) {
       Toast.show({
         type: "error",
-        text1: "Notify time must be in the future.",
+        text1: t("reminders.validation.notifyTimeFuture"),
       });
       return;
     }
@@ -121,13 +123,13 @@ export default function useSaveReminder({
       onClose();
       Toast.show({
         type: "success",
-        text1: "Reminder updated successfully",
+        text1: t("reminders.success.updated"),
       });
     } catch {
       Toast.show({
         type: "error",
-        text1: "Error updating reminder",
-        text2: "Try again later.",
+        text1: t("reminders.errors.updateFailed"),
+        text2: t("reminders.errors.tryAgainLater"),
       });
     } finally {
       setIsSaving(false);

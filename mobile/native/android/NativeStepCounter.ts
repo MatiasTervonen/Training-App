@@ -5,10 +5,21 @@ const nativeStepCounter = NativeModules.NativeStepCounter;
 
 export const LIVE_STEP_EVENT = "LIVE_STEP_UPDATE";
 
-export function initializeStepCounter(): void {
+export function startStepTrackingService(): void {
   if (Platform.OS === "android" && nativeStepCounter) {
-    nativeStepCounter.initializeStepCounter();
+    nativeStepCounter.startStepTrackingService();
   }
+}
+
+export function stopStepTrackingService(): void {
+  if (Platform.OS === "android" && nativeStepCounter) {
+    nativeStepCounter.stopStepTrackingService();
+  }
+}
+
+export async function isStepTrackingServiceRunning(): Promise<boolean> {
+  if (Platform.OS !== "android" || !nativeStepCounter) return false;
+  return nativeStepCounter.isStepTrackingServiceRunning();
 }
 
 export async function hasStepPermission(): Promise<boolean> {

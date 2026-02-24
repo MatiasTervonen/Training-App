@@ -1,0 +1,69 @@
+{
+  "welcome": {
+    "title": "Welcome to MyTrack!",
+    "body": "Let's get you set up. This takes about a minute. You can skip at any time — everything can be configured later in Settings.",
+    "letsGo": "Let's go",
+    "skip": "Skip, I'll set things up later"
+  },
+  "language": {
+    "title": "Choose your language",
+    "continue": "Continue"
+  },
+  "permissions": {
+    "title": "Permissions",
+    "subtitle": "Enable the features you want to use. You can change any of these later in Settings.",
+    "continue": "Continue",
+    "enable": "Enable",
+    "enabled": "Enabled",
+    "disable": "Disable",
+    "disabled": "Disabled",
+    "openSettings": "Open Settings",
+    "notifications": {
+      "title": "Notifications",
+      "description": "Get reminders for your workouts, timers, and scheduled activities. Without this, reminders and alarms won't work when the app is in the background."
+    },
+    "location": {
+      "title": "Location tracking",
+      "description": "Track your route and distance during outdoor activities like running and cycling. Select \"Allow all the time\" so GPS tracking continues even when the screen is off."
+    },
+    "stepCounter": {
+      "title": "Step counter",
+      "description": "Count your daily steps using your phone's built-in sensor. This also powers the Steps home screen widget."
+    },
+    "exactAlarms": {
+      "title": "Exact alarms",
+      "description": "Allows timers and alarms to fire at the exact time you set, even when the app is closed."
+    },
+    "batteryOptimization": {
+      "title": "Battery optimization",
+      "description": "Disable battery optimization so GPS tracking and background features work reliably without being killed by the system."
+    }
+  },
+  "aboutYou": {
+    "title": "What's your weight?",
+    "description": "Your weight is used to estimate calories burned during activities. You can update it anytime in the Weight section.",
+    "continue": "Continue",
+    "skipStep": "Skip"
+  },
+  "complete": {
+    "title": "You're all set!",
+    "body": "You can always adjust your settings, permissions, and profile from the menu. Enjoy tracking!",
+    "start": "Start using MyTrack",
+    "summary": {
+      "language": "Language",
+      "notifications": "Notifications",
+      "location": "Location",
+      "stepCounter": "Step counter",
+      "exactAlarms": "Exact alarms",
+      "batteryOptimization": "Battery optimization",
+      "weight": "Weight"
+    }
+  },
+  "skipModal": {
+    "title": "Skip setup?",
+    "body": "Are you sure? You can set up everything later from Settings and Profile.",
+    "confirm": "Yes, skip",
+    "cancel": "Continue setup"
+  },
+  "skip": "Skip onboarding"
+}

@@ -6,16 +6,18 @@ import { deleteGlobalReminder } from "@/database/reminders/delete-global-reminde
 import { deleteLocalReminder } from "@/database/reminders/delete-local-reminder";
 import Toast from "react-native-toast-message";
 import { cancelNativeAlarm } from "@/native/android/NativeAlarm";
+import { useTranslation } from "react-i18next";
 
 export default function useDeleteReminder() {
+  const { t } = useTranslation("reminders");
   const queryClient = useQueryClient();
 
   const confirmAction = useConfirmAction();
 
   const handleDeleteReminder = async (reminder: full_reminder) => {
     const confirmDelete = await confirmAction({
-      message: "Delete Reminder",
-      title: "Are you sure you want to delete this reminder?",
+      message: t("reminders.deleteConfirm.message"),
+      title: t("reminders.deleteConfirm.title"),
     });
     if (!confirmDelete) return;
 
@@ -44,13 +46,13 @@ export default function useDeleteReminder() {
 
       Toast.show({
         type: "success",
-        text1: "Reminder deleted successfully",
+        text1: t("reminders.success.deleted"),
       });
     } catch {
       Toast.show({
         type: "error",
-        text1: "Failed to delete reminder",
-        text2: "Please try again.",
+        text1: t("reminders.errors.deleteFailed"),
+        text2: t("reminders.errors.tryAgainShort"),
       });
     }
   };

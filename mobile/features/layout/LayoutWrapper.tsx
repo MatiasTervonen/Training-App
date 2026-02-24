@@ -59,6 +59,17 @@ export default function LayoutWrapper({
         i18n.changeLanguage(settings.language);
       }
 
+      // Check onboarding status after login (strict === false so undefined/missing is treated as completed)
+      const latestSettings = useUserStore.getState().settings;
+      if (
+        !skipRedirect &&
+        latestSettings?.has_completed_onboarding === false &&
+        !pathname.startsWith("/onboarding")
+      ) {
+        router.replace("/onboarding");
+        return;
+      }
+
       if (!skipRedirect && pathname !== "/dashboard") {
         router.replace("/dashboard");
       }
@@ -93,9 +104,15 @@ export default function LayoutWrapper({
           initialUrl.length > "mytrack://".length;
 
         if (hasDeepLink) {
-          // Load user data but skip dashboard redirect
+          // Load user data but skip dashboard redirect (unless onboarding needed)
           await handleSessionChange(session, true);
-          useAppReadyStore.getState().setFeedReady();
+          // If onboarding not completed, redirect there even from deep link
+          const settings = useUserStore.getState().settings;
+          if (settings?.has_completed_onboarding === false) {
+            router.replace("/onboarding");
+          } else {
+            useAppReadyStore.getState().setFeedReady();
+          }
         } else {
           await handleSessionChange(session);
         }
@@ -135,7 +152,9 @@ export default function LayoutWrapper({
   }
 
   const noModalRoutes = ["/", "/login"];
-  const shouldRenderModal = !noModalRoutes.includes(pathname);
+  const isOnboarding = pathname.startsWith("/onboarding");
+  const shouldRenderModal =
+    !noModalRoutes.includes(pathname) && !isOnboarding;
 
   if (!shouldRenderModal) {
     return <>{children}</>;

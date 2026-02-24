@@ -6,7 +6,7 @@
     "templates": "Templates",
     "addExercise": "Add Exercise",
     "editExercise": "Edit Exercise",
-    "workoutAnalytics": "Workout Analytics",
+    "workoutAnalytics": "Analytics",
     "mySessions": {
       "title": "My Sessions",
       "loadError": "Failed to load gym sessions. Please try again later.",

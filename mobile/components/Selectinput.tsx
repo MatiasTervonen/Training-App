@@ -50,7 +50,9 @@ export default function SelectInput({
           end={{ x: 1, y: 1 }}
           className="absolute inset-0 items-center justify-center"
         >
-          <AppText className="text-lg ">{selectedDisplay || selectedlabel || placeholder}</AppText>
+          <AppText className="text-lg ">
+            {selectedDisplay || selectedlabel || placeholder}
+          </AppText>
         </LinearGradient>
       </Pressable>
 
@@ -66,7 +68,7 @@ export default function SelectInput({
         >
           <View
             style={{ maxHeight: "75%", width: screenWidth * 0.85 }}
-            className="border-2 border-gray-100 rounded-xl bg-slate-800 py-5 justify-center"
+            className="border-2 border-slate-300 rounded-xl bg-slate-900 py-5 justify-center"
           >
             {label && (
               <AppText className="mb-6 text-center text-xl px-4">
@@ -81,10 +83,16 @@ export default function SelectInput({
                     onChange?.(option.value);
                     setIsOpen(false);
                   }}
+                  className={`flex-row items-center border p-2 my-2 rounded-xl mx-6 px-4 ${option.value === value ? "bg-blue-900/40 border-blue-500" : "bg-slate-800 border-slate-700"}`}
                 >
-                  <AppText className="text-center text-xl border p-2 bg-slate-700 my-2 border-gray-100 rounded-xl mx-6">
-                    {option.label}
-                  </AppText>
+                  <AppText className="text-xl">{option.label}</AppText>
+                  {option.value === value && (
+                    <View className="ml-auto">
+                      <View className="w-6 h-6 rounded-full bg-blue-500 items-center justify-center">
+                        <AppText className="text-sm">✓</AppText>
+                      </View>
+                    </View>
+                  )}
                 </AnimatedButton>
               ))}
             </ScrollView>

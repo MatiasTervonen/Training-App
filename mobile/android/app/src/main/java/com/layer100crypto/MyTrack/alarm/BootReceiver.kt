@@ -4,6 +4,8 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.util.Log
+import androidx.core.content.ContextCompat
+import com.layer100crypto.MyTrack.step.StepTrackingService
 import java.util.Calendar
 
 class BootReceiver : BroadcastReceiver() {
@@ -16,6 +18,11 @@ class BootReceiver : BroadcastReceiver() {
         if (intent.action == Intent.ACTION_BOOT_COMPLETED) {
             Log.d(TAG, "Boot completed, rescheduling alarms...")
             rescheduleAlarms(context)
+
+            // Start step tracking foreground service
+            Log.d(TAG, "Starting step tracking service...")
+            val serviceIntent = Intent(context, StepTrackingService::class.java)
+            ContextCompat.startForegroundService(context, serviceIntent)
         }
     }
 

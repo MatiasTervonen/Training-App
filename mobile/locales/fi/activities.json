@@ -99,6 +99,7 @@
       "session": "sessio",
       "sessions": "sessiota",
       "noActivitiesInPeriod": "Ei aktiviteetteja tällä ajanjaksolla",
+      "noData": "Ei vielä tietoja. Aloita ensimmäinen aktiviteettisessio nähdäksesi analytiikkaa täällä!",
       "unknown": "Tuntematon"
     },
     "startActivityScreen": {

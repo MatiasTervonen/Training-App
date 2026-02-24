@@ -17,7 +17,8 @@ export default function Navbar() {
     (state) => state.profile?.profile_picture || null,
   );
 
-  if (pathname === "/login" || pathname === "/") return null; // Don't render the navbar on the login page
+  if (pathname === "/login" || pathname === "/" || pathname === "/onboarding")
+    return null; // Don't render the navbar on the login page
 
   return (
     <>

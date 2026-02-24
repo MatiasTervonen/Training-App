@@ -43,8 +43,8 @@ export default function SettingsPage() {
           value={language}
           onChange={(lang) => handleLanguageChange(lang as "en" | "fi")}
           options={[
-            { label: t("settings.languages.en"), value: "en" },
-            { label: t("settings.languages.fi"), value: "fi" },
+            { label: `🇬🇧  ${t("settings.languages.en")}`, value: "en" },
+            { label: `🇫🇮  ${t("settings.languages.fi")}`, value: "fi" },
           ]}
         />
       </View>

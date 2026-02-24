@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import { saveLocalReminder } from "@/database/reminders/save-local-reminder";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useTranslation } from "react-i18next";
 
 export default function useSaveReminderOnetime({
   title,
@@ -21,6 +22,7 @@ export default function useSaveReminderOnetime({
   setNotification: (reminderId: string) => Promise<string | undefined>;
   mode?: "alarm" | "normal";
 }) {
+  const { t } = useTranslation("reminders");
   const queryClient = useQueryClient();
   const router = useRouter();
 
@@ -28,14 +30,14 @@ export default function useSaveReminderOnetime({
     if (title.trim().length === 0) {
       Toast.show({
         type: "error",
-        text1: "Title is required",
+        text1: t("reminders.validation.titleRequired"),
       });
       return;
     }
     if (!notifyAt) {
       Toast.show({
         type: "error",
-        text1: "Notify time is required",
+        text1: t("reminders.validation.notifyTimeRequired"),
       });
       return;
     }
@@ -71,8 +73,8 @@ export default function useSaveReminderOnetime({
     } catch {
       Toast.show({
         type: "error",
-        text1: "Failed to save reminder.",
-        text2: "Please try again later.",
+        text1: t("reminders.errors.saveFailed"),
+        text2: t("reminders.errors.tryAgainLaterGeneric"),
       });
       setIsSaving(false);
     }

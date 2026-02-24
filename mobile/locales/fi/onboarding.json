@@ -1,0 +1,69 @@
+{
+  "welcome": {
+    "title": "Tervetuloa MyTrackiin!",
+    "body": "Tehdään alkuasetukset. Tämä kestää noin minuutin. Voit ohittaa milloin tahansa — kaiken voi määrittää myöhemmin Asetuksissa.",
+    "letsGo": "Aloitetaan",
+    "skip": "Ohita, teen asetukset myöhemmin"
+  },
+  "language": {
+    "title": "Valitse kielesi",
+    "continue": "Jatka"
+  },
+  "permissions": {
+    "title": "Käyttöoikeudet",
+    "subtitle": "Ota käyttöön haluamasi ominaisuudet. Voit muuttaa näitä myöhemmin Asetuksissa.",
+    "continue": "Jatka",
+    "enable": "Ota käyttöön",
+    "enabled": "Käytössä",
+    "disable": "Poista käytöstä",
+    "disabled": "Pois käytöstä",
+    "openSettings": "Avaa asetukset",
+    "notifications": {
+      "title": "Ilmoitukset",
+      "description": "Saat muistutuksia treeneistä, ajastimista ja ajoitetuista aktiviteeteista. Ilman tätä muistutukset ja hälytykset eivät toimi sovelluksen ollessa taustalla."
+    },
+    "location": {
+      "title": "Sijaintiseuranta",
+      "description": "Seuraa reittiäsi ja matkaasi ulkoaktiviteettien, kuten juoksun ja pyöräilyn, aikana. Valitse \"Salli aina\", jotta GPS-seuranta jatkuu myös näytön ollessa pois päältä."
+    },
+    "stepCounter": {
+      "title": "Askelmittari",
+      "description": "Laske päivittäiset askeleesi puhelimesi sisäänrakennetulla anturilla. Tämä toimii myös Askeleet-kotinäyttöwidgetin kanssa."
+    },
+    "exactAlarms": {
+      "title": "Tarkat hälytykset",
+      "description": "Ajastimet ja hälytykset laukeavat täsmälleen asettamanasi aikana, vaikka sovellus olisi suljettu."
+    },
+    "batteryOptimization": {
+      "title": "Akun optimointi",
+      "description": "Poista akun optimointi käytöstä, jotta GPS-seuranta ja taustaominaisuudet toimivat luotettavasti ilman järjestelmän keskeytyksiä."
+    }
+  },
+  "aboutYou": {
+    "title": "Mikä on painosi?",
+    "description": "Painoasi käytetään aktiviteettien aikana kulutettujen kalorien arviointiin. Voit päivittää sen milloin tahansa Paino-osiossa.",
+    "continue": "Jatka",
+    "skipStep": "Ohita"
+  },
+  "complete": {
+    "title": "Kaikki valmista!",
+    "body": "Voit aina muuttaa asetuksiasi, käyttöoikeuksiasi ja profiiliasi valikosta. Nauti seurannasta!",
+    "start": "Aloita MyTrackin käyttö",
+    "summary": {
+      "language": "Kieli",
+      "notifications": "Ilmoitukset",
+      "location": "Sijainti",
+      "stepCounter": "Askelmittari",
+      "exactAlarms": "Tarkat hälytykset",
+      "batteryOptimization": "Akun optimointi",
+      "weight": "Paino"
+    }
+  },
+  "skipModal": {
+    "title": "Ohita asetukset?",
+    "body": "Oletko varma? Voit tehdä kaiken myöhemmin Asetuksissa ja Profiilissa.",
+    "confirm": "Kyllä, ohita",
+    "cancel": "Jatka asetuksia"
+  },
+  "skip": "Ohita perehdytys"
+}

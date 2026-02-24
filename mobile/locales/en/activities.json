@@ -99,6 +99,7 @@
       "session": "session",
       "sessions": "sessions",
       "noActivitiesInPeriod": "No activities in this period",
+      "noData": "No data yet. Start your first activity session to see analytics here!",
       "unknown": "Unknown"
     },
     "startActivityScreen": {

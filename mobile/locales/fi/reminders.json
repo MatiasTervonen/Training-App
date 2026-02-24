@@ -15,7 +15,21 @@
     },
     "errors": {
       "editGlobalReminder": "Virhe muokattaessa globaalia muistutusta",
-      "tryAgainLater": "Yritä myöhemmin uudelleen."
+      "tryAgainLater": "Yritä myöhemmin uudelleen.",
+      "saveFailed": "Muistutuksen tallennus epäonnistui.",
+      "tryAgainLaterGeneric": "Yritä myöhemmin uudelleen.",
+      "updateFailed": "Virhe muistutuksen päivittämisessä",
+      "deleteFailed": "Muistutuksen poisto epäonnistui",
+      "tryAgainShort": "Yritä uudelleen."
+    },
+    "success": {
+      "saved": "Muistutus tallennettu onnistuneesti.",
+      "updated": "Muistutus päivitetty onnistuneesti",
+      "deleted": "Muistutus poistettu onnistuneesti"
+    },
+    "deleteConfirm": {
+      "title": "Haluatko varmasti poistaa tämän muistutuksen?",
+      "message": "Poista muistutus"
     },
     "oneTimeGlobal": "Kertaluonteinen globaali",
     "oneTime": "Kertaluonteinen",

@@ -90,13 +90,30 @@ export default function ActivityAnalytics() {
     return { startDate: start, endDate: end };
   }, [selectedRange]);
 
-  const isLoading = isLoadingSteps && isLoadingSessions && loadingToday;
+  const isLoading = isLoadingSessions || loadingToday || (stepsPermitted && isLoadingSteps);
+
+  const hasNoData = sessionsData.length === 0 && stepsData.length === 0 && todaySteps === 0;
 
   if (isLoading) {
     return (
       <View className="flex-1 justify-center items-center">
         <ActivityIndicator size="large" color="#22c55e" />
       </View>
+    );
+  }
+
+  if (hasNoData) {
+    return (
+      <PageContainer>
+        <AppText className="text-2xl text-center mb-6">
+          {t("activities.analyticsScreen.title")}
+        </AppText>
+        <View className="items-center mt-20 px-4">
+          <AppText className="text-gray-300 text-center text-lg">
+            {t("activities.analyticsScreen.noData")}
+          </AppText>
+        </View>
+      </PageContainer>
     );
   }
 

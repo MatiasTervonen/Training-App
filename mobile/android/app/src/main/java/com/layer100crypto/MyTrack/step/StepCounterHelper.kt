@@ -20,6 +20,11 @@ class StepCounterHelper(private val context: Context) {
         private const val KEY_LAST_READ_TIME = "last_read_time"
         private const val KEY_DAILY_STEPS = "daily_steps"
         private const val KEY_SESSION_START_VALUE = "session_start_value"
+        const val KEY_CURRENT_ACTIVITY_TYPE = "current_activity_type"
+        const val KEY_CURRENT_ACTIVITY_CONFIDENCE = "current_activity_confidence"
+        const val KEY_LAST_WALKING_TIMESTAMP = "last_walking_timestamp"
+        private const val KEY_SESSION_FILTERED_STEPS = "session_filtered_steps"
+        private const val KEY_SESSION_LAST_LIVE_SENSOR = "session_last_live_sensor"
         private const val MAX_HISTORY_DAYS = 60
     }
 
@@ -35,26 +40,37 @@ class StepCounterHelper(private val context: Context) {
         val sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
         val stepSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER) ?: return null
 
-        val latch = CountDownLatch(1)
-        var sensorValue: Long? = null
+        for (attempt in 1..3) {
+            val latch = CountDownLatch(1)
+            var sensorValue: Long? = null
 
-        val listener = object : SensorEventListener {
-            override fun onSensorChanged(event: SensorEvent) {
-                sensorValue = event.values[0].toLong()
-                latch.countDown()
+            val listener = object : SensorEventListener {
+                override fun onSensorChanged(event: SensorEvent) {
+                    sensorValue = event.values[0].toLong()
+                    latch.countDown()
+                }
+                override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
             }
-            override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
+
+            // maxReportLatencyUs = 0 disables batching, forces immediate delivery
+            sensorManager.registerListener(listener, stepSensor, SensorManager.SENSOR_DELAY_FASTEST, 0)
+            // Flush any pending sensor events to trigger immediate delivery
+            sensorManager.flush(listener)
+            latch.await(timeoutMs, TimeUnit.MILLISECONDS)
+            sensorManager.unregisterListener(listener)
+
+            if (sensorValue != null) return sensorValue
         }
 
-        sensorManager.registerListener(listener, stepSensor, SensorManager.SENSOR_DELAY_FASTEST)
-        latch.await(timeoutMs, TimeUnit.MILLISECONDS)
-        sensorManager.unregisterListener(listener)
-
-        return sensorValue
+        return null
     }
 
     fun recordReading() {
         val currentValue = readSensorValueSync() ?: return
+        recordReadingWithValue(currentValue)
+    }
+
+    fun recordReadingWithValue(currentValue: Long) {
 
         val lastValue = prefs.getLong(KEY_LAST_SENSOR_VALUE, -1L)
         val today = dateFormat.format(Date())
@@ -105,10 +121,19 @@ class StepCounterHelper(private val context: Context) {
         return result
     }
 
+    fun updateLastSensorValue(currentValue: Long) {
+        prefs.edit()
+            .putLong(KEY_LAST_SENSOR_VALUE, currentValue)
+            .putLong(KEY_LAST_READ_TIME, System.currentTimeMillis())
+            .apply()
+    }
+
     fun startSession(): Long? {
         val currentValue = readSensorValueSync() ?: return null
         prefs.edit()
             .putLong(KEY_SESSION_START_VALUE, currentValue)
+            .putLong(KEY_SESSION_FILTERED_STEPS, 0L)
+            .putLong(KEY_SESSION_LAST_LIVE_SENSOR, currentValue)
             .apply()
         return currentValue
     }
@@ -116,15 +141,38 @@ class StepCounterHelper(private val context: Context) {
     fun getSessionSteps(): Long {
         val currentValue = readSensorValueSync() ?: return 0L
         val sessionStart = prefs.getLong(KEY_SESSION_START_VALUE, -1L)
+        val filteredSteps = prefs.getLong(KEY_SESSION_FILTERED_STEPS, 0L)
 
         if (sessionStart == -1L) return 0L
 
-        return if (currentValue < sessionStart) {
-            // Reboot happened during session: treat current value as steps since boot
+        val rawSteps = if (currentValue < sessionStart) {
             currentValue
         } else {
             currentValue - sessionStart
         }
+
+        return maxOf(rawSteps - filteredSteps, 0L)
+    }
+
+    fun getSessionFilteredSteps(): Long {
+        return prefs.getLong(KEY_SESSION_FILTERED_STEPS, 0L)
+    }
+
+    fun addSessionFilteredSteps(delta: Long) {
+        val current = prefs.getLong(KEY_SESSION_FILTERED_STEPS, 0L)
+        prefs.edit()
+            .putLong(KEY_SESSION_FILTERED_STEPS, current + delta)
+            .apply()
+    }
+
+    fun getSessionLastLiveSensor(): Long {
+        return prefs.getLong(KEY_SESSION_LAST_LIVE_SENSOR, -1L)
+    }
+
+    fun setSessionLastLiveSensor(value: Long) {
+        prefs.edit()
+            .putLong(KEY_SESSION_LAST_LIVE_SENSOR, value)
+            .apply()
     }
 
     private fun loadDailySteps(): JSONObject {

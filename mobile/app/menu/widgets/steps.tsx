@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { View } from "react-native";
+import { Keyboard, Pressable, View } from "react-native";
 import AppText from "@/components/AppText";
 import AppInput from "@/components/AppInput";
 import AnimatedButton from "@/components/buttons/animatedButton";
@@ -63,38 +63,40 @@ export default function StepsConfigPage() {
   if (!loaded) return null;
 
   return (
-    <PageContainer>
-      <AppText className="text-2xl text-center mb-8">
-        {t("widgets.steps.configTitle")}
-      </AppText>
+    <Pressable className="flex-1" onPress={Keyboard.dismiss}>
+      <PageContainer>
+        <AppText className="text-2xl text-center mb-8">
+          {t("widgets.steps.configTitle")}
+        </AppText>
 
-      <View className="flex-1 justify-between">
-        <View className="gap-5">
-          <View className="flex-row justify-between items-center py-3 px-4 bg-slate-800 rounded-lg">
-            <AppText className="text-lg">
-              {t("widgets.steps.showGoal")}
-            </AppText>
-            <Toggle isOn={showGoal} onToggle={() => setShowGoal((v) => !v)} />
+        <View className="flex-1 justify-between">
+          <View className="gap-5">
+            <View className="flex-row justify-between items-center py-3 px-4 bg-slate-800 rounded-lg">
+              <AppText className="text-lg">
+                {t("widgets.steps.showGoal")}
+              </AppText>
+              <Toggle isOn={showGoal} onToggle={() => setShowGoal((v) => !v)} />
+            </View>
+
+            {showGoal && (
+              <View className="px-4">
+                <AppInput
+                  label={t("widgets.steps.dailyGoal")}
+                  value={dailyGoal}
+                  setValue={setDailyGoal}
+                  keyboardType="numeric"
+                />
+              </View>
+            )}
           </View>
 
-          {showGoal && (
-            <View className="px-4">
-              <AppInput
-                label={t("widgets.steps.dailyGoal")}
-                value={dailyGoal}
-                setValue={setDailyGoal}
-                keyboardType="numeric"
-              />
-            </View>
-          )}
+          <AnimatedButton
+            label={t("widgets.steps.save")}
+            onPress={handleSave}
+            className="btn-base"
+          />
         </View>
-
-        <AnimatedButton
-          label={t("widgets.steps.save")}
-          onPress={handleSave}
-          className="btn-base"
-        />
-      </View>
-    </PageContainer>
+      </PageContainer>
+    </Pressable>
   );
 }

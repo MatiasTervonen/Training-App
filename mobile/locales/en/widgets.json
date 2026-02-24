@@ -2,6 +2,7 @@
   "widgets": {
     "hub": {
       "title": "Widgets",
+      "info": "You can add widgets to your phone's home screen by long pressing the app icon.",
       "quickLinks": "Quick Links",
       "steps": "Steps"
     },

@@ -27,6 +27,7 @@ const docGroups = [
         links: [
           { name: "Installation and Setup", slug: "mobile/installation" },
           { name: "Development", slug: "mobile/development" },
+          { name: "Debugging Native Code", slug: "mobile/debugging" },
         ],
       },
       {

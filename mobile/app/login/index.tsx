@@ -173,7 +173,7 @@ export default function LoginScreen() {
                     label={t("login.logIn")}
                     onPress={() => {
                       if (!isValidEmail(login.email)) {
-                        Alert.alert(t("login.invalidEmail"));
+                        Alert.alert("", t("login.invalidEmail"));
                         return;
                       }
 
@@ -183,7 +183,7 @@ export default function LoginScreen() {
                         setLoadingMessage,
                         setLoading,
                         setError,
-                        onSuccess: () => router.push("/dashboard"),
+                        onSuccess: () => {},
                       });
                     }}
                   />
@@ -257,7 +257,7 @@ export default function LoginScreen() {
                     label={t("login.signUp")}
                     onPress={() => {
                       if (!isValidEmail(signup.email)) {
-                        Alert.alert(t("login.invalidEmail"));
+                        Alert.alert("", t("login.invalidEmail"));
                         return;
                       }
 
@@ -364,7 +364,7 @@ export default function LoginScreen() {
                 label={t("login.resendEmail.resendButton")}
                 onPress={async () => {
                   if (!isValidEmail(login.email)) {
-                    Alert.alert(t("login.invalidEmail"));
+                    Alert.alert("", t("login.invalidEmail"));
                     return;
                   }
 
@@ -420,7 +420,7 @@ export default function LoginScreen() {
                 label={t("login.forgotPassword.sendResetLink")}
                 onPress={async () => {
                   if (!isValidEmail(login.email)) {
-                    Alert.alert(t("login.invalidEmail"));
+                    Alert.alert("", t("login.invalidEmail"));
                     return;
                   }
 
@@ -465,7 +465,7 @@ export default function LoginScreen() {
                 guestLogIn({
                   setLoadingMessage,
                   setLoading,
-                  onSuccess: () => router.push("/dashboard"),
+                  onSuccess: () => {},
                 });
               }}
             />

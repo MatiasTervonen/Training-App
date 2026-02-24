@@ -4,6 +4,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getDeviceId } from "@/utils/deviceId";
+import { useTranslation } from "react-i18next";
 
 export default function useSaveReminder({
   title,
@@ -22,6 +23,7 @@ export default function useSaveReminder({
   resetReminder: () => void;
   setNotification: (reminderId: string) => Promise<string | undefined>;
 }) {
+  const { t } = useTranslation("reminders");
   const queryClient = useQueryClient();
   const router = useRouter();
 
@@ -29,14 +31,14 @@ export default function useSaveReminder({
     if (title.trim().length === 0) {
       Toast.show({
         type: "error",
-        text1: "Title is required",
+        text1: t("reminders.validation.titleRequired"),
       });
       return;
     }
     if (!notifyAt) {
       Toast.show({
         type: "error",
-        text1: "Notify time is required",
+        text1: t("reminders.validation.notifyTimeRequired"),
       });
       return;
     }
@@ -51,7 +53,7 @@ export default function useSaveReminder({
         title: title,
         notes,
         type: "global",
-        notify_at: notifyAt ? notifyAt.toISOString() : null,
+        notify_at: notifyAt.toISOString(),
         created_from_device_id: deviceId,
         mode,
       });
@@ -77,13 +79,13 @@ export default function useSaveReminder({
       resetReminder();
       Toast.show({
         type: "success",
-        text1: "Reminder saved successfully.",
+        text1: t("reminders.success.saved"),
       });
     } catch {
       Toast.show({
         type: "error",
-        text1: "Failed to save reminder.",
-        text2: "Please try again later.",
+        text1: t("reminders.errors.saveFailed"),
+        text2: t("reminders.errors.tryAgainLaterGeneric"),
       });
       setIsSaving(false);
     }

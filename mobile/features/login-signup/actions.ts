@@ -23,7 +23,7 @@ export async function signInWithEmail({
   onSuccess,
 }: SignInProps) {
   if (!email || !password) {
-    Alert.alert(t("login:login.actions.enterEmailAndPassword"));
+    Alert.alert("", t("login:login.actions.enterEmailAndPassword"));
     return;
   }
 
@@ -37,14 +37,16 @@ export async function signInWithEmail({
 
   if (error && error.message === "Email not confirmed") {
     setError(t("login:login.actions.verifyEmailFirst"));
-    Alert.alert(t("login:login.actions.verifyEmailFirst"));
+    Alert.alert("", t("login:login.actions.verifyEmailFirst"));
+    setLoading(false);
   } else if (error) {
-    Alert.alert(error.message);
+    Alert.alert("", error.message);
+    setLoading(false);
   } else {
+    // Don't setLoading(false) on success — keep the loader visible
+    // until onAuthStateChange navigates away from the login page.
     onSuccess();
   }
-
-  setLoading(false);
 }
 
 // SignUp
@@ -73,17 +75,17 @@ export async function signUpWithEmail({
   setSignup,
 }: SignUpProps) {
   if (!password) {
-    Alert.alert(t("login:login.actions.enterPassword"));
+    Alert.alert("", t("login:login.actions.enterPassword"));
     return;
   }
 
   if (password !== confirmPassword) {
-    Alert.alert(t("login:login.actions.passwordsDoNotMatch"));
+    Alert.alert("", t("login:login.actions.passwordsDoNotMatch"));
     return;
   }
 
   if (password.length < 8) {
-    Alert.alert(t("login:login.actions.passwordTooShort"));
+    Alert.alert("", t("login:login.actions.passwordTooShort"));
     return;
   }
 
@@ -96,6 +98,7 @@ export async function signUpWithEmail({
 
   if (signupError) {
     Alert.alert(
+      "",
       signupError.message || t("login:login.actions.somethingWentWrong"),
     );
     handleError(signupError, {
@@ -111,7 +114,7 @@ export async function signUpWithEmail({
   const userExists = (signUpData?.user?.identities?.length ?? 0) === 0;
 
   if (userExists) {
-    Alert.alert(t("login:login.actions.emailAlreadyRegistered"));
+    Alert.alert("", t("login:login.actions.emailAlreadyRegistered"));
     setSignup({ email: "", password: "", confirmPassword: "" });
     setLoading(false);
     return;
@@ -136,7 +139,7 @@ export async function sendPasswordResetEmail({
   setLoading,
 }: PasswordResetEmailProps) {
   if (!forgotPasswordEmail) {
-    Alert.alert(t("login:login.actions.enterEmail"));
+    Alert.alert("", t("login:login.actions.enterEmail"));
     return;
   }
 
@@ -147,9 +150,9 @@ export async function sendPasswordResetEmail({
     await supabase.auth.resetPasswordForEmail(forgotPasswordEmail);
 
   if (error) {
-    Alert.alert(error.message || t("login:login.actions.somethingWentWrong"));
+    Alert.alert("", error.message || t("login:login.actions.somethingWentWrong"));
   } else {
-    Alert.alert(t("login:login.actions.passwordResetSent"));
+    Alert.alert("", t("login:login.actions.passwordResetSent"));
   }
 
   setLoading(false);
@@ -171,7 +174,7 @@ export async function resendEmailVerification({
   setSuccess,
 }: ResendEmailVerificationProps) {
   if (!resendEmail) {
-    Alert.alert(t("login:login.actions.enterEmail"));
+    Alert.alert("", t("login:login.actions.enterEmail"));
     return;
   }
 
@@ -185,12 +188,13 @@ export async function resendEmailVerification({
 
   if (error)
     Alert.alert(
+      "",
       error.message || t("login:login.actions.couldNotResend"),
     );
 
   setLoading(false);
   setSuccess(true);
-  Alert.alert(t("login:login.actions.verificationResent"));
+  Alert.alert("", t("login:login.actions.verificationResent"));
 }
 
 type GuestSignInProps = {
@@ -215,7 +219,7 @@ export async function guestLogIn({
       route: "actions: guest-login",
       method: "POST",
     });
-    Alert.alert(t("login:login.actions.guestLoginError"));
+    Alert.alert("", t("login:login.actions.guestLoginError"));
     setLoading(false);
     return;
   }

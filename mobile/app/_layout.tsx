@@ -45,7 +45,7 @@ import { backfillMissingDaysThrottled } from "@/database/activities/syncStepsToD
 import * as Device from "expo-device";
 import { hasStepsPermission } from "@/features/activities/stepToggle/stepPermission";
 import {
-  initializeStepCounter,
+  startStepTrackingService,
   getTodaySteps,
 } from "@/native/android/NativeStepCounter";
 import { requestWidgetUpdate } from "react-native-android-widget";
@@ -149,7 +149,7 @@ export default Sentry.wrap(function RootLayout() {
 
     // Only run on physical Android device
     if (Platform.OS === "android" && Device.isDevice) {
-      initializeStepCounter(); // Start WorkManager periodic step counting
+      startStepTrackingService(); // Start foreground service for continuous step tracking
 
       const syncSteps = async () => {
         const canReadSteps = await hasStepsPermission();
@@ -196,6 +196,7 @@ export default Sentry.wrap(function RootLayout() {
               </SaveAreaInset>
               {pathname !== "/" &&
                 pathname !== "/login" &&
+                !pathname.startsWith("/onboarding") &&
                 (!fontsLoaded || !feedReady) && <BootScreen />}
             </PaperProvider>
             <Toast config={toastConfig} position="top" />

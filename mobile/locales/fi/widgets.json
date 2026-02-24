@@ -2,6 +2,7 @@
   "widgets": {
     "hub": {
       "title": "Widgetit",
+      "info": "Voit lisätä widgettejä puhelimen aloitusnäytölle painamalla sovelluskuvaketta pitkään.",
       "quickLinks": "Pikalinkit",
       "steps": "Askeleet"
     },

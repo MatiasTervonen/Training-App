@@ -19,6 +19,8 @@
   <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT"/>
   <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE"/>
   <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"/>
+  <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION"/>
+  <uses-permission android:name="com.google.android.gms.permission.ACTIVITY_RECOGNITION"/>
   <queries>
     <intent>
       <action android:name="android.intent.action.VIEW"/>
@@ -53,11 +55,6 @@
         <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
       </intent-filter>
     </activity>
-    <receiver android:name=".step.StepWidgetUpdateReceiver" android:exported="false">
-      <intent-filter>
-        <action android:name="android.intent.action.USER_PRESENT"/>
-      </intent-filter>
-    </receiver>
     <!-- Alarm system components -->
     <receiver android:name=".alarm.AlarmReceiver" android:exported="false"/>
     <receiver android:name=".alarm.StopAlarmReceiver" android:exported="false"/>
@@ -91,6 +88,19 @@
       <property
         android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
         android:value="timer"/>
+    </service>
+    <!-- Activity Recognition receiver for step filtering -->
+    <receiver
+      android:name=".step.ActivityRecognitionReceiver"
+      android:exported="false"/>
+    <!-- Step tracking foreground service -->
+    <service
+      android:name=".step.StepTrackingService"
+      android:exported="false"
+      android:foregroundServiceType="specialUse">
+      <property
+        android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+        android:value="step_tracking"/>
     </service>
     <receiver android:name=".widget.QuickLinks" android:exported="false" android:label="MyTrack Quick Links">
       <intent-filter>

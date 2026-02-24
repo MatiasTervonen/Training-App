@@ -13,6 +13,7 @@ export interface UserSettings {
   push_enabled: boolean;
   gps_tracking_enabled: boolean;
   language: "en" | "fi" | null;
+  has_completed_onboarding: boolean;
 }
 
 interface UserStore {

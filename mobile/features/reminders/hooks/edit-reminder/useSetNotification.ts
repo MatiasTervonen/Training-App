@@ -4,6 +4,7 @@ import { handleError } from "@/utils/handleError";
 import { FeedItemUI, full_reminder } from "@/types/session";
 import { cancelNativeAlarm, scheduleNativeAlarm } from "@/native/android/NativeAlarm";
 import { t } from "i18next";
+import { SNOOZE_CATEGORY_ID } from "@/features/push-notifications/constants";
 
 type ReminderInput = FeedItemUI | full_reminder;
 
@@ -45,7 +46,8 @@ export default function useSetNotification({
             notes || (reminder as full_reminder).notes || "",
             t("reminders:reminders.notification.tapToOpen"),
             t("reminders:reminders.notification.reminder"),
-            t("reminders:reminders.notification.stopAlarm")
+            t("reminders:reminders.notification.stopAlarm"),
+            t("reminders:reminders.notification.snooze")
           );
         }
 
@@ -62,6 +64,9 @@ export default function useSetNotification({
               reminderId:
                 reminderId
             },
+            ...(mode === "normal" && {
+              categoryIdentifier: SNOOZE_CATEGORY_ID,
+            }),
           },
           trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: notifyAt },
         });
@@ -92,6 +97,9 @@ export default function useSetNotification({
             data: {
               reminderId: reminderId,
             },
+            ...(mode === "normal" && {
+              categoryIdentifier: SNOOZE_CATEGORY_ID,
+            }),
           },
           trigger,
         });
@@ -125,6 +133,9 @@ export default function useSetNotification({
                 data: {
                   reminderId: reminderId,
                 },
+                ...(mode === "normal" && {
+                  categoryIdentifier: SNOOZE_CATEGORY_ID,
+                }),
               },
               trigger,
             });

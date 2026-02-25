@@ -4,6 +4,11 @@ import { handleError } from "@/utils/handleError";
 import Constants from "expo-constants";
 import { Alert, Linking } from "react-native";
 import { getDeviceId } from "@/utils/deviceId";
+import { t } from "i18next";
+import {
+  SNOOZE_CATEGORY_ID,
+  SNOOZE_ACTION_ID,
+} from "@/features/push-notifications/constants";
 
 function handleRegistrationError(errorMessage: string) {
   alert(errorMessage);
@@ -112,19 +117,30 @@ export async function deleteTokenFromServer() {
 }
 
 export async function configureNotificationChannels() {
-  await Notifications.setNotificationChannelAsync("reminders", {
-    name: "Reminders",
-    importance: Notifications.AndroidImportance.HIGH,
-    sound: "default",
-  });
+  await Promise.all([
+    Notifications.setNotificationChannelAsync("reminders", {
+      name: "Reminders",
+      importance: Notifications.AndroidImportance.HIGH,
+      sound: "default",
+    }),
+    Notifications.setNotificationChannelAsync("alarm", {
+      name: "Alarm Reminders",
+      importance: Notifications.AndroidImportance.MAX,
+      sound: "default",
+      vibrationPattern: [0, 1000, 500, 1000],
+      lockscreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC,
+    }),
+  ]);
+}
 
-  await Notifications.setNotificationChannelAsync("alarm", {
-    name: "Alarm Reminders",
-    importance: Notifications.AndroidImportance.MAX,
-    sound: "default",
-    vibrationPattern: [0, 1000, 500, 1000],
-    lockscreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC,
-  });
+export async function configureNotificationCategories() {
+  await Notifications.setNotificationCategoryAsync(SNOOZE_CATEGORY_ID, [
+    {
+      identifier: SNOOZE_ACTION_ID,
+      buttonTitle: t("reminders:reminders.notification.snooze"),
+      options: { opensAppToForeground: false },
+    },
+  ]);
 }
 
 export async function configurePushNotificationsWhenAppIsOpen() {

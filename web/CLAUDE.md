@@ -39,3 +39,6 @@
 
 ## TypeScript
 - Never use `any` type. Fix TypeScript errors with proper types. If you're unsure of the type, read the codebase to find the correct one.
+
+## Post-Implementation Review
+- After implementing a feature from the `specs/` folder, scan the changed code against the best practices rules in `.agents/skills/vercel-react-best-practices/rules/`. Focus on Critical and High impact patterns only.

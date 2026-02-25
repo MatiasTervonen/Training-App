@@ -82,7 +82,8 @@
     "notification": {
       "tapToOpen": "Avaa napauttamalla",
       "reminder": "Muistutus",
-      "stopAlarm": "Pysäytä hälytys"
+      "stopAlarm": "Pysäytä hälytys",
+      "snooze": "Torkku (5 min)"
     }
   }
 }

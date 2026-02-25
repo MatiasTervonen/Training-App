@@ -18,6 +18,7 @@ import { Plus } from "lucide-react-native";
 import { formatDateTime } from "@/lib/formatDate";
 import PageContainer from "@/components/PageContainer";
 import { FeedItemUI } from "@/types/session";
+import { useQueryClient } from "@tanstack/react-query";
 import Toggle from "@/components/toggle";
 import { canUseExactAlarm, requestExactAlarm } from "@/native/android/EnsureExactAlarmPermission";
 import InfoModal from "@/components/InfoModal";
@@ -46,6 +47,7 @@ export default function HandleEditGlobalReminder({
   onDirtyChange,
 }: Props) {
   const { t, i18n } = useTranslation("common");
+  const queryClient = useQueryClient();
   const payload = reminder.extra_fields as unknown as reminderPayload;
 
   const [title, setValue] = useState(reminder.title);
@@ -149,6 +151,8 @@ export default function HandleEditGlobalReminder({
 
       onSave({ ...updatedFeedItem, feed_context: reminder.feed_context });
       onClose();
+      queryClient.invalidateQueries({ queryKey: ["feed"], exact: true });
+      queryClient.invalidateQueries({ queryKey: ["reminders"] });
     } catch {
       Toast.show({
         type: "error",

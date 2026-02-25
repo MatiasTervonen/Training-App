@@ -137,14 +137,15 @@ export default function ProfileScreen() {
   const updateSettings = async () => {
     setIsSaving(true);
     try {
-      const uploadedProfilePic = await saveProfilePicture();
+      const [uploadedProfilePic, isTaken] = await Promise.all([
+        saveProfilePicture(),
+        validateUserName(userName),
+      ]);
 
       const profilePictureUrl =
         typeof uploadedProfilePic === "string"
           ? uploadedProfilePic
           : (profilePicZ ?? null);
-
-      const isTaken = await validateUserName(userName);
 
       if (isTaken) {
         return Toast.show({

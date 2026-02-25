@@ -63,6 +63,15 @@ const docGroups = [
       },
     ],
   },
+  {
+    group: "Tooling",
+    sections: [
+      {
+        name: "AI Assistant",
+        links: [{ name: "Claude Code", slug: "tooling/claude-code" }],
+      },
+    ],
+  },
 ];
 
 function NavContent({

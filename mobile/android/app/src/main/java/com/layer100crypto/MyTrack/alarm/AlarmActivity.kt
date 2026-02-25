@@ -13,11 +13,18 @@ import androidx.appcompat.app.AppCompatActivity
 import com.layer100crypto.MyTrack.MainActivity
 import com.layer100crypto.MyTrack.R
 import com.layer100crypto.MyTrack.ReactEventEmitter
+import com.layer100crypto.MyTrack.timer.TimerService
 
 class AlarmActivity : AppCompatActivity() {
 
     private var soundType: String = "default"
     private var reminderId: String = ""
+    private var alarmTitle: String = ""
+    private var alarmContent: String = ""
+    private var tapToOpenText: String = "Tap to open"
+    private var timesUpTextValue: String = ""
+    private var stopAlarmTextValue: String = "Stop Alarm"
+    private var snoozeTextValue: String = "Snooze"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,16 +51,22 @@ class AlarmActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_alarm)
 
-        // Get title, soundType, content, reminderId, timesUpText, and stopAlarmText from intent
+        // Get title, soundType, content, reminderId, timesUpText, stopAlarmText, and snoozeText from intent
         val title = intent?.getStringExtra("TITLE") ?: "Timer"
         soundType = intent?.getStringExtra("SOUND_TYPE") ?: "default"
         val content = intent?.getStringExtra("CONTENT") ?: ""
         reminderId = intent?.getStringExtra("REMINDER_ID") ?: ""
         val timesUpText = intent?.getStringExtra("TIMES_UP_TEXT") ?: if (soundType == "reminder") "Reminder" else "Time's up!"
         val stopAlarmText = intent?.getStringExtra("STOP_ALARM_TEXT") ?: "Stop Alarm"
+        snoozeTextValue = intent?.getStringExtra("SNOOZE_TEXT") ?: "Snooze"
+        alarmTitle = title
+        alarmContent = content
+        tapToOpenText = intent?.getStringExtra("TAP_TO_OPEN_TEXT") ?: "Tap to open"
+        timesUpTextValue = timesUpText
+        stopAlarmTextValue = stopAlarmText
 
         // Customize UI based on alarm type
-        if (soundType == "reminder") {
+        if (soundType == "reminder" || soundType == "global-reminder") {
             // Reminder: Show mail icon
             findViewById<TextView>(R.id.alarmIcon).text = "📧"
             findViewById<TextView>(R.id.alarmSubtitle).text = timesUpText
@@ -80,6 +93,70 @@ class AlarmActivity : AppCompatActivity() {
                 stopAlarmAndOpenApp()
             }
         }
+
+        // Handle snooze/extend button
+        val snoozeDurationMinutes = if (soundType == "reminder" || soundType == "global-reminder") 5 else 1
+        val snoozeButtonLabel = snoozeTextValue
+        findViewById<Button>(R.id.snoozeButton).apply {
+            text = snoozeButtonLabel
+            visibility = android.view.View.VISIBLE
+            setOnClickListener {
+                snoozeAlarm(snoozeDurationMinutes)
+            }
+        }
+    }
+
+    private fun snoozeAlarm(durationMinutes: Int) {
+        // Stop the alarm service
+        stopService(Intent(this, AlarmService::class.java))
+
+        // Send event to JS to stop the alarm sound
+        ReactEventEmitter.sendStopAlarmSound(this)
+
+        // Schedule a new alarm N minutes from now, reusing the same ID
+        val triggerAtMillis = System.currentTimeMillis() + durationMinutes * 60 * 1000L
+
+        AlarmScheduler(this).schedule(
+            triggerAtMillis = triggerAtMillis,
+            reminderId = reminderId,
+            title = alarmTitle,
+            soundType = soundType,
+            content = alarmContent,
+            tapToOpenText = tapToOpenText,
+            timesUpText = timesUpTextValue,
+            stopAlarmText = stopAlarmTextValue,
+            snoozeText = snoozeTextValue
+        )
+
+        // Notify JS to update DB for global reminders
+        if (soundType == "global-reminder") {
+            ReactEventEmitter.sendGlobalReminderSnoozed(
+                this,
+                reminderId,
+                durationMinutes
+            )
+        }
+
+        // Start countdown notification for timers
+        if (soundType == "timer") {
+            val timerIntent = Intent(this, TimerService::class.java).apply {
+                putExtra("startTime", triggerAtMillis)
+                putExtra("label", alarmTitle)
+                putExtra("mode", "countdown")
+            }
+            startForegroundService(timerIntent)
+
+            // Notify JS to update timer state
+            ReactEventEmitter.sendTimerSnoozed(
+                this,
+                triggerAtMillis,
+                durationMinutes * 60,
+                alarmTitle
+            )
+        }
+
+        // Close the activity without opening the app
+        finish()
     }
 
     private fun stopAlarmAndOpenApp() {
@@ -90,9 +167,9 @@ class AlarmActivity : AppCompatActivity() {
         ReactEventEmitter.sendStopAlarmSound(this)
 
         // Determine route based on alarm type
-        val route = if (soundType == "reminder" && reminderId.isNotEmpty()) {
+        val route = if ((soundType == "reminder" || soundType == "global-reminder") && reminderId.isNotEmpty()) {
             "mytrack://dashboard?reminderId=$reminderId"
-        } else if (soundType == "reminder") {
+        } else if (soundType == "reminder" || soundType == "global-reminder") {
             "mytrack://dashboard"
         } else {
             "mytrack://timer/empty-timer"

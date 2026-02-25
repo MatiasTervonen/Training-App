@@ -10,7 +10,8 @@ export function scheduleNativeAlarm(
   content?: string,
   tapToOpenText?: string,
   timesUpText?: string,
-  stopAlarmText?: string
+  stopAlarmText?: string,
+  snoozeText?: string
 ) {
   if (Platform.OS === "android" && nativeAlarm) {
     nativeAlarm.scheduleAlarm(
@@ -21,7 +22,8 @@ export function scheduleNativeAlarm(
       content || "",
       tapToOpenText || "Tap to open timer",
       timesUpText || "Time's up!",
-      stopAlarmText || "Stop Alarm"
+      stopAlarmText || "Stop Alarm",
+      snoozeText || "Snooze"
     );
   }
 }

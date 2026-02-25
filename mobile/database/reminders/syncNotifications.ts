@@ -57,6 +57,7 @@ export async function syncNotifications() {
             title: reminder.title,
             notes: reminder.notes,
             reminderId: reminder.id,
+            mode: (reminder.mode as "alarm" | "normal") || "normal",
           });
           await AsyncStorage.setItem(
             `notification:${reminder.id}`,
@@ -70,8 +71,9 @@ export async function syncNotifications() {
             notifyAt: new Date(reminder.notify_at_time),
             title: reminder.title,
             notes: reminder.notes,
-            weekdays: reminder.weekdays,
+            weekdays: reminder.weekdays as number[],
             reminderId: reminder.id,
+            mode: (reminder.mode as "alarm" | "normal") || "normal",
           });
           await AsyncStorage.setItem(
             `notification:${reminder.id}`,
@@ -92,6 +94,7 @@ export async function syncNotifications() {
             title: reminder.title,
             notes: reminder.notes,
             reminderId: reminder.id,
+            mode: (reminder.mode as "alarm" | "normal") || "normal",
           });
           await AsyncStorage.setItem(
             `notification:${reminder.id}`,
@@ -118,6 +121,7 @@ export async function syncNotifications() {
         title: reminder.title,
         notes: reminder.notes || "",
         reminderId: reminder.id,
+        mode: (reminder.mode as "alarm" | "normal") || "normal",
       });
       await AsyncStorage.setItem(
         `notification:${reminder.id}`,

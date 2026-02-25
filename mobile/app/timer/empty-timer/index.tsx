@@ -87,6 +87,7 @@ export default function SettingsScreen() {
       t("timer.notification.tapToOpenTimer"),
       t("timer.notification.timesUp"),
       t("timer.notification.stopAlarm"),
+      t("timer.notification.extendTimer"),
     );
   };
 
@@ -156,6 +157,29 @@ export default function SettingsScreen() {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Listen for TIMER_SNOOZED event from native (when snooze is tapped)
+  useEffect(() => {
+    const sub = DeviceEventEmitter.addListener(
+      "TIMER_SNOOZED",
+      (event: { endTimestamp: number; durationSeconds: number }) => {
+        if (player) {
+          try {
+            player.pause();
+            player.seekTo(0);
+          } catch (error) {
+            console.error("Error stopping audio player:", error);
+          }
+        }
+        setSkipPlaying(false);
+        useTimerStore.getState().snoozedTimer(event.endTimestamp, event.durationSeconds);
+      }
+    );
+
+    return () => {
+      sub.remove();
+    };
+  }, [player]);
 
   return (
     <Pressable

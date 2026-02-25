@@ -53,7 +53,8 @@ class BootReceiver : BroadcastReceiver() {
                     repeatType = repeatInfo.repeatType,
                     weekdays = repeatInfo.weekdays,
                     hour = repeatInfo.hour,
-                    minute = repeatInfo.minute
+                    minute = repeatInfo.minute,
+                    snoozeText = repeatInfo.snoozeText
                 )
 
                 Log.d(TAG, "Rescheduled repeating alarm: $reminderId (${repeatInfo.repeatType})")

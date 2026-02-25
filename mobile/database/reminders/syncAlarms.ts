@@ -153,7 +153,8 @@ export async function syncAlarms() {
             reminder.notes || "",
             t("reminders:reminders.notification.tapToOpen"),
             t("reminders:reminders.notification.reminder"),
-            t("reminders:reminders.notification.stopAlarm")
+            t("reminders:reminders.notification.stopAlarm"),
+            t("reminders:reminders.notification.snooze")
           );
           return;
         }
@@ -175,11 +176,12 @@ export async function syncAlarms() {
         notifyAt.getTime(),
         reminder.id,
         reminder.title,
-        "reminder",
+        "global-reminder",
         reminder.notes || "",
         t("reminders:reminders.notification.tapToOpen"),
         t("reminders:reminders.notification.reminder"),
-        t("reminders:reminders.notification.stopAlarm")
+        t("reminders:reminders.notification.stopAlarm"),
+        t("reminders:reminders.notification.snooze")
       );
     })
   );

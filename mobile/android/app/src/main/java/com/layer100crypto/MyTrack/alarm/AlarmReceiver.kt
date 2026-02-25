@@ -20,6 +20,7 @@ class AlarmReceiver : BroadcastReceiver() {
         val tapToOpenText = intent.getStringExtra("TAP_TO_OPEN_TEXT") ?: "Tap to open timer"
         val timesUpText = intent.getStringExtra("TIMES_UP_TEXT") ?: "Time's up!"
         val stopAlarmText = intent.getStringExtra("STOP_ALARM_TEXT") ?: "Stop Alarm"
+        val snoozeText = intent.getStringExtra("SNOOZE_TEXT") ?: "Snooze"
 
         val isAppInForeground = AppForegroundState.isForeground()
 
@@ -34,7 +35,7 @@ class AlarmReceiver : BroadcastReceiver() {
 
         // For timers: JS handles the alarm when in foreground AND screen is on
         // For reminders: Always use native alarm (no JS handling exists)
-        val shouldStartService = soundType == "reminder" || !isAppInForeground || !isScreenOn
+        val shouldStartService = soundType == "reminder" || soundType == "global-reminder" || !isAppInForeground || !isScreenOn
 
         if (shouldStartService) {
             val serviceIntent = Intent(context, AlarmService::class.java).apply {
@@ -45,6 +46,7 @@ class AlarmReceiver : BroadcastReceiver() {
                 putExtra("TAP_TO_OPEN_TEXT", tapToOpenText)
                 putExtra("TIMES_UP_TEXT", timesUpText)
                 putExtra("STOP_ALARM_TEXT", stopAlarmText)
+                putExtra("SNOOZE_TEXT", snoozeText)
             }
             ContextCompat.startForegroundService(context, serviceIntent)
         }
@@ -54,7 +56,7 @@ class AlarmReceiver : BroadcastReceiver() {
         // so we bypass it and show the full-screen alarm UI directly.
         // When screen is off/locked, the fullScreenIntent from the notification handles it.
         // For timers with the app in foreground, JS already handles the UI (see above).
-        val jsHandlesAlarm = isAppInForeground && isScreenOn && soundType != "reminder"
+        val jsHandlesAlarm = isAppInForeground && isScreenOn && soundType != "reminder" && soundType != "global-reminder"
         if (isScreenOn && !jsHandlesAlarm) {
             val alarmActivityIntent = Intent(context, AlarmActivity::class.java).apply {
                 putExtra("REMINDER_ID", reminderId)
@@ -64,13 +66,14 @@ class AlarmReceiver : BroadcastReceiver() {
                 putExtra("TAP_TO_OPEN_TEXT", tapToOpenText)
                 putExtra("TIMES_UP_TEXT", timesUpText)
                 putExtra("STOP_ALARM_TEXT", stopAlarmText)
+                putExtra("SNOOZE_TEXT", snoozeText)
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK
             }
             context.startActivity(alarmActivityIntent)
         }
 
         // Notify JS if app is in foreground and screen is on (for timer sound/UI)
-        if (isAppInForeground && isScreenOn && soundType != "reminder") {
+        if (isAppInForeground && isScreenOn && soundType != "reminder" && soundType != "global-reminder") {
             ReactEventEmitter.sendTimerFinished(context, reminderId, title)
         }
 
@@ -93,7 +96,8 @@ class AlarmReceiver : BroadcastReceiver() {
                 repeatType = repeatInfo.repeatType,
                 weekdays = repeatInfo.weekdays,
                 hour = repeatInfo.hour,
-                minute = repeatInfo.minute
+                minute = repeatInfo.minute,
+                snoozeText = repeatInfo.snoozeText
             )
         }
     }

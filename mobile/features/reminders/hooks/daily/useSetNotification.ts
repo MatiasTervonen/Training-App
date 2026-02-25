@@ -2,6 +2,7 @@ import { Platform } from "react-native";
 import * as Notifications from "expo-notifications";
 import { handleError } from "@/utils/handleError";
 import { scheduleRepeatingNativeAlarm } from "@/native/android/NativeAlarm";
+import { SNOOZE_CATEGORY_ID } from "@/features/push-notifications/constants";
 
 export default function useSetNotification({
   notifyAt,
@@ -68,6 +69,7 @@ export default function useSetNotification({
           body: notes,
           sound: true,
           data: { reminderId: reminderId, type: "local-reminders" },
+          categoryIdentifier: SNOOZE_CATEGORY_ID,
         },
         trigger,
       });

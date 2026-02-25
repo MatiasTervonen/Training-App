@@ -28,9 +28,9 @@ export default function useDeleteReminder() {
           ? [reminder.notification_id]
           : [];
 
-      for (const nid of ids) {
-        await Notifications.cancelScheduledNotificationAsync(nid);
-      }
+      await Promise.all(
+        ids.map((nid) => Notifications.cancelScheduledNotificationAsync(nid)),
+      );
 
       // Cancel native Android alarm if it was a high-priority reminder
       cancelNativeAlarm(reminder.id);

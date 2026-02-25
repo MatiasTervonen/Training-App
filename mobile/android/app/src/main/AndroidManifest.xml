@@ -58,6 +58,7 @@
     <!-- Alarm system components -->
     <receiver android:name=".alarm.AlarmReceiver" android:exported="false"/>
     <receiver android:name=".alarm.StopAlarmReceiver" android:exported="false"/>
+    <receiver android:name=".alarm.SnoozeAlarmReceiver" android:exported="false"/>
     <receiver android:name=".alarm.BootReceiver" android:exported="false">
       <intent-filter>
         <action android:name="android.intent.action.BOOT_COMPLETED"/>

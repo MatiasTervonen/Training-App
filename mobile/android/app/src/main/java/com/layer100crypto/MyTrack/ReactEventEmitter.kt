@@ -76,6 +76,80 @@ object ReactEventEmitter {
         return true
     }
 
+    fun sendTimerSnoozed(
+        context: Context,
+        endTimestamp: Long,
+        durationSeconds: Int,
+        title: String
+    ): Boolean {
+        val reactApplication = context.applicationContext as? ReactApplication
+            ?: return false
+
+        var reactContext: ReactContext? = try {
+            reactApplication.reactHost?.currentReactContext
+        } catch (e: Exception) {
+            null
+        }
+
+        if (reactContext == null) {
+            reactContext = try {
+                reactApplication.reactNativeHost
+                    ?.reactInstanceManager
+                    ?.currentReactContext
+            } catch (e: Exception) {
+                null
+            }
+        }
+
+        if (reactContext == null) return false
+
+        reactContext
+            .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
+            .emit("TIMER_SNOOZED", Arguments.createMap().apply {
+                putDouble("endTimestamp", endTimestamp.toDouble())
+                putInt("durationSeconds", durationSeconds)
+                putString("title", title)
+            })
+
+        return true
+    }
+
+    fun sendGlobalReminderSnoozed(
+        context: Context,
+        reminderId: String,
+        snoozeDurationMinutes: Int
+    ): Boolean {
+        val reactApplication = context.applicationContext as? ReactApplication
+            ?: return false
+
+        var reactContext: ReactContext? = try {
+            reactApplication.reactHost?.currentReactContext
+        } catch (e: Exception) {
+            null
+        }
+
+        if (reactContext == null) {
+            reactContext = try {
+                reactApplication.reactNativeHost
+                    ?.reactInstanceManager
+                    ?.currentReactContext
+            } catch (e: Exception) {
+                null
+            }
+        }
+
+        if (reactContext == null) return false
+
+        reactContext
+            .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
+            .emit("GLOBAL_REMINDER_SNOOZED", Arguments.createMap().apply {
+                putString("reminderId", reminderId)
+                putInt("snoozeDurationMinutes", snoozeDurationMinutes)
+            })
+
+        return true
+    }
+
     fun sendAlarmPlaying(
         context: Context,
         reminderId: String,

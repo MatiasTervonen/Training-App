@@ -45,31 +45,28 @@ export default function PermissionsScreen() {
   const [batteryOptDisabled, setBatteryOptDisabled] = useState(false);
 
   const checkPermissions = useCallback(async () => {
-    // Check notifications
-    const notifStatus = await Notifications.getPermissionsAsync();
+    const [notifStatus, fg, bg] = await Promise.all([
+      Notifications.getPermissionsAsync(),
+      Location.getForegroundPermissionsAsync(),
+      Location.getBackgroundPermissionsAsync(),
+    ]);
     setNotificationsGranted(notifStatus.status === "granted");
-
-    // Check location (both foreground + background)
-    const fg = await Location.getForegroundPermissionsAsync();
-    const bg = await Location.getBackgroundPermissionsAsync();
     setLocationGranted(fg.status === "granted" && bg.status === "granted");
 
-    // Check step counter (Android only)
     if (Platform.OS === "android") {
-      const hasSteps = await hasStepPermission();
+      const [hasSteps, canAlarm, ignoring] = await Promise.all([
+        hasStepPermission(),
+        canUseExactAlarm(),
+        isIgnoringBatteryOptimizations(),
+      ]);
       setStepsGranted(hasSteps);
+      setExactAlarmGranted(canAlarm);
+      setBatteryOptDisabled(ignoring);
+
       if (!hasSteps) {
         const denied = await isStepPermissionPermanentlyDenied();
         setStepsPermanentlyDenied(denied);
       }
-
-      // Check exact alarm
-      const canAlarm = await canUseExactAlarm();
-      setExactAlarmGranted(canAlarm);
-
-      // Check battery optimization
-      const ignoring = await isIgnoringBatteryOptimizations();
-      setBatteryOptDisabled(ignoring);
     }
   }, []);
 

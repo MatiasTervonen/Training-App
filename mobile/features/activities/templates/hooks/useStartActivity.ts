@@ -42,10 +42,10 @@ export function useStartActivity() {
       baseMet: template.activity.base_met,
     };
 
-    await AsyncStorage.setItem("activity_draft", JSON.stringify(sessionDraft));
-
-    // Stop any running GPS tracking first to prevent race conditions
-    await stopGPStracking();
+    await Promise.all([
+      AsyncStorage.setItem("activity_draft", JSON.stringify(sessionDraft)),
+      stopGPStracking(),
+    ]);
 
     const initializeDatabase = async () => {
       const db = await getDatabase();
@@ -76,12 +76,15 @@ export function useStartActivity() {
           );
         `);
 
-        template.route?.coordinates.forEach(async ([lng, lat], index) => {
-          await db.runAsync(
-            `INSERT INTO template_route (idx, latitude, longitude) VALUES (?, ?, ?)`,
-            [index, lat, lng],
-          );
-        });
+        if (template.route?.coordinates) {
+          for (let index = 0; index < template.route.coordinates.length; index++) {
+            const [lng, lat] = template.route.coordinates[index];
+            await db.runAsync(
+              `INSERT INTO template_route (idx, latitude, longitude) VALUES (?, ?, ?)`,
+              [index, lat, lng],
+            );
+          }
+        }
 
         return true;
       } catch (error) {

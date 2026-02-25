@@ -2,6 +2,7 @@ import * as Notifications from "expo-notifications";
 import { handleError } from "@/utils/handleError";
 import { scheduleNativeAlarm } from "@/native/android/NativeAlarm";
 import { t } from "i18next";
+import { SNOOZE_CATEGORY_ID } from "@/features/push-notifications/constants";
 
 export default function useSetNotification({
   notifyAt,
@@ -28,7 +29,8 @@ export default function useSetNotification({
           notes,
           t("reminders:reminders.notification.tapToOpen"),
           t("reminders:reminders.notification.reminder"),
-          t("reminders:reminders.notification.stopAlarm")
+          t("reminders:reminders.notification.stopAlarm"),
+          t("reminders:reminders.notification.snooze")
         );
       }
 
@@ -42,6 +44,9 @@ export default function useSetNotification({
             reminderId: reminderId,
             type: "local-reminders",
           },
+          ...(mode === "normal" && {
+            categoryIdentifier: SNOOZE_CATEGORY_ID,
+          }),
         },
         trigger: {
           type: Notifications.SchedulableTriggerInputTypes.DATE,

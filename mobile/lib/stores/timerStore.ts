@@ -56,6 +56,7 @@ interface TimerState {
   resumeTimer: (label: string) => void;
   setAlarmFired: (fired: boolean) => void;
   startSession: (label: string) => void;
+  snoozedTimer: (endTimestamp: number, durationSeconds: number) => void;
   setAlarmSoundPlaying: (playing: boolean) => void;
 }
 
@@ -245,9 +246,53 @@ export const useTimerStore = create<TimerState>()(
             "",
             t("timer:timer.notification.tapToOpenTimer"),
             t("timer:timer.notification.timesUp"),
-            t("timer:timer.notification.stopAlarm")
+            t("timer:timer.notification.stopAlarm"),
+            t("timer:timer.notification.extendTimer")
           );
         }
+
+        interval = setInterval(() => {
+          const { isRunning, mode, endTimestamp } = get();
+
+          if (!isRunning) return;
+
+          if (
+            mode === "countdown" &&
+            endTimestamp &&
+            Date.now() >= endTimestamp
+          ) {
+            set({
+              alarmFired: true,
+              isRunning: false,
+              alarmSoundPlaying: true,
+            });
+            stopNativeTimer();
+
+            return;
+          }
+
+          set((state) => ({ uiTick: state.uiTick + 1 }));
+        }, 1000);
+      },
+
+      snoozedTimer: (endTimestamp: number, durationSeconds: number) => {
+        if (interval) {
+          clearInterval(interval);
+          interval = null;
+        }
+
+        const now = Date.now();
+
+        set({
+          isRunning: true,
+          alarmFired: false,
+          alarmSoundPlaying: false,
+          startTimestamp: now,
+          endTimestamp,
+          mode: "countdown",
+          totalDuration: durationSeconds,
+          paused: false,
+        });
 
         interval = setInterval(() => {
           const { isRunning, mode, endTimestamp } = get();

@@ -23,7 +23,11 @@ export default function AlarmPlayingListener() {
         stopNativeAlarm();
 
         // Navigate based on alarm type - this will expand the reminder
-        if (data.soundType === "reminder" && data.reminderId) {
+        if (
+          (data.soundType === "reminder" ||
+            data.soundType === "global-reminder") &&
+          data.reminderId
+        ) {
           router.push(`/dashboard?reminderId=${data.reminderId}`);
         } else if (data.soundType === "timer") {
           router.push("/timer/empty-timer");

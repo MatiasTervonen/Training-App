@@ -53,6 +53,7 @@ class AlarmService : Service() {
     private var tapToOpenText: String = "Tap to open timer"
     private var timesUpText: String = "Time's up!"
     private var stopAlarmText: String = "Stop Alarm"
+    private var snoozeText: String = "Snooze"
 
     override fun onCreate() {
         super.onCreate()
@@ -67,6 +68,7 @@ class AlarmService : Service() {
         tapToOpenText = intent?.getStringExtra("TAP_TO_OPEN_TEXT") ?: "Tap to open timer"
         timesUpText = intent?.getStringExtra("TIMES_UP_TEXT") ?: "Time's up!"
         stopAlarmText = intent?.getStringExtra("STOP_ALARM_TEXT") ?: "Stop Alarm"
+        snoozeText = intent?.getStringExtra("SNOOZE_TEXT") ?: "Snooze"
 
         // Update static state
         isRunning = true
@@ -97,7 +99,7 @@ class AlarmService : Service() {
 
         val soundUri: Uri = when (soundType) {
             "timer" -> Uri.parse("android.resource://$packageName/${R.raw.mixkit_classic_alarm_995}")
-            "reminder" -> Uri.parse("android.resource://$packageName/${R.raw.mixkit_classic_alarm_995}")          
+            "reminder", "global-reminder" -> Uri.parse("android.resource://$packageName/${R.raw.mixkit_classic_alarm_995}")
 
             else ->
                 android.provider.Settings.System.DEFAULT_ALARM_ALERT_URI
@@ -138,9 +140,9 @@ class AlarmService : Service() {
         }
 
         // Determine route based on alarm type
-        val route = if (soundType == "reminder" && reminderId.isNotEmpty()) {
+        val route = if ((soundType == "reminder" || soundType == "global-reminder") && reminderId.isNotEmpty()) {
             "mytrack://dashboard?reminderId=$reminderId"
-        } else if (soundType == "reminder") {
+        } else if (soundType == "reminder" || soundType == "global-reminder") {
             "mytrack://dashboard"
         } else {
             "mytrack://timer/empty-timer"
@@ -171,6 +173,8 @@ class AlarmService : Service() {
             putExtra("REMINDER_ID", reminderId)
             putExtra("TIMES_UP_TEXT", timesUpText)
             putExtra("STOP_ALARM_TEXT", stopAlarmText)
+            putExtra("SNOOZE_TEXT", snoozeText)
+            putExtra("TAP_TO_OPEN_TEXT", tapToOpenText)
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or
                     Intent.FLAG_ACTIVITY_NO_USER_ACTION
         }
@@ -191,6 +195,26 @@ class AlarmService : Service() {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
+        // Snooze/extend action button
+        val snoozeDurationMinutes = if (soundType == "reminder" || soundType == "global-reminder") 5 else 1
+        val snoozeIntent = Intent(this, SnoozeAlarmReceiver::class.java).apply {
+            putExtra("REMINDER_ID", reminderId)
+            putExtra("TITLE", alarmTitle)
+            putExtra("SOUND_TYPE", soundType)
+            putExtra("CONTENT", alarmContent)
+            putExtra("TAP_TO_OPEN_TEXT", tapToOpenText)
+            putExtra("TIMES_UP_TEXT", timesUpText)
+            putExtra("STOP_ALARM_TEXT", stopAlarmText)
+            putExtra("SNOOZE_TEXT", snoozeText)
+            putExtra("SNOOZE_DURATION_MINUTES", snoozeDurationMinutes)
+        }
+        val snoozePendingIntent = PendingIntent.getBroadcast(
+            this,
+            3,
+            snoozeIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
         val builder = NotificationCompat.Builder(this, channelId)
             .setContentTitle(alarmTitle)
             .setContentText(contentText)
@@ -203,6 +227,7 @@ class AlarmService : Service() {
             .setPriority(NotificationCompat.PRIORITY_MAX)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .addAction(0, stopAlarmText, stopPendingIntent)
+            .addAction(0, snoozeText, snoozePendingIntent)
             .setUsesChronometer(true)
             .setWhen(System.currentTimeMillis())
             .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)

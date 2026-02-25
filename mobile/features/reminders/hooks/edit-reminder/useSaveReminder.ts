@@ -4,6 +4,7 @@ import { FeedItemUI, full_reminder } from "@/types/session";
 import { editLocalReminder } from "@/database/reminders/edit-local-reminder";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useTranslation } from "react-i18next";
+import { useQueryClient } from "@tanstack/react-query";
 
 type ReminderInput = FeedItemUI | full_reminder;
 
@@ -42,6 +43,7 @@ export default function useSaveReminder({
   mode = "normal",
 }: useSaveReminderProps) {
   const { t } = useTranslation("reminders");
+  const queryClient = useQueryClient();
   const reminderId = getReminderId(reminder);
 
   const handleSave = async () => {
@@ -77,9 +79,9 @@ export default function useSaveReminder({
       const stored = await AsyncStorage.getItem(`notification:${reminderId}`);
       const oldIds: string[] = stored ? JSON.parse(stored) : [];
 
-      for (const id of oldIds) {
-        await Notifications.cancelScheduledNotificationAsync(id);
-      }
+      await Promise.all(
+        oldIds.map((id) => Notifications.cancelScheduledNotificationAsync(id)),
+      );
 
       const newIds = await scheduleNotifications();
       const normalizedIds = newIds
@@ -121,6 +123,8 @@ export default function useSaveReminder({
         (onSave as () => void)();
       }
       onClose();
+      queryClient.invalidateQueries({ queryKey: ["feed"], exact: true });
+      queryClient.invalidateQueries({ queryKey: ["reminders"] });
       Toast.show({
         type: "success",
         text1: t("reminders.success.updated"),

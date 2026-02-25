@@ -25,6 +25,7 @@ import { MenuProvider } from "react-native-popup-menu";
 import { Provider as PaperProvider } from "react-native-paper";
 import {
   configureNotificationChannels,
+  configureNotificationCategories,
   configurePushNotificationsWhenAppIsOpen,
 } from "@/features/push-notifications/actions";
 import {
@@ -39,6 +40,7 @@ import SaveAreaInset from "@/features/layout/SaveAreaInset";
 import Mapbox from "@rnmapbox/maps";
 import TimerFinishListener from "@/features/layout/TimerFinished";
 import AlarmPlayingListener from "@/features/layout/AlarmPlayingListener";
+import GlobalReminderSnoozedListener from "@/features/layout/GlobalReminderSnoozedListener";
 import AppStatePermissionListener from "@/features/push-notifications/AppStatePermissionListener";
 import GpsTrackingPermission from "@/features/activities/gpsToggle/gpsTrackingPermission";
 import { backfillMissingDaysThrottled } from "@/database/activities/syncStepsToDatabase";
@@ -145,6 +147,7 @@ export default Sentry.wrap(function RootLayout() {
   // Configure Notification Channels for Android and Push Notifications
   useEffect(() => {
     configureNotificationChannels();
+    configureNotificationCategories();
     configurePushNotificationsWhenAppIsOpen();
 
     // Only run on physical Android device
@@ -184,6 +187,7 @@ export default Sentry.wrap(function RootLayout() {
             <PaperProvider>
               <TimerFinishListener />
               <AlarmPlayingListener />
+              <GlobalReminderSnoozedListener />
               <StatusBar
                 barStyle="light-content"
                 backgroundColor="#020617"

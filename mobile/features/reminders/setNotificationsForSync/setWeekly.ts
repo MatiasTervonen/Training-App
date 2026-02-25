@@ -1,5 +1,6 @@
 import { Platform } from "react-native";
 import * as Notifications from "expo-notifications";
+import { SNOOZE_CATEGORY_ID } from "@/features/push-notifications/constants";
 
 export default async function setWeeklyNotification({
   notifyAt,
@@ -7,12 +8,14 @@ export default async function setWeeklyNotification({
   notes,
   weekdays,
   reminderId,
+  mode = "normal",
 }: {
   notifyAt: Date;
   title: string;
   notes: string;
   weekdays: number[];
   reminderId: string;
+  mode?: "alarm" | "normal";
 }) {
   const hour = notifyAt.getHours();
   const minute = notifyAt.getMinutes();
@@ -41,6 +44,9 @@ export default async function setWeeklyNotification({
           body: notes,
           sound: true,
           data: { reminderId: reminderId },
+          ...(mode === "normal" && {
+            categoryIdentifier: SNOOZE_CATEGORY_ID,
+          }),
         },
         trigger,
       });

@@ -125,7 +125,7 @@ export async function POST(request: NextRequest) {
     // Send mobile push notifications via Expo
     for (const expoSub of expoTokens ?? []) {
       // Skip the device that created this reminder (it has local notification scheduled)
-      if (item.created_from_token && expoSub.token === item.created_from_token) {
+      if (item.created_from_device_id && expoSub.device_id === item.created_from_device_id) {
         continue;
       }
 

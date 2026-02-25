@@ -82,7 +82,8 @@
     "notification": {
       "tapToOpen": "Tap to open",
       "reminder": "Reminder",
-      "stopAlarm": "Stop Alarm"
+      "stopAlarm": "Stop Alarm",
+      "snooze": "Snooze (5 min)"
     }
   }
 }

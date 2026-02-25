@@ -42,9 +42,9 @@ export default function useDeleteSession() {
         if (stored) {
           const ids: string[] = JSON.parse(stored);
 
-          for (const nid of ids) {
-            await Notifications.cancelScheduledNotificationAsync(nid);
-          }
+          await Promise.all(
+            ids.map((nid) => Notifications.cancelScheduledNotificationAsync(nid)),
+          );
 
           await AsyncStorage.removeItem(`notification:${id}`);
         }

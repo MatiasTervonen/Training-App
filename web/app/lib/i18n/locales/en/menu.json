@@ -55,6 +55,7 @@
     "security": "Security",
     "settings": "Settings",
     "friends": "Friends",
+    "feedback": "Feedback",
     "logOut": "Log Out",
     "loggingOut": "Logging out...",
     "logoutFailed": "Logout Failed",
@@ -89,6 +90,25 @@
       "enableError": "Failed to enable Location Tracking",
       "disableError": "Failed to disable Location Tracking"
     }
+  },
+  "feedback": {
+    "title": "Send Feedback",
+    "category": "Category",
+    "categories": {
+      "bug": "Bug Report",
+      "feature": "Feature Request",
+      "general": "General Feedback"
+    },
+    "titleLabel": "Title",
+    "titlePlaceholder": "Brief summary",
+    "messageLabel": "Message",
+    "messagePlaceholder": "Describe in detail...",
+    "sending": "Sending feedback...",
+    "sendSuccess": "Feedback sent! Thank you.",
+    "sendError": "Failed to send feedback. Please try again.",
+    "emptyTitle": "Please enter a title.",
+    "emptyMessage": "Please enter a message.",
+    "send": "Send"
   },
   "friends": {
     "title": "Friends",

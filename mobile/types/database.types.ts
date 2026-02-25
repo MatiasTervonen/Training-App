@@ -522,6 +522,41 @@ export type Database = {
           },
         ]
       }
+      feedback: {
+        Row: {
+          category: string
+          created_at: string
+          id: string
+          message: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          id?: string
+          message: string
+          title: string
+          user_id: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          id?: string
+          message?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feedback_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       friend_requests: {
         Row: {
           created_at: string
@@ -1688,6 +1723,7 @@ export type Database = {
       user_settings: {
         Row: {
           gps_tracking_enabled: boolean
+          has_completed_onboarding: boolean | null
           language: string
           push_enabled: boolean
           updated_at: string
@@ -1695,6 +1731,7 @@ export type Database = {
         }
         Insert: {
           gps_tracking_enabled?: boolean
+          has_completed_onboarding?: boolean | null
           language?: string
           push_enabled?: boolean
           updated_at?: string
@@ -1702,6 +1739,7 @@ export type Database = {
         }
         Update: {
           gps_tracking_enabled?: boolean
+          has_completed_onboarding?: boolean | null
           language?: string
           push_enabled?: boolean
           updated_at?: string
@@ -1935,91 +1973,35 @@ export type Database = {
         Returns: string
       }
       last_30d_analytics: { Args: never; Returns: Json }
-      notes_edit_note:
-        | {
-            Args: {
-              p_deleted_recording_ids?: string[]
-              p_id: string
-              p_new_recordings?: Json
-              p_notes: string
-              p_title: string
-              p_updated_at: string
-            }
-            Returns: {
-              activity_at: string | null
-              created_at: string
-              extra_fields: Json
-              id: string
-              occurred_at: string
-              source_id: string
-              title: string
-              type: string
-              updated_at: string | null
-              user_id: string
-            }
-            SetofOptions: {
-              from: "*"
-              to: "feed_items"
-              isOneToOne: true
-              isSetofReturn: false
-            }
-          }
-        | {
-            Args: {
-              p_deleted_recording_ids?: string[]
-              p_folder_id?: string
-              p_id: string
-              p_new_recordings?: Json
-              p_notes: string
-              p_title: string
-              p_updated_at: string
-            }
-            Returns: {
-              activity_at: string | null
-              created_at: string
-              extra_fields: Json
-              id: string
-              occurred_at: string
-              source_id: string
-              title: string
-              type: string
-              updated_at: string | null
-              user_id: string
-            }
-            SetofOptions: {
-              from: "*"
-              to: "feed_items"
-              isOneToOne: true
-              isSetofReturn: false
-            }
-          }
-        | {
-            Args: {
-              p_folder_id?: string
-              p_id: string
-              p_notes: string
-              p_title: string
-              p_updated_at: string
-            }
-            Returns: {
-              activity_at: string | null
-              created_at: string
-              extra_fields: Json
-              id: string
-              occurred_at: string
-              source_id: string
-              title: string
-              type: string
-              updated_at: string | null
-              user_id: string
-            }
-            SetofOptions: {
-              from: "*"
-              to: "feed_items"
-              isOneToOne: true
-              isSetofReturn: false
-            }
-          }
+      notes_edit_note: {
+        Args: {
+          p_deleted_recording_ids?: string[]
+          p_folder_id?: string
+          p_id: string
+          p_new_recordings?: Json
+          p_notes: string
+          p_title: string
+          p_updated_at: string
+        }
+        Returns: {
+          activity_at: string | null
+          created_at: string
+          extra_fields: Json
+          id: string
+          occurred_at: string
+          source_id: string
+          title: string
+          type: string
+          updated_at: string | null
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "feed_items"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       notes_get_by_folder: {
         Args: {
           p_folder_id?: string
@@ -2050,24 +2032,15 @@ export type Database = {
         Args: { p_folder_id?: string; p_note_id: string }
         Returns: undefined
       }
-      notes_save_note:
-        | {
-            Args: { p_draftrecordings?: Json; p_notes: string; p_title: string }
-            Returns: string
-          }
-        | {
-            Args: {
-              p_draftrecordings?: Json
-              p_folder_id?: string
-              p_notes: string
-              p_title: string
-            }
-            Returns: string
-          }
-        | {
-            Args: { p_folder_id?: string; p_notes: string; p_title: string }
-            Returns: string
-          }
+      notes_save_note: {
+        Args: {
+          p_draftrecordings?: Json
+          p_folder_id?: string
+          p_notes: string
+          p_title: string
+        }
+        Returns: string
+      }
       reminders_delete_global_reminder: {
         Args: { p_id: string }
         Returns: undefined

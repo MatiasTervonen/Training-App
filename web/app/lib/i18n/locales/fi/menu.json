@@ -55,6 +55,7 @@
     "security": "Turvallisuus",
     "settings": "Asetukset",
     "friends": "Kaverit",
+    "feedback": "Palaute",
     "logOut": "Kirjaudu ulos",
     "loggingOut": "Kirjaudutaan ulos...",
     "logoutFailed": "Uloskirjautuminen epäonnistui",
@@ -89,6 +90,25 @@
       "enableError": "Sijaintiseurannan käyttöönotto epäonnistui",
       "disableError": "Sijaintiseurannan poistaminen epäonnistui"
     }
+  },
+  "feedback": {
+    "title": "Lähetä palautetta",
+    "category": "Kategoria",
+    "categories": {
+      "bug": "Virheraportti",
+      "feature": "Ominaisuuspyyntö",
+      "general": "Yleinen palaute"
+    },
+    "titleLabel": "Otsikko",
+    "titlePlaceholder": "Lyhyt yhteenveto",
+    "messageLabel": "Viesti",
+    "messagePlaceholder": "Kuvaile tarkemmin...",
+    "sending": "Lähetetään palautetta...",
+    "sendSuccess": "Palaute lähetetty! Kiitos.",
+    "sendError": "Palautteen lähettäminen epäonnistui. Yritä uudelleen.",
+    "emptyTitle": "Kirjoita otsikko.",
+    "emptyMessage": "Kirjoita viesti.",
+    "send": "Lähetä"
   },
   "friends": {
     "title": "Kaverit",

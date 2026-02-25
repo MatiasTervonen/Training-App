@@ -3,7 +3,7 @@
 import LinkButton from "@/components/buttons/LinkButton";
 import MenuContext from "@/features/menu/components/MenuContext";
 import SignOutButton from "@/components/buttons/singOutButton";
-import { ShieldUser, UserPen, ContactRound, Settings } from "lucide-react";
+import { ShieldUser, UserPen, ContactRound, Settings, MessageSquareMore } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 export default function MenuSidebar() {
@@ -30,6 +30,10 @@ export default function MenuSidebar() {
           <LinkButton href="/menu/settings">
             <p>{t("menu.settings")}</p>
             <Settings size={18} />
+          </LinkButton>
+          <LinkButton href="/menu/feedback">
+            <p>{t("menu.feedback")}</p>
+            <MessageSquareMore size={18} />
           </LinkButton>
         </div>
       </div>

@@ -23,7 +23,7 @@ export async function editNotes({
     p_title: title,
     p_notes: notes,
     p_updated_at: updated_at,
-    p_folder_id: folderId ?? null,
+    p_folder_id: folderId ?? undefined,
   });
 
   if (error) {

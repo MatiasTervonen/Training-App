@@ -13,6 +13,7 @@ export async function clearAsyncStorage() {
     "timer_session_draft",
     "weight_draft",
     "todo_session_draft",
+    "feedback_draft",
   ];
 
   await AsyncStorage.multiRemove(keysToRemove);

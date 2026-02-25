@@ -12,6 +12,7 @@ export function clearLocalStorage() {
     "weight_draft",
     "todo_session_draft",
     "template_draft",
+    "feedback_draft",
   ];
 
   keysToRemove.forEach((key) => localStorage.removeItem(key));

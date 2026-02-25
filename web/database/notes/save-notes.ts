@@ -13,7 +13,7 @@ export async function saveNote({ title, notes, folderId }: props) {
   const { error } = await supabase.rpc("notes_save_note", {
     p_title: title,
     p_notes: notes,
-    p_folder_id: folderId ?? null,
+    p_folder_id: folderId ?? undefined,
   });
 
   if (error) {

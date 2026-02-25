@@ -11,6 +11,7 @@ type Coordinate = [number, number];
 // Gap detection thresholds
 const TIME_GAP_MS = 60_000; // 60 seconds - likely battery death or app restart
 const DISTANCE_GAP_METERS = 500; // 500m jump - safe for fast driving, catches battery death
+const STANDING_STILL_METERS = 100; // If distance < this during a time gap, user was just standing still
 
 /**
  * Apply one iteration of Chaikin's corner-cutting algorithm.
@@ -79,10 +80,15 @@ function downsample(coords: Coordinate[], maxPoints: number): Coordinate[] {
 /**
  * Split TrackPoints into segments based on time gaps.
  * Used for live tracking where we have timestamps.
+ *
+ * A new segment is only created when there's BOTH a time gap AND a distance gap.
+ * This prevents false gaps when the user is standing still and the OS throttles
+ * background tasks (causing time gaps >60s without actually moving).
  */
 export function splitTrackByTimeGaps(
   track: TrackPoint[],
   gapThresholdMs: number = TIME_GAP_MS,
+  standingStillMeters: number = STANDING_STILL_METERS,
 ): TrackPoint[][] {
   if (track.length === 0) return [];
 
@@ -93,11 +99,24 @@ export function splitTrackByTimeGaps(
     const timeDiff = track[i].timestamp - track[i - 1].timestamp;
 
     if (timeDiff > gapThresholdMs) {
-      // Time gap detected - start new segment
-      if (currentSegment.length > 0) {
-        segments.push(currentSegment);
+      // Time gap detected - check if user actually moved
+      const distance = haversine(
+        track[i - 1].latitude,
+        track[i - 1].longitude,
+        track[i].latitude,
+        track[i].longitude,
+      );
+
+      if (distance > standingStillMeters) {
+        // Large time gap AND large distance - likely battery death / app restart
+        if (currentSegment.length > 0) {
+          segments.push(currentSegment);
+        }
+        currentSegment = [track[i]];
+      } else {
+        // Large time gap but nearby - user was just standing still
+        currentSegment.push(track[i]);
       }
-      currentSegment = [track[i]];
     } else {
       currentSegment.push(track[i]);
     }

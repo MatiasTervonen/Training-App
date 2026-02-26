@@ -50,6 +50,7 @@ class TimerService : Service() {
             .setUsesChronometer(true)
             .setWhen(whenTime)
             .setContentIntent(pendingIntent)
+            .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
 
             if(mode == "countdown") {
               builder.setChronometerCountDown(true)

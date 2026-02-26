@@ -150,6 +150,35 @@ object ReactEventEmitter {
         return true
     }
 
+    fun sendRestTimerSkipped(context: Context): Boolean {
+        val reactApplication = context.applicationContext as? ReactApplication
+            ?: return false
+
+        var reactContext: ReactContext? = try {
+            reactApplication.reactHost?.currentReactContext
+        } catch (e: Exception) {
+            null
+        }
+
+        if (reactContext == null) {
+            reactContext = try {
+                reactApplication.reactNativeHost
+                    ?.reactInstanceManager
+                    ?.currentReactContext
+            } catch (e: Exception) {
+                null
+            }
+        }
+
+        if (reactContext == null) return false
+
+        reactContext
+            .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
+            .emit("REST_TIMER_SKIPPED", null)
+
+        return true
+    }
+
     fun sendAlarmPlaying(
         context: Context,
         reminderId: String,

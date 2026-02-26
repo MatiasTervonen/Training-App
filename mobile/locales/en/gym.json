@@ -236,6 +236,18 @@
       "range1y": "1Y",
       "noChartData": "Not enough data for chart"
     },
+    "restTimer": {
+      "label": "Rest",
+      "skip": "Skip",
+      "finished": "Rest time is up!",
+      "ongoingBody": "Rest timer is running"
+    },
+    "settings": {
+      "title": "Settings",
+      "restTimerEnabled": "Enable rest timer",
+      "restTimerDuration": "Rest duration (seconds)",
+      "restTimerDescription": "Automatically start a rest timer when you log a set"
+    },
     "analytics": {
       "title": "Last 30 Days Analytics",
       "totalWorkouts": "Total workouts",

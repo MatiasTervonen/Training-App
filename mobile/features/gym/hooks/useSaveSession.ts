@@ -6,6 +6,7 @@ import { saveSession } from "@/database/gym/save-session";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import { useTimerStore } from "@/lib/stores/timerStore";
+import { useRestTimerStore } from "@/lib/stores/restTimerStore";
 import { useTranslation } from "react-i18next";
 
 export default function useSaveSession({
@@ -114,6 +115,7 @@ export default function useSaveSession({
         router.push("/gym/training-finished");
       }
 
+      useRestTimerStore.getState().clearRestTimer();
       resetSession();
     } catch {
       Toast.show({

@@ -85,7 +85,7 @@ export default function SelectInput({
                   }}
                   className={`flex-row items-center border p-2 my-2 rounded-xl mx-6 px-4 ${option.value === value ? "bg-blue-900/40 border-blue-500" : "bg-slate-800 border-slate-700"}`}
                 >
-                  <AppText className="text-xl">{option.label}</AppText>
+                  <AppText className="text-xl flex-1">{option.label}</AppText>
                   {option.value === value && (
                     <View className="ml-auto">
                       <View className="w-6 h-6 rounded-full bg-blue-500 items-center justify-center">

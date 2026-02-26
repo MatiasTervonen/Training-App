@@ -28,6 +28,9 @@
 - Title fields: `AppInput`
 - Always check `app/components` for existing components before creating new ones.
 
+## Keyboard
+- On pages with text inputs, always wrap content with `<Pressable onPress={Keyboard.dismiss}>` so the keyboard dismisses when tapping outside.
+
 ## Imports
 - Always use absolute paths when importing — never use relative paths.
 

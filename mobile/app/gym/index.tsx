@@ -3,7 +3,7 @@ import AppText from "@/components/AppText";
 import LinkButton from "@/components/buttons/LinkButton";
 import { useTimerStore } from "@/lib/stores/timerStore";
 import Toast from "react-native-toast-message";
-import { List, ChartNoAxesCombined } from "lucide-react-native";
+import { List, ChartNoAxesCombined, Settings } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 
 export default function SessionsScreen() {
@@ -49,6 +49,11 @@ export default function SessionsScreen() {
       </LinkButton>
       <LinkButton label={t("gym.mySessions.title")} href="/gym/my-sessions">
         <List color="#f3f4f6" className="ml-2" />
+      </LinkButton>
+
+      <View className="border border-gray-400 rounded-md" />
+      <LinkButton label={t("gym.settings.title")} href="/gym/settings">
+        <Settings color="#f3f4f6" className="ml-2" />
       </LinkButton>
     </View>
   );

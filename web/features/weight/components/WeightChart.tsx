@@ -48,16 +48,17 @@ function addOffsetToDate(
   return [start, end];
 }
 
-function getLatestDate(data: weight[]) {
-  return new Date(
-    Math.max(...data.map((entry) => new Date(entry.created_at).getTime()))
-  );
-}
-
 function getOldestDate(data: weight[]) {
   return new Date(
     Math.min(...data.map((entry) => new Date(entry.created_at).getTime()))
   );
+}
+
+function toLocalDateString(date: Date): string {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
 }
 
 function formatDatelabel(
@@ -65,7 +66,8 @@ function formatDatelabel(
   range: "week" | "month" | "year",
   locale: string
 ): string {
-  const date = new Date(dateString);
+  const [year, month, day] = dateString.split("-").map(Number);
+  const date = new Date(year, month - 1, day);
   switch (range) {
     case "week":
       return new Intl.DateTimeFormat(locale, {
@@ -86,31 +88,10 @@ function generateDateRange(start: Date, end: Date): string[] {
   const dateList: string[] = [];
   const currentDate = new Date(start);
   while (currentDate <= end) {
-    dateList.push(currentDate.toISOString().split("T")[0]);
+    dateList.push(toLocalDateString(currentDate));
     currentDate.setDate(currentDate.getDate() + 1);
   }
   return dateList;
-}
-
-function fillMissingDatesWithCarry(
-  fullDates: string[],
-  entries: weight[]
-): { date: string; weight: number | null }[] {
-  const weightMap = new Map(
-    entries.map((entry) => [entry.created_at.split("T")[0], entry.weight])
-  );
-
-  let lastKnownWeight: number | null = null;
-
-  return fullDates.map((date) => {
-    if (weightMap.has(date)) {
-      lastKnownWeight = weightMap.get(date)!;
-    }
-    return {
-      date,
-      weight: lastKnownWeight,
-    };
-  });
 }
 
 function generateXTicks(range: string, dateList: string[]): string[] {
@@ -147,10 +128,10 @@ export default function WeightChart({ range, data }: WeightChartProps) {
     setOffset(0);
   }
 
-  const latestDate = getLatestDate(data);
+  const today = new Date();
   const oldestDate = getOldestDate(data);
 
-  const [calculatedStart, end] = addOffsetToDate(latestDate, range, offset);
+  const [calculatedStart, end] = addOffsetToDate(today, range, offset);
 
   // For year range, clamp start to oldest record if not enough data
   const start =
@@ -159,7 +140,7 @@ export default function WeightChart({ range, data }: WeightChartProps) {
       : calculatedStart;
 
   // Check if we can go back further (for disabling back button)
-  const [nextStart] = addOffsetToDate(latestDate, range, offset + 1);
+  const [nextStart] = addOffsetToDate(today, range, offset + 1);
   const canGoBack = nextStart >= oldestDate;
 
   const weightUnit = useUserStore(
@@ -171,33 +152,37 @@ export default function WeightChart({ range, data }: WeightChartProps) {
     return entryDate >= start && entryDate <= end;
   });
 
-  const firstEntry = filteredData.find((entry) => entry.weight !== null);
-  const lastEntry = [...filteredData]
-    .reverse()
-    .find((entry) => entry.weight !== null);
-
-  let weightDifference: string | number = "N/A";
-
-  if (firstEntry && lastEntry) {
-    const diff = lastEntry.weight - firstEntry.weight;
-    const rounded = Math.round(diff * 10) / 10;
-
-    weightDifference =
-      rounded > 0
-        ? `+ ${rounded}`
-        : rounded < 0
-          ? `- ${Math.abs(rounded)}`
-          : `${rounded}`;
-  }
-
   const fullDateRange = generateDateRange(start, end);
-  const chartData = fillMissingDatesWithCarry(fullDateRange, filteredData)
-    .filter((item) => item.weight !== null)
-    .map((item) => ({
-      date: item.date,
-      weight: item.weight,
-      label: formatDatelabel(item.date, range, locale),
-    }));
+
+  const chartData = (() => {
+    const weightMap = new Map(
+      filteredData.map((entry) => [entry.created_at.split("T")[0], entry.weight])
+    );
+
+    // Find the most recent measurement before the range to carry forward
+    const rangeStart = fullDateRange[0];
+    let priorWeight: number | null = null;
+    let priorDate = "";
+    for (const entry of data) {
+      const entryDate = entry.created_at.split("T")[0];
+      if (entryDate < rangeStart && entry.weight !== null && entryDate > priorDate) {
+        priorWeight = entry.weight;
+        priorDate = entryDate;
+      }
+    }
+
+    let carry: number | null = priorWeight;
+    return fullDateRange.map((date) => {
+      if (weightMap.has(date)) {
+        carry = weightMap.get(date)!;
+      }
+      return {
+        date,
+        weight: carry,
+        label: formatDatelabel(date, range, locale),
+      };
+    });
+  })();
 
   function formatDateRange(start: Date | null, end: Date | null) {
     if (!start || !end) return t("weight.analyticsScreen.noData");
@@ -215,6 +200,21 @@ export default function WeightChart({ range, data }: WeightChartProps) {
   }
 
   const xTicks = generateXTicks(range, fullDateRange);
+
+  const firstValue = chartData[0]?.weight;
+  const lastValue = chartData[chartData.length - 1]?.weight;
+
+  let weightDifference: string | number = "N/A";
+  if (firstValue != null && lastValue != null) {
+    const diff = lastValue - firstValue;
+    const rounded = Math.round(diff * 10) / 10;
+    weightDifference =
+      rounded > 0
+        ? `+ ${rounded}`
+        : rounded < 0
+          ? `- ${Math.abs(rounded)}`
+          : `${rounded}`;
+  }
 
   const weights = chartData
     .map((d) => d.weight)

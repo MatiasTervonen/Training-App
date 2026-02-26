@@ -17,14 +17,16 @@ type WeightFeedChartProps = {
   data: weight[];
 };
 
-function getLatestDate(data: weight[]) {
-  return new Date(
-    Math.max(...data.map((entry) => new Date(entry.created_at).getTime()))
-  );
+function toLocalDateString(date: Date): string {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
 }
 
 function formatDatelabel(dateString: string, locale: string): string {
-  const date = new Date(dateString);
+  const [year, month, day] = dateString.split("-").map(Number);
+  const date = new Date(year, month - 1, day);
   return new Intl.DateTimeFormat(locale, {
     weekday: "short",
   }).format(date);
@@ -34,29 +36,42 @@ function generateDateRange(start: Date, end: Date): string[] {
   const dateList: string[] = [];
   const currentDate = new Date(start);
   while (currentDate <= end) {
-    dateList.push(currentDate.toISOString().split("T")[0]);
+    dateList.push(toLocalDateString(currentDate));
     currentDate.setDate(currentDate.getDate() + 1);
   }
   return dateList;
 }
 
-function fillMissingDatesWithCarry(
-  fullDates: string[],
-  entries: weight[]
-): { date: string; weight: number | null }[] {
+function buildChartData(
+  fullDateRange: string[],
+  filteredData: weight[],
+  allData: weight[],
+  locale: string
+) {
   const weightMap = new Map(
-    entries.map((entry) => [entry.created_at.split("T")[0], entry.weight])
+    filteredData.map((entry) => [entry.created_at.split("T")[0], entry.weight])
   );
 
-  let lastKnownWeight: number | null = null;
+  const rangeStart = fullDateRange[0];
+  let priorWeight: number | null = null;
+  let priorDate = "";
+  for (const entry of allData) {
+    const entryDate = entry.created_at.split("T")[0];
+    if (entryDate < rangeStart && entry.weight !== null && entryDate > priorDate) {
+      priorWeight = entry.weight;
+      priorDate = entryDate;
+    }
+  }
 
-  return fullDates.map((date) => {
+  let carry: number | null = priorWeight;
+  return fullDateRange.map((date) => {
     if (weightMap.has(date)) {
-      lastKnownWeight = weightMap.get(date)!;
+      carry = weightMap.get(date)!;
     }
     return {
       date,
-      weight: lastKnownWeight,
+      weight: carry,
+      label: formatDatelabel(date, locale),
     };
   });
 }
@@ -69,27 +84,27 @@ export default function WeightFeedChart({ data }: WeightFeedChartProps) {
     (state) => state.preferences?.weight_unit || "kg"
   );
 
-  // Calculate last 7 days
-  const end = getLatestDate(data);
-  const start = new Date(end);
-  start.setDate(end.getDate() - 6);
+  // Calculate last 7 days from today
+  const end = new Date();
+  const start = new Date();
+  start.setDate(start.getDate() - 6);
 
   const filteredData = data.filter((entry) => {
     const entryDate = new Date(entry.created_at);
     return entryDate >= start && entryDate <= end;
   });
 
-  const firstEntry = filteredData.find((entry) => entry.weight !== null);
-  const lastEntry = [...filteredData]
-    .reverse()
-    .find((entry) => entry.weight !== null);
+  const fullDateRange = generateDateRange(start, end);
+
+  const chartData = buildChartData(fullDateRange, filteredData, data, locale);
+
+  const firstValue = chartData[0]?.weight;
+  const lastValue = chartData[chartData.length - 1]?.weight;
 
   let weightDifference: string | number = "N/A";
-
-  if (firstEntry && lastEntry) {
-    const diff = lastEntry.weight - firstEntry.weight;
+  if (firstValue != null && lastValue != null) {
+    const diff = lastValue - firstValue;
     const rounded = Math.round(diff * 10) / 10;
-
     weightDifference =
       rounded > 0
         ? `+ ${rounded}`
@@ -97,15 +112,6 @@ export default function WeightFeedChart({ data }: WeightFeedChartProps) {
           ? `- ${Math.abs(rounded)}`
           : `${rounded}`;
   }
-
-  const fullDateRange = generateDateRange(start, end);
-  const chartData = fillMissingDatesWithCarry(fullDateRange, filteredData)
-    .filter((item) => item.weight !== null)
-    .map((item) => ({
-      date: item.date,
-      weight: item.weight,
-      label: formatDatelabel(item.date, locale),
-    }));
 
   const weights = chartData
     .map((d) => d.weight)

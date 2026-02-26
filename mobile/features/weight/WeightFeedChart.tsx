@@ -13,14 +13,16 @@ type WeightFeedChartProps = {
   data: weight[];
 };
 
-function getLatestDate(data: weight[]) {
-  return new Date(
-    Math.max(...data.map((entry) => new Date(entry.created_at).getTime())),
-  );
+function toLocalDateString(date: Date): string {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
 }
 
 function formatDatelabel(dateString: string, locale: string): string {
-  const date = new Date(dateString);
+  const [year, month, day] = dateString.split("-").map(Number);
+  const date = new Date(year, month - 1, day);
   return new Intl.DateTimeFormat(locale, {
     weekday: "short",
   }).format(date);
@@ -30,7 +32,7 @@ function generateDateRange(start: Date, end: Date): string[] {
   const dateList: string[] = [];
   const currentDate = new Date(start);
   while (currentDate <= end) {
-    dateList.push(currentDate.toISOString().split("T")[0]);
+    dateList.push(toLocalDateString(currentDate));
     currentDate.setDate(currentDate.getDate() + 1);
   }
   return dateList;
@@ -48,66 +50,67 @@ export default function WeightFeedChart({ data }: WeightFeedChartProps) {
     (state) => state.profile?.weight_unit || "kg",
   );
 
-  // Calculate last 7 days
-  const end = getLatestDate(data);
-  const start = new Date(end);
-  start.setDate(end.getDate() - 6);
+  // Calculate last 7 days from today
+  const end = useMemo(() => new Date(), []);
+  const start = useMemo(() => {
+    const s = new Date();
+    s.setDate(s.getDate() - 6);
+    return s;
+  }, []);
 
   const filteredData = data.filter((entry) => {
     const entryDate = new Date(entry.created_at);
     return entryDate >= start && entryDate <= end;
   });
 
-  const firstEntry = filteredData.find((entry) => entry.weight !== null);
-  const lastEntry = filteredData.findLast((entry) => entry.weight !== null);
+  const fullDateRange = generateDateRange(start, end);
+
+  const chartData = useMemo(() => {
+    const weightMap = new Map(
+      filteredData.map((entry) => [entry.created_at.split("T")[0], entry.weight]),
+    );
+
+    const rangeStart = fullDateRange[0];
+    let priorWeight: number | null = null;
+    let priorDate = "";
+    for (const entry of data) {
+      const entryDate = entry.created_at.split("T")[0];
+      if (entryDate < rangeStart && entry.weight !== null && entryDate > priorDate) {
+        priorWeight = entry.weight;
+        priorDate = entryDate;
+      }
+    }
+
+    let carry: number | null = priorWeight;
+    return fullDateRange.map((date) => {
+      if (weightMap.has(date)) {
+        carry = weightMap.get(date)!;
+      }
+      return {
+        value: carry,
+        label: formatDatelabel(date, locale),
+      };
+    });
+  }, [fullDateRange, filteredData, data, locale]);
+
+  const firstValue = chartData[0]?.value;
+  const lastValue = chartData[chartData.length - 1]?.value;
 
   let weightDifference: string | number = "N/A";
-
-  if (firstEntry && lastEntry) {
-    const diff = lastEntry.weight - firstEntry.weight;
+  if (firstValue != null && lastValue != null) {
+    const diff = lastValue - firstValue;
     const rounded = Math.round(diff * 10) / 10;
-
     weightDifference =
       rounded > 0
-        ? `- ${rounded}`
+        ? `+ ${rounded}`
         : rounded < 0
-          ? `+ ${Math.abs(rounded)}`
+          ? `- ${Math.abs(rounded)}`
           : `${rounded}`;
   }
 
-  const fullDateRange = generateDateRange(start, end);
-
-  function fillMissingDatesWithCarry(
-    fullDates: string[],
-    entries: weight[],
-  ): { date: string; weight: number | null }[] {
-    const weightMap = new Map(
-      entries.map((entry) => [entry.created_at.split("T")[0], entry.weight]),
-    );
-
-    let lastKnownWeight: number | null = null;
-
-    return fullDates.map((date) => {
-      if (weightMap.has(date)) {
-        lastKnownWeight = weightMap.get(date)!;
-      }
-      return {
-        date,
-        weight: lastKnownWeight,
-      };
-    });
-  }
-
-  const chartData = fillMissingDatesWithCarry(fullDateRange, filteredData)
-    .filter((item) => item.weight !== null)
-    .map((item) => ({
-      value: item.weight!,
-      label: formatDatelabel(item.date, locale),
-    }));
-
-  const values = chartData.map((item) => item.value);
-  const minWeight = Math.min(...values);
-  const maxWeight = Math.max(...values);
+  const values = chartData.map((item) => item.value).filter((v): v is number => v !== null);
+  const minWeight = values.length > 0 ? Math.min(...values) : 0;
+  const maxWeight = values.length > 0 ? Math.max(...values) : 100;
 
   const option = useMemo(
     () => ({

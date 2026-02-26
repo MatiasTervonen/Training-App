@@ -38,13 +38,16 @@ export async function widgetTaskHandler(props: WidgetTaskHandlerProps) {
     }
     case 'WIDGET_UPDATE':
     case 'WIDGET_RESIZED': {
+      // Always read global config (the settings UI writes there) and sync to per-instance
       if (widgetName === 'QuickLinks') {
-        const config = await getQuickLinksConfig(widgetInfo.widgetId);
+        const config = await getGlobalQuickLinksConfig();
+        await saveQuickLinksConfig(widgetInfo.widgetId, config);
         props.renderWidget(
           <QuickLinksWidget config={config} widgetInfo={widgetInfo} />,
         );
       } else if (widgetName === 'Steps') {
-        const config = await getStepsConfig(widgetInfo.widgetId);
+        const config = await getGlobalStepsConfig();
+        await saveStepsConfig(widgetInfo.widgetId, config);
         const steps = await getTodaySteps();
         props.renderWidget(
           <StepsWidget config={config} steps={steps} />,

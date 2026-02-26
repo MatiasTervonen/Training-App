@@ -226,7 +226,17 @@ export default function ExerciseCard({
                   </View>
                   <View className="flex-1 items-center">
                     <AppText className="p-2 text-lg">
-                      {set.rpe ? ({"Warm-up": "1", Easy: "2", Medium: "3", Hard: "4", Failure: "5"} as Record<string, string>)[set.rpe] || set.rpe : ""}
+                      {set.rpe
+                        ? (
+                            {
+                              "Warm-up": "1",
+                              Easy: "2",
+                              Medium: "3",
+                              Hard: "4",
+                              Failure: "5",
+                            } as Record<string, string>
+                          )[set.rpe] || set.rpe
+                        : ""}
                     </AppText>
                   </View>
                 </>
@@ -309,7 +319,19 @@ export default function ExerciseCard({
                     disabled={disabled}
                     label={`${index + 1}. ${exercise.name}`}
                     value={input.rpe}
-                    selectedDisplay={input.rpe ? ({"Warm-up": "1", Easy: "2", Medium: "3", Hard: "4", Failure: "5"} as Record<string, string>)[input.rpe] : undefined}
+                    selectedDisplay={
+                      input.rpe
+                        ? (
+                            {
+                              "Warm-up": "1",
+                              Easy: "2",
+                              Medium: "3",
+                              Hard: "4",
+                              Failure: "5",
+                            } as Record<string, string>
+                          )[input.rpe]
+                        : undefined
+                    }
                     onChange={(val) => onInputChange(index, "rpe", val)}
                     options={[
                       {
@@ -338,40 +360,39 @@ export default function ExerciseCard({
               </View>
             )}
           </View>
-          <View className="mx-auto mt-2">
-            <AnimatedButton
-              onPress={() => {
-                if (isCardioExercise(exercise)) {
-                  const isTimeEmpty =
-                    !input.time_min || input.time_min.trim() === "";
 
-                  if (isTimeEmpty) {
-                    Toast.show({
-                      type: "error",
-                      text1: t("gym.exerciseCard.missingData"),
-                      text2: t("gym.exerciseCard.fillTime"),
-                    });
-                    return;
-                  }
-                } else {
-                  const isRepsEmpty = !input.reps || input.reps.trim() === "";
+          <AnimatedButton
+            onPress={() => {
+              if (isCardioExercise(exercise)) {
+                const isTimeEmpty =
+                  !input.time_min || input.time_min.trim() === "";
 
-                  if (isRepsEmpty) {
-                    Toast.show({
-                      type: "error",
-                      text1: t("gym.exerciseCard.missingData"),
-                      text2: t("gym.exerciseCard.fillReps"),
-                    });
-                    return;
-                  }
+                if (isTimeEmpty) {
+                  Toast.show({
+                    type: "error",
+                    text1: t("gym.exerciseCard.missingData"),
+                    text2: t("gym.exerciseCard.fillTime"),
+                  });
+                  return;
                 }
+              } else {
+                const isRepsEmpty = !input.reps || input.reps.trim() === "";
 
-                onAddSet(index);
-              }}
-              label={t("gym.exerciseCard.addSet")}
-              className="btn-base px-10 my-4"
-            />
-          </View>
+                if (isRepsEmpty) {
+                  Toast.show({
+                    type: "error",
+                    text1: t("gym.exerciseCard.missingData"),
+                    text2: t("gym.exerciseCard.fillReps"),
+                  });
+                  return;
+                }
+              }
+
+              onAddSet(index);
+            }}
+            label={t("gym.exerciseCard.addSet")}
+            className="btn-base my-4 w-1/2 self-center"
+          />
         </>
       )}
     </View>

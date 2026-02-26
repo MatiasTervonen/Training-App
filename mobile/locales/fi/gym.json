@@ -6,7 +6,7 @@
     "templates": "Pohjat",
     "addExercise": "Lisää liike",
     "editExercise": "Muokkaa liikettä",
-    "workoutAnalytics": "Treenin analytiikka",
+    "workoutAnalytics": "Analytiikka",
     "mySessions": {
       "title": "Omat sessiot",
       "loadError": "Kuntosalisessioiden lataus epäonnistui. Yritä myöhemmin uudelleen.",
@@ -237,6 +237,18 @@
       "range6m": "6K",
       "range1y": "1V",
       "noChartData": "Ei tarpeeksi dataa kaaviolle"
+    },
+    "restTimer": {
+      "label": "Lepo",
+      "skip": "Ohita",
+      "finished": "Lepoaika päättyi!",
+      "ongoingBody": "Lepoajastin käynnissä"
+    },
+    "settings": {
+      "title": "Asetukset",
+      "restTimerEnabled": "Lepoajastin käytössä",
+      "restTimerDuration": "Lepoaika (sekuntia)",
+      "restTimerDescription": "Käynnistä lepoajastin automaattisesti kun kirjaat sarjan"
     },
     "analytics": {
       "title": "Viimeisten 30 päivän analytiikka",

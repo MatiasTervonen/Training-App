@@ -90,6 +90,16 @@
         android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
         android:value="timer"/>
     </service>
+    <!-- Rest Timer service -->
+    <receiver android:name=".resttimer.StopRestTimerReceiver" android:exported="false"/>
+    <service
+      android:name=".resttimer.RestTimerService"
+      android:exported="false"
+      android:foregroundServiceType="specialUse">
+      <property
+        android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+        android:value="rest_timer"/>
+    </service>
     <!-- Activity Recognition receiver for step filtering -->
     <receiver
       android:name=".step.ActivityRecognitionReceiver"

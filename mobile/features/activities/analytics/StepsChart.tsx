@@ -50,7 +50,9 @@ function formatDateLabel(
   range: "week" | "month" | "3months",
   locale: string
 ): string {
-  const date = new Date(dateString);
+  // Parse as local date to avoid UTC timezone shift (e.g. "2026-02-26" showing as Wednesday instead of Thursday)
+  const [year, month, day] = dateString.split("-").map(Number);
+  const date = new Date(year, month - 1, day);
   switch (range) {
     case "week":
       return new Intl.DateTimeFormat(locale, { weekday: "short" }).format(date);
@@ -61,11 +63,18 @@ function formatDateLabel(
   }
 }
 
+function toLocalDateString(date: Date): string {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}
+
 function generateDateRange(start: Date, end: Date): string[] {
   const dateList: string[] = [];
   const currentDate = new Date(start);
   while (currentDate <= end) {
-    dateList.push(currentDate.toISOString().split("T")[0]);
+    dateList.push(toLocalDateString(currentDate));
     currentDate.setDate(currentDate.getDate() + 1);
   }
   return dateList;
@@ -90,7 +99,7 @@ export default function StepsChart({
   const [size, setSize] = useState({ width: 0, height: 0 });
   const skiaRef = useRef<any>(null);
 
-  const todayStr = useMemo(() => new Date().toISOString().split("T")[0], []);
+  const todayStr = useMemo(() => toLocalDateString(new Date()), []);
   const today = useMemo(() => new Date(), []);
   const [start, end] = addOffsetToDate(today, range, offset);
 

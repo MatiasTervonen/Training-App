@@ -1,4 +1,6 @@
 import { ExerciseEntry, ExerciseInput } from "@/types/session";
+import { useGymSettingsStore } from "@/lib/stores/gymSettingsStore";
+import { useRestTimerStore } from "@/lib/stores/restTimerStore";
 
 export default function useLogSetForExercise({
   exercises,
@@ -49,6 +51,13 @@ export default function useLogSetForExercise({
     }
 
     setExercises(updated);
+
+    // Start rest timer if enabled
+    const { restTimerEnabled, restTimerDurationSeconds } =
+      useGymSettingsStore.getState();
+    if (restTimerEnabled) {
+      useRestTimerStore.getState().startRestTimer(restTimerDurationSeconds);
+    }
   };
 
   return {

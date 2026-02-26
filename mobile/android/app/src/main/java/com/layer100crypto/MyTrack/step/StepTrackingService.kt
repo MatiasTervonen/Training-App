@@ -1,5 +1,6 @@
 package com.layer100crypto.MyTrack.step
 
+import android.Manifest
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -9,14 +10,17 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.pm.PackageManager
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import android.os.Build
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import android.util.Log
+import androidx.core.content.ContextCompat
 import com.google.android.gms.location.ActivityRecognition
 import com.google.android.gms.location.ActivityRecognitionClient
 import com.google.android.gms.location.DetectedActivity
@@ -51,6 +55,8 @@ class StepTrackingService : Service(), SensorEventListener {
     private var screenUnlockReceiver: BroadcastReceiver? = null
     private var activityRecognitionClient: ActivityRecognitionClient? = null
     private var activityRecognitionPendingIntent: PendingIntent? = null
+    private var isSetUp = false
+    private var isActivityRecognitionActive = false
     private val notificationHandler = Handler(Looper.getMainLooper())
     private val notificationUpdateRunnable = object : Runnable {
         override fun run() {
@@ -70,12 +76,17 @@ class StepTrackingService : Service(), SensorEventListener {
 
         createNotificationChannel()
         startForeground(NOTIFICATION_ID, buildNotification())
-        registerSensorListener()
-        registerScreenUnlockReceiver()
-        startActivityRecognition()
 
-        // Start periodic notification updates
-        notificationHandler.postDelayed(notificationUpdateRunnable, NOTIFICATION_UPDATE_INTERVAL_MS)
+        if (!isSetUp) {
+            registerSensorListener()
+            registerScreenUnlockReceiver()
+            notificationHandler.postDelayed(notificationUpdateRunnable, NOTIFICATION_UPDATE_INTERVAL_MS)
+            isSetUp = true
+        }
+
+        if (!isActivityRecognitionActive) {
+            startActivityRecognition()
+        }
 
         return START_STICKY
     }
@@ -89,6 +100,8 @@ class StepTrackingService : Service(), SensorEventListener {
         screenUnlockReceiver?.let { unregisterReceiver(it) }
         screenUnlockReceiver = null
         helper = null
+        isSetUp = false
+        isActivityRecognitionActive = false
         super.onDestroy()
     }
 
@@ -136,6 +149,13 @@ class StepTrackingService : Service(), SensorEventListener {
 
     @android.annotation.SuppressLint("MissingPermission")
     private fun startActivityRecognition() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val granted = ContextCompat.checkSelfPermission(
+                this, Manifest.permission.ACTIVITY_RECOGNITION
+            ) == PackageManager.PERMISSION_GRANTED
+            if (!granted) return
+        }
+
         val client = ActivityRecognition.getClient(this)
         val intent = Intent(this, ActivityRecognitionReceiver::class.java)
         val pi = PendingIntent.getBroadcast(
@@ -146,9 +166,11 @@ class StepTrackingService : Service(), SensorEventListener {
         client.requestActivityUpdates(ACTIVITY_DETECTION_INTERVAL_MS, pi)
             .addOnSuccessListener {
                 Log.d(TAG, "Activity Recognition started (interval: ${ACTIVITY_DETECTION_INTERVAL_MS}ms)")
+                isActivityRecognitionActive = true
             }
             .addOnFailureListener { e ->
                 Log.e(TAG, "Failed to start Activity Recognition: ${e.message}")
+                isActivityRecognitionActive = false
             }
 
         activityRecognitionClient = client
@@ -175,15 +197,14 @@ class StepTrackingService : Service(), SensorEventListener {
             return
         }
 
-        // SENSOR_DELAY_NORMAL with 60-second batching for battery efficiency
         sm.registerListener(
             this,
             stepSensor,
             SensorManager.SENSOR_DELAY_NORMAL,
-            60_000_000 // maxReportLatencyUs = 60 seconds
+            0 // No batching — deliver events immediately
         )
         sensorManager = sm
-        Log.d(TAG, "Sensor listener registered with 60s batching")
+        Log.d(TAG, "Sensor listener registered")
     }
 
     private fun registerScreenUnlockReceiver() {

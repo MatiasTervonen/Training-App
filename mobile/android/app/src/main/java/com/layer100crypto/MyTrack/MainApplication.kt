@@ -24,6 +24,7 @@ import com.layer100crypto.MyTrack.timer.TimerPackage
 import com.layer100crypto.MyTrack.alarm.AlarmPackage
 import com.layer100crypto.MyTrack.step.StepCounterPackage
 import com.layer100crypto.MyTrack.battery.BatteryOptimizationPackage
+import com.layer100crypto.MyTrack.resttimer.RestTimerPackage
 
 class MainApplication : Application(), ReactApplication {
 
@@ -39,6 +40,7 @@ class MainApplication : Application(), ReactApplication {
               add(AlarmPackage())
               add(StepCounterPackage())
               add(BatteryOptimizationPackage())
+              add(RestTimerPackage())
             }
 
           override fun getJSMainModuleName(): String = ".expo/.virtual-metro-entry"

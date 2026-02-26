@@ -33,6 +33,7 @@ import useSaveGymDraft from "@/features/gym/hooks/useSaveGymDraft";
 import useStartExercise from "@/features/gym/hooks/useStartExercise";
 import useLogSetForExercise from "@/features/gym/hooks/useLogSetForExercise";
 import useSaveSession from "@/features/gym/hooks/useSaveSession";
+import RestTimerDisplay from "@/features/gym/components/RestTimerDisplay";
 import { getPrefetchedHistoryPerCard } from "@/database/gym/prefetchedHistoryPerCard";
 import { updateNativeTimerLabel } from "@/native/android/NativeTimer";
 import { useTranslation } from "react-i18next";
@@ -253,7 +254,7 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
       {isEditing ? (
         ""
       ) : (
-        <View className="flex items-center bg-gray-600 p-2 px-4 w-full z-40 ticky top-0">
+        <View className="flex-row items-center gap-10  bg-gray-600 p-2 px-4 w-full z-40 sticky top-0">
           <Timer
             textClassName="text-xl"
             manualSession={{
@@ -262,6 +263,7 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
               type: t("gym.title"),
             }}
           />
+          <RestTimerDisplay />
         </View>
       )}
 

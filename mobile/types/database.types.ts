@@ -1326,6 +1326,7 @@ export type Database = {
           moving_time_seconds: number | null
           session_id: string
           steps: number | null
+          total_volume: number | null
           updated_at: string | null
         }
         Insert: {
@@ -1342,6 +1343,7 @@ export type Database = {
           moving_time_seconds?: number | null
           session_id: string
           steps?: number | null
+          total_volume?: number | null
           updated_at?: string | null
         }
         Update: {
@@ -1358,6 +1360,7 @@ export type Database = {
           moving_time_seconds?: number | null
           session_id?: string
           steps?: number | null
+          total_volume?: number | null
           updated_at?: string | null
         }
         Relationships: [

@@ -1,4 +1,3 @@
-import React from "react";
 import { View } from "react-native";
 import AppText from "@/components/AppText";
 import ChartTabSwitcher from "@/features/gym/analytics/AnalytictsChartTabSwitcher";
@@ -10,7 +9,7 @@ import {
 } from "echarts/components";
 import { HeatmapChart } from "echarts/charts";
 import { SkiaRenderer, SkiaChart } from "@wuba/react-native-echarts";
-import { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { formatDateShort, formatDuration } from "@/lib/formatDate";
 import { Last30DaysAnalytics } from "@/database/gym/analytics/last-30-days-rpc";
 import { useTranslation } from "react-i18next";
@@ -93,6 +92,7 @@ export default function AnalyticsForm({ data, heatmap }: AnalyticsFormProps) {
   const option = useMemo(
     () => ({
       tooltip: {
+        triggerOn: "click",
         confine: true,
         position: "top",
         backgroundColor: "#020617",

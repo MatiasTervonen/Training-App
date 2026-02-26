@@ -10,10 +10,11 @@ import PageContainer from "@/components/PageContainer";
 import { History, Clock } from "lucide-react-native";
 import { getLastExerciseHistory } from "@/database/gym/last-exercise-history";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import ExerciseHistoryModal from "@/features/gym/components/ExerciseHistoryModal";
+import StatCard from "@/components/StatCard";
 
 export default function GymSession(gym_session: FullGymSession) {
   const { t } = useTranslation("gym");
@@ -26,6 +27,33 @@ export default function GymSession(gym_session: FullGymSession) {
 
   const weightUnit =
     useUserStore((state) => state.profile?.weight_unit) || "kg";
+
+  const stats = useMemo(() => {
+    const exercises = gym_session.gym_session_exercises || [];
+    const exerciseCount = exercises.length;
+    const totalSets = exercises.reduce(
+      (sum, ex) => sum + (ex.gym_sets?.length ?? 0),
+      0,
+    );
+    const muscleGroupsHit = new Set(
+      exercises
+        .map((ex) => ex.gym_exercises?.muscle_group)
+        .filter(Boolean),
+    ).size;
+
+    return { exerciseCount, totalSets, muscleGroupsHit };
+  }, [gym_session.gym_session_exercises]);
+
+  const sessionStats = gym_session.session_stats;
+  const totalVolume = sessionStats?.total_volume ?? 0;
+  const calories = sessionStats?.calories ?? 0;
+
+  const formatVolume = (volume: number) => {
+    if (volume >= 1000) {
+      return `${(volume / 1000).toFixed(1)}t ${weightUnit}`;
+    }
+    return `${Math.round(volume)} ${weightUnit}`;
+  };
 
   const isCardioExercise = (exercise: {
     gym_exercises: { main_group: string };
@@ -66,8 +94,8 @@ export default function GymSession(gym_session: FullGymSession) {
           </AppText>
           <LinearGradient
             colors={["#1e3a8a", "#0f172a", "#0f172a"]}
-            start={{ x: 1, y: 0 }} // bottom-left
-            end={{ x: 0, y: 1 }} // top-right
+            start={{ x: 1, y: 0 }}
+            end={{ x: 0, y: 1 }}
             className="items-center p-5 rounded-lg overflow-hidden shadow-md mt-5 gap-4"
           >
             <AppText className="text-2xl text-center">
@@ -80,10 +108,38 @@ export default function GymSession(gym_session: FullGymSession) {
                 {formatTime(gym_session.end_time)}
               </AppText>
             </View>
-            <AppText className="text-lg">
-              {t("gym.session.duration")}:{" "}
-              {formatDuration(gym_session.duration)}
-            </AppText>
+
+            <View className="w-full gap-2">
+              <View className="flex-row gap-2">
+                <StatCard
+                  label={t("gym.session.duration")}
+                  value={formatDuration(gym_session.duration)}
+                />
+                <StatCard
+                  label={t("gym.session.totalVolume")}
+                  value={formatVolume(totalVolume)}
+                />
+                <StatCard
+                  label={t("gym.session.calories")}
+                  value={String(Math.round(calories))}
+                />
+              </View>
+              <View className="flex-row gap-2">
+                <StatCard
+                  label={t("gym.session.exercises")}
+                  value={String(stats.exerciseCount)}
+                />
+                <StatCard
+                  label={t("gym.session.totalSets")}
+                  value={String(stats.totalSets)}
+                />
+                <StatCard
+                  label={t("gym.session.muscleGroups")}
+                  value={String(stats.muscleGroupsHit)}
+                />
+              </View>
+            </View>
+
             {gym_session.notes && (
               <BodyText className="text-gray-200 whitespace-pre-wrap break-words overflow-hidden">
                 {gym_session.notes}

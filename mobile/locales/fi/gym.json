@@ -218,7 +218,12 @@
       "meters": "metriä",
       "weight": "Paino",
       "reps": "Toistot",
-      "rpe": "RPE"
+      "rpe": "RPE",
+      "totalVolume": "Volyymi",
+      "calories": "Kalorit",
+      "exercises": "Liikkeet",
+      "totalSets": "Sarjat",
+      "muscleGroups": "Lihakset"
     },
     "editScreen": {
       "loadingSession": "Ladataan kuntosalisessiota...",

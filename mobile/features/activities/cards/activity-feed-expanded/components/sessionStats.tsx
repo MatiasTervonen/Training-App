@@ -1,5 +1,4 @@
 import { View } from "react-native";
-import AppText from "@/components/AppText";
 import { FullActivitySession } from "@/types/models";
 import {
   formatDurationLong,
@@ -8,37 +7,12 @@ import {
 } from "@/lib/formatDate";
 import { LinearGradient } from "expo-linear-gradient";
 import { useTranslation } from "react-i18next";
+import StatCard from "@/components/StatCard";
 
 type SessionStatsProps = {
   activity_session: FullActivitySession;
   hasRoute: boolean;
 };
-
-type StatCardProps = {
-  label: string;
-  sublabel?: string;
-  value: string;
-};
-
-function StatCard({ label, sublabel, value }: StatCardProps) {
-  return (
-    <View className="flex-1 min-w-[30%] items-center justify-between gap-1 border-blue-500 border py-3 px-2 rounded-lg bg-slate-950/50">
-      <View className="flex-row items-center justify-center gap-1">
-        <AppText
-          className="text-gray-300"
-          numberOfLines={1}
-          ellipsizeMode="tail"
-        >
-          {label}
-        </AppText>
-        {sublabel && (
-          <AppText className="text-gray-500 text-xs">{sublabel}</AppText>
-        )}
-      </View>
-      <AppText className="text-gray-100 text-base text-center">{value}</AppText>
-    </View>
-  );
-}
 
 export default function SessionStats({ activity_session, hasRoute }: SessionStatsProps) {
   const { t } = useTranslation("activities");

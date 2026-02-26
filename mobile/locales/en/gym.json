@@ -216,7 +216,12 @@
       "meters": "meters",
       "weight": "Weight",
       "reps": "Reps",
-      "rpe": "RPE"
+      "rpe": "RPE",
+      "totalVolume": "Volume",
+      "calories": "Calories",
+      "exercises": "Exercises",
+      "totalSets": "Sets",
+      "muscleGroups": "Muscles"
     },
     "editScreen": {
       "loadingSession": "Loading gym session...",

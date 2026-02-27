@@ -6,7 +6,7 @@ import {
   ScrollView,
 } from "react-native";
 import AppText from "@/components/AppText";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSignOut } from "@/lib/handleSignout";
 import { supabase } from "@/lib/supabase";
 import AppInput from "@/components/AppInput";
@@ -29,11 +29,28 @@ export default function SecurityPage() {
   const [errorMessage2, setErrorMessage2] = useState("");
   const [isDeleteAccount, setIsDeleteAccount] = useState("");
 
+  const [isGoogleUser, setIsGoogleUser] = useState(false);
+
   const confirmAction = useConfirmAction();
 
   const { signOut } = useSignOut();
 
   const isGuest = useUserStore((state) => state.profile?.role === "guest");
+
+  useEffect(() => {
+    let isMounted = true;
+
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (isMounted) {
+        const provider = session?.user?.app_metadata?.provider;
+        setIsGoogleUser(provider === "google");
+      }
+    });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const handleSavePassword = async () => {
     if (password !== confirmPassword) {
@@ -146,73 +163,86 @@ export default function SecurityPage() {
           <AppText className="text-2xl mb-10">
             {t("menu:security.title")}
           </AppText>
-          <AppText className="text-xl mb-5 underline">
-            {t("menu:security.resetPassword.title")}
-          </AppText>
-          <AppText className="text-gray-300 mb-5 text-sm">
-            {t("menu:security.resetPassword.description")}
-          </AppText>
-          <View className="w-full mb-5">
-            <AppInput
-              label={t("menu:security.resetPassword.newPassword")}
-              value={password}
-              setValue={(value) => {
-                setPassword(value);
-                setErrorMessage("");
-              }}
-              placeholder={t(
-                "menu:security.resetPassword.newPasswordPlaceholder",
-              )}
-              secureTextEntry
-            />
-          </View>
-          <View className="w-full mb-5">
-            <AppInput
-              label={t("menu:security.resetPassword.confirmPassword")}
-              value={confirmPassword}
-              setValue={(value) => {
-                setConfirmPassword(value);
-                setErrorMessage("");
-              }}
-              placeholder={t(
-                "menu:security.resetPassword.confirmPasswordPlaceholder",
-              )}
-              secureTextEntry
-            />
-          </View>
-          {successMessage ? (
-            <AppText className="text-green-500 mb-5 text-center">
-              {successMessage}
-            </AppText>
-          ) : errorMessage ? (
-            <AppText className="text-red-500 mb-5 text-center">
-              {errorMessage}
-            </AppText>
-          ) : (
-            <AppText className="mb-5 text-center invisible">
-              Placeholder
-            </AppText>
-          )}
-          {isGuest ? (
-            <View className="w-full">
-              <SaveButtonSpinner
-                onPress={handleSavePassword}
-                label={t("menu:security.resetPassword.saveNotAllowed")}
-                disabled={isGuest}
-                loading={loading}
-                className="bg-gray-600 border-gray-400 hover:bg-gray-500"
-              />
+          {isGoogleUser ? (
+            <View className="mb-10">
+              <AppText className="text-xl mb-5 underline text-center">
+                {t("menu:security.resetPassword.title")}
+              </AppText>
+              <AppText className="text-gray-400 text-center">
+                {t("menu:security.googleAccount")}
+              </AppText>
             </View>
           ) : (
-            <View className="w-full">
-              <SaveButtonSpinner
-                onPress={handleSavePassword}
-                label={loading ? t("common.saving") : t("common.save")}
-                disabled={loading}
-                loading={loading}
-                className="btn-base"
-              />
-            </View>
+            <>
+              <AppText className="text-xl mb-5 underline">
+                {t("menu:security.resetPassword.title")}
+              </AppText>
+              <AppText className="text-gray-300 mb-5 text-sm">
+                {t("menu:security.resetPassword.description")}
+              </AppText>
+              <View className="w-full mb-5">
+                <AppInput
+                  label={t("menu:security.resetPassword.newPassword")}
+                  value={password}
+                  setValue={(value) => {
+                    setPassword(value);
+                    setErrorMessage("");
+                  }}
+                  placeholder={t(
+                    "menu:security.resetPassword.newPasswordPlaceholder",
+                  )}
+                  secureTextEntry
+                />
+              </View>
+              <View className="w-full mb-5">
+                <AppInput
+                  label={t("menu:security.resetPassword.confirmPassword")}
+                  value={confirmPassword}
+                  setValue={(value) => {
+                    setConfirmPassword(value);
+                    setErrorMessage("");
+                  }}
+                  placeholder={t(
+                    "menu:security.resetPassword.confirmPasswordPlaceholder",
+                  )}
+                  secureTextEntry
+                />
+              </View>
+              {successMessage ? (
+                <AppText className="text-green-500 mb-5 text-center">
+                  {successMessage}
+                </AppText>
+              ) : errorMessage ? (
+                <AppText className="text-red-500 mb-5 text-center">
+                  {errorMessage}
+                </AppText>
+              ) : (
+                <AppText className="mb-5 text-center invisible">
+                  Placeholder
+                </AppText>
+              )}
+              {isGuest ? (
+                <View className="w-full">
+                  <SaveButtonSpinner
+                    onPress={handleSavePassword}
+                    label={t("menu:security.resetPassword.saveNotAllowed")}
+                    disabled={isGuest}
+                    loading={loading}
+                    className="bg-gray-600 border-gray-400 hover:bg-gray-500"
+                  />
+                </View>
+              ) : (
+                <View className="w-full">
+                  <SaveButtonSpinner
+                    onPress={handleSavePassword}
+                    label={loading ? t("common.saving") : t("common.save")}
+                    disabled={loading}
+                    loading={loading}
+                    className="btn-base"
+                  />
+                </View>
+              )}
+            </>
           )}
 
           <AppText className="mt-10 underline text-xl">

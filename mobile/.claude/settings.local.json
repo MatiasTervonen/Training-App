@@ -4,7 +4,10 @@
       "Bash(find:*)",
       "Bash(head:*)",
       "Bash(xargs ls:*)",
-      "Bash(xargs grep:*)"
+      "Bash(xargs grep:*)",
+      "WebFetch(domain:supabase.com)",
+      "WebFetch(domain:docs.expo.dev)",
+      "WebSearch"
     ]
   },
   "enabledPlugins": {

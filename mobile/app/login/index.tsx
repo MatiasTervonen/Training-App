@@ -31,7 +31,9 @@ import {
   sendPasswordResetEmail,
   resendEmailVerification,
   guestLogIn,
+  signInWithGoogle,
 } from "@/features/login-signup/actions";
+import GoogleIcon from "@/components/icons/GoogleIcon";
 import { Confetti, ConfettiMethods } from "react-native-fast-confetti";
 import { useTranslation } from "react-i18next";
 
@@ -140,7 +142,7 @@ export default function LoginScreen() {
 
               <View
                 style={{ height: screenHeight }}
-                className="justify-center max-w-md mx-auto w-full flex-1"
+                className="justify-center max-w-md mx-auto w-full flex-1 pb-20"
               >
                 <AppInput
                   label={t("login.email")}
@@ -168,7 +170,7 @@ export default function LoginScreen() {
                     keyboardType="default"
                   />
                 </View>
-                <View className="mt-10">
+                <View className="mt-6">
                   <GradientButton
                     label={t("login.logIn")}
                     onPress={() => {
@@ -188,15 +190,34 @@ export default function LoginScreen() {
                     }}
                   />
                 </View>
-                <View className="mt-10 items-center">
+                <View className="flex-row items-center mt-5 mb-3">
+                  <View className="flex-1 h-px bg-gray-600" />
+                  <AppText className="mx-4 text-gray-400">
+                    {t("login.or")}
+                  </AppText>
+                  <View className="flex-1 h-px bg-gray-600" />
+                </View>
+                <AnimatedButton
+                  className="btn-neutral flex-row items-center justify-center gap-3"
+                  onPress={() =>
+                    signInWithGoogle({
+                      setLoadingMessage,
+                      setLoading,
+                    })
+                  }
+                >
+                  <GoogleIcon />
+                  <AppText>{t("login.signInWithGoogle")}</AppText>
+                </AnimatedButton>
+                <View className="mt-4 items-center">
                   <AppText
                     onPress={() => setGuestModalOpen(true)}
-                    className="text-center text-lg mb-4 underline"
+                    className="text-center text-lg mb-2 underline"
                   >
                     {t("login.logInAsGuest")}
                   </AppText>
                 </View>
-                <View className="mt-6 items-center">
+                <View className="mt-3 items-center">
                   <ForgotPasswordText onPress={() => setModalOpen(true)} />
                 </View>
                 {error && (
@@ -210,7 +231,7 @@ export default function LoginScreen() {
 
               <View
                 style={{ height: screenHeight }}
-                className="justify-center max-w-md mx-auto w-full"
+                className="justify-center max-w-md mx-auto w-full pb-20"
               >
                 <AppInput
                   label={t("login.email")}
@@ -252,7 +273,7 @@ export default function LoginScreen() {
                     autoCapitalize={"none"}
                   />
                 </View>
-                <View className="mt-10">
+                <View className="mt-6">
                   <GradientButton
                     label={t("login.signUp")}
                     onPress={() => {
@@ -273,6 +294,26 @@ export default function LoginScreen() {
                     }}
                   />
                 </View>
+
+                <View className="flex-row items-center mt-5 mb-3">
+                  <View className="flex-1 h-px bg-gray-600" />
+                  <AppText className="mx-4 text-gray-400">
+                    {t("login.or")}
+                  </AppText>
+                  <View className="flex-1 h-px bg-gray-600" />
+                </View>
+                <AnimatedButton
+                  className="btn-neutral flex-row items-center justify-center gap-3"
+                  onPress={() =>
+                    signInWithGoogle({
+                      setLoadingMessage,
+                      setLoading,
+                    })
+                  }
+                >
+                  <GoogleIcon />
+                  <AppText>{t("login.signInWithGoogle")}</AppText>
+                </AnimatedButton>
 
                 {success && (
                   <View className="mt-6 items-center">

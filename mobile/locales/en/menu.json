@@ -34,6 +34,7 @@
       "updateSuccess": "Password updated successfully! Logging you out...",
       "saveNotAllowed": "Save (not allowed)"
     },
+    "googleAccount": "You signed in with Google. Password management is handled through your Google account.",
     "deleteAccount": {
       "title": "Delete Account",
       "description": "Type \"DELETE ACCOUNT\" to confirm. All your data will be permanently removed and cannot be recovered.",

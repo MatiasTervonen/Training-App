@@ -37,7 +37,8 @@ export default function LayoutWrapper({
   ) => {
     if (!session) {
       logoutUser();
-      if (pathname !== "/") router.replace("/");
+      if (pathname !== "/" && !pathname.startsWith("/auth"))
+        router.replace("/");
       return;
     }
 
@@ -153,8 +154,7 @@ export default function LayoutWrapper({
 
   const noModalRoutes = ["/", "/login"];
   const isOnboarding = pathname.startsWith("/onboarding");
-  const shouldRenderModal =
-    !noModalRoutes.includes(pathname) && !isOnboarding;
+  const shouldRenderModal = !noModalRoutes.includes(pathname) && !isOnboarding;
 
   if (!shouldRenderModal) {
     return <>{children}</>;

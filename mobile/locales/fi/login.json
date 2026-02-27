@@ -48,6 +48,8 @@
       "title": "Kiitos rekisteröitymisestä!",
       "message": "Sähköposti lähetetty! Tarkista saapuneet (ja roskaposti) vahvistaaksesi tilisi ennen kirjautumista."
     },
+    "or": "tai",
+    "signInWithGoogle": "Kirjaudu Googlella",
     "guest": {
       "title": "Demotili",
       "description": "Kaikki ominaisuudet ovat käytettävissä, mutta tietosi ja tilisi poistetaan uloskirjautumisen jälkeen.",

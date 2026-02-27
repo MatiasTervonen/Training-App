@@ -48,6 +48,8 @@
       "title": "Thank you for signing up!",
       "message": "Email sent! Check your inbox (and spam folder) to verify your account before logging in."
     },
+    "or": "or",
+    "signInWithGoogle": "Sign in with Google",
     "guest": {
       "title": "Demo account",
       "description": "All features are available, but your data and account will be deleted after you log out.",

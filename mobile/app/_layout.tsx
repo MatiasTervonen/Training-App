@@ -1,6 +1,9 @@
+import "@/lib/polyfillCrypto";
+import "react-native-url-polyfill/auto";
 import "./i18n";
 import "@/features/activities/lib/locationTask";
 import "@/lib/nativewindInterop";
+import "./global.css";
 
 import { Slot, usePathname } from "expo-router";
 import { StatusBar, Platform, AppState } from "react-native";
@@ -8,8 +11,6 @@ import type { AppStateStatus } from "react-native";
 import { useFonts } from "expo-font";
 import { useEffect } from "react";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import "./global.css";
-import "react-native-url-polyfill/auto";
 import LayoutWrapper from "@/features/layout/LayoutWrapper";
 import Toast from "react-native-toast-message";
 import { GestureHandlerRootView } from "react-native-gesture-handler";

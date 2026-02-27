@@ -21,20 +21,6 @@ export async function deleteUser(user_id: string) {
     throw new Error("Forbidden");
   }
 
-  const { error: errorUserTable } = await supabase
-    .from("users")
-    .delete()
-    .eq("id", user_id);
-
-  if (errorUserTable) {
-    handleError(errorUserTable, {
-      message: "Error deleting user from users table",
-      route: "server-actions: deleteUser",
-      method: "direct",
-    });
-    throw new Error("Error deleting user");
-  }
-
   const { error } = await adminSupabase.auth.admin.deleteUser(user_id);
 
   if (error) {

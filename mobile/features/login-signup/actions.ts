@@ -1,7 +1,9 @@
 import { Alert } from "react-native";
+import * as Linking from "expo-linking";
 import { supabase } from "@/lib/supabase";
 import { handleError } from "@/utils/handleError";
 import { t } from "i18next";
+import * as WebBrowser from "expo-web-browser";
 
 // LogIn
 
@@ -150,7 +152,10 @@ export async function sendPasswordResetEmail({
     await supabase.auth.resetPasswordForEmail(forgotPasswordEmail);
 
   if (error) {
-    Alert.alert("", error.message || t("login:login.actions.somethingWentWrong"));
+    Alert.alert(
+      "",
+      error.message || t("login:login.actions.somethingWentWrong"),
+    );
   } else {
     Alert.alert("", t("login:login.actions.passwordResetSent"));
   }
@@ -187,14 +192,73 @@ export async function resendEmailVerification({
   });
 
   if (error)
-    Alert.alert(
-      "",
-      error.message || t("login:login.actions.couldNotResend"),
-    );
+    Alert.alert("", error.message || t("login:login.actions.couldNotResend"));
 
   setLoading(false);
   setSuccess(true);
   Alert.alert("", t("login:login.actions.verificationResent"));
+}
+
+// Google Sign-In
+
+type GoogleSignInProps = {
+  setLoadingMessage: (msg: string) => void;
+  setLoading: (loading: boolean) => void;
+};
+
+export async function signInWithGoogle({
+  setLoadingMessage,
+  setLoading,
+}: GoogleSignInProps) {
+  setLoadingMessage(t("login:login.actions.loggingIn"));
+  setLoading(true);
+
+  try {
+    const redirectTo = Linking.createURL("/login");
+
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo,
+        skipBrowserRedirect: true,
+      },
+    });
+
+    if (error || !data.url) {
+      Alert.alert(
+        "",
+        error?.message || t("login:login.actions.somethingWentWrong"),
+      );
+      setLoading(false);
+      return;
+    }
+
+    const result = await WebBrowser.openAuthSessionAsync(data.url, redirectTo);
+
+    if (result.type === "success") {
+      const code = new URL(result.url).searchParams.get("code");
+
+      if (code) {
+        const { error: exchangeError } =
+          await supabase.auth.exchangeCodeForSession(code);
+
+        if (exchangeError) {
+          Alert.alert("", t("login:login.actions.somethingWentWrong"));
+          setLoading(false);
+        }
+        // Don't setLoading(false) on success — keep the loader visible
+        // until onAuthStateChange navigates away from the login page.
+      }
+    }
+  } catch (err) {
+    handleError(err, {
+      message: "Error signing in with Google",
+      route: "google-sign-in",
+      method: "POST",
+    });
+    Alert.alert("", t("login:login.actions.somethingWentWrong"));
+    setLoading(false);
+  }
 }
 
 type GuestSignInProps = {

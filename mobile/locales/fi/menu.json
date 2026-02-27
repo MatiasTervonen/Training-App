@@ -34,6 +34,7 @@
       "updateSuccess": "Salasana päivitetty onnistuneesti! Kirjataan ulos...",
       "saveNotAllowed": "Tallenna (ei sallittu)"
     },
+    "googleAccount": "Kirjauduit sisään Googlella. Salasanaa hallitaan Google-tilisi kautta.",
     "deleteAccount": {
       "title": "Poista tili",
       "description": "Kirjoita \"POISTA TILI\" vahvistaaksesi. Kaikki tietosi poistetaan pysyvästi eikä niitä voi palauttaa.",

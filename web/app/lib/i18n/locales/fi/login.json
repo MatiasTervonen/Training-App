@@ -26,6 +26,8 @@
     "passwordPlaceholder": "Syötä salasana...",
     "confirmPassword": "Vahvista salasana",
     "confirmPasswordPlaceholder": "Vahvista salasana...",
+    "or": "tai",
+    "signInWithGoogle": "Kirjaudu Googlella",
     "logIn": "Kirjaudu sisään",
     "signUp": "Rekisteröidy",
     "logInAsGuest": "Kirjaudu vieraana",

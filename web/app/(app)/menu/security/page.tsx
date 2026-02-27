@@ -1,7 +1,7 @@
 "use client";
 
 import CustomInput from "@/ui/CustomInput";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SaveButtonSpinner from "@/components/buttons/save-button-spinner";
 import { createClient } from "@/utils/supabase/client";
 import { useSignOut } from "@/lib/handleSignOut";
@@ -24,6 +24,15 @@ export default function Page() {
 
   const { t } = useTranslation("menu");
   const isGuest = useUserStore((state) => state.role === "guest");
+  const [isGoogleUser, setIsGoogleUser] = useState(false);
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      const provider = session?.user?.app_metadata?.provider;
+      setIsGoogleUser(provider === "google");
+    });
+  }, []);
 
   const { signOut } = useSignOut();
 
@@ -106,59 +115,70 @@ export default function Page() {
   return (
     <div className="page-padding max-w-md mx-auto">
       <h1 className="flex justify-center mb-10 text-2xl">{t("security.title")}</h1>
-      <h2 className="mb-5 underline">{t("security.resetPassword.title")}</h2>
-      <p className="text-gray-300 mb-5 text-sm">
-        {t("security.resetPassword.description")}
-      </p>
-      <div className="mb-5">
-        <CustomInput
-          type="password"
-          label={t("security.resetPassword.newPassword")}
-          placeholder={t("security.resetPassword.newPasswordPlaceholder")}
-          value={password}
-          setValue={(value) => {
-            setPassword(value);
-            setErrorMessage("");
-          }}
-          disabled={loading}
-          maxLength={128}
-          id="new-password-input"
-        />
-      </div>
-      <CustomInput
-        type="password"
-        label={t("security.resetPassword.confirmPassword")}
-        placeholder={t("security.resetPassword.confirmPasswordPlaceholder")}
-        value={confirmPassword}
-        setValue={(value) => {
-          setConfirmPassword(value);
-          setErrorMessage("");
-        }}
-        disabled={loading}
-        maxLength={128}
-        id="confirm-password-input"
-      />
-      {successMessage ? (
-        <p className="text-green-500 my-5 text-center">{successMessage}</p>
-      ) : errorMessage ? (
-        <p className="text-red-500 my-5 text-center">{errorMessage}</p>
+      {isGoogleUser ? (
+        <div className="mb-10">
+          <h2 className="mb-5 underline">{t("security.resetPassword.title")}</h2>
+          <p className="text-gray-400 ">
+            {t("security.googleAccount")}
+          </p>
+        </div>
       ) : (
-        <p className="mb-5 text-center invisible">Placeholder</p>
-      )}
-      {isGuest ? (
-        <SaveButtonSpinner
-          disabled={isGuest}
-          loading={loading}
-          onClick={handleSavePassword}
-          className="bg-gray-600 border-gray-400 hover:bg-gray-500"
-          label={t("security.resetPassword.saveNotAllowed")}
-        />
-      ) : (
-        <SaveButtonSpinner
-          disabled={loading}
-          loading={loading}
-          onClick={handleSavePassword}
-        />
+        <>
+          <h2 className="mb-5 underline">{t("security.resetPassword.title")}</h2>
+          <p className="text-gray-300 mb-5 text-sm">
+            {t("security.resetPassword.description")}
+          </p>
+          <div className="mb-5">
+            <CustomInput
+              type="password"
+              label={t("security.resetPassword.newPassword")}
+              placeholder={t("security.resetPassword.newPasswordPlaceholder")}
+              value={password}
+              setValue={(value) => {
+                setPassword(value);
+                setErrorMessage("");
+              }}
+              disabled={loading}
+              maxLength={128}
+              id="new-password-input"
+            />
+          </div>
+          <CustomInput
+            type="password"
+            label={t("security.resetPassword.confirmPassword")}
+            placeholder={t("security.resetPassword.confirmPasswordPlaceholder")}
+            value={confirmPassword}
+            setValue={(value) => {
+              setConfirmPassword(value);
+              setErrorMessage("");
+            }}
+            disabled={loading}
+            maxLength={128}
+            id="confirm-password-input"
+          />
+          {successMessage ? (
+            <p className="text-green-500 my-5 text-center">{successMessage}</p>
+          ) : errorMessage ? (
+            <p className="text-red-500 my-5 text-center">{errorMessage}</p>
+          ) : (
+            <p className="mb-5 text-center invisible">Placeholder</p>
+          )}
+          {isGuest ? (
+            <SaveButtonSpinner
+              disabled={isGuest}
+              loading={loading}
+              onClick={handleSavePassword}
+              className="bg-gray-600 border-gray-400 hover:bg-gray-500"
+              label={t("security.resetPassword.saveNotAllowed")}
+            />
+          ) : (
+            <SaveButtonSpinner
+              disabled={loading}
+              loading={loading}
+              onClick={handleSavePassword}
+            />
+          )}
+        </>
       )}
       <h2 className="mt-10 underline">{t("security.deleteAccount.title")}</h2>
       <p className="my-5 text-gray-300">

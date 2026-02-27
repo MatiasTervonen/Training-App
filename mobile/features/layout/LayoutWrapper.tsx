@@ -37,8 +37,7 @@ export default function LayoutWrapper({
   ) => {
     if (!session) {
       logoutUser();
-      if (pathname !== "/" && !pathname.startsWith("/auth"))
-        router.replace("/");
+      if (pathname !== "/") router.replace("/");
       return;
     }
 

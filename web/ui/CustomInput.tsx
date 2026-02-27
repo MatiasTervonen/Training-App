@@ -20,7 +20,7 @@ export default function CustomInput({
       )}
       <input
         id={id}
-        className={`p-2 rounded-md border-2 border-gray-100 z-10 placeholder-gray-500 bg-[linear-gradient(50deg,#0f172a,#1e293b,#333333)] hover:border-blue-500 focus:outline-none focus:border-green-300 ${className}`}
+        className={`p-2 rounded-md border-2 border-slate-300 z-10 placeholder-gray-500 bg-[linear-gradient(50deg,#0f172a,#1e293b,#333333)] hover:border-blue-500 focus:outline-none focus:border-green-300 ${className}`}
         onChange={(e) => setValue && setValue(e.target.value)}
         value={value}
         spellCheck={false}

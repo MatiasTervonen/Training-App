@@ -26,6 +26,8 @@
     "passwordPlaceholder": "Enter password...",
     "confirmPassword": "Confirm Password",
     "confirmPasswordPlaceholder": "Confirm Password...",
+    "or": "or",
+    "signInWithGoogle": "Sign in with Google",
     "logIn": "Log in",
     "signUp": "Sign up",
     "logInAsGuest": "Log in as a Guest",

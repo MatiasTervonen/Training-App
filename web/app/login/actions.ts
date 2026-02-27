@@ -144,6 +144,32 @@ export async function sendPasswordResetEmail(
   };
 }
 
+export async function signInWithGoogle(): Promise<{
+  url?: string;
+  error?: string;
+}> {
+  const verification = await checkBotId();
+
+  if (verification.isBot) {
+    return { error: "Something went wrong." };
+  }
+
+  const supabase = await createClient();
+
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`,
+    },
+  });
+
+  if (error || !data.url) {
+    return { error: error?.message || "Something went wrong." };
+  }
+
+  return { url: data.url };
+}
+
 export async function resendEmailVerification(
   prevState: AuthActionState | undefined,
   formData: FormData

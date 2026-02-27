@@ -6,6 +6,7 @@ import {
   signup,
   sendPasswordResetEmail,
   resendEmailVerification,
+  signInWithGoogle,
 } from "@/app/login/actions";
 import React from "react";
 import LoginButton from "@/app/login/components/loginbutton";
@@ -19,6 +20,7 @@ import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { guestLogin } from "@/app/login/guest-login/action";
 import FullScreenLoader from "@/components/FullScreenLoader";
+import GoogleIcon from "@/components/icons/GoogleIcon";
 import { useTranslation } from "react-i18next";
 
 const ConfettiAnimation = dynamic(() => import("../components/confetti"), {
@@ -30,6 +32,7 @@ export default function LoginPage() {
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const [guestModalOpen, setGuestModalOpen] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
 
   const [activeForm, setActiveForm] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
@@ -41,6 +44,17 @@ export default function LoginPage() {
   const initialState = {
     success: false,
     message: "",
+  };
+
+  const handleGoogleSignIn = async () => {
+    setGoogleLoading(true);
+    const result = await signInWithGoogle();
+    if (result.url) {
+      window.location.href = result.url;
+    } else {
+      setError(result.error ?? t("login.actions.somethingWentWrong"));
+      setGoogleLoading(false);
+    }
   };
 
   const [state, formAction] = React.useActionState(signup, initialState);
@@ -144,13 +158,31 @@ export default function LoginPage() {
               )}
             </div>
 
+            {/* Google Sign-In divider */}
+            <div className="flex items-center">
+              <div className="flex-1 h-px bg-gray-600" />
+              <span className="mx-4 text-gray-400">{t("login.or")}</span>
+              <div className="flex-1 h-px bg-gray-600" />
+            </div>
+
+            {/* Google Sign-In button */}
+            <button
+              type="button"
+              onClick={handleGoogleSignIn}
+              disabled={googleLoading}
+              className="flex items-center justify-center gap-3 btn-neutral"
+            >
+              <GoogleIcon />
+              <span>{t("login.signInWithGoogle")}</span>
+            </button>
+
             {/*  Guest login button */}
 
-            <div className="flex flex-col items-center justify-center">
+            <div className="flex flex-col items-center justify-center mt-5">
               <button
                 type="button"
                 onClick={() => setGuestModalOpen(true)}
-                className="flex items-center justify-center gap-2 px-10  border-2 border-blue-500 p-2 rounded-md bg-linear-to-tr from-slate-950  to-blue-700 hover:from-blue-700 hover:to-slate-950 transform hover:scale-105 transition duration-200 cursor-pointer"
+                className="cursor-pointer text-center hover:underline"
                 disabled={isPending}
               >
                 <span>{t("login.logInAsGuest")}</span>
@@ -279,6 +311,25 @@ export default function LoginPage() {
               >
                 {!hideErrorMessage && state.message}
               </p>
+
+              {/* Google Sign-In divider */}
+              <div className="flex items-center">
+                <div className="flex-1 h-px bg-gray-600" />
+                <span className="mx-4 text-gray-400">{t("login.or")}</span>
+                <div className="flex-1 h-px bg-gray-600" />
+              </div>
+
+              {/* Google Sign-In button */}
+              <button
+                type="button"
+                onClick={handleGoogleSignIn}
+                disabled={googleLoading}
+                className="flex items-center justify-center gap-3 btn-neutral"
+              >
+                <GoogleIcon />
+                <span>{t("login.signInWithGoogle")}</span>
+              </button>
+
               {state.success && (
                 <p
                   onClick={() => setModal2Open(true)}
@@ -304,8 +355,12 @@ export default function LoginPage() {
                 <h1 className="text-3xl sm:text-4xl lg:text-5xl text-center bg-linear-to-tr from-[#27aee4] via-[#66ece1] to-[#f3f18d] text-transparent bg-clip-text">
                   MyTrack
                 </h1>
-                <h3 className="text-xl  mt-5">{t("login.signUpSuccess.title")}</h3>
-                <p className="text-green-500 ">{t("login.signUpSuccess.message")}</p>
+                <h3 className="text-xl  mt-5">
+                  {t("login.signUpSuccess.title")}
+                </h3>
+                <p className="text-green-500 ">
+                  {t("login.signUpSuccess.message")}
+                </p>
 
                 <p
                   onClick={() => setModal2Open(true)}
@@ -377,9 +432,7 @@ export default function LoginPage() {
               </h1>
               <div className="flex flex-col text-center gap-10">
                 <h2 className="text-2xl underline">{t("login.guest.title")}</h2>
-                <p className="text-lg">
-                  {t("login.guest.description")}
-                </p>
+                <p className="text-lg">{t("login.guest.description")}</p>
                 <p>{t("login.guest.testInfo")}</p>
               </div>
               <button
@@ -389,7 +442,9 @@ export default function LoginPage() {
                     setError(null);
                     const result = await guestLogin();
                     if (!result.success) {
-                      setError(result.message ?? t("login.actions.guestLoginError"));
+                      setError(
+                        result.message ?? t("login.actions.guestLoginError"),
+                      );
                       setGuestModalOpen(false);
                     }
                   })
@@ -401,7 +456,12 @@ export default function LoginPage() {
               </button>
             </div>
           </ModalLogin>
-          {isPending && <FullScreenLoader message={t("login.actions.loggingInAsGuest")} />}
+          {isPending && (
+            <FullScreenLoader message={t("login.actions.loggingInAsGuest")} />
+          )}
+          {googleLoading && (
+            <FullScreenLoader message={t("login.actions.loggingIn")} />
+          )}
         </div>
         <div className="flex justify-center items-center w-full  pb-10">
           <div className="flex flex-col items-center justify-center gap-5">

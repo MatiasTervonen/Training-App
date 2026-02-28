@@ -80,6 +80,16 @@
       "created": "created:",
       "updated": "updated:",
       "voiceLoadError": "Failed to load voice recordings."
+    },
+    "videos": {
+      "title": "Videos:",
+      "addVideo": "Add Video",
+      "takeVideo": "Take Video",
+      "chooseFromLibrary": "Choose from Library",
+      "cancel": "Cancel",
+      "deleteVideoTitle": "Delete Video",
+      "deleteVideoMessage": "Are you sure you want to delete this video?",
+      "permissionRequired": "Camera or video library permission is required."
     }
   }
 }

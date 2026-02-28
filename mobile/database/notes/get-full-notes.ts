@@ -7,6 +7,14 @@ export type NoteImage = {
   uri: string;
 };
 
+export type NoteVideo = {
+  id: string;
+  storage_path: string;
+  thumbnailUri: string;
+  uri: string;
+  duration_ms: number | null;
+};
+
 export type FullNotesSession = {
   id: string;
   title: string;
@@ -18,6 +26,7 @@ export type FullNotesSession = {
     uri: string;
   }[];
   images: NoteImage[];
+  videos: NoteVideo[];
 };
 
 export async function getFullNotesSession(
@@ -56,6 +65,24 @@ export async function getFullNotesSession(
     throw new Error("Error fetching note images");
   }
 
+  // Fetch videos
+  const { data: videoData, error: videoError } = await supabase
+    .from("notes_videos" as "notes_voice")
+    .select("id, storage_path, thumbnail_storage_path, duration_ms")
+    .eq("note_id", noteId) as unknown as {
+      data: { id: string; storage_path: string; thumbnail_storage_path: string | null; duration_ms: number | null }[] | null;
+      error: { message: string } | null;
+    };
+
+  if (videoError) {
+    handleError(videoError, {
+      message: "Error fetching note videos",
+      route: "/database/notes/get-full-notes",
+      method: "GET",
+    });
+    throw new Error("Error fetching note videos");
+  }
+
   // Get signed URLs for voice recordings
   const voiceRecordings = await Promise.all(
     (voiceData ?? []).map(async (voice) => {
@@ -87,8 +114,33 @@ export async function getFullNotesSession(
     }),
   );
 
+  // Get signed URLs for videos and thumbnails
+  const videos = await Promise.all(
+    (videoData ?? []).map(async (video) => {
+      const { data: videoUrlData } = await supabase.storage
+        .from("media-videos")
+        .createSignedUrl(video.storage_path, 3600);
+
+      const thumbnailUri = video.thumbnail_storage_path
+        ? (await supabase.storage
+            .from("media-videos")
+            .createSignedUrl(video.thumbnail_storage_path, 3600)
+          ).data?.signedUrl ?? ""
+        : "";
+
+      return {
+        id: video.id,
+        storage_path: video.storage_path,
+        uri: videoUrlData?.signedUrl ?? "",
+        thumbnailUri,
+        duration_ms: video.duration_ms,
+      };
+    }),
+  );
+
   const validRecordings = voiceRecordings.filter((v) => v.uri !== "");
   const validImages = images.filter((img) => img.uri !== "");
+  const validVideos = videos.filter((v) => v.uri !== "");
 
   return {
     id: noteId,
@@ -96,5 +148,6 @@ export async function getFullNotesSession(
     notes: "",
     voiceRecordings: validRecordings,
     images: validImages,
+    videos: validVideos,
   };
 }

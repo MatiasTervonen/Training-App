@@ -15,6 +15,13 @@ type DraftImage = {
   uri: string;
 };
 
+type DraftVideo = {
+  id: string;
+  uri: string;
+  thumbnailUri: string;
+  durationMs: number;
+};
+
 type Props = {
   id: string;
   title: string;
@@ -25,6 +32,8 @@ type Props = {
   newRecordings?: DraftRecording[];
   deletedImageIds?: string[];
   newImages?: DraftImage[];
+  deletedVideoIds?: string[];
+  newVideos?: DraftVideo[];
 };
 
 export async function editNotes({
@@ -37,6 +46,8 @@ export async function editNotes({
   newRecordings = [],
   deletedImageIds = [],
   newImages = [],
+  deletedVideoIds = [],
+  newVideos = [],
 }: Props) {
   const {
     data: { session },
@@ -54,6 +65,12 @@ export async function editNotes({
 
   const uploadedImages: {
     storage_path: string;
+  }[] = [];
+
+  const uploadedVideos: {
+    storage_path: string;
+    thumbnail_storage_path: string;
+    duration_ms: number;
   }[] = [];
 
   try {
@@ -102,6 +119,40 @@ export async function editNotes({
       uploadedImages.push({ storage_path: path });
     }
 
+    // Upload new videos
+    for (const video of newVideos) {
+      const videoPath = `${session.user.id}/${Crypto.randomUUID()}.mp4`;
+      const thumbPath = `${session.user.id}/${Crypto.randomUUID()}-thumb.jpg`;
+
+      const videoFile = new File(video.uri);
+      const videoBytes = await videoFile.bytes();
+
+      const { error: videoUploadError } = await supabase.storage
+        .from("media-videos")
+        .upload(videoPath, videoBytes, { contentType: "video/mp4" });
+
+      if (videoUploadError) {
+        throw videoUploadError;
+      }
+
+      const thumbFile = new File(video.thumbnailUri);
+      const thumbBytes = await thumbFile.bytes();
+
+      const { error: thumbUploadError } = await supabase.storage
+        .from("media-videos")
+        .upload(thumbPath, thumbBytes, { contentType: "image/jpeg" });
+
+      if (thumbUploadError) {
+        throw thumbUploadError;
+      }
+
+      uploadedVideos.push({
+        storage_path: videoPath,
+        thumbnail_storage_path: thumbPath,
+        duration_ms: video.durationMs,
+      });
+    }
+
     const { data, error } = await supabase.rpc("notes_edit_note", {
       p_id: id,
       p_title: title,
@@ -112,6 +163,8 @@ export async function editNotes({
       p_folder_id: folderId ?? null,
       p_deleted_image_ids: deletedImageIds,
       p_new_images: uploadedImages,
+      p_deleted_video_ids: deletedVideoIds,
+      p_new_videos: uploadedVideos,
     });
 
     if (error) {
@@ -130,6 +183,13 @@ export async function editNotes({
       await supabase.storage
         .from("notes-images")
         .remove(uploadedImages.map((r) => r.storage_path));
+    }
+    if (uploadedVideos.length > 0) {
+      const paths = uploadedVideos.flatMap((v) => [
+        v.storage_path,
+        v.thumbnail_storage_path,
+      ]);
+      await supabase.storage.from("media-videos").remove(paths);
     }
 
     handleError(error, {

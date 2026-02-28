@@ -18,8 +18,10 @@ import { NotesVoiceSkeleton } from "@/components/skeletetons";
 import { useTranslation } from "react-i18next";
 import useFolders from "@/features/notes/hooks/useFolders";
 import DraftImageItem from "@/features/notes/components/DraftImageItem";
+import DraftVideoItem from "@/features/notes/components/DraftVideoItem";
 import ImageViewerModal from "@/features/notes/components/ImageViewerModal";
 import MediaToolbar from "@/features/notes/components/MediaToolbar";
+import { DraftVideo } from "@/types/session";
 
 type Props = {
   note: FeedItemUI;
@@ -34,6 +36,7 @@ type notesPayload = {
   notes: string;
   "voice-count"?: number;
   "image-count"?: number;
+  "video-count"?: number;
   folder_id?: string | null;
 };
 
@@ -62,6 +65,14 @@ type DraftImage = {
   uri: string;
 };
 
+type ExistingVideo = {
+  id: string;
+  storage_path: string;
+  uri: string;
+  thumbnailUri: string;
+  duration_ms: number | null;
+};
+
 export default function EditNotes({
   note,
   onClose,
@@ -74,6 +85,7 @@ export default function EditNotes({
   const payload = note.extra_fields as notesPayload;
   const voiceCount = payload["voice-count"] ?? 0;
   const imageCount = payload["image-count"] ?? 0;
+  const videoCount = payload["video-count"] ?? 0;
   const confirmAction = useConfirmAction();
   const [title, setValue] = useState(note.title);
   const [notes, setNotes] = useState(payload.notes);
@@ -84,10 +96,8 @@ export default function EditNotes({
   const initialFolderId = payload.folder_id ?? null;
   const { folders, isLoading: isFoldersLoading } = useFolders();
 
-  // Voice recordings state - initialize from props
-  const [existingRecordings, setExistingRecordings] = useState<
-    ExistingRecording[]
-  >([]);
+  // Voice recordings state
+  const [existingRecordings, setExistingRecordings] = useState<ExistingRecording[]>([]);
   const [deletedRecordingIds, setDeletedRecordingIds] = useState<string[]>([]);
   const [newRecordings, setNewRecordings] = useState<DraftRecording[]>([]);
 
@@ -97,10 +107,15 @@ export default function EditNotes({
   const [newImages, setNewImages] = useState<DraftImage[]>([]);
   const [viewerIndex, setViewerIndex] = useState(-1);
 
+  // Video state
+  const [existingVideos, setExistingVideos] = useState<ExistingVideo[]>([]);
+  const [deletedVideoIds, setDeletedVideoIds] = useState<string[]>([]);
+  const [newVideos, setNewVideos] = useState<DraftVideo[]>([]);
+
   const initialTitle = note.title || "";
   const initialNotes = payload.notes || "";
 
-  // Sync existing recordings and images from props
+  // Sync existing recordings, images, and videos from props
   useEffect(() => {
     if (voiceRecordings?.voiceRecordings) {
       setExistingRecordings(voiceRecordings.voiceRecordings);
@@ -108,7 +123,10 @@ export default function EditNotes({
     if (voiceRecordings?.images) {
       setExistingImages(voiceRecordings.images);
     }
-  }, [voiceRecordings?.voiceRecordings, voiceRecordings?.images]);
+    if (voiceRecordings?.videos) {
+      setExistingVideos(voiceRecordings.videos);
+    }
+  }, [voiceRecordings?.voiceRecordings, voiceRecordings?.images, voiceRecordings?.videos]);
 
   const handleDeleteExisting = async (recordingId: string) => {
     const confirmed = await confirmAction({
@@ -152,6 +170,27 @@ export default function EditNotes({
     setNewImages((prev) => prev.filter((_, i) => i !== index));
   };
 
+  const handleDeleteExistingVideo = async (videoId: string) => {
+    const confirmed = await confirmAction({
+      title: t("notes.videos.deleteVideoTitle"),
+      message: t("notes.videos.deleteVideoMessage"),
+    });
+    if (!confirmed) return;
+
+    setDeletedVideoIds((prev) => [...prev, videoId]);
+    setExistingVideos((prev) => prev.filter((v) => v.id !== videoId));
+  };
+
+  const handleDeleteNewVideo = async (index: number) => {
+    const confirmed = await confirmAction({
+      title: t("notes.videos.deleteVideoTitle"),
+      message: t("notes.videos.deleteVideoMessage"),
+    });
+    if (!confirmed) return;
+
+    setNewVideos((prev) => prev.filter((_, i) => i !== index));
+  };
+
   const handleSubmit = async () => {
     setIsSaving(true);
 
@@ -166,6 +205,8 @@ export default function EditNotes({
         newRecordings,
         deletedImageIds,
         newImages,
+        deletedVideoIds,
+        newVideos,
       });
 
       onSave({ ...updatedFeedItem, feed_context: note.feed_context });
@@ -188,7 +229,9 @@ export default function EditNotes({
     deletedRecordingIds.length > 0 ||
     newRecordings.length > 0 ||
     deletedImageIds.length > 0 ||
-    newImages.length > 0;
+    newImages.length > 0 ||
+    deletedVideoIds.length > 0 ||
+    newVideos.length > 0;
 
   useEffect(() => {
     onDirtyChange?.(hasChanges);
@@ -297,7 +340,44 @@ export default function EditNotes({
             </View>
           )}
 
-          {/* Record New Voice Note & Add Image */}
+          {/* Existing Videos */}
+          {(videoCount > 0 ||
+            existingVideos.length > 0 ||
+            newVideos.length > 0) && (
+            <View className="mt-5">
+              <AppText className="mb-2">{t("notes.videos.title")}</AppText>
+              {isLoadingVoice ? (
+                <NotesVoiceSkeleton count={videoCount} />
+              ) : (
+                existingVideos.map((video) => (
+                  <DraftVideoItem
+                    key={video.id}
+                    uri={video.uri}
+                    thumbnailUri={video.thumbnailUri}
+                    durationMs={video.duration_ms ?? undefined}
+                    onDelete={() => handleDeleteExistingVideo(video.id)}
+                  />
+                ))
+              )}
+            </View>
+          )}
+
+          {/* New Videos */}
+          {newVideos.length > 0 && (
+            <View>
+              {newVideos.map((video, index) => (
+                <DraftVideoItem
+                  key={video.id}
+                  uri={video.uri}
+                  thumbnailUri={video.thumbnailUri}
+                  durationMs={video.durationMs}
+                  onDelete={() => handleDeleteNewVideo(index)}
+                />
+              ))}
+            </View>
+          )}
+
+          {/* Record New Voice Note & Add Image/Video */}
           <View className="mt-6">
             <MediaToolbar
               onRecordingComplete={(uri, durationMs) => {
@@ -311,6 +391,12 @@ export default function EditNotes({
               }}
               onImageSelected={(uri) => {
                 setNewImages((prev) => [...prev, { id: nanoid(), uri }]);
+              }}
+              onVideoSelected={(uri, thumbnailUri, durationMs) => {
+                setNewVideos((prev) => [
+                  ...prev,
+                  { id: nanoid(), uri, thumbnailUri, durationMs },
+                ]);
               }}
               folders={isFoldersLoading ? [] : folders}
               selectedFolderId={selectedFolderId}

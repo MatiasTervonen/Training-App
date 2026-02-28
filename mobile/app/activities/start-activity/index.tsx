@@ -49,9 +49,17 @@ import { useModalPageConfig } from "@/lib/stores/modalPageConfig";
 import { useTranslation } from "react-i18next";
 import NotesModal from "@/features/activities/components/notesModal";
 import { nanoid } from "nanoid/non-secure";
-import RecordVoiceNotes from "@/features/notes/components/RecordVoiceNotes";
+import MediaToolbar from "@/features/notes/components/MediaToolbar";
+import DraftImageItem from "@/features/notes/components/DraftImageItem";
+import DraftVideoItem from "@/features/notes/components/DraftVideoItem";
 import { DraftRecordingItem } from "@/features/notes/components/draftRecording";
 import { useConfirmAction } from "@/lib/confirmAction";
+import { DraftVideo } from "@/types/session";
+
+type DraftImage = {
+  id: string;
+  uri: string;
+};
 import { debugLog } from "@/features/activities/lib/debugLogger";
 import DebugOverlay from "@/features/activities/components/debugOverlay";
 import { getWeight } from "@/database/weight/get-weight";
@@ -93,6 +101,8 @@ export default function StartActivityScreen() {
   const [stepsPermanentlyDenied, setStepsPermanentlyDenied] = useState(false);
   const [isHydrated, setIsHydrated] = useState(false);
   const [draftRecordings, setDraftRecordings] = useState<DraftRecording[]>([]);
+  const [draftImages, setDraftImages] = useState<DraftImage[]>([]);
+  const [draftVideos, setDraftVideos] = useState<DraftVideo[]>([]);
   const [baseMet, setBaseMet] = useState(0);
   const [showBatteryHint, setShowBatteryHint] = useState(false);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
@@ -315,6 +325,8 @@ export default function StartActivityScreen() {
     notes,
     meters,
     draftRecordings,
+    draftImages,
+    draftVideos,
     setIsSaving,
     resetSession,
   });
@@ -572,17 +584,55 @@ export default function StartActivityScreen() {
                     ))}
                   </View>
                 )}
+                {draftImages.length > 0 && (
+                  <View className="mt-5">
+                    {draftImages.map((image, index) => (
+                      <DraftImageItem
+                        key={image.id}
+                        uri={image.uri}
+                        onDelete={() =>
+                          setDraftImages((prev) => prev.filter((_, i) => i !== index))
+                        }
+                      />
+                    ))}
+                  </View>
+                )}
+                {draftVideos.length > 0 && (
+                  <View className="mt-5">
+                    {draftVideos.map((video, index) => (
+                      <DraftVideoItem
+                        key={video.id}
+                        uri={video.uri}
+                        thumbnailUri={video.thumbnailUri}
+                        durationMs={video.durationMs}
+                        onDelete={() =>
+                          setDraftVideos((prev) => prev.filter((_, i) => i !== index))
+                        }
+                      />
+                    ))}
+                  </View>
+                )}
                 <View className="mt-6">
-                  <RecordVoiceNotes
+                  <MediaToolbar
                     onRecordingComplete={(uri, duration) => {
-                      const newRecording = {
-                        id: nanoid(),
-                        uri,
-                        createdAt: Date.now(),
-                        durationMs: duration,
-                      };
-                      setDraftRecordings((prev) => [...prev, newRecording]);
+                      setDraftRecordings((prev) => [
+                        ...prev,
+                        { id: nanoid(), uri, createdAt: Date.now(), durationMs: duration },
+                      ]);
                     }}
+                    onImageSelected={(uri) =>
+                      setDraftImages((prev) => [...prev, { id: nanoid(), uri }])
+                    }
+                    onVideoSelected={(uri, thumbnailUri, durationMs) =>
+                      setDraftVideos((prev) => [
+                        ...prev,
+                        { id: nanoid(), uri, thumbnailUri, durationMs },
+                      ])
+                    }
+                    folders={[]}
+                    selectedFolderId={null}
+                    onFolderSelect={() => {}}
+                    showFolderButton={false}
                   />
                 </View>
               </View>
@@ -654,6 +704,10 @@ export default function StartActivityScreen() {
         setNotes={setNotes}
         draftRecordings={draftRecordings}
         setDraftRecordings={setDraftRecordings}
+        draftImages={draftImages}
+        setDraftImages={setDraftImages}
+        draftVideos={draftVideos}
+        setDraftVideos={setDraftVideos}
       />
 
       <FullScreenLoader

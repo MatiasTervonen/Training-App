@@ -11,7 +11,12 @@ import { handleError } from "@/utils/handleError";
 import { getSessionSteps } from "@/native/android/NativeStepCounter";
 import { filterTrackBeforeSaving } from "../lib/filterTrackBeforeSaving";
 import { useTranslation } from "react-i18next";
-import { DraftRecording } from "@/types/session";
+import { DraftRecording, DraftVideo } from "@/types/session";
+
+type DraftImage = {
+  id: string;
+  uri: string;
+};
 
 async function loadTrackFromDatabase() {
   const db = await getDatabase();
@@ -47,6 +52,8 @@ export default function useSaveActivitySession({
   notes,
   meters,
   draftRecordings,
+  draftImages = [],
+  draftVideos = [],
   setIsSaving,
   resetSession,
 }: {
@@ -54,6 +61,8 @@ export default function useSaveActivitySession({
   notes: string;
   meters: number;
   draftRecordings: DraftRecording[];
+  draftImages?: DraftImage[];
+  draftVideos?: DraftVideo[];
   setIsSaving: (isSaving: boolean) => void;
   resetSession: () => void;
 }) {
@@ -139,6 +148,8 @@ export default function useSaveActivitySession({
         activityId,
         steps: steps ?? 0,
         draftRecordings,
+        draftImages,
+        draftVideos,
       });
 
       await queryClient.invalidateQueries({ queryKey: ["feed"], exact: true });

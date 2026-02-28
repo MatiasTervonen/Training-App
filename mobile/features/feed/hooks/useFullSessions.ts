@@ -65,12 +65,13 @@ export default function useFullSessions(
         : null;
 
   const notesExtra = notesItem?.extra_fields as
-    | { "voice-count"?: number; "image-count"?: number }
+    | { "voice-count"?: number; "image-count"?: number; "video-count"?: number }
     | undefined;
   const voiceCount = notesExtra?.["voice-count"] ?? 0;
   const imageCount = notesExtra?.["image-count"] ?? 0;
+  const videoCount = notesExtra?.["video-count"] ?? 0;
 
-  const notesHasMedia = notesItem && (voiceCount > 0 || imageCount > 0);
+  const notesHasMedia = notesItem && (voiceCount > 0 || imageCount > 0 || videoCount > 0);
 
   const notesId = notesHasMedia ? getId(notesItem) : null;
 

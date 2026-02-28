@@ -2,8 +2,9 @@ import { View, Alert, Modal, Pressable, ScrollView, Dimensions } from "react-nat
 import { useState } from "react";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import AppText from "@/components/AppText";
-import { Mic, ImagePlus, FolderOpen } from "lucide-react-native";
+import { Mic, ImagePlus, FolderOpen, Video } from "lucide-react-native";
 import * as ExpoImagePicker from "expo-image-picker";
+import * as VideoThumbnails from "expo-video-thumbnails";
 import Toast from "react-native-toast-message";
 import { useTranslation } from "react-i18next";
 import RecordingModal from "@/features/notes/components/RecordingModal";
@@ -12,17 +13,21 @@ import type { FolderWithCount } from "@/database/notes/get-folders";
 type Props = {
   onRecordingComplete: (uri: string, durationMs: number) => void;
   onImageSelected: (uri: string) => void;
+  onVideoSelected?: (uri: string, thumbnailUri: string, durationMs: number) => void;
   folders: FolderWithCount[];
   selectedFolderId: string | null;
   onFolderSelect: (folderId: string | null) => void;
+  showFolderButton?: boolean;
 };
 
 export default function MediaToolbar({
   onRecordingComplete,
   onImageSelected,
+  onVideoSelected,
   folders,
   selectedFolderId,
   onFolderSelect,
+  showFolderButton = true,
 }: Props) {
   const { t } = useTranslation("notes");
   const [showRecordingModal, setShowRecordingModal] = useState(false);
@@ -82,7 +87,62 @@ export default function MediaToolbar({
     ]);
   };
 
+  const pickVideoFromLibrary = async () => {
+    const { status } =
+      await ExpoImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== "granted") {
+      Toast.show({
+        type: "error",
+        text1: t("notes.videos.permissionRequired"),
+      });
+      return;
+    }
+
+    const result = await ExpoImagePicker.launchImageLibraryAsync({
+      mediaTypes: ["videos"],
+    });
+
+    if (!result.canceled && result.assets[0]) {
+      const asset = result.assets[0];
+      const thumbnail = await VideoThumbnails.getThumbnailAsync(asset.uri, { time: 0 });
+      const durationMs = Math.round(asset.duration ?? 0);
+      onVideoSelected?.(asset.uri, thumbnail.uri, durationMs);
+    }
+  };
+
+  const takeVideo = async () => {
+    const { status } = await ExpoImagePicker.requestCameraPermissionsAsync();
+    if (status !== "granted") {
+      Toast.show({
+        type: "error",
+        text1: t("notes.videos.permissionRequired"),
+      });
+      return;
+    }
+
+    const result = await ExpoImagePicker.launchCameraAsync({
+      mediaTypes: ["videos"],
+      videoMaxDuration: 120,
+    });
+
+    if (!result.canceled && result.assets[0]) {
+      const asset = result.assets[0];
+      const thumbnail = await VideoThumbnails.getThumbnailAsync(asset.uri, { time: 0 });
+      const durationMs = Math.round(asset.duration ?? 0);
+      onVideoSelected?.(asset.uri, thumbnail.uri, durationMs);
+    }
+  };
+
+  const handleVideoPress = () => {
+    Alert.alert(t("notes.videos.addVideo"), undefined, [
+      { text: t("notes.videos.takeVideo"), onPress: takeVideo },
+      { text: t("notes.videos.chooseFromLibrary"), onPress: pickVideoFromLibrary },
+      { text: t("notes.videos.cancel"), style: "cancel" },
+    ]);
+  };
+
   const hasFolderSelected = selectedFolderId !== null;
+  const showFolder = showFolderButton && folders.length > 0;
 
   return (
     <>
@@ -105,7 +165,20 @@ export default function MediaToolbar({
           <ImagePlus color="white" size={24} />
         </AnimatedButton>
 
-        {folders.length > 0 && (
+        {onVideoSelected && (
+          <>
+            <View className="w-px bg-blue-500" />
+            <AnimatedButton
+              onPress={handleVideoPress}
+              className="py-1 items-center justify-center"
+              tabClassName="flex-1"
+            >
+              <Video color="white" size={24} />
+            </AnimatedButton>
+          </>
+        )}
+
+        {showFolder && (
           <>
             <View className="w-px bg-blue-500" />
 

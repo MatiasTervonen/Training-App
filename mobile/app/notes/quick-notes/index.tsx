@@ -17,8 +17,10 @@ import { useConfirmAction } from "@/lib/confirmAction";
 import { useTranslation } from "react-i18next";
 import useFolders from "@/features/notes/hooks/useFolders";
 import DraftImageItem from "@/features/notes/components/DraftImageItem";
+import DraftVideoItem from "@/features/notes/components/DraftVideoItem";
 import ImageViewerModal from "@/features/notes/components/ImageViewerModal";
 import MediaToolbar from "@/features/notes/components/MediaToolbar";
+import { DraftVideo } from "@/types/session";
 
 type DraftRecording = {
   id: string;
@@ -40,6 +42,7 @@ export default function NotesScreen() {
   const [isSaving, setIsSaving] = useState(false);
   const [draftRecordings, setDraftRecordings] = useState<DraftRecording[]>([]);
   const [draftImages, setDraftImages] = useState<DraftImage[]>([]);
+  const [draftVideos, setDraftVideos] = useState<DraftVideo[]>([]);
   const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
   const [viewerIndex, setViewerIndex] = useState(-1);
 
@@ -51,6 +54,7 @@ export default function NotesScreen() {
     setNotes("");
     setDraftRecordings([]);
     setDraftImages([]);
+    setDraftVideos([]);
     setSelectedFolderId(null);
     AsyncStorage.removeItem("notes_draft");
   };
@@ -61,10 +65,12 @@ export default function NotesScreen() {
     notes,
     draftRecordings,
     draftImages,
+    draftVideos,
     setTitle,
     setNotes,
     setDraftRecordings,
     setDraftImages,
+    setDraftVideos,
   });
 
   // useSaveNotes hook to save notes
@@ -74,6 +80,7 @@ export default function NotesScreen() {
     folderId: selectedFolderId,
     draftRecordings,
     draftImages,
+    draftVideos,
     setIsSaving,
     resetNote,
   });
@@ -145,6 +152,29 @@ export default function NotesScreen() {
                 ))}
               </View>
             )}
+            {draftVideos.length > 0 && (
+              <View className="mt-5">
+                <AppText className="mb-2">{t("notes.videos.title")}</AppText>
+                {draftVideos.map((video, index) => (
+                  <DraftVideoItem
+                    key={video.id}
+                    uri={video.uri}
+                    thumbnailUri={video.thumbnailUri}
+                    durationMs={video.durationMs}
+                    onDelete={async () => {
+                      const confirm = await confirmAction({
+                        title: t("notes.videos.deleteVideoTitle"),
+                        message: t("notes.videos.deleteVideoMessage"),
+                      });
+                      if (!confirm) return;
+                      setDraftVideos((prev) =>
+                        prev.filter((_, i) => i !== index),
+                      );
+                    }}
+                  />
+                ))}
+              </View>
+            )}
             <View className="mt-6">
               <MediaToolbar
                 onRecordingComplete={(uri, durationMs) => {
@@ -158,6 +188,12 @@ export default function NotesScreen() {
                 }}
                 onImageSelected={(uri) => {
                   setDraftImages((prev) => [...prev, { id: nanoid(), uri }]);
+                }}
+                onVideoSelected={(uri, thumbnailUri, durationMs) => {
+                  setDraftVideos((prev) => [
+                    ...prev,
+                    { id: nanoid(), uri, thumbnailUri, durationMs },
+                  ]);
                 }}
                 folders={isFoldersLoading ? [] : folders}
                 selectedFolderId={selectedFolderId}

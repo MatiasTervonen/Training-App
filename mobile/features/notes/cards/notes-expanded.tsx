@@ -13,12 +13,14 @@ import BodyText from "@/components/BodyText";
 import RichContent from "../components/notesWebview";
 import { stripHtml } from "@/lib/stripHtml";
 import DraftImageItem from "@/features/notes/components/DraftImageItem";
+import DraftVideoItem from "@/features/notes/components/DraftVideoItem";
 import ImageViewerModal from "@/features/notes/components/ImageViewerModal";
 
 type notesPayload = {
   notes: string;
   "voice-count"?: number;
   "image-count"?: number;
+  "video-count"?: number;
 };
 
 type NotesSessionProps = {
@@ -39,7 +41,9 @@ export default function NotesSession({
   const payload = note.extra_fields as notesPayload;
   const voiceCount = payload["voice-count"] ?? 0;
   const imageCount = payload["image-count"] ?? 0;
+  const videoCount = payload["video-count"] ?? 0;
   const images = voiceRecordings?.images ?? [];
+  const videos = voiceRecordings?.videos ?? [];
 
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
@@ -77,6 +81,24 @@ export default function NotesSession({
                     key={image.id}
                     uri={image.uri}
                     onPress={() => setViewerIndex(idx)}
+                  />
+                ))
+              )}
+            </View>
+          )}
+          {/* Videos */}
+          {videoCount > 0 && (
+            <View className="mt-6">
+              <AppText className="mb-2">{t("notes.videos.title")}</AppText>
+              {isLoadingVoice ? (
+                <NotesVoiceSkeleton count={videoCount} />
+              ) : (
+                videos.map((video) => (
+                  <DraftVideoItem
+                    key={video.id}
+                    uri={video.uri}
+                    thumbnailUri={video.thumbnailUri}
+                    durationMs={video.duration_ms ?? undefined}
                   />
                 ))
               )}

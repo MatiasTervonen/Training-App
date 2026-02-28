@@ -247,3 +247,10 @@ export type DraftRecording = {
   createdAt: number;
   durationMs?: number;
 };
+
+export type DraftVideo = {
+  id: string;
+  uri: string;
+  thumbnailUri: string;
+  durationMs: number;
+};

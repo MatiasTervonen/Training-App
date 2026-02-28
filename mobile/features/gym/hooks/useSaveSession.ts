@@ -1,6 +1,6 @@
 import { Toast } from "react-native-toast-message/lib/src/Toast";
 import { useConfirmAction } from "@/lib/confirmAction";
-import { ExerciseEntry, FeedData } from "@/types/session";
+import { DraftVideo, ExerciseEntry, FeedData } from "@/types/session";
 import { editSession } from "@/database/gym/edit-session";
 import { saveSession } from "@/database/gym/save-session";
 import { useQueryClient } from "@tanstack/react-query";
@@ -8,6 +8,18 @@ import { useRouter } from "expo-router";
 import { useTimerStore } from "@/lib/stores/timerStore";
 import { useRestTimerStore } from "@/lib/stores/restTimerStore";
 import { useTranslation } from "react-i18next";
+
+type DraftRecording = {
+  id: string;
+  uri: string;
+  createdAt: number;
+  durationMs?: number;
+};
+
+type DraftImage = {
+  id: string;
+  uri: string;
+};
 
 export default function useSaveSession({
   title,
@@ -18,6 +30,9 @@ export default function useSaveSession({
   setIsSaving,
   resetSession,
   session,
+  draftImages = [],
+  draftRecordings = [],
+  draftVideos = [],
 }: {
   title: string;
   exercises: ExerciseEntry[];
@@ -27,12 +42,15 @@ export default function useSaveSession({
   setIsSaving: (isSaving: boolean) => void;
   resetSession: () => void;
   session: { id: string };
+  draftImages?: DraftImage[];
+  draftRecordings?: DraftRecording[];
+  draftVideos?: DraftVideo[];
 }) {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { t } = useTranslation("gym");
   const confirmAction = useConfirmAction();
-  
+
   const handleSaveSession = async () => {
     if (title.trim() === "") {
       Toast.show({
@@ -69,6 +87,9 @@ export default function useSaveSession({
           notes,
           durationEdit,
           exercises,
+          newImages: draftImages,
+          newVideos: draftVideos,
+          newRecordings: draftRecordings,
         });
 
         await Promise.all([
@@ -98,6 +119,9 @@ export default function useSaveSession({
           notes,
           duration: durationInSeconds,
           exercises,
+          draftImages,
+          draftRecordings,
+          draftVideos,
         });
 
         await Promise.all([

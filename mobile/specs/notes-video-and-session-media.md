@@ -1,18 +1,17 @@
 # Spec: Video + Full Media Support Everywhere
 
 ## Context
-The app already has images + voice in the notes feature. We're extending this with:
-1. **Video support in notes** (new capability)
-2. **Full media (images + voice + video) in gym sessions** (currently text-only)
-3. **Images + video in activity sessions** (voice already exists)
-4. **Images + voice + video in weight tracking** (currently text-only)
+The app already has images + voice in notes. Extending with:
+1. **Video support in notes** (new)
+2. **Full media (images + voice + video) in gym + activity sessions** — both use `sessions` table
+3. **Images + voice + video in weight tracking**
 
-All media reuses shared storage buckets (`notes-images`, `notes-voice`, plus a new `media-videos`).
-Max video length: 2 minutes. Thumbnail generated on-device before upload via `expo-video-thumbnails`.
+Storage: reuse `notes-images`, `notes-voice` buckets. Add `media-videos` for all videos.
+Max video: 2 minutes. Thumbnail generated on-device via `expo-video-thumbnails` before upload.
 
 ---
 
-## Step 0: Install Packages
+## Step 0: Install Packages + Type Cleanup
 
 ```bash
 npx expo install expo-video expo-video-thumbnails
@@ -20,49 +19,39 @@ npx expo install expo-video expo-video-thumbnails
 
 ---
 
-## Step 1: Database Migrations (5 files)
+## Step 1: Database Migrations (4 files)
 
 ### `20260228120000_add_notes_videos.sql`
-- Create `notes_videos` table: `id, user_id, note_id (FK→notes), storage_path, thumbnail_storage_path, duration_ms, created_at`
+- Create `notes_videos` table: `id, user_id, note_id (FK→notes CASCADE), storage_path, thumbnail_storage_path, duration_ms, created_at`
 - RLS policies (same pattern as `notes_images`)
-- Update `notes_save_note` RPC: add `p_videos jsonb` param → insert into `notes_videos`, set `video-count` in feed_items extra_fields
-- Update `notes_edit_note` RPC: add `p_deleted_video_ids uuid[]` + `p_new_videos jsonb[]` params, update `video-count` in feed_items
+- Update `notes_save_note` RPC: add `p_videos jsonb` → insert into `notes_videos`, set `video-count` in feed_items
+- Update `notes_edit_note` RPC: add `p_deleted_video_ids uuid[]` + `p_new_videos jsonb[]`, update `video-count`
 
 ### `20260228121000_add_media_videos_bucket.sql`
-- Create `media-videos` storage bucket
-- File size limit: 500MB
-- MIME types: `video/mp4`, `video/quicktime`, `video/webm`
-- Also allow `image/jpeg` in this bucket (for thumbnails stored alongside videos)
-- RLS: authenticated users can access their own folder `{user_id}/**`
+- Create `media-videos` storage bucket, 500MB file limit
+- MIME types: `video/mp4`, `video/quicktime`, `video/webm`, `image/jpeg` (thumbnails)
+- RLS: authenticated users access own folder `{user_id}/**`
 
-### `20260228130000_add_gym_session_media.sql`
-- Create `gym_session_images` table: `id, user_id, gym_session_id (FK→gym_sessions), storage_path, created_at`
-- Create `gym_session_videos` table: `id, user_id, gym_session_id (FK→gym_sessions), storage_path, thumbnail_storage_path, duration_ms, created_at`
-- Create `gym_session_voice` table: `id, user_id, gym_session_id (FK→gym_sessions), storage_path, duration_ms, created_at`
-- Update `gym_save_session` RPC: add `p_images jsonb`, `p_videos jsonb`, `p_recordings jsonb` params → insert into respective tables, update feed_items extra_fields with counts
-- Update `gym_edit_session` RPC: add delete + new arrays for all 3 media types, update feed_items counts
-- Add `image-count`, `video-count`, `voice-count` to gym_sessions feed_items extra_fields
-
-### `20260228131000_add_session_media.sql`
-- Create `session_images` table: `id, user_id, session_id (FK→sessions), storage_path, created_at`
-- Create `session_videos` table: `id, user_id, session_id (FK→sessions), storage_path, thumbnail_storage_path, duration_ms, created_at`
-- Note: `sessions_voice` already exists for activity sessions
-- Update `activities_save_activity` RPC: add `p_images jsonb`, `p_videos jsonb` params
+### `20260228130000_add_session_media.sql`
+Covers BOTH gym and activity sessions (both use `sessions` table).
+- Create `session_images` table: `id, user_id, session_id (FK→sessions CASCADE), storage_path, created_at`
+- Create `session_videos` table: `id, user_id, session_id (FK→sessions CASCADE), storage_path, thumbnail_storage_path, duration_ms, created_at`
+- `sessions_voice` already exists — reuse for gym sessions (no new table)
+- Update `gym_save_session` RPC: add `p_images jsonb`, `p_videos jsonb`, `p_recordings jsonb` → insert into `session_images`, `session_videos`, `sessions_voice`; update feed_items counts
+- Update `gym_edit_session` RPC: add delete + new arrays for all 3 media types
+- Update `activities_save_activity` RPC: add `p_images jsonb`, `p_videos jsonb`
 - Update activity edit RPC similarly
-- Add `image-count`, `video-count` to activity feed_items extra_fields
+- Add `image-count`, `video-count` to both gym and activity feed_items extra_fields
 
 ### `20260228140000_add_weight_media.sql`
-- Create `weight_images` table: `id, user_id, weight_id (FK→weight), storage_path, created_at`
-- Create `weight_videos` table: `id, user_id, weight_id (FK→weight), storage_path, thumbnail_storage_path, duration_ms, created_at`
-- Create `weight_voice` table: `id, user_id, weight_id (FK→weight), storage_path, duration_ms, created_at`
-- Update weight save RPC: add media params
-- Add media counts to weight feed_items extra_fields
+- Create `weight_images` table: `id, user_id, weight_id (FK→weight CASCADE), storage_path, created_at`
+- Create `weight_videos` table: `id, user_id, weight_id (FK→weight CASCADE), storage_path, thumbnail_storage_path, duration_ms, created_at`
+- Create `weight_voice` table: `id, user_id, weight_id (FK→weight CASCADE), storage_path, duration_ms, created_at`
+- Update weight save RPC: add media params, update feed_items counts
 
 ---
 
-## Step 2: New Shared Types
-
-Add to a shared types file or inline in DB layer:
+## Step 2: New Shared Type
 
 ```ts
 type DraftVideo = {
@@ -75,21 +64,18 @@ type DraftVideo = {
 
 ---
 
-## Step 3: New UI Components (in `features/notes/components/`)
+## Step 3: New UI Components (`features/notes/components/`)
 
 ### `DraftVideoItem.tsx`
-- Thumbnail image (same height as `DraftImageItem` - h-48, cover mode)
-- Play icon overlay (centered, semi-transparent background)
-- Duration badge (bottom-left, e.g. "1:32")
-- Delete button (X icon, top-right, red) with confirmation Alert
-- `onPress` → open VideoPlayerModal
+- Thumbnail (h-48, cover) + play icon overlay (centered, semi-transparent bg)
+- Duration badge bottom-left (e.g. "1:32")
+- Delete button (X, top-right, red) with confirm Alert
+- `onPress` → VideoPlayerModal
 
 ### `VideoPlayerModal.tsx`
-- Full-screen modal
-- Uses `expo-video` `VideoView` component with `useVideoPlayer` hook
-- Native controls enabled (`nativeControls: true`)
-- Close button (X icon, top-right)
-- Supports both local draft URIs and remote signed URLs
+- Full-screen modal using `expo-video` `VideoView` + `useVideoPlayer` hook
+- `nativeControls: true`, close button top-right
+- Works with local draft URIs and remote signed URLs
 
 ---
 
@@ -97,129 +83,108 @@ type DraftVideo = {
 
 **File:** `features/notes/components/MediaToolbar.tsx`
 
-- Add `Video` (or `Clapperboard`) icon from lucide as third button (after ImagePlus, before FolderOpen)
-- Add `onVideoSelected: (uri: string, thumbnailUri: string, durationMs: number) => void` to Props
-- Add `showFolderButton?: boolean` prop (default true) — pass `false` from gym/weight/activity contexts
-- On video button press:
-  - Alert: "Take Video" / "Choose from Library" / "Cancel"
-  - Use `ExpoImagePicker.launchCameraAsync({ mediaTypes: ['videos'], videoMaxDuration: 120 })`
-  - Use `ExpoImagePicker.launchImageLibraryAsync({ mediaTypes: ['videos'] })`
-  - After picking: `VideoThumbnails.getThumbnailAsync(uri, { time: 0 })` to generate thumbnail
-  - Call `onVideoSelected(uri, thumbnailUri, durationMs)`
+- Add `Video` icon button (after ImagePlus, before FolderOpen)
+- New prop: `onVideoSelected: (uri: string, thumbnailUri: string, durationMs: number) => void`
+- New prop: `showFolderButton?: boolean` (default true) — pass `false` from gym/weight/activity
+- On press: Alert "Take Video" / "Choose from Library" / "Cancel"
+  - `launchCameraAsync({ mediaTypes: ['videos'], videoMaxDuration: 120 })`
+  - `launchImageLibraryAsync({ mediaTypes: ['videos'] })`
+  - After pick: `VideoThumbnails.getThumbnailAsync(uri, { time: 0 })`
+  - Call `onVideoSelected(uri, thumbnail.uri, durationMs)`
 
 ---
 
-## Step 5: Notes — Add Video to Existing Pipeline
+## Step 5: Notes — Add Video
 
 ### `database/notes/save-note.ts`
 - Accept `draftVideos: DraftVideo[]`
-- Upload each video to `media-videos` bucket: `{user_id}/{uuid}.mp4`
-- Upload each thumbnail to `media-videos` bucket: `{user_id}/{uuid}-thumb.jpg`
-- Pass `p_videos: [{ storage_path, thumbnail_storage_path, duration_ms }]` to `notes_save_note` RPC
+- Upload video → `media-videos/{user_id}/{uuid}.mp4`
+- Upload thumbnail → `media-videos/{user_id}/{uuid}-thumb.jpg`
+- Pass `p_videos` to `notes_save_note` RPC
 
 ### `database/notes/edit-notes.ts`
 - Accept `deletedVideoIds: string[]` + `newVideos: DraftVideo[]`
-- Upload new videos + thumbnails
-- Pass `p_deleted_video_ids` + `p_new_videos` to `notes_edit_note` RPC
+- Upload new, pass to RPC
 
 ### `database/notes/get-full-notes.ts`
-- Fetch `notes_videos` records
-- Generate signed URLs for video + thumbnail storage paths
-- Add to `FullNotesSession` return type: `videos: { id, uri, thumbnailUri, duration_ms }[]`
+- Fetch `notes_videos`, generate signed URLs for video + thumbnail
+- Add `videos: { id, uri, thumbnailUri, duration_ms }[]` to `FullNotesSession`
 
 ### `app/notes/quick-notes/index.tsx`
-- Add `draftVideos: DraftVideo[]` state
-- Wire `onVideoSelected` from MediaToolbar
-- Render `DraftVideoItem` list below images
-- Pass `draftVideos` to `useSaveNotes`
-- Persist to `useSaveDraft` AsyncStorage
+- Add `draftVideos` state, wire `onVideoSelected`
+- Render `DraftVideoItem` list, pass to `useSaveNotes`, persist in `useSaveDraft`
 
 ### `features/notes/cards/edit-notes.tsx`
-- Add `existingVideos[]`, `deletedVideoIds[]`, `newDraftVideos[]` state (mirror of image pattern)
-- Render existing videos (with delete) + new draft videos
-- Pass to `editNotes()` DB function
+- Add `existingVideos[]`, `deletedVideoIds[]`, `newDraftVideos[]` (mirror image pattern)
 
 ### `features/notes/cards/notes-expanded.tsx`
-- Render `DraftVideoItem` (tappable → VideoPlayerModal) for each video in `notesSessionFull?.videos`
+- Render videos → tappable `DraftVideoItem` → VideoPlayerModal
 
 ### `features/notes/cards/notes-feed.tsx`
-- Add video count badge (camera icon + count) — same pattern as voice/image badges
+- Add video count badge (same pattern as voice/image)
 
 ### `features/feed/hooks/useFullSessions.ts`
-- Update condition to also fetch if `videoCount > 0`
+- Also fetch if `videoCount > 0`
 
 ---
 
-## Step 6: Gym Sessions — Add Full Media
+## Step 6: Gym + Activity Sessions — Add Media
+
+Both use `sessions` table → same `session_images` / `session_videos` tables.
 
 ### `database/gym/save-session.ts`
 - Accept `draftImages`, `draftRecordings`, `draftVideos`
-- Upload all to respective buckets
+- Upload to `notes-images`, `notes-voice`, `media-videos`
 - Pass to updated `gym_save_session` RPC
 
 ### `database/gym/edit-session.ts`
-- Accept delete arrays + new draft arrays for all 3 media types
+- Accept delete + new draft arrays for all 3 media types
 
 ### `database/gym/get-full-gym-session.ts`
-- Fetch `gym_session_images`, `gym_session_videos`, `gym_session_voice`
-- Generate signed URLs, return in `FullGymSession` type
+- Fetch `session_images`, `session_videos`, `sessions_voice`
+- Generate signed URLs, add to `FullGymSession`
 
 ### `features/gym/components/GymForm.tsx`
 - Add `draftImages`, `draftRecordings`, `draftVideos` state
-- Add `MediaToolbar` below the notes field (pass `folders={[]}`, `showFolderButton={false}`)
-- Render `DraftRecordingItem`, `DraftImageItem`, `DraftVideoItem` lists
-- Pass media state to `useSaveSession` hook
+- Add `MediaToolbar` below notes field (`folders={[]}`, `showFolderButton={false}`)
+- Render `DraftRecordingItem`, `DraftImageItem`, `DraftVideoItem`
+- Pass media to `useSaveSession`
 
-### Gym session expanded view
-- Render images, videos, voice recordings if present
-
-### Gym feed card
-- Add image/video/voice count badges
-
----
-
-## Step 7: Activity Sessions — Add Images + Video
+### Gym session expanded view + gym feed card
+- Render images/videos/voice, add count badges
 
 ### `database/activities/save-session.ts`
-- Already handles `draftRecordings`
-- Extend to accept `draftImages`, `draftVideos`
-- Upload to `notes-images` and `media-videos` buckets
-- Pass to updated `activities_save_activity` RPC
+- Extend existing voice support: add `draftImages`, `draftVideos`, upload + pass to RPC
 
 ### `database/activities/get-full-activity-session.ts`
-- Fetch `session_images`, `session_videos`
-- Generate signed URLs, add to return type
+- Fetch `session_images`, `session_videos`, generate signed URLs
 
 ### `app/activities/start-activity/index.tsx`
-- Replace `RecordVoiceNotes` component inside the notes modal with the new `MediaToolbar`
-- Add `draftImages`, `draftVideos` state alongside existing `draftRecordings`
-- Render draft items in the modal
+- Replace `RecordVoiceNotes` with `MediaToolbar` in notes modal
+- Add `draftImages`, `draftVideos` state
 
 ### Activity expanded view (`features/activities/cards/activity-feed-expanded/activity.tsx`)
-- Add images and video display sections
+- Add images and video sections
 
 ---
 
-## Step 8: Weight Tracking — Add Full Media
+## Step 7: Weight Tracking — Add Full Media
 
-### `database/weight/` (extend save function)
-- Accept `draftImages`, `draftRecordings`, `draftVideos`
-- Upload, pass to RPC
+### Weight DB save function
+- Accept `draftImages`, `draftRecordings`, `draftVideos`, upload + pass to RPC
 
 ### `app/weight/tracking/index.tsx`
-- Add media state
-- Add `MediaToolbar` below notes field (no folders, `showFolderButton={false}`)
-- Render draft items
-- Pass to `useSaveWeight`
+- Add media state, `MediaToolbar` below notes (`showFolderButton={false}`)
+- Render draft items, pass to `useSaveWeight`
 
 ### `features/weight/hooks/useSaveWeight.ts`
 - Accept and forward media to DB layer
 
 ---
 
-## Step 9: Translations
+## Step 8: Translations
 
-Add to `locales/en/notes.json` and `locales/fi/notes.json`:
+Add under `notes.videos` in `locales/en/notes.json` and `locales/fi/notes.json`:
 ```json
 "videos": {
   "title": "Videos:",
@@ -239,37 +204,41 @@ Add to `locales/en/notes.json` and `locales/fi/notes.json`:
 
 | File | Change |
 |------|--------|
-| `features/notes/components/MediaToolbar.tsx` | Update — add video icon + callback |
-| `features/notes/components/DraftVideoItem.tsx` | Create |
-| `features/notes/components/VideoPlayerModal.tsx` | Create |
-| `database/notes/save-note.ts` | Update |
-| `database/notes/edit-notes.ts` | Update |
-| `database/notes/get-full-notes.ts` | Update |
-| `app/notes/quick-notes/index.tsx` | Update |
-| `features/notes/cards/edit-notes.tsx` | Update |
-| `features/notes/cards/notes-expanded.tsx` | Update |
-| `features/notes/cards/notes-feed.tsx` | Update |
-| `features/feed/hooks/useFullSessions.ts` | Update |
-| `features/gym/components/GymForm.tsx` | Update |
-| `database/gym/save-session.ts` | Update |
-| `database/gym/edit-session.ts` | Update |
-| `database/gym/get-full-gym-session.ts` | Update |
-| `database/activities/save-session.ts` | Update |
-| `database/activities/get-full-activity-session.ts` | Update |
-| `app/activities/start-activity/index.tsx` | Update |
-| `app/weight/tracking/index.tsx` | Update |
-| `features/weight/hooks/useSaveWeight.ts` | Update |
-| `locales/en/notes.json` | Update |
-| `locales/fi/notes.json` | Update |
-| 5x SQL migration files | Create |
+| `types/models.ts` | Remove broken `gym_sessions` type export |
+| `features/notes/components/MediaToolbar.tsx` | Add video icon + props |
+| `features/notes/components/DraftVideoItem.tsx` | **Create** |
+| `features/notes/components/VideoPlayerModal.tsx` | **Create** |
+| `database/notes/save-note.ts` | Add video upload |
+| `database/notes/edit-notes.ts` | Add video delete/upload |
+| `database/notes/get-full-notes.ts` | Fetch videos + signed URLs |
+| `app/notes/quick-notes/index.tsx` | Add video state |
+| `features/notes/cards/edit-notes.tsx` | Add video state |
+| `features/notes/cards/notes-expanded.tsx` | Render videos |
+| `features/notes/cards/notes-feed.tsx` | Video count badge |
+| `features/feed/hooks/useFullSessions.ts` | Fetch if videoCount > 0 |
+| `features/gym/components/GymForm.tsx` | Add MediaToolbar + media state |
+| `database/gym/save-session.ts` | Add media upload |
+| `database/gym/edit-session.ts` | Add media delete/upload |
+| `database/gym/get-full-gym-session.ts` | Fetch session media |
+| Gym session expanded view | Render media |
+| Gym feed card | Media count badges |
+| `database/activities/save-session.ts` | Add image/video upload |
+| `database/activities/get-full-activity-session.ts` | Fetch session media |
+| `app/activities/start-activity/index.tsx` | Replace RecordVoiceNotes with MediaToolbar |
+| Activity expanded view | Add images/video sections |
+| `app/weight/tracking/index.tsx` | Add MediaToolbar + media state |
+| `features/weight/hooks/useSaveWeight.ts` | Forward media to DB |
+| Weight DB save function | Add media upload |
+| `locales/en/notes.json` | Add videos translations |
+| `locales/fi/notes.json` | Add Finnish videos translations |
+| 4x SQL migration files | **Create** |
 
 ## Implementation Order
-1. Install packages
-2. Write migrations
-3. New UI components (DraftVideoItem, VideoPlayerModal)
-4. Update MediaToolbar (add video)
-5. Notes pipeline (DB layer → UI)
-6. Gym sessions (DB layer → GymForm → expanded view)
-7. Activity sessions
-8. Weight tracking
-9. Translations
+1. Install packages + remove broken `gym_sessions` type from `types/models.ts`
+2. Write + apply migrations
+3. Create `DraftVideoItem`, `VideoPlayerModal`
+4. Update `MediaToolbar` (add video)
+5. Notes pipeline (DB → UI)
+6. Gym + activity sessions (DB → UI)
+7. Weight tracking (DB → UI)
+8. Translations

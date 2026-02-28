@@ -38,7 +38,9 @@
       },
       "addExerciseButtonLabel": "Add Exercise",
       "editDeleteButtonLabel": "Cancel",
-      "fullScreenLoaderLabel": "Saving session..."
+      "fullScreenLoaderLabel": "Saving session...",
+      "notesButton": "Notes & Media",
+      "notesModalTitle": "Session Notes"
     },
     "templateForm": {
       "titleCreate": "Create your template",

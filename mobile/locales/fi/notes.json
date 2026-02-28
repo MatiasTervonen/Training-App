@@ -80,6 +80,16 @@
       "created": "luotu:",
       "updated": "päivitetty:",
       "voiceLoadError": "Ääninauhoitusten lataaminen epäonnistui."
+    },
+    "videos": {
+      "title": "Videot:",
+      "addVideo": "Lisää video",
+      "takeVideo": "Kuvaa video",
+      "chooseFromLibrary": "Valitse kirjastosta",
+      "cancel": "Peruuta",
+      "deleteVideoTitle": "Poista video",
+      "deleteVideoMessage": "Haluatko varmasti poistaa tämän videon?",
+      "permissionRequired": "Kameran tai videokirjaston käyttöoikeus vaaditaan."
     }
   }
 }

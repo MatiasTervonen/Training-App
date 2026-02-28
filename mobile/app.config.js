@@ -69,6 +69,7 @@ export default {
       favicon: "./assets/images/favicon.png",
     },
     plugins: [
+      "expo-video",
       "expo-sqlite",
       "@rnmapbox/maps",
       "expo-router",

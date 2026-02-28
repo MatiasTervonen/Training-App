@@ -2,7 +2,7 @@ import Toast from "react-native-toast-message";
 import { saveNote } from "@/database/notes/save-note";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
-import { DraftRecording } from "@/types/session";
+import { DraftRecording, DraftVideo } from "@/types/session";
 
 type DraftImage = {
   id: string;
@@ -15,6 +15,7 @@ type saveNotesProps = {
   folderId?: string | null;
   draftRecordings: DraftRecording[];
   draftImages?: DraftImage[];
+  draftVideos?: DraftVideo[];
   setIsSaving: (isSaving: boolean) => void;
   resetNote: () => void;
 };
@@ -25,6 +26,7 @@ export default function useSaveNotes({
   folderId,
   draftRecordings,
   draftImages = [],
+  draftVideos = [],
   setIsSaving,
   resetNote,
 }: saveNotesProps) {
@@ -43,7 +45,7 @@ export default function useSaveNotes({
     setIsSaving(true);
 
     try {
-      await saveNote({ title, notes, folderId, draftRecordings, draftImages });
+      await saveNote({ title, notes, folderId, draftRecordings, draftImages, draftVideos });
 
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ["feed"], exact: true }),

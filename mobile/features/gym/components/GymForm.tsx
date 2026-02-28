@@ -1,9 +1,9 @@
 import { View, ScrollView } from "react-native";
 import AppText from "@/components/AppText";
-import AppInput from "@/components/AppInput";
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { useRouter } from "expo-router";
 import {
+  DraftVideo,
   ExerciseEntry,
   ExerciseInput,
   emptyExerciseEntry,
@@ -27,7 +27,6 @@ import { LinearGradient } from "expo-linear-gradient";
 import Timer from "@/components/timer";
 import PageContainer from "@/components/PageContainer";
 import AnimatedButton from "@/components/buttons/animatedButton";
-import SubNotesInput from "@/components/SubNotesInput";
 import { FullGymSession } from "@/database/gym/get-full-gym-session";
 import useSaveGymDraft from "@/features/gym/hooks/useSaveGymDraft";
 import useStartExercise from "@/features/gym/hooks/useStartExercise";
@@ -38,6 +37,20 @@ import { getPrefetchedHistoryPerCard } from "@/database/gym/prefetchedHistoryPer
 import { updateNativeTimerLabel } from "@/native/android/NativeTimer";
 import { useTranslation } from "react-i18next";
 import { formatDateShort } from "@/lib/formatDate";
+import GymNotesModal from "@/features/gym/components/GymNotesModal";
+import { NotebookPen } from "lucide-react-native";
+
+type DraftRecording = {
+  id: string;
+  uri: string;
+  createdAt: number;
+  durationMs?: number;
+};
+
+type DraftImage = {
+  id: string;
+  uri: string;
+};
 
 type GymFormData = Pick<
   FullGymSession,
@@ -84,6 +97,10 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
   const [durationEdit, setDurationEdit] = useState(session.duration);
   const router = useRouter();
   const [isSaving, setIsSaving] = useState(false);
+  const [draftImages, setDraftImages] = useState<DraftImage[]>([]);
+  const [draftRecordings, setDraftRecordings] = useState<DraftRecording[]>([]);
+  const [draftVideos, setDraftVideos] = useState<DraftVideo[]>([]);
+  const [showNotesModal, setShowNotesModal] = useState(false);
   const [exerciseType, setExerciseType] = useState("Normal");
   const [supersetExercise, setSupersetExercise] = useState<ExerciseEntry[]>([]);
   const [isExerciseModalOpen, setIsExerciseModalOpen] = useState(false);
@@ -218,6 +235,9 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
     setIsSaving,
     resetSession,
     session,
+    draftImages,
+    draftRecordings,
+    draftVideos,
   });
 
   // Keep a ref to the latest activeSession for use inside effects
@@ -274,36 +294,22 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
       >
         <PageContainer className="justify-between flex-1">
           <View>
-            {isEditing ? (
-              <AppText className="text-2xl mb-5 text-center">
-                {t("gym.gymForm.titleEdit")}
-              </AppText>
-            ) : (
-              <AppText className="text-2xl mb-5 text-center">
-                {t("gym.gymForm.title")}
-              </AppText>
-            )}
+            <AppText className="text-2xl mb-5 text-center">
+              {title || t("gym.gymForm.title")}
+            </AppText>
             <View className="gap-5">
-              <AppInput
-                value={title}
-                setValue={setTitle}
-                placeholder={t("gym.gymForm.titlePlaceholder")}
-                label={t("gym.gymForm.titleLabel")}
-              />
-              {isEditing && (
-                <AppInput
-                  value={String(durationEdit)}
-                  setValue={() => String(setDurationEdit)}
-                  placeholder={t("gym.gymForm.editDurationPlaceholder")}
-                  label={t("gym.gymForm.editDurationLabel")}
-                />
-              )}
-              <SubNotesInput
-                value={notes}
-                setValue={setNotes}
-                placeholder={t("gym.gymForm.notesPlaceholder")}
-                label={t("gym.gymForm.notesLabel")}
-              />
+              <AnimatedButton
+                onPress={() => setShowNotesModal(true)}
+                className="btn-neutral flex-row items-center justify-center gap-2 px-4"
+              >
+                <NotebookPen size={18} color="#f3f4f6" />
+                <AppText>
+                  {t("gym.gymForm.notesButton")}
+                  {draftRecordings.length + draftImages.length + draftVideos.length > 0
+                    ? ` (${draftRecordings.length + draftImages.length + draftVideos.length})`
+                    : ""}
+                </AppText>
+              </AnimatedButton>
             </View>
           </View>
 
@@ -509,6 +515,24 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
           </>
         </PageContainer>
       </ScrollView>
+
+      <GymNotesModal
+        isOpen={showNotesModal}
+        onClose={() => setShowNotesModal(false)}
+        title={title}
+        setTitle={setTitle}
+        notes={notes}
+        setNotes={setNotes}
+        isEditing={isEditing}
+        durationEdit={durationEdit}
+        setDurationEdit={setDurationEdit}
+        draftRecordings={draftRecordings}
+        setDraftRecordings={setDraftRecordings}
+        draftImages={draftImages}
+        setDraftImages={setDraftImages}
+        draftVideos={draftVideos}
+        setDraftVideos={setDraftVideos}
+      />
 
       <FullScreenLoader
         visible={isSaving}

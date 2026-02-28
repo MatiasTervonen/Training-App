@@ -10,20 +10,22 @@ import MediaToolbar from "@/features/notes/components/MediaToolbar";
 import type { SetStateAction } from "react";
 import { nanoid } from "nanoid/non-secure";
 import { useConfirmAction } from "@/lib/confirmAction";
-import { DraftRecording, DraftVideo } from "@/types/session";
+import { DraftVideo, DraftRecording } from "@/types/session";
 import FullScreenModal from "@/components/FullScreenModal";
 import PageContainer from "@/components/PageContainer";
 
 type DraftImage = { id: string; uri: string };
 
-type NotesModalProps = {
+type GymNotesModalProps = {
   isOpen: boolean;
   onClose: () => void;
-  activityName: string;
   title: string;
   setTitle: (title: string) => void;
   notes: string;
   setNotes: (notes: string) => void;
+  isEditing?: boolean;
+  durationEdit?: number;
+  setDurationEdit?: (value: number) => void;
   draftRecordings: DraftRecording[];
   setDraftRecordings: (value: SetStateAction<DraftRecording[]>) => void;
   draftImages: DraftImage[];
@@ -32,23 +34,24 @@ type NotesModalProps = {
   setDraftVideos: (value: SetStateAction<DraftVideo[]>) => void;
 };
 
-export default function NotesModal({
+export default function GymNotesModal({
   isOpen,
   onClose,
-  activityName,
   title,
   setTitle,
   notes,
   setNotes,
+  isEditing,
+  durationEdit,
+  setDurationEdit,
   draftRecordings,
   setDraftRecordings,
   draftImages,
   setDraftImages,
   draftVideos,
   setDraftVideos,
-}: NotesModalProps) {
-  const { t } = useTranslation("activities");
-
+}: GymNotesModalProps) {
+  const { t } = useTranslation(["gym", "notes"]);
   const confirmAction = useConfirmAction();
 
   return (
@@ -59,24 +62,33 @@ export default function NotesModal({
       >
         <PageContainer className="pt-10">
           <AppText className="text-2xl mb-6 text-center">
-            {activityName}
+            {t("gym.gymForm.notesModalTitle")}
           </AppText>
+
           <AppInput
-            label={t("activities.startActivityScreen.sessionNameLabel")}
+            label={t("gym.gymForm.titleLabel")}
             value={title}
             setValue={setTitle}
-            placeholder={t(
-              "activities.startActivityScreen.sessionNamePlaceholder",
-            )}
+            placeholder={t("gym.gymForm.titlePlaceholder")}
           />
+
+          {isEditing && durationEdit !== undefined && setDurationEdit && (
+            <View className="mt-5">
+              <AppInput
+                value={String(durationEdit)}
+                setValue={(v) => setDurationEdit(Number(v))}
+                placeholder={t("gym.gymForm.editDurationPlaceholder")}
+                label={t("gym.gymForm.editDurationLabel")}
+              />
+            </View>
+          )}
+
           <View className="mt-5">
             <NotesInput
-              label={t("activities.startActivityScreen.sessionNotesLabel")}
+              label={t("gym.gymForm.notesLabel")}
               value={notes}
               setValue={setNotes}
-              placeholder={t(
-                "activities.startActivityScreen.sessionNotesPlaceholder",
-              )}
+              placeholder={t("gym.gymForm.notesPlaceholder")}
             />
           </View>
 

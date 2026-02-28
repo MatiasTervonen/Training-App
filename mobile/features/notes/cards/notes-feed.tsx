@@ -1,4 +1,4 @@
-import { NotebookPen, FolderOpen, ImageIcon, Mic } from "lucide-react-native";
+import { NotebookPen, FolderOpen, ImageIcon, Mic, Video } from "lucide-react-native";
 import { FeedCardProps } from "@/types/session";
 import BaseFeedCard from "@/features/feed-cards/BaseFeedCard";
 import { View } from "react-native";
@@ -13,6 +13,7 @@ type notesPayload = {
   folder_name?: string | null;
   "voice-count"?: number;
   "image-count"?: number;
+  "video-count"?: number;
 };
 
 type Props = FeedCardProps & {
@@ -35,6 +36,7 @@ export default function NotesCard({
   const isHtmlNote = payload.notes?.startsWith("<");
   const voiceCount = payload["voice-count"] ?? 0;
   const imageCount = payload["image-count"] ?? 0;
+  const videoCount = payload["video-count"] ?? 0;
 
   return (
     <BaseFeedCard
@@ -57,7 +59,7 @@ export default function NotesCard({
               <AppText className="text-xs text-slate-400">{folderName}</AppText>
             </View>
           )}
-          {(voiceCount > 0 || imageCount > 0) && (
+          {(voiceCount > 0 || imageCount > 0 || videoCount > 0) && (
             <View className="flex-row items-center gap-3 mb-1">
               {voiceCount > 0 && (
                 <View className="flex-row items-center gap-1">
@@ -69,6 +71,12 @@ export default function NotesCard({
                 <View className="flex-row items-center gap-1">
                   <ImageIcon size={12} color="#94a3b8" />
                   <AppText className="text-xs text-slate-400">{imageCount}</AppText>
+                </View>
+              )}
+              {videoCount > 0 && (
+                <View className="flex-row items-center gap-1">
+                  <Video size={12} color="#94a3b8" />
+                  <AppText className="text-xs text-slate-400">{videoCount}</AppText>
                 </View>
               )}
             </View>

@@ -2,6 +2,19 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import Toast from "react-native-toast-message";
 import { saveWeight } from "@/database/weight/save-weight";
+import { DraftVideo } from "@/types/session";
+
+type DraftRecording = {
+  id: string;
+  uri: string;
+  createdAt: number;
+  durationMs?: number;
+};
+
+type DraftImage = {
+  id: string;
+  uri: string;
+};
 
 export default function useSaveWeight({
   title,
@@ -9,12 +22,18 @@ export default function useSaveWeight({
   weight,
   setIsSaving,
   resetWeight,
+  draftImages = [],
+  draftVideos = [],
+  draftRecordings = [],
 }: {
   title: string;
   notes: string;
   weight: string;
   setIsSaving: (isSaving: boolean) => void;
   resetWeight: () => void;
+  draftImages?: DraftImage[];
+  draftVideos?: DraftVideo[];
+  draftRecordings?: DraftRecording[];
 }) {
   const queryClient = useQueryClient();
   const router = useRouter();
@@ -40,7 +59,14 @@ export default function useSaveWeight({
     setIsSaving(true);
 
     try {
-      await saveWeight({ title, notes, weight: Number(weight) });
+      await saveWeight({
+        title,
+        notes,
+        weight: Number(weight),
+        draftImages,
+        draftVideos,
+        draftRecordings,
+      });
 
       await Promise.all([
         queryClient.invalidateQueries({

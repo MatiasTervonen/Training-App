@@ -38,7 +38,9 @@
       },
       "addExerciseButtonLabel": "Lisää liike",
       "editDeleteButtonLabel": "Peruuta",
-      "fullScreenLoaderLabel": "Tallennetaan harjoitusta..."
+      "fullScreenLoaderLabel": "Tallennetaan harjoitusta...",
+      "notesButton": "Muistiinpanot ja media",
+      "notesModalTitle": "Session muistiinpanot"
     },
     "templateForm": {
       "titleCreate": "Luo harjoituspohja",

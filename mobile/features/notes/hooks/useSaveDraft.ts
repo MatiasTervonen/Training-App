@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDebouncedCallback } from "use-debounce";
 import { handleError } from "@/utils/handleError";
-import { DraftRecording } from "@/types/session";
+import { DraftRecording, DraftVideo } from "@/types/session";
 
 type DraftImage = {
   id: string;
@@ -14,19 +14,23 @@ export default function useSaveDraft({
   notes,
   draftRecordings,
   draftImages = [],
+  draftVideos = [],
   setTitle,
   setNotes,
   setDraftRecordings,
   setDraftImages,
+  setDraftVideos,
 }: {
   title: string;
   notes: string;
   draftRecordings: DraftRecording[];
   draftImages?: DraftImage[];
+  draftVideos?: DraftVideo[];
   setTitle: (title: string) => void;
   setNotes: (notes: string) => void;
   setDraftRecordings: (recordings: DraftRecording[]) => void;
   setDraftImages?: (images: DraftImage[]) => void;
+  setDraftVideos?: (videos: DraftVideo[]) => void;
 }) {
   const [isLoaded, setIsLoaded] = useState(false);
 
@@ -40,6 +44,7 @@ export default function useSaveDraft({
           setNotes(draft.notes || "");
           setDraftRecordings(draft.draftRecordings || []);
           setDraftImages?.(draft.draftImages || []);
+          setDraftVideos?.(draft.draftVideos || []);
         }
       } catch (error) {
         handleError(error, {
@@ -61,7 +66,7 @@ export default function useSaveDraft({
       if (title.trim().length === 0 && notes.trim().length === 0) {
         await AsyncStorage.removeItem("notes_draft");
       } else {
-        const draft = { title, notes, draftRecordings, draftImages };
+        const draft = { title, notes, draftRecordings, draftImages, draftVideos };
         await AsyncStorage.setItem("notes_draft", JSON.stringify(draft));
       }
     },
@@ -71,7 +76,7 @@ export default function useSaveDraft({
 
   useEffect(() => {
     saveNotesDraft();
-  }, [notes, title, draftRecordings, draftImages, saveNotesDraft]);
+  }, [notes, title, draftRecordings, draftImages, draftVideos, saveNotesDraft]);
 
   return {
     saveNotesDraft,

@@ -813,74 +813,6 @@ export type Database = {
           },
         ]
       }
-      gym_sessions: {
-        Row: {
-          created_at: string
-          duration: number
-          id: string
-          notes: string | null
-          title: string | null
-          updated_at: string | null
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          duration: number
-          id: string
-          notes?: string | null
-          title?: string | null
-          updated_at?: string | null
-          user_id?: string
-        }
-        Update: {
-          created_at?: string
-          duration?: number
-          id?: string
-          notes?: string | null
-          title?: string | null
-          updated_at?: string | null
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "gym_sessions_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      gym_sessions_backup: {
-        Row: {
-          created_at: string | null
-          duration: number | null
-          id: string | null
-          notes: string | null
-          title: string | null
-          updated_at: string | null
-          user_id: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          duration?: number | null
-          id?: string | null
-          notes?: string | null
-          title?: string | null
-          updated_at?: string | null
-          user_id?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          duration?: number | null
-          id?: string | null
-          notes?: string | null
-          title?: string | null
-          updated_at?: string | null
-          user_id?: string | null
-        }
-        Relationships: []
-      }
       gym_sets: {
         Row: {
           created_at: string
@@ -1199,6 +1131,38 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notes_images: {
+        Row: {
+          created_at: string
+          id: string
+          note_id: string
+          storage_path: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          note_id: string
+          storage_path: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          note_id?: string
+          storage_path?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notes_images_note_id_fkey"
+            columns: ["note_id"]
+            isOneToOne: false
+            referencedRelation: "notes"
             referencedColumns: ["id"]
           },
         ]
@@ -1978,9 +1942,11 @@ export type Database = {
       last_30d_analytics: { Args: never; Returns: Json }
       notes_edit_note: {
         Args: {
+          p_deleted_image_ids?: string[]
           p_deleted_recording_ids?: string[]
           p_folder_id?: string
           p_id: string
+          p_new_images?: Json
           p_new_recordings?: Json
           p_notes: string
           p_title: string
@@ -2039,6 +2005,7 @@ export type Database = {
         Args: {
           p_draftrecordings?: Json
           p_folder_id?: string
+          p_images?: Json
           p_notes: string
           p_title: string
         }

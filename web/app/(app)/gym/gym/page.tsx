@@ -10,6 +10,11 @@ export default function TrainingSessionPage() {
     duration: 0,
     created_at: new Date().toISOString(),
     updated_at: "",
+    activity_id: "",
+    end_time: "",
+    start_time: "",
+    geom: null,
+    template_id: null,
     gym_session_exercises: [],
   };
 

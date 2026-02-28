@@ -4,9 +4,11 @@ import Toast from "react-native-toast-message";
 import { Friends } from "@/types/models";
 import { useConfirmAction } from "@/lib/confirmAction";
 import { handleError } from "@/utils/handleError";
-import { deleteFriend } from "@/database/friend/delete-friend";
+import { useDeleteFriend } from "@/features/friends/hooks/useDeleteFriend";
 import { View } from "react-native";
 import AppText from "@/components/AppText";
+import AnimatedButton from "@/components/buttons/animatedButton";
+import { useTranslation } from "react-i18next";
 
 type FriendCardProps = {
   friend: Friends;
@@ -14,23 +16,20 @@ type FriendCardProps = {
 
 export default function FriendCard({ friend }: FriendCardProps) {
   const confirmAction = useConfirmAction();
+  const deleteFriend = useDeleteFriend();
+  const { t } = useTranslation("friends");
 
   const handleDeleteFriend = async () => {
     const confirmed = await confirmAction({
-      title: "Are you sure you want to delete this friend?",
+      title: t("friends.deleteConfirmation"),
     });
     if (!confirmed) return;
 
     try {
-      const response = await deleteFriend(friend.id);
-
-      if (response.error) {
-        throw new Error(response.message || "Failed to delete friend");
-      }
-
+      await deleteFriend.mutateAsync(friend.id);
       Toast.show({
         type: "success",
-        text1: "Friend deleted successfully!",
+        text1: t("friends.deleteSuccess"),
       });
     } catch (error) {
       handleError(error, {
@@ -38,22 +37,32 @@ export default function FriendCard({ friend }: FriendCardProps) {
         route: "/api/friend/delete-friend",
         method: "DELETE",
       });
+      Toast.show({
+        type: "error",
+        text1: t("friends.deleteError"),
+      });
     }
   };
 
+  const imageSource = friend.user.profile_picture
+    ? { uri: friend.user.profile_picture }
+    : require("@/assets/images/default-avatar.png");
+
   return (
-    <View className="bg-slate-900 p-4 rounded-md shadow-md flex-row items-center justify-between mb-4">
-      <View className="flex-row items-center">
+    <View className="bg-slate-900 p-4 rounded-md shadow-md flex-row items-center justify-between">
+      <View className="flex-row items-center gap-5">
         <Image
-          source={{ uri: friend.user.profile_picture || "/default-avatar.png" }}
-          alt="Profile Picture"
+          source={imageSource}
           className="rounded-full border-2 border-blue-500 w-[40px] h-[40px]"
         />
-        <AppText className="ml-2 text-white">
-          {friend.user.display_name}
-        </AppText>
+        <AppText className="text-lg">{friend.user.display_name}</AppText>
       </View>
-      <Trash2 onPress={handleDeleteFriend} color="#ef4444" />
+      <AnimatedButton
+        onPress={handleDeleteFriend}
+        className="bg-red-600 p-2 rounded-md"
+      >
+        <Trash2 color="#f3f4f6" size={20} />
+      </AnimatedButton>
     </View>
   );
 }

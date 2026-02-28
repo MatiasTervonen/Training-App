@@ -2,7 +2,7 @@ import { View } from "react-native";
 import AppText from "@/components/AppText";
 import LinkButton from "@/components/buttons/LinkButton";
 import LogoutButton from "@/features/login-signup/LogoutButton";
-import { ShieldUser, UserPen, Settings, LayoutGrid, MessageSquareMore } from "lucide-react-native";
+import { ShieldUser, UserPen, Settings, LayoutGrid, MessageSquareMore, ContactRound } from "lucide-react-native";
 import PageContainer from "@/components/PageContainer";
 import { useTranslation } from "react-i18next";
 
@@ -16,9 +16,9 @@ export default function SettingsScreen() {
       </AppText>
       <View className="justify-between flex-1">
         <View className="gap-4">
-          {/* <LinkButton label="Friends" href="/menu/friends">
-            <ContactRound color="white" />
-          </LinkButton> */}
+          <LinkButton label={t("menu.friends")} href="/menu/friends">
+            <ContactRound color="#f3f4f6" />
+          </LinkButton>
           <LinkButton label={t("menu.profile")} href="/menu/profile">
             <UserPen color="#f3f4f6" />
           </LinkButton>

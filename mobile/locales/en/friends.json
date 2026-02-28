@@ -1,0 +1,27 @@
+{
+  "friends": {
+    "title": "Friends",
+    "myFriends": "My Friends",
+    "noFriends": "No friends yet",
+    "sendRequest": "Send Request",
+    "sendFriendRequest": "Send Friend Request",
+    "placeholder": "Enter friend's display name",
+    "requestSentSuccess": "Friend request sent!",
+    "cannotSendToSelf": "You cannot send a friend request to yourself",
+    "requestAlreadyExists": "Friend request already pending",
+    "alreadyFriends": "You are already friends",
+    "userNotFound": "User not found",
+    "sendError": "Failed to send friend request",
+    "deleteConfirmation": "Remove this friend?",
+    "deleteSuccess": "Friend removed",
+    "deleteError": "Failed to remove friend",
+    "pendingRequests": "Pending Requests",
+    "requestFrom": "Friend request from",
+    "accept": "Accept",
+    "reject": "Reject",
+    "acceptSuccess": "Friend request accepted!",
+    "acceptError": "Failed to accept request",
+    "rejectSuccess": "Friend request declined",
+    "rejectError": "Failed to decline request"
+  }
+}

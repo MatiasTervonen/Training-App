@@ -1,0 +1,27 @@
+{
+  "friends": {
+    "title": "Kaverit",
+    "myFriends": "Kaverini",
+    "noFriends": "Ei vielä kavereita",
+    "sendRequest": "Lähetä pyyntö",
+    "sendFriendRequest": "Lähetä kaveripyyntö",
+    "placeholder": "Syötä kaverin näyttönimi",
+    "requestSentSuccess": "Kaveripyyntö lähetetty!",
+    "cannotSendToSelf": "Et voi lähettää kaveripyyntöä itsellesi",
+    "requestAlreadyExists": "Kaveripyyntö on jo lähetetty",
+    "alreadyFriends": "Olette jo kavereita",
+    "userNotFound": "Käyttäjää ei löytynyt",
+    "sendError": "Kaveripyynnön lähetys epäonnistui",
+    "deleteConfirmation": "Poista tämä kaveri?",
+    "deleteSuccess": "Kaveri poistettu",
+    "deleteError": "Kaverin poisto epäonnistui",
+    "pendingRequests": "Saapuneet pyynnöt",
+    "requestFrom": "Kaveripyyntö käyttäjältä",
+    "accept": "Hyväksy",
+    "reject": "Hylkää",
+    "acceptSuccess": "Kaveripyyntö hyväksytty!",
+    "acceptError": "Pyynnön hyväksyminen epäonnistui",
+    "rejectSuccess": "Kaveripyyntö hylätty",
+    "rejectError": "Pyynnön hylkääminen epäonnistui"
+  }
+}

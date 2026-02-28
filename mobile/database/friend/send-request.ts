@@ -15,62 +15,42 @@ export async function sendFriendRequest(identifier: string) {
     throw new Error("invalid identifier");
   }
 
-  const isUUID = (str: string) =>
-    /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/.test(
-      str,
-    );
-
-  let targetuser = null;
-  let lookUpError = null;
-
-  if (isUUID(identifier)) {
-    const result = await supabase
-      .from("users")
-      .select("id")
-      .eq("id", identifier)
-      .single();
-
-    targetuser = result.data;
-    lookUpError = result.error;
-  } else {
-    const result = await supabase
-      .from("users")
-      .select("id")
-      .eq("display_name", identifier)
-      .single();
-
-    targetuser = result.data;
-    lookUpError = result.error;
-  }
+  const { data: targetuser, error: lookUpError } = await supabase
+    .from("users")
+    .select("id")
+    .ilike("display_name", identifier)
+    .single();
 
   if (lookUpError || !targetuser) {
-    handleError(lookUpError, {
-      message: "Error fetching user",
-      route: "/database/friend/send-request",
-      method: "POST",
-    });
-    throw new Error("Error fetching user");
+    return { error: true, message: "userNotFound" };
   }
 
   const receiverId = targetuser.id;
 
-  // Check if the receiverId is the same as the user's id
-
   if (receiverId === session.user.id) {
-    return {
-      error: true,
-      message: "You cannot send a friend request to yourself",
-    };
+    return { error: true, message: "cannotSendToSelf" };
   }
 
-  // Check if a friend request already exists
-  const { data: existingRequest, error: existingError } = await supabase
-    .from("friend_requests")
-    .select("*")
-    .or(
-      `and(sender_id.eq.${session.user.id},receiver_id.eq.${receiverId},status.eq.pending),and(sender_id.eq.${receiverId},receiver_id.eq.${session.user.id},status.eq.pending)`,
-    )
-    .maybeSingle();
+  // Check for existing request and existing friendship in parallel
+  const [existingResult, friendshipResult] = await Promise.all([
+    supabase
+      .from("friend_requests")
+      .select("*")
+      .or(
+        `and(sender_id.eq.${session.user.id},receiver_id.eq.${receiverId},status.eq.pending),and(sender_id.eq.${receiverId},receiver_id.eq.${session.user.id},status.eq.pending)`,
+      )
+      .maybeSingle(),
+    supabase
+      .from("friend_requests")
+      .select("*")
+      .or(
+        `and(sender_id.eq.${session.user.id},receiver_id.eq.${receiverId},status.eq.accepted),and(sender_id.eq.${receiverId},receiver_id.eq.${session.user.id},status.eq.accepted)`,
+      )
+      .maybeSingle(),
+  ]);
+
+  const { data: existingRequest, error: existingError } = existingResult;
+  const { data: friendship, error: friendshipError } = friendshipResult;
 
   if (existingError) {
     handleError(existingError, {
@@ -82,18 +62,8 @@ export async function sendFriendRequest(identifier: string) {
   }
 
   if (existingRequest) {
-    return { error: true, message: "Friend request already exists" };
+    return { error: true, message: "requestAlreadyExists" };
   }
-
-  // Check if the user are already friends
-
-  const { data: friendship, error: friendshipError } = await supabase
-    .from("friend_requests")
-    .select("*")
-    .or(
-      `and(sender_id.eq.${session.user.id},receiver_id.eq.${receiverId},status.eq.accepted),and(sender_id.eq.${receiverId},receiver_id.eq.${session.user.id},status.eq.accepted)`,
-    )
-    .maybeSingle();
 
   if (friendshipError) {
     handleError(friendshipError, {
@@ -102,8 +72,9 @@ export async function sendFriendRequest(identifier: string) {
       method: "POST",
     });
   }
+
   if (friendship) {
-    throw new Error("Error checking friendship");
+    return { error: true, message: "alreadyFriends" };
   }
 
   const { data: request, error } = await supabase

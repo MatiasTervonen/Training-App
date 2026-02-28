@@ -527,6 +527,7 @@ export type Database = {
           category: string
           created_at: string
           id: string
+          image_paths: string[]
           message: string
           title: string
           user_id: string
@@ -535,6 +536,7 @@ export type Database = {
           category: string
           created_at?: string
           id?: string
+          image_paths?: string[]
           message: string
           title: string
           user_id: string
@@ -543,6 +545,7 @@ export type Database = {
           category?: string
           created_at?: string
           id?: string
+          image_paths?: string[]
           message?: string
           title?: string
           user_id?: string
@@ -1167,6 +1170,44 @@ export type Database = {
           },
         ]
       }
+      notes_videos: {
+        Row: {
+          created_at: string
+          duration_ms: number | null
+          id: string
+          note_id: string
+          storage_path: string
+          thumbnail_storage_path: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          duration_ms?: number | null
+          id?: string
+          note_id: string
+          storage_path: string
+          thumbnail_storage_path?: string | null
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          duration_ms?: number | null
+          id?: string
+          note_id?: string
+          storage_path?: string
+          thumbnail_storage_path?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notes_videos_note_id_fkey"
+            columns: ["note_id"]
+            isOneToOne: false
+            referencedRelation: "notes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notes_voice: {
         Row: {
           created_at: string
@@ -1275,6 +1316,38 @@ export type Database = {
         }
         Relationships: []
       }
+      session_images: {
+        Row: {
+          created_at: string
+          id: string
+          session_id: string
+          storage_path: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          session_id: string
+          storage_path: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          session_id?: string
+          storage_path?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "session_images_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       session_stats: {
         Row: {
           avg_pace: number | null
@@ -1332,6 +1405,44 @@ export type Database = {
             foreignKeyName: "activity_session_stats_session_id_fkey"
             columns: ["session_id"]
             isOneToOne: true
+            referencedRelation: "sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      session_videos: {
+        Row: {
+          created_at: string
+          duration_ms: number | null
+          id: string
+          session_id: string
+          storage_path: string
+          thumbnail_storage_path: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          duration_ms?: number | null
+          id?: string
+          session_id: string
+          storage_path: string
+          thumbnail_storage_path?: string | null
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          duration_ms?: number | null
+          id?: string
+          session_id?: string
+          storage_path?: string
+          thumbnail_storage_path?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "session_videos_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
             referencedRelation: "sessions"
             referencedColumns: ["id"]
           },
@@ -1796,6 +1907,111 @@ export type Database = {
           },
         ]
       }
+      weight_images: {
+        Row: {
+          created_at: string
+          id: string
+          storage_path: string
+          user_id: string
+          weight_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          storage_path: string
+          user_id?: string
+          weight_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          storage_path?: string
+          user_id?: string
+          weight_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "weight_images_weight_id_fkey"
+            columns: ["weight_id"]
+            isOneToOne: false
+            referencedRelation: "weight"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      weight_videos: {
+        Row: {
+          created_at: string
+          duration_ms: number | null
+          id: string
+          storage_path: string
+          thumbnail_storage_path: string | null
+          user_id: string
+          weight_id: string
+        }
+        Insert: {
+          created_at?: string
+          duration_ms?: number | null
+          id?: string
+          storage_path: string
+          thumbnail_storage_path?: string | null
+          user_id?: string
+          weight_id: string
+        }
+        Update: {
+          created_at?: string
+          duration_ms?: number | null
+          id?: string
+          storage_path?: string
+          thumbnail_storage_path?: string | null
+          user_id?: string
+          weight_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "weight_videos_weight_id_fkey"
+            columns: ["weight_id"]
+            isOneToOne: false
+            referencedRelation: "weight"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      weight_voice: {
+        Row: {
+          created_at: string
+          duration_ms: number | null
+          id: string
+          storage_path: string
+          user_id: string
+          weight_id: string
+        }
+        Insert: {
+          created_at?: string
+          duration_ms?: number | null
+          id?: string
+          storage_path: string
+          user_id?: string
+          weight_id: string
+        }
+        Update: {
+          created_at?: string
+          duration_ms?: number | null
+          id?: string
+          storage_path?: string
+          user_id?: string
+          weight_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "weight_voice_weight_id_fkey"
+            columns: ["weight_id"]
+            isOneToOne: false
+            referencedRelation: "weight"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       debug_session: {
@@ -1807,6 +2023,10 @@ export type Database = {
       }
     }
     Functions: {
+      accept_friend_request: {
+        Args: { p_sender_id: string }
+        Returns: undefined
+      }
       activities_compute_session_stats: {
         Args: { p_session_id: string; p_steps: number }
         Returns: undefined
@@ -1822,11 +2042,13 @@ export type Database = {
           p_draftrecordings?: Json
           p_duration: number
           p_end_time: string
+          p_images?: Json
           p_notes: string
           p_start_time: string
           p_steps: number
           p_title: string
           p_track: Json
+          p_videos?: Json
         }
         Returns: string
       }
@@ -1861,6 +2083,7 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      delete_friend: { Args: { p_friend_id: string }; Returns: undefined }
       feed_delete_session: {
         Args: { p_id: string; p_type: string }
         Returns: undefined
@@ -1883,9 +2106,15 @@ export type Database = {
       get_jwt: { Args: never; Returns: Json }
       gym_edit_session: {
         Args: {
+          p_deleted_image_ids?: string[]
+          p_deleted_recording_ids?: string[]
+          p_deleted_video_ids?: string[]
           p_duration: number
           p_exercises: Json
           p_id: string
+          p_new_images?: Json
+          p_new_recordings?: Json
+          p_new_videos?: Json
           p_notes: string
           p_title: string
           p_updated_at: string
@@ -1929,9 +2158,12 @@ export type Database = {
           p_duration: number
           p_end_time: string
           p_exercises: Json
+          p_images?: Json
           p_notes: string
+          p_recordings?: Json
           p_start_time: string
           p_title: string
+          p_videos?: Json
         }
         Returns: string
       }
@@ -1944,10 +2176,12 @@ export type Database = {
         Args: {
           p_deleted_image_ids?: string[]
           p_deleted_recording_ids?: string[]
+          p_deleted_video_ids?: string[]
           p_folder_id?: string
           p_id: string
           p_new_images?: Json
           p_new_recordings?: Json
+          p_new_videos?: Json
           p_notes: string
           p_title: string
           p_updated_at: string
@@ -2008,6 +2242,7 @@ export type Database = {
           p_images?: Json
           p_notes: string
           p_title: string
+          p_videos?: Json
         }
         Returns: string
       }
@@ -2202,7 +2437,14 @@ export type Database = {
         }
       }
       weight_save_weight: {
-        Args: { p_notes: string; p_title: string; p_weight: number }
+        Args: {
+          p_images?: Json
+          p_notes: string
+          p_recordings?: Json
+          p_title: string
+          p_videos?: Json
+          p_weight: number
+        }
         Returns: string
       }
     }

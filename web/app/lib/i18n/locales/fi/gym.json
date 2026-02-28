@@ -227,6 +227,13 @@
       "confirmMessage": "Haluatko varmasti lopettaa tämän session?",
       "saveError": "Session tallentaminen epäonnistui. Yritä uudelleen."
     },
+    "session": {
+      "totalVolume": "Volyymi",
+      "calories": "Kalorit",
+      "exercises": "Liikkeet",
+      "totalSets": "Sarjat",
+      "muscleGroups": "Lihasryhmät"
+    },
     "analytics": {
       "title": "Viimeisten 30 päivän analytiikka",
       "totalWorkouts": "Treenejä yht",

@@ -228,6 +228,13 @@
       "confirmMessage": "Are you sure you want to finish this session?",
       "saveError": "Failed to save session. Please try again."
     },
+    "session": {
+      "totalVolume": "Volume",
+      "calories": "Calories",
+      "exercises": "Exercises",
+      "totalSets": "Sets",
+      "muscleGroups": "Muscles"
+    },
     "analytics": {
       "title": "Last 30 Days Analytics",
       "totalWorkouts": "Total workouts",

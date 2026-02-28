@@ -13,6 +13,7 @@ import ExerciseHistoryModal from "@/features/gym/components/ExerciseHistory/Exer
 import { useTranslation } from "react-i18next";
 import { FullGymSession } from "@/database/gym/get-full-gym-session";
 import { Clock } from "lucide-react";
+import { StatCard } from "@/components/StatCard";
 
 export default function GymSession(gym_session: FullGymSession) {
   const { t, i18n } = useTranslation("gym");
@@ -25,6 +26,18 @@ export default function GymSession(gym_session: FullGymSession) {
 
   const weightUnit =
     useUserStore((state) => state.preferences?.weight_unit) || "kg";
+
+  const sessionStats = gym_session.session_stats;
+  const exerciseCount = gym_session.gym_session_exercises?.length ?? 0;
+  const totalSets = gym_session.gym_session_exercises?.reduce(
+    (sum, ex) => sum + (ex.gym_sets?.length ?? 0),
+    0,
+  ) ?? 0;
+  const muscleGroupsHit = new Set(
+    gym_session.gym_session_exercises
+      ?.map((ex) => ex.gym_exercises?.muscle_group)
+      .filter(Boolean),
+  ).size;
 
   const isCardioExercise = (exercise: {
     gym_exercises: { main_group: string };
@@ -70,9 +83,34 @@ export default function GymSession(gym_session: FullGymSession) {
             {formatTime(gym_session.end_time)}
           </p>
         </div>
-        <h3>
-          {t("gym.analytics.duration")}: {formatDuration(gym_session.duration)}
-        </h3>
+        <div className="flex gap-2 w-full">
+          <StatCard
+            label={t("gym.analytics.duration")}
+            value={formatDuration(gym_session.duration)}
+          />
+          <StatCard
+            label={t("gym.session.totalVolume")}
+            value={sessionStats != null ? `${sessionStats.total_volume?.toLocaleString() ?? 0} ${weightUnit}` : "—"}
+          />
+          <StatCard
+            label={t("gym.session.calories")}
+            value={sessionStats != null ? String(Math.round(sessionStats.calories ?? 0)) : "—"}
+          />
+        </div>
+        <div className="flex gap-2 w-full">
+          <StatCard
+            label={t("gym.session.exercises")}
+            value={String(exerciseCount)}
+          />
+          <StatCard
+            label={t("gym.session.totalSets")}
+            value={String(totalSets)}
+          />
+          <StatCard
+            label={t("gym.session.muscleGroups")}
+            value={String(muscleGroupsHit)}
+          />
+        </div>
         {gym_session.notes && (
           <p className="mt-4 text-gray-200 whitespace-pre-wrap wrap-break-word overflow-hidden max-w-full">
             {gym_session.notes}

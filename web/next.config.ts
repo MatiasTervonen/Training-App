@@ -5,6 +5,9 @@ import { withBotId } from "botid/next/config";
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
+  experimental: {
+    optimizePackageImports: ["lucide-react"],
+  },
   images: {
     remotePatterns: [
       {

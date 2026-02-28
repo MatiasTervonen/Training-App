@@ -11,3 +11,4 @@ export { default as login } from "./login.json";
 export { default as feed } from "./feed.json";
 export { default as widgets } from "./widgets.json";
 export { default as onboarding } from "./onboarding.json";
+export { default as friends } from "./friends.json";

@@ -31,12 +31,13 @@ import SelectInput from "@/components/Selectinput";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { LinearGradient } from "expo-linear-gradient";
 import { useConfirmAction } from "@/lib/confirmAction";
-import AppButton from "@/components/buttons/AppButton";
 import PageContainer from "@/components/PageContainer";
 import useAddExercise from "@/features/gym/hooks/template/useAddExercise";
 import useSaveTemplate from "@/features/gym/hooks/template/useSaveTemplate";
 import useLogSetForExercise from "@/features/gym/hooks/template/useLogSetForExercise";
 import { useTranslation } from "react-i18next";
+
+import AnimatedButton from "@/components/buttons/animatedButton";
 
 export default function TemplateForm() {
   const confirmAction = useConfirmAction();
@@ -122,8 +123,8 @@ export default function TemplateForm() {
           equipment: ex.gym_exercises.equipment,
           main_group: ex.gym_exercises.main_group,
           muscle_group: ex.gym_exercises.muscle_group,
-          sets: Array.from({ length: ex.sets ?? 0 }).map(() => ({
-            reps: ex.reps ?? undefined,
+          sets: Array.from({ length: ex.position ?? 0 }).map(() => ({
+            reps: undefined,
             weight: undefined,
             rpe: undefined,
           })),
@@ -390,7 +391,7 @@ export default function TemplateForm() {
             />
 
             <View className="flex-row items-center justify-center gap-5 mt-10">
-              <AppButton
+              <AnimatedButton
                 onPress={() => {
                   setExerciseType("Normal");
                   setSupersetExercise([emptyExerciseEntry]);
@@ -398,9 +399,10 @@ export default function TemplateForm() {
                   setIsExerciseModalOpen(true);
                 }}
                 label={t("gym.templateForm.addExercise")}
+                className="btn-base flex-row justify-center items-center gap-3 px-10"
               >
                 <Plus size={20} color="#f3f4f6" />
-              </AppButton>
+              </AnimatedButton>
             </View>
             <View className="flex-row gap-4 mt-14">
               <View className="flex-1">

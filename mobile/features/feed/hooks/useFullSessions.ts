@@ -64,14 +64,15 @@ export default function useFullSessions(
         ? editingItem
         : null;
 
-  const voiceCount =
-    (notesItem?.extra_fields as { "voice-count"?: number } | undefined)?.[
-      "voice-count"
-    ] ?? 0;
+  const notesExtra = notesItem?.extra_fields as
+    | { "voice-count"?: number; "image-count"?: number }
+    | undefined;
+  const voiceCount = notesExtra?.["voice-count"] ?? 0;
+  const imageCount = notesExtra?.["image-count"] ?? 0;
 
-  const notesHasVoice = notesItem && voiceCount > 0;
+  const notesHasMedia = notesItem && (voiceCount > 0 || imageCount > 0);
 
-  const notesId = notesHasVoice ? getId(notesItem) : null;
+  const notesId = notesHasMedia ? getId(notesItem) : null;
 
   const {
     data: GymSessionFull,

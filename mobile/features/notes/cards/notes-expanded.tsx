@@ -8,13 +8,17 @@ import { FullNotesSession } from "@/database/notes/get-full-notes";
 import { DraftRecordingItem } from "../components/draftRecording";
 import { NotesVoiceSkeleton } from "@/components/skeletetons";
 import { useTranslation } from "react-i18next";
+import { useState } from "react";
 import BodyText from "@/components/BodyText";
 import RichContent from "../components/notesWebview";
 import { stripHtml } from "@/lib/stripHtml";
+import DraftImageItem from "@/features/notes/components/DraftImageItem";
+import ImageViewerModal from "@/features/notes/components/ImageViewerModal";
 
 type notesPayload = {
   notes: string;
   "voice-count"?: number;
+  "image-count"?: number;
 };
 
 type NotesSessionProps = {
@@ -31,8 +35,11 @@ export default function NotesSession({
   error,
 }: NotesSessionProps) {
   const { t } = useTranslation("notes");
+  const [viewerIndex, setViewerIndex] = useState(-1);
   const payload = note.extra_fields as notesPayload;
   const voiceCount = payload["voice-count"] ?? 0;
+  const imageCount = payload["image-count"] ?? 0;
+  const images = voiceRecordings?.images ?? [];
 
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
@@ -59,6 +66,22 @@ export default function NotesSession({
               {payload.notes}
             </BodyText>
           )}
+          {/* Images */}
+          {imageCount > 0 && (
+            <View className="mt-10">
+              {isLoadingVoice ? (
+                <NotesVoiceSkeleton count={imageCount} />
+              ) : (
+                images.map((image, idx) => (
+                  <DraftImageItem
+                    key={image.id}
+                    uri={image.uri}
+                    onPress={() => setViewerIndex(idx)}
+                  />
+                ))
+              )}
+            </View>
+          )}
           {/* Voice Recordings */}
           {voiceCount > 0 && (
             <View className="mt-14">
@@ -82,6 +105,14 @@ export default function NotesSession({
         </View>
 
       </PageContainer>
+      {images.length > 0 && viewerIndex >= 0 && (
+        <ImageViewerModal
+          images={images}
+          initialIndex={viewerIndex}
+          visible={viewerIndex >= 0}
+          onClose={() => setViewerIndex(-1)}
+        />
+      )}
     </ScrollView>
   );
 }

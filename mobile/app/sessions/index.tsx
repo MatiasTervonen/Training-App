@@ -21,28 +21,28 @@ export default function SessionsScreen() {
       <AppText className="text-2xl text-center mb-10">{t("sessions.title")}</AppText>
       <View className="gap-4">
         <LinkButton label={t("sessions.gym")} href="/gym">
-          <Dumbbell color="#f3f4f6" />
+          <Dumbbell size={20} color="#f3f4f6" />
         </LinkButton>
         <LinkButton label={t("sessions.activities")} href="/activities">
-          <Activity color="#f3f4f6" />
+          <Activity size={20} color="#f3f4f6" />
         </LinkButton>
         <LinkButton label={t("sessions.notes")} href="/notes">
-          <NotebookPen color="#f3f4f6" />
+          <NotebookPen size={20} color="#f3f4f6" />
         </LinkButton>
         {/* <LinkButton label="Disc-golf" href="/disc-golf">
-          <Disc color="#f3f4f6" />
+          <Disc size={20} color="#f3f4f6" />
         </LinkButton> */}
         <LinkButton label={t("sessions.timer")} href="/timer">
-          <Timer color="#f3f4f6" />
+          <Timer size={20} color="#f3f4f6" />
         </LinkButton>
         <LinkButton label={t("sessions.bodyWeight")} href="/weight">
-          <Weight color="#f3f4f6" />
+          <Weight size={20} color="#f3f4f6" />
         </LinkButton>
         <LinkButton label={t("sessions.todoList")} href="/todo">
-          <ListTodo color="#f3f4f6" />
+          <ListTodo size={20} color="#f3f4f6" />
         </LinkButton>
         <LinkButton label={t("sessions.reminders")} href="/reminders">
-          <Bell color="#f3f4f6" />
+          <Bell size={20} color="#f3f4f6" />
         </LinkButton>
       </View>
     </PageContainer>

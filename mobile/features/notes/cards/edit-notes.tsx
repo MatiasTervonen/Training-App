@@ -12,13 +12,14 @@ import { Dot } from "lucide-react-native";
 import { FeedItemUI } from "@/types/session";
 import { FullNotesSession } from "@/database/notes/get-full-notes";
 import { DraftRecordingItem } from "../components/draftRecording";
-import RecordVoiceNotes from "../components/RecordVoiceNotes";
 import { nanoid } from "nanoid/non-secure";
 import { useConfirmAction } from "@/lib/confirmAction";
 import { NotesVoiceSkeleton } from "@/components/skeletetons";
 import { useTranslation } from "react-i18next";
 import useFolders from "@/features/notes/hooks/useFolders";
-import FolderPicker from "@/features/notes/components/FolderPicker";
+import DraftImageItem from "@/features/notes/components/DraftImageItem";
+import ImageViewerModal from "@/features/notes/components/ImageViewerModal";
+import MediaToolbar from "@/features/notes/components/MediaToolbar";
 
 type Props = {
   note: FeedItemUI;
@@ -32,6 +33,7 @@ type Props = {
 type notesPayload = {
   notes: string;
   "voice-count"?: number;
+  "image-count"?: number;
   folder_id?: string | null;
 };
 
@@ -49,6 +51,17 @@ type ExistingRecording = {
   uri: string;
 };
 
+type ExistingImage = {
+  id: string;
+  storage_path: string;
+  uri: string;
+};
+
+type DraftImage = {
+  id: string;
+  uri: string;
+};
+
 export default function EditNotes({
   note,
   onClose,
@@ -60,6 +73,7 @@ export default function EditNotes({
   const { t } = useTranslation("notes");
   const payload = note.extra_fields as notesPayload;
   const voiceCount = payload["voice-count"] ?? 0;
+  const imageCount = payload["image-count"] ?? 0;
   const confirmAction = useConfirmAction();
   const [title, setValue] = useState(note.title);
   const [notes, setNotes] = useState(payload.notes);
@@ -77,15 +91,24 @@ export default function EditNotes({
   const [deletedRecordingIds, setDeletedRecordingIds] = useState<string[]>([]);
   const [newRecordings, setNewRecordings] = useState<DraftRecording[]>([]);
 
+  // Image state
+  const [existingImages, setExistingImages] = useState<ExistingImage[]>([]);
+  const [deletedImageIds, setDeletedImageIds] = useState<string[]>([]);
+  const [newImages, setNewImages] = useState<DraftImage[]>([]);
+  const [viewerIndex, setViewerIndex] = useState(-1);
+
   const initialTitle = note.title || "";
   const initialNotes = payload.notes || "";
 
-  // Sync existing recordings from props
+  // Sync existing recordings and images from props
   useEffect(() => {
     if (voiceRecordings?.voiceRecordings) {
       setExistingRecordings(voiceRecordings.voiceRecordings);
     }
-  }, [voiceRecordings?.voiceRecordings]);
+    if (voiceRecordings?.images) {
+      setExistingImages(voiceRecordings.images);
+    }
+  }, [voiceRecordings?.voiceRecordings, voiceRecordings?.images]);
 
   const handleDeleteExisting = async (recordingId: string) => {
     const confirmed = await confirmAction({
@@ -108,6 +131,27 @@ export default function EditNotes({
     setNewRecordings((prev) => prev.filter((_, i) => i !== index));
   };
 
+  const handleDeleteExistingImage = async (imageId: string) => {
+    const confirmed = await confirmAction({
+      title: t("notes.images.deleteImageTitle"),
+      message: t("notes.images.deleteImageMessage"),
+    });
+    if (!confirmed) return;
+
+    setDeletedImageIds((prev) => [...prev, imageId]);
+    setExistingImages((prev) => prev.filter((img) => img.id !== imageId));
+  };
+
+  const handleDeleteNewImage = async (index: number) => {
+    const confirmed = await confirmAction({
+      title: t("notes.images.deleteImageTitle"),
+      message: t("notes.images.deleteImageMessage"),
+    });
+    if (!confirmed) return;
+
+    setNewImages((prev) => prev.filter((_, i) => i !== index));
+  };
+
   const handleSubmit = async () => {
     setIsSaving(true);
 
@@ -120,6 +164,8 @@ export default function EditNotes({
         folderId: selectedFolderId,
         deletedRecordingIds,
         newRecordings,
+        deletedImageIds,
+        newImages,
       });
 
       onSave({ ...updatedFeedItem, feed_context: note.feed_context });
@@ -140,7 +186,9 @@ export default function EditNotes({
     notes !== initialNotes ||
     selectedFolderId !== initialFolderId ||
     deletedRecordingIds.length > 0 ||
-    newRecordings.length > 0;
+    newRecordings.length > 0 ||
+    deletedImageIds.length > 0 ||
+    newImages.length > 0;
 
   useEffect(() => {
     onDirtyChange?.(hasChanges);
@@ -177,13 +225,6 @@ export default function EditNotes({
             label={t("notes.notesLabel")}
             minHeight={200}
           />
-          <FolderPicker
-            folders={folders}
-            selectedFolderId={selectedFolderId}
-            onSelect={setSelectedFolderId}
-            isLoading={isFoldersLoading}
-          />
-
           {/* Existing Voice Recordings */}
           {(voiceCount > 0 ||
             existingRecordings.length > 0 ||
@@ -219,18 +260,61 @@ export default function EditNotes({
             </View>
           )}
 
-          {/* Record New Voice Note */}
+          {/* Existing Images */}
+          {(imageCount > 0 ||
+            existingImages.length > 0 ||
+            newImages.length > 0) && (
+            <View className="mt-5">
+              <AppText className="mb-2">{t("notes.images.title")}</AppText>
+              {isLoadingVoice ? (
+                <NotesVoiceSkeleton count={imageCount} />
+              ) : (
+                existingImages.map((image, idx) => (
+                  <DraftImageItem
+                    key={image.id}
+                    uri={image.uri}
+                    onPress={() => setViewerIndex(idx)}
+                    onDelete={() => handleDeleteExistingImage(image.id)}
+                  />
+                ))
+              )}
+            </View>
+          )}
+
+          {/* New Images */}
+          {newImages.length > 0 && (
+            <View>
+              {newImages.map((image, index) => (
+                <DraftImageItem
+                  key={image.id}
+                  uri={image.uri}
+                  onPress={() =>
+                    setViewerIndex(existingImages.length + index)
+                  }
+                  onDelete={() => handleDeleteNewImage(index)}
+                />
+              ))}
+            </View>
+          )}
+
+          {/* Record New Voice Note & Add Image */}
           <View className="mt-6">
-            <RecordVoiceNotes
-              onRecordingComplete={(uri, duration) => {
+            <MediaToolbar
+              onRecordingComplete={(uri, durationMs) => {
                 const newRecording = {
                   id: nanoid(),
                   uri,
                   createdAt: Date.now(),
-                  durationMs: duration,
+                  durationMs,
                 };
                 setNewRecordings((prev) => [...prev, newRecording]);
               }}
+              onImageSelected={(uri) => {
+                setNewImages((prev) => [...prev, { id: nanoid(), uri }]);
+              }}
+              folders={isFoldersLoading ? [] : folders}
+              selectedFolderId={selectedFolderId}
+              onFolderSelect={setSelectedFolderId}
             />
           </View>
         </PageContainer>
@@ -250,6 +334,17 @@ export default function EditNotes({
         visible={isSaving}
         message={t("notes.editScreen.savingNotes")}
       />
+      {(() => {
+        const allImages = [...existingImages, ...newImages];
+        return allImages.length > 0 && viewerIndex >= 0 ? (
+          <ImageViewerModal
+            images={allImages}
+            initialIndex={viewerIndex}
+            visible={viewerIndex >= 0}
+            onClose={() => setViewerIndex(-1)}
+          />
+        ) : null;
+      })()}
     </View>
   );
 }

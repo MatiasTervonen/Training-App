@@ -172,7 +172,7 @@ export default function Timer({
                   path: "/timer/empty-timer",
                 });
               }}
-              className="btn-base"
+              className="btn-base flex-row gap-2 justify-center items-center"
               textClassName="text-gray-100"
             >
               <RotateCcw color="#f3f4f6" />

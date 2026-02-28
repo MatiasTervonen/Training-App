@@ -10,6 +10,11 @@ type DraftRecording = {
   durationMs?: number;
 };
 
+type DraftImage = {
+  id: string;
+  uri: string;
+};
+
 type Props = {
   id: string;
   title: string;
@@ -18,6 +23,8 @@ type Props = {
   folderId?: string | null;
   deletedRecordingIds?: string[];
   newRecordings?: DraftRecording[];
+  deletedImageIds?: string[];
+  newImages?: DraftImage[];
 };
 
 export async function editNotes({
@@ -28,6 +35,8 @@ export async function editNotes({
   folderId,
   deletedRecordingIds = [],
   newRecordings = [],
+  deletedImageIds = [],
+  newImages = [],
 }: Props) {
   const {
     data: { session },
@@ -41,6 +50,10 @@ export async function editNotes({
   const uploadedRecordings: {
     storage_path: string;
     duration_ms?: number;
+  }[] = [];
+
+  const uploadedImages: {
+    storage_path: string;
   }[] = [];
 
   try {
@@ -67,6 +80,28 @@ export async function editNotes({
       });
     }
 
+    // Upload new images
+    for (const image of newImages) {
+      const ext = image.uri.split(".").pop()?.toLowerCase() ?? "jpg";
+      const mimeType = ext === "png" ? "image/png" : ext === "webp" ? "image/webp" : "image/jpeg";
+      const path = `${session.user.id}/${Crypto.randomUUID()}.${ext}`;
+
+      const file = new File(image.uri);
+      const bytes = await file.bytes();
+
+      const { error: uploadError } = await supabase.storage
+        .from("notes-images")
+        .upload(path, bytes, {
+          contentType: mimeType,
+        });
+
+      if (uploadError) {
+        throw uploadError;
+      }
+
+      uploadedImages.push({ storage_path: path });
+    }
+
     const { data, error } = await supabase.rpc("notes_edit_note", {
       p_id: id,
       p_title: title,
@@ -75,6 +110,8 @@ export async function editNotes({
       p_deleted_recording_ids: deletedRecordingIds,
       p_new_recordings: uploadedRecordings,
       p_folder_id: folderId ?? null,
+      p_deleted_image_ids: deletedImageIds,
+      p_new_images: uploadedImages,
     });
 
     if (error) {
@@ -88,6 +125,11 @@ export async function editNotes({
       await supabase.storage
         .from("notes-voice")
         .remove(uploadedRecordings.map((r) => r.storage_path));
+    }
+    if (uploadedImages.length > 0) {
+      await supabase.storage
+        .from("notes-images")
+        .remove(uploadedImages.map((r) => r.storage_path));
     }
 
     handleError(error, {

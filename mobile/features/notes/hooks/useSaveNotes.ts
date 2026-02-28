@@ -4,11 +4,17 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import { DraftRecording } from "@/types/session";
 
+type DraftImage = {
+  id: string;
+  uri: string;
+};
+
 type saveNotesProps = {
   title: string;
   notes: string;
   folderId?: string | null;
   draftRecordings: DraftRecording[];
+  draftImages?: DraftImage[];
   setIsSaving: (isSaving: boolean) => void;
   resetNote: () => void;
 };
@@ -18,6 +24,7 @@ export default function useSaveNotes({
   notes,
   folderId,
   draftRecordings,
+  draftImages = [],
   setIsSaving,
   resetNote,
 }: saveNotesProps) {
@@ -36,7 +43,7 @@ export default function useSaveNotes({
     setIsSaving(true);
 
     try {
-      await saveNote({ title, notes, folderId, draftRecordings });
+      await saveNote({ title, notes, folderId, draftRecordings, draftImages });
 
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ["feed"], exact: true }),

@@ -66,6 +66,16 @@
       "errorRename": "Failed to rename folder",
       "errorMove": "Failed to move note"
     },
+    "images": {
+      "title": "Images:",
+      "addImage": "Add Image",
+      "takePhoto": "Take Photo",
+      "chooseFromLibrary": "Choose from Library",
+      "permissionRequired": "Camera or photo library permission is required.",
+      "cancel": "Cancel",
+      "deleteImageTitle": "Delete Image",
+      "deleteImageMessage": "Are you sure you want to delete this image?"
+    },
     "expandedView": {
       "created": "created:",
       "updated": "updated:",

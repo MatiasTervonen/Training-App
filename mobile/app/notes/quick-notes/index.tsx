@@ -11,19 +11,25 @@ import PageContainer from "@/components/PageContainer";
 import useSaveDraft from "@/features/notes/hooks/useSaveDraft";
 import useSaveNotes from "@/features/notes/hooks/useSaveNotes";
 import { formatDateShort } from "@/lib/formatDate";
-import RecordVoiceNotes from "@/features/notes/components/RecordVoiceNotes";
 import { nanoid } from "nanoid/non-secure";
 import { DraftRecordingItem } from "@/features/notes/components/draftRecording";
 import { useConfirmAction } from "@/lib/confirmAction";
 import { useTranslation } from "react-i18next";
 import useFolders from "@/features/notes/hooks/useFolders";
-import SelectInput from "@/components/Selectinput";
+import DraftImageItem from "@/features/notes/components/DraftImageItem";
+import ImageViewerModal from "@/features/notes/components/ImageViewerModal";
+import MediaToolbar from "@/features/notes/components/MediaToolbar";
 
 type DraftRecording = {
   id: string;
   uri: string;
   createdAt: number;
   durationMs?: number;
+};
+
+type DraftImage = {
+  id: string;
+  uri: string;
 };
 
 export default function NotesScreen() {
@@ -33,7 +39,9 @@ export default function NotesScreen() {
   const [notes, setNotes] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [draftRecordings, setDraftRecordings] = useState<DraftRecording[]>([]);
+  const [draftImages, setDraftImages] = useState<DraftImage[]>([]);
   const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
+  const [viewerIndex, setViewerIndex] = useState(-1);
 
   const confirmAction = useConfirmAction();
   const { folders, isLoading: isFoldersLoading } = useFolders();
@@ -42,6 +50,7 @@ export default function NotesScreen() {
     setTitle("");
     setNotes("");
     setDraftRecordings([]);
+    setDraftImages([]);
     setSelectedFolderId(null);
     AsyncStorage.removeItem("notes_draft");
   };
@@ -51,9 +60,11 @@ export default function NotesScreen() {
     title,
     notes,
     draftRecordings,
+    draftImages,
     setTitle,
     setNotes,
     setDraftRecordings,
+    setDraftImages,
   });
 
   // useSaveNotes hook to save notes
@@ -62,6 +73,7 @@ export default function NotesScreen() {
     notes,
     folderId: selectedFolderId,
     draftRecordings,
+    draftImages,
     setIsSaving,
     resetNote,
   });
@@ -88,21 +100,6 @@ export default function NotesScreen() {
               label={t("notes.notesLabel")}
               placeholder={t("notes.notesPlaceholder")}
             />
-            {!isFoldersLoading && folders.length > 0 && (
-              <View className="mt-4">
-                <SelectInput
-                  topLabel={t("notes.folders.saveToFolder")}
-                  label={t("notes.folders.saveToFolder")}
-                  placeholder={t("notes.folders.noFolder")}
-                  options={[
-                    { value: "", label: t("notes.folders.noFolder") },
-                    ...folders.map((f) => ({ value: f.id, label: f.name })),
-                  ]}
-                  value={selectedFolderId ?? ""}
-                  onChange={(val) => setSelectedFolderId(val || null)}
-                />
-              </View>
-            )}
             {draftRecordings.length > 0 && (
               <View className="mt-5">
                 <AppText className=" mb-2">{t("notes.recordings")}</AppText>
@@ -126,17 +123,45 @@ export default function NotesScreen() {
                 ))}
               </View>
             )}
+            {draftImages.length > 0 && (
+              <View className="mt-5">
+                <AppText className=" mb-2">{t("notes.images.title")}</AppText>
+                {draftImages.map((image, index) => (
+                  <DraftImageItem
+                    key={image.id}
+                    uri={image.uri}
+                    onPress={() => setViewerIndex(index)}
+                    onDelete={async () => {
+                      const confirm = await confirmAction({
+                        title: t("notes.images.deleteImageTitle"),
+                        message: t("notes.images.deleteImageMessage"),
+                      });
+                      if (!confirm) return;
+                      setDraftImages((prev) =>
+                        prev.filter((_, i) => i !== index),
+                      );
+                    }}
+                  />
+                ))}
+              </View>
+            )}
             <View className="mt-6">
-              <RecordVoiceNotes
-                onRecordingComplete={(uri, duration) => {
+              <MediaToolbar
+                onRecordingComplete={(uri, durationMs) => {
                   const newRecording = {
                     id: nanoid(),
                     uri,
                     createdAt: Date.now(),
-                    durationMs: duration,
+                    durationMs,
                   };
                   setDraftRecordings((prev) => [...prev, newRecording]);
                 }}
+                onImageSelected={(uri) => {
+                  setDraftImages((prev) => [...prev, { id: nanoid(), uri }]);
+                }}
+                folders={isFoldersLoading ? [] : folders}
+                selectedFolderId={selectedFolderId}
+                onFolderSelect={setSelectedFolderId}
               />
             </View>
           </View>
@@ -152,6 +177,14 @@ export default function NotesScreen() {
         </PageContainer>
       </ScrollView>
       <FullScreenLoader visible={isSaving} message={t("notes.savingNotes")} />
+      {draftImages.length > 0 && viewerIndex >= 0 && (
+        <ImageViewerModal
+          images={draftImages}
+          initialIndex={viewerIndex}
+          visible={viewerIndex >= 0}
+          onClose={() => setViewerIndex(-1)}
+        />
+      )}
     </View>
   );
 }

@@ -4,20 +4,29 @@ import { useDebouncedCallback } from "use-debounce";
 import { handleError } from "@/utils/handleError";
 import { DraftRecording } from "@/types/session";
 
+type DraftImage = {
+  id: string;
+  uri: string;
+};
+
 export default function useSaveDraft({
   title,
   notes,
   draftRecordings,
+  draftImages = [],
   setTitle,
   setNotes,
   setDraftRecordings,
+  setDraftImages,
 }: {
   title: string;
   notes: string;
   draftRecordings: DraftRecording[];
+  draftImages?: DraftImage[];
   setTitle: (title: string) => void;
   setNotes: (notes: string) => void;
   setDraftRecordings: (recordings: DraftRecording[]) => void;
+  setDraftImages?: (images: DraftImage[]) => void;
 }) {
   const [isLoaded, setIsLoaded] = useState(false);
 
@@ -30,6 +39,7 @@ export default function useSaveDraft({
           setTitle(draft.title || "");
           setNotes(draft.notes || "");
           setDraftRecordings(draft.draftRecordings || []);
+          setDraftImages?.(draft.draftImages || []);
         }
       } catch (error) {
         handleError(error, {
@@ -51,7 +61,7 @@ export default function useSaveDraft({
       if (title.trim().length === 0 && notes.trim().length === 0) {
         await AsyncStorage.removeItem("notes_draft");
       } else {
-        const draft = { title, notes, draftRecordings };
+        const draft = { title, notes, draftRecordings, draftImages };
         await AsyncStorage.setItem("notes_draft", JSON.stringify(draft));
       }
     },
@@ -61,7 +71,7 @@ export default function useSaveDraft({
 
   useEffect(() => {
     saveNotesDraft();
-  }, [notes, title, draftRecordings, saveNotesDraft]);
+  }, [notes, title, draftRecordings, draftImages, saveNotesDraft]);
 
   return {
     saveNotesDraft,

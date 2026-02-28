@@ -2,11 +2,11 @@ import { formatDate } from "@/lib/formatDate";
 import GroupTemplateExercise from "@/features/gym/lib/GroupTemplateExercises";
 import { ScrollView, View } from "react-native";
 import AppText from "@/components/AppText";
-import AppButton from "@/components/buttons/AppButton";
 import PageContainer from "@/components/PageContainer";
 import { LinearGradient } from "expo-linear-gradient";
 import { useTranslation } from "react-i18next";
 import { FullGymTemplate } from "@/database/gym/get-full-template";
+import AnimatedButton from "@/components/buttons/animatedButton";
 
 type Props = {
   item: FullGymTemplate;
@@ -82,9 +82,10 @@ export default function GymTemplate({ item, onStartWorkout }: Props) {
             ))}
           </View>
           <View className="mt-10">
-            <AppButton
+            <AnimatedButton
               onPress={onStartWorkout}
               label={t("gym.templateView.startWorkout")}
+              className="btn-base"
             />
           </View>
         </View>

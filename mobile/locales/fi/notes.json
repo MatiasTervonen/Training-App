@@ -66,6 +66,16 @@
       "errorRename": "Kansion nimeäminen epäonnistui",
       "errorMove": "Muistiinpanon siirtäminen epäonnistui"
     },
+    "images": {
+      "title": "Kuvat:",
+      "addImage": "Lisää kuva",
+      "takePhoto": "Ota kuva",
+      "chooseFromLibrary": "Valitse kirjastosta",
+      "permissionRequired": "Kameran tai kuvakirjaston käyttöoikeus vaaditaan.",
+      "cancel": "Peruuta",
+      "deleteImageTitle": "Poista kuva",
+      "deleteImageMessage": "Haluatko varmasti poistaa tämän kuvan?"
+    },
     "expandedView": {
       "created": "luotu:",
       "updated": "päivitetty:",

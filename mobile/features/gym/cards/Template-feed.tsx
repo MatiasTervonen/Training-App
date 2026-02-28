@@ -72,13 +72,13 @@ export default function TemplateCard({
         onPress={onExpand}
         className="flex-row items-center justify-between px-5 bg-blue-600 py-2 rounded-br-md rounded-bl-md "
       >
-        <AppText className=" text-gray-200">
+        <AppText className="text-slate-300">
           {formatDateShort(item.created_at)}
         </AppText>
 
         <View className="flex-row items-center gap-5">
-          <AppText>{t("common.start")}</AppText>
-          <Dumbbell size={20} color="#f3f4f6" />
+          <AppText className="text-slate-300">{t("common.start")}</AppText>
+          <Dumbbell size={20} color="#cbd5e1" />
         </View>
       </Pressable>
     </View>

@@ -61,7 +61,7 @@ export default function ActivityTemplateCard({
       </div>
 
       {item.activity.name && (
-        <div className="ml-4 text-gray-300">{getActivityName(item.activity)}</div>
+        <div className="ml-4 text-slate-300">{getActivityName(item.activity)}</div>
       )}
 
       {item.template.updated_at ? (
@@ -78,12 +78,12 @@ export default function ActivityTemplateCard({
         onClick={onExpand}
         className="flex justify-between items-center px-4 bg-blue-600 rounded-br-md rounded-bl-md hover:bg-blue-500 cursor-pointer py-2"
       >
-        <div className="text-gray-200 text-sm">
+        <div className="text-slate-300 text-sm">
           {formatDateShort(item.template.created_at)}
         </div>
         <div className="flex items-center gap-5">
-          <p>{t("activities.templatesScreen.start")}</p>
-          <Activity size={20} color="#f3f4f6" />
+          <p className="text-slate-300">{t("activities.templatesScreen.start")}</p>
+          <Activity size={20} color="#cbd5e1" />
         </div>
       </button>
     </div>

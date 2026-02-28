@@ -7,9 +7,9 @@ import { router } from "expo-router";
 import { useUserStore } from "@/lib/stores/useUserStore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { handleError } from "@/utils/handleError";
-import AppButton from "@/components/buttons/AppButton";
 import { useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
+import AnimatedButton from "@/components/buttons/animatedButton";
 
 export default function LogoutButton() {
   const { t } = useTranslation("menu");
@@ -54,9 +54,13 @@ export default function LogoutButton() {
 
   return (
     <>
-      <AppButton onPress={handleLogout} label={t("menu.logOut")}>
+      <AnimatedButton
+        onPress={handleLogout}
+        label={t("menu.logOut")}
+        className="btn-base flex-row justify-center items-center gap-3"
+      >
         <LogOut size={20} color="#f3f4f6" />
-      </AppButton>
+      </AnimatedButton>
       <FullScreenLoader visible={isLoading} message={t("menu.loggingOut")} />
     </>
   );

@@ -3,6 +3,11 @@ import { handleError } from "@/utils/handleError";
 import * as Crypto from "expo-crypto";
 import { File } from "expo-file-system/next";
 
+type DraftImage = {
+  id: string;
+  uri: string;
+};
+
 type props = {
   title: string;
   notes: string;
@@ -13,9 +18,16 @@ type props = {
     createdAt: number;
     durationMs?: number;
   }[];
+  draftImages?: DraftImage[];
 };
 
-export async function saveNote({ title, notes, folderId, draftRecordings = [] }: props) {
+export async function saveNote({
+  title,
+  notes,
+  folderId,
+  draftRecordings = [],
+  draftImages = [],
+}: props) {
   const {
     data: { session },
     error: sessionError,
@@ -28,6 +40,10 @@ export async function saveNote({ title, notes, folderId, draftRecordings = [] }:
   const uploadedRecordings: {
     storage_path: string;
     duration_ms?: number;
+  }[] = [];
+
+  const uploadedImages: {
+    storage_path: string;
   }[] = [];
 
   try {
@@ -53,11 +69,38 @@ export async function saveNote({ title, notes, folderId, draftRecordings = [] }:
       });
     }
 
+    for (const image of draftImages) {
+      const ext = image.uri.split(".").pop()?.toLowerCase() ?? "jpg";
+      const mimeType =
+        ext === "png"
+          ? "image/png"
+          : ext === "webp"
+            ? "image/webp"
+            : "image/jpeg";
+      const path = `${session.user.id}/${Crypto.randomUUID()}.${ext}`;
+
+      const file = new File(image.uri);
+      const bytes = await file.bytes();
+
+      const { error: uploadError } = await supabase.storage
+        .from("notes-images")
+        .upload(path, bytes, {
+          contentType: mimeType,
+        });
+
+      if (uploadError) {
+        throw uploadError;
+      }
+
+      uploadedImages.push({ storage_path: path });
+    }
+
     const { error } = await supabase.rpc("notes_save_note", {
       p_title: title,
       p_notes: notes,
       p_draftrecordings: uploadedRecordings ?? [],
-      p_folder_id: folderId ?? null,
+      p_folder_id: folderId ?? undefined,
+      p_images: uploadedImages ?? [],
     });
 
     if (error) {
@@ -66,11 +109,17 @@ export async function saveNote({ title, notes, folderId, draftRecordings = [] }:
 
     return true;
   } catch (error) {
+    console.error("Error in saveNote:", error);
     // cleanup orphaned uploads
     if (uploadedRecordings.length > 0) {
       await supabase.storage
         .from("notes-voice")
         .remove(uploadedRecordings.map((r) => r.storage_path));
+    }
+    if (uploadedImages.length > 0) {
+      await supabase.storage
+        .from("notes-images")
+        .remove(uploadedImages.map((r) => r.storage_path));
     }
     handleError(error, {
       message: "Error saving note",

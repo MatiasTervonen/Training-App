@@ -1,6 +1,7 @@
 package com.layer100crypto.MyTrack.step
 
 import android.Manifest
+import com.layer100crypto.MyTrack.R
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -251,7 +252,7 @@ class StepTrackingService : Service(), SensorEventListener {
         return Notification.Builder(this, CHANNEL_ID)
             .setContentTitle("MyTrack")
             .setContentText("Tracking steps: $formattedSteps today")
-            .setSmallIcon(android.R.drawable.ic_menu_directions)
+            .setSmallIcon(R.drawable.small_notification_icon)
             .setContentIntent(pendingIntent)
             .setOngoing(true)
             .build()

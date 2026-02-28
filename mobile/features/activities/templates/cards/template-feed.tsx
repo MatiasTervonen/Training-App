@@ -54,12 +54,13 @@ export default function ActivityTemplateCard({
         />
       </View>
       {item.activity.name && (
-        <AppText className="ml-4 ">{item.activity.name}</AppText>
+        <AppText className="ml-4 text-slate-300">{item.activity.name}</AppText>
       )}
 
       {item.template.updated_at ? (
         <AppText className=" text-yellow-500 text-sm ml-4 my-2">
-          {t("activities.templatesScreen.updated")} {formatDate(item.template.updated_at)}
+          {t("activities.templatesScreen.updated")}{" "}
+          {formatDate(item.template.updated_at)}
         </AppText>
       ) : (
         <View className="h-[17.8px]" />
@@ -69,13 +70,13 @@ export default function ActivityTemplateCard({
         onPress={onExpand}
         className="flex-row items-center justify-between px-5 bg-blue-600 py-2 rounded-br-md rounded-bl-md "
       >
-        <AppText className=" text-gray-200">
+        <AppText className=" text-slate-300">
           {formatDateShort(item.template.created_at)}
         </AppText>
 
         <View className="flex-row items-center gap-5">
-          <AppText>{t("activities.templatesScreen.start")}</AppText>
-          <Activity size={20} color="#f3f4f6" />
+          <AppText className="text-slate-300">{t("activities.templatesScreen.start")}</AppText>
+          <Activity size={20} color="#cbd5e1" />
         </View>
       </Pressable>
     </View>

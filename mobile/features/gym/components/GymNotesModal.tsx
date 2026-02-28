@@ -122,9 +122,14 @@ export default function GymNotesModal({
                 <DraftImageItem
                   key={image.id}
                   uri={image.uri}
-                  onDelete={() =>
-                    setDraftImages((prev) => prev.filter((_, i) => i !== index))
-                  }
+                  onDelete={async () => {
+                    const confirm = await confirmAction({
+                      title: t("notes:notes.images.deleteImageTitle"),
+                      message: t("notes:notes.images.deleteImageMessage"),
+                    });
+                    if (!confirm) return;
+                    setDraftImages((prev) => prev.filter((_, i) => i !== index));
+                  }}
                 />
               ))}
             </View>

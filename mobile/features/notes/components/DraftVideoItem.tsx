@@ -4,6 +4,7 @@ import AppText from "@/components/AppText";
 import { X, Play } from "lucide-react-native";
 import { useState } from "react";
 import VideoPlayerModal from "@/features/notes/components/VideoPlayerModal";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   uri: string;
@@ -25,15 +26,16 @@ export default function DraftVideoItem({
   durationMs,
   onDelete,
 }: Props) {
+  const { t } = useTranslation("notes");
   const [playerVisible, setPlayerVisible] = useState(false);
 
   const handleDelete = () => {
     Alert.alert(
-      "Delete Video",
-      "Are you sure you want to delete this video?",
+      t("notes.videos.deleteVideoTitle"),
+      t("notes.videos.deleteVideoMessage"),
       [
-        { text: "Cancel", style: "cancel" },
-        { text: "Delete", style: "destructive", onPress: onDelete },
+        { text: t("notes.videos.cancel"), style: "cancel" },
+        { text: t("notes.videos.delete"), style: "destructive", onPress: onDelete },
       ],
     );
   };

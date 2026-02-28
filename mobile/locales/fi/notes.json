@@ -87,6 +87,7 @@
       "takeVideo": "Kuvaa video",
       "chooseFromLibrary": "Valitse kirjastosta",
       "cancel": "Peruuta",
+      "delete": "Poista",
       "deleteVideoTitle": "Poista video",
       "deleteVideoMessage": "Haluatko varmasti poistaa tämän videon?",
       "permissionRequired": "Kameran tai videokirjaston käyttöoikeus vaaditaan."

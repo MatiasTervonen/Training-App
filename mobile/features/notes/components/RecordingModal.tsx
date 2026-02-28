@@ -54,13 +54,13 @@ export default function RecordingModal({
     }
 
     if (isPaused) {
+      setIsPaused(false);
       try {
         await audioRecorder.record();
       } catch {
         // Android throws IllegalStateException during pause→resume transition
         // but the recording works correctly — safe to ignore
       }
-      setIsPaused(false);
       return;
     }
 
@@ -120,24 +120,25 @@ export default function RecordingModal({
           <View className="items-center mb-5">
             <View className="flex-row items-center gap-3 mb-4">
               <Mic color="#3b82f6" size={28} />
-              <AppText className="text-2xl text-blue-400">
+              <AppText
+                className="text-2xl text-blue-400"
+                style={{ width: 72 }}
+              >
                 {formatDurationNotesVoice(recorderState.durationMillis)}
               </AppText>
             </View>
 
             <AnimatedButton
               label={
-                recorderState.isRecording
-                  ? t("notes.voiceRecording.pauseRecording")
+                !hasStarted
+                  ? t("notes.voiceRecording.recordVoiceNote")
                   : isPaused
                     ? t("notes.voiceRecording.resumeRecording")
-                    : t("notes.voiceRecording.recordVoiceNote")
+                    : t("notes.voiceRecording.pauseRecording")
               }
               onPress={record}
-              className="bg-blue-800 border-blue-500 border-2 py-3 px-6 rounded-md flex-row items-center justify-center gap-2 w-full"
-            >
-              <Mic color="white" size={20} />
-            </AnimatedButton>
+              className="bg-blue-800 border-blue-500 border-2 py-3 px-6 rounded-md items-center justify-center w-full"
+            />
           </View>
 
           <View className="flex-row gap-4">

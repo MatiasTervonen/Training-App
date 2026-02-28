@@ -37,9 +37,12 @@
 ## Translations
 - Always add translations when creating new pages or user-facing text.
 - Translation files are in `locales`.
+- Always use proper ä/ö characters in Finnish — never substitute with plain a/o
 
 ## TypeScript
 - Never use `any` type. Fix TypeScript errors with proper types. If you're unsure of the type, read the codebase to find the correct one.
 
 ## Post-Implementation Review
 - After implementing a feature from the `specs/` folder, scan the changed code against the best practices references in `.agents/skills/react-native-best-practices/references/` and `.agents/skills/react-data-patterns/references/`. Focus on Critical and High impact patterns only.
+
+

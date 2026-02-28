@@ -87,6 +87,7 @@
       "takeVideo": "Take Video",
       "chooseFromLibrary": "Choose from Library",
       "cancel": "Cancel",
+      "delete": "Delete",
       "deleteVideoTitle": "Delete Video",
       "deleteVideoMessage": "Are you sure you want to delete this video?",
       "permissionRequired": "Camera or video library permission is required."

@@ -107,6 +107,7 @@
     "sendError": "Failed to send feedback. Please try again.",
     "emptyTitle": "Please enter a title.",
     "emptyMessage": "Please enter a message.",
+    "maxImages": "You can attach up to {{count}} images.",
     "send": "Send"
   }
 }

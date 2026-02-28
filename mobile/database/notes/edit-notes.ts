@@ -100,7 +100,12 @@ export async function editNotes({
     // Upload new images
     for (const image of newImages) {
       const ext = image.uri.split(".").pop()?.toLowerCase() ?? "jpg";
-      const mimeType = ext === "png" ? "image/png" : ext === "webp" ? "image/webp" : "image/jpeg";
+      const mimeType =
+        ext === "png"
+          ? "image/png"
+          : ext === "webp"
+            ? "image/webp"
+            : "image/jpeg";
       const path = `${session.user.id}/${Crypto.randomUUID()}.${ext}`;
 
       const file = new File(image.uri);
@@ -160,7 +165,7 @@ export async function editNotes({
       p_updated_at: updated_at,
       p_deleted_recording_ids: deletedRecordingIds,
       p_new_recordings: uploadedRecordings,
-      p_folder_id: folderId ?? null,
+      p_folder_id: folderId || undefined,
       p_deleted_image_ids: deletedImageIds,
       p_new_images: uploadedImages,
       p_deleted_video_ids: deletedVideoIds,

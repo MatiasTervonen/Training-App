@@ -107,6 +107,7 @@
     "sendError": "Palautteen lähetys epäonnistui. Yritä uudelleen.",
     "emptyTitle": "Kirjoita otsikko.",
     "emptyMessage": "Kirjoita viesti.",
+    "maxImages": "Voit liittää enintään {{count}} kuvaa.",
     "send": "Lähetä"
   }
 }

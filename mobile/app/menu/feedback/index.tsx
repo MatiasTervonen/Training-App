@@ -1,4 +1,4 @@
-import { View, TouchableWithoutFeedback, Keyboard } from "react-native";
+import { View, TouchableWithoutFeedback, Keyboard, ScrollView } from "react-native";
 import AppText from "@/components/AppText";
 import AppInput from "@/components/AppInput";
 import SelectInput from "@/components/Selectinput";
@@ -14,6 +14,10 @@ import { useConfirmAction } from "@/lib/confirmAction";
 import NotesInput from "@/components/NotesInput";
 import useSaveDraft from "@/features/feedback/hooks/useSaveDraft";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import ImagePicker from "@/features/notes/components/ImagePicker";
+import DraftImageItem from "@/features/notes/components/DraftImageItem";
+
+const MAX_IMAGES = 3;
 
 export default function FeedbackScreen() {
   const { t } = useTranslation("menu");
@@ -21,15 +25,18 @@ export default function FeedbackScreen() {
   const [category, setCategory] = useState("general");
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
+  const [imageUris, setImageUris] = useState<string[]>([]);
   const [isSending, setIsSending] = useState(false);
 
   const { clearDraft } = useSaveDraft({
     category,
     title,
     message,
+    imageUris,
     setCategory,
     setTitle,
     setMessage,
+    setImageUris,
   });
 
   const categoryOptions = [
@@ -37,6 +44,21 @@ export default function FeedbackScreen() {
     { value: "feature", label: t("menu:feedback.categories.feature") },
     { value: "general", label: t("menu:feedback.categories.general") },
   ];
+
+  const handleImageSelected = (uri: string) => {
+    if (imageUris.length >= MAX_IMAGES) {
+      Toast.show({
+        type: "error",
+        text1: t("menu:feedback.maxImages", { count: MAX_IMAGES }),
+      });
+      return;
+    }
+    setImageUris((prev) => [...prev, uri]);
+  };
+
+  const handleDeleteImage = (uri: string) => {
+    setImageUris((prev) => prev.filter((u) => u !== uri));
+  };
 
   const handleSubmit = async () => {
     if (!title.trim()) {
@@ -57,7 +79,7 @@ export default function FeedbackScreen() {
 
     setIsSending(true);
     try {
-      await sendFeedback({ category, title, message });
+      await sendFeedback({ category, title, message, imageUris });
       Toast.show({
         type: "success",
         text1: t("menu:feedback.sendSuccess"),
@@ -65,6 +87,7 @@ export default function FeedbackScreen() {
       setCategory("general");
       setTitle("");
       setMessage("");
+      setImageUris([]);
       await clearDraft();
     } catch {
       Toast.show({
@@ -85,6 +108,7 @@ export default function FeedbackScreen() {
     setCategory("general");
     setTitle("");
     setMessage("");
+    setImageUris([]);
     await AsyncStorage.removeItem("feedback_draft");
   };
 
@@ -92,7 +116,7 @@ export default function FeedbackScreen() {
     <ModalPageWrapper>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <PageContainer className="justify-between">
-          <View>
+          <ScrollView showsVerticalScrollIndicator={false} className="flex-1">
             <AppText className="text-2xl text-center mb-10">
               {t("menu:feedback.title")}
             </AppText>
@@ -113,7 +137,7 @@ export default function FeedbackScreen() {
                 placeholder={t("menu:feedback.titlePlaceholder")}
               />
             </View>
-            <View>
+            <View className="mb-4">
               <NotesInput
                 value={message}
                 setValue={setMessage}
@@ -121,8 +145,20 @@ export default function FeedbackScreen() {
                 placeholder={t("menu:feedback.messagePlaceholder")}
               />
             </View>
-          </View>
-          <View className="flex-row gap-3">
+            <View className="mb-4">
+              {imageUris.map((uri) => (
+                <DraftImageItem
+                  key={uri}
+                  uri={uri}
+                  onDelete={() => handleDeleteImage(uri)}
+                />
+              ))}
+              {imageUris.length < MAX_IMAGES && (
+                <ImagePicker onImageSelected={handleImageSelected} />
+              )}
+            </View>
+          </ScrollView>
+          <View className="flex-row gap-3 pt-3">
             <AnimatedButton
               onPress={handleDelete}
               className="btn-danger py-3"

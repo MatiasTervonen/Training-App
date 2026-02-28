@@ -50,6 +50,7 @@ coverage/
 
 # Claude Code
 .claude/
+mobile/.claude/
 
 # Next.js (root level)
 .next/

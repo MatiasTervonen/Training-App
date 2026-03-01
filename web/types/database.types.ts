@@ -527,6 +527,7 @@ export type Database = {
           category: string
           created_at: string
           id: string
+          image_paths: string[]
           message: string
           title: string
           user_id: string
@@ -535,6 +536,7 @@ export type Database = {
           category: string
           created_at?: string
           id?: string
+          image_paths?: string[]
           message: string
           title: string
           user_id: string
@@ -543,6 +545,7 @@ export type Database = {
           category?: string
           created_at?: string
           id?: string
+          image_paths?: string[]
           message?: string
           title?: string
           user_id?: string
@@ -2020,6 +2023,10 @@ export type Database = {
       }
     }
     Functions: {
+      accept_friend_request: {
+        Args: { p_sender_id: string }
+        Returns: undefined
+      }
       activities_compute_session_stats: {
         Args: { p_session_id: string; p_steps: number }
         Returns: undefined
@@ -2076,6 +2083,7 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      delete_friend: { Args: { p_friend_id: string }; Returns: undefined }
       feed_delete_session: {
         Args: { p_id: string; p_type: string }
         Returns: undefined

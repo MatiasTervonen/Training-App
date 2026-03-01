@@ -5,6 +5,7 @@ export async function sendFeedback(feedback: {
   category: "bug" | "feature" | "general";
   title: string;
   message: string;
+  imagePaths?: string[];
 }) {
   const supabase = createClient();
 
@@ -20,6 +21,7 @@ export async function sendFeedback(feedback: {
     category: feedback.category,
     title: feedback.title,
     message: feedback.message,
+    image_paths: feedback.imagePaths ?? [],
   });
 
   if (error) {

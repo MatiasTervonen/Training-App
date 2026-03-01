@@ -1,15 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import SaveButton from "@/components/buttons/save-button";
 import DeleteSessionBtn from "@/components/buttons/deleteSessionBtn";
 import TiptapEditor from "@/features/notes/components/TiptapEditor";
+import type { UploadedImage } from "@/features/notes/components/TiptapEditor";
 import FullScreenLoader from "@/components/FullScreenLoader";
 import TitleInput from "@/ui/TitleInput";
 import FolderPicker from "@/features/notes/components/FolderPicker";
 import useSaveDraft from "@/features/notes/hooks/useSaveDraft";
 import useSaveNotes from "@/features/notes/hooks/useSaveNotes";
 import useFolders from "@/features/notes/hooks/useFolders";
+import { createClient } from "@/utils/supabase/client";
 import { useTranslation } from "react-i18next";
 import { formatDateShort } from "@/lib/formatDate";
 
@@ -21,27 +23,34 @@ export default function Notes() {
   const [notes, setNotes] = useState("");
   const [isLoaded, setIsLoaded] = useState(false);
   const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
+  const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
 
   const { folders, isLoading: foldersLoading } = useFolders();
-
-  // useSaveDraft hook to save draft notes
 
   useSaveDraft({
     title,
     notes,
+    images: uploadedImages,
     setTitle,
     setNotes,
+    setImages: setUploadedImages,
     setIsLoaded,
     isLoaded,
   });
 
-  const resetNotes = () => {
+  const resetNotes = useCallback(async () => {
+    // Clean up orphaned images from storage
+    if (uploadedImages.length > 0) {
+      const supabase = createClient();
+      const paths = uploadedImages.map((img) => img.storage_path);
+      await supabase.storage.from("notes-images").remove(paths);
+    }
     localStorage.removeItem("notes_draft");
     setTitle("");
     setNotes("");
-  };
+    setUploadedImages([]);
+  }, [uploadedImages]);
 
-  // useSaveNotes hook to save notes
   const { mutate: saveNotes, isPending } = useSaveNotes();
 
   return (
@@ -64,24 +73,33 @@ export default function Notes() {
           <TiptapEditor
             content={notes}
             onChange={setNotes}
+            onImagesChange={setUploadedImages}
             placeholder={t("notes.notesPlaceholder")}
             label={t("notes.notesLabel")}
           />
         </div>
-        <div className="flex  items-center gap-5">
+        <div className="flex items-center gap-5">
           <DeleteSessionBtn onDelete={resetNotes} />
           <SaveButton
             onClick={() => {
               if (notes.trim().length === 0) return;
 
               saveNotes(
-                { title, notes, folderId: selectedFolderId },
+                {
+                  title,
+                  notes,
+                  folderId: selectedFolderId,
+                  images: uploadedImages,
+                },
                 {
                   onSuccess: () => {
-                    resetNotes();
+                    localStorage.removeItem("notes_draft");
+                    setTitle("");
+                    setNotes("");
+                    setUploadedImages([]);
                     setSelectedFolderId(null);
                   },
-                }
+                },
               );
             }}
           />

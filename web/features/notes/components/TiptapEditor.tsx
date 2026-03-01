@@ -3,6 +3,7 @@
 import { useEditor, useEditorState, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
+import Image from "@tiptap/extension-image";
 import { ModalSwipeBlocker } from "@/components/modal";
 import { useTranslation } from "react-i18next";
 import {
@@ -18,22 +19,35 @@ import {
   SquareCode,
   Quote,
   Minus,
+  ImageIcon,
+  Loader2,
 } from "lucide-react";
 import clsx from "clsx";
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState, useCallback } from "react";
 import { ensureHtml } from "@/features/notes/lib/ensureHtml";
+import { createClient } from "@/utils/supabase/client";
+import toast from "react-hot-toast";
+
+export type UploadedImage = {
+  storage_path: string;
+};
 
 type TiptapEditorProps = {
   content: string;
   onChange: (html: string) => void;
+  onImagesChange?: (images: UploadedImage[]) => void;
   placeholder?: string;
   label?: string;
   maxLength?: number;
 };
 
+const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
+
 export default function TiptapEditor({
   content,
   onChange,
+  onImagesChange,
   placeholder = "",
   label,
   maxLength = 10000,
@@ -42,12 +56,37 @@ export default function TiptapEditor({
   const isInternalUpdate = useRef(false);
   const htmlContent = ensureHtml(content);
   const prevContent = useRef(htmlContent);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
+
+  const updateImages = useCallback(
+    (images: UploadedImage[]) => {
+      setUploadedImages(images);
+      onImagesChange?.(images);
+    },
+    [onImagesChange],
+  );
 
   const editor = useEditor({
     extensions: [
       StarterKit,
       Placeholder.configure({
         placeholder,
+      }),
+      Image.extend({
+        draggable: true,
+      }).configure({
+        HTMLAttributes: {
+          class: "rounded-md max-w-full h-auto",
+        },
+        resize: {
+          enabled: true,
+          directions: ["bottom-right"],
+          minWidth: 50,
+          minHeight: 50,
+          alwaysPreserveAspectRatio: true,
+        },
       }),
     ],
     immediatelyRender: false,
@@ -92,6 +131,49 @@ export default function TiptapEditor({
     },
   });
 
+  const handleImageUpload = async (file: File) => {
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+      toast.error(t("notes.image.invalidFileType"));
+      return;
+    }
+    if (file.size > MAX_FILE_SIZE) {
+      toast.error(t("notes.image.fileTooLarge"));
+      return;
+    }
+
+    setIsUploading(true);
+    try {
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
+
+      const ext = file.name.split(".").pop() ?? "jpg";
+      const storagePath = `${user.id}/${crypto.randomUUID()}.${ext}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("notes-images")
+        .upload(storagePath, file);
+      if (uploadError) throw uploadError;
+
+      const { data: urlData } = await supabase.storage
+        .from("notes-images")
+        .createSignedUrl(storagePath, 60 * 60 * 24 * 365);
+      if (!urlData?.signedUrl) throw new Error("Failed to create signed URL");
+
+      editor?.chain().focus().setImage({ src: urlData.signedUrl }).run();
+
+      const newImages = [...uploadedImages, { storage_path: storagePath }];
+      updateImages(newImages);
+    } catch {
+      toast.error(t("notes.image.uploadError"));
+    } finally {
+      setIsUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
+
   if (!editor) return null;
 
   const contentLength = content.length;
@@ -101,6 +183,16 @@ export default function TiptapEditor({
       {label && <label className="text-sm text-gray-300 mb-1">{label}</label>}
       <ModalSwipeBlocker className="flex-1 flex flex-col min-h-0">
         <div className="tiptap-editor rounded-md border-2 border-gray-100 hover:border-blue-500 focus-within:border-blue-500 overflow-hidden flex flex-col flex-1 min-h-0">
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            className="hidden"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) handleImageUpload(file);
+            }}
+          />
           <div className="bg-slate-800 border-b border-gray-700 p-1 flex flex-wrap gap-1 shrink-0">
             <ToolbarButton
               onClick={() => editor.chain().focus().toggleBold().run()}
@@ -188,6 +280,25 @@ export default function TiptapEditor({
               isActive={false}
               icon={<Minus size={16} />}
               label={t("notes.toolbar.horizontalRule", "Horizontal rule")}
+            />
+
+            <Divider />
+
+            <ToolbarButton
+              onClick={() => fileInputRef.current?.click()}
+              isActive={false}
+              icon={
+                isUploading ? (
+                  <Loader2 size={16} className="animate-spin" />
+                ) : (
+                  <ImageIcon size={16} />
+                )
+              }
+              label={
+                isUploading
+                  ? t("notes.image.uploading", "Uploading...")
+                  : t("notes.toolbar.image", "Insert image")
+              }
             />
           </div>
 

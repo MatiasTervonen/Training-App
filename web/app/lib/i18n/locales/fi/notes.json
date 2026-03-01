@@ -87,7 +87,14 @@
       "code": "Koodi",
       "codeBlock": "Koodilohko",
       "blockquote": "Lainaus",
-      "horizontalRule": "Vaakaviiva"
+      "horizontalRule": "Vaakaviiva",
+      "image": "Lisää kuva"
+    },
+    "image": {
+      "uploading": "Ladataan...",
+      "uploadError": "Kuvan lataaminen epäonnistui. Yritä uudelleen.",
+      "fileTooLarge": "Tiedosto on liian suuri. Enimmäiskoko on 10 MB.",
+      "invalidFileType": "Virheellinen tiedostotyyppi. Käytä JPEG-, PNG- tai WebP-muotoa."
     }
   }
 }

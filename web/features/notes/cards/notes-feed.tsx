@@ -1,6 +1,6 @@
 "use client";
 
-import { NotebookPen, FolderOpen } from "lucide-react";
+import { NotebookPen, FolderOpen, ImageIcon } from "lucide-react";
 import { FeedCardProps } from "@/types/session";
 import BaseFeedCard from "@/features/feed-cards/BaseFeedCard";
 import { useTranslation } from "react-i18next";
@@ -8,6 +8,7 @@ import { useTranslation } from "react-i18next";
 type notesPayload = {
   notes: string;
   folder_id?: string | null;
+  "image-count"?: number;
 };
 
 type Props = FeedCardProps & {
@@ -34,6 +35,7 @@ export default function NotesCard({
 }: Props) {
   const { t } = useTranslation("feed");
   const payload = item.extra_fields as notesPayload;
+  const imageCount = payload["image-count"] ?? 0;
 
   return (
     <BaseFeedCard
@@ -58,6 +60,12 @@ export default function NotesCard({
             <div className="flex items-center gap-1 mb-1">
               <FolderOpen size={12} className="text-slate-400" />
               <span className="text-xs text-slate-400">{folderName}</span>
+            </div>
+          )}
+          {imageCount > 0 && (
+            <div className="flex items-center gap-1 mb-1">
+              <ImageIcon size={12} className="text-slate-400" />
+              <span className="text-xs text-slate-400">{imageCount}</span>
             </div>
           )}
           <p

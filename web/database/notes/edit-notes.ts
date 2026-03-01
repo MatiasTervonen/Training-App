@@ -7,6 +7,8 @@ type Props = {
   notes: string;
   updated_at: string;
   folderId?: string | null;
+  newImages?: { storage_path: string }[];
+  deletedImageIds?: string[];
 };
 
 export async function editNotes({
@@ -15,6 +17,8 @@ export async function editNotes({
   notes,
   updated_at,
   folderId,
+  newImages,
+  deletedImageIds,
 }: Props) {
   const supabase = createClient();
 
@@ -24,6 +28,8 @@ export async function editNotes({
     p_notes: notes,
     p_updated_at: updated_at,
     p_folder_id: folderId ?? undefined,
+    p_new_images: newImages ?? [],
+    p_deleted_image_ids: deletedImageIds ?? [],
   });
 
   if (error) {

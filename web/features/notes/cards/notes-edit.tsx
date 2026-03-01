@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import SaveButton from "@/components/buttons/save-button";
 import FullScreenLoader from "@/components/FullScreenLoader";
 import toast from "react-hot-toast";
 import { editNotes } from "@/database/notes/edit-notes";
 import { FeedItemUI } from "@/types/session";
 import TiptapEditor from "@/features/notes/components/TiptapEditor";
+import type { UploadedImage } from "@/features/notes/components/TiptapEditor";
 import TitleInput from "@/ui/TitleInput";
 import FolderPicker from "@/features/notes/components/FolderPicker";
 import useFolders from "@/features/notes/hooks/useFolders";
@@ -25,7 +26,7 @@ type NotesPayload = {
 };
 
 export default function EditNotes({ note, onSave, onDirtyChange }: Props) {
-  const { t } = useTranslation("common");
+  const { t } = useTranslation("notes");
   const payload = note.extra_fields as unknown as NotesPayload;
 
   const [title, setValue] = useState(note.title);
@@ -34,13 +35,17 @@ export default function EditNotes({ note, onSave, onDirtyChange }: Props) {
     payload.folder_id ?? null,
   );
   const [isSaving, setIsSaving] = useState(false);
+  const [newImages, setNewImages] = useState<UploadedImage[]>([]);
 
   const { folders, isLoading: foldersLoading } = useFolders();
 
-  const updated = new Date().toISOString();
+  const handleImagesChange = useCallback((images: UploadedImage[]) => {
+    setNewImages(images);
+  }, []);
 
   const handleSubmit = async () => {
     setIsSaving(true);
+    const updated = new Date().toISOString();
     try {
       const updatedFeedItem = await editNotes({
         id: note.source_id,
@@ -48,19 +53,21 @@ export default function EditNotes({ note, onSave, onDirtyChange }: Props) {
         notes,
         updated_at: updated,
         folderId: selectedFolderId,
+        newImages: newImages.length > 0 ? newImages : undefined,
       });
 
       onSave(updatedFeedItem as FeedItemUI);
     } catch {
       setIsSaving(false);
-      toast.error("Failed to update notes");
+      toast.error(t("notes.editScreen.errorTitle"));
     }
   };
 
   const hasChanges =
     title !== note.title ||
     notes !== payload.notes ||
-    selectedFolderId !== (payload.folder_id ?? null);
+    selectedFolderId !== (payload.folder_id ?? null) ||
+    newImages.length > 0;
 
   useEffect(() => {
     onDirtyChange?.(hasChanges);
@@ -71,7 +78,7 @@ export default function EditNotes({ note, onSave, onDirtyChange }: Props) {
       {hasChanges && (
         <div className="bg-slate-900 z-50 py-1 px-4 flex items-center rounded-lg fixed top-5 self-start ml-5">
           <p className="text-sm text-yellow-500">
-            {hasChanges ? t("common.unsavedChanges") : ""}
+            {hasChanges ? t("notes.editScreen.unsavedChanges") : ""}
           </p>
           <div className="animate-pulse">
             <Dot color="#eab308" />
@@ -79,13 +86,15 @@ export default function EditNotes({ note, onSave, onDirtyChange }: Props) {
         </div>
       )}
       <div className="flex flex-col h-full max-w-3xl mx-auto page-padding">
-        <div className="flex flex-col items-center gap-5 min-h-0">
-          <h2 className="text-lg text-center mb-5">Edit your notes</h2>
+        <div className="flex flex-col items-center gap-5 grow min-h-0">
+          <h2 className="text-lg text-center mb-5">
+            {t("notes.editScreen.title")}
+          </h2>
           <TitleInput
             value={title || ""}
             setValue={setValue}
-            placeholder="Notes title..."
-            label="Title..."
+            placeholder={t("notes.titlePlaceholder")}
+            label={t("notes.titleLabel")}
           />
           <FolderPicker
             folders={folders}
@@ -96,8 +105,9 @@ export default function EditNotes({ note, onSave, onDirtyChange }: Props) {
           <TiptapEditor
             content={notes || ""}
             onChange={setNotes}
-            placeholder="Write your notes here..."
-            label="Notes..."
+            onImagesChange={handleImagesChange}
+            placeholder={t("notes.notesPlaceholder")}
+            label={t("notes.notesLabel")}
           />
         </div>
         <div className="w-full mt-5">
@@ -105,7 +115,9 @@ export default function EditNotes({ note, onSave, onDirtyChange }: Props) {
         </div>
       </div>
 
-      {isSaving && <FullScreenLoader message="Saving notes..." />}
+      {isSaving && (
+        <FullScreenLoader message={t("notes.editScreen.savingNotes")} />
+      )}
     </>
   );
 }

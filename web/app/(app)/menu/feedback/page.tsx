@@ -1,22 +1,25 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import CustomInput from "@/ui/CustomInput";
 import TiptapEditor from "@/features/notes/components/TiptapEditor";
+import type { UploadedImage } from "@/features/notes/components/TiptapEditor";
 import SaveButtonSpinner from "@/components/buttons/save-button-spinner";
 import DeleteSessionBtn from "@/components/buttons/deleteSessionBtn";
 import FullScreenLoader from "@/components/FullScreenLoader";
 import ExerciseTypeSelect from "@/features/gym/components/ExerciseTypeSelect";
 import useSaveFeedbackDraft from "@/features/menu/hooks/useSaveFeedbackDraft";
 import { sendFeedback } from "@/database/settings/send-feedback";
+import { createClient } from "@/utils/supabase/client";
 
 export default function FeedbackPage() {
   const { t } = useTranslation("menu");
   const [category, setCategory] = useState("general");
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
+  const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
   const [isSending, setIsSending] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
 
@@ -37,12 +40,18 @@ export default function FeedbackPage() {
     { value: "general", label: t("feedback.categories.general") },
   ];
 
-  const resetForm = () => {
+  const resetForm = useCallback(async () => {
+    if (uploadedImages.length > 0) {
+      const supabase = createClient();
+      const paths = uploadedImages.map((img) => img.storage_path);
+      await supabase.storage.from("notes-images").remove(paths);
+    }
     clearDraft();
     setCategory("general");
     setTitle("");
     setMessage("");
-  };
+    setUploadedImages([]);
+  }, [uploadedImages, clearDraft]);
 
   const handleSubmit = async () => {
     if (!title.trim()) {
@@ -60,9 +69,14 @@ export default function FeedbackPage() {
         category: category as "bug" | "feature" | "general",
         title: title.trim(),
         message: message.trim(),
+        imagePaths: uploadedImages.map((img) => img.storage_path),
       });
       toast.success(t("feedback.sendSuccess"));
-      resetForm();
+      setUploadedImages([]);
+      clearDraft();
+      setCategory("general");
+      setTitle("");
+      setMessage("");
     } catch {
       toast.error(t("feedback.sendError"));
     } finally {
@@ -71,10 +85,10 @@ export default function FeedbackPage() {
   };
 
   return (
-    <div className="page-padding max-w-3xl mx-auto min-h-full flex flex-col justify-between pb-10">
-      <div>
+    <div className="page-padding max-w-3xl mx-auto h-full flex flex-col pb-10">
+      <div className="flex flex-col grow min-h-0">
         <h1 className="text-2xl text-center mb-10">{t("feedback.title")}</h1>
-        <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-5 grow min-h-0">
           <ExerciseTypeSelect
             value={category}
             onChange={setCategory}
@@ -90,6 +104,7 @@ export default function FeedbackPage() {
           <TiptapEditor
             content={message}
             onChange={setMessage}
+            onImagesChange={setUploadedImages}
             placeholder={t("feedback.messagePlaceholder")}
             label={t("feedback.messageLabel")}
           />

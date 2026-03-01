@@ -18,7 +18,8 @@ export default function useSaveNotes() {
       toast.success("Notes saved successfully");
       router.push("/dashboard");
     },
-    onError: () => {
+    onError: (error) => {
+      console.log("Failed to save notes", error);
       toast.error("Failed to save notes. Please try again.");
     },
   });

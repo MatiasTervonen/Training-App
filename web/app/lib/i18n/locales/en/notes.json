@@ -87,7 +87,14 @@
       "code": "Code",
       "codeBlock": "Code block",
       "blockquote": "Blockquote",
-      "horizontalRule": "Horizontal rule"
+      "horizontalRule": "Horizontal rule",
+      "image": "Insert image"
+    },
+    "image": {
+      "uploading": "Uploading...",
+      "uploadError": "Failed to upload image. Please try again.",
+      "fileTooLarge": "File is too large. Maximum size is 10 MB.",
+      "invalidFileType": "Invalid file type. Please use JPEG, PNG, or WebP."
     }
   }
 }

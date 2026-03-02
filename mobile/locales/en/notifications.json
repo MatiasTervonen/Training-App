@@ -1,0 +1,21 @@
+{
+  "notifications": {
+    "title": "Notifications",
+    "markAllAsRead": "Mark all as read",
+    "empty": "No notifications yet",
+    "friendRequest": {
+      "title": "New Friend Request",
+      "body": "{{name}} sent you a friend request"
+    },
+    "friendAccepted": {
+      "title": "Friend Request Accepted",
+      "body": "{{name}} accepted your friend request"
+    },
+    "timeAgo": {
+      "now": "Just now",
+      "minutes": "{{count}} min ago",
+      "hours": "{{count}}h ago",
+      "days": "{{count}}d ago"
+    }
+  }
+}

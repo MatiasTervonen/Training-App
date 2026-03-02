@@ -121,3 +121,14 @@ export type full_gym_exercises = gym_session_exercises & {
 export type full_gym_session = sessions & {
   gym_session_exercises: full_gym_exercises[];
 };
+
+export type Notification = {
+  id: string;
+  user_id: string;
+  type: string;
+  title: string;
+  body: string;
+  data: Record<string, unknown>;
+  is_read: boolean;
+  created_at: string;
+};

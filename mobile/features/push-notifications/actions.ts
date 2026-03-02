@@ -130,6 +130,11 @@ export async function configureNotificationChannels() {
       vibrationPattern: [0, 1000, 500, 1000],
       lockscreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC,
     }),
+    Notifications.setNotificationChannelAsync("social", {
+      name: "Social",
+      importance: Notifications.AndroidImportance.HIGH,
+      sound: "default",
+    }),
   ]);
 }
 

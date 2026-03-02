@@ -14,6 +14,7 @@ import ModalPageWrapper from "@/components/ModalPageWrapper";
 import { useModalPageConfig } from "@/lib/stores/modalPageConfig";
 import { fetchUserSettings } from "@/database/settings/get-user-settings";
 import i18n from "@/app/i18n";
+import { useNotificationSubscription } from "@/features/notifications/hooks/useNotificationSubscription";
 
 export default function LayoutWrapper({
   children,
@@ -36,6 +37,9 @@ export default function LayoutWrapper({
   const hasHydrated = useUserStore((state) => state._hasHydrated);
 
   const { modalPageConfig, setModalPageConfig } = useModalPageConfig();
+
+  // Subscribe to realtime notifications for badge updates
+  useNotificationSubscription();
 
   const handleSessionChange = useCallback(
     async (session: Session | null, skipRedirect = false) => {

@@ -42,6 +42,7 @@ export default function NotesSession({
   const voiceCount = payload["voice-count"] ?? 0;
   const imageCount = payload["image-count"] ?? 0;
   const videoCount = payload["video-count"] ?? 0;
+  const isRichHtml = payload.notes.startsWith("<");
   const images = voiceRecordings?.images ?? [];
   const videos = voiceRecordings?.videos ?? [];
 
@@ -70,8 +71,8 @@ export default function NotesSession({
               {payload.notes}
             </BodyText>
           )}
-          {/* Images */}
-          {imageCount > 0 && (
+          {/* Images – skip for rich HTML notes since images are already inline */}
+          {imageCount > 0 && !isRichHtml && (
             <View className="mt-10">
               {isLoadingVoice ? (
                 <NotesVoiceSkeleton count={imageCount} />

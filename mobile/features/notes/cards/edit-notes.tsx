@@ -9,7 +9,7 @@ import { View, ScrollView } from "react-native";
 import { editNotes } from "@/database/notes/edit-notes";
 import PageContainer from "@/components/PageContainer";
 import { Dot } from "lucide-react-native";
-import { FeedItemUI } from "@/types/session";
+import { FeedItemUI, DraftVideo } from "@/types/session";
 import { FullNotesSession } from "@/database/notes/get-full-notes";
 import { DraftRecordingItem } from "../components/draftRecording";
 import { nanoid } from "nanoid/non-secure";
@@ -21,7 +21,6 @@ import DraftImageItem from "@/features/notes/components/DraftImageItem";
 import DraftVideoItem from "@/features/notes/components/DraftVideoItem";
 import ImageViewerModal from "@/features/notes/components/ImageViewerModal";
 import MediaToolbar from "@/features/notes/components/MediaToolbar";
-import { DraftVideo } from "@/types/session";
 
 type Props = {
   note: FeedItemUI;
@@ -97,7 +96,9 @@ export default function EditNotes({
   const { folders, isLoading: isFoldersLoading } = useFolders();
 
   // Voice recordings state
-  const [existingRecordings, setExistingRecordings] = useState<ExistingRecording[]>([]);
+  const [existingRecordings, setExistingRecordings] = useState<
+    ExistingRecording[]
+  >([]);
   const [deletedRecordingIds, setDeletedRecordingIds] = useState<string[]>([]);
   const [newRecordings, setNewRecordings] = useState<DraftRecording[]>([]);
 
@@ -126,7 +127,11 @@ export default function EditNotes({
     if (voiceRecordings?.videos) {
       setExistingVideos(voiceRecordings.videos);
     }
-  }, [voiceRecordings?.voiceRecordings, voiceRecordings?.images, voiceRecordings?.videos]);
+  }, [
+    voiceRecordings?.voiceRecordings,
+    voiceRecordings?.images,
+    voiceRecordings?.videos,
+  ]);
 
   const handleDeleteExisting = async (recordingId: string) => {
     const confirmed = await confirmAction({
@@ -266,7 +271,7 @@ export default function EditNotes({
             value={notes}
             setValue={setNotes}
             label={t("notes.notesLabel")}
-            minHeight={200}
+            height={200}
           />
           {/* Existing Voice Recordings */}
           {(voiceCount > 0 ||
@@ -331,9 +336,7 @@ export default function EditNotes({
                 <DraftImageItem
                   key={image.id}
                   uri={image.uri}
-                  onPress={() =>
-                    setViewerIndex(existingImages.length + index)
-                  }
+                  onPress={() => setViewerIndex(existingImages.length + index)}
                   onDelete={() => handleDeleteNewImage(index)}
                 />
               ))}

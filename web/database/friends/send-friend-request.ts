@@ -16,44 +16,13 @@ export async function sendFriendRequest(identifier: string) {
       throw new Error("Invalid identifier");
     }
   
-    const isUUID = (str: string) =>
-      /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/.test(
-        str
-      );
-  
-    let targetuser = null;
-    let lookUpError = null;
-  
-    if (isUUID(identifier)) {
-      const result = await supabase
-        .from("users")
-        .select("id")
-        .eq("id", identifier)
-        .single();
-  
-      targetuser = result.data;
-      lookUpError = result.error;
-    } else {
-      const result = await supabase
-        .from("users")
-        .select("id")
-        .eq("display_name", identifier)
-        .single();
-  
-      targetuser = result.data;
-      lookUpError = result.error;
-    }
-  
-    if (lookUpError && lookUpError.code !== "PGRST116") {
-      // PGRST116 = "No rows found" for .single()
-      handleError(lookUpError, {
-        message: "Database lookup error",
-        route: "sendFriendRequest",
-      });
-      throw new Error("Database lookup failed");
-    }
-  
-    if (!targetuser) {
+    const { data: targetuser, error: lookUpError } = await supabase
+      .from("users")
+      .select("id")
+      .ilike("display_name", identifier)
+      .single();
+
+    if (lookUpError || !targetuser) {
       return { message: "User does not exist" };
     }
   

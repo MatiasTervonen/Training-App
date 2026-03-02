@@ -126,6 +126,13 @@
     "alreadyFriends": "Olette jo kavereita",
     "userNotFound": "Käyttäjää ei löytynyt",
     "profilePicture": "Profiilikuva",
+    "pendingRequests": "Odottavat pyynnöt",
+    "accept": "Hyväksy",
+    "reject": "Hylkää",
+    "acceptSuccess": "Kaveripyyntö hyväksytty!",
+    "acceptError": "Kaveripyynnön hyväksyminen epäonnistui",
+    "rejectSuccess": "Kaveripyyntö hylätty",
+    "rejectError": "Kaveripyynnön hylkääminen epäonnistui",
     "deleteConfirmation": "Haluatko varmasti poistaa tämän kaverin? Tätä toimintoa ei voi perua.",
     "deleteSuccess": "Kaveri poistettu onnistuneesti!",
     "deleteError": "Kaverin poistaminen epäonnistui"

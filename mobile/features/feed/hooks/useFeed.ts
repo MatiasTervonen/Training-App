@@ -1,6 +1,6 @@
 import { useQueryClient, useInfiniteQuery } from "@tanstack/react-query";
 import getFeed from "@/database/feed/getFeed";
-import { FeedData } from "@/types/session";
+import { FeedData, FeedItemUI } from "@/types/session";
 import { useEffect, useMemo } from "react";
 
 export default function useFeed() {
@@ -15,11 +15,17 @@ export default function useFeed() {
     hasNextPage,
     isFetchingNextPage,
     isSuccess,
-  } = useInfiniteQuery({
+  } = useInfiniteQuery<
+    { feed: FeedItemUI[]; nextPage: number | null },
+    Error,
+    FeedData,
+    string[],
+    number
+  >({
     queryKey: ["feed"],
-    queryFn: ({ pageParam = 0 }) => getFeed({ pageParam, limit: 10 }),
+    queryFn: ({ pageParam }) => getFeed({ pageParam, limit: 10 }),
     initialPageParam: 0,
-    getNextPageParam: (lastPage) => lastPage.nextPage,
+    getNextPageParam: (lastPage) => lastPage.nextPage ?? undefined,
   });
 
   // Keep only first page in cahce when user leaves feed

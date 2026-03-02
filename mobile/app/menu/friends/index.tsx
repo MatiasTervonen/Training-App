@@ -96,14 +96,14 @@ export default function FriendsScreen() {
                       </AppText>
                       <View className="flex-row gap-3">
                         <AnimatedButton
-                          className="btn-base flex-1 py-2 px-8"
+                          className="btn-base flex-1 py-1.5 px-8"
                           label={t("friends.accept")}
                           onPress={() => handleAccept(request.sender_id)}
                           textClassName="text-gray-100 text-center"
                           disabled={acceptRequest.isPending}
                         />
                         <AnimatedButton
-                          className="btn-danger flex-1 py-2 px-8"
+                          className="btn-danger flex-1 py-1.5 px-8"
                           label={t("friends.reject")}
                           onPress={() => handleReject(request.id)}
                           textClassName="text-gray-100 text-center"

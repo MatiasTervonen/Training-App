@@ -3,40 +3,36 @@
 import CustomInput from "@/ui/CustomInput";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { sendFriendRequest } from "@/database/friends/send-friend-request";
+import { useSendFriendRequest } from "@/features/menu/friends/hooks/useSendFriendRequest";
 import { useTranslation } from "react-i18next";
+
+const messageKeyMap: Record<string, string> = {
+  "You cannot send a friend request to yourself": "friends.cannotSendToSelf",
+  "Friend request already exists": "friends.requestAlreadyExists",
+  "You are already friends": "friends.alreadyFriends",
+  "User does not exist": "friends.userNotFound",
+};
 
 export default function FriendRequestForm() {
   const { t } = useTranslation("menu");
   const [identifier, setIdentifier] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const sendRequest = useSendFriendRequest();
 
-  const handleSendFriendRequest = async (identifier: string) => {
+  const handleSendFriendRequest = async () => {
+    if (!identifier.trim()) return;
+
     try {
-      const result = await sendFriendRequest(identifier);
+      const result = await sendRequest.mutateAsync(identifier.trim());
 
-      if (result.message === "You cannot send a friend request to yourself") {
-        setErrorMessage(t("friends.cannotSendToSelf"));
-        return;
-      }
-
-      if (result.message === "Friend request already exists") {
-        setErrorMessage(t("friends.requestAlreadyExists"));
-        return;
-      }
-
-      if (result.message === "You are already friends") {
-        setErrorMessage(t("friends.alreadyFriends"));
-        return;
-      }
-
-      if (result.message === "User does not exist") {
-        setErrorMessage(t("friends.userNotFound"));
+      if ("message" in result && result.message) {
+        const key = messageKeyMap[result.message];
+        setErrorMessage(key ? t(key) : result.message);
         return;
       }
 
       toast.success(t("friends.requestSentSuccess"));
-      setIdentifier(""); // Clear the input field after sending the request
+      setIdentifier("");
     } catch {
       toast.error(t("friends.requestSentError"));
     }
@@ -60,11 +56,10 @@ export default function FriendRequestForm() {
       ) : (
         <p className="invisible min-h-11"></p>
       )}
-
       <button
-        disabled={!identifier}
-        onClick={() => handleSendFriendRequest(identifier)}
-        className="bg-blue-800 py-2 px-10 rounded-md shadow-md border-2 border-blue-500 text-md cursor-pointer hover:bg-blue-700 hover:scale-105 transition-transform duration-200"
+        disabled={sendRequest.isPending || !identifier.trim()}
+        onClick={handleSendFriendRequest}
+        className="bg-blue-800 py-2 px-10 rounded-md shadow-md border-2 border-blue-500 text-md cursor-pointer hover:bg-blue-700 hover:scale-105 transition-transform duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
       >
         {t("friends.sendRequest")}
       </button>

@@ -4,7 +4,7 @@ import {
   UserSettings,
 } from "@/lib/stores/useUserStore";
 import { useAppReadyStore } from "@/lib/stores/appReadyStore";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useCallback, useState } from "react";
 import { useRouter, usePathname } from "expo-router";
 import { Linking, Alert } from "react-native";
 import { supabase } from "@/lib/supabase";
@@ -25,112 +25,110 @@ export default function LayoutWrapper({
   const router = useRouter();
   const pathname = usePathname();
 
+  // Keep pathname in a ref so the auth listener always has the current value
+  const pathnameRef = useRef(pathname);
+  useEffect(() => {
+    pathnameRef.current = pathname;
+  }, [pathname]);
+
   const logoutUser = useUserStore((state) => state.logoutUser);
   const loginUser = useUserStore((state) => state.loginUser);
   const hasHydrated = useUserStore((state) => state._hasHydrated);
 
   const { modalPageConfig, setModalPageConfig } = useModalPageConfig();
 
-  const handleSessionChange = async (
-    session: Session | null,
-    skipRedirect = false,
-  ) => {
-    if (!session) {
-      logoutUser();
-      if (pathname !== "/") router.replace("/");
-      return;
-    }
+  const handleSessionChange = useCallback(
+    async (session: Session | null, skipRedirect = false) => {
+      const currentPathname = pathnameRef.current;
 
-    const { profile, settings } = useUserStore.getState();
-
-    try {
-      if (!profile || !settings) {
-        const [profileData, settingsData] = await Promise.all([
-          fetchUserProfile(),
-          fetchUserSettings(),
-        ]);
-        loginUser(profileData as UserProfile, settingsData as UserSettings);
-        // Only override device language if user explicitly set a preference
-        if (settingsData?.language) {
-          i18n.changeLanguage(settingsData.language);
-        }
-      } else if (settings?.language) {
-        // Only override device language if user explicitly set a preference (from cache)
-        i18n.changeLanguage(settings.language);
-      }
-
-      // Check onboarding status after login (strict === false so undefined/missing is treated as completed)
-      const latestSettings = useUserStore.getState().settings;
-      if (
-        !skipRedirect &&
-        latestSettings?.has_completed_onboarding === false &&
-        !pathname.startsWith("/onboarding")
-      ) {
-        router.replace("/onboarding");
+      if (!session) {
+        logoutUser();
+        if (currentPathname !== "/") router.replace("/");
         return;
       }
 
-      if (!skipRedirect && pathname !== "/dashboard") {
-        router.replace("/dashboard");
-      }
-    } catch {
-      if (!profile || !settings) {
-        Alert.alert(
-          "Error",
-          "An error occurred while loading your profile. Please log in again.",
-        );
-        logoutUser();
-        if (pathname !== "/") router.replace("/");
-      }
-    }
-  };
+      const { profile, settings } = useUserStore.getState();
 
-  useEffect(() => {
-    if (!hasHydrated) return;
+      try {
+        if (!profile || !settings) {
+          const [profileData, settingsData] = await Promise.all([
+            fetchUserProfile(),
+            fetchUserSettings(),
+          ]);
+          loginUser(profileData as UserProfile, settingsData as UserSettings);
+          // Only override device language if user explicitly set a preference
+          if (settingsData?.language) {
+            i18n.changeLanguage(settingsData.language);
+          }
+        } else if (settings?.language) {
+          // Only override device language if user explicitly set a preference (from cache)
+          i18n.changeLanguage(settings.language);
+        }
 
-    supabase.auth
-      .getSession()
-      .then(async ({ data: { session } }) => {
-        if (!session) {
-          handleSessionChange(session);
+        // Check onboarding status after login (strict === false so undefined/missing is treated as completed)
+        const latestSettings = useUserStore.getState().settings;
+        if (
+          !skipRedirect &&
+          latestSettings?.has_completed_onboarding === false &&
+          !currentPathname.startsWith("/onboarding")
+        ) {
+          router.replace("/onboarding");
           return;
         }
 
-        // Check if app was launched via widget deep link (e.g. mytrack://gym)
-        const initialUrl = await Linking.getInitialURL();
-        const hasDeepLink =
-          initialUrl != null &&
-          initialUrl.startsWith("mytrack://") &&
-          initialUrl.length > "mytrack://".length;
-
-        if (hasDeepLink) {
-          // Load user data but skip dashboard redirect (unless onboarding needed)
-          await handleSessionChange(session, true);
-          // If onboarding not completed, redirect there even from deep link
-          const settings = useUserStore.getState().settings;
-          if (settings?.has_completed_onboarding === false) {
-            router.replace("/onboarding");
-          } else {
-            useAppReadyStore.getState().setFeedReady();
-          }
-        } else {
-          await handleSessionChange(session);
+        if (!skipRedirect && currentPathname !== "/dashboard") {
+          router.replace("/dashboard");
         }
-      })
-      .finally(() => {
-        setSessionChecked(true);
-      });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hasHydrated]);
+      } catch {
+        if (!profile || !settings) {
+          Alert.alert(
+            "Error",
+            "An error occurred while loading your profile. Please log in again.",
+          );
+          logoutUser();
+          if (currentPathname !== "/") router.replace("/");
+        }
+      }
+    },
+    [logoutUser, loginUser, router],
+  );
 
+  // Single auth listener — handles both initial session and subsequent changes
   useEffect(() => {
     if (!hasHydrated) return;
 
     const { data: listener } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        if (event === "USER_UPDATED" || event === "INITIAL_SESSION") {
+        if (event === "USER_UPDATED") return;
+
+        if (event === "INITIAL_SESSION") {
+          // This replaces the separate getSession() call
+          if (session) {
+            const initialUrl = await Linking.getInitialURL();
+            const hasDeepLink =
+              initialUrl != null &&
+              initialUrl.startsWith("mytrack://") &&
+              initialUrl.length > "mytrack://".length;
+
+            if (hasDeepLink) {
+              await handleSessionChange(session, true);
+              const settings = useUserStore.getState().settings;
+              if (settings?.has_completed_onboarding === false) {
+                router.replace("/onboarding");
+              } else {
+                useAppReadyStore.getState().setFeedReady();
+              }
+            } else {
+              await handleSessionChange(session);
+            }
+          } else {
+            await handleSessionChange(null);
+          }
+          setSessionChecked(true);
           return;
         }
+
+        // SIGNED_IN, SIGNED_OUT, TOKEN_REFRESHED
         handleSessionChange(session);
       },
     );
@@ -138,8 +136,7 @@ export default function LayoutWrapper({
     return () => {
       listener.subscription.unsubscribe();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hasHydrated]);
+  }, [hasHydrated, handleSessionChange, router]);
 
   useEffect(() => {
     if (pathname !== "/dashboard") {

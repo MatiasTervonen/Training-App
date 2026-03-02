@@ -136,6 +136,11 @@ export default Sentry.wrap(function RootLayout() {
 
   const pathname = usePathname();
 
+  // Reset boot screen visibility on mount so it shows again after backgrounding
+  useEffect(() => {
+    resetFeedReady();
+  }, [resetFeedReady]);
+
   // handle notification response when app is opened from notification
   useNotificationResponse();
 
@@ -167,12 +172,7 @@ export default Sentry.wrap(function RootLayout() {
     }
   }, []);
 
-  // reset feed ready when app is mounted
-  useEffect(() => {
-    resetFeedReady();
-  }, [resetFeedReady]);
-
-  // listen for app state changes and check permissions notifications and gps tracking
+// listen for app state changes and check permissions notifications and gps tracking
   AppStatePermissionListener();
   GpsTrackingPermission();
 

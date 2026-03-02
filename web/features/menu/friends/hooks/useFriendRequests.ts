@@ -1,10 +1,12 @@
+"use client";
+
 import { useQuery } from "@tanstack/react-query";
-import { getFriendRequests } from "@/database/friend/get-friend-requests";
+import { getFriendRequest } from "@/database/friends/get-friend-request";
 
 export function useFriendRequests() {
   return useQuery({
     queryKey: ["friend-requests"],
-    queryFn: getFriendRequests,
+    queryFn: getFriendRequest,
     staleTime: 0,
   });
 }

@@ -70,6 +70,10 @@ const docGroups = [
         name: "AI Assistant",
         links: [{ name: "Claude Code", slug: "tooling/claude-code" }],
       },
+      {
+        name: "Git",
+        links: [{ name: "Worktrees", slug: "tooling/worktrees" }],
+      },
     ],
   },
 ];

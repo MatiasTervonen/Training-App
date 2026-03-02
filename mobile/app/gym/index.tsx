@@ -24,7 +24,7 @@ export default function SessionsScreen() {
   };
 
   return (
-    <View className="px-5 max-w-md mx-auto w-full gap-5">
+    <View className="px-5 max-w-md mx-auto w-full gap-4">
       <AppText className="text-2xl text-center my-5">{t("gym.title")}</AppText>
       <LinkButton
         label={t("gym.startEmptyWorkout")}

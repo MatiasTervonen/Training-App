@@ -16,6 +16,7 @@ import useSaveDraft from "@/features/feedback/hooks/useSaveDraft";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import ImagePicker from "@/features/notes/components/ImagePicker";
 import DraftImageItem from "@/features/notes/components/DraftImageItem";
+import ImageViewerModal from "@/features/notes/components/ImageViewerModal";
 
 const MAX_IMAGES = 3;
 
@@ -27,6 +28,7 @@ export default function FeedbackScreen() {
   const [message, setMessage] = useState("");
   const [imageUris, setImageUris] = useState<string[]>([]);
   const [isSending, setIsSending] = useState(false);
+  const [viewerIndex, setViewerIndex] = useState(-1);
 
   const { clearDraft } = useSaveDraft({
     category,
@@ -38,6 +40,8 @@ export default function FeedbackScreen() {
     setMessage,
     setImageUris,
   });
+
+  const confirmAction = useConfirmAction();
 
   const categoryOptions = [
     { value: "bug", label: t("menu:feedback.categories.bug") },
@@ -56,7 +60,12 @@ export default function FeedbackScreen() {
     setImageUris((prev) => [...prev, uri]);
   };
 
-  const handleDeleteImage = (uri: string) => {
+  const handleDeleteImage = async (uri: string) => {
+    const confirmed = await confirmAction({
+      title: t("notes:notes.images.deleteImageTitle"),
+      message: t("notes:notes.images.deleteImageMessage"),
+    });
+    if (!confirmed) return;
     setImageUris((prev) => prev.filter((u) => u !== uri));
   };
 
@@ -98,8 +107,6 @@ export default function FeedbackScreen() {
       setIsSending(false);
     }
   };
-
-  const confirmAction = useConfirmAction();
 
   const handleDelete = async () => {
     const confirmed = await confirmAction({});
@@ -146,10 +153,11 @@ export default function FeedbackScreen() {
               />
             </View>
             <View className="mb-4">
-              {imageUris.map((uri) => (
+              {imageUris.map((uri, index) => (
                 <DraftImageItem
                   key={uri}
                   uri={uri}
+                  onPress={() => setViewerIndex(index)}
                   onDelete={() => handleDeleteImage(uri)}
                 />
               ))}
@@ -180,6 +188,14 @@ export default function FeedbackScreen() {
         visible={isSending}
         message={t("menu:feedback.sending")}
       />
+      {imageUris.length > 0 && viewerIndex >= 0 && (
+        <ImageViewerModal
+          images={imageUris.map((uri, i) => ({ id: String(i), uri }))}
+          initialIndex={viewerIndex}
+          visible={viewerIndex >= 0}
+          onClose={() => setViewerIndex(-1)}
+        />
+      )}
     </ModalPageWrapper>
   );
 }

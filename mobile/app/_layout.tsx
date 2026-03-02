@@ -35,6 +35,7 @@ import {
 } from "react-native-reanimated";
 import { toastConfig } from "@/lib/config/toast";
 import useNotificationResponse from "@/features/feed/hooks/useNotificationResponse";
+import useNotificationNavigation from "@/features/notifications/useNotificationNavigation";
 import { useAppReadyStore } from "@/lib/stores/appReadyStore";
 import BootScreen from "@/features/feed/fakeFeedLoader";
 import SaveAreaInset from "@/features/layout/SaveAreaInset";
@@ -143,6 +144,9 @@ export default Sentry.wrap(function RootLayout() {
 
   // handle notification response when app is opened from notification
   useNotificationResponse();
+
+  // handle push notification taps for social notifications (friend requests, etc.)
+  useNotificationNavigation();
 
   // Subscribe to AppState changes for TanStack Query focus refetching
   useEffect(() => {

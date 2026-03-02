@@ -1,0 +1,21 @@
+{
+  "notifications": {
+    "title": "Ilmoitukset",
+    "markAllAsRead": "Merkitse kaikki luetuksi",
+    "empty": "Ei ilmoituksia",
+    "friendRequest": {
+      "title": "Uusi kaveripyyntö",
+      "body": "{{name}} lähetti sinulle kaveripyynnön"
+    },
+    "friendAccepted": {
+      "title": "Kaveripyyntö hyväksytty",
+      "body": "{{name}} hyväksyi kaveripyyntösi"
+    },
+    "timeAgo": {
+      "now": "Juuri nyt",
+      "minutes": "{{count}} min sitten",
+      "hours": "{{count}} t sitten",
+      "days": "{{count}} pv sitten"
+    }
+  }
+}

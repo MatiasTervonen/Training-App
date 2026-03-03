@@ -7,6 +7,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import { useTimerStore } from "@/lib/stores/timerStore";
 import { useRestTimerStore } from "@/lib/stores/restTimerStore";
+import { useSessionSummaryStore } from "@/lib/stores/sessionSummaryStore";
+import { useUserStore } from "@/lib/stores/useUserStore";
 import { useTranslation } from "react-i18next";
 
 type DraftRecording = {
@@ -136,6 +138,16 @@ export default function useSaveSession({
       if (isEditing) {
         router.push("/dashboard");
       } else {
+        const weightUnit =
+          useUserStore.getState().profile?.weight_unit ?? "kg";
+        useSessionSummaryStore.getState().setSummary({
+          title,
+          date: new Date().toISOString(),
+          duration: durationInSeconds,
+          exercises,
+          notes,
+          weightUnit,
+        });
         router.push("/gym/training-finished");
       }
 

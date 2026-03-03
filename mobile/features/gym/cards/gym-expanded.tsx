@@ -7,7 +7,7 @@ import AppText from "@/components/AppText";
 import BodyText from "@/components/BodyText";
 import { LinearGradient } from "expo-linear-gradient";
 import PageContainer from "@/components/PageContainer";
-import { History, Clock } from "lucide-react-native";
+import { History, Clock, Share2 } from "lucide-react-native";
 import { getLastExerciseHistory } from "@/database/gym/last-exercise-history";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
@@ -19,12 +19,14 @@ import DraftImageItem from "@/features/notes/components/DraftImageItem";
 import DraftVideoItem from "@/features/notes/components/DraftVideoItem";
 import { DraftRecordingItem } from "@/features/notes/components/draftRecording";
 import ImageViewerModal from "@/features/notes/components/ImageViewerModal";
+import ShareModal from "@/features/gym/components/ShareModal";
 
 export default function GymSession(gym_session: FullGymSession) {
   const { t } = useTranslation("gym");
   const [exerciseId, setExerciseId] = useState("");
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [viewerIndex, setViewerIndex] = useState(-1);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
   const images = gym_session.sessionImages ?? [];
   const videos = gym_session.sessionVideos ?? [];
@@ -45,9 +47,7 @@ export default function GymSession(gym_session: FullGymSession) {
       0,
     );
     const muscleGroupsHit = new Set(
-      exercises
-        .map((ex) => ex.gym_exercises?.muscle_group)
-        .filter(Boolean),
+      exercises.map((ex) => ex.gym_exercises?.muscle_group).filter(Boolean),
     ).size;
 
     return { exerciseCount, totalSets, muscleGroupsHit };
@@ -97,22 +97,31 @@ export default function GymSession(gym_session: FullGymSession) {
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
       <PageContainer className="mb-10">
+        <AppText className="text-gray-400 text-center mb-2 text-sm">
+          {formatDate(gym_session.start_time)}
+        </AppText>
         <View>
-          <AppText className="text-gray-400 text-center">
-            {formatDate(gym_session.created_at)}
-          </AppText>
           <LinearGradient
             colors={["#1e3a8a", "#0f172a", "#0f172a"]}
             start={{ x: 1, y: 0 }}
             end={{ x: 0, y: 1 }}
             className="items-center p-5 rounded-lg overflow-hidden shadow-md mt-5 gap-4"
           >
-            <AppText className="text-2xl text-center">
-              {gym_session.title}
-            </AppText>
+            <View className="w-full flex-row items-center">
+              <View className="w-5" />
+              <AppText className="text-2xl text-center flex-1">
+                {gym_session.title}
+              </AppText>
+              <AnimatedButton
+                onPress={() => setIsShareModalOpen(true)}
+                hitSlop={10}
+              >
+                <Share2 color="#9ca3af" size={20} />
+              </AnimatedButton>
+            </View>
             <View className="flex-row items-center gap-3">
               <Clock color="#f3f4f6" />
-              <AppText className="text-lg text-center">
+              <AppText className="text-base text-center">
                 {formatTime(gym_session.start_time)} -{" "}
                 {formatTime(gym_session.end_time)}
               </AppText>
@@ -369,6 +378,13 @@ export default function GymSession(gym_session: FullGymSession) {
           onClose={() => setViewerIndex(-1)}
         />
       )}
+
+      <ShareModal
+        visible={isShareModalOpen}
+        onClose={() => setIsShareModalOpen(false)}
+        gymSession={gym_session}
+        weightUnit={weightUnit}
+      />
     </ScrollView>
   );
 }

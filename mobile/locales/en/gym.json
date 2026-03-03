@@ -255,6 +255,20 @@
       "restTimerDuration": "Rest duration (seconds)",
       "restTimerDescription": "Automatically start a rest timer when you log a set"
     },
+    "share": {
+      "workoutFinished": "Workout Finished",
+      "shareWorkout": "Share Workout",
+      "share": "Share",
+      "sharing": "Sharing...",
+      "done": "Done",
+      "close": "Close",
+      "dialogTitle": "Share your workout",
+      "shareError": "Failed to share workout",
+      "duration": "Duration",
+      "volume": "Volume",
+      "exercises": "Exercises",
+      "sets": "Sets"
+    },
     "analytics": {
       "title": "Last 30 Days Analytics",
       "totalWorkouts": "Total workouts",

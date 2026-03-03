@@ -11,8 +11,8 @@ export type TopExercise = {
   weight: number;
   reps: number;
   isCardio: boolean;
-  time_min?: number;
-  distance_meters?: number;
+  time_min?: number | null;
+  distance_meters?: number | null;
 };
 
 export function computeShareStats(exercises: ExerciseEntry[]): ShareStats {

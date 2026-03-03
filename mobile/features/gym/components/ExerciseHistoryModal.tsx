@@ -132,15 +132,16 @@ export default function ExerciseHistoryModal({
                     {t(`gym.equipment.${equipment?.toLowerCase()}`)}
                   </AppText>
 
-                  {/* Chart */}
-                  <ExerciseHistoryChart
-                    history={history}
-                    isCardio={isCardio}
-                    valueUnit={weightUnit}
-                  />
+                  {/* Chart & Personal Best — only for strength exercises */}
+                  {!isCardio && (
+                    <ExerciseHistoryChart
+                      history={history}
+                      isCardio={isCardio}
+                      valueUnit={weightUnit}
+                    />
+                  )}
 
-                  {/* Personal Best */}
-                  {personalBest && (
+                  {!isCardio && personalBest && (
                     <LinearGradient
                       colors={["#1e3a8a", "#0f172a", "#0f172a"]}
                       start={{ x: 1, y: 0 }}
@@ -195,16 +196,10 @@ export default function ExerciseHistoryModal({
                                 <AppText className="p-2 text-lg">
                                   {t("gym.session.time")}
                                 </AppText>
-                                <AppText className="text-sm">
-                                  ({t("gym.session.min")})
-                                </AppText>
                               </View>
                               <View className="flex-1 items-center">
                                 <AppText className="p-2 text-lg">
                                   {t("gym.session.distance")}
-                                </AppText>
-                                <AppText className="text-sm">
-                                  ({t("gym.session.meters")})
                                 </AppText>
                               </View>
                             </>
@@ -251,12 +246,16 @@ export default function ExerciseHistoryModal({
                                 </View>
                                 <View className="flex-1 items-center">
                                   <AppText className="p-2 text-lg">
-                                    {set.time_min}
+                                    {set.time_min
+                                      ? `${Math.floor(set.time_min)}:${String(Math.round((set.time_min % 1) * 60)).padStart(2, "0")}`
+                                      : ""}
                                   </AppText>
                                 </View>
                                 <View className="flex-1 items-center">
                                   <AppText className="p-2 text-lg">
-                                    {set.distance_meters}
+                                    {set.distance_meters
+                                      ? `${set.distance_meters}m`
+                                      : ""}
                                   </AppText>
                                 </View>
                               </>

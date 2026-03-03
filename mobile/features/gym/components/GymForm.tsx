@@ -1,4 +1,5 @@
-import { View, ScrollView } from "react-native";
+import { View } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import AppText from "@/components/AppText";
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { useRouter } from "expo-router";
@@ -17,7 +18,6 @@ import GroupGymExercises from "@/features/gym/lib/GroupGymExercises";
 import ExerciseCard from "@/features/gym/components/ExerciseCard";
 import FullScreenModal from "@/components/FullScreenModal";
 import ExerciseSelectorList from "@/features/gym/components/ExerciseSelectorList";
-import { Plus } from "lucide-react-native";
 import SelectInput from "@/components/Selectinput";
 import ExerciseHistoryModal from "@/features/gym/components/ExerciseHistoryModal";
 import SaveButton from "@/components/buttons/SaveButton";
@@ -38,7 +38,7 @@ import { updateNativeTimerLabel } from "@/native/android/NativeTimer";
 import { useTranslation } from "react-i18next";
 import { formatDateShort } from "@/lib/formatDate";
 import GymNotesModal from "@/features/gym/components/GymNotesModal";
-import { NotebookPen } from "lucide-react-native";
+import { NotebookPen, Plus } from "lucide-react-native";
 
 type DraftRecording = {
   id: string;
@@ -287,7 +287,7 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
         </View>
       )}
 
-      <ScrollView
+      <KeyboardAwareScrollView
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={{ flexGrow: 1 }}
         showsVerticalScrollIndicator={false}
@@ -514,7 +514,7 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
             </View>
           </>
         </PageContainer>
-      </ScrollView>
+      </KeyboardAwareScrollView>
 
       <GymNotesModal
         isOpen={showNotesModal}

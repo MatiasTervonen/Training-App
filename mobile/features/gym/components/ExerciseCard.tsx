@@ -109,16 +109,20 @@ export default function ExerciseCard({
         </View>
       </View>
       {history?.sets && history?.sets.length > 0 && (
-        <View className="flex-row mt-2 flex-wrap">
-          <View className="flex-row items-center bg-gray-700/50 px-2 py-0.5 rounded">
-            <AppText className="text-sm text-gray-300">
+        <View className="flex-row mt-2">
+          <View className="flex-row items-center bg-gray-700/50 px-2 py-0.5 rounded shrink">
+            <AppText className="text-sm text-gray-300 shrink-0">
               {t("gym.exerciseCard.last")}{" "}
             </AppText>
-            <AppText className="text-sm text-green-400">
+            <AppText
+              className="text-sm text-green-400 shrink"
+              numberOfLines={1}
+            >
               {isCardioExercise(exercise)
                 ? history?.sets
                     .map(
-                      (set) => `${set.time_min}min / ${set.distance_meters}m`,
+                      (set) =>
+                        `${set.time_min ? `${Math.floor(set.time_min)}:${String(Math.round((set.time_min % 1) * 60)).padStart(2, "0")}` : "0:00"} / ${set.distance_meters ?? 0}m`,
                     )
                     .join(" • ")
                 : history?.sets

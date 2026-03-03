@@ -15,11 +15,20 @@ import { useTranslation } from "react-i18next";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import ExerciseHistoryModal from "@/features/gym/components/ExerciseHistoryModal";
 import StatCard from "@/components/StatCard";
+import DraftImageItem from "@/features/notes/components/DraftImageItem";
+import DraftVideoItem from "@/features/notes/components/DraftVideoItem";
+import { DraftRecordingItem } from "@/features/notes/components/draftRecording";
+import ImageViewerModal from "@/features/notes/components/ImageViewerModal";
 
 export default function GymSession(gym_session: FullGymSession) {
   const { t } = useTranslation("gym");
   const [exerciseId, setExerciseId] = useState("");
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+  const [viewerIndex, setViewerIndex] = useState(-1);
+
+  const images = gym_session.sessionImages ?? [];
+  const videos = gym_session.sessionVideos ?? [];
+  const voiceRecordings = gym_session.sessionVoiceRecordings ?? [];
 
   const groupedExercises = GroupExercises(
     gym_session.gym_session_exercises || [],
@@ -144,6 +153,43 @@ export default function GymSession(gym_session: FullGymSession) {
               <BodyText className="text-gray-200 whitespace-pre-wrap break-words overflow-hidden">
                 {gym_session.notes}
               </BodyText>
+            )}
+
+            {images.length > 0 && (
+              <View className="w-full mt-4">
+                {images.map((image, idx) => (
+                  <DraftImageItem
+                    key={image.id}
+                    uri={image.uri}
+                    onPress={() => setViewerIndex(idx)}
+                  />
+                ))}
+              </View>
+            )}
+
+            {videos.length > 0 && (
+              <View className="w-full mt-4">
+                {videos.map((video) => (
+                  <DraftVideoItem
+                    key={video.id}
+                    uri={video.uri}
+                    thumbnailUri={video.thumbnailUri}
+                    durationMs={video.duration_ms ?? undefined}
+                  />
+                ))}
+              </View>
+            )}
+
+            {voiceRecordings.length > 0 && (
+              <View className="w-full mt-4">
+                {voiceRecordings.map((recording) => (
+                  <DraftRecordingItem
+                    key={recording.id}
+                    uri={recording.uri}
+                    durationMs={recording.duration_ms ?? undefined}
+                  />
+                ))}
+              </View>
             )}
           </LinearGradient>
         </View>
@@ -314,6 +360,15 @@ export default function GymSession(gym_session: FullGymSession) {
         history={Array.isArray(history) ? history : []}
         error={historyError ? historyError.message : null}
       />
+
+      {images.length > 0 && viewerIndex >= 0 && (
+        <ImageViewerModal
+          images={images}
+          initialIndex={viewerIndex}
+          visible={viewerIndex >= 0}
+          onClose={() => setViewerIndex(-1)}
+        />
+      )}
     </ScrollView>
   );
 }

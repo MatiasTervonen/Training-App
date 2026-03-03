@@ -24,6 +24,7 @@ import NetInfo from "@react-native-community/netinfo";
 import * as Sentry from "@sentry/react-native";
 import { MenuProvider } from "react-native-popup-menu";
 import { Provider as PaperProvider } from "react-native-paper";
+import { KeyboardProvider } from "react-native-keyboard-controller";
 import {
   configureNotificationChannels,
   configureNotificationCategories,
@@ -187,6 +188,7 @@ export default Sentry.wrap(function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
+        <KeyboardProvider>
         <QueryClientProvider client={queryClient}>
           <MenuProvider>
             <PaperProvider>
@@ -211,6 +213,7 @@ export default Sentry.wrap(function RootLayout() {
             <Toast config={toastConfig} position="top" />
           </MenuProvider>
         </QueryClientProvider>
+        </KeyboardProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );

@@ -7,7 +7,8 @@ import { editTodo } from "@/database/todo/edit-todo";
 import SubNotesInput from "@/components/SubNotesInput";
 import AppInput from "@/components/AppInput";
 import AnimatedButton from "@/components/buttons/animatedButton";
-import { View, ScrollView } from "react-native";
+import { View } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import AppText from "@/components/AppText";
 import PageContainer from "@/components/PageContainer";
 import { useConfirmAction } from "@/lib/confirmAction";
@@ -157,7 +158,7 @@ export default function EditTodo({ todo_session, onClose, onSave, onDirtyChange 
         </View>
       )}
 
-      <ScrollView
+      <KeyboardAwareScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ flexGrow: 1 }}
       >
@@ -230,7 +231,7 @@ export default function EditTodo({ todo_session, onClose, onSave, onDirtyChange 
           visible={isSaving}
           message={t("todo.editScreen.savingTodoList")}
         />
-      </ScrollView>
+      </KeyboardAwareScrollView>
     </View>
   );
 }

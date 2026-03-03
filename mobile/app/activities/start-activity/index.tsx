@@ -24,7 +24,7 @@ import {
 } from "@/features/activities/lib/location-actions";
 import { formatDateShort } from "@/lib/formatDate";
 import FullScreenMap from "@/features/activities/components/fullScreenMap";
-import { TrackPoint, DraftRecording } from "@/types/session";
+import { TrackPoint, DraftRecording, DraftVideo } from "@/types/session";
 import InfoModal from "@/components/InfoModal";
 import { useDistanceFromTrack } from "@/features/activities/hooks/useCountDistance";
 import { useStartActivity } from "@/features/activities/hooks/useStartActivity";
@@ -54,12 +54,6 @@ import DraftImageItem from "@/features/notes/components/DraftImageItem";
 import DraftVideoItem from "@/features/notes/components/DraftVideoItem";
 import { DraftRecordingItem } from "@/features/notes/components/draftRecording";
 import { useConfirmAction } from "@/lib/confirmAction";
-import { DraftVideo } from "@/types/session";
-
-type DraftImage = {
-  id: string;
-  uri: string;
-};
 import { debugLog } from "@/features/activities/lib/debugLogger";
 import DebugOverlay from "@/features/activities/components/debugOverlay";
 import { getWeight } from "@/database/weight/get-weight";
@@ -68,6 +62,11 @@ import {
   requestIgnoreBatteryOptimizations,
 } from "@/native/android/NativeBatteryOptimization";
 import AppTextNC from "@/components/AppTextNC";
+
+type DraftImage = {
+  id: string;
+  uri: string;
+};
 
 export default function StartActivityScreen() {
   const { t } = useTranslation(["activities", "timer"]);
@@ -591,7 +590,9 @@ export default function StartActivityScreen() {
                         key={image.id}
                         uri={image.uri}
                         onDelete={() =>
-                          setDraftImages((prev) => prev.filter((_, i) => i !== index))
+                          setDraftImages((prev) =>
+                            prev.filter((_, i) => i !== index),
+                          )
                         }
                       />
                     ))}
@@ -606,7 +607,9 @@ export default function StartActivityScreen() {
                         thumbnailUri={video.thumbnailUri}
                         durationMs={video.durationMs}
                         onDelete={() =>
-                          setDraftVideos((prev) => prev.filter((_, i) => i !== index))
+                          setDraftVideos((prev) =>
+                            prev.filter((_, i) => i !== index),
+                          )
                         }
                       />
                     ))}
@@ -617,7 +620,12 @@ export default function StartActivityScreen() {
                     onRecordingComplete={(uri, duration) => {
                       setDraftRecordings((prev) => [
                         ...prev,
-                        { id: nanoid(), uri, createdAt: Date.now(), durationMs: duration },
+                        {
+                          id: nanoid(),
+                          uri,
+                          createdAt: Date.now(),
+                          durationMs: duration,
+                        },
                       ]);
                     }}
                     onImageSelected={(uri) =>

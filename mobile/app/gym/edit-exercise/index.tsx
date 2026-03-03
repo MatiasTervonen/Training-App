@@ -16,7 +16,6 @@ import { editExercise } from "@/database/gym/edit-exercise";
 import { deleteExercise } from "@/database/gym/delete-exercise";
 import ExerciseDropdownEdit from "@/features/gym/components/ExerciseDropDownEdit";
 import DeleteButton from "@/components/buttons/DeleteButton";
-import AnimatedButton from "@/components/buttons/animatedButton";
 import { useQueryClient } from "@tanstack/react-query";
 import PageContainer from "@/components/PageContainer";
 import { useTranslation } from "react-i18next";
@@ -239,14 +238,6 @@ export default function EditExercises() {
                 />
               </View>
             </View>
-            <AnimatedButton
-              onPress={() => {
-                resetFields();
-              }}
-              label={t("common:common.cancel")}
-              className="bg-red-800 py-2 rounded-md shadow-md border-2 border-red-500 text-lg items-center"
-              textClassName="text-gray-100"
-            />
           </View>
 
           <FullScreenLoader

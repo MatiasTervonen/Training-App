@@ -4,9 +4,13 @@ Git worktrees let you work on multiple feature branches simultaneously in separa
 
 ---
 
-## Starting a Feature
+## Starting a Feature (Two-Phase Workflow)
 
-Use the `implement-feature` skill to start a new feature in a worktree:
+The `implement-feature` skill uses a two-phase workflow. This is because worktrees are created **outside** the VS Code workspace, and Claude Code's auto-accept and project permissions only apply to files **inside** the workspace.
+
+### Phase 1: Setup (from main window)
+
+In your main VS Code window (`Training-App`), run:
 
 ```
 /implement-feature my-feature-name
@@ -14,13 +18,25 @@ Use the `implement-feature` skill to start a new feature in a worktree:
 
 This automatically:
 - Creates a new git worktree and branch at `../Training-App-my-feature-name`
-- Copies `.env` files
-- Copies the Supabase link config so `db push` works immediately
+- Copies `.claude`, `.env`, and Supabase link config files
 - Installs dependencies with `pnpm install`
 - Generates TypeScript types
-- Opens the worktree in a new VSCode window
+- Opens the worktree in a **new VS Code window**
+- **Stops** — does not start implementing
 
-You develop and test in the worktree just like any normal branch — run the app, push migrations, iterate.
+### Phase 2: Implementation (from new window)
+
+In the newly opened VS Code window (the worktree), open Claude Code and run:
+
+```
+/implement-feature my-feature-name
+```
+
+The same skill detects it's running inside a worktree and skips setup — it goes straight to reading the spec and implementing the feature. Since the worktree is now the workspace root, auto-accept and all permissions work normally.
+
+### Why Two Phases?
+
+VS Code's workspace root doesn't change when Claude Code runs `cd` in the terminal. If Phase 1 tried to implement directly, it would write files to a directory outside its workspace — causing permission prompts on every file creation, even with auto-accept enabled. Opening the worktree as its own VS Code window solves this.
 
 ---
 

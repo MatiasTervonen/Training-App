@@ -1,4 +1,4 @@
-import { ActivityIndicator, View } from "react-native";
+import { ActivityIndicator, Animated, View } from "react-native";
 import Mapbox, { AnimatedPoint } from "@rnmapbox/maps";
 import AnimatedButton from "../../../components/buttons/animatedButton";
 import { CircleX, Layers2, MapPin, NotebookPen } from "lucide-react-native";
@@ -124,8 +124,20 @@ export default function FullScreenMap({
       animatedUserPoint.setValue({ type: "Point", coordinates: coords });
       hasInitialPosition.current = true;
     } else {
-      // Subsequent updates — animate smoothly
-      animatedUserPoint.timing({ coordinates: coords }).start();
+      // Subsequent updates — animate smoothly with short duration
+      // so the dot stays close to the track head at higher speeds
+      Animated.parallel([
+        Animated.timing(animatedUserPoint.longitude, {
+          toValue: coords[0],
+          duration: 500,
+          useNativeDriver: false,
+        }),
+        Animated.timing(animatedUserPoint.latitude, {
+          toValue: coords[1],
+          duration: 500,
+          useNativeDriver: false,
+        }),
+      ]).start();
     }
   }, [userPosition?.longitude, userPosition?.latitude, animatedUserPoint, userPosition]);
 
@@ -220,6 +232,7 @@ export default function FullScreenMap({
             <Mapbox.ShapeSource id="user-location" shape={animatedUserPoint as any}>
               <Mapbox.CircleLayer
                 id="user-dot-outer-blur"
+                aboveLayerID="track-core"
                 style={{
                   circleColor: "#3b82f6",
                   circleRadius: 18,
@@ -228,6 +241,7 @@ export default function FullScreenMap({
               />
               <Mapbox.CircleLayer
                 id="user-dot-core"
+                aboveLayerID="user-dot-outer-blur"
                 style={{
                   circleColor: "#3b82f6",
                   circleRadius: 9,

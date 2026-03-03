@@ -29,5 +29,5 @@ export async function last30DaysAnalyticsRPC(): Promise<Last30DaysAnalytics> {
     throw new Error("Error fetching gym sessions");
   }
 
-  return data;
+  return data as Last30DaysAnalytics;
 }

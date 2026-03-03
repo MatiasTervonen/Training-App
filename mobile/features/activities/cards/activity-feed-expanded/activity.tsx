@@ -26,7 +26,9 @@ type ActivitySessionProps = FullActivitySession & {
   voiceError?: unknown;
 };
 
-export default function ActivitySession(activity_session: ActivitySessionProps) {
+export default function ActivitySession(
+  activity_session: ActivitySessionProps,
+) {
   const { t } = useTranslation("activities");
   const [scrollEnabled, setScrollEnabled] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -57,7 +59,7 @@ export default function ActivitySession(activity_session: ActivitySessionProps) 
         <View className="flex-1 justify-between">
           <View>
             <AppText className="text-gray-300 text-center text-sm">
-              {formatDate(activity_session.session.created_at!)}
+              {formatDate(activity_session.session.start_time)}
             </AppText>
             <LinearGradient
               colors={["#1e3a8a", "#0f172a", "#0f172a"]}
@@ -91,20 +93,26 @@ export default function ActivitySession(activity_session: ActivitySessionProps) 
                 />
               </View>
             )}
-            <SessionStats activity_session={activity_session} hasRoute={hasRoute} />
+            <SessionStats
+              activity_session={activity_session}
+              hasRoute={hasRoute}
+            />
 
-            {activity_session.voiceRecordings && activity_session.voiceRecordings.length > 0 && (
-              <View className="mt-10">
-                <AppText className="mb-3">{t("activities.sessionDetails.recordings")}</AppText>
-                {activity_session.voiceRecordings.map((recording) => (
-                  <DraftRecordingItem
-                    key={recording.id}
-                    uri={recording.uri}
-                    durationMs={recording.duration_ms ?? undefined}
-                  />
-                ))}
-              </View>
-            )}
+            {activity_session.voiceRecordings &&
+              activity_session.voiceRecordings.length > 0 && (
+                <View className="mt-10">
+                  <AppText className="mb-3">
+                    {t("activities.sessionDetails.recordings")}
+                  </AppText>
+                  {activity_session.voiceRecordings.map((recording) => (
+                    <DraftRecordingItem
+                      key={recording.id}
+                      uri={recording.uri}
+                      durationMs={recording.duration_ms ?? undefined}
+                    />
+                  ))}
+                </View>
+              )}
 
             {activity_session.isLoadingVoice && (
               <View className="mt-10">

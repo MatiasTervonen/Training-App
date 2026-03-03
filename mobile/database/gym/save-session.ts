@@ -3,7 +3,7 @@ import { handleError } from "@/utils/handleError";
 import { useTimerStore } from "@/lib/stores/timerStore";
 import * as Crypto from "expo-crypto";
 import { File } from "expo-file-system/next";
-import { DraftVideo } from "@/types/session";
+import { DraftVideo, ExerciseEntry } from "@/types/session";
 
 type DraftRecording = {
   id: string;
@@ -21,18 +21,7 @@ type props = {
   title: string;
   notes: string;
   duration: number;
-  exercises: {
-    exercise_id?: string;
-    notes?: string;
-    superset_id?: string;
-    sets: {
-      weight?: number;
-      reps?: number;
-      rpe?: string;
-      time_min?: number;
-      distance_meters?: number;
-    }[];
-  }[];
+  exercises: ExerciseEntry[];
   draftImages?: DraftImage[];
   draftRecordings?: DraftRecording[];
   draftVideos?: DraftVideo[];

@@ -257,6 +257,20 @@
       "restTimerDuration": "Lepoaika (sekuntia)",
       "restTimerDescription": "Käynnistä lepoajastin automaattisesti kun kirjaat sarjan"
     },
+    "share": {
+      "workoutFinished": "Treeni valmis",
+      "shareWorkout": "Jaa treeni",
+      "share": "Jaa",
+      "sharing": "Jaetaan...",
+      "done": "Valmis",
+      "close": "Sulje",
+      "dialogTitle": "Jaa treenisi",
+      "shareError": "Treenin jakaminen epäonnistui",
+      "duration": "Kesto",
+      "volume": "Volyymi",
+      "exercises": "Liikkeet",
+      "sets": "Sarjat"
+    },
     "analytics": {
       "title": "Viimeisten 30 päivän analytiikka",
       "totalWorkouts": "Treenejä yht",

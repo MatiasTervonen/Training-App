@@ -36,22 +36,22 @@ export type HistoryResult = ({
 } | null)[];
 
 export type ExerciseSet = {
-  weight?: number;
-  reps?: number;
-  rpe?: string;
-  time_min?: number;
-  distance_meters?: number;
+  weight?: number | null;
+  reps?: number | null;
+  rpe?: string | null;
+  time_min?: number | null;
+  distance_meters?: number | null;
 };
 
 export type ExerciseEntry = {
   exercise_id: string;
   name: string;
-  equipment: string; // Optional, can be used to display equipment type
-  main_group?: string; // Optional, can be used to display main muscle group
+  equipment: string;
+  main_group?: string | null;
   sets: ExerciseSet[];
-  notes?: string;
-  superset_id?: string; // For super-sets
-  muscle_group?: string; // Optional, can be used to display muscle group
+  notes?: string | null;
+  superset_id?: string | null;
+  muscle_group?: string | null;
 };
 
 export const emptyExerciseEntry: ExerciseEntry = {

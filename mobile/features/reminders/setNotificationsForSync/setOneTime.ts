@@ -10,14 +10,14 @@ export default function setOneTimeNotification({
 }: {
   notifyAt: Date;
   title: string;
-  notes: string;
+  notes: string | null;
   reminderId: string;
   mode?: "alarm" | "normal";
 }) {
   return Notifications.scheduleNotificationAsync({
     content: {
       title: title,
-      body: notes,
+      body: notes || "",
       sound: true,
       data: {
         reminderId: reminderId,

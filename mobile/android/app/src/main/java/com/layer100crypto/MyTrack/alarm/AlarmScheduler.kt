@@ -15,9 +15,8 @@ class AlarmScheduler(private val context: Context) {
 
     fun schedule(triggerAtMillis: Long, reminderId: String, title: String, soundType: String, content: String, tapToOpenText: String = "Tap to open timer", timesUpText: String = "Time's up!", stopAlarmText: String = "Stop Alarm", snoozeText: String = "Snooze") {
         scheduleInternal(triggerAtMillis, reminderId, title, soundType, content, tapToOpenText, timesUpText, stopAlarmText, snoozeText)
-        // Clear any repeat info for one-time alarms
         clearRepeatInfo(reminderId)
-        // Track this alarm ID
+        saveOneTimeInfo(reminderId, triggerAtMillis, title, soundType, content, tapToOpenText, timesUpText, stopAlarmText, snoozeText)
         addAlarmId(reminderId)
     }
 
@@ -36,8 +35,8 @@ class AlarmScheduler(private val context: Context) {
         snoozeText: String = "Snooze"
     ) {
         scheduleInternal(triggerAtMillis, reminderId, title, soundType, content, tapToOpenText, timesUpText, snoozeText = snoozeText)
+        clearOneTimeInfo(reminderId)
         saveRepeatInfo(reminderId, title, soundType, content, repeatType, weekdays, hour, minute, tapToOpenText, timesUpText, snoozeText)
-        // Track this alarm ID
         addAlarmId(reminderId)
     }
 
@@ -153,6 +152,7 @@ class AlarmScheduler(private val context: Context) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         alarmManager.cancel(pendingIntent)
         clearRepeatInfo(reminderId)
+        clearOneTimeInfo(reminderId)
         removeAlarmId(reminderId)
     }
 
@@ -169,6 +169,7 @@ class AlarmScheduler(private val context: Context) {
             val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
             alarmManager.cancel(pendingIntent)
             clearRepeatInfo(reminderId)
+            clearOneTimeInfo(reminderId)
         }
         clearAllAlarmIds()
     }
@@ -197,6 +198,69 @@ class AlarmScheduler(private val context: Context) {
         prefs.edit().remove(ALARM_IDS_KEY).apply()
     }
 
+    // --- One-time alarm persistence ---
+
+    private fun saveOneTimeInfo(
+        reminderId: String,
+        triggerAtMillis: Long,
+        title: String,
+        soundType: String,
+        content: String,
+        tapToOpenText: String,
+        timesUpText: String,
+        stopAlarmText: String,
+        snoozeText: String
+    ) {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        prefs.edit()
+            .putLong("${reminderId}_triggerAtMillis", triggerAtMillis)
+            .putString("${reminderId}_title", title)
+            .putString("${reminderId}_soundType", soundType)
+            .putString("${reminderId}_content", content)
+            .putString("${reminderId}_tapToOpenText", tapToOpenText)
+            .putString("${reminderId}_timesUpText", timesUpText)
+            .putString("${reminderId}_stopAlarmText", stopAlarmText)
+            .putString("${reminderId}_snoozeText", snoozeText)
+            .apply()
+    }
+
+    fun getOneTimeInfo(reminderId: String): OneTimeInfo? {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val triggerAtMillis = prefs.getLong("${reminderId}_triggerAtMillis", -1L)
+        if (triggerAtMillis == -1L) return null
+
+        return OneTimeInfo(
+            triggerAtMillis = triggerAtMillis,
+            title = prefs.getString("${reminderId}_title", "") ?: "",
+            soundType = prefs.getString("${reminderId}_soundType", "reminder") ?: "reminder",
+            content = prefs.getString("${reminderId}_content", "") ?: "",
+            tapToOpenText = prefs.getString("${reminderId}_tapToOpenText", "Tap to open timer") ?: "Tap to open timer",
+            timesUpText = prefs.getString("${reminderId}_timesUpText", "Time's up!") ?: "Time's up!",
+            stopAlarmText = prefs.getString("${reminderId}_stopAlarmText", "Stop Alarm") ?: "Stop Alarm",
+            snoozeText = prefs.getString("${reminderId}_snoozeText", "Snooze") ?: "Snooze"
+        )
+    }
+
+    private fun clearOneTimeInfo(reminderId: String) {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        prefs.edit()
+            .remove("${reminderId}_triggerAtMillis")
+            .remove("${reminderId}_title")
+            .remove("${reminderId}_soundType")
+            .remove("${reminderId}_content")
+            .remove("${reminderId}_tapToOpenText")
+            .remove("${reminderId}_timesUpText")
+            .remove("${reminderId}_stopAlarmText")
+            .remove("${reminderId}_snoozeText")
+            .apply()
+    }
+
+    fun cleanUpFiredOneTimeAlarm(reminderId: String) {
+        if (getRepeatInfo(reminderId) != null) return
+        clearOneTimeInfo(reminderId)
+        removeAlarmId(reminderId)
+    }
+
     data class RepeatInfo(
         val repeatType: String,
         val weekdays: List<Int>,
@@ -207,6 +271,17 @@ class AlarmScheduler(private val context: Context) {
         val content: String,
         val tapToOpenText: String = "Tap to open",
         val timesUpText: String = "Reminder",
+        val snoozeText: String = "Snooze"
+    )
+
+    data class OneTimeInfo(
+        val triggerAtMillis: Long,
+        val title: String,
+        val soundType: String,
+        val content: String,
+        val tapToOpenText: String = "Tap to open timer",
+        val timesUpText: String = "Time's up!",
+        val stopAlarmText: String = "Stop Alarm",
         val snoozeText: String = "Snooze"
     )
 }

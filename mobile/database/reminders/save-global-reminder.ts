@@ -24,7 +24,7 @@ export async function saveGlobalReminder({
     p_notify_at: notify_at,
     p_type: type,
     p_mode: mode,
-    p_created_from_device_id: created_from_device_id ?? null,
+    p_created_from_device_id: created_from_device_id || undefined,
   });
 
   if (error) {

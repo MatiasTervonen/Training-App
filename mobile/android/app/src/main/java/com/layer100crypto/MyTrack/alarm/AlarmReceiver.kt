@@ -77,6 +77,9 @@ class AlarmReceiver : BroadcastReceiver() {
             ReactEventEmitter.sendTimerFinished(context, reminderId, title)
         }
 
+        // Clean up one-time alarm data (it has fired and won't repeat)
+        AlarmScheduler(context).cleanUpFiredOneTimeAlarm(reminderId)
+
         // Schedule next occurrence for repeating alarms
         scheduleNextRepeat(context, reminderId)
     }

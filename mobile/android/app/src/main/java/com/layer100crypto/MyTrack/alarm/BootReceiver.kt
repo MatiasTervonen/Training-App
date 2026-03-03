@@ -59,9 +59,29 @@ class BootReceiver : BroadcastReceiver() {
 
                 Log.d(TAG, "Rescheduled repeating alarm: $reminderId (${repeatInfo.repeatType})")
             } else {
-                // One-time alarm - can't reschedule without trigger time
-                // Will be synced when app opens
-                Log.d(TAG, "Skipping one-time alarm: $reminderId (will sync on app open)")
+                val oneTimeInfo = scheduler.getOneTimeInfo(reminderId)
+                if (oneTimeInfo != null) {
+                    if (oneTimeInfo.triggerAtMillis > System.currentTimeMillis()) {
+                        scheduler.schedule(
+                            triggerAtMillis = oneTimeInfo.triggerAtMillis,
+                            reminderId = reminderId,
+                            title = oneTimeInfo.title,
+                            soundType = oneTimeInfo.soundType,
+                            content = oneTimeInfo.content,
+                            tapToOpenText = oneTimeInfo.tapToOpenText,
+                            timesUpText = oneTimeInfo.timesUpText,
+                            stopAlarmText = oneTimeInfo.stopAlarmText,
+                            snoozeText = oneTimeInfo.snoozeText
+                        )
+                        Log.d(TAG, "Rescheduled one-time alarm: $reminderId")
+                    } else {
+                        scheduler.cleanUpFiredOneTimeAlarm(reminderId)
+                        Log.d(TAG, "Cleaned up past one-time alarm: $reminderId")
+                    }
+                } else {
+                    scheduler.cleanUpFiredOneTimeAlarm(reminderId)
+                    Log.d(TAG, "No stored info for one-time alarm: $reminderId, removing")
+                }
             }
         }
     }

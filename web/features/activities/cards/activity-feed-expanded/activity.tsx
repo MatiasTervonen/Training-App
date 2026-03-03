@@ -1,11 +1,7 @@
 "use client";
 
 import { FullActivitySession } from "@/types/models";
-import {
-  formatDate,
-  formatTime,
-  formatDuration,
-} from "@/lib/formatDate";
+import { formatDate, formatTime, formatDuration } from "@/lib/formatDate";
 import RouteMap from "@/features/activities/cards/activity-feed-expanded/components/Map";
 import SessionStats from "@/features/activities/cards/activity-feed-expanded/components/SessionStats";
 import { useTranslation } from "react-i18next";
@@ -26,7 +22,7 @@ export default function ActivitySession(
   return (
     <div className="max-w-lg mx-auto page-padding">
       <p className="text-gray-300 text-center text-sm">
-        {formatDate(activity_session.session.created_at!)}
+        {formatDate(activity_session.session.start_time)}
       </p>
 
       <div className="bg-linear-to-tr from-gray-900 via-slate-900 to-blue-900 rounded-lg overflow-hidden shadow-md mt-5">
@@ -38,8 +34,8 @@ export default function ActivitySession(
           <div className="flex items-center justify-center gap-3">
             <Clock />
             <p className="text-lg text-center text-gray-100">
-              {formatTime(activity_session.session.start_time!)} -{" "}
-              {formatTime(activity_session.session.end_time!)}
+              {formatTime(activity_session.session.start_time)} -{" "}
+              {formatTime(activity_session.session.end_time)}
             </p>
           </div>
 
@@ -52,14 +48,14 @@ export default function ActivitySession(
           {!hasRoute && (
             <p className="text-lg text-center mt-5 text-gray-100">
               {t("activities.sessionDetails.duration")}:{" "}
-              {formatDuration(activity_session.session.duration ?? 0)}
+              {formatDuration(activity_session.session.duration)}
             </p>
           )}
 
           {!hasRoute && !!activity_session.stats?.steps && (
             <p className="text-lg text-center mt-5 text-gray-100">
               {t("activities.sessionDetails.steps")}:{" "}
-              {activity_session.stats?.steps}
+              {activity_session.stats.steps}
             </p>
           )}
         </div>

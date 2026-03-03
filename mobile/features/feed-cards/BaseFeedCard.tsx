@@ -14,7 +14,7 @@ type BaseCardProps = {
   onTogglePin: () => void;
   onDelete: () => void;
   onExpand: () => void;
-  onEdit: () => void;
+  onEdit?: () => void;
   onMoveToFolder?: () => void;
   statsContent: ReactNode; // Middle section with stats
   typeIcon: ReactNode; // Icon for activity type

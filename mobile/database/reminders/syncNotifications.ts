@@ -50,6 +50,7 @@ export async function syncNotifications() {
 
   await Promise.all(
     (localReminders || []).map(async (reminder) => {
+      if (!reminder.notify_at_time) return;
       switch (reminder.type) {
         case "daily": {
           const notificationId = await setDailyNotification({

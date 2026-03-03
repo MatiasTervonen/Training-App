@@ -20,11 +20,6 @@ class StepCounterHelper(private val context: Context) {
         private const val KEY_LAST_READ_TIME = "last_read_time"
         private const val KEY_DAILY_STEPS = "daily_steps"
         private const val KEY_SESSION_START_VALUE = "session_start_value"
-        const val KEY_CURRENT_ACTIVITY_TYPE = "current_activity_type"
-        const val KEY_CURRENT_ACTIVITY_CONFIDENCE = "current_activity_confidence"
-        const val KEY_LAST_WALKING_TIMESTAMP = "last_walking_timestamp"
-        private const val KEY_SESSION_FILTERED_STEPS = "session_filtered_steps"
-        private const val KEY_SESSION_LAST_LIVE_SENSOR = "session_last_live_sensor"
         private const val MAX_HISTORY_DAYS = 60
     }
 
@@ -121,19 +116,10 @@ class StepCounterHelper(private val context: Context) {
         return result
     }
 
-    fun updateLastSensorValue(currentValue: Long) {
-        prefs.edit()
-            .putLong(KEY_LAST_SENSOR_VALUE, currentValue)
-            .putLong(KEY_LAST_READ_TIME, System.currentTimeMillis())
-            .apply()
-    }
-
     fun startSession(): Long? {
         val currentValue = readSensorValueSync() ?: return null
         prefs.edit()
             .putLong(KEY_SESSION_START_VALUE, currentValue)
-            .putLong(KEY_SESSION_FILTERED_STEPS, 0L)
-            .putLong(KEY_SESSION_LAST_LIVE_SENSOR, currentValue)
             .apply()
         return currentValue
     }
@@ -141,38 +127,16 @@ class StepCounterHelper(private val context: Context) {
     fun getSessionSteps(): Long {
         val currentValue = readSensorValueSync() ?: return 0L
         val sessionStart = prefs.getLong(KEY_SESSION_START_VALUE, -1L)
-        val filteredSteps = prefs.getLong(KEY_SESSION_FILTERED_STEPS, 0L)
 
         if (sessionStart == -1L) return 0L
 
         val rawSteps = if (currentValue < sessionStart) {
-            currentValue
+            currentValue // reboot: treat current value as steps
         } else {
             currentValue - sessionStart
         }
 
-        return maxOf(rawSteps - filteredSteps, 0L)
-    }
-
-    fun getSessionFilteredSteps(): Long {
-        return prefs.getLong(KEY_SESSION_FILTERED_STEPS, 0L)
-    }
-
-    fun addSessionFilteredSteps(delta: Long) {
-        val current = prefs.getLong(KEY_SESSION_FILTERED_STEPS, 0L)
-        prefs.edit()
-            .putLong(KEY_SESSION_FILTERED_STEPS, current + delta)
-            .apply()
-    }
-
-    fun getSessionLastLiveSensor(): Long {
-        return prefs.getLong(KEY_SESSION_LAST_LIVE_SENSOR, -1L)
-    }
-
-    fun setSessionLastLiveSensor(value: Long) {
-        prefs.edit()
-            .putLong(KEY_SESSION_LAST_LIVE_SENSOR, value)
-            .apply()
+        return maxOf(rawSteps, 0L)
     }
 
     private fun loadDailySteps(): JSONObject {

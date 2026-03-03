@@ -15,10 +15,7 @@ export async function syncAlarms() {
     return true;
   }
 
-  // 1. Clear all existing alarms
-  cancelAllNativeAlarms();
-
-  // 2. Fetch local reminders and get deviceId in parallel
+  // 1. Fetch all data BEFORE canceling alarms — if fetching fails, keep existing alarms
   const [{ data: localReminders, error: localRemindersError }, deviceId] =
     await Promise.all([
       supabase.from("local_reminders").select("*").eq("mode", "alarm"),
@@ -34,7 +31,6 @@ export async function syncAlarms() {
     throw new Error("Failed to sync alarms");
   }
 
-  // 3. Fetch global reminders (needs deviceId)
   const { data: globalRemindersData, error: globalRemindersError } =
     await supabase
       .from("global_reminders")
@@ -52,9 +48,13 @@ export async function syncAlarms() {
 
   const globalReminders = globalRemindersData || [];
 
-  // 3. Re-schedule all alarms
-  await Promise.all(
+  // 2. Only cancel alarms AFTER we have the data to reschedule
+  cancelAllNativeAlarms();
+
+  // 3. Re-schedule all alarms (allSettled so one failure doesn't skip the rest)
+  await Promise.allSettled(
     (localReminders || []).map(async (reminder) => {
+      if (!reminder.notify_at_time) return;
       const notifyAt = new Date(reminder.notify_at_time);
       const hour = notifyAt.getHours();
       const minute = notifyAt.getMinutes();
@@ -79,13 +79,13 @@ export async function syncAlarms() {
             reminder.notes || "",
             "daily",
             hour,
-            minute
+            minute,
           );
           return;
         }
 
         case "weekly": {
-          const weekdays: number[] = reminder.weekdays || [];
+          const weekdays: number[] = (reminder.weekdays as number[]) || [];
           if (weekdays.length === 0) return;
 
           // Calculate first trigger time based on next matching weekday
@@ -125,7 +125,7 @@ export async function syncAlarms() {
             "weekly",
             hour,
             minute,
-            weekdays
+            weekdays,
           );
           return;
         }
@@ -154,17 +154,18 @@ export async function syncAlarms() {
             t("reminders:reminders.notification.tapToOpen"),
             t("reminders:reminders.notification.reminder"),
             t("reminders:reminders.notification.stopAlarm"),
-            t("reminders:reminders.notification.snooze")
+            t("reminders:reminders.notification.snooze"),
           );
           return;
         }
       }
-    })
+    }),
   );
 
-  // 6. Schedule global reminders (one-time alarms)
-  await Promise.all(
+  // 4. Schedule global reminders (one-time alarms)
+  await Promise.allSettled(
     globalReminders.map(async (reminder) => {
+      if (!reminder.notify_at) return;
       const notifyAt = new Date(reminder.notify_at);
 
       // Do NOT schedule past reminders
@@ -181,9 +182,9 @@ export async function syncAlarms() {
         t("reminders:reminders.notification.tapToOpen"),
         t("reminders:reminders.notification.reminder"),
         t("reminders:reminders.notification.stopAlarm"),
-        t("reminders:reminders.notification.snooze")
+        t("reminders:reminders.notification.snooze"),
       );
-    })
+    }),
   );
 
   return true;

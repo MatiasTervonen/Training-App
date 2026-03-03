@@ -72,7 +72,7 @@ export default function GymSession(gym_session: FullGymSession) {
   return (
     <div className="max-w-lg mx-auto page-padding">
       <div className="text-sm text-gray-400 text-center">
-        {formatDate(gym_session.created_at)}
+        {formatDate(gym_session.start_time)}
       </div>
       <div className="flex flex-col gap-4 justify-center items-center bg-slate-900 rounded-md p-5 mt-5">
         <h2 className="text-xl text-center border-b border-gray-400">{gym_session.title}</h2>

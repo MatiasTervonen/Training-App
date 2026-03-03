@@ -23,7 +23,6 @@ import com.facebook.react.modules.core.DeviceEventManagerModule
 import com.facebook.react.modules.core.PermissionAwareActivity
 import com.facebook.react.modules.core.PermissionListener
 import com.facebook.react.module.annotations.ReactModule
-import com.google.android.gms.location.DetectedActivity
 
 @ReactModule(name = "NativeStepCounter")
 class StepCounterModule(private val reactContext: ReactApplicationContext)
@@ -263,40 +262,21 @@ class StepCounterModule(private val reactContext: ReactApplicationContext)
 
         val prefs = reactContext.getSharedPreferences(STEP_PREFS_NAME, Context.MODE_PRIVATE)
         val sessionStart = prefs.getLong(KEY_SESSION_START_VALUE, -1L)
-        val helper = StepCounterHelper(reactContext)
 
         val listener = object : SensorEventListener {
             override fun onSensorChanged(event: SensorEvent) {
                 val currentValue = event.values[0].toLong()
                 if (sessionStart == -1L) return
 
-                // Calculate delta from last live sensor reading
-                val lastLive = helper.getSessionLastLiveSensor()
-                val delta = when {
-                    lastLive == -1L -> 0L
-                    currentValue < lastLive -> currentValue // reboot
-                    else -> currentValue - lastLive
-                }
-                helper.setSessionLastLiveSensor(currentValue)
-
-                // Check Activity Recognition filter
-                if (delta > 0 && !shouldCountLiveStep(prefs)) {
-                    helper.addSessionFilteredSteps(delta)
-                    return
-                }
-
-                // Calculate filtered session steps
-                val rawSteps = if (currentValue < sessionStart) {
-                    currentValue
+                val displaySteps = if (currentValue < sessionStart) {
+                    currentValue // reboot: treat current value as steps
                 } else {
                     currentValue - sessionStart
-                }
-                val filteredSteps = helper.getSessionFilteredSteps()
-                val displaySteps = maxOf(rawSteps - filteredSteps, 0L).toInt()
+                }.toInt()
 
                 reactContext
                     .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
-                    .emit(EVENT_LIVE_STEPS, displaySteps)
+                    .emit(EVENT_LIVE_STEPS, maxOf(displaySteps, 0))
             }
 
             override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
@@ -305,28 +285,6 @@ class StepCounterModule(private val reactContext: ReactApplicationContext)
         sm.registerListener(listener, stepSensor, SensorManager.SENSOR_DELAY_NORMAL, 0)
         sensorManager = sm
         liveListener = listener
-    }
-
-    private fun shouldCountLiveStep(prefs: android.content.SharedPreferences): Boolean {
-        val activityType = prefs.getInt(StepCounterHelper.KEY_CURRENT_ACTIVITY_TYPE, DetectedActivity.UNKNOWN)
-        val activityConfidence = prefs.getInt(StepCounterHelper.KEY_CURRENT_ACTIVITY_CONFIDENCE, 0)
-        val lastWalkingTime = prefs.getLong(StepCounterHelper.KEY_LAST_WALKING_TIMESTAMP, 0L)
-
-        // Accept if Activity Recognition hasn't reported yet
-        if (activityType == DetectedActivity.UNKNOWN) return true
-
-        // Accept if user is walking/running
-        val isMoving = activityType in listOf(
-            DetectedActivity.WALKING,
-            DetectedActivity.RUNNING,
-            DetectedActivity.ON_FOOT
-        ) && activityConfidence >= 70
-        if (isMoving) return true
-
-        // Grace period: 5 seconds after last walking detection
-        if (System.currentTimeMillis() - lastWalkingTime < 5_000L) return true
-
-        return false
     }
 
     @ReactMethod

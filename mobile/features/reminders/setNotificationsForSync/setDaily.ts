@@ -11,7 +11,7 @@ export default function setDailyNotification({
 }: {
   notifyAt: Date;
   title: string;
-  notes: string;
+  notes: string | null;
   reminderId: string;
   mode?: "alarm" | "normal";
 }) {
@@ -35,7 +35,7 @@ export default function setDailyNotification({
   return Notifications.scheduleNotificationAsync({
     content: {
       title: title,
-      body: notes,
+      body: notes || "",
       sound: true,
       data: { reminderId: reminderId },
       ...(mode === "normal" && {

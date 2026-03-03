@@ -16,7 +16,13 @@ import AnimatedButton from "@/components/buttons/animatedButton";
 import { useTranslation } from "react-i18next";
 import { useUserStore } from "@/lib/stores/useUserStore";
 
-type ExerciseItem = Awaited<ReturnType<typeof getExercises>>[number];
+type ExerciseItem = {
+  id: string;
+  name: string;
+  equipment: string;
+  main_group: string;
+  muscle_group: string;
+};
 
 type Props = {
   onSelect: (exercise: ExerciseItem) => void;

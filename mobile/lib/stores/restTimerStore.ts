@@ -65,7 +65,6 @@ export const useRestTimerStore = create<RestTimerState>()((set, get) => ({
       content: {
         title: t("gym:gym.restTimer.finished"),
         sound: "mixkit_alert_bells_echo_765.wav",
-        channelId: REST_TIMER_CHANNEL_ID,
       },
       trigger: {
         type: Notifications.SchedulableTriggerInputTypes.DATE,

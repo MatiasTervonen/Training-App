@@ -19,7 +19,7 @@ type DraftImage = {
 type props = {
   title: string;
   notes: string;
-  weight: number | undefined;
+  weight: number;
   draftImages?: DraftImage[];
   draftVideos?: DraftVideo[];
   draftRecordings?: DraftRecording[];

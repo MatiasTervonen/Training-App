@@ -30,7 +30,7 @@ export default function useSaveTemplate({
       template_id: templateId,
       exercise_id: ex.exercise_id,
       position: index,
-      superset_id: ex.superset_id,
+      superset_id: ex.superset_id ?? undefined,
     }));
 
     try {

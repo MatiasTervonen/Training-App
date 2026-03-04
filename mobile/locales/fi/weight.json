@@ -15,6 +15,7 @@
     "created": "luotu",
     "fullAnalytics": "Täysi analytiikka",
     "chartError": "Virhe painotietojen latauksessa.",
+    "mediaLoadError": "Virhe median latauksessa.",
     "analyticsScreen": {
       "title": "Painoanalytiikka",
       "loading": "Ladataan painotietoja...",

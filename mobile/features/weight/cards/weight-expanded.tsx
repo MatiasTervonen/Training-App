@@ -1,6 +1,6 @@
 import { formatDate } from "@/lib/formatDate";
 import { useUserStore } from "@/lib/stores/useUserStore";
-import { View, ActivityIndicator } from "react-native";
+import { View, ActivityIndicator, ScrollView } from "react-native";
 import AppText from "@/components/AppText";
 import BodyText from "@/components/BodyText";
 import PageContainer from "@/components/PageContainer";
@@ -11,15 +11,42 @@ import { getWeight } from "@/database/weight/get-weight";
 import WeightFeedChart from "@/features/weight/WeightFeedChart";
 import { ChartNoAxesCombined } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
+import { FullWeightSession } from "@/database/weight/get-full-weight";
+import DraftImageItem from "@/features/notes/components/DraftImageItem";
+import DraftVideoItem from "@/features/notes/components/DraftVideoItem";
+import { DraftRecordingItem } from "@/features/notes/components/draftRecording";
+import ImageViewerModal from "@/features/notes/components/ImageViewerModal";
+import { NotesVoiceSkeleton } from "@/components/skeletetons";
+import { useState } from "react";
 
 type weightPayload = {
   weight: number;
   notes: string;
+  "image-count"?: number;
+  "video-count"?: number;
+  "voice-count"?: number;
 };
 
-export default function WeightSession(weight: FeedItemUI) {
+type WeightSessionProps = {
+  weightMedia?: FullWeightSession | null;
+  isLoadingMedia?: boolean;
+  mediaError?: unknown;
+} & FeedItemUI;
+
+export default function WeightSession({
+  weightMedia,
+  isLoadingMedia,
+  mediaError,
+  ...weight
+}: WeightSessionProps) {
   const { t } = useTranslation("weight");
+  const [viewerIndex, setViewerIndex] = useState(-1);
   const payload = weight.extra_fields as weightPayload;
+  const imageCount = payload["image-count"] ?? 0;
+  const videoCount = payload["video-count"] ?? 0;
+  const voiceCount = payload["voice-count"] ?? 0;
+  const images = weightMedia?.images ?? [];
+  const videos = weightMedia?.videos ?? [];
 
   const weightUnit =
     useUserStore((state) => state.profile?.weight_unit) || "kg";
@@ -34,6 +61,8 @@ export default function WeightSession(weight: FeedItemUI) {
   });
 
   return (
+  <>
+    <ScrollView showsVerticalScrollIndicator={false}>
     <PageContainer>
       <AppText className="text-sm text-gray-400 text-center">
         {t("weight.created")}: {formatDate(weight.created_at!)}
@@ -55,6 +84,62 @@ export default function WeightSession(weight: FeedItemUI) {
               </AppText>
             </View>
           </View>
+
+          {/* Images */}
+          {imageCount > 0 && (
+            <View className="mt-5">
+              {isLoadingMedia ? (
+                <NotesVoiceSkeleton count={imageCount} />
+              ) : (
+                images.map((image, idx) => (
+                  <DraftImageItem
+                    key={image.id}
+                    uri={image.uri}
+                    onPress={() => setViewerIndex(idx)}
+                  />
+                ))
+              )}
+            </View>
+          )}
+
+          {/* Videos */}
+          {videoCount > 0 && (
+            <View className="mt-3">
+              {isLoadingMedia ? (
+                <NotesVoiceSkeleton count={videoCount} />
+              ) : (
+                videos.map((video) => (
+                  <DraftVideoItem
+                    key={video.id}
+                    uri={video.uri}
+                    thumbnailUri={video.thumbnailUri}
+                    durationMs={video.duration_ms ?? undefined}
+                  />
+                ))
+              )}
+            </View>
+          )}
+
+          {/* Voice Recordings */}
+          {voiceCount > 0 && (
+            <View className="mt-3">
+              {isLoadingMedia ? (
+                <NotesVoiceSkeleton count={voiceCount} />
+              ) : mediaError ? (
+                <AppText className="text-center text-red-500 mt-2">
+                  {t("weight.mediaLoadError")}
+                </AppText>
+              ) : (
+                weightMedia?.voiceRecordings.map((recording) => (
+                  <DraftRecordingItem
+                    key={recording.id}
+                    uri={recording.uri}
+                    durationMs={recording.duration_ms ?? undefined}
+                  />
+                ))
+              )}
+            </View>
+          )}
 
           {isLoading ? (
             <View className="mt-5 bg-slate-900 shadow-md rounded-md p-4 h-[340px]">
@@ -86,5 +171,15 @@ export default function WeightSession(weight: FeedItemUI) {
         </View>
       </View>
     </PageContainer>
+    </ScrollView>
+    {images.length > 0 && viewerIndex >= 0 && (
+      <ImageViewerModal
+        images={images}
+        initialIndex={viewerIndex}
+        visible={viewerIndex >= 0}
+        onClose={() => setViewerIndex(-1)}
+      />
+    )}
+  </>
   );
 }

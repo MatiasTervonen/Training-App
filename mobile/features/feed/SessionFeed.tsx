@@ -128,6 +128,9 @@ export default function SessionFeed({ expandReminderId }: SessionFeedProps) {
     notesSessionFull,
     notesSessionError,
     isLoadingNotesSession,
+    weightSessionFull,
+    weightSessionError,
+    isLoadingWeightSession,
   } = useFullSessions(expandedItem, editingItem);
 
   // useUpdateFeedItem hook to update feed item in cache
@@ -254,7 +257,12 @@ export default function SessionFeed({ expandReminderId }: SessionFeedProps) {
             />
           )}
           {expandedItem.type === "weight" && (
-            <WeightSession {...expandedItem} />
+            <WeightSession
+              {...expandedItem}
+              weightMedia={weightSessionFull}
+              isLoadingMedia={isLoadingWeightSession}
+              mediaError={weightSessionError}
+            />
           )}
           {expandedItem.type === "global_reminders" && (
             <ReminderSession {...expandedItem} />

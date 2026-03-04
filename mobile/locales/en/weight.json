@@ -15,6 +15,7 @@
     "created": "created",
     "fullAnalytics": "Full Analytics",
     "chartError": "Error loading weight data.",
+    "mediaLoadError": "Error loading media.",
     "analyticsScreen": {
       "title": "Weight Analytics",
       "loading": "Loading weight data...",

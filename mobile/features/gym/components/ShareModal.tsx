@@ -3,7 +3,7 @@ import { View, Modal, LayoutChangeEvent } from "react-native";
 import AppText from "@/components/AppText";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import ShareCard from "@/features/gym/components/ShareCard";
-import useShareCard from "@/features/gym/hooks/useShareCard";
+import useShareCard from "@/lib/hooks/useShareCard";
 import { FullGymSession } from "@/database/gym/get-full-gym-session";
 import { ExerciseEntry } from "@/types/session";
 import { Share2 } from "lucide-react-native";

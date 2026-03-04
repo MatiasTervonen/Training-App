@@ -318,6 +318,14 @@ export default function StartActivityScreen() {
     return Math.round(baseMet * userWeight * (effectiveMovingTime / 3600));
   }, [baseMet, userWeight, effectiveMovingTime]);
 
+  // Average speed calculation for share card
+  const averageSpeed = useMemo(() => {
+    if (!allowGPS || meters <= 0 || (movingTimeSeconds ?? 0) <= 0) return null;
+    return Number(
+      ((meters / 1000) / ((movingTimeSeconds ?? 0) / 3600)).toFixed(1),
+    );
+  }, [allowGPS, meters, movingTimeSeconds]);
+
   // useSaveActivitySession hook to save the activity session
   const { handleSaveSession } = useSaveActivitySession({
     title,
@@ -328,6 +336,12 @@ export default function StartActivityScreen() {
     draftVideos,
     setIsSaving,
     resetSession,
+    activityName,
+    baseMet,
+    userWeight,
+    movingTimeSeconds,
+    averagePacePerKm,
+    averageSpeed,
   });
 
   // when point arrives add it to the track and persist it to the database

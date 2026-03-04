@@ -14,7 +14,8 @@ import SubNotesInput from "@/components/SubNotesInput";
 import FullScreenLoader from "@/components/FullScreenLoader";
 import useSaveTemplate from "./hooks/useSaveTemplate";
 import { useTranslation } from "react-i18next";
-import { Clock } from "lucide-react-native";
+import { Clock, Share2 } from "lucide-react-native";
+import ActivityShareModal from "@/features/activities/components/share/ActivityShareModal";
 import FullScreenMapModal from "./components/fullScreenMap";
 import { ActivityVoiceRecording } from "@/database/activities/get-activity-voice-recordings";
 import { DraftRecordingItem } from "@/features/notes/components/draftRecording";
@@ -36,6 +37,7 @@ export default function ActivitySession(
   const [templateNotes, setTemplateNotes] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [fullScreen, setFullScreen] = useState(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const hasRoute = activity_session.route !== null;
 
   // hook to save the activity as a template
@@ -67,9 +69,17 @@ export default function ActivitySession(
               end={{ x: 0, y: 1 }} // top-right
               className="items-center p-5 rounded-lg overflow-hidden shadow-md mt-5"
             >
-              <AppText className="text-xl text-center mb-5 border-b border-gray-700 pb-2">
-                {activity_session.session.title}
-              </AppText>
+              <View className="flex-row items-center justify-center mb-5 border-b border-gray-700 pb-2">
+                <AppText className="text-xl text-center flex-1">
+                  {activity_session.session.title}
+                </AppText>
+                <AnimatedButton
+                  onPress={() => setIsShareModalOpen(true)}
+                  hitSlop={10}
+                >
+                  <Share2 color="#9ca3af" size={20} />
+                </AnimatedButton>
+              </View>
 
               <View className="flex-row items-center gap-3">
                 <Clock size={24} color="#f3f4f6" />
@@ -197,6 +207,11 @@ export default function ActivitySession(
       <FullScreenLoader
         visible={isSaving}
         message={t("activities.sessionDetails.savingTemplate")}
+      />
+      <ActivityShareModal
+        visible={isShareModalOpen}
+        onClose={() => setIsShareModalOpen(false)}
+        activitySession={activity_session}
       />
     </ScrollView>
   );

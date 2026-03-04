@@ -6,7 +6,7 @@ import { Image } from "expo-image";
 import LinkButton from "@/components/buttons/LinkButton";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import ShareCard from "@/features/gym/components/ShareCard";
-import useShareCard from "@/features/gym/hooks/useShareCard";
+import useShareCard from "@/lib/hooks/useShareCard";
 import { useSessionSummaryStore } from "@/lib/stores/sessionSummaryStore";
 import { Share2 } from "lucide-react-native";
 import { useTranslation } from "react-i18next";

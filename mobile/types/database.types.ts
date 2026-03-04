@@ -2076,6 +2076,10 @@ export type Database = {
         Args: { p_session_id: string }
         Returns: Json
       }
+      activities_get_template_history: {
+        Args: { p_template_id: string }
+        Returns: Json
+      }
       activities_get_templates: { Args: never; Returns: Json }
       activities_save_activity: {
         Args: {

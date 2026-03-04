@@ -294,11 +294,31 @@
       "noTemplatesHint": "Create a new template to get started!",
       "edit": "Edit",
       "delete": "Delete",
+      "history": "History",
       "updated": "updated:",
       "start": "start",
       "created": "Created:",
       "distance": "Distance:",
       "startActivity": "Start Activity"
+    },
+    "templateHistory": {
+      "loading": "Loading history...",
+      "loadError": "Failed to load template history. Please try again later.",
+      "noHistory": "No sessions recorded for this template yet.",
+      "personalBests": "Personal Bests",
+      "fastestPace": "Fastest Pace",
+      "shortestDuration": "Shortest Duration",
+      "minPerKm": "min/km",
+      "metricPace": "Pace",
+      "metricDuration": "Duration",
+      "metricSpeed": "Speed",
+      "metricCalories": "Calories",
+      "metricSteps": "Steps",
+      "range1m": "1M",
+      "range3m": "3M",
+      "range6m": "6M",
+      "range1y": "1Y",
+      "noChartData": "Not enough data points to show chart"
     }
   }
 }

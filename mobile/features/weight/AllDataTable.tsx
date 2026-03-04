@@ -9,6 +9,7 @@ import Toast from "react-native-toast-message";
 import { useQueryClient } from "@tanstack/react-query";
 import HeaderAllDataTable from "@/features/weight/headerAllDataTable";
 import WeightRow from "@/features/weight/RowAllDataTable";
+import WeightShareModal from "@/features/weight/components/WeightShareModal";
 import { useTranslation } from "react-i18next";
 import i18n from "@/app/i18n";
 
@@ -23,6 +24,7 @@ export default function AllDataTable({ data, isLoading, error }: AllDataProps) {
 
   const [expanded, setExpanded] = useState<string | null>(null);
   const [range, setRange] = useState<"week" | "month" | "year">("month");
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
   const confirmAction = useConfirmAction();
 
@@ -113,35 +115,45 @@ export default function AllDataTable({ data, isLoading, error }: AllDataProps) {
         isLoading={isLoading}
         error={error}
         data={data}
+        onSharePress={() => setIsShareModalOpen(true)}
       />
     ),
     [range, setRange, isLoading, error, data],
   );
 
   return (
-    <SectionList
-      sections={sections}
-      ListHeaderComponent={renderHeader}
-      keyExtractor={(item) => item.id}
-      renderSectionHeader={({ section }) => (
-        <View className="bg-gray-800 px-4 py-2 flex-row justify-between items-center">
-          <AppText className="text-lg">
-            {section.title}
-          </AppText>
-          <AppText>
-            {section.difference} {weightUnit}
-          </AppText>
-        </View>
-      )}
-      renderItem={({ item }) => (
-        <WeightRow
-          item={item}
-          weightUnit={weightUnit}
-          onDelete={async (id: string) => await handleDelete(id, "weight")}
-          onExpand={(id) => setExpanded((prev) => (prev === id ? null : id))}
-          expanded={expanded === item.id}
-        />
-      )}
-    />
+    <>
+      <SectionList
+        sections={sections}
+        ListHeaderComponent={renderHeader}
+        keyExtractor={(item) => item.id}
+        renderSectionHeader={({ section }) => (
+          <View className="bg-gray-800 px-4 py-2 flex-row justify-between items-center">
+            <AppText className="text-lg">
+              {section.title}
+            </AppText>
+            <AppText>
+              {section.difference} {weightUnit}
+            </AppText>
+          </View>
+        )}
+        renderItem={({ item }) => (
+          <WeightRow
+            item={item}
+            weightUnit={weightUnit}
+            onDelete={async (id: string) => await handleDelete(id, "weight")}
+            onExpand={(id) => setExpanded((prev) => (prev === id ? null : id))}
+            expanded={expanded === item.id}
+          />
+        )}
+      />
+      <WeightShareModal
+        visible={isShareModalOpen}
+        onClose={() => setIsShareModalOpen(false)}
+        range={range}
+        data={data}
+        weightUnit={weightUnit}
+      />
+    </>
   );
 }

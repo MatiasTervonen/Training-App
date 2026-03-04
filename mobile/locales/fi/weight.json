@@ -33,6 +33,19 @@
       "deleteError": "Virhe",
       "deleteErrorMessage": "Merkinnän poistaminen epäonnistui.",
       "noNotes": "Ei muistiinpanoja..."
+    },
+    "share": {
+      "share": "Jaa",
+      "sharing": "Jaetaan...",
+      "save": "Tallenna",
+      "saving": "Tallennetaan...",
+      "saveSuccess": "Painokaavio tallennettu galleriaan",
+      "saveError": "Painokaavion tallentaminen epäonnistui",
+      "close": "Sulje",
+      "shareError": "Painokaavion jakaminen epäonnistui",
+      "weightChange": "Painon muutos",
+      "currentWeight": "Nykyinen paino",
+      "title": "Paino"
     }
   }
 }

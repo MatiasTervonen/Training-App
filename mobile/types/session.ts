@@ -254,3 +254,18 @@ export type DraftVideo = {
   thumbnailUri: string;
   durationMs: number;
 };
+
+export type TemplateHistorySession = {
+  session_id: string;
+  title: string;
+  start_time: string;
+  duration: number;
+  distance_meters: number | null;
+  moving_time_seconds: number | null;
+  avg_pace: number | null;
+  avg_speed: number | null;
+  calories: number | null;
+  steps: number | null;
+};
+
+export type TemplateHistoryMetric = "avg_pace" | "duration" | "avg_speed" | "calories" | "steps";

@@ -14,12 +14,14 @@ import SubNotesInput from "@/components/SubNotesInput";
 import FullScreenLoader from "@/components/FullScreenLoader";
 import useSaveTemplate from "./hooks/useSaveTemplate";
 import { useTranslation } from "react-i18next";
-import { Clock, Share2 } from "lucide-react-native";
+import { Clock, History, Share2 } from "lucide-react-native";
 import ActivityShareModal from "@/features/activities/components/share/ActivityShareModal";
 import FullScreenMapModal from "./components/fullScreenMap";
 import { ActivityVoiceRecording } from "@/database/activities/get-activity-voice-recordings";
 import { DraftRecordingItem } from "@/features/notes/components/draftRecording";
 import { NotesVoiceSkeleton } from "@/components/skeletetons";
+import { useTemplateHistory } from "@/features/activities/templates/hooks/useTemplateHistory";
+import TemplateHistoryModal from "@/features/activities/templates/components/TemplateHistoryModal";
 
 type ActivitySessionProps = FullActivitySession & {
   voiceRecordings?: ActivityVoiceRecording[];
@@ -39,6 +41,17 @@ export default function ActivitySession(
   const [fullScreen, setFullScreen] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const hasRoute = activity_session.route !== null;
+  const hasTemplate = !!activity_session.session.template_id;
+
+  const {
+    history,
+    historyError,
+    isLoadingHistory,
+    isHistoryOpen,
+    historyTemplateName,
+    openHistory,
+    closeHistory,
+  } = useTemplateHistory();
 
   // hook to save the activity as a template
   const { saveAsTemplate } = useSaveTemplate({
@@ -73,12 +86,27 @@ export default function ActivitySession(
                 <AppText className="text-xl text-center flex-1">
                   {activity_session.session.title}
                 </AppText>
-                <AnimatedButton
-                  onPress={() => setIsShareModalOpen(true)}
-                  hitSlop={10}
-                >
-                  <Share2 color="#9ca3af" size={20} />
-                </AnimatedButton>
+                <View className="flex-row items-center gap-4">
+                  {hasTemplate && (
+                    <AnimatedButton
+                      onPress={() =>
+                        openHistory(
+                          activity_session.session.template_id!,
+                          activity_session.session.title,
+                        )
+                      }
+                      hitSlop={10}
+                    >
+                      <History color="#9ca3af" size={20} />
+                    </AnimatedButton>
+                  )}
+                  <AnimatedButton
+                    onPress={() => setIsShareModalOpen(true)}
+                    hitSlop={10}
+                  >
+                    <Share2 color="#9ca3af" size={20} />
+                  </AnimatedButton>
+                </View>
               </View>
 
               <View className="flex-row items-center gap-3">
@@ -212,6 +240,14 @@ export default function ActivitySession(
         visible={isShareModalOpen}
         onClose={() => setIsShareModalOpen(false)}
         activitySession={activity_session}
+      />
+      <TemplateHistoryModal
+        isOpen={isHistoryOpen}
+        onClose={closeHistory}
+        isLoading={isLoadingHistory}
+        history={Array.isArray(history) ? history : []}
+        templateName={historyTemplateName}
+        error={historyError ? historyError.message : null}
       />
     </ScrollView>
   );

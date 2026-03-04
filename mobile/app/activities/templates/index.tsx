@@ -12,6 +12,8 @@ import ActivityTemplateCard from "@/features/activities/templates/cards/template
 import ActivityTemplateExpanded from "@/features/activities/templates/cards/template-expanded";
 import { useStartActivity } from "@/features/activities/templates/hooks/useStartActivity";
 import { useDeleteTemplate } from "@/features/activities/templates/hooks/useDeleteTemplate";
+import { useTemplateHistory } from "@/features/activities/templates/hooks/useTemplateHistory";
+import TemplateHistoryModal from "@/features/activities/templates/components/TemplateHistoryModal";
 import { useTranslation } from "react-i18next";
 
 export default function TemplatesPage() {
@@ -36,6 +38,17 @@ export default function TemplatesPage() {
 
   // useDeleteTemplate hook to delete a template
   const { handleDeleteTemplate } = useDeleteTemplate();
+
+  // useTemplateHistory hook
+  const {
+    history,
+    historyError,
+    isLoadingHistory,
+    isHistoryOpen,
+    historyTemplateName,
+    openHistory,
+    closeHistory,
+  } = useTemplateHistory();
 
   return (
     <ScrollView
@@ -79,6 +92,9 @@ export default function TemplatesPage() {
               onEdit={() => {
                 router.push(`/activities/templates/${template.template.id}`);
               }}
+              onHistory={() =>
+                openHistory(template.template.id, template.template.name)
+              }
             />
           ))}
 
@@ -91,6 +107,14 @@ export default function TemplatesPage() {
             />
           </FullScreenModal>
         )}
+        <TemplateHistoryModal
+          isOpen={isHistoryOpen}
+          onClose={closeHistory}
+          isLoading={isLoadingHistory}
+          history={Array.isArray(history) ? history : []}
+          templateName={historyTemplateName}
+          error={historyError ? historyError.message : null}
+        />
       </PageContainer>
     </ScrollView>
   );

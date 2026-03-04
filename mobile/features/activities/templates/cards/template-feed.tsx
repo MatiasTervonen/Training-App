@@ -11,6 +11,7 @@ type Props = {
   onDelete: (index: number) => void;
   onExpand: () => void;
   onEdit: (index: number) => void;
+  onHistory: () => void;
   index: number;
 };
 
@@ -20,6 +21,7 @@ export default function ActivityTemplateCard({
   onDelete,
   onExpand,
   onEdit,
+  onHistory,
 }: Props) {
   const { t } = useTranslation("activities");
 
@@ -37,12 +39,16 @@ export default function ActivityTemplateCard({
           label={`${item.template.name}`}
           options={[
             { value: "edit", label: t("activities.templatesScreen.edit") },
+            { value: "history", label: t("activities.templatesScreen.history") },
             { value: "delete", label: t("activities.templatesScreen.delete") },
           ]}
           onChange={(value) => {
             switch (value) {
               case "edit":
                 onEdit(index);
+                break;
+              case "history":
+                onHistory();
                 break;
               case "delete":
                 onDelete(index);

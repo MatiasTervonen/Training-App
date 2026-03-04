@@ -4,7 +4,7 @@ import PageContainer from "@/components/PageContainer";
 import { View } from "react-native";
 import Toast from "react-native-toast-message";
 import { useTimerStore } from "@/lib/stores/timerStore";
-import { ChartNoAxesCombined, List } from "lucide-react-native";
+import { ChartNoAxesCombined, List, Settings } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 
 export default function SessionsScreen() {
@@ -44,6 +44,11 @@ export default function SessionsScreen() {
         </LinkButton>
         <LinkButton label={t("activities.mySessions.title")} href="/activities/my-sessions">
           <List color="#f3f4f6" className="ml-2" />
+        </LinkButton>
+
+        <View className="border border-gray-400 rounded-md" />
+        <LinkButton label={t("activities.settings.title")} href="/activities/settings">
+          <Settings color="#f3f4f6" className="ml-2" />
         </LinkButton>
       </View>
     </PageContainer>

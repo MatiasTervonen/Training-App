@@ -3,6 +3,7 @@ import { Pressable, View } from "react-native";
 import { useEffect, useState } from "react";
 import { templateSummary } from "@/types/session";
 import { Move, Lock } from "lucide-react-native";
+import { useActivitySettingsStore } from "@/lib/stores/activitySettingsStore";
 
 type MapProps = {
   template: templateSummary;
@@ -15,6 +16,7 @@ export default function TemplateMap({
   setScrollEnabled,
   setSwipeEnabled,
 }: MapProps) {
+  const defaultMapStyle = useActivitySettingsStore((s) => s.defaultMapStyle);
   const [mapActive, setMapActive] = useState(false);
 
   const coordinates = template.route!.coordinates;
@@ -76,7 +78,7 @@ export default function TemplateMap({
       <View pointerEvents={mapActive ? "auto" : "none"} style={{ flex: 1 }}>
         <Mapbox.MapView
           style={{ flex: 1 }}
-          styleURL={Mapbox.StyleURL.Dark}
+          styleURL={defaultMapStyle}
           scaleBarEnabled={false}
           logoEnabled={false}
           attributionEnabled={false}

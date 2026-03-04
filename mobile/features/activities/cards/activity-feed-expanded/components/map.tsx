@@ -1,13 +1,15 @@
 import { FullActivitySession } from "@/types/models";
 import Mapbox from "@rnmapbox/maps";
-import { Image, View } from "react-native";
-import { useEffect, useMemo, useState } from "react";
+import { View } from "react-native";
+import { useEffect, useMemo } from "react";
 import {
   processSavedRoute,
   smoothMultiLineString,
 } from "@/features/activities/lib/smoothCoordinates";
-import { Move, Lock, Fullscreen, X, Layers2, Route } from "lucide-react-native";
+import { Fullscreen } from "lucide-react-native";
 import AnimatedButton from "@/components/buttons/animatedButton";
+import { LINE_COLORS } from "@/features/activities/lib/mapConstants";
+import { useActivitySettingsStore } from "@/lib/stores/activitySettingsStore";
 
 type MapProps = {
   activity_session: FullActivitySession;
@@ -20,22 +22,11 @@ export default function Map({
   setScrollEnabled,
   setFullScreen,
 }: MapProps) {
-  const [expanded, setExpanded] = useState(false);
-  const [mapActive, setMapActive] = useState(false);
-  const [mapStyle, setMapStyle] = useState(Mapbox.StyleURL.Dark);
-  const LINE_COLORS = [
-    { glow: "rgba(59,130,246,0.4)", core: "#3b82f6" }, // blue
-    { glow: "rgba(239,68,68,0.4)", core: "#ef4444" }, // red
-    { glow: "rgba(34,197,94,0.4)", core: "#22c55e" }, // green
-    { glow: "rgba(168,85,247,0.4)", core: "#a855f7" }, // purple
-    { glow: "rgba(234,179,8,0.4)", core: "#eab308" }, // yellow
-  ];
-  const [colorIndex, setColorIndex] = useState(0);
-  const lineColor = LINE_COLORS[colorIndex];
-
-  const toggleLineColor = () => {
-    setColorIndex((prev) => (prev + 1) % LINE_COLORS.length);
-  };
+  const defaultMapStyle = useActivitySettingsStore((s) => s.defaultMapStyle);
+  const defaultLineColorIndex = useActivitySettingsStore(
+    (s) => s.defaultLineColorIndex,
+  );
+  const lineColor = LINE_COLORS[defaultLineColorIndex];
 
   const route = activity_session.route!;
   const isMultiLine = route.type === "MultiLineString";
@@ -97,40 +88,18 @@ export default function Map({
     ],
   };
 
-  const MAP_STYLES = [
-    Mapbox.StyleURL.Dark,
-    Mapbox.StyleURL.SatelliteStreet,
-    Mapbox.StyleURL.Street,
-  ];
-
-  const toggleMapStyle = () => {
-    setMapStyle((prev) => {
-      const currentIndex = MAP_STYLES.indexOf(prev);
-      const nextIndex =
-        currentIndex === -1 ? 0 : (currentIndex + 1) % MAP_STYLES.length;
-
-      return MAP_STYLES[nextIndex];
-    });
-  };
-
   useEffect(() => {
     return () => {
       setScrollEnabled(true);
     };
   }, [setScrollEnabled]);
 
-  const toggleMapActive = () => {
-    const next = !mapActive;
-    setMapActive(next);
-    setScrollEnabled(!next);
-  };
-
   return (
     <View style={{ height: 300 }}>
-      <View pointerEvents={mapActive ? "auto" : "none"} style={{ flex: 1 }}>
+      <View pointerEvents="none" style={{ flex: 1 }}>
         <Mapbox.MapView
           style={{ flex: 1 }}
-          styleURL={mapStyle}
+          styleURL={defaultMapStyle}
           scaleBarEnabled={false}
           logoEnabled={false}
           attributionEnabled={false}
@@ -195,64 +164,14 @@ export default function Map({
           </Mapbox.ShapeSource>
         </Mapbox.MapView>
       </View>
-      {expanded ? (
-        <View className="absolute z-50 bottom-0 left-0 right-0 flex-row items-center justify-between px-4 py-3 bg-slate-900">
-          <AnimatedButton
-            onPress={toggleMapActive}
-            className="p-2 rounded-full bg-blue-700 border-2 border-blue-500"
-            hitSlop={10}
-          >
-            {mapActive ? (
-              <Lock size={22} color="#f3f4f6" />
-            ) : (
-              <Move size={22} color="#f3f4f6" />
-            )}
-          </AnimatedButton>
-          <AnimatedButton
-            onPress={toggleMapStyle}
-            className="p-2 rounded-full bg-blue-700 border-2 border-blue-500"
-            hitSlop={10}
-          >
-            <Layers2 size={22} color="#f3f4f6" />
-          </AnimatedButton>
-          <AnimatedButton
-            onPress={toggleLineColor}
-            className="p-2 rounded-full bg-blue-700 border-2 border-blue-500"
-            hitSlop={10}
-          >
-            <Route size={22} color="#f3f4f6" />
-          </AnimatedButton>
-          <AnimatedButton
-            onPress={() => {
-              setExpanded(false);
-              setFullScreen(true);
-            }}
-            className="p-2 rounded-full bg-blue-700 border-2 border-blue-500"
-            hitSlop={10}
-          >
-            <Fullscreen size={22} color="#f3f4f6" />
-          </AnimatedButton>
-          <AnimatedButton
-            onPress={() => setExpanded(false)}
-            className="p-2 rounded-full bg-slate-700 border-2 border-slate-500"
-            hitSlop={10}
-          >
-            <X size={22} color="#f3f4f6" />
-          </AnimatedButton>
-        </View>
-      ) : (
-        <AnimatedButton
-          onPress={() => setExpanded(true)}
-          className="absolute z-50"
-          style={{ bottom: 15, right: 25 }}
-          hitSlop={10}
-        >
-          <Image
-            source={require("@/assets/images/ios-tinted-icon.png")}
-            style={{ width: 40, height: 40, borderRadius: 10 }}
-          />
-        </AnimatedButton>
-      )}
+      <AnimatedButton
+        onPress={() => setFullScreen(true)}
+        className="absolute z-50 p-2 rounded-full bg-blue-700 border-2 border-blue-500"
+        style={{ bottom: 15, right: 15 }}
+        hitSlop={10}
+      >
+        <Fullscreen size={22} color="#f3f4f6" />
+      </AnimatedButton>
     </View>
   );
 }

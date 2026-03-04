@@ -11,6 +11,8 @@ import { processLiveTrack } from "../lib/smoothCoordinates";
 import AppText from "@/components/AppText";
 import { useRouter } from "expo-router";
 import { debugLog } from "../lib/debugLogger";
+import { MAP_STYLES } from "@/features/activities/lib/mapConstants";
+import { useActivitySettingsStore } from "@/lib/stores/activitySettingsStore";
 
 type FullScreenMapProps = {
   track: TrackPoint[];
@@ -53,7 +55,15 @@ export default function FullScreenMap({
 }: FullScreenMapProps) {
   const insets = useSafeAreaInsets();
   const [isFollowingUser, setIsFollowingUser] = useState(true);
-  const [mapStyle, setMapStyle] = useState(Mapbox.StyleURL.Dark);
+  const defaultMapStyle = useActivitySettingsStore((s) => s.defaultMapStyle);
+  const [mapStyle, setMapStyle] = useState(defaultMapStyle);
+  const hydratedRef = useRef(false);
+  useEffect(() => {
+    if (!hydratedRef.current) {
+      hydratedRef.current = true;
+      setMapStyle(defaultMapStyle);
+    }
+  }, [defaultMapStyle]);
 
   const router = useRouter();
 
@@ -141,19 +151,12 @@ export default function FullScreenMap({
     }
   }, [userPosition?.longitude, userPosition?.latitude, animatedUserPoint, userPosition]);
 
-  const MAP_STYLES = [
-    Mapbox.StyleURL.Dark,
-    Mapbox.StyleURL.SatelliteStreet,
-    Mapbox.StyleURL.Street,
-  ];
-
   const toggleMapStyle = () => {
     setMapStyle((prev) => {
-      const currentIndex = MAP_STYLES.indexOf(prev);
+      const currentIndex = MAP_STYLES.findIndex((s) => s.url === prev);
       const nextIndex =
         currentIndex === -1 ? 0 : (currentIndex + 1) % MAP_STYLES.length;
-
-      return MAP_STYLES[nextIndex];
+      return MAP_STYLES[nextIndex].url;
     });
   };
 

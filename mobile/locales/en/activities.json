@@ -268,6 +268,25 @@
       "minStats": "Select at least 2 stats",
       "maxStats": "Maximum 7 stats"
     },
+    "settings": {
+      "title": "Settings",
+      "defaultMapStyle": "Default Map Style",
+      "defaultMapStyleDescription": "Choose the default map style for activities",
+      "defaultLineColor": "Default Route Color",
+      "defaultLineColorDescription": "Choose the default route line color",
+      "mapStyles": {
+        "dark": "Dark",
+        "satellite": "Satellite",
+        "street": "Street"
+      },
+      "lineColors": {
+        "blue": "Blue",
+        "red": "Red",
+        "green": "Green",
+        "purple": "Purple",
+        "yellow": "Yellow"
+      }
+    },
     "templatesScreen": {
       "title": "My Templates",
       "loadError": "Error loading templates. Try again!",

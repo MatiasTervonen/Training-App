@@ -268,6 +268,25 @@
       "minStats": "Valitse vähintään 2 tilastoa",
       "maxStats": "Enintään 7 tilastoa"
     },
+    "settings": {
+      "title": "Asetukset",
+      "defaultMapStyle": "Oletuskartttyyli",
+      "defaultMapStyleDescription": "Valitse aktiviteettien oletuskartttyyli",
+      "defaultLineColor": "Oletusreitin väri",
+      "defaultLineColorDescription": "Valitse oletusreitin viivan väri",
+      "mapStyles": {
+        "dark": "Tumma",
+        "satellite": "Satelliitti",
+        "street": "Katu"
+      },
+      "lineColors": {
+        "blue": "Sininen",
+        "red": "Punainen",
+        "green": "Vihreä",
+        "purple": "Violetti",
+        "yellow": "Keltainen"
+      }
+    },
     "templatesScreen": {
       "title": "Omat pohjat",
       "loadError": "Virhe ladattaessa pohjia. Yritä uudelleen!",

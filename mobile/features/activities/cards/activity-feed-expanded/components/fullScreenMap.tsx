@@ -1,15 +1,17 @@
-import { Image, Modal, View } from "react-native";
+import { Modal, View } from "react-native";
 import Mapbox from "@rnmapbox/maps";
 import AnimatedButton from "@/components/buttons/animatedButton";
-import { CircleX, Layers2, LocateFixed, Route, X } from "lucide-react-native";
+import { CircleX, Layers2, LocateFixed, Route } from "lucide-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   processSavedRoute,
   smoothMultiLineString,
 } from "@/features/activities/lib/smoothCoordinates";
 import { FullActivitySession } from "@/types/models";
 import SessionStats from "./sessionStats";
+import { MAP_STYLES, LINE_COLORS } from "@/features/activities/lib/mapConstants";
+import { useActivitySettingsStore } from "@/lib/stores/activitySettingsStore";
 
 type MapProps = {
   activity_session: FullActivitySession;
@@ -85,32 +87,30 @@ export default function FullScreenMapModal({
     ],
   };
 
-  const LINE_COLORS = [
-    { glow: "rgba(59,130,246,0.4)", core: "#3b82f6" },
-    { glow: "rgba(239,68,68,0.4)", core: "#ef4444" },
-    { glow: "rgba(34,197,94,0.4)", core: "#22c55e" },
-    { glow: "rgba(168,85,247,0.4)", core: "#a855f7" },
-    { glow: "rgba(234,179,8,0.4)", core: "#eab308" },
-  ];
+  const defaultMapStyle = useActivitySettingsStore((s) => s.defaultMapStyle);
+  const defaultLineColorIndex = useActivitySettingsStore(
+    (s) => s.defaultLineColorIndex,
+  );
 
-  const MAP_STYLES = [
-    Mapbox.StyleURL.Dark,
-    Mapbox.StyleURL.SatelliteStreet,
-    Mapbox.StyleURL.Street,
-  ];
-
-  const [mapStyle, setMapStyle] = useState(Mapbox.StyleURL.Dark);
-  const [colorIndex, setColorIndex] = useState(0);
-  const [expanded, setExpanded] = useState(false);
+  const [mapStyle, setMapStyle] = useState(defaultMapStyle);
+  const [colorIndex, setColorIndex] = useState(defaultLineColorIndex);
+  const hydratedRef = useRef(false);
+  useEffect(() => {
+    if (!hydratedRef.current) {
+      hydratedRef.current = true;
+      setMapStyle(defaultMapStyle);
+      setColorIndex(defaultLineColorIndex);
+    }
+  }, [defaultMapStyle, defaultLineColorIndex]);
   const cameraRef = useRef<Mapbox.Camera>(null);
   const lineColor = LINE_COLORS[colorIndex];
 
   const toggleMapStyle = () => {
     setMapStyle((prev) => {
-      const currentIndex = MAP_STYLES.indexOf(prev);
+      const currentIndex = MAP_STYLES.findIndex((s) => s.url === prev);
       const nextIndex =
         currentIndex === -1 ? 0 : (currentIndex + 1) % MAP_STYLES.length;
-      return MAP_STYLES[nextIndex];
+      return MAP_STYLES[nextIndex].url;
     });
   };
 
@@ -194,29 +194,7 @@ export default function FullScreenMapModal({
             </Mapbox.ShapeSource>
           </Mapbox.MapView>
 
-          {!expanded && (
-            <AnimatedButton
-              onPress={() => setExpanded(true)}
-              className="absolute z-50"
-              style={{ bottom: 15, right: 25 }}
-              hitSlop={10}
-            >
-              <Image
-                source={require("@/assets/images/ios-tinted-icon.png")}
-                style={{ width: 40, height: 40, borderRadius: 10 }}
-              />
-            </AnimatedButton>
-          )}
-        </View>
-
-        <View className="absolute z-50 right-5" style={{ top: insets.top }}>
-          <AnimatedButton onPress={() => setFullScreen(false)} hitSlop={10}>
-            <CircleX size={35} color="#3b82f6" />
-          </AnimatedButton>
-        </View>
-
-        {expanded ? (
-          <View className="flex-row items-center justify-between px-4 py-3 bg-slate-900">
+          <View className="absolute z-50 gap-3" style={{ bottom: 15, right: 15 }}>
             <AnimatedButton
               onPress={toggleMapStyle}
               className="p-2 rounded-full bg-blue-700 border-2 border-blue-500"
@@ -238,15 +216,14 @@ export default function FullScreenMapModal({
             >
               <LocateFixed size={22} color="#f3f4f6" />
             </AnimatedButton>
-            <AnimatedButton
-              onPress={() => setExpanded(false)}
-              className="p-2 rounded-full bg-slate-700 border-2 border-slate-500"
-              hitSlop={10}
-            >
-              <X size={22} color="#f3f4f6" />
-            </AnimatedButton>
           </View>
-        ) : null}
+        </View>
+
+        <View className="absolute z-50 right-5" style={{ top: insets.top }}>
+          <AnimatedButton onPress={() => setFullScreen(false)} hitSlop={10}>
+            <CircleX size={35} color="#3b82f6" />
+          </AnimatedButton>
+        </View>
         <View style={{ paddingBottom: insets.bottom }}>
           <SessionStats
             activity_session={activity_session}

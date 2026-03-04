@@ -7,8 +7,15 @@ import Animated, {
 import AppText from "@/components/AppText";
 import { weight } from "@/types/session";
 import { View, Pressable } from "react-native";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useQuery } from "@tanstack/react-query";
+import { getFullWeightSession } from "@/database/weight/get-full-weight";
+import DraftImageItem from "@/features/notes/components/DraftImageItem";
+import DraftVideoItem from "@/features/notes/components/DraftVideoItem";
+import { DraftRecordingItem } from "@/features/notes/components/draftRecording";
+import ImageViewerModal from "@/features/notes/components/ImageViewerModal";
+import { NotesVoiceSkeleton } from "@/components/skeletetons";
 
 type RowAllDataProps = {
   item: weight;
@@ -26,7 +33,22 @@ export default function WeightRow({
   expanded,
 }: RowAllDataProps) {
   const { t } = useTranslation("weight");
+  const [viewerIndex, setViewerIndex] = useState(-1);
   const rotation = useSharedValue(0);
+
+  const {
+    data: weightMedia,
+    isLoading: isLoadingMedia,
+  } = useQuery({
+    queryKey: ["fullWeightSession", item.id],
+    queryFn: () => getFullWeightSession(item.id),
+    enabled: expanded,
+  });
+
+  const images = weightMedia?.images ?? [];
+  const videos = weightMedia?.videos ?? [];
+  const voiceRecordings = weightMedia?.voiceRecordings ?? [];
+  const hasMedia = images.length > 0 || videos.length > 0 || voiceRecordings.length > 0;
 
   useEffect(() => {
     rotation.value = withSpring(expanded ? 90 : 0);
@@ -61,14 +83,59 @@ export default function WeightRow({
         </View>
       </View>
       {expanded && (
-        <View className="bg-gray-800 px-6 py-3 flex-row justify-between items-center ">
-          <AppText className="text-gray-300">
-            {item.notes || t("weight.analyticsScreen.noNotes")}
-          </AppText>
-          <Pressable onPress={async () => onDelete(item.id)}>
-            <Trash2 size={20} color="#d1d5db" />
-          </Pressable>
+        <View className="bg-gray-800 px-6 py-3">
+          <View className="flex-row justify-between items-center">
+            <AppText className="text-gray-300 flex-1 mr-3">
+              {item.notes || t("weight.analyticsScreen.noNotes")}
+            </AppText>
+            <Pressable onPress={async () => onDelete(item.id)}>
+              <Trash2 size={20} color="#d1d5db" />
+            </Pressable>
+          </View>
+
+          {isLoadingMedia && (
+            <View className="mt-3">
+              <NotesVoiceSkeleton count={1} />
+            </View>
+          )}
+
+          {!isLoadingMedia && hasMedia && (
+            <View className="mt-3">
+              {images.map((image, idx) => (
+                <DraftImageItem
+                  key={image.id}
+                  uri={image.uri}
+                  onPress={() => setViewerIndex(idx)}
+                />
+              ))}
+
+              {videos.map((video) => (
+                <DraftVideoItem
+                  key={video.id}
+                  uri={video.uri}
+                  thumbnailUri={video.thumbnailUri}
+                  durationMs={video.duration_ms ?? undefined}
+                />
+              ))}
+
+              {voiceRecordings.map((recording) => (
+                <DraftRecordingItem
+                  key={recording.id}
+                  uri={recording.uri}
+                  durationMs={recording.duration_ms ?? undefined}
+                />
+              ))}
+            </View>
+          )}
         </View>
+      )}
+      {images.length > 0 && viewerIndex >= 0 && (
+        <ImageViewerModal
+          images={images}
+          initialIndex={viewerIndex}
+          visible={viewerIndex >= 0}
+          onClose={() => setViewerIndex(-1)}
+        />
       )}
     </View>
   );

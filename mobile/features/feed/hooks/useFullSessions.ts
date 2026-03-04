@@ -12,6 +12,10 @@ import {
   getActivityVoiceRecordings,
   ActivityVoiceRecording,
 } from "@/database/activities/get-activity-voice-recordings";
+import {
+  getFullWeightSession,
+  FullWeightSession,
+} from "@/database/weight/get-full-weight";
 
 const getId = (fi: FeedItemUI | null) => fi?.source_id ?? null;
 
@@ -75,6 +79,27 @@ export default function useFullSessions(
 
   const notesId = notesHasMedia ? getId(notesItem) : null;
 
+  // Only fetch weight media if there are media attachments
+  const weightItem =
+    expandedItem?.type === "weight"
+      ? expandedItem
+      : editingItem?.type === "weight"
+        ? editingItem
+        : null;
+
+  const weightExtra = weightItem?.extra_fields as
+    | { "image-count"?: number; "video-count"?: number; "voice-count"?: number }
+    | undefined;
+  const weightImageCount = weightExtra?.["image-count"] ?? 0;
+  const weightVideoCount = weightExtra?.["video-count"] ?? 0;
+  const weightVoiceCount = weightExtra?.["voice-count"] ?? 0;
+
+  const weightHasMedia =
+    weightItem &&
+    (weightImageCount > 0 || weightVideoCount > 0 || weightVoiceCount > 0);
+
+  const weightId = weightHasMedia ? getId(weightItem) : null;
+
   const {
     data: GymSessionFull,
     error: GymSessionError,
@@ -135,6 +160,16 @@ export default function useFullSessions(
     enabled: !!notesId,
   });
 
+  const {
+    data: weightSessionFull,
+    error: weightSessionError,
+    isLoading: isLoadingWeightSession,
+  } = useQuery<FullWeightSession>({
+    queryKey: ["fullWeightSession", weightId],
+    queryFn: async () => await getFullWeightSession(weightId!),
+    enabled: !!weightId,
+  });
+
   return {
     GymSessionFull,
     GymSessionError,
@@ -155,5 +190,8 @@ export default function useFullSessions(
     notesSessionError,
     isLoadingNotesSession,
     refetchFullNotes,
+    weightSessionFull,
+    weightSessionError,
+    isLoadingWeightSession,
   };
 }

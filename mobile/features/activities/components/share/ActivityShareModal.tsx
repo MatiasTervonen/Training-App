@@ -267,71 +267,74 @@ export default function ActivityShareModal({
         bounds &&
         !mapSnapshotUri &&
         (!hideMapDetails || privacyStyleReady) && (
-        <View className="absolute" style={OFFSCREEN_STYLE}>
-          <Mapbox.MapView
-            ref={mapViewRef}
-            key={hideMapDetails ? "private" : "normal"}
-            style={MAP_STYLE}
-            {...(hideMapDetails && noLabelsStyleJSON
-              ? { styleJSON: noLabelsStyleJSON }
-              : { styleURL: Mapbox.StyleURL.Dark })}
-            scaleBarEnabled={false}
-            logoEnabled={false}
-            attributionEnabled={false}
-            onDidFinishLoadingMap={onMapDidFinishLoading}
-          >
-            {!hideMapDetails && (
-              <Mapbox.Images
-                images={{
-                  start: require("@/assets/images/start-image.png"),
-                  end: require("@/assets/images/finnish-image.png"),
-                }}
-              />
-            )}
-            <Mapbox.Camera
-              bounds={{
-                ne: bounds.ne,
-                sw: bounds.sw,
-                paddingTop: 50,
-                paddingBottom: 50,
-                paddingLeft: 50,
-                paddingRight: 50,
-              }}
-              animationMode="none"
-            />
-            <Mapbox.ShapeSource
-              id="modal-snapshot-track"
-              shape={routeFeature as GeoJSON.Feature}
+          <View className="absolute" style={OFFSCREEN_STYLE}>
+            <Mapbox.MapView
+              ref={mapViewRef}
+              key={hideMapDetails ? "private" : "normal"}
+              style={MAP_STYLE}
+              {...(hideMapDetails && noLabelsStyleJSON
+                ? { styleJSON: noLabelsStyleJSON }
+                : { styleURL: Mapbox.StyleURL.Dark })}
+              scaleBarEnabled={false}
+              logoEnabled={false}
+              attributionEnabled={false}
+              onDidFinishLoadingMap={onMapDidFinishLoading}
             >
-              <Mapbox.LineLayer id="modal-snapshot-glow" style={GLOW_STYLE} />
-              <Mapbox.LineLayer
-                id="modal-snapshot-core"
-                aboveLayerID="modal-snapshot-glow"
-                style={CORE_STYLE}
-              />
-            </Mapbox.ShapeSource>
-            {!hideMapDetails && startEndGeoJSON && (
-              <Mapbox.ShapeSource id="modal-snapshot-points" shape={startEndGeoJSON as GeoJSON.FeatureCollection}>
-                <Mapbox.SymbolLayer
-                  id="modal-snapshot-points-layer"
-                  style={{
-                    iconImage: [
-                      "case",
-                      ["==", ["get", "type"], "start"],
-                      "start",
-                      "end",
-                    ],
-                    iconSize: 0.12,
-                    iconAnchor: "bottom",
-                    iconAllowOverlap: true,
-                    iconIgnorePlacement: true,
+              {!hideMapDetails && (
+                <Mapbox.Images
+                  images={{
+                    start: require("@/assets/images/start-image.png"),
+                    end: require("@/assets/images/finnish-image.png"),
                   }}
                 />
+              )}
+              <Mapbox.Camera
+                bounds={{
+                  ne: bounds.ne,
+                  sw: bounds.sw,
+                  paddingTop: 50,
+                  paddingBottom: 50,
+                  paddingLeft: 50,
+                  paddingRight: 50,
+                }}
+                animationMode="none"
+              />
+              <Mapbox.ShapeSource
+                id="modal-snapshot-track"
+                shape={routeFeature as GeoJSON.Feature}
+              >
+                <Mapbox.LineLayer id="modal-snapshot-glow" style={GLOW_STYLE} />
+                <Mapbox.LineLayer
+                  id="modal-snapshot-core"
+                  aboveLayerID="modal-snapshot-glow"
+                  style={CORE_STYLE}
+                />
               </Mapbox.ShapeSource>
-            )}
-          </Mapbox.MapView>
-        </View>
-      )}
+              {!hideMapDetails && startEndGeoJSON && (
+                <Mapbox.ShapeSource
+                  id="modal-snapshot-points"
+                  shape={startEndGeoJSON as GeoJSON.FeatureCollection}
+                >
+                  <Mapbox.SymbolLayer
+                    id="modal-snapshot-points-layer"
+                    style={{
+                      iconImage: [
+                        "case",
+                        ["==", ["get", "type"], "start"],
+                        "start",
+                        "end",
+                      ],
+                      iconSize: 0.12,
+                      iconAnchor: "bottom",
+                      iconAllowOverlap: true,
+                      iconIgnorePlacement: true,
+                    }}
+                  />
+                </Mapbox.ShapeSource>
+              )}
+            </Mapbox.MapView>
+          </View>
+        )}
       <ToastMessage config={toastConfig} position="top" />
     </Modal>
   );

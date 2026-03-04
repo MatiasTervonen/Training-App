@@ -6,8 +6,8 @@ Before making any changes, always read the CLAUDE.md in the relevant app directo
 - `mobile/CLAUDE.md` — mobile-specific rules
 - `web/CLAUDE.md` — web-specific rules
 
-## Bash Commands
-Always explain what a bash command does before running it, especially for compound commands, flags, or anything that isn't immediately obvious.
+## Terminal Commands
+Every command run in the terminal must include a short explanation of what it does. This applies to all commands — git, npm, pnpm, supabase, or anything else.
 
 ## Supabase Migrations
 - Never use `CREATE OR REPLACE FUNCTION`. It only replaces if the exact parameter signature matches — if parameters changed, it creates a duplicate overload. Always `DROP FUNCTION` first, then `CREATE FUNCTION`.

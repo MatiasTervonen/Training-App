@@ -127,10 +127,6 @@ const WeightShareCard = forwardRef<View, WeightShareCardProps>(
 
     const { start, end, chartData } = useWeightShareData(range, data, locale);
 
-    const values = chartData
-      .map((item) => item.value)
-      .filter((v): v is number => v !== null);
-
     const firstValue = chartData[0]?.value;
     const lastValue = chartData[chartData.length - 1]?.value;
 
@@ -167,8 +163,8 @@ const WeightShareCard = forwardRef<View, WeightShareCardProps>(
           end={{ x: 0.2, y: 1 }}
           className="flex-1 p-[60px] justify-between"
         >
-          {/* Header - App branding */}
-          <View className="flex-row items-center gap-4">
+          {/* App branding - absolute so it doesn't affect layout */}
+          <View className="absolute top-[30px] left-[30px] flex-row items-center gap-4">
             <Image
               source={require("@/assets/images/android-chrome-192x192.png")}
               className="w-[64px] h-[64px] rounded-lg"
@@ -177,7 +173,7 @@ const WeightShareCard = forwardRef<View, WeightShareCardProps>(
           </View>
 
           {/* Title + Date range */}
-          <View className="items-center gap-3 mt-[20px]">
+          <View className="items-center gap-3">
             <AppText className="text-[52px] text-center">
               {t("weight.share.title")}
             </AppText>
@@ -188,11 +184,11 @@ const WeightShareCard = forwardRef<View, WeightShareCardProps>(
 
           {/* Chart as captured image */}
           <View className="items-center mt-[20px]">
-            <View className="w-[960px] h-[540px] bg-slate-900/50 rounded-lg overflow-hidden">
+            <View className="w-[960px] h-[620px]">
               {chartImageUri ? (
                 <Image
                   source={{ uri: chartImageUri }}
-                  className="w-[960px] h-[540px]"
+                  className="w-[960px] h-[620px]"
                   resizeMode="contain"
                 />
               ) : null}

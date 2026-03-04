@@ -175,7 +175,7 @@ export default function WeightShareModal({
             onMessage={onWebViewMessage}
             javaScriptEnabled
             originWhitelist={["*"]}
-            style={{ width: 960, height: 540 }}
+            style={{ width: 960, height: 620 }}
           />
         </View>
       )}

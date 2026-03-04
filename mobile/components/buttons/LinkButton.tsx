@@ -91,7 +91,7 @@ export default function LinkButton({
         </Animated.View>
         <View className="flex-row items-center justify-center gap-2">
           {label && (
-            <AppText className="text-base text-center">{label}</AppText>
+            <AppText className="text-base text-center" numberOfLines={1}>{label}</AppText>
           )}
           {children}
         </View>

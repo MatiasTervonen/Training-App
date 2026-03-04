@@ -78,20 +78,20 @@ export default function useChartImage(
           },
         },
       ],
-      grid: { top: 20, right: 30, bottom: 40, left: 30 },
+      grid: { top: 20, right: 30, bottom: 40, left: 60 },
     };
 
     return `<!DOCTYPE html>
 <html>
 <head>
 <meta name="viewport" content="width=960,initial-scale=1,user-scalable=no">
-<style>html,body{margin:0;padding:0;width:960px;height:540px;background:transparent;overflow:hidden;}#chart{width:960px;height:540px;}</style>
+<style>html,body{margin:0;padding:0;width:960px;height:620px;background:transparent;overflow:hidden;}#chart{width:960px;height:620px;}</style>
 <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
 </head>
 <body>
 <div id="chart"></div>
 <script>
-var chart=echarts.init(document.getElementById('chart'),null,{renderer:'canvas',width:960,height:540});
+var chart=echarts.init(document.getElementById('chart'),null,{renderer:'canvas',width:960,height:620});
 chart.setOption(${JSON.stringify(option)});
 setTimeout(function(){
   var url=chart.getDataURL({type:'png',pixelRatio:2,backgroundColor:'transparent'});

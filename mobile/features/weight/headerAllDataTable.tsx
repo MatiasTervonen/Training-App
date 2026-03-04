@@ -4,6 +4,7 @@ import AppTextNC from "@/components/AppTextNC";
 import { weight } from "@/types/session";
 import WeightChart from "@/features/weight/WeightChart";
 import AnimatedButton from "@/components/buttons/animatedButton";
+import { Share2 } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 
 type RangeType = "week" | "month" | "year";
@@ -22,6 +23,7 @@ type HeaderAllDataTableProps = {
   isLoading: boolean;
   error: unknown;
   data: weight[];
+  onSharePress: () => void;
 };
 
 export default function HeaderAllDataTable({
@@ -30,14 +32,21 @@ export default function HeaderAllDataTable({
   isLoading,
   error,
   data,
+  onSharePress,
 }: HeaderAllDataTableProps) {
   const { t } = useTranslation("weight");
 
   return (
     <>
-      <AppText className="text-2xl my-5 text-center">
-        {t("weight.analyticsScreen.title")}
-      </AppText>
+      <View className="flex-row items-center justify-center my-5 px-4">
+        <View className="w-10" />
+        <AppText className="text-2xl flex-1 text-center">
+          {t("weight.analyticsScreen.title")}
+        </AppText>
+        <AnimatedButton onPress={onSharePress} hitSlop={10}>
+          <Share2 color="#f3f4f6" size={22} />
+        </AnimatedButton>
+      </View>
       <View className="flex-row bg-slate-800 rounded-lg p-1 mb-5 mx-4">
         {ranges.map((option) => (
           <AnimatedButton

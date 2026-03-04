@@ -33,6 +33,19 @@
       "deleteError": "Error",
       "deleteErrorMessage": "Failed to delete item.",
       "noNotes": "No notes..."
+    },
+    "share": {
+      "share": "Share",
+      "sharing": "Sharing...",
+      "save": "Save",
+      "saving": "Saving...",
+      "saveSuccess": "Weight chart saved to gallery",
+      "saveError": "Failed to save weight chart",
+      "close": "Close",
+      "shareError": "Failed to share weight chart",
+      "weightChange": "Weight Change",
+      "currentWeight": "Current Weight",
+      "title": "Weight"
     }
   }
 }

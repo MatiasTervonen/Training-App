@@ -26,20 +26,29 @@ import PageContainer from "@/components/PageContainer";
 import CopyText from "@/components/CopyToClipboard";
 import { FeedItemUI } from "@/types/session";
 import { useTranslation } from "react-i18next";
+import { TodoTaskMedia } from "@/database/todo/get-todo-media";
+import { DraftRecordingItem } from "@/features/notes/components/draftRecording";
+import DraftImageItem from "@/features/notes/components/DraftImageItem";
+import DraftVideoItem from "@/features/notes/components/DraftVideoItem";
+import ImageViewerModal from "@/features/notes/components/ImageViewerModal";
 
 type TodoSessionProps = {
   initialTodo: full_todo_session;
   onSave: (updatedItem: FeedItemUI) => void;
   onDirtyChange?: (dirty: boolean) => void;
+  taskMedia?: TodoTaskMedia;
 };
 
 export default function TodoSession({
   initialTodo,
   onSave,
   onDirtyChange,
+  taskMedia,
 }: TodoSessionProps) {
   const { t } = useTranslation("todo");
   const [open, setOpen] = useState<number | null>(null);
+  const [viewerIndex, setViewerIndex] = useState(-1);
+  const [viewerTaskId, setViewerTaskId] = useState<string | null>(null);
   const [sessionData, setSessionData] = useState(initialTodo);
   const [isSaving, setIsSaving] = useState(false);
   const [sortField, setSortField] = useState<"original" | "completed">(
@@ -270,36 +279,119 @@ export default function TodoSession({
                               <FullScreenModal
                                 onClose={() => {
                                   setOpen(null);
+                                  setViewerIndex(-1);
+                                  setViewerTaskId(null);
                                 }}
                                 isOpen={true}
                               >
-                                <PageContainer className="mb-10">
-                                  <AppText className="text-sm text-gray-300 text-center">
-                                    {t("todo.session.created")}{" "}
-                                    {formatDate(task.created_at!)}
-                                  </AppText>
-                                  {task.updated_at && (
-                                    <AppText className="text-sm text-yellow-500 mt-2 text-center">
-                                      {t("todo.session.updated")}{" "}
-                                      {formatDate(task.updated_at)}
+                                <ScrollView
+                                  contentContainerStyle={{ flexGrow: 1 }}
+                                  showsVerticalScrollIndicator={false}
+                                >
+                                  <PageContainer className="mb-10">
+                                    <AppText className="text-sm text-gray-300 text-center">
+                                      {t("todo.session.created")}{" "}
+                                      {formatDate(task.created_at!)}
                                     </AppText>
-                                  )}
-                                  <View className="relative items-center bg-slate-900 pt-5 pb-10 px-5 rounded-md shadow-md mt-5">
-                                    <View className="absolute top-2 right-2 z-10">
-                                      <CopyText
-                                        textToCopy={
-                                          task.task + "\n\n" + task.notes || ""
-                                        }
-                                      />
+                                    {task.updated_at && (
+                                      <AppText className="text-sm text-yellow-500 mt-2 text-center">
+                                        {t("todo.session.updated")}{" "}
+                                        {formatDate(task.updated_at)}
+                                      </AppText>
+                                    )}
+                                    <View className="relative items-center bg-slate-900 pt-5 pb-10 px-5 rounded-md shadow-md mt-5">
+                                      <View className="absolute top-2 right-2 z-10">
+                                        <CopyText
+                                          textToCopy={
+                                            task.task + "\n\n" + task.notes ||
+                                            ""
+                                          }
+                                        />
+                                      </View>
+                                      <AppText className="text-xl text-center mb-10 border-b border-gray-700 pb-2">
+                                        {task.task}
+                                      </AppText>
+                                      <BodyText className="text-left">
+                                        {task.notes ||
+                                          t("todo.noNotesAvailable")}
+                                      </BodyText>
+
+                                      {/* Task media */}
+                                      {task.id && taskMedia?.[task.id] && (
+                                        <>
+                                          {taskMedia[task.id].images.length >
+                                            0 && (
+                                            <View className="mt-10 w-full">
+                                              {taskMedia[task.id].images.map(
+                                                (image, idx) => (
+                                                  <DraftImageItem
+                                                    key={image.id}
+                                                    uri={image.uri}
+                                                    onPress={() => {
+                                                      setViewerTaskId(task.id!);
+                                                      setViewerIndex(idx);
+                                                    }}
+                                                  />
+                                                ),
+                                              )}
+                                            </View>
+                                          )}
+                                          {taskMedia[task.id].videos.length >
+                                            0 && (
+                                            <View className="mt-6 w-full">
+                                              {taskMedia[task.id].videos.map(
+                                                (video) => (
+                                                  <DraftVideoItem
+                                                    key={video.id}
+                                                    uri={video.uri}
+                                                    thumbnailUri={
+                                                      video.thumbnailUri
+                                                    }
+                                                    durationMs={
+                                                      video.duration_ms ??
+                                                      undefined
+                                                    }
+                                                  />
+                                                ),
+                                              )}
+                                            </View>
+                                          )}
+                                          {taskMedia[task.id].voice.length >
+                                            0 && (
+                                            <View className="mt-10 w-full">
+                                              {taskMedia[task.id].voice.map(
+                                                (recording) => (
+                                                  <DraftRecordingItem
+                                                    key={recording.id}
+                                                    uri={recording.uri}
+                                                    durationMs={
+                                                      recording.duration_ms ??
+                                                      undefined
+                                                    }
+                                                  />
+                                                ),
+                                              )}
+                                            </View>
+                                          )}
+                                        </>
+                                      )}
                                     </View>
-                                    <AppText className="text-xl text-center mb-10 border-b border-gray-700 pb-2">
-                                      {task.task}
-                                    </AppText>
-                                    <BodyText className="text-left">
-                                      {task.notes || t("todo.noNotesAvailable")}
-                                    </BodyText>
-                                  </View>
-                                </PageContainer>
+                                  </PageContainer>
+                                </ScrollView>
+                                {viewerTaskId &&
+                                  (taskMedia?.[viewerTaskId]?.images?.length ?? 0) >
+                                    0 &&
+                                  viewerIndex >= 0 && (
+                                    <ImageViewerModal
+                                      images={taskMedia![viewerTaskId].images}
+                                      initialIndex={viewerIndex}
+                                      visible={viewerIndex >= 0}
+                                      onClose={() => {
+                                        setViewerIndex(-1);
+                                        setViewerTaskId(null);
+                                      }}
+                                    />
+                                  )}
                               </FullScreenModal>
                             )}
                           </View>

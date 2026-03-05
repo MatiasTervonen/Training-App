@@ -16,6 +16,10 @@ import {
   getFullWeightSession,
   FullWeightSession,
 } from "@/database/weight/get-full-weight";
+import {
+  getFullTodoMedia,
+  TodoTaskMedia,
+} from "@/database/todo/get-todo-media";
 
 const getId = (fi: FeedItemUI | null) => fi?.source_id ?? null;
 
@@ -41,6 +45,20 @@ export default function useFullSessions(
         : null;
 
   const todoId = todoItem ? getId(todoItem) : null;
+
+  // Only fetch todo media if there are media attachments
+  const todoExtra = todoItem?.extra_fields as
+    | { "voice-count"?: number; "image-count"?: number; "video-count"?: number }
+    | undefined;
+  const todoVoiceCount = todoExtra?.["voice-count"] ?? 0;
+  const todoImageCount = todoExtra?.["image-count"] ?? 0;
+  const todoVideoCount = todoExtra?.["video-count"] ?? 0;
+
+  const todoHasMedia =
+    todoItem &&
+    (todoVoiceCount > 0 || todoImageCount > 0 || todoVideoCount > 0);
+
+  const todoMediaId = todoHasMedia ? getId(todoItem) : null;
 
   const activityItem =
     expandedItem?.type === "activity_sessions"
@@ -170,6 +188,16 @@ export default function useFullSessions(
     enabled: !!weightId,
   });
 
+  const {
+    data: todoMediaFull,
+    error: todoMediaError,
+    isLoading: isLoadingTodoMedia,
+  } = useQuery<TodoTaskMedia>({
+    queryKey: ["fullTodoMedia", todoMediaId],
+    queryFn: async () => await getFullTodoMedia(todoMediaId!),
+    enabled: !!todoMediaId,
+  });
+
   return {
     GymSessionFull,
     GymSessionError,
@@ -193,5 +221,8 @@ export default function useFullSessions(
     weightSessionFull,
     weightSessionError,
     isLoadingWeightSession,
+    todoMediaFull,
+    todoMediaError,
+    isLoadingTodoMedia,
   };
 }

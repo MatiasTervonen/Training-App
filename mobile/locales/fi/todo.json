@@ -21,6 +21,8 @@
     "delete": "poista",
     "deleteTaskTitle": "Poista tehtävä",
     "deleteTaskMessage": "Haluatko varmasti poistaa tämän tehtävän?",
+    "deleteMediaTitle": "Poista media",
+    "deleteMediaMessage": "Haluatko varmasti poistaa tämän median?",
     "emptyListError": "Lisää vähintään yksi tehtävä",
     "emptyTitleError": "Lisää otsikko tehtävälistallesi",
     "savingTodoList": "Tallennetaan tehtävälistaa...",
@@ -59,6 +61,11 @@
       "updateSuccess": "Sessio päivitetty onnistuneesti",
       "updateError": "Session päivitys epäonnistui",
       "savingTodoList": "Tallennetaan tehtävälistaa..."
+    },
+    "media": {
+      "voiceRecordings": "Äänitallenteet",
+      "images": "Kuvat",
+      "videos": "Videot"
     }
   }
 }

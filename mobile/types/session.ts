@@ -179,6 +179,17 @@ export type full_todo_session_optional_id = {
     task: string;
     updated_at: string | null;
     user_id: string;
+    draftRecordings?: DraftRecording[];
+    draftImages?: DraftImage[];
+    draftVideos?: DraftVideo[];
+    existingVoice?: { id: string; uri: string; duration_ms: number | null }[];
+    existingImages?: { id: string; uri: string }[];
+    existingVideos?: {
+      id: string;
+      uri: string;
+      thumbnailUri: string;
+      duration_ms: number | null;
+    }[];
   }[];
   feed_context: "pinned" | "feed";
 };
@@ -246,6 +257,11 @@ export type DraftRecording = {
   uri: string;
   createdAt: number;
   durationMs?: number;
+};
+
+export type DraftImage = {
+  id: string;
+  uri: string;
 };
 
 export type DraftVideo = {

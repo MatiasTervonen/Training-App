@@ -2,11 +2,15 @@ import { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDebouncedCallback } from "use-debounce";
 import { handleError } from "@/utils/handleError";
+import { DraftRecording, DraftImage, DraftVideo } from "@/types/session";
 
 type TodoItem = {
   tempId: string;
   task: string;
   notes: string | null;
+  draftRecordings?: DraftRecording[];
+  draftImages?: DraftImage[];
+  draftVideos?: DraftVideo[];
 };
 
 export default function useSaveDraft({
@@ -29,7 +33,7 @@ export default function useSaveDraft({
   setTodoList: (todoList: TodoItem[]) => void;
 }) {
   const [isLoaded, setIsLoaded] = useState(false);
-  
+
   useEffect(() => {
     const loadDraft = async () => {
       try {
@@ -39,7 +43,7 @@ export default function useSaveDraft({
           setTitle(draft.title || "");
           setTask(draft.task || "");
           setNotes(draft.notes || "");
-          setTodoList(draft.todoList || "");
+          setTodoList(draft.todoList || []);
         }
       } catch (error) {
         handleError(error, {
@@ -77,7 +81,7 @@ export default function useSaveDraft({
   useEffect(() => {
     saveTodoDraft();
   }, [title, notes, todoList, task, saveTodoDraft]);
-  
+
   return {
     saveTodoDraft,
   };

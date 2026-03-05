@@ -260,7 +260,7 @@ export default function WeightChart({
   );
 
   useEffect(() => {
-    if (!skiaRef.current) return;
+    if (!skiaRef.current || size.width === 0 || size.height === 0) return;
 
     const chart = echarts.init(skiaRef.current, "light", {
       renderer: "skia",
@@ -306,9 +306,8 @@ export default function WeightChart({
       <View
         className="bg-slate-900 shadow-md"
         style={{
-          flex: 1,
           width: "100%",
-          minHeight: 300,
+          height: 300,
         }}
         onLayout={(e) => {
           const { width, height } = e.nativeEvent.layout;

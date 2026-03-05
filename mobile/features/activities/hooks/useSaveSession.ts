@@ -2,6 +2,7 @@ import { useConfirmAction } from "@/lib/confirmAction";
 import { useRouter } from "expo-router";
 import Toast from "react-native-toast-message";
 import { saveActivitySession } from "@/database/activities/save-session";
+import { getFullActivitySession } from "@/database/activities/get-full-activity-session";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useStopGPStracking } from "@/features/activities/lib/location-actions";
 import { useQueryClient } from "@tanstack/react-query";
@@ -58,11 +59,6 @@ export default function useSaveActivitySession({
   setIsSaving,
   resetSession,
   activityName = null,
-  baseMet = 0,
-  userWeight = 70,
-  movingTimeSeconds = null,
-  averagePacePerKm = null,
-  averageSpeed = null,
 }: {
   title: string;
   notes: string;
@@ -73,11 +69,6 @@ export default function useSaveActivitySession({
   setIsSaving: (isSaving: boolean) => void;
   resetSession: () => void;
   activityName?: string | null;
-  baseMet?: number;
-  userWeight?: number;
-  movingTimeSeconds?: number | null;
-  averagePacePerKm?: number | null;
-  averageSpeed?: number | null;
 }) {
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -148,10 +139,12 @@ export default function useSaveActivitySession({
       ).toISOString();
 
       const activityId = parsedDraft?.activityId ?? null;
+      const templateId = parsedDraft?.templateId ?? null;
+      const activitySlug = parsedDraft?.activitySlug ?? null;
 
       const steps = stepsAllowed ? await loadStepsFromNative() : 0;
 
-      await saveActivitySession({
+      const { sessionId } = await saveActivitySession({
         title,
         notes,
         duration: durationInSeconds,
@@ -163,44 +156,32 @@ export default function useSaveActivitySession({
         draftRecordings,
         draftImages,
         draftVideos,
+        templateId,
       });
 
-      await queryClient.invalidateQueries({ queryKey: ["feed"], exact: true });
+      // Fetch the real DB-computed stats for the share card
+      const [fullSession] = await Promise.all([
+        getFullActivitySession(sessionId),
+        queryClient.invalidateQueries({ queryKey: ["feed"], exact: true }),
+      ]);
 
-      // Populate activity session summary for share card
-      const hasRoute = allowGPS && cleanTrack.length > 0;
-      let route = null;
-      if (hasRoute) {
-        const coords = cleanTrack.map(
-          (p) => [p.longitude, p.latitude] as [number, number],
-        );
-        route = { type: "LineString" as const, coordinates: coords };
-      }
-      const calories =
-        baseMet && userWeight
-          ? Math.round(baseMet * userWeight * (durationInSeconds / 3600))
-          : null;
-
-      const avgSpeed =
-        hasRoute && meters > 0 && (movingTimeSeconds ?? 0) > 0
-          ? Number(
-              ((meters / 1000) / ((movingTimeSeconds ?? 0) / 3600)).toFixed(1),
-            )
-          : null;
+      const stats = fullSession.stats;
+      const hasRoute = fullSession.route !== null;
 
       useActivitySessionSummaryStore.getState().setSummary({
         title,
         date: start_time,
         duration: durationInSeconds,
         activityName,
+        activitySlug,
         hasRoute,
-        route,
-        distance: hasRoute ? meters : null,
-        movingTime: hasRoute ? (movingTimeSeconds ?? null) : null,
-        averagePace: hasRoute ? (averagePacePerKm ?? null) : null,
-        averageSpeed: averageSpeed ?? avgSpeed,
-        steps: steps > 0 ? steps : null,
-        calories,
+        route: fullSession.route,
+        distance: stats?.distance_meters ?? null,
+        movingTime: stats?.moving_time_seconds ?? null,
+        averagePace: stats?.avg_pace ?? null,
+        averageSpeed: stats?.avg_speed ?? null,
+        steps: stats?.steps ?? null,
+        calories: stats?.calories ?? null,
       });
 
       resetSession();

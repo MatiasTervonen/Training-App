@@ -28,7 +28,7 @@ import useUpdateTimer from "@/features/timer/hooks/useUpdateTimer";
 import { useTranslation } from "react-i18next";
 
 export default function MyTimersScreen() {
-  const { t } = useTranslation(["timer", "common"]);
+  const { t } = useTranslation(["timer"]);
   const [expandedItem, setExpandedItem] = useState<timers | null>(null);
   const [editingItem, setEditingItem] = useState<timers | null>(null);
 
@@ -238,7 +238,7 @@ export default function MyTimersScreen() {
                 />
                 <AnimatedButton
                   className="bg-gray-700 rounded-md shadow-md border-2 border-gray-500 py-2"
-                  label={t("common.cancel")}
+                  label={t("common:common.cancel")}
                   onPress={() => setEditingItem(null)}
                   textClassName="text-gray-100 text-center"
                 />

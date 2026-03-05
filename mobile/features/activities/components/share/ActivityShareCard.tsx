@@ -5,6 +5,7 @@ import AppText from "@/components/AppText";
 import { LinearGradient } from "expo-linear-gradient";
 import { formatDateShort } from "@/lib/formatDate";
 import { StatItem } from "@/features/activities/lib/activityShareCardUtils";
+import { useTranslation } from "react-i18next";
 
 const GRADIENT_COLORS: [string, string, string] = ["#1e3a8a", "#0f172a", "#0f172a"];
 const GRADIENT_START = { x: 0.8, y: 0 };
@@ -16,13 +17,25 @@ type ActivityShareCardProps = {
   title: string;
   date: string;
   activityName: string | null;
+  activitySlug: string | null;
   mapSnapshotUri: string | null;
   hasRoute: boolean;
   selectedStats: StatItem[];
 };
 
 const ActivityShareCard = forwardRef<View, ActivityShareCardProps>(
-  ({ title, date, activityName, mapSnapshotUri, hasRoute, selectedStats }, ref) => {
+  ({ title, date, activityName, activitySlug, mapSnapshotUri, hasRoute, selectedStats }, ref) => {
+    const { t } = useTranslation("activities");
+
+    const displayActivityName = (() => {
+      if (activitySlug) {
+        const translated = t(`activities.activityNames.${activitySlug}`, { defaultValue: "" });
+        if (translated && translated !== `activities.activityNames.${activitySlug}`) {
+          return translated;
+        }
+      }
+      return activityName;
+    })();
     if (hasRoute) {
       return (
         <View
@@ -62,7 +75,7 @@ const ActivityShareCard = forwardRef<View, ActivityShareCardProps>(
                 {title}
               </AppText>
               <AppText className="text-[28px] text-gray-300 mt-1">
-                {formatDateShort(date)}
+                {displayActivityName && `${displayActivityName}  ·  `}{formatDateShort(date)}
               </AppText>
             </View>
             {/* App logo overlay at bottom-right */}
@@ -105,7 +118,7 @@ const ActivityShareCard = forwardRef<View, ActivityShareCardProps>(
               {title}
             </AppText>
             <AppText className="text-[28px] text-gray-300 mt-1">
-              {formatDateShort(date)}
+              {displayActivityName && `${displayActivityName}  ·  `}{formatDateShort(date)}
             </AppText>
           </View>
 

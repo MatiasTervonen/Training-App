@@ -275,7 +275,7 @@ export default function TemplateHistoryChart({
     { key: "1y", label: t("activities.templateHistory.range1y") },
   ];
 
-  if (allChartData.length < 2) return null;
+  if (!history || history.length < 2) return null;
 
   return (
     <View className="mt-6">
@@ -373,9 +373,14 @@ export default function TemplateHistoryChart({
             <SkiaChart ref={skiaRef} />
           </View>
         ) : (
-          <AppText className="text-center text-gray-400 text-sm py-4">
-            {t("activities.templateHistory.noChartData")}
-          </AppText>
+          <View
+            style={{ width: "100%", minHeight: 250 }}
+            className="justify-center items-center"
+          >
+            <AppText className="text-center text-gray-400 text-sm">
+              {t("activities.templateHistory.noChartData")}
+            </AppText>
+          </View>
         )}
       </View>
     </View>

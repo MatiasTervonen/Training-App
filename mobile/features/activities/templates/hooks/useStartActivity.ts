@@ -40,6 +40,7 @@ export function useStartActivity() {
       activityId: template.activity.id,
       activitySlug: template.activity.slug ?? null,
       baseMet: template.activity.base_met,
+      templateId: template.template.id,
     };
 
     await Promise.all([

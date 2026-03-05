@@ -18,7 +18,11 @@ import { Clock, History, Share2 } from "lucide-react-native";
 import ActivityShareModal from "@/features/activities/components/share/ActivityShareModal";
 import FullScreenMapModal from "./components/fullScreenMap";
 import { ActivityVoiceRecording } from "@/database/activities/get-activity-voice-recordings";
+import { ActivitySessionMedia } from "@/database/activities/get-activity-session-media";
 import { DraftRecordingItem } from "@/features/notes/components/draftRecording";
+import DraftImageItem from "@/features/notes/components/DraftImageItem";
+import DraftVideoItem from "@/features/notes/components/DraftVideoItem";
+import ImageViewerModal from "@/features/notes/components/ImageViewerModal";
 import { NotesVoiceSkeleton } from "@/components/skeletetons";
 import { useTemplateHistory } from "@/features/activities/templates/hooks/useTemplateHistory";
 import TemplateHistoryModal from "@/features/activities/templates/components/TemplateHistoryModal";
@@ -27,6 +31,9 @@ type ActivitySessionProps = FullActivitySession & {
   voiceRecordings?: ActivityVoiceRecording[];
   isLoadingVoice?: boolean;
   voiceError?: unknown;
+  media?: ActivitySessionMedia;
+  isLoadingMedia?: boolean;
+  mediaError?: unknown;
 };
 
 export default function ActivitySession(
@@ -39,6 +46,7 @@ export default function ActivitySession(
   const [templateNotes, setTemplateNotes] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [fullScreen, setFullScreen] = useState(false);
+  const [viewerIndex, setViewerIndex] = useState(-1);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const hasRoute = activity_session.route !== null;
   const hasTemplate = !!activity_session.session.template_id;
@@ -163,6 +171,47 @@ export default function ActivitySession(
                 {t("activities.sessionDetails.voiceLoadError")}
               </AppText>
             )}
+
+            {/* Images */}
+            {activity_session.media &&
+              activity_session.media.images.length > 0 && (
+                <View className="mt-10">
+                  {activity_session.media.images.map((image, idx) => (
+                    <DraftImageItem
+                      key={image.id}
+                      uri={image.uri}
+                      onPress={() => setViewerIndex(idx)}
+                    />
+                  ))}
+                </View>
+              )}
+
+            {/* Videos */}
+            {activity_session.media &&
+              activity_session.media.videos.length > 0 && (
+                <View className="mt-6">
+                  {activity_session.media.videos.map((video) => (
+                    <DraftVideoItem
+                      key={video.id}
+                      uri={video.uri}
+                      thumbnailUri={video.thumbnailUri}
+                      durationMs={video.duration_ms ?? undefined}
+                    />
+                  ))}
+                </View>
+              )}
+
+            {activity_session.isLoadingMedia && (
+              <View className="mt-10">
+                <NotesVoiceSkeleton />
+              </View>
+            )}
+
+            {!!activity_session.mediaError && (
+              <AppText className="text-center text-red-500 mt-10">
+                {t("activities.sessionDetails.mediaLoadError")}
+              </AppText>
+            )}
           </View>
           {hasRoute && (
             <View className="mt-20">
@@ -249,6 +298,16 @@ export default function ActivitySession(
         templateName={historyTemplateName}
         error={historyError ? historyError.message : null}
       />
+      {activity_session.media &&
+        activity_session.media.images.length > 0 &&
+        viewerIndex >= 0 && (
+          <ImageViewerModal
+            images={activity_session.media.images}
+            initialIndex={viewerIndex}
+            visible={viewerIndex >= 0}
+            onClose={() => setViewerIndex(-1)}
+          />
+        )}
     </ScrollView>
   );
 }

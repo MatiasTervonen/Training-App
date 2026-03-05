@@ -63,6 +63,7 @@ export default function ActivityShareModal({
       date: session.start_time,
       duration: session.duration ?? 0,
       activityName: activitySession.activity?.name ?? null,
+      activitySlug: activitySession.activity?.slug ?? null,
       hasRoute,
       route: activitySession.route,
       distance: stats?.distance_meters ?? null,
@@ -173,6 +174,7 @@ export default function ActivityShareModal({
                 title={summary.title}
                 date={summary.date}
                 activityName={summary.activityName}
+                activitySlug={summary.activitySlug}
                 hasRoute={summary.hasRoute}
                 mapSnapshotUri={mapSnapshotUri}
                 selectedStats={selectedStats}

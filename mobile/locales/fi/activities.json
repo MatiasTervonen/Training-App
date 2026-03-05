@@ -136,7 +136,8 @@
       "save": "Tallenna",
       "savingTemplate": "Tallennetaan pohjaa...",
       "recordings": "Äänitallenteet",
-      "voiceLoadError": "Äänitallenteiden lataaminen epäonnistui."
+      "voiceLoadError": "Äänitallenteiden lataaminen epäonnistui.",
+      "mediaLoadError": "Median lataaminen epäonnistui."
     },
     "sessionStats": {
       "duration": "Kesto",

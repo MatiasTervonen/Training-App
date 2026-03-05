@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { useNavigation } from "expo-router";
-import { View, LayoutChangeEvent } from "react-native";
+import { View, ScrollView, LayoutChangeEvent } from "react-native";
 import AppText from "@/components/AppText";
 import { Image } from "expo-image";
 import LinkButton from "@/components/buttons/LinkButton";
@@ -124,7 +124,12 @@ export default function ActivityFinishedScreen() {
   }, [navigation, clearSummary]);
 
   return (
-    <View className="flex-1 px-5" onLayout={onContainerLayout}>
+    <ScrollView
+      className="flex-1 px-5"
+      contentContainerStyle={{ flexGrow: 1 }}
+      showsVerticalScrollIndicator={false}
+      onLayout={onContainerLayout}
+    >
       {/* Header */}
       <View className="items-center mt-10">
         <View className="flex-row gap-5 items-center">
@@ -139,7 +144,7 @@ export default function ActivityFinishedScreen() {
       </View>
 
       {/* Share Card Preview - centered */}
-      <View className="flex-1 items-center justify-center">
+      <View className="flex-1 items-center justify-center mt-5">
         {summary && (
           <View style={cardContainerStyle}>
             <View style={cardTransformStyle}>
@@ -148,6 +153,7 @@ export default function ActivityFinishedScreen() {
                 title={summary.title}
                 date={summary.date}
                 activityName={summary.activityName}
+                activitySlug={summary.activitySlug}
                 hasRoute={summary.hasRoute}
                 mapSnapshotUri={mapSnapshotUri}
                 selectedStats={selectedStats}
@@ -318,6 +324,6 @@ export default function ActivityFinishedScreen() {
           </Mapbox.MapView>
         </View>
       )}
-    </View>
+    </ScrollView>
   );
 }

@@ -14,7 +14,7 @@ import {
   isIgnoringBatteryOptimizations,
   requestIgnoreBatteryOptimizations,
 } from "@/native/android/NativeBatteryOptimization";
-import i18n from "i18next";
+import { useTranslation } from "react-i18next";
 
 export function useStartActivity({
   activityName,
@@ -27,6 +27,7 @@ export function useStartActivity({
   allowGPS: boolean;
   stepsAllowed: boolean;
 }) {
+  const { t } = useTranslation("activities"); 
   const setActiveSession = useTimerStore((state) => state.setActiveSession);
   const startSession = useTimerStore((state) => state.startSession);
   const { startGPStracking } = useStartGPStracking();
@@ -44,7 +45,10 @@ export function useStartActivity({
 
     // Clear debug log from previous session
     clearLog();
-    debugLog("SESSION", `Starting activity: ${activityName}, gps=${allowGPS}, steps=${stepsAllowed}`);
+    debugLog(
+      "SESSION",
+      `Starting activity: ${activityName}, gps=${allowGPS}, steps=${stepsAllowed}`,
+    );
 
     // Stop any running GPS tracking first to prevent race conditions
     await stopGPStracking();
@@ -116,16 +120,24 @@ export function useStartActivity({
         if (!isIgnoring) {
           await new Promise<void>((resolve) => {
             Alert.alert(
-              i18n.t("activities:activities.startActivityScreen.batteryOptTitle"),
-              i18n.t("activities:activities.startActivityScreen.batteryOptMessage"),
+              t(
+                "activities:activities.startActivityScreen.batteryOptTitle",
+              ),
+              t(
+                "activities:activities.startActivityScreen.batteryOptMessage",
+              ),
               [
                 {
-                  text: i18n.t("activities:activities.startActivityScreen.batteryOptSkip"),
+                  text: t(
+                    "activities:activities.startActivityScreen.batteryOptSkip",
+                  ),
                   style: "cancel",
                   onPress: () => resolve(),
                 },
                 {
-                  text: i18n.t("activities:activities.startActivityScreen.batteryOptDisable"),
+                  text: t(
+                    "activities:activities.startActivityScreen.batteryOptDisable",
+                  ),
                   onPress: async () => {
                     await requestIgnoreBatteryOptimizations();
                     resolve();

@@ -30,6 +30,7 @@ type props = {
   draftRecordings: DraftRecording[];
   draftImages?: DraftImage[];
   draftVideos?: DraftVideo[];
+  templateId?: string | null;
 };
 
 export async function saveActivitySession({
@@ -44,6 +45,7 @@ export async function saveActivitySession({
   draftRecordings,
   draftImages = [],
   draftVideos = [],
+  templateId = null,
 }: props) {
   const {
     data: { session },
@@ -63,58 +65,59 @@ export async function saveActivitySession({
   const uploadedVideos: { storage_path: string; thumbnail_storage_path: string; duration_ms: number }[] = [];
 
   try {
-    for (const recording of draftRecordings) {
-      const path = `${session.user.id}/${Crypto.randomUUID()}.m4a`;
+    // Upload all media in parallel for speed
+    const [recordingResults, imageResults, videoResults] = await Promise.all([
+      // Voice recordings
+      Promise.all(
+        draftRecordings.map(async (recording) => {
+          const path = `${session.user.id}/${Crypto.randomUUID()}.m4a`;
+          const file = new File(recording.uri);
+          const bytes = await file.bytes();
+          const { error: uploadError } = await supabase.storage
+            .from("notes-voice")
+            .upload(path, bytes, { contentType: "audio/m4a" });
+          if (uploadError) throw uploadError;
+          return { storage_path: path, duration_ms: recording.durationMs };
+        }),
+      ),
+      // Images
+      Promise.all(
+        draftImages.map(async (image) => {
+          const ext = image.uri.split(".").pop()?.toLowerCase() ?? "jpg";
+          const mimeType = ext === "png" ? "image/png" : ext === "webp" ? "image/webp" : "image/jpeg";
+          const path = `${session.user.id}/${Crypto.randomUUID()}.${ext}`;
+          const file = new File(image.uri);
+          const bytes = await file.bytes();
+          const { error: uploadError } = await supabase.storage
+            .from("notes-images")
+            .upload(path, bytes, { contentType: mimeType });
+          if (uploadError) throw uploadError;
+          return { storage_path: path };
+        }),
+      ),
+      // Videos (video + thumbnail uploaded in parallel per video)
+      Promise.all(
+        draftVideos.map(async (video) => {
+          const videoPath = `${session.user.id}/${Crypto.randomUUID()}.mp4`;
+          const thumbPath = `${session.user.id}/${Crypto.randomUUID()}-thumb.jpg`;
+          const [videoBytes, thumbBytes] = await Promise.all([
+            new File(video.uri).bytes(),
+            new File(video.thumbnailUri).bytes(),
+          ]);
+          const [videoUpload, thumbUpload] = await Promise.all([
+            supabase.storage.from("media-videos").upload(videoPath, videoBytes, { contentType: "video/mp4" }),
+            supabase.storage.from("media-videos").upload(thumbPath, thumbBytes, { contentType: "image/jpeg" }),
+          ]);
+          if (videoUpload.error) throw videoUpload.error;
+          if (thumbUpload.error) throw thumbUpload.error;
+          return { storage_path: videoPath, thumbnail_storage_path: thumbPath, duration_ms: video.durationMs };
+        }),
+      ),
+    ]);
 
-      const file = new File(recording.uri);
-      const bytes = await file.bytes();
-
-      const { error: uploadError } = await supabase.storage
-        .from("notes-voice")
-        .upload(path, bytes, {
-          contentType: "audio/m4a",
-        });
-
-      if (uploadError) {
-        throw uploadError;
-      }
-
-      uploadedRecordings.push({
-        storage_path: path,
-        duration_ms: recording.durationMs,
-      });
-    }
-
-    for (const image of draftImages) {
-      const ext = image.uri.split(".").pop()?.toLowerCase() ?? "jpg";
-      const mimeType = ext === "png" ? "image/png" : ext === "webp" ? "image/webp" : "image/jpeg";
-      const path = `${session.user.id}/${Crypto.randomUUID()}.${ext}`;
-      const file = new File(image.uri);
-      const bytes = await file.bytes();
-      const { error: uploadError } = await supabase.storage
-        .from("notes-images")
-        .upload(path, bytes, { contentType: mimeType });
-      if (uploadError) throw uploadError;
-      uploadedImages.push({ storage_path: path });
-    }
-
-    for (const video of draftVideos) {
-      const videoPath = `${session.user.id}/${Crypto.randomUUID()}.mp4`;
-      const thumbPath = `${session.user.id}/${Crypto.randomUUID()}-thumb.jpg`;
-      const videoFile = new File(video.uri);
-      const videoBytes = await videoFile.bytes();
-      const { error: videoUploadError } = await supabase.storage
-        .from("media-videos")
-        .upload(videoPath, videoBytes, { contentType: "video/mp4" });
-      if (videoUploadError) throw videoUploadError;
-      const thumbFile = new File(video.thumbnailUri);
-      const thumbBytes = await thumbFile.bytes();
-      const { error: thumbUploadError } = await supabase.storage
-        .from("media-videos")
-        .upload(thumbPath, thumbBytes, { contentType: "image/jpeg" });
-      if (thumbUploadError) throw thumbUploadError;
-      uploadedVideos.push({ storage_path: videoPath, thumbnail_storage_path: thumbPath, duration_ms: video.durationMs });
-    }
+    uploadedRecordings.push(...recordingResults);
+    uploadedImages.push(...imageResults);
+    uploadedVideos.push(...videoResults);
 
     const normalizedTrack = track.map((point) => ({
       ...point,
@@ -135,6 +138,7 @@ export async function saveActivitySession({
         p_draftrecordings: uploadedRecordings,
         p_images: uploadedImages,
         p_videos: uploadedVideos,
+        p_template_id: templateId,
       },
     );
 
@@ -148,7 +152,7 @@ export async function saveActivitySession({
       throw new Error("Error saving activity session");
     }
 
-    return { success: true };
+    return { success: true, sessionId: sessionId as string };
   } catch (error) {
     // cleanup orphaned uploads
     if (uploadedRecordings.length > 0) {

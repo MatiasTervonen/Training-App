@@ -125,6 +125,9 @@ export default function SessionFeed({ expandReminderId }: SessionFeedProps) {
     activityVoiceRecordings,
     activityVoiceError,
     isLoadingActivityVoice,
+    activityMedia,
+    activityMediaError,
+    isLoadingActivityMedia,
     notesSessionFull,
     notesSessionError,
     isLoadingNotesSession,
@@ -340,6 +343,9 @@ export default function SessionFeed({ expandReminderId }: SessionFeedProps) {
                     voiceRecordings={activityVoiceRecordings}
                     isLoadingVoice={isLoadingActivityVoice}
                     voiceError={activityVoiceError}
+                    media={activityMedia}
+                    isLoadingMedia={isLoadingActivityMedia}
+                    mediaError={activityMediaError}
                   />
                 )
               )}

@@ -136,7 +136,8 @@
       "save": "Save",
       "savingTemplate": "Saving template...",
       "recordings": "Recordings",
-      "voiceLoadError": "Failed to load voice recordings."
+      "voiceLoadError": "Failed to load voice recordings.",
+      "mediaLoadError": "Failed to load media."
     },
     "sessionStats": {
       "duration": "Duration",

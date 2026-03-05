@@ -6,6 +6,7 @@ export type ActivitySessionSummary = {
   date: string;
   duration: number;
   activityName: string | null;
+  activitySlug: string | null;
   hasRoute: boolean;
   route: FullActivitySession["route"];
   distance: number | null;

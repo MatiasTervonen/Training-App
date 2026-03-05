@@ -13,6 +13,10 @@ import {
   ActivityVoiceRecording,
 } from "@/database/activities/get-activity-voice-recordings";
 import {
+  getActivitySessionMedia,
+  ActivitySessionMedia,
+} from "@/database/activities/get-activity-session-media";
+import {
   getFullWeightSession,
   FullWeightSession,
 } from "@/database/weight/get-full-weight";
@@ -77,6 +81,16 @@ export default function useFullSessions(
 
   const activityHasVoice = activityItem && activityVoiceCount > 0;
   const activityVoiceId = activityHasVoice ? getId(activityItem) : null;
+
+  // Only fetch activity media (images/videos) if there are any
+  const activityExtra = activityItem?.extra_fields as
+    | { voice_count?: number; "image-count"?: number; "video-count"?: number }
+    | undefined;
+  const activityImageCount = activityExtra?.["image-count"] ?? 0;
+  const activityVideoCount = activityExtra?.["video-count"] ?? 0;
+
+  const activityHasMedia = activityItem && (activityImageCount > 0 || activityVideoCount > 0);
+  const activityMediaId = activityHasMedia ? getId(activityItem) : null;
 
   // Only fetch notes if there are voice recordings
   const notesItem =
@@ -168,6 +182,16 @@ export default function useFullSessions(
   });
 
   const {
+    data: activityMedia,
+    error: activityMediaError,
+    isLoading: isLoadingActivityMedia,
+  } = useQuery<ActivitySessionMedia>({
+    queryKey: ["activitySessionMedia", activityMediaId],
+    queryFn: async () => await getActivitySessionMedia(activityMediaId!),
+    enabled: !!activityMediaId,
+  });
+
+  const {
     data: notesSessionFull,
     error: notesSessionError,
     isLoading: isLoadingNotesSession,
@@ -214,6 +238,9 @@ export default function useFullSessions(
     activityVoiceRecordings,
     activityVoiceError,
     isLoadingActivityVoice,
+    activityMedia,
+    activityMediaError,
+    isLoadingActivityMedia,
     notesSessionFull,
     notesSessionError,
     isLoadingNotesSession,

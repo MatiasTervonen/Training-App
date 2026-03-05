@@ -337,11 +337,6 @@ export default function StartActivityScreen() {
     setIsSaving,
     resetSession,
     activityName,
-    baseMet,
-    userWeight,
-    movingTimeSeconds,
-    averagePacePerKm,
-    averageSpeed,
   });
 
   // when point arrives add it to the track and persist it to the database

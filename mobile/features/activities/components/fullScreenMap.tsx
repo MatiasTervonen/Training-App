@@ -1,5 +1,5 @@
-import { ActivityIndicator, Animated, View } from "react-native";
-import Mapbox, { AnimatedPoint } from "@rnmapbox/maps";
+import { ActivityIndicator, View } from "react-native";
+import Mapbox from "@rnmapbox/maps";
 import AnimatedButton from "../../../components/buttons/animatedButton";
 import { CircleX, Layers2, MapPin, NotebookPen } from "lucide-react-native";
 import SessionStats from "./sessionStats";
@@ -120,36 +120,13 @@ export default function FullScreenMap({
 
   const userPosition = currentPosition ?? lastPoint;
 
-  const animatedUserPoint = useRef(
-    new AnimatedPoint({ type: "Point", coordinates: [0, 0] })
-  ).current;
-  const hasInitialPosition = useRef(false);
-
-  useEffect(() => {
-    if (!userPosition) return;
-    const coords = [userPosition.longitude, userPosition.latitude];
-
-    if (!hasInitialPosition.current) {
-      // First position — snap immediately, no animation
-      animatedUserPoint.setValue({ type: "Point", coordinates: coords });
-      hasInitialPosition.current = true;
-    } else {
-      // Subsequent updates — animate smoothly with short duration
-      // so the dot stays close to the track head at higher speeds
-      Animated.parallel([
-        Animated.timing(animatedUserPoint.longitude, {
-          toValue: coords[0],
-          duration: 500,
-          useNativeDriver: false,
-        }),
-        Animated.timing(animatedUserPoint.latitude, {
-          toValue: coords[1],
-          duration: 500,
-          useNativeDriver: false,
-        }),
-      ]).start();
-    }
-  }, [userPosition?.longitude, userPosition?.latitude, animatedUserPoint, userPosition]);
+  const userPointShape = useMemo(() => {
+    if (!userPosition) return null;
+    return {
+      type: "Point" as const,
+      coordinates: [userPosition.longitude, userPosition.latitude],
+    };
+  }, [userPosition]);
 
   const toggleMapStyle = () => {
     setMapStyle((prev) => {
@@ -231,8 +208,8 @@ export default function FullScreenMap({
             </Mapbox.ShapeSource>
           )}
 
-          {hasInitialPosition.current && (
-            <Mapbox.ShapeSource id="user-location" shape={animatedUserPoint as any}>
+          {userPointShape && (
+            <Mapbox.ShapeSource id="user-location" shape={userPointShape}>
               <Mapbox.CircleLayer
                 id="user-dot-outer-blur"
                 aboveLayerID="track-core"

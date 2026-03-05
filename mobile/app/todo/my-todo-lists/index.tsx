@@ -60,6 +60,7 @@ export default function MyTodoListsScreen() {
     todoSessionError,
     isLoadingTodoSession,
     refetchFullTodo,
+    todoMediaFull,
   } = useFullSessions(expandedItem, editingItem);
 
   const handleSave = (updatedItem: FeedItemUI) => {
@@ -179,6 +180,7 @@ export default function MyTodoListsScreen() {
                   setHasUnsavedExpandedChanges(false);
                 }}
                 onDirtyChange={setHasUnsavedExpandedChanges}
+                taskMedia={todoMediaFull}
               />
             )
           )}
@@ -215,6 +217,7 @@ export default function MyTodoListsScreen() {
                   setEditingItem(null);
                 }}
                 onDirtyChange={setHasUnsavedChanges}
+                taskMedia={todoMediaFull}
               />
             )
           )}

@@ -131,6 +131,7 @@ export default function SessionFeed({ expandReminderId }: SessionFeedProps) {
     weightSessionFull,
     weightSessionError,
     isLoadingWeightSession,
+    todoMediaFull,
   } = useFullSessions(expandedItem, editingItem);
 
   // useUpdateFeedItem hook to update feed item in cache
@@ -295,6 +296,7 @@ export default function SessionFeed({ expandReminderId }: SessionFeedProps) {
                       setHasUnsavedExpandedChanges(false);
                     }}
                     onDirtyChange={setHasUnsavedExpandedChanges}
+                    taskMedia={todoMediaFull}
                   />
                 )
               )}
@@ -424,6 +426,7 @@ export default function SessionFeed({ expandReminderId }: SessionFeedProps) {
                       setEditingItem(null);
                     }}
                     onDirtyChange={setHasUnsavedChanges}
+                    taskMedia={todoMediaFull}
                   />
                 )
               )}

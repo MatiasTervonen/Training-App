@@ -4,6 +4,7 @@ import AnimatedButton from "@/components/buttons/animatedButton";
 import { StatItem } from "@/features/activities/lib/activityShareCardUtils";
 import Toast from "react-native-toast-message";
 import { useTranslation } from "react-i18next";
+import * as Haptics from "expo-haptics";
 
 type StatToggleChipsProps = {
   availableStats: StatItem[];
@@ -37,6 +38,7 @@ export default function StatToggleChips({
       return;
     }
 
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     onToggle(key);
   };
 

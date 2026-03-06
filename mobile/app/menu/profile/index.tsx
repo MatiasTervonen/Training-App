@@ -107,7 +107,7 @@ export default function ProfileScreen() {
       } as any);
 
       const response = await fetch(
-        `${process.env.EXPO_PUBLIC_API_URL}/api/settings/save-profilePic`,
+        `${process.env.EXPO_PUBLIC_API_URL_PROD}/api/settings/save-profilePic-mobile`,
         {
           method: "POST",
           headers: {
@@ -124,7 +124,8 @@ export default function ProfileScreen() {
       }
 
       return `${result.publicUrl}?v=${Date.now()}`;
-    } catch {
+    } catch (error) {
+      console.error("Error uploading profile picture:", error);
       Toast.show({
         type: "error",
         text1: t("common.error"),

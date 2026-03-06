@@ -5,6 +5,7 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import { useEffect } from "react";
+import * as Haptics from "expo-haptics";
 
 interface ToggleProps {
   isOn: boolean;
@@ -30,7 +31,7 @@ export default function Toggle({ isOn, onToggle, disabled }: ToggleProps) {
   }));
 
   return (
-    <Pressable onPress={onToggle} hitSlop={10} disabled={disabled}>
+    <Pressable onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); onToggle(); }} hitSlop={10} disabled={disabled}>
       <Animated.View
         style={animatedStyleBg}
         className={`rounded-full border-2 border-gray-300 w-[48px] h-[24px] transition-colors p-0.5 flex items-center   justify-center`}

@@ -93,12 +93,14 @@ export default function ProfilePicture({ data, onFileSelected }: Props) {
         />
       </View>
       <Pressable onPress={pickImage}>
-        <AppInput
-          placeholderTextColor={"#f3f4f6"}
-          editable={false}
-          placeholder={t("profile.profilePicturePlaceholder")}
-          value={userPickedImage ? fileName : ""}
-        />
+        <View pointerEvents="none">
+          <AppInput
+            placeholderTextColor={"#f3f4f6"}
+            editable={false}
+            placeholder={t("profile.profilePicturePlaceholder")}
+            value={userPickedImage ? fileName : ""}
+          />
+        </View>
       </Pressable>
     </>
   );

@@ -13,6 +13,7 @@ import { Confetti } from "react-native-fast-confetti";
 import { useTranslation } from "react-i18next";
 import { useState, useCallback, useMemo, useRef, useEffect } from "react";
 import { Plus } from "lucide-react-native";
+import * as Haptics from "expo-haptics";
 
 function getMonthRange(year: number, month: number) {
   const start = `${year}-${String(month + 1).padStart(2, "0")}-01`;
@@ -48,6 +49,7 @@ export default function HabitsScreen() {
   useEffect(() => {
     if (allDoneToday && !hasShownConfetti.current) {
       hasShownConfetti.current = true;
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       setShowConfetti(true);
       setTimeout(() => setShowConfetti(false), 3000);
     } else if (!allDoneToday) {

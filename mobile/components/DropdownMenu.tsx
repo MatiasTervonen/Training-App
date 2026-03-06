@@ -8,6 +8,7 @@ import {
 } from "react-native-popup-menu";
 import AppText from "@/components/AppText";
 import { useTranslation } from "react-i18next";
+import * as Haptics from "expo-haptics";
 
 type DropdownMenuProps = {
   button: React.ReactNode;
@@ -34,7 +35,7 @@ export default function DropdownMenu({
 
   return (
     <View>
-      <Menu>
+      <Menu onOpen={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)}>
         <MenuTrigger
           customStyles={{
             triggerWrapper: {

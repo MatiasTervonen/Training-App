@@ -17,7 +17,7 @@
 - Never write custom button styles — use existing ones from `app/components/buttons`.
 
 ## Buttons
-- Always use `AnimatedButton` instead of `Pressable` — never use raw `Pressable`.
+- Always use `AnimatedButton` instead of `Pressable` for buttons — never use raw `Pressable` as a button.
 - Always check `app/components/buttons` for existing buttons before creating new ones.
 - If no matching button exists, use `AnimatedButton` with the correct style class.
 - Use `btn-base` for standard buttons, `btn-danger` for delete/cancel actions, `btn-neutral` for neutral actions.
@@ -29,7 +29,7 @@
 - Always check `app/components` for existing components before creating new ones.
 
 ## Keyboard
-- On pages with text inputs, always wrap content with `<Pressable onPress={Keyboard.dismiss}>` so the keyboard dismisses when tapping outside.
+- On pages with text inputs, always wrap the page content with `<Pressable onPress={Keyboard.dismiss} className="flex-1">` so the keyboard dismisses when tapping outside. Never use `TouchableWithoutFeedback` — always use `Pressable`.
 
 ## Imports
 - Always use absolute paths when importing — never use relative paths.

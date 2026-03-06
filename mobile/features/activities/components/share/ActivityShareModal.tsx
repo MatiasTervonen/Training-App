@@ -17,6 +17,7 @@ import ToastMessage from "react-native-toast-message";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
 import { toastConfig } from "@/lib/config/toast";
 import { useTranslation } from "react-i18next";
+import * as Haptics from "expo-haptics";
 import Mapbox from "@rnmapbox/maps";
 
 const OFFSCREEN_STYLE = { left: -9999, width: 960, height: 480 };
@@ -144,6 +145,7 @@ export default function ActivityShareModal({
   );
 
   const handleShare = async () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     const success = await shareCard();
     if (!success) {
       onClose();

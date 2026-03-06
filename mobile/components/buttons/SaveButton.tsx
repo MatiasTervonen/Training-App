@@ -1,5 +1,6 @@
 import AnimatedButton from "@/components/buttons/animatedButton";
 import { useTranslation } from "react-i18next";
+import * as Haptics from "expo-haptics";
 
 type SaveButtonProps = {
   onPress: () => void;
@@ -18,7 +19,7 @@ export default function SaveButton({
     <AnimatedButton
       className="btn-base"
       label={label ?? t("common.save")}
-      onPress={onPress}
+      onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); onPress(); }}
       textClassName="text-gray-100 text-center"
       disabled={disabled}
     />

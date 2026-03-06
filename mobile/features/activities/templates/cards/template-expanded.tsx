@@ -62,7 +62,11 @@ export default function ActivityTemplateExpanded({
           )}
         </View>
         <View className="mt-10">
-          <Map template={item} setScrollEnabled={setScrollEnabled} setSwipeEnabled={setSwipeEnabled} />
+          <Map
+            template={item}
+            setScrollEnabled={setScrollEnabled}
+            setSwipeEnabled={setSwipeEnabled}
+          />
         </View>
         <View className="mt-10">
           <SaveButtonSpinner

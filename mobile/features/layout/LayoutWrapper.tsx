@@ -150,8 +150,12 @@ export default function LayoutWrapper({
           return;
         }
 
-        // SIGNED_IN, SIGNED_OUT, TOKEN_REFRESHED
-        handleSessionChange(session);
+        if (event === "SIGNED_IN") {
+          handleSessionChange(session);
+        } else {
+          // TOKEN_REFRESHED, SIGNED_OUT — no redirect
+          handleSessionChange(session, true);
+        }
       },
     );
 

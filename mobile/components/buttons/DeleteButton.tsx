@@ -1,6 +1,7 @@
 import AnimatedButton from "@/components/buttons/animatedButton";
 import { Alert } from "react-native";
 import { useTranslation } from "react-i18next";
+import * as Haptics from "expo-haptics";
 
 type DeleteButtonProps = {
   onPress: () => void;
@@ -16,6 +17,7 @@ export default function DeleteButton({
   const { t } = useTranslation("common");
 
   const handleDelete = () => {
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
     if (confirm) {
       Alert.alert(
         t("deleteButton.confirmDeleteTitle"),

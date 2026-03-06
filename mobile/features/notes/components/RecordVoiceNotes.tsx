@@ -13,6 +13,7 @@ import { useState } from "react";
 import { formatDurationNotesVoice } from "@/lib/formatDate";
 import { useConfirmAction } from "@/lib/confirmAction";
 import { useTranslation } from "react-i18next";
+import * as Haptics from "expo-haptics";
 
 type RecordVoiceNotesProps = {
   onRecordingComplete: (uri: string, durationMs?: number) => void;
@@ -53,6 +54,7 @@ export default function RecordVoiceNotes({
     }
 
     if (recorderState.isRecording) {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
       await audioRecorder.pause();
       setIsPaused(true);
       return;
@@ -75,11 +77,13 @@ export default function RecordVoiceNotes({
     });
 
     await audioRecorder.prepareToRecordAsync();
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     audioRecorder.record();
     setIsPaused(false);
   };
 
   const stopRecording = async () => {
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     // The recording will be available on `audioRecorder.uri`.
     await audioRecorder.stop();
     setIsPaused(false);

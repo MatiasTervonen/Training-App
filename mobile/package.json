@@ -10,7 +10,7 @@
     "web": "expo start --web",
     "lint": "expo lint",
     "android:reset": "rimraf android && npx expo prebuild --clean && pnpm exec expo run:android",
-    "gen:types": "npx supabase gen types typescript --project-id gqcqrstelckkkhhunchm --schema public > types/database.types.ts",
+    "gen:types": "pnpm dlx supabase gen types typescript --project-id gqcqrstelckkkhhunchm --schema public > types/database.types.ts",
     "gen:routes": "npx expo customize tsconfig.json",
     "postinstall": "rimraf node_modules/echarts/node_modules/tslib && rimraf node_modules/zrender/node_modules/tslib"
   },
@@ -75,6 +75,7 @@
     "react-i18next": "^16.5.4",
     "react-native": "0.81.5",
     "react-native-android-widget": "^0.20.1",
+    "react-native-big-calendar": "^4.19.0",
     "react-native-css-interop": "^0.2.1",
     "react-native-date-picker": "^5.0.13",
     "react-native-draggable-flatlist": "^4.0.3",

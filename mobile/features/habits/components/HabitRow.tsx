@@ -3,7 +3,6 @@ import AppText from "@/components/AppText";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import Toggle from "@/components/toggle";
 import { Habit } from "@/types/habit";
-import * as Haptics from "expo-haptics";
 
 type HabitRowProps = {
   habit: Habit;
@@ -30,7 +29,7 @@ export default function HabitRow({
       </AppText>
       <Toggle
         isOn={isCompleted}
-        onToggle={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); onToggle(); }}
+        onToggle={onToggle}
       />
     </AnimatedButton>
   );

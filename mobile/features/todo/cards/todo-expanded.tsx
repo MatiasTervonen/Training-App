@@ -26,6 +26,7 @@ import PageContainer from "@/components/PageContainer";
 import CopyText from "@/components/CopyToClipboard";
 import { FeedItemUI } from "@/types/session";
 import { useTranslation } from "react-i18next";
+import * as Haptics from "expo-haptics";
 import { TodoTaskMedia } from "@/database/todo/get-todo-media";
 import { DraftRecordingItem } from "@/features/notes/components/draftRecording";
 import DraftImageItem from "@/features/notes/components/DraftImageItem";
@@ -235,7 +236,7 @@ export default function TodoSession({
                   return (
                     <ScaleDecorator activeScale={1.07}>
                       <TouchableOpacity
-                        onLongPress={drag}
+                        onLongPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); drag(); }}
                         delayLongPress={300}
                         activeOpacity={0.7}
                         style={{
@@ -246,6 +247,7 @@ export default function TodoSession({
                           <Checkbox
                             hitSlop={20}
                             onValueChange={() => {
+                              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                               toggleCompleted(task.id);
                             }}
                             value={task.is_completed}

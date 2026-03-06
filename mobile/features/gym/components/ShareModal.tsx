@@ -9,6 +9,7 @@ import { ExerciseEntry } from "@/types/session";
 import { Share2 } from "lucide-react-native";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
 import { useTranslation } from "react-i18next";
+import * as Haptics from "expo-haptics";
 
 type ShareModalProps = {
   visible: boolean;
@@ -70,6 +71,7 @@ export default function ShareModal({
   );
 
   const handleShare = async () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     const success = await shareCard();
     if (!success) {
       onClose();

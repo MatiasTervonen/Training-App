@@ -17,6 +17,7 @@ import {
 } from "@/native/android/NativeAlarm";
 import { startNativeTimer } from "@/native/android/NativeTimer";
 import { useTranslation } from "react-i18next";
+import * as Haptics from "expo-haptics";
 
 type TimerProps = {
   className?: string;
@@ -81,6 +82,7 @@ export default function Timer({
 
   const handleStart = () => {
     if (!remainingMs) return;
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 
     if (paused) {
       resumeTimer("Timer");
@@ -90,6 +92,7 @@ export default function Timer({
   };
 
   const handlePause = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     pauseTimer();
   };
 
@@ -140,6 +143,7 @@ export default function Timer({
               className="btn-danger"
               textClassName="text-gray-100"
               onPress={() => {
+                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
                 onStopAlarmSound?.();
                 stopNativeAlarm();
                 cancelNativeAlarm("timer");

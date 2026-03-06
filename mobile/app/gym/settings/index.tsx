@@ -3,7 +3,6 @@ import { View, Keyboard, Pressable } from "react-native";
 import AppText from "@/components/AppText";
 import AppInput from "@/components/AppInput";
 import Toggle from "@/components/toggle";
-import ModalPageWrapper from "@/components/ModalPageWrapper";
 import PageContainer from "@/components/PageContainer";
 import { useGymSettingsStore } from "@/lib/stores/gymSettingsStore";
 import { useTranslation } from "react-i18next";
@@ -39,7 +38,6 @@ export default function GymSettingsScreen() {
   };
 
   return (
-    <ModalPageWrapper>
       <Pressable className="flex-1" onPress={Keyboard.dismiss}>
         <PageContainer>
           <AppText className="text-2xl text-center my-5">
@@ -77,6 +75,5 @@ export default function GymSettingsScreen() {
           </View>
         </PageContainer>
       </Pressable>
-    </ModalPageWrapper>
   );
 }

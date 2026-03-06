@@ -1,4 +1,9 @@
-import { View, TouchableWithoutFeedback, Keyboard, ScrollView } from "react-native";
+import {
+  View,
+  Pressable,
+  Keyboard,
+  ScrollView,
+} from "react-native";
 import AppText from "@/components/AppText";
 import AppInput from "@/components/AppInput";
 import SelectInput from "@/components/Selectinput";
@@ -120,8 +125,8 @@ export default function FeedbackScreen() {
   };
 
   return (
-    <ModalPageWrapper>
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+    <>
+      <Pressable onPress={Keyboard.dismiss} accessible={false} className="flex-1">
         <PageContainer className="justify-between">
           <ScrollView showsVerticalScrollIndicator={false} className="flex-1">
             <AppText className="text-2xl text-center mb-10">
@@ -183,7 +188,7 @@ export default function FeedbackScreen() {
             />
           </View>
         </PageContainer>
-      </TouchableWithoutFeedback>
+      </Pressable>
       <FullScreenLoader
         visible={isSending}
         message={t("menu:feedback.sending")}
@@ -196,6 +201,6 @@ export default function FeedbackScreen() {
           onClose={() => setViewerIndex(-1)}
         />
       )}
-    </ModalPageWrapper>
+    </>
   );
 }

@@ -2,7 +2,6 @@ import { View } from "react-native";
 import Mapbox from "@rnmapbox/maps";
 import AppText from "@/components/AppText";
 import AnimatedButton from "@/components/buttons/animatedButton";
-import ModalPageWrapper from "@/components/ModalPageWrapper";
 import PageContainer from "@/components/PageContainer";
 import { useActivitySettingsStore } from "@/lib/stores/activitySettingsStore";
 import { MAP_STYLES, LINE_COLORS } from "@/features/activities/lib/mapConstants";
@@ -57,7 +56,6 @@ export default function ActivitySettingsScreen() {
   const lineColor = LINE_COLORS[defaultLineColorIndex];
 
   return (
-    <ModalPageWrapper>
       <PageContainer>
         <AppText className="text-2xl text-center mb-10">
           {t("activities.settings.title")}
@@ -179,6 +177,5 @@ export default function ActivitySettingsScreen() {
           </View>
         </View>
       </PageContainer>
-    </ModalPageWrapper>
   );
 }

@@ -9,6 +9,8 @@
     "loadingActivity": "Loading activity session details...",
     "activityError": "Failed to load activity session details. Please try again later.",
     "loadingNotes": "Loading notes session...",
+    "loadingReport": "Loading report...",
+    "reportError": "Failed to load report",
     "card": {
       "details": "Details",
       "updated": "updated:",
@@ -33,7 +35,8 @@
         "gym": "Gym",
         "notes": "Notes",
         "reminder": "Reminder",
-        "habits": "Habits"
+        "habits": "Habits",
+        "report": "Report"
       }
     },
     "loadingMore": "Loading more...",

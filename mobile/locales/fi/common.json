@@ -40,7 +40,8 @@
     "bodyWeight": "Paino",
     "todoList": "Tehtävälista",
     "reminders": "Muistutukset",
-    "habits": "Tavat"
+    "habits": "Tavat",
+    "reports": "Raportit"
   },
   "deleteButton": {
     "confirmDeleteTitle": "Vahvista poisto",

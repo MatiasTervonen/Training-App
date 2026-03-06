@@ -1,0 +1,83 @@
+{
+  "reports": {
+    "title": "Reports",
+    "yourReports": "Your Reports",
+    "noReports": "No reports yet",
+    "createFirst": "Create your first report to get periodic summaries",
+    "createReport": "Create Report",
+    "editReport": "Edit Report",
+    "maxReached": "Maximum 5 reports reached",
+    "quickAdd": "Quick Add",
+    "reportName": "Report Title",
+    "reportNamePlaceholder": "e.g. Weekly Report",
+    "include": "Include",
+    "features": {
+      "gym": "Gym",
+      "activities": "Activities",
+      "weight": "Weight",
+      "habits": "Habits",
+      "todo": "Todo"
+    },
+    "schedule": "Schedule",
+    "deliverOn": "Deliver on",
+    "deliveryTime": "Delivery time",
+    "scheduleTypes": {
+      "weekly": "Every week",
+      "biweekly": "Every 2 weeks",
+      "monthly": "Every month",
+      "quarterly": "Every 3 months"
+    },
+    "save": "Save",
+    "delete": "Delete Report",
+    "deleteConfirm": "Are you sure you want to delete this report schedule?",
+    "saved": "Report saved!",
+    "deleted": "Report deleted",
+    "errorSaving": "Failed to save report",
+    "errorDeleting": "Failed to delete report",
+    "atLeastOneFeature": "Select at least one feature",
+    "titleRequired": "Title is required",
+    "weekdays": {
+      "0": "Sunday",
+      "1": "Monday",
+      "2": "Tuesday",
+      "3": "Wednesday",
+      "4": "Thursday",
+      "5": "Friday",
+      "6": "Saturday"
+    },
+    "dayOfMonth": "Day {{day}} of month",
+    "expanded": {
+      "periodLabel": "{{start}} – {{end}}",
+      "sessions": "Sessions",
+      "totalDuration": "Duration",
+      "avgDuration": "Avg Duration",
+      "totalVolume": "Volume",
+      "totalCalories": "Calories",
+      "exercises": "Exercises",
+      "totalDistance": "Distance",
+      "totalSteps": "Steps",
+      "entries": "Entries",
+      "startWeight": "Start",
+      "endWeight": "End",
+      "weightChange": "Change",
+      "completionRate": "Rate",
+      "daysAllDone": "All Done",
+      "totalCompletions": "Completions",
+      "tasksCompleted": "Completed",
+      "tasksCreated": "Created",
+      "listsUpdated": "Updated"
+    },
+    "share": {
+      "share": "Share",
+      "sharing": "Sharing...",
+      "close": "Close",
+      "shareError": "Failed to share report",
+      "minFeature": "At least one feature required",
+      "showOnCard": "Show on card"
+    },
+    "presets": {
+      "weekly": "Weekly Report",
+      "monthly": "Monthly Report"
+    }
+  }
+}

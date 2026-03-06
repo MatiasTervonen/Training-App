@@ -2,6 +2,7 @@ import "@/lib/polyfillCrypto";
 import "react-native-url-polyfill/auto";
 import "./i18n";
 import "@/features/activities/lib/locationTask";
+import "@/features/habits/lib/habitNotificationTask";
 import "@/lib/nativewindInterop";
 import "./global.css";
 
@@ -36,7 +37,7 @@ import {
 } from "react-native-reanimated";
 import { toastConfig } from "@/lib/config/toast";
 import useNotificationResponse from "@/features/feed/hooks/useNotificationResponse";
-import useNotificationNavigation from "@/features/notifications/useNotificationNavigation";
+import { HabitBgSyncListener } from "@/features/habits/hooks/useHabitBgSync";
 import { useAppReadyStore } from "@/lib/stores/appReadyStore";
 import BootScreen from "@/features/feed/fakeFeedLoader";
 import SaveAreaInset from "@/features/layout/SaveAreaInset";
@@ -143,11 +144,9 @@ export default Sentry.wrap(function RootLayout() {
     resetFeedReady();
   }, [resetFeedReady]);
 
-  // handle notification response when app is opened from notification
+  // handle notification action buttons (snooze, mark done)
   useNotificationResponse();
 
-  // handle push notification taps for social notifications (friend requests, etc.)
-  useNotificationNavigation();
 
   // Subscribe to AppState changes for TanStack Query focus refetching
   useEffect(() => {
@@ -195,6 +194,7 @@ export default Sentry.wrap(function RootLayout() {
               <TimerFinishListener />
               <AlarmPlayingListener />
               <GlobalReminderSnoozedListener />
+              <HabitBgSyncListener />
               <StatusBar
                 barStyle="light-content"
                 backgroundColor="#020617"
@@ -208,6 +208,7 @@ export default Sentry.wrap(function RootLayout() {
               {pathname !== "/" &&
                 pathname !== "/login" &&
                 !pathname.startsWith("/onboarding") &&
+                !pathname.startsWith("/habits") &&
                 (!fontsLoaded || !feedReady) && <BootScreen />}
             </PaperProvider>
             <Toast config={toastConfig} position="top" />

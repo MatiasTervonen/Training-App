@@ -81,9 +81,44 @@ No changes needed to the notification infrastructure itself — the bell, hooks,
 - Each item shows an icon by type, relative time, and an unread dot indicator
 - Tapping a notification marks it as read and navigates to the relevant screen
 
-**Push Tap Handler** (`features/notifications/useNotificationNavigation.ts`)
-- Listens for `Notifications.addNotificationResponseReceivedListener`
-- Reads `data.type` from the push payload and navigates accordingly
+**Notification Action Buttons** (`features/feed/hooks/useNotificationResponse.ts`)
+- Listener for action buttons only: snooze and mark habit done
+- Called in `_layout.tsx`
+
+**Notification Tap Navigation** (`features/notifications/useNotificationNavigation.ts`)
+- Uses `useLastNotificationResponse()` hook + `clearLastNotificationResponse()` to handle tap-to-navigate
+- Route mapping in `features/notifications/getRouteForNotification.ts`
+- Called in `LayoutWrapper` with `sessionChecked` to wait for auth
+
+## Notification Tap Navigation
+
+### How It Works
+
+Two separate hooks handle notifications:
+
+1. `useNotificationResponse()` in `_layout.tsx` — handles action buttons (snooze, mark done) via `addNotificationResponseReceivedListener`
+2. `useNotificationNavigation(sessionChecked)` in `LayoutWrapper` — handles tap navigation via `useLastNotificationResponse()` hook
+
+**Preventing dashboard flash (cold start):**
+In `LayoutWrapper`'s `INITIAL_SESSION` handler, `getLastNotificationResponse()` (sync) checks if a notification tap will navigate. If yes, auth runs with `skipRedirect = true` so `/dashboard` is never loaded.
+
+**Navigation after auth:**
+`useNotificationNavigation` waits for `sessionChecked` to be true, then calls `router.push()` and `clearLastNotificationResponse()` to prevent re-handling.
+
+**Warm start:**
+The `useLastNotificationResponse()` hook fires immediately, `sessionChecked` is already true, so `router.push()` works instantly.
+
+### Key Files
+- `features/feed/hooks/useNotificationResponse.ts` — Action buttons only (snooze, mark done)
+- `features/notifications/useNotificationNavigation.ts` — Tap navigation with `useLastNotificationResponse()`
+- `features/notifications/getRouteForNotification.ts` — Route mapping (`habit` → `/habits`, `friend_request` → `/menu/friends`)
+- `features/layout/LayoutWrapper.tsx` — `INITIAL_SESSION` checks for notification to skip dashboard redirect
+
+### Rules
+1. Always call `clearLastNotificationResponse()` after handling — without it `useLastNotificationResponse()` causes infinite loops
+2. `useNotificationNavigation` must be in `LayoutWrapper` and receive `sessionChecked` — it must wait for auth
+3. Never use `notification.date` for freshness — it's delivery time, not tap time
+4. Local notification `data.url` is NOT picked up by `Linking.getInitialURL()` — deep linking doesn't work for local notifications
 
 ## Realtime
 

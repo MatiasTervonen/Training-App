@@ -6,8 +6,10 @@ import {
 import { useAppReadyStore } from "@/lib/stores/appReadyStore";
 import { useEffect, useRef, useCallback, useState } from "react";
 import { useRouter, usePathname } from "expo-router";
-import { Linking, Alert } from "react-native";
+import { Linking, Alert, View, ActivityIndicator } from "react-native";
+import * as Notifications from "expo-notifications";
 import { supabase } from "@/lib/supabase";
+import { getRouteForNotification } from "@/features/notifications/getRouteForNotification";
 import { Session } from "@supabase/supabase-js";
 import { fetchUserProfile } from "@/database/settings/get-user-profile";
 import ModalPageWrapper from "@/components/ModalPageWrapper";
@@ -15,6 +17,7 @@ import { useModalPageConfig } from "@/lib/stores/modalPageConfig";
 import { fetchUserSettings } from "@/database/settings/get-user-settings";
 import i18n from "@/app/i18n";
 import { useNotificationSubscription } from "@/features/notifications/hooks/useNotificationSubscription";
+import useNotificationNavigation from "@/features/notifications/useNotificationNavigation";
 
 export default function LayoutWrapper({
   children,
@@ -40,6 +43,9 @@ export default function LayoutWrapper({
 
   // Subscribe to realtime notifications for badge updates
   useNotificationSubscription();
+
+  // Handle notification tap navigation (waits for auth, prevents dashboard flash)
+  useNotificationNavigation(sessionChecked);
 
   const handleSessionChange = useCallback(
     async (session: Session | null, skipRedirect = false) => {
@@ -83,6 +89,8 @@ export default function LayoutWrapper({
         if (!skipRedirect && currentPathname !== "/dashboard") {
           router.replace("/dashboard");
         }
+
+        
       } catch {
         if (!profile || !settings) {
           Alert.alert(
@@ -109,12 +117,22 @@ export default function LayoutWrapper({
           // This replaces the separate getSession() call
           if (session) {
             const initialUrl = await Linking.getInitialURL();
+            const lastNotifResponse = Notifications.getLastNotificationResponse();
+
             const hasDeepLink =
               initialUrl != null &&
               initialUrl.startsWith("mytrack://") &&
               initialUrl.length > "mytrack://".length;
 
-            if (hasDeepLink) {
+            // Check if a notification tap will handle navigation
+            const hasNotificationNav =
+              lastNotifResponse?.actionIdentifier ===
+                Notifications.DEFAULT_ACTION_IDENTIFIER &&
+              !!getRouteForNotification(
+                lastNotifResponse?.notification.request.content.data,
+              );
+
+            if (hasDeepLink || hasNotificationNav) {
               await handleSessionChange(session, true);
               const settings = useUserStore.getState().settings;
               if (settings?.has_completed_onboarding === false) {
@@ -140,7 +158,8 @@ export default function LayoutWrapper({
     return () => {
       listener.subscription.unsubscribe();
     };
-  }, [hasHydrated, handleSessionChange, router]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasHydrated]);
 
   useEffect(() => {
     if (pathname !== "/dashboard") {
@@ -149,7 +168,11 @@ export default function LayoutWrapper({
   }, [pathname, setModalPageConfig]);
 
   if (!sessionChecked) {
-    return null;
+    return (
+      <View className="flex-1 justify-center items-center bg-slate-900">
+        <ActivityIndicator size="large" color="#9ca3af" />
+      </View>
+    );
   }
 
   const noModalRoutes = ["/", "/login"];

@@ -4,8 +4,10 @@ import {
   SNOOZE_ACTION_ID,
   SNOOZE_CATEGORY_ID,
   SNOOZE_DELAY_MS,
+  HABIT_DONE_ACTION_ID,
 } from "@/features/push-notifications/constants";
 import { supabase } from "@/lib/supabase";
+import { markHabitDone } from "@/database/habits/mark-habit-done";
 import { handleError } from "@/utils/handleError";
 
 export default function useNotificationResponse() {
@@ -13,10 +15,22 @@ export default function useNotificationResponse() {
     const sub = Notifications.addNotificationResponseReceivedListener(
       async (response) => {
         const actionId = response.actionIdentifier;
+        const { data } = response.notification.request.content;
+
+        // Mark habit as done from notification action button
+        if (actionId === HABIT_DONE_ACTION_ID && data?.habitId) {
+          const today = new Date().toISOString().split("T")[0];
+          markHabitDone(data.habitId as string, today);
+          Notifications.dismissNotificationAsync(
+            response.notification.request.identifier,
+          ).catch(() => {});
+          return;
+        }
+
         if (actionId !== SNOOZE_ACTION_ID) return;
 
         const notification = response.notification;
-        const { title, body, data } = notification.request.content;
+        const { title, body } = notification.request.content;
 
         // Dismiss current notification and schedule snooze in parallel
         await Promise.all([

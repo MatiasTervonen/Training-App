@@ -99,7 +99,7 @@ importers:
         specifier: ~14.0.9
         version: 14.0.10(expo@54.0.30)(react-native@0.81.5(@babel/core@7.28.5)(@react-native-community/cli@20.0.2(typescript@5.9.3))(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
       expo-haptics:
-        specifier: ~15.0.7
+        specifier: ~15.0.8
         version: 15.0.8(expo@54.0.30)
       expo-image:
         specifier: ~3.0.9

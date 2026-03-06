@@ -9,7 +9,7 @@
 - Button styles: `btn-base`, `btn-danger`, `btn-neutral` in `app/global.css`
 
 ## Page Structure
-- When creating a new page, always wrap it with `ModalPageWrapper`.
+- When creating a new page, always wrap it with `PageContainer`. Never use `ModalPageWrapper` directly — `LayoutWrapper` already handles that.
 
 ## Styling
 - Always use NativeWind (`className`) for styling — never use inline `style` props.

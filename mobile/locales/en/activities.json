@@ -85,7 +85,7 @@
       "cross_training": "Cross Training"
     },
     "analyticsScreen": {
-      "title": "Activity Analytics",
+      "title": "Analytics",
       "errorFetchingSteps": "Error fetching today's steps",
       "errorFetchingStepsDesc": "Unable to retrieve today's step count.",
       "today": "Today",
@@ -244,6 +244,19 @@
       "errorGeneric": "Please try again later",
       "successTitle": "Template saved",
       "successMessage": "Template has been saved successfully."
+    },
+    "stepsShare": {
+      "title": "Daily Steps",
+      "share": "Share",
+      "sharing": "Sharing...",
+      "save": "Save",
+      "saving": "Saving...",
+      "saveSuccess": "Steps chart saved to gallery",
+      "saveError": "Failed to save steps chart",
+      "shareError": "Failed to share steps chart",
+      "close": "Close",
+      "totalSteps": "Total Steps",
+      "dailyAvg": "Daily Avg"
     },
     "share": {
       "activityFinished": "Activity Finished",

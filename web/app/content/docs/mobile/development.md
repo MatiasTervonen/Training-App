@@ -24,3 +24,18 @@ Check if your device or emulator is connected and recognized by running the foll
 adb devices
 ```
 
+## Debug vs Release builds
+
+The Android build uses an `applicationIdSuffix ".dev"` for debug builds. This means:
+
+- **Release build**: `com.layer100crypto.MyTrack`
+- **Debug build**: `com.layer100crypto.MyTrack.dev`
+
+This allows both builds to be installed side by side on the same device. You can test new features with the dev build without overwriting your release build.
+
+### Firebase setup
+
+Both package names must be registered in the Firebase console as separate Android apps. The `google-services.json` file contains both client entries. If you ever re-download it from Firebase, make sure both apps are still registered.
+
+After updating `google-services.json` in the project root, you also need to copy it to `android/app/google-services.json` or run `npx expo prebuild` to regenerate it.
+

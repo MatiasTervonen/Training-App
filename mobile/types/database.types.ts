@@ -1002,6 +1002,86 @@ export type Database = {
           },
         ]
       }
+      habit_logs: {
+        Row: {
+          completed_date: string
+          created_at: string
+          habit_id: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          completed_date: string
+          created_at?: string
+          habit_id: string
+          id?: string
+          user_id?: string
+        }
+        Update: {
+          completed_date?: string
+          created_at?: string
+          habit_id?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "habit_logs_habit_id_fkey"
+            columns: ["habit_id"]
+            isOneToOne: false
+            referencedRelation: "habits"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "habit_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      habits: {
+        Row: {
+          created_at: string
+          frequency_days: number[] | null
+          id: string
+          is_active: boolean
+          name: string
+          reminder_time: string | null
+          sort_order: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          frequency_days?: number[] | null
+          id?: string
+          is_active?: boolean
+          name: string
+          reminder_time?: string | null
+          sort_order?: number
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          frequency_days?: number[] | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          reminder_time?: string | null
+          sort_order?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "habits_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       local_reminders: {
         Row: {
           created_at: string
@@ -1706,6 +1786,111 @@ export type Database = {
           },
         ]
       }
+      todo_task_images: {
+        Row: {
+          created_at: string
+          id: string
+          storage_path: string
+          task_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          storage_path: string
+          task_id: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          storage_path?: string
+          task_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "todo_task_images_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "todo_tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      todo_task_videos: {
+        Row: {
+          created_at: string
+          duration_ms: number | null
+          id: string
+          storage_path: string
+          task_id: string
+          thumbnail_storage_path: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          duration_ms?: number | null
+          id?: string
+          storage_path: string
+          task_id: string
+          thumbnail_storage_path?: string | null
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          duration_ms?: number | null
+          id?: string
+          storage_path?: string
+          task_id?: string
+          thumbnail_storage_path?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "todo_task_videos_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "todo_tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      todo_task_voice: {
+        Row: {
+          created_at: string
+          duration_ms: number | null
+          id: string
+          storage_path: string
+          task_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          duration_ms?: number | null
+          id?: string
+          storage_path: string
+          task_id: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          duration_ms?: number | null
+          id?: string
+          storage_path?: string
+          task_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "todo_task_voice_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "todo_tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       todo_tasks: {
         Row: {
           created_at: string
@@ -2091,6 +2276,7 @@ export type Database = {
           p_notes: string
           p_start_time: string
           p_steps: number
+          p_template_id?: string
           p_title: string
           p_track: Json
           p_videos?: Json
@@ -2215,6 +2401,11 @@ export type Database = {
       gym_save_template: {
         Args: { p_exercises: Json; p_name: string }
         Returns: string
+      }
+      habit_get_stats: { Args: { p_habit_id: string }; Returns: Json }
+      habit_toggle_log: {
+        Args: { p_date: string; p_habit_id: string }
+        Returns: boolean
       }
       last_30d_analytics: { Args: never; Returns: Json }
       notes_edit_note: {
@@ -2425,7 +2616,10 @@ export type Database = {
       }
       todo_edit_todo: {
         Args: {
-          p_deleted_ids: string[]
+          p_deleted_ids?: string[]
+          p_deleted_image_ids?: string[]
+          p_deleted_video_ids?: string[]
+          p_deleted_voice_ids?: string[]
           p_id: string
           p_tasks: Json
           p_title: string

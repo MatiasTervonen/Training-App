@@ -7,6 +7,7 @@ import {
   Bell,
   ListTodo,
   Activity,
+  CalendarCheck,
 } from "lucide-react-native";
 import LinkButton from "@/components/buttons/LinkButton";
 import PageContainer from "@/components/PageContainer";
@@ -43,6 +44,9 @@ export default function SessionsScreen() {
         </LinkButton>
         <LinkButton label={t("sessions.reminders")} href="/reminders">
           <Bell size={20} color="#f3f4f6" />
+        </LinkButton>
+        <LinkButton label={t("sessions.habits")} href="/habits">
+          <CalendarCheck size={20} color="#f3f4f6" />
         </LinkButton>
       </View>
     </PageContainer>

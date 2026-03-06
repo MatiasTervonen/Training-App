@@ -8,6 +8,8 @@ import { t } from "i18next";
 import {
   SNOOZE_CATEGORY_ID,
   SNOOZE_ACTION_ID,
+  HABIT_CATEGORY_ID,
+  HABIT_DONE_ACTION_ID,
 } from "@/features/push-notifications/constants";
 
 function handleRegistrationError(errorMessage: string) {
@@ -139,12 +141,21 @@ export async function configureNotificationChannels() {
 }
 
 export async function configureNotificationCategories() {
-  await Notifications.setNotificationCategoryAsync(SNOOZE_CATEGORY_ID, [
-    {
-      identifier: SNOOZE_ACTION_ID,
-      buttonTitle: t("reminders:reminders.notification.snooze"),
-      options: { opensAppToForeground: false },
-    },
+  await Promise.all([
+    Notifications.setNotificationCategoryAsync(SNOOZE_CATEGORY_ID, [
+      {
+        identifier: SNOOZE_ACTION_ID,
+        buttonTitle: t("reminders:reminders.notification.snooze"),
+        options: { opensAppToForeground: false },
+      },
+    ]),
+    Notifications.setNotificationCategoryAsync(HABIT_CATEGORY_ID, [
+      {
+        identifier: HABIT_DONE_ACTION_ID,
+        buttonTitle: t("habits:markAsDone"),
+        options: { opensAppToForeground: false },
+      },
+    ]),
   ]);
 }
 

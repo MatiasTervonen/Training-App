@@ -1,25 +1,21 @@
 import * as Notifications from "expo-notifications";
 import { useEffect } from "react";
-import { useRouter } from "expo-router";
+import { router } from "expo-router";
+import { getRouteForNotification } from "@/features/notifications/getRouteForNotification";
 
-export default function useNotificationNavigation() {
-  const router = useRouter();
+export default function useNotificationNavigation(sessionChecked: boolean) {
+  const lastResponse = Notifications.useLastNotificationResponse();
 
+  // Navigate after auth is done, then clear so the hook stops returning it
   useEffect(() => {
-    const sub = Notifications.addNotificationResponseReceivedListener(
-      (response) => {
-        const { data } = response.notification.request.content;
-        const actionId = response.actionIdentifier;
+    if (!sessionChecked || !lastResponse) return;
+    if (lastResponse.actionIdentifier !== Notifications.DEFAULT_ACTION_IDENTIFIER) return;
 
-        // Only handle default tap (not custom actions like snooze)
-        if (actionId !== Notifications.DEFAULT_ACTION_IDENTIFIER) return;
-
-        if (data?.type === "friend_request" || data?.type === "friend_accepted") {
-          router.push("/menu/friends");
-        }
-      },
-    );
-
-    return () => sub.remove();
-  }, [router]);
+    const { data } = lastResponse.notification.request.content;
+    const route = getRouteForNotification(data);
+    if (route) {
+      router.push(route);
+      Notifications.clearLastNotificationResponse();
+    }
+  }, [sessionChecked, lastResponse]);
 }

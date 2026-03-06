@@ -168,8 +168,8 @@ CREATE FUNCTION todo_edit_todo(
   p_id uuid,
   p_title text,
   p_tasks jsonb,
-  p_deleted_ids uuid[] DEFAULT '{}',
   p_updated_at timestamptz,
+  p_deleted_ids uuid[] DEFAULT '{}',
   p_deleted_voice_ids uuid[] DEFAULT '{}',
   p_deleted_image_ids uuid[] DEFAULT '{}',
   p_deleted_video_ids uuid[] DEFAULT '{}'

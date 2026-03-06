@@ -30,8 +30,18 @@ export default function FeedHeader({
           pinnedFeed={pinnedFeed}
           width={width}
           height={194.2}
-          onExpand={setExpandedItem}
+          onExpand={(feedItem) => {
+            if (feedItem.type === "habits") {
+              router.push("/habits");
+              return;
+            }
+            setExpandedItem(feedItem);
+          }}
           onEdit={(feedItem) => {
+            if (feedItem.type === "habits") {
+              router.push("/habits");
+              return;
+            }
             if (feedItem.type === "gym_sessions") {
               router.push(`/gym/gym/${feedItem.source_id}`);
             } else {

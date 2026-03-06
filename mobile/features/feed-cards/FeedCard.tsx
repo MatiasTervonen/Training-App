@@ -5,6 +5,7 @@ import LocalReminderCard from "@/features/reminders/cards/LocalReminderCard-feed
 import TodoCard from "@/features/todo/cards/todo-feed";
 import GlobalReminderCard from "@/features/reminders/cards/GlobalReminderCard-feed";
 import ActivityCard from "@/features/activities/cards/activity-feed";
+import HabitSummaryCard from "@/features/habits/cards/habit-feed";
 import { FeedCardProps } from "@/types/session";
 
 export default function FeedCard(props: FeedCardProps) {
@@ -34,5 +35,7 @@ export default function FeedCard(props: FeedCardProps) {
       return <TodoCard {...commomProps} />;
     case "activity_sessions":
       return <ActivityCard {...commomProps} />;
+    case "habits":
+      return <HabitSummaryCard {...commomProps} />;
   }
 }

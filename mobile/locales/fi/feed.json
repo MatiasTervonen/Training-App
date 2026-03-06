@@ -32,7 +32,8 @@
         "todo": "Tehtävä",
         "gym": "Kuntosali",
         "notes": "Muistiinpanot",
-        "reminder": "Muistutus"
+        "reminder": "Muistutus",
+        "habits": "Tavat"
       }
     },
     "loadingMore": "Ladataan lisää...",

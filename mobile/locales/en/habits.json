@@ -20,6 +20,9 @@
     "totalCompletions": "Total Completions",
     "days": "days"
   },
+  "feed": {
+    "streak": "{{count}} day streak"
+  },
   "seeFullHistory": "See Full History",
   "allDone": "All habits done!",
   "reminderBody": "Time to {{habitName}}!",

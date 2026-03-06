@@ -6,6 +6,7 @@ import * as Localization from "expo-localization";
 
 import * as en from "@/locales/en";
 import * as fi from "@/locales/fi";
+import { APP_NAME } from "@/lib/app-config";
 
 const resources = {
   en,
@@ -26,6 +27,7 @@ i18n
     fallbackLng: "en",
     interpolation: {
       escapeValue: false,
+      defaultVariables: { appName: APP_NAME },
     },
     react: {
       useSuspense: false,

@@ -7,6 +7,7 @@ import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useUserStore } from "@/lib/stores/useUserStore";
 import { saveOnboardingStatus } from "@/database/settings/save-onboarding-status";
+import { APP_NAME } from "@/lib/app-config";
 
 export default function WelcomeScreen() {
   const router = useRouter();
@@ -27,7 +28,7 @@ export default function WelcomeScreen() {
   return (
     <View className="flex-1 px-6 justify-center">
       <View className="items-center mb-12">
-        <AppText className="text-4xl mb-2">MyTrack</AppText>
+        <AppText className="text-4xl mb-2">{APP_NAME}</AppText>
       </View>
 
       <OnboardingProgressBar currentStep={0} />

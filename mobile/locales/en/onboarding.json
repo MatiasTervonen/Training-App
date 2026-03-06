@@ -1,6 +1,6 @@
 {
   "welcome": {
-    "title": "Welcome to MyTrack!",
+    "title": "Welcome to {{appName}}!",
     "body": "Let's get you set up. This takes about a minute. You can skip at any time — everything can be configured later in Settings.",
     "letsGo": "Let's go",
     "skip": "Skip, I'll set things up later"
@@ -48,7 +48,7 @@
   "complete": {
     "title": "You're all set!",
     "body": "You can always adjust your settings, permissions, and profile from the menu. Enjoy tracking!",
-    "start": "Start using MyTrack",
+    "start": "Start using {{appName}}",
     "summary": {
       "language": "Language",
       "notifications": "Notifications",

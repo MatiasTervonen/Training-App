@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { APP_NAME } from "@/lib/app-config";
 
 export default function Notes({ isActive }: { isActive: boolean }) {
   return (
@@ -11,8 +12,8 @@ export default function Notes({ isActive }: { isActive: boolean }) {
         <div className="flex flex-col  max-w-lg bg-slate-900 py-4 px-6 rounded-lg shadow-lg ">
           <p className="text-center rounded-xl lg:text-left text-md sm:text-lg">
             Keep track of your thoughts, ideas, and reminders with
-            MyTrack&apos;s Notes feature. Whether it&apos;s workout tips,
-            personal goals, or daily reminders, MyTrack helps you stay organized
+            {APP_NAME}&apos;s Notes feature. Whether it&apos;s workout tips,
+            personal goals, or daily reminders, {APP_NAME} helps you stay organized
             and focused.
           </p>
         </div>

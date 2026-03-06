@@ -8,6 +8,7 @@ import NotificationBell from "@/features/navbar/notificationBell";
 import { LinearGradient } from "expo-linear-gradient";
 import ActiveSessionPopup from "@/components/ActiveSessionPopup";
 import { useTranslation } from "react-i18next";
+import { APP_NAME } from "@/lib/app-config";
 
 export default function Navbar() {
   const { t } = useTranslation();
@@ -30,7 +31,7 @@ export default function Navbar() {
       >
         <Link href="/dashboard" asChild>
           <Pressable>
-            <AppText className="text-2xl pr-[1px]">MyTrack</AppText>
+            <AppText className="text-2xl pr-[1px]">{APP_NAME}</AppText>
           </Pressable>
         </Link>
         <View className="flex-row items-center gap-3">

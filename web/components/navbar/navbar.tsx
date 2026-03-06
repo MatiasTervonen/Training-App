@@ -9,6 +9,7 @@ import { useUserStore } from "@/lib/stores/useUserStore";
 import { useRouter } from "next/navigation";
 import ActiveSessionPopup from "@/components/activeSessionPopup";
 import { useTranslation } from "react-i18next";
+import { APP_NAME } from "@/lib/app-config";
 
 export default function Navbar() {
   const { t } = useTranslation("common");
@@ -26,7 +27,7 @@ export default function Navbar() {
     <div className={`w-full lg:max-w-[1600px] ${fullPage} sticky top-0 mx-auto z-50`}>
       <nav className="w-full flex items-center justify-between p-4 bg-linear-to-tr from-gray-900 via-slate-900 to-blue-900 shadow-lg">
         <Link href="/dashboard" className=" text-2xl sm:text-3xl">
-          MyTrack
+          {APP_NAME}
         </Link>
         <div className="flex gap-3 items-center">
           <NotificationBell />

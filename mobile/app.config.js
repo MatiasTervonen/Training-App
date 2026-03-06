@@ -1,11 +1,12 @@
 import "dotenv/config";
+import { APP_NAME } from "./lib/app-config";
 
 /** @type {import('react-native-android-widget').WithAndroidWidgetsParams} */
 const widgetConfig = {
   widgets: [
     {
       name: "QuickLinks",
-      label: "MyTrack Quick Links",
+      label: `${APP_NAME} Quick Links`,
       minWidth: "180dp",
       minHeight: "60dp",
       targetCellWidth: 3,
@@ -17,7 +18,7 @@ const widgetConfig = {
     },
     {
       name: "Steps",
-      label: "MyTrack Steps",
+      label: `${APP_NAME} Steps`,
       minWidth: "180dp",
       minHeight: "60dp",
       targetCellWidth: 2,
@@ -33,7 +34,7 @@ const widgetConfig = {
 
 export default {
   expo: {
-    name: "MyTrack",
+    name: APP_NAME,
     slug: "mytrack",
     version: "1.0.0",
     orientation: "default",
@@ -79,7 +80,7 @@ export default {
         "expo-location",
         {
           locationAlwaysAndWhenInUsePermission:
-            "Allow MyTrack to use your location.",
+            `Allow ${APP_NAME} to use your location.`,
           isAndroidBackgroundLocationEnabled: true,
         },
       ],

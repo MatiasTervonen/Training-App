@@ -161,7 +161,7 @@
     },
     "stepInfoModal": {
       "title": "Ota askelseuranta käyttöön",
-      "description": "MyTrack käyttää askeldataa Android Health Connectista näyttääkseen aktiviteettitietosi.\n\nOta askelpääsy käyttöön MyTrackille Health Connectin Käyttöoikeudet-kohdassa.",
+      "description": "{{appName}} käyttää askeldataa Android Health Connectista näyttääkseen aktiviteettitietosi.\n\nOta askelpääsy käyttöön {{appName}}ille Health Connectin Käyttöoikeudet-kohdassa.",
       "cancel": "Peruuta",
       "openSettings": "Avaa asetukset"
     },

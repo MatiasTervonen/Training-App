@@ -3,6 +3,7 @@ import { initReactI18next } from "react-i18next";
 
 import * as en from "./locales/en";
 import * as fi from "./locales/fi";
+import { APP_NAME } from "@/lib/app-config";
 
 const resources = {
   en,
@@ -19,6 +20,7 @@ i18n.use(initReactI18next).init({
   supportedLngs: supportedLangs,
   interpolation: {
     escapeValue: false,
+    defaultVariables: { appName: APP_NAME },
   },
   react: {
     useSuspense: false,

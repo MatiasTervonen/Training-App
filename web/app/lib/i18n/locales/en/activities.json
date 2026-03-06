@@ -161,7 +161,7 @@
     },
     "stepInfoModal": {
       "title": "Enable step tracking",
-      "description": "MyTrack uses step data from Android Health Connect to show your activity insights.\n\nPlease enable step access for MyTrack in Permissions under Health Connect.",
+      "description": "{{appName}} uses step data from Android Health Connect to show your activity insights.\n\nPlease enable step access for {{appName}} in Permissions under Health Connect.",
       "cancel": "Cancel",
       "openSettings": "Open settings"
     },

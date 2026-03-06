@@ -22,6 +22,7 @@ import { guestLogin } from "@/app/login/guest-login/action";
 import FullScreenLoader from "@/components/FullScreenLoader";
 import GoogleIcon from "@/components/icons/GoogleIcon";
 import { useTranslation } from "react-i18next";
+import { APP_NAME } from "@/lib/app-config";
 
 const ConfettiAnimation = dynamic(() => import("../components/confetti"), {
   ssr: false,
@@ -95,7 +96,7 @@ export default function LoginPage() {
             <p>{t("login.back")}</p>
           </button>
           <p className="text-3xl sm:text-4xl lg:text-5xl text-center bg-linear-to-tr from-[#27aee4] via-[#66ece1] to-[#f3f18d] text-transparent bg-clip-text">
-            MyTrack
+            {APP_NAME}
           </p>
           <p className="min-w-[76px]"></p>
         </nav>
@@ -353,7 +354,7 @@ export default function LoginPage() {
             >
               <div className="flex flex-col items-center px-6 py-10 pb-10 justify-between h-full text-center">
                 <h1 className="text-3xl sm:text-4xl lg:text-5xl text-center bg-linear-to-tr from-[#27aee4] via-[#66ece1] to-[#f3f18d] text-transparent bg-clip-text">
-                  MyTrack
+                  {APP_NAME}
                 </h1>
                 <h3 className="text-xl  mt-5">
                   {t("login.signUpSuccess.title")}
@@ -428,7 +429,7 @@ export default function LoginPage() {
           >
             <div className="flex flex-col justify-between h-full py-10 px-4 sm:px-10 items-center z-100 w-full">
               <h1 className="text-3xl sm:text-4xl lg:text-5xl text-center bg-linear-to-tr from-[#27aee4] via-[#66ece1] to-[#f3f18d] text-transparent bg-clip-text">
-                MyTrack
+                {APP_NAME}
               </h1>
               <div className="flex flex-col text-center gap-10">
                 <h2 className="text-2xl underline">{t("login.guest.title")}</h2>

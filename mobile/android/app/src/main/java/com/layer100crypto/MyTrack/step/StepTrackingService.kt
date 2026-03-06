@@ -162,7 +162,7 @@ class StepTrackingService : Service(), SensorEventListener {
         )
 
         return Notification.Builder(this, CHANNEL_ID)
-            .setContentTitle("MyTrack")
+            .setContentTitle(getString(R.string.app_name))
             .setContentText("Tracking steps: $formattedSteps today")
             .setSmallIcon(R.drawable.small_notification_icon)
             .setContentIntent(pendingIntent)

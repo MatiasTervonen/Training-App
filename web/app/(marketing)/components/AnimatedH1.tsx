@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { APP_NAME } from "@/lib/app-config";
 
 export default function AnimatedH1() {
   return (
@@ -19,7 +20,7 @@ export default function AnimatedH1() {
         transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
         className="text-3xl sm:text-4xl lg:text-5xl text-center bg-linear-to-tr from-[#27aee4] via-[#66ece1] to-[#f3f18d] text-transparent bg-clip-text"
       >
-        MyTrack!
+        {APP_NAME}!
       </motion.h1>
     </div>
   );

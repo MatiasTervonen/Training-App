@@ -10,6 +10,7 @@ import {
 } from "@/features/gym/lib/shareCardUtils";
 import { ExerciseEntry } from "@/types/session";
 import { useTranslation } from "react-i18next";
+import { APP_NAME } from "@/lib/app-config";
 
 type ShareCardProps = {
   title: string;
@@ -66,7 +67,7 @@ const ShareCard = forwardRef<View, ShareCardProps>(
               source={require("@/assets/images/android-chrome-192x192.png")}
               className="w-[64px] h-[64px] rounded-lg"
             />
-            <AppText className="text-[36px] text-blue-400">MyTrack</AppText>
+            <AppText className="text-[36px] text-blue-400">{APP_NAME}</AppText>
           </View>
 
           {/* Title + Date */}
@@ -122,7 +123,7 @@ const ShareCard = forwardRef<View, ShareCardProps>(
 
           {/* Footer watermark */}
           <View className="items-center mt-[40px]">
-            <AppText className="text-[28px] text-gray-600">MyTrack</AppText>
+            <AppText className="text-[28px] text-gray-600">{APP_NAME}</AppText>
           </View>
         </LinearGradient>
       </View>

@@ -19,8 +19,7 @@ const ICONS = {
   scale: `<path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/>`,
   bell: `<path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/>`,
   listChecks: `<path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/>`,
-  layoutDashboard: `<rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/>`,
-  disc3: `<circle cx="12" cy="12" r="10"/><path d="M6 12c0-1.7.7-3.2 1.8-4.2"/><circle cx="12" cy="12" r="2"/><path d="M18 12c0 1.7-.7 3.2-1.8 4.2"/>`,
+  repeat2: `<path d="m2 9 3-3 3 3"/><path d="M13 18H7a2 2 0 0 1-2-2V6"/><path d="m22 15-3 3-3-3"/><path d="M11 6h6a2 2 0 0 1 2 2v10"/>`,
 } as const;
 
 export const LINK_TARGETS: LinkTarget[] = [
@@ -74,18 +73,11 @@ export const LINK_TARGETS: LinkTarget[] = [
     iconSvg: lucideSvg(ICONS.listChecks),
   },
   {
-    key: "dashboard",
-    labelEn: "Dashboard",
-    labelFi: "Etusivu",
-    route: "dashboard",
-    iconSvg: lucideSvg(ICONS.layoutDashboard),
-  },
-  {
-    key: "disc_golf",
-    labelEn: "Disc Golf",
-    labelFi: "Frisbeegolf",
-    route: "disc-golf",
-    iconSvg: lucideSvg(ICONS.disc3),
+    key: "habits",
+    labelEn: "Habits",
+    labelFi: "Tavat",
+    route: "habits",
+    iconSvg: lucideSvg(ICONS.repeat2),
   },
 ];
 

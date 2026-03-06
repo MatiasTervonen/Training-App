@@ -36,6 +36,7 @@ import {
 import GoogleIcon from "@/components/icons/GoogleIcon";
 import { Confetti, ConfettiMethods } from "react-native-fast-confetti";
 import { useTranslation } from "react-i18next";
+import { APP_NAME } from "@/lib/app-config";
 
 export default function LoginScreen() {
   const { t } = useTranslation("login");
@@ -123,7 +124,7 @@ export default function LoginScreen() {
               </AnimatedButton>
 
               <GradientColorText style={{ width: 140, height: 36 }}>
-                MyTrack
+                {APP_NAME}
               </GradientColorText>
 
               <AppText className="min-w-[65.5px]"></AppText>
@@ -351,7 +352,7 @@ export default function LoginScreen() {
         >
           <View className="flex-1 justify-between  px-6 py-10 pb-10 items-center">
             <GradientColorText style={{ width: 140, height: 36 }}>
-              MyTrack
+              {APP_NAME}
             </GradientColorText>
             <AppText className="text-xl mt-5 text-center">
               {t("login.signUpSuccess.title")}
@@ -488,7 +489,7 @@ export default function LoginScreen() {
       >
         <View className="flex-1 justify-between items-center p-6">
           <GradientColorText style={{ width: 140, height: 36 }}>
-            MyTrack
+            {APP_NAME}
           </GradientColorText>
           <AppText className="text-2xl underline mt-5 text-gray-100 text-center">
             {t("login.guest.title")}

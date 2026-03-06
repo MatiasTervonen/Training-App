@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { APP_NAME } from "@/lib/app-config";
 
 export default function Gym({ isActive }: { isActive: boolean }) {
   return (
@@ -8,7 +9,7 @@ export default function Gym({ isActive }: { isActive: boolean }) {
       <div className="flex flex-col lg:flex-row items-center justify-center gap-20 pt-10 px-5">
         <div className="flex flex-col  max-w-lg bg-slate-900 py-4 px-6 rounded-lg shadow-lg ">
           <p className="text-center rounded-xl lg:text-left text-md sm:text-lg">
-            Track your gym workouts, sets, reps, and personal records. MyTrack
+            Track your gym workouts, sets, reps, and personal records. {APP_NAME}
             helps you stay organized and motivated in your fitness journey.
           </p>
           <div className="mt-10 flex flex-col items-start gap-4">

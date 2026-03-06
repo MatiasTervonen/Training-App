@@ -6,6 +6,7 @@ import { Menu, CircleX } from "lucide-react";
 import { useState, useRef } from "react";
 import { useClickOutside } from "@/components/clickOutside";
 import { useInstallPrompt } from "@/lib/useInstallPrompt";
+import { APP_NAME } from "@/lib/app-config";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -20,7 +21,7 @@ export default function Navbar() {
     <>
       <nav className="flex justify-between items-center px-5 py-3 text-gray-100">
         <div className="text-3xl py-5">
-          <Link href={"/"}>MyTrack</Link>
+          <Link href={"/"}>{APP_NAME}</Link>
         </div>
         <div className="hidden md:flex items-center gap-4">
           <Link href={"/login"}>

@@ -3,6 +3,7 @@ import Navbar from "./components/navbar";
 import InteractiveTab from "./components/interactive-tab";
 import AnimatedH1 from "./components/AnimatedH1";
 import Footer from "./components/footer";
+import { APP_NAME } from "@/lib/app-config";
 
 export default function Home() {
   return (
@@ -27,7 +28,7 @@ export default function Home() {
                 </h2>
                 <p className="text-md sm:text-lg mt-4 max-w-lg ">
                   Track everything from gym workouts to Disc Golf rounds and
-                  personal goals. MyTrack helps you stay organized and motivated
+                  personal goals. {APP_NAME} helps you stay organized and motivated
                   your progress, your way.
                 </p>
               </div>

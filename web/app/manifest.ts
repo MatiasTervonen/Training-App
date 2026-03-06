@@ -1,11 +1,12 @@
 import type { MetadataRoute } from "next";
+import { APP_NAME } from "@/lib/app-config";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "MyTrack",
-    short_name: "MyTrack",
+    name: APP_NAME,
+    short_name: APP_NAME,
     description:
-      "Track everything from gym workouts to Disc Golf rounds and personal goals. MyTrack helps you stay organized and motivated—your progress, your way.",
+      `Track everything from gym workouts to Disc Golf rounds and personal goals. ${APP_NAME} helps you stay organized and motivated—your progress, your way.`,
     theme_color: "#0f172a",
     background_color: "#0f172a",
     display: "standalone",

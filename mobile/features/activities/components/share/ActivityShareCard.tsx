@@ -6,6 +6,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { formatDateShort } from "@/lib/formatDate";
 import { StatItem } from "@/features/activities/lib/activityShareCardUtils";
 import { useTranslation } from "react-i18next";
+import { APP_NAME } from "@/lib/app-config";
 
 const GRADIENT_COLORS: [string, string, string] = ["#1e3a8a", "#0f172a", "#0f172a"];
 const GRADIENT_START = { x: 0.8, y: 0 };
@@ -84,7 +85,7 @@ const ActivityShareCard = forwardRef<View, ActivityShareCardProps>(
                 source={require("@/assets/images/android-chrome-192x192.png")}
                 className="w-[48px] h-[48px] rounded-lg"
               />
-              <AppText className="text-[30px] text-white/80">MyTrack</AppText>
+              <AppText className="text-[30px] text-white/80">{APP_NAME}</AppText>
             </View>
           </View>
 
@@ -133,7 +134,7 @@ const ActivityShareCard = forwardRef<View, ActivityShareCardProps>(
               source={require("@/assets/images/android-chrome-192x192.png")}
               className="w-[48px] h-[48px] rounded-lg"
             />
-            <AppText className="text-[30px] text-white/80">MyTrack</AppText>
+            <AppText className="text-[30px] text-white/80">{APP_NAME}</AppText>
           </View>
         </LinearGradient>
       </View>

@@ -8,12 +8,13 @@ Users want periodic summaries of their training progress — what they've done, 
 
 ## Requirements
 
-- Create, edit, and delete report schedules (title, included features, delivery day, data period)
-- Default report presets: "Weekly Report" (every week on Monday) and "Monthly Report" (every month on 1st)
+- Create, edit, and delete report schedules (title, included features, delivery day, delivery time, data period)
+- Default report presets: "Weekly Report" (every week on Monday at 8:00) and "Monthly Report" (every month on 1st at 8:00)
 - Maximum 5 report schedules per user
 - Configurable included features: Gym, Activities, Weight, Habits, Todo
 - Configurable schedule: Every week, Every 2 weeks, Every month, Every 3 months
 - Delivery day: weekday (for weekly/biweekly) or day of month 1–28 (for monthly/quarterly)
+- Delivery time: hour of day (6–22), default 8:00
 - Data period automatically matches the schedule interval
 - Automatic push notification when a report is generated
 - Report appears as a feed card with type `reports`
@@ -34,14 +35,14 @@ Users want periodic summaries of their training progress — what they've done, 
 │                                │
 │  ┌──────────────────────────┐  │
 │  │ Weekly Report            │  │
-│  │ Every week · Monday      │  │
+│  │ Every week · Monday · 8:00│  │
 │  │ Gym, Activities, Weight  │  │
 │  │ [Edit]  [Delete]         │  │
 │  └──────────────────────────┘  │
 │                                │
 │  ┌──────────────────────────┐  │
 │  │ Monthly Report           │  │
-│  │ Every month · 1st        │  │
+│  │ Every month · 1st · 8:00 │  │
 │  │ All features             │  │
 │  │ [Edit]  [Delete]         │  │
 │  └──────────────────────────┘  │
@@ -56,7 +57,7 @@ Users want periodic summaries of their training progress — what they've done, 
 - Shows all report schedules with summary info
 - Count indicator (2/5) shows usage vs. limit
 - Quick-add buttons for default presets (only if under limit)
-- Each report card shows title, schedule, period, and included features
+- Each report card shows title, schedule, delivery time, and included features
 
 ### Create/Edit Report (`/reports/create`)
 
@@ -78,6 +79,9 @@ Users want periodic summaries of their training progress — what they've done, 
 │  Deliver on:                   │
 │  [Monday ▼]                    │
 │                                │
+│  Delivery time:                │
+│  [08:00 ▼]                     │
+│                                │
 │  [Save]                        │
 └────────────────────────────────┘
 ```
@@ -86,6 +90,7 @@ Users want periodic summaries of their training progress — what they've done, 
 - Include: checkboxes for each feature (at least 1 required)
 - Schedule: dropdown with "Every week", "Every 2 weeks", "Every month", "Every 3 months"
 - Deliver on: weekday dropdown (for weekly/biweekly) or day-of-month 1–28 (for monthly/quarterly)
+- Delivery time: hour dropdown (6:00–22:00 in 1-hour steps), default 8:00. Uses user's local timezone (stored as UTC offset at save time)
 - Data period is implicit — matches the schedule interval (7, 14, 30, or 90 days)
 - Validation: max 5 reports per user enforced on save
 
@@ -180,7 +185,8 @@ Users want periodic summaries of their training progress — what they've done, 
 ```
 
 - Follows existing share card pattern (1080x1080, `LinearGradient`, `StatCard` grid)
-- Adapts grid layout based on number of included features (same logic as activity share)
+- Adapts grid layout based on number of **selected** features (same logic as activity share)
+- Feature toggle chips above the card preview let user show/hide features (same `StatToggleChips` pattern as activity share)
 - Uses `useShareCard` hook
 
 ---
@@ -189,11 +195,12 @@ Users want periodic summaries of their training progress — what they've done, 
 
 ### Report Generation (Server-Side)
 
-1. Supabase cron job runs daily (e.g., at 06:00 UTC)
-2. Calls Edge Function `generate-reports`
-3. Edge Function queries `report_schedules` for schedules due today:
-   - Weekly/Biweekly: `delivery_day_of_week` matches today's day of week (biweekly also checks last report was 2+ weeks ago)
-   - Monthly/Quarterly: `delivery_day_of_month` matches today's day of month (quarterly also checks last report was 3+ months ago)
+1. Supabase cron job runs **every hour**
+2. Calls Edge Function `generate-reports` with the current UTC hour
+3. Edge Function queries `report_schedules` for schedules due now:
+   - Day match: Weekly/Biweekly check `delivery_day_of_week`, Monthly/Quarterly check `delivery_day_of_month`
+   - Hour match: `delivery_hour` matches the current UTC hour (stored as UTC at save time)
+   - Biweekly also checks last report was 2+ weeks ago; Quarterly checks 3+ months ago
 4. For each due schedule, aggregates data from relevant tables based on `included_features` and the schedule type's implicit data period
 5. Inserts generated report into `generated_reports` table
 6. Inserts feed item into `feed_items` with type `reports`
@@ -215,12 +222,13 @@ Users want periodic summaries of their training progress — what they've done, 
 -- Report schedules (max 5 per user, enforced in app)
 CREATE TABLE report_schedules (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL DEFAULT auth.uid() REFERENCES public.users(id) ON DELETE CASCADE,
   title TEXT NOT NULL,
   included_features TEXT[] NOT NULL DEFAULT '{}',
   schedule_type TEXT NOT NULL CHECK (schedule_type IN ('weekly', 'biweekly', 'monthly', 'quarterly')),
   delivery_day_of_week INT CHECK (delivery_day_of_week BETWEEN 0 AND 6),
   delivery_day_of_month INT CHECK (delivery_day_of_month BETWEEN 1 AND 28),
+  delivery_hour INT NOT NULL DEFAULT 8 CHECK (delivery_hour BETWEEN 0 AND 23),
   is_active BOOLEAN NOT NULL DEFAULT true,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
@@ -243,7 +251,7 @@ CREATE INDEX idx_report_schedules_active ON report_schedules(is_active, schedule
 -- Generated reports (one per schedule per delivery)
 CREATE TABLE generated_reports (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL DEFAULT auth.uid() REFERENCES public.users(id) ON DELETE CASCADE,
   schedule_id UUID NOT NULL REFERENCES report_schedules(id) ON DELETE CASCADE,
   title TEXT NOT NULL,
   period_start DATE NOT NULL,
@@ -270,9 +278,7 @@ CREATE INDEX idx_generated_reports_schedule ON generated_reports(schedule_id, cr
 
 ```sql
 DROP FUNCTION IF EXISTS report_get_schedules;
-CREATE FUNCTION report_get_schedules(
-  p_user_id UUID
-)
+CREATE FUNCTION report_get_schedules()
 RETURNS JSONB
 LANGUAGE plpgsql
 SECURITY INVOKER
@@ -281,7 +287,7 @@ BEGIN
   RETURN COALESCE(
     (SELECT jsonb_agg(row_to_json(s))
      FROM report_schedules s
-     WHERE s.user_id = p_user_id AND s.is_active = true
+     WHERE s.user_id = auth.uid() AND s.is_active = true
      ORDER BY s.created_at),
     '[]'::jsonb
   );
@@ -294,12 +300,12 @@ $$;
 ```sql
 DROP FUNCTION IF EXISTS report_save_schedule;
 CREATE FUNCTION report_save_schedule(
-  p_user_id UUID,
   p_title TEXT,
   p_included_features TEXT[],
   p_schedule_type TEXT,
   p_delivery_day_of_week INT DEFAULT NULL,
-  p_delivery_day_of_month INT DEFAULT NULL
+  p_delivery_day_of_month INT DEFAULT NULL,
+  p_delivery_hour INT DEFAULT 8
 )
 RETURNS UUID
 LANGUAGE plpgsql
@@ -312,19 +318,19 @@ BEGIN
   -- Enforce max 5 active schedules
   SELECT COUNT(*) INTO v_count
   FROM report_schedules
-  WHERE user_id = p_user_id AND is_active = true;
+  WHERE user_id = auth.uid() AND is_active = true;
 
   IF v_count >= 5 THEN
     RAISE EXCEPTION 'Maximum 5 report schedules allowed';
   END IF;
 
   INSERT INTO report_schedules (
-    user_id, title, included_features, schedule_type,
-    delivery_day_of_week, delivery_day_of_month
+    title, included_features, schedule_type,
+    delivery_day_of_week, delivery_day_of_month, delivery_hour
   )
   VALUES (
-    p_user_id, p_title, p_included_features, p_schedule_type,
-    p_delivery_day_of_week, p_delivery_day_of_month
+    p_title, p_included_features, p_schedule_type,
+    p_delivery_day_of_week, p_delivery_day_of_month, p_delivery_hour
   )
   RETURNING id INTO v_id;
 
@@ -338,13 +344,13 @@ $$;
 ```sql
 DROP FUNCTION IF EXISTS report_update_schedule;
 CREATE FUNCTION report_update_schedule(
-  p_user_id UUID,
   p_schedule_id UUID,
   p_title TEXT,
   p_included_features TEXT[],
   p_schedule_type TEXT,
   p_delivery_day_of_week INT DEFAULT NULL,
-  p_delivery_day_of_month INT DEFAULT NULL
+  p_delivery_day_of_month INT DEFAULT NULL,
+  p_delivery_hour INT DEFAULT 8
 )
 RETURNS VOID
 LANGUAGE plpgsql
@@ -358,8 +364,9 @@ BEGIN
     schedule_type = p_schedule_type,
     delivery_day_of_week = p_delivery_day_of_week,
     delivery_day_of_month = p_delivery_day_of_month,
+    delivery_hour = p_delivery_hour,
     updated_at = now()
-  WHERE id = p_schedule_id AND user_id = p_user_id;
+  WHERE id = p_schedule_id AND user_id = auth.uid();
 END;
 $$;
 ```
@@ -369,7 +376,6 @@ $$;
 ```sql
 DROP FUNCTION IF EXISTS report_delete_schedule;
 CREATE FUNCTION report_delete_schedule(
-  p_user_id UUID,
   p_schedule_id UUID
 )
 RETURNS VOID
@@ -379,7 +385,7 @@ AS $$
 BEGIN
   UPDATE report_schedules
   SET is_active = false, updated_at = now()
-  WHERE id = p_schedule_id AND user_id = p_user_id;
+  WHERE id = p_schedule_id AND user_id = auth.uid();
 END;
 $$;
 ```
@@ -450,9 +456,12 @@ This Edge Function is triggered by a Supabase cron job daily.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 Deno.serve(async (req: Request) => {
+  // Verify the request is from our cron job using the service role key
   const authHeader = req.headers.get("Authorization");
   if (authHeader !== `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`) {
-    return new Response("Unauthorized", { status: 401 });
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+    });
   }
 
   const supabase = createClient(
@@ -463,13 +472,15 @@ Deno.serve(async (req: Request) => {
   const today = new Date();
   const dayOfWeek = today.getDay(); // 0=Sunday
   const dayOfMonth = today.getDate();
+  const currentHour = today.getUTCHours();
 
-  // Get all active schedules that could fire today (by day match)
-  // Biweekly schedules need additional check (see filtering below)
+  // Get all active schedules that match today's day AND current hour
+  // Biweekly/quarterly schedules need additional check (see filtering below)
   const { data: schedules, error } = await supabase
     .from("report_schedules")
     .select("*")
     .eq("is_active", true)
+    .eq("delivery_hour", currentHour)
     .or(
       `and(schedule_type.in.(weekly,biweekly),delivery_day_of_week.eq.${dayOfWeek}),and(schedule_type.in.(monthly,quarterly),delivery_day_of_month.eq.${dayOfMonth})`,
     );
@@ -799,10 +810,10 @@ async function aggregateReportData(
 Add to Supabase Dashboard → Database → Extensions → enable `pg_cron`, then:
 
 ```sql
--- Run daily at 06:00 UTC
+-- Run every hour to match per-user delivery times
 SELECT cron.schedule(
-  'generate-daily-reports',
-  '0 6 * * *',
+  'generate-hourly-reports',
+  '0 * * * *',
   $$
   SELECT net.http_post(
     url := current_setting('app.settings.supabase_url') || '/functions/v1/generate-reports',
@@ -827,7 +838,7 @@ SELECT cron.schedule(
 
 ### `database/reports/save-report-schedule.ts` (NEW) — RPC
 
-- Calls `report_save_schedule` RPC with title, features, schedule_type, delivery day
+- Calls `report_save_schedule` RPC with title, features, schedule_type, delivery day, delivery_hour
 - Returns the new schedule ID
 
 ### `database/reports/update-report-schedule.ts` (NEW) — RPC
@@ -858,6 +869,7 @@ export type ReportSchedule = {
   schedule_type: ScheduleType;
   delivery_day_of_week: number | null; // 0-6 (Sun-Sat)
   delivery_day_of_month: number | null; // 1-28
+  delivery_hour: number; // 0-23 (UTC), default 8
   is_active: boolean;
   created_at: string;
   updated_at: string;
@@ -978,7 +990,7 @@ export const MAX_REPORTS = 5;
 ### `features/reports/components/ReportScheduleCard.tsx` (NEW)
 
 - Single schedule card for the management page
-- Shows: title, frequency + delivery day, data period, included feature chips
+- Shows: title, frequency + delivery day + delivery time, included feature chips
 - Edit and Delete buttons using `AnimatedButton`
 - Delete with confirmation alert
 
@@ -992,6 +1004,7 @@ export const MAX_REPORTS = 5;
 
 - Dropdown for schedule type: "Every week", "Every 2 weeks", "Every month", "Every 3 months"
 - Conditionally shows weekday dropdown (weekly/biweekly) or day-of-month dropdown (monthly/quarterly)
+- Delivery time dropdown: hours from 6:00 to 22:00 (1-hour steps), default 8:00. User picks in local time; value is converted to UTC hour on save.
 - Uses `SCHEDULE_TYPES` constant for options
 
 ### `features/reports/components/ReportSection.tsx` (NEW)
@@ -1018,15 +1031,26 @@ export const MAX_REPORTS = 5;
 
 ### `features/reports/components/ReportShareModal.tsx` (NEW)
 
-- Modal following gym/activity share pattern
+- Modal following activity share pattern (`ActivityShareModal`)
 - Uses `useShareCard` hook
-- Renders `ReportShareCard` (1080x1080) for capture
+- Feature toggle chips (same `StatToggleChips` pattern): user can show/hide features on the share card
+  - Available chips = features present in the report's `report_data` (only features with data)
+  - All selected by default on modal open
+  - Min 1 feature selected; toast + haptic feedback on limits
+- Renders `ReportShareCard` (1080x1080) for capture, passing only selected features
+- Card preview updates in real time as user toggles chips
 
 ### `features/reports/components/ReportShareCard.tsx` (NEW)
 
 - 1080x1080 share card with `LinearGradient`
 - Header: title + date range
-- Grid of `StatCard` components per feature (adaptive layout)
+- Grid of `StatCard` components per **selected** feature (adaptive layout based on count)
+  - 1 feature: single large card
+  - 2 features: 2 columns
+  - 3 features: 3 columns or 2+1
+  - 4 features: 2x2 grid
+  - 5 features: 3+2 layout
+- Each feature card shows 2–3 key stats (fixed per feature type)
 - Footer watermark
 - Uses `forwardRef` for capture via `useShareCard`
 
@@ -1053,10 +1077,11 @@ export const MAX_REPORTS = 5;
   - `FeatureCheckbox` list (at least 1 required)
   - `SchedulePicker` (every week / every 2 weeks / every month / every 3 months)
   - Delivery day picker (weekday dropdown or day-of-month, driven by schedule type)
+  - Delivery time picker (hour dropdown 6:00–22:00, default 8:00)
 - Route params: `id` for editing, `preset` for quick-add ("weekly" or "monthly")
 - Preset defaults:
-  - Weekly: title="Weekly Report", schedule_type=weekly, day=Monday (1), all features
-  - Monthly: title="Monthly Report", schedule_type=monthly, day=1, all features
+  - Weekly: title="Weekly Report", schedule_type=weekly, day=Monday (1), hour=8, all features
+  - Monthly: title="Monthly Report", schedule_type=monthly, day=1, hour=8, all features
 - Validation before save: title required, at least 1 feature, valid delivery day
 - Save calls `useSaveReportSchedule` or `useUpdateReportSchedule`
 - On save: toast + navigate back
@@ -1143,6 +1168,7 @@ Use `FileBarChart` icon from `lucide-react-native`.
   },
   "schedule": "Schedule",
   "deliverOn": "Deliver on",
+  "deliveryTime": "Delivery time",
   "scheduleTypes": {
     "weekly": "Every week",
     "biweekly": "Every 2 weeks",
@@ -1193,7 +1219,9 @@ Use `FileBarChart` icon from `lucide-react-native`.
     "share": "Share",
     "sharing": "Sharing...",
     "close": "Close",
-    "shareError": "Failed to share report"
+    "shareError": "Failed to share report",
+    "minFeature": "At least one feature required",
+    "showOnCard": "Show on card"
   },
   "presets": {
     "weekly": "Weekly Report",
@@ -1226,6 +1254,7 @@ Use `FileBarChart` icon from `lucide-react-native`.
   },
   "schedule": "Aikataulu",
   "deliverOn": "Toimita",
+  "deliveryTime": "Toimitusaika",
   "scheduleTypes": {
     "weekly": "Joka viikko",
     "biweekly": "Joka 2. viikko",
@@ -1276,7 +1305,9 @@ Use `FileBarChart` icon from `lucide-react-native`.
     "share": "Jaa",
     "sharing": "Jaetaan...",
     "close": "Sulje",
-    "shareError": "Raportin jakaminen epäonnistui"
+    "shareError": "Raportin jakaminen epäonnistui",
+    "minFeature": "Vähintään yksi ominaisuus vaaditaan",
+    "showOnCard": "Näytä kortissa"
   },
   "presets": {
     "weekly": "Viikkoraportti",
@@ -1351,7 +1382,7 @@ Add `reports` namespace to `locales/en/index.ts` and `locales/fi/index.ts`.
 
 ## Verification
 
-1. **Create schedule**: Sessions → Reports → Create Report → fill title "Weekly Report", select Gym + Weight, frequency Weekly, Monday, 7 days → Save → schedule appears in list
+1. **Create schedule**: Sessions → Reports → Create Report → fill title "Weekly Report", select Gym + Weight, frequency Weekly, Monday, 8:00 → Save → schedule appears in list
 2. **Preset quick-add**: Tap "Weekly Report" quick-add → form pre-filled with defaults → Save
 3. **Max limit**: Create 5 schedules → "Create Report" button disabled, count shows 5/5
 4. **Edit schedule**: Tap Edit on a schedule → change title + features → Save → changes reflected
@@ -1359,9 +1390,10 @@ Add `reports` namespace to `locales/en/index.ts` and `locales/fi/index.ts`.
 6. **Report generation** (manual test): Trigger the Edge Function manually → generated report appears in DB → feed item created
 7. **Feed card**: Report card shows in feed with title, date range, and feature summary
 8. **Expand report**: Tap Details on report card → expanded view shows full stats per feature
-9. **Share report**: Tap Share in expanded view → share card renders → native share sheet opens
+9. **Share report**: Tap Share in expanded view → share modal opens with feature toggle chips → toggle features on/off → card preview updates → share → native share sheet opens
 10. **Push notification**: When report generates → push notification received with correct title
 11. **Empty states**: No schedules → shows empty state message. Feature with no data in period → shows zeros gracefully
 12. **Translations**: Switch language to Finnish → all text shows in Finnish with proper ä/ö characters
 13. **Monthly schedule**: Create monthly report on day 1 → verify it shows correct delivery info
 14. **Data period**: Create report with 90-day period → expanded report shows 90 days of aggregated data
+15. **Delivery time**: Create report with delivery time 18:00 → verify `delivery_hour` stored as correct UTC value → cron triggers only at matching hour

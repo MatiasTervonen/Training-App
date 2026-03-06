@@ -2,6 +2,7 @@ import * as Location from "expo-location";
 import { LOCATION_TASK_NAME } from "./locationTask";
 import { useCallback } from "react";
 import { useUserStore } from "@/lib/stores/useUserStore";
+import { APP_NAME } from "@/lib/app-config";
 
 export function useStartGPStracking() {
   const gpsEnabledGlobally = useUserStore(
@@ -22,7 +23,7 @@ export function useStartGPStracking() {
       distanceInterval: 1,
       showsBackgroundLocationIndicator: true,
       foregroundService: {
-        notificationTitle: "MyTrack",
+        notificationTitle: APP_NAME,
         notificationBody: "Location tracking active",
         notificationColor: "#0f172a",
       },

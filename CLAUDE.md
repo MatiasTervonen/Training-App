@@ -12,4 +12,5 @@ Every command run in the terminal must include a short explanation of what it do
 ## Supabase Migrations
 - Never use `CREATE OR REPLACE FUNCTION`. It only replaces if the exact parameter signature matches — if parameters changed, it creates a duplicate overload. Always `DROP FUNCTION` first, then `CREATE FUNCTION`.
 - Always use full `YYYYMMDDHHmmss` timestamp format for migration filenames (e.g., `20260223200000_name.sql`), never short `YYYYMMDD`. Short timestamps cause ordering conflicts with existing full-format migrations and break `db push`.
-- - I have RLS enabled on all tables. Never use SECURITY DEFINER on RPC functions unless I explicitly ask for it. Always explicitly add SECURITY INVOKER to every RPC function.
+- I have RLS enabled on all tables. Never use SECURITY DEFINER on RPC functions unless I explicitly ask for it. Always explicitly add SECURITY INVOKER to every RPC function.
+- Always use `DEFAULT auth.uid()` on `user_id` columns. In SECURITY INVOKER RPC functions, use `auth.uid()` directly instead of accepting a `p_user_id` parameter — the client should never need to pass the user ID.

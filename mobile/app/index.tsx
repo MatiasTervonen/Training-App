@@ -6,6 +6,7 @@ import { Image } from "expo-image";
 import GradientButton from "@/components/buttons/GradientButton";
 import { useRouter } from "expo-router";
 import PageContainer from "@/components/PageContainer";
+import { APP_NAME } from "@/lib/app-config";
 
 export default function Index() {
   const router = useRouter();
@@ -31,7 +32,7 @@ export default function Index() {
           <View className="items-center justify-center mt-10">
             <AppText className="text-4xl">Welcome to the</AppText>
             <GradientColorText style={{ width: 200, height: 50 }}>
-              MyTrack!
+              {APP_NAME}!
             </GradientColorText>
             <AppText className="text-xl mt-4 text-center">
               The Only Tracking App You&apos;ll Ever Need

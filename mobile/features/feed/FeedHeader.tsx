@@ -38,10 +38,6 @@ export default function FeedHeader({
             setExpandedItem(feedItem);
           }}
           onEdit={(feedItem) => {
-            if (feedItem.type === "habits") {
-              router.push("/habits");
-              return;
-            }
             if (feedItem.type === "gym_sessions") {
               router.push(`/gym/gym/${feedItem.source_id}`);
             } else {

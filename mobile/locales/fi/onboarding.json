@@ -1,6 +1,6 @@
 {
   "welcome": {
-    "title": "Tervetuloa MyTrackiin!",
+    "title": "Tervetuloa {{appName}}iin!",
     "body": "Tehdään alkuasetukset. Tämä kestää noin minuutin. Voit ohittaa milloin tahansa — kaiken voi määrittää myöhemmin Asetuksissa.",
     "letsGo": "Aloitetaan",
     "skip": "Ohita, teen asetukset myöhemmin"
@@ -48,7 +48,7 @@
   "complete": {
     "title": "Kaikki valmista!",
     "body": "Voit aina muuttaa asetuksiasi, käyttöoikeuksiasi ja profiiliasi valikosta. Nauti seurannasta!",
-    "start": "Aloita MyTrackin käyttö",
+    "start": "Aloita {{appName}}in käyttö",
     "summary": {
       "language": "Kieli",
       "notifications": "Ilmoitukset",

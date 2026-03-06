@@ -4,6 +4,7 @@ import AppText from "@/components/AppText";
 import { LinearGradient } from "expo-linear-gradient";
 import { weight } from "@/types/session";
 import { useTranslation } from "react-i18next";
+import { APP_NAME } from "@/lib/app-config";
 
 type WeightShareCardProps = {
   range: "week" | "month" | "year";
@@ -169,7 +170,7 @@ const WeightShareCard = forwardRef<View, WeightShareCardProps>(
               source={require("@/assets/images/android-chrome-192x192.png")}
               className="w-[64px] h-[64px] rounded-lg"
             />
-            <AppText className="text-[36px] text-blue-400">MyTrack</AppText>
+            <AppText className="text-[36px] text-blue-400">{APP_NAME}</AppText>
           </View>
 
           {/* Title + Date range */}

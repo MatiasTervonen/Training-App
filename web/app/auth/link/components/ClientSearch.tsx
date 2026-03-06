@@ -3,6 +3,7 @@
 import { useSearchParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import SaveButtonSpinner from "@/components/buttons/save-button-spinner";
+import { APP_NAME } from "@/lib/app-config";
 
 export default function ClientSearch() {
   const searchParams = useSearchParams();
@@ -55,7 +56,7 @@ export default function ClientSearch() {
   return (
     <>
       <div className="flex flex-col items-center justify-center gap-10 max-w-xl border-2 py-10 px-5 sm:px-10 rounded-xl bg-slate-900 shadow-lg w-full">
-        <h1 className="text-2xl ">MyTrack</h1>
+        <h1 className="text-2xl ">{APP_NAME}</h1>
         <h2 className="text-green-400">{title}</h2>
         <p className="text-center">{message}</p>
         <SaveButtonSpinner

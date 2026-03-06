@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { APP_NAME } from "@/lib/app-config";
 
 export default function Weight({ isActive }: { isActive: boolean }) {
   return (
@@ -10,7 +11,7 @@ export default function Weight({ isActive }: { isActive: boolean }) {
       <div className="flex flex-col lg:flex-row items-center justify-center gap-20 pt-10 px-5">
         <div className="flex flex-col  max-w-lg bg-slate-900 py-4 px-6 rounded-lg shadow-lg ">
           <p className="text-center rounded-xl lg:text-left text-md sm:text-lg">
-            Keep track of your weight and body measurements with MyTrack&apos;s
+            Keep track of your weight and body measurements with {APP_NAME}&apos;s
             Weight Tracking feature. Monitor your progress, set goals, and stay
             motivated on your fitness journey.
           </p>

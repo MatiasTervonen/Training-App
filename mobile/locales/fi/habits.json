@@ -20,6 +20,9 @@
     "totalCompletions": "Suorituksia yhteensä",
     "days": "päivää"
   },
+  "feed": {
+    "streak": "{{count}} päivän putki"
+  },
   "seeFullHistory": "Näytä koko historia",
   "allDone": "Kaikki tavat tehty!",
   "reminderBody": "Aika ottaa {{habitName}}!",

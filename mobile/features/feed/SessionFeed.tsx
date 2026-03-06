@@ -199,6 +199,10 @@ export default function SessionFeed({ expandReminderId }: SessionFeedProps) {
                   item={feedItem as FeedItemUI}
                   pinned={false}
                   onExpand={() => {
+                    if (feedItem.type === "habits") {
+                      router.push("/habits");
+                      return;
+                    }
                     setExpandedItem(feedItem);
                   }}
                   onTogglePin={() =>
@@ -213,6 +217,10 @@ export default function SessionFeed({ expandReminderId }: SessionFeedProps) {
                     handleDelete(feedItem.source_id, feedItem.type);
                   }}
                   onEdit={() => {
+                    if (feedItem.type === "habits") {
+                      router.push("/habits");
+                      return;
+                    }
                     if (feedItem.type === "gym_sessions") {
                       router.push(`/gym/gym/${feedItem.source_id}`);
                     } else {

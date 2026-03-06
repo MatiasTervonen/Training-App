@@ -10,6 +10,7 @@ export function useToggleHabit() {
       Promise.all([
         queryClient.invalidateQueries({ queryKey: ["habit-logs"] }),
         queryClient.invalidateQueries({ queryKey: ["habit-stats"] }),
+        queryClient.invalidateQueries({ queryKey: ["feed"] }),
       ]);
     },
   });

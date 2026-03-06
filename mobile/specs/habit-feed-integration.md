@@ -17,11 +17,11 @@ Adds habit tracking summary to the daily feed. One feed item per day, updated on
 ## How Feed Items Are Generated
 
 No cron job needed. Same pattern as todos:
-- Every time a habit is toggled, upsert a `habit_summary` feed item for today
+- Every time a habit is toggled, upsert a `habits` feed item for today
 - The `habit_toggle_log` RPC gets extended (or a wrapper RPC) to:
   1. Toggle the habit log (existing behavior)
   2. Count today's completed/total habits
-  3. Upsert into `feed_items` where `type = 'habit_summary'` and `occurred_at = today`
+  3. Upsert into `feed_items` where `type = 'habits'` and `occurred_at = today`
   4. Update `extra_fields` with completion and streak data
 
 One feed item per day, updated on each toggle.
@@ -40,7 +40,7 @@ One feed item per day, updated on each toggle.
 | Step | What | Files |
 |------|------|-------|
 | 1 | New migration: update `habit_toggle_log` RPC to also upsert `feed_items` | `supabase/migrations/` |
-| 2 | Add `"habit_summary"` to feed item types | `types/session.ts`, `types/database.types.ts` |
+| 2 | Add `"habits"` to feed item types | `types/session.ts`, `types/database.types.ts` |
 | 3 | Create `HabitSummaryCard` component (collapsed only) | `features/habits/cards/habit-feed.tsx` |
 | 4 | Add case to `FeedCard.tsx` router | `features/feed-cards/FeedCard.tsx` |
 | 5 | Handle "Details" -> navigate to `/habits` | In the card component |

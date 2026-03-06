@@ -6,6 +6,7 @@ import AppTextNC from "@/components/AppTextNC";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import StepsChart from "@/features/activities/analytics/StepsChart";
 import ActivityBreakdownChart from "@/features/activities/analytics/ActivityBreakdownChart";
+import StepsShareModal from "@/features/activities/analytics/StepsShareModal";
 import { getStepsData } from "@/database/activities/get-steps";
 import { getActivitySessions } from "@/database/activities/get-activity-sessions";
 import { getTodaysSteps } from "@/features/activities/analytics/getTodaysSteps";
@@ -14,6 +15,7 @@ import PageContainer from "@/components/PageContainer";
 import * as Device from "expo-device";
 import { useTranslation } from "react-i18next";
 import { hasStepsPermission } from "@/features/activities/stepToggle/stepPermission";
+
 
 type RangeType = "week" | "month" | "3months";
 
@@ -40,6 +42,7 @@ export default function ActivityAnalytics() {
   const [todaySteps, setTodaySteps] = useState(0);
   const [loadingToday, setLoadingToday] = useState(true);
   const [stepsPermitted, setStepsPermitted] = useState(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
   const { data: stepsData = [], isLoading: isLoadingSteps } = useQuery({
     queryKey: ["steps-analytics"],
@@ -152,6 +155,7 @@ export default function ActivityAnalytics() {
               range={selectedRange}
               data={stepsData}
               todaySteps={todaySteps}
+              onSharePress={() => setIsShareModalOpen(true)}
             />
             {todaySteps > 0 && (
               <View className="mt-4 bg-slate-900 rounded-xl p-4">
@@ -175,6 +179,15 @@ export default function ActivityAnalytics() {
             endDate={endDate}
           />
         </View>
+        {stepsPermitted && (
+          <StepsShareModal
+            visible={isShareModalOpen}
+            onClose={() => setIsShareModalOpen(false)}
+            range={selectedRange}
+            data={stepsData}
+            todaySteps={todaySteps}
+          />
+        )}
       </PageContainer>
     </ScrollView>
   );

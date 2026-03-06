@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight } from "lucide-react-native";
+import { ChevronLeft, ChevronRight, Share2 } from "lucide-react-native";
 import { useState, useEffect, useRef, useMemo } from "react";
 import { View } from "react-native";
 import AppText from "@/components/AppText";
@@ -14,6 +14,7 @@ type StepsChartProps = {
   range: "week" | "month" | "3months";
   data: StepRecord[];
   todaySteps: number;
+  onSharePress?: () => void;
 };
 
 function getRangeDays(range: "week" | "month" | "3months"): number {
@@ -93,6 +94,7 @@ export default function StepsChart({
   range,
   data,
   todaySteps,
+  onSharePress,
 }: StepsChartProps) {
   const { t, i18n } = useTranslation("activities");
   const [offset, setOffset] = useState(0);
@@ -272,9 +274,19 @@ export default function StepsChart({
 
   return (
     <View className="bg-slate-900 shadow-md w-full rounded-2xl p-4">
-      <AppText className="text-lg font-medium text-center mb-2">
-        {t("activities.analyticsScreen.dailySteps")}
-      </AppText>
+      <View className="flex-row items-center mb-2">
+        <View className="w-8" />
+        <AppText className="text-lg font-medium text-center flex-1">
+          {t("activities.analyticsScreen.dailySteps")}
+        </AppText>
+        {onSharePress ? (
+          <AnimatedButton onPress={onSharePress} className="w-8 items-end" hitSlop={10}>
+            <Share2 color="#4ade80" size={20} />
+          </AnimatedButton>
+        ) : (
+          <View className="w-8" />
+        )}
+      </View>
       <View className="flex-row justify-center items-center mb-4">
         <AnimatedButton
           onPress={() => setOffset((prev) => prev + 1)}

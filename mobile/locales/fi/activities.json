@@ -85,7 +85,7 @@
       "cross_training": "Cross Training"
     },
     "analyticsScreen": {
-      "title": "Aktiviteetti-analytiikka",
+      "title": "Analytiikka",
       "errorFetchingSteps": "Virhe haettaessa päivän askeleita",
       "errorFetchingStepsDesc": "Päivän askelmäärää ei voitu hakea.",
       "today": "Tänään",
@@ -244,6 +244,19 @@
       "errorGeneric": "Yritä myöhemmin uudelleen",
       "successTitle": "Pohja tallennettu",
       "successMessage": "Pohja on tallennettu onnistuneesti."
+    },
+    "stepsShare": {
+      "title": "Päivittäiset askeleet",
+      "share": "Jaa",
+      "sharing": "Jaetaan...",
+      "save": "Tallenna",
+      "saving": "Tallennetaan...",
+      "saveSuccess": "Askelkaavio tallennettu galleriaan",
+      "saveError": "Askelkaavion tallentaminen epäonnistui",
+      "shareError": "Askelkaavion jakaminen epäonnistui",
+      "close": "Sulje",
+      "totalSteps": "Askeleet yhteensä",
+      "dailyAvg": "Päivittäinen ka."
     },
     "share": {
       "activityFinished": "Aktiviteetti valmis",

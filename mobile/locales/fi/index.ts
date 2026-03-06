@@ -14,3 +14,4 @@ export { default as onboarding } from "./onboarding.json";
 export { default as friends } from "./friends.json";
 export { default as notifications } from "./notifications.json";
 export { default as habits } from "./habits.json";
+export { default as reports } from "./reports.json";

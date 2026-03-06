@@ -10,6 +10,7 @@
 
 ## Page Structure
 - When creating a new page, always wrap it with `PageContainer`. Never use `ModalPageWrapper` directly — `LayoutWrapper` already handles that.
+- On pages with a `ScrollView`, always put the `ScrollView` outside `PageContainer` — never inside it. This prevents `PageContainer`'s padding from creating a static border around the scrolling content.
 
 ## Styling
 - Always use NativeWind (`className`) for styling — never use inline `style` props.

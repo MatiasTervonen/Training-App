@@ -1,0 +1,83 @@
+{
+  "reports": {
+    "title": "Raportit",
+    "yourReports": "Omat raportit",
+    "noReports": "Ei vielä raportteja",
+    "createFirst": "Luo ensimmäinen raportti saadaksesi säännöllisiä yhteenvetoja",
+    "createReport": "Luo raportti",
+    "editReport": "Muokkaa raporttia",
+    "maxReached": "Enintään 5 raporttia sallittu",
+    "quickAdd": "Pikalisäys",
+    "reportName": "Raportin otsikko",
+    "reportNamePlaceholder": "esim. Viikkoraportti",
+    "include": "Sisällytä",
+    "features": {
+      "gym": "Kuntosali",
+      "activities": "Aktiviteetit",
+      "weight": "Paino",
+      "habits": "Tavat",
+      "todo": "Tehtävät"
+    },
+    "schedule": "Aikataulu",
+    "deliverOn": "Toimita",
+    "deliveryTime": "Toimitusaika",
+    "scheduleTypes": {
+      "weekly": "Joka viikko",
+      "biweekly": "Joka 2. viikko",
+      "monthly": "Joka kuukausi",
+      "quarterly": "Joka 3. kuukausi"
+    },
+    "save": "Tallenna",
+    "delete": "Poista raportti",
+    "deleteConfirm": "Haluatko varmasti poistaa tämän raportin?",
+    "saved": "Raportti tallennettu!",
+    "deleted": "Raportti poistettu",
+    "errorSaving": "Raportin tallennus epäonnistui",
+    "errorDeleting": "Raportin poistaminen epäonnistui",
+    "atLeastOneFeature": "Valitse vähintään yksi ominaisuus",
+    "titleRequired": "Otsikko on pakollinen",
+    "weekdays": {
+      "0": "Sunnuntai",
+      "1": "Maanantai",
+      "2": "Tiistai",
+      "3": "Keskiviikko",
+      "4": "Torstai",
+      "5": "Perjantai",
+      "6": "Lauantai"
+    },
+    "dayOfMonth": "Kuukauden {{day}}. päivä",
+    "expanded": {
+      "periodLabel": "{{start}} – {{end}}",
+      "sessions": "Harjoitukset",
+      "totalDuration": "Kesto",
+      "avgDuration": "Keskikesto",
+      "totalVolume": "Volyymi",
+      "totalCalories": "Kalorit",
+      "exercises": "Liikkeet",
+      "totalDistance": "Matka",
+      "totalSteps": "Askeleet",
+      "entries": "Merkinnät",
+      "startWeight": "Alku",
+      "endWeight": "Loppu",
+      "weightChange": "Muutos",
+      "completionRate": "Prosentti",
+      "daysAllDone": "Kaikki tehty",
+      "totalCompletions": "Suorituksia",
+      "tasksCompleted": "Suoritettu",
+      "tasksCreated": "Luotu",
+      "listsUpdated": "Päivitetty"
+    },
+    "share": {
+      "share": "Jaa",
+      "sharing": "Jaetaan...",
+      "close": "Sulje",
+      "shareError": "Raportin jakaminen epäonnistui",
+      "minFeature": "Vähintään yksi ominaisuus vaaditaan",
+      "showOnCard": "Näytä kortissa"
+    },
+    "presets": {
+      "weekly": "Viikkoraportti",
+      "monthly": "Kuukausiraportti"
+    }
+  }
+}

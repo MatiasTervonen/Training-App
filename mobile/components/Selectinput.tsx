@@ -67,6 +67,7 @@ export default function SelectInput({
           onPress={() => setIsOpen(false)}
         >
           <View
+            onStartShouldSetResponder={() => true}
             style={{ maxHeight: "75%", width: screenWidth * 0.85 }}
             className="border-2 border-slate-300 rounded-xl bg-slate-900 py-5 justify-center"
           >

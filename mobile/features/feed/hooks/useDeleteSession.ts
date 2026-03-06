@@ -65,6 +65,12 @@ export default function useDeleteSession() {
         });
       }
 
+      if (type === "reports") {
+        queryClient.invalidateQueries({
+          queryKey: ["report-schedules"],
+        });
+      }
+
       Toast.show({
         type: "success",
         text1: t("feed.deleteSession.successTitle"),

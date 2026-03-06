@@ -16,7 +16,6 @@ import * as Device from "expo-device";
 import { useTranslation } from "react-i18next";
 import { hasStepsPermission } from "@/features/activities/stepToggle/stepPermission";
 
-
 type RangeType = "week" | "month" | "3months";
 
 const ranges: { key: RangeType; label: string }[] = [
@@ -93,9 +92,11 @@ export default function ActivityAnalytics() {
     return { startDate: start, endDate: end };
   }, [selectedRange]);
 
-  const isLoading = isLoadingSessions || loadingToday || (stepsPermitted && isLoadingSteps);
+  const isLoading =
+    isLoadingSessions || loadingToday || (stepsPermitted && isLoadingSteps);
 
-  const hasNoData = sessionsData.length === 0 && stepsData.length === 0 && todaySteps === 0;
+  const hasNoData =
+    sessionsData.length === 0 && stepsData.length === 0 && todaySteps === 0;
 
   if (isLoading) {
     return (

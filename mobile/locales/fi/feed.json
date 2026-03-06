@@ -9,6 +9,8 @@
     "loadingActivity": "Ladataan aktiviteetin tietoja...",
     "activityError": "Aktiviteetin tietojen lataaminen epäonnistui. Yritä myöhemmin uudelleen.",
     "loadingNotes": "Ladataan muistiinpanoja...",
+    "loadingReport": "Ladataan raporttia...",
+    "reportError": "Raportin lataaminen epäonnistui",
     "card": {
       "details": "Tiedot",
       "updated": "päivitetty:",
@@ -33,7 +35,8 @@
         "gym": "Kuntosali",
         "notes": "Muistiinpanot",
         "reminder": "Muistutus",
-        "habits": "Tavat"
+        "habits": "Tavat",
+        "report": "Raportti"
       }
     },
     "loadingMore": "Ladataan lisää...",

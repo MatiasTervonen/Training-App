@@ -6,6 +6,7 @@ import TodoCard from "@/features/todo/cards/todo-feed";
 import GlobalReminderCard from "@/features/reminders/cards/GlobalReminderCard-feed";
 import ActivityCard from "@/features/activities/cards/activity-feed";
 import HabitSummaryCard from "@/features/habits/cards/habit-feed";
+import ReportCard from "@/features/reports/cards/report-feed";
 import { FeedCardProps } from "@/types/session";
 
 export default function FeedCard(props: FeedCardProps) {
@@ -37,5 +38,7 @@ export default function FeedCard(props: FeedCardProps) {
       return <ActivityCard {...commomProps} />;
     case "habits":
       return <HabitSummaryCard {...commomProps} />;
+    case "reports":
+      return <ReportCard {...commomProps} />;
   }
 }

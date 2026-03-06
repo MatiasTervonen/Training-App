@@ -40,7 +40,8 @@
     "bodyWeight": "Body Weight",
     "todoList": "Todo List",
     "reminders": "Reminders",
-    "habits": "Habits"
+    "habits": "Habits",
+    "reports": "Reports"
   },
   "deleteButton": {
     "confirmDeleteTitle": "Confirm Deletion",

@@ -52,8 +52,7 @@ export default function HeaderAllDataTable({
           <AnimatedButton
             key={option.key}
             onPress={() => setRange(option.key)}
-            tabClassName="flex-1"
-            className={`py-2 rounded-md ${
+            className={`flex-1 py-2 rounded-md ${
               range === option.key ? "bg-slate-700" : ""
             }`}
           >

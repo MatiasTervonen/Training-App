@@ -4,7 +4,7 @@ import { handleError } from "@/utils/handleError";
 export async function deleteHabit(habitId: string) {
   const { error } = await supabase
     .from("habits")
-    .update({ is_active: false })
+    .delete()
     .eq("id", habitId);
 
   if (error) {

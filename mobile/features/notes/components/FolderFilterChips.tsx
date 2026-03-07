@@ -54,8 +54,7 @@ export default function FolderFilterChips({
       <View className="flex-row p-1 gap-2">
         <AnimatedButton
           onPress={onSelectAll}
-          tabClassName="w-[100px]"
-          className={`py-2 px-3 rounded-md ${isAllSelected ? "bg-slate-700" : ""}`}
+          className={`w-[100px] py-2 px-3 rounded-md ${isAllSelected ? "bg-slate-700" : ""}`}
         >
           <AppTextNC
             numberOfLines={1}
@@ -73,8 +72,7 @@ export default function FolderFilterChips({
             <AnimatedButton
               key={folder.id}
               onPress={() => onSelectFolder(folder.id)}
-              tabClassName="w-[100px]"
-              className={`py-2 px-3 rounded-md ${isActive ? "bg-slate-700" : ""}`}
+              className={`w-[100px] py-2 px-3 rounded-md ${isActive ? "bg-slate-700" : ""}`}
             >
               <AppTextNC
                 numberOfLines={1}

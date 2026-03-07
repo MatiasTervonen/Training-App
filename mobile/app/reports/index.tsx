@@ -86,8 +86,7 @@ export default function ReportsScreen() {
                 onPress={() =>
                   router.push("/reports/create?preset=weekly")
                 }
-                tabClassName="flex-1"
-                className="btn-neutral items-center justify-center"
+                className="flex-1 btn-neutral items-center justify-center"
               >
                 <AppText className="text-sm text-center text-gray-200">
                   {t("reports.presets.weekly")}
@@ -97,8 +96,7 @@ export default function ReportsScreen() {
                 onPress={() =>
                   router.push("/reports/create?preset=monthly")
                 }
-                tabClassName="flex-1"
-                className="btn-neutral items-center justify-center"
+                className="flex-1 btn-neutral items-center justify-center"
               >
                 <AppText className="text-sm text-center text-gray-200">
                   {t("reports.presets.monthly")}

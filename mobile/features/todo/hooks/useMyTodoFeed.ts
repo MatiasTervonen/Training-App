@@ -1,10 +1,15 @@
 import { useQueryClient, useInfiniteQuery } from "@tanstack/react-query";
-import { getTodoSessions } from "@/database/todo/get-todo-sessions";
+import { getTodoSessions, TodoFilter } from "@/database/todo/get-todo-sessions";
 import { FeedData } from "@/types/session";
 import { useEffect, useMemo } from "react";
 
-export default function useMyTodoFeed() {
+export default function useMyTodoFeed(filter: TodoFilter = "all") {
   const queryClient = useQueryClient();
+
+  const queryKey = useMemo(() => {
+    if (filter === "all") return ["myTodoLists"];
+    return ["myTodoLists", filter];
+  }, [filter]);
 
   const {
     data,
@@ -15,8 +20,9 @@ export default function useMyTodoFeed() {
     hasNextPage,
     isFetchingNextPage,
   } = useInfiniteQuery({
-    queryKey: ["myTodoLists"],
-    queryFn: ({ pageParam = 0 }) => getTodoSessions({ pageParam, limit: 10 }),
+    queryKey,
+    queryFn: ({ pageParam = 0 }) =>
+      getTodoSessions({ pageParam, limit: 10, filter }),
     initialPageParam: 0,
     getNextPageParam: (lastPage) => lastPage.nextPage,
   });
@@ -25,7 +31,7 @@ export default function useMyTodoFeed() {
 
   useEffect(() => {
     return () => {
-      queryClient.setQueryData<FeedData>(["myTodoLists"], (old) => {
+      queryClient.setQueryData<FeedData>(queryKey, (old) => {
         if (!old) return old;
 
         return {
@@ -35,7 +41,7 @@ export default function useMyTodoFeed() {
         };
       });
     };
-  }, [queryClient]);
+  }, [queryClient, queryKey]);
 
   const { pinnedFeed, unpinnedFeed } = useMemo(() => {
     const pinned: NonNullable<typeof data>["pages"][0]["feed"] = [];
@@ -59,5 +65,6 @@ export default function useMyTodoFeed() {
     isFetchingNextPage,
     pinnedFeed,
     unpinnedFeed,
+    queryKey,
   };
 }

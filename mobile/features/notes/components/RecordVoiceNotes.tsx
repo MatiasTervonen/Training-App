@@ -133,14 +133,12 @@ export default function RecordVoiceNotes({
           <AnimatedButton
             label={t("notes.voiceRecording.cancel")}
             onPress={cancelRecording}
-            className="bg-red-800 py-2 rounded-md shadow-md border-2 border-red-500 justify-center items-center"
-            tabClassName="flex-1"
+            className="flex-1 bg-red-800 py-2 rounded-md shadow-md border-2 border-red-500 justify-center items-center"
           />
           <AnimatedButton
             label={t("notes.voiceRecording.finish")}
             onPress={stopRecording}
-            className="bg-blue-800 border-blue-500 border-2 py-2 shadow-md justify-center items-center flex-row gap-2 rounded-md"
-            tabClassName="flex-1"
+            className="flex-1 bg-blue-800 border-blue-500 border-2 py-2 shadow-md justify-center items-center flex-row gap-2 rounded-md"
           />
         </View>
       )}

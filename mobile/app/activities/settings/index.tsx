@@ -125,8 +125,7 @@ export default function ActivitySettingsScreen() {
                 <AnimatedButton
                   key={style.labelKey}
                   onPress={() => setDefaultMapStyle(style.url)}
-                  tabClassName="flex-1"
-                  className={`py-3 rounded-lg items-center border-2 ${
+                  className={`flex-1 py-3 rounded-lg items-center border-2 ${
                     isSelected
                       ? "bg-blue-700 border-blue-500"
                       : "bg-slate-800 border-slate-600"

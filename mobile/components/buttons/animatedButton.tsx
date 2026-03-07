@@ -6,13 +6,14 @@ import Animated, {
   withSpring,
 } from "react-native-reanimated";
 
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+
 interface AppButtonProps extends PressableProps {
   label?: string;
   children?: React.ReactNode;
   onPress: () => void;
   className?: string;
   textClassName?: string;
-  tabClassName?: string;
 }
 
 export default function AnimatedButton({
@@ -21,7 +22,6 @@ export default function AnimatedButton({
   onPress,
   className,
   textClassName,
-  tabClassName,
   ...props
 }: AppButtonProps) {
   const scale = useSharedValue(1);
@@ -43,21 +43,20 @@ export default function AnimatedButton({
   };
 
   return (
-    <Animated.View style={animatedStyle} className={`${tabClassName}`}>
-      <Pressable
-        onPress={onPress}
-        onPressIn={handlePressIn}
-        onPressOut={handlePressOut}
-        className={`${className}`}
-        {...props}
-      >
-        {label && (
-          <AppText className={`text-base text-center ${textClassName}`}>
-            {label}
-          </AppText>
-        )}
-        {children}
-      </Pressable>
-    </Animated.View>
+    <AnimatedPressable
+      style={animatedStyle}
+      onPress={onPress}
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}
+      className={className}
+      {...props}
+    >
+      {label && (
+        <AppText className={`text-base text-center ${textClassName}`}>
+          {label}
+        </AppText>
+      )}
+      {children}
+    </AnimatedPressable>
   );
 }

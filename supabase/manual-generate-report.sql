@@ -58,7 +58,7 @@ BEGIN
         FROM sessions s
         JOIN gym_session_exercises gse ON gse.session_id = s.id
         WHERE s.user_id = 'fa0f62ef-be31-46b0-ad25-7328f22cb46c'::uuid
-          AND s.created_at::date BETWEEN v_period_start AND v_period_end
+          AND s.start_time::date BETWEEN v_period_start AND v_period_end
       )
       SELECT jsonb_build_object(
         'session_count', COUNT(*),
@@ -90,7 +90,7 @@ BEGIN
       FROM sessions s
       LEFT JOIN session_stats ss ON ss.session_id = s.id
       WHERE s.user_id = 'fa0f62ef-be31-46b0-ad25-7328f22cb46c'::uuid
-        AND s.created_at::date BETWEEN v_period_start AND v_period_end
+        AND s.start_time::date BETWEEN v_period_start AND v_period_end
         AND NOT EXISTS (SELECT 1 FROM gym_session_exercises gse WHERE gse.session_id = s.id);
 
       v_report_data := v_report_data || jsonb_build_object('activities', v_act_sessions);

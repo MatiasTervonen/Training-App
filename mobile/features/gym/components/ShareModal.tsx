@@ -111,8 +111,7 @@ export default function ShareModal({
           <View className="flex-row gap-4 mt-6 w-full">
             <AnimatedButton
               onPress={onClose}
-              tabClassName="flex-1"
-              className="btn-neutral items-center justify-center"
+              className="flex-1 btn-neutral items-center justify-center"
             >
               <AppText className="text-base text-center">
                 {t("gym.share.close")}
@@ -120,8 +119,7 @@ export default function ShareModal({
             </AnimatedButton>
             <AnimatedButton
               onPress={handleShare}
-              tabClassName="flex-1"
-              className="btn-base flex-row items-center justify-center gap-2"
+              className="flex-1 btn-base flex-row items-center justify-center gap-2"
               disabled={isSharing}
             >
               <Share2 color="#f3f4f6" size={18} />

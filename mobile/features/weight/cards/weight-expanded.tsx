@@ -165,7 +165,7 @@ export default function WeightSession({
           )}
         </View>
         <View className="my-10">
-          <LinkButton label={t("weight.fullAnalytics")} href="/weight/analytics">
+          <LinkButton label={t("weight.fullAnalytics")} href="/weight">
             <ChartNoAxesCombined color="#f3f4f6" className="ml-2" />
           </LinkButton>
         </View>

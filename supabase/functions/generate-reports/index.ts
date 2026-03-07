@@ -1,7 +1,8 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 Deno.serve(async (req: Request) => {
-  // Verify the request is from our cron job using the service role key
+  // Verify the request is from our cron job using the secret key
+  // SUPABASE_SERVICE_ROLE_KEY is the legacy env var name but contains the current secret key value
   const authHeader = req.headers.get("Authorization");
   if (authHeader !== `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`) {
     return new Response(JSON.stringify({ error: "Unauthorized" }), {
@@ -14,26 +15,51 @@ Deno.serve(async (req: Request) => {
     Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
   );
 
-  const today = new Date();
-  const dayOfWeek = today.getDay(); // 0=Sunday
-  const dayOfMonth = today.getDate();
-  const currentHour = today.getUTCHours();
+  const now = new Date();
 
-  // Get all active schedules that match today's day AND current hour
+  // Get all active schedules where the current hour matches in the user's timezone
+  // We fetch all active schedules and filter in code because each schedule may have a different timezone
   const { data: schedules, error } = await supabase
     .from("report_schedules")
     .select("*")
-    .eq("is_active", true)
-    .eq("delivery_hour", currentHour)
-    .or(
-      `and(schedule_type.in.(weekly,biweekly),delivery_day_of_week.eq.${dayOfWeek}),and(schedule_type.in.(monthly,quarterly),delivery_day_of_month.eq.${dayOfMonth})`,
-    );
+    .eq("is_active", true);
 
   if (error || !schedules) {
     return new Response(JSON.stringify({ error: "Failed to fetch schedules" }), {
       status: 500,
     });
   }
+
+  // Filter schedules that match the current day+hour in their timezone
+  const matchingSchedules = schedules.filter((schedule) => {
+    const tz = schedule.timezone || "UTC";
+    const formatter = new Intl.DateTimeFormat("en-US", {
+      timeZone: tz,
+      hour: "numeric",
+      hourCycle: "h23",
+    });
+    const dayFormatter = new Intl.DateTimeFormat("en-US", {
+      timeZone: tz,
+      weekday: "short",
+      day: "numeric",
+    });
+
+    const localHour = Number(formatter.format(now));
+    const localParts = dayFormatter.formatToParts(now);
+    const localDayOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+      .indexOf(localParts.find((p) => p.type === "weekday")!.value);
+    const localDayOfMonth = Number(localParts.find((p) => p.type === "day")!.value);
+
+    if (schedule.delivery_hour !== localHour) return false;
+
+    if (schedule.schedule_type === "weekly" || schedule.schedule_type === "biweekly") {
+      return schedule.delivery_day_of_week === localDayOfWeek;
+    }
+    if (schedule.schedule_type === "monthly" || schedule.schedule_type === "quarterly") {
+      return schedule.delivery_day_of_month === localDayOfMonth;
+    }
+    return false;
+  });
 
   // Map schedule_type to data period in days
   const periodDaysMap: Record<string, number> = {
@@ -43,7 +69,7 @@ Deno.serve(async (req: Request) => {
     quarterly: 90,
   };
 
-  for (const schedule of schedules) {
+  for (const schedule of matchingSchedules) {
     try {
       // For biweekly: check if it's been 2 weeks since last report
       if (schedule.schedule_type === "biweekly") {
@@ -57,7 +83,7 @@ Deno.serve(async (req: Request) => {
 
         if (lastReport) {
           const daysSinceLast = Math.floor(
-            (today.getTime() - new Date(lastReport.created_at).getTime()) / (1000 * 60 * 60 * 24),
+            (now.getTime() - new Date(lastReport.created_at).getTime()) / (1000 * 60 * 60 * 24),
           );
           if (daysSinceLast < 13) continue; // Skip — too soon (allow 1 day tolerance)
         }
@@ -75,17 +101,29 @@ Deno.serve(async (req: Request) => {
 
         if (lastReport) {
           const daysSinceLast = Math.floor(
-            (today.getTime() - new Date(lastReport.created_at).getTime()) / (1000 * 60 * 60 * 24),
+            (now.getTime() - new Date(lastReport.created_at).getTime()) / (1000 * 60 * 60 * 24),
           );
           if (daysSinceLast < 85) continue; // Skip — too soon (allow 5 day tolerance)
         }
       }
 
       const dataPeriodDays = periodDaysMap[schedule.schedule_type] || 7;
-      const periodEnd = new Date(today);
-      periodEnd.setDate(periodEnd.getDate() - 1); // yesterday
+      const tz = schedule.timezone || "UTC";
+
+      // Calculate period dates in the user's local timezone
+      const localDateStr = new Intl.DateTimeFormat("en-CA", {
+        timeZone: tz,
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      }).format(now); // "YYYY-MM-DD" in user's timezone
+
+      // periodEnd = yesterday in user's timezone
+      const localToday = new Date(localDateStr + "T00:00:00Z");
+      const periodEnd = new Date(localToday);
+      periodEnd.setUTCDate(periodEnd.getUTCDate() - 1);
       const periodStart = new Date(periodEnd);
-      periodStart.setDate(periodStart.getDate() - dataPeriodDays + 1);
+      periodStart.setUTCDate(periodStart.getUTCDate() - dataPeriodDays + 1);
 
       const reportData = await aggregateReportData(
         supabase,
@@ -93,6 +131,7 @@ Deno.serve(async (req: Request) => {
         schedule.included_features,
         periodStart,
         periodEnd,
+        tz,
       );
 
       // Generate the report (inserts report + feed item)
@@ -140,7 +179,7 @@ Deno.serve(async (req: Request) => {
     }
   }
 
-  return new Response(JSON.stringify({ processed: schedules.length }), {
+  return new Response(JSON.stringify({ processed: matchingSchedules.length }), {
     headers: { "Content-Type": "application/json" },
     status: 200,
   });
@@ -156,19 +195,27 @@ async function aggregateReportData(
   features: string[],
   periodStart: Date,
   periodEnd: Date,
+  timezone: string,
 ) {
   const start = formatDate(periodStart);
   const end = formatDate(periodEnd);
+
+  // PostgreSQL natively parses IANA timezone names in timestamp literals
+  const tsStart = `${start} 00:00:00 ${timezone}`;
+  const tsEnd = `${end} 23:59:59 ${timezone}`;
+
   const data: Record<string, unknown> = {};
 
   for (const feature of features) {
     switch (feature) {
       case "gym": {
         // Gym sessions = sessions that have gym_session_exercises
-        const { data: gymExerciseRows } = await supabase
+        const { data: gymExerciseRows, error: exErr } = await supabase
           .from("gym_session_exercises")
           .select("session_id")
           .eq("user_id", userId);
+
+        if (exErr) console.error("gym_session_exercises query failed:", exErr.message);
 
         const gymSessionIds = [
           ...new Set((gymExerciseRows || []).map((r: { session_id: string }) => r.session_id)),
@@ -176,13 +223,16 @@ async function aggregateReportData(
 
         let gymSessions: { id: string; duration: number | null; session_stats: { total_volume: number; calories: number } | null }[] = [];
         if (gymSessionIds.length > 0) {
-          const { data: sessions } = await supabase
+          const { data: sessions, error: sessErr } = await supabase
             .from("sessions")
-            .select("id, duration, created_at, session_stats(total_volume, calories)")
+            .select("id, duration, start_time, session_stats(total_volume, calories)")
             .eq("user_id", userId)
             .in("id", gymSessionIds)
-            .gte("created_at", start)
-            .lte("created_at", end + "T23:59:59Z");
+            .gte("start_time", tsStart)
+            .lte("start_time", tsEnd);
+
+          if (sessErr) console.error("sessions query failed:", sessErr.message);
+          console.log(`gym: ${gymSessionIds.length} exercise session IDs, range ${tsStart} to ${tsEnd}, found ${sessions?.length ?? 0} sessions`);
           gymSessions = sessions || [];
         }
 
@@ -221,10 +271,10 @@ async function aggregateReportData(
         // Activity sessions = sessions that do NOT have gym_session_exercises
         const { data: allSessions } = await supabase
           .from("sessions")
-          .select("id, duration, created_at, session_stats(calories, steps, distance_meters)")
+          .select("id, duration, start_time, session_stats(calories, steps, distance_meters)")
           .eq("user_id", userId)
-          .gte("created_at", start)
-          .lte("created_at", end + "T23:59:59Z");
+          .gte("start_time", tsStart)
+          .lte("start_time", tsEnd);
 
         const allSessionsList = allSessions || [];
         const allIds = allSessionsList.map((s: { id: string }) => s.id);
@@ -269,8 +319,8 @@ async function aggregateReportData(
           .from("weight")
           .select("weight, created_at")
           .eq("user_id", userId)
-          .gte("created_at", start)
-          .lte("created_at", end + "T23:59:59Z")
+          .gte("created_at", tsStart)
+          .lte("created_at", tsEnd)
           .order("created_at", { ascending: true });
 
         const weightEntries = entries || [];
@@ -287,18 +337,23 @@ async function aggregateReportData(
       }
 
       case "habits": {
-        const { data: logs } = await supabase
+        const { data: logs, error: logErr } = await supabase
           .from("habit_logs")
           .select("habit_id, completed_date")
           .eq("user_id", userId)
           .gte("completed_date", start)
           .lte("completed_date", end);
 
-        const { data: habits } = await supabase
+        if (logErr) console.error("habit_logs query failed:", logErr.message);
+
+        const { data: habits, error: habErr } = await supabase
           .from("habits")
           .select("id")
           .eq("user_id", userId)
           .eq("is_active", true);
+
+        if (habErr) console.error("habits query failed:", habErr.message);
+        console.log(`habits: ${logs?.length ?? 0} logs, ${habits?.length ?? 0} active habits, range ${start} to ${end}`);
 
         const habitLogs = logs || [];
         const activeHabits = habits || [];
@@ -339,22 +394,22 @@ async function aggregateReportData(
           .select("id", { count: "exact", head: true })
           .eq("user_id", userId)
           .eq("is_completed", true)
-          .gte("updated_at", start)
-          .lte("updated_at", end + "T23:59:59Z");
+          .gte("updated_at", tsStart)
+          .lte("updated_at", tsEnd);
 
         const { count: createdTasks } = await supabase
           .from("todo_tasks")
           .select("id", { count: "exact", head: true })
           .eq("user_id", userId)
-          .gte("created_at", start)
-          .lte("created_at", end + "T23:59:59Z");
+          .gte("created_at", tsStart)
+          .lte("created_at", tsEnd);
 
         const { count: updatedLists } = await supabase
           .from("todo_lists")
           .select("id", { count: "exact", head: true })
           .eq("user_id", userId)
-          .gte("updated_at", start)
-          .lte("updated_at", end + "T23:59:59Z");
+          .gte("updated_at", tsStart)
+          .lte("updated_at", tsEnd);
 
         data.todo = {
           tasks_completed: completedTasks || 0,

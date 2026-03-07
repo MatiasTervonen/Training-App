@@ -28,8 +28,15 @@
     "savingTodoList": "Saving todolist...",
     "saveSuccess": "Todo saved successfully",
     "saveError": "Failed to save todo",
+    "filter": {
+      "active": "Active",
+      "completed": "Completed",
+      "all": "All"
+    },
     "failedToLoad": "Failed to load todo lists. Please try again later.",
     "noTodoLists": "No todo lists yet. Add a todo list to get started!",
+    "noActiveTodoLists": "No active todo lists.",
+    "noCompletedTodoLists": "No completed todo lists.",
     "loadingDetails": "Loading todo list details...",
     "loadingTodoList": "Loading todo list...",
     "failedToLoadDetails": "Failed to load todo list details. Please try again later.",

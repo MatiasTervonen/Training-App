@@ -52,7 +52,7 @@ export default function RemindersPage() {
         <View className="flex-row gap-3 justify-center my-10 rounded-md">
           <AnimatedButton
             onPress={() => setActiveTab("normal")}
-            tabClassName={`flex-1 px-4 py-2 rounded-xl ${
+            className={`flex-1 px-4 py-2 rounded-xl ${
               activeTab === "normal" ? "bg-gray-900" : ""
             }`}
             hitSlop={20}
@@ -68,7 +68,7 @@ export default function RemindersPage() {
 
           <AnimatedButton
             onPress={() => setActiveTab("repeating")}
-            tabClassName={`flex-1 px-4 py-2 rounded-xl  ${
+            className={`flex-1 px-4 py-2 rounded-xl  ${
               activeTab === "repeating" ? "bg-gray-900" : ""
             }`}
             hitSlop={20}
@@ -83,7 +83,7 @@ export default function RemindersPage() {
           </AnimatedButton>
           <AnimatedButton
             onPress={() => setActiveTab("delivered")}
-            tabClassName={`flex-1 px-4 py-2 rounded-xl  ${
+            className={`flex-1 px-4 py-2 rounded-xl  ${
               activeTab === "delivered" ? "bg-gray-900" : ""
             }`}
             hitSlop={20}

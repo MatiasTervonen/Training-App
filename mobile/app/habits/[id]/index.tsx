@@ -1,21 +1,22 @@
-import { View, ScrollView } from "react-native";
+import { View, ScrollView, Alert } from "react-native";
 import AppText from "@/components/AppText";
 import PageContainer from "@/components/PageContainer";
 
 import StatsCard from "@/features/habits/components/StatsCard";
 import MonthGrid from "@/features/habits/components/MonthGrid";
 import LinkButton from "@/components/buttons/LinkButton";
-import DeleteButton from "@/components/buttons/DeleteButton";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import { useHabits } from "@/features/habits/hooks/useHabits";
 import { useHabitLogs } from "@/features/habits/hooks/useHabitLogs";
 import { useHabitStats } from "@/features/habits/hooks/useHabitStats";
 import { useDeleteHabit } from "@/features/habits/hooks/useDeleteHabit";
+import { useArchiveHabit } from "@/features/habits/hooks/useArchiveHabit";
 import { useHabitNotifications } from "@/features/habits/hooks/useHabitNotifications";
 import { useTranslation } from "react-i18next";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState, useCallback } from "react";
 import Toast from "react-native-toast-message";
+import * as Haptics from "expo-haptics";
 
 function getMonthRange(year: number, month: number) {
   const start = `${year}-${String(month + 1).padStart(2, "0")}-01`;
@@ -39,6 +40,7 @@ export default function HabitDetailScreen() {
   const { data: logs = [] } = useHabitLogs({ startDate: start, endDate: end, habitId: id });
   const { data: stats } = useHabitStats(id);
   const deleteMutation = useDeleteHabit();
+  const archiveMutation = useArchiveHabit();
   const { cancelHabitReminder } = useHabitNotifications();
 
   const now = new Date();
@@ -69,15 +71,45 @@ export default function HabitDetailScreen() {
     }
   }, [currentMonth]);
 
-  const handleDelete = async () => {
-    try {
-      await deleteMutation.mutateAsync(id);
-      await cancelHabitReminder(id);
-      Toast.show({ type: "success", text1: t("deleted") });
-      router.back();
-    } catch {
-      Toast.show({ type: "error", text1: t("errorDeleting") });
-    }
+  const handleArchive = () => {
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+    Alert.alert(t("archive"), t("archiveConfirm"), [
+      { text: t("common:common.cancel"), style: "cancel" },
+      {
+        text: t("archive"),
+        onPress: async () => {
+          try {
+            await archiveMutation.mutateAsync(id);
+            await cancelHabitReminder(id);
+            Toast.show({ type: "success", text1: t("archived") });
+            router.back();
+          } catch {
+            Toast.show({ type: "error", text1: t("errorArchiving") });
+          }
+        },
+      },
+    ]);
+  };
+
+  const handleDelete = () => {
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+    Alert.alert(t("delete"), t("deleteConfirm"), [
+      { text: t("common:common.cancel"), style: "cancel" },
+      {
+        text: t("common:common.delete"),
+        style: "destructive",
+        onPress: async () => {
+          try {
+            await deleteMutation.mutateAsync(id);
+            await cancelHabitReminder(id);
+            Toast.show({ type: "success", text1: t("deleted") });
+            router.back();
+          } catch {
+            Toast.show({ type: "error", text1: t("errorDeleting") });
+          }
+        },
+      },
+    ]);
   };
 
   if (!habit) {
@@ -119,18 +151,26 @@ export default function HabitDetailScreen() {
               href={`/habits/${id}/history`}
             />
           )}
+          <AnimatedButton
+            onPress={() => router.push(`/habits/create?id=${id}`)}
+            className="btn-base"
+            label={t("common:common.edit")}
+            textClassName="text-gray-100 text-center"
+          />
           <View className="flex-row gap-3">
             <View className="flex-1">
-              <DeleteButton
-                onPress={handleDelete}
-                label={t("delete")}
+              <AnimatedButton
+                onPress={handleArchive}
+                className="btn-neutral"
+                label={t("archive")}
+                textClassName="text-gray-100 text-center"
               />
             </View>
             <View className="flex-1">
               <AnimatedButton
-                onPress={() => router.push(`/habits/create?id=${id}`)}
-                className="btn-base"
-                label={t("common:common.edit")}
+                onPress={handleDelete}
+                className="btn-danger"
+                label={t("delete")}
                 textClassName="text-gray-100 text-center"
               />
             </View>

@@ -135,8 +135,7 @@ export default function FullScreenModal({
                   <View className="flex-row gap-3">
                     <AnimatedButton
                       onPress={() => setShowConfirm(false)}
-                      tabClassName="flex-1"
-                      className="btn-base py-3"
+                      className="flex-1 btn-base py-3"
                       label={t("common.keepEditing")}
                       textClassName="text-center text-gray-100"
                     />
@@ -145,8 +144,7 @@ export default function FullScreenModal({
                         setShowConfirm(false);
                         onClose();
                       }}
-                      tabClassName="flex-1"
-                      className="btn-danger py-3"
+                      className="flex-1 btn-danger py-3"
                       label={t("common.discard")}
                       textClassName="text-center text-gray-100"
                     />

@@ -1,9 +1,9 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import {
   View,
   Pressable,
   Modal,
-  FlatList,
+  SectionList,
   Dimensions,
 } from "react-native";
 import { Bell, UserPlus, UserCheck, BellRing } from "lucide-react-native";
@@ -16,6 +16,7 @@ import { useNotifications } from "@/features/notifications/hooks/useNotification
 import { useMarkAsRead } from "@/features/notifications/hooks/useMarkAsRead";
 import { useMarkAllAsRead } from "@/features/notifications/hooks/useMarkAllAsRead";
 import { getTimeAgo } from "@/features/notifications/utils/timeAgo";
+import { groupByTimePeriod } from "@/features/notifications/utils/groupByTimePeriod";
 import { Notification } from "@/types/models";
 
 function getNotificationIcon(type: string) {
@@ -50,6 +51,11 @@ export default function NotificationBell() {
   const markAllAsRead = useMarkAllAsRead();
 
   const screenWidth = Math.min(Dimensions.get("window").width, 768);
+
+  const sections = useMemo(
+    () => groupByTimePeriod(notifications ?? [], t),
+    [notifications, t],
+  );
 
   const handleNotificationPress = useCallback(
     (notification: Notification) => {
@@ -152,10 +158,17 @@ export default function NotificationBell() {
                     </AppText>
                   </AnimatedButton>
                 )}
-                <FlatList
-                  data={notifications}
+                <SectionList
+                  sections={sections}
                   keyExtractor={(item) => item.id}
                   renderItem={renderNotification}
+                  renderSectionHeader={({ section }) => (
+                    <View className="py-1.5">
+                      <AppText className="text-xs font-bold text-gray-400 uppercase">
+                        {section.title}
+                      </AppText>
+                    </View>
+                  )}
                   ListEmptyComponent={renderEmpty}
                   style={{ maxHeight: 340 }}
                 />

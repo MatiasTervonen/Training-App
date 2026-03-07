@@ -635,6 +635,54 @@ export type Database = {
           },
         ]
       }
+      generated_reports: {
+        Row: {
+          created_at: string
+          id: string
+          period_end: string
+          period_start: string
+          report_data: Json
+          schedule_id: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          period_end: string
+          period_start: string
+          report_data?: Json
+          schedule_id: string
+          title: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          period_end?: string
+          period_start?: string
+          report_data?: Json
+          schedule_id?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "generated_reports_schedule_id_fkey"
+            columns: ["schedule_id"]
+            isOneToOne: false
+            referencedRelation: "report_schedules"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "generated_reports_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       global_reminders: {
         Row: {
           created_at: string
@@ -1436,6 +1484,56 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: []
+      }
+      report_schedules: {
+        Row: {
+          created_at: string
+          delivery_day_of_month: number | null
+          delivery_day_of_week: number | null
+          delivery_hour: number
+          id: string
+          included_features: string[]
+          is_active: boolean
+          schedule_type: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          delivery_day_of_month?: number | null
+          delivery_day_of_week?: number | null
+          delivery_hour?: number
+          id?: string
+          included_features?: string[]
+          is_active?: boolean
+          schedule_type: string
+          title: string
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          delivery_day_of_month?: number | null
+          delivery_day_of_week?: number | null
+          delivery_hour?: number
+          id?: string
+          included_features?: string[]
+          is_active?: boolean
+          schedule_type?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "report_schedules_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       session_images: {
         Row: {
@@ -2592,6 +2690,43 @@ export type Database = {
           p_weekdays?: Json
         }
         Returns: string
+      }
+      report_delete_schedule: {
+        Args: { p_schedule_id: string }
+        Returns: undefined
+      }
+      report_generate: {
+        Args: {
+          p_period_end: string
+          p_period_start: string
+          p_report_data: Json
+          p_schedule_id: string
+        }
+        Returns: string
+      }
+      report_get_schedules: { Args: never; Returns: Json }
+      report_save_schedule: {
+        Args: {
+          p_delivery_day_of_month?: number
+          p_delivery_day_of_week?: number
+          p_delivery_hour?: number
+          p_included_features: string[]
+          p_schedule_type: string
+          p_title: string
+        }
+        Returns: string
+      }
+      report_update_schedule: {
+        Args: {
+          p_delivery_day_of_month?: number
+          p_delivery_day_of_week?: number
+          p_delivery_hour?: number
+          p_included_features: string[]
+          p_schedule_id: string
+          p_schedule_type: string
+          p_title: string
+        }
+        Returns: undefined
       }
       todo_check_todo: {
         Args: { p_list_id: string; p_todo_tasks: Json; p_updated_at: string }

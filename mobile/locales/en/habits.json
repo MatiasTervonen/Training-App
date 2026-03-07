@@ -11,8 +11,12 @@
   "reminder": "Reminder",
   "reminderTime": "Reminder Time",
   "save": "Save",
+  "archive": "Archive Habit",
+  "archiveConfirm": "Are you sure? The habit will be hidden but its history will be preserved.",
+  "archived": "Habit archived",
+  "errorArchiving": "Failed to archive habit",
   "delete": "Delete Habit",
-  "deleteConfirm": "Are you sure you want to delete this habit? History will be preserved.",
+  "deleteConfirm": "Are you sure? This will permanently delete the habit and all its history.",
   "stats": {
     "currentStreak": "Current Streak",
     "longestStreak": "Longest Streak",

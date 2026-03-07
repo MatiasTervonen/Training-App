@@ -2,18 +2,21 @@ import { supabase } from "@/lib/supabase";
 import { handleError } from "@/utils/handleError";
 import { FeedItemUI } from "@/types/session";
 
+export type TodoFilter = "active" | "completed" | "all";
+
 export async function getTodoSessions({
   pageParam = 0,
   limit = 10,
+  filter = "all",
 }: {
   pageParam?: number;
   limit?: number;
+  filter?: TodoFilter;
 }): Promise<{
   feed: FeedItemUI[];
   nextPage: number | null;
 }> {
   const from = pageParam * limit;
-  const to = from + limit - 1;
 
   const pinnedPromise =
     pageParam === 0
@@ -24,10 +27,12 @@ export async function getTodoSessions({
           .order("created_at", { ascending: false })
       : Promise.resolve({ data: [], error: null });
 
-  const feedPromise = supabase
-    .from("feed_items")
-    .select(
-      `
+  const feedPromise =
+    filter === "all"
+      ? supabase
+          .from("feed_items")
+          .select(
+            `
     id,
     title,
     source_id,
@@ -38,10 +43,15 @@ export async function getTodoSessions({
     type,
     extra_fields
 `,
-    )
-    .eq("type", "todo_lists")
-    .order("activity_at", { ascending: false })
-    .range(from, to);
+          )
+          .eq("type", "todo_lists")
+          .order("activity_at", { ascending: false })
+          .range(from, from + limit - 1)
+      : supabase.rpc("todo_get_filtered", {
+          p_filter: filter,
+          p_limit: limit,
+          p_offset: from,
+        });
 
   const [pinnedResult, feedResult] = await Promise.all([
     pinnedPromise,
@@ -68,7 +78,7 @@ export async function getTodoSessions({
 
   const feed = [
     ...pinned,
-    ...feedResult.data
+    ...(feedResult.data ?? [])
       .filter((i) => !pinnedIds.has(i.id))
       .map((item) => ({
         ...item,

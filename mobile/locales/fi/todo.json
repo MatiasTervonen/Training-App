@@ -28,8 +28,15 @@
     "savingTodoList": "Tallennetaan tehtävälistaa...",
     "saveSuccess": "Tehtävälista tallennettu onnistuneesti",
     "saveError": "Tehtävälistan tallennus epäonnistui",
+    "filter": {
+      "active": "Aktiiviset",
+      "completed": "Valmiit",
+      "all": "Kaikki"
+    },
     "failedToLoad": "Tehtävälistojen lataaminen epäonnistui. Yritä myöhemmin uudelleen.",
     "noTodoLists": "Ei vielä tehtävälistoja. Lisää ensimmäinen tehtävälistasi!",
+    "noActiveTodoLists": "Ei aktiivisia tehtävälistoja.",
+    "noCompletedTodoLists": "Ei valmiita tehtävälistoja.",
     "loadingDetails": "Ladataan tehtävälistan tietoja...",
     "loadingTodoList": "Ladataan tehtävälistaa...",
     "failedToLoadDetails": "Tehtävälistan tietojen lataaminen epäonnistui. Yritä myöhemmin uudelleen.",

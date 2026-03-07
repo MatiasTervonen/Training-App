@@ -2,7 +2,6 @@ import { View, ScrollView } from "react-native";
 import AppText from "@/components/AppText";
 import AppInput from "@/components/AppInput";
 import { useState } from "react";
-import ModalPageWrapper from "@/components/ModalPageWrapper";
 import useFolders from "@/features/notes/hooks/useFolders";
 import useCreateFolder from "@/features/notes/hooks/useCreateFolder";
 import useRenameFolder from "@/features/notes/hooks/useRenameFolder";
@@ -61,7 +60,6 @@ export default function ManageFoldersScreen() {
   };
 
   return (
-    <ModalPageWrapper>
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View className="px-5 pt-5 pb-20">
           <AppText className="text-2xl text-center mb-8">
@@ -137,7 +135,7 @@ export default function ManageFoldersScreen() {
                       <AnimatedButton
                         onPress={() =>
                           router.push({
-                            pathname: "/notes/my-notes",
+                            pathname: "/notes",
                             params: { folder: folder.id },
                           })
                         }
@@ -168,7 +166,7 @@ export default function ManageFoldersScreen() {
                         <AnimatedButton
                           onPress={() =>
                             router.push({
-                              pathname: "/notes/my-notes",
+                              pathname: "/notes",
                               params: { folder: folder.id },
                             })
                           }
@@ -185,6 +183,5 @@ export default function ManageFoldersScreen() {
           )}
         </View>
       </ScrollView>
-    </ModalPageWrapper>
   );
 }

@@ -10,7 +10,6 @@ import SelectInput from "@/components/Selectinput";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import FullScreenLoader from "@/components/FullScreenLoader";
 import PageContainer from "@/components/PageContainer";
-import ModalPageWrapper from "@/components/ModalPageWrapper";
 import { useState } from "react";
 import Toast from "react-native-toast-message";
 import { useTranslation } from "react-i18next";
@@ -174,17 +173,15 @@ export default function FeedbackScreen() {
           <View className="flex-row gap-3 pt-3">
             <AnimatedButton
               onPress={handleDelete}
-              className="btn-danger py-3"
+              className="flex-1 btn-danger py-3"
               label={t("common:common.delete")}
               textClassName="text-center text-gray-100"
-              tabClassName="flex-1"
             />
             <AnimatedButton
               onPress={handleSubmit}
-              className="btn-base py-3"
+              className="flex-1 btn-base py-3"
               label={t("menu:feedback.send")}
               textClassName="text-center text-gray-100"
-              tabClassName="flex-1"
             />
           </View>
         </PageContainer>

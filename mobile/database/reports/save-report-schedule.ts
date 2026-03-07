@@ -1,3 +1,4 @@
+import * as Localization from "expo-localization";
 import { supabase } from "@/lib/supabase";
 import { handleError } from "@/utils/handleError";
 import { ReportFeature, ScheduleType } from "@/types/report";
@@ -17,6 +18,8 @@ export async function saveReportSchedule({
   deliveryDayOfMonth: number | null;
   deliveryHour: number;
 }): Promise<string> {
+  const timezone = Localization.getCalendars()[0]?.timeZone ?? "UTC";
+
   const { data, error } = await supabase.rpc("report_save_schedule", {
     p_title: title,
     p_included_features: includedFeatures,
@@ -24,6 +27,7 @@ export async function saveReportSchedule({
     p_delivery_day_of_week: deliveryDayOfWeek,
     p_delivery_day_of_month: deliveryDayOfMonth,
     p_delivery_hour: deliveryHour,
+    p_timezone: timezone,
   });
 
   if (error) {

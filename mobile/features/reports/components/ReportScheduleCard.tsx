@@ -29,10 +29,7 @@ export default function ReportScheduleCard({
     ? t(`reports.weekdays.${schedule.delivery_day_of_week}`)
     : t("reports.dayOfMonth", { day: schedule.delivery_day_of_month });
 
-  // Convert UTC hour to local for display
-  const utcOffset = new Date().getTimezoneOffset() / -60;
-  const localHour = ((schedule.delivery_hour + utcOffset) % 24 + 24) % 24;
-  const deliveryTime = new Date(2000, 0, 1, localHour).toLocaleTimeString([], {
+  const deliveryTime = new Date(2000, 0, 1, schedule.delivery_hour).toLocaleTimeString([], {
     hour: "numeric",
     minute: "2-digit",
   });

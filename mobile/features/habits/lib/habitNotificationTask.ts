@@ -111,7 +111,6 @@ TaskManager.defineTask(HABIT_BG_TASK_NAME, async ({ data, error }) => {
       await AsyncStorage.removeItem(PENDING_KEY);
     }
     await AsyncStorage.setItem("habit-bg-dirty", "true");
-    console.log("BG habit marked done:", habitId, date);
   }
 });
 

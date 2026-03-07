@@ -132,8 +132,7 @@ export default function ActivityAnalytics() {
             <AnimatedButton
               key={range.key}
               onPress={() => setSelectedRange(range.key)}
-              tabClassName="flex-1"
-              className={`py-2 rounded-md ${
+              className={`flex-1 py-2 rounded-md ${
                 selectedRange === range.key ? "bg-slate-700" : ""
               }`}
               hitSlop={10}

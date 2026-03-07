@@ -214,8 +214,7 @@ export default function ActivityFinishedScreen() {
                     : t("activities.share.saveError"),
                 });
               }}
-              tabClassName="flex-1"
-              className="btn-neutral flex-row items-center justify-center gap-2"
+              className="flex-1 btn-neutral flex-row items-center justify-center gap-2"
               disabled={isSaving || isSharing || isLoadingSnapshot}
             >
               <Download color="#f3f4f6" size={20} />
@@ -236,8 +235,7 @@ export default function ActivityFinishedScreen() {
                   });
                 }
               }}
-              tabClassName="flex-1"
-              className="btn-base flex-row items-center justify-center gap-2"
+              className="flex-1 btn-base flex-row items-center justify-center gap-2"
               disabled={isSharing || isSaving || isLoadingSnapshot}
             >
               <Share2 color="#f3f4f6" size={20} />

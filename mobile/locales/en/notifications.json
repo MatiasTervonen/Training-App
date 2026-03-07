@@ -11,6 +11,12 @@
       "title": "Friend Request Accepted",
       "body": "{{name}} accepted your friend request"
     },
+    "sections": {
+      "today": "Today",
+      "yesterday": "Yesterday",
+      "thisWeek": "This week",
+      "earlier": "Earlier"
+    },
     "timeAgo": {
       "now": "Just now",
       "minutes": "{{count}} min ago",

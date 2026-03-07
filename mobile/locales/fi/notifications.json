@@ -11,6 +11,12 @@
       "title": "Kaveripyyntö hyväksytty",
       "body": "{{name}} hyväksyi kaveripyyntösi"
     },
+    "sections": {
+      "today": "Tänään",
+      "yesterday": "Eilen",
+      "thisWeek": "Tällä viikolla",
+      "earlier": "Aiemmin"
+    },
     "timeAgo": {
       "now": "Juuri nyt",
       "minutes": "{{count}} min sitten",

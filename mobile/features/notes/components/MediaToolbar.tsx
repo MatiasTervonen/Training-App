@@ -149,8 +149,7 @@ export default function MediaToolbar({
       <View className="btn-base flex-row overflow-hidden">
         <AnimatedButton
           onPress={() => setShowRecordingModal(true)}
-          className="py-1 items-center justify-center"
-          tabClassName="flex-1"
+          className="flex-1 py-1 items-center justify-center"
         >
           <Mic color="white" size={24} />
         </AnimatedButton>
@@ -159,8 +158,7 @@ export default function MediaToolbar({
 
         <AnimatedButton
           onPress={handleImagePress}
-          className="py-1 items-center justify-center"
-          tabClassName="flex-1"
+          className="flex-1 py-1 items-center justify-center"
         >
           <ImagePlus color="white" size={24} />
         </AnimatedButton>
@@ -170,8 +168,7 @@ export default function MediaToolbar({
             <View className="w-px bg-blue-500" />
             <AnimatedButton
               onPress={handleVideoPress}
-              className="py-1 items-center justify-center"
-              tabClassName="flex-1"
+              className="flex-1 py-1 items-center justify-center"
             >
               <Video color="white" size={24} />
             </AnimatedButton>
@@ -184,8 +181,7 @@ export default function MediaToolbar({
 
             <AnimatedButton
               onPress={() => setShowFolderModal(true)}
-              className="py-1 items-center justify-center"
-              tabClassName="flex-1"
+              className="flex-1 py-1 items-center justify-center"
             >
               <FolderOpen
                 color={hasFolderSelected ? "#3b82f6" : "white"}

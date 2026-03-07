@@ -48,9 +48,7 @@ export default function CreateReportScreen() {
         setScheduleType(schedule.schedule_type);
         setDeliveryDayOfWeek(schedule.delivery_day_of_week ?? 1);
         setDeliveryDayOfMonth(schedule.delivery_day_of_month ?? 1);
-        // Convert UTC hour back to local for display
-        const utcOffset = new Date().getTimezoneOffset() / -60;
-        setDeliveryHour(((schedule.delivery_hour + utcOffset) % 24 + 24) % 24);
+        setDeliveryHour(schedule.delivery_hour);
       }
     }
   }, [isEditing, id, schedules]);
@@ -102,10 +100,6 @@ export default function CreateReportScreen() {
     const isWeekly =
       scheduleType === "weekly" || scheduleType === "biweekly";
 
-    // Convert local hour to UTC
-    const utcOffset = new Date().getTimezoneOffset() / -60;
-    const utcHour = ((deliveryHour - utcOffset) % 24 + 24) % 24;
-
     setIsSaving(true);
     try {
       if (isEditing) {
@@ -116,7 +110,7 @@ export default function CreateReportScreen() {
           scheduleType,
           deliveryDayOfWeek: isWeekly ? deliveryDayOfWeek : null,
           deliveryDayOfMonth: isWeekly ? null : deliveryDayOfMonth,
-          deliveryHour: utcHour,
+          deliveryHour,
         });
       } else {
         await saveMutation.mutateAsync({
@@ -125,7 +119,7 @@ export default function CreateReportScreen() {
           scheduleType,
           deliveryDayOfWeek: isWeekly ? deliveryDayOfWeek : null,
           deliveryDayOfMonth: isWeekly ? null : deliveryDayOfMonth,
-          deliveryHour: utcHour,
+          deliveryHour,
         });
       }
       Toast.show({ type: "success", text1: t("reports.saved") });

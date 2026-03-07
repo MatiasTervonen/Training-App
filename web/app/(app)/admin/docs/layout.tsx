@@ -62,7 +62,10 @@ const docGroups = [
       },
       {
         name: "API",
-        links: [{ name: "API Routes", slug: "backend/api-routes" }],
+        links: [
+          { name: "API Routes", slug: "backend/api-routes" },
+          { name: "Edge Functions", slug: "backend/edge-functions" },
+        ],
       },
     ],
   },

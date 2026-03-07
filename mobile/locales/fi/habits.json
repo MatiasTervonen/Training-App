@@ -11,8 +11,12 @@
   "reminder": "Muistutus",
   "reminderTime": "Muistutusaika",
   "save": "Tallenna",
+  "archive": "Arkistoi tapa",
+  "archiveConfirm": "Oletko varma? Tapa piilotetaan, mutta sen historia säilytetään.",
+  "archived": "Tapa arkistoitu",
+  "errorArchiving": "Tavan arkistointi epäonnistui",
   "delete": "Poista tapa",
-  "deleteConfirm": "Haluatko varmasti poistaa tämän tavan? Historia säilytetään.",
+  "deleteConfirm": "Oletko varma? Tämä poistaa tavan ja sen historian pysyvästi.",
   "stats": {
     "currentStreak": "Nykyinen putki",
     "longestStreak": "Pisin putki",

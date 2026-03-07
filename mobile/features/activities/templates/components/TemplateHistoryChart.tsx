@@ -314,8 +314,7 @@ export default function TemplateHistoryChart({
             <AnimatedButton
               key={opt.key}
               onPress={() => setRange(opt.key)}
-              tabClassName="flex-1"
-              className={`px-5 py-2 rounded-md ${
+              className={`flex-1 px-5 py-2 rounded-md ${
                 range === opt.key ? "bg-slate-700" : ""
               }`}
               hitSlop={20}

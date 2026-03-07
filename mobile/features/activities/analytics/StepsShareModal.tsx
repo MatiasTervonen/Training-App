@@ -125,8 +125,7 @@ export default function StepsShareModal({
                     topOffset: 60,
                   });
                 }}
-                tabClassName="flex-1"
-                className="btn-neutral flex-row items-center justify-center gap-2"
+                className="flex-1 btn-neutral flex-row items-center justify-center gap-2"
                 disabled={isSaving || isSharing}
               >
                 <Download color="#f3f4f6" size={18} />
@@ -138,8 +137,7 @@ export default function StepsShareModal({
               </AnimatedButton>
               <AnimatedButton
                 onPress={handleShare}
-                tabClassName="flex-1"
-                className="btn-base flex-row items-center justify-center gap-2"
+                className="flex-1 btn-base flex-row items-center justify-center gap-2"
                 disabled={isSharing || isSaving}
               >
                 <Share2 color="#f3f4f6" size={18} />

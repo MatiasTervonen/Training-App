@@ -26,6 +26,7 @@ export default function useFeed() {
     queryFn: ({ pageParam }) => getFeed({ pageParam, limit: 10 }),
     initialPageParam: 0,
     getNextPageParam: (lastPage) => lastPage.nextPage ?? undefined,
+    staleTime: 0,
   });
 
   // Keep only first page in cahce when user leaves feed

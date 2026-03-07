@@ -22,6 +22,7 @@ export default function LocalReminderCard({
   onDelete,
   onExpand,
   onEdit,
+  onHide,
 }: FeedCardProps) {
   const { t } = useTranslation("feed");
   const payload = item.extra_fields as reminderPayload;
@@ -44,6 +45,7 @@ export default function LocalReminderCard({
       onDelete={onDelete}
       onExpand={onExpand}
       onEdit={onEdit}
+      onHide={onHide}
       typeIcon={<Bell size={20} color={pinned ? "#0f172a" : "#cbd5e1"} />}
       typeName={t("feed.card.types.reminder")}
       showUpdatedAt={true}

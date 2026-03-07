@@ -22,6 +22,7 @@ import EditTodo from "@/features/todo/cards/todo-edit";
 import ReminderSession from "@/features/reminders/cards/reminder-expanded-feed";
 import useDeleteSession from "@/features/feed/hooks/useDeleteSession";
 import useTogglePin from "@/features/feed/hooks/useTogglePin";
+import useHideFeedItem from "@/features/feed/hooks/useHideFeedItem";
 import useFeed from "@/features/feed/hooks/useFeed";
 import useFullSessions from "@/features/feed/hooks/useFullSessions";
 import FeedHeader from "@/features/feed/FeedHeader";
@@ -108,6 +109,10 @@ export default function SessionFeed({ expandReminderId }: SessionFeedProps) {
   // handle feedItem deletion
 
   const { handleDelete } = useDeleteSession();
+
+  // handle feedItem hiding
+
+  const { handleHide } = useHideFeedItem();
 
   // useFullSessions hook to get full sessions
 
@@ -217,6 +222,7 @@ export default function SessionFeed({ expandReminderId }: SessionFeedProps) {
                   onDelete={() => {
                     handleDelete(feedItem.source_id, feedItem.type);
                   }}
+                  onHide={() => handleHide(feedItem.id)}
                   onEdit={() => {
                     if (feedItem.type === "habits") {
                       router.push("/habits");

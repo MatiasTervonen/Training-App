@@ -20,6 +20,7 @@ export default function WeightCard({
   onDelete,
   onExpand,
   onEdit,
+  onHide,
 }: FeedCardProps) {
   const { t } = useTranslation("feed");
   const payload = item.extra_fields as weightPayload;
@@ -38,6 +39,7 @@ export default function WeightCard({
       onDelete={onDelete}
       onExpand={onExpand}
       onEdit={onEdit}
+      onHide={onHide}
       typeIcon={<Scale size={20} color={pinned ? "#0f172a" : "#cbd5e1"} />}
       typeName={t("feed.card.types.weight")}
       statsContent={

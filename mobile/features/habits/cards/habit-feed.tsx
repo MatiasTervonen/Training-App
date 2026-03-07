@@ -17,6 +17,7 @@ export default function HabitSummaryCard({
   onTogglePin,
   onDelete,
   onExpand,
+  onHide,
 }: FeedCardProps) {
   const { t } = useTranslation("feed");
   const { t: tHabits } = useTranslation("habits");
@@ -30,6 +31,7 @@ export default function HabitSummaryCard({
       onTogglePin={onTogglePin}
       onDelete={onDelete}
       onExpand={onExpand}
+      onHide={onHide}
       typeIcon={<Repeat size={20} color={pinned ? "#0f172a" : "#cbd5e1"} />}
       typeName={t("feed.card.types.habits")}
       statsContent={

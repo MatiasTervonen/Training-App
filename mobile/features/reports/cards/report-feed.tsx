@@ -20,6 +20,7 @@ export default function ReportCard({
   onTogglePin,
   onDelete,
   onExpand,
+  onHide,
 }: FeedCardProps) {
   const { t } = useTranslation(["feed", "reports"]);
   const payload = item.extra_fields as ReportPayload;
@@ -37,6 +38,7 @@ export default function ReportCard({
       onTogglePin={onTogglePin}
       onDelete={onDelete}
       onExpand={onExpand}
+      onHide={onHide}
       typeIcon={
         <FileBarChart size={20} color={pinned ? "#0f172a" : "#cbd5e1"} />
       }

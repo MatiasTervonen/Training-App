@@ -20,6 +20,7 @@ export default function TodoCard({
   onDelete,
   onExpand,
   onEdit,
+  onHide,
 }: FeedCardProps) {
   const { t } = useTranslation("feed");
   const payload = item.extra_fields as todoPayload;
@@ -35,6 +36,7 @@ export default function TodoCard({
       onDelete={onDelete}
       onExpand={onExpand}
       onEdit={onEdit}
+      onHide={onHide}
       typeIcon={<ListTodo size={20} color={pinned ? "#0f172a" : "#cbd5e1"} />}
       typeName={t("feed.card.types.todo")}
       statsContent={

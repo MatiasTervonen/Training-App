@@ -480,6 +480,7 @@ export type Database = {
           activity_at: string | null
           created_at: string
           extra_fields: Json
+          hidden_at: string | null
           id: string
           occurred_at: string
           source_id: string
@@ -492,6 +493,7 @@ export type Database = {
           activity_at?: string | null
           created_at?: string
           extra_fields?: Json
+          hidden_at?: string | null
           id?: string
           occurred_at: string
           source_id: string
@@ -504,6 +506,7 @@ export type Database = {
           activity_at?: string | null
           created_at?: string
           extra_fields?: Json
+          hidden_at?: string | null
           id?: string
           occurred_at?: string
           source_id?: string
@@ -2396,6 +2399,7 @@ export type Database = {
           activity_at: string | null
           created_at: string
           extra_fields: Json
+          hidden_at: string | null
           id: string
           occurred_at: string
           source_id: string
@@ -2414,6 +2418,10 @@ export type Database = {
       delete_friend: { Args: { p_friend_id: string }; Returns: undefined }
       feed_delete_session: {
         Args: { p_id: string; p_type: string }
+        Returns: undefined
+      }
+      hide_feed_item: {
+        Args: { p_feed_item_id: string }
         Returns: undefined
       }
       get_feed_sorted: {
@@ -2451,6 +2459,7 @@ export type Database = {
           activity_at: string | null
           created_at: string
           extra_fields: Json
+          hidden_at: string | null
           id: string
           occurred_at: string
           source_id: string
@@ -2523,6 +2532,7 @@ export type Database = {
           activity_at: string | null
           created_at: string
           extra_fields: Json
+          hidden_at: string | null
           id: string
           occurred_at: string
           source_id: string
@@ -2602,6 +2612,7 @@ export type Database = {
           activity_at: string | null
           created_at: string
           extra_fields: Json
+          hidden_at: string | null
           id: string
           occurred_at: string
           source_id: string
@@ -2634,6 +2645,7 @@ export type Database = {
           activity_at: string | null
           created_at: string
           extra_fields: Json
+          hidden_at: string | null
           id: string
           occurred_at: string
           source_id: string
@@ -2735,6 +2747,7 @@ export type Database = {
           activity_at: string | null
           created_at: string
           extra_fields: Json
+          hidden_at: string | null
           id: string
           occurred_at: string
           source_id: string
@@ -2765,6 +2778,7 @@ export type Database = {
           activity_at: string | null
           created_at: string
           extra_fields: Json
+          hidden_at: string | null
           id: string
           occurred_at: string
           source_id: string
@@ -2817,6 +2831,7 @@ export type Database = {
           activity_at: string | null
           created_at: string
           extra_fields: Json
+          hidden_at: string | null
           id: string
           occurred_at: string
           source_id: string

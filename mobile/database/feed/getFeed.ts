@@ -63,6 +63,7 @@ export default async function getFeed({
       .filter((i) => !pinnedIds.has(i.id))
       .map((item) => ({
         ...item,
+        hidden_at: null,
         feed_context: "feed" as const,
       })),
   ];

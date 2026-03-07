@@ -6,7 +6,7 @@ import {
   getQuickLinksConfig,
   getStepsConfig,
   getGlobalQuickLinksConfig,
-  getGlobalStepsConfig,
+  getEffectiveStepsConfig,
   saveQuickLinksConfig,
   saveStepsConfig,
   deleteWidgetConfig,
@@ -27,7 +27,7 @@ export async function widgetTaskHandler(props: WidgetTaskHandlerProps) {
           <QuickLinksWidget config={config} widgetInfo={widgetInfo} />,
         );
       } else if (widgetName === 'Steps') {
-        const config = await getGlobalStepsConfig();
+        const config = await getEffectiveStepsConfig();
         await saveStepsConfig(widgetInfo.widgetId, config);
         const steps = await getTodaySteps();
         props.renderWidget(
@@ -46,7 +46,7 @@ export async function widgetTaskHandler(props: WidgetTaskHandlerProps) {
           <QuickLinksWidget config={config} widgetInfo={widgetInfo} />,
         );
       } else if (widgetName === 'Steps') {
-        const config = await getGlobalStepsConfig();
+        const config = await getEffectiveStepsConfig();
         await saveStepsConfig(widgetInfo.widgetId, config);
         const steps = await getTodaySteps();
         props.renderWidget(

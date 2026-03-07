@@ -1,5 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import { handleError } from "@/utils/handleError";
+import { Habit } from "@/types/habit";
 
 export async function getHabits() {
   const { data, error } = await supabase
@@ -17,5 +18,5 @@ export async function getHabits() {
     throw new Error("Error getting habits");
   }
 
-  return data ?? [];
+  return (data ?? []) as Habit[];
 }

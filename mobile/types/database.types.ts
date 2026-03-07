@@ -1094,6 +1094,8 @@ export type Database = {
           name: string
           reminder_time: string | null
           sort_order: number
+          target_value: number | null
+          type: string
           user_id: string
         }
         Insert: {
@@ -1104,6 +1106,8 @@ export type Database = {
           name: string
           reminder_time?: string | null
           sort_order?: number
+          target_value?: number | null
+          type?: string
           user_id?: string
         }
         Update: {
@@ -1114,6 +1118,8 @@ export type Database = {
           name?: string
           reminder_time?: string | null
           sort_order?: number
+          target_value?: number | null
+          type?: string
           user_id?: string
         }
         Relationships: [

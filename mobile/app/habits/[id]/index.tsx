@@ -126,6 +126,14 @@ export default function HabitDetailScreen() {
     <PageContainer>
         <ScrollView className="flex-1">
           <AppText className="text-2xl text-center mb-6">{habit.name}</AppText>
+          {habit.type === "steps" && habit.target_value && (
+            <View className="bg-gray-800 rounded-lg px-4 py-3 mb-4">
+              <AppText className="text-gray-400 text-sm">{t("stepGoal")}</AppText>
+              <AppText className="text-lg text-gray-100">
+                {habit.target_value.toLocaleString()} {t("steps")}
+              </AppText>
+            </View>
+          )}
           {stats && <StatsCard stats={stats} />}
 
           <View className="mt-6">

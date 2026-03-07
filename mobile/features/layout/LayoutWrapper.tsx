@@ -18,6 +18,7 @@ import { fetchUserSettings } from "@/database/settings/get-user-settings";
 import i18n from "@/app/i18n";
 import { useNotificationSubscription } from "@/features/notifications/hooks/useNotificationSubscription";
 import useNotificationNavigation from "@/features/notifications/useNotificationNavigation";
+import { useStepGoalSync } from "@/features/habits/hooks/useStepGoalSync";
 
 export default function LayoutWrapper({
   children,
@@ -46,6 +47,9 @@ export default function LayoutWrapper({
 
   // Handle notification tap navigation (waits for auth, prevents dashboard flash)
   useNotificationNavigation(sessionChecked);
+
+  // Sync step habit goals to native SharedPreferences for background notifications
+  useStepGoalSync();
 
   const handleSessionChange = useCallback(
     async (session: Session | null, skipRedirect = false) => {

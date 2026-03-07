@@ -86,3 +86,13 @@ export function addLiveStepListener(
 ): EmitterSubscription {
   return DeviceEventEmitter.addListener(LIVE_STEP_EVENT, callback);
 }
+
+export function setStepGoals(
+  goals: number[],
+  notifTitle: string,
+  notifBody: string,
+): void {
+  if (Platform.OS === "android" && nativeStepCounter) {
+    nativeStepCounter.setStepGoals(goals, notifTitle, notifBody);
+  }
+}

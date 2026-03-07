@@ -6,15 +6,22 @@ export async function editHabit({
   name,
   reminderTime,
   frequencyDays,
+  targetValue,
 }: {
   habitId: string;
   name: string;
   reminderTime: string | null;
   frequencyDays: number[] | null;
+  targetValue?: number | null;
 }) {
   const { error } = await supabase
     .from("habits")
-    .update({ name, reminder_time: reminderTime, frequency_days: frequencyDays })
+    .update({
+      name,
+      reminder_time: reminderTime,
+      frequency_days: frequencyDays,
+      target_value: targetValue ?? null,
+    })
     .eq("id", habitId);
 
   if (error) {

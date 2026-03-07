@@ -23,7 +23,8 @@
       "goal": "Tavoite",
       "stepsUnit": "askelta",
       "saved": "Askelwidget tallennettu",
-      "invalidGoal": "Tavoitteen on oltava positiivinen luku"
+      "invalidGoal": "Tavoitteen on oltava positiivinen luku",
+      "goalFromHabit": "Tavoite asetettu askeltavasta"
     }
   }
 }

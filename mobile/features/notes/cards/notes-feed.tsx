@@ -29,6 +29,7 @@ export default function NotesCard({
   onExpand,
   onEdit,
   onMoveToFolder,
+  onHide,
   folderName,
 }: Props) {
   const { t } = useTranslation("feed");
@@ -47,6 +48,7 @@ export default function NotesCard({
       onExpand={onExpand}
       onEdit={isHtmlNote ? undefined : onEdit}
       onMoveToFolder={onMoveToFolder}
+      onHide={onHide}
       typeIcon={
         <NotebookPen size={20} color={pinned ? "#0f172a" : "#cbd5e1"} />
       }

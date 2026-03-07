@@ -19,6 +19,7 @@ type DropdownMenuProps = {
   onHistory?: () => void;
   onChange?: () => void;
   onMoveToFolder?: () => void;
+  onHide?: () => void;
 };
 
 export default function DropdownMenu({
@@ -30,8 +31,9 @@ export default function DropdownMenu({
   onHistory,
   onChange,
   onMoveToFolder,
+  onHide,
 }: DropdownMenuProps) {
-  const { t } = useTranslation("common");
+  const { t } = useTranslation(["common", "feed"]);
 
   return (
     <View>
@@ -68,6 +70,14 @@ export default function DropdownMenu({
             <View className="border-b border-blue-500">
               <MenuOption onSelect={onMoveToFolder}>
                 <AppText className="text-center">{t("common.moveToFolder")}</AppText>
+              </MenuOption>
+            </View>
+          )}
+
+          {onHide && (
+            <View className="border-b border-blue-500">
+              <MenuOption onSelect={onHide}>
+                <AppText className="text-center">{t("feed:feed.hide.label")}</AppText>
               </MenuOption>
             </View>
           )}

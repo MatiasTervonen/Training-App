@@ -55,6 +55,11 @@
       "successMessage": "Kohde on poistettu onnistuneesti.",
       "errorTitle": "Virhe",
       "errorMessage": "Kohteen poistaminen epäonnistui."
+    },
+    "hide": {
+      "label": "Piilota syötteestä",
+      "success": "Piilotettu syötteestä",
+      "error": "Kohteen piilottaminen epäonnistui"
     }
   }
 }

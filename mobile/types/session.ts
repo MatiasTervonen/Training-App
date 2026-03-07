@@ -149,6 +149,7 @@ export type FeedCardProps = {
   onExpand: () => void;
   onEdit: () => void;
   onMoveToFolder?: () => void;
+  onHide?: () => void;
 };
 
 export type NotesFeedCardProps = {

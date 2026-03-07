@@ -55,6 +55,11 @@
       "successMessage": "Item has been deleted successfully.",
       "errorTitle": "Error",
       "errorMessage": "Failed to delete item."
+    },
+    "hide": {
+      "label": "Hide from feed",
+      "success": "Hidden from feed",
+      "error": "Failed to hide item"
     }
   }
 }

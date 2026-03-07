@@ -19,6 +19,7 @@ export default function ActivityCard({
   onDelete,
   onExpand,
   onEdit,
+  onHide,
 }: FeedCardProps) {
   const { t } = useTranslation("activities");
   const payload = item.extra_fields as activityPayload;
@@ -50,6 +51,7 @@ export default function ActivityCard({
       onDelete={onDelete}
       onExpand={onExpand}
       onEdit={onEdit}
+      onHide={onHide}
       typeIcon={<Activity size={20} color={pinned ? "#0f172a" : "#cbd5e1"} />}
       typeName={getActivityTypeName()}
       statsContent={

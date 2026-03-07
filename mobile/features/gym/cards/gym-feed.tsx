@@ -21,6 +21,7 @@ export default function GymCard({
   onDelete,
   onExpand,
   onEdit,
+  onHide,
 }: FeedCardProps) {
   const { t } = useTranslation("feed");
   const payload = item.extra_fields as gymPayload;
@@ -36,6 +37,7 @@ export default function GymCard({
       onDelete={onDelete}
       onExpand={onExpand}
       onEdit={onEdit}
+      onHide={onHide}
       typeIcon={<Dumbbell size={20} color={pinned ? "#0f172a" : "#cbd5e1"} />}
       typeName={t("feed.card.types.gym")}
       statsContent={

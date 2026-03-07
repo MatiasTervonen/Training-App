@@ -10,7 +10,7 @@ import ReportCard from "@/features/reports/cards/report-feed";
 import { FeedCardProps } from "@/types/session";
 
 export default function FeedCard(props: FeedCardProps) {
-  const { pinned, onTogglePin, onDelete, onExpand, onEdit, onMoveToFolder } = props;
+  const { pinned, onTogglePin, onDelete, onExpand, onEdit, onMoveToFolder, onHide } = props;
 
   const commomProps = {
     item: props.item,
@@ -19,6 +19,7 @@ export default function FeedCard(props: FeedCardProps) {
     onDelete: onDelete,
     onExpand: onExpand,
     onEdit: onEdit,
+    onHide: onHide,
   };
 
   switch (props.item.type) {

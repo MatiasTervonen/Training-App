@@ -127,7 +127,8 @@
       "gripper": "Puristin",
       "band": "Vastuskumi",
       "ball": "Pallo",
-      "wheel": "Pyörä"
+      "wheel": "Pyörä",
+      "none": "Ei välinettä"
     },
     "muscleGroups": {
       "chest": "Rinta",

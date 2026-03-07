@@ -127,7 +127,8 @@
       "gripper": "Gripper",
       "band": "Band",
       "ball": "Ball",
-      "wheel": "Wheel"
+      "wheel": "Wheel",
+      "none": "None"
     },
     "muscleGroups": {
       "chest": "Chest",

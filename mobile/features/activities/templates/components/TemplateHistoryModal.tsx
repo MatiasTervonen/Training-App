@@ -13,6 +13,8 @@ import {
   formatDurationLong,
   formatMeters,
   formatAveragePace,
+  formatSpeed,
+  getDistanceUnitLabels,
 } from "@/lib/formatDate";
 
 type TemplateHistoryModalProps = {
@@ -34,6 +36,7 @@ export default function TemplateHistoryModal({
 }: TemplateHistoryModalProps) {
   const { t, i18n } = useTranslation("activities");
   const locale = i18n.language;
+  const labels = getDistanceUnitLabels();
 
   const personalBests = useMemo(() => {
     if (!history || history.length === 0) return null;
@@ -138,7 +141,7 @@ export default function TemplateHistoryModal({
                               )}
                             </AppTextNC>
                             <AppText className="text-gray-400 text-xs mt-1">
-                              {t("activities.templateHistory.minPerKm")}
+                              {labels.pace}
                             </AppText>
                             <AppText className="text-gray-500 text-xs mt-1">
                               {formatDateWithYear(
@@ -212,13 +215,13 @@ export default function TemplateHistoryModal({
                           {session.avg_pace !== null && (
                             <StatCard
                               label={t("activities.sessionStats.avgPace")}
-                              value={`${formatAveragePace(session.avg_pace)} ${t("activities.sessionStats.minPerKm")}`}
+                              value={`${formatAveragePace(session.avg_pace)} ${labels.pace}`}
                             />
                           )}
                           {session.avg_speed !== null && (
                             <StatCard
                               label={t("activities.sessionStats.avgSpeed")}
-                              value={`${session.avg_speed} ${t("activities.sessionStats.kmPerHour")}`}
+                              value={formatSpeed(session.avg_speed)}
                             />
                           )}
                         </View>

@@ -2,7 +2,7 @@ import { forwardRef } from "react";
 import { Image, View } from "react-native";
 import AppText from "@/components/AppText";
 import { LinearGradient } from "expo-linear-gradient";
-import { formatDuration, formatDateShort } from "@/lib/formatDate";
+import { formatDuration, formatDateShort, formatMeters } from "@/lib/formatDate";
 import {
   computeShareStats,
   getTopExercises,
@@ -38,11 +38,7 @@ const ShareCard = forwardRef<View, ShareCardProps>(
         const parts = [];
         if (ex.time_min) parts.push(`${ex.time_min} min`);
         if (ex.distance_meters) {
-          parts.push(
-            ex.distance_meters >= 1000
-              ? `${(ex.distance_meters / 1000).toFixed(1)} km`
-              : `${ex.distance_meters} m`,
-          );
+          parts.push(formatMeters(ex.distance_meters));
         }
         return parts.join(" / ") || "-";
       }

@@ -668,13 +668,6 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "generated_reports_schedule_id_fkey"
-            columns: ["schedule_id"]
-            isOneToOne: false
-            referencedRelation: "report_schedules"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "generated_reports_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
@@ -1495,6 +1488,7 @@ export type Database = {
           included_features: string[]
           is_active: boolean
           schedule_type: string
+          timezone: string
           title: string
           updated_at: string
           user_id: string
@@ -1508,6 +1502,7 @@ export type Database = {
           included_features?: string[]
           is_active?: boolean
           schedule_type: string
+          timezone?: string
           title: string
           updated_at?: string
           user_id?: string
@@ -1521,6 +1516,7 @@ export type Database = {
           included_features?: string[]
           is_active?: boolean
           schedule_type?: string
+          timezone?: string
           title?: string
           updated_at?: string
           user_id?: string
@@ -2167,6 +2163,7 @@ export type Database = {
           id: string
           profile_picture: string | null
           role: string
+          distance_unit: string
           weight_unit: string
         }
         Insert: {
@@ -2174,6 +2171,7 @@ export type Database = {
           banned_until?: string | null
           created_at?: string
           display_name: string
+          distance_unit?: string
           email?: string | null
           id: string
           profile_picture?: string | null
@@ -2185,6 +2183,7 @@ export type Database = {
           banned_until?: string | null
           created_at?: string
           display_name?: string
+          distance_unit?: string
           email?: string | null
           id?: string
           profile_picture?: string | null
@@ -2712,6 +2711,7 @@ export type Database = {
           p_delivery_hour?: number
           p_included_features: string[]
           p_schedule_type: string
+          p_timezone?: string
           p_title: string
         }
         Returns: string
@@ -2724,6 +2724,7 @@ export type Database = {
           p_included_features: string[]
           p_schedule_id: string
           p_schedule_type: string
+          p_timezone?: string
           p_title: string
         }
         Returns: undefined
@@ -2777,6 +2778,27 @@ export type Database = {
           to: "feed_items"
           isOneToOne: true
           isSetofReturn: false
+        }
+      }
+      todo_get_filtered: {
+        Args: { p_filter: string; p_limit: number; p_offset: number }
+        Returns: {
+          activity_at: string | null
+          created_at: string
+          extra_fields: Json
+          id: string
+          occurred_at: string
+          source_id: string
+          title: string
+          type: string
+          updated_at: string | null
+          user_id: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "feed_items"
+          isOneToOne: false
+          isSetofReturn: true
         }
       }
       todo_save_todo: {

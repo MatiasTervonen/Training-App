@@ -5,6 +5,7 @@ import { persist } from "zustand/middleware";
 export interface UserProfile {
   display_name: string;
   weight_unit: string;
+  distance_unit: string;
   profile_picture: string | null;
   role: string;
 }

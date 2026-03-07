@@ -3,6 +3,8 @@ import {
   formatDurationLong,
   formatMeters,
   formatAveragePace,
+  formatSpeed,
+  getDistanceUnitLabels,
 } from "@/lib/formatDate";
 import { TFunction } from "i18next";
 
@@ -39,7 +41,7 @@ export function getAvailableStats(
     stats.push({
       key: "avgPace",
       label: t("activities.share.avgPace"),
-      value: `${formatAveragePace(summary.averagePace)} /km`,
+      value: `${formatAveragePace(summary.averagePace)} ${getDistanceUnitLabels().pace}`,
     });
   }
 
@@ -48,7 +50,7 @@ export function getAvailableStats(
     stats.push({
       key: "avgSpeed",
       label: t("activities.share.avgSpeed"),
-      value: `${summary.averageSpeed} km/h`,
+      value: formatSpeed(summary.averageSpeed),
     });
   }
 

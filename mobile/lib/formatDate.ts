@@ -60,6 +60,17 @@ export const formatNotifyTime = (time: string | null) => {
 };
 
 export const formatMeters = (meters: number) => {
+  const distanceUnit = useUserStore.getState().profile?.distance_unit ?? "km";
+
+  if (distanceUnit === "mi") {
+    const feet = meters * 3.28084;
+    if (feet >= 5280) {
+      return `${(meters / 1609.344).toFixed(1)} mi`;
+    } else {
+      return `${Math.round(feet)} ft`;
+    }
+  }
+
   if (meters >= 1000) {
     return `${(meters / 1000).toFixed(1)} km`;
   } else {
@@ -97,12 +108,72 @@ export const formatDurationLong = (seconds: number) => {
   }
 };
 
-export const formatAveragePace = (paceSeconds: number) => {
+export const formatAveragePace = (paceSecondsPerKm: number) => {
+  const distanceUnit = useUserStore.getState().profile?.distance_unit ?? "km";
+
+  let paceSeconds = paceSecondsPerKm;
+  if (distanceUnit === "mi") {
+    paceSeconds = paceSecondsPerKm * 1.60934;
+  }
+
   if (!isFinite(paceSeconds) || paceSeconds <= 0) return "0:00";
 
   const minutes = Math.floor(paceSeconds / 60);
   const seconds = Math.floor(paceSeconds % 60);
   return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+};
+
+export const formatSpeed = (kmh: number) => {
+  const distanceUnit = useUserStore.getState().profile?.distance_unit ?? "km";
+
+  if (distanceUnit === "mi") {
+    return `${(kmh * 0.621371).toFixed(1)} mph`;
+  }
+  return `${kmh.toFixed(1)} km/h`;
+};
+
+export const formatSpeedFromMs = (ms: number) => {
+  const distanceUnit = useUserStore.getState().profile?.distance_unit ?? "km";
+
+  if (distanceUnit === "mi") {
+    return Math.round(ms * 2.23694);
+  }
+  return Math.round(ms * 3.6);
+};
+
+export const formatAltitude = (meters: number) => {
+  const distanceUnit = useUserStore.getState().profile?.distance_unit ?? "km";
+
+  if (distanceUnit === "mi") {
+    return `${Math.round(meters * 3.28084)} ft`;
+  }
+  return `${Math.round(meters)} m`;
+};
+
+export const getDistanceUnitLabels = () => {
+  const distanceUnit = useUserStore.getState().profile?.distance_unit ?? "km";
+  return {
+    speed: distanceUnit === "mi" ? "mph" : "km/h",
+    pace: distanceUnit === "mi" ? "min/mi" : "min/km",
+    altitude: distanceUnit === "mi" ? "ft" : "m",
+    short: distanceUnit === "mi" ? "ft" : "m",
+  };
+};
+
+export const convertMetersForDisplay = (meters: number) => {
+  const distanceUnit = useUserStore.getState().profile?.distance_unit ?? "km";
+  if (distanceUnit === "mi") {
+    return Math.round(meters * 3.28084);
+  }
+  return meters;
+};
+
+export const convertInputToMeters = (value: number) => {
+  const distanceUnit = useUserStore.getState().profile?.distance_unit ?? "km";
+  if (distanceUnit === "mi") {
+    return Math.round(value / 3.28084);
+  }
+  return value;
 };
 
 export function formatDurationNotesVoice(ms?: number) {

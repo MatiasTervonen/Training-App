@@ -28,11 +28,13 @@ export default function ProfileScreen() {
   const [isSaving, setIsSaving] = useState(false);
   const [userName, setUserName] = useState("");
   const [weightUnit, setWeightUnit] = useState("");
+  const [distanceUnit, setDistanceUnit] = useState("");
   const [selectedProfilePic, setSelectedProfilePic] =
     useState<UploadFile | null>(null);
 
   const userNameZ = useUserStore((state) => state.profile?.display_name);
   const weightUnitZ = useUserStore((state) => state.profile?.weight_unit);
+  const distanceUnitZ = useUserStore((state) => state.profile?.distance_unit);
   const profilePicZ = useUserStore((state) => state.profile?.profile_picture);
 
   const setUserProfile = useUserStore((state) => state.setUserProfile);
@@ -40,8 +42,9 @@ export default function ProfileScreen() {
   useEffect(() => {
     setUserName(userNameZ || "");
     setWeightUnit(weightUnitZ || "kg");
+    setDistanceUnit(distanceUnitZ || "km");
     setSelectedProfilePic(null);
-  }, [userNameZ, weightUnitZ, profilePicZ]);
+  }, [userNameZ, weightUnitZ, distanceUnitZ, profilePicZ]);
 
   const checkFileSize = async (uri: string) => {
     try {
@@ -159,6 +162,7 @@ export default function ProfileScreen() {
       const payload = {
         display_name: userName,
         weight_unit: weightUnit,
+        distance_unit: distanceUnit,
         profile_picture: profilePictureUrl,
       };
 
@@ -223,6 +227,18 @@ export default function ProfileScreen() {
                 options={[
                   { value: "kg", label: "kg" },
                   { value: "lbs", label: "lbs" },
+                ]}
+              />
+            </View>
+            <View className="mt-5">
+              <SelectInput
+                topLabel={t("menu:profile.distanceUnit")}
+                label={t("menu:profile.distanceUnit")}
+                value={distanceUnit}
+                onChange={setDistanceUnit}
+                options={[
+                  { value: "km", label: "km" },
+                  { value: "mi", label: "mi" },
                 ]}
               />
             </View>

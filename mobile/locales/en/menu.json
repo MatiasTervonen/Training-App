@@ -15,6 +15,7 @@
     "profilePicturePermissionTitle": "Permission Denied",
     "profilePicturePermissionMessage": "Please allow access to your photos.",
     "weightUnit": "Weight Unit",
+    "distanceUnit": "Distance Unit",
     "savingProfile": "Saving profile...",
     "updateSuccess": "Settings updated successfully!",
     "updateError": "An unexpected error occurred while saving settings."

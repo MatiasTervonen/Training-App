@@ -15,6 +15,7 @@
     "profilePicturePermissionTitle": "Lupa evätty",
     "profilePicturePermissionMessage": "Salli pääsy kuviisi.",
     "weightUnit": "Painoyksikkö",
+    "distanceUnit": "Matkayksikkö",
     "savingProfile": "Tallennetaan profiilia...",
     "updateSuccess": "Asetukset päivitetty onnistuneesti!",
     "updateError": "Odottamaton virhe asetusten tallennuksessa."

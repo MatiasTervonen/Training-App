@@ -46,6 +46,10 @@ class StepTrackingService : Service(), SensorEventListener {
     private var helper: StepCounterHelper? = null
     private var screenUnlockReceiver: BroadcastReceiver? = null
     private var isSetUp = false
+
+    // Step goal tracking
+    private var cachedGoals: IntArray = intArrayOf()
+    private var goalsLoadedForDate: String = ""
     private val notificationHandler = Handler(Looper.getMainLooper())
     private val notificationUpdateRunnable = object : Runnable {
         override fun run() {
@@ -61,6 +65,11 @@ class StepTrackingService : Service(), SensorEventListener {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        if (intent?.action == "RELOAD_GOALS") {
+            reloadGoals()
+            return START_STICKY
+        }
+
         Log.d(TAG, "Service starting")
 
         createNotificationChannel()
@@ -96,6 +105,9 @@ class StepTrackingService : Service(), SensorEventListener {
         val currentValue = event.values[0].toLong()
         val h = helper ?: return
         h.recordReadingWithValue(currentValue)
+
+        // Check step goals after recording
+        checkStepGoals(h.getTodaySteps())
     }
 
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
@@ -173,5 +185,92 @@ class StepTrackingService : Service(), SensorEventListener {
     private fun updateNotification() {
         val notificationManager = getSystemService(NotificationManager::class.java)
         notificationManager.notify(NOTIFICATION_ID, buildNotification())
+    }
+
+    // --- Step Goal Checking ---
+
+    private fun reloadGoals() {
+        val goalPrefs = getSharedPreferences("step_goals_prefs", Context.MODE_PRIVATE)
+        val goalsJson = goalPrefs.getString("step_goals", "[]") ?: "[]"
+        val arr = org.json.JSONArray(goalsJson)
+        cachedGoals = IntArray(arr.length()) { arr.getInt(it) }
+    }
+
+    private fun checkStepGoals(todaySteps: Long) {
+        // Reload goals once per day (picks up changes + resets notified flags)
+        val today = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.US).format(java.util.Date())
+        if (goalsLoadedForDate != today) {
+            reloadGoals()
+            goalsLoadedForDate = today
+        }
+
+        if (cachedGoals.isEmpty()) return
+
+        val notifiedPrefs = getSharedPreferences("step_goals_notified", Context.MODE_PRIVATE)
+        val notifiedDate = notifiedPrefs.getString("notified_date", "")
+
+        // Reset notified flags if it's a new day
+        if (notifiedDate != today) {
+            notifiedPrefs.edit()
+                .putString("notified_date", today)
+                .putStringSet("notified_goals", emptySet())
+                .apply()
+        }
+
+        val notifiedGoals = notifiedPrefs.getStringSet("notified_goals", emptySet())!!.toMutableSet()
+
+        for (target in cachedGoals) {
+            val key = target.toString()
+            if (todaySteps >= target && key !in notifiedGoals) {
+                notifiedGoals.add(key)
+                fireGoalReachedNotification(target)
+            }
+        }
+
+        notifiedPrefs.edit()
+            .putStringSet("notified_goals", notifiedGoals)
+            .apply()
+    }
+
+    private fun fireGoalReachedNotification(target: Int) {
+        val channelId = "step_goal_channel"
+        val notificationManager = getSystemService(NotificationManager::class.java)
+
+        // Create channel if needed (idempotent)
+        val channel = NotificationChannel(
+            channelId,
+            "Step Goals",
+            NotificationManager.IMPORTANCE_HIGH
+        ).apply {
+            description = "Notifications when you reach your step goal"
+        }
+        notificationManager.createNotificationChannel(channel)
+
+        val formattedTarget = NumberFormat.getNumberInstance(Locale.getDefault()).format(target)
+
+        // Read translated strings from SharedPreferences (written by JS)
+        val goalPrefs = getSharedPreferences("step_goals_prefs", Context.MODE_PRIVATE)
+        val title = goalPrefs.getString("notif_title", "Step goal reached!") ?: "Step goal reached!"
+        val bodyTemplate = goalPrefs.getString("notif_body", "You hit {{steps}} steps today!") ?: "You hit {{steps}} steps today!"
+        val body = bodyTemplate.replace("{{steps}}", formattedTarget)
+
+        val openAppIntent = Intent(this, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
+        }
+        val pendingIntent = PendingIntent.getActivity(
+            this, target, openAppIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val notification = Notification.Builder(this, channelId)
+            .setContentTitle(title)
+            .setContentText(body)
+            .setSmallIcon(R.drawable.small_notification_icon)
+            .setContentIntent(pendingIntent)
+            .setAutoCancel(true)
+            .build()
+
+        // Use target as notification ID so each goal gets its own notification
+        notificationManager.notify(target, notification)
     }
 }

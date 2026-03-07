@@ -75,6 +75,22 @@ export async function getGlobalStepsConfig(): Promise<StepsConfig> {
   return JSON.parse(raw) as StepsConfig;
 }
 
+export async function getEffectiveStepsConfig(): Promise<StepsConfig> {
+  const config = await getGlobalStepsConfig();
+
+  // Check if step habits exist — their targets override the manual goal
+  const raw = await AsyncStorage.getItem("step_habit_targets");
+  if (raw) {
+    const targets: number[] = JSON.parse(raw);
+    if (targets.length > 0) {
+      const highestTarget = Math.max(...targets);
+      return { showGoal: config.showGoal, dailyGoal: highestTarget };
+    }
+  }
+
+  return config;
+}
+
 export async function saveGlobalStepsConfig(
   config: StepsConfig,
 ): Promise<void> {

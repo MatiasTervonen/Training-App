@@ -23,7 +23,8 @@
       "goal": "Goal",
       "stepsUnit": "steps",
       "saved": "Steps widget saved",
-      "invalidGoal": "Goal must be a positive number"
+      "invalidGoal": "Goal must be a positive number",
+      "goalFromHabit": "Goal set by step habit"
     }
   }
 }

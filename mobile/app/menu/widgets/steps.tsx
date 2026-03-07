@@ -14,22 +14,34 @@ import { DEFAULT_STEPS_CONFIG } from "@/features/widgets/widget-constants";
 import {
   getGlobalStepsConfig,
   saveGlobalStepsConfig,
+  getEffectiveStepsConfig,
 } from "@/features/widgets/widget-storage";
 import { getTodaySteps } from "@/native/android/NativeStepCounter";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function StepsConfigPage() {
-  const { t } = useTranslation("widgets");
+  const { t } = useTranslation(["widgets", "habits"]);
   const router = useRouter();
   const [showGoal, setShowGoal] = useState(DEFAULT_STEPS_CONFIG.showGoal);
   const [dailyGoal, setDailyGoal] = useState(
     String(DEFAULT_STEPS_CONFIG.dailyGoal),
   );
   const [loaded, setLoaded] = useState(false);
+  const [stepHabitTarget, setStepHabitTarget] = useState<number | null>(null);
 
   useEffect(() => {
-    getGlobalStepsConfig().then((config) => {
+    Promise.all([
+      getGlobalStepsConfig(),
+      AsyncStorage.getItem("step_habit_targets"),
+    ]).then(([config, raw]) => {
       setShowGoal(config.showGoal);
       setDailyGoal(String(config.dailyGoal));
+      if (raw) {
+        const targets: number[] = JSON.parse(raw);
+        if (targets.length > 0) {
+          setStepHabitTarget(Math.max(...targets));
+        }
+      }
       setLoaded(true);
     });
   }, []);
@@ -38,10 +50,10 @@ export default function StepsConfigPage() {
   const isGoalValid = !isNaN(parsedGoal) && parsedGoal > 0;
 
   const handleSave = async () => {
-    if (showGoal && !isGoalValid) {
+    if (showGoal && !stepHabitTarget && !isGoalValid) {
       Toast.show({
         type: "error",
-        text1: t("widgets.steps.invalidGoal"),
+        text1: t("widgets:widgets.steps.invalidGoal"),
       });
       return;
     }
@@ -51,12 +63,13 @@ export default function StepsConfigPage() {
       dailyGoal: isGoalValid ? parsedGoal : DEFAULT_STEPS_CONFIG.dailyGoal,
     };
     await saveGlobalStepsConfig(config);
+    const effectiveConfig = await getEffectiveStepsConfig();
     const steps = await getTodaySteps();
     requestWidgetUpdate({
       widgetName: "Steps",
-      renderWidget: () => <StepsWidget config={config} steps={steps} />,
+      renderWidget: () => <StepsWidget config={effectiveConfig} steps={steps} />,
     }).catch(() => {});
-    Toast.show({ type: "success", text1: t("widgets.steps.saved") });
+    Toast.show({ type: "success", text1: t("widgets:widgets.steps.saved") });
     router.back();
   };
 
@@ -66,32 +79,46 @@ export default function StepsConfigPage() {
     <Pressable className="flex-1" onPress={Keyboard.dismiss}>
       <PageContainer>
         <AppText className="text-2xl text-center mb-8">
-          {t("widgets.steps.configTitle")}
+          {t("widgets:widgets.steps.configTitle")}
         </AppText>
 
         <View className="flex-1 justify-between">
           <View className="gap-5">
             <View className="flex-row justify-between items-center py-3 px-4 bg-slate-800 rounded-lg">
               <AppText className="text-lg">
-                {t("widgets.steps.showGoal")}
+                {t("widgets:widgets.steps.showGoal")}
               </AppText>
               <Toggle isOn={showGoal} onToggle={() => setShowGoal((v) => !v)} />
             </View>
 
             {showGoal && (
               <View className="px-4">
-                <AppInput
-                  label={t("widgets.steps.dailyGoal")}
-                  value={dailyGoal}
-                  setValue={setDailyGoal}
-                  keyboardType="numeric"
-                />
+                {stepHabitTarget ? (
+                  <View className="gap-2">
+                    <AppText className="text-gray-400">
+                      {t("widgets:widgets.steps.dailyGoal")}
+                    </AppText>
+                    <AppText className="text-lg text-gray-100">
+                      {stepHabitTarget.toLocaleString()} {t("widgets:widgets.steps.stepsUnit")}
+                    </AppText>
+                    <AppText className="text-sm text-gray-500">
+                      {t("widgets:widgets.steps.goalFromHabit")}
+                    </AppText>
+                  </View>
+                ) : (
+                  <AppInput
+                    label={t("widgets:widgets.steps.dailyGoal")}
+                    value={dailyGoal}
+                    setValue={setDailyGoal}
+                    keyboardType="numeric"
+                  />
+                )}
               </View>
             )}
           </View>
 
           <AnimatedButton
-            label={t("widgets.steps.save")}
+            label={t("widgets:widgets.steps.save")}
             onPress={handleSave}
             className="btn-base"
           />

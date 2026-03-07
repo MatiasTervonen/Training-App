@@ -7,6 +7,8 @@ export type Habit = {
   is_active: boolean;
   sort_order: number;
   created_at: string;
+  type: "manual" | "steps";
+  target_value: number | null;
 };
 
 export type HabitLog = {

@@ -19,6 +19,7 @@ import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
+import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.modules.core.DeviceEventManagerModule
 import com.facebook.react.modules.core.PermissionAwareActivity
 import com.facebook.react.modules.core.PermissionListener
@@ -248,6 +249,27 @@ class StepCounterModule(private val reactContext: ReactApplicationContext)
         } catch (e: Exception) {
             promise.reject("STEP_ERROR", e.message, e)
         }
+    }
+
+    // --- Step Goals ---
+
+    @ReactMethod
+    fun setStepGoals(goals: ReadableArray, notifTitle: String, notifBody: String) {
+        val prefs = reactContext.getSharedPreferences("step_goals_prefs", Context.MODE_PRIVATE)
+        val jsonArray = org.json.JSONArray()
+        for (i in 0 until goals.size()) {
+            jsonArray.put(goals.getInt(i))
+        }
+        prefs.edit()
+            .putString("step_goals", jsonArray.toString())
+            .putString("notif_title", notifTitle)
+            .putString("notif_body", notifBody)
+            .apply()
+
+        // Tell the running service to reload goals immediately
+        val intent = Intent(reactContext, StepTrackingService::class.java)
+        intent.action = "RELOAD_GOALS"
+        reactContext.startService(intent)
     }
 
     // --- Live Step Updates (for activity sessions) ---

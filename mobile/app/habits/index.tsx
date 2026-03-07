@@ -8,6 +8,8 @@ import MonthGrid from "@/features/habits/components/MonthGrid";
 import { useHabits } from "@/features/habits/hooks/useHabits";
 import { useHabitLogs } from "@/features/habits/hooks/useHabitLogs";
 import { useToggleHabit } from "@/features/habits/hooks/useToggleHabit";
+import { useStepHabitAutoComplete } from "@/features/habits/hooks/useStepHabitAutoComplete";
+import { useTodaySteps } from "@/features/habits/hooks/useTodaySteps";
 import { isHabitScheduledForDate } from "@/features/habits/utils/isHabitScheduled";
 import { Confetti } from "react-native-fast-confetti";
 import { useTranslation } from "react-i18next";
@@ -33,6 +35,8 @@ export default function HabitsScreen() {
   const { start, end } = getMonthRange(currentYear, currentMonth);
   const { data: logs = [] } = useHabitLogs({ startDate: start, endDate: end });
   const toggleMutation = useToggleHabit();
+  const currentSteps = useTodaySteps();
+  useStepHabitAutoComplete();
 
   const [showConfetti, setShowConfetti] = useState(false);
   const hasShownConfetti = useRef(false);
@@ -132,6 +136,7 @@ export default function HabitsScreen() {
               logs={logs}
               selectedDate={selectedDate}
               onToggle={handleToggle}
+              currentSteps={currentSteps}
             />
 
             <View className="mt-6">

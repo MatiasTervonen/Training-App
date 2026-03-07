@@ -12,6 +12,7 @@ type HabitChecklistProps = {
   logs: HabitLog[];
   selectedDate: string;
   onToggle: (habitId: string, date: string) => void;
+  currentSteps?: number;
 };
 
 export default function HabitChecklist({
@@ -19,6 +20,7 @@ export default function HabitChecklist({
   logs,
   selectedDate,
   onToggle,
+  currentSteps,
 }: HabitChecklistProps) {
   const { t } = useTranslation("habits");
   const router = useRouter();
@@ -35,9 +37,6 @@ export default function HabitChecklist({
   );
 
   const isToday = selectedDate === new Date().toLocaleDateString("en-CA");
-
-  const allDone = scheduledHabits.length > 0 &&
-    scheduledHabits.every((h) => completedSet.has(h.id));
 
   const handleToggle = useCallback(
     (habitId: string) => onToggle(habitId, selectedDate),
@@ -65,6 +64,9 @@ export default function HabitChecklist({
               isCompleted={completedSet.has(habit.id)}
               onToggle={() => handleToggle(habit.id)}
               onPress={() => handlePress(habit.id)}
+              currentSteps={
+                isToday && habit.type === "steps" ? currentSteps : undefined
+              }
             />
           ))}
         </View>

@@ -11,7 +11,7 @@ import Animated, {
   Easing,
 } from "react-native-reanimated";
 import { useEffect } from "react";
-import { formatAveragePace, formatMeters } from "@/lib/formatDate";
+import { formatAveragePace, formatMeters, formatSpeedFromMs, formatAltitude, getDistanceUnitLabels } from "@/lib/formatDate";
 import { useTimerStore } from "@/lib/stores/timerStore";
 
 function mapDegreesToDirection(degrees: number): string {
@@ -48,6 +48,7 @@ export default function SessionStats({
   hasStartedTracking = false,
   averagePacePerKm = 0,
 }: SessionStatsProps) {
+  const labels = getDistanceUnitLabels();
   const activeSession = useTimerStore((state) => state.activeSession);
   const heading = useSharedValue(0);
   const opacity = useSharedValue(1);
@@ -108,7 +109,7 @@ export default function SessionStats({
             </View>
             <View>
               <AppText className="text-xl z-[999]">
-                {formatAveragePace(averagePacePerKm)} min/km
+                {formatAveragePace(averagePacePerKm)} {labels.pace}
               </AppText>
               <AppText className="text-xl z-[999] mt-2">
                 {formatMeters(totalDistance)}
@@ -145,11 +146,11 @@ export default function SessionStats({
                 <View className="flex-row items-center gap-2">
                   <View className="border-2 border-blue-500 rounded-full w-14 h-14 items-center justify-center mb-2">
                     <AppText className="text-xl">
-                      {Math.round(lastMovingPoint?.speed * 3.6)}
+                      {formatSpeedFromMs(lastMovingPoint?.speed ?? 0)}
                     </AppText>
                   </View>
                   <View>
-                    <AppText>km/h</AppText>
+                    <AppText>{labels.speed}</AppText>
                   </View>
                 </View>
                 <Gauge size={20} color="#f3f4f6" />
@@ -201,11 +202,11 @@ export default function SessionStats({
                 <View className="flex-row items-center gap-2">
                   <View className="border-2 border-blue-500 rounded-full w-14 h-14 items-center justify-center mb-2">
                     <AppText className="text-xl">
-                      {Math.round(lastMovingPoint.altitude)}
+                      {formatAltitude(lastMovingPoint.altitude).split(" ")[0]}
                     </AppText>
                   </View>
                   <View>
-                    <AppText>m</AppText>
+                    <AppText>{labels.altitude}</AppText>
                   </View>
                 </View>
                 <Mountain size={20} color="#3b82f6" />

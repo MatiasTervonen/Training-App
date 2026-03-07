@@ -8,6 +8,7 @@ import {
 import { SquareX } from "lucide-react-native";
 import AppInput from "@/components/AppInput";
 import { useUserStore } from "@/lib/stores/useUserStore";
+import { getDistanceUnitLabels, convertMetersForDisplay } from "@/lib/formatDate";
 import { useConfirmAction } from "@/lib/confirmAction";
 import SelectInput from "@/components/Selectinput";
 import DropDownModal from "@/components/DropDownModal";
@@ -57,6 +58,7 @@ export default function ExerciseCard({
 }: ExerciseCardProps) {
   const weightUnit =
     useUserStore((state) => state.profile?.weight_unit) || "kg";
+  const distanceLabels = getDistanceUnitLabels();
 
   const confirmAction = useConfirmAction();
 
@@ -122,7 +124,7 @@ export default function ExerciseCard({
                 ? history?.sets
                     .map(
                       (set) =>
-                        `${set.time_min ? `${Math.floor(set.time_min)}:${String(Math.round((set.time_min % 1) * 60)).padStart(2, "0")}` : "0:00"} / ${set.distance_meters ?? 0}m`,
+                        `${set.time_min ? `${Math.floor(set.time_min)}:${String(Math.round((set.time_min % 1) * 60)).padStart(2, "0")}` : "0:00"} / ${convertMetersForDisplay(set.distance_meters ?? 0)}${distanceLabels.short}`,
                     )
                     .join(" • ")
                 : history?.sets
@@ -211,7 +213,7 @@ export default function ExerciseCard({
                   </View>
                   <View className="flex-1 items-center">
                     <AppText className="p-2 text-lg">
-                      {set.distance_meters}
+                      {convertMetersForDisplay(set.distance_meters ?? 0)}
                     </AppText>
                   </View>
                 </>
@@ -280,7 +282,7 @@ export default function ExerciseCard({
                   </View>
                   <View className="w-2/4">
                     <AppInput
-                      placeholder={t("gym.exerciseCard.lengthPlaceholder")}
+                      placeholder={`${t("gym.exerciseCard.length")} (${distanceLabels.short})`}
                       keyboardType="numeric"
                       value={input.distance_meters ?? ""}
                       onChangeText={(val) => {

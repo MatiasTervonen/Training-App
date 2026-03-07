@@ -1,4 +1,4 @@
-import { formatDate, formatDuration, formatTime } from "@/lib/formatDate";
+import { formatDate, formatDuration, formatTime, getDistanceUnitLabels, convertMetersForDisplay } from "@/lib/formatDate";
 import { useUserStore } from "@/lib/stores/useUserStore";
 import { FullGymSession } from "@/database/gym/get-full-gym-session";
 import GroupExercises from "@/features/gym/lib/GroupExercises";
@@ -275,7 +275,7 @@ export default function GymSession(gym_session: FullGymSession) {
                             {t("gym.session.distance")}
                           </AppText>
                           <AppText className="text-lg">
-                            ({t("gym.session.meters")})
+                            ({getDistanceUnitLabels().short})
                           </AppText>
                         </View>
                         <View className="w-8" />
@@ -327,7 +327,7 @@ export default function GymSession(gym_session: FullGymSession) {
                           </View>
                           <View className="flex-1 items-center">
                             <AppText className="p-2">
-                              {set.distance_meters}
+                              {convertMetersForDisplay(set.distance_meters ?? 0)}
                             </AppText>
                           </View>
                           <View className="w-8" />

@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import FullScreenModal from "@/components/FullScreenModal";
 import { ActivityIndicator, View } from "react-native";
-import { formatDateShort } from "@/lib/formatDate";
+import { formatDateShort, getDistanceUnitLabels, convertMetersForDisplay } from "@/lib/formatDate";
 import AppText from "@/components/AppText";
 import { HistoryResult } from "@/types/session";
 import { FlatList } from "react-native-gesture-handler";
@@ -159,7 +159,7 @@ export default function ExerciseHistoryModal({
                         </AppTextNC>
                       ) : (
                         <AppTextNC className="text-center text-2xl text-cyan-400">
-                          {personalBest.distance} m &middot;{" "}
+                          {convertMetersForDisplay(personalBest.distance)} {getDistanceUnitLabels().short} &middot;{" "}
                           {personalBest.time}{" "}
                           {t("gym.exerciseHistory.timeMin").toLowerCase()}
                         </AppTextNC>
@@ -254,7 +254,7 @@ export default function ExerciseHistoryModal({
                                 <View className="flex-1 items-center">
                                   <AppText className="p-2 text-lg">
                                     {set.distance_meters
-                                      ? `${set.distance_meters}m`
+                                      ? `${convertMetersForDisplay(set.distance_meters)}${getDistanceUnitLabels().short}`
                                       : ""}
                                   </AppText>
                                 </View>

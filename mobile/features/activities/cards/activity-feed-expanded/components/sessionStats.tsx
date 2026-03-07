@@ -4,6 +4,8 @@ import {
   formatDurationLong,
   formatMeters,
   formatAveragePace,
+  formatSpeed,
+  getDistanceUnitLabels,
 } from "@/lib/formatDate";
 import { LinearGradient } from "expo-linear-gradient";
 import { useTranslation } from "react-i18next";
@@ -16,6 +18,7 @@ type SessionStatsProps = {
 
 export default function SessionStats({ activity_session, hasRoute }: SessionStatsProps) {
   const { t } = useTranslation("activities");
+  const labels = getDistanceUnitLabels();
   const stats = activity_session.stats;
   const session = activity_session.session;
 
@@ -49,11 +52,11 @@ export default function SessionStats({ activity_session, hasRoute }: SessionStat
           <StatCard
             label={t("activities.sessionStats.avgPace")}
             sublabel={t("activities.sessionStats.moving")}
-            value={`${formatAveragePace(stats?.avg_pace ?? 0)} ${t("activities.sessionStats.minPerKm")}`}
+            value={`${formatAveragePace(stats?.avg_pace ?? 0)} ${labels.pace}`}
           />
           <StatCard
             label={t("activities.sessionStats.avgSpeed")}
-            value={`${stats?.avg_speed ?? 0} ${t("activities.sessionStats.kmPerHour")}`}
+            value={formatSpeed(stats?.avg_speed ?? 0)}
           />
         </View>
       )}

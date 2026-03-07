@@ -4,6 +4,7 @@ import { handleError } from "@/utils/handleError";
 export async function saveUserProfile(updates: {
   display_name: string;
   weight_unit: string;
+  distance_unit: string;
   profile_picture: string | null;
 }) {
   const {

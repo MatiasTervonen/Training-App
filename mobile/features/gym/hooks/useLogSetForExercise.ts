@@ -1,6 +1,7 @@
 import { ExerciseEntry, ExerciseInput } from "@/types/session";
 import { useGymSettingsStore } from "@/lib/stores/gymSettingsStore";
 import { useRestTimerStore } from "@/lib/stores/restTimerStore";
+import { convertInputToMeters } from "@/lib/formatDate";
 
 export default function useLogSetForExercise({
   exercises,
@@ -23,7 +24,7 @@ export default function useLogSetForExercise({
     if (isCardio) {
       const safeTime = input.time_min === "" ? 0 : Number(input.time_min);
       const safeDistance =
-        input.distance_meters === "" ? 0 : Number(input.distance_meters);
+        input.distance_meters === "" ? 0 : convertInputToMeters(Number(input.distance_meters));
 
       updated[index].sets.push({
         time_min: safeDistance,

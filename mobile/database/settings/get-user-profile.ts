@@ -13,7 +13,7 @@ export async function fetchUserProfile() {
 
   const { data, error } = await supabase
     .from("users")
-    .select("id, display_name, weight_unit, profile_picture, role")
+    .select("id, display_name, weight_unit, distance_unit, profile_picture, role")
     .eq("id", session.user.id)
     .single();
 

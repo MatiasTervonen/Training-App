@@ -1,11 +1,9 @@
 import PageContainer from "@/components/PageContainer";
 import AppText from "@/components/AppText";
-import AppInput from "@/components/AppInput";
 import ActivityDropdown from "@/features/activities/components/activityDropdown";
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { View, AppState, ScrollView, Pressable } from "react-native";
-import SubNotesInput from "@/components/SubNotesInput";
+import { View, AppState, Pressable } from "react-native";
 import Toggle from "@/components/toggle";
 import SessionStats from "@/features/activities/components/sessionStats";
 import { useUserStore } from "@/lib/stores/useUserStore";
@@ -48,12 +46,7 @@ import { findWarmupStartIndex } from "@/features/activities/lib/findWarmupStartI
 import { useModalPageConfig } from "@/lib/stores/modalPageConfig";
 import { useTranslation } from "react-i18next";
 import NotesModal from "@/features/activities/components/notesModal";
-import { nanoid } from "nanoid/non-secure";
-import MediaToolbar from "@/features/notes/components/MediaToolbar";
-import DraftImageItem from "@/features/notes/components/DraftImageItem";
-import DraftVideoItem from "@/features/notes/components/DraftVideoItem";
-import { DraftRecordingItem } from "@/features/notes/components/draftRecording";
-import { useConfirmAction } from "@/lib/confirmAction";
+import { NotebookPen } from "lucide-react-native";
 import { debugLog } from "@/features/activities/lib/debugLogger";
 import DebugOverlay from "@/features/activities/components/debugOverlay";
 import { getWeight } from "@/database/weight/get-weight";
@@ -105,8 +98,6 @@ export default function StartActivityScreen() {
   const [baseMet, setBaseMet] = useState(0);
   const [showBatteryHint, setShowBatteryHint] = useState(false);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
-
-  const confirmAction = useConfirmAction();
 
   const gpsEnabledGlobally = useUserStore(
     (state) => state.settings?.gps_tracking_enabled,
@@ -318,14 +309,6 @@ export default function StartActivityScreen() {
     return Math.round(baseMet * userWeight * (effectiveMovingTime / 3600));
   }, [baseMet, userWeight, effectiveMovingTime]);
 
-  // Average speed calculation for share card
-  const averageSpeed = useMemo(() => {
-    if (!allowGPS || meters <= 0 || (movingTimeSeconds ?? 0) <= 0) return null;
-    return Number(
-      ((meters / 1000) / ((movingTimeSeconds ?? 0) / 3600)).toFixed(1),
-    );
-  }, [allowGPS, meters, movingTimeSeconds]);
-
   // useSaveActivitySession hook to save the activity session
   const { handleSaveSession } = useSaveActivitySession({
     title,
@@ -531,145 +514,36 @@ export default function StartActivityScreen() {
           </View>
         </View>
       ) : (
-        <>
+        <View className="flex-1 bg-slate-950">
           <SessionStats
             title={title || "Activity"}
             currentStepCount={steps}
             liveCalories={liveCalories}
           />
-
-          <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-            <View className="flex-1 justify-between p-5 ">
-              <View>
-                <View className="flex-row items-center justify-between mb-5">
-                  <AppText className="text-2xl text-center flex-1">
-                    {activityName}
-                  </AppText>
-                  <View className="w-10" />
-                </View>
-                <View className="w-full gap-4">
-                  <AppInput
-                    label={t("activities.startActivityScreen.sessionNameLabel")}
-                    value={title}
-                    setValue={setTitle}
-                    placeholder={t(
-                      "activities.startActivityScreen.sessionNamePlaceholder",
-                    )}
-                  />
-                  <SubNotesInput
-                    label={t(
-                      "activities.startActivityScreen.sessionNotesLabel",
-                    )}
-                    value={notes}
-                    setValue={setNotes}
-                    placeholder={t(
-                      "activities.startActivityScreen.sessionNotesPlaceholder",
-                    )}
-                  />
-                </View>
-                {draftRecordings.length > 0 && (
-                  <View className="mt-5">
-                    <AppText className=" mb-2">
-                      {t("notes:notes.recordings")}
-                    </AppText>
-                    {draftRecordings.map((recording, index) => (
-                      <DraftRecordingItem
-                        key={recording.id}
-                        uri={recording.uri}
-                        durationMs={recording.durationMs}
-                        deleteRecording={async () => {
-                          const confirm = await confirmAction({
-                            title: t("notes:notes.deleteRecordingTitle"),
-                            message: t("notes:notes.deleteRecordingMessage"),
-                          });
-                          if (!confirm) return;
-
-                          setDraftRecordings((prev) =>
-                            prev.filter((_, i) => i !== index),
-                          );
-                        }}
-                      />
-                    ))}
-                  </View>
-                )}
-                {draftImages.length > 0 && (
-                  <View className="mt-5">
-                    {draftImages.map((image, index) => (
-                      <DraftImageItem
-                        key={image.id}
-                        uri={image.uri}
-                        onDelete={() =>
-                          setDraftImages((prev) =>
-                            prev.filter((_, i) => i !== index),
-                          )
-                        }
-                      />
-                    ))}
-                  </View>
-                )}
-                {draftVideos.length > 0 && (
-                  <View className="mt-5">
-                    {draftVideos.map((video, index) => (
-                      <DraftVideoItem
-                        key={video.id}
-                        uri={video.uri}
-                        thumbnailUri={video.thumbnailUri}
-                        durationMs={video.durationMs}
-                        onDelete={() =>
-                          setDraftVideos((prev) =>
-                            prev.filter((_, i) => i !== index),
-                          )
-                        }
-                      />
-                    ))}
-                  </View>
-                )}
-                <View className="mt-6">
-                  <MediaToolbar
-                    onRecordingComplete={(uri, duration) => {
-                      setDraftRecordings((prev) => [
-                        ...prev,
-                        {
-                          id: nanoid(),
-                          uri,
-                          createdAt: Date.now(),
-                          durationMs: duration,
-                        },
-                      ]);
-                    }}
-                    onImageSelected={(uri) =>
-                      setDraftImages((prev) => [...prev, { id: nanoid(), uri }])
-                    }
-                    onVideoSelected={(uri, thumbnailUri, durationMs) =>
-                      setDraftVideos((prev) => [
-                        ...prev,
-                        { id: nanoid(), uri, thumbnailUri, durationMs },
-                      ])
-                    }
-                    folders={[]}
-                    selectedFolderId={null}
-                    onFolderSelect={() => {}}
-                    showFolderButton={false}
-                  />
-                </View>
-              </View>
-              <View className="flex-row gap-5 mt-20">
-                <View className="flex-1 shrink-0">
-                  <DeleteButton
-                    label={t("activities.startActivityScreen.delete")}
-                    onPress={resetSession}
-                  />
-                </View>
-                <View className="flex-1 shrink-0">
-                  <SaveButton
-                    label={t("activities.startActivityScreen.finishActivity")}
-                    onPress={handleSaveSession}
-                  />
-                </View>
-              </View>
+          <View className="absolute z-50 bottom-20 right-5">
+            <AnimatedButton
+              onPress={() => setShowNotesModal(true)}
+              className="p-3 rounded-full bg-blue-700 border-2 border-blue-500"
+              hitSlop={10}
+            >
+              <NotebookPen size={24} color="#f3f4f6" />
+            </AnimatedButton>
+          </View>
+          <View className="flex-row gap-5 px-5 pt-2 pb-3">
+            <View className="flex-1 shrink-0">
+              <DeleteButton
+                label={t("activities.startActivityScreen.delete")}
+                onPress={resetSession}
+              />
             </View>
-          </ScrollView>
-        </>
+            <View className="flex-1 shrink-0">
+              <SaveButton
+                label={t("activities.startActivityScreen.finishActivity")}
+                onPress={handleSaveSession}
+              />
+            </View>
+          </View>
+        </View>
       )}
 
       <InfoModal

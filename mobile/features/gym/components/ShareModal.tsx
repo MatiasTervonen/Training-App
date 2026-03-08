@@ -6,8 +6,10 @@ import ShareCard from "@/features/gym/components/ShareCard";
 import useShareCard from "@/lib/hooks/useShareCard";
 import { FullGymSession } from "@/database/gym/get-full-gym-session";
 import { ExerciseEntry } from "@/types/session";
-import { Share2 } from "lucide-react-native";
+import { Download, Share2 } from "lucide-react-native";
+import ToastMessage from "react-native-toast-message";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
+import { toastConfig } from "@/lib/config/toast";
 import { useTranslation } from "react-i18next";
 import * as Haptics from "expo-haptics";
 
@@ -26,7 +28,8 @@ export default function ShareModal({
 }: ShareModalProps) {
   const { t } = useTranslation("gym");
   const [shareCardScale, setShareCardScale] = useState(0.3);
-  const { cardRef, isSharing, shareCard } = useShareCard();
+  const { cardRef, isSharing, isSaving, shareCard, saveCardToGallery } =
+    useShareCard("gym-");
 
   const shareExercises = useMemo<ExerciseEntry[]>(() => {
     return (gymSession.gym_session_exercises || []).map((ex) => ({
@@ -108,28 +111,55 @@ export default function ShareModal({
             </View>
           </View>
 
-          <View className="flex-row gap-4 mt-6 w-full">
+          <View className="mt-6 w-full gap-3">
+            <View className="flex-row gap-3">
+              <AnimatedButton
+                onPress={async () => {
+                  const success = await saveCardToGallery();
+                  Toast.show({
+                    type: success ? "success" : "error",
+                    text1: success
+                      ? t("gym.share.saveSuccess")
+                      : t("common:common.error"),
+                    text2: success
+                      ? undefined
+                      : t("gym.share.saveError"),
+                    topOffset: 60,
+                  });
+                }}
+                className="flex-1 btn-neutral flex-row items-center justify-center gap-2"
+                disabled={isSaving || isSharing}
+              >
+                <Download color="#f3f4f6" size={18} />
+                <AppText className="text-base text-center" numberOfLines={1}>
+                  {isSaving
+                    ? t("gym.share.saving")
+                    : t("gym.share.save")}
+                </AppText>
+              </AnimatedButton>
+              <AnimatedButton
+                onPress={handleShare}
+                className="flex-1 btn-base flex-row items-center justify-center gap-2"
+                disabled={isSharing || isSaving}
+              >
+                <Share2 color="#f3f4f6" size={18} />
+                <AppText className="text-base text-center" numberOfLines={1}>
+                  {isSharing ? t("gym.share.sharing") : t("gym.share.share")}
+                </AppText>
+              </AnimatedButton>
+            </View>
             <AnimatedButton
               onPress={onClose}
-              className="flex-1 btn-neutral items-center justify-center"
+              className="btn-neutral items-center justify-center"
             >
               <AppText className="text-base text-center">
                 {t("gym.share.close")}
               </AppText>
             </AnimatedButton>
-            <AnimatedButton
-              onPress={handleShare}
-              className="flex-1 btn-base flex-row items-center justify-center gap-2"
-              disabled={isSharing}
-            >
-              <Share2 color="#f3f4f6" size={18} />
-              <AppText className="text-base text-center">
-                {isSharing ? t("gym.share.sharing") : t("gym.share.share")}
-              </AppText>
-            </AnimatedButton>
           </View>
         </View>
       </View>
+      <ToastMessage config={toastConfig} position="top" />
     </Modal>
   );
 }

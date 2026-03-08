@@ -16,4 +16,7 @@ export async function markHabitDone(habitId: string, date: string) {
     });
     throw new Error("Error marking habit as done");
   }
+
+  // Update the feed item so the habit card reflects the new count
+  await supabase.rpc("refresh_habit_feed", { p_date: date });
 }

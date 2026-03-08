@@ -6,6 +6,11 @@ import {
   startNativeRestTimer,
   stopNativeRestTimer,
 } from "@/native/android/NativeRestTimer";
+import { createAudioPlayer } from "expo-audio";
+
+const restTimerSound = createAudioPlayer(
+  require("@/assets/audio/mixkit_alert_bells_echo_765.wav"),
+);
 
 const REST_TIMER_CHANNEL_ID = "rest-timer-end";
 
@@ -89,6 +94,10 @@ export const useRestTimerStore = create<RestTimerState>()((set, get) => ({
           restInterval = null;
         }
         stopNativeRestTimer();
+
+        // Play sound when timer ends in foreground
+        restTimerSound.seekTo(0);
+        restTimerSound.play();
 
         // Auto-dismiss end notification after 5 seconds
         const { endNotificationId: firedId } = get();

@@ -13,6 +13,7 @@ import {
   TemplateHistoryMetric,
 } from "@/types/session";
 import { formatAveragePace, formatDurationLong } from "@/lib/formatDate";
+import { useUserStore } from "@/lib/stores/useUserStore";
 import { useTranslation } from "react-i18next";
 
 type RangeType = "1m" | "3m" | "6m" | "1y";
@@ -59,6 +60,12 @@ function formatChartValue(value: number, metric: TemplateHistoryMetric): string 
       return formatAveragePace(value);
     case "duration":
       return formatDurationLong(value);
+    case "avg_speed": {
+      const distanceUnit =
+        useUserStore.getState().profile?.distance_unit ?? "km";
+      const converted = distanceUnit === "mi" ? value * 0.621371 : value;
+      return converted.toFixed(1);
+    }
     default:
       return String(Math.round(value));
   }
@@ -247,7 +254,7 @@ export default function TemplateHistoryChart({
   useEffect(() => {
     if (!skiaRef.current || !option || size.width === 0) return;
 
-    const chart = echarts.init(skiaRef.current, "light", {
+    const chart = echarts.init(skiaRef.current as HTMLElement, "light", {
       renderer: "skia",
       width: size.width,
       height: size.height,

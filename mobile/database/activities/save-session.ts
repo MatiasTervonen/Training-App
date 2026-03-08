@@ -138,7 +138,7 @@ export async function saveActivitySession({
         p_draftrecordings: uploadedRecordings,
         p_images: uploadedImages,
         p_videos: uploadedVideos,
-        p_template_id: templateId,
+        p_template_id: templateId ?? undefined,
       },
     );
 

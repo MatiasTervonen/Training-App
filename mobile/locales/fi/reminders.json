@@ -57,11 +57,22 @@
     "pushDisabledMessage": "Ota push-ilmoitukset käyttöön asetuksista vastaanottaaksesi muistutuksia.",
     "back": "Takaisin",
     "settings": "Asetukset",
-    "tabs": {
-      "normal": "Normaalit",
-      "repeating": "Toistuvat",
-      "delivered": "Toimitetut"
+    "createReminder": "Luo muistutus",
+    "type": {
+      "onetime": "Kertaluonteinen",
+      "daily": "Päivittäinen",
+      "weekly": "Viikoittainen",
+      "global": "Globaali"
     },
+    "tabs": {
+      "upcoming": "Tulevat",
+      "delivered": "Toimitetut",
+      "normal": "Normaalit",
+      "repeating": "Toistuvat"
+    },
+    "noRemindersUpcoming": "Ei tulevia muistutuksia",
+    "noRemindersDelivered": "Ei toimitettuja muistutuksia",
+    "loadingDetails": "Ladataan muistutuksen tietoja...",
     "errorLoading": "Virhe muistutusten lataamisessa. Yritä uudelleen!",
     "noReminders": "Ei {{tab}} muistutuksia.",
     "days": {

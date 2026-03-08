@@ -41,7 +41,7 @@ export function getAvailableStats(
     stats.push({
       key: "avgPace",
       label: t("activities.share.avgPace"),
-      value: `${formatAveragePace(summary.averagePace)} ${getDistanceUnitLabels().pace}`,
+      value: `${formatAveragePace(summary.averagePace)} ${getDistanceUnitLabels().pace.replace("min/", "/")}`,
     });
   }
 

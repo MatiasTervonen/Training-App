@@ -9,8 +9,10 @@ import {
 import { supabase } from "@/lib/supabase";
 import { markHabitDone } from "@/database/habits/mark-habit-done";
 import { handleError } from "@/utils/handleError";
+import { queryClient } from "@/lib/queryClient";
 
 export default function useNotificationResponse() {
+
   useEffect(() => {
     const sub = Notifications.addNotificationResponseReceivedListener(
       async (response) => {
@@ -20,7 +22,10 @@ export default function useNotificationResponse() {
         // Mark habit as done from notification action button
         if (actionId === HABIT_DONE_ACTION_ID && data?.habitId) {
           const today = new Date().toISOString().split("T")[0];
-          markHabitDone(data.habitId as string, today);
+          await markHabitDone(data.habitId as string, today);
+          queryClient.invalidateQueries({ queryKey: ["habit-logs"] });
+          queryClient.invalidateQueries({ queryKey: ["habit-stats"] });
+          queryClient.invalidateQueries({ queryKey: ["feed"] });
           Notifications.dismissNotificationAsync(
             response.notification.request.identifier,
           ).catch(() => {});

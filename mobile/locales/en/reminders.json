@@ -57,11 +57,22 @@
     "pushDisabledMessage": "Enable push notifications from settings to receive reminders.",
     "back": "Back",
     "settings": "Settings",
-    "tabs": {
-      "normal": "Normal",
-      "repeating": "Repeating",
-      "delivered": "Delivered"
+    "createReminder": "Create Reminder",
+    "type": {
+      "onetime": "One-time",
+      "daily": "Daily",
+      "weekly": "Weekly",
+      "global": "Global"
     },
+    "tabs": {
+      "upcoming": "Upcoming",
+      "delivered": "Delivered",
+      "normal": "Normal",
+      "repeating": "Repeating"
+    },
+    "noRemindersUpcoming": "No upcoming reminders",
+    "noRemindersDelivered": "No delivered reminders",
+    "loadingDetails": "Loading reminder details...",
     "errorLoading": "Error loading reminders. Try again!",
     "noReminders": "No {{tab}} reminders.",
     "days": {

@@ -3,6 +3,7 @@ import { AppState } from "react-native";
 import { useQueryClient } from "@tanstack/react-query";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { markHabitDone } from "@/database/habits/mark-habit-done";
+import { supabase } from "@/lib/supabase";
 
 const DIRTY_KEY = "habit-bg-dirty";
 const PENDING_KEY = "habit-pending-done";
@@ -41,8 +42,13 @@ async function syncHabits(queryClient: ReturnType<typeof useQueryClient>) {
 
   if (dirty === "true" || synced) {
     await AsyncStorage.removeItem(DIRTY_KEY);
+    // Background task inserted habit_logs directly via fetch, so the feed_items
+    // row is stale. Refresh it before invalidating queries.
+    const today = new Date().toLocaleDateString("en-CA");
+    await supabase.rpc("refresh_habit_feed", { p_date: today });
     queryClient.invalidateQueries({ queryKey: ["habit-logs"] });
     queryClient.invalidateQueries({ queryKey: ["habit-stats"] });
+    queryClient.invalidateQueries({ queryKey: ["feed"] });
   }
 }
 

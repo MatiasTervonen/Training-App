@@ -19,8 +19,10 @@ type Props = {
 
 export default function ProfilePicture({ data, onFileSelected }: Props) {
   const { t } = useTranslation("menu");
-  const [imageUri, setImageUri] = useState<string>("");
-  const [fileName, setFileName] = useState<string>("");
+  const [imageUri, setImageUri] = useState<string>(data || "");
+  const [fileName, setFileName] = useState<string>(
+    data ? data.split("/").pop() || "image.jpg" : "",
+  );
   const [userPickedImage, setUserPickedImage] = useState(false);
 
   const [prevData, setPrevData] = useState(data);

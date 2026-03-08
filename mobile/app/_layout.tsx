@@ -17,10 +17,10 @@ import Toast from "react-native-toast-message";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import {
   QueryClientProvider,
-  QueryClient,
   focusManager,
   onlineManager,
 } from "@tanstack/react-query";
+import { queryClient } from "@/lib/queryClient";
 import NetInfo from "@react-native-community/netinfo";
 import * as Sentry from "@sentry/react-native";
 import { MenuProvider } from "react-native-popup-menu";
@@ -75,21 +75,6 @@ if (!__DEV__) {
 if (__DEV__) {
   import("../ReactotronConfig");
 }
-
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 1000 * 60 * 5, // 5 minutes
-      gcTime: 1000 * 60 * 30, // 30 minutes
-      retry: 2,
-      refetchOnWindowFocus: true, // now works with focusManager above
-      refetchOnReconnect: true, // now works with onlineManager above
-    },
-    mutations: {
-      retry: 0,
-    },
-  },
-});
 
 // React Native Focus Manager: refetch stale queries when app returns from background
 async function onAppStateChange(status: AppStateStatus) {

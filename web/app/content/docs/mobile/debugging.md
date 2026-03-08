@@ -74,6 +74,18 @@ A typical workflow looks like:
 
 ---
 
+## Killing the ADB Server
+
+If the ADB server gets stuck or your device isn't being recognized, force kill it:
+
+```bash
+taskkill //F //IM adb.exe
+```
+
+It restarts automatically when you start a build.
+
+---
+
 ## Important
 
 **Always rebuild your app after making changes to native code.** Unlike JS/TS changes which hot-reload, native Kotlin changes require a full rebuild with `npx expo run:android`.

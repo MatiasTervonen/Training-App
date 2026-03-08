@@ -40,6 +40,12 @@
 - Translation files are in `locales`.
 - Always use proper ä/ö characters in Finnish — never substitute with plain a/o
 
+## Dates & Timezones
+- For "today" as a local date string, use `new Date().toLocaleDateString("en-CA")` — this gives `YYYY-MM-DD` in the device's local timezone.
+- Database timestamps (`created_at`, `updated_at`) are stored in UTC. When comparing them against local date strings, always convert to local time first: `new Date(utcTimestamp).toLocaleDateString("en-CA")`.
+- Never compare a UTC timestamp directly against a local date string — the date portion can differ by a day near midnight.
+- When filtering data by date ranges, ensure both sides use the same timezone basis (both local or both UTC).
+
 ## TypeScript
 - Never use `any` type. Fix TypeScript errors with proper types. If you're unsure of the type, read the codebase to find the correct one.
 

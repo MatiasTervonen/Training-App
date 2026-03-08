@@ -1,4 +1,4 @@
-import { View, ScrollView, Pressable, Keyboard, ActivityIndicator } from "react-native";
+import { View, ScrollView, ActivityIndicator } from "react-native";
 import AppText from "@/components/AppText";
 import PageContainer from "@/components/PageContainer";
 
@@ -45,7 +45,8 @@ export default function HabitsScreen() {
     () => habits.filter((h) => isHabitScheduledForDate(h, today)),
     [habits, today],
   );
-  const allDoneToday = scheduledToday.length > 0 &&
+  const allDoneToday =
+    scheduledToday.length > 0 &&
     scheduledToday.every((h) =>
       logs.some((l) => l.habit_id === h.id && l.completed_date === today),
     );
@@ -79,9 +80,11 @@ export default function HabitsScreen() {
 
   const canGoPrev = earliestCreated
     ? currentYear > earliestCreated.getFullYear() ||
-      (currentYear === earliestCreated.getFullYear() && currentMonth > earliestCreated.getMonth())
+      (currentYear === earliestCreated.getFullYear() &&
+        currentMonth > earliestCreated.getMonth())
     : true;
-  const canGoNext = currentYear < now.getFullYear() ||
+  const canGoNext =
+    currentYear < now.getFullYear() ||
     (currentYear === now.getFullYear() && currentMonth < now.getMonth());
 
   const handlePrevMonth = useCallback(() => {
@@ -103,67 +106,84 @@ export default function HabitsScreen() {
   }, [currentMonth]);
 
   return (
-    <PageContainer>
-    {showConfetti && (
-      <View className="absolute -top-5 -left-5 -right-5 -bottom-10 z-[9999] pointer-events-none">
-        <Confetti />
-      </View>
-    )}
-    <Pressable onPress={Keyboard.dismiss} className="flex-1">
-      {isLoading ? (
-        <View className="flex-1 justify-center items-center">
-          <ActivityIndicator size="large" color="#9ca3af" />
+    <>
+      {showConfetti && (
+        <View className="absolute -top-5 -left-5 -right-5 -bottom-10 z-[9999] pointer-events-none">
+          <Confetti />
         </View>
-      ) : habits.length === 0 ? (
-        <View className="flex-1 justify-between">
-          <AppText className="text-2xl text-center mb-6">{t("title")}</AppText>
-          <View className="items-center gap-3">
-            <AppText className="text-gray-400 text-lg text-center">{t("noHabits")}</AppText>
-            <AppText className="text-gray-500 text-center px-4">{t("emptyDescription")}</AppText>
-          </View>
-          <View>
-            <LinkButton label={t("createFirst")} href="/habits/create">
-              <Plus size={20} color="#f3f4f6" />
-            </LinkButton>
-          </View>
-        </View>
-      ) : (
-        <View className="flex-1">
-          <ScrollView className="flex-1">
-            <AppText className="text-2xl text-center mb-6">{t("title")}</AppText>
-            <HabitChecklist
-              habits={habits}
-              logs={logs}
-              selectedDate={selectedDate}
-              onToggle={handleToggle}
-              currentSteps={currentSteps}
-            />
-
-            <View className="mt-6">
-              <MonthGrid
-                year={currentYear}
-                month={currentMonth}
-                logs={logs}
-                habits={habits}
-                selectedDate={selectedDate}
-                onDayPress={setSelectedDate}
-                onPrevMonth={handlePrevMonth}
-                onNextMonth={handleNextMonth}
-                canGoPrev={canGoPrev}
-                canGoNext={canGoNext}
-                showNavigation
-              />
+      )}
+      <ScrollView
+        className="flex-1"
+        showsVerticalScrollIndicator={false}
+        contentContainerClassName={
+          isLoading || habits.length === 0 ? "flex-1" : undefined
+        }
+      >
+        <PageContainer>
+          {isLoading ? (
+            <View className="flex-1 justify-center items-center">
+              <ActivityIndicator size="large" color="#9ca3af" />
             </View>
-          </ScrollView>
+          ) : habits.length === 0 ? (
+            <View className="flex-1 justify-between">
+              <AppText className="text-2xl text-center mb-6">
+                {t("title")}
+              </AppText>
+              <View className="items-center gap-3">
+                <AppText className="text-gray-400 text-lg text-center">
+                  {t("noHabits")}
+                </AppText>
+                <AppText className="text-gray-500 text-center px-4">
+                  {t("emptyDescription")}
+                </AppText>
+              </View>
+              <View>
+                <LinkButton label={t("createFirst")} href="/habits/create">
+                  <Plus size={20} color="#f3f4f6" />
+                </LinkButton>
+              </View>
+            </View>
+          ) : (
+            <>
+              <AppText className="text-2xl text-center mb-6">
+                {t("title")}
+              </AppText>
+              <HabitChecklist
+                habits={habits}
+                logs={logs}
+                selectedDate={selectedDate}
+                onToggle={handleToggle}
+                currentSteps={currentSteps}
+              />
 
-          <View className="pt-4">
+              <View className="mt-6">
+                <MonthGrid
+                  year={currentYear}
+                  month={currentMonth}
+                  logs={logs}
+                  habits={habits}
+                  selectedDate={selectedDate}
+                  onDayPress={setSelectedDate}
+                  onPrevMonth={handlePrevMonth}
+                  onNextMonth={handleNextMonth}
+                  canGoPrev={canGoPrev}
+                  canGoNext={canGoNext}
+                  showNavigation
+                />
+              </View>
+            </>
+          )}
+        </PageContainer>
+      </ScrollView>
+      {!isLoading && habits.length > 0 && (
+        <View className="px-5 py-3">
+          <View className="max-w-md mx-auto w-full">
             <LinkButton label={t("addHabit")} href="/habits/create">
               <Plus size={20} color="#f3f4f6" />
             </LinkButton>
           </View>
         </View>
       )}
-    </Pressable>
-    </PageContainer>
+    </>
   );
 }

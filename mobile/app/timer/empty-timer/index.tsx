@@ -172,8 +172,10 @@ export default function SettingsScreen() {
           }
         }
         setSkipPlaying(false);
-        useTimerStore.getState().snoozedTimer(event.endTimestamp, event.durationSeconds);
-      }
+        useTimerStore
+          .getState()
+          .snoozedTimer(event.endTimestamp, event.durationSeconds);
+      },
     );
 
     return () => {
@@ -202,7 +204,7 @@ export default function SettingsScreen() {
               onStopAlarmSound={() => setAlarmSoundPlaying(false)}
             />
             {mode === "countdown" && !alarmFired && (
-              <View className="w-full bg-gray-300 h-6 rounded-full overflow-hidden mt-4">
+              <View className="w-full bg-gray-700 h-6 rounded-full overflow-hidden mt-4">
                 <Animated.View
                   className=" bg-green-500 h-6 w-full"
                   style={{

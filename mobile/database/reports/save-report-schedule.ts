@@ -24,8 +24,8 @@ export async function saveReportSchedule({
     p_title: title,
     p_included_features: includedFeatures,
     p_schedule_type: scheduleType,
-    p_delivery_day_of_week: deliveryDayOfWeek,
-    p_delivery_day_of_month: deliveryDayOfMonth,
+    p_delivery_day_of_week: deliveryDayOfWeek ?? undefined,
+    p_delivery_day_of_month: deliveryDayOfMonth ?? undefined,
     p_delivery_hour: deliveryHour,
     p_timezone: timezone,
   });

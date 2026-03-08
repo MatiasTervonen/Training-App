@@ -2168,11 +2168,11 @@ export type Database = {
           banned_until: string | null
           created_at: string
           display_name: string
+          distance_unit: string
           email: string | null
           id: string
           profile_picture: string | null
           role: string
-          distance_unit: string
           weight_unit: string
         }
         Insert: {
@@ -2426,10 +2426,6 @@ export type Database = {
         Args: { p_id: string; p_type: string }
         Returns: undefined
       }
-      hide_feed_item: {
-        Args: { p_feed_item_id: string }
-        Returns: undefined
-      }
       get_feed_sorted: {
         Args: { p_limit: number; p_offset: number }
         Returns: {
@@ -2519,6 +2515,11 @@ export type Database = {
         Args: { p_date: string; p_habit_id: string }
         Returns: boolean
       }
+      refresh_habit_feed: {
+        Args: { p_date: string }
+        Returns: undefined
+      }
+      hide_feed_item: { Args: { p_feed_item_id: string }; Returns: undefined }
       last_30d_analytics: { Args: never; Returns: Json }
       notes_edit_note: {
         Args: {
@@ -2565,6 +2566,7 @@ export type Database = {
           activity_at: string | null
           created_at: string
           extra_fields: Json
+          hidden_at: string | null
           id: string
           occurred_at: string
           source_id: string
@@ -2666,6 +2668,22 @@ export type Database = {
           isOneToOne: true
           isSetofReturn: false
         }
+      }
+      reminders_get_feed: {
+        Args: { p_tab: string; p_limit?: number; p_offset?: number }
+        Returns: {
+          activity_at: string | null
+          created_at: string
+          extra_fields: Json
+          hidden_at: string | null
+          id: string
+          occurred_at: string
+          source_id: string
+          title: string
+          type: string
+          updated_at: string | null
+          user_id: string
+        }[]
       }
       reminders_get_by_tab: {
         Args: { p_tab: string }
@@ -2806,6 +2824,7 @@ export type Database = {
           activity_at: string | null
           created_at: string
           extra_fields: Json
+          hidden_at: string | null
           id: string
           occurred_at: string
           source_id: string

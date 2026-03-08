@@ -98,7 +98,7 @@ export default function SettingsScreen() {
               />
               <AppInput
                 value={weight}
-                onChangeText={setWeight}
+                onChangeText={(v) => setWeight(v.replace(",", "."))}
                 label={t("weight.weightLabel")}
                 placeholder={t("weight.weightPlaceholder")}
                 keyboardType="numeric"

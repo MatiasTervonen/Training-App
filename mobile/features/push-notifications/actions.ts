@@ -137,6 +137,11 @@ export async function configureNotificationChannels() {
       importance: Notifications.AndroidImportance.HIGH,
       sound: "default",
     }),
+    Notifications.setNotificationChannelAsync("reports", {
+      name: "Reports",
+      importance: Notifications.AndroidImportance.HIGH,
+      sound: "default",
+    }),
   ]);
 }
 

@@ -80,8 +80,8 @@ export default function SessionStats({
   }, [gpsEnabled, hasStartedTracking, opacity]);
 
   return (
-    <View className="bg-slate-950 py-5" style={style}>
-      <View className={`flex-row items-center justify-around ${gpsEnabled ? "mb-5" : ""}`}>
+    <View className={gpsEnabled ? "bg-slate-950 py-5" : "flex-1 bg-slate-950 py-5"} style={style}>
+      <View className={gpsEnabled ? "flex-row items-center justify-around mb-5" : "flex-1 items-center justify-evenly"}>
         {gpsEnabled ? (
           <>
             <View>
@@ -119,7 +119,7 @@ export default function SessionStats({
         ) : (
           <>
             <Timer
-              textClassName="text-2xl z-[999]"
+              textClassName="text-5xl z-[999]"
               manualSession={{
                 label: title || "Activity",
                 path: "/activities/start-activity",
@@ -127,13 +127,13 @@ export default function SessionStats({
               }}
               color="#3b82f6"
             />
-            <View className="flex-row gap-2 items-center">
-              <Footprints size={20} color="#f3f4f6" />
-              <AppText className="text-xl z-[999]">{currentStepCount}</AppText>
+            <View className="flex-row gap-3 items-center">
+              <Footprints size={28} color="#f3f4f6" />
+              <AppText className="text-3xl z-[999]">{currentStepCount}</AppText>
             </View>
-            <View className="flex-row gap-1 items-center">
-              <Flame size={20} color="#f97316" />
-              <AppText className="text-xl z-[999]">{liveCalories ?? 0} kcal</AppText>
+            <View className="flex-row gap-2 items-center">
+              <Flame size={28} color="#f97316" />
+              <AppText className="text-3xl z-[999]">{liveCalories ?? 0} kcal</AppText>
             </View>
           </>
         )}

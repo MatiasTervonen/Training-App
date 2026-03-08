@@ -1,3 +1,4 @@
+import { View } from "react-native";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import AllDataTable from "@/features/weight/AllDataTable";
@@ -20,12 +21,17 @@ export default function WeightScreen() {
   return (
     <>
       <AllDataTable data={weightData ?? []} isLoading={isLoading} error={error} />
-      <AnimatedButton
-        onPress={() => router.push("/weight/tracking")}
-        className="absolute bottom-8 right-6 w-14 h-14 rounded-full bg-blue-600 items-center justify-center border-2 border-blue-400"
-      >
-        <Plus size={28} color="#f3f4f6" />
-      </AnimatedButton>
+      <View className="absolute bottom-8 right-6">
+        <View className="absolute -inset-1 rounded-full bg-cyan-400/30" />
+        <View className="absolute -inset-3 rounded-full bg-cyan-400/15" />
+        <View className="absolute -inset-5 rounded-full bg-cyan-400/5" />
+        <AnimatedButton
+          onPress={() => router.push("/weight/tracking")}
+          className="w-14 h-14 rounded-full bg-slate-800 items-center justify-center shadow-xl shadow-cyan-400/60 border-2 border-cyan-300"
+        >
+          <Plus size={30} color="#67e8f9" />
+        </AnimatedButton>
+      </View>
     </>
   );
 }

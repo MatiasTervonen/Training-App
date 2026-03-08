@@ -130,6 +130,7 @@ export default function StepsChart({
       let weekSum = 0;
       let weekCount = 0;
       let currentWeekLabel = "";
+      let lastShownMonth = "";
 
       fullDateRange.forEach((date, index) => {
         const steps = stepsMap.get(date) || 0;
@@ -141,8 +142,12 @@ export default function StepsChart({
         }
 
         if ((index + 1) % 7 === 0 || index === fullDateRange.length - 1) {
+          const label = currentWeekLabel !== lastShownMonth ? currentWeekLabel : "";
+          if (currentWeekLabel !== lastShownMonth) {
+            lastShownMonth = currentWeekLabel;
+          }
           weeklyData.push({
-            label: currentWeekLabel,
+            label,
             value: weekCount > 0 ? Math.round(weekSum / weekCount) : 0,
             count: weekCount,
           });
@@ -233,7 +238,7 @@ export default function StepsChart({
           },
         },
       ],
-      grid: { top: 20, right: 15, bottom: 30, left: 45 },
+      grid: { top: 20, right: 5, bottom: 30, left: 35 },
     }),
     [chartData, maxSteps, range]
   );

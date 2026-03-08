@@ -63,5 +63,17 @@
   "navigation": {
     "back": "takaisin",
     "home": "koti"
+  },
+  "share": {
+    "sizeLabel": "Koko",
+    "themeLabel": "Teema",
+    "sizeSquare": "Neliö",
+    "sizeStory": "Tarina",
+    "sizeWide": "Leveä",
+    "themeClassic": "Klassinen",
+    "themeMidnight": "Yö",
+    "themeClean": "Vaalea",
+    "themeForest": "Metsä",
+    "hideShadow": "Piilota varjo"
   }
 }

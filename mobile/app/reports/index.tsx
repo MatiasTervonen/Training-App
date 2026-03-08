@@ -30,13 +30,15 @@ export default function ReportsScreen() {
 
   return (
     <PageContainer>
-      <AppText className="text-2xl text-center mb-6">
-        {t("reports.title")}
-      </AppText>
-
-      <AppText className="text-sm text-gray-400 mb-4">
-        {t("reports.yourReports")} ({schedules.length}/{MAX_REPORTS})
-      </AppText>
+      {schedules.length === 0 ? (
+        <AppText className="text-2xl text-center mb-6">
+          {t("reports.title")}
+        </AppText>
+      ) : (
+        <AppText className="text-sm text-gray-400 mb-4">
+          {t("reports.yourReports")} ({schedules.length}/{MAX_REPORTS})
+        </AppText>
+      )}
 
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {schedules.length === 0 ? (

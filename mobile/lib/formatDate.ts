@@ -154,7 +154,7 @@ export const getDistanceUnitLabels = () => {
   const distanceUnit = useUserStore.getState().profile?.distance_unit ?? "km";
   return {
     speed: distanceUnit === "mi" ? "mph" : "km/h",
-    pace: distanceUnit === "mi" ? "min/mi" : "min/km",
+    pace: distanceUnit === "mi" ? "/mi" : "/km",
     altitude: distanceUnit === "mi" ? "ft" : "m",
     short: distanceUnit === "mi" ? "ft" : "m",
   };

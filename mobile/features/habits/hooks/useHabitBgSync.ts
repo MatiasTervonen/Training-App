@@ -45,7 +45,10 @@ async function syncHabits(queryClient: ReturnType<typeof useQueryClient>) {
     // Background task inserted habit_logs directly via fetch, so the feed_items
     // row is stale. Refresh it before invalidating queries.
     const today = new Date().toLocaleDateString("en-CA");
-    await supabase.rpc("refresh_habit_feed", { p_date: today });
+    await supabase.rpc("refresh_habit_feed", {
+      p_date: today,
+      p_tz: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    });
     queryClient.invalidateQueries({ queryKey: ["habit-logs"] });
     queryClient.invalidateQueries({ queryKey: ["habit-stats"] });
     queryClient.invalidateQueries({ queryKey: ["feed"] });

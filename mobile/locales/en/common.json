@@ -63,5 +63,17 @@
   "navigation": {
     "back": "back",
     "home": "home"
+  },
+  "share": {
+    "sizeLabel": "Size",
+    "themeLabel": "Theme",
+    "sizeSquare": "Square",
+    "sizeStory": "Story",
+    "sizeWide": "Wide",
+    "themeClassic": "Classic",
+    "themeMidnight": "Midnight",
+    "themeClean": "Clean",
+    "themeForest": "Forest",
+    "hideShadow": "Hide shadow"
   }
 }

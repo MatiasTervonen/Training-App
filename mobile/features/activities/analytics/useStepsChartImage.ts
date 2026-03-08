@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { useStepsShareData } from "@/features/activities/analytics/StepsShareCard";
 import { StepRecord } from "@/database/activities/get-steps";
+import { ShareCardTheme } from "@/lib/share/themes";
 
 function formatNumber(num: number): string {
   if (num >= 1000) {
@@ -14,11 +15,17 @@ export default function useStepsChartImage(
   data: StepRecord[],
   todaySteps: number,
   locale: string,
+  theme?: ShareCardTheme,
 ) {
   const { chartData } = useStepsShareData(range, data, todaySteps, locale);
 
   const values = chartData.map((item) => item.value);
   const maxSteps = Math.max(...values, 1000);
+
+  const isLightTheme = theme?.id === "clean";
+  const labelColor = isLightTheme ? theme.colors.textPrimary : "#f3f4f6";
+  const gridColor = theme?.colors.textMuted ?? "#374151";
+  const yLabelColor = isLightTheme ? theme.colors.textSecondary : "#9ca3af";
 
   const html = useMemo(() => {
     const option = {
@@ -28,7 +35,7 @@ export default function useStepsChartImage(
         type: "category",
         data: chartData.map((item) => item.label),
         axisLabel: {
-          color: "#f3f4f6",
+          color: labelColor,
           fontSize: 24,
           interval: range === "month" ? 4 : 0,
         },
@@ -42,13 +49,13 @@ export default function useStepsChartImage(
         splitLine: {
           show: true,
           lineStyle: {
-            color: "#374151",
+            color: gridColor,
             width: 1,
             type: "dashed",
           },
         },
         axisLabel: {
-          color: "#9ca3af",
+          color: yLabelColor,
           fontSize: 24,
           formatter: `function(v){return v>=1000?(v/1000).toFixed(1).replace(/\\.0$/,'')+'k':v+''}`,
         },
@@ -74,7 +81,7 @@ export default function useStepsChartImage(
           },
         },
       ],
-      grid: { top: 30, right: 40, bottom: 50, left: 80 },
+      grid: { top: 30, right: 10, bottom: 50, left: 50 },
     };
 
     // Build the option JSON but replace the formatter string with an actual function
@@ -103,7 +110,7 @@ setTimeout(function(){
 </script>
 </body>
 </html>`;
-  }, [chartData, maxSteps, range]);
+  }, [chartData, maxSteps, range, labelColor, gridColor, yLabelColor]);
 
   return html;
 }

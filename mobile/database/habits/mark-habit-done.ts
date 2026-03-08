@@ -18,5 +18,8 @@ export async function markHabitDone(habitId: string, date: string) {
   }
 
   // Update the feed item so the habit card reflects the new count
-  await supabase.rpc("refresh_habit_feed", { p_date: date });
+  await supabase.rpc("refresh_habit_feed", {
+    p_date: date,
+    p_tz: Intl.DateTimeFormat().resolvedOptions().timeZone,
+  });
 }

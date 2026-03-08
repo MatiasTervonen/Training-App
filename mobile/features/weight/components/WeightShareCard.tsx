@@ -1,16 +1,20 @@
 import { forwardRef, useMemo } from "react";
 import { Image, View } from "react-native";
 import AppText from "@/components/AppText";
-import { LinearGradient } from "expo-linear-gradient";
 import { weight } from "@/types/session";
 import { useTranslation } from "react-i18next";
 import { APP_NAME } from "@/lib/app-config";
+import { ShareCardTheme, ShareCardSize } from "@/lib/share/themes";
+import ThemedCardWrapper from "@/lib/components/share/ThemedCardWrapper";
+import ThemedStatBox from "@/lib/components/share/ThemedStatBox";
 
 type WeightShareCardProps = {
   range: "week" | "month" | "year";
   data: weight[];
   weightUnit: string;
   chartImageUri: string | null;
+  theme: ShareCardTheme;
+  size: ShareCardSize;
 };
 
 function toLocalDateString(date: Date): string {
@@ -62,6 +66,20 @@ function getDateRange(range: "week" | "month" | "year"): [Date, Date] {
       break;
   }
   return [start, end];
+}
+
+function getChartDimensions(size: ShareCardSize): {
+  width: number;
+  height: number;
+} {
+  switch (size) {
+    case "square":
+      return { width: 960, height: 620 };
+    case "story":
+      return { width: 960, height: 1100 };
+    case "wide":
+      return { width: 1100, height: 620 };
+  }
 }
 
 export function useWeightShareData(
@@ -122,7 +140,7 @@ export function useWeightShareData(
 }
 
 const WeightShareCard = forwardRef<View, WeightShareCardProps>(
-  ({ range, data, weightUnit, chartImageUri }, ref) => {
+  ({ range, data, weightUnit, chartImageUri, theme, size }, ref) => {
     const { t, i18n } = useTranslation("weight");
     const locale = i18n.language;
 
@@ -156,40 +174,111 @@ const WeightShareCard = forwardRef<View, WeightShareCardProps>(
       return `${fmt(start)} - ${fmt(end)}`;
     }, [start, end, locale]);
 
-    return (
-      <View ref={ref} collapsable={false} className="w-[1080px] h-[1080px]">
-        <LinearGradient
-          colors={["#1e3a8a", "#0f172a", "#0f172a"]}
-          start={{ x: 0.8, y: 0 }}
-          end={{ x: 0.2, y: 1 }}
-          className="flex-1 p-[60px] justify-between"
-        >
-          {/* App branding - absolute so it doesn't affect layout */}
-          <View className="absolute top-[30px] left-[30px] flex-row items-center gap-4">
+    const chartDims = getChartDimensions(size);
+
+    if (size === "wide") {
+      return (
+        <ThemedCardWrapper ref={ref} theme={theme} size={size}>
+          {/* Header - App branding */}
+          <View className="flex-row items-center gap-4">
             <Image
               source={require("@/assets/images/android-chrome-192x192.png")}
-              className="w-[64px] h-[64px] rounded-lg"
+              style={{ width: 64, height: 64, borderRadius: 8 }}
             />
-            <AppText className="text-[36px] text-blue-400">{APP_NAME}</AppText>
+            <AppText style={{ fontSize: 36, color: theme.colors.accent }}>
+              {APP_NAME}
+            </AppText>
+          </View>
+
+          {/* Title + Date centered */}
+          <View className="items-center gap-3">
+            <AppText
+              className="text-center"
+              style={{ fontSize: 56, color: theme.colors.textPrimary }}
+            >
+              {t("weight.share.title")}
+            </AppText>
+            <AppText style={{ fontSize: 32, color: theme.colors.textMuted }}>
+              {dateRangeText}
+            </AppText>
+          </View>
+
+          {/* Chart + Stats side by side */}
+          <View className="flex-row items-center" style={{ gap: 20 }}>
+            <View className="flex-1 items-center justify-center">
+              <View style={{ width: chartDims.width, height: chartDims.height }}>
+                {chartImageUri ? (
+                  <Image
+                    source={{ uri: chartImageUri }}
+                    style={{ width: chartDims.width, height: chartDims.height }}
+                    resizeMode="contain"
+                  />
+                ) : null}
+              </View>
+            </View>
+
+            <View className="justify-center" style={{ width: 400, gap: 16, position: "relative", right: 80 }}>
+              <ThemedStatBox
+                label={t("weight.share.weightChange")}
+                value={`${weightChange} ${weightUnit}`}
+                theme={theme}
+              />
+              <ThemedStatBox
+                label={t("weight.share.currentWeight")}
+                value={`${currentWeight} ${weightUnit}`}
+                theme={theme}
+              />
+            </View>
+          </View>
+
+          {/* Footer watermark */}
+          <View className="items-center">
+            <AppText
+              style={{ fontSize: 28, color: theme.colors.textMuted, opacity: 0.5 }}
+            >
+              {APP_NAME}
+            </AppText>
+          </View>
+        </ThemedCardWrapper>
+      );
+    }
+
+    if (size === "story") {
+      return (
+        <ThemedCardWrapper ref={ref} theme={theme} size={size}>
+          {/* Header - App branding */}
+          <View className="flex-row items-center gap-4">
+            <Image
+              source={require("@/assets/images/android-chrome-192x192.png")}
+              style={{ width: 80, height: 80, borderRadius: 8 }}
+            />
+            <AppText style={{ fontSize: 44, color: theme.colors.accent }}>
+              {APP_NAME}
+            </AppText>
           </View>
 
           {/* Title + Date range */}
           <View className="items-center gap-3">
-            <AppText className="text-[52px] text-center">
+            <AppText
+              className="text-center"
+              style={{ fontSize: 68, color: theme.colors.textPrimary }}
+            >
               {t("weight.share.title")}
             </AppText>
-            <AppText className="text-[28px] text-gray-400">
+            <AppText style={{ fontSize: 40, color: theme.colors.textMuted }}>
               {dateRangeText}
             </AppText>
           </View>
 
           {/* Chart as captured image */}
-          <View className="items-center mt-[20px]">
-            <View className="w-[960px] h-[620px]">
+          <View className="items-center">
+            <View
+              style={{ width: chartDims.width, height: chartDims.height }}
+            >
               {chartImageUri ? (
                 <Image
                   source={{ uri: chartImageUri }}
-                  className="w-[960px] h-[620px]"
+                  style={{ width: chartDims.width, height: chartDims.height }}
                   resizeMode="contain"
                 />
               ) : null}
@@ -197,31 +286,92 @@ const WeightShareCard = forwardRef<View, WeightShareCardProps>(
           </View>
 
           {/* Stat Boxes */}
-          <View className="flex-row gap-4 mt-[20px]">
-            <StatBox
+          <View className="flex-row" style={{ gap: 16, position: "relative", bottom: 80 }}>
+            <View className="flex-1">
+              <ThemedStatBox
+                label={t("weight.share.weightChange")}
+                value={`${weightChange} ${weightUnit}`}
+                theme={theme}
+                size="large"
+              />
+            </View>
+            <View className="flex-1">
+              <ThemedStatBox
+                label={t("weight.share.currentWeight")}
+                value={`${currentWeight} ${weightUnit}`}
+                theme={theme}
+                size="large"
+              />
+            </View>
+          </View>
+        </ThemedCardWrapper>
+      );
+    }
+
+    // Square (default)
+    return (
+      <ThemedCardWrapper ref={ref} theme={theme} size={size}>
+        {/* Header - App branding */}
+        <View className="flex-row items-center gap-4">
+          <Image
+            source={require("@/assets/images/android-chrome-192x192.png")}
+            style={{ width: 64, height: 64, borderRadius: 8 }}
+          />
+          <AppText style={{ fontSize: 36, color: theme.colors.accent }}>
+            {APP_NAME}
+          </AppText>
+        </View>
+
+        {/* Title + Date range */}
+        <View className="items-center gap-3">
+          <AppText
+            className="text-center"
+            style={{ fontSize: 52, color: theme.colors.textPrimary }}
+          >
+            {t("weight.share.title")}
+          </AppText>
+          <AppText style={{ fontSize: 28, color: theme.colors.textMuted }}>
+            {dateRangeText}
+          </AppText>
+        </View>
+
+        {/* Chart as captured image */}
+        <View className="items-center">
+          <View
+            style={{ width: chartDims.width, height: chartDims.height }}
+          >
+            {chartImageUri ? (
+              <Image
+                source={{ uri: chartImageUri }}
+                style={{ width: chartDims.width, height: chartDims.height }}
+                resizeMode="contain"
+              />
+            ) : null}
+          </View>
+        </View>
+
+        {/* Stat Boxes */}
+        <View className="flex-row gap-4">
+          <View className="flex-1">
+            <ThemedStatBox
               label={t("weight.share.weightChange")}
               value={`${weightChange} ${weightUnit}`}
-            />
-            <StatBox
-              label={t("weight.share.currentWeight")}
-              value={`${currentWeight} ${weightUnit}`}
+              theme={theme}
             />
           </View>
-        </LinearGradient>
-      </View>
+          <View className="flex-1">
+            <ThemedStatBox
+              label={t("weight.share.currentWeight")}
+              value={`${currentWeight} ${weightUnit}`}
+              theme={theme}
+            />
+          </View>
+        </View>
+      </ThemedCardWrapper>
     );
   },
 );
 
 WeightShareCard.displayName = "WeightShareCard";
-
-function StatBox({ label, value }: { label: string; value: string }) {
-  return (
-    <View className="flex-1 items-center justify-center gap-2 border-blue-500 border rounded-lg bg-slate-950/50 py-[30px] px-[20px]">
-      <AppText className="text-[24px] text-gray-300">{label}</AppText>
-      <AppText className="text-[36px] text-gray-100">{value}</AppText>
-    </View>
-  );
-}
 
 export default WeightShareCard;

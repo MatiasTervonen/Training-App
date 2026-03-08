@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { useWeightShareData } from "@/features/weight/components/WeightShareCard";
 import { weight } from "@/types/session";
+import { ShareCardTheme } from "@/lib/share/themes";
 
 /**
  * Builds the echarts option and generates the HTML for rendering
@@ -10,6 +11,7 @@ export default function useChartImage(
   range: "week" | "month" | "year",
   data: weight[],
   locale: string,
+  theme?: ShareCardTheme,
 ) {
   const { chartData } = useWeightShareData(range, data, locale);
 
@@ -19,6 +21,10 @@ export default function useChartImage(
   const minWeight = values.length > 0 ? Math.min(...values) : 0;
   const maxWeight = values.length > 0 ? Math.max(...values) : 100;
 
+  const isLightTheme = theme?.id === "clean";
+  const labelColor = isLightTheme ? theme.colors.textPrimary : "#f3f4f6";
+  const gridColor = theme?.colors.textMuted ?? "#9ca3af";
+
   const html = useMemo(() => {
     const option = {
       backgroundColor: "transparent",
@@ -27,7 +33,7 @@ export default function useChartImage(
         type: "category",
         data: chartData.map((item) => item.label),
         axisLabel: {
-          color: "#f3f4f6",
+          color: labelColor,
           fontSize: 24,
         },
       },
@@ -38,13 +44,13 @@ export default function useChartImage(
         splitLine: {
           show: true,
           lineStyle: {
-            color: "#9ca3af",
+            color: gridColor,
             width: 0.5,
             type: "dashed",
           },
         },
         axisLabel: {
-          color: "#f3f4f6",
+          color: labelColor,
           fontSize: 24,
         },
       },
@@ -78,7 +84,7 @@ export default function useChartImage(
           },
         },
       ],
-      grid: { top: 20, right: 30, bottom: 40, left: 60 },
+      grid: { top: 20, right: 10, bottom: 40, left: 50 },
     };
 
     return `<!DOCTYPE html>
@@ -100,7 +106,7 @@ setTimeout(function(){
 </script>
 </body>
 </html>`;
-  }, [chartData, minWeight, maxWeight]);
+  }, [chartData, minWeight, maxWeight, labelColor, gridColor]);
 
   return html;
 }

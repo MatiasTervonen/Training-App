@@ -1,6 +1,6 @@
 {
   "activities": {
-    "title": "Start Activity",
+    "title": "Activities",
     "saveSession": {
       "titleRequired": "Title is required.",
       "confirmTitle": "Confirm Finish Session",
@@ -275,12 +275,15 @@
       "steps": "Steps",
       "selectStats": "Select stats:",
       "hideMapDetails": "Hide location details",
+      "hideShadow": "Hide shadow",
       "save": "Save",
       "saving": "Saving...",
       "saveSuccess": "Image saved to gallery",
       "saveError": "Failed to save image",
       "minStats": "Select at least 2 stats",
-      "maxStats": "Maximum 7 stats"
+      "maxStats": "Maximum 7 stats",
+      "mapStyle": "Map Style",
+      "routeColor": "Route Color"
     },
     "settings": {
       "title": "Settings",

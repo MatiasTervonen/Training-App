@@ -88,11 +88,12 @@ export default function HabitHistoryScreen() {
         year={item.year}
         month={item.month}
         logs={logs}
+        habits={habit ? [habit] : undefined}
         totalHabits={1}
         habitId={id}
       />
     ),
-    [logs, id],
+    [logs, id, habit],
   );
 
   return (

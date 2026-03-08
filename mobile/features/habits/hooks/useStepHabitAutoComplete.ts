@@ -39,6 +39,7 @@ export function useStepHabitAutoComplete() {
         await markHabitDone(habit.id, today);
         queryClient.invalidateQueries({ queryKey: ["habit-logs"] });
         queryClient.invalidateQueries({ queryKey: ["habit-stats"] });
+        queryClient.invalidateQueries({ queryKey: ["feed"] });
       }
     }
   }, [stepHabits, today, queryClient]);

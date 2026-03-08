@@ -37,7 +37,11 @@ export default function HabitDetailScreen() {
   const habit = habits.find((h) => h.id === id);
 
   const { start, end } = getMonthRange(currentYear, currentMonth);
-  const { data: logs = [] } = useHabitLogs({ startDate: start, endDate: end, habitId: id });
+  const { data: logs = [] } = useHabitLogs({
+    startDate: start,
+    endDate: end,
+    habitId: id,
+  });
   const { data: stats } = useHabitStats(id);
   const deleteMutation = useDeleteHabit();
   const archiveMutation = useArchiveHabit();
@@ -48,9 +52,11 @@ export default function HabitDetailScreen() {
 
   const canGoPrev = createdDate
     ? currentYear > createdDate.getFullYear() ||
-      (currentYear === createdDate.getFullYear() && currentMonth > createdDate.getMonth())
+      (currentYear === createdDate.getFullYear() &&
+        currentMonth > createdDate.getMonth())
     : true;
-  const canGoNext = currentYear < now.getFullYear() ||
+  const canGoNext =
+    currentYear < now.getFullYear() ||
     (currentYear === now.getFullYear() && currentMonth < now.getMonth());
 
   const handlePrevMonth = useCallback(() => {
@@ -116,31 +122,39 @@ export default function HabitDetailScreen() {
     return (
       <PageContainer>
         <View className="flex-1 items-center justify-center">
-          <AppText className="text-gray-400">{t("common:common.loading")}</AppText>
+          <AppText className="text-gray-400">
+            {t("common:common.loading")}
+          </AppText>
         </View>
       </PageContainer>
     );
   }
 
   return (
-    <PageContainer>
-        <ScrollView className="flex-1">
+    <ScrollView
+      showsVerticalScrollIndicator={false}
+      contentContainerClassName="flex-1"
+    >
+      <PageContainer className="justify-between">
+        <View>
           <AppText className="text-2xl text-center mb-6">{habit.name}</AppText>
           {habit.type === "steps" && habit.target_value && (
             <View className="bg-gray-800 rounded-lg px-4 py-3 mb-4">
-              <AppText className="text-gray-400 text-sm">{t("stepGoal")}</AppText>
+              <AppText className="text-gray-400 text-sm">
+                {t("stepGoal")}
+              </AppText>
               <AppText className="text-lg text-gray-100">
                 {habit.target_value.toLocaleString()} {t("steps")}
               </AppText>
             </View>
           )}
           {stats && <StatsCard stats={stats} />}
-
           <View className="mt-6">
             <MonthGrid
               year={currentYear}
               month={currentMonth}
               logs={logs}
+              habits={[habit]}
               totalHabits={1}
               onPrevMonth={handlePrevMonth}
               onNextMonth={handleNextMonth}
@@ -150,7 +164,7 @@ export default function HabitDetailScreen() {
               habitId={id}
             />
           </View>
-        </ScrollView>
+        </View>
 
         <View className="gap-3 pt-4">
           {canGoPrev && (
@@ -184,6 +198,7 @@ export default function HabitDetailScreen() {
             </View>
           </View>
         </View>
-    </PageContainer>
+      </PageContainer>
+    </ScrollView>
   );
 }

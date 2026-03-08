@@ -5,6 +5,7 @@ import { HabitStats } from "@/types/habit";
 export async function getHabitStats(habitId: string): Promise<HabitStats> {
   const { data, error } = await supabase.rpc("habit_get_stats", {
     p_habit_id: habitId,
+    p_date: new Date().toLocaleDateString("en-CA"),
   });
 
   if (error || !data) {

@@ -145,9 +145,6 @@ export default function HabitsScreen() {
             </View>
           ) : (
             <>
-              <AppText className="text-2xl text-center mb-6">
-                {t("title")}
-              </AppText>
               <HabitChecklist
                 habits={habits}
                 logs={logs}

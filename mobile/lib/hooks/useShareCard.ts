@@ -4,16 +4,21 @@ import { makeImageFromView, ImageFormat } from "@shopify/react-native-skia";
 import { File as FSFile, Paths } from "expo-file-system";
 import Share from "react-native-share";
 import * as MediaLibrary from "expo-media-library";
+import {
+  ShareCardSize,
+  SHARE_CARD_DIMENSIONS,
+} from "@/lib/share/themes";
 
 export default function useShareCard(filenamePrefix = "share-") {
   const cardRef = useRef<View>(null);
   const [isSharing, setIsSharing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
-  const captureCard = useCallback(async (): Promise<string | null> => {
+  const captureCard = useCallback(async (size?: ShareCardSize): Promise<string | null> => {
     if (!cardRef.current) return null;
 
-    const image = await makeImageFromView(cardRef);
+    const dims = size ? SHARE_CARD_DIMENSIONS[size] : undefined;
+    const image = await makeImageFromView(cardRef, dims ? { width: dims.width, height: dims.height } : undefined);
     if (!image) return null;
 
     const base64 = image.encodeToBase64(ImageFormat.PNG);
@@ -24,10 +29,10 @@ export default function useShareCard(filenamePrefix = "share-") {
     return file.uri;
   }, [filenamePrefix]);
 
-  const shareCard = useCallback(async (): Promise<boolean> => {
+  const shareCard = useCallback(async (size?: ShareCardSize): Promise<boolean> => {
     setIsSharing(true);
     try {
-      const uri = await captureCard();
+      const uri = await captureCard(size);
       if (!uri) return false;
 
       await Share.open({ url: uri, type: "image/png" });
@@ -46,13 +51,13 @@ export default function useShareCard(filenamePrefix = "share-") {
     }
   }, [captureCard]);
 
-  const saveCardToGallery = useCallback(async (): Promise<boolean> => {
+  const saveCardToGallery = useCallback(async (size?: ShareCardSize): Promise<boolean> => {
     setIsSaving(true);
     try {
       const { status } = await MediaLibrary.requestPermissionsAsync();
       if (status !== "granted") return false;
 
-      const uri = await captureCard();
+      const uri = await captureCard(size);
       if (!uri) return false;
 
       await MediaLibrary.saveToLibraryAsync(uri);

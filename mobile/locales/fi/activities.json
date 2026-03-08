@@ -1,6 +1,6 @@
 {
   "activities": {
-    "title": "Aloita aktiviteetti",
+    "title": "Aktiviteetit",
     "saveSession": {
       "titleRequired": "Otsikko vaaditaan.",
       "confirmTitle": "Vahvista sessio",
@@ -275,12 +275,15 @@
       "steps": "Askeleet",
       "selectStats": "Valitse tilastot:",
       "hideMapDetails": "Piilota sijaintitiedot",
+      "hideShadow": "Piilota varjo",
       "save": "Tallenna",
       "saving": "Tallennetaan...",
       "saveSuccess": "Kuva tallennettu galleriaan",
       "saveError": "Kuvan tallennus epäonnistui",
       "minStats": "Valitse vähintään 2 tilastoa",
-      "maxStats": "Enintään 7 tilastoa"
+      "maxStats": "Enintään 7 tilastoa",
+      "mapStyle": "Kartan tyyli",
+      "routeColor": "Reitin väri"
     },
     "settings": {
       "title": "Asetukset",

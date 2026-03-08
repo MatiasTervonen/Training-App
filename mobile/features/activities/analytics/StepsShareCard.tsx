@@ -1,16 +1,20 @@
 import { forwardRef, useMemo } from "react";
 import { Image, View } from "react-native";
 import AppText from "@/components/AppText";
-import { LinearGradient } from "expo-linear-gradient";
 import { StepRecord } from "@/database/activities/get-steps";
 import { useTranslation } from "react-i18next";
 import { APP_NAME } from "@/lib/app-config";
+import { ShareCardTheme, ShareCardSize } from "@/lib/share/themes";
+import ThemedCardWrapper from "@/lib/components/share/ThemedCardWrapper";
+import ThemedStatBox from "@/lib/components/share/ThemedStatBox";
 
 type StepsShareCardProps = {
   range: "week" | "month" | "3months";
   data: StepRecord[];
   todaySteps: number;
   chartImageUri: string | null;
+  theme: ShareCardTheme;
+  size: ShareCardSize;
 };
 
 function toLocalDateString(date: Date): string {
@@ -58,6 +62,17 @@ function getRangeDays(range: "week" | "month" | "3months"): number {
   }
 }
 
+function getChartDimensions(size: ShareCardSize): { width: number; height: number } {
+  switch (size) {
+    case "square":
+      return { width: 960, height: 620 };
+    case "story":
+      return { width: 960, height: 1100 };
+    case "wide":
+      return { width: 1100, height: 620 };
+  }
+}
+
 export function useStepsShareData(
   range: "week" | "month" | "3months",
   data: StepRecord[],
@@ -87,6 +102,7 @@ export function useStepsShareData(
       let weekSum = 0;
       let weekCount = 0;
       let currentWeekLabel = "";
+      let lastShownMonth = "";
 
       fullDateRange.forEach((date, index) => {
         const steps = stepsMap.get(date) || 0;
@@ -98,8 +114,12 @@ export function useStepsShareData(
         }
 
         if ((index + 1) % 7 === 0 || index === fullDateRange.length - 1) {
+          const label = currentWeekLabel !== lastShownMonth ? currentWeekLabel : "";
+          if (currentWeekLabel !== lastShownMonth) {
+            lastShownMonth = currentWeekLabel;
+          }
           weeklyData.push({
-            label: currentWeekLabel,
+            label,
             value: weekCount > 0 ? Math.round(weekSum / weekCount) : 0,
           });
           weekSum = 0;
@@ -129,7 +149,7 @@ export function useStepsShareData(
 }
 
 const StepsShareCard = forwardRef<View, StepsShareCardProps>(
-  ({ range, data, todaySteps, chartImageUri }, ref) => {
+  ({ range, data, todaySteps, chartImageUri, theme, size }, ref) => {
     const { t, i18n } = useTranslation("activities");
     const locale = i18n.language;
 
@@ -139,6 +159,9 @@ const StepsShareCard = forwardRef<View, StepsShareCardProps>(
       todaySteps,
       locale,
     );
+
+    const { colors } = theme;
+    const chartDims = getChartDimensions(size);
 
     const dateRangeText = useMemo(() => {
       const fmt = (d: Date) =>
@@ -150,68 +173,138 @@ const StepsShareCard = forwardRef<View, StepsShareCardProps>(
       return `${fmt(start)} - ${fmt(end)}`;
     }, [start, end, locale]);
 
-    return (
-      <View ref={ref} collapsable={false} className="w-[1080px] h-[1080px]">
-        <LinearGradient
-          colors={["#065f46", "#0f172a", "#0f172a"]}
-          start={{ x: 0.8, y: 0 }}
-          end={{ x: 0.2, y: 1 }}
-          className="flex-1 p-[60px] justify-between"
-        >
-          <View className="absolute top-[30px] left-[30px] flex-row items-center gap-4">
+    if (size === "wide") {
+      return (
+        <ThemedCardWrapper ref={ref} theme={theme} size={size}>
+          {/* Header - App branding */}
+          <View className="flex-row items-center gap-4">
             <Image
               source={require("@/assets/images/android-chrome-192x192.png")}
-              className="w-[64px] h-[64px] rounded-lg"
+              style={{ width: 64, height: 64, borderRadius: 8 }}
             />
-            <AppText className="text-[36px] text-green-400">{APP_NAME}</AppText>
+            <AppText style={{ fontSize: 36, color: colors.accent }}>
+              {APP_NAME}
+            </AppText>
           </View>
 
+          {/* Title + Date centered */}
           <View className="items-center gap-3">
-            <AppText className="text-[52px] text-center">
+            <AppText
+              className="text-center"
+              style={{ fontSize: 56, color: colors.textPrimary }}
+            >
               {t("activities.stepsShare.title")}
             </AppText>
-            <AppText className="text-[28px] text-gray-400">
+            <AppText style={{ fontSize: 32, color: colors.textMuted }}>
               {dateRangeText}
             </AppText>
           </View>
 
-          <View className="items-center mt-[20px]">
-            <View className="w-[960px] h-[620px]">
-              {chartImageUri ? (
-                <Image
-                  source={{ uri: chartImageUri }}
-                  className="w-[960px] h-[620px]"
-                  resizeMode="contain"
-                />
-              ) : null}
+          {/* Chart + Stats side by side */}
+          <View className="flex-row items-center" style={{ gap: 20 }}>
+            <View className="flex-1 items-center justify-center">
+              <View style={{ width: chartDims.width, height: chartDims.height }}>
+                {chartImageUri ? (
+                  <Image
+                    source={{ uri: chartImageUri }}
+                    style={{ width: chartDims.width, height: chartDims.height }}
+                    resizeMode="contain"
+                  />
+                ) : null}
+              </View>
+            </View>
+
+            <View className="justify-center" style={{ width: 400, gap: 16, position: "relative", right: 80 }}>
+              <ThemedStatBox
+                label={t("activities.stepsShare.totalSteps")}
+                value={totalSteps.toLocaleString()}
+                theme={theme}
+              />
+              <ThemedStatBox
+                label={t("activities.stepsShare.dailyAvg")}
+                value={avgSteps.toLocaleString()}
+                theme={theme}
+              />
             </View>
           </View>
 
-          <View className="flex-row gap-4 mt-[20px]">
-            <StatBox
+          {/* Footer watermark */}
+          <View className="items-center">
+            <AppText
+              style={{ fontSize: 28, color: colors.textMuted, opacity: 0.5 }}
+            >
+              {APP_NAME}
+            </AppText>
+          </View>
+        </ThemedCardWrapper>
+      );
+    }
+
+    const isStory = size === "story";
+
+    return (
+      <ThemedCardWrapper ref={ref} theme={theme} size={size}>
+        {/* Header - App branding */}
+        <View className="flex-row items-center gap-4">
+          <Image
+            source={require("@/assets/images/android-chrome-192x192.png")}
+            style={{ width: isStory ? 80 : 64, height: isStory ? 80 : 64, borderRadius: 8 }}
+          />
+          <AppText style={{ fontSize: isStory ? 44 : 36, color: colors.accent }}>
+            {APP_NAME}
+          </AppText>
+        </View>
+
+        {/* Title + Date range */}
+        <View className="items-center gap-3">
+          <AppText
+            className="text-center"
+            style={{ fontSize: isStory ? 68 : 52, color: colors.textPrimary }}
+          >
+            {t("activities.stepsShare.title")}
+          </AppText>
+          <AppText style={{ fontSize: isStory ? 40 : 28, color: colors.textMuted }}>
+            {dateRangeText}
+          </AppText>
+        </View>
+
+        {/* Chart as captured image */}
+        <View className="items-center">
+          <View style={{ width: chartDims.width, height: chartDims.height }}>
+            {chartImageUri ? (
+              <Image
+                source={{ uri: chartImageUri }}
+                style={{ width: chartDims.width, height: chartDims.height }}
+                resizeMode="contain"
+              />
+            ) : null}
+          </View>
+        </View>
+
+        {/* Stat Boxes */}
+        <View className="flex-row" style={{ gap: isStory ? 16 : 16, position: "relative", bottom: isStory ? 80 : 0 }}>
+          <View className="flex-1">
+            <ThemedStatBox
               label={t("activities.stepsShare.totalSteps")}
               value={totalSteps.toLocaleString()}
-            />
-            <StatBox
-              label={t("activities.stepsShare.dailyAvg")}
-              value={avgSteps.toLocaleString()}
+              theme={theme}
+              size={isStory ? "large" : "normal"}
             />
           </View>
-        </LinearGradient>
-      </View>
+          <View className="flex-1">
+            <ThemedStatBox
+              label={t("activities.stepsShare.dailyAvg")}
+              value={avgSteps.toLocaleString()}
+              theme={theme}
+              size={isStory ? "large" : "normal"}
+            />
+          </View>
+        </View>
+      </ThemedCardWrapper>
     );
   },
 );
 
 StepsShareCard.displayName = "StepsShareCard";
-
-function StatBox({ label, value }: { label: string; value: string }) {
-  return (
-    <View className="flex-1 items-center justify-center gap-2 border-green-500 border rounded-lg bg-slate-950/50 py-[30px] px-[20px]">
-      <AppText className="text-[24px] text-gray-300">{label}</AppText>
-      <AppText className="text-[36px] text-gray-100">{value}</AppText>
-    </View>
-  );
-}
 
 export default StepsShareCard;

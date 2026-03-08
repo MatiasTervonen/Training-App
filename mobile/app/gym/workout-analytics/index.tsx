@@ -29,10 +29,6 @@ export default function AnalyticsScreen() {
   return (
     <ScrollView contentContainerStyle={{ paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
       <PageContainer>
-        <AppText className="text-2xl mb-10 text-center">
-          {t("gym.analyticsScreen.title")}
-        </AppText>
-
         {isUnifiedLoading ? (
           <View className="items-center gap-2 mt-20">
             <AppText className="text-gray-300 text-center text-xl">

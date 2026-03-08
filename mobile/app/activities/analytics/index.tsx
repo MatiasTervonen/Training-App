@@ -124,9 +124,6 @@ export default function ActivityAnalytics() {
   return (
     <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
       <PageContainer>
-        <AppText className="text-2xl text-center mb-6">
-          {t("activities.analyticsScreen.title")}
-        </AppText>
         <View className="flex-row bg-slate-800 rounded-lg p-1 mb-4">
           {ranges.map((range) => (
             <AnimatedButton

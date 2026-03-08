@@ -11,6 +11,7 @@ export async function toggleHabitLog({
   const { data, error } = await supabase.rpc("habit_toggle_log", {
     p_habit_id: habitId,
     p_date: date,
+    p_tz: Intl.DateTimeFormat().resolvedOptions().timeZone,
   });
 
   if (error) {

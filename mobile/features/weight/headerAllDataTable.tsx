@@ -38,33 +38,29 @@ export default function HeaderAllDataTable({
 
   return (
     <>
-      <View className="flex-row items-center justify-center my-5 px-4">
-        <View className="w-10" />
-        <AppText className="text-2xl flex-1 text-center">
-          {t("weight.analyticsScreen.title")}
-        </AppText>
+      <View className="flex-row items-center gap-2 mb-5 mx-4 mt-5">
+        <View className="flex-row flex-1 bg-slate-800 rounded-lg p-1">
+          {ranges.map((option) => (
+            <AnimatedButton
+              key={option.key}
+              onPress={() => setRange(option.key)}
+              className={`flex-1 py-2 rounded-md ${
+                range === option.key ? "bg-slate-700" : ""
+              }`}
+            >
+              <AppTextNC
+                className={`text-center font-medium ${
+                  range === option.key ? "text-cyan-400" : "text-gray-200"
+                }`}
+              >
+                {t(option.translationKey)}
+              </AppTextNC>
+            </AnimatedButton>
+          ))}
+        </View>
         <AnimatedButton onPress={onSharePress} hitSlop={10}>
           <Share2 color="#f3f4f6" size={22} />
         </AnimatedButton>
-      </View>
-      <View className="flex-row bg-slate-800 rounded-lg p-1 mb-5 mx-4">
-        {ranges.map((option) => (
-          <AnimatedButton
-            key={option.key}
-            onPress={() => setRange(option.key)}
-            className={`flex-1 py-2 rounded-md ${
-              range === option.key ? "bg-slate-700" : ""
-            }`}
-          >
-            <AppTextNC
-              className={`text-center font-medium ${
-                range === option.key ? "text-cyan-400" : "text-gray-200"
-              }`}
-            >
-              {t(option.translationKey)}
-            </AppTextNC>
-          </AnimatedButton>
-        ))}
       </View>
       <View className="w-full items-center">
         {isLoading ? (

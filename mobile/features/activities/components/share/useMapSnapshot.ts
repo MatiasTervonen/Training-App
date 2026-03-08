@@ -35,10 +35,12 @@ async function getNoLabelsStyleJSON(): Promise<string> {
 export default function useMapSnapshot(
   route: FullActivitySession["route"],
   hideDetails = false,
+  resetKey?: string,
 ) {
   const mapViewRef = useRef<MapViewRef>(null);
   const [mapSnapshotUri, setMapSnapshotUri] = useState<string | null>(null);
   const [isLoadingSnapshot, setIsLoadingSnapshot] = useState(!!route);
+  const snappingRef = useRef(false);
   const [noLabelsStyleJSON, setNoLabelsStyleJSON] = useState<string | null>(
     null,
   );
@@ -56,12 +58,11 @@ export default function useMapSnapshot(
     };
   }, [hideDetails, route]);
 
-  // Reset snapshot when privacy mode changes so the hidden map re-renders
+  // Re-take snapshot when style/color changes — keep old snapshot visible while loading
   useEffect(() => {
     if (!route) return;
-    setMapSnapshotUri(null);
     setIsLoadingSnapshot(true);
-  }, [hideDetails, route]);
+  }, [hideDetails, route, resetKey]);
 
   const isMultiLine = route?.type === "MultiLineString";
 
@@ -129,19 +130,30 @@ export default function useMapSnapshot(
   // Whether the no-labels style is ready to use
   const privacyStyleReady = hideDetails && noLabelsStyleJSON !== null;
 
-  const onMapDidFinishLoading = useCallback(async () => {
-    if (!mapViewRef.current) return;
+  const takeSnapshot = useCallback(async () => {
+    if (!mapViewRef.current || snappingRef.current) return null;
+    snappingRef.current = true;
     try {
-      // Small delay to let tiles finish rendering
-      await new Promise((resolve) => setTimeout(resolve, 500));
       const uri = await mapViewRef.current.takeSnap(true);
       setMapSnapshotUri(uri);
+      return uri;
     } catch (error) {
       console.error("Failed to take map snapshot:", error);
+      return null;
     } finally {
-      setIsLoadingSnapshot(false);
+      snappingRef.current = false;
     }
   }, []);
+
+  const onMapDidFinishLoading = useCallback(async () => {
+    await takeSnapshot();
+    setIsLoadingSnapshot(false);
+  }, [takeSnapshot]);
+
+  const onMapIdle = useCallback(async () => {
+    await takeSnapshot();
+    setIsLoadingSnapshot(false);
+  }, [takeSnapshot]);
 
   return {
     mapViewRef,
@@ -151,6 +163,8 @@ export default function useMapSnapshot(
     bounds,
     startEndGeoJSON,
     onMapDidFinishLoading,
+    onMapIdle,
+    takeSnapshot,
     noLabelsStyleJSON,
     privacyStyleReady,
   };

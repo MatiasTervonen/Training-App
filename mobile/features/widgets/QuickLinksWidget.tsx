@@ -33,6 +33,8 @@ function IconButton({ iconSvg, route }: { iconSvg: string; route: string }) {
         height: BUTTON_SIZE,
         marginLeft: 6,
         marginRight: 6,
+        marginTop: 6,
+        marginBottom: 6,
       }}
     >
       <SvgWidget
@@ -54,10 +56,14 @@ export function QuickLinksWidget({
     config.selectedLinks.includes(target.key),
   );
 
-  // Calculate how many icons fit in one row based on widget width
+  // Calculate grid capacity based on widget dimensions
   const itemWidth = BUTTON_SIZE + 12; // button + margins
+  const itemHeight = BUTTON_SIZE + 12; // button + vertical margins
   const availableWidth = widgetInfo.width - 16; // minus container padding
-  const maxItems = Math.max(1, Math.floor(availableWidth / itemWidth));
+  const availableHeight = widgetInfo.height - 16;
+  const columns = Math.max(1, Math.floor(availableWidth / itemWidth));
+  const rows = Math.max(1, Math.floor(availableHeight / itemHeight));
+  const maxItems = columns * rows;
   const visibleTargets = selectedTargets.slice(0, maxItems);
 
   return (

@@ -283,7 +283,10 @@
       "minStats": "Select at least 2 stats",
       "maxStats": "Maximum 7 stats",
       "mapStyle": "Map Style",
-      "routeColor": "Route Color"
+      "routeColor": "Route Color",
+      "loadingMap": "Loading map...",
+      "subtitle": "Share your session with friends",
+      "customizeCard": "Customize card"
     },
     "settings": {
       "title": "Settings",

@@ -132,6 +132,7 @@ export default function WeightShareModal({
         }}
         onLayout={onLayout}
       >
+        {containerHeight === 0 ? null : <>
         {/* Top section: preview + picker */}
         <View>
           <View
@@ -212,6 +213,7 @@ export default function WeightShareModal({
             </AppText>
           </AnimatedButton>
         </View>
+        </>}
       </View>
 
       {/* Hidden WebView renders chart with canvas, exports PNG data URL */}

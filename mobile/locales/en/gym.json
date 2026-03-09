@@ -272,7 +272,9 @@
       "duration": "Duration",
       "volume": "Volume",
       "exercises": "Exercises",
-      "sets": "Sets"
+      "sets": "Sets",
+      "subtitle": "Share your session with friends",
+      "customizeCard": "Customize card"
     },
     "analytics": {
       "title": "Last 30 Days Analytics",

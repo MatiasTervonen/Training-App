@@ -11,6 +11,7 @@ import BodyText from "@/components/BodyText";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import OnboardingProgressBar from "@/features/onboarding/OnboardingProgressBar";
 import SkipOnboardingButton from "@/features/onboarding/SkipOnboardingButton";
+import OnboardingBackButton from "@/features/onboarding/OnboardingBackButton";
 import { useSkipOnboarding } from "@/features/onboarding/useSkipOnboarding";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
@@ -25,10 +26,16 @@ export default function AboutYouScreen() {
   const currentUnit = useUserStore(
     (state) => state.profile?.weight_unit ?? (i18n.language === "fi" ? "kg" : "lbs"),
   );
+  const currentDistanceUnit = useUserStore(
+    (state) => state.profile?.distance_unit ?? (i18n.language === "fi" ? "km" : "mi"),
+  );
 
   const [weight, setWeight] = useState("");
   const [unit, setUnit] = useState<"kg" | "lbs">(
     currentUnit === "lbs" ? "lbs" : "kg",
+  );
+  const [distanceUnit, setDistanceUnit] = useState<"km" | "mi">(
+    currentDistanceUnit === "mi" ? "mi" : "km",
   );
 
   const handleContinue = () => {
@@ -38,8 +45,15 @@ export default function AboutYouScreen() {
       const maxWeight = unit === "kg" ? 300 : 660;
 
       if (!isNaN(numWeight) && numWeight >= minWeight && numWeight <= maxWeight) {
-        useUserStore.getState().setUserProfile({ weight_unit: unit });
+        useUserStore.getState().setUserProfile({
+          weight_unit: unit,
+          distance_unit: distanceUnit,
+        });
       }
+    } else {
+      useUserStore.getState().setUserProfile({
+        distance_unit: distanceUnit,
+      });
     }
     router.push("/onboarding/complete");
   };
@@ -54,7 +68,8 @@ export default function AboutYouScreen() {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <Pressable className="flex-1 px-6 justify-center" onPress={Keyboard.dismiss}>
-        <OnboardingProgressBar currentStep={3} />
+        <OnboardingBackButton />
+        <OnboardingProgressBar currentStep={4} />
 
         <View className="mt-8">
           <AppText className="text-3xl text-center mb-4">
@@ -114,6 +129,41 @@ export default function AboutYouScreen() {
             maxLength={6}
           />
           <AppText className="text-2xl ml-3 text-slate-400">{unit}</AppText>
+        </View>
+
+        {/* Distance unit */}
+        <AppText className="text-xl text-center mb-4">
+          {t("aboutYou.distanceUnit")}
+        </AppText>
+        <View className="flex-row justify-center mb-8 gap-3">
+          <AnimatedButton
+            onPress={() => setDistanceUnit("km")}
+            className={`px-6 py-2 rounded-lg border-2 ${
+              distanceUnit === "km"
+                ? "bg-blue-900/40 border-blue-500"
+                : "bg-slate-800 border-slate-700"
+            }`}
+          >
+            <AppText
+              className={distanceUnit === "km" ? "text-blue-400" : "text-slate-400"}
+            >
+              km
+            </AppText>
+          </AnimatedButton>
+          <AnimatedButton
+            onPress={() => setDistanceUnit("mi")}
+            className={`px-6 py-2 rounded-lg border-2 ${
+              distanceUnit === "mi"
+                ? "bg-blue-900/40 border-blue-500"
+                : "bg-slate-800 border-slate-700"
+            }`}
+          >
+            <AppText
+              className={distanceUnit === "mi" ? "text-blue-400" : "text-slate-400"}
+            >
+              mi
+            </AppText>
+          </AnimatedButton>
         </View>
 
         <AnimatedButton

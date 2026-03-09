@@ -4,6 +4,7 @@ import PageContainer from "@/components/PageContainer";
 
 import StatsCard from "@/features/habits/components/StatsCard";
 import MonthGrid from "@/features/habits/components/MonthGrid";
+import HabitShareModal from "@/features/habits/components/HabitShareModal";
 import LinkButton from "@/components/buttons/LinkButton";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import { useHabits } from "@/features/habits/hooks/useHabits";
@@ -17,6 +18,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState, useCallback } from "react";
 import Toast from "react-native-toast-message";
 import * as Haptics from "expo-haptics";
+import { Share2 } from "lucide-react-native";
 
 function getMonthRange(year: number, month: number) {
   const start = `${year}-${String(month + 1).padStart(2, "0")}-01`;
@@ -46,6 +48,7 @@ export default function HabitDetailScreen() {
   const deleteMutation = useDeleteHabit();
   const archiveMutation = useArchiveHabit();
   const { cancelHabitReminder } = useHabitNotifications();
+  const [shareVisible, setShareVisible] = useState(false);
 
   const now = new Date();
   const createdDate = habit ? new Date(habit.created_at) : null;
@@ -137,7 +140,20 @@ export default function HabitDetailScreen() {
     >
       <PageContainer className="justify-between">
         <View>
-          <AppText className="text-2xl text-center mb-6">{habit.name}</AppText>
+          <View className="flex-row items-center mb-6">
+            <View className="w-8" />
+            <AppText className="text-2xl text-center flex-1">{habit.name}</AppText>
+            {stats && (
+              <AnimatedButton
+                onPress={() => setShareVisible(true)}
+                hitSlop={10}
+                className="ml-3"
+              >
+                <Share2 color="#9ca3af" size={20} />
+              </AnimatedButton>
+            )}
+            {!stats && <View className="w-8" />}
+          </View>
           {habit.type === "steps" && habit.target_value && (
             <View className="bg-gray-800 rounded-lg px-4 py-3 mb-4">
               <AppText className="text-gray-400 text-sm">
@@ -156,6 +172,7 @@ export default function HabitDetailScreen() {
               logs={logs}
               habits={[habit]}
               totalHabits={1}
+              selectedDate={new Date().toLocaleDateString("en-CA")}
               onPrevMonth={handlePrevMonth}
               onNextMonth={handleNextMonth}
               canGoPrev={canGoPrev}
@@ -199,6 +216,14 @@ export default function HabitDetailScreen() {
           </View>
         </View>
       </PageContainer>
+      {stats && (
+        <HabitShareModal
+          visible={shareVisible}
+          onClose={() => setShareVisible(false)}
+          habitName={habit.name}
+          stats={stats}
+        />
+      )}
     </ScrollView>
   );
 }

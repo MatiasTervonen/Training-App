@@ -39,9 +39,22 @@
       "description": "Poista akun optimointi käytöstä, jotta GPS-seuranta ja taustaominaisuudet toimivat luotettavasti ilman järjestelmän keskeytyksiä."
     }
   },
+  "profile": {
+    "title": "Luo profiilisi",
+    "description": "Valitse käyttäjänimi ja profiilikuva. Voit muuttaa näitä myöhemmin profiiliasetuksissa.",
+    "userName": "Käyttäjänimi",
+    "userNameHint": "Pienet kirjaimet, numerot ja alaviivat (enintään 15 merkkiä)",
+    "userNameTaken": "Tämä käyttäjänimi on jo varattu",
+    "continue": "Jatka",
+    "skipStep": "Ohita",
+    "saving": "Tallennetaan profiilia...",
+    "pictureSizeError": "Kuvan on oltava alle 5 Mt",
+    "pictureFormatError": "Vain JPEG-, PNG- ja WebP-kuvat ovat tuettuja"
+  },
   "aboutYou": {
     "title": "Mikä on painosi?",
     "description": "Painoasi käytetään aktiviteettien aikana kulutettujen kalorien arviointiin. Voit päivittää sen milloin tahansa Paino-osiossa.",
+    "distanceUnit": "Etäisyyden yksikkö",
     "continue": "Jatka",
     "skipStep": "Ohita"
   },
@@ -51,12 +64,14 @@
     "start": "Aloita {{appName}}in käyttö",
     "summary": {
       "language": "Kieli",
+      "userName": "Käyttäjänimi",
       "notifications": "Ilmoitukset",
       "location": "Sijainti",
       "stepCounter": "Askelmittari",
       "exactAlarms": "Tarkat hälytykset",
       "batteryOptimization": "Akun optimointi",
-      "weight": "Paino"
+      "weight": "Paino",
+      "distanceUnit": "Etäisyys"
     }
   },
   "skipModal": {

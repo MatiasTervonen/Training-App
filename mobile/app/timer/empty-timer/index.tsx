@@ -74,7 +74,7 @@ export default function SettingsScreen() {
 
     setActiveSession({
       type: t("timer.title"),
-      label: "Timer",
+      label: t("timer.title"),
       path: "/timer/empty-timer",
     });
 

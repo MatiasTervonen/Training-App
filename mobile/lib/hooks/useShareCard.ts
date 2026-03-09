@@ -4,10 +4,7 @@ import { makeImageFromView, ImageFormat } from "@shopify/react-native-skia";
 import { File as FSFile, Paths } from "expo-file-system";
 import Share from "react-native-share";
 import * as MediaLibrary from "expo-media-library";
-import {
-  ShareCardSize,
-  SHARE_CARD_DIMENSIONS,
-} from "@/lib/share/themes";
+import { ShareCardSize } from "@/lib/share/themes";
 
 export default function useShareCard(filenamePrefix = "share-") {
   const cardRef = useRef<View>(null);
@@ -17,8 +14,7 @@ export default function useShareCard(filenamePrefix = "share-") {
   const captureCard = useCallback(async (size?: ShareCardSize): Promise<string | null> => {
     if (!cardRef.current) return null;
 
-    const dims = size ? SHARE_CARD_DIMENSIONS[size] : undefined;
-    const image = await makeImageFromView(cardRef, dims ? { width: dims.width, height: dims.height } : undefined);
+    const image = await makeImageFromView(cardRef);
     if (!image) return null;
 
     const base64 = image.encodeToBase64(ImageFormat.PNG);

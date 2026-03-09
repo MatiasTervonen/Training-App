@@ -1,4 +1,4 @@
-import { View, TouchableWithoutFeedback, Keyboard } from "react-native";
+import { View, Pressable, Keyboard } from "react-native";
 import AppText from "@/components/AppText";
 import AppInput from "@/components/AppInput";
 import ProfilePicture from "@/components/ProfilePicture";
@@ -186,7 +186,7 @@ export default function ProfileScreen() {
 
   return (
     <>
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <Pressable onPress={Keyboard.dismiss} className="flex-1">
         <PageContainer className="justify-between">
           <View>
             <View>
@@ -260,7 +260,7 @@ export default function ProfileScreen() {
             />
           </View>
         </PageContainer>
-      </TouchableWithoutFeedback>
+      </Pressable>
       <FullScreenLoader
         visible={isSaving}
         message={t("menu:profile.savingProfile")}

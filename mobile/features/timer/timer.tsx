@@ -85,9 +85,9 @@ export default function Timer({
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 
     if (paused) {
-      resumeTimer("Timer");
+      resumeTimer(t("timer.title"));
     } else {
-      startTimer(remainingMs, "Timer");
+      startTimer(remainingMs, t("timer.title"));
     }
   };
 
@@ -136,10 +136,10 @@ export default function Timer({
           </AnimatedButton>
         )
       ) : (
-        <View className="flex-row gap-5">
+        <View className="flex-row gap-3">
           <View className="flex-1">
             <AnimatedButton
-              label="Stop alarm"
+              label={t("timer.notification.stopAlarm")}
               className="btn-danger"
               textClassName="text-gray-100"
               onPress={() => {
@@ -152,7 +152,7 @@ export default function Timer({
           </View>
           <View className="flex-1">
             <AnimatedButton
-              label="Restart"
+              label={t("timer.notification.restart")}
               onPress={() => {
                 if (!totalDuration) return;
 
@@ -169,17 +169,17 @@ export default function Timer({
                   t("timer.notification.stopAlarm"),
                   t("timer.notification.extendTimer"),
                 );
-                startTimer(totalDuration, "Timer");
+                startTimer(totalDuration, t("timer.title"));
                 setActiveSession({
                   type: t("timer.title"),
-                  label: "Timer",
+                  label: t("timer.title"),
                   path: "/timer/empty-timer",
                 });
               }}
               className="btn-base flex-row gap-2 justify-center items-center"
               textClassName="text-gray-100"
             >
-              <RotateCcw color="#f3f4f6" />
+              <RotateCcw size={20} color="#f3f4f6" />
             </AnimatedButton>
           </View>
           <View className="flex-1">

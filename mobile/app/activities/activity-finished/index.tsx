@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { useNavigation } from "expo-router";
-import { View, ScrollView, LayoutChangeEvent } from "react-native";
+import { View, ScrollView, LayoutChangeEvent, ActivityIndicator, PixelRatio } from "react-native";
 import AppText from "@/components/AppText";
 import { Image } from "expo-image";
 import LinkButton from "@/components/buttons/LinkButton";
@@ -17,7 +17,7 @@ import {
   getAvailableStats,
   getDefaultSelectedKeys,
 } from "@/features/activities/lib/activityShareCardUtils";
-import { Download, Share2 } from "lucide-react-native";
+import { Download, Share2, ChevronDown, ChevronUp } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
 import * as Haptics from "expo-haptics";
@@ -26,6 +26,12 @@ import { MAP_STYLES, LINE_COLORS } from "@/features/activities/lib/mapConstants"
 import { useActivitySettingsStore } from "@/lib/stores/activitySettingsStore";
 
 const MAP_VIEW_STYLE = { flex: 1 };
+
+const ROUTE_SCALE: Record<string, number> = {
+  square: 1,
+  story: 1.8,
+  wide: 1.3,
+};
 
 export default function ActivityFinishedScreen() {
   const { t } = useTranslation("activities");
@@ -37,6 +43,7 @@ export default function ActivityFinishedScreen() {
     useShareCard("activity-");
   const [containerWidth, setContainerWidth] = useState(0);
   const [containerHeight, setContainerHeight] = useState(0);
+  const [settingsExpanded, setSettingsExpanded] = useState(false);
 
   const {
     theme: themeId,
@@ -65,6 +72,15 @@ export default function ActivityFinishedScreen() {
   const theme = useMemo(() => getTheme(themeId), [themeId]);
   const dims = useMemo(() => SHARE_CARD_DIMENSIONS[size], [size]);
 
+  const pixelRatio = PixelRatio.get();
+  const mapDims = useMemo(
+    () => ({
+      width: Math.round(dims.width / pixelRatio),
+      height: Math.round(dims.height / pixelRatio),
+    }),
+    [dims, pixelRatio],
+  );
+
   const {
     mapViewRef,
     mapSnapshotUri,
@@ -79,7 +95,8 @@ export default function ActivityFinishedScreen() {
   } = useMapSnapshot(
     summary?.route ?? null,
     hideMapDetails,
-    `${mapStyleIndex}-${lineColorIndex}`,
+    `${mapStyleIndex}-${lineColorIndex}-${size}`,
+    mapStyleUrl,
   );
 
   const availableStats = useMemo(
@@ -193,7 +210,7 @@ export default function ActivityFinishedScreen() {
       onLayout={onContainerLayout}
     >
       {/* Header */}
-      <View className="items-center mt-10">
+      <View className="items-center mt-10 gap-2">
         <View className="flex-row gap-5 items-center">
           <AppText className="text-2xl" numberOfLines={1}>
             {t("activities.share.activityFinished")}
@@ -203,6 +220,9 @@ export default function ActivityFinishedScreen() {
             className="w-10 h-10"
           />
         </View>
+        <AppText className="text-sm text-gray-400">
+          {t("activities.share.subtitle")}
+        </AppText>
       </View>
 
       {/* Share Card Preview - fixed height to prevent layout shift */}
@@ -212,126 +232,52 @@ export default function ActivityFinishedScreen() {
       >
         {summary && (
           <View style={cardContainerStyle}>
-            <View style={cardTransformStyle}>
-              <ActivityShareCard
-                key={`${showGradient}`}
-                ref={cardRef}
-                title={summary.title}
-                date={summary.date}
-                activityName={summary.activityName}
-                activitySlug={summary.activitySlug}
-                hasRoute={summary.hasRoute}
-                mapSnapshotUri={mapSnapshotUri}
-                selectedStats={selectedStats}
-                theme={theme}
-                size={size}
-                showGradient={showGradient}
-              />
-            </View>
+            {isLoadingSnapshot && !mapSnapshotUri && summary.hasRoute ? (
+              <View
+                className="items-center justify-center rounded-lg"
+                style={{
+                  width: cardContainerStyle.width,
+                  height: cardContainerStyle.height,
+                  backgroundColor: theme.colors.background[0],
+                }}
+              >
+                <ActivityIndicator size="large" color={theme.colors.accent} />
+                <AppText className="text-sm text-gray-400 mt-3">
+                  {t("activities.share.loadingMap")}
+                </AppText>
+              </View>
+            ) : (
+              <>
+                <View style={cardTransformStyle}>
+                  <ActivityShareCard
+                    key={`${showGradient}`}
+                    ref={cardRef}
+                    title={summary.title}
+                    date={summary.date}
+                    activityName={summary.activityName}
+                    activitySlug={summary.activitySlug}
+                    hasRoute={summary.hasRoute}
+                    mapSnapshotUri={mapSnapshotUri}
+                    selectedStats={selectedStats}
+                    theme={theme}
+                    size={size}
+                    showGradient={showGradient}
+                  />
+                </View>
+                {isLoadingSnapshot && mapSnapshotUri && (
+                  <View className="absolute inset-0 items-center justify-center bg-black/40 rounded-lg">
+                    <ActivityIndicator size="large" color="#ffffff" />
+                  </View>
+                )}
+              </>
+            )}
           </View>
         )}
       </View>
 
-      {/* Controls */}
+      {/* Share / Save buttons - right below preview */}
       {summary && (
-        <View className="mt-6 gap-5">
-          {availableStats.length > 2 && (
-            <View>
-              <StatToggleChips
-                availableStats={availableStats}
-                selectedKeys={selectedKeys}
-                onToggle={handleToggle}
-              />
-            </View>
-          )}
-
-          {summary.hasRoute && (
-            <View className="w-full gap-3">
-              {/* Map style picker */}
-              <View className="gap-1">
-                <AppText className="text-sm text-gray-400">
-                  {t("activities.share.mapStyle")}
-                </AppText>
-                <View className="flex-row gap-2">
-                  {MAP_STYLES.map((style, i) => (
-                    <AnimatedButton
-                      key={style.labelKey}
-                      onPress={() => setMapStyleIndex(i)}
-                      className={`px-4 py-2 rounded-full border ${
-                        mapStyleIndex === i
-                          ? "bg-blue-700 border-blue-500"
-                          : "bg-transparent border-gray-600"
-                      }`}
-                    >
-                      <AppText
-                        className={`text-sm ${mapStyleIndex === i ? "text-gray-100" : "text-gray-400"}`}
-                      >
-                        {t(`activities.settings.mapStyles.${style.labelKey}`)}
-                      </AppText>
-                    </AnimatedButton>
-                  ))}
-                </View>
-              </View>
-
-              {/* Route color picker */}
-              <View className="gap-1">
-                <AppText className="text-sm text-gray-400">
-                  {t("activities.share.routeColor")}
-                </AppText>
-                <View className="flex-row gap-3">
-                  {LINE_COLORS.map((color, i) => (
-                    <AnimatedButton
-                      key={color.labelKey}
-                      onPress={() => setLineColorIndex(i)}
-                      className="items-center gap-1"
-                    >
-                      <View
-                        className={`w-[32px] h-[32px] rounded-full ${
-                          lineColorIndex === i
-                            ? "border-2 border-white"
-                            : "border border-gray-600"
-                        }`}
-                        style={{ backgroundColor: color.core }}
-                      />
-                    </AnimatedButton>
-                  ))}
-                </View>
-              </View>
-
-              {/* Toggle button */}
-              <AnimatedButton
-                onPress={() => setHideMapDetails((prev) => !prev)}
-                className={`px-4 py-2 rounded-full border self-start ${
-                  hideMapDetails
-                    ? "bg-blue-700 border-blue-500"
-                    : "bg-transparent border-gray-600"
-                }`}
-              >
-                <AppText
-                  className={`text-sm ${hideMapDetails ? "text-gray-100" : "text-gray-400"}`}
-                >
-                  {t("activities.share.hideMapDetails")}
-                </AppText>
-              </AnimatedButton>
-            </View>
-          )}
-
-          <View className="w-full">
-            <ShareCardPicker
-              selectedSize={size}
-              onSizeChange={setSize}
-              selectedTheme={themeId}
-              onThemeChange={setTheme}
-              showGradient={showGradient}
-              onShowGradientChange={setShowGradient}
-            />
-          </View>
-        </View>
-      )}
-
-      {/* Bottom buttons */}
-      <View className="w-full gap-4 pb-10 mt-8">
-        {summary && (
+        <View className="mt-6 gap-4">
           <View className="flex-row gap-4">
             <AnimatedButton
               onPress={handleSave}
@@ -358,7 +304,122 @@ export default function ActivityFinishedScreen() {
               </AppText>
             </AnimatedButton>
           </View>
-        )}
+        </View>
+      )}
+
+      {/* Collapsible Customize Card section */}
+      {summary && (
+        <View className="mt-6">
+          <AnimatedButton
+            onPress={() => setSettingsExpanded((prev) => !prev)}
+            className="flex-row items-center justify-between py-3 border-b border-gray-700"
+          >
+            <AppText className="text-base text-gray-300">
+              {t("activities.share.customizeCard")}
+            </AppText>
+            {settingsExpanded ? (
+              <ChevronUp color="#9ca3af" size={20} />
+            ) : (
+              <ChevronDown color="#9ca3af" size={20} />
+            )}
+          </AnimatedButton>
+
+          {settingsExpanded && (
+            <View className="mt-4 gap-5">
+              {availableStats.length > 2 && (
+                <StatToggleChips
+                  availableStats={availableStats}
+                  selectedKeys={selectedKeys}
+                  onToggle={handleToggle}
+                />
+              )}
+
+              {summary.hasRoute && (
+                <View className="w-full gap-3">
+                  {/* Map style picker */}
+                  <View className="gap-1">
+                    <AppText className="text-sm text-gray-400">
+                      {t("activities.share.mapStyle")}
+                    </AppText>
+                    <View className="flex-row gap-2">
+                      {MAP_STYLES.map((style, i) => (
+                        <AnimatedButton
+                          key={style.labelKey}
+                          onPress={() => setMapStyleIndex(i)}
+                          className={`px-4 py-2 rounded-full border ${
+                            mapStyleIndex === i
+                              ? "bg-blue-700 border-blue-500"
+                              : "bg-transparent border-gray-600"
+                          }`}
+                        >
+                          <AppText
+                            className={`text-sm ${mapStyleIndex === i ? "text-gray-100" : "text-gray-400"}`}
+                          >
+                            {t(`activities.settings.mapStyles.${style.labelKey}`)}
+                          </AppText>
+                        </AnimatedButton>
+                      ))}
+                    </View>
+                  </View>
+
+                  {/* Route color picker */}
+                  <View className="gap-1">
+                    <AppText className="text-sm text-gray-400">
+                      {t("activities.share.routeColor")}
+                    </AppText>
+                    <View className="flex-row gap-3">
+                      {LINE_COLORS.map((color, i) => (
+                        <AnimatedButton
+                          key={color.labelKey}
+                          onPress={() => setLineColorIndex(i)}
+                          className="items-center gap-1"
+                        >
+                          <View
+                            className={`w-[32px] h-[32px] rounded-full ${
+                              lineColorIndex === i
+                                ? "border-2 border-white"
+                                : "border border-gray-600"
+                            }`}
+                            style={{ backgroundColor: color.core }}
+                          />
+                        </AnimatedButton>
+                      ))}
+                    </View>
+                  </View>
+
+                  {/* Toggle button */}
+                  <AnimatedButton
+                    onPress={() => setHideMapDetails((prev) => !prev)}
+                    className={`px-4 py-2 rounded-full border self-start ${
+                      hideMapDetails
+                        ? "bg-blue-700 border-blue-500"
+                        : "bg-transparent border-gray-600"
+                    }`}
+                  >
+                    <AppText
+                      className={`text-sm ${hideMapDetails ? "text-gray-100" : "text-gray-400"}`}
+                    >
+                      {t("activities.share.hideMapDetails")}
+                    </AppText>
+                  </AnimatedButton>
+                </View>
+              )}
+
+              <ShareCardPicker
+                selectedSize={size}
+                onSizeChange={setSize}
+                selectedTheme={themeId}
+                onThemeChange={setTheme}
+                showGradient={showGradient}
+                onShowGradientChange={setShowGradient}
+              />
+            </View>
+          )}
+        </View>
+      )}
+
+      {/* Done button */}
+      <View className="w-full pb-10 mt-8">
         <LinkButton href="/dashboard">
           <AppText className="text-center">
             {t("activities.share.done")}
@@ -369,17 +430,19 @@ export default function ActivityFinishedScreen() {
       {/* Hidden MapView for snapshot */}
       {showHiddenMap && (
         <View
-          className="absolute"
           style={{
-            left: -9999,
-            width: dims.width,
-            height: dims.height,
+            position: "absolute",
+            top: -mapDims.height,
+            left: 0,
+            width: mapDims.width,
+            height: mapDims.height,
+            overflow: "hidden",
           }}
           pointerEvents="none"
         >
           <Mapbox.MapView
             ref={mapViewRef}
-            key={`${size}-${hideMapDetails}`}
+            key={`${size}-${hideMapDetails}-${lineColorIndex}`}
             style={MAP_VIEW_STYLE}
             {...(hideMapDetails && noLabelsStyleJSON
               ? { styleJSON: noLabelsStyleJSON }
@@ -403,10 +466,10 @@ export default function ActivityFinishedScreen() {
                 bounds: {
                   ne: bounds.ne,
                   sw: bounds.sw,
-                  paddingTop: Math.round(dims.height * 0.15),
-                  paddingBottom: Math.round(dims.height * 0.45),
-                  paddingLeft: Math.round(dims.width * 0.05),
-                  paddingRight: Math.round(dims.width * 0.05),
+                  paddingTop: Math.round(mapDims.height * 0.15),
+                  paddingBottom: Math.round(mapDims.height * 0.45),
+                  paddingLeft: Math.round(mapDims.width * 0.05),
+                  paddingRight: Math.round(mapDims.width * 0.05),
                 },
               }}
               animationMode="none"
@@ -421,8 +484,8 @@ export default function ActivityFinishedScreen() {
                   lineColor: lineColor.glow,
                   lineCap: "round" as const,
                   lineJoin: "round" as const,
-                  lineWidth: Math.round(16 * (Math.max(dims.width, dims.height) / 1080)),
-                  lineBlur: Math.round(6 * (Math.max(dims.width, dims.height) / 1080)),
+                  lineWidth: (20 * (ROUTE_SCALE[size] ?? 1)) / pixelRatio,
+                  lineBlur: (8 * (ROUTE_SCALE[size] ?? 1)) / pixelRatio,
                 }}
               />
               <Mapbox.LineLayer
@@ -430,7 +493,7 @@ export default function ActivityFinishedScreen() {
                 aboveLayerID="snapshot-glow"
                 style={{
                   lineColor: lineColor.core,
-                  lineWidth: Math.round(7 * (Math.max(dims.width, dims.height) / 1080)),
+                  lineWidth: (9 * (ROUTE_SCALE[size] ?? 1)) / pixelRatio,
                   lineCap: "round" as const,
                   lineJoin: "round" as const,
                 }}
@@ -450,7 +513,7 @@ export default function ActivityFinishedScreen() {
                       "start",
                       "end",
                     ],
-                    iconSize: 0.12 * (Math.max(dims.width, dims.height) / 1080),
+                    iconSize: (0.12 * (ROUTE_SCALE[size] ?? 1)) / pixelRatio,
                     iconAnchor: "bottom",
                     iconAllowOverlap: true,
                     iconIgnorePlacement: true,

@@ -43,9 +43,11 @@
       "timeRemaining": "Aikaa jäljellä",
       "inProgress": "Käynnissä",
       "tapToOpenTimer": "Avaa ajastin napauttamalla",
+      "alarm": "HÄLYTYS!",
       "timesUp": "Aika loppui!",
-      "stopAlarm": "Pysäytä hälytys",
-      "extendTimer": "+1 min"
+      "stopAlarm": "Pysäytä",
+      "extendTimer": "+1 min",
+      "restart": "Uudelleen"
     },
     "stopwatch": {
       "title": "Sekuntikello",

@@ -21,7 +21,7 @@ export default function useNotificationResponse() {
 
         // Mark habit as done from notification action button
         if (actionId === HABIT_DONE_ACTION_ID && data?.habitId) {
-          const today = new Date().toISOString().split("T")[0];
+          const today = new Date().toLocaleDateString("en-CA");
           await markHabitDone(data.habitId as string, today);
           queryClient.invalidateQueries({ queryKey: ["habit-logs"] });
           queryClient.invalidateQueries({ queryKey: ["habit-stats"] });

@@ -155,6 +155,7 @@ export default function ReportShareModal({
         }}
         onLayout={onLayout}
       >
+        {containerHeight === 0 ? null : <>
         {/* Card preview — fixed height */}
         <View
           className="items-center justify-center"
@@ -269,6 +270,7 @@ export default function ReportShareModal({
             </AppText>
           </AnimatedButton>
         </View>
+        </>}
       </View>
       <ToastMessage config={toastConfig} position="top" />
     </Modal>

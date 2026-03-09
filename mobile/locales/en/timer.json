@@ -43,9 +43,11 @@
       "timeRemaining": "Time remaining",
       "inProgress": "In progress",
       "tapToOpenTimer": "Tap to open timer",
+      "alarm": "ALARM!",
       "timesUp": "Time's up!",
       "stopAlarm": "Stop Alarm",
-      "extendTimer": "+1 min"
+      "extendTimer": "+1 min",
+      "restart": "Restart"
     },
     "stopwatch": {
       "title": "Stopwatch",

@@ -30,7 +30,7 @@ export default function HabitRow({
     >
       <View className="flex-row items-center justify-between">
         <AppText
-          className={`text-lg ${isCompleted ? "text-green-400" : "text-gray-100"}`}
+          className={`flex-1 shrink text-lg mr-3 ${isCompleted ? "text-green-400" : "text-gray-100"}`}
         >
           {habit.name}
         </AppText>

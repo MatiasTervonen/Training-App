@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { useNavigation } from "expo-router";
-import { View, LayoutChangeEvent } from "react-native";
+import { View, ScrollView, LayoutChangeEvent } from "react-native";
 import AppText from "@/components/AppText";
 import { Image } from "expo-image";
 import LinkButton from "@/components/buttons/LinkButton";
@@ -11,18 +11,21 @@ import useShareCard from "@/lib/hooks/useShareCard";
 import useShareCardPreferences from "@/lib/hooks/useShareCardPreferences";
 import { getTheme, SHARE_CARD_DIMENSIONS } from "@/lib/share/themes";
 import { useSessionSummaryStore } from "@/lib/stores/sessionSummaryStore";
-import { Share2 } from "lucide-react-native";
+import { Download, Share2, ChevronDown, ChevronUp } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
+import * as Haptics from "expo-haptics";
 
 export default function TrainingFinishedScreen() {
   const { t } = useTranslation("gym");
   const summary = useSessionSummaryStore((state) => state.summary);
   const clearSummary = useSessionSummaryStore((state) => state.clearSummary);
-  const { cardRef, isSharing, shareCard } = useShareCard();
+  const { cardRef, isSharing, isSaving, shareCard, saveCardToGallery } =
+    useShareCard();
   const { theme: themeId, size, setTheme, setSize } = useShareCardPreferences();
   const [containerWidth, setContainerWidth] = useState(0);
   const [containerHeight, setContainerHeight] = useState(0);
+  const [settingsExpanded, setSettingsExpanded] = useState(false);
 
   const theme = useMemo(() => getTheme(themeId), [themeId]);
   const dims = SHARE_CARD_DIMENSIONS[size];
@@ -70,80 +73,141 @@ export default function TrainingFinishedScreen() {
     return unsubscribe;
   }, [navigation, clearSummary]);
 
+  const handleShare = useCallback(async () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    const success = await shareCard(size);
+    if (!success) {
+      Toast.show({
+        type: "error",
+        text1: t("common:common.error"),
+        text2: t("gym.share.shareError"),
+      });
+    }
+  }, [shareCard, size, t]);
+
+  const handleSave = useCallback(async () => {
+    const success = await saveCardToGallery(size);
+    Toast.show({
+      type: success ? "success" : "error",
+      text1: success
+        ? t("gym.share.saveSuccess")
+        : t("common:common.error"),
+      text2: success ? undefined : t("gym.share.saveError"),
+    });
+  }, [saveCardToGallery, size, t]);
+
   return (
-    <View className="flex-1 px-5 justify-between" onLayout={onContainerLayout}>
-      {/* Top section: header + preview + picker */}
-      <View>
-        {/* Header */}
-        <View className="flex-row gap-5 items-center justify-center mt-10">
+    <ScrollView
+      className="flex-1 px-5"
+      contentContainerStyle={{ flexGrow: 1 }}
+      showsVerticalScrollIndicator={false}
+      onLayout={onContainerLayout}
+    >
+      {/* Header */}
+      <View className="items-center mt-10 gap-2">
+        <View className="flex-row gap-5 items-center">
           <AppText className="text-2xl">{t("gym.share.workoutFinished")}</AppText>
           <Image
             source={require("@/assets/images/confetti.png")}
             className="w-10 h-10"
           />
         </View>
+        <AppText className="text-sm text-gray-400">
+          {t("gym.share.subtitle")}
+        </AppText>
+      </View>
 
-        {/* Share Card Preview - fixed height */}
-        <View
-          className="items-center justify-center mt-4"
-          style={{ height: previewAreaHeight }}
-        >
-          {summary && (
-            <View style={cardContainerStyle}>
-              <View style={cardTransformStyle}>
-                <ShareCard
-                  ref={cardRef}
-                  title={summary.title}
-                  date={summary.date}
-                  duration={summary.duration}
-                  exercises={summary.exercises}
-                  weightUnit={summary.weightUnit}
-                  theme={theme}
-                  size={size}
-                />
-              </View>
+      {/* Share Card Preview - fixed height */}
+      <View
+        className="items-center justify-center mt-5"
+        style={{ height: previewAreaHeight }}
+      >
+        {summary && (
+          <View style={cardContainerStyle}>
+            <View style={cardTransformStyle}>
+              <ShareCard
+                ref={cardRef}
+                title={summary.title}
+                date={summary.date}
+                duration={summary.duration}
+                exercises={summary.exercises}
+                weightUnit={summary.weightUnit}
+                theme={theme}
+                size={size}
+              />
+            </View>
+          </View>
+        )}
+      </View>
+
+      {/* Share / Save buttons */}
+      {summary && (
+        <View className="mt-6 gap-4">
+          <View className="flex-row gap-4">
+            <AnimatedButton
+              onPress={handleSave}
+              className="flex-1 btn-neutral flex-row items-center justify-center gap-2"
+              disabled={isSaving || isSharing}
+            >
+              <Download color="#f3f4f6" size={20} />
+              <AppText className="text-base text-center">
+                {isSaving
+                  ? t("gym.share.saving")
+                  : t("gym.share.save")}
+              </AppText>
+            </AnimatedButton>
+            <AnimatedButton
+              onPress={handleShare}
+              className="flex-1 btn-base flex-row items-center justify-center gap-2"
+              disabled={isSharing || isSaving}
+            >
+              <Share2 color="#f3f4f6" size={20} />
+              <AppText className="text-base text-center">
+                {isSharing
+                  ? t("gym.share.sharing")
+                  : t("gym.share.shareWorkout")}
+              </AppText>
+            </AnimatedButton>
+          </View>
+        </View>
+      )}
+
+      {/* Collapsible Customize Card section */}
+      {summary && (
+        <View className="mt-6">
+          <AnimatedButton
+            onPress={() => setSettingsExpanded((prev) => !prev)}
+            className="flex-row items-center justify-between py-3 border-b border-gray-700"
+          >
+            <AppText className="text-base text-gray-300">
+              {t("gym.share.customizeCard")}
+            </AppText>
+            {settingsExpanded ? (
+              <ChevronUp color="#9ca3af" size={20} />
+            ) : (
+              <ChevronDown color="#9ca3af" size={20} />
+            )}
+          </AnimatedButton>
+
+          {settingsExpanded && (
+            <View className="mt-4">
+              <ShareCardPicker
+                selectedSize={size}
+                onSizeChange={setSize}
+                selectedTheme={themeId}
+                onThemeChange={setTheme}
+              />
             </View>
           )}
         </View>
+      )}
 
-        {/* Theme/Size Picker */}
-        <View className="mt-4">
-          <ShareCardPicker
-            selectedSize={size}
-            onSizeChange={setSize}
-            selectedTheme={themeId}
-            onThemeChange={setTheme}
-          />
-        </View>
-      </View>
-
-      {/* Bottom buttons */}
-      <View className="w-full gap-4 pb-10">
-        {summary && (
-          <AnimatedButton
-            onPress={async () => {
-              const success = await shareCard(size);
-              if (!success) {
-                Toast.show({
-                  type: "error",
-                  text1: t("common:common.error"),
-                  text2: t("gym.share.shareError"),
-                });
-              }
-            }}
-            className="btn-base flex-row items-center justify-center gap-2"
-            disabled={isSharing}
-          >
-            <Share2 color="#f3f4f6" size={20} />
-            <AppText className="text-base text-center">
-              {isSharing ? t("gym.share.sharing") : t("gym.share.shareWorkout")}
-            </AppText>
-          </AnimatedButton>
-        )}
+      {/* Done button */}
+      <View className="w-full pb-10 mt-8">
         <LinkButton href="/dashboard">
           <AppText className="text-center">{t("gym.share.done")}</AppText>
         </LinkButton>
       </View>
-    </View>
+    </ScrollView>
   );
 }

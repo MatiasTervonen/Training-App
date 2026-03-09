@@ -128,7 +128,6 @@ export default function CreateTodo() {
       await queryClient.invalidateQueries({ queryKey: ["feed"], exact: true });
       await queryClient.invalidateQueries({
         queryKey: ["myTodoLists"],
-        exact: true,
       });
       router.push("/dashboard");
       handleDeleteAll();

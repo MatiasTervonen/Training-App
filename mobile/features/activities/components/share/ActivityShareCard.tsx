@@ -221,9 +221,9 @@ const GPSLayout = forwardRef<View, GPSLayoutProps>(
             <View className="flex-row items-center gap-3 self-end mt-4">
               <Image
                 source={require("@/assets/images/android-chrome-192x192.png")}
-                className="w-[48px] h-[48px] rounded-lg"
+                className="w-[64px] h-[64px] rounded-xl"
               />
-              <AppText className="text-[30px]" style={{ color: noGradientOverride?.textMuted ?? colors.textMuted, ...textShadow }}>
+              <AppText className="text-[38px]" style={{ color: noGradientOverride?.textMuted ?? colors.textMuted, ...textShadow }}>
                 {APP_NAME}
               </AppText>
             </View>
@@ -288,9 +288,9 @@ const GPSLayout = forwardRef<View, GPSLayoutProps>(
           <View className="flex-row items-center gap-3 self-end mt-4">
             <Image
               source={require("@/assets/images/android-chrome-192x192.png")}
-              className="w-[48px] h-[48px] rounded-lg"
+              className="w-[64px] h-[64px] rounded-xl"
             />
-            <AppText className="text-[30px]" style={{ color: noGradientOverride?.textMuted ?? colors.textMuted, ...textShadow }}>
+            <AppText className="text-[38px]" style={{ color: noGradientOverride?.textMuted ?? colors.textMuted, ...textShadow }}>
               {APP_NAME}
             </AppText>
           </View>
@@ -355,9 +355,9 @@ const NoGPSLayout = forwardRef<View, NoGPSLayoutProps>(
           <View className="flex-row items-center gap-3 self-end">
             <Image
               source={require("@/assets/images/android-chrome-192x192.png")}
-              className="w-[48px] h-[48px] rounded-lg"
+              className="w-[64px] h-[64px] rounded-xl"
             />
-            <AppText className="text-[30px]" style={{ color: colors.textMuted }}>
+            <AppText className="text-[38px]" style={{ color: colors.textMuted }}>
               {APP_NAME}
             </AppText>
           </View>
@@ -401,9 +401,9 @@ const NoGPSLayout = forwardRef<View, NoGPSLayoutProps>(
           <View className="flex-row items-center gap-3 self-end">
             <Image
               source={require("@/assets/images/android-chrome-192x192.png")}
-              className="w-[48px] h-[48px] rounded-lg"
+              className="w-[64px] h-[64px] rounded-xl"
             />
-            <AppText className="text-[30px]" style={{ color: colors.textMuted }}>
+            <AppText className="text-[38px]" style={{ color: colors.textMuted }}>
               {APP_NAME}
             </AppText>
           </View>
@@ -447,9 +447,9 @@ const NoGPSLayout = forwardRef<View, NoGPSLayoutProps>(
         <View className="flex-row items-center gap-3 self-end">
           <Image
             source={require("@/assets/images/android-chrome-192x192.png")}
-            className="w-[48px] h-[48px] rounded-lg"
+            className="w-[64px] h-[64px] rounded-xl"
           />
-          <AppText className="text-[30px]" style={{ color: colors.textMuted }}>
+          <AppText className="text-[38px]" style={{ color: colors.textMuted }}>
             {APP_NAME}
           </AppText>
         </View>

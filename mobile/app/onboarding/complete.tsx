@@ -3,6 +3,7 @@ import AppText from "@/components/AppText";
 import BodyText from "@/components/BodyText";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import OnboardingProgressBar from "@/features/onboarding/OnboardingProgressBar";
+import OnboardingBackButton from "@/features/onboarding/OnboardingBackButton";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useUserStore } from "@/lib/stores/useUserStore";
@@ -19,7 +20,9 @@ export default function CompleteScreen() {
   const gpsEnabled = useUserStore(
     (state) => state.settings?.gps_tracking_enabled,
   );
+  const displayName = useUserStore((state) => state.profile?.display_name);
   const weightUnit = useUserStore((state) => state.profile?.weight_unit);
+  const distanceUnit = useUserStore((state) => state.profile?.distance_unit);
 
   const handleFinish = async () => {
     setIsLoading(true);
@@ -40,6 +43,13 @@ export default function CompleteScreen() {
     summaryItems.push({
       label: t("complete.summary.language"),
       value: language === "fi" ? "Suomi" : "English",
+    });
+  }
+
+  if (displayName) {
+    summaryItems.push({
+      label: t("complete.summary.userName"),
+      value: displayName,
     });
   }
 
@@ -64,9 +74,17 @@ export default function CompleteScreen() {
     });
   }
 
+  if (distanceUnit) {
+    summaryItems.push({
+      label: t("complete.summary.distanceUnit"),
+      value: distanceUnit,
+    });
+  }
+
   return (
     <View className="flex-1 px-6 justify-center">
-      <OnboardingProgressBar currentStep={4} />
+      <OnboardingBackButton />
+      <OnboardingProgressBar currentStep={5} />
 
       <View className="mt-8">
         <AppText className="text-3xl text-center mb-4">

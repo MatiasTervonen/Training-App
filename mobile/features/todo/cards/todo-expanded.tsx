@@ -314,8 +314,7 @@ export default function TodoSession({
                                         {task.task}
                                       </AppText>
                                       <BodyText className="text-left">
-                                        {task.notes ||
-                                          t("todo.noNotesAvailable")}
+                                        {task.notes}
                                       </BodyText>
 
                                       {/* Task media */}

@@ -2,7 +2,7 @@
   "profile": {
     "title": "Profiiliasetukset",
     "userName": "Käyttäjänimi",
-    "userNameHint": "Enintään 15 merkkiä. Vain pienet kirjaimet, numerot ja \"_\" sallittu.",
+    "userNameHint": "Enintään 15 merkkiä. Vain pienet kirjaimet, numerot ja alaviivat sallittu.",
     "userNameEmpty": "Käyttäjänimi ei voi olla tyhjä.",
     "userNameTaken": "Käyttäjänimi on jo varattu. Valitse toinen.",
     "profilePicture": "Profiilikuva",

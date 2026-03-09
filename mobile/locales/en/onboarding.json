@@ -39,9 +39,22 @@
       "description": "Disable battery optimization so GPS tracking and background features work reliably without being killed by the system."
     }
   },
+  "profile": {
+    "title": "Set up your profile",
+    "description": "Choose a username and profile picture. You can always change these later in your profile settings.",
+    "userName": "Username",
+    "userNameHint": "Lowercase letters, numbers, and underscores only (max 15 characters)",
+    "userNameTaken": "This username is already taken",
+    "continue": "Continue",
+    "skipStep": "Skip",
+    "saving": "Saving profile...",
+    "pictureSizeError": "Image must be smaller than 5 MB",
+    "pictureFormatError": "Only JPEG, PNG, and WebP images are supported"
+  },
   "aboutYou": {
     "title": "What's your weight?",
     "description": "Your weight is used to estimate calories burned during activities. You can update it anytime in the Weight section.",
+    "distanceUnit": "Preferred distance unit",
     "continue": "Continue",
     "skipStep": "Skip"
   },
@@ -51,12 +64,14 @@
     "start": "Start using {{appName}}",
     "summary": {
       "language": "Language",
+      "userName": "Username",
       "notifications": "Notifications",
       "location": "Location",
       "stepCounter": "Step counter",
       "exactAlarms": "Exact alarms",
       "batteryOptimization": "Battery optimization",
-      "weight": "Weight"
+      "weight": "Weight",
+      "distanceUnit": "Distance"
     }
   },
   "skipModal": {

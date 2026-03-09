@@ -260,7 +260,7 @@
     },
     "share": {
       "activityFinished": "Aktiviteetti valmis",
-      "shareActivity": "Jaa aktiviteetti",
+      "shareActivity": "Jaa",
       "share": "Jaa",
       "sharing": "Jaetaan...",
       "done": "Valmis",
@@ -283,7 +283,10 @@
       "minStats": "Valitse vähintään 2 tilastoa",
       "maxStats": "Enintään 7 tilastoa",
       "mapStyle": "Kartan tyyli",
-      "routeColor": "Reitin väri"
+      "routeColor": "Reitin väri",
+      "loadingMap": "Ladataan karttaa...",
+      "subtitle": "Jaa treeni kavereidesi kanssa",
+      "customizeCard": "Muokkaa korttia"
     },
     "settings": {
       "title": "Asetukset",

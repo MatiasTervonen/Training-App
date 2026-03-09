@@ -104,7 +104,7 @@ export default function ActiveSessionPopup() {
                   {activeSession.label}
                 </AppText>
               )}
-              {alarmFired && <AppText>ALARM!</AppText>}
+              {alarmFired && <AppText>{t("timer:timer.notification.alarm")}</AppText>}
             </View>
             <View className="flex-row items-center gap-5">
               <Timer textClassName="text-xl" />

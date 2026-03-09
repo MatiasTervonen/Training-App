@@ -5,6 +5,7 @@ import AnimatedButton from "@/components/buttons/animatedButton";
 import OnboardingProgressBar from "@/features/onboarding/OnboardingProgressBar";
 import PermissionCard from "@/features/onboarding/PermissionCard";
 import SkipOnboardingButton from "@/features/onboarding/SkipOnboardingButton";
+import OnboardingBackButton from "@/features/onboarding/OnboardingBackButton";
 import { useSkipOnboarding } from "@/features/onboarding/useSkipOnboarding";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
@@ -123,6 +124,7 @@ export default function PermissionsScreen() {
 
   return (
     <View className="flex-1 px-6">
+      <OnboardingBackButton />
       <View className="pt-6">
         <OnboardingProgressBar currentStep={2} />
       </View>
@@ -205,7 +207,7 @@ export default function PermissionsScreen() {
 
       <View className="pb-6">
         <AnimatedButton
-          onPress={() => router.push("/onboarding/about-you")}
+          onPress={() => router.push("/onboarding/profile")}
           className="btn-base py-3"
           label={t("permissions.continue")}
           textClassName="text-lg"

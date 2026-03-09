@@ -125,6 +125,7 @@ export default function StepsShareModal({
         }}
         onLayout={onLayout}
       >
+        {containerHeight === 0 ? null : <>
         {/* Top section: preview + picker */}
         <View>
           <View
@@ -205,6 +206,7 @@ export default function StepsShareModal({
             </AppText>
           </AnimatedButton>
         </View>
+        </>}
       </View>
 
       {visible && !chartImageUri && (

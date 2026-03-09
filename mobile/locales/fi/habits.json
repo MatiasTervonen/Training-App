@@ -58,6 +58,16 @@
     "sat": "La",
     "sun": "Su"
   },
+  "share": {
+    "share": "Jaa",
+    "sharing": "Jaetaan...",
+    "save": "Tallenna",
+    "saving": "Tallennetaan...",
+    "close": "Sulje",
+    "saveSuccess": "Tallennettu galleriaan",
+    "saveError": "Kuvan tallennus epäonnistui",
+    "shareError": "Kuvan jakaminen epäonnistui"
+  },
   "months": {
     "january": "Tammikuu",
     "february": "Helmikuu",

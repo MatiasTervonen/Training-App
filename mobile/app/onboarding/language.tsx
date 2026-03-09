@@ -4,6 +4,7 @@ import AnimatedButton from "@/components/buttons/animatedButton";
 import OnboardingProgressBar from "@/features/onboarding/OnboardingProgressBar";
 import LanguageCard from "@/features/onboarding/LanguageCard";
 import SkipOnboardingButton from "@/features/onboarding/SkipOnboardingButton";
+import OnboardingBackButton from "@/features/onboarding/OnboardingBackButton";
 import { useSkipOnboarding } from "@/features/onboarding/useSkipOnboarding";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
@@ -31,6 +32,7 @@ export default function LanguageScreen() {
 
   return (
     <View className="flex-1 px-6 justify-center">
+      <OnboardingBackButton />
       <OnboardingProgressBar currentStep={1} />
 
       <View className="mt-8 mb-8">

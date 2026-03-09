@@ -9,18 +9,22 @@ import {
 type MapViewRef = MapboxGL.MapView;
 
 /**
- * Fetches the Mapbox Dark style JSON and strips all symbol (text/label) layers.
- * Cached so it's only fetched once per app session.
+ * Fetches a Mapbox style JSON and strips all symbol (text/label) layers.
+ * Cached per style URL so each style is only fetched once per app session.
  */
-let cachedNoLabelsStyle: string | null = null;
+const noLabelsCache = new Map<string, string>();
 
-async function getNoLabelsStyleJSON(): Promise<string> {
-  if (cachedNoLabelsStyle) return cachedNoLabelsStyle;
+async function getNoLabelsStyleJSON(mapboxStyleUrl: string): Promise<string> {
+  const cached = noLabelsCache.get(mapboxStyleUrl);
+  if (cached) return cached;
 
   const token = process.env.EXPO_PUBLIC_MAPBOX_PUBLIC_TOKEN;
-  const url = `https://api.mapbox.com/styles/v1/mapbox/dark-v11?access_token=${token}`;
-
-  const res = await fetch(url);
+  // Convert mapbox:// URL to API URL
+  const apiUrl = mapboxStyleUrl.replace(
+    "mapbox://styles/",
+    "https://api.mapbox.com/styles/v1/",
+  );
+  const res = await fetch(`${apiUrl}?access_token=${token}`);
   const style = await res.json();
 
   // Remove all symbol layers (text labels, POI icons, road labels, etc.)
@@ -28,14 +32,16 @@ async function getNoLabelsStyleJSON(): Promise<string> {
     (layer: { type: string }) => layer.type !== "symbol",
   );
 
-  cachedNoLabelsStyle = JSON.stringify(style);
-  return cachedNoLabelsStyle;
+  const json = JSON.stringify(style);
+  noLabelsCache.set(mapboxStyleUrl, json);
+  return json;
 }
 
 export default function useMapSnapshot(
   route: FullActivitySession["route"],
   hideDetails = false,
   resetKey?: string,
+  mapStyleUrl?: string,
 ) {
   const mapViewRef = useRef<MapViewRef>(null);
   const [mapSnapshotUri, setMapSnapshotUri] = useState<string | null>(null);
@@ -45,24 +51,29 @@ export default function useMapSnapshot(
     null,
   );
 
-  // Fetch the no-labels style when privacy mode is enabled
+  // Fetch the no-labels style for the current map style when privacy mode is enabled
   useEffect(() => {
-    if (!hideDetails || !route) return;
+    if (!hideDetails || !route || !mapStyleUrl) return;
 
     let cancelled = false;
-    getNoLabelsStyleJSON().then((json) => {
+    setNoLabelsStyleJSON(null);
+    getNoLabelsStyleJSON(mapStyleUrl).then((json) => {
       if (!cancelled) setNoLabelsStyleJSON(json);
     });
     return () => {
       cancelled = true;
     };
-  }, [hideDetails, route]);
+  }, [hideDetails, route, mapStyleUrl]);
 
-  // Re-take snapshot when style/color changes — keep old snapshot visible while loading
-  useEffect(() => {
-    if (!route) return;
+  // Set loading synchronously during render when deps change so the spinner
+  // shows in the same render cycle as the MapView remount (avoids race
+  // conditions where onDidFinishLoadingMap fires before a useEffect would run).
+  const depsKey = `${hideDetails}-${resetKey}`;
+  const prevDepsKeyRef = useRef(depsKey);
+  if (route && depsKey !== prevDepsKeyRef.current) {
+    prevDepsKeyRef.current = depsKey;
     setIsLoadingSnapshot(true);
-  }, [hideDetails, route, resetKey]);
+  }
 
   const isMultiLine = route?.type === "MultiLineString";
 
@@ -164,7 +175,6 @@ export default function useMapSnapshot(
     startEndGeoJSON,
     onMapDidFinishLoading,
     onMapIdle,
-    takeSnapshot,
     noLabelsStyleJSON,
     privacyStyleReady,
   };

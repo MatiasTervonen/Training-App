@@ -2,7 +2,7 @@
   "profile": {
     "title": "Profile Settings",
     "userName": "User Name",
-    "userNameHint": "Max 15 characters. Only lowercase letters, numbers, \"_\" allowed.",
+    "userNameHint": "Max 15 characters. Only lowercase letters, numbers, and underscores allowed.",
     "userNameEmpty": "User name cannot be empty.",
     "userNameTaken": "User name is already taken. Please choose another.",
     "profilePicture": "Profile Picture",

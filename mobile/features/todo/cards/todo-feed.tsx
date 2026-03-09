@@ -40,15 +40,7 @@ export default function TodoCard({
       typeIcon={<ListTodo size={20} color={pinned ? "#0f172a" : "#cbd5e1"} />}
       typeName={t("feed.card.types.todo")}
       statsContent={
-        <>
-          <View className="flex-row gap-2 items-center">
-            <AppText
-              className={`${pinned ? "text-slate-900" : "text-slate-300"}`}
-            >
-              {t("feed.card.completed")}: {payload.completed} / {payload.total}
-            </AppText>
-            {payload.completed === payload.total && <Check color="#22c55e" />}
-          </View>
+        <View>
           {(voiceCount > 0 || imageCount > 0 || videoCount > 0) && (
             <View className="flex-row items-center gap-3 mb-1">
               {voiceCount > 0 && (
@@ -77,7 +69,15 @@ export default function TodoCard({
               )}
             </View>
           )}
-        </>
+          <View className="flex-row gap-2 items-center">
+            <AppText
+              className={`${pinned ? "text-slate-900" : "text-slate-300"}`}
+            >
+              {t("feed.card.completed")}: {payload.completed} / {payload.total}
+            </AppText>
+            {payload.completed === payload.total && <Check color="#22c55e" />}
+          </View>
+        </View>
       }
       showUpdatedAt={true}
     />

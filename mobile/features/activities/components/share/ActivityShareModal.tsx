@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { View, Modal, ScrollView, LayoutChangeEvent } from "react-native";
+import { View, Modal, ScrollView, LayoutChangeEvent, ActivityIndicator, PixelRatio } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import AppText from "@/components/AppText";
 import AnimatedButton from "@/components/buttons/animatedButton";
@@ -27,6 +27,12 @@ import { MAP_STYLES, LINE_COLORS } from "@/features/activities/lib/mapConstants"
 import { useActivitySettingsStore } from "@/lib/stores/activitySettingsStore";
 
 const MAP_VIEW_STYLE = { flex: 1 };
+
+const ROUTE_SCALE: Record<string, number> = {
+  square: 1,
+  story: 1.8,
+  wide: 1.3,
+};
 
 type ActivityShareModalProps = {
   visible: boolean;
@@ -84,6 +90,17 @@ export default function ActivityShareModal({
   const theme = useMemo(() => getTheme(themeId), [themeId]);
   const dims = useMemo(() => SHARE_CARD_DIMENSIONS[size], [size]);
 
+  // Hidden MapView dimensions: divide by pixel ratio so takeSnap() produces
+  // the correct physical pixel size without rendering an oversized map.
+  const pixelRatio = PixelRatio.get();
+  const mapDims = useMemo(
+    () => ({
+      width: Math.round(dims.width / pixelRatio),
+      height: Math.round(dims.height / pixelRatio),
+    }),
+    [dims, pixelRatio],
+  );
+
   // Convert FullActivitySession to summary format
   const summary = useMemo<ActivitySessionSummary>(() => {
     const stats = activitySession.stats;
@@ -121,7 +138,8 @@ export default function ActivityShareModal({
   } = useMapSnapshot(
     visible ? summary.route : null,
     hideMapDetails,
-    `${mapStyleIndex}-${lineColorIndex}`,
+    `${mapStyleIndex}-${lineColorIndex}-${size}`,
+    mapStyleUrl,
   );
 
   const availableStats = useMemo(
@@ -236,22 +254,24 @@ export default function ActivityShareModal({
         }}
         onLayout={onLayout}
       >
+        {/* Wait for layout measurement before rendering content to prevent jump */}
+        {containerHeight === 0 ? null : <>
         {/* Hidden offscreen map for snapshot capture */}
         {showHiddenMap && (
           <View
             style={{
               position: "absolute",
-              top: -dims.height,
+              top: -mapDims.height,
               left: 0,
-              width: dims.width,
-              height: dims.height,
+              width: mapDims.width,
+              height: mapDims.height,
               overflow: "hidden",
             }}
             pointerEvents="none"
           >
             <Mapbox.MapView
               ref={mapViewRef}
-              key={`${size}-${hideMapDetails}`}
+              key={`${size}-${hideMapDetails}-${lineColorIndex}`}
               style={MAP_VIEW_STYLE}
               {...(hideMapDetails && noLabelsStyleJSON
                 ? { styleJSON: noLabelsStyleJSON }
@@ -275,10 +295,10 @@ export default function ActivityShareModal({
                   bounds: {
                     ne: bounds.ne,
                     sw: bounds.sw,
-                    paddingTop: Math.round(dims.height * 0.15),
-                    paddingBottom: Math.round(dims.height * 0.45),
-                    paddingLeft: Math.round(dims.width * 0.05),
-                    paddingRight: Math.round(dims.width * 0.05),
+                    paddingTop: Math.round(mapDims.height * 0.15),
+                    paddingBottom: Math.round(mapDims.height * 0.45),
+                    paddingLeft: Math.round(mapDims.width * 0.05),
+                    paddingRight: Math.round(mapDims.width * 0.05),
                   },
                 }}
                 animationMode="none"
@@ -293,8 +313,8 @@ export default function ActivityShareModal({
                     lineColor: lineColor.glow,
                     lineCap: "round" as const,
                     lineJoin: "round" as const,
-                    lineWidth: Math.round(16 * (Math.max(dims.width, dims.height) / 1080)),
-                    lineBlur: Math.round(6 * (Math.max(dims.width, dims.height) / 1080)),
+                    lineWidth: (20 * (ROUTE_SCALE[size] ?? 1)) / pixelRatio,
+                    lineBlur: (8 * (ROUTE_SCALE[size] ?? 1)) / pixelRatio,
                   }}
                 />
                 <Mapbox.LineLayer
@@ -302,7 +322,7 @@ export default function ActivityShareModal({
                   aboveLayerID="snapshot-glow"
                   style={{
                     lineColor: lineColor.core,
-                    lineWidth: Math.round(7 * (Math.max(dims.width, dims.height) / 1080)),
+                    lineWidth: (9 * (ROUTE_SCALE[size] ?? 1)) / pixelRatio,
                     lineCap: "round" as const,
                     lineJoin: "round" as const,
                   }}
@@ -322,7 +342,7 @@ export default function ActivityShareModal({
                         "start",
                         "end",
                       ],
-                      iconSize: 0.12 * (Math.max(dims.width, dims.height) / 1080),
+                      iconSize: (0.12 * (ROUTE_SCALE[size] ?? 1)) / pixelRatio,
                       iconAnchor: "bottom",
                       iconAllowOverlap: true,
                       iconIgnorePlacement: true,
@@ -340,22 +360,47 @@ export default function ActivityShareModal({
           style={{ height: previewAreaHeight }}
         >
           <View style={containerStyle}>
-            <View style={transformStyle}>
-              <ActivityShareCard
-                key={`${showGradient}`}
-                ref={cardRef}
-                title={summary.title}
-                date={summary.date}
-                activityName={summary.activityName}
-                activitySlug={summary.activitySlug}
-                hasRoute={summary.hasRoute}
-                mapSnapshotUri={mapSnapshotUri}
-                selectedStats={selectedStats}
-                theme={theme}
-                size={size}
-                showGradient={showGradient}
-              />
-            </View>
+            {/* Cold open: show placeholder until first snapshot is ready */}
+            {isLoadingSnapshot && !mapSnapshotUri && summary.hasRoute ? (
+              <View
+                className="items-center justify-center rounded-lg"
+                style={{
+                  width: containerStyle.width,
+                  height: containerStyle.height,
+                  backgroundColor: theme.colors.background[0],
+                }}
+              >
+                <ActivityIndicator size="large" color={theme.colors.accent} />
+                <AppText className="text-sm text-gray-400 mt-3">
+                  {t("activities.share.loadingMap")}
+                </AppText>
+              </View>
+            ) : (
+              <>
+                <View style={transformStyle}>
+                  <ActivityShareCard
+                    key={`${showGradient}`}
+                    ref={cardRef}
+                    title={summary.title}
+                    date={summary.date}
+                    activityName={summary.activityName}
+                    activitySlug={summary.activitySlug}
+                    hasRoute={summary.hasRoute}
+                    mapSnapshotUri={mapSnapshotUri}
+                    selectedStats={selectedStats}
+                    theme={theme}
+                    size={size}
+                    showGradient={showGradient}
+                  />
+                </View>
+                {/* Loading overlay while map snapshot is re-rendering */}
+                {isLoadingSnapshot && mapSnapshotUri && (
+                  <View className="absolute inset-0 items-center justify-center bg-black/40 rounded-lg">
+                    <ActivityIndicator size="large" color="#ffffff" />
+                  </View>
+                )}
+              </>
+            )}
           </View>
         </View>
 
@@ -494,6 +539,7 @@ export default function ActivityShareModal({
             </AnimatedButton>
           </View>
         </ScrollView>
+        </>}
       </View>
       <ToastMessage config={toastConfig} position="top" />
     </Modal>

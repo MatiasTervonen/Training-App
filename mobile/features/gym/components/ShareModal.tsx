@@ -124,6 +124,7 @@ export default function ShareModal({
         }}
         onLayout={onLayout}
       >
+        {containerHeight === 0 ? null : <>
         {/* Top section: preview + picker */}
         <View>
           <View
@@ -203,6 +204,7 @@ export default function ShareModal({
             </AppText>
           </AnimatedButton>
         </View>
+        </>}
       </View>
       <ToastMessage config={toastConfig} position="top" />
     </Modal>

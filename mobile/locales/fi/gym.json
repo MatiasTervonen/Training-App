@@ -274,7 +274,9 @@
       "duration": "Kesto",
       "volume": "Volyymi",
       "exercises": "Liikkeet",
-      "sets": "Sarjat"
+      "sets": "Sarjat",
+      "subtitle": "Jaa treeni kavereidesi kanssa",
+      "customizeCard": "Muokkaa korttia"
     },
     "analytics": {
       "title": "Viimeisten 30 päivän analytiikka",

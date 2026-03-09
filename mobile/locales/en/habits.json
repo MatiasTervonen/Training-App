@@ -58,6 +58,16 @@
     "sat": "Sa",
     "sun": "Su"
   },
+  "share": {
+    "share": "Share",
+    "sharing": "Sharing...",
+    "save": "Save",
+    "saving": "Saving...",
+    "close": "Close",
+    "saveSuccess": "Saved to gallery",
+    "saveError": "Failed to save image",
+    "shareError": "Failed to share image"
+  },
   "months": {
     "january": "January",
     "february": "February",

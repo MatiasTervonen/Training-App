@@ -1,4 +1,5 @@
-import { View, Image, Alert } from "react-native";
+import { View, Alert } from "react-native";
+import { Image } from "expo-image";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import AppText from "@/components/AppText";
 import { X, Play } from "lucide-react-native";
@@ -49,7 +50,9 @@ export default function DraftVideoItem({
         <Image
           source={{ uri: thumbnailUri }}
           className="w-full h-48"
-          resizeMode="cover"
+          contentFit="cover"
+          cachePolicy="memory-disk"
+          transition={200}
         />
         {/* Play icon overlay */}
         <View className="absolute inset-0 items-center justify-center">

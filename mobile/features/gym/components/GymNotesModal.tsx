@@ -32,6 +32,9 @@ type GymNotesModalProps = {
   setDraftImages: (value: SetStateAction<DraftImage[]>) => void;
   draftVideos: DraftVideo[];
   setDraftVideos: (value: SetStateAction<DraftVideo[]>) => void;
+  existingImageCount?: number;
+  existingVideoCount?: number;
+  existingVoiceCount?: number;
 };
 
 export default function GymNotesModal({
@@ -50,6 +53,9 @@ export default function GymNotesModal({
   setDraftImages,
   draftVideos,
   setDraftVideos,
+  existingImageCount = 0,
+  existingVideoCount = 0,
+  existingVoiceCount = 0,
 }: GymNotesModalProps) {
   const { t } = useTranslation(["gym", "notes"]);
   const confirmAction = useConfirmAction();
@@ -168,6 +174,9 @@ export default function GymNotesModal({
                   { id: nanoid(), uri, thumbnailUri, durationMs },
                 ])
               }
+              currentImageCount={existingImageCount + draftImages.length}
+              currentVideoCount={existingVideoCount + draftVideos.length}
+              currentVoiceCount={existingVoiceCount + draftRecordings.length}
               folders={[]}
               selectedFolderId={null}
               onFolderSelect={() => {}}

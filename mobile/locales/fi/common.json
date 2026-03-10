@@ -24,7 +24,17 @@
     "keepEditing": "Jatka",
     "discard": "Hylkää",
     "copyToClipboard": "Kopioi leikepöydälle",
-    "copiedToClipboard": "Kopioitu leikepöydälle"
+    "copiedToClipboard": "Kopioitu leikepöydälle",
+    "media": {
+      "maxImagesReached": "Enintään {{max}} kuvaa",
+      "maxVideosReached": "Enintään {{max}} videota",
+      "maxVoiceReached": "Enintään {{max}} äänitallennetta",
+      "imageTooLarge": "Kuva ylittää {{max}} Mt rajan",
+      "videoTooLarge": "Video ylittää {{max}} Mt rajan pakkauksen jälkeen",
+      "videoTooLong": "Video ylittää {{max}} minuutin rajan",
+      "compressingImage": "Optimoidaan kuvaa...",
+      "compressingVideo": "Pakataan videota..."
+    }
   },
   "navbar": {
     "menu": "Valikko",

@@ -54,7 +54,7 @@ type DraftImage = {
 
 type GymFormData = Pick<
   FullGymSession,
-  "id" | "title" | "notes" | "duration" | "gym_session_exercises"
+  "id" | "title" | "notes" | "duration" | "gym_session_exercises" | "sessionImages" | "sessionVideos" | "sessionVoiceRecordings"
 >;
 
 export default function GymForm({ initialData }: { initialData: GymFormData }) {
@@ -305,9 +305,14 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
                 <NotebookPen size={18} color="#f3f4f6" />
                 <AppText>
                   {t("gym.gymForm.notesButton")}
-                  {draftRecordings.length + draftImages.length + draftVideos.length > 0
-                    ? ` (${draftRecordings.length + draftImages.length + draftVideos.length})`
-                    : ""}
+                  {(() => {
+                    const totalMedia =
+                      draftRecordings.length + draftImages.length + draftVideos.length +
+                      (session.sessionImages?.length ?? 0) +
+                      (session.sessionVideos?.length ?? 0) +
+                      (session.sessionVoiceRecordings?.length ?? 0);
+                    return totalMedia > 0 ? ` (${totalMedia})` : "";
+                  })()}
                 </AppText>
               </AnimatedButton>
             </View>
@@ -532,6 +537,9 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
         setDraftImages={setDraftImages}
         draftVideos={draftVideos}
         setDraftVideos={setDraftVideos}
+        existingImageCount={session.sessionImages?.length ?? 0}
+        existingVideoCount={session.sessionVideos?.length ?? 0}
+        existingVoiceCount={session.sessionVoiceRecordings?.length ?? 0}
       />
 
       <FullScreenLoader

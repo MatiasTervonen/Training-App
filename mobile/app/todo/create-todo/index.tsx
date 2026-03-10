@@ -220,6 +220,9 @@ export default function CreateTodo() {
                   { id: nanoid(), uri, thumbnailUri, durationMs },
                 ]);
               }}
+              currentImageCount={draftImages.length}
+              currentVideoCount={draftVideos.length}
+              currentVoiceCount={draftRecordings.length}
               showFolderButton={false}
               folders={[]}
               selectedFolderId={null}
@@ -432,6 +435,9 @@ export default function CreateTodo() {
                                           ),
                                         );
                                       }}
+                                      currentImageCount={item.draftImages?.length ?? 0}
+                                      currentVideoCount={item.draftVideos?.length ?? 0}
+                                      currentVoiceCount={item.draftRecordings?.length ?? 0}
                                       showFolderButton={false}
                                       folders={[]}
                                       selectedFolderId={null}

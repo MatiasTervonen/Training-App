@@ -401,6 +401,9 @@ export default function EditNotes({
                   { id: nanoid(), uri, thumbnailUri, durationMs },
                 ]);
               }}
+              currentImageCount={existingImages.length + newImages.length}
+              currentVideoCount={existingVideos.length + newVideos.length}
+              currentVoiceCount={existingRecordings.length + newRecordings.length}
               folders={isFoldersLoading ? [] : folders}
               selectedFolderId={selectedFolderId}
               onFolderSelect={setSelectedFolderId}

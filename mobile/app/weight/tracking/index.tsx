@@ -161,6 +161,9 @@ export default function SettingsScreen() {
                     { id: nanoid(), uri, thumbnailUri, durationMs },
                   ])
                 }
+                currentImageCount={draftImages.length}
+                currentVideoCount={draftVideos.length}
+                currentVoiceCount={draftRecordings.length}
                 folders={[]}
                 selectedFolderId={null}
                 onFolderSelect={() => {}}

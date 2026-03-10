@@ -341,6 +341,9 @@ export default function EditTodo({
                           ),
                         }));
                       }}
+                      currentImageCount={(task.existingImages?.length ?? 0) + (task.draftImages?.length ?? 0)}
+                      currentVideoCount={(task.existingVideos?.length ?? 0) + (task.draftVideos?.length ?? 0)}
+                      currentVoiceCount={(task.existingVoice?.length ?? 0) + (task.draftRecordings?.length ?? 0)}
                       showFolderButton={false}
                       folders={[]}
                       selectedFolderId={null}

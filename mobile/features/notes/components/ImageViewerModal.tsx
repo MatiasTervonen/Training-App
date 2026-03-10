@@ -1,4 +1,5 @@
-import { View, Modal, Image, FlatList, Dimensions } from "react-native";
+import { View, Modal, FlatList, Dimensions } from "react-native";
+import { Image } from "expo-image";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import AppText from "@/components/AppText";
 import { X } from "lucide-react-native";
@@ -180,7 +181,8 @@ function ImagePage({
           <Image
             source={{ uri }}
             style={{ width: SCREEN_WIDTH, height: SCREEN_HEIGHT }}
-            resizeMode="contain"
+            contentFit="contain"
+            cachePolicy="memory-disk"
           />
         </Animated.View>
       </GestureDetector>

@@ -1,4 +1,5 @@
-import { View, Image } from "react-native";
+import { View } from "react-native";
+import { Image } from "expo-image";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import { X } from "lucide-react-native";
 
@@ -17,7 +18,9 @@ export default function DraftImageItem({ uri, onDelete, onPress }: Props) {
       <Image
         source={{ uri }}
         className="w-full h-48"
-        resizeMode="cover"
+        contentFit="cover"
+        cachePolicy="memory-disk"
+        transition={200}
       />
       {onDelete && (
         <View className="absolute top-2 right-2">

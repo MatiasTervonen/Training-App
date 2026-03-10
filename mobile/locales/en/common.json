@@ -24,7 +24,17 @@
     "keepEditing": "Keep editing",
     "discard": "Discard",
     "copyToClipboard": "Copy to Clipboard",
-    "copiedToClipboard": "Copied to Clipboard"
+    "copiedToClipboard": "Copied to Clipboard",
+    "media": {
+      "maxImagesReached": "Maximum {{max}} images reached",
+      "maxVideosReached": "Maximum {{max}} videos reached",
+      "maxVoiceReached": "Maximum {{max}} voice recordings reached",
+      "imageTooLarge": "Image exceeds {{max}} MB limit",
+      "videoTooLarge": "Video exceeds {{max}} MB limit after compression",
+      "videoTooLong": "Video exceeds {{max}} minute limit",
+      "compressingImage": "Optimizing image...",
+      "compressingVideo": "Compressing video..."
+    }
   },
   "navbar": {
     "menu": "Menu",

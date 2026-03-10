@@ -195,6 +195,9 @@ export default function NotesScreen() {
                     { id: nanoid(), uri, thumbnailUri, durationMs },
                   ]);
                 }}
+                currentImageCount={draftImages.length}
+                currentVideoCount={draftVideos.length}
+                currentVoiceCount={draftRecordings.length}
                 folders={isFoldersLoading ? [] : folders}
                 selectedFolderId={selectedFolderId}
                 onFolderSelect={setSelectedFolderId}

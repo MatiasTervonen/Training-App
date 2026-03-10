@@ -14,9 +14,9 @@ type Props = {
   onRecordingComplete: (uri: string, durationMs: number) => void;
   onImageSelected: (uri: string) => void;
   onVideoSelected?: (uri: string, thumbnailUri: string, durationMs: number) => void;
-  folders: FolderWithCount[];
-  selectedFolderId: string | null;
-  onFolderSelect: (folderId: string | null) => void;
+  folders?: FolderWithCount[];
+  selectedFolderId?: string | null;
+  onFolderSelect?: (folderId: string | null) => void;
   showFolderButton?: boolean;
 };
 
@@ -24,9 +24,9 @@ export default function MediaToolbar({
   onRecordingComplete,
   onImageSelected,
   onVideoSelected,
-  folders,
-  selectedFolderId,
-  onFolderSelect,
+  folders = [],
+  selectedFolderId = null,
+  onFolderSelect = () => {},
   showFolderButton = true,
 }: Props) {
   const { t } = useTranslation("notes");
@@ -146,21 +146,21 @@ export default function MediaToolbar({
 
   return (
     <>
-      <View className="btn-base flex-row overflow-hidden">
+      <View className="bg-blue-800 border-[1.5px] border-blue-500 rounded-md flex-row overflow-hidden">
         <AnimatedButton
           onPress={() => setShowRecordingModal(true)}
-          className="flex-1 py-1 items-center justify-center"
+          className="flex-1 py-1.5 items-center justify-center"
         >
-          <Mic color="white" size={24} />
+          <Mic color="white" size={20} />
         </AnimatedButton>
 
         <View className="w-px bg-blue-500" />
 
         <AnimatedButton
           onPress={handleImagePress}
-          className="flex-1 py-1 items-center justify-center"
+          className="flex-1 py-1.5 items-center justify-center"
         >
-          <ImagePlus color="white" size={24} />
+          <ImagePlus color="white" size={20} />
         </AnimatedButton>
 
         {onVideoSelected && (
@@ -168,9 +168,9 @@ export default function MediaToolbar({
             <View className="w-px bg-blue-500" />
             <AnimatedButton
               onPress={handleVideoPress}
-              className="flex-1 py-1 items-center justify-center"
+              className="flex-1 py-1.5 items-center justify-center"
             >
-              <Video color="white" size={24} />
+              <Video color="white" size={20} />
             </AnimatedButton>
           </>
         )}
@@ -181,11 +181,11 @@ export default function MediaToolbar({
 
             <AnimatedButton
               onPress={() => setShowFolderModal(true)}
-              className="flex-1 py-1 items-center justify-center"
+              className="flex-1 py-1.5 items-center justify-center"
             >
               <FolderOpen
                 color={hasFolderSelected ? "#3b82f6" : "white"}
-                size={24}
+                size={20}
               />
             </AnimatedButton>
           </>

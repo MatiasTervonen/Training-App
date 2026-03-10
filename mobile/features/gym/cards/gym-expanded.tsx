@@ -1,4 +1,4 @@
-import { formatDate, formatDuration, formatTime, getDistanceUnitLabels, convertMetersForDisplay } from "@/lib/formatDate";
+import { formatDateShort, formatDuration, formatTime, getDistanceUnitLabels, convertMetersForDisplay } from "@/lib/formatDate";
 import { useUserStore } from "@/lib/stores/useUserStore";
 import { FullGymSession } from "@/database/gym/get-full-gym-session";
 import GroupExercises from "@/features/gym/lib/GroupExercises";
@@ -7,7 +7,7 @@ import AppText from "@/components/AppText";
 import BodyText from "@/components/BodyText";
 import { LinearGradient } from "expo-linear-gradient";
 import PageContainer from "@/components/PageContainer";
-import { History, Clock, Share2 } from "lucide-react-native";
+import { History, Share2 } from "lucide-react-native";
 import { getLastExerciseHistory } from "@/database/gym/last-exercise-history";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
@@ -97,9 +97,6 @@ export default function GymSession(gym_session: FullGymSession) {
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
       <PageContainer className="mb-10">
-        <AppText className="text-gray-400 text-center mb-2 text-sm">
-          {formatDate(gym_session.start_time)}
-        </AppText>
         <View>
           <LinearGradient
             colors={["#1e3a8a", "#0f172a", "#0f172a"]}
@@ -107,9 +104,8 @@ export default function GymSession(gym_session: FullGymSession) {
             end={{ x: 0, y: 1 }}
             className="items-center p-5 rounded-lg overflow-hidden shadow-md mt-5 gap-4"
           >
-            <View className="w-full flex-row items-center">
-              <View className="w-5" />
-              <AppText className="text-2xl text-center flex-1">
+            <View className="w-full flex-row items-center mb-2">
+              <AppText className="text-xl text-center flex-1">
                 {gym_session.title}
               </AppText>
               <AnimatedButton
@@ -119,13 +115,9 @@ export default function GymSession(gym_session: FullGymSession) {
                 <Share2 color="#9ca3af" size={20} />
               </AnimatedButton>
             </View>
-            <View className="flex-row items-center gap-3">
-              <Clock color="#f3f4f6" />
-              <AppText className="text-base text-center">
-                {formatTime(gym_session.start_time)} -{" "}
-                {formatTime(gym_session.end_time)}
-              </AppText>
-            </View>
+            <AppText className="text-sm text-gray-400">
+              {formatDateShort(gym_session.start_time)}  ·  {formatTime(gym_session.start_time)} – {formatTime(gym_session.end_time)}
+            </AppText>
 
             <View className="w-full gap-2">
               <View className="flex-row gap-2">

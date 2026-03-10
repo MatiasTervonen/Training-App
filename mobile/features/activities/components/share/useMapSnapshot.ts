@@ -156,12 +156,16 @@ export default function useMapSnapshot(
     }
   }, []);
 
-  const onMapDidFinishLoading = useCallback(async () => {
-    await takeSnapshot();
-    setIsLoadingSnapshot(false);
-  }, [takeSnapshot]);
+  // Do NOT take a snapshot here — the base map tiles are loaded but the
+  // ShapeSource route layer may not be rendered yet, which produces a
+  // snapshot without the route (showing only the bare map).
+  const onMapDidFinishLoading = useCallback(() => {
+    // intentionally empty — wait for onMapIdle instead
+  }, []);
 
   const onMapIdle = useCallback(async () => {
+    // Small delay to ensure the route ShapeSource layer is fully composited
+    await new Promise((resolve) => setTimeout(resolve, 300));
     await takeSnapshot();
     setIsLoadingSnapshot(false);
   }, [takeSnapshot]);

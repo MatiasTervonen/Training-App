@@ -51,7 +51,6 @@ export default function SessionStats({ activity_session, hasRoute }: SessionStat
         <View className="flex-row gap-2 mb-2">
           <StatCard
             label={t("activities.sessionStats.avgPace")}
-            sublabel={t("activities.sessionStats.moving")}
             value={`${formatAveragePace(stats?.avg_pace ?? 0)} ${labels.pace}`}
           />
           <StatCard

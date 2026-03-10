@@ -3,31 +3,33 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDebouncedCallback } from "use-debounce";
 import { handleError } from "@/utils/handleError";
 import { useTranslation } from "react-i18next";
-
-type DraftRecording = {
-  id: string;
-  uri: string;
-  createdAt: number;
-  durationMs?: number;
-};
+import { DraftRecording, DraftImage, DraftVideo } from "@/types/session";
 
 export default function useSaveDraft({
   title,
   notes,
   draftRecordings,
+  draftImages,
+  draftVideos,
   setTitle,
   setNotes,
   setActivityName,
   setDraftRecordings,
+  setDraftImages,
+  setDraftVideos,
   setBaseMet,
 }: {
   title: string;
   notes: string;
   draftRecordings: DraftRecording[];
+  draftImages: DraftImage[];
+  draftVideos: DraftVideo[];
   setTitle: (title: string) => void;
   setNotes: (notes: string) => void;
   setActivityName: (activityName: string) => void;
   setDraftRecordings: (recordings: DraftRecording[]) => void;
+  setDraftImages: (images: DraftImage[]) => void;
+  setDraftVideos: (videos: DraftVideo[]) => void;
   setBaseMet?: (baseMet: number) => void;
 }) {
   const { t } = useTranslation("activities");
@@ -41,6 +43,9 @@ export default function useSaveDraft({
           setTitle(draft.title || "");
           setNotes(draft.notes || "");
           setDraftRecordings(draft.draftRecordings || []);
+          setDraftImages(draft.draftImages || []);
+          const videos: DraftVideo[] = draft.draftVideos || [];
+          setDraftVideos(videos.filter((v) => !v.isCompressing));
 
           let name = draft.activityName || "";
           if (draft.activitySlug) {
@@ -69,11 +74,17 @@ export default function useSaveDraft({
       }
     };
     loadDraft();
-  }, [setTitle, setNotes, setActivityName, setDraftRecordings, t]);
+  }, [setTitle, setNotes, setActivityName, setDraftRecordings, setDraftImages, setDraftVideos, t]);
 
   const saveActivityDraft = useDebouncedCallback(
     async () => {
-      const draft = { title, notes };
+      const draft = {
+        title,
+        notes,
+        draftRecordings,
+        draftImages,
+        draftVideos: draftVideos.filter((v) => !v.isCompressing),
+      };
       await AsyncStorage.mergeItem("activity_draft", JSON.stringify(draft));
     },
     500,
@@ -82,7 +93,7 @@ export default function useSaveDraft({
 
   useEffect(() => {
     saveActivityDraft();
-  }, [notes, title, draftRecordings, saveActivityDraft]);
+  }, [notes, title, draftRecordings, draftImages, draftVideos, saveActivityDraft]);
 
   return {
     saveActivityDraft,

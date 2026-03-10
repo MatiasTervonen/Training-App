@@ -11,6 +11,7 @@ export type SessionImage = {
 export type SessionVideo = {
   id: string;
   storage_path: string;
+  thumbnail_storage_path: string | null;
   thumbnailUri: string;
   uri: string;
   duration_ms: number | null;
@@ -123,7 +124,7 @@ export async function getFullGymSession(sessionId: string) {
       const thumbnailUri = vid.thumbnail_storage_path
         ? (await supabase.storage.from("media-videos").createSignedUrl(vid.thumbnail_storage_path, 3600)).data?.signedUrl ?? ""
         : "";
-      return { id: vid.id, storage_path: vid.storage_path, uri: videoUrlData?.signedUrl ?? "", thumbnailUri, duration_ms: vid.duration_ms };
+      return { id: vid.id, storage_path: vid.storage_path, thumbnail_storage_path: vid.thumbnail_storage_path, uri: videoUrlData?.signedUrl ?? "", thumbnailUri, duration_ms: vid.duration_ms };
     }),
   );
 

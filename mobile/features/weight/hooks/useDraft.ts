@@ -3,21 +3,34 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDebouncedCallback } from "use-debounce";
 import { handleError } from "@/utils/handleError";
 import { formatDate } from "@/lib/formatDate";
+import { DraftRecording, DraftImage, DraftVideo } from "@/types/session";
 
 export default function useWeightDraft({
   title,
   notes,
   weight,
+  draftRecordings,
+  draftImages,
+  draftVideos,
   setTitle,
   setNotes,
   setWeight,
+  setDraftRecordings,
+  setDraftImages,
+  setDraftVideos,
 }: {
   title: string;
   notes: string;
+  weight: string;
+  draftRecordings: DraftRecording[];
+  draftImages: DraftImage[];
+  draftVideos: DraftVideo[];
   setTitle: (title: string) => void;
   setNotes: (notes: string) => void;
   setWeight: (weight: string) => void;
-  weight: string;
+  setDraftRecordings: (recordings: DraftRecording[]) => void;
+  setDraftImages: (images: DraftImage[]) => void;
+  setDraftVideos: (videos: DraftVideo[]) => void;
 }) {
   const now = formatDate(new Date());
   const [isLoaded, setIsLoaded] = useState(false);
@@ -31,6 +44,10 @@ export default function useWeightDraft({
           setTitle(draft.title || `Weight - ${now}`);
           setNotes(draft.notes || "");
           setWeight(draft.weight || "");
+          setDraftRecordings(draft.draftRecordings || []);
+          setDraftImages(draft.draftImages || []);
+          const videos: DraftVideo[] = draft.draftVideos || [];
+          setDraftVideos(videos.filter((v) => !v.isCompressing));
         }
       } catch (error) {
         handleError(error, {
@@ -44,7 +61,7 @@ export default function useWeightDraft({
     };
 
     loadDraft();
-  }, [now, setTitle, setNotes, setWeight, setIsLoaded]);
+  }, [now, setTitle, setNotes, setWeight, setDraftRecordings, setDraftImages, setDraftVideos, setIsLoaded]);
 
   const saveWeightDraft = useDebouncedCallback(
     async () => {
@@ -53,7 +70,14 @@ export default function useWeightDraft({
       if (title.trim().length === 0 && notes.trim().length === 0) {
         await AsyncStorage.removeItem("weight_draft");
       } else {
-        const draft = { title, notes, weight };
+        const draft = {
+          title,
+          notes,
+          weight,
+          draftRecordings,
+          draftImages,
+          draftVideos: draftVideos.filter((v) => !v.isCompressing),
+        };
         await AsyncStorage.setItem("weight_draft", JSON.stringify(draft));
       }
     },
@@ -63,7 +87,7 @@ export default function useWeightDraft({
 
   useEffect(() => {
     saveWeightDraft();
-  }, [notes, title, weight, saveWeightDraft]);
+  }, [notes, title, weight, draftRecordings, draftImages, draftVideos, saveWeightDraft]);
 
   return {
     saveWeightDraft,

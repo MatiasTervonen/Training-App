@@ -57,6 +57,7 @@ export default function useSaveActivitySession({
   draftImages = [],
   draftVideos = [],
   setIsSaving,
+  setSavingProgress,
   resetSession,
   activityName = null,
 }: {
@@ -67,6 +68,7 @@ export default function useSaveActivitySession({
   draftImages?: DraftImage[];
   draftVideos?: DraftVideo[];
   setIsSaving: (isSaving: boolean) => void;
+  setSavingProgress?: (progress: number | undefined) => void;
   resetSession: () => void;
   activityName?: string | null;
 }) {
@@ -77,6 +79,11 @@ export default function useSaveActivitySession({
   const confirmAction = useConfirmAction();
 
   const handleSaveSession = async () => {
+    if (draftVideos.some((v) => v.isCompressing)) {
+      Toast.show({ type: "info", text1: t("common:common.media.videoStillCompressing") });
+      return;
+    }
+
     // Get timer state only when saving, not on every render
     const { startTimestamp, isRunning, remainingMs, activeSession } =
       useTimerStore.getState();
@@ -111,6 +118,7 @@ export default function useSaveActivitySession({
 
     try {
       setIsSaving(true);
+      setSavingProgress?.(undefined);
 
       // stop the GPS tracking
       if (allowGPS) {
@@ -157,6 +165,7 @@ export default function useSaveActivitySession({
         draftImages,
         draftVideos,
         templateId,
+        onProgress: (p) => setSavingProgress?.(p),
       });
 
       // Fetch the real DB-computed stats for the share card

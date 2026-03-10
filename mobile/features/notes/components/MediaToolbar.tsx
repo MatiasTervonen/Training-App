@@ -1,23 +1,38 @@
-import { View, Alert, Modal, Pressable, ScrollView, Dimensions } from "react-native";
+import {
+  View,
+  Alert,
+  Modal,
+  Pressable,
+  ScrollView,
+  Dimensions,
+} from "react-native";
 import { useState } from "react";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import AppText from "@/components/AppText";
 import { Mic, ImagePlus, FolderOpen, Video } from "lucide-react-native";
 import * as ExpoImagePicker from "expo-image-picker";
 import * as VideoThumbnails from "expo-video-thumbnails";
-import * as FileSystem from "expo-file-system";
-import { Image as ImageCompressor, Video as VideoCompressor } from "react-native-compressor";
+import * as FileSystem from "expo-file-system/legacy";
+import {
+  Image as ImageCompressor,
+  Video as VideoCompressor,
+} from "react-native-compressor";
 import Toast from "react-native-toast-message";
 import { useTranslation } from "react-i18next";
+import { nanoid } from "nanoid/non-secure";
 import RecordingModal from "@/features/notes/components/RecordingModal";
-import FullScreenLoader from "@/components/FullScreenLoader";
 import type { FolderWithCount } from "@/database/notes/get-folders";
+import type { DraftVideo } from "@/types/session";
 import { MEDIA_LIMITS } from "@/constants/media-limits";
 
 type Props = {
   onRecordingComplete: (uri: string, durationMs: number) => void;
-  onImageSelected: (uri: string) => void;
-  onVideoSelected?: (uri: string, thumbnailUri: string, durationMs: number) => void;
+  onImageSelected: (image: {
+    id: string;
+    uri: string;
+    isLoading: boolean;
+  }) => void;
+  onVideoSelected?: (video: DraftVideo) => void;
   folders?: FolderWithCount[];
   selectedFolderId?: string | null;
   onFolderSelect?: (folderId: string | null) => void;
@@ -42,8 +57,6 @@ export default function MediaToolbar({
   const { t } = useTranslation(["notes", "common"]);
   const [showRecordingModal, setShowRecordingModal] = useState(false);
   const [showFolderModal, setShowFolderModal] = useState(false);
-  const [isCompressing, setIsCompressing] = useState(false);
-  const [compressionProgress, setCompressionProgress] = useState("");
 
   const rawScreenWidth = Dimensions.get("window").width;
   const screenWidth = Math.min(rawScreenWidth, 768);
@@ -73,9 +86,7 @@ export default function MediaToolbar({
   const compressVideo = async (uri: string): Promise<string> => {
     const compressed = await VideoCompressor.compress(uri, {
       maxSize: 720,
-      progressDivider: 10,
-    }, (progress) => {
-      setCompressionProgress(`${Math.round(progress * 100)}%`);
+      bitrate: 3_000_000,
     });
     return compressed;
   };
@@ -84,7 +95,9 @@ export default function MediaToolbar({
     if (imagesAtLimit) {
       Toast.show({
         type: "info",
-        text1: t("common:common.media.maxImagesReached", { max: MEDIA_LIMITS.MAX_IMAGES }),
+        text1: t("common:common.media.maxImagesReached", {
+          max: MEDIA_LIMITS.MAX_IMAGES,
+        }),
       });
       return;
     }
@@ -101,34 +114,46 @@ export default function MediaToolbar({
 
     const result = await ExpoImagePicker.launchImageLibraryAsync({
       mediaTypes: ["images"],
-      quality: 0.7,
       allowsEditing: false,
     });
 
     if (!result.canceled && result.assets[0]) {
       const asset = result.assets[0];
 
-      // Check file size
-      const sizeMB = await getFileSizeMB(asset.uri);
-      if (sizeMB > MEDIA_LIMITS.MAX_IMAGE_SIZE_MB) {
+      // Reject absurdly large files before attempting compression
+      const rawSizeMB = await getFileSizeMB(asset.uri);
+      if (rawSizeMB > MEDIA_LIMITS.MAX_IMAGE_RAW_SIZE_MB) {
         Toast.show({
           type: "error",
-          text1: t("common:common.media.imageTooLarge", { max: MEDIA_LIMITS.MAX_IMAGE_SIZE_MB }),
+          text1: t("common:common.media.imageTooLarge", {
+            max: MEDIA_LIMITS.MAX_IMAGE_RAW_SIZE_MB,
+          }),
         });
         return;
       }
 
-      // Compress and resize
-      setIsCompressing(true);
-      setCompressionProgress(t("common:common.media.compressingImage"));
+      // Show placeholder immediately, compress in background
+      const id = nanoid();
+      onImageSelected({ id, uri: "", isLoading: true });
       try {
         const compressedUri = await compressImage(asset.uri);
-        onImageSelected(compressedUri);
+
+        // Check file size after compression
+        const sizeMB = await getFileSizeMB(compressedUri);
+        if (sizeMB > MEDIA_LIMITS.MAX_IMAGE_SIZE_MB) {
+          Toast.show({
+            type: "error",
+            text1: t("common:common.media.imageTooLarge", {
+              max: MEDIA_LIMITS.MAX_IMAGE_SIZE_MB,
+            }),
+          });
+          onImageSelected({ id, uri: "", isLoading: false });
+          return;
+        }
+
+        onImageSelected({ id, uri: compressedUri, isLoading: false });
       } catch {
-        onImageSelected(asset.uri);
-      } finally {
-        setIsCompressing(false);
-        setCompressionProgress("");
+        onImageSelected({ id, uri: asset.uri, isLoading: false });
       }
     }
   };
@@ -137,7 +162,9 @@ export default function MediaToolbar({
     if (imagesAtLimit) {
       Toast.show({
         type: "info",
-        text1: t("common:common.media.maxImagesReached", { max: MEDIA_LIMITS.MAX_IMAGES }),
+        text1: t("common:common.media.maxImagesReached", {
+          max: MEDIA_LIMITS.MAX_IMAGES,
+        }),
       });
       return;
     }
@@ -153,24 +180,34 @@ export default function MediaToolbar({
 
     const result = await ExpoImagePicker.launchCameraAsync({
       mediaTypes: ["images"],
-      quality: 0.7,
       allowsEditing: false,
     });
 
     if (!result.canceled && result.assets[0]) {
       const asset = result.assets[0];
 
-      // Compress and resize
-      setIsCompressing(true);
-      setCompressionProgress(t("common:common.media.compressingImage"));
+      // Show placeholder immediately, compress in background
+      const id = nanoid();
+      onImageSelected({ id, uri: "", isLoading: true });
       try {
         const compressedUri = await compressImage(asset.uri);
-        onImageSelected(compressedUri);
+
+        // Check file size after compression
+        const sizeMB = await getFileSizeMB(compressedUri);
+        if (sizeMB > MEDIA_LIMITS.MAX_IMAGE_SIZE_MB) {
+          Toast.show({
+            type: "error",
+            text1: t("common:common.media.imageTooLarge", {
+              max: MEDIA_LIMITS.MAX_IMAGE_SIZE_MB,
+            }),
+          });
+          onImageSelected({ id, uri: "", isLoading: false });
+          return;
+        }
+
+        onImageSelected({ id, uri: compressedUri, isLoading: false });
       } catch {
-        onImageSelected(asset.uri);
-      } finally {
-        setIsCompressing(false);
-        setCompressionProgress("");
+        onImageSelected({ id, uri: asset.uri, isLoading: false });
       }
     }
   };
@@ -179,23 +216,36 @@ export default function MediaToolbar({
     if (imagesAtLimit) {
       Toast.show({
         type: "info",
-        text1: t("common:common.media.maxImagesReached", { max: MEDIA_LIMITS.MAX_IMAGES }),
+        text1: t("common:common.media.maxImagesReached", {
+          max: MEDIA_LIMITS.MAX_IMAGES,
+        }),
       });
       return;
     }
 
-    Alert.alert(t("notes:notes.images.addImage"), undefined, [
-      { text: t("notes:notes.images.takePhoto"), onPress: takePhoto },
-      { text: t("notes:notes.images.chooseFromLibrary"), onPress: pickFromLibrary },
-      { text: t("notes:notes.images.cancel"), style: "cancel" },
-    ]);
+    Alert.alert(
+      t("notes:notes.images.addImage"),
+      t("common:common.media.imageLimitInfo", {
+        size: MEDIA_LIMITS.MAX_IMAGE_SIZE_MB,
+      }),
+      [
+        { text: t("notes:notes.images.takePhoto"), onPress: takePhoto },
+        {
+          text: t("notes:notes.images.chooseFromLibrary"),
+          onPress: pickFromLibrary,
+        },
+        { text: t("notes:notes.images.cancel"), style: "cancel" },
+      ],
+    );
   };
 
   const pickVideoFromLibrary = async () => {
     if (videosAtLimit) {
       Toast.show({
         type: "info",
-        text1: t("common:common.media.maxVideosReached", { max: MEDIA_LIMITS.MAX_VIDEOS }),
+        text1: t("common:common.media.maxVideosReached", {
+          max: MEDIA_LIMITS.MAX_VIDEOS,
+        }),
       });
       return;
     }
@@ -223,14 +273,28 @@ export default function MediaToolbar({
       if (durationSec > MEDIA_LIMITS.MAX_VIDEO_DURATION_SEC) {
         Toast.show({
           type: "error",
-          text1: t("common:common.media.videoTooLong", { max: Math.round(MEDIA_LIMITS.MAX_VIDEO_DURATION_SEC / 60) }),
+          text1: t("common:common.media.videoTooLong", {
+            max: Math.round(MEDIA_LIMITS.MAX_VIDEO_DURATION_SEC / 60),
+          }),
         });
         return;
       }
 
-      // Compress video
-      setIsCompressing(true);
-      setCompressionProgress(t("common:common.media.compressingVideo"));
+      // Add video to draft immediately with thumbnail + compressing state
+      const id = nanoid();
+      const durationMs = Math.round(asset.duration ?? 0);
+      const thumbnail = await VideoThumbnails.getThumbnailAsync(asset.uri, {
+        time: 0,
+      });
+      onVideoSelected?.({
+        id,
+        uri: asset.uri,
+        thumbnailUri: thumbnail.uri,
+        durationMs,
+        isCompressing: true,
+      });
+
+      // Compress in background, then update
       try {
         const compressedUri = await compressVideo(asset.uri);
 
@@ -239,22 +303,36 @@ export default function MediaToolbar({
         if (sizeMB > MEDIA_LIMITS.MAX_VIDEO_SIZE_MB) {
           Toast.show({
             type: "error",
-            text1: t("common:common.media.videoTooLarge", { max: MEDIA_LIMITS.MAX_VIDEO_SIZE_MB }),
+            text1: t("common:common.media.videoTooLarge", {
+              max: MEDIA_LIMITS.MAX_VIDEO_SIZE_MB,
+            }),
+          });
+          onVideoSelected?.({
+            id,
+            uri: "",
+            thumbnailUri: "",
+            durationMs: 0,
+            isCompressing: false,
           });
           return;
         }
 
-        const thumbnail = await VideoThumbnails.getThumbnailAsync(compressedUri, { time: 0 });
-        const durationMs = Math.round(asset.duration ?? 0);
-        onVideoSelected?.(compressedUri, thumbnail.uri, durationMs);
+        onVideoSelected?.({
+          id,
+          uri: compressedUri,
+          thumbnailUri: thumbnail.uri,
+          durationMs,
+          isCompressing: false,
+        });
       } catch {
         // Fallback: use original if compression fails
-        const thumbnail = await VideoThumbnails.getThumbnailAsync(asset.uri, { time: 0 });
-        const durationMs = Math.round(asset.duration ?? 0);
-        onVideoSelected?.(asset.uri, thumbnail.uri, durationMs);
-      } finally {
-        setIsCompressing(false);
-        setCompressionProgress("");
+        onVideoSelected?.({
+          id,
+          uri: asset.uri,
+          thumbnailUri: thumbnail.uri,
+          durationMs,
+          isCompressing: false,
+        });
       }
     }
   };
@@ -263,7 +341,9 @@ export default function MediaToolbar({
     if (videosAtLimit) {
       Toast.show({
         type: "info",
-        text1: t("common:common.media.maxVideosReached", { max: MEDIA_LIMITS.MAX_VIDEOS }),
+        text1: t("common:common.media.maxVideosReached", {
+          max: MEDIA_LIMITS.MAX_VIDEOS,
+        }),
       });
       return;
     }
@@ -285,9 +365,21 @@ export default function MediaToolbar({
     if (!result.canceled && result.assets[0]) {
       const asset = result.assets[0];
 
-      // Compress video
-      setIsCompressing(true);
-      setCompressionProgress(t("common:common.media.compressingVideo"));
+      // Add video to draft immediately with thumbnail + compressing state
+      const id = nanoid();
+      const durationMs = Math.round(asset.duration ?? 0);
+      const thumbnail = await VideoThumbnails.getThumbnailAsync(asset.uri, {
+        time: 0,
+      });
+      onVideoSelected?.({
+        id,
+        uri: asset.uri,
+        thumbnailUri: thumbnail.uri,
+        durationMs,
+        isCompressing: true,
+      });
+
+      // Compress in background, then update
       try {
         const compressedUri = await compressVideo(asset.uri);
 
@@ -296,21 +388,36 @@ export default function MediaToolbar({
         if (sizeMB > MEDIA_LIMITS.MAX_VIDEO_SIZE_MB) {
           Toast.show({
             type: "error",
-            text1: t("common:common.media.videoTooLarge", { max: MEDIA_LIMITS.MAX_VIDEO_SIZE_MB }),
+            text1: t("common:common.media.videoTooLarge", {
+              max: MEDIA_LIMITS.MAX_VIDEO_SIZE_MB,
+            }),
+          });
+          onVideoSelected?.({
+            id,
+            uri: "",
+            thumbnailUri: "",
+            durationMs: 0,
+            isCompressing: false,
           });
           return;
         }
 
-        const thumbnail = await VideoThumbnails.getThumbnailAsync(compressedUri, { time: 0 });
-        const durationMs = Math.round(asset.duration ?? 0);
-        onVideoSelected?.(compressedUri, thumbnail.uri, durationMs);
+        onVideoSelected?.({
+          id,
+          uri: compressedUri,
+          thumbnailUri: thumbnail.uri,
+          durationMs,
+          isCompressing: false,
+        });
       } catch {
-        const thumbnail = await VideoThumbnails.getThumbnailAsync(asset.uri, { time: 0 });
-        const durationMs = Math.round(asset.duration ?? 0);
-        onVideoSelected?.(asset.uri, thumbnail.uri, durationMs);
-      } finally {
-        setIsCompressing(false);
-        setCompressionProgress("");
+        // Fallback: use original if compression fails
+        onVideoSelected?.({
+          id,
+          uri: asset.uri,
+          thumbnailUri: thumbnail.uri,
+          durationMs,
+          isCompressing: false,
+        });
       }
     }
   };
@@ -319,23 +426,37 @@ export default function MediaToolbar({
     if (videosAtLimit) {
       Toast.show({
         type: "info",
-        text1: t("common:common.media.maxVideosReached", { max: MEDIA_LIMITS.MAX_VIDEOS }),
+        text1: t("common:common.media.maxVideosReached", {
+          max: MEDIA_LIMITS.MAX_VIDEOS,
+        }),
       });
       return;
     }
 
-    Alert.alert(t("notes:notes.videos.addVideo"), undefined, [
-      { text: t("notes:notes.videos.takeVideo"), onPress: takeVideo },
-      { text: t("notes:notes.videos.chooseFromLibrary"), onPress: pickVideoFromLibrary },
-      { text: t("notes:notes.videos.cancel"), style: "cancel" },
-    ]);
+    Alert.alert(
+      t("notes:notes.videos.addVideo"),
+      t("common:common.media.videoLimitInfo", {
+        duration: Math.round(MEDIA_LIMITS.MAX_VIDEO_DURATION_SEC / 60),
+        size: MEDIA_LIMITS.MAX_VIDEO_SIZE_MB,
+      }),
+      [
+        { text: t("notes:notes.videos.takeVideo"), onPress: takeVideo },
+        {
+          text: t("notes:notes.videos.chooseFromLibrary"),
+          onPress: pickVideoFromLibrary,
+        },
+        { text: t("notes:notes.videos.cancel"), style: "cancel" },
+      ],
+    );
   };
 
   const handleRecordingPress = () => {
     if (voiceAtLimit) {
       Toast.show({
         type: "info",
-        text1: t("common:common.media.maxVoiceReached", { max: MEDIA_LIMITS.MAX_VOICE_RECORDINGS }),
+        text1: t("common:common.media.maxVoiceReached", {
+          max: MEDIA_LIMITS.MAX_VOICE_RECORDINGS,
+        }),
       });
       return;
     }
@@ -398,11 +519,6 @@ export default function MediaToolbar({
         visible={showRecordingModal}
         onClose={() => setShowRecordingModal(false)}
         onRecordingComplete={onRecordingComplete}
-      />
-
-      <FullScreenLoader
-        visible={isCompressing}
-        message={compressionProgress}
       />
 
       <Modal

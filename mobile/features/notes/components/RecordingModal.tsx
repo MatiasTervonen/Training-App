@@ -9,11 +9,12 @@ import {
   useAudioRecorderState,
 } from "expo-audio";
 import AppText from "@/components/AppText";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { formatDurationNotesVoice } from "@/lib/formatDate";
 import { useConfirmAction } from "@/lib/confirmAction";
 import { useTranslation } from "react-i18next";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { MEDIA_LIMITS } from "@/constants/media-limits";
 
 type Props = {
   visible: boolean;
@@ -31,7 +32,7 @@ export default function RecordingModal({
   onClose,
   onRecordingComplete,
 }: Props) {
-  const { t } = useTranslation("notes");
+  const { t } = useTranslation(["notes", "common"]);
   const insets = useSafeAreaInsets();
   const [isPaused, setIsPaused] = useState(false);
   const [hasStarted, setHasStarted] = useState(false);
@@ -39,8 +40,31 @@ export default function RecordingModal({
 
   const audioRecorder = useAudioRecorder(RecordingPresets.VOICE_HIGH_QUALITY);
   const recorderState = useAudioRecorderState(audioRecorder);
+  const autoStoppedRef = useRef(false);
+
+  const maxDurationMs = MEDIA_LIMITS.MAX_VOICE_DURATION_SEC * 1000;
+
+  // Auto-stop when max duration is reached
+  useEffect(() => {
+    if (
+      recorderState.isRecording &&
+      recorderState.durationMillis >= maxDurationMs &&
+      !autoStoppedRef.current
+    ) {
+      autoStoppedRef.current = true;
+      audioRecorder.stop().then(() => {
+        const { uri } = audioRecorder;
+        if (uri == null) return;
+        setIsPaused(false);
+        setHasStarted(false);
+        onRecordingComplete(uri, maxDurationMs);
+        onClose();
+      });
+    }
+  }, [recorderState.durationMillis, recorderState.isRecording]);
 
   const record = async () => {
+    autoStoppedRef.current = false;
     const status = await AudioModule.requestRecordingPermissionsAsync();
 
     if (!status.granted) {
@@ -127,6 +151,11 @@ export default function RecordingModal({
                 {formatDurationNotesVoice(recorderState.durationMillis)}
               </AppText>
             </View>
+            <AppText className="text-xs text-slate-400 mb-3">
+              {t("common:common.media.voiceLimitInfo", {
+                duration: Math.round(MEDIA_LIMITS.MAX_VOICE_DURATION_SEC / 60),
+              })}
+            </AppText>
 
             <AnimatedButton
               label={

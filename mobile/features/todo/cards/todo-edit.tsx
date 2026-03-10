@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import SaveButton from "@/components/buttons/SaveButton";
 import FullScreenLoader from "@/components/FullScreenLoader";
 import Toast from "react-native-toast-message";
@@ -37,43 +37,69 @@ export default function EditTodo({
   onDirtyChange,
   taskMedia,
 }: Props) {
-  const { t } = useTranslation("todo");
-  const [originalData] = useState(todo_session);
+  const { t } = useTranslation(["todo", "common"]);
+
+  const applyTaskMedia = (
+    tasks: typeof todo_session.todo_tasks,
+    media: TodoTaskMedia,
+  ) =>
+    tasks.map((task) => {
+      const m = task.id ? media[task.id] : undefined;
+      if (!m) return task;
+      return {
+        ...task,
+        existingVoice: m.voice?.map((v) => ({
+          id: v.id,
+          uri: v.uri,
+          storage_path: v.storage_path,
+          duration_ms: v.duration_ms,
+        })),
+        existingImages: m.images?.map((img) => ({
+          id: img.id,
+          uri: img.uri,
+          storage_path: img.storage_path,
+        })),
+        existingVideos: m.videos?.map((v) => ({
+          id: v.id,
+          uri: v.uri,
+          thumbnailUri: v.thumbnailUri,
+          storage_path: v.storage_path,
+          thumbnail_storage_path: v.thumbnail_storage_path,
+          duration_ms: v.duration_ms,
+        })),
+      };
+    });
+
+  const initData = taskMedia
+    ? { ...todo_session, todo_tasks: applyTaskMedia(todo_session.todo_tasks, taskMedia) }
+    : todo_session;
+
+  const [originalData, setOriginalData] = useState(initData);
   const [isSaving, setIsSaving] = useState(false);
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
-  const [sessionData, setSessionData] = useState(() => {
-    if (taskMedia) {
-      return {
-        ...todo_session,
-        todo_tasks: todo_session.todo_tasks.map((task) => {
-          const media = task.id ? taskMedia[task.id] : undefined;
-          return {
-            ...task,
-            existingVoice: media?.voice?.map((v) => ({
-              id: v.id,
-              uri: v.uri,
-              duration_ms: v.duration_ms,
-            })),
-            existingImages: media?.images?.map((img) => ({
-              id: img.id,
-              uri: img.uri,
-            })),
-            existingVideos: media?.videos?.map((v) => ({
-              id: v.id,
-              uri: v.uri,
-              thumbnailUri: v.thumbnailUri,
-              duration_ms: v.duration_ms,
-            })),
-          };
-        }),
-      };
+  const mediaAppliedRef = useRef(!!taskMedia);
+
+  const [sessionData, setSessionData] = useState(initData);
+
+  useEffect(() => {
+    if (taskMedia && !mediaAppliedRef.current) {
+      mediaAppliedRef.current = true;
+      const apply = (prev: typeof sessionData) => ({
+        ...prev,
+        todo_tasks: applyTaskMedia(prev.todo_tasks, taskMedia),
+      });
+      setSessionData(apply);
+      setOriginalData(apply);
     }
-    return todo_session;
-  });
+  }, [taskMedia]);
+
   const [deletedIds, setDeletedIds] = useState<string[]>([]);
   const [deletedVoiceIds, setDeletedVoiceIds] = useState<string[]>([]);
+  const [deletedVoicePaths, setDeletedVoicePaths] = useState<string[]>([]);
   const [deletedImageIds, setDeletedImageIds] = useState<string[]>([]);
+  const [deletedImagePaths, setDeletedImagePaths] = useState<string[]>([]);
   const [deletedVideoIds, setDeletedVideoIds] = useState<string[]>([]);
+  const [deletedVideoPaths, setDeletedVideoPaths] = useState<string[]>([]);
   const [viewerIndex, setViewerIndex] = useState(-1);
   const [viewerTaskIndex, setViewerTaskIndex] = useState<number | null>(null);
 
@@ -144,6 +170,11 @@ export default function EditTodo({
   const updated = new Date().toISOString();
 
   const handleSave = async () => {
+    if (sessionData.todo_tasks.some((task) => task.draftVideos?.some((v) => v.isCompressing))) {
+      Toast.show({ type: "info", text1: t("common:common.media.videoStillCompressing") });
+      return;
+    }
+
     const hasEmptyTasks = sessionData.todo_tasks.some(
       (task) => task.task.trim().length === 0,
     );
@@ -176,8 +207,11 @@ export default function EditTodo({
         deletedIds,
         updated_at: updated,
         deletedVoiceIds,
+        deletedVoicePaths,
         deletedImageIds,
+        deletedImagePaths,
         deletedVideoIds,
+        deletedVideoPaths,
       });
 
       onSave({ ...updatedFeedItem, feed_context: todo_session.feed_context });
@@ -277,20 +311,24 @@ export default function EditTodo({
                     existingImages={task.existingImages}
                     existingVideos={task.existingVideos}
                     existingVoice={task.existingVoice}
-                    onAddImage={(uri) =>
+                    onAddImage={(image) =>
                       updateTask(index, (t) => ({
-                        draftImages: [
-                          ...(t.draftImages ?? []),
-                          { id: nanoid(), uri },
-                        ],
+                        draftImages: image.isLoading
+                          ? [...(t.draftImages ?? []), image]
+                          : !image.uri
+                            ? (t.draftImages ?? []).filter((img) => img.id !== image.id)
+                            : (t.draftImages ?? []).map((img) =>
+                                img.id === image.id ? image : img,
+                              ),
                       }))
                     }
-                    onAddVideo={(uri, thumbnailUri, durationMs) =>
+                    onAddVideo={(video) =>
                       updateTask(index, (t) => ({
-                        draftVideos: [
-                          ...(t.draftVideos ?? []),
-                          { id: nanoid(), uri, thumbnailUri, durationMs },
-                        ],
+                        draftVideos: (t.draftVideos ?? []).some((v) => v.id === video.id)
+                          ? !video.uri
+                            ? (t.draftVideos ?? []).filter((v) => v.id !== video.id)
+                            : (t.draftVideos ?? []).map((v) => v.id === video.id ? video : v)
+                          : video.isCompressing ? [...(t.draftVideos ?? []), video] : (t.draftVideos ?? []),
                       }))
                     }
                     onAddRecording={(uri, durationMs) =>
@@ -328,6 +366,11 @@ export default function EditTodo({
                       }))
                     }
                     onDeleteExistingImage={(id) => {
+                      const task = sessionData.todo_tasks[index];
+                      const image = task.existingImages?.find((img) => img.id === id);
+                      if (image) {
+                        setDeletedImagePaths((prev) => [...prev, image.storage_path]);
+                      }
                       setDeletedImageIds((prev) => [...prev, id]);
                       updateTask(index, (t) => ({
                         existingImages: t.existingImages?.filter(
@@ -336,6 +379,13 @@ export default function EditTodo({
                       }));
                     }}
                     onDeleteExistingVideo={(id) => {
+                      const task = sessionData.todo_tasks[index];
+                      const video = task.existingVideos?.find((v) => v.id === id);
+                      if (video) {
+                        const paths = [video.storage_path];
+                        if (video.thumbnail_storage_path) paths.push(video.thumbnail_storage_path);
+                        setDeletedVideoPaths((prev) => [...prev, ...paths]);
+                      }
                       setDeletedVideoIds((prev) => [...prev, id]);
                       updateTask(index, (t) => ({
                         existingVideos: t.existingVideos?.filter(
@@ -344,6 +394,11 @@ export default function EditTodo({
                       }));
                     }}
                     onDeleteExistingVoice={(id) => {
+                      const task = sessionData.todo_tasks[index];
+                      const voice = task.existingVoice?.find((v) => v.id === id);
+                      if (voice) {
+                        setDeletedVoicePaths((prev) => [...prev, voice.storage_path]);
+                      }
                       setDeletedVoiceIds((prev) => [...prev, id]);
                       updateTask(index, (t) => ({
                         existingVoice: t.existingVoice?.filter(

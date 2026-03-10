@@ -1,8 +1,9 @@
 import { supabase } from "@/lib/supabase";
 import { handleError } from "@/utils/handleError";
+import { uploadFileToStorage, getAccessToken } from "@/lib/upload-with-progress";
 import { useTimerStore } from "@/lib/stores/timerStore";
 import * as Crypto from "expo-crypto";
-import { File } from "expo-file-system/next";
+import * as FileSystem from "expo-file-system/legacy";
 import { DraftVideo, ExerciseEntry } from "@/types/session";
 
 type DraftRecording = {
@@ -25,7 +26,13 @@ type props = {
   draftImages?: DraftImage[];
   draftRecordings?: DraftRecording[];
   draftVideos?: DraftVideo[];
+  onProgress?: (progress: number | undefined) => void;
 };
+
+async function getFileSize(uri: string): Promise<number> {
+  const info = await FileSystem.getInfoAsync(uri);
+  return info.exists && "size" in info ? (info.size ?? 0) : 0;
+}
 
 export async function saveSession({
   exercises,
@@ -35,6 +42,7 @@ export async function saveSession({
   draftImages = [],
   draftRecordings = [],
   draftVideos = [],
+  onProgress,
 }: props) {
   const {
     data: { session },
@@ -44,6 +52,8 @@ export async function saveSession({
   if (sessionError || !session || !session.user) {
     throw new Error("Unauthorized");
   }
+
+  const accessToken = await getAccessToken();
 
   const start_time = new Date(
     useTimerStore.getState().activeSession?.started_at ?? Date.now(),
@@ -55,14 +65,34 @@ export async function saveSession({
   const uploadedVideos: { storage_path: string; thumbnail_storage_path: string; duration_ms: number }[] = [];
 
   try {
+    // Calculate total bytes for progress tracking
+    const allUris = [
+      ...draftRecordings.map((r) => r.uri),
+      ...draftImages.map((i) => i.uri),
+      ...draftVideos.flatMap((v) => [v.uri, v.thumbnailUri]),
+    ];
+    const sizes = await Promise.all(allUris.map(getFileSize));
+    const totalBytes = sizes.reduce((a, b) => a + b, 0);
+    if (totalBytes > 0) onProgress?.(0);
+    let completedBytes = 0;
+    let sizeIndex = 0;
+
+    const makeProgressHandler = (fileSize: number) => {
+      return (loaded: number) => {
+        onProgress?.((completedBytes + Math.min(loaded, fileSize)) / totalBytes);
+      };
+    };
+
+    const advanceCompleted = (fileSize: number) => {
+      completedBytes += fileSize;
+      onProgress?.(completedBytes / totalBytes);
+    };
+
     for (const recording of draftRecordings) {
       const path = `${session.user.id}/${Crypto.randomUUID()}.m4a`;
-      const file = new File(recording.uri);
-      const bytes = await file.bytes();
-      const { error: uploadError } = await supabase.storage
-        .from("notes-voice")
-        .upload(path, bytes, { contentType: "audio/m4a" });
-      if (uploadError) throw uploadError;
+      const fileSize = sizes[sizeIndex++];
+      await uploadFileToStorage("notes-voice", path, recording.uri, "audio/m4a", accessToken, makeProgressHandler(fileSize));
+      advanceCompleted(fileSize);
       uploadedRecordings.push({ storage_path: path, duration_ms: recording.durationMs });
     }
 
@@ -70,32 +100,28 @@ export async function saveSession({
       const ext = image.uri.split(".").pop()?.toLowerCase() ?? "jpg";
       const mimeType = ext === "png" ? "image/png" : ext === "webp" ? "image/webp" : "image/jpeg";
       const path = `${session.user.id}/${Crypto.randomUUID()}.${ext}`;
-      const file = new File(image.uri);
-      const bytes = await file.bytes();
-      const { error: uploadError } = await supabase.storage
-        .from("notes-images")
-        .upload(path, bytes, { contentType: mimeType });
-      if (uploadError) throw uploadError;
+      const fileSize = sizes[sizeIndex++];
+      await uploadFileToStorage("notes-images", path, image.uri, mimeType, accessToken, makeProgressHandler(fileSize));
+      advanceCompleted(fileSize);
       uploadedImages.push({ storage_path: path });
     }
 
     for (const video of draftVideos) {
       const videoPath = `${session.user.id}/${Crypto.randomUUID()}.mp4`;
       const thumbPath = `${session.user.id}/${Crypto.randomUUID()}-thumb.jpg`;
-      const videoFile = new File(video.uri);
-      const videoBytes = await videoFile.bytes();
-      const { error: videoUploadError } = await supabase.storage
-        .from("media-videos")
-        .upload(videoPath, videoBytes, { contentType: "video/mp4" });
-      if (videoUploadError) throw videoUploadError;
-      const thumbFile = new File(video.thumbnailUri);
-      const thumbBytes = await thumbFile.bytes();
-      const { error: thumbUploadError } = await supabase.storage
-        .from("media-videos")
-        .upload(thumbPath, thumbBytes, { contentType: "image/jpeg" });
-      if (thumbUploadError) throw thumbUploadError;
+      const videoSize = sizes[sizeIndex++];
+      const thumbSize = sizes[sizeIndex++];
+
+      await uploadFileToStorage("media-videos", videoPath, video.uri, "video/mp4", accessToken, makeProgressHandler(videoSize));
+      advanceCompleted(videoSize);
+
+      await uploadFileToStorage("media-videos", thumbPath, video.thumbnailUri, "image/jpeg", accessToken, makeProgressHandler(thumbSize));
+      advanceCompleted(thumbSize);
+
       uploadedVideos.push({ storage_path: videoPath, thumbnail_storage_path: thumbPath, duration_ms: video.durationMs });
     }
+
+    onProgress?.(undefined);
 
     const { error } = await supabase.rpc("gym_save_session", {
       p_exercises: exercises,

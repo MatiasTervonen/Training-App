@@ -95,7 +95,7 @@ export default function TaskMediaList({
           durationMs={video.duration_ms ?? undefined}
           onDelete={
             onDeleteExistingVideo
-              ? () => confirmDelete(() => onDeleteExistingVideo(video.id))
+              ? () => onDeleteExistingVideo(video.id)
               : undefined
           }
         />
@@ -116,6 +116,7 @@ export default function TaskMediaList({
         <DraftImageItem
           key={image.id}
           uri={image.uri}
+          isLoading={image.isLoading}
           onDelete={
             onDeleteDraftImage
               ? () => confirmDelete(() => onDeleteDraftImage(image.id))
@@ -134,9 +135,10 @@ export default function TaskMediaList({
           uri={video.uri}
           thumbnailUri={video.thumbnailUri}
           durationMs={video.durationMs}
+          isCompressing={video.isCompressing}
           onDelete={
             onDeleteDraftVideo
-              ? () => confirmDelete(() => onDeleteDraftVideo(video.id))
+              ? () => onDeleteDraftVideo(video.id)
               : undefined
           }
         />

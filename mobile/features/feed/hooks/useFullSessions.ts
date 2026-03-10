@@ -216,6 +216,7 @@ export default function useFullSessions(
     data: todoMediaFull,
     error: todoMediaError,
     isLoading: isLoadingTodoMedia,
+    refetch: refetchFullTodoMedia,
   } = useQuery<TodoTaskMedia>({
     queryKey: ["fullTodoMedia", todoMediaId],
     queryFn: async () => await getFullTodoMedia(todoMediaId!),
@@ -251,5 +252,6 @@ export default function useFullSessions(
     todoMediaFull,
     todoMediaError,
     isLoadingTodoMedia,
+    refetchFullTodoMedia,
   };
 }

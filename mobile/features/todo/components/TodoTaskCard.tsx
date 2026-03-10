@@ -38,8 +38,8 @@ type Props = {
   existingVideos?: ExistingVideo[];
   existingVoice?: ExistingVoice[];
   onAddRecording: (uri: string, durationMs: number) => void;
-  onAddImage: (uri: string) => void;
-  onAddVideo: (uri: string, thumbnailUri: string, durationMs: number) => void;
+  onAddImage: (image: { id: string; uri: string; isLoading: boolean }) => void;
+  onAddVideo: (video: DraftVideo) => void;
   onDeleteDraftImage?: (id: string) => void;
   onDeleteDraftVideo?: (id: string) => void;
   onDeleteDraftRecording?: (id: string) => void;
@@ -153,6 +153,15 @@ export default function TodoTaskCard({
           onImageSelected={onAddImage}
           onVideoSelected={onAddVideo}
           showFolderButton={false}
+          currentImageCount={
+            (existingImages?.length ?? 0) + (draftImages?.length ?? 0)
+          }
+          currentVideoCount={
+            (existingVideos?.length ?? 0) + (draftVideos?.length ?? 0)
+          }
+          currentVoiceCount={
+            (existingVoice?.length ?? 0) + (draftRecordings?.length ?? 0)
+          }
         />
       </View>
 

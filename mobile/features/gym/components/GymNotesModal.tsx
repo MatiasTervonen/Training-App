@@ -7,14 +7,20 @@ import { DraftRecordingItem } from "@/features/notes/components/draftRecording";
 import DraftImageItem from "@/features/notes/components/DraftImageItem";
 import DraftVideoItem from "@/features/notes/components/DraftVideoItem";
 import MediaToolbar from "@/features/notes/components/MediaToolbar";
-import type { SetStateAction } from "react";
+import { useState, type SetStateAction } from "react";
 import { nanoid } from "nanoid/non-secure";
 import { useConfirmAction } from "@/lib/confirmAction";
 import { DraftVideo, DraftRecording } from "@/types/session";
 import FullScreenModal from "@/components/FullScreenModal";
 import PageContainer from "@/components/PageContainer";
+import ImageViewerModal from "@/features/notes/components/ImageViewerModal";
+import {
+  SessionImage,
+  SessionVideo,
+  SessionVoiceRecording,
+} from "@/database/gym/get-full-gym-session";
 
-type DraftImage = { id: string; uri: string };
+type DraftImage = { id: string; uri: string; isLoading?: boolean };
 
 type GymNotesModalProps = {
   isOpen: boolean;
@@ -32,9 +38,12 @@ type GymNotesModalProps = {
   setDraftImages: (value: SetStateAction<DraftImage[]>) => void;
   draftVideos: DraftVideo[];
   setDraftVideos: (value: SetStateAction<DraftVideo[]>) => void;
-  existingImageCount?: number;
-  existingVideoCount?: number;
-  existingVoiceCount?: number;
+  existingImages?: SessionImage[];
+  existingVideos?: SessionVideo[];
+  existingRecordings?: SessionVoiceRecording[];
+  onDeleteExistingImage?: (id: string) => void;
+  onDeleteExistingVideo?: (id: string) => void;
+  onDeleteExistingRecording?: (id: string) => void;
 };
 
 export default function GymNotesModal({
@@ -53,12 +62,21 @@ export default function GymNotesModal({
   setDraftImages,
   draftVideos,
   setDraftVideos,
-  existingImageCount = 0,
-  existingVideoCount = 0,
-  existingVoiceCount = 0,
+  existingImages = [],
+  existingVideos = [],
+  existingRecordings = [],
+  onDeleteExistingImage,
+  onDeleteExistingVideo,
+  onDeleteExistingRecording,
 }: GymNotesModalProps) {
   const { t } = useTranslation(["gym", "notes"]);
   const confirmAction = useConfirmAction();
+  const [viewerIndex, setViewerIndex] = useState(-1);
+
+  const allImages = [
+    ...existingImages.map((img) => ({ id: img.id, uri: img.uri })),
+    ...draftImages.map((img) => ({ id: img.id, uri: img.uri })),
+  ];
 
   return (
     <FullScreenModal isOpen={isOpen} onClose={onClose}>
@@ -98,9 +116,34 @@ export default function GymNotesModal({
             />
           </View>
 
-          {draftRecordings.length > 0 && (
+          {/* Existing Voice Recordings */}
+          {existingRecordings.length > 0 && (
             <View className="mt-5">
               <AppText className="mb-2">{t("notes:notes.recordings")}</AppText>
+              {existingRecordings.map((recording) => (
+                <DraftRecordingItem
+                  key={recording.id}
+                  uri={recording.uri}
+                  durationMs={recording.duration_ms ?? undefined}
+                  deleteRecording={async () => {
+                    const confirm = await confirmAction({
+                      title: t("notes:notes.deleteRecordingTitle"),
+                      message: t("notes:notes.deleteRecordingMessage"),
+                    });
+                    if (!confirm) return;
+                    onDeleteExistingRecording?.(recording.id);
+                  }}
+                />
+              ))}
+            </View>
+          )}
+
+          {/* New Voice Recordings */}
+          {draftRecordings.length > 0 && (
+            <View className={existingRecordings.length === 0 ? "mt-5" : ""}>
+              {existingRecordings.length === 0 && (
+                <AppText className="mb-2">{t("notes:notes.recordings")}</AppText>
+              )}
               {draftRecordings.map((recording, index) => (
                 <DraftRecordingItem
                   key={recording.id}
@@ -122,12 +165,36 @@ export default function GymNotesModal({
             </View>
           )}
 
-          {draftImages.length > 0 && (
+          {/* Existing Images */}
+          {existingImages.length > 0 && (
             <View className="mt-5">
+              {existingImages.map((image, idx) => (
+                <DraftImageItem
+                  key={image.id}
+                  uri={image.uri}
+                  onPress={() => setViewerIndex(idx)}
+                  onDelete={async () => {
+                    const confirm = await confirmAction({
+                      title: t("notes:notes.images.deleteImageTitle"),
+                      message: t("notes:notes.images.deleteImageMessage"),
+                    });
+                    if (!confirm) return;
+                    onDeleteExistingImage?.(image.id);
+                  }}
+                />
+              ))}
+            </View>
+          )}
+
+          {/* New Images */}
+          {draftImages.length > 0 && (
+            <View className={existingImages.length === 0 ? "mt-5" : ""}>
               {draftImages.map((image, index) => (
                 <DraftImageItem
                   key={image.id}
                   uri={image.uri}
+                  isLoading={image.isLoading}
+                  onPress={() => setViewerIndex(existingImages.length + index)}
                   onDelete={async () => {
                     const confirm = await confirmAction({
                       title: t("notes:notes.images.deleteImageTitle"),
@@ -141,14 +208,33 @@ export default function GymNotesModal({
             </View>
           )}
 
-          {draftVideos.length > 0 && (
+          {/* Existing Videos */}
+          {existingVideos.length > 0 && (
             <View className="mt-5">
+              {existingVideos.map((video) => (
+                <DraftVideoItem
+                  key={video.id}
+                  uri={video.uri}
+                  thumbnailUri={video.thumbnailUri}
+                  durationMs={video.duration_ms ?? undefined}
+                  onDelete={async () => {
+                    onDeleteExistingVideo?.(video.id);
+                  }}
+                />
+              ))}
+            </View>
+          )}
+
+          {/* New Videos */}
+          {draftVideos.length > 0 && (
+            <View className={existingVideos.length === 0 ? "mt-5" : ""}>
               {draftVideos.map((video, index) => (
                 <DraftVideoItem
                   key={video.id}
                   uri={video.uri}
                   thumbnailUri={video.thumbnailUri}
                   durationMs={video.durationMs}
+                  isCompressing={video.isCompressing}
                   onDelete={() =>
                     setDraftVideos((prev) => prev.filter((_, i) => i !== index))
                   }
@@ -165,18 +251,33 @@ export default function GymNotesModal({
                   { id: nanoid(), uri, createdAt: Date.now(), durationMs: duration },
                 ]);
               }}
-              onImageSelected={(uri) =>
-                setDraftImages((prev) => [...prev, { id: nanoid(), uri }])
+              onImageSelected={(image) =>
+                setDraftImages((prev) => {
+                  if (image.isLoading) {
+                    return [...prev, image];
+                  }
+                  if (!image.uri) {
+                    return prev.filter((img) => img.id !== image.id);
+                  }
+                  return prev.map((img) =>
+                    img.id === image.id ? image : img,
+                  );
+                })
               }
-              onVideoSelected={(uri, thumbnailUri, durationMs) =>
-                setDraftVideos((prev) => [
-                  ...prev,
-                  { id: nanoid(), uri, thumbnailUri, durationMs },
-                ])
+              onVideoSelected={(video) =>
+                setDraftVideos((prev) => {
+                  if (prev.some((v) => v.id === video.id)) {
+                    if (!video.uri) {
+                      return prev.filter((v) => v.id !== video.id);
+                    }
+                    return prev.map((v) => v.id === video.id ? video : v);
+                  }
+                  return video.isCompressing ? [...prev, video] : prev;
+                })
               }
-              currentImageCount={existingImageCount + draftImages.length}
-              currentVideoCount={existingVideoCount + draftVideos.length}
-              currentVoiceCount={existingVoiceCount + draftRecordings.length}
+              currentImageCount={existingImages.length + draftImages.length}
+              currentVideoCount={existingVideos.length + draftVideos.length}
+              currentVoiceCount={existingRecordings.length + draftRecordings.length}
               folders={[]}
               selectedFolderId={null}
               onFolderSelect={() => {}}
@@ -187,6 +288,15 @@ export default function GymNotesModal({
           <View className="h-10" />
         </PageContainer>
       </ScrollView>
+
+      {allImages.length > 0 && viewerIndex >= 0 && (
+        <ImageViewerModal
+          images={allImages}
+          initialIndex={viewerIndex}
+          visible={viewerIndex >= 0}
+          onClose={() => setViewerIndex(-1)}
+        />
+      )}
     </FullScreenModal>
   );
 }

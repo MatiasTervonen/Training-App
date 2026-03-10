@@ -183,12 +183,14 @@ export type full_todo_session_optional_id = {
     draftRecordings?: DraftRecording[];
     draftImages?: DraftImage[];
     draftVideos?: DraftVideo[];
-    existingVoice?: { id: string; uri: string; duration_ms: number | null }[];
-    existingImages?: { id: string; uri: string }[];
+    existingVoice?: { id: string; uri: string; storage_path: string; duration_ms: number | null }[];
+    existingImages?: { id: string; uri: string; storage_path: string }[];
     existingVideos?: {
       id: string;
       uri: string;
       thumbnailUri: string;
+      storage_path: string;
+      thumbnail_storage_path: string | null;
       duration_ms: number | null;
     }[];
   }[];
@@ -263,6 +265,7 @@ export type DraftRecording = {
 export type DraftImage = {
   id: string;
   uri: string;
+  isLoading?: boolean;
 };
 
 export type DraftVideo = {
@@ -270,6 +273,7 @@ export type DraftVideo = {
   uri: string;
   thumbnailUri: string;
   durationMs: number;
+  isCompressing?: boolean;
 };
 
 export type TemplateHistorySession = {

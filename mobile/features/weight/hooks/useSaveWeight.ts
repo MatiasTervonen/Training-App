@@ -1,6 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import Toast from "react-native-toast-message";
+import { useTranslation } from "react-i18next";
 import { saveWeight } from "@/database/weight/save-weight";
 import { DraftVideo } from "@/types/session";
 
@@ -21,6 +22,7 @@ export default function useSaveWeight({
   notes,
   weight,
   setIsSaving,
+  setSavingProgress,
   resetWeight,
   draftImages = [],
   draftVideos = [],
@@ -30,6 +32,7 @@ export default function useSaveWeight({
   notes: string;
   weight: string;
   setIsSaving: (isSaving: boolean) => void;
+  setSavingProgress?: (progress: number | undefined) => void;
   resetWeight: () => void;
   draftImages?: DraftImage[];
   draftVideos?: DraftVideo[];
@@ -37,8 +40,13 @@ export default function useSaveWeight({
 }) {
   const queryClient = useQueryClient();
   const router = useRouter();
+  const { t } = useTranslation("common");
 
   const handleSaveWeight = async () => {
+    if (draftVideos.some((v) => v.isCompressing)) {
+      Toast.show({ type: "info", text1: t("common.media.videoStillCompressing") });
+      return;
+    }
     if (!title.trim()) {
       Toast.show({
         type: "error",
@@ -57,6 +65,7 @@ export default function useSaveWeight({
       return;
     }
     setIsSaving(true);
+    setSavingProgress?.(undefined);
 
     try {
       await saveWeight({
@@ -66,6 +75,7 @@ export default function useSaveWeight({
         draftImages,
         draftVideos,
         draftRecordings,
+        onProgress: (p) => setSavingProgress?.(p),
       });
 
       await Promise.all([

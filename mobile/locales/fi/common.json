@@ -33,7 +33,12 @@
       "videoTooLarge": "Video ylittää {{max}} Mt rajan pakkauksen jälkeen",
       "videoTooLong": "Video ylittää {{max}} minuutin rajan",
       "compressingImage": "Optimoidaan kuvaa...",
-      "compressingVideo": "Pakataan videota..."
+      "compressingVideo": "Pakataan videota...",
+      "uploading": "Lähetetään mediaa...",
+      "videoStillCompressing": "Odota videon pakkauksen valmistumista",
+      "videoLimitInfo": "Enintään {{duration}} min, {{size}} Mt",
+      "imageLimitInfo": "Enintään {{size}} Mt per kuva",
+      "voiceLimitInfo": "Enintään {{duration}} min"
     }
   },
   "navbar": {

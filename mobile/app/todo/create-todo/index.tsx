@@ -23,10 +23,11 @@ import ImageViewerModal from "@/features/notes/components/ImageViewerModal";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 
 export default function CreateTodo() {
-  const { t } = useTranslation("todo");
+  const { t } = useTranslation(["todo", "common"]);
   const now = formatDateShort(new Date());
 
   const [loading, setLoading] = useState(false);
+  const [savingProgress, setSavingProgress] = useState<number | undefined>(undefined);
   const [title, setTitle] = useState(`${t("todo.title")} - ${now}`);
   const [todoList, setTodoList] = useState<TodoItem[]>([]);
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
@@ -69,6 +70,10 @@ export default function CreateTodo() {
   };
 
   const handleSaveTodo = async () => {
+    if (todoList.some((task) => task.draftVideos?.some((v) => v.isCompressing))) {
+      Toast.show({ type: "info", text1: t("common:common.media.videoStillCompressing") });
+      return;
+    }
     if (!title.trim()) {
       Toast.show({ type: "error", text1: t("todo.emptyTitleError") });
       return;
@@ -87,8 +92,9 @@ export default function CreateTodo() {
       return;
     }
     setLoading(true);
+    setSavingProgress(undefined);
     try {
-      await saveTodoToDB({ title, todoList });
+      await saveTodoToDB({ title, todoList, onProgress: setSavingProgress });
       await queryClient.invalidateQueries({ queryKey: ["feed"], exact: true });
       await queryClient.invalidateQueries({ queryKey: ["myTodoLists"] });
       router.push("/dashboard");
@@ -108,9 +114,17 @@ export default function CreateTodo() {
     }
   };
 
-  const updateTask = (index: number, updates: Partial<TodoItem>) => {
+  const updateTask = (
+    index: number,
+    updates: Partial<TodoItem> | ((task: TodoItem) => Partial<TodoItem>),
+  ) => {
     setTodoList((prev) =>
-      prev.map((item, i) => (i === index ? { ...item, ...updates } : item)),
+      prev.map((item, i) => {
+        if (i !== index) return item;
+        const resolved =
+          typeof updates === "function" ? updates(item) : updates;
+        return { ...item, ...resolved };
+      }),
     );
   };
 
@@ -163,26 +177,30 @@ export default function CreateTodo() {
                   draftImages={item.draftImages}
                   draftVideos={item.draftVideos}
                   draftRecordings={item.draftRecordings}
-                  onAddImage={(uri) =>
-                    updateTask(index, {
-                      draftImages: [
-                        ...(item.draftImages ?? []),
-                        { id: nanoid(), uri },
-                      ],
-                    })
+                  onAddImage={(image) =>
+                    updateTask(index, (t) => ({
+                      draftImages: image.isLoading
+                        ? [...(t.draftImages ?? []), image]
+                        : !image.uri
+                          ? (t.draftImages ?? []).filter((img) => img.id !== image.id)
+                          : (t.draftImages ?? []).map((img) =>
+                              img.id === image.id ? image : img,
+                            ),
+                    }))
                   }
-                  onAddVideo={(uri, thumbnailUri, durationMs) =>
-                    updateTask(index, {
-                      draftVideos: [
-                        ...(item.draftVideos ?? []),
-                        { id: nanoid(), uri, thumbnailUri, durationMs },
-                      ],
-                    })
+                  onAddVideo={(video) =>
+                    updateTask(index, (t) => ({
+                      draftVideos: (t.draftVideos ?? []).some((v) => v.id === video.id)
+                        ? !video.uri
+                          ? (t.draftVideos ?? []).filter((v) => v.id !== video.id)
+                          : (t.draftVideos ?? []).map((v) => v.id === video.id ? video : v)
+                        : video.isCompressing ? [...(t.draftVideos ?? []), video] : (t.draftVideos ?? []),
+                    }))
                   }
                   onAddRecording={(uri, durationMs) =>
-                    updateTask(index, {
+                    updateTask(index, (t) => ({
                       draftRecordings: [
-                        ...(item.draftRecordings ?? []),
+                        ...(t.draftRecordings ?? []),
                         {
                           id: nanoid(),
                           uri,
@@ -190,28 +208,28 @@ export default function CreateTodo() {
                           durationMs,
                         },
                       ],
-                    })
+                    }))
                   }
                   onDeleteDraftImage={(id) =>
-                    updateTask(index, {
-                      draftImages: item.draftImages?.filter(
+                    updateTask(index, (t) => ({
+                      draftImages: (t.draftImages ?? []).filter(
                         (img) => img.id !== id,
                       ),
-                    })
+                    }))
                   }
                   onDeleteDraftVideo={(id) =>
-                    updateTask(index, {
-                      draftVideos: item.draftVideos?.filter(
+                    updateTask(index, (t) => ({
+                      draftVideos: (t.draftVideos ?? []).filter(
                         (v) => v.id !== id,
                       ),
-                    })
+                    }))
                   }
                   onDeleteDraftRecording={(id) =>
-                    updateTask(index, {
-                      draftRecordings: item.draftRecordings?.filter(
+                    updateTask(index, (t) => ({
+                      draftRecordings: (t.draftRecordings ?? []).filter(
                         (r) => r.id !== id,
                       ),
-                    })
+                    }))
                   }
                   onImagePress={(imgIdx) => {
                     setViewerTaskIndex(index);
@@ -240,7 +258,8 @@ export default function CreateTodo() {
 
             <FullScreenLoader
               visible={loading}
-              message={t("todo.savingTodoList")}
+              message={savingProgress !== undefined ? t("common:common.media.uploading") : t("todo.savingTodoList")}
+              progress={savingProgress}
             />
           </PageContainer>
         </Pressable>

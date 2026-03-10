@@ -33,7 +33,12 @@
       "videoTooLarge": "Video exceeds {{max}} MB limit after compression",
       "videoTooLong": "Video exceeds {{max}} minute limit",
       "compressingImage": "Optimizing image...",
-      "compressingVideo": "Compressing video..."
+      "compressingVideo": "Compressing video...",
+      "uploading": "Uploading media...",
+      "videoStillCompressing": "Please wait for video compression to finish",
+      "videoLimitInfo": "Max {{duration}} min, {{size}} MB",
+      "imageLimitInfo": "Max {{size}} MB per image",
+      "voiceLimitInfo": "Max {{duration}} min"
     }
   },
   "navbar": {

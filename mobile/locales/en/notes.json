@@ -56,7 +56,7 @@
       "noFolders": "No folders yet. Create a folder to organize your notes!",
       "folderEmpty": "This folder is empty.",
       "duplicateName": "A folder with this name already exists.",
-      "saveToFolder": "Save to folder (optional)",
+      "saveToFolder": "Save to folder",
       "noteCount": "{{count}} notes",
       "folderCreated": "Folder created",
       "folderDeleted": "Folder deleted",

@@ -10,6 +10,7 @@ export type NoteImage = {
 export type NoteVideo = {
   id: string;
   storage_path: string;
+  thumbnail_storage_path: string | null;
   thumbnailUri: string;
   uri: string;
   duration_ms: number | null;
@@ -131,6 +132,7 @@ export async function getFullNotesSession(
       return {
         id: video.id,
         storage_path: video.storage_path,
+        thumbnail_storage_path: video.thumbnail_storage_path,
         uri: videoUrlData?.signedUrl ?? "",
         thumbnailUri,
         duration_ms: video.duration_ms,

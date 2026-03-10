@@ -130,7 +130,7 @@
       "saveAsTemplateDesc": "Tallenna tämä aktiviteetti pohjaksi tulevaa käyttöä varten.",
       "templateNamePlaceholder": "Syötä pohjan nimi",
       "templateNameLabel": "Pohjan nimi",
-      "templateNotesPlaceholder": "Syötä pohjan muistiinpanot (valinnainen)",
+      "templateNotesPlaceholder": "Syötä pohjan muistiinpanot...",
       "templateNotesLabel": "Pohjan muistiinpanot",
       "cancel": "Peruuta",
       "save": "Tallenna",

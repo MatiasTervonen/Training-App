@@ -56,7 +56,7 @@
       "noFolders": "Ei vielä kansioita. Luo kansio muistiinpanojesi järjestämiseksi!",
       "folderEmpty": "Tämä kansio on tyhjä.",
       "duplicateName": "Samanniminen kansio on jo olemassa.",
-      "saveToFolder": "Tallenna kansioon (valinnainen)",
+      "saveToFolder": "Tallenna kansioon",
       "noteCount": "{{count}} muistiinpanoa",
       "folderCreated": "Kansio luotu",
       "folderDeleted": "Kansio poistettu",

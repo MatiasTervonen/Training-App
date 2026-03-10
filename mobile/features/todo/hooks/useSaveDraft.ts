@@ -33,7 +33,13 @@ export default function useSaveDraft({
         if (storeDraft) {
           const draft = JSON.parse(storeDraft);
           setTitle(draft.title || "");
-          setTodoList(draft.todoList || []);
+          const todoList: TodoItem[] = draft.todoList || [];
+          setTodoList(
+            todoList.map((item) => ({
+              ...item,
+              draftVideos: (item.draftVideos ?? []).filter((v) => !v.isCompressing),
+            })),
+          );
         }
       } catch (error) {
         handleError(error, {
@@ -55,7 +61,13 @@ export default function useSaveDraft({
       if (title.trim() === "" && todoList.length === 0) {
         await AsyncStorage.removeItem("todo_draft");
       } else {
-        const draft = { title, todoList };
+        const draft = {
+          title,
+          todoList: todoList.map((item) => ({
+            ...item,
+            draftVideos: (item.draftVideos ?? []).filter((v) => !v.isCompressing),
+          })),
+        };
         await AsyncStorage.setItem("todo_draft", JSON.stringify(draft));
       }
     },

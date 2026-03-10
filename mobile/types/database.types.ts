@@ -2510,14 +2510,13 @@ export type Database = {
         Args: { p_exercises: Json; p_name: string }
         Returns: string
       }
-      habit_get_stats: { Args: { p_habit_id: string }; Returns: Json }
-      habit_toggle_log: {
-        Args: { p_date: string; p_habit_id: string }
-        Returns: boolean
+      habit_get_stats: {
+        Args: { p_date?: string; p_habit_id: string }
+        Returns: Json
       }
-      refresh_habit_feed: {
-        Args: { p_date: string }
-        Returns: undefined
+      habit_toggle_log: {
+        Args: { p_date: string; p_habit_id: string; p_tz?: string }
+        Returns: boolean
       }
       hide_feed_item: { Args: { p_feed_item_id: string }; Returns: undefined }
       last_30d_analytics: { Args: never; Returns: Json }
@@ -2597,6 +2596,10 @@ export type Database = {
         }
         Returns: string
       }
+      refresh_habit_feed: {
+        Args: { p_date: string; p_tz?: string }
+        Returns: undefined
+      }
       reminders_delete_global_reminder: {
         Args: { p_id: string }
         Returns: undefined
@@ -2669,22 +2672,6 @@ export type Database = {
           isSetofReturn: false
         }
       }
-      reminders_get_feed: {
-        Args: { p_tab: string; p_limit?: number; p_offset?: number }
-        Returns: {
-          activity_at: string | null
-          created_at: string
-          extra_fields: Json
-          hidden_at: string | null
-          id: string
-          occurred_at: string
-          source_id: string
-          title: string
-          type: string
-          updated_at: string | null
-          user_id: string
-        }[]
-      }
       reminders_get_by_tab: {
         Args: { p_tab: string }
         Returns: {
@@ -2702,6 +2689,28 @@ export type Database = {
           updated_at: string
           weekdays: Json
         }[]
+      }
+      reminders_get_feed: {
+        Args: { p_limit?: number; p_offset?: number; p_tab: string }
+        Returns: {
+          activity_at: string | null
+          created_at: string
+          extra_fields: Json
+          hidden_at: string | null
+          id: string
+          occurred_at: string
+          source_id: string
+          title: string
+          type: string
+          updated_at: string | null
+          user_id: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "feed_items"
+          isOneToOne: false
+          isSetofReturn: true
+        }
       }
       reminders_save_global_reminder: {
         Args: {

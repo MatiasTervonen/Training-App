@@ -79,7 +79,7 @@ export default function EditWeight({ weight, onClose, onSave, onDirtyChange }: P
         </View>
       )}
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-        <PageContainer className="justify-between mb-10 mt-5">
+        <PageContainer className="justify-between mt-5">
           <View className="gap-5">
           <AppText className="text-xl text-center mb-5">
             Edit your weight session

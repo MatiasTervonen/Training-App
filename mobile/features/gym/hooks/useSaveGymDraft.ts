@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDebouncedCallback } from "use-debounce";
-import { ExerciseEntry, ExerciseInput } from "@/types/session";
+import { ExerciseEntry, ExerciseInput, DraftRecording, DraftImage, DraftVideo } from "@/types/session";
 import { handleError } from "@/utils/handleError";
 import { formatDate } from "@/lib/formatDate";
 
@@ -10,19 +10,31 @@ export default function useSaveGymDraft({
   notes,
   title,
   isEditing,
+  draftRecordings,
+  draftImages,
+  draftVideos,
   setTitle,
   setExercises,
   setNotes,
   setExerciseInputs,
+  setDraftRecordings,
+  setDraftImages,
+  setDraftVideos,
 }: {
   exercises: ExerciseEntry[];
   notes: string;
   title: string;
   isEditing: boolean;
+  draftRecordings: DraftRecording[];
+  draftImages: DraftImage[];
+  draftVideos: DraftVideo[];
   setTitle: (title: string) => void;
   setExercises: (exercises: ExerciseEntry[]) => void;
   setNotes: (notes: string) => void;
   setExerciseInputs: (exerciseInputs: ExerciseInput[]) => void;
+  setDraftRecordings: (recordings: DraftRecording[]) => void;
+  setDraftImages: (images: DraftImage[]) => void;
+  setDraftVideos: (videos: DraftVideo[]) => void;
 }) {
   const [hasLoadedDraft, setHasLoadedDraft] = useState(false);
 
@@ -50,11 +62,15 @@ export default function useSaveGymDraft({
                 }))
               : []
           );
+          setDraftRecordings(parsedDraft.draftRecordings || []);
+          setDraftImages(parsedDraft.draftImages || []);
+          const videos: DraftVideo[] = parsedDraft.draftVideos || [];
+          setDraftVideos(videos.filter((v) => !v.isCompressing));
         }
       } catch (error) {
         handleError(error, {
-          message: "Error loading notes draft",
-          route: "notes/index.tsx",
+          message: "Error loading gym draft",
+          route: "gym/index.tsx",
           method: "loadDraft",
         });
       } finally {
@@ -68,6 +84,9 @@ export default function useSaveGymDraft({
     setExercises,
     setNotes,
     setExerciseInputs,
+    setDraftRecordings,
+    setDraftImages,
+    setDraftVideos,
     setHasLoadedDraft,
   ]);
 
@@ -87,6 +106,9 @@ export default function useSaveGymDraft({
           title,
           exercises,
           notes,
+          draftRecordings,
+          draftImages,
+          draftVideos: draftVideos.filter((v) => !v.isCompressing),
         };
 
         await AsyncStorage.setItem(
@@ -101,7 +123,7 @@ export default function useSaveGymDraft({
 
   useEffect(() => {
     saveGymDraft();
-  }, [notes, title, exercises, saveGymDraft]);
+  }, [notes, title, exercises, draftRecordings, draftImages, draftVideos, saveGymDraft]);
 
   return {
     saveGymDraft,

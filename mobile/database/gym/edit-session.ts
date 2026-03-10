@@ -24,10 +24,13 @@ type editGymSessionProps = {
   notes: string;
   exercises: ExerciseEntry[];
   deletedImageIds?: string[];
+  deletedImagePaths?: string[];
   newImages?: DraftImage[];
   deletedVideoIds?: string[];
+  deletedVideoPaths?: string[];
   newVideos?: DraftVideo[];
   deletedRecordingIds?: string[];
+  deletedRecordingPaths?: string[];
   newRecordings?: DraftRecording[];
 };
 
@@ -38,10 +41,13 @@ export async function editSession({
   title,
   id,
   deletedImageIds = [],
+  deletedImagePaths = [],
   newImages = [],
   deletedVideoIds = [],
+  deletedVideoPaths = [],
   newVideos = [],
   deletedRecordingIds = [],
+  deletedRecordingPaths = [],
   newRecordings = [],
 }: editGymSessionProps) {
   const {
@@ -119,6 +125,17 @@ export async function editSession({
 
     if (error) {
       throw error;
+    }
+
+    // Clean up storage files for deleted media (fire-and-forget)
+    if (deletedRecordingPaths.length > 0) {
+      supabase.storage.from("notes-voice").remove(deletedRecordingPaths);
+    }
+    if (deletedImagePaths.length > 0) {
+      supabase.storage.from("notes-images").remove(deletedImagePaths);
+    }
+    if (deletedVideoPaths.length > 0) {
+      supabase.storage.from("media-videos").remove(deletedVideoPaths);
     }
 
     return data;

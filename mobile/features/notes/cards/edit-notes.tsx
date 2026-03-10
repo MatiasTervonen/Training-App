@@ -62,11 +62,13 @@ type ExistingImage = {
 type DraftImage = {
   id: string;
   uri: string;
+  isLoading?: boolean;
 };
 
 type ExistingVideo = {
   id: string;
   storage_path: string;
+  thumbnail_storage_path: string | null;
   uri: string;
   thumbnailUri: string;
   duration_ms: number | null;
@@ -80,7 +82,7 @@ export default function EditNotes({
   isLoadingVoice = false,
   onDirtyChange,
 }: Props) {
-  const { t } = useTranslation("notes");
+  const { t } = useTranslation(["notes", "common"]);
   const payload = note.extra_fields as notesPayload;
   const voiceCount = payload["voice-count"] ?? 0;
   const imageCount = payload["image-count"] ?? 0;
@@ -89,6 +91,9 @@ export default function EditNotes({
   const [title, setValue] = useState(note.title);
   const [notes, setNotes] = useState(payload.notes);
   const [isSaving, setIsSaving] = useState(false);
+  const [savingProgress, setSavingProgress] = useState<number | undefined>(
+    undefined,
+  );
   const [selectedFolderId, setSelectedFolderId] = useState<string | null>(
     payload.folder_id ?? null,
   );
@@ -100,17 +105,20 @@ export default function EditNotes({
     ExistingRecording[]
   >([]);
   const [deletedRecordingIds, setDeletedRecordingIds] = useState<string[]>([]);
+  const [deletedRecordingPaths, setDeletedRecordingPaths] = useState<string[]>([]);
   const [newRecordings, setNewRecordings] = useState<DraftRecording[]>([]);
 
   // Image state
   const [existingImages, setExistingImages] = useState<ExistingImage[]>([]);
   const [deletedImageIds, setDeletedImageIds] = useState<string[]>([]);
+  const [deletedImagePaths, setDeletedImagePaths] = useState<string[]>([]);
   const [newImages, setNewImages] = useState<DraftImage[]>([]);
   const [viewerIndex, setViewerIndex] = useState(-1);
 
   // Video state
   const [existingVideos, setExistingVideos] = useState<ExistingVideo[]>([]);
   const [deletedVideoIds, setDeletedVideoIds] = useState<string[]>([]);
+  const [deletedVideoPaths, setDeletedVideoPaths] = useState<string[]>([]);
   const [newVideos, setNewVideos] = useState<DraftVideo[]>([]);
 
   const initialTitle = note.title || "";
@@ -140,6 +148,10 @@ export default function EditNotes({
     });
     if (!confirmed) return;
 
+    const recording = existingRecordings.find((r) => r.id === recordingId);
+    if (recording) {
+      setDeletedRecordingPaths((prev) => [...prev, recording.storage_path]);
+    }
     setDeletedRecordingIds((prev) => [...prev, recordingId]);
     setExistingRecordings((prev) => prev.filter((r) => r.id !== recordingId));
   };
@@ -161,6 +173,10 @@ export default function EditNotes({
     });
     if (!confirmed) return;
 
+    const image = existingImages.find((img) => img.id === imageId);
+    if (image) {
+      setDeletedImagePaths((prev) => [...prev, image.storage_path]);
+    }
     setDeletedImageIds((prev) => [...prev, imageId]);
     setExistingImages((prev) => prev.filter((img) => img.id !== imageId));
   };
@@ -175,29 +191,32 @@ export default function EditNotes({
     setNewImages((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const handleDeleteExistingVideo = async (videoId: string) => {
-    const confirmed = await confirmAction({
-      title: t("notes.videos.deleteVideoTitle"),
-      message: t("notes.videos.deleteVideoMessage"),
-    });
-    if (!confirmed) return;
-
+  const handleDeleteExistingVideo = (videoId: string) => {
+    const video = existingVideos.find((v) => v.id === videoId);
+    if (video) {
+      const paths = [video.storage_path];
+      if (video.thumbnail_storage_path) paths.push(video.thumbnail_storage_path);
+      setDeletedVideoPaths((prev) => [...prev, ...paths]);
+    }
     setDeletedVideoIds((prev) => [...prev, videoId]);
     setExistingVideos((prev) => prev.filter((v) => v.id !== videoId));
   };
 
-  const handleDeleteNewVideo = async (index: number) => {
-    const confirmed = await confirmAction({
-      title: t("notes.videos.deleteVideoTitle"),
-      message: t("notes.videos.deleteVideoMessage"),
-    });
-    if (!confirmed) return;
-
+  const handleDeleteNewVideo = (index: number) => {
     setNewVideos((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async () => {
+    if (newVideos.some((v) => v.isCompressing)) {
+      Toast.show({
+        type: "info",
+        text1: t("common:common.media.videoStillCompressing"),
+      });
+      return;
+    }
+
     setIsSaving(true);
+    setSavingProgress(undefined);
 
     try {
       const updatedFeedItem = await editNotes({
@@ -207,11 +226,15 @@ export default function EditNotes({
         updated_at: new Date().toISOString(),
         folderId: selectedFolderId,
         deletedRecordingIds,
+        deletedRecordingPaths,
         newRecordings,
         deletedImageIds,
+        deletedImagePaths,
         newImages,
         deletedVideoIds,
+        deletedVideoPaths,
         newVideos,
+        onProgress: (p) => setSavingProgress(p),
       });
 
       onSave({ ...updatedFeedItem, feed_context: note.feed_context });
@@ -219,8 +242,8 @@ export default function EditNotes({
     } catch {
       Toast.show({
         type: "error",
-        text1: t("notes.editScreen.errorTitle"),
-        text2: t("notes.editScreen.errorMessage"),
+        text1: t("notes:notes.editScreen.errorTitle"),
+        text2: t("notes:notes.editScreen.errorMessage"),
       });
     } finally {
       setIsSaving(false);
@@ -271,7 +294,7 @@ export default function EditNotes({
             value={notes}
             setValue={setNotes}
             label={t("notes.notesLabel")}
-            height={200}
+            placeholder={t("notes.notesPlaceholder")}
           />
           {/* Existing Voice Recordings */}
           {(voiceCount > 0 ||
@@ -336,6 +359,7 @@ export default function EditNotes({
                 <DraftImageItem
                   key={image.id}
                   uri={image.uri}
+                  isLoading={image.isLoading}
                   onPress={() => setViewerIndex(existingImages.length + index)}
                   onDelete={() => handleDeleteNewImage(index)}
                 />
@@ -374,6 +398,7 @@ export default function EditNotes({
                   uri={video.uri}
                   thumbnailUri={video.thumbnailUri}
                   durationMs={video.durationMs}
+                  isCompressing={video.isCompressing}
                   onDelete={() => handleDeleteNewVideo(index)}
                 />
               ))}
@@ -392,18 +417,33 @@ export default function EditNotes({
                 };
                 setNewRecordings((prev) => [...prev, newRecording]);
               }}
-              onImageSelected={(uri) => {
-                setNewImages((prev) => [...prev, { id: nanoid(), uri }]);
+              onImageSelected={(image) => {
+                setNewImages((prev) => {
+                  if (image.isLoading) {
+                    return [...prev, image];
+                  }
+                  if (!image.uri) {
+                    return prev.filter((img) => img.id !== image.id);
+                  }
+                  return prev.map((img) => (img.id === image.id ? image : img));
+                });
               }}
-              onVideoSelected={(uri, thumbnailUri, durationMs) => {
-                setNewVideos((prev) => [
-                  ...prev,
-                  { id: nanoid(), uri, thumbnailUri, durationMs },
-                ]);
+              onVideoSelected={(video) => {
+                setNewVideos((prev) => {
+                  if (prev.some((v) => v.id === video.id)) {
+                    if (!video.uri) {
+                      return prev.filter((v) => v.id !== video.id);
+                    }
+                    return prev.map((v) => (v.id === video.id ? video : v));
+                  }
+                  return video.isCompressing ? [...prev, video] : prev;
+                });
               }}
               currentImageCount={existingImages.length + newImages.length}
               currentVideoCount={existingVideos.length + newVideos.length}
-              currentVoiceCount={existingRecordings.length + newRecordings.length}
+              currentVoiceCount={
+                existingRecordings.length + newRecordings.length
+              }
               folders={isFoldersLoading ? [] : folders}
               selectedFolderId={selectedFolderId}
               onFolderSelect={setSelectedFolderId}
@@ -411,7 +451,7 @@ export default function EditNotes({
           </View>
         </PageContainer>
       </ScrollView>
-      <View className="px-5 pb-10 pt-3">
+      <View className="px-5 pb-5 pt-3">
         <SaveButton
           disabled={!hasChanges}
           onPress={handleSubmit}
@@ -424,7 +464,12 @@ export default function EditNotes({
       </View>
       <FullScreenLoader
         visible={isSaving}
-        message={t("notes.editScreen.savingNotes")}
+        message={
+          savingProgress !== undefined
+            ? t("common:common.media.uploading")
+            : t("notes:notes.editScreen.savingNotes")
+        }
+        progress={savingProgress}
       />
       {(() => {
         const allImages = [...existingImages, ...newImages];

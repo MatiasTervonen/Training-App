@@ -29,8 +29,7 @@ type Props = {
   onClose: () => void;
 };
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } =
-  Dimensions.get("window");
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 const DISMISS_THRESHOLD = 150;
 
 function ImagePage({
@@ -169,10 +168,7 @@ function ImagePage({
 
   return (
     <View style={{ width: SCREEN_WIDTH, height: SCREEN_HEIGHT }}>
-      <Animated.View
-        className="absolute inset-0 bg-black/95"
-        style={bgStyle}
-      />
+      <Animated.View className="absolute inset-0 bg-black" style={bgStyle} />
       <GestureDetector gesture={composed}>
         <Animated.View
           className="flex-1 justify-center items-center"
@@ -202,7 +198,7 @@ export default function ImageViewerModal({
   const [scrollEnabled, setScrollEnabled] = useState(true);
 
   const onViewableItemsChanged = useCallback(
-    ({ viewableItems }: { viewableItems: Array<{ index: number | null }> }) => {
+    ({ viewableItems }: { viewableItems: { index: number | null }[] }) => {
       if (viewableItems.length > 0 && viewableItems[0].index != null) {
         setCurrentIndex(viewableItems[0].index);
       }
@@ -210,7 +206,9 @@ export default function ImageViewerModal({
     [],
   );
 
-  const viewabilityConfig = useRef({ viewAreaCoveragePercentThreshold: 50 }).current;
+  const viewabilityConfig = useRef({
+    viewAreaCoveragePercentThreshold: 50,
+  }).current;
 
   return (
     <Modal
@@ -221,14 +219,14 @@ export default function ImageViewerModal({
       statusBarTranslucent
     >
       <GestureHandlerRootView className="flex-1">
-        <View className="flex-1 bg-black">
+        <View className="flex-1">
           <View
             className="absolute right-4 z-10 flex-row items-center gap-3"
             style={{ top: insets.top + 8 }}
           >
             {images.length > 1 && (
-              <View className="bg-slate-800/80 border border-slate-600 rounded-full px-3 py-1">
-                <AppText className="text-sm">
+              <View className="bg-slate-800/80 border border-slate-600 rounded-full px-3 py-1 min-w-[52px] items-center">
+                <AppText className="text-sm" numberOfLines={1}>
                   {currentIndex + 1} / {images.length}
                 </AppText>
               </View>

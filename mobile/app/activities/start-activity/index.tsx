@@ -62,7 +62,7 @@ type DraftImage = {
 };
 
 export default function StartActivityScreen() {
-  const { t } = useTranslation(["activities", "timer"]);
+  const { t } = useTranslation(["activities", "timer", "common"]);
   const now = formatDateShort(new Date());
 
   // Helper function to get translated activity name
@@ -82,6 +82,7 @@ export default function StartActivityScreen() {
   const [notes, setNotes] = useState("");
   const [allowGPS, setAllowGPS] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [savingProgress, setSavingProgress] = useState<number | undefined>(undefined);
   const [track, setTrack] = useState<TrackPoint[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [showNotesModal, setShowNotesModal] = useState(false);
@@ -239,10 +240,14 @@ export default function StartActivityScreen() {
     title,
     notes,
     draftRecordings,
+    draftImages,
+    draftVideos,
     setTitle,
     setNotes,
     setActivityName,
     setDraftRecordings,
+    setDraftImages,
+    setDraftVideos,
     setBaseMet,
   });
 
@@ -318,6 +323,7 @@ export default function StartActivityScreen() {
     draftImages,
     draftVideos,
     setIsSaving,
+    setSavingProgress,
     resetSession,
     activityName,
   });
@@ -603,7 +609,8 @@ export default function StartActivityScreen() {
 
       <FullScreenLoader
         visible={isSaving}
-        message={t("activities.startActivityScreen.savingSession")}
+        message={savingProgress !== undefined ? t("common:common.media.uploading") : t("activities.startActivityScreen.savingSession")}
+        progress={savingProgress}
       />
     </>
   );

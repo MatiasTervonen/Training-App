@@ -1,4 +1,4 @@
-import { View, Alert } from "react-native";
+import { View, Alert, ActivityIndicator } from "react-native";
 import { Image } from "expo-image";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import AppText from "@/components/AppText";
@@ -11,6 +11,7 @@ type Props = {
   uri: string;
   thumbnailUri: string;
   durationMs?: number;
+  isCompressing?: boolean;
   onDelete?: () => void;
 };
 
@@ -25,6 +26,7 @@ export default function DraftVideoItem({
   uri,
   thumbnailUri,
   durationMs,
+  isCompressing,
   onDelete,
 }: Props) {
   const { t } = useTranslation("notes");
@@ -44,7 +46,7 @@ export default function DraftVideoItem({
   return (
     <>
       <AnimatedButton
-        onPress={() => setPlayerVisible(true)}
+        onPress={() => !isCompressing && setPlayerVisible(true)}
         className="relative mb-3 rounded-md overflow-hidden border-2 border-blue-500 bg-slate-950"
       >
         <Image
@@ -54,11 +56,17 @@ export default function DraftVideoItem({
           cachePolicy="memory-disk"
           transition={200}
         />
-        {/* Play icon overlay */}
+        {/* Play icon or compressing spinner overlay */}
         <View className="absolute inset-0 items-center justify-center">
-          <View className="bg-black/50 rounded-full p-3">
-            <Play color="white" size={28} fill="white" />
-          </View>
+          {isCompressing ? (
+            <View className="bg-black/60 rounded-full p-3">
+              <ActivityIndicator size="large" color="white" />
+            </View>
+          ) : (
+            <View className="bg-black/50 rounded-full p-3">
+              <Play color="white" size={28} fill="white" />
+            </View>
+          )}
         </View>
         {/* Duration badge */}
         {durationMs !== undefined && (

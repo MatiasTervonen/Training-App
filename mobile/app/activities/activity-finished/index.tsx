@@ -442,7 +442,7 @@ export default function ActivityFinishedScreen() {
         >
           <Mapbox.MapView
             ref={mapViewRef}
-            key={`${size}-${hideMapDetails}-${lineColorIndex}`}
+            key={`${size}-${hideMapDetails}-${lineColorIndex}-${mapStyleIndex}`}
             style={MAP_VIEW_STYLE}
             {...(hideMapDetails && noLabelsStyleJSON
               ? { styleJSON: noLabelsStyleJSON }

@@ -3,7 +3,7 @@ import { View, ScrollView, Modal } from "react-native";
 import AppText from "@/components/AppText";
 import BodyText from "@/components/BodyText";
 import PageContainer from "@/components/PageContainer";
-import { formatDate, formatTime } from "@/lib/formatDate";
+import { formatDateShort, formatTime } from "@/lib/formatDate";
 import { useState } from "react";
 import Map from "./components/map";
 import SessionStats from "./components/sessionStats";
@@ -14,7 +14,7 @@ import SubNotesInput from "@/components/SubNotesInput";
 import FullScreenLoader from "@/components/FullScreenLoader";
 import useSaveTemplate from "./hooks/useSaveTemplate";
 import { useTranslation } from "react-i18next";
-import { Clock, History, Share2 } from "lucide-react-native";
+import { History, Share2 } from "lucide-react-native";
 import ActivityShareModal from "@/features/activities/components/share/ActivityShareModal";
 import FullScreenMapModal from "./components/fullScreenMap";
 import { ActivityVoiceRecording } from "@/database/activities/get-activity-voice-recordings";
@@ -81,16 +81,13 @@ export default function ActivitySession(
       <PageContainer>
         <View className="flex-1 justify-between">
           <View>
-            <AppText className="text-gray-300 text-center text-sm">
-              {formatDate(activity_session.session.start_time)}
-            </AppText>
             <LinearGradient
               colors={["#1e3a8a", "#0f172a", "#0f172a"]}
-              start={{ x: 1, y: 0 }} // bottom-left
-              end={{ x: 0, y: 1 }} // top-right
+              start={{ x: 1, y: 0 }}
+              end={{ x: 0, y: 1 }}
               className="items-center p-5 rounded-lg overflow-hidden shadow-md mt-5"
             >
-              <View className="flex-row items-center justify-center mb-5 border-b border-gray-700 pb-2">
+              <View className="flex-row items-center justify-center mb-2">
                 <AppText className="text-xl text-center flex-1">
                   {activity_session.session.title}
                 </AppText>
@@ -117,13 +114,9 @@ export default function ActivitySession(
                 </View>
               </View>
 
-              <View className="flex-row items-center gap-3">
-                <Clock size={24} color="#f3f4f6" />
-                <AppText className="text-lg text-center">
-                  {formatTime(activity_session.session.start_time)} -{" "}
-                  {formatTime(activity_session.session.end_time)}
-                </AppText>
-              </View>
+              <AppText className="text-sm text-gray-400">
+                {formatDateShort(activity_session.session.start_time)}  ·  {formatTime(activity_session.session.start_time)} – {formatTime(activity_session.session.end_time)}
+              </AppText>
               {activity_session.session.notes && (
                 <BodyText className="text-left mt-5">
                   {activity_session.session.notes}

@@ -25,6 +25,7 @@ export function useHabitNotifications() {
         sound: true,
         data: { habitId, type: "habit" },
         categoryIdentifier: HABIT_CATEGORY_ID,
+        ...(Platform.OS === "android" && { channelId: "reminders" }),
       };
 
       if (frequencyDays && frequencyDays.length > 0) {

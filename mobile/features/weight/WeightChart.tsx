@@ -112,6 +112,9 @@ export default function WeightChart({
       ? oldestDate
       : calculatedStart;
 
+  const startTime = start.getTime();
+  const endTime = end.getTime();
+
   // Check if we can go back further (for disabling back button)
   const [nextStart] = addOffsetToDate(today, range, offset + 1);
   const canGoBack = nextStart >= oldestDate;
@@ -126,12 +129,19 @@ export default function WeightChart({
     setOffset(0);
   }
 
-  const filteredData = data.filter((entry) => {
-    const entryDate = new Date(entry.created_at);
-    return entryDate >= start && entryDate <= end;
-  });
+  const filteredData = useMemo(
+    () =>
+      data.filter((entry) => {
+        const entryTime = new Date(entry.created_at).getTime();
+        return entryTime >= startTime && entryTime <= endTime;
+      }),
+    [data, startTime, endTime],
+  );
 
-  const fullDateRange = generateDateRange(start, end);
+  const fullDateRange = useMemo(
+    () => generateDateRange(new Date(startTime), new Date(endTime)),
+    [startTime, endTime],
+  );
 
   const chartData = useMemo(() => {
     const weightMap = new Map(
@@ -259,6 +269,9 @@ export default function WeightChart({
     [chartData, minWeight, maxWeight],
   );
 
+  const chartRef = useRef<ReturnType<typeof echarts.init> | null>(null);
+
+  // Initialize chart once when size is available
   useEffect(() => {
     if (!skiaRef.current || size.width === 0 || size.height === 0) return;
 
@@ -267,11 +280,19 @@ export default function WeightChart({
       width: size.width,
       height: size.height,
     } as any);
+    chartRef.current = chart;
 
-    chart.setOption(option);
+    return () => {
+      chart.dispose();
+      chartRef.current = null;
+    };
+  }, [size]);
 
-    return () => chart.dispose();
-  }, [option, size]);
+  // Update chart options without re-initializing
+  useEffect(() => {
+    if (!chartRef.current) return;
+    chartRef.current.setOption(option);
+  }, [option]);
 
   return (
     <View

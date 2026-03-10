@@ -5,17 +5,13 @@ import Toast from "react-native-toast-message";
 import {
   full_todo_session_optional_id,
   FeedItemUI,
-  DraftRecording,
-  DraftImage,
-  DraftVideo,
 } from "@/types/session";
 import { editTodo } from "@/database/todo/edit-todo";
-import SubNotesInput from "@/components/SubNotesInput";
-import AppInput from "@/components/AppInput";
 import AnimatedButton from "@/components/buttons/animatedButton";
-import { View, ScrollView } from "react-native";
+import { View, Pressable, Keyboard } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import AppText from "@/components/AppText";
+import AppInput from "@/components/AppInput";
 import PageContainer from "@/components/PageContainer";
 import { useConfirmAction } from "@/lib/confirmAction";
 import { Dot } from "lucide-react-native";
@@ -23,10 +19,7 @@ import * as Crypto from "expo-crypto";
 import { useTranslation } from "react-i18next";
 import { nanoid } from "nanoid/non-secure";
 import { TodoTaskMedia } from "@/database/todo/get-todo-media";
-import MediaToolbar from "@/features/notes/components/MediaToolbar";
-import { DraftRecordingItem } from "@/features/notes/components/draftRecording";
-import DraftImageItem from "@/features/notes/components/DraftImageItem";
-import DraftVideoItem from "@/features/notes/components/DraftVideoItem";
+import TodoTaskCard from "@/features/todo/components/TodoTaskCard";
 import ImageViewerModal from "@/features/notes/components/ImageViewerModal";
 
 type Props = {
@@ -35,13 +28,6 @@ type Props = {
   onSave: (updateFeedItem: FeedItemUI) => void;
   onDirtyChange?: (isDirty: boolean) => void;
   taskMedia?: TodoTaskMedia;
-};
-
-type Task = {
-  task: string;
-  notes?: string;
-  position: number;
-  updated_at: string;
 };
 
 export default function EditTodo({
@@ -54,8 +40,8 @@ export default function EditTodo({
   const { t } = useTranslation("todo");
   const [originalData] = useState(todo_session);
   const [isSaving, setIsSaving] = useState(false);
+  const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
   const [sessionData, setSessionData] = useState(() => {
-    // Hydrate existing media into tasks
     if (taskMedia) {
       return {
         ...todo_session,
@@ -97,15 +83,22 @@ export default function EditTodo({
     setSessionData((prev) => ({ ...prev, title: value }));
   };
 
-  const updateTask = (index: number, item: Partial<Task>) => {
-    setSessionData((prev) => {
-      const updatedTasks = [...prev.todo_tasks];
-      updatedTasks[index] = { ...updatedTasks[index], ...item };
-      return { ...prev, todo_tasks: updatedTasks };
-    });
+  const updateTask = (
+    index: number,
+    updater: (
+      task: (typeof sessionData.todo_tasks)[number],
+    ) => Partial<(typeof sessionData.todo_tasks)[number]>,
+  ) => {
+    setSessionData((prev) => ({
+      ...prev,
+      todo_tasks: prev.todo_tasks.map((t, i) =>
+        i === index ? { ...t, ...updater(t) } : t,
+      ),
+    }));
   };
 
   const addNewTask = () => {
+    const newIndex = sessionData.todo_tasks.length;
     setSessionData((prev) => ({
       ...prev,
       todo_tasks: [
@@ -123,6 +116,7 @@ export default function EditTodo({
         },
       ],
     }));
+    setExpandedIndex(newIndex);
   };
 
   const handleDeleteItem = async (index: number) => {
@@ -133,14 +127,18 @@ export default function EditTodo({
     if (!confirmed) return;
 
     setSessionData((prev) => {
-      const updatedTasks = prev.todo_tasks[index];
-
-      if (updatedTasks?.id)
-        setDeletedIds((ids) => [...ids, updatedTasks.id as string]);
-
-      const todo_tasks = prev.todo_tasks.filter((_, i) => i !== index);
-      return { ...prev, todo_tasks };
+      const deletedTask = prev.todo_tasks[index];
+      if (deletedTask?.id)
+        setDeletedIds((ids) => [...ids, deletedTask.id as string]);
+      return {
+        ...prev,
+        todo_tasks: prev.todo_tasks.filter((_, i) => i !== index),
+      };
     });
+
+    if (expandedIndex === index) setExpandedIndex(null);
+    else if (expandedIndex !== null && expandedIndex > index)
+      setExpandedIndex(expandedIndex - 1);
   };
 
   const updated = new Date().toISOString();
@@ -208,7 +206,6 @@ export default function EditTodo({
     onDirtyChange?.(hasChanges);
   }, [hasChanges, onDirtyChange]);
 
-  // Get all images for viewer (combine existing + draft for the task)
   const getViewerImages = (taskIndex: number) => {
     const task = sessionData.todo_tasks[taskIndex];
     const existing = (task.existingImages ?? []).map((img) => ({
@@ -225,9 +222,9 @@ export default function EditTodo({
   return (
     <View className="flex-1">
       {hasChanges && (
-        <View className="bg-gray-900 absolute top-5 left-5 z-50  py-1 px-4 flex-row items-center rounded-lg">
+        <View className="bg-gray-900 absolute top-5 left-5 z-50 py-1 px-4 flex-row items-center rounded-lg">
           <AppText className="text-sm text-yellow-500">
-            {hasChanges ? t("todo.session.unsavedChanges") : ""}
+            {t("todo.session.unsavedChanges")}
           </AppText>
           <View className="animate-pulse">
             <Dot color="#eab308" />
@@ -239,346 +236,156 @@ export default function EditTodo({
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ flexGrow: 1 }}
       >
-        <PageContainer className="justify-between items-center gap-5 max-w-lg mb-5">
-          <View className="w-full">
-            <AppText className="text-lg text-center mb-10">
-              {t("todo.editScreen.title")}
-            </AppText>
-            <View className="w-full mb-10">
-              <AppInput
-                value={sessionData.title}
-                setValue={handleTitleChange}
-                placeholder={t("todo.editScreen.titlePlaceholder")}
-                label={t("todo.editScreen.titleLabel")}
+        <Pressable onPress={Keyboard.dismiss} className="flex-1">
+          <PageContainer className="justify-between items-center gap-5 max-w-lg">
+            <View className="w-full">
+              <AppText className="text-lg text-center mb-10">
+                {t("todo.editScreen.title")}
+              </AppText>
+              <View className="w-full mb-10">
+                <AppInput
+                  value={sessionData.title}
+                  setValue={handleTitleChange}
+                  placeholder={t("todo.editScreen.titlePlaceholder")}
+                  label={t("todo.editScreen.titleLabel")}
+                />
+              </View>
+
+              <View className="w-full">
+                {sessionData.todo_tasks.map((task, index) => (
+                  <TodoTaskCard
+                    key={task.id ?? task.tempId}
+                    index={index}
+                    task={task.task}
+                    notes={task.notes ?? ""}
+                    isExpanded={expandedIndex === index}
+                    onToggleExpand={() =>
+                      setExpandedIndex(
+                        expandedIndex === index ? null : index,
+                      )
+                    }
+                    onTaskChange={(value) =>
+                      updateTask(index, () => ({ task: value }))
+                    }
+                    onNotesChange={(value) =>
+                      updateTask(index, () => ({ notes: value }))
+                    }
+                    onDelete={() => handleDeleteItem(index)}
+                    draftImages={task.draftImages}
+                    draftVideos={task.draftVideos}
+                    draftRecordings={task.draftRecordings}
+                    existingImages={task.existingImages}
+                    existingVideos={task.existingVideos}
+                    existingVoice={task.existingVoice}
+                    onAddImage={(uri) =>
+                      updateTask(index, (t) => ({
+                        draftImages: [
+                          ...(t.draftImages ?? []),
+                          { id: nanoid(), uri },
+                        ],
+                      }))
+                    }
+                    onAddVideo={(uri, thumbnailUri, durationMs) =>
+                      updateTask(index, (t) => ({
+                        draftVideos: [
+                          ...(t.draftVideos ?? []),
+                          { id: nanoid(), uri, thumbnailUri, durationMs },
+                        ],
+                      }))
+                    }
+                    onAddRecording={(uri, durationMs) =>
+                      updateTask(index, (t) => ({
+                        draftRecordings: [
+                          ...(t.draftRecordings ?? []),
+                          {
+                            id: nanoid(),
+                            uri,
+                            createdAt: Date.now(),
+                            durationMs,
+                          },
+                        ],
+                      }))
+                    }
+                    onDeleteDraftImage={(id) =>
+                      updateTask(index, (t) => ({
+                        draftImages: t.draftImages?.filter(
+                          (img) => img.id !== id,
+                        ),
+                      }))
+                    }
+                    onDeleteDraftVideo={(id) =>
+                      updateTask(index, (t) => ({
+                        draftVideos: t.draftVideos?.filter(
+                          (v) => v.id !== id,
+                        ),
+                      }))
+                    }
+                    onDeleteDraftRecording={(id) =>
+                      updateTask(index, (t) => ({
+                        draftRecordings: t.draftRecordings?.filter(
+                          (r) => r.id !== id,
+                        ),
+                      }))
+                    }
+                    onDeleteExistingImage={(id) => {
+                      setDeletedImageIds((prev) => [...prev, id]);
+                      updateTask(index, (t) => ({
+                        existingImages: t.existingImages?.filter(
+                          (img) => img.id !== id,
+                        ),
+                      }));
+                    }}
+                    onDeleteExistingVideo={(id) => {
+                      setDeletedVideoIds((prev) => [...prev, id]);
+                      updateTask(index, (t) => ({
+                        existingVideos: t.existingVideos?.filter(
+                          (v) => v.id !== id,
+                        ),
+                      }));
+                    }}
+                    onDeleteExistingVoice={(id) => {
+                      setDeletedVoiceIds((prev) => [...prev, id]);
+                      updateTask(index, (t) => ({
+                        existingVoice: t.existingVoice?.filter(
+                          (v) => v.id !== id,
+                        ),
+                      }));
+                    }}
+                    onImagePress={(imgIdx) => {
+                      setViewerTaskIndex(index);
+                      setViewerIndex(imgIdx);
+                    }}
+                    cardClassName="bg-slate-900"
+                  />
+                ))}
+              </View>
+            </View>
+
+            <View className="w-full pt-5 flex flex-col gap-5">
+              <AnimatedButton
+                onPress={addNewTask}
+                label={t("todo.editScreen.addTask")}
+                className="btn-base py-2"
+                textClassName="text-gray-100 text-center"
+              />
+              <SaveButton
+                disabled={!hasChanges}
+                onPress={handleSave}
+                label={
+                  !hasChanges
+                    ? t("todo.session.save")
+                    : t("todo.session.saveChanges")
+                }
               />
             </View>
-            <View className="w-full">
-              {sessionData.todo_tasks.map((task, index) => (
-                <View
-                  key={task.id ?? task.tempId}
-                  className="text-gray-300 mb-5 bg-slate-900 p-4 rounded-lg"
-                >
-                  <View className="flex-row justify-between">
-                    <AppText className="mb-2">{index + 1}.</AppText>
-                    <AnimatedButton
-                      onPress={() => handleDeleteItem(index)}
-                      label={t("todo.editScreen.delete")}
-                      textClassName="text-red-500"
-                      hitSlop={10}
-                    />
-                  </View>
-                  <AppInput
-                    value={task.task}
-                    setValue={(value) => updateTask(index, { task: value })}
-                    placeholder={t("todo.editScreen.taskPlaceholder")}
-                    label={t("todo.editScreen.taskLabel")}
-                  />
-                  <View className="mt-5">
-                    <SubNotesInput
-                      value={task.notes || ""}
-                      setValue={(value) => updateTask(index, { notes: value })}
-                      placeholder={t("todo.editScreen.notesPlaceholder")}
-                      label={t("todo.editScreen.notesLabel")}
-                    />
-                  </View>
-                  <View className="mt-3">
-                    <MediaToolbar
-                      onRecordingComplete={(uri, durationMs) => {
-                        setSessionData((prev) => ({
-                          ...prev,
-                          todo_tasks: prev.todo_tasks.map((t, i) =>
-                            i === index
-                              ? {
-                                  ...t,
-                                  draftRecordings: [
-                                    ...(t.draftRecordings ?? []),
-                                    {
-                                      id: nanoid(),
-                                      uri,
-                                      createdAt: Date.now(),
-                                      durationMs,
-                                    },
-                                  ],
-                                }
-                              : t,
-                          ),
-                        }));
-                      }}
-                      onImageSelected={(uri) => {
-                        setSessionData((prev) => ({
-                          ...prev,
-                          todo_tasks: prev.todo_tasks.map((t, i) =>
-                            i === index
-                              ? {
-                                  ...t,
-                                  draftImages: [
-                                    ...(t.draftImages ?? []),
-                                    { id: nanoid(), uri },
-                                  ],
-                                }
-                              : t,
-                          ),
-                        }));
-                      }}
-                      onVideoSelected={(uri, thumbnailUri, durationMs) => {
-                        setSessionData((prev) => ({
-                          ...prev,
-                          todo_tasks: prev.todo_tasks.map((t, i) =>
-                            i === index
-                              ? {
-                                  ...t,
-                                  draftVideos: [
-                                    ...(t.draftVideos ?? []),
-                                    {
-                                      id: nanoid(),
-                                      uri,
-                                      thumbnailUri,
-                                      durationMs,
-                                    },
-                                  ],
-                                }
-                              : t,
-                          ),
-                        }));
-                      }}
-                      currentImageCount={(task.existingImages?.length ?? 0) + (task.draftImages?.length ?? 0)}
-                      currentVideoCount={(task.existingVideos?.length ?? 0) + (task.draftVideos?.length ?? 0)}
-                      currentVoiceCount={(task.existingVoice?.length ?? 0) + (task.draftRecordings?.length ?? 0)}
-                      showFolderButton={false}
-                      folders={[]}
-                      selectedFolderId={null}
-                      onFolderSelect={() => {}}
-                    />
-                  </View>
-
-                  {/* Existing media */}
-                  {(task.existingImages?.length ?? 0) > 0 && (
-                    <View className="mt-3">
-                      {task.existingImages?.map((image, idx) => (
-                        <DraftImageItem
-                          key={image.id}
-                          uri={image.uri}
-                          onDelete={async () => {
-                            const confirmed = await confirmAction({
-                              title: t("todo.deleteMediaTitle"),
-                              message: t("todo.deleteMediaMessage"),
-                            });
-                            if (!confirmed) return;
-                            setDeletedImageIds((prev) => [...prev, image.id]);
-                            setSessionData((prev) => ({
-                              ...prev,
-                              todo_tasks: prev.todo_tasks.map((t, i) =>
-                                i === index
-                                  ? {
-                                      ...t,
-                                      existingImages:
-                                        t.existingImages?.filter(
-                                          (img) => img.id !== image.id,
-                                        ),
-                                    }
-                                  : t,
-                              ),
-                            }));
-                          }}
-                          onPress={() => {
-                            setViewerTaskIndex(index);
-                            setViewerIndex(idx);
-                          }}
-                        />
-                      ))}
-                    </View>
-                  )}
-                  {(task.existingVideos?.length ?? 0) > 0 && (
-                    <View className="mt-3">
-                      {task.existingVideos?.map((video) => (
-                        <DraftVideoItem
-                          key={video.id}
-                          uri={video.uri}
-                          thumbnailUri={video.thumbnailUri}
-                          durationMs={video.duration_ms ?? undefined}
-                          onDelete={async () => {
-                            const confirmed = await confirmAction({
-                              title: t("todo.deleteMediaTitle"),
-                              message: t("todo.deleteMediaMessage"),
-                            });
-                            if (!confirmed) return;
-                            setDeletedVideoIds((prev) => [...prev, video.id]);
-                            setSessionData((prev) => ({
-                              ...prev,
-                              todo_tasks: prev.todo_tasks.map((t, i) =>
-                                i === index
-                                  ? {
-                                      ...t,
-                                      existingVideos:
-                                        t.existingVideos?.filter(
-                                          (v) => v.id !== video.id,
-                                        ),
-                                    }
-                                  : t,
-                              ),
-                            }));
-                          }}
-                        />
-                      ))}
-                    </View>
-                  )}
-                  {(task.existingVoice?.length ?? 0) > 0 && (
-                    <View className="mt-3">
-                      {task.existingVoice?.map((voice) => (
-                        <DraftRecordingItem
-                          key={voice.id}
-                          uri={voice.uri}
-                          durationMs={voice.duration_ms ?? undefined}
-                          deleteRecording={async () => {
-                            const confirmed = await confirmAction({
-                              title: t("todo.deleteMediaTitle"),
-                              message: t("todo.deleteMediaMessage"),
-                            });
-                            if (!confirmed) return;
-                            setDeletedVoiceIds((prev) => [...prev, voice.id]);
-                            setSessionData((prev) => ({
-                              ...prev,
-                              todo_tasks: prev.todo_tasks.map((t, i) =>
-                                i === index
-                                  ? {
-                                      ...t,
-                                      existingVoice:
-                                        t.existingVoice?.filter(
-                                          (v) => v.id !== voice.id,
-                                        ),
-                                    }
-                                  : t,
-                              ),
-                            }));
-                          }}
-                        />
-                      ))}
-                    </View>
-                  )}
-
-                  {/* New draft media */}
-                  {(task.draftImages?.length ?? 0) > 0 && (
-                    <View className="mt-3">
-                      {task.draftImages?.map((image) => (
-                        <DraftImageItem
-                          key={image.id}
-                          uri={image.uri}
-                          onDelete={async () => {
-                            const confirmed = await confirmAction({
-                              title: t("todo.deleteMediaTitle"),
-                              message: t("todo.deleteMediaMessage"),
-                            });
-                            if (!confirmed) return;
-                            setSessionData((prev) => ({
-                              ...prev,
-                              todo_tasks: prev.todo_tasks.map((t, i) =>
-                                i === index
-                                  ? {
-                                      ...t,
-                                      draftImages: t.draftImages?.filter(
-                                        (img) => img.id !== image.id,
-                                      ),
-                                    }
-                                  : t,
-                              ),
-                            }));
-                          }}
-                        />
-                      ))}
-                    </View>
-                  )}
-                  {(task.draftVideos?.length ?? 0) > 0 && (
-                    <View className="mt-3">
-                      {task.draftVideos?.map((video) => (
-                        <DraftVideoItem
-                          key={video.id}
-                          uri={video.uri}
-                          thumbnailUri={video.thumbnailUri}
-                          durationMs={video.durationMs}
-                          onDelete={async () => {
-                            const confirmed = await confirmAction({
-                              title: t("todo.deleteMediaTitle"),
-                              message: t("todo.deleteMediaMessage"),
-                            });
-                            if (!confirmed) return;
-                            setSessionData((prev) => ({
-                              ...prev,
-                              todo_tasks: prev.todo_tasks.map((t, i) =>
-                                i === index
-                                  ? {
-                                      ...t,
-                                      draftVideos: t.draftVideos?.filter(
-                                        (v) => v.id !== video.id,
-                                      ),
-                                    }
-                                  : t,
-                              ),
-                            }));
-                          }}
-                        />
-                      ))}
-                    </View>
-                  )}
-                  {(task.draftRecordings?.length ?? 0) > 0 && (
-                    <View className="mt-3">
-                      {task.draftRecordings?.map((rec) => (
-                        <DraftRecordingItem
-                          key={rec.id}
-                          uri={rec.uri}
-                          durationMs={rec.durationMs}
-                          deleteRecording={async () => {
-                            const confirmed = await confirmAction({
-                              title: t("todo.deleteMediaTitle"),
-                              message: t("todo.deleteMediaMessage"),
-                            });
-                            if (!confirmed) return;
-                            setSessionData((prev) => ({
-                              ...prev,
-                              todo_tasks: prev.todo_tasks.map((t, i) =>
-                                i === index
-                                  ? {
-                                      ...t,
-                                      draftRecordings:
-                                        t.draftRecordings?.filter(
-                                          (r) => r.id !== rec.id,
-                                        ),
-                                    }
-                                  : t,
-                              ),
-                            }));
-                          }}
-                        />
-                      ))}
-                    </View>
-                  )}
-                </View>
-              ))}
-            </View>
-          </View>
-          <View className="w-full pt-10 flex flex-col gap-5">
-            <AnimatedButton
-              onPress={addNewTask}
-              label={t("todo.editScreen.addTask")}
-              className="bg-blue-800 rounded-md shadow-md border-2 border-blue-500 py-2"
-              textClassName="text-gray-100 text-center"
-            />
-            <SaveButton
-              disabled={!hasChanges}
-              onPress={handleSave}
-              label={
-                !hasChanges
-                  ? t("todo.session.save")
-                  : t("todo.session.saveChanges")
-              }
-            />
-          </View>
-        </PageContainer>
-
-        <FullScreenLoader
-          visible={isSaving}
-          message={t("todo.editScreen.savingTodoList")}
-        />
+          </PageContainer>
+        </Pressable>
       </KeyboardAwareScrollView>
+
+      <FullScreenLoader
+        visible={isSaving}
+        message={t("todo.editScreen.savingTodoList")}
+      />
 
       {viewerTaskIndex !== null &&
         getViewerImages(viewerTaskIndex).length > 0 &&

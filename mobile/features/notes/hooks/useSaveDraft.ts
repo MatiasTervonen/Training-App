@@ -44,7 +44,8 @@ export default function useSaveDraft({
           setNotes(draft.notes || "");
           setDraftRecordings(draft.draftRecordings || []);
           setDraftImages?.(draft.draftImages || []);
-          setDraftVideos?.(draft.draftVideos || []);
+          const videos: DraftVideo[] = draft.draftVideos || [];
+          setDraftVideos?.(videos.filter((v) => !v.isCompressing));
         }
       } catch (error) {
         handleError(error, {
@@ -66,7 +67,13 @@ export default function useSaveDraft({
       if (title.trim().length === 0 && notes.trim().length === 0) {
         await AsyncStorage.removeItem("notes_draft");
       } else {
-        const draft = { title, notes, draftRecordings, draftImages, draftVideos };
+        const draft = {
+          title,
+          notes,
+          draftRecordings,
+          draftImages,
+          draftVideos: draftVideos.filter((v) => !v.isCompressing),
+        };
         await AsyncStorage.setItem("notes_draft", JSON.stringify(draft));
       }
     },

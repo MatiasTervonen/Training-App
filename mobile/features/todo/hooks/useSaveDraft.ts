@@ -4,7 +4,7 @@ import { useDebouncedCallback } from "use-debounce";
 import { handleError } from "@/utils/handleError";
 import { DraftRecording, DraftImage, DraftVideo } from "@/types/session";
 
-type TodoItem = {
+export type TodoItem = {
   tempId: string;
   task: string;
   notes: string | null;
@@ -15,21 +15,13 @@ type TodoItem = {
 
 export default function useSaveDraft({
   title,
-  task,
-  notes,
   todoList,
   setTitle,
-  setTask,
-  setNotes,
   setTodoList,
 }: {
   title: string;
-  task: string;
-  notes: string;
   todoList: TodoItem[];
   setTitle: (title: string) => void;
-  setTask: (task: string) => void;
-  setNotes: (notes: string) => void;
   setTodoList: (todoList: TodoItem[]) => void;
 }) {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -41,9 +33,13 @@ export default function useSaveDraft({
         if (storeDraft) {
           const draft = JSON.parse(storeDraft);
           setTitle(draft.title || "");
-          setTask(draft.task || "");
-          setNotes(draft.notes || "");
-          setTodoList(draft.todoList || []);
+          const todoList: TodoItem[] = draft.todoList || [];
+          setTodoList(
+            todoList.map((item) => ({
+              ...item,
+              draftVideos: (item.draftVideos ?? []).filter((v) => !v.isCompressing),
+            })),
+          );
         }
       } catch (error) {
         handleError(error, {
@@ -56,7 +52,7 @@ export default function useSaveDraft({
       }
     };
     loadDraft();
-  }, [setIsLoaded, setTitle, setTask, setNotes, setTodoList]);
+  }, [setIsLoaded, setTitle, setTodoList]);
 
   const saveTodoDraft = useDebouncedCallback(
     async () => {
@@ -67,9 +63,10 @@ export default function useSaveDraft({
       } else {
         const draft = {
           title,
-          task,
-          notes,
-          todoList: todoList,
+          todoList: todoList.map((item) => ({
+            ...item,
+            draftVideos: (item.draftVideos ?? []).filter((v) => !v.isCompressing),
+          })),
         };
         await AsyncStorage.setItem("todo_draft", JSON.stringify(draft));
       }
@@ -80,7 +77,7 @@ export default function useSaveDraft({
 
   useEffect(() => {
     saveTodoDraft();
-  }, [title, notes, todoList, task, saveTodoDraft]);
+  }, [title, todoList, saveTodoDraft]);
 
   return {
     saveTodoDraft,

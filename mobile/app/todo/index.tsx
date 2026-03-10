@@ -65,6 +65,7 @@ export default function TodoScreen() {
     isLoadingTodoSession,
     refetchFullTodo,
     todoMediaFull,
+    refetchFullTodoMedia,
   } = useFullSessions(expandedItem, editingItem);
 
   const handleSave = (updatedItem: FeedItemUI) => {
@@ -273,6 +274,7 @@ export default function TodoScreen() {
                 onSave={(updatedItem) => {
                   updateFeedItem(updatedItem);
                   refetchFullTodo();
+                  refetchFullTodoMedia();
                   setHasUnsavedChanges(false);
                   setEditingItem(null);
                 }}

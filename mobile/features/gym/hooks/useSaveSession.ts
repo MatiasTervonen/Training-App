@@ -30,11 +30,18 @@ export default function useSaveSession({
   durationEdit,
   isEditing,
   setIsSaving,
+  setSavingProgress,
   resetSession,
   session,
   draftImages = [],
   draftRecordings = [],
   draftVideos = [],
+  deletedImageIds = [],
+  deletedImagePaths = [],
+  deletedVideoIds = [],
+  deletedVideoPaths = [],
+  deletedRecordingIds = [],
+  deletedRecordingPaths = [],
 }: {
   title: string;
   exercises: ExerciseEntry[];
@@ -42,11 +49,18 @@ export default function useSaveSession({
   durationEdit: number;
   isEditing: boolean;
   setIsSaving: (isSaving: boolean) => void;
+  setSavingProgress?: (progress: number | undefined) => void;
   resetSession: () => void;
   session: { id: string };
   draftImages?: DraftImage[];
   draftRecordings?: DraftRecording[];
   draftVideos?: DraftVideo[];
+  deletedImageIds?: string[];
+  deletedImagePaths?: string[];
+  deletedVideoIds?: string[];
+  deletedVideoPaths?: string[];
+  deletedRecordingIds?: string[];
+  deletedRecordingPaths?: string[];
 }) {
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -54,6 +68,11 @@ export default function useSaveSession({
   const confirmAction = useConfirmAction();
 
   const handleSaveSession = async () => {
+    if (draftVideos.some((v) => v.isCompressing)) {
+      Toast.show({ type: "info", text1: t("common:common.media.videoStillCompressing") });
+      return;
+    }
+
     if (title.trim() === "") {
       Toast.show({
         type: "error",
@@ -72,6 +91,7 @@ export default function useSaveSession({
     if (exercises.length === 0 && notes.trim() === "") return;
 
     setIsSaving(true);
+    setSavingProgress?.(undefined);
 
     // Get timer state only when saving, not on every render
     const { startTimestamp, isRunning, remainingMs } = useTimerStore.getState();
@@ -92,6 +112,12 @@ export default function useSaveSession({
           newImages: draftImages,
           newVideos: draftVideos,
           newRecordings: draftRecordings,
+          deletedImageIds,
+          deletedImagePaths,
+          deletedVideoIds,
+          deletedVideoPaths,
+          deletedRecordingIds,
+          deletedRecordingPaths,
         });
 
         await Promise.all([
@@ -124,6 +150,7 @@ export default function useSaveSession({
           draftImages,
           draftRecordings,
           draftVideos,
+          onProgress: (p) => setSavingProgress?.(p),
         });
 
         await Promise.all([

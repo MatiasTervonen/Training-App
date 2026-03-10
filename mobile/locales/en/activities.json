@@ -130,7 +130,7 @@
       "saveAsTemplateDesc": "Save this activity as a template for future use.",
       "templateNamePlaceholder": "Enter template name",
       "templateNameLabel": "Template name",
-      "templateNotesPlaceholder": "Enter template notes (optional)",
+      "templateNotesPlaceholder": "Enter template notes...",
       "templateNotesLabel": "Template notes",
       "cancel": "Cancel",
       "save": "Save",

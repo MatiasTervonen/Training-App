@@ -15,6 +15,7 @@ export type TodoTaskMedia = {
       uri: string;
       thumbnailUri: string;
       storage_path: string;
+      thumbnail_storage_path: string | null;
       duration_ms: number | null;
     }[];
   };
@@ -179,11 +180,12 @@ export async function getFullTodoMedia(
         ({ id, uri, storage_path }) => ({ id, uri, storage_path }),
       ),
       videos: (videosByTask.get(taskId) ?? []).map(
-        ({ id, uri, thumbnailUri, storage_path, duration_ms }) => ({
+        ({ id, uri, thumbnailUri, storage_path, thumbnail_storage_path, duration_ms }) => ({
           id,
           uri,
           thumbnailUri,
           storage_path,
+          thumbnail_storage_path,
           duration_ms,
         }),
       ),

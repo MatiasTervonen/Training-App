@@ -1,7 +1,8 @@
 import { supabase } from "@/lib/supabase";
 import { handleError } from "@/utils/handleError";
+import { uploadFileToStorage, getAccessToken } from "@/lib/upload-with-progress";
 import * as Crypto from "expo-crypto";
-import { File } from "expo-file-system/next";
+import * as FileSystem from "expo-file-system/legacy";
 
 type DraftRecording = {
   id: string;
@@ -29,12 +30,21 @@ type Props = {
   updated_at: string;
   folderId?: string | null;
   deletedRecordingIds?: string[];
+  deletedRecordingPaths?: string[];
   newRecordings?: DraftRecording[];
   deletedImageIds?: string[];
+  deletedImagePaths?: string[];
   newImages?: DraftImage[];
   deletedVideoIds?: string[];
+  deletedVideoPaths?: string[];
   newVideos?: DraftVideo[];
+  onProgress?: (progress: number | undefined) => void;
 };
+
+async function getFileSize(uri: string): Promise<number> {
+  const info = await FileSystem.getInfoAsync(uri);
+  return info.exists && "size" in info ? (info.size ?? 0) : 0;
+}
 
 export async function editNotes({
   id,
@@ -43,11 +53,15 @@ export async function editNotes({
   updated_at,
   folderId,
   deletedRecordingIds = [],
+  deletedRecordingPaths = [],
   newRecordings = [],
   deletedImageIds = [],
+  deletedImagePaths = [],
   newImages = [],
   deletedVideoIds = [],
+  deletedVideoPaths = [],
   newVideos = [],
+  onProgress,
 }: Props) {
   const {
     data: { session },
@@ -57,6 +71,8 @@ export async function editNotes({
   if (sessionError || !session || !session.user) {
     throw new Error("Unauthorized");
   }
+
+  const accessToken = await getAccessToken();
 
   const uploadedRecordings: {
     storage_path: string;
@@ -74,23 +90,44 @@ export async function editNotes({
   }[] = [];
 
   try {
+    // Calculate total bytes for progress tracking
+    const allUris = [
+      ...newRecordings.map((r) => r.uri),
+      ...newImages.map((i) => i.uri),
+      ...newVideos.flatMap((v) => [v.uri, v.thumbnailUri]),
+    ];
+    const sizes = await Promise.all(allUris.map(getFileSize));
+    const totalBytes = sizes.reduce((a, b) => a + b, 0);
+    if (totalBytes > 0) onProgress?.(0);
+    let completedBytes = 0;
+    let sizeIndex = 0;
+
+    const makeProgressHandler = (fileSize: number) => {
+      return (loaded: number) => {
+        onProgress?.((completedBytes + Math.min(loaded, fileSize)) / totalBytes);
+      };
+    };
+
+    const advanceCompleted = (fileSize: number) => {
+      completedBytes += fileSize;
+      onProgress?.(completedBytes / totalBytes);
+    };
+
     // Upload new recordings
     for (const recording of newRecordings) {
       const path = `${session.user.id}/${Crypto.randomUUID()}.m4a`;
+      const fileSize = sizes[sizeIndex++];
 
-      const file = new File(recording.uri);
-      const bytes = await file.bytes();
+      await uploadFileToStorage(
+        "notes-voice",
+        path,
+        recording.uri,
+        "audio/m4a",
+        accessToken,
+        makeProgressHandler(fileSize),
+      );
 
-      const { error: uploadError } = await supabase.storage
-        .from("notes-voice")
-        .upload(path, bytes, {
-          contentType: "audio/m4a",
-        });
-
-      if (uploadError) {
-        throw uploadError;
-      }
-
+      advanceCompleted(fileSize);
       uploadedRecordings.push({
         storage_path: path,
         duration_ms: recording.durationMs,
@@ -107,20 +144,18 @@ export async function editNotes({
             ? "image/webp"
             : "image/jpeg";
       const path = `${session.user.id}/${Crypto.randomUUID()}.${ext}`;
+      const fileSize = sizes[sizeIndex++];
 
-      const file = new File(image.uri);
-      const bytes = await file.bytes();
+      await uploadFileToStorage(
+        "notes-images",
+        path,
+        image.uri,
+        mimeType,
+        accessToken,
+        makeProgressHandler(fileSize),
+      );
 
-      const { error: uploadError } = await supabase.storage
-        .from("notes-images")
-        .upload(path, bytes, {
-          contentType: mimeType,
-        });
-
-      if (uploadError) {
-        throw uploadError;
-      }
-
+      advanceCompleted(fileSize);
       uploadedImages.push({ storage_path: path });
     }
 
@@ -128,28 +163,28 @@ export async function editNotes({
     for (const video of newVideos) {
       const videoPath = `${session.user.id}/${Crypto.randomUUID()}.mp4`;
       const thumbPath = `${session.user.id}/${Crypto.randomUUID()}-thumb.jpg`;
+      const videoSize = sizes[sizeIndex++];
+      const thumbSize = sizes[sizeIndex++];
 
-      const videoFile = new File(video.uri);
-      const videoBytes = await videoFile.bytes();
+      await uploadFileToStorage(
+        "media-videos",
+        videoPath,
+        video.uri,
+        "video/mp4",
+        accessToken,
+        makeProgressHandler(videoSize),
+      );
+      advanceCompleted(videoSize);
 
-      const { error: videoUploadError } = await supabase.storage
-        .from("media-videos")
-        .upload(videoPath, videoBytes, { contentType: "video/mp4" });
-
-      if (videoUploadError) {
-        throw videoUploadError;
-      }
-
-      const thumbFile = new File(video.thumbnailUri);
-      const thumbBytes = await thumbFile.bytes();
-
-      const { error: thumbUploadError } = await supabase.storage
-        .from("media-videos")
-        .upload(thumbPath, thumbBytes, { contentType: "image/jpeg" });
-
-      if (thumbUploadError) {
-        throw thumbUploadError;
-      }
+      await uploadFileToStorage(
+        "media-videos",
+        thumbPath,
+        video.thumbnailUri,
+        "image/jpeg",
+        accessToken,
+        makeProgressHandler(thumbSize),
+      );
+      advanceCompleted(thumbSize);
 
       uploadedVideos.push({
         storage_path: videoPath,
@@ -157,6 +192,9 @@ export async function editNotes({
         duration_ms: video.durationMs,
       });
     }
+
+    // Switch to spinner for the DB save phase
+    onProgress?.(undefined);
 
     const { data, error } = await supabase.rpc("notes_edit_note", {
       p_id: id,
@@ -174,6 +212,17 @@ export async function editNotes({
 
     if (error) {
       throw error;
+    }
+
+    // Clean up storage files for deleted media (fire-and-forget)
+    if (deletedRecordingPaths.length > 0) {
+      supabase.storage.from("notes-voice").remove(deletedRecordingPaths);
+    }
+    if (deletedImagePaths.length > 0) {
+      supabase.storage.from("notes-images").remove(deletedImagePaths);
+    }
+    if (deletedVideoPaths.length > 0) {
+      supabase.storage.from("media-videos").remove(deletedVideoPaths);
     }
 
     return data;

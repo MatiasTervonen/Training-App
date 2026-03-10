@@ -54,7 +54,7 @@ type DraftImage = {
 
 type GymFormData = Pick<
   FullGymSession,
-  "id" | "title" | "notes" | "duration" | "gym_session_exercises"
+  "id" | "title" | "notes" | "duration" | "gym_session_exercises" | "sessionImages" | "sessionVideos" | "sessionVoiceRecordings"
 >;
 
 export default function GymForm({ initialData }: { initialData: GymFormData }) {
@@ -62,7 +62,7 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
   const session = initialData;
   const now = formatDateShort(new Date());
 
-  const { t } = useTranslation(["gym", "timer"]);
+  const { t } = useTranslation(["gym", "timer", "common"]);
   const [title, setTitle] = useState(
     session.title || `${t("gym.title")} - ${now}`,
   );
@@ -97,9 +97,22 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
   const [durationEdit, setDurationEdit] = useState(session.duration);
   const router = useRouter();
   const [isSaving, setIsSaving] = useState(false);
+  const [savingProgress, setSavingProgress] = useState<number | undefined>(undefined);
   const [draftImages, setDraftImages] = useState<DraftImage[]>([]);
   const [draftRecordings, setDraftRecordings] = useState<DraftRecording[]>([]);
   const [draftVideos, setDraftVideos] = useState<DraftVideo[]>([]);
+
+  // Existing media state (for editing)
+  const [existingImages, setExistingImages] = useState(session.sessionImages ?? []);
+  const [existingVideos, setExistingVideos] = useState(session.sessionVideos ?? []);
+  const [existingRecordings, setExistingRecordings] = useState(session.sessionVoiceRecordings ?? []);
+  const [deletedImageIds, setDeletedImageIds] = useState<string[]>([]);
+  const [deletedImagePaths, setDeletedImagePaths] = useState<string[]>([]);
+  const [deletedVideoIds, setDeletedVideoIds] = useState<string[]>([]);
+  const [deletedVideoPaths, setDeletedVideoPaths] = useState<string[]>([]);
+  const [deletedRecordingIds, setDeletedRecordingIds] = useState<string[]>([]);
+  const [deletedRecordingPaths, setDeletedRecordingPaths] = useState<string[]>([]);
+
   const [showNotesModal, setShowNotesModal] = useState(false);
   const [exerciseType, setExerciseType] = useState("Normal");
   const [supersetExercise, setSupersetExercise] = useState<ExerciseEntry[]>([]);
@@ -126,10 +139,16 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
     notes,
     title,
     isEditing,
+    draftRecordings,
+    draftImages,
+    draftVideos,
     setTitle,
     setExercises,
     setNotes,
     setExerciseInputs,
+    setDraftRecordings,
+    setDraftImages,
+    setDraftVideos,
   });
 
   // Use selectors to avoid re-rendering on uiTick changes
@@ -233,11 +252,18 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
     durationEdit,
     isEditing,
     setIsSaving,
+    setSavingProgress,
     resetSession,
     session,
     draftImages,
     draftRecordings,
     draftVideos,
+    deletedImageIds,
+    deletedImagePaths,
+    deletedVideoIds,
+    deletedVideoPaths,
+    deletedRecordingIds,
+    deletedRecordingPaths,
   });
 
   // Keep a ref to the latest activeSession for use inside effects
@@ -305,9 +331,14 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
                 <NotebookPen size={18} color="#f3f4f6" />
                 <AppText>
                   {t("gym.gymForm.notesButton")}
-                  {draftRecordings.length + draftImages.length + draftVideos.length > 0
-                    ? ` (${draftRecordings.length + draftImages.length + draftVideos.length})`
-                    : ""}
+                  {(() => {
+                    const totalMedia =
+                      draftRecordings.length + draftImages.length + draftVideos.length +
+                      existingImages.length +
+                      existingVideos.length +
+                      existingRecordings.length;
+                    return totalMedia > 0 ? ` (${totalMedia})` : "";
+                  })()}
                 </AppText>
               </AnimatedButton>
             </View>
@@ -532,11 +563,41 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
         setDraftImages={setDraftImages}
         draftVideos={draftVideos}
         setDraftVideos={setDraftVideos}
+        existingImages={existingImages}
+        existingVideos={existingVideos}
+        existingRecordings={existingRecordings}
+        onDeleteExistingImage={(id) => {
+          const image = existingImages.find((img) => img.id === id);
+          if (image) {
+            setDeletedImagePaths((prev) => [...prev, image.storage_path]);
+          }
+          setDeletedImageIds((prev) => [...prev, id]);
+          setExistingImages((prev) => prev.filter((img) => img.id !== id));
+        }}
+        onDeleteExistingVideo={(id) => {
+          const video = existingVideos.find((v) => v.id === id);
+          if (video) {
+            const paths = [video.storage_path];
+            if (video.thumbnail_storage_path) paths.push(video.thumbnail_storage_path);
+            setDeletedVideoPaths((prev) => [...prev, ...paths]);
+          }
+          setDeletedVideoIds((prev) => [...prev, id]);
+          setExistingVideos((prev) => prev.filter((v) => v.id !== id));
+        }}
+        onDeleteExistingRecording={(id) => {
+          const recording = existingRecordings.find((r) => r.id === id);
+          if (recording) {
+            setDeletedRecordingPaths((prev) => [...prev, recording.storage_path]);
+          }
+          setDeletedRecordingIds((prev) => [...prev, id]);
+          setExistingRecordings((prev) => prev.filter((r) => r.id !== id));
+        }}
       />
 
       <FullScreenLoader
         visible={isSaving}
-        message={t("gym.gymForm.fullScreenLoaderLabel")}
+        message={savingProgress !== undefined ? t("common:common.media.uploading") : t("gym.gymForm.fullScreenLoaderLabel")}
+        progress={savingProgress}
       />
     </>
   );

@@ -1,8 +1,9 @@
 import { supabase } from "@/lib/supabase";
 import { handleError } from "@/utils/handleError";
+import { uploadFileToStorage, getAccessToken } from "@/lib/upload-with-progress";
 import { DraftRecording, DraftImage, DraftVideo } from "@/types/session";
 import * as Crypto from "expo-crypto";
-import { File } from "expo-file-system/next";
+import * as FileSystem from "expo-file-system/legacy";
 
 type TodoTask = {
   task: string;
@@ -15,11 +16,18 @@ type TodoTask = {
 type saveTodoToDBProps = {
   title: string;
   todoList: TodoTask[];
+  onProgress?: (progress: number | undefined) => void;
 };
+
+async function getFileSize(uri: string): Promise<number> {
+  const info = await FileSystem.getInfoAsync(uri);
+  return info.exists && "size" in info ? (info.size ?? 0) : 0;
+}
 
 export async function saveTodoToDB({
   title,
   todoList,
+  onProgress,
 }: saveTodoToDBProps) {
   const {
     data: { session },
@@ -30,11 +38,38 @@ export async function saveTodoToDB({
     throw new Error("Unauthorized");
   }
 
+  const accessToken = await getAccessToken();
+
   const uploadedVoicePaths: string[] = [];
   const uploadedImagePaths: string[] = [];
   const uploadedVideoPaths: string[] = [];
 
   try {
+    // Calculate total bytes across all tasks for progress tracking
+    const allUris: string[] = [];
+    for (const task of todoList) {
+      allUris.push(...(task.draftRecordings ?? []).map((r) => r.uri));
+      allUris.push(...(task.draftImages ?? []).map((i) => i.uri));
+      for (const v of task.draftVideos ?? []) {
+        allUris.push(v.uri, v.thumbnailUri);
+      }
+    }
+    const sizes = await Promise.all(allUris.map(getFileSize));
+    const totalBytes = sizes.reduce((a, b) => a + b, 0);
+    if (totalBytes > 0) onProgress?.(0);
+
+    // Track per-file progress for parallel uploads
+    const fileProgress = new Map<string, number>();
+    let fileCounter = 0;
+    const updateProgress = () => {
+      const loaded = Array.from(fileProgress.values()).reduce((a, b) => a + b, 0);
+      onProgress?.(totalBytes > 0 ? loaded / totalBytes : 0);
+    };
+    const makeHandler = (key: string) => (loaded: number) => {
+      fileProgress.set(key, loaded);
+      updateProgress();
+    };
+
     // Build task jsonb with uploaded media storage paths
     const tasksWithMedia = [];
 
@@ -45,14 +80,10 @@ export async function saveTodoToDB({
         Promise.all(
           (task.draftRecordings ?? []).map(async (recording) => {
             const path = `${session.user.id}/${Crypto.randomUUID()}.m4a`;
-            const file = new File(recording.uri);
-            const bytes = await file.bytes();
+            const key = `f-${fileCounter++}`;
+            fileProgress.set(key, 0);
 
-            const { error: uploadError } = await supabase.storage
-              .from("notes-voice")
-              .upload(path, bytes, { contentType: "audio/m4a" });
-
-            if (uploadError) throw uploadError;
+            await uploadFileToStorage("notes-voice", path, recording.uri, "audio/m4a", accessToken, makeHandler(key));
 
             uploadedVoicePaths.push(path);
             return { storage_path: path, duration_ms: recording.durationMs };
@@ -69,15 +100,10 @@ export async function saveTodoToDB({
                   ? "image/webp"
                   : "image/jpeg";
             const path = `${session.user.id}/${Crypto.randomUUID()}.${ext}`;
+            const key = `f-${fileCounter++}`;
+            fileProgress.set(key, 0);
 
-            const file = new File(image.uri);
-            const bytes = await file.bytes();
-
-            const { error: uploadError } = await supabase.storage
-              .from("notes-images")
-              .upload(path, bytes, { contentType: mimeType });
-
-            if (uploadError) throw uploadError;
+            await uploadFileToStorage("notes-images", path, image.uri, mimeType, accessToken, makeHandler(key));
 
             uploadedImagePaths.push(path);
             return { storage_path: path };
@@ -89,25 +115,15 @@ export async function saveTodoToDB({
             const videoPath = `${session.user.id}/${Crypto.randomUUID()}.mp4`;
             const thumbPath = `${session.user.id}/${Crypto.randomUUID()}-thumb.jpg`;
 
-            const videoFile = new File(video.uri);
-            const thumbFile = new File(video.thumbnailUri);
+            const videoKey = `f-${fileCounter++}`;
+            const thumbKey = `f-${fileCounter++}`;
+            fileProgress.set(videoKey, 0);
+            fileProgress.set(thumbKey, 0);
 
-            const [videoBytes, thumbBytes] = await Promise.all([
-              videoFile.bytes(),
-              thumbFile.bytes(),
+            await Promise.all([
+              uploadFileToStorage("media-videos", videoPath, video.uri, "video/mp4", accessToken, makeHandler(videoKey)),
+              uploadFileToStorage("media-videos", thumbPath, video.thumbnailUri, "image/jpeg", accessToken, makeHandler(thumbKey)),
             ]);
-
-            const [videoResult, thumbResult] = await Promise.all([
-              supabase.storage
-                .from("media-videos")
-                .upload(videoPath, videoBytes, { contentType: "video/mp4" }),
-              supabase.storage
-                .from("media-videos")
-                .upload(thumbPath, thumbBytes, { contentType: "image/jpeg" }),
-            ]);
-
-            if (videoResult.error) throw videoResult.error;
-            if (thumbResult.error) throw thumbResult.error;
 
             uploadedVideoPaths.push(videoPath, thumbPath);
             return {
@@ -127,6 +143,8 @@ export async function saveTodoToDB({
         videos: videos.length > 0 ? videos : undefined,
       });
     }
+
+    onProgress?.(undefined);
 
     const { error } = await supabase.rpc("todo_save_todo", {
       p_title: title,

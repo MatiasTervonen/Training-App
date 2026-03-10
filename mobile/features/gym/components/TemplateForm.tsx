@@ -399,7 +399,8 @@ export default function TemplateForm() {
                   setIsExerciseModalOpen(true);
                 }}
                 label={t("gym.templateForm.addExercise")}
-                className="btn-base flex-row justify-center items-center gap-3 px-10"
+                className="btn-base flex-row justify-center items-center"
+                textClassName="px-4"
               >
                 <Plus size={20} color="#f3f4f6" />
               </AnimatedButton>

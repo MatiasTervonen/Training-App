@@ -14,7 +14,7 @@ import { DraftRecording, DraftVideo } from "@/types/session";
 import FullScreenModal from "@/components/FullScreenModal";
 import PageContainer from "@/components/PageContainer";
 
-type DraftImage = { id: string; uri: string };
+type DraftImage = { id: string; uri: string; isLoading?: boolean };
 
 type NotesModalProps = {
   isOpen: boolean;
@@ -110,6 +110,7 @@ export default function NotesModal({
                 <DraftImageItem
                   key={image.id}
                   uri={image.uri}
+                  isLoading={image.isLoading}
                   onDelete={() =>
                     setDraftImages((prev) => prev.filter((_, i) => i !== index))
                   }
@@ -126,6 +127,7 @@ export default function NotesModal({
                   uri={video.uri}
                   thumbnailUri={video.thumbnailUri}
                   durationMs={video.durationMs}
+                  isCompressing={video.isCompressing}
                   onDelete={() =>
                     setDraftVideos((prev) => prev.filter((_, i) => i !== index))
                   }
@@ -142,15 +144,33 @@ export default function NotesModal({
                   { id: nanoid(), uri, createdAt: Date.now(), durationMs: duration },
                 ]);
               }}
-              onImageSelected={(uri) =>
-                setDraftImages((prev) => [...prev, { id: nanoid(), uri }])
+              onImageSelected={(image) =>
+                setDraftImages((prev) => {
+                  if (image.isLoading) {
+                    return [...prev, image];
+                  }
+                  if (!image.uri) {
+                    return prev.filter((img) => img.id !== image.id);
+                  }
+                  return prev.map((img) =>
+                    img.id === image.id ? image : img,
+                  );
+                })
               }
-              onVideoSelected={(uri, thumbnailUri, durationMs) =>
-                setDraftVideos((prev) => [
-                  ...prev,
-                  { id: nanoid(), uri, thumbnailUri, durationMs },
-                ])
+              onVideoSelected={(video) =>
+                setDraftVideos((prev) => {
+                  if (prev.some((v) => v.id === video.id)) {
+                    if (!video.uri) {
+                      return prev.filter((v) => v.id !== video.id);
+                    }
+                    return prev.map((v) => v.id === video.id ? video : v);
+                  }
+                  return video.isCompressing ? [...prev, video] : prev;
+                })
               }
+              currentImageCount={draftImages.length}
+              currentVideoCount={draftVideos.length}
+              currentVoiceCount={draftRecordings.length}
               folders={[]}
               selectedFolderId={null}
               onFolderSelect={() => {}}

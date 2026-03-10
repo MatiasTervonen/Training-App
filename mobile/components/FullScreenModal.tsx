@@ -33,7 +33,7 @@ export default function FullScreenModal({
   const insets = useSafeAreaInsets();
 
   const fullScreenModalConfig = useFullScreenModalConfig(
-    (state) => state.fullScreenModalConfig
+    (state) => state.fullScreenModalConfig,
   );
   const swipeEnabled = fullScreenModalConfig?.swipeEnabled ?? true;
 
@@ -85,7 +85,7 @@ export default function FullScreenModal({
             { duration: 300 },
             () => {
               runOnJS(onClose)();
-            }
+            },
           );
         }
       } else {
@@ -109,49 +109,51 @@ export default function FullScreenModal({
       <GestureDetector gesture={pan}>
         <View className="absolute inset-0 bg-black/50 flex-1 z-50 justify-end items-center">
           <Animated.View
-            className="bg-slate-800 rounded-t-2xl h-[95%] w-full z-50 max-w-3xl"
+            className="rounded-t-2xl h-[95%] w-full z-50 max-w-3xl overflow-hidden"
             style={[animatedStyle]}
           >
-            <Pressable
-              onPress={handleClose}
-              className="absolute top-4 right-4 z-[999]"
-              hitSlop={10}
-            >
-              <CircleX size={30} color="#f3f4f6" />
-            </Pressable>
-            <View
-              className="flex-1 max-w-xl px-2 w-full"
-              style={{ paddingBottom: insets.bottom }}
-            >
-              {children}
-            </View>
+            <View className="flex-1 bg-[#1d293d]">
+              <Pressable
+                onPress={handleClose}
+                className="absolute top-4 right-4 z-[999]"
+                hitSlop={10}
+              >
+                <CircleX size={30} color="#f3f4f6" />
+              </Pressable>
+              <View
+                className="flex-1 max-w-xl px-2 w-full"
+                style={{ paddingBottom: insets.bottom }}
+              >
+                {children}
+              </View>
 
-            {showConfirm && (
-              <View className="absolute inset-0 bg-black/70 items-center justify-center z-50 rounded-t-2xl">
-                <View className="bg-slate-800 border border-slate-600 rounded-xl p-6 mx-4 w-full max-w-sm">
-                  <AppText className="text-lg text-center mb-6">
-                    {t("common.unsavedChangesDiscard")}
-                  </AppText>
-                  <View className="flex-row gap-3">
-                    <AnimatedButton
-                      onPress={() => setShowConfirm(false)}
-                      className="flex-1 btn-base py-3"
-                      label={t("common.keepEditing")}
-                      textClassName="text-center text-gray-100"
-                    />
-                    <AnimatedButton
-                      onPress={() => {
-                        setShowConfirm(false);
-                        onClose();
-                      }}
-                      className="flex-1 btn-danger py-3"
-                      label={t("common.discard")}
-                      textClassName="text-center text-gray-100"
-                    />
+              {showConfirm && (
+                <View className="absolute inset-0 bg-black/70 items-center justify-center z-50 rounded-t-2xl">
+                  <View className="bg-slate-800 border border-slate-600 rounded-xl p-6 mx-4 w-full max-w-sm">
+                    <AppText className="text-lg text-center mb-6">
+                      {t("common.unsavedChangesDiscard")}
+                    </AppText>
+                    <View className="flex-row gap-3">
+                      <AnimatedButton
+                        onPress={() => setShowConfirm(false)}
+                        className="flex-1 btn-base py-3"
+                        label={t("common.keepEditing")}
+                        textClassName="text-center text-gray-100"
+                      />
+                      <AnimatedButton
+                        onPress={() => {
+                          setShowConfirm(false);
+                          onClose();
+                        }}
+                        className="flex-1 btn-danger py-3"
+                        label={t("common.discard")}
+                        textClassName="text-center text-gray-100"
+                      />
+                    </View>
                   </View>
                 </View>
-              </View>
-            )}
+              )}
+            </View>
           </Animated.View>
         </View>
       </GestureDetector>

@@ -1,7 +1,8 @@
 import { supabase } from "@/lib/supabase";
 import { handleError } from "@/utils/handleError";
+import { uploadFileToStorage, getAccessToken } from "@/lib/upload-with-progress";
 import * as Crypto from "expo-crypto";
-import { File } from "expo-file-system/next";
+import * as FileSystem from "expo-file-system/legacy";
 
 type DraftImage = {
   id: string;
@@ -27,7 +28,13 @@ type props = {
   }[];
   draftImages?: DraftImage[];
   draftVideos?: DraftVideo[];
+  onProgress?: (progress: number | undefined) => void;
 };
+
+async function getFileSize(uri: string): Promise<number> {
+  const info = await FileSystem.getInfoAsync(uri);
+  return info.exists && "size" in info ? (info.size ?? 0) : 0;
+}
 
 export async function saveNote({
   title,
@@ -36,6 +43,7 @@ export async function saveNote({
   draftRecordings = [],
   draftImages = [],
   draftVideos = [],
+  onProgress,
 }: props) {
   const {
     data: { session },
@@ -45,6 +53,8 @@ export async function saveNote({
   if (sessionError || !session || !session.user) {
     throw new Error("Unauthorized");
   }
+
+  const accessToken = await getAccessToken();
 
   const uploadedRecordings: {
     storage_path: string;
@@ -62,22 +72,43 @@ export async function saveNote({
   }[] = [];
 
   try {
+    // Calculate total bytes for progress tracking
+    const allUris = [
+      ...draftRecordings.map((r) => r.uri),
+      ...draftImages.map((i) => i.uri),
+      ...draftVideos.flatMap((v) => [v.uri, v.thumbnailUri]),
+    ];
+    const sizes = await Promise.all(allUris.map(getFileSize));
+    const totalBytes = sizes.reduce((a, b) => a + b, 0);
+    if (totalBytes > 0) onProgress?.(0);
+    let completedBytes = 0;
+    let sizeIndex = 0;
+
+    const makeProgressHandler = (fileSize: number) => {
+      return (loaded: number) => {
+        onProgress?.((completedBytes + Math.min(loaded, fileSize)) / totalBytes);
+      };
+    };
+
+    const advanceCompleted = (fileSize: number) => {
+      completedBytes += fileSize;
+      onProgress?.(completedBytes / totalBytes);
+    };
+
     for (const recording of draftRecordings) {
       const path = `${session.user.id}/${Crypto.randomUUID()}.m4a`;
+      const fileSize = sizes[sizeIndex++];
 
-      const file = new File(recording.uri);
-      const bytes = await file.bytes();
+      await uploadFileToStorage(
+        "notes-voice",
+        path,
+        recording.uri,
+        "audio/m4a",
+        accessToken,
+        makeProgressHandler(fileSize),
+      );
 
-      const { error: uploadError } = await supabase.storage
-        .from("notes-voice")
-        .upload(path, bytes, {
-          contentType: "audio/m4a",
-        });
-
-      if (uploadError) {
-        throw uploadError;
-      }
-
+      advanceCompleted(fileSize);
       uploadedRecordings.push({
         storage_path: path,
         duration_ms: recording.durationMs,
@@ -93,48 +124,46 @@ export async function saveNote({
             ? "image/webp"
             : "image/jpeg";
       const path = `${session.user.id}/${Crypto.randomUUID()}.${ext}`;
+      const fileSize = sizes[sizeIndex++];
 
-      const file = new File(image.uri);
-      const bytes = await file.bytes();
+      await uploadFileToStorage(
+        "notes-images",
+        path,
+        image.uri,
+        mimeType,
+        accessToken,
+        makeProgressHandler(fileSize),
+      );
 
-      const { error: uploadError } = await supabase.storage
-        .from("notes-images")
-        .upload(path, bytes, {
-          contentType: mimeType,
-        });
-
-      if (uploadError) {
-        throw uploadError;
-      }
-
+      advanceCompleted(fileSize);
       uploadedImages.push({ storage_path: path });
     }
 
     for (const video of draftVideos) {
       const videoPath = `${session.user.id}/${Crypto.randomUUID()}.mp4`;
       const thumbPath = `${session.user.id}/${Crypto.randomUUID()}-thumb.jpg`;
+      const videoSize = sizes[sizeIndex++];
+      const thumbSize = sizes[sizeIndex++];
 
-      const videoFile = new File(video.uri);
-      const videoBytes = await videoFile.bytes();
+      await uploadFileToStorage(
+        "media-videos",
+        videoPath,
+        video.uri,
+        "video/mp4",
+        accessToken,
+        makeProgressHandler(videoSize),
+      );
+      advanceCompleted(videoSize);
 
-      const { error: videoUploadError } = await supabase.storage
-        .from("media-videos")
-        .upload(videoPath, videoBytes, { contentType: "video/mp4" });
-
-      if (videoUploadError) {
-        throw videoUploadError;
-      }
-
-      const thumbFile = new File(video.thumbnailUri);
-      const thumbBytes = await thumbFile.bytes();
-
-      const { error: thumbUploadError } = await supabase.storage
-        .from("media-videos")
-        .upload(thumbPath, thumbBytes, { contentType: "image/jpeg" });
-
-      if (thumbUploadError) {
-        throw thumbUploadError;
-      }
+      await uploadFileToStorage(
+        "media-videos",
+        thumbPath,
+        video.thumbnailUri,
+        "image/jpeg",
+        accessToken,
+        makeProgressHandler(thumbSize),
+      );
+      advanceCompleted(thumbSize);
 
       uploadedVideos.push({
         storage_path: videoPath,
@@ -142,6 +171,9 @@ export async function saveNote({
         duration_ms: video.durationMs,
       });
     }
+
+    // Switch to spinner for the DB save phase
+    onProgress?.(undefined);
 
     const { error } = await supabase.rpc("notes_save_note", {
       p_title: title,

@@ -29,13 +29,15 @@ type DraftRecording = {
 type DraftImage = {
   id: string;
   uri: string;
+  isLoading?: boolean;
 };
 
 export default function SettingsScreen() {
-  const { t } = useTranslation("weight");
+  const { t } = useTranslation(["weight", "common"]);
   const now = formatDateShort(new Date());
   const [weight, setWeight] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+  const [savingProgress, setSavingProgress] = useState<number | undefined>(undefined);
   const [notes, setNotes] = useState("");
   const [title, setTitle] = useState(`${t("weight.defaultTitle")} - ${now}`);
   const [draftImages, setDraftImages] = useState<DraftImage[]>([]);
@@ -47,9 +49,15 @@ export default function SettingsScreen() {
     title,
     notes,
     weight,
+    draftRecordings,
+    draftImages,
+    draftVideos,
     setTitle,
     setNotes,
     setWeight,
+    setDraftRecordings,
+    setDraftImages,
+    setDraftVideos,
   });
 
   const resetWeight = async () => {
@@ -68,6 +76,7 @@ export default function SettingsScreen() {
     notes,
     weight,
     setIsSaving,
+    setSavingProgress,
     resetWeight,
     draftImages,
     draftVideos,
@@ -123,6 +132,7 @@ export default function SettingsScreen() {
                     <DraftImageItem
                       key={image.id}
                       uri={image.uri}
+                      isLoading={image.isLoading}
                       onDelete={() =>
                         setDraftImages((prev) => prev.filter((_, i) => i !== index))
                       }
@@ -138,6 +148,7 @@ export default function SettingsScreen() {
                       uri={video.uri}
                       thumbnailUri={video.thumbnailUri}
                       durationMs={video.durationMs}
+                      isCompressing={video.isCompressing}
                       onDelete={() =>
                         setDraftVideos((prev) => prev.filter((_, i) => i !== index))
                       }
@@ -152,15 +163,33 @@ export default function SettingsScreen() {
                     { id: nanoid(), uri, createdAt: Date.now(), durationMs },
                   ])
                 }
-                onImageSelected={(uri) =>
-                  setDraftImages((prev) => [...prev, { id: nanoid(), uri }])
+                onImageSelected={(image) =>
+                  setDraftImages((prev) => {
+                    if (image.isLoading) {
+                      return [...prev, image];
+                    }
+                    if (!image.uri) {
+                      return prev.filter((img) => img.id !== image.id);
+                    }
+                    return prev.map((img) =>
+                      img.id === image.id ? image : img,
+                    );
+                  })
                 }
-                onVideoSelected={(uri, thumbnailUri, durationMs) =>
-                  setDraftVideos((prev) => [
-                    ...prev,
-                    { id: nanoid(), uri, thumbnailUri, durationMs },
-                  ])
+                onVideoSelected={(video) =>
+                  setDraftVideos((prev) => {
+                    if (prev.some((v) => v.id === video.id)) {
+                      if (!video.uri) {
+                        return prev.filter((v) => v.id !== video.id);
+                      }
+                      return prev.map((v) => v.id === video.id ? video : v);
+                    }
+                    return video.isCompressing ? [...prev, video] : prev;
+                  })
                 }
+                currentImageCount={draftImages.length}
+                currentVideoCount={draftVideos.length}
+                currentVoiceCount={draftRecordings.length}
                 folders={[]}
                 selectedFolderId={null}
                 onFolderSelect={() => {}}
@@ -179,7 +208,11 @@ export default function SettingsScreen() {
           </PageContainer>
         </ScrollView>
       </TouchableWithoutFeedback>
-      <FullScreenLoader visible={isSaving} message={t("weight.savingWeight")} />
+      <FullScreenLoader
+        visible={isSaving}
+        message={savingProgress !== undefined ? t("common:common.media.uploading") : t("weight.savingWeight")}
+        progress={savingProgress}
+      />
     </>
   );
 }

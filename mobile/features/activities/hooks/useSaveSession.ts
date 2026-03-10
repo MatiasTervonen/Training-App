@@ -57,6 +57,7 @@ export default function useSaveActivitySession({
   draftImages = [],
   draftVideos = [],
   setIsSaving,
+  setSavingProgress,
   resetSession,
   activityName = null,
 }: {
@@ -67,6 +68,7 @@ export default function useSaveActivitySession({
   draftImages?: DraftImage[];
   draftVideos?: DraftVideo[];
   setIsSaving: (isSaving: boolean) => void;
+  setSavingProgress?: (progress: number | undefined) => void;
   resetSession: () => void;
   activityName?: string | null;
 }) {
@@ -77,6 +79,11 @@ export default function useSaveActivitySession({
   const confirmAction = useConfirmAction();
 
   const handleSaveSession = async () => {
+    if (draftVideos.some((v) => v.isCompressing)) {
+      Toast.show({ type: "info", text1: t("common:common.media.videoStillCompressing") });
+      return;
+    }
+
     // Get timer state only when saving, not on every render
     const { startTimestamp, isRunning, remainingMs, activeSession } =
       useTimerStore.getState();
@@ -93,15 +100,14 @@ export default function useSaveActivitySession({
     const allowGPS = activeSession?.gpsAllowed ?? false;
     const stepsAllowed = activeSession?.stepsAllowed ?? false;
 
-    // TODO: revert – temporarily disabled for dev testing
-    // if (allowGPS && meters <= 50) {
-    //   Toast.show({
-    //     type: "error",
-    //     text1: t("common:common.error"),
-    //     text2: t("activities.saveSession.minDistanceError"),
-    //   });
-    //   return;
-    // }
+    if (allowGPS && meters <= 50) {
+      Toast.show({
+        type: "error",
+        text1: t("common:common.error"),
+        text2: t("activities.saveSession.minDistanceError"),
+      });
+      return;
+    }
 
     const confirmSave = await confirmAction({
       title: t("activities.saveSession.confirmTitle"),
@@ -112,6 +118,7 @@ export default function useSaveActivitySession({
 
     try {
       setIsSaving(true);
+      setSavingProgress?.(undefined);
 
       // stop the GPS tracking
       if (allowGPS) {
@@ -158,6 +165,7 @@ export default function useSaveActivitySession({
         draftImages,
         draftVideos,
         templateId,
+        onProgress: (p) => setSavingProgress?.(p),
       });
 
       // Fetch the real DB-computed stats for the share card
@@ -167,20 +175,7 @@ export default function useSaveActivitySession({
       ]);
 
       const stats = fullSession.stats;
-
-      // TODO: revert – mock route for dev testing
-      const mockRoute = {
-        type: "LineString" as const,
-        coordinates: [
-          [24.9354, 60.1695], [24.9360, 60.1700], [24.9370, 60.1710],
-          [24.9385, 60.1718], [24.9400, 60.1725], [24.9420, 60.1730],
-          [24.9440, 60.1728], [24.9455, 60.1720], [24.9465, 60.1710],
-          [24.9470, 60.1698], [24.9460, 60.1688], [24.9445, 60.1680],
-          [24.9425, 60.1678], [24.9405, 60.1682], [24.9390, 60.1690],
-          [24.9375, 60.1695], [24.9354, 60.1695],
-        ],
-      };
-      const hasRoute = true;
+      const hasRoute = fullSession.route !== null;
 
       useActivitySessionSummaryStore.getState().setSummary({
         title,
@@ -189,13 +184,13 @@ export default function useSaveActivitySession({
         activityName,
         activitySlug,
         hasRoute,
-        route: mockRoute,
-        distance: 2500,
-        movingTime: durationInSeconds > 60 ? durationInSeconds - 60 : durationInSeconds,
-        averagePace: 320,
-        averageSpeed: 11.2,
-        steps: 3200,
-        calories: 280,
+        route: fullSession.route,
+        distance: stats?.distance_meters ?? null,
+        movingTime: stats?.moving_time_seconds ?? null,
+        averagePace: stats?.avg_pace ?? null,
+        averageSpeed: stats?.avg_speed ?? null,
+        steps: stats?.steps ?? null,
+        calories: stats?.calories ?? null,
       });
 
       resetSession();

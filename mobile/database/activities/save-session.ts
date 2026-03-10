@@ -1,8 +1,9 @@
 import { supabase } from "@/lib/supabase";
 import { handleError } from "@/utils/handleError";
+import { uploadFileToStorage, getAccessToken } from "@/lib/upload-with-progress";
 import { DraftRecording, DraftVideo } from "@/types/session";
 import * as Crypto from "expo-crypto";
-import { File } from "expo-file-system/next";
+import * as FileSystem from "expo-file-system/legacy";
 
 type DraftImage = {
   id: string;
@@ -31,7 +32,13 @@ type props = {
   draftImages?: DraftImage[];
   draftVideos?: DraftVideo[];
   templateId?: string | null;
+  onProgress?: (progress: number | undefined) => void;
 };
+
+async function getFileSize(uri: string): Promise<number> {
+  const info = await FileSystem.getInfoAsync(uri);
+  return info.exists && "size" in info ? (info.size ?? 0) : 0;
+}
 
 export async function saveActivitySession({
   title,
@@ -46,6 +53,7 @@ export async function saveActivitySession({
   draftImages = [],
   draftVideos = [],
   templateId = null,
+  onProgress,
 }: props) {
   const {
     data: { session },
@@ -56,6 +64,8 @@ export async function saveActivitySession({
     throw new Error("Unauthorized");
   }
 
+  const accessToken = await getAccessToken();
+
   const uploadedRecordings: {
     storage_path: string;
     duration_ms?: number;
@@ -65,51 +75,74 @@ export async function saveActivitySession({
   const uploadedVideos: { storage_path: string; thumbnail_storage_path: string; duration_ms: number }[] = [];
 
   try {
+    // Calculate total bytes for progress tracking
+    const allUris = [
+      ...draftRecordings.map((r) => r.uri),
+      ...draftImages.map((i) => i.uri),
+      ...draftVideos.flatMap((v) => [v.uri, v.thumbnailUri]),
+    ];
+    const sizes = await Promise.all(allUris.map(getFileSize));
+    const totalBytes = sizes.reduce((a, b) => a + b, 0);
+    if (totalBytes > 0) onProgress?.(0);
+
+    // Track per-file progress for parallel uploads
+    const fileProgress = new Map<string, number>();
+    const updateProgress = () => {
+      const loaded = Array.from(fileProgress.values()).reduce((a, b) => a + b, 0);
+      onProgress?.(totalBytes > 0 ? loaded / totalBytes : 0);
+    };
+    const makeHandler = (key: string, fileSize: number) => (loaded: number) => {
+      fileProgress.set(key, Math.min(loaded, fileSize));
+      updateProgress();
+    };
+
     // Upload all media in parallel for speed
+    const recOffset = 0;
+    const imgOffset = draftRecordings.length;
+    const vidOffset = draftRecordings.length + draftImages.length;
+
     const [recordingResults, imageResults, videoResults] = await Promise.all([
       // Voice recordings
       Promise.all(
-        draftRecordings.map(async (recording) => {
+        draftRecordings.map(async (recording, i) => {
           const path = `${session.user.id}/${Crypto.randomUUID()}.m4a`;
-          const file = new File(recording.uri);
-          const bytes = await file.bytes();
-          const { error: uploadError } = await supabase.storage
-            .from("notes-voice")
-            .upload(path, bytes, { contentType: "audio/m4a" });
-          if (uploadError) throw uploadError;
+          const key = `rec-${i}`;
+          const fileSize = sizes[recOffset + i];
+          fileProgress.set(key, 0);
+          await uploadFileToStorage("notes-voice", path, recording.uri, "audio/m4a", accessToken, makeHandler(key, fileSize));
           return { storage_path: path, duration_ms: recording.durationMs };
         }),
       ),
       // Images
       Promise.all(
-        draftImages.map(async (image) => {
+        draftImages.map(async (image, i) => {
           const ext = image.uri.split(".").pop()?.toLowerCase() ?? "jpg";
           const mimeType = ext === "png" ? "image/png" : ext === "webp" ? "image/webp" : "image/jpeg";
           const path = `${session.user.id}/${Crypto.randomUUID()}.${ext}`;
-          const file = new File(image.uri);
-          const bytes = await file.bytes();
-          const { error: uploadError } = await supabase.storage
-            .from("notes-images")
-            .upload(path, bytes, { contentType: mimeType });
-          if (uploadError) throw uploadError;
+          const key = `img-${i}`;
+          const fileSize = sizes[imgOffset + i];
+          fileProgress.set(key, 0);
+          await uploadFileToStorage("notes-images", path, image.uri, mimeType, accessToken, makeHandler(key, fileSize));
           return { storage_path: path };
         }),
       ),
       // Videos (video + thumbnail uploaded in parallel per video)
       Promise.all(
-        draftVideos.map(async (video) => {
+        draftVideos.map(async (video, i) => {
           const videoPath = `${session.user.id}/${Crypto.randomUUID()}.mp4`;
           const thumbPath = `${session.user.id}/${Crypto.randomUUID()}-thumb.jpg`;
-          const [videoBytes, thumbBytes] = await Promise.all([
-            new File(video.uri).bytes(),
-            new File(video.thumbnailUri).bytes(),
+
+          const videoKey = `vid-${i}`;
+          const thumbKey = `thumb-${i}`;
+          const videoSize = sizes[vidOffset + i * 2];
+          const thumbSize = sizes[vidOffset + i * 2 + 1];
+          fileProgress.set(videoKey, 0);
+          fileProgress.set(thumbKey, 0);
+
+          await Promise.all([
+            uploadFileToStorage("media-videos", videoPath, video.uri, "video/mp4", accessToken, makeHandler(videoKey, videoSize)),
+            uploadFileToStorage("media-videos", thumbPath, video.thumbnailUri, "image/jpeg", accessToken, makeHandler(thumbKey, thumbSize)),
           ]);
-          const [videoUpload, thumbUpload] = await Promise.all([
-            supabase.storage.from("media-videos").upload(videoPath, videoBytes, { contentType: "video/mp4" }),
-            supabase.storage.from("media-videos").upload(thumbPath, thumbBytes, { contentType: "image/jpeg" }),
-          ]);
-          if (videoUpload.error) throw videoUpload.error;
-          if (thumbUpload.error) throw thumbUpload.error;
           return { storage_path: videoPath, thumbnail_storage_path: thumbPath, duration_ms: video.durationMs };
         }),
       ),
@@ -118,6 +151,8 @@ export async function saveActivitySession({
     uploadedRecordings.push(...recordingResults);
     uploadedImages.push(...imageResults);
     uploadedVideos.push(...videoResults);
+
+    onProgress?.(undefined);
 
     const normalizedTrack = track.map((point) => ({
       ...point,

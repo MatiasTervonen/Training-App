@@ -141,6 +141,7 @@ export default function SessionFeed({ expandReminderId }: SessionFeedProps) {
     weightSessionError,
     isLoadingWeightSession,
     todoMediaFull,
+    refetchFullTodoMedia,
   } = useFullSessions(expandedItem, editingItem);
 
   // useUpdateFeedItem hook to update feed item in cache
@@ -446,6 +447,7 @@ export default function SessionFeed({ expandReminderId }: SessionFeedProps) {
                       await Promise.all([
                         updateFeedItemToTop(updatedItem),
                         refetchFullTodo(),
+                        refetchFullTodoMedia(),
                       ]);
                       setHasUnsavedChanges(false);
                       setEditingItem(null);

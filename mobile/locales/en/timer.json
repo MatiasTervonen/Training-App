@@ -15,7 +15,7 @@
     "titleLabel": "Title...",
     "titlePlaceholder": "Timer Title",
     "notesLabel": "Notes...",
-    "notesPlaceholder": "Timer notes...(optional)",
+    "notesPlaceholder": "Timer notes...",
     "savingTimer": "Saving timer...",
     "updatingTimer": "Updating timer...",
     "loadingTimers": "Loading timers...",

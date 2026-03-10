@@ -9,6 +9,9 @@ export default function GymScreen() {
         notes: null,
         duration: 0,
         gym_session_exercises: [],
+        sessionImages: [],
+        sessionVideos: [],
+        sessionVoiceRecordings: [],
       }}
     />
   );

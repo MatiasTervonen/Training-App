@@ -32,14 +32,16 @@ type DraftRecording = {
 type DraftImage = {
   id: string;
   uri: string;
+  isLoading?: boolean;
 };
 
 export default function NotesScreen() {
-  const { t } = useTranslation("notes");
+  const { t } = useTranslation(["notes", "common"]);
   const now = formatDateShort(new Date());
   const [title, setTitle] = useState(`${t("notes.title")} - ${now}`);
   const [notes, setNotes] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+  const [savingProgress, setSavingProgress] = useState<number | undefined>(undefined);
   const [draftRecordings, setDraftRecordings] = useState<DraftRecording[]>([]);
   const [draftImages, setDraftImages] = useState<DraftImage[]>([]);
   const [draftVideos, setDraftVideos] = useState<DraftVideo[]>([]);
@@ -82,6 +84,7 @@ export default function NotesScreen() {
     draftImages,
     draftVideos,
     setIsSaving,
+    setSavingProgress,
     resetNote,
   });
 
@@ -137,6 +140,7 @@ export default function NotesScreen() {
                   <DraftImageItem
                     key={image.id}
                     uri={image.uri}
+                    isLoading={image.isLoading}
                     onPress={() => setViewerIndex(index)}
                     onDelete={async () => {
                       const confirm = await confirmAction({
@@ -161,16 +165,12 @@ export default function NotesScreen() {
                     uri={video.uri}
                     thumbnailUri={video.thumbnailUri}
                     durationMs={video.durationMs}
-                    onDelete={async () => {
-                      const confirm = await confirmAction({
-                        title: t("notes.videos.deleteVideoTitle"),
-                        message: t("notes.videos.deleteVideoMessage"),
-                      });
-                      if (!confirm) return;
+                    isCompressing={video.isCompressing}
+                    onDelete={() =>
                       setDraftVideos((prev) =>
                         prev.filter((_, i) => i !== index),
-                      );
-                    }}
+                      )
+                    }
                   />
                 ))}
               </View>
@@ -186,15 +186,33 @@ export default function NotesScreen() {
                   };
                   setDraftRecordings((prev) => [...prev, newRecording]);
                 }}
-                onImageSelected={(uri) => {
-                  setDraftImages((prev) => [...prev, { id: nanoid(), uri }]);
+                onImageSelected={(image) => {
+                  setDraftImages((prev) => {
+                    if (image.isLoading) {
+                      return [...prev, image];
+                    }
+                    if (!image.uri) {
+                      return prev.filter((img) => img.id !== image.id);
+                    }
+                    return prev.map((img) =>
+                      img.id === image.id ? image : img,
+                    );
+                  });
                 }}
-                onVideoSelected={(uri, thumbnailUri, durationMs) => {
-                  setDraftVideos((prev) => [
-                    ...prev,
-                    { id: nanoid(), uri, thumbnailUri, durationMs },
-                  ]);
+                onVideoSelected={(video) => {
+                  setDraftVideos((prev) => {
+                    if (prev.some((v) => v.id === video.id)) {
+                      if (!video.uri) {
+                        return prev.filter((v) => v.id !== video.id);
+                      }
+                      return prev.map((v) => v.id === video.id ? video : v);
+                    }
+                    return video.isCompressing ? [...prev, video] : prev;
+                  });
                 }}
+                currentImageCount={draftImages.length}
+                currentVideoCount={draftVideos.length}
+                currentVoiceCount={draftRecordings.length}
                 folders={isFoldersLoading ? [] : folders}
                 selectedFolderId={selectedFolderId}
                 onFolderSelect={setSelectedFolderId}
@@ -212,7 +230,11 @@ export default function NotesScreen() {
           </View>
         </PageContainer>
       </ScrollView>
-      <FullScreenLoader visible={isSaving} message={t("notes.savingNotes")} />
+      <FullScreenLoader
+        visible={isSaving}
+        message={savingProgress !== undefined ? t("common:common.media.uploading") : t("notes.savingNotes")}
+        progress={savingProgress}
+      />
       {draftImages.length > 0 && viewerIndex >= 0 && (
         <ImageViewerModal
           images={draftImages}

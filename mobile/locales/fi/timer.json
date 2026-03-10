@@ -15,7 +15,7 @@
     "titleLabel": "Otsikko...",
     "titlePlaceholder": "Ajastimen otsikko",
     "notesLabel": "Muistiinpanot...",
-    "notesPlaceholder": "Ajastimen muistiinpanot...(valinnainen)",
+    "notesPlaceholder": "Ajastimen muistiinpanot...",
     "savingTimer": "Tallennetaan ajastinta...",
     "updatingTimer": "Päivitetään ajastinta...",
     "loadingTimers": "Ladataan ajastimia...",

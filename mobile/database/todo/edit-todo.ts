@@ -22,8 +22,11 @@ type TodoListEdit = {
   deletedIds: string[];
   updated_at: string;
   deletedVoiceIds?: string[];
+  deletedVoicePaths?: string[];
   deletedImageIds?: string[];
+  deletedImagePaths?: string[];
   deletedVideoIds?: string[];
+  deletedVideoPaths?: string[];
 };
 
 export async function editTodo({
@@ -33,8 +36,11 @@ export async function editTodo({
   deletedIds,
   updated_at,
   deletedVoiceIds = [],
+  deletedVoicePaths = [],
   deletedImageIds = [],
+  deletedImagePaths = [],
   deletedVideoIds = [],
+  deletedVideoPaths = [],
 }: TodoListEdit) {
   const {
     data: { session },
@@ -158,6 +164,17 @@ export async function editTodo({
     });
 
     if (error) throw error;
+
+    // Clean up storage files for deleted media (fire-and-forget)
+    if (deletedVoicePaths.length > 0) {
+      supabase.storage.from("notes-voice").remove(deletedVoicePaths);
+    }
+    if (deletedImagePaths.length > 0) {
+      supabase.storage.from("notes-images").remove(deletedImagePaths);
+    }
+    if (deletedVideoPaths.length > 0) {
+      supabase.storage.from("media-videos").remove(deletedVideoPaths);
+    }
 
     return data;
   } catch (error) {

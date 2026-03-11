@@ -172,33 +172,32 @@ export default function ExerciseHistoryModal({
                 </View>
               }
               renderItem={({ item: session }) => (
-                <>
-                  <AppText className="text-lg mb-5 text-center">
+                <LinearGradient
+                  colors={["#1e3a8a", "#0f172a", "#0f172a"]}
+                  start={{ x: 1, y: 0 }}
+                  end={{ x: 0, y: 1 }}
+                  className="py-5 px-4 rounded-md overflow-hidden mb-10 border-2 border-gray-600"
+                >
+                  <AppText className="text-base text-gray-300 mb-3 text-center">
                     {formatDateShort(session!.date)}
                   </AppText>
-                  <LinearGradient
-                    colors={["#1e3a8a", "#0f172a", "#0f172a"]}
-                    start={{ x: 1, y: 0 }}
-                    end={{ x: 0, y: 1 }}
-                    className="py-5 px-4 rounded-md overflow-hidden mb-10 border-2 border-gray-600"
-                  >
                     <View className="w-full text-left">
                       <View className="w-full">
-                        <View className="text-gray-300 border-b border-gray-300 flex-row">
+                        <View className="border-b border-gray-600 flex-row">
                           {session!.main_group === "cardio" ? (
                             <>
                               <View className="flex-1 items-center">
-                                <AppText className="p-2 text-lg">
+                                <AppText className="p-2 text-sm text-gray-400">
                                   {t("gym.session.set")}
                                 </AppText>
                               </View>
                               <View className="flex-1 items-center">
-                                <AppText className="p-2 text-lg">
+                                <AppText className="p-2 text-sm text-gray-400">
                                   {t("gym.session.time")}
                                 </AppText>
                               </View>
                               <View className="flex-1 items-center">
-                                <AppText className="p-2 text-lg">
+                                <AppText className="p-2 text-sm text-gray-400">
                                   {t("gym.session.distance")}
                                 </AppText>
                               </View>
@@ -206,22 +205,22 @@ export default function ExerciseHistoryModal({
                           ) : (
                             <>
                               <View className="flex-1 items-center">
-                                <AppText className="p-2 text-lg">
+                                <AppText className="p-2 text-sm text-gray-400">
                                   {t("gym.session.set")}
                                 </AppText>
                               </View>
                               <View className="flex-1 items-center">
-                                <AppText className="p-2 text-lg">
+                                <AppText className="p-2 text-sm text-gray-400">
                                   {t("gym.session.weight")}
                                 </AppText>
                               </View>
                               <View className="flex-1 items-center">
-                                <AppText className="p-2 text-lg">
+                                <AppText className="p-2 text-sm text-gray-400">
                                   {t("gym.session.reps")}
                                 </AppText>
                               </View>
                               <View className="flex-1 items-center">
-                                <AppText className="p-2 text-lg">
+                                <AppText className="p-2 text-sm text-gray-400">
                                   {t("gym.session.rpe")}
                                 </AppText>
                               </View>
@@ -233,26 +232,26 @@ export default function ExerciseHistoryModal({
                         {session!.sets.map((set, setIndex) => (
                           <View
                             key={setIndex}
-                            className={`border-b border-gray-300 flex-row items-center ${
+                            className={`border-b border-gray-600 flex-row items-center ${
                               set.rpe === "Failure" ? "bg-red-500" : ""
                             } ${set.rpe === "Warm-up" ? "bg-blue-500" : ""}`}
                           >
                             {session!.main_group === "cardio" ? (
                               <>
                                 <View className="flex-1 items-center">
-                                  <AppText className="p-2 text-lg">
+                                  <AppText className="p-2">
                                     {setIndex + 1}
                                   </AppText>
                                 </View>
                                 <View className="flex-1 items-center">
-                                  <AppText className="p-2 text-lg">
+                                  <AppText className="p-2">
                                     {set.time_min
                                       ? `${Math.floor(set.time_min)}:${String(Math.round((set.time_min % 1) * 60)).padStart(2, "0")}`
                                       : ""}
                                   </AppText>
                                 </View>
                                 <View className="flex-1 items-center">
-                                  <AppText className="p-2 text-lg">
+                                  <AppText className="p-2">
                                     {set.distance_meters
                                       ? `${convertMetersForDisplay(set.distance_meters)}${getDistanceUnitLabels().short}`
                                       : ""}
@@ -262,22 +261,22 @@ export default function ExerciseHistoryModal({
                             ) : (
                               <>
                                 <View className="flex-1 items-center">
-                                  <AppText className="p-2 text-lg">
+                                  <AppText className="p-2">
                                     {setIndex + 1}
                                   </AppText>
                                 </View>
                                 <View className="flex-1 items-center">
-                                  <AppText className="p-2 text-lg">
+                                  <AppText className="p-2">
                                     {set.weight} {weightUnit}
                                   </AppText>
                                 </View>
                                 <View className="flex-1 items-center">
-                                  <AppText className="p-2 text-lg">
+                                  <AppText className="p-2">
                                     {set.reps}
                                   </AppText>
                                 </View>
                                 <View className="flex-1 items-center">
-                                  <AppText className="p-2 text-lg" numberOfLines={1}>
+                                  <AppText className="p-2" numberOfLines={1}>
                                     {set.rpe ? translateRpe(set.rpe) : ""}
                                   </AppText>
                                 </View>
@@ -287,8 +286,7 @@ export default function ExerciseHistoryModal({
                         ))}
                       </View>
                     </View>
-                  </LinearGradient>
-                </>
+                </LinearGradient>
               )}
             />
           </View>

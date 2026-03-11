@@ -54,11 +54,12 @@ export default function DropDownModal({
           onPress={() => setIsOpen(false)}
         >
           <View
-            className="border-2 border-gray-100 rounded-xl bg-slate-800 py-5"
-            style={{ width: screenWidth * 0.6 }}
+            onStartShouldSetResponder={() => true}
+            className="border-2 border-slate-300 rounded-xl bg-slate-900 py-5 justify-center"
+            style={{ width: screenWidth * 0.85 }}
           >
             {label && (
-              <AppText className="mb-6 text-center text-gray-100 text-xl px-4">
+              <AppText className="mb-6 text-center text-xl px-4">
                 {label}
               </AppText>
             )}
@@ -69,8 +70,9 @@ export default function DropDownModal({
                   onChange?.(option.value);
                   setIsOpen(false);
                 }}
+                className="flex-row items-center border p-2 my-2 rounded-xl mx-6 px-4 bg-slate-800 border-slate-700"
               >
-                <AppText className="text-gray-100  text-center text-xl border p-2 bg-slate-700 my-2 border-gray-100 rounded-xl mx-6">
+                <AppText className="text-xl flex-1 text-center">
                   {option.label}
                 </AppText>
               </AnimatedButton>

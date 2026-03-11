@@ -39,6 +39,7 @@ import { useTranslation } from "react-i18next";
 import { formatDateShort } from "@/lib/formatDate";
 import GymNotesModal from "@/features/gym/components/GymNotesModal";
 import { NotebookPen, Plus } from "lucide-react-native";
+import DraggableList from "@/components/DraggableList";
 
 if (
   Platform.OS === "android" &&
@@ -61,7 +62,14 @@ type DraftImage = {
 
 type GymFormData = Pick<
   FullGymSession,
-  "id" | "title" | "notes" | "duration" | "gym_session_exercises" | "sessionImages" | "sessionVideos" | "sessionVoiceRecordings"
+  | "id"
+  | "title"
+  | "notes"
+  | "duration"
+  | "gym_session_exercises"
+  | "sessionImages"
+  | "sessionVideos"
+  | "sessionVoiceRecordings"
 >;
 
 export default function GymForm({ initialData }: { initialData: GymFormData }) {
@@ -101,29 +109,40 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
       distance_meters: "",
     })),
   );
-  const [collapsedExercises, setCollapsedExercises] = useState<Set<number>>(
-    () => new Set(exercises.map((_, i) => i)),
+  const [collapsedExercises, setCollapsedExercises] = useState<Set<string>>(
+    () => new Set(exercises.map((ex) => ex.exercise_id)),
   );
+  const [scrollEnabled, setScrollEnabled] = useState(true);
   const addedViaModalRef = useRef(false);
   const prevExerciseCountRef = useRef(exercises.length);
   const [durationEdit, setDurationEdit] = useState(session.duration);
   const router = useRouter();
   const [isSaving, setIsSaving] = useState(false);
-  const [savingProgress, setSavingProgress] = useState<number | undefined>(undefined);
+  const [savingProgress, setSavingProgress] = useState<number | undefined>(
+    undefined,
+  );
   const [draftImages, setDraftImages] = useState<DraftImage[]>([]);
   const [draftRecordings, setDraftRecordings] = useState<DraftRecording[]>([]);
   const [draftVideos, setDraftVideos] = useState<DraftVideo[]>([]);
 
   // Existing media state (for editing)
-  const [existingImages, setExistingImages] = useState(session.sessionImages ?? []);
-  const [existingVideos, setExistingVideos] = useState(session.sessionVideos ?? []);
-  const [existingRecordings, setExistingRecordings] = useState(session.sessionVoiceRecordings ?? []);
+  const [existingImages, setExistingImages] = useState(
+    session.sessionImages ?? [],
+  );
+  const [existingVideos, setExistingVideos] = useState(
+    session.sessionVideos ?? [],
+  );
+  const [existingRecordings, setExistingRecordings] = useState(
+    session.sessionVoiceRecordings ?? [],
+  );
   const [deletedImageIds, setDeletedImageIds] = useState<string[]>([]);
   const [deletedImagePaths, setDeletedImagePaths] = useState<string[]>([]);
   const [deletedVideoIds, setDeletedVideoIds] = useState<string[]>([]);
   const [deletedVideoPaths, setDeletedVideoPaths] = useState<string[]>([]);
   const [deletedRecordingIds, setDeletedRecordingIds] = useState<string[]>([]);
-  const [deletedRecordingPaths, setDeletedRecordingPaths] = useState<string[]>([]);
+  const [deletedRecordingPaths, setDeletedRecordingPaths] = useState<string[]>(
+    [],
+  );
 
   const [showNotesModal, setShowNotesModal] = useState(false);
   const [exerciseType, setExerciseType] = useState("Normal");
@@ -180,9 +199,13 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
   });
 
   const exerciseIds = exercises.map((ex) => ex.exercise_id!);
+  const sortedExerciseIds = useMemo(
+    () => [...exerciseIds].sort(),
+    [exerciseIds],
+  );
 
   const { data: prefetchedHistory = [] } = useQuery({
-    queryKey: ["prefetched-history", exerciseIds],
+    queryKey: ["prefetched-history", sortedExerciseIds],
     queryFn: () => getPrefetchedHistoryPerCard(exerciseIds),
     enabled: exerciseIds.length > 0,
   });
@@ -311,19 +334,19 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
 
     if (exercises.length > prev && !addedViaModalRef.current) {
       // Exercises loaded from template/draft — collapse all
-      setCollapsedExercises(new Set(exercises.map((_, i) => i)));
+      setCollapsedExercises(new Set(exercises.map((ex) => ex.exercise_id)));
     }
     addedViaModalRef.current = false;
-  }, [exercises.length]);
+  }, [exercises.length, exercises]);
 
-  const toggleExercise = useCallback((index: number) => {
+  const toggleExercise = useCallback((exerciseId: string) => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     setCollapsedExercises((prev) => {
       const next = new Set(prev);
-      if (next.has(index)) {
-        next.delete(index);
+      if (next.has(exerciseId)) {
+        next.delete(exerciseId);
       } else {
-        next.add(index);
+        next.add(exerciseId);
       }
       return next;
     });
@@ -353,6 +376,7 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={{ flexGrow: 1 }}
         showsVerticalScrollIndicator={false}
+        scrollEnabled={scrollEnabled}
       >
         <PageContainer className="justify-between flex-1">
           <View>
@@ -369,7 +393,9 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
                   {t("gym.gymForm.notesButton")}
                   {(() => {
                     const totalMedia =
-                      draftRecordings.length + draftImages.length + draftVideos.length +
+                      draftRecordings.length +
+                      draftImages.length +
+                      draftVideos.length +
                       existingImages.length +
                       existingVideos.length +
                       existingRecordings.length;
@@ -381,105 +407,125 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
           </View>
 
           <>
-            {Object.entries(groupedExercises).map(([superset_id, group]) => (
-              <LinearGradient
-                key={superset_id}
-                colors={["#1e3a8a", "#0f172a", "#0f172a"]}
-                start={{ x: 1, y: 0 }} // bottom-left
-                end={{ x: 0, y: 1 }} // top-right
-                className={`mt-5  rounded-md overflow-hidden ${
-                  group.length > 1
-                    ? "border-2 border-blue-700"
-                    : "border-2 border-gray-600"
-                }`}
-              >
-                {group.length > 1 && (
-                  <AppText className="text-gray-100 text-lg text-center my-2">
-                    {t("gym.gymForm.superSet")}
-                  </AppText>
-                )}
+            <DraggableList
+              items={Object.entries(groupedExercises)}
+              keyExtractor={([, group], index) =>
+                `${group.map((g) => g.exercise.exercise_id).join("-")}-${index}`
+              }
+              onDragStart={() => setScrollEnabled(false)}
+              onDragEnd={() => setScrollEnabled(true)}
+              onReorder={(reordered) => {
+                const flatExercises = reordered.flatMap(([, group]) =>
+                  group.map((g) => g.exercise),
+                );
+                const flatInputs = reordered.flatMap(([, group]) =>
+                  group.map((g) => exerciseInputs[g.index]),
+                );
+                setExercises(flatExercises);
+                setExerciseInputs(flatInputs);
+              }}
+              renderItem={([superset_id, group]) => (
+                <LinearGradient
+                  colors={["#1e3a8a", "#0f172a", "#0f172a"]}
+                  start={{ x: 1, y: 0 }}
+                  end={{ x: 0, y: 1 }}
+                  className={`mt-5 rounded-md overflow-hidden ${
+                    group.length > 1
+                      ? "border-2 border-blue-700"
+                      : "border-2 border-gray-600"
+                  }`}
+                >
+                  {group.length > 1 && (
+                    <AppText className="text-gray-100 text-lg text-center my-2">
+                      {t("gym.gymForm.superSet")}
+                    </AppText>
+                  )}
 
-                {group.map(({ exercise, index }) => {
-                  return (
-                    <View key={exercise.exercise_id}>
-                      <ExerciseCard
-                        disabled={false}
-                        mode="session"
-                        isExpanded={!collapsedExercises.has(index)}
-                        onToggleExpand={() => toggleExercise(index)}
-                        exercise={exercise}
-                        history={historyMap[exercise.exercise_id]}
-                        lastExerciseHistory={(index) => {
-                          const ex = exercises[index];
-                          if (ex.exercise_id) {
-                            openHistory(ex.exercise_id);
+                  {group.map(({ exercise, index }) => {
+                    return (
+                      <View key={exercise.exercise_id}>
+                        <ExerciseCard
+                          disabled={false}
+                          mode="session"
+                          isExpanded={
+                            !collapsedExercises.has(exercise.exercise_id)
                           }
-                        }}
-                        onChangeExercise={(index) => {
-                          setExerciseToChangeIndex(index);
-                          setSupersetExercise([emptyExerciseEntry]);
-                          setNormalExercises([emptyExerciseEntry]);
-                          setIsExerciseModalOpen(true);
-                        }}
-                        index={index}
-                        input={exerciseInputs[index]}
-                        onInputChange={(index, field, value) => {
-                          const updatedInputs = [...exerciseInputs];
-                          updatedInputs[index] = {
-                            ...updatedInputs[index],
-                            [field]: value,
-                          };
-                          setExerciseInputs(updatedInputs);
-                        }}
-                        onAddSet={(index) => logSetForExercise(index)}
-                        onDeleteSet={(index, setIndex) => {
-                          const updated = [...exercises];
-                          updated[index].sets.splice(setIndex, 1);
-                          setExercises(updated);
-                        }}
-                        onUpdateExercise={(index, updatedExercise) => {
-                          const updated = [...exercises];
-                          updated[index] = updatedExercise;
-                          setExercises(updated);
-                        }}
-                        onDeleteExercise={async (index) => {
-                          const confirmDelete = await confirmAction({
-                            title: t("gym.gymForm.confirmDeleteExerciseTitle"),
-                            message: t(
-                              "gym.gymForm.confirmDeleteExerciseMessage",
-                            ),
-                          });
-                          if (!confirmDelete) return;
-
-                          const updated = exercises.filter(
-                            (_, i) => i !== index,
-                          );
-                          setExercises(updated);
-                          setCollapsedExercises((prev) => {
-                            const next = new Set<number>();
-                            for (const idx of prev) {
-                              if (idx < index) next.add(idx);
-                              else if (idx > index) next.add(idx - 1);
+                          onToggleExpand={() =>
+                            toggleExercise(exercise.exercise_id)
+                          }
+                          exercise={exercise}
+                          history={historyMap[exercise.exercise_id]}
+                          lastExerciseHistory={(index) => {
+                            const ex = exercises[index];
+                            if (ex.exercise_id) {
+                              openHistory(ex.exercise_id);
                             }
-                            return next;
-                          });
+                          }}
+                          onChangeExercise={(index) => {
+                            setExerciseToChangeIndex(index);
+                            setSupersetExercise([emptyExerciseEntry]);
+                            setNormalExercises([emptyExerciseEntry]);
+                            setIsExerciseModalOpen(true);
+                          }}
+                          index={index}
+                          input={exerciseInputs[index]}
+                          onInputChange={(index, field, value) => {
+                            const updatedInputs = [...exerciseInputs];
+                            updatedInputs[index] = {
+                              ...updatedInputs[index],
+                              [field]: value,
+                            };
+                            setExerciseInputs(updatedInputs);
+                          }}
+                          onAddSet={(index) => logSetForExercise(index)}
+                          onDeleteSet={(index, setIndex) => {
+                            const updated = [...exercises];
+                            updated[index].sets.splice(setIndex, 1);
+                            setExercises(updated);
+                          }}
+                          onUpdateExercise={(index, updatedExercise) => {
+                            const updated = [...exercises];
+                            updated[index] = updatedExercise;
+                            setExercises(updated);
+                          }}
+                          onDeleteExercise={async (index) => {
+                            const confirmDelete = await confirmAction({
+                              title: t(
+                                "gym.gymForm.confirmDeleteExerciseTitle",
+                              ),
+                              message: t(
+                                "gym.gymForm.confirmDeleteExerciseMessage",
+                              ),
+                            });
+                            if (!confirmDelete) return;
 
-                          const sessionDraft = {
-                            title: title,
-                            exercises: updated,
-                            notes,
-                          };
-                          AsyncStorage.setItem(
-                            "gym_session_draft",
-                            JSON.stringify(sessionDraft),
-                          );
-                        }}
-                      />
-                    </View>
-                  );
-                })}
-              </LinearGradient>
-            ))}
+                            const updated = exercises.filter(
+                              (_, i) => i !== index,
+                            );
+                            setExercises(updated);
+                            setCollapsedExercises((prev) => {
+                              const next = new Set(prev);
+                              next.delete(exercise.exercise_id);
+                              return next;
+                            });
+
+                            const sessionDraft = {
+                              title: title,
+                              exercises: updated,
+                              notes,
+                            };
+                            AsyncStorage.setItem(
+                              "gym_session_draft",
+                              JSON.stringify(sessionDraft),
+                            );
+                          }}
+                        />
+                      </View>
+                    );
+                  })}
+                </LinearGradient>
+              )}
+            />
 
             <FullScreenModal
               isOpen={isExerciseModalOpen}
@@ -625,7 +671,8 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
           const video = existingVideos.find((v) => v.id === id);
           if (video) {
             const paths = [video.storage_path];
-            if (video.thumbnail_storage_path) paths.push(video.thumbnail_storage_path);
+            if (video.thumbnail_storage_path)
+              paths.push(video.thumbnail_storage_path);
             setDeletedVideoPaths((prev) => [...prev, ...paths]);
           }
           setDeletedVideoIds((prev) => [...prev, id]);
@@ -634,7 +681,10 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
         onDeleteExistingRecording={(id) => {
           const recording = existingRecordings.find((r) => r.id === id);
           if (recording) {
-            setDeletedRecordingPaths((prev) => [...prev, recording.storage_path]);
+            setDeletedRecordingPaths((prev) => [
+              ...prev,
+              recording.storage_path,
+            ]);
           }
           setDeletedRecordingIds((prev) => [...prev, id]);
           setExistingRecordings((prev) => prev.filter((r) => r.id !== id));
@@ -643,7 +693,11 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
 
       <FullScreenLoader
         visible={isSaving}
-        message={savingProgress !== undefined ? t("common:common.media.uploading") : t("gym.gymForm.fullScreenLoaderLabel")}
+        message={
+          savingProgress !== undefined
+            ? t("common:common.media.uploading")
+            : t("gym.gymForm.fullScreenLoaderLabel")
+        }
         progress={savingProgress}
       />
     </>

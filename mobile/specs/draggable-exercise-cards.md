@@ -4,7 +4,8 @@
 During a gym session, users sometimes want to reorder exercises — e.g., move a later exercise up because a machine became free. Currently exercises are locked in the order they were added. This feature adds drag-to-reorder on the exercise cards in GymForm using a custom implementation built on `react-native-reanimated` (v4) and `react-native-gesture-handler` (v2.28) — no third-party drag-and-drop library.
 
 ## Requirements
-- Long press on an exercise card activates drag mode
+- Drag is only available on **collapsed** cards — expanded cards have interactive inputs that conflict with long press
+- Long press on a collapsed exercise card activates drag mode
 - Dragging an exercise over another swaps their positions
 - Visual feedback: dragged card is slightly scaled up and has higher opacity/shadow
 - Other cards animate smoothly to make room

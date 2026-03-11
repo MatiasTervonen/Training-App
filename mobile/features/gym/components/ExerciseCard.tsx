@@ -8,7 +8,10 @@ import {
 import { SquareX, ChevronDown, ChevronUp } from "lucide-react-native";
 import AppInput from "@/components/AppInput";
 import { useUserStore } from "@/lib/stores/useUserStore";
-import { getDistanceUnitLabels, convertMetersForDisplay } from "@/lib/formatDate";
+import {
+  getDistanceUnitLabels,
+  convertMetersForDisplay,
+} from "@/lib/formatDate";
 import { useConfirmAction } from "@/lib/confirmAction";
 import SelectInput from "@/components/Selectinput";
 import DropDownModal from "@/components/DropDownModal";

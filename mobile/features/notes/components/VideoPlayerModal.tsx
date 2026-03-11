@@ -13,8 +13,8 @@ import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
-  runOnJS,
 } from "react-native-reanimated";
+import { scheduleOnRN } from "react-native-worklets";
 
 type Props = {
   uri: string;
@@ -74,8 +74,8 @@ export default function VideoPlayerModal({ uri, visible, onClose }: Props) {
           dismissY.value > 0 ? SCREEN_HEIGHT : -SCREEN_HEIGHT,
           { duration: 200 },
           () => {
-            runOnJS(handleClose)();
-            runOnJS(resetValues)();
+            scheduleOnRN(handleClose);
+            scheduleOnRN(resetValues);
           },
         );
       } else {
@@ -108,17 +108,23 @@ export default function VideoPlayerModal({ uri, visible, onClose }: Props) {
           />
           <GestureDetector gesture={panGesture}>
             <Animated.View className="flex-1" style={contentStyle}>
-              <View className="flex-1" style={{ paddingTop: insets.top, paddingBottom: insets.bottom }}>
+              <View
+                className="flex-1"
+                style={{ paddingTop: insets.top, paddingBottom: insets.bottom }}
+              >
                 <VideoView
                   player={player}
                   style={{ width: "100%", height: "100%" }}
                   nativeControls
-                  fullscreenOptions={{ enabled: true }}
+                  fullscreenOptions={{ enable: true }}
                 />
               </View>
             </Animated.View>
           </GestureDetector>
-          <View className="absolute right-4 z-10" style={{ top: insets.top + 8 }}>
+          <View
+            className="absolute right-4 z-10"
+            style={{ top: insets.top + 8 }}
+          >
             <AnimatedButton
               onPress={handleClose}
               className="bg-slate-800 border-slate-600 border-2 rounded-full p-2"

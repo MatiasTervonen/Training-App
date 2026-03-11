@@ -11,28 +11,34 @@ class TimerModule(reactContext: ReactApplicationContext) :
     override fun getName() = "NativeTimer"
 
     @ReactMethod
-    fun startTimer(startTime: Double, label: String?, mode: String, statusText: String?) {
-        val safeLabel = label ?: "Session"
-        val safeStatusText = statusText ?: if (mode == "countdown") "Time remaining" else "In progress"
-
+    fun startTimer(startTime: Double, label: String?, mode: String, statusText: String?, pauseText: String?, extendText: String?) {
         val intent = Intent(reactApplicationContext, TimerService::class.java)
         intent.putExtra("startTime", startTime.toLong())
-        intent.putExtra("label", safeLabel)
+        intent.putExtra("label", label ?: "Session")
         intent.putExtra("mode", mode)
-        intent.putExtra("statusText", safeStatusText)
+        intent.putExtra("pauseText", pauseText ?: "Stop")
+        intent.putExtra("extendText", extendText ?: "+1 min")
         reactApplicationContext.startForegroundService(intent)
     }
 
     @ReactMethod
-    fun updateTimerLabel(startTime: Double, label: String?, mode: String, statusText: String?) {
-        val safeLabel = label ?: "Session"
-        val safeStatusText = statusText ?: if (mode == "countdown") "Time remaining" else "In progress"
-
+    fun updateTimerLabel(startTime: Double, label: String?, mode: String, statusText: String?, pauseText: String?, extendText: String?) {
         val intent = Intent(reactApplicationContext, TimerService::class.java)
         intent.putExtra("startTime", startTime.toLong())
-        intent.putExtra("label", safeLabel)
+        intent.putExtra("label", label ?: "Session")
         intent.putExtra("mode", mode)
-        intent.putExtra("statusText", safeStatusText)
+        intent.putExtra("pauseText", pauseText ?: "Stop")
+        intent.putExtra("extendText", extendText ?: "+1 min")
+        reactApplicationContext.startForegroundService(intent)
+    }
+
+    @ReactMethod
+    fun pauseTimer(frozenTime: String?, pausedLabel: String?, resumeText: String?) {
+        val intent = Intent(reactApplicationContext, TimerService::class.java)
+        intent.putExtra("action", "pause")
+        intent.putExtra("frozenTime", frozenTime ?: "")
+        intent.putExtra("pausedLabel", pausedLabel ?: "Paused")
+        intent.putExtra("resumeText", resumeText ?: "Resume")
         reactApplicationContext.startForegroundService(intent)
     }
 
@@ -42,4 +48,3 @@ class TimerModule(reactContext: ReactApplicationContext) :
         reactApplicationContext.stopService(intent)
     }
 }
-

@@ -5,7 +5,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import { useConfirmAction } from "@/lib/confirmAction";
 import { useTranslation } from "react-i18next";
-import { formatDateShort } from "@/lib/formatDate";
+import { formatDurationLong } from "@/lib/formatDate";
 
 type StopwatchProps = {
   className?: string;
@@ -35,18 +35,10 @@ export default function Stopwatch({
     paused,
   } = useTimerStore();
 
-  const formatTime = (seconds: number) => {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${String(minutes).padStart(2, "0")}:${String(
-      remainingSeconds,
-    ).padStart(2, "0")}`;
-  };
-
   const handleStart = () => {
     setActiveSession({
       type: t("timer.stopwatch.title"),
-      label: `${t("timer.stopwatch.title")} - ${formatDateShort(new Date())}`,
+      label: `${t("timer.stopwatch.title")}`,
       path: "/timer/start-stopwatch",
     });
 
@@ -97,7 +89,7 @@ export default function Stopwatch({
           adjustsFontSizeToFit
           minimumFontScale={0.1}
         >
-          {formatTime(displaySeconds)}
+          {formatDurationLong(displaySeconds)}
         </Text>
       </View>
 

@@ -10,6 +10,11 @@ import { HabitLog } from "@/types/habit";
 
 const POLL_INTERVAL_MS = 30_000; // 30 seconds
 
+export function StepHabitAutoCompleteListener() {
+  useStepHabitAutoComplete();
+  return null;
+}
+
 export function useStepHabitAutoComplete() {
   const today = new Date().toLocaleDateString("en-CA");
   const { data: habits = [] } = useHabits();

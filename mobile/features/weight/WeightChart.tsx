@@ -145,7 +145,10 @@ export default function WeightChart({
 
   const chartData = useMemo(() => {
     const weightMap = new Map(
-      filteredData.map((entry) => [entry.created_at.split("T")[0], entry.weight]),
+      filteredData.map((entry) => [
+        toLocalDateString(new Date(entry.created_at)),
+        entry.weight,
+      ]),
     );
 
     // Find the most recent measurement before the range to carry forward
@@ -153,7 +156,7 @@ export default function WeightChart({
     let priorWeight: number | null = null;
     let priorDate = "";
     for (const entry of data) {
-      const entryDate = entry.created_at.split("T")[0];
+      const entryDate = toLocalDateString(new Date(entry.created_at));
       if (entryDate < rangeStart && entry.weight !== null && entryDate > priorDate) {
         priorWeight = entry.weight;
         priorDate = entryDate;
@@ -281,6 +284,7 @@ export default function WeightChart({
       height: size.height,
     } as any);
     chartRef.current = chart;
+    chart.setOption(option);
 
     return () => {
       chart.dispose();
@@ -288,7 +292,7 @@ export default function WeightChart({
     };
   }, [size]);
 
-  // Update chart options without re-initializing
+  // Update chart options when data changes
   useEffect(() => {
     if (!chartRef.current) return;
     chartRef.current.setOption(option);

@@ -47,6 +47,8 @@ export default function useMapSnapshot(
   const [mapSnapshotUri, setMapSnapshotUri] = useState<string | null>(null);
   const [isLoadingSnapshot, setIsLoadingSnapshot] = useState(!!route);
   const snappingRef = useRef(false);
+  const genRef = useRef(0);
+  const fallbackTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [noLabelsStyleJSON, setNoLabelsStyleJSON] = useState<string | null>(
     null,
   );
@@ -72,6 +74,12 @@ export default function useMapSnapshot(
   const prevDepsKeyRef = useRef(depsKey);
   if (route && depsKey !== prevDepsKeyRef.current) {
     prevDepsKeyRef.current = depsKey;
+    genRef.current += 1;
+    snappingRef.current = false;
+    if (fallbackTimerRef.current) {
+      clearTimeout(fallbackTimerRef.current);
+      fallbackTimerRef.current = null;
+    }
     setIsLoadingSnapshot(true);
   }
 
@@ -156,19 +164,44 @@ export default function useMapSnapshot(
     }
   }, []);
 
-  // Do NOT take a snapshot here — the base map tiles are loaded but the
-  // ShapeSource route layer may not be rendered yet, which produces a
-  // snapshot without the route (showing only the bare map).
   const onMapDidFinishLoading = useCallback(() => {
-    // intentionally empty — wait for onMapIdle instead
-  }, []);
+    // Don't snapshot here — the ShapeSource route layer may not be rendered
+    // yet. But set a fallback in case onMapIdle never fires (e.g. cached tiles).
+    if (fallbackTimerRef.current) {
+      clearTimeout(fallbackTimerRef.current);
+    }
+    const gen = genRef.current;
+    fallbackTimerRef.current = setTimeout(async () => {
+      fallbackTimerRef.current = null;
+      if (gen !== genRef.current) return;
+      const uri = await takeSnapshot();
+      if (gen !== genRef.current) return;
+      if (uri) setIsLoadingSnapshot(false);
+    }, 3000);
+  }, [takeSnapshot]);
 
   const onMapIdle = useCallback(async () => {
+    // Cancel the fallback timer — idle fired normally
+    if (fallbackTimerRef.current) {
+      clearTimeout(fallbackTimerRef.current);
+      fallbackTimerRef.current = null;
+    }
+    const gen = genRef.current;
     // Small delay to ensure the route ShapeSource layer is fully composited
     await new Promise((resolve) => setTimeout(resolve, 300));
-    await takeSnapshot();
-    setIsLoadingSnapshot(false);
+    if (gen !== genRef.current) return;
+    const uri = await takeSnapshot();
+    if (gen !== genRef.current) return;
+    if (uri) setIsLoadingSnapshot(false);
   }, [takeSnapshot]);
+
+  useEffect(() => {
+    return () => {
+      if (fallbackTimerRef.current) {
+        clearTimeout(fallbackTimerRef.current);
+      }
+    };
+  }, []);
 
   return {
     mapViewRef,

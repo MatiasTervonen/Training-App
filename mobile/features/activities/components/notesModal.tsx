@@ -7,12 +7,13 @@ import { DraftRecordingItem } from "@/features/notes/components/draftRecording";
 import DraftImageItem from "@/features/notes/components/DraftImageItem";
 import DraftVideoItem from "@/features/notes/components/DraftVideoItem";
 import MediaToolbar from "@/features/notes/components/MediaToolbar";
-import type { SetStateAction } from "react";
+import { useState, type SetStateAction } from "react";
 import { nanoid } from "nanoid/non-secure";
 import { useConfirmAction } from "@/lib/confirmAction";
 import { DraftRecording, DraftVideo } from "@/types/session";
 import FullScreenModal from "@/components/FullScreenModal";
 import PageContainer from "@/components/PageContainer";
+import ImageViewerModal from "@/features/notes/components/ImageViewerModal";
 
 type DraftImage = { id: string; uri: string; isLoading?: boolean };
 
@@ -50,6 +51,9 @@ export default function NotesModal({
   const { t } = useTranslation("activities");
 
   const confirmAction = useConfirmAction();
+  const [viewerIndex, setViewerIndex] = useState(-1);
+
+  const allImages = draftImages.map((img) => ({ id: img.id, uri: img.uri }));
 
   return (
     <FullScreenModal isOpen={isOpen} onClose={onClose}>
@@ -111,6 +115,7 @@ export default function NotesModal({
                   key={image.id}
                   uri={image.uri}
                   isLoading={image.isLoading}
+                  onPress={() => setViewerIndex(index)}
                   onDelete={() =>
                     setDraftImages((prev) => prev.filter((_, i) => i !== index))
                   }
@@ -181,6 +186,15 @@ export default function NotesModal({
           <View className="h-10" />
         </PageContainer>
       </ScrollView>
+
+      {allImages.length > 0 && viewerIndex >= 0 && (
+        <ImageViewerModal
+          images={allImages}
+          initialIndex={viewerIndex}
+          visible={viewerIndex >= 0}
+          onClose={() => setViewerIndex(-1)}
+        />
+      )}
     </FullScreenModal>
   );
 }

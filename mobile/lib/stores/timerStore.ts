@@ -15,9 +15,11 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { DeviceEventEmitter } from "react-native";
 import {
   startNativeTimer,
   stopNativeTimer,
+  pauseNativeTimer,
 } from "@/native/android/NativeTimer";
 import {
   cancelNativeAlarm,
@@ -101,7 +103,7 @@ export const useTimerStore = create<TimerState>()(
           alarmFired: false,
         });
 
-        startNativeTimer(now, label, "countup", t("timer:timer.notification.inProgress"));
+        startNativeTimer(now, label, "countup", t("timer:timer.notification.inProgress"), t("timer:timer.notification.pauseTimer"));
 
         interval = setInterval(() => {
           set((state) => ({
@@ -126,7 +128,7 @@ export const useTimerStore = create<TimerState>()(
           totalDuration: totalDurationInSeconds,
         });
 
-        startNativeTimer(endTimestamp, label, "countdown", t("timer:timer.notification.timeRemaining"));
+        startNativeTimer(endTimestamp, label, "countdown", t("timer:timer.notification.timeRemaining"), t("timer:timer.notification.pauseTimer"), t("timer:timer.notification.extendTimer"));
 
         interval = setInterval(() => {
           const { isRunning, mode, endTimestamp } = get();
@@ -179,8 +181,6 @@ export const useTimerStore = create<TimerState>()(
           interval = null;
         }
 
-        stopNativeTimer();
-
         if (get().activeSession?.type === "timer") {
           cancelNativeAlarm("timer");
         }
@@ -194,6 +194,23 @@ export const useTimerStore = create<TimerState>()(
           mode === "countup"
             ? now - startTimestamp
             : Math.max(0, endTimestamp! - now);
+
+        // Format frozen time for notification
+        const totalSec = Math.floor(frozeMS / 1000);
+        const h = Math.floor(totalSec / 3600);
+        const m = Math.floor((totalSec % 3600) / 60);
+        const s = totalSec % 60;
+        const frozenTime =
+          h > 0
+            ? `${h}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`
+            : `${m}:${String(s).padStart(2, "0")}`;
+
+        const label = get().activeSession?.label ?? "";
+        pauseNativeTimer(
+          frozenTime,
+          `${label} — ${t("timer:timer.notification.pauseTimer")}`,
+          t("timer:timer.notification.resumeTimer"),
+        );
 
         set({
           isRunning: false,
@@ -232,9 +249,9 @@ export const useTimerStore = create<TimerState>()(
         }
 
         if (mode === "countup") {
-          startNativeTimer(now - remainingMs, label, "countup", t("timer:timer.notification.inProgress"));
+          startNativeTimer(now - remainingMs, label, "countup", t("timer:timer.notification.inProgress"), t("timer:timer.notification.pauseTimer"));
         } else {
-          startNativeTimer(now + remainingMs, label, "countdown", t("timer:timer.notification.timeRemaining"));
+          startNativeTimer(now + remainingMs, label, "countdown", t("timer:timer.notification.timeRemaining"), t("timer:timer.notification.pauseTimer"), t("timer:timer.notification.extendTimer"));
         }
 
         if (get().activeSession?.type === "timer") {
@@ -338,3 +355,55 @@ export const useTimerStore = create<TimerState>()(
     }
   )
 );
+
+// Listen for native pause button press
+DeviceEventEmitter.addListener("TIMER_STOPPED", () => {
+  useTimerStore.getState().pauseTimer();
+});
+
+// Listen for native +1 min button press
+DeviceEventEmitter.addListener("TIMER_EXTENDED", () => {
+  const state = useTimerStore.getState();
+  if (state.mode === "countdown" && state.endTimestamp && state.isRunning) {
+    const newEnd = state.endTimestamp + 60 * 1000;
+    const label = state.activeSession?.label ?? t("timer:timer.title");
+
+    useTimerStore.setState({
+      endTimestamp: newEnd,
+      totalDuration: state.totalDuration + 60,
+    });
+
+    // Restart native timer with new end time
+    startNativeTimer(
+      newEnd,
+      label,
+      "countdown",
+      t("timer:timer.notification.timeRemaining"),
+      t("timer:timer.notification.pauseTimer"),
+      t("timer:timer.notification.extendTimer"),
+    );
+
+    // Reschedule alarm
+    cancelNativeAlarm("timer");
+    scheduleNativeAlarm(
+      newEnd,
+      "timer",
+      label,
+      "timer",
+      "",
+      t("timer:timer.notification.tapToOpenTimer"),
+      t("timer:timer.notification.timesUp"),
+      t("timer:timer.notification.stopAlarm"),
+      t("timer:timer.notification.extendTimer"),
+    );
+  }
+});
+
+// Listen for native resume button press
+DeviceEventEmitter.addListener("TIMER_RESUMED", () => {
+  const state = useTimerStore.getState();
+  if (state.paused && state.remainingMs) {
+    const label = state.activeSession?.label ?? t("timer:timer.title");
+    useTimerStore.getState().resumeTimer(label);
+  }
+});

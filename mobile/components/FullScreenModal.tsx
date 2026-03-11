@@ -4,7 +4,6 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
   withTiming,
-  runOnJS,
 } from "react-native-reanimated";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { CircleX } from "lucide-react-native";
@@ -15,6 +14,7 @@ import { useFullScreenModalConfig } from "@/lib/stores/fullScreenModalConfig";
 import AppText from "@/components/AppText";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import { useTranslation } from "react-i18next";
+import { scheduleOnRN } from "react-native-worklets";
 
 export default function FullScreenModal({
   isOpen,
@@ -77,14 +77,14 @@ export default function FullScreenModal({
             damping: 15,
             mass: 1,
           });
-          runOnJS(handleClose)();
+          scheduleOnRN(handleClose);
         } else {
           // Animate off-screen and close
           translateX.value = withTiming(
             translateX.value > 0 ? exitDistance : -exitDistance,
             { duration: 300 },
             () => {
-              runOnJS(onClose)();
+              scheduleOnRN(onClose);
             },
           );
         }

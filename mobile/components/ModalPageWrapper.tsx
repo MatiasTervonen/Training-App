@@ -10,12 +10,12 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
   withTiming,
-  runOnJS,
   Easing,
 } from "react-native-reanimated";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { useTransitionDirectionStore } from "@/lib/stores/transitionDirection";
 import { useModalPageConfig } from "@/lib/stores/modalPageConfig";
+import { scheduleOnRN } from "react-native-worklets";
 
 type Props = {
   children: ReactNode;
@@ -43,7 +43,7 @@ export default function ModalPageWrapper({
   const router = useRouter();
   const direction = useTransitionDirectionStore((state) => state.direction);
   const setDirection = useTransitionDirectionStore(
-    (state) => state.setDirection
+    (state) => state.setDirection,
   );
 
   const modalPageConfig = useModalPageConfig((state) => state.modalPageConfig);
@@ -74,7 +74,7 @@ export default function ModalPageWrapper({
         duration: 350,
         easing: Easing.out(Easing.cubic),
       });
-      runOnJS(setIsReady)(true); // mark as ready
+      scheduleOnRN(setIsReady, true); // mark as ready
       setDirection(0);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -107,7 +107,7 @@ export default function ModalPageWrapper({
     .activeOffsetX([-40, 40]) // Activate only if horizontal movement exceeds 40 pixels
     .failOffsetY([-12, 12]) // Cancel if vertical movement exceeds 12 pixels first
     .onStart(() => {
-      runOnJS(setIsTransitioning)(true);
+      scheduleOnRN(setIsTransitioning, true);
     })
     .onUpdate((e) => {
       translateX.value = e.translationX * 0.35; // follow finger
@@ -127,12 +127,12 @@ export default function ModalPageWrapper({
       });
 
       if (swipedRight) {
-        runOnJS(handleSwipeRight)();
+        scheduleOnRN(handleSwipeRight);
       } else if (swipedLeft) {
-        runOnJS(handleSwipeLeft)();
+        scheduleOnRN(handleSwipeLeft);
       }
 
-      runOnJS(setIsTransitioning)(false);
+      scheduleOnRN(setIsTransitioning, false);
     });
 
   const tap = Gesture.Tap();

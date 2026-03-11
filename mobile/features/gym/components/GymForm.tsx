@@ -36,7 +36,6 @@ import RestTimerDisplay from "@/features/gym/components/RestTimerDisplay";
 import { getPrefetchedHistoryPerCard } from "@/database/gym/prefetchedHistoryPerCard";
 import { updateNativeTimerLabel } from "@/native/android/NativeTimer";
 import { useTranslation } from "react-i18next";
-import { formatDateShort } from "@/lib/formatDate";
 import GymNotesModal from "@/features/gym/components/GymNotesModal";
 import { NotebookPen, Plus } from "lucide-react-native";
 import DraggableList from "@/components/DraggableList";
@@ -75,12 +74,9 @@ type GymFormData = Pick<
 export default function GymForm({ initialData }: { initialData: GymFormData }) {
   const confirmAction = useConfirmAction();
   const session = initialData;
-  const now = formatDateShort(new Date());
 
   const { t } = useTranslation(["gym", "timer", "common"]);
-  const [title, setTitle] = useState(
-    session.title || `${t("gym.title")} - ${now}`,
-  );
+  const [title, setTitle] = useState(session.title || `${t("gym.title")}`);
   const [exercises, setExercises] = useState<ExerciseEntry[]>(
     (session.gym_session_exercises || []).map((ex) => ({
       exercise_id: ex.exercise_id,
@@ -324,7 +320,16 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
         mode === "countdown"
           ? t("timer:timer.notification.timeRemaining")
           : t("timer:timer.notification.inProgress");
-      updateNativeTimerLabel(startTimestamp, title, mode, statusText);
+      updateNativeTimerLabel(
+        startTimestamp,
+        title,
+        mode,
+        statusText,
+        t("timer:timer.notification.pauseTimer"),
+        mode === "countdown"
+          ? t("timer:timer.notification.extendTimer")
+          : undefined,
+      );
     }
   }, [title, setActiveSession, startTimestamp, mode, t]);
 

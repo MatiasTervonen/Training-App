@@ -18,6 +18,7 @@ import {
 import { startNativeTimer } from "@/native/android/NativeTimer";
 import { useTranslation } from "react-i18next";
 import * as Haptics from "expo-haptics";
+import { formatDurationLong } from "@/lib/formatDate";
 
 type TimerProps = {
   className?: string;
@@ -72,14 +73,6 @@ export default function Timer({
     }
   }, [alarmFired, colorProgress]);
 
-  const formatTime = (seconds: number) => {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${String(minutes).padStart(2, "0")}:${String(
-      remainingSeconds,
-    ).padStart(2, "0")}`;
-  };
-
   const handleStart = () => {
     if (!remainingMs) return;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -121,7 +114,7 @@ export default function Timer({
           adjustsFontSizeToFit
           minimumFontScale={0.1}
         >
-          {formatTime(displaySeconds)}
+          {formatDurationLong(displaySeconds)}
         </Animated.Text>
       </View>
 
@@ -143,7 +136,9 @@ export default function Timer({
               className="btn-danger"
               textClassName="text-gray-100"
               onPress={() => {
-                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                Haptics.notificationAsync(
+                  Haptics.NotificationFeedbackType.Success,
+                );
                 onStopAlarmSound?.();
                 stopNativeAlarm();
                 cancelNativeAlarm("timer");
@@ -210,6 +205,8 @@ export default function Timer({
                   t("timer.title"),
                   "countdown",
                   t("timer.notification.timeRemaining"),
+                  t("timer.notification.pauseTimer"),
+                  t("timer.notification.extendTimer"),
                 );
 
                 useTimerStore

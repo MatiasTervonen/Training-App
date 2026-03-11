@@ -13,9 +13,9 @@ import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
-  runOnJS,
 } from "react-native-reanimated";
 import { useCallback, useRef, useState } from "react";
+import { scheduleOnRN } from "react-native-worklets";
 
 type ImageItem = {
   id: string;
@@ -62,10 +62,10 @@ function ImagePage({
         translateY.value = withTiming(0);
         savedTranslateX.value = 0;
         savedTranslateY.value = 0;
-        runOnJS(onZoomChange)(false);
+        scheduleOnRN(onZoomChange, false);
       } else {
         savedScale.value = scale.value;
-        runOnJS(onZoomChange)(scale.value > 1);
+        scheduleOnRN(onZoomChange, scale.value > 1);
       }
     });
 
@@ -120,7 +120,7 @@ function ImagePage({
             dismissY.value > 0 ? SCREEN_HEIGHT : -SCREEN_HEIGHT,
             { duration: 200 },
             () => {
-              runOnJS(onClose)();
+              scheduleOnRN(onClose);
             },
           );
         } else {
@@ -140,11 +140,11 @@ function ImagePage({
         translateY.value = withTiming(0);
         savedTranslateX.value = 0;
         savedTranslateY.value = 0;
-        runOnJS(onZoomChange)(false);
+        scheduleOnRN(onZoomChange, false);
       } else {
         scale.value = withTiming(2.5);
         savedScale.value = 2.5;
-        runOnJS(onZoomChange)(true);
+        scheduleOnRN(onZoomChange, true);
       }
     });
 

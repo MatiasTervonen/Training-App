@@ -4,7 +4,6 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
   withTiming,
-  runOnJS,
 } from "react-native-reanimated";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { CircleX } from "lucide-react-native";
@@ -14,6 +13,7 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
 } from "react-native";
+import { scheduleOnRN } from "react-native-worklets";
 
 export default function ModalLogin({
   isOpen,
@@ -46,7 +46,7 @@ export default function ModalLogin({
           translateX.value > 0 ? 500 : -500,
           { duration: 200 },
           () => {
-            runOnJS(onClose)();
+            scheduleOnRN(onClose);
           },
         );
       } else {

@@ -2,6 +2,7 @@ import { CirclePlay, CirclePause } from "lucide-react-native";
 import { useTimerStore } from "@/lib/stores/timerStore";
 import { View, TouchableOpacity } from "react-native";
 import AppText from "@/components/AppText";
+import { formatDurationLong } from "@/lib/formatDate";
 
 type ActiveSession = {
   label: string;
@@ -60,14 +61,6 @@ export default function Timer({
     onPause?.();
   };
 
-  const formatTime = (seconds: number) => {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${String(minutes).padStart(2, "0")}:${String(
-      remainingSeconds
-    ).padStart(2, "0")}`;
-  };
-
   const now = Date.now();
 
   const remainingSeconds = Math.max(0, Math.ceil((endTimestamp! - now) / 1000));
@@ -85,7 +78,7 @@ export default function Timer({
     <View className={`flex-row gap-2 items-center ${className}`}>
       <View className="items-center">
         <AppText className={`font-mono font-bold ${textClassName} `}>
-          {formatTime(displaySeconds)}
+          {formatDurationLong(displaySeconds)}
         </AppText>
       </View>
       {isRunning ? (

@@ -3,7 +3,11 @@ package com.layer100crypto.MyTrack.resttimer
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
+import android.os.CountDownTimer
 import android.util.Log
+import android.view.View
+import android.graphics.Color
+import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import android.app.PendingIntent
 import android.app.NotificationChannel
@@ -13,12 +17,17 @@ import com.layer100crypto.MyTrack.R
 
 class RestTimerService : Service() {
 
+    private var countDownTimer: CountDownTimer? = null
+    private var notificationManager: NotificationManager? = null
+    private var notificationBuilder: NotificationCompat.Builder? = null
+    private var collapsedViews: RemoteViews? = null
+    private var expandedViews: RemoteViews? = null
+
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Log.d("RestTimer", "Rest Timer Service started")
 
         val endTime = intent?.getLongExtra("endTime", 0L) ?: 0L
         val label = intent?.getStringExtra("label") ?: "Rest"
-        val statusText = intent?.getStringExtra("statusText") ?: "Resting"
         val cancelText = intent?.getStringExtra("cancelText") ?: "Skip"
 
         // Create notification channel
@@ -27,8 +36,8 @@ class RestTimerService : Service() {
             "Rest Timer",
             NotificationManager.IMPORTANCE_LOW
         )
-        val manager = getSystemService(NotificationManager::class.java)
-        manager.createNotificationChannel(channel)
+        notificationManager = getSystemService(NotificationManager::class.java)
+        notificationManager?.createNotificationChannel(channel)
 
         // Open app intent
         val openAppIntent = Intent(this, MainActivity::class.java).apply {
@@ -54,20 +63,59 @@ class RestTimerService : Service() {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        val builder = NotificationCompat.Builder(this, "rest_timer_channel")
-            .setContentTitle(label)
-            .setContentText(statusText)
+        val remaining = endTime - System.currentTimeMillis()
+
+        // Single button — same inline layout for collapsed and expanded
+        val inlineViews = RemoteViews(packageName, R.layout.notification_timer_expanded_inline).apply {
+            setTextViewText(R.id.timer_label, label)
+            setTextViewText(R.id.timer_text, formatTime(remaining))
+            setTextViewText(R.id.btn_primary, cancelText)
+            setViewVisibility(R.id.btn_primary, View.VISIBLE)
+            setOnClickPendingIntent(R.id.btn_primary, cancelPendingIntent)
+        }
+        collapsedViews = inlineViews
+        expandedViews = inlineViews
+
+        notificationBuilder = NotificationCompat.Builder(this, "rest_timer_channel")
             .setSmallIcon(R.drawable.small_notification_icon)
             .setOngoing(true)
-            .setUsesChronometer(true)
-            .setChronometerCountDown(true)
-            .setWhen(endTime)
+            .setShowWhen(false)
+            .setColorized(true)
+            .setColor(Color.parseColor("#0f172a"))
+            .setCustomContentView(collapsedViews)
+            .setCustomBigContentView(expandedViews)
             .setContentIntent(pendingIntent)
-            .addAction(0, cancelText, cancelPendingIntent)
             .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
 
-        startForeground(3, builder.build())
+        startForeground(3, notificationBuilder!!.build())
+
+        // Update notification every second with remaining time
+        countDownTimer?.cancel()
+        countDownTimer = object : CountDownTimer(remaining.coerceAtLeast(0), 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                val formatted = formatTime(millisUntilFinished)
+                collapsedViews?.setTextViewText(R.id.timer_text, formatted)
+                expandedViews?.setTextViewText(R.id.timer_text, formatted)
+                notificationManager?.notify(3, notificationBuilder!!.build())
+            }
+            override fun onFinish() {
+                stopSelf()
+            }
+        }.start()
+
         return START_STICKY
+    }
+
+    private fun formatTime(millis: Long): String {
+        val totalSeconds = (millis / 1000).coerceAtLeast(0)
+        val minutes = totalSeconds / 60
+        val seconds = totalSeconds % 60
+        return String.format("%d:%02d", minutes, seconds)
+    }
+
+    override fun onDestroy() {
+        countDownTimer?.cancel()
+        super.onDestroy()
     }
 
     override fun onBind(intent: Intent?): IBinder? = null

@@ -15,7 +15,6 @@ import {
   stopNativeAlarm,
   cancelNativeAlarm,
 } from "@/native/android/NativeAlarm";
-import { formatDurationLong } from "@/lib/formatDate";
 import { useTranslation } from "react-i18next";
 import { LinearGradient } from "expo-linear-gradient";
 
@@ -23,8 +22,6 @@ export default function ActiveSessionPopup() {
   const { t } = useTranslation(["gym", "timer"]);
   const activeSession = useTimerStore((state) => state.activeSession);
   const alarmFired = useTimerStore((state) => state.alarmFired);
-  const totalDuration = useTimerStore((state) => state.totalDuration);
-  const mode = useTimerStore((state) => state.mode);
 
   const pathname = usePathname();
 
@@ -93,29 +90,19 @@ export default function ActiveSessionPopup() {
           }}
           className="w-full py-3 flex-row items-center z-50"
         >
-          <View className="ml-10 flex-1">
-            <View className="flex-row items-center mb-2">
-              {activeSession.label && (
-                <AppText
-                  numberOfLines={1}
-                  ellipsizeMode="tail"
-                  className=" mr-8 text-lg"
-                >
-                  {activeSession.label}
-                </AppText>
-              )}
-              {alarmFired && <AppText>{t("timer:timer.notification.alarm")}</AppText>}
-            </View>
-            <View className="flex-row items-center gap-5">
-              <Timer textClassName="text-xl" />
-              <AppText>{activeSession.type}</AppText>
-              {mode === "countdown" && (
-                <AppText>{formatDurationLong(totalDuration)}</AppText>
-              )}
-            </View>
-          </View>
-          <View className="mr-5">
+          <View className="flex-row flex-1 justify-between items-center gap-5 ml-10">
+            <Timer textClassName="text-3xl" />
+            {activeSession.label && (
+              <AppText numberOfLines={1} ellipsizeMode="tail" className=" mr-8">
+                {activeSession.label}
+              </AppText>
+            )}
+            {alarmFired && (
+              <AppText>{t("timer:timer.notification.alarm")}</AppText>
+            )}
+
             <Link
+              className="mr-5"
               onPress={() => {
                 stopNativeAlarm();
                 cancelNativeAlarm("timer");

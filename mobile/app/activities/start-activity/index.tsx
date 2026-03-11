@@ -20,7 +20,6 @@ import {
   useStartGPStracking,
   useStopGPStracking,
 } from "@/features/activities/lib/location-actions";
-import { formatDateShort } from "@/lib/formatDate";
 import FullScreenMap from "@/features/activities/components/fullScreenMap";
 import { TrackPoint, DraftRecording, DraftVideo } from "@/types/session";
 import InfoModal from "@/components/InfoModal";
@@ -63,7 +62,6 @@ type DraftImage = {
 
 export default function StartActivityScreen() {
   const { t } = useTranslation(["activities", "timer", "common"]);
-  const now = formatDateShort(new Date());
 
   // Helper function to get translated activity name
   const getActivityName = (name: string, slug?: string | null) => {
@@ -82,7 +80,9 @@ export default function StartActivityScreen() {
   const [notes, setNotes] = useState("");
   const [allowGPS, setAllowGPS] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [savingProgress, setSavingProgress] = useState<number | undefined>(undefined);
+  const [savingProgress, setSavingProgress] = useState<number | undefined>(
+    undefined,
+  );
   const [track, setTrack] = useState<TrackPoint[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [showNotesModal, setShowNotesModal] = useState(false);
@@ -167,7 +167,16 @@ export default function StartActivityScreen() {
         mode === "countdown"
           ? t("timer:timer.notification.timeRemaining")
           : t("timer:timer.notification.inProgress");
-      updateNativeTimerLabel(startTimestamp, title, mode, statusText);
+      updateNativeTimerLabel(
+        startTimestamp,
+        title,
+        mode,
+        statusText,
+        t("timer:timer.notification.pauseTimer"),
+        mode === "countdown"
+          ? t("timer:timer.notification.extendTimer")
+          : undefined,
+      );
     }
   }, [title, setActiveSession, startTimestamp, mode, t, activityName]);
 
@@ -408,7 +417,7 @@ export default function StartActivityScreen() {
                 activity.slug,
               );
               setActivityName(translatedName);
-              setTitle(`${translatedName} - ${now}`);
+              setTitle(`${translatedName}`);
               setBaseMet(activity.base_met);
 
               await AsyncStorage.mergeItem(
@@ -609,7 +618,11 @@ export default function StartActivityScreen() {
 
       <FullScreenLoader
         visible={isSaving}
-        message={savingProgress !== undefined ? t("common:common.media.uploading") : t("activities.startActivityScreen.savingSession")}
+        message={
+          savingProgress !== undefined
+            ? t("common:common.media.uploading")
+            : t("activities.startActivityScreen.savingSession")
+        }
         progress={savingProgress}
       />
     </>

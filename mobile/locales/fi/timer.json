@@ -47,7 +47,9 @@
       "timesUp": "Aika loppui!",
       "stopAlarm": "Pysäytä",
       "extendTimer": "+1 min",
-      "restart": "Uudelleen"
+      "restart": "Uudelleen",
+      "pauseTimer": "Tauko",
+      "resumeTimer": "Jatka"
     },
     "stopwatch": {
       "title": "Sekuntikello",

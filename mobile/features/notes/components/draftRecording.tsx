@@ -148,10 +148,7 @@ export function DraftRecordingItem({
       </View>
 
       <GestureDetector gesture={combinedGesture}>
-        <View
-          className=" h-6 justify-center mx-4 py-6"
-          onLayout={onBarLayout}
-        >
+        <View className=" h-6 justify-center mx-4 py-6" onLayout={onBarLayout}>
           {/* Track background */}
           <View className="h-1 bg-slate-600 rounded-full">
             {/* Progress fill */}

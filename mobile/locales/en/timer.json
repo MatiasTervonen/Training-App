@@ -47,7 +47,9 @@
       "timesUp": "Time's up!",
       "stopAlarm": "Stop Alarm",
       "extendTimer": "+1 min",
-      "restart": "Restart"
+      "restart": "Restart",
+      "pauseTimer": "Pause",
+      "resumeTimer": "Resume"
     },
     "stopwatch": {
       "title": "Stopwatch",

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:background="@android:color/transparent"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp"
+    android:gravity="center_vertical">
+
+    <!-- Timer text (left side) -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/timer_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Rest"
+            android:textSize="12sp"
+            android:textColor="#94a3b8" />
+
+        <TextView
+            android:id="@+id/timer_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0:00"
+            android:textSize="34sp"
+            android:textColor="#ffffff"
+            android:fontFamily="sans-serif-light"
+            android:includeFontPadding="false"
+            android:lineSpacingExtra="-4dp" />
+
+    </LinearLayout>
+
+    <!-- Single button (right side) -->
+    <TextView
+        android:id="@+id/btn_primary"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:gravity="center"
+        android:text="Skip"
+        android:textSize="13sp"
+        android:textColor="#60a5fa"
+        android:textAllCaps="true"
+        android:fontFamily="sans-serif-medium"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:visibility="gone" />
+
+</LinearLayout>

@@ -179,6 +179,93 @@ object ReactEventEmitter {
         return true
     }
 
+    fun sendStopTimer(context: Context): Boolean {
+        val reactApplication = context.applicationContext as? ReactApplication
+            ?: return false
+
+        var reactContext: ReactContext? = try {
+            reactApplication.reactHost?.currentReactContext
+        } catch (e: Exception) {
+            null
+        }
+
+        if (reactContext == null) {
+            reactContext = try {
+                reactApplication.reactNativeHost
+                    ?.reactInstanceManager
+                    ?.currentReactContext
+            } catch (e: Exception) {
+                null
+            }
+        }
+
+        if (reactContext == null) return false
+
+        reactContext
+            .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
+            .emit("TIMER_STOPPED", null)
+
+        return true
+    }
+
+    fun sendTimerResumed(context: Context): Boolean {
+        val reactApplication = context.applicationContext as? ReactApplication
+            ?: return false
+
+        var reactContext: ReactContext? = try {
+            reactApplication.reactHost?.currentReactContext
+        } catch (e: Exception) {
+            null
+        }
+
+        if (reactContext == null) {
+            reactContext = try {
+                reactApplication.reactNativeHost
+                    ?.reactInstanceManager
+                    ?.currentReactContext
+            } catch (e: Exception) {
+                null
+            }
+        }
+
+        if (reactContext == null) return false
+
+        reactContext
+            .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
+            .emit("TIMER_RESUMED", null)
+
+        return true
+    }
+
+    fun sendTimerExtended(context: Context): Boolean {
+        val reactApplication = context.applicationContext as? ReactApplication
+            ?: return false
+
+        var reactContext: ReactContext? = try {
+            reactApplication.reactHost?.currentReactContext
+        } catch (e: Exception) {
+            null
+        }
+
+        if (reactContext == null) {
+            reactContext = try {
+                reactApplication.reactNativeHost
+                    ?.reactInstanceManager
+                    ?.currentReactContext
+            } catch (e: Exception) {
+                null
+            }
+        }
+
+        if (reactContext == null) return false
+
+        reactContext
+            .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
+            .emit("TIMER_EXTENDED", null)
+
+        return true
+    }
+
     fun sendAlarmPlaying(
         context: Context,
         reminderId: String,

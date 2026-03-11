@@ -81,6 +81,10 @@
       android:theme="@style/Theme.AppCompat.NoActionBar"
       android:excludeFromRecents="true"
       android:taskAffinity=""/>
+    <!-- Timer receivers -->
+    <receiver android:name=".timer.PauseTimerReceiver" android:exported="false"/>
+    <receiver android:name=".timer.ResumeTimerReceiver" android:exported="false"/>
+    <receiver android:name=".timer.ExtendTimerReceiver" android:exported="false"/>
     <!-- Timer service -->
     <service
       android:name=".timer.TimerService"

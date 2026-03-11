@@ -38,6 +38,7 @@ import useLogSetForExercise from "@/features/gym/hooks/template/useLogSetForExer
 import { useTranslation } from "react-i18next";
 
 import AnimatedButton from "@/components/buttons/animatedButton";
+import DraggableList from "@/components/DraggableList";
 
 export default function TemplateForm() {
   const confirmAction = useConfirmAction();
@@ -57,6 +58,7 @@ export default function TemplateForm() {
   const [exerciseHistoryId, setExerciseHistoryId] = useState<string | null>(
     null,
   );
+  const [isScrollEnabled, setIsScrollEnabled] = useState(true);
 
   const { id } = useLocalSearchParams<{ id?: string }>();
   const templateId = id;
@@ -211,6 +213,7 @@ export default function TemplateForm() {
     <>
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
         <ScrollView
+          scrollEnabled={isScrollEnabled}
           keyboardShouldPersistTaps="handled"
           contentContainerStyle={{ flexGrow: 1 }}
         >
@@ -230,14 +233,29 @@ export default function TemplateForm() {
                 />
               </View>
             </View>
-            <View>
-              {Object.entries(groupedExercises).map(([superset_id, group]) => (
+            <DraggableList
+              items={Object.entries(groupedExercises)}
+              keyExtractor={([, group], index) =>
+                `${group.map((g) => g.exercise.exercise_id).join("-")}-${index}`
+              }
+              onDragStart={() => setIsScrollEnabled(false)}
+              onDragEnd={() => setIsScrollEnabled(true)}
+              onReorder={(reordered) => {
+                const flatExercises = reordered.flatMap(([, group]) =>
+                  group.map((g) => g.exercise),
+                );
+                const flatInputs = reordered.flatMap(([, group]) =>
+                  group.map((g) => exerciseInputs[g.index]),
+                );
+                setExercises(flatExercises);
+                setExerciseInputs(flatInputs);
+              }}
+              renderItem={([superset_id, group]) => (
                 <LinearGradient
-                  key={superset_id}
                   colors={["#1e3a8a", "#0f172a", "#0f172a"]}
-                  start={{ x: 1, y: 0 }} // bottom-left
-                  end={{ x: 0, y: 1 }} // top-right
-                  className={`mt-5 rounded-md overflow-hidden  ${
+                  start={{ x: 1, y: 0 }}
+                  end={{ x: 0, y: 1 }}
+                  className={`mt-5 rounded-md overflow-hidden ${
                     group.length > 1
                       ? "border-2 border-blue-700"
                       : "border-2 border-gray-600"
@@ -248,73 +266,71 @@ export default function TemplateForm() {
                       {t("gym.templateForm.superSetLabel")}
                     </AppText>
                   )}
-                  {group.map(({ exercise, index }) => {
-                    return (
-                      <View key={exercise.exercise_id}>
-                        <ExerciseCard
-                          exercise={exercise}
-                          lastExerciseHistory={(index) => {
-                            const ex = exercises[index];
-                            if (ex.exercise_id) {
-                              openHistory(ex.exercise_id);
-                            }
-                          }}
-                          onChangeExercise={(index) => {
-                            setExerciseToChangeIndex(index);
-                            setSupersetExercise([emptyExerciseEntry]);
-                            setNormalExercises([emptyExerciseEntry]);
-                            setIsExerciseModalOpen(true);
-                          }}
-                          index={index}
-                          input={exerciseInputs[index]}
-                          onInputChange={(index, field, value) => {
-                            const updatedInputs = [...exerciseInputs];
-                            updatedInputs[index] = {
-                              ...updatedInputs[index],
-                              [field]: value,
-                            };
-                            setExerciseInputs(updatedInputs);
-                          }}
-                          onAddSet={(index) => logSetForExercise(index)}
-                          onDeleteSet={(index, setIndex) => {
-                            const updated = [...exercises];
-                            updated[index].sets.splice(setIndex, 1);
-                            setExercises(updated);
-                          }}
-                          onUpdateExercise={(index, updatedExercise) => {
-                            const updated = [...exercises];
-                            updated[index] = updatedExercise;
-                            setExercises(updated);
-                          }}
-                          onDeleteExercise={async (index) => {
-                            const confirmDelete = await confirmAction({
-                              title: "Delete Exercise",
-                              message:
-                                "Are you sure you want to delete this exercise from the template?",
-                            });
-                            if (!confirmDelete) return;
+                  {group.map(({ exercise, index }) => (
+                    <View key={exercise.exercise_id}>
+                      <ExerciseCard
+                        exercise={exercise}
+                        lastExerciseHistory={(index) => {
+                          const ex = exercises[index];
+                          if (ex.exercise_id) {
+                            openHistory(ex.exercise_id);
+                          }
+                        }}
+                        onChangeExercise={(index) => {
+                          setExerciseToChangeIndex(index);
+                          setSupersetExercise([emptyExerciseEntry]);
+                          setNormalExercises([emptyExerciseEntry]);
+                          setIsExerciseModalOpen(true);
+                        }}
+                        index={index}
+                        input={exerciseInputs[index]}
+                        onInputChange={(index, field, value) => {
+                          const updatedInputs = [...exerciseInputs];
+                          updatedInputs[index] = {
+                            ...updatedInputs[index],
+                            [field]: value,
+                          };
+                          setExerciseInputs(updatedInputs);
+                        }}
+                        onAddSet={(index) => logSetForExercise(index)}
+                        onDeleteSet={(index, setIndex) => {
+                          const updated = [...exercises];
+                          updated[index].sets.splice(setIndex, 1);
+                          setExercises(updated);
+                        }}
+                        onUpdateExercise={(index, updatedExercise) => {
+                          const updated = [...exercises];
+                          updated[index] = updatedExercise;
+                          setExercises(updated);
+                        }}
+                        onDeleteExercise={async (index) => {
+                          const confirmDelete = await confirmAction({
+                            title: "Delete Exercise",
+                            message:
+                              "Are you sure you want to delete this exercise from the template?",
+                          });
+                          if (!confirmDelete) return;
 
-                            const updated = exercises.filter(
-                              (_, i) => i !== index,
-                            );
-                            setExercises(updated);
+                          const updated = exercises.filter(
+                            (_, i) => i !== index,
+                          );
+                          setExercises(updated);
 
-                            const sessionDraft = {
-                              title: workoutName,
-                              exercises: updated,
-                            };
-                            AsyncStorage.setItem(
-                              storageKey,
-                              JSON.stringify(sessionDraft),
-                            );
-                          }}
-                        />
-                      </View>
-                    );
-                  })}
+                          const sessionDraft = {
+                            title: workoutName,
+                            exercises: updated,
+                          };
+                          AsyncStorage.setItem(
+                            storageKey,
+                            JSON.stringify(sessionDraft),
+                          );
+                        }}
+                      />
+                    </View>
+                  ))}
                 </LinearGradient>
-              ))}
-            </View>
+              )}
+            />
             <FullScreenModal
               isOpen={isExerciseModalOpen}
               onClose={() => {

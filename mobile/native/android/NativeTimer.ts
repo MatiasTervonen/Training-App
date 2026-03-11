@@ -6,10 +6,19 @@ export function startNativeTimer(
   startTime: number,
   label: string,
   mode: string,
-  statusText?: string
+  statusText?: string,
+  pauseText?: string,
+  extendText?: string,
 ) {
   if (Platform.OS === "android" && nativeTimer) {
-    nativeTimer.startTimer(startTime, label, mode, statusText || "");
+    nativeTimer.startTimer(
+      startTime,
+      label,
+      mode,
+      statusText || "",
+      pauseText || "Stop",
+      extendText || "+1 min",
+    );
   }
 }
 
@@ -17,10 +26,33 @@ export function updateNativeTimerLabel(
   startTime: number,
   label: string,
   mode: string,
-  statusText?: string
+  statusText?: string,
+  pauseText?: string,
+  extendText?: string,
 ) {
   if (Platform.OS === "android" && nativeTimer) {
-    nativeTimer.updateTimerLabel(startTime, label, mode, statusText || "");
+    nativeTimer.updateTimerLabel(
+      startTime,
+      label,
+      mode,
+      statusText || "",
+      pauseText || "Stop",
+      extendText || "+1 min",
+    );
+  }
+}
+
+export function pauseNativeTimer(
+  frozenTime?: string,
+  pausedLabel?: string,
+  resumeText?: string,
+) {
+  if (Platform.OS === "android" && nativeTimer) {
+    nativeTimer.pauseTimer(
+      frozenTime || "",
+      pausedLabel || "Paused",
+      resumeText || "Resume",
+    );
   }
 }
 

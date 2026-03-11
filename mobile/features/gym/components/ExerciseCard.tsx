@@ -5,7 +5,7 @@ import {
   ExerciseInput,
   LatestHistoryPerExercise,
 } from "@/types/session";
-import { SquareX } from "lucide-react-native";
+import { SquareX, ChevronDown, ChevronUp } from "lucide-react-native";
 import AppInput from "@/components/AppInput";
 import { useUserStore } from "@/lib/stores/useUserStore";
 import { getDistanceUnitLabels, convertMetersForDisplay } from "@/lib/formatDate";
@@ -35,6 +35,8 @@ type ExerciseCardProps = {
   mode?: "session";
   disabled?: boolean;
   history?: LatestHistoryPerExercise;
+  isExpanded?: boolean;
+  onToggleExpand?: () => void;
 };
 
 const isCardioExercise = (exercise: ExerciseEntry) => {
@@ -55,6 +57,8 @@ export default function ExerciseCard({
   mode,
   disabled,
   history,
+  isExpanded,
+  onToggleExpand,
 }: ExerciseCardProps) {
   const weightUnit =
     useUserStore((state) => state.profile?.weight_unit) || "kg";
@@ -63,12 +67,18 @@ export default function ExerciseCard({
   const confirmAction = useConfirmAction();
 
   const { t } = useTranslation("gym");
+  const showContent = isExpanded !== false;
+
   return (
     <View className="py-2 px-4">
       <View className="flex-row items-center justify-between">
-        <View className="flex-1 mr-2">
+        <Pressable
+          onPress={onToggleExpand}
+          disabled={!onToggleExpand}
+          className="flex-1 mr-2"
+        >
           <AppText
-            className="text-gray-100 text-xl"
+            className="text-gray-100 text-lg"
             numberOfLines={1}
             ellipsizeMode="tail"
           >
@@ -81,37 +91,42 @@ export default function ExerciseCard({
                 `gym.muscleGroups.${exercise.muscle_group?.toLowerCase().replace(/ /g, "_")}`,
               )}
             </AppText>
+            {mode === "session" && !showContent && exercise.sets.length > 0 && (
+              <View className="bg-gray-600 px-2 py-0.5 rounded">
+                <AppText className="text-sm text-gray-300">
+                  {exercise.sets.length} {t("gym.exerciseCard.setsLabel")}
+                </AppText>
+              </View>
+            )}
           </View>
-        </View>
-        <View className="mr-4">
-          <DropDownModal
-            disabled={disabled}
-            label={`${index + 1}. ${exercise.name}`}
-            options={[
-              { value: "delete", label: t("gym.exerciseCard.delete") },
-              { value: "change", label: t("gym.exerciseCard.change") },
-              { value: "history", label: t("gym.exerciseCard.history") },
-            ]}
-            onChange={(value) => {
-              switch (value) {
-                case "delete":
-                  onDeleteExercise(index);
-                  break;
-                case "change":
-                  onChangeExercise(index);
-                  break;
-                case "history":
-                  lastExerciseHistory(index);
-                  break;
-                default:
-                  break;
-              }
-            }}
-          />
-        </View>
+        </Pressable>
+        <DropDownModal
+          disabled={disabled}
+          label={`${index + 1}. ${exercise.name}`}
+          options={[
+            { value: "delete", label: t("gym.exerciseCard.delete") },
+            { value: "change", label: t("gym.exerciseCard.change") },
+            { value: "history", label: t("gym.exerciseCard.history") },
+          ]}
+          onChange={(value) => {
+            switch (value) {
+              case "delete":
+                onDeleteExercise(index);
+                break;
+              case "change":
+                onChangeExercise(index);
+                break;
+              case "history":
+                lastExerciseHistory(index);
+                break;
+              default:
+                break;
+            }
+          }}
+        />
       </View>
-      {history?.sets && history?.sets.length > 0 && (
-        <View className="flex-row mt-2">
+      <View className="flex-row items-center justify-between mt-2">
+        {history?.sets && history?.sets.length > 0 ? (
           <View className="flex-row items-center bg-gray-700/50 px-2 py-0.5 rounded shrink">
             <AppText className="text-sm text-gray-300 shrink-0">
               {t("gym.exerciseCard.last")}{" "}
@@ -132,9 +147,20 @@ export default function ExerciseCard({
                     .join(" • ")}
             </AppText>
           </View>
-        </View>
-      )}
-      {mode === "session" && (
+        ) : (
+          <View />
+        )}
+        {onToggleExpand && (
+          <Pressable onPress={onToggleExpand} className="pl-2">
+            {showContent ? (
+              <ChevronUp color="#9ca3af" size={24} />
+            ) : (
+              <ChevronDown color="#9ca3af" size={24} />
+            )}
+          </Pressable>
+        )}
+      </View>
+      {mode === "session" && showContent && (
         <>
           <View className="my-4">
             <SubNotesInput

@@ -127,13 +127,21 @@ const ShareCard = forwardRef<View, ShareCardProps>(
             <View className="flex-1 justify-center gap-3">
               {topExercises.map((ex, i) => (
                 <View key={i} className="flex-row justify-between items-center">
-                  <AppText
-                    className="text-[30px] flex-1 mr-4"
-                    style={{ color: colors.textSecondary }}
-                    numberOfLines={1}
-                  >
-                    {ex.name}
-                  </AppText>
+                  <View className="flex-1 mr-4">
+                    <AppText
+                      className="text-[30px]"
+                      style={{ color: colors.textSecondary }}
+                      numberOfLines={1}
+                    >
+                      {ex.name}
+                    </AppText>
+                    <AppText
+                      className="text-[22px]"
+                      style={{ color: colors.textMuted }}
+                    >
+                      {t(`gym.equipment.${ex.equipment?.toLowerCase()}`)}
+                    </AppText>
+                  </View>
                   <AppText
                     className="text-[30px]"
                     style={{ color: colors.textMuted }}
@@ -235,13 +243,19 @@ const ShareCard = forwardRef<View, ShareCardProps>(
         <View className="gap-3">
           {topExercises.map((ex, i) => (
             <View key={i} className="flex-row justify-between items-center">
-              <AppText
-                className="flex-1 mr-4"
-                style={{ fontSize: isStory ? 36 : 28, color: colors.textSecondary }}
-                numberOfLines={1}
-              >
-                {ex.name}
-              </AppText>
+              <View className="flex-1 mr-4">
+                <AppText
+                  style={{ fontSize: isStory ? 36 : 28, color: colors.textSecondary }}
+                  numberOfLines={1}
+                >
+                  {ex.name}
+                </AppText>
+                <AppText
+                  style={{ fontSize: isStory ? 26 : 20, color: colors.textMuted }}
+                >
+                  {t(`gym.equipment.${ex.equipment?.toLowerCase()}`)}
+                </AppText>
+              </View>
               <AppText
                 style={{ fontSize: isStory ? 36 : 28, color: colors.textMuted }}
               >

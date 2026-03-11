@@ -192,7 +192,8 @@
       },
       "missingData": "Puuttuvat tiedot",
       "fillTime": "Täytä aika (min).",
-      "fillReps": "Täytä toistot."
+      "fillReps": "Täytä toistot.",
+      "setsLabel": "sarjaa"
     },
     "templateView": {
       "created": "Luotu:",

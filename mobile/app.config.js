@@ -80,8 +80,7 @@ export default {
       [
         "expo-location",
         {
-          locationAlwaysAndWhenInUsePermission:
-            `Allow ${APP_NAME} to use your location.`,
+          locationAlwaysAndWhenInUsePermission: `Allow ${APP_NAME} to use your location.`,
           isAndroidBackgroundLocationEnabled: true,
         },
       ],

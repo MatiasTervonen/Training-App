@@ -190,7 +190,8 @@
       },
       "missingData": "Missing data",
       "fillTime": "Please fill time (min).",
-      "fillReps": "Please fill reps."
+      "fillReps": "Please fill reps.",
+      "setsLabel": "sets"
     },
     "templateView": {
       "created": "Created:",

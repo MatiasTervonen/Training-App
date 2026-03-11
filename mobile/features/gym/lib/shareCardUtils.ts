@@ -8,6 +8,7 @@ export type ShareStats = {
 
 export type TopExercise = {
   name: string;
+  equipment: string;
   weight: number;
   reps: number;
   isCardio: boolean;
@@ -53,6 +54,7 @@ export function getTopExercises(
         );
         return {
           name: ex.name,
+          equipment: ex.equipment,
           weight: 0,
           reps: 0,
           isCardio: true,
@@ -72,6 +74,7 @@ export function getTopExercises(
 
       return {
         name: ex.name,
+        equipment: ex.equipment,
         weight: bestSet.weight ?? 0,
         reps: bestSet.reps ?? 0,
         isCardio: false,

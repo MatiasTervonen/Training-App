@@ -1,4 +1,4 @@
-import { View } from "react-native";
+import { View, LayoutAnimation, UIManager, Platform } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import AppText from "@/components/AppText";
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
@@ -39,6 +39,13 @@ import { useTranslation } from "react-i18next";
 import { formatDateShort } from "@/lib/formatDate";
 import GymNotesModal from "@/features/gym/components/GymNotesModal";
 import { NotebookPen, Plus } from "lucide-react-native";
+
+if (
+  Platform.OS === "android" &&
+  UIManager.setLayoutAnimationEnabledExperimental
+) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
+}
 
 type DraftRecording = {
   id: string;
@@ -94,6 +101,11 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
       distance_meters: "",
     })),
   );
+  const [collapsedExercises, setCollapsedExercises] = useState<Set<number>>(
+    () => new Set(exercises.map((_, i) => i)),
+  );
+  const addedViaModalRef = useRef(false);
+  const prevExerciseCountRef = useRef(exercises.length);
   const [durationEdit, setDurationEdit] = useState(session.duration);
   const router = useRouter();
   const [isSaving, setIsSaving] = useState(false);
@@ -293,6 +305,30 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
     }
   }, [title, setActiveSession, startTimestamp, mode, t]);
 
+  useEffect(() => {
+    const prev = prevExerciseCountRef.current;
+    prevExerciseCountRef.current = exercises.length;
+
+    if (exercises.length > prev && !addedViaModalRef.current) {
+      // Exercises loaded from template/draft — collapse all
+      setCollapsedExercises(new Set(exercises.map((_, i) => i)));
+    }
+    addedViaModalRef.current = false;
+  }, [exercises.length]);
+
+  const toggleExercise = useCallback((index: number) => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    setCollapsedExercises((prev) => {
+      const next = new Set(prev);
+      if (next.has(index)) {
+        next.delete(index);
+      } else {
+        next.add(index);
+      }
+      return next;
+    });
+  }, []);
+
   const groupedExercises = GroupGymExercises(exercises);
 
   return (
@@ -320,10 +356,10 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
       >
         <PageContainer className="justify-between flex-1">
           <View>
-            <AppText className="text-2xl mb-5 text-center">
+            <AppText className="text-2xl mb-8 text-center">
               {title || t("gym.gymForm.title")}
             </AppText>
-            <View className="gap-5">
+            <View className="gap-5 mb-6">
               <AnimatedButton
                 onPress={() => setShowNotesModal(true)}
                 className="btn-neutral flex-row items-center justify-center gap-2 px-4"
@@ -351,7 +387,7 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
                 colors={["#1e3a8a", "#0f172a", "#0f172a"]}
                 start={{ x: 1, y: 0 }} // bottom-left
                 end={{ x: 0, y: 1 }} // top-right
-                className={`mt-10  rounded-md overflow-hidden ${
+                className={`mt-5  rounded-md overflow-hidden ${
                   group.length > 1
                     ? "border-2 border-blue-700"
                     : "border-2 border-gray-600"
@@ -369,6 +405,8 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
                       <ExerciseCard
                         disabled={false}
                         mode="session"
+                        isExpanded={!collapsedExercises.has(index)}
+                        onToggleExpand={() => toggleExercise(index)}
                         exercise={exercise}
                         history={historyMap[exercise.exercise_id]}
                         lastExerciseHistory={(index) => {
@@ -417,6 +455,14 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
                             (_, i) => i !== index,
                           );
                           setExercises(updated);
+                          setCollapsedExercises((prev) => {
+                            const next = new Set<number>();
+                            for (const idx of prev) {
+                              if (idx < index) next.add(idx);
+                              else if (idx > index) next.add(idx - 1);
+                            }
+                            return next;
+                          });
 
                           const sessionDraft = {
                             title: title,
@@ -491,6 +537,7 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
                 <View className="flex-1">
                   <AnimatedButton
                     onPress={() => {
+                      addedViaModalRef.current = true;
                       startExercise();
                       setIsExerciseModalOpen(false);
                     }}

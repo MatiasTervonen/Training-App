@@ -6,7 +6,13 @@ import {
   startNativeRestTimer,
   stopNativeRestTimer,
 } from "@/native/android/NativeRestTimer";
-import { createAudioPlayer } from "expo-audio";
+import { createAudioPlayer, setAudioModeAsync } from "expo-audio";
+
+// Duck other audio (e.g. YouTube) instead of pausing it
+setAudioModeAsync({
+  interruptionMode: "duckOthers",
+  interruptionModeAndroid: "duckOthers",
+});
 
 const restTimerSound = createAudioPlayer(
   require("@/assets/audio/mixkit_alert_bells_echo_765.wav"),
@@ -95,16 +101,20 @@ export const useRestTimerStore = create<RestTimerState>()((set, get) => ({
         }
         stopNativeRestTimer();
 
-        // Play sound when timer ends in foreground
-        restTimerSound.seekTo(0);
-        restTimerSound.play();
+        const timeSinceEnd = Date.now() - end;
 
-        // Auto-dismiss end notification after 5 seconds
+        // Only play JS sound if caught in real-time (foreground).
+        // If app was backgrounded the notification already played the sound.
+        if (timeSinceEnd < 2000) {
+          restTimerSound.seekTo(0);
+          restTimerSound.play();
+        }
+
+        // Cancel/dismiss the scheduled notification
         const { endNotificationId: firedId } = get();
         if (firedId) {
-          setTimeout(() => {
-            Notifications.dismissNotificationAsync(firedId);
-          }, 5000);
+          Notifications.cancelScheduledNotificationAsync(firedId);
+          Notifications.dismissNotificationAsync(firedId);
         }
 
         set({

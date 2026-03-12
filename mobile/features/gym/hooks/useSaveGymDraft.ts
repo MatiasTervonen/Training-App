@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDebouncedCallback } from "use-debounce";
-import { ExerciseEntry, ExerciseInput, DraftRecording, DraftImage, DraftVideo } from "@/types/session";
+import { ExerciseEntry, ExerciseInput, DraftRecording, DraftImage, DraftVideo, PhaseData } from "@/types/session";
 import { handleError } from "@/utils/handleError";
 import { formatDate } from "@/lib/formatDate";
 
@@ -13,6 +13,8 @@ export default function useSaveGymDraft({
   draftRecordings,
   draftImages,
   draftVideos,
+  warmup,
+  cooldown,
   setTitle,
   setExercises,
   setNotes,
@@ -20,6 +22,8 @@ export default function useSaveGymDraft({
   setDraftRecordings,
   setDraftImages,
   setDraftVideos,
+  setWarmup,
+  setCooldown,
 }: {
   exercises: ExerciseEntry[];
   notes: string;
@@ -28,6 +32,8 @@ export default function useSaveGymDraft({
   draftRecordings: DraftRecording[];
   draftImages: DraftImage[];
   draftVideos: DraftVideo[];
+  warmup?: PhaseData | null;
+  cooldown?: PhaseData | null;
   setTitle: (title: string) => void;
   setExercises: (exercises: ExerciseEntry[]) => void;
   setNotes: (notes: string) => void;
@@ -35,6 +41,8 @@ export default function useSaveGymDraft({
   setDraftRecordings: (recordings: DraftRecording[]) => void;
   setDraftImages: (images: DraftImage[]) => void;
   setDraftVideos: (videos: DraftVideo[]) => void;
+  setWarmup?: (warmup: PhaseData | null) => void;
+  setCooldown?: (cooldown: PhaseData | null) => void;
 }) {
   const [hasLoadedDraft, setHasLoadedDraft] = useState(false);
 
@@ -66,6 +74,12 @@ export default function useSaveGymDraft({
           setDraftImages(parsedDraft.draftImages || []);
           const videos: DraftVideo[] = parsedDraft.draftVideos || [];
           setDraftVideos(videos.filter((v) => !v.isCompressing));
+          if (parsedDraft.warmup) {
+            setWarmup?.(parsedDraft.warmup);
+          }
+          if (parsedDraft.cooldown) {
+            setCooldown?.(parsedDraft.cooldown);
+          }
         }
       } catch (error) {
         handleError(error, {
@@ -97,7 +111,9 @@ export default function useSaveGymDraft({
       if (
         exercises.length === 0 &&
         notes.trim() === "" &&
-        title.trim() === ""
+        title.trim() === "" &&
+        !warmup &&
+        !cooldown
       ) {
         AsyncStorage.removeItem("gym_session_draft");
         return;
@@ -109,6 +125,8 @@ export default function useSaveGymDraft({
           draftRecordings,
           draftImages,
           draftVideos: draftVideos.filter((v) => !v.isCompressing),
+          warmup: warmup ?? null,
+          cooldown: cooldown ?? null,
         };
 
         await AsyncStorage.setItem(
@@ -123,7 +141,13 @@ export default function useSaveGymDraft({
 
   useEffect(() => {
     saveGymDraft();
-  }, [notes, title, exercises, draftRecordings, draftImages, draftVideos, saveGymDraft]);
+  }, [notes, title, exercises, draftRecordings, draftImages, draftVideos, warmup, cooldown, saveGymDraft]);
+
+  useEffect(() => {
+    return () => {
+      saveGymDraft.flush();
+    };
+  }, [saveGymDraft]);
 
   return {
     saveGymDraft,

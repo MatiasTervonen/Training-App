@@ -1,6 +1,15 @@
 import { create } from "zustand";
 import { ExerciseEntry } from "@/types/session";
 
+export type SessionSummaryPhase = {
+  phase_type: string;
+  activity_id: string;
+  duration_seconds: number;
+  steps: number | null;
+  distance_meters: number | null;
+  is_manual: boolean;
+};
+
 export type SessionSummary = {
   title: string;
   date: string;
@@ -8,6 +17,7 @@ export type SessionSummary = {
   exercises: ExerciseEntry[];
   notes: string;
   weightUnit: string;
+  phases?: SessionSummaryPhase[];
 };
 
 interface SessionSummaryStore {

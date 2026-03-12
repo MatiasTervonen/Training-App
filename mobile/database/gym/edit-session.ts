@@ -17,6 +17,15 @@ type DraftImage = {
   uri: string;
 };
 
+type PhasePayload = {
+  phase_type: string;
+  activity_id: string;
+  duration_seconds: number;
+  steps: number | null;
+  distance_meters: number | null;
+  is_manual: boolean;
+};
+
 type editGymSessionProps = {
   id: string;
   title: string;
@@ -32,6 +41,7 @@ type editGymSessionProps = {
   deletedRecordingIds?: string[];
   deletedRecordingPaths?: string[];
   newRecordings?: DraftRecording[];
+  phases?: PhasePayload[];
 };
 
 export async function editSession({
@@ -49,6 +59,7 @@ export async function editSession({
   deletedRecordingIds = [],
   deletedRecordingPaths = [],
   newRecordings = [],
+  phases = [],
 }: editGymSessionProps) {
   const {
     data: { session },
@@ -121,6 +132,7 @@ export async function editSession({
       p_new_videos: uploadedVideos,
       p_deleted_recording_ids: deletedRecordingIds,
       p_new_recordings: uploadedRecordings,
+      p_phases: phases,
     });
 
     if (error) {

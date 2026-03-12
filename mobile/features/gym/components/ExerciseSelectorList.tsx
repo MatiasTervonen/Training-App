@@ -6,6 +6,8 @@ import AppText from "@/components/AppText";
 import { Pressable, View } from "react-native";
 import React from "react";
 
+type PhaseType = "warmup" | "cooldown";
+
 interface Props {
   draftExercises: ExerciseEntry[];
   setDraftExercises: React.Dispatch<React.SetStateAction<ExerciseEntry[]>>;
@@ -14,6 +16,9 @@ interface Props {
   exercises: ExerciseEntry[];
   setExercises: React.Dispatch<React.SetStateAction<ExerciseEntry[]>>;
   setIsExerciseModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  hasWarmup?: boolean;
+  hasCooldown?: boolean;
+  onSelectPhase?: (phaseType: PhaseType) => void;
 }
 
 export default function ExerciseSelectorList({
@@ -24,6 +29,9 @@ export default function ExerciseSelectorList({
   exercises,
   setExercises,
   setIsExerciseModalOpen,
+  hasWarmup,
+  hasCooldown,
+  onSelectPhase,
 }: Props) {
   return (
     <>
@@ -36,6 +44,12 @@ export default function ExerciseSelectorList({
           return (
             <ExerciseDropdown
               key="empty-selector"
+              hasWarmup={hasWarmup}
+              hasCooldown={hasCooldown}
+              onSelectPhase={(phaseType) => {
+                setIsExerciseModalOpen(false);
+                onSelectPhase?.(phaseType);
+              }}
               onSelect={(selected) => {
                 const newExercise: ExerciseEntry = {
                   exercise_id: String(selected.id),

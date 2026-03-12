@@ -860,6 +860,63 @@ export type Database = {
           },
         ]
       }
+      gym_session_phases: {
+        Row: {
+          activity_id: string
+          calories: number | null
+          created_at: string | null
+          distance_meters: number | null
+          duration_seconds: number
+          id: string
+          is_manual: boolean | null
+          phase_type: string
+          session_id: string
+          steps: number | null
+          user_id: string
+        }
+        Insert: {
+          activity_id: string
+          calories?: number | null
+          created_at?: string | null
+          distance_meters?: number | null
+          duration_seconds: number
+          id?: string
+          is_manual?: boolean | null
+          phase_type: string
+          session_id: string
+          steps?: number | null
+          user_id?: string
+        }
+        Update: {
+          activity_id?: string
+          calories?: number | null
+          created_at?: string | null
+          distance_meters?: number | null
+          duration_seconds?: number
+          id?: string
+          is_manual?: boolean | null
+          phase_type?: string
+          session_id?: string
+          steps?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gym_session_phases_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "gym_session_phases_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       gym_sets: {
         Row: {
           created_at: string
@@ -965,6 +1022,48 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      gym_template_phases: {
+        Row: {
+          activity_id: string
+          created_at: string | null
+          id: string
+          phase_type: string
+          template_id: string
+          user_id: string
+        }
+        Insert: {
+          activity_id: string
+          created_at?: string | null
+          id?: string
+          phase_type: string
+          template_id: string
+          user_id?: string
+        }
+        Update: {
+          activity_id?: string
+          created_at?: string | null
+          id?: string
+          phase_type?: string
+          template_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gym_template_phases_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "gym_template_phases_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "gym_templates"
             referencedColumns: ["id"]
           },
         ]
@@ -2454,6 +2553,7 @@ export type Database = {
           p_new_recordings?: Json
           p_new_videos?: Json
           p_notes: string
+          p_phases?: Json
           p_title: string
           p_updated_at: string
         }
@@ -2478,7 +2578,12 @@ export type Database = {
         }
       }
       gym_edit_template: {
-        Args: { p_exercises: Json; p_id: string; p_name: string }
+        Args: {
+          p_exercises: Json
+          p_id: string
+          p_name: string
+          p_phases?: Json
+        }
         Returns: string
       }
       gym_latest_history_per_exercise: {
@@ -2499,6 +2604,7 @@ export type Database = {
           p_exercises: Json
           p_images?: Json
           p_notes: string
+          p_phases?: Json
           p_recordings?: Json
           p_start_time: string
           p_title: string
@@ -2507,7 +2613,7 @@ export type Database = {
         Returns: string
       }
       gym_save_template: {
-        Args: { p_exercises: Json; p_name: string }
+        Args: { p_exercises: Json; p_name: string; p_phases?: Json }
         Returns: string
       }
       habit_get_stats: {

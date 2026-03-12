@@ -333,7 +333,7 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
   const handleStartSession = useCallback(() => {
     setActiveSession({
       type: t("gym:gym.title"),
-      label: title,
+      label: t("gym:gym.title"),
       path: "/gym/gym",
     });
 
@@ -520,11 +520,11 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
     if (
       session &&
       session.type === t("gym:gym.title") &&
-      session.label !== title
+      session.label !== t("gym:gym.title")
     ) {
       setActiveSession({
         ...session,
-        label: title,
+        label: t("gym:gym.title"),
       });
     }
 

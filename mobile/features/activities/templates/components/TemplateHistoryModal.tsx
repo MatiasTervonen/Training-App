@@ -41,8 +41,8 @@ export default function TemplateHistoryModal({
   const personalBests = useMemo(() => {
     if (!history || history.length === 0) return null;
 
-    let fastestPace: { value: number; date: string } | null = null;
-    let shortestDuration: { value: number; date: string } | null = null;
+    let fastestPace: { value: number; date: string; sessionId: string } | null = null;
+    let shortestDuration: { value: number; date: string; sessionId: string } | null = null;
 
     for (const session of history) {
       if (
@@ -50,7 +50,7 @@ export default function TemplateHistoryModal({
         session.avg_pace > 0 &&
         (!fastestPace || session.avg_pace < fastestPace.value)
       ) {
-        fastestPace = { value: session.avg_pace, date: session.start_time };
+        fastestPace = { value: session.avg_pace, date: session.start_time, sessionId: session.session_id };
       }
 
       if (
@@ -60,6 +60,7 @@ export default function TemplateHistoryModal({
         shortestDuration = {
           value: session.duration,
           date: session.start_time,
+          sessionId: session.session_id,
         };
       }
     }
@@ -67,6 +68,13 @@ export default function TemplateHistoryModal({
     if (!fastestPace && !shortestDuration) return null;
     return { fastestPace, shortestDuration };
   }, [history]);
+
+  const bestSessionIds = useMemo(() => {
+    const ids = new Set<string>();
+    if (personalBests?.fastestPace) ids.add(personalBests.fastestPace.sessionId);
+    if (personalBests?.shortestDuration) ids.add(personalBests.shortestDuration.sessionId);
+    return ids;
+  }, [personalBests]);
 
   const formatDateWithYear = (dateString: string) => {
     const date = new Date(dateString);
@@ -124,12 +132,12 @@ export default function TemplateHistoryModal({
                   {/* Personal Bests */}
                   {personalBests && (
                     <LinearGradient
-                      colors={["#1e3a8a", "#0f172a", "#0f172a"]}
-                      start={{ x: 1, y: 0 }}
-                      end={{ x: 0, y: 1 }}
-                      className="mt-6 rounded-md px-4 py-4 overflow-hidden border-2 border-gray-600"
+                      colors={["#78350f", "#1e1b4b", "#0f172a"]}
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 1, y: 1 }}
+                      className="mt-6 rounded-md px-4 py-4 overflow-hidden border-2 border-amber-500/60"
                     >
-                      <AppText className="text-center text-gray-400 text-sm mb-3">
+                      <AppText className="text-center text-amber-400 text-sm mb-3">
                         {t("activities.templateHistory.personalBests")}
                       </AppText>
                       <View className="flex-row gap-4">
@@ -175,17 +183,24 @@ export default function TemplateHistoryModal({
                   <TemplateHistoryChart history={history} />
                 </View>
               }
-              renderItem={({ item: session }) => (
+              renderItem={({ item: session }) => {
+                const isBest = bestSessionIds.has(session.session_id);
+                return (
                 <View className="mb-8">
                   <AppText className="text-lg mb-3 text-center">
                     {formatSessionDate(session.start_time)}
                   </AppText>
                   <LinearGradient
-                    colors={["#1e3a8a", "#0f172a", "#0f172a"]}
-                    start={{ x: 1, y: 0 }}
-                    end={{ x: 0, y: 1 }}
-                    className="py-4 px-4 rounded-md overflow-hidden border-2 border-gray-600"
+                    colors={isBest ? ["#78350f", "#1e1b4b", "#0f172a"] : ["#1e3a8a", "#0f172a", "#0f172a"]}
+                    start={isBest ? { x: 0, y: 0 } : { x: 1, y: 0 }}
+                    end={{ x: isBest ? 1 : 0, y: 1 }}
+                    className={`pb-4 px-4 rounded-md overflow-hidden border-2 ${isBest ? "pt-2 border-amber-500/60" : "pt-4 border-gray-600"}`}
                   >
+                    {isBest && (
+                      <AppText className="text-amber-400 text-xs text-center mt-1 mb-3">
+                        {t("activities.templateHistory.personalBest")}
+                      </AppText>
+                    )}
                     <View className="gap-2">
                       {/* Row 1: Duration, Moving Time, Distance */}
                       <View className="flex-row gap-2">
@@ -247,7 +262,8 @@ export default function TemplateHistoryModal({
                     </View>
                   </LinearGradient>
                 </View>
-              )}
+                );
+              }}
             />
           </View>
         )}

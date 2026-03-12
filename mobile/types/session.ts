@@ -227,6 +227,12 @@ export type templateSummary = {
     created_at: string;
     updated_at?: string | null;
     distance_meters: number | null;
+    last_completed_at: string | null;
+    times_completed: number;
+    avg_duration: number | null;
+    avg_pace: number | null;
+    avg_speed: number | null;
+    avg_distance: number | null;
   };
   activity: {
     id: string;

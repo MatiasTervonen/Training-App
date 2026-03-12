@@ -258,7 +258,11 @@ class StepCounterModule(private val reactContext: ReactApplicationContext)
         val prefs = reactContext.getSharedPreferences("step_goals_prefs", Context.MODE_PRIVATE)
         val jsonArray = org.json.JSONArray()
         for (i in 0 until goals.size()) {
-            jsonArray.put(goals.getInt(i))
+            val goal = goals.getMap(i)
+            val obj = org.json.JSONObject()
+            obj.put("id", goal?.getString("id") ?: "")
+            obj.put("target", goal?.getInt("target") ?: 0)
+            jsonArray.put(obj)
         }
         prefs.edit()
             .putString("step_goals", jsonArray.toString())

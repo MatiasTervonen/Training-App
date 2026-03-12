@@ -12,6 +12,31 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: "12.2.3 (519615d)"
   }
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json
+          operationName?: string
+          query?: string
+          variables?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
   public: {
     Tables: {
       activities: {
@@ -920,39 +945,33 @@ export type Database = {
       gym_sets: {
         Row: {
           created_at: string
-          distance_meters: number | null
           id: string
           reps: number | null
           rpe: string | null
           session_exercise_id: string
           set_number: number
-          time_min: number | null
           updated_at: string | null
           user_id: string
           weight: number | null
         }
         Insert: {
           created_at?: string
-          distance_meters?: number | null
           id?: string
           reps?: number | null
           rpe?: string | null
           session_exercise_id: string
           set_number: number
-          time_min?: number | null
           updated_at?: string | null
           user_id?: string
           weight?: number | null
         }
         Update: {
           created_at?: string
-          distance_meters?: number | null
           id?: string
           reps?: number | null
           rpe?: string | null
           session_exercise_id?: string
           set_number?: number
-          time_min?: number | null
           updated_at?: string | null
           user_id?: string
           weight?: number | null
@@ -3126,6 +3145,9 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
   public: {
     Enums: {},
   },

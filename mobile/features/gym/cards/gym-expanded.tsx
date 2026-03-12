@@ -1,4 +1,4 @@
-import { formatDateShort, formatDuration, formatDurationLong, formatTime, getDistanceUnitLabels, convertMetersForDisplay } from "@/lib/formatDate";
+import { formatDateShort, formatDurationLong, formatTime, convertMetersForDisplay } from "@/lib/formatDate";
 import { PhaseType } from "@/types/session";
 import { useUserStore } from "@/lib/stores/useUserStore";
 import { FullGymSession } from "@/database/gym/get-full-gym-session";
@@ -82,10 +82,6 @@ export default function GymSession(gym_session: FullGymSession) {
     return `${Math.round(volume)} ${weightUnit}`;
   };
 
-  const isCardioExercise = (exercise: {
-    gym_exercises: { main_group: string };
-  }) => exercise.gym_exercises?.main_group.toLowerCase() === "cardio";
-
   const translateRpe = (rpe: string) => {
     const rpeMap: Record<string, string> = {
       "Warm-up": "1",
@@ -141,7 +137,7 @@ export default function GymSession(gym_session: FullGymSession) {
               <View className="flex-row gap-2">
                 <StatCard
                   label={t("gym.session.duration")}
-                  value={formatDuration(gym_session.duration)}
+                  value={formatDurationLong(gym_session.duration)}
                 />
                 <StatCard
                   label={t("gym.session.totalVolume")}
@@ -279,54 +275,27 @@ export default function GymSession(gym_session: FullGymSession) {
 
                 <View className="w-full">
                   <View className="border-b border-gray-600 flex-row">
-                    {isCardioExercise(exercise) ? (
-                      <>
-                        <View className="flex-1 items-center">
-                          <AppText className="p-2 text-sm text-gray-400">
-                            {t("gym.session.set")}
-                          </AppText>
-                        </View>
-                        <View className="flex-1 items-center">
-                          <AppText className="p-2 text-sm text-gray-400">
-                            {t("gym.session.time")}
-                          </AppText>
-                          <AppText className="text-sm text-gray-400">({t("gym.session.min")})</AppText>
-                        </View>
-                        <View className="flex-1 items-center">
-                          <AppText className="p-2 text-sm text-gray-400">
-                            {t("gym.session.distance")}
-                          </AppText>
-                          <AppText className="text-sm text-gray-400">
-                            ({getDistanceUnitLabels().short})
-                          </AppText>
-                        </View>
-                        <View className="w-8" />
-                      </>
-                    ) : (
-                      <>
-                        <View className="flex-1 items-center">
-                          <AppText className="p-2 text-sm text-gray-400">
-                            {t("gym.session.set")}
-                          </AppText>
-                        </View>
-                        <View className="flex-1 items-center">
-                          <AppText className="p-2 text-sm text-gray-400">
-                            {t("gym.session.weight")}
-                          </AppText>
-                        </View>
-                        <View className="flex-1 items-center">
-                          <AppText className="p-2 text-sm text-gray-400">
-                            {t("gym.session.reps")}
-                          </AppText>
-                        </View>
-                        <View className="flex-1 items-center">
-                          <AppText className="p-2 text-sm text-gray-400">
-                            {t("gym.session.rpe")}
-                          </AppText>
-                        </View>
-                        <View className="w-8" />
-                      </>
-                    )}
+                    <View className="flex-1 items-center">
+                      <AppText className="p-2 text-sm text-gray-400">
+                        {t("gym.session.set")}
+                      </AppText>
+                    </View>
+                    <View className="flex-1 items-center">
+                      <AppText className="p-2 text-sm text-gray-400">
+                        {t("gym.session.weight")}
+                      </AppText>
+                    </View>
+                    <View className="flex-1 items-center">
+                      <AppText className="p-2 text-sm text-gray-400">
+                        {t("gym.session.reps")}
+                      </AppText>
+                    </View>
+                    <View className="flex-1 items-center">
+                      <AppText className="p-2 text-sm text-gray-400">
+                        {t("gym.session.rpe")}
+                      </AppText>
+                    </View>
+                    <View className="w-8" />
                   </View>
                 </View>
                 <View>
@@ -339,42 +308,23 @@ export default function GymSession(gym_session: FullGymSession) {
                           : "text-gray-100"
                       } ${set.rpe === "Warm-up" ? "bg-blue-500" : ""}`}
                     >
-                      {isCardioExercise(exercise) ? (
-                        <>
-                          <View className="flex-1 items-center">
-                            <AppText className="p-2">{setIndex + 1}</AppText>
-                          </View>
-                          <View className="flex-1 items-center">
-                            <AppText className="p-2">{set.time_min}</AppText>
-                          </View>
-                          <View className="flex-1 items-center">
-                            <AppText className="p-2">
-                              {convertMetersForDisplay(set.distance_meters ?? 0)}
-                            </AppText>
-                          </View>
-                          <View className="w-8" />
-                        </>
-                      ) : (
-                        <>
-                          <View className="flex-1 items-center">
-                            <AppText className="p-2">{setIndex + 1}</AppText>
-                          </View>
-                          <View className="flex-1 items-center">
-                            <AppText className="p-2">
-                              {set.weight} {weightUnit}
-                            </AppText>
-                          </View>
-                          <View className="flex-1 items-center">
-                            <AppText className="p-2">{set.reps}</AppText>
-                          </View>
-                          <View className="flex-1 items-center">
-                            <AppText className="p-2" numberOfLines={1}>
-                              {set.rpe ? translateRpe(set.rpe) : ""}
-                            </AppText>
-                          </View>
-                          <View className="w-8" />
-                        </>
-                      )}
+                      <View className="flex-1 items-center">
+                        <AppText className="p-2">{setIndex + 1}</AppText>
+                      </View>
+                      <View className="flex-1 items-center">
+                        <AppText className="p-2">
+                          {set.weight} {weightUnit}
+                        </AppText>
+                      </View>
+                      <View className="flex-1 items-center">
+                        <AppText className="p-2">{set.reps}</AppText>
+                      </View>
+                      <View className="flex-1 items-center">
+                        <AppText className="p-2" numberOfLines={1}>
+                          {set.rpe ? translateRpe(set.rpe) : ""}
+                        </AppText>
+                      </View>
+                      <View className="w-8" />
                     </View>
                   ))}
                 </View>
@@ -472,37 +422,55 @@ function PhaseDisplayCard({
       <AppText className="text-lg mb-2">
         {phaseLabel}: {translatedName}
       </AppText>
-      <View className="flex-row gap-4">
-        <View>
-          <AppText className="text-sm text-gray-400">
-            {t("gym.phase.time")}
-          </AppText>
-          <AppText>{formattedTime}</AppText>
+      <View className="w-full">
+        <View className="border-b border-emerald-700 flex-row">
+          <View className="flex-1 items-center">
+            <AppText className="p-2 text-sm text-gray-400">
+              {t("gym.phase.time")}
+            </AppText>
+          </View>
+          {steps != null && steps > 0 && (
+            <View className="flex-1 items-center">
+              <AppText className="p-2 text-sm text-gray-400">
+                {t("gym.phase.stepsLabel")}
+              </AppText>
+            </View>
+          )}
+          {distanceMeters != null && distanceMeters > 0 && (
+            <View className="flex-1 items-center">
+              <AppText className="p-2 text-sm text-gray-400">
+                {t("gym.phase.distance")}
+              </AppText>
+            </View>
+          )}
+          {calories != null && calories > 0 && (
+            <View className="flex-1 items-center">
+              <AppText className="p-2 text-sm text-gray-400">
+                {t("gym.session.calories")}
+              </AppText>
+            </View>
+          )}
         </View>
-        {steps != null && steps > 0 && (
-          <View>
-            <AppText className="text-sm text-gray-400">
-              {t("gym.phase.stepsLabel")}
-            </AppText>
-            <AppText>{steps.toLocaleString()}</AppText>
+        <View className="border-b border-emerald-700 flex-row">
+          <View className="flex-1 items-center">
+            <AppText className="p-2">{formattedTime}</AppText>
           </View>
-        )}
-        {distanceMeters != null && distanceMeters > 0 && (
-          <View>
-            <AppText className="text-sm text-gray-400">
-              {t("gym.phase.distance")}
-            </AppText>
-            <AppText>{convertMetersForDisplay(distanceMeters)}</AppText>
-          </View>
-        )}
-        {calories != null && calories > 0 && (
-          <View>
-            <AppText className="text-sm text-gray-400">
-              {t("gym.session.calories")}
-            </AppText>
-            <AppText>{Math.round(calories)}</AppText>
-          </View>
-        )}
+          {steps != null && steps > 0 && (
+            <View className="flex-1 items-center">
+              <AppText className="p-2">{steps.toLocaleString()}</AppText>
+            </View>
+          )}
+          {distanceMeters != null && distanceMeters > 0 && (
+            <View className="flex-1 items-center">
+              <AppText className="p-2">{convertMetersForDisplay(distanceMeters)}</AppText>
+            </View>
+          )}
+          {calories != null && calories > 0 && (
+            <View className="flex-1 items-center">
+              <AppText className="p-2">{Math.round(calories)}</AppText>
+            </View>
+          )}
+        </View>
       </View>
     </LinearGradient>
   );

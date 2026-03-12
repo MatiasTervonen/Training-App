@@ -8,10 +8,7 @@ import {
 import { SquareX, ChevronDown, ChevronUp } from "lucide-react-native";
 import AppInput from "@/components/AppInput";
 import { useUserStore } from "@/lib/stores/useUserStore";
-import {
-  getDistanceUnitLabels,
-  convertMetersForDisplay,
-} from "@/lib/formatDate";
+
 import { useConfirmAction } from "@/lib/confirmAction";
 import SelectInput from "@/components/Selectinput";
 import DropDownModal from "@/components/DropDownModal";
@@ -29,7 +26,7 @@ type ExerciseCardProps = {
   lastExerciseHistory: (index: number) => void;
   onInputChange: (
     index: number,
-    field: "weight" | "reps" | "rpe" | "time_min" | "distance_meters",
+    field: "weight" | "reps" | "rpe",
     value: number | string,
   ) => void;
   onAddSet: (index: number) => void;
@@ -40,10 +37,6 @@ type ExerciseCardProps = {
   history?: LatestHistoryPerExercise;
   isExpanded?: boolean;
   onToggleExpand?: () => void;
-};
-
-const isCardioExercise = (exercise: ExerciseEntry) => {
-  return exercise.main_group?.toLowerCase() === "cardio";
 };
 
 export default function ExerciseCard({
@@ -65,7 +58,6 @@ export default function ExerciseCard({
 }: ExerciseCardProps) {
   const weightUnit =
     useUserStore((state) => state.profile?.weight_unit) || "kg";
-  const distanceLabels = getDistanceUnitLabels();
 
   const confirmAction = useConfirmAction();
 
@@ -138,14 +130,7 @@ export default function ExerciseCard({
               className="text-sm text-green-400 shrink"
               numberOfLines={1}
             >
-              {isCardioExercise(exercise)
-                ? history?.sets
-                    .map(
-                      (set) =>
-                        `${set.time_min ? `${Math.floor(set.time_min)}:${String(Math.round((set.time_min % 1) * 60)).padStart(2, "0")}` : "0:00"} / ${convertMetersForDisplay(set.distance_meters ?? 0)}${distanceLabels.short}`,
-                    )
-                    .join(" • ")
-                : history?.sets
+              {history?.sets
                     .map((set) => `${set.weight}kg × ${set.reps}`)
                     .join(" • ")}
             </AppText>
@@ -178,50 +163,27 @@ export default function ExerciseCard({
 
           <View className="w-full">
             <View className="text-gray-300 border-b border-gray-300 flex-row">
-              {isCardioExercise(exercise) ? (
-                <>
-                  <View className="flex-1 items-center">
-                    <AppText className="p-2 text-lg">
-                      {t("gym.exerciseCard.set")}
-                    </AppText>
-                  </View>
-                  <View className="flex-1 items-center">
-                    <AppText className="p-2 text-lg">
-                      {t("gym.exerciseCard.time")}
-                    </AppText>
-                  </View>
-                  <View className="flex-1 items-center">
-                    <AppText className="p-2 text-lg">
-                      {t("gym.exerciseCard.length")}
-                    </AppText>
-                  </View>
-                  <View className="w-8" />
-                </>
-              ) : (
-                <>
-                  <View className="flex-1 items-center">
-                    <AppText className="p-2 text-lg">
-                      {t("gym.exerciseCard.set")}
-                    </AppText>
-                  </View>
-                  <View className="flex-1 items-center">
-                    <AppText className="p-2 text-lg">
-                      {t("gym.exerciseCard.weight")}
-                    </AppText>
-                  </View>
-                  <View className="flex-1 items-center">
-                    <AppText className="p-2 text-lg">
-                      {t("gym.exerciseCard.reps")}
-                    </AppText>
-                  </View>
-                  <View className="flex-1 items-center">
-                    <AppText className="p-2 text-lg">
-                      {t("gym.exerciseCard.rpe")}
-                    </AppText>
-                  </View>
-                  <View className="w-8" />
-                </>
-              )}
+              <View className="flex-1 items-center">
+                <AppText className="p-2 text-lg">
+                  {t("gym.exerciseCard.set")}
+                </AppText>
+              </View>
+              <View className="flex-1 items-center">
+                <AppText className="p-2 text-lg">
+                  {t("gym.exerciseCard.weight")}
+                </AppText>
+              </View>
+              <View className="flex-1 items-center">
+                <AppText className="p-2 text-lg">
+                  {t("gym.exerciseCard.reps")}
+                </AppText>
+              </View>
+              <View className="flex-1 items-center">
+                <AppText className="p-2 text-lg">
+                  {t("gym.exerciseCard.rpe")}
+                </AppText>
+              </View>
+              <View className="w-8" />
             </View>
           </View>
 
@@ -232,50 +194,32 @@ export default function ExerciseCard({
                 set.rpe === "Failure" ? "bg-red-800" : ""
               } ${set.rpe === "Warm-up" ? "bg-blue-500" : ""}`}
             >
-              {isCardioExercise(exercise) ? (
-                <>
-                  <View className="flex-1 items-center">
-                    <AppText className="p-2 text-lg">{setIndex + 1}</AppText>
-                  </View>
-                  <View className="flex-1 items-center">
-                    <AppText className="p-2 text-lg">{set.time_min}</AppText>
-                  </View>
-                  <View className="flex-1 items-center">
-                    <AppText className="p-2 text-lg">
-                      {convertMetersForDisplay(set.distance_meters ?? 0)}
-                    </AppText>
-                  </View>
-                </>
-              ) : (
-                <>
-                  <View className="flex-1 items-center">
-                    <AppText className="p-2 text-lg">{setIndex + 1}</AppText>
-                  </View>
-                  <View className="flex-1 items-center">
-                    <AppText className="p-2 text-lg">
-                      {set.weight} {weightUnit}
-                    </AppText>
-                  </View>
-                  <View className="flex-1 items-center">
-                    <AppText className="p-2 text-lg">{set.reps}</AppText>
-                  </View>
-                  <View className="flex-1 items-center">
-                    <AppText className="p-2 text-lg">
-                      {set.rpe
-                        ? (
-                            {
-                              "Warm-up": "1",
-                              Easy: "2",
-                              Medium: "3",
-                              Hard: "4",
-                              Failure: "5",
-                            } as Record<string, string>
-                          )[set.rpe] || set.rpe
-                        : ""}
-                    </AppText>
-                  </View>
-                </>
-              )}
+              <View className="flex-1 items-center">
+                <AppText className="p-2 text-lg">{setIndex + 1}</AppText>
+              </View>
+              <View className="flex-1 items-center">
+                <AppText className="p-2 text-lg">
+                  {set.weight} {weightUnit}
+                </AppText>
+              </View>
+              <View className="flex-1 items-center">
+                <AppText className="p-2 text-lg">{set.reps}</AppText>
+              </View>
+              <View className="flex-1 items-center">
+                <AppText className="p-2 text-lg">
+                  {set.rpe
+                    ? (
+                        {
+                          "Warm-up": "1",
+                          Easy: "2",
+                          Medium: "3",
+                          Hard: "4",
+                          Failure: "5",
+                        } as Record<string, string>
+                      )[set.rpe] || set.rpe
+                    : ""}
+                </AppText>
+              </View>
               <View className="w-8 items-center">
                 <Pressable
                   onPress={async () => {
@@ -295,132 +239,89 @@ export default function ExerciseCard({
           ))}
 
           <View className="flex-row items-center justify-center gap-4 mt-6">
-            {isCardioExercise(exercise) ? (
-              <>
-                <View className="flex-row items-center justify-center gap-2 px-2">
-                  <View className="w-2/4">
-                    <AppInput
-                      placeholder={t("gym.exerciseCard.timePlaceholder")}
-                      keyboardType="numeric"
-                      value={input.time_min ?? ""}
-                      onChangeText={(val) => {
-                        const numbersOnly = val.replace(/[^0-9.]/g, "");
-                        onInputChange(index, "time_min", numbersOnly);
-                      }}
-                    />
-                  </View>
-                  <View className="w-2/4">
-                    <AppInput
-                      placeholder={`${t("gym.exerciseCard.length")} (${distanceLabels.short})`}
-                      keyboardType="numeric"
-                      value={input.distance_meters ?? ""}
-                      onChangeText={(val) => {
-                        const numbersOnly = val.replace(/[^0-9.]/g, "");
-                        onInputChange(index, "distance_meters", numbersOnly);
-                      }}
-                    />
-                  </View>
-                </View>
-              </>
-            ) : (
-              <View className="flex-row gap-2 items-center justify-center px-2">
-                <View className="w-1/3">
-                  <AppInput
-                    placeholder={t("gym.exerciseCard.weightPlaceholder")}
-                    keyboardType="numeric"
-                    maxLength={5}
-                    value={input.weight ?? ""}
-                    onChangeText={(val) => {
-                      const numbersOnly = val.replace(/[^0-9.,]/g, "");
-                      onInputChange(index, "weight", numbersOnly);
-                    }}
-                  />
-                </View>
-                <View className="w-1/3">
-                  <AppInput
-                    placeholder={t("gym.exerciseCard.repsPlaceholder")}
-                    keyboardType="numeric"
-                    maxLength={5}
-                    value={input.reps || ""}
-                    onChangeText={(val) => {
-                      if (/^\d*$/.test(val)) {
-                        onInputChange(index, "reps", val);
-                      }
-                    }}
-                  />
-                </View>
-                <View className="w-1/3">
-                  <SelectInput
-                    disabled={disabled}
-                    label={`${index + 1}. ${exercise.name}`}
-                    value={input.rpe}
-                    selectedDisplay={
-                      input.rpe
-                        ? (
-                            {
-                              "Warm-up": "1",
-                              Easy: "2",
-                              Medium: "3",
-                              Hard: "4",
-                              Failure: "5",
-                            } as Record<string, string>
-                          )[input.rpe]
-                        : undefined
-                    }
-                    onChange={(val) => onInputChange(index, "rpe", val)}
-                    options={[
-                      {
-                        value: "Warm-up",
-                        label: t("gym.exerciseCard.rpeOptions.warmup"),
-                      },
-                      {
-                        value: "Easy",
-                        label: t("gym.exerciseCard.rpeOptions.easy"),
-                      },
-                      {
-                        value: "Medium",
-                        label: t("gym.exerciseCard.rpeOptions.medium"),
-                      },
-                      {
-                        value: "Hard",
-                        label: t("gym.exerciseCard.rpeOptions.hard"),
-                      },
-                      {
-                        value: "Failure",
-                        label: t("gym.exerciseCard.rpeOptions.failure"),
-                      },
-                    ]}
-                  />
-                </View>
+            <View className="flex-row gap-2 items-center justify-center px-2">
+              <View className="w-1/3">
+                <AppInput
+                  placeholder={t("gym.exerciseCard.weightPlaceholder")}
+                  keyboardType="numeric"
+                  maxLength={5}
+                  value={input.weight ?? ""}
+                  onChangeText={(val) => {
+                    const numbersOnly = val.replace(/[^0-9.,]/g, "");
+                    onInputChange(index, "weight", numbersOnly);
+                  }}
+                />
               </View>
-            )}
+              <View className="w-1/3">
+                <AppInput
+                  placeholder={t("gym.exerciseCard.repsPlaceholder")}
+                  keyboardType="numeric"
+                  maxLength={5}
+                  value={input.reps || ""}
+                  onChangeText={(val) => {
+                    if (/^\d*$/.test(val)) {
+                      onInputChange(index, "reps", val);
+                    }
+                  }}
+                />
+              </View>
+              <View className="w-1/3">
+                <SelectInput
+                  disabled={disabled}
+                  label={`${index + 1}. ${exercise.name}`}
+                  value={input.rpe}
+                  selectedDisplay={
+                    input.rpe
+                      ? (
+                          {
+                            "Warm-up": "1",
+                            Easy: "2",
+                            Medium: "3",
+                            Hard: "4",
+                            Failure: "5",
+                          } as Record<string, string>
+                        )[input.rpe]
+                      : undefined
+                  }
+                  onChange={(val) => onInputChange(index, "rpe", val)}
+                  options={[
+                    {
+                      value: "Warm-up",
+                      label: t("gym.exerciseCard.rpeOptions.warmup"),
+                    },
+                    {
+                      value: "Easy",
+                      label: t("gym.exerciseCard.rpeOptions.easy"),
+                    },
+                    {
+                      value: "Medium",
+                      label: t("gym.exerciseCard.rpeOptions.medium"),
+                    },
+                    {
+                      value: "Hard",
+                      label: t("gym.exerciseCard.rpeOptions.hard"),
+                    },
+                    {
+                      value: "Failure",
+                      label: t("gym.exerciseCard.rpeOptions.failure"),
+                    },
+                  ]}
+                />
+              </View>
+            </View>
           </View>
 
           <AnimatedButton
             onPress={() => {
-              if (isCardioExercise(exercise)) {
-                const isTimeEmpty =
-                  !input.time_min || input.time_min.trim() === "";
+              const isRepsEmpty = !input.reps || input.reps.trim() === "";
 
-                if (isTimeEmpty) {
-                  Toast.show({
-                    type: "error",
-                    text1: t("gym.exerciseCard.missingData"),
-                    text2: t("gym.exerciseCard.fillTime"),
-                  });
-                  return;
-                }
-              } else {
-                const isRepsEmpty = !input.reps || input.reps.trim() === "";
-
-                if (isRepsEmpty) {
-                  Toast.show({
-                    type: "error",
-                    text1: t("gym.exerciseCard.missingData"),
-                    text2: t("gym.exerciseCard.fillReps"),
-                  });
-                  return;
-                }
+              if (isRepsEmpty) {
+                Toast.show({
+                  type: "error",
+                  text1: t("gym.exerciseCard.missingData"),
+                  text2: t("gym.exerciseCard.fillReps"),
+                });
+                return;
               }
 
               onAddSet(index);

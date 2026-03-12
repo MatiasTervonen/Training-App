@@ -65,8 +65,6 @@ export default function useSaveGymDraft({
                   weight: "",
                   reps: "",
                   rpe: "Medium",
-                  time_min: "",
-                  distance_meters: "",
                 }))
               : []
           );

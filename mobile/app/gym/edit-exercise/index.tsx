@@ -218,7 +218,6 @@ export default function EditExercises() {
                 { value: "shoulders", label: t("gym.mainGroups.shoulders") },
                 { value: "back", label: t("gym.mainGroups.back") },
                 { value: "core", label: t("gym.mainGroups.core") },
-                { value: "cardio", label: t("gym.mainGroups.cardio") },
               ]}
               label={t("gym.addExerciseScreen.mainGroup")}
             />

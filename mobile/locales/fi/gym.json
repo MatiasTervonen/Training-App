@@ -160,8 +160,7 @@
       "arms": "Kädet",
       "shoulders": "Olkapäät",
       "back": "Selkä",
-      "core": "Keskivartalo",
-      "cardio": "Kardio"
+      "core": "Keskivartalo"
     },
     "exerciseCard": {
       "delete": "Poista",
@@ -172,15 +171,11 @@
       "notesFor": "Muistiinpanot...",
       "notesPlaceholder": "Lisää muistiinpanosi tähän...",
       "set": "Sarja",
-      "time": "Aika",
-      "length": "Matka",
       "weight": "Paino",
       "reps": "Toistot",
       "rpe": "RPE",
       "deleteSetTitle": "Poista sarja",
       "deleteSetMessage": "Haluatko varmasti poistaa tämän sarjan?",
-      "timePlaceholder": "Aika (min)",
-      "lengthPlaceholder": "Matka (metriä)",
       "weightPlaceholder": "Paino...",
       "repsPlaceholder": "Toistot...",
       "rpeOptions": {
@@ -191,7 +186,6 @@
         "failure": "5 - Epäonnistuminen"
       },
       "missingData": "Puuttuvat tiedot",
-      "fillTime": "Täytä aika (min).",
       "fillReps": "Täytä toistot.",
       "setsLabel": "sarjaa"
     },
@@ -208,6 +202,8 @@
     },
     "saveSession": {
       "titleRequired": "Otsikko vaaditaan.",
+      "phaseStillRunningTitle": "Seuranta käynnissä",
+      "phaseStillRunningSub": "Pysäytä lämmittely tai jäähdyttely ensin.",
       "confirmTitle": "Vahvista sessio",
       "confirmMessage": "Haluatko varmasti lopettaa tämän session?",
       "saveError": "Session tallentaminen epäonnistui. Yritä uudelleen."
@@ -216,10 +212,6 @@
       "duration": "Kesto",
       "superSet": "Super-setti",
       "set": "Sarja",
-      "time": "Aika",
-      "min": "min",
-      "distance": "Matka",
-      "meters": "metriä",
       "weight": "Paino",
       "reps": "Toistot",
       "rpe": "RPE",
@@ -239,8 +231,6 @@
       "loadError": "Historian lataus epäonnistui. Yritä uudelleen.",
       "noHistory": "Tälle liikkeelle ei ole historiaa.",
       "personalBest": "Ennätys",
-      "timeMin": "Aika (min)",
-      "distanceMeters": "Matka (metriä)",
       "range1m": "1K",
       "range3m": "3K",
       "range6m": "6K",

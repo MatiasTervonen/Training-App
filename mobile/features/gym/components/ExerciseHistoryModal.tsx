@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import FullScreenModal from "@/components/FullScreenModal";
 import { ActivityIndicator, View } from "react-native";
-import { formatDateShort, getDistanceUnitLabels, convertMetersForDisplay } from "@/lib/formatDate";
+import { formatDateShort } from "@/lib/formatDate";
 import AppText from "@/components/AppText";
 import { HistoryResult } from "@/types/session";
 import { FlatList } from "react-native-gesture-handler";
@@ -33,7 +33,6 @@ export default function ExerciseHistoryModal({
 
   const exerciseName = history?.[0]?.name;
   const equipment = history?.[0]?.equipment;
-  const isCardio = history?.[0]?.main_group === "cardio";
 
   const translateRpe = (rpe: string) => {
     const rpeMap: Record<string, string> = {
@@ -50,40 +49,22 @@ export default function ExerciseHistoryModal({
   const personalBest = useMemo(() => {
     if (!history || history.length === 0) return null;
 
-    if (isCardio) {
-      let bestDistance = 0;
-      let bestTime = 0;
-      let bestDate = "";
-      for (const session of history) {
-        if (!session) continue;
-        for (const set of session.sets) {
-          if (set.distance_meters && set.distance_meters > bestDistance) {
-            bestDistance = set.distance_meters;
-            bestTime = set.time_min || 0;
-            bestDate = session.date;
-          }
+    let bestWeight = 0;
+    let bestReps = 0;
+    let bestDate = "";
+    for (const session of history) {
+      if (!session) continue;
+      for (const set of session.sets) {
+        if (set.weight && set.weight > bestWeight) {
+          bestWeight = set.weight;
+          bestReps = set.reps || 0;
+          bestDate = session.date;
         }
       }
-      if (bestDistance === 0) return null;
-      return { distance: bestDistance, time: bestTime, date: bestDate };
-    } else {
-      let bestWeight = 0;
-      let bestReps = 0;
-      let bestDate = "";
-      for (const session of history) {
-        if (!session) continue;
-        for (const set of session.sets) {
-          if (set.weight && set.weight > bestWeight) {
-            bestWeight = set.weight;
-            bestReps = set.reps || 0;
-            bestDate = session.date;
-          }
-        }
-      }
-      if (bestWeight === 0) return null;
-      return { weight: bestWeight, reps: bestReps, date: bestDate };
     }
-  }, [history, isCardio]);
+    if (bestWeight === 0) return null;
+    return { weight: bestWeight, reps: bestReps, date: bestDate };
+  }, [history]);
 
   const formatDateWithYear = (dateString: string) => {
     const date = new Date(dateString);
@@ -132,16 +113,12 @@ export default function ExerciseHistoryModal({
                     {t(`gym.equipment.${equipment?.toLowerCase()}`)}
                   </AppText>
 
-                  {/* Chart & Personal Best — only for strength exercises */}
-                  {!isCardio && (
-                    <ExerciseHistoryChart
-                      history={history}
-                      isCardio={isCardio}
-                      valueUnit={weightUnit}
-                    />
-                  )}
+                  <ExerciseHistoryChart
+                    history={history}
+                    valueUnit={weightUnit}
+                  />
 
-                  {!isCardio && personalBest && (
+                  {personalBest && (
                     <LinearGradient
                       colors={["#1e3a8a", "#0f172a", "#0f172a"]}
                       start={{ x: 1, y: 0 }}
@@ -151,19 +128,11 @@ export default function ExerciseHistoryModal({
                       <AppText className="text-center text-gray-400 text-sm mb-2">
                         {t("gym.exerciseHistory.personalBest")}
                       </AppText>
-                      {"weight" in personalBest ? (
-                        <AppTextNC className="text-center text-xl text-cyan-400">
-                          {personalBest.weight} {weightUnit} x{" "}
-                          {personalBest.reps}{" "}
-                          {t("gym.exerciseCard.reps").toLowerCase()}
-                        </AppTextNC>
-                      ) : (
-                        <AppTextNC className="text-center text-2xl text-cyan-400">
-                          {convertMetersForDisplay(personalBest.distance)} {getDistanceUnitLabels().short} &middot;{" "}
-                          {personalBest.time}{" "}
-                          {t("gym.exerciseHistory.timeMin").toLowerCase()}
-                        </AppTextNC>
-                      )}
+                      <AppTextNC className="text-center text-xl text-cyan-400">
+                        {personalBest.weight} {weightUnit} x{" "}
+                        {personalBest.reps}{" "}
+                        {t("gym.exerciseCard.reps").toLowerCase()}
+                      </AppTextNC>
                       <AppText className="text-center text-gray-400 text-sm mt-1">
                         {formatDateWithYear(personalBest.date)}
                       </AppText>
@@ -184,48 +153,26 @@ export default function ExerciseHistoryModal({
                     <View className="w-full text-left">
                       <View className="w-full">
                         <View className="border-b border-gray-600 flex-row">
-                          {session!.main_group === "cardio" ? (
-                            <>
-                              <View className="flex-1 items-center">
-                                <AppText className="p-2 text-sm text-gray-400">
-                                  {t("gym.session.set")}
-                                </AppText>
-                              </View>
-                              <View className="flex-1 items-center">
-                                <AppText className="p-2 text-sm text-gray-400">
-                                  {t("gym.session.time")}
-                                </AppText>
-                              </View>
-                              <View className="flex-1 items-center">
-                                <AppText className="p-2 text-sm text-gray-400">
-                                  {t("gym.session.distance")}
-                                </AppText>
-                              </View>
-                            </>
-                          ) : (
-                            <>
-                              <View className="flex-1 items-center">
-                                <AppText className="p-2 text-sm text-gray-400">
-                                  {t("gym.session.set")}
-                                </AppText>
-                              </View>
-                              <View className="flex-1 items-center">
-                                <AppText className="p-2 text-sm text-gray-400">
-                                  {t("gym.session.weight")}
-                                </AppText>
-                              </View>
-                              <View className="flex-1 items-center">
-                                <AppText className="p-2 text-sm text-gray-400">
-                                  {t("gym.session.reps")}
-                                </AppText>
-                              </View>
-                              <View className="flex-1 items-center">
-                                <AppText className="p-2 text-sm text-gray-400">
-                                  {t("gym.session.rpe")}
-                                </AppText>
-                              </View>
-                            </>
-                          )}
+                          <View className="flex-1 items-center">
+                            <AppText className="p-2 text-sm text-gray-400">
+                              {t("gym.session.set")}
+                            </AppText>
+                          </View>
+                          <View className="flex-1 items-center">
+                            <AppText className="p-2 text-sm text-gray-400">
+                              {t("gym.session.weight")}
+                            </AppText>
+                          </View>
+                          <View className="flex-1 items-center">
+                            <AppText className="p-2 text-sm text-gray-400">
+                              {t("gym.session.reps")}
+                            </AppText>
+                          </View>
+                          <View className="flex-1 items-center">
+                            <AppText className="p-2 text-sm text-gray-400">
+                              {t("gym.session.rpe")}
+                            </AppText>
+                          </View>
                         </View>
                       </View>
                       <View>
@@ -236,52 +183,26 @@ export default function ExerciseHistoryModal({
                               set.rpe === "Failure" ? "bg-red-500" : ""
                             } ${set.rpe === "Warm-up" ? "bg-blue-500" : ""}`}
                           >
-                            {session!.main_group === "cardio" ? (
-                              <>
-                                <View className="flex-1 items-center">
-                                  <AppText className="p-2">
-                                    {setIndex + 1}
-                                  </AppText>
-                                </View>
-                                <View className="flex-1 items-center">
-                                  <AppText className="p-2">
-                                    {set.time_min
-                                      ? `${Math.floor(set.time_min)}:${String(Math.round((set.time_min % 1) * 60)).padStart(2, "0")}`
-                                      : ""}
-                                  </AppText>
-                                </View>
-                                <View className="flex-1 items-center">
-                                  <AppText className="p-2">
-                                    {set.distance_meters
-                                      ? `${convertMetersForDisplay(set.distance_meters)}${getDistanceUnitLabels().short}`
-                                      : ""}
-                                  </AppText>
-                                </View>
-                              </>
-                            ) : (
-                              <>
-                                <View className="flex-1 items-center">
-                                  <AppText className="p-2">
-                                    {setIndex + 1}
-                                  </AppText>
-                                </View>
-                                <View className="flex-1 items-center">
-                                  <AppText className="p-2">
-                                    {set.weight} {weightUnit}
-                                  </AppText>
-                                </View>
-                                <View className="flex-1 items-center">
-                                  <AppText className="p-2">
-                                    {set.reps}
-                                  </AppText>
-                                </View>
-                                <View className="flex-1 items-center">
-                                  <AppText className="p-2" numberOfLines={1}>
-                                    {set.rpe ? translateRpe(set.rpe) : ""}
-                                  </AppText>
-                                </View>
-                              </>
-                            )}
+                            <View className="flex-1 items-center">
+                              <AppText className="p-2">
+                                {setIndex + 1}
+                              </AppText>
+                            </View>
+                            <View className="flex-1 items-center">
+                              <AppText className="p-2">
+                                {set.weight} {weightUnit}
+                              </AppText>
+                            </View>
+                            <View className="flex-1 items-center">
+                              <AppText className="p-2">
+                                {set.reps}
+                              </AppText>
+                            </View>
+                            <View className="flex-1 items-center">
+                              <AppText className="p-2" numberOfLines={1}>
+                                {set.rpe ? translateRpe(set.rpe) : ""}
+                              </AppText>
+                            </View>
                           </View>
                         ))}
                       </View>

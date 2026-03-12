@@ -210,9 +210,6 @@ export default function TemplateForm() {
     setIsHistoryOpen(true);
   };
 
-  const isCardioExercise = (exercise: ExerciseEntry) =>
-    (exercise.main_group || "").toLowerCase() === "cardio";
-
   // useAddExercise hook to add an exercise
 
   const { handleAddExercise } = useAddExercise({
@@ -223,7 +220,6 @@ export default function TemplateForm() {
     setSupersetExercise,
     setNormalExercises,
     setExerciseInputs,
-    isCardioExercise,
   });
 
   // useSaveTemplate hook to save the template

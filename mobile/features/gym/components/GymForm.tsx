@@ -84,7 +84,7 @@ type GymFormData = Pick<
     duration_seconds: number;
     steps: number | null;
     distance_meters: number | null;
-    is_manual: boolean;
+    is_manual: boolean | null;
     calories: number | null;
     activities: { name: string; slug: string | null; base_met: number } | null;
   }[];
@@ -109,8 +109,6 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
           weight: s.weight ?? 0,
           reps: s.reps ?? 0,
           rpe: s.rpe ?? "Medium",
-          time_min: s.time_min ?? 0,
-          distance_meters: s.distance_meters ?? 0,
         })) || [],
     })),
   );
@@ -120,8 +118,6 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
       weight: "",
       reps: "",
       rpe: "Medium",
-      time_min: "",
-      distance_meters: "",
     })),
   );
   const [collapsedExercises, setCollapsedExercises] = useState<Set<string>>(
@@ -175,7 +171,7 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
       duration_seconds: wp.duration_seconds,
       steps: wp.steps,
       distance_meters: wp.distance_meters,
-      is_manual: wp.is_manual,
+      is_manual: wp.is_manual ?? false,
       is_tracking: false,
     };
   });
@@ -194,7 +190,7 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
       duration_seconds: cd.duration_seconds,
       steps: cd.steps,
       distance_meters: cd.distance_meters,
-      is_manual: cd.is_manual,
+      is_manual: cd.is_manual ?? false,
       is_tracking: false,
     };
   });

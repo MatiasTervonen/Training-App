@@ -85,7 +85,7 @@ export async function getLastExerciseHistory({
     sorted.map(async (session) => {
       const { data: sets, error: setsError } = await supabase
         .from("gym_sets")
-        .select("set_number,weight, reps, rpe, time_min, distance_meters")
+        .select("set_number, weight, reps, rpe")
         .eq("session_exercise_id", session.id)
         .order("set_number", { ascending: true });
 

@@ -23,8 +23,6 @@ type SessionSet = {
   reps: number | null;
   rpe: string | null;
   set_number: number;
-  time_min: number | null;
-  distance_meters: number | null;
 };
 
 export type HistoryResult = ({
@@ -39,8 +37,6 @@ export type ExerciseSet = {
   weight?: number | null;
   reps?: number | null;
   rpe?: string | null;
-  time_min?: number | null;
-  distance_meters?: number | null;
 };
 
 export type ExerciseEntry = {
@@ -68,8 +64,6 @@ export type ExerciseInput = {
   weight?: string;
   reps?: string;
   rpe?: string;
-  time_min?: string;
-  distance_meters?: string;
 };
 
 export type FeedItemUI = feed_items & {
@@ -208,8 +202,6 @@ export type LatestHistoryPerExercise = {
     weight: number | null;
     reps: number | null;
     rpe: string | null;
-    time_min: number | null;
-    distance_meters: number | null;
   }[];
 };
 

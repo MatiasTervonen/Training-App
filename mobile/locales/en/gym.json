@@ -158,8 +158,7 @@
       "arms": "Arms",
       "shoulders": "Shoulders",
       "back": "Back",
-      "core": "Core",
-      "cardio": "Cardio"
+      "core": "Core"
     },
     "exerciseCard": {
       "delete": "Delete",
@@ -170,15 +169,11 @@
       "notesFor": "Notes...",
       "notesPlaceholder": "Add your notes here...",
       "set": "Set",
-      "time": "Time",
-      "length": "Length",
       "weight": "Weight",
       "reps": "Reps",
       "rpe": "RPE",
       "deleteSetTitle": "Delete Set",
       "deleteSetMessage": "Are you sure you want to delete this set?",
-      "timePlaceholder": "Time (min)",
-      "lengthPlaceholder": "Length (meters)",
       "weightPlaceholder": "Weight...",
       "repsPlaceholder": "Reps...",
       "rpeOptions": {
@@ -189,7 +184,6 @@
         "failure": "5 - Failure"
       },
       "missingData": "Missing data",
-      "fillTime": "Please fill time (min).",
       "fillReps": "Please fill reps.",
       "setsLabel": "sets"
     },
@@ -206,6 +200,8 @@
     },
     "saveSession": {
       "titleRequired": "Title is required.",
+      "phaseStillRunningTitle": "Tracking still running",
+      "phaseStillRunningSub": "Stop warm-up or cool-down first.",
       "confirmTitle": "Confirm Finish Session",
       "confirmMessage": "Are you sure you want to finish this session?",
       "saveError": "Failed to save session. Please try again."
@@ -214,10 +210,6 @@
       "duration": "Duration",
       "superSet": "Super-Set",
       "set": "Set",
-      "time": "Time",
-      "min": "min",
-      "distance": "Distance",
-      "meters": "meters",
       "weight": "Weight",
       "reps": "Reps",
       "rpe": "RPE",
@@ -237,8 +229,6 @@
       "loadError": "Could not load exercise history. Please try again.",
       "noHistory": "No history available for this exercise.",
       "personalBest": "Personal Best",
-      "timeMin": "Time (min)",
-      "distanceMeters": "Distance (meters)",
       "range1m": "1M",
       "range3m": "3M",
       "range6m": "6M",

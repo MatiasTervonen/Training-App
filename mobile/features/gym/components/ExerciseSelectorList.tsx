@@ -5,6 +5,7 @@ import { generateUUID } from "@/utils/generateUUID";
 import AppText from "@/components/AppText";
 import { Pressable, View } from "react-native";
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 type PhaseType = "warmup" | "cooldown";
 
@@ -33,6 +34,7 @@ export default function ExerciseSelectorList({
   hasCooldown,
   onSelectPhase,
 }: Props) {
+  const { t } = useTranslation("gym");
   return (
     <>
       {draftExercises.map((exercise, index) => {
@@ -89,13 +91,13 @@ export default function ExerciseSelectorList({
         // All others: just show a summary
         return (
           <View
-            key={exercise.exercise_id}
+            key={`${exercise.exercise_id}-${index}`}
             className="bg-slate-700 p-2 my-2 px-4 flex-row justify-between items-center mr-20 ml-0"
           >
             <View>
               <AppText className="">{exercise.name}</AppText>
               <AppText className="text-sm text-gray-400">
-                {exercise.equipment} / {exercise.muscle_group}
+                {t(`gym.equipment.${exercise.equipment?.toLowerCase()}`)} / {t(`gym.muscleGroups.${exercise.muscle_group?.toLowerCase().replace(/ /g, "_")}`)}
               </AppText>
             </View>
             <Pressable

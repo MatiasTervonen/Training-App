@@ -88,7 +88,7 @@ export function addLiveStepListener(
 }
 
 export function setStepGoals(
-  goals: number[],
+  goals: { id: string; target: number }[],
   notifTitle: string,
   notifBody: string,
 ): void {

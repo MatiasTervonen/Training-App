@@ -14,6 +14,7 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
@@ -48,7 +49,8 @@ class StepTrackingService : Service(), SensorEventListener {
     private var isSetUp = false
 
     // Step goal tracking
-    private var cachedGoals: IntArray = intArrayOf()
+    private data class StepGoal(val id: String, val target: Int)
+    private var cachedGoals: List<StepGoal> = emptyList()
     private var goalsLoadedForDate: String = ""
     private val notificationHandler = Handler(Looper.getMainLooper())
     private val notificationUpdateRunnable = object : Runnable {
@@ -193,7 +195,10 @@ class StepTrackingService : Service(), SensorEventListener {
         val goalPrefs = getSharedPreferences("step_goals_prefs", Context.MODE_PRIVATE)
         val goalsJson = goalPrefs.getString("step_goals", "[]") ?: "[]"
         val arr = org.json.JSONArray(goalsJson)
-        cachedGoals = IntArray(arr.length()) { arr.getInt(it) }
+        cachedGoals = (0 until arr.length()).map { i ->
+            val obj = arr.getJSONObject(i)
+            StepGoal(obj.getString("id"), obj.getInt("target"))
+        }
     }
 
     private fun checkStepGoals(todaySteps: Long) {
@@ -219,11 +224,12 @@ class StepTrackingService : Service(), SensorEventListener {
 
         val notifiedGoals = notifiedPrefs.getStringSet("notified_goals", emptySet())!!.toMutableSet()
 
-        for (target in cachedGoals) {
-            val key = target.toString()
-            if (todaySteps >= target && key !in notifiedGoals) {
+        for (goal in cachedGoals) {
+            val key = goal.id
+            if (todaySteps >= goal.target && key !in notifiedGoals) {
                 notifiedGoals.add(key)
-                fireGoalReachedNotification(target)
+                fireGoalReachedNotification(goal.target)
+                triggerStepGoalTask(goal.id, today)
             }
         }
 
@@ -272,5 +278,18 @@ class StepTrackingService : Service(), SensorEventListener {
 
         // Use target as notification ID so each goal gets its own notification
         notificationManager.notify(target, notification)
+    }
+
+    private fun triggerStepGoalTask(habitId: String, date: String) {
+        try {
+            val taskIntent = Intent(applicationContext, StepGoalTaskService::class.java)
+            val bundle = Bundle()
+            bundle.putString("habitId", habitId)
+            bundle.putString("date", date)
+            taskIntent.putExtras(bundle)
+            applicationContext.startService(taskIntent)
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to start StepGoalTaskService", e)
+        }
     }
 }

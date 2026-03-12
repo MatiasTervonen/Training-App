@@ -9,7 +9,6 @@ export default function useAddExercise({
   setSupersetExercise,
   setNormalExercises,
   setExerciseInputs,
-  isCardioExercise,
 }: {
   exerciseType: string;
   supersetExercise: ExerciseEntry[];
@@ -28,7 +27,6 @@ export default function useAddExercise({
       | ExerciseInput[]
       | ((prev: ExerciseInput[]) => ExerciseInput[])
   ) => void;
-  isCardioExercise: (exercise: ExerciseEntry) => boolean;
 }) {
   const handleAddExercise = () => {
     const newSupersetId = Crypto.randomUUID();
@@ -47,10 +45,10 @@ export default function useAddExercise({
       setExercises((prev) => [...prev, ...newGroup]);
       setExerciseInputs((prev) => [
         ...prev,
-        ...newGroup.map((ex) => ({
+        ...newGroup.map(() => ({
           weight: "",
           reps: "",
-          rpe: isCardioExercise(ex) ? "Warm-up" : "Medium",
+          rpe: "Medium",
         })),
       ]);
       setSupersetExercise([]);
@@ -68,10 +66,10 @@ export default function useAddExercise({
       setExercises((prev) => [...prev, ...updated]);
       setExerciseInputs((prev) => [
         ...prev,
-        ...updated.map((ex) => ({
+        ...updated.map(() => ({
           weight: "",
           reps: "",
-          rpe: isCardioExercise(ex) ? "Warm-up" : "Medium",
+          rpe: "Medium",
         })),
       ]);
       setNormalExercises([]);

@@ -15,7 +15,6 @@ type RangeType = "1m" | "3m" | "6m" | "1y";
 
 type ExerciseHistoryChartProps = {
   history: HistoryResult;
-  isCardio: boolean;
   valueUnit: string;
 };
 
@@ -55,7 +54,6 @@ echarts.use([SkiaRenderer, LineChart, GridComponent]);
 
 export default function ExerciseHistoryChart({
   history,
-  isCardio,
   valueUnit,
 }: ExerciseHistoryChartProps) {
   const { t, i18n } = useTranslation("gym");
@@ -85,33 +83,19 @@ export default function ExerciseHistoryChart({
     return sorted
       .map((session) => {
         if (!session) return null;
-        if (isCardio) {
-          const bestSet = session.sets.reduce(
-            (best, s) =>
-              (s.distance_meters || 0) > (best.distance_meters || 0) ? s : best,
-            session.sets[0],
-          );
-          if (!bestSet?.distance_meters) return null;
-          return {
-            date: session.date,
-            value: bestSet.distance_meters,
-            reps: bestSet.time_min || 0,
-          };
-        } else {
-          const bestSet = session.sets.reduce(
-            (best, s) => ((s.weight || 0) > (best.weight || 0) ? s : best),
-            session.sets[0],
-          );
-          if (!bestSet?.weight) return null;
-          return {
-            date: session.date,
-            value: bestSet.weight,
-            reps: bestSet.reps || 0,
-          };
-        }
+        const bestSet = session.sets.reduce(
+          (best, s) => ((s.weight || 0) > (best.weight || 0) ? s : best),
+          session.sets[0],
+        );
+        if (!bestSet?.weight) return null;
+        return {
+          date: session.date,
+          value: bestSet.weight,
+          reps: bestSet.reps || 0,
+        };
       })
       .filter(Boolean) as { date: string; value: number; reps: number }[];
-  }, [history, isCardio]);
+  }, [history]);
 
   // Date boundaries
   const latestDate = useMemo(() => {

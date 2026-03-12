@@ -54,8 +54,6 @@ export default function ShareModal({
         weight: s.weight,
         reps: s.reps,
         rpe: s.rpe,
-        time_min: s.time_min,
-        distance_meters: s.distance_meters,
       })),
     }));
   }, [gymSession.gym_session_exercises]);

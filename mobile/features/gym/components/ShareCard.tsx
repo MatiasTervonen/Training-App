@@ -1,7 +1,7 @@
 import { forwardRef } from "react";
 import { Image, View } from "react-native";
 import AppText from "@/components/AppText";
-import { formatDuration, formatDateShort, formatMeters } from "@/lib/formatDate";
+import { formatDurationLong, formatDateShort } from "@/lib/formatDate";
 import {
   computeShareStats,
   getTopExercises,
@@ -38,14 +38,6 @@ const ShareCard = forwardRef<View, ShareCardProps>(
     };
 
     const formatTopSet = (ex: TopExercise) => {
-      if (ex.isCardio) {
-        const parts = [];
-        if (ex.time_min) parts.push(`${ex.time_min} min`);
-        if (ex.distance_meters) {
-          parts.push(formatMeters(ex.distance_meters));
-        }
-        return parts.join(" / ") || "-";
-      }
       return `${ex.weight} ${weightUnit} × ${ex.reps}`;
     };
 
@@ -93,7 +85,7 @@ const ShareCard = forwardRef<View, ShareCardProps>(
                 <View className="flex-1">
                   <ThemedStatBox
                     label={t("gym.share.duration")}
-                    value={formatDuration(duration)}
+                    value={formatDurationLong(duration)}
                     theme={theme}
                   />
                 </View>
@@ -205,7 +197,7 @@ const ShareCard = forwardRef<View, ShareCardProps>(
             <View className="flex-1">
               <ThemedStatBox
                 label={t("gym.share.duration")}
-                value={formatDuration(duration)}
+                value={formatDurationLong(duration)}
                 theme={theme}
                 size={isStory ? "large" : "normal"}
               />

@@ -77,6 +77,15 @@ export default function useSaveSession({
       return;
     }
 
+    if (warmup?.is_tracking || cooldown?.is_tracking) {
+      Toast.show({
+        type: "error",
+        text1: t("gym.saveSession.phaseStillRunningTitle"),
+        text2: t("gym.saveSession.phaseStillRunningSub"),
+      });
+      return;
+    }
+
     if (title.trim() === "") {
       Toast.show({
         type: "error",

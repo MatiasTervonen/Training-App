@@ -8,22 +8,25 @@ export function useStepGoalSync() {
   const { t } = useTranslation("habits");
   const { data: habits = [] } = useHabits();
 
-  const stepTargets = useMemo(
+  const stepGoals = useMemo(
     () =>
       habits
         .filter((h) => h.type === "steps" && h.target_value)
-        .map((h) => h.target_value!),
+        .map((h) => ({ id: h.id, target: h.target_value! })),
     [habits],
   );
 
   useEffect(() => {
     setStepGoals(
-      stepTargets,
+      stepGoals,
       t("stepGoalReached"),
       t("stepGoalBody", { steps: "{{steps}}" }),
     );
 
     // Also store in AsyncStorage for widget to read
-    AsyncStorage.setItem("step_habit_targets", JSON.stringify(stepTargets));
-  }, [stepTargets, t]);
+    AsyncStorage.setItem(
+      "step_habit_targets",
+      JSON.stringify(stepGoals.map((g) => g.target)),
+    );
+  }, [stepGoals, t]);
 }

@@ -117,6 +117,8 @@
         android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
         android:value="step_tracking"/>
     </service>
+    <!-- Headless JS task for marking step habits done in background -->
+    <service android:name=".step.StepGoalTaskService" android:exported="false"/>
     <receiver android:name=".widget.QuickLinks" android:exported="false" android:label="MyTrack Quick Links">
       <intent-filter>
         <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>

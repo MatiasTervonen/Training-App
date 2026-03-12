@@ -1,5 +1,6 @@
 import { ExerciseEntry, ExerciseInput } from "@/types/session";
 import * as Crypto from "expo-crypto";
+import { useTimerStore } from "@/lib/stores/timerStore";
 
 export default function useStartExercise({
   exercises,
@@ -35,7 +36,7 @@ export default function useStartExercise({
   const startExercise = () => {
     const newSupersetId = Crypto.randomUUID();
 
-    if (exercises.length === 0) {
+    if (!useTimerStore.getState().startTimestamp) {
       handleStartSession();
     }
 
@@ -78,8 +79,6 @@ export default function useStartExercise({
           weight: "",
           reps: "",
           rpe: "Medium",
-          time_min: "",
-          distance_meters: "",
         })),
       ]);
       setNormalExercises([]);

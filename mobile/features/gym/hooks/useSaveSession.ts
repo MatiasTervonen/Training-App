@@ -1,6 +1,6 @@
 import { Toast } from "react-native-toast-message/lib/src/Toast";
 import { useConfirmAction } from "@/lib/confirmAction";
-import { DraftVideo, ExerciseEntry, FeedData } from "@/types/session";
+import { DraftVideo, ExerciseEntry, FeedData, PhaseData } from "@/types/session";
 import { editSession } from "@/database/gym/edit-session";
 import { saveSession } from "@/database/gym/save-session";
 import { useQueryClient } from "@tanstack/react-query";
@@ -42,6 +42,8 @@ export default function useSaveSession({
   deletedVideoPaths = [],
   deletedRecordingIds = [],
   deletedRecordingPaths = [],
+  warmup,
+  cooldown,
 }: {
   title: string;
   exercises: ExerciseEntry[];
@@ -61,6 +63,8 @@ export default function useSaveSession({
   deletedVideoPaths?: string[];
   deletedRecordingIds?: string[];
   deletedRecordingPaths?: string[];
+  warmup?: PhaseData | null;
+  cooldown?: PhaseData | null;
 }) {
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -101,6 +105,36 @@ export default function useSaveSession({
         ? Math.floor((Date.now() - startTimestamp) / 1000)
         : Math.floor((remainingMs ?? 0) / 1000);
 
+    // Build phases array from warmup/cooldown state
+    const phases: {
+      phase_type: string;
+      activity_id: string;
+      duration_seconds: number;
+      steps: number | null;
+      distance_meters: number | null;
+      is_manual: boolean;
+    }[] = [];
+    if (warmup && warmup.duration_seconds > 0) {
+      phases.push({
+        phase_type: "warmup",
+        activity_id: warmup.activity_id,
+        duration_seconds: warmup.duration_seconds,
+        steps: warmup.steps,
+        distance_meters: warmup.distance_meters,
+        is_manual: warmup.is_manual,
+      });
+    }
+    if (cooldown && cooldown.duration_seconds > 0) {
+      phases.push({
+        phase_type: "cooldown",
+        activity_id: cooldown.activity_id,
+        duration_seconds: cooldown.duration_seconds,
+        steps: cooldown.steps,
+        distance_meters: cooldown.distance_meters,
+        is_manual: cooldown.is_manual,
+      });
+    }
+
     try {
       if (isEditing) {
         const updatedFeedItem = await editSession({
@@ -118,6 +152,7 @@ export default function useSaveSession({
           deletedVideoPaths,
           deletedRecordingIds,
           deletedRecordingPaths,
+          phases,
         });
 
         await Promise.all([
@@ -151,6 +186,7 @@ export default function useSaveSession({
           draftRecordings,
           draftVideos,
           onProgress: (p) => setSavingProgress?.(p),
+          phases,
         });
 
         await Promise.all([
@@ -174,6 +210,7 @@ export default function useSaveSession({
           exercises,
           notes,
           weightUnit,
+          phases,
         });
         router.push("/gym/training-finished");
       }

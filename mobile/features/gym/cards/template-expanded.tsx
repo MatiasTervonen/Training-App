@@ -24,7 +24,7 @@ export default function GymTemplate({ item, onStartWorkout }: Props) {
       showsVerticalScrollIndicator={false}
       contentContainerStyle={{ flexGrow: 1 }}
     >
-      <PageContainer className="mb-5">
+      <PageContainer>
         <View className="flex-1 justify-between">
           <View>
             <View className="mb-5 justify-center items-center">

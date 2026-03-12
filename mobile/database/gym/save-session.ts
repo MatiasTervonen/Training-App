@@ -18,6 +18,15 @@ type DraftImage = {
   uri: string;
 };
 
+type PhasePayload = {
+  phase_type: string;
+  activity_id: string;
+  duration_seconds: number;
+  steps: number | null;
+  distance_meters: number | null;
+  is_manual: boolean;
+};
+
 type props = {
   title: string;
   notes: string;
@@ -27,6 +36,7 @@ type props = {
   draftRecordings?: DraftRecording[];
   draftVideos?: DraftVideo[];
   onProgress?: (progress: number | undefined) => void;
+  phases?: PhasePayload[];
 };
 
 async function getFileSize(uri: string): Promise<number> {
@@ -43,6 +53,7 @@ export async function saveSession({
   draftRecordings = [],
   draftVideos = [],
   onProgress,
+  phases = [],
 }: props) {
   const {
     data: { session },
@@ -133,6 +144,7 @@ export async function saveSession({
       p_images: uploadedImages,
       p_videos: uploadedVideos,
       p_recordings: uploadedRecordings,
+      p_phases: phases,
     });
 
     if (error) {

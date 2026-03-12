@@ -24,11 +24,21 @@ type ExerciseItem = {
   muscle_group: string;
 };
 
+type PhaseType = "warmup" | "cooldown";
+
 type Props = {
   onSelect: (exercise: ExerciseItem) => void;
+  hasWarmup?: boolean;
+  hasCooldown?: boolean;
+  onSelectPhase?: (phaseType: PhaseType) => void;
 };
 
-export default function ExerciseDropdown({ onSelect }: Props) {
+export default function ExerciseDropdown({
+  onSelect,
+  hasWarmup = false,
+  hasCooldown = false,
+  onSelectPhase,
+}: Props) {
   const { t } = useTranslation("gym");
   const [searchQuery, setSearchQuery] = useState("");
   const language = useUserStore((state) => state.settings?.language ?? "en");
@@ -77,9 +87,44 @@ export default function ExerciseDropdown({ onSelect }: Props) {
 
   const recentExercisesList = recentExercises || [];
 
-  const sections = [];
+  const showPhaseSection =
+    onSelectPhase &&
+    !searchQuery.trim() &&
+    (!hasWarmup || !hasCooldown);
+
+  const phaseItems: { id: string; name: string; phaseType: PhaseType }[] = [];
+  if (showPhaseSection) {
+    if (!hasWarmup) {
+      phaseItems.push({
+        id: "__phase_warmup",
+        name: t("gym.phase.addWarmup"),
+        phaseType: "warmup",
+      });
+    }
+    if (!hasCooldown) {
+      phaseItems.push({
+        id: "__phase_cooldown",
+        name: t("gym.phase.addCooldown"),
+        phaseType: "cooldown",
+      });
+    }
+  }
+
+  const sections: {
+    title: string;
+    data: (ExerciseItem | { id: string; name: string; phaseType: PhaseType })[];
+    key?: string;
+  }[] = [];
 
   if (!isError && !isLoading) {
+    if (phaseItems.length > 0) {
+      sections.push({
+        title: t("gym.phase.sectionTitle"),
+        data: phaseItems,
+        key: "phases",
+      });
+    }
+
     if (recentExercisesList.length > 0 && searchQuery.length === 0) {
       sections.push({
         title: t("gym.exerciseDropdown.recentExercises"),
@@ -134,11 +179,25 @@ export default function ExerciseDropdown({ onSelect }: Props) {
               showsVerticalScrollIndicator={false}
               sections={sections}
               keyExtractor={(item) => item.id}
-              renderItem={({ item }) => {
+              renderItem={({ item, section, index }) => {
+                if ("phaseType" in item && section.key === "phases") {
+                  return (
+                    <AnimatedButton
+                      className={`w-full text-left px-4 py-3 z-40 border-b border-gray-700 ${index % 2 === 1 ? "bg-slate-800/50" : ""}`}
+                      onPress={() => onSelectPhase?.(item.phaseType)}
+                    >
+                      <AppText className="text-lg">
+                        {item.name}
+                      </AppText>
+                    </AnimatedButton>
+                  );
+                }
+
+                const exerciseItem = item as ExerciseItem;
                 return (
                   <AnimatedButton
-                    className="w-full text-left px-4 py-2 z-40 border-b border-gray-400"
-                    onPress={() => onSelect(item)}
+                    className={`w-full text-left px-4 py-2 z-40 border-b border-gray-700 ${index % 2 === 1 ? "bg-slate-800/50" : ""}`}
+                    onPress={() => onSelect(exerciseItem)}
                   >
                     <View className="justify-between">
                       <View className="flex-row justify-between items-center">
@@ -147,21 +206,21 @@ export default function ExerciseDropdown({ onSelect }: Props) {
                           numberOfLines={1}
                           ellipsizeMode="tail"
                         >
-                          {item.name}
+                          {exerciseItem.name}
                         </AppText>
                         <AppText className="text-md text-gray-300 shrink-0">
-                          {t(`gym.muscleGroups.${item.muscle_group}`)}
+                          {t(`gym.muscleGroups.${exerciseItem.muscle_group}`)}
                         </AppText>
                       </View>
                       <AppText className="text-md text-gray-400">
-                        {t(`gym.equipment.${item.equipment}`)}
+                        {t(`gym.equipment.${exerciseItem.equipment}`)}
                       </AppText>
                     </View>
                   </AnimatedButton>
                 );
               }}
               renderSectionHeader={({ section: { title } }) => (
-                <AppText className="text-center text-lg bg-blue-600">
+                <AppText className="text-center text-base bg-blue-600 py-0.5">
                   {title}
                 </AppText>
               )}

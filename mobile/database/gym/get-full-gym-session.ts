@@ -34,7 +34,9 @@ export async function getFullGymSession(sessionId: string) {
   const { data, error } = await supabase
     .from("sessions")
     .select(
-      `*, session_stats(*), gym_session_exercises(
+      `*, session_stats(*),
+      gym_session_phases(*, activities(name, slug, base_met)),
+      gym_session_exercises(
         *,
         gym_exercises(
           *,

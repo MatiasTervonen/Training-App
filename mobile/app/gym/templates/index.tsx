@@ -71,9 +71,58 @@ export default function TemplatesPage() {
         superset_id: ex.superset_id,
       }));
 
+    // Build phase data from template phases
+    const templatePhases = (template as typeof template & {
+      gym_template_phases?: {
+        phase_type: string;
+        activity_id: string;
+        activities: { name: string; slug: string | null; base_met: number } | null;
+      }[];
+    }).gym_template_phases;
+
+    let warmup = null;
+    let cooldown = null;
+
+    if (templatePhases) {
+      const wp = templatePhases.find((p) => p.phase_type === "warmup");
+      if (wp?.activities) {
+        warmup = {
+          phase_type: "warmup" as const,
+          activity_id: wp.activity_id,
+          activity_name: wp.activities.name,
+          activity_slug: wp.activities.slug,
+          activity_met: wp.activities.base_met,
+          input_mode: "pending" as const,
+          duration_seconds: 0,
+          steps: null,
+          distance_meters: null,
+          is_manual: false,
+          is_tracking: false,
+        };
+      }
+      const cd = templatePhases.find((p) => p.phase_type === "cooldown");
+      if (cd?.activities) {
+        cooldown = {
+          phase_type: "cooldown" as const,
+          activity_id: cd.activity_id,
+          activity_name: cd.activities.name,
+          activity_slug: cd.activities.slug,
+          activity_met: cd.activities.base_met,
+          input_mode: "pending" as const,
+          duration_seconds: 0,
+          steps: null,
+          distance_meters: null,
+          is_manual: false,
+          is_tracking: false,
+        };
+      }
+    }
+
     const sessionDraft = {
       title: template.name,
       exercises: workoutExercises,
+      warmup,
+      cooldown,
     };
 
     await AsyncStorage.setItem(

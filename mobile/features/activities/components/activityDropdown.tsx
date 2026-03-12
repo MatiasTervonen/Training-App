@@ -166,10 +166,10 @@ export default function ActivityDropdown({ onSelect }: Props) {
               showsVerticalScrollIndicator={false}
               sections={sections}
               keyExtractor={(item: activities_with_category) => item.id}
-              renderItem={({ item }: { item: activities_with_category }) => {
+              renderItem={({ item, index }: { item: activities_with_category; index: number }) => {
                 return (
                   <AnimatedButton
-                    className={`w-full text-left px-4 py-2 z-40 border-b border-gray-400 ${selectedActivity?.id === item.id ? "bg-blue-800" : ""}`}
+                    className={`w-full text-left px-4 py-2 z-40 border-b border-gray-700 ${selectedActivity?.id === item.id ? "bg-blue-800" : index % 2 === 1 ? "bg-slate-800/50" : ""}`}
                     onPress={() => {
                       handleSelectActivity(item);
 
@@ -194,7 +194,7 @@ export default function ActivityDropdown({ onSelect }: Props) {
                 );
               }}
               renderSectionHeader={({ section: { title } }) => (
-                <AppText className="text-center text-lg bg-blue-600">
+                <AppText className="text-center text-base bg-blue-600 py-0.5">
                   {title}
                 </AppText>
               )}

@@ -1,4 +1,4 @@
-import { feed_items, notes } from "./models";
+import { feed_items, notes, activities_with_category } from "./models";
 
 export type Template = {
   id: string;
@@ -290,3 +290,29 @@ export type TemplateHistorySession = {
 };
 
 export type TemplateHistoryMetric = "avg_pace" | "duration" | "avg_speed" | "calories" | "steps";
+
+export type PhaseType = "warmup" | "cooldown";
+
+export type PhaseInputMode = "live" | "manual" | "pending";
+
+export type PhaseData = {
+  phase_type: PhaseType;
+  activity_id: string;
+  activity_name: string;
+  activity_slug: string | null;
+  activity_met: number;
+  input_mode: PhaseInputMode;
+  duration_seconds: number;
+  steps: number | null;
+  distance_meters: number | null;
+  is_manual: boolean;
+  is_tracking: boolean;
+};
+
+export type TemplatePhaseData = {
+  phase_type: PhaseType;
+  activity_id: string;
+  activity_name: string;
+  activity_slug: string | null;
+  activity_met: number;
+};

@@ -314,6 +314,31 @@
         "nov": "Marras",
         "dec": "Joulu"
       }
+    },
+    "phase": {
+      "warmup": "Lämmittely",
+      "cooldown": "Jäähdyttely",
+      "addWarmup": "Lisää lämmittely",
+      "addCooldown": "Lisää jäähdyttely",
+      "sectionTitle": "Lämmittely / Jäähdyttely",
+      "trackLive": "Seuraa livenä",
+      "enterManually": "Syötä käsin",
+      "selectActivity": "Valitse aktiviteetti",
+      "time": "Aika",
+      "timeMin": "Aika (min)",
+      "distance": "Matka",
+      "steps": "Askeleet",
+      "stop": "Lopeta",
+      "save": "Tallenna",
+      "remove": "Poista",
+      "liveTracking": "Live-seuranta",
+      "manualEntry": "Manuaalinen syöttö",
+      "min": "min",
+      "stepsLabel": "askelta",
+      "confirmRemoveTitle": "Poista vaihe",
+      "confirmRemoveMessage": "Haluatko varmasti poistaa tämän vaiheen?",
+      "confirmStopTitle": "Lopeta seuranta",
+      "confirmStopMessage": "Haluatko varmasti lopettaa seurannan?"
     }
   }
 }

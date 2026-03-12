@@ -1,4 +1,5 @@
 import { formatDateShort, formatDuration, formatTime, getDistanceUnitLabels, convertMetersForDisplay } from "@/lib/formatDate";
+import { PhaseType } from "@/types/session";
 import { useUserStore } from "@/lib/stores/useUserStore";
 import { FullGymSession } from "@/database/gym/get-full-gym-session";
 import GroupExercises from "@/features/gym/lib/GroupExercises";
@@ -52,6 +53,23 @@ export default function GymSession(gym_session: FullGymSession) {
 
     return { exerciseCount, totalSets, muscleGroupsHit };
   }, [gym_session.gym_session_exercises]);
+
+  const phases = (gym_session as FullGymSession & {
+    gym_session_phases?: {
+      id: string;
+      phase_type: string;
+      activity_id: string;
+      duration_seconds: number;
+      steps: number | null;
+      distance_meters: number | null;
+      calories: number | null;
+      is_manual: boolean;
+      activities: { name: string; slug: string | null; base_met: number } | null;
+    }[];
+  }).gym_session_phases ?? [];
+
+  const warmupPhase = phases.find((p) => p.phase_type === "warmup");
+  const cooldownPhase = phases.find((p) => p.phase_type === "cooldown");
 
   const sessionStats = gym_session.session_stats;
   const totalVolume = sessionStats?.total_volume ?? 0;
@@ -194,6 +212,17 @@ export default function GymSession(gym_session: FullGymSession) {
             )}
           </LinearGradient>
         </View>
+        {warmupPhase && warmupPhase.activities && (
+          <PhaseDisplayCard
+            phaseType="warmup"
+            activityName={warmupPhase.activities.name}
+            durationSeconds={warmupPhase.duration_seconds}
+            steps={warmupPhase.steps}
+            distanceMeters={warmupPhase.distance_meters}
+            calories={warmupPhase.calories}
+            t={t}
+          />
+        )}
         {Object.entries(groupedExercises).map(([superset_id, group]) => (
           <LinearGradient
             key={superset_id}
@@ -352,6 +381,17 @@ export default function GymSession(gym_session: FullGymSession) {
             ))}
           </LinearGradient>
         ))}
+        {cooldownPhase && cooldownPhase.activities && (
+          <PhaseDisplayCard
+            phaseType="cooldown"
+            activityName={cooldownPhase.activities.name}
+            durationSeconds={cooldownPhase.duration_seconds}
+            steps={cooldownPhase.steps}
+            distanceMeters={cooldownPhase.distance_meters}
+            calories={cooldownPhase.calories}
+            t={t}
+          />
+        )}
       </PageContainer>
 
       <ExerciseHistoryModal
@@ -378,5 +418,74 @@ export default function GymSession(gym_session: FullGymSession) {
         weightUnit={weightUnit}
       />
     </ScrollView>
+  );
+}
+
+function PhaseDisplayCard({
+  phaseType,
+  activityName,
+  durationSeconds,
+  steps,
+  distanceMeters,
+  calories,
+  t,
+}: {
+  phaseType: PhaseType;
+  activityName: string;
+  durationSeconds: number;
+  steps: number | null;
+  distanceMeters: number | null;
+  calories: number | null;
+  t: (key: string) => string;
+}) {
+  const durationMin = Math.round(durationSeconds / 60);
+  const phaseLabel =
+    phaseType === "warmup"
+      ? t("gym.phase.warmup")
+      : t("gym.phase.cooldown");
+
+  return (
+    <LinearGradient
+      colors={["#065f46", "#0f172a", "#0f172a"]}
+      start={{ x: 1, y: 0 }}
+      end={{ x: 0, y: 1 }}
+      className="mt-5 rounded-md overflow-hidden border-2 border-emerald-600 p-4"
+    >
+      <AppText className="text-lg mb-2">
+        {phaseLabel}: {activityName}
+      </AppText>
+      <View className="flex-row gap-4">
+        <View>
+          <AppText className="text-sm text-gray-400">
+            {t("gym.phase.timeMin")}
+          </AppText>
+          <AppText>{durationMin}</AppText>
+        </View>
+        {steps != null && steps > 0 && (
+          <View>
+            <AppText className="text-sm text-gray-400">
+              {t("gym.phase.stepsLabel")}
+            </AppText>
+            <AppText>{steps.toLocaleString()}</AppText>
+          </View>
+        )}
+        {distanceMeters != null && distanceMeters > 0 && (
+          <View>
+            <AppText className="text-sm text-gray-400">
+              {t("gym.phase.distance")}
+            </AppText>
+            <AppText>{convertMetersForDisplay(distanceMeters)}</AppText>
+          </View>
+        )}
+        {calories != null && calories > 0 && (
+          <View>
+            <AppText className="text-sm text-gray-400">
+              {t("gym.session.calories")}
+            </AppText>
+            <AppText>{Math.round(calories)}</AppText>
+          </View>
+        )}
+      </View>
+    </LinearGradient>
   );
 }

@@ -18,7 +18,10 @@ import {
   ExerciseEntry,
   emptyExerciseEntry,
   ExerciseInput,
+  TemplatePhaseData,
+  PhaseType,
 } from "@/types/session";
+import { activities_with_category } from "@/types/models";
 import ExerciseHistoryModal from "@/features/gym/components/ExerciseHistoryModal";
 import FullScreenLoader from "@/components/FullScreenLoader";
 import GroupGymExercises from "@/features/gym/lib/GroupGymExercises";
@@ -39,6 +42,8 @@ import { useTranslation } from "react-i18next";
 
 import AnimatedButton from "@/components/buttons/animatedButton";
 import DraggableList from "@/components/DraggableList";
+import PhaseCard from "@/features/gym/components/PhaseCard";
+import PhaseActivityPicker from "@/features/gym/components/PhaseActivityPicker";
 
 export default function TemplateForm() {
   const confirmAction = useConfirmAction();
@@ -60,6 +65,12 @@ export default function TemplateForm() {
   );
   const [isScrollEnabled, setIsScrollEnabled] = useState(true);
 
+  // Phase state for templates
+  const [warmup, setWarmup] = useState<TemplatePhaseData | null>(null);
+  const [cooldown, setCooldown] = useState<TemplatePhaseData | null>(null);
+  const [phasePickerOpen, setPhasePickerOpen] = useState(false);
+  const [phasePickerType, setPhasePickerType] = useState<PhaseType>("warmup");
+
   const { id } = useLocalSearchParams<{ id?: string }>();
   const templateId = id;
   const storageKey = templateId
@@ -77,6 +88,8 @@ export default function TemplateForm() {
     setExercises([]);
     setWorkoutName("");
     setNormalExercises([]);
+    setWarmup(null);
+    setCooldown(null);
     AsyncStorage.removeItem(storageKey);
   };
 
@@ -99,9 +112,11 @@ export default function TemplateForm() {
     const sessionDraft = {
       title: workoutName,
       exercises,
+      warmup,
+      cooldown,
     };
     AsyncStorage.setItem(storageKey, JSON.stringify(sessionDraft));
-  }, [exercises, workoutName, storageKey]);
+  }, [exercises, workoutName, storageKey, warmup, cooldown]);
 
   // Load existing template when editing
 
@@ -143,6 +158,38 @@ export default function TemplateForm() {
           rpe: "Medium",
         })),
       );
+
+      // Load template phases
+      const templatePhases = (existingTemplate as typeof existingTemplate & {
+        gym_template_phases?: {
+          phase_type: string;
+          activity_id: string;
+          activities: { name: string; slug: string | null; base_met: number } | null;
+        }[];
+      }).gym_template_phases;
+
+      if (templatePhases) {
+        const wp = templatePhases.find((p) => p.phase_type === "warmup");
+        if (wp?.activities) {
+          setWarmup({
+            phase_type: "warmup",
+            activity_id: wp.activity_id,
+            activity_name: wp.activities.name,
+            activity_slug: wp.activities.slug,
+            activity_met: wp.activities.base_met,
+          });
+        }
+        const cd = templatePhases.find((p) => p.phase_type === "cooldown");
+        if (cd?.activities) {
+          setCooldown({
+            phase_type: "cooldown",
+            activity_id: cd.activity_id,
+            activity_name: cd.activities.name,
+            activity_slug: cd.activities.slug,
+            activity_met: cd.activities.base_met,
+          });
+        }
+      }
     }
   }, [existingTemplate]);
 
@@ -187,6 +234,8 @@ export default function TemplateForm() {
     setIsSaving,
     resetSession,
     templateId: templateId || "",
+    warmup,
+    cooldown,
   });
 
   // useLogSetForExercise hook to log the set for the exercise. not used in this component.
@@ -197,6 +246,28 @@ export default function TemplateForm() {
     setExerciseInputs,
     setExercises,
   });
+
+  const handlePhaseSelect = (phaseType: PhaseType) => {
+    setPhasePickerType(phaseType);
+    setPhasePickerOpen(true);
+    setIsExerciseModalOpen(false);
+  };
+
+  const handleTemplatePhaseSelected = (activity: activities_with_category) => {
+    const phase: TemplatePhaseData = {
+      phase_type: phasePickerType,
+      activity_id: activity.id,
+      activity_name: activity.name,
+      activity_slug: activity.slug ?? null,
+      activity_met: activity.base_met,
+    };
+
+    if (phasePickerType === "warmup") {
+      setWarmup(phase);
+    } else {
+      setCooldown(phase);
+    }
+  };
 
   if (templateId && (isLoading || !existingTemplate)) {
     return (
@@ -233,6 +304,17 @@ export default function TemplateForm() {
                 />
               </View>
             </View>
+            {/* Warm-up Phase Card (template mode) */}
+            {warmup && (
+              <View className="mt-5">
+                <PhaseCard
+                  mode="template"
+                  phase={warmup}
+                  onRemove={() => setWarmup(null)}
+                />
+              </View>
+            )}
+
             <DraggableList
               items={Object.entries(groupedExercises)}
               keyExtractor={([, group], index) =>
@@ -331,6 +413,18 @@ export default function TemplateForm() {
                 </LinearGradient>
               )}
             />
+
+            {/* Cool-down Phase Card (template mode) */}
+            {cooldown && (
+              <View className="mt-5">
+                <PhaseCard
+                  mode="template"
+                  phase={cooldown}
+                  onRemove={() => setCooldown(null)}
+                />
+              </View>
+            )}
+
             <FullScreenModal
               isOpen={isExerciseModalOpen}
               onClose={() => {
@@ -353,6 +447,9 @@ export default function TemplateForm() {
                 exercises={exercises}
                 setExercises={setExercises}
                 setIsExerciseModalOpen={setIsExerciseModalOpen}
+                hasWarmup={!!warmup}
+                hasCooldown={!!cooldown}
+                onSelectPhase={handlePhaseSelect}
               />
               <View className="flex-row gap-3 px-2 mt-5 mb-10 right-0 z-50">
                 <View className="relative flex-1">
@@ -443,6 +540,14 @@ export default function TemplateForm() {
           </PageContainer>
         </ScrollView>
       </TouchableWithoutFeedback>
+      <PhaseActivityPicker
+        isOpen={phasePickerOpen}
+        onClose={() => setPhasePickerOpen(false)}
+        phaseType={phasePickerType}
+        isTemplate
+        onSelect={() => {}}
+        onSelectTemplate={handleTemplatePhaseSelected}
+      />
       <FullScreenLoader
         visible={isSaving}
         message={t("gym.templateForm.savingTemplate")}

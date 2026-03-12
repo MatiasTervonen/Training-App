@@ -7,20 +7,27 @@ type gym_template_exercises = {
   superset_id?: string;
 };
 
+type TemplatePhasePayload = {
+  phase_type: string;
+  activity_id: string;
+};
+
 export async function editTemplate({
   id,
   exercises,
   name,
-
+  phases = [],
 }: {
   id: string;
   exercises: gym_template_exercises[];
   name: string;
+  phases?: TemplatePhasePayload[];
 }) {
   const { error } = await supabase.rpc("gym_edit_template", {
     p_id: id,
     p_exercises: exercises,
     p_name: name,
+    p_phases: phases,
   });
 
   if (error) {

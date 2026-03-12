@@ -3,7 +3,7 @@ import { saveTemplate } from "@/database/gym/save-template";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
-import { ExerciseEntry } from "@/types/session";
+import { ExerciseEntry, TemplatePhaseData } from "@/types/session";
 
 export default function useSaveTemplate({
   workoutName,
@@ -11,12 +11,16 @@ export default function useSaveTemplate({
   setIsSaving,
   resetSession,
   templateId,
+  warmup,
+  cooldown,
 }: {
   workoutName: string;
   exercises: ExerciseEntry[];
   setIsSaving: (isSaving: boolean) => void;
   resetSession: () => void;
   templateId: string;
+  warmup?: TemplatePhaseData | null;
+  cooldown?: TemplatePhaseData | null;
 }) {
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -33,17 +37,30 @@ export default function useSaveTemplate({
       superset_id: ex.superset_id ?? undefined,
     }));
 
+    const phases: { phase_type: string; activity_id: string }[] = [];
+    if (warmup) {
+      phases.push({ phase_type: "warmup", activity_id: warmup.activity_id });
+    }
+    if (cooldown) {
+      phases.push({
+        phase_type: "cooldown",
+        activity_id: cooldown.activity_id,
+      });
+    }
+
     try {
       if (templateId) {
         await editTemplate({
           id: templateId,
           exercises: simplified,
           name: workoutName,
+          phases,
         });
       } else {
         await saveTemplate({
           exercises: simplified,
           name: workoutName,
+          phases,
         });
       }
 

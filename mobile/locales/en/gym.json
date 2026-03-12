@@ -312,6 +312,31 @@
         "nov": "Nov",
         "dec": "Dec"
       }
+    },
+    "phase": {
+      "warmup": "Warm-up",
+      "cooldown": "Cool-down",
+      "addWarmup": "Add Warm-up",
+      "addCooldown": "Add Cool-down",
+      "sectionTitle": "Warm-up / Cool-down",
+      "trackLive": "Track live",
+      "enterManually": "Enter manually",
+      "selectActivity": "Select activity",
+      "time": "Time",
+      "timeMin": "Time (min)",
+      "distance": "Distance",
+      "steps": "Steps",
+      "stop": "Stop",
+      "save": "Save",
+      "remove": "Remove",
+      "liveTracking": "Live tracking",
+      "manualEntry": "Manual entry",
+      "min": "min",
+      "stepsLabel": "steps",
+      "confirmRemoveTitle": "Remove Phase",
+      "confirmRemoveMessage": "Are you sure you want to remove this phase?",
+      "confirmStopTitle": "Stop Tracking",
+      "confirmStopMessage": "Are you sure you want to stop tracking?"
     }
   }
 }

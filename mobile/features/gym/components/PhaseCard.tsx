@@ -7,6 +7,7 @@ import { PhaseData, PhaseType, TemplatePhaseData } from "@/types/session";
 import { LinearGradient } from "expo-linear-gradient";
 import { X, ChevronDown, ChevronUp, Footprints, Flame } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
+import { formatDurationLong } from "@/lib/formatDate";
 
 type LivePhaseCardProps = {
   mode: "live";
@@ -62,12 +63,6 @@ type Props =
   | CollapsedPhaseCardProps
   | PendingPhaseCardProps
   | TemplatePhaseCardProps;
-
-function formatPhaseTime(seconds: number) {
-  const m = Math.floor(seconds / 60);
-  const s = seconds % 60;
-  return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
-}
 
 function FixedWidthDigits({
   text,
@@ -136,7 +131,7 @@ export default function PhaseCard(props: Props) {
         </View>
         <View className="flex-row justify-center gap-6 mb-4">
           <FixedWidthDigits
-            text={formatPhaseTime(props.elapsedSeconds)}
+            text={formatDurationLong(props.elapsedSeconds)}
             className="text-2xl"
             charWidth={17}
           />
@@ -227,7 +222,7 @@ export default function PhaseCard(props: Props) {
 
   // collapsed mode
   const { phase, onRemove, onExpand, isExpanded } = props;
-  const formattedDuration = formatPhaseTime(phase.duration_seconds);
+  const formattedDuration = formatDurationLong(phase.duration_seconds);
   const summary = [
     formattedDuration,
     phase.steps ? `${phase.steps.toLocaleString()} ${t("gym.phase.stepsLabel")}` : null,

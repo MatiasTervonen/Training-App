@@ -1,4 +1,4 @@
-import { formatDateShort, formatDuration, formatTime, getDistanceUnitLabels, convertMetersForDisplay } from "@/lib/formatDate";
+import { formatDateShort, formatDuration, formatDurationLong, formatTime, getDistanceUnitLabels, convertMetersForDisplay } from "@/lib/formatDate";
 import { PhaseType } from "@/types/session";
 import { useUserStore } from "@/lib/stores/useUserStore";
 import { FullGymSession } from "@/database/gym/get-full-gym-session";
@@ -216,6 +216,7 @@ export default function GymSession(gym_session: FullGymSession) {
           <PhaseDisplayCard
             phaseType="warmup"
             activityName={warmupPhase.activities.name}
+            activitySlug={warmupPhase.activities.slug}
             durationSeconds={warmupPhase.duration_seconds}
             steps={warmupPhase.steps}
             distanceMeters={warmupPhase.distance_meters}
@@ -385,6 +386,7 @@ export default function GymSession(gym_session: FullGymSession) {
           <PhaseDisplayCard
             phaseType="cooldown"
             activityName={cooldownPhase.activities.name}
+            activitySlug={cooldownPhase.activities.slug}
             durationSeconds={cooldownPhase.duration_seconds}
             steps={cooldownPhase.steps}
             distanceMeters={cooldownPhase.distance_meters}
@@ -424,6 +426,7 @@ export default function GymSession(gym_session: FullGymSession) {
 function PhaseDisplayCard({
   phaseType,
   activityName,
+  activitySlug,
   durationSeconds,
   steps,
   distanceMeters,
@@ -432,17 +435,32 @@ function PhaseDisplayCard({
 }: {
   phaseType: PhaseType;
   activityName: string;
+  activitySlug: string | null;
   durationSeconds: number;
   steps: number | null;
   distanceMeters: number | null;
   calories: number | null;
   t: (key: string) => string;
 }) {
-  const durationMin = Math.round(durationSeconds / 60);
+  const { t: tActivities } = useTranslation("activities");
+  const formattedTime = formatDurationLong(durationSeconds);
   const phaseLabel =
     phaseType === "warmup"
       ? t("gym.phase.warmup")
       : t("gym.phase.cooldown");
+
+  const translatedName = (() => {
+    if (activitySlug) {
+      const translated = tActivities(
+        `activities.activityNames.${activitySlug}`,
+        { defaultValue: "" },
+      );
+      if (translated && translated !== `activities.activityNames.${activitySlug}`) {
+        return translated;
+      }
+    }
+    return activityName;
+  })();
 
   return (
     <LinearGradient
@@ -452,14 +470,14 @@ function PhaseDisplayCard({
       className="mt-5 rounded-md overflow-hidden border-2 border-emerald-600 p-4"
     >
       <AppText className="text-lg mb-2">
-        {phaseLabel}: {activityName}
+        {phaseLabel}: {translatedName}
       </AppText>
       <View className="flex-row gap-4">
         <View>
           <AppText className="text-sm text-gray-400">
-            {t("gym.phase.timeMin")}
+            {t("gym.phase.time")}
           </AppText>
-          <AppText>{durationMin}</AppText>
+          <AppText>{formattedTime}</AppText>
         </View>
         {steps != null && steps > 0 && (
           <View>

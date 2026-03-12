@@ -111,7 +111,9 @@ export default function useSaveGymDraft({
       if (
         exercises.length === 0 &&
         notes.trim() === "" &&
-        title.trim() === ""
+        title.trim() === "" &&
+        !warmup &&
+        !cooldown
       ) {
         AsyncStorage.removeItem("gym_session_draft");
         return;
@@ -123,8 +125,8 @@ export default function useSaveGymDraft({
           draftRecordings,
           draftImages,
           draftVideos: draftVideos.filter((v) => !v.isCompressing),
-          warmup: warmup?.is_tracking ? null : warmup,
-          cooldown: cooldown?.is_tracking ? null : cooldown,
+          warmup: warmup ?? null,
+          cooldown: cooldown ?? null,
         };
 
         await AsyncStorage.setItem(
@@ -140,6 +142,12 @@ export default function useSaveGymDraft({
   useEffect(() => {
     saveGymDraft();
   }, [notes, title, exercises, draftRecordings, draftImages, draftVideos, warmup, cooldown, saveGymDraft]);
+
+  useEffect(() => {
+    return () => {
+      saveGymDraft.flush();
+    };
+  }, [saveGymDraft]);
 
   return {
     saveGymDraft,

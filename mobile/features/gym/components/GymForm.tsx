@@ -265,6 +265,36 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
     setCooldown,
   });
 
+  // Resume phase tracking from persisted tracking_started_at
+  const warmupResumedRef = useRef(false);
+  const cooldownResumedRef = useRef(false);
+
+  useEffect(() => {
+    if (
+      warmup?.is_tracking &&
+      warmup.tracking_started_at &&
+      !warmupTracking.isTracking &&
+      !warmupResumedRef.current
+    ) {
+      warmupResumedRef.current = true;
+      warmupTracking.resume(warmup.tracking_started_at);
+      setWarmupCollapsed(false);
+    }
+  }, [warmup?.is_tracking, warmup?.tracking_started_at, warmupTracking]);
+
+  useEffect(() => {
+    if (
+      cooldown?.is_tracking &&
+      cooldown.tracking_started_at &&
+      !cooldownTracking.isTracking &&
+      !cooldownResumedRef.current
+    ) {
+      cooldownResumedRef.current = true;
+      cooldownTracking.resume(cooldown.tracking_started_at);
+      setCooldownCollapsed(false);
+    }
+  }, [cooldown?.is_tracking, cooldown?.tracking_started_at, cooldownTracking]);
+
   // Use selectors to avoid re-rendering on uiTick changes
   const activeSession = useTimerStore((state) => state.activeSession);
   const setActiveSession = useTimerStore((state) => state.setActiveSession);
@@ -385,6 +415,7 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
       distance_meters: null,
       is_manual: inputMode === "manual",
       is_tracking: inputMode === "live",
+      tracking_started_at: inputMode === "live" ? Date.now() : null,
     };
 
     if (phasePickerType === "warmup") {
@@ -638,7 +669,8 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
                     }}
                     onSelectMode={(mode) => {
                       if (mode === "live") {
-                        setWarmup((prev) => prev ? { ...prev, input_mode: "live", is_tracking: true } : prev);
+                        const now = Date.now();
+                        setWarmup((prev) => prev ? { ...prev, input_mode: "live", is_tracking: true, tracking_started_at: now } : prev);
                         warmupTracking.start();
                       } else {
                         setWarmup((prev) => prev ? { ...prev, input_mode: "manual", is_manual: true } : prev);
@@ -841,7 +873,8 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
                     }}
                     onSelectMode={(mode) => {
                       if (mode === "live") {
-                        setCooldown((prev) => prev ? { ...prev, input_mode: "live", is_tracking: true } : prev);
+                        const now = Date.now();
+                        setCooldown((prev) => prev ? { ...prev, input_mode: "live", is_tracking: true, tracking_started_at: now } : prev);
                         cooldownTracking.start();
                       } else {
                         setCooldown((prev) => prev ? { ...prev, input_mode: "manual", is_manual: true } : prev);

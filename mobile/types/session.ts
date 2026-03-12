@@ -307,6 +307,7 @@ export type PhaseData = {
   distance_meters: number | null;
   is_manual: boolean;
   is_tracking: boolean;
+  tracking_started_at?: number | null;
 };
 
 export type TemplatePhaseData = {

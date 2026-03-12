@@ -23,6 +23,14 @@ export default function usePhaseTracking() {
     setIsTracking(true);
   }, []);
 
+  const resume = useCallback(async (timestamp: number) => {
+    startTimeRef.current = timestamp;
+    setElapsedSeconds(Math.floor((Date.now() - timestamp) / 1000));
+    await startStepSession();
+    startLiveStepUpdates();
+    setIsTracking(true);
+  }, []);
+
   const stop = useCallback(async () => {
     stopLiveStepUpdates();
     setIsTracking(false);
@@ -71,6 +79,7 @@ export default function usePhaseTracking() {
     steps,
     elapsedSeconds,
     start,
+    resume,
     stop,
   };
 }

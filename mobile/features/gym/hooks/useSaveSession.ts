@@ -101,7 +101,9 @@ export default function useSaveSession({
     });
 
     if (!confirmSave) return;
-    if (exercises.length === 0 && notes.trim() === "") return;
+
+    const hasPhases = (warmup && warmup.duration_seconds > 0) || (cooldown && cooldown.duration_seconds > 0);
+    if (exercises.length === 0 && notes.trim() === "" && !hasPhases) return;
 
     setIsSaving(true);
     setSavingProgress?.(undefined);

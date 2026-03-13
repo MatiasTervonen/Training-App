@@ -318,6 +318,7 @@
       "timeMin": "Aika (min)",
       "distance": "Matka",
       "steps": "Askeleet",
+      "calories": "Kalorit",
       "stop": "Lopeta",
       "save": "Tallenna",
       "remove": "Poista",

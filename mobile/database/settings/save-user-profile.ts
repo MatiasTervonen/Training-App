@@ -6,6 +6,7 @@ export async function saveUserProfile(updates: {
   weight_unit: string;
   distance_unit: string;
   profile_picture: string | null;
+  height_cm?: number | null;
 }) {
   const {
     data: { session },

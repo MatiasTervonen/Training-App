@@ -1,6 +1,6 @@
 import { StyleProp, View, ViewStyle } from "react-native";
 import AppText from "../../../components/AppText";
-import { Gauge, Compass, Mountain, Footprints, Flame } from "lucide-react-native";
+import { Gauge, Compass, Mountain, Footprints, Flame, Ruler } from "lucide-react-native";
 import Timer from "../../../components/timer";
 import { TrackPoint } from "@/types/session";
 import Animated, {
@@ -35,6 +35,7 @@ type SessionStatsProps = {
   averagePacePerKm?: number;
   isStepRelevant?: boolean;
   isCaloriesRelevant?: boolean;
+  estimatedDistance?: number;
 };
 
 export default function SessionStats({
@@ -51,6 +52,7 @@ export default function SessionStats({
   averagePacePerKm = 0,
   isStepRelevant = true,
   isCaloriesRelevant = true,
+  estimatedDistance = 0,
 }: SessionStatsProps) {
   const labels = getDistanceUnitLabels();
   const activeSession = useTimerStore((state) => state.activeSession);
@@ -141,6 +143,14 @@ export default function SessionStats({
               <View className="flex-row gap-3 items-center">
                 <Footprints size={28} color="#f3f4f6" />
                 <AppText className="text-3xl z-[999]">{currentStepCount}</AppText>
+              </View>
+            )}
+            {isStepRelevant && (
+              <View className="flex-row gap-3 items-center">
+                <Ruler size={28} color="#60a5fa" />
+                <AppText className="text-3xl z-[999] text-blue-300">
+                  ~{formatMeters(estimatedDistance)}
+                </AppText>
               </View>
             )}
             {isCaloriesRelevant && (

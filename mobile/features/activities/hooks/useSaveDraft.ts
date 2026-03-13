@@ -21,6 +21,7 @@ export default function useSaveDraft({
   setIsGpsRelevant,
   setIsStepRelevant,
   setIsCaloriesRelevant,
+  setActivitySlug,
 }: {
   title: string;
   notes: string;
@@ -37,6 +38,7 @@ export default function useSaveDraft({
   setIsGpsRelevant?: (v: boolean) => void;
   setIsStepRelevant?: (v: boolean) => void;
   setIsCaloriesRelevant?: (v: boolean) => void;
+  setActivitySlug?: (slug: string | null) => void;
 }) {
   const { t } = useTranslation("activities");
 
@@ -69,6 +71,9 @@ export default function useSaveDraft({
           setActivityName(name);
           if (draft.baseMet && setBaseMet) {
             setBaseMet(draft.baseMet);
+          }
+          if (setActivitySlug) {
+            setActivitySlug(draft.activitySlug ?? null);
           }
           // Relevance flags are NOT restored from draft — they come from
           // the ActivityDropdown onSelect callback when the user picks an activity.

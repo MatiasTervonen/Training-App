@@ -8,6 +8,7 @@ export interface UserProfile {
   distance_unit: string;
   profile_picture: string | null;
   role: string;
+  height_cm: number | null;
 }
 
 export interface UserSettings {

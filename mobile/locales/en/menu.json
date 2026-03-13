@@ -16,6 +16,9 @@
     "profilePicturePermissionMessage": "Please allow access to your photos.",
     "weightUnit": "Weight Unit",
     "distanceUnit": "Distance Unit",
+    "height": "Height (cm)",
+    "heightPlaceholder": "e.g. 175",
+    "heightHint": "Used to estimate distance from steps. Leave empty to use defaults.",
     "savingProfile": "Saving profile...",
     "updateSuccess": "Settings updated successfully!",
     "updateError": "An unexpected error occurred while saving settings."

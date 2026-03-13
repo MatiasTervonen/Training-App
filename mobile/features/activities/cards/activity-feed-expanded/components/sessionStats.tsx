@@ -21,6 +21,7 @@ export default function SessionStats({ activity_session, hasRoute }: SessionStat
   const labels = getDistanceUnitLabels();
   const stats = activity_session.stats;
   const session = activity_session.session;
+  const hasStepDistance = !hasRoute && (stats?.distance_meters ?? 0) > 0;
 
   return (
     <LinearGradient
@@ -44,6 +45,12 @@ export default function SessionStats({ activity_session, hasRoute }: SessionStat
           <StatCard
             label={t("activities.sessionStats.distance")}
             value={formatMeters(stats?.distance_meters ?? 0)}
+          />
+        )}
+        {hasStepDistance && (
+          <StatCard
+            label={t("activities.sessionStats.distance")}
+            value={`~${formatMeters(stats?.distance_meters ?? 0)}`}
           />
         )}
       </View>

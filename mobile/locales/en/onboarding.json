@@ -52,8 +52,10 @@
     "pictureFormatError": "Only JPEG, PNG, and WebP images are supported"
   },
   "aboutYou": {
-    "title": "What's your weight?",
-    "description": "Your weight is used to estimate calories burned during activities. You can update it anytime in the Weight section.",
+    "title": "About you",
+    "description": "Your weight is used to estimate calories burned, and your height helps calculate distance from steps. You can update these anytime.",
+    "heightLabel": "Height (cm)",
+    "startingWeight": "Starting weight",
     "distanceUnit": "Preferred distance unit",
     "continue": "Continue",
     "skipStep": "Skip"
@@ -71,6 +73,7 @@
       "exactAlarms": "Exact alarms",
       "batteryOptimization": "Battery optimization",
       "weight": "Weight",
+      "height": "Height",
       "distanceUnit": "Distance"
     }
   },

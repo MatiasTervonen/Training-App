@@ -160,6 +160,7 @@
       "duration": "Duration",
       "movingTime": "Moving Time",
       "distance": "Distance",
+      "estimatedDistance": "Est. Distance",
       "avgPace": "Avg Pace",
       "moving": "(moving)",
       "minPerKm": "min/km",

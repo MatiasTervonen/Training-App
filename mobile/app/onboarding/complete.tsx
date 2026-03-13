@@ -23,6 +23,7 @@ export default function CompleteScreen() {
   const displayName = useUserStore((state) => state.profile?.display_name);
   const weightUnit = useUserStore((state) => state.profile?.weight_unit);
   const distanceUnit = useUserStore((state) => state.profile?.distance_unit);
+  const heightCm = useUserStore((state) => state.profile?.height_cm);
 
   const handleFinish = async () => {
     setIsLoading(true);
@@ -71,6 +72,13 @@ export default function CompleteScreen() {
     summaryItems.push({
       label: t("complete.summary.weight"),
       value: weightUnit,
+    });
+  }
+
+  if (heightCm) {
+    summaryItems.push({
+      label: t("complete.summary.height"),
+      value: `${heightCm} cm`,
     });
   }
 

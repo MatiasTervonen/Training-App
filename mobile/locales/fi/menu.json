@@ -16,6 +16,9 @@
     "profilePicturePermissionMessage": "Salli pääsy kuviisi.",
     "weightUnit": "Painoyksikkö",
     "distanceUnit": "Matkayksikkö",
+    "height": "Pituus (cm)",
+    "heightPlaceholder": "esim. 175",
+    "heightHint": "Käytetään matkan arviointiin askeleista. Jätä tyhjäksi oletusarvojen käyttämiseksi.",
     "savingProfile": "Tallennetaan profiilia...",
     "updateSuccess": "Asetukset päivitetty onnistuneesti!",
     "updateError": "Odottamaton virhe asetusten tallennuksessa."

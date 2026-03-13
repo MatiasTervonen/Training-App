@@ -316,6 +316,7 @@
       "timeMin": "Time (min)",
       "distance": "Distance",
       "steps": "Steps",
+      "calories": "Calories",
       "stop": "Stop",
       "save": "Save",
       "remove": "Remove",

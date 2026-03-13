@@ -39,7 +39,14 @@ import {
   hasStepSensor,
   isStepPermissionPermanentlyDenied,
 } from "@/native/android/NativeStepCounter";
-import { updateNativeTimerLabel } from "@/native/android/NativeTimer";
+import {
+  updateNativeTimerLabel,
+  setMilestoneConfig,
+  clearMilestoneConfig,
+} from "@/native/android/NativeTimer";
+import { useMilestoneAlerts } from "@/features/activities/hooks/useMilestoneAlerts";
+import MilestoneToast from "@/features/activities/components/MilestoneToast";
+import { useActivitySettingsStore } from "@/lib/stores/activitySettingsStore";
 import { useTemplateRoute } from "@/features/activities/hooks/useTemplateRoute";
 import { findWarmupStartIndex } from "@/features/activities/lib/findWarmupStartIndex";
 import { useModalPageConfig } from "@/lib/stores/modalPageConfig";
@@ -114,6 +121,8 @@ export default function StartActivityScreen() {
   const activeSession = useTimerStore((state) => state.activeSession);
   const setActiveSession = useTimerStore((state) => state.setActiveSession);
   const mode = useTimerStore((state) => state.mode);
+
+  const milestoneSettings = useActivitySettingsStore((s) => s.milestoneAlerts);
 
   // Restore GPS and steps settings from persisted activeSession on mount
   const hasActiveSession = !!activeSession;
@@ -224,6 +233,7 @@ export default function StartActivityScreen() {
 
   const resetSession = async () => {
     clearEverything();
+    clearMilestoneConfig();
     AsyncStorage.removeItem("activity_draft");
     setTitle("");
     setNotes("");
@@ -322,6 +332,16 @@ export default function StartActivityScreen() {
     if (!baseMet || !userWeight) return 0;
     return Math.round(baseMet * userWeight * (effectiveMovingTime / 3600));
   }, [baseMet, userWeight, effectiveMovingTime]);
+
+  const { toast } = useMilestoneAlerts(
+    {
+      steps,
+      durationSeconds: effectiveMovingTime,
+      distanceMeters: meters,
+      calories: liveCalories,
+    },
+    isRunning,
+  );
 
   // useSaveActivitySession hook to save the activity session
   const { handleSaveSession } = useSaveActivitySession({
@@ -482,7 +502,17 @@ export default function StartActivityScreen() {
           )}
           <AnimatedButton
             label={t("activities.startActivityScreen.startButton")}
-            onPress={startActivity}
+            onPress={async () => {
+              await startActivity();
+              setMilestoneConfig({
+                steps: milestoneSettings.steps,
+                duration: milestoneSettings.duration,
+                distance: milestoneSettings.distance,
+                calories: milestoneSettings.calories,
+                baseMet,
+                userWeight,
+              });
+            }}
             className="justify-center items-center py-2 bg-blue-800 rounded-md shadow-md border-2 border-blue-500"
             textClassName="text-gray-100 text-center"
           />
@@ -508,6 +538,7 @@ export default function StartActivityScreen() {
             liveCalories={liveCalories}
             onNotesPress={() => setShowNotesModal(true)}
           />
+          <MilestoneToast toast={toast} />
           <DebugOverlay
             trackLength={track.length}
             isHydrated={isHydrated}
@@ -535,6 +566,7 @@ export default function StartActivityScreen() {
             currentStepCount={steps}
             liveCalories={liveCalories}
           />
+          <MilestoneToast toast={toast} />
           <View className="absolute z-50 bottom-20 right-5">
             <AnimatedButton
               onPress={() => setShowNotesModal(true)}

@@ -1,8 +1,16 @@
 package com.layer100crypto.MyTrack.timer
 
+import android.app.NotificationChannel
 import android.app.Service
+import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
+import android.media.AudioAttributes
+import android.net.Uri
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
@@ -13,7 +21,24 @@ import androidx.core.app.NotificationCompat
 import android.app.PendingIntent
 import com.layer100crypto.MyTrack.MainActivity
 import com.layer100crypto.MyTrack.R
+import org.json.JSONObject
 
+
+data class MilestoneMetricConfig(val enabled: Boolean, val interval: Double)
+data class MilestoneConfig(
+    val steps: MilestoneMetricConfig,
+    val duration: MilestoneMetricConfig,
+    val distance: MilestoneMetricConfig,
+    val calories: MilestoneMetricConfig,
+    val baseMet: Double,
+    val userWeight: Double,
+)
+data class MilestoneThresholds(
+    var steps: Long? = null,
+    var durationSecs: Long? = null,
+    var distanceMeters: Double? = null,
+    var calories: Double? = null,
+)
 
 class TimerService : Service() {
 
@@ -25,11 +50,35 @@ class TimerService : Service() {
     private var expandedViews: RemoteViews? = null
     private var isPaused = false
 
+    // Milestone alert fields
+    private var appInForeground = true
+    private var milestoneConfig: MilestoneConfig? = null
+    private var nextThresholds = MilestoneThresholds()
+    private var stepSensorManager: SensorManager? = null
+    private var milestoneStepListener: SensorEventListener? = null
+    private var sessionBaselineSteps: Long = -1L
+    private var currentSessionSteps: Long = 0L
+    private var timerStartTime: Long = 0L
+
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val action = intent?.getStringExtra("action") ?: "start"
 
         if (action == "pause") {
             return handlePause(intent)
+        }
+        if (action == "reload_milestones") {
+            loadMilestoneConfig()
+            return START_STICKY
+        }
+        if (action == "clear_milestones") {
+            milestoneConfig = null
+            nextThresholds = MilestoneThresholds()
+            unregisterMilestoneStepListener()
+            return START_STICKY
+        }
+        if (action == "set_foreground") {
+            appInForeground = intent?.getBooleanExtra("inForeground", true) ?: true
+            return START_STICKY
         }
 
         Log.d("NativeTimer", "Timer Service started")
@@ -37,6 +86,7 @@ class TimerService : Service() {
         isPaused = false
 
         val startTime = intent?.getLongExtra("startTime", 0L) ?: 0L
+        timerStartTime = startTime
         val label = intent?.getStringExtra("label") ?: "Session"
         val mode = intent?.getStringExtra("mode") ?: "countup"
         val pauseText = intent?.getStringExtra("pauseText") ?: "Pause"
@@ -151,6 +201,12 @@ class TimerService : Service() {
                 collapsedViews?.setTextViewText(R.id.timer_text, formatted)
                 expandedViews?.setTextViewText(R.id.timer_text, formatted)
                 notificationManager?.notify(1, notificationBuilder!!.build())
+
+                // Check milestones on each tick
+                if (mode != "countdown") {
+                    checkMilestones(millis / 1000)
+                }
+
                 handler?.postDelayed(this, 1000)
             }
         }
@@ -209,8 +265,182 @@ class TimerService : Service() {
         }
     }
 
+    private fun loadMilestoneConfig() {
+        try {
+            val prefs = getSharedPreferences("milestone_config", Context.MODE_PRIVATE)
+            val configJson = prefs.getString("config", null) ?: return
+            val json = JSONObject(configJson)
+
+            val steps = json.getJSONObject("steps")
+            val duration = json.getJSONObject("duration")
+            val distance = json.getJSONObject("distance")
+            val calories = json.getJSONObject("calories")
+
+            milestoneConfig = MilestoneConfig(
+                steps = MilestoneMetricConfig(steps.getBoolean("enabled"), steps.getDouble("interval")),
+                duration = MilestoneMetricConfig(duration.getBoolean("enabled"), duration.getDouble("interval")),
+                distance = MilestoneMetricConfig(distance.getBoolean("enabled"), distance.getDouble("interval")),
+                calories = MilestoneMetricConfig(calories.getBoolean("enabled"), calories.getDouble("interval")),
+                baseMet = json.getDouble("baseMet"),
+                userWeight = json.getDouble("userWeight"),
+            )
+
+            val config = milestoneConfig!!
+
+            // Initialize thresholds
+            nextThresholds = MilestoneThresholds(
+                steps = if (config.steps.enabled) config.steps.interval.toLong() else null,
+                durationSecs = if (config.duration.enabled) (config.duration.interval * 60).toLong() else null,
+                distanceMeters = if (config.distance.enabled) config.distance.interval * 1000.0 else null,
+                calories = if (config.calories.enabled) config.calories.interval else null,
+            )
+
+            persistThresholds()
+
+            // Register step sensor if steps milestone enabled
+            if (config.steps.enabled) {
+                registerMilestoneStepListener()
+            }
+
+            Log.d("NativeTimer", "Milestone config loaded: steps=${config.steps.enabled}, duration=${config.duration.enabled}, distance=${config.distance.enabled}, calories=${config.calories.enabled}")
+        } catch (e: Exception) {
+            Log.e("NativeTimer", "Failed to load milestone config", e)
+        }
+    }
+
+    private fun registerMilestoneStepListener() {
+        val sm = getSystemService(Context.SENSOR_SERVICE) as? SensorManager ?: return
+        val sensor = sm.getDefaultSensor(Sensor.TYPE_STEP_COUNTER) ?: return
+
+        // Read session baseline (set by JS when session started)
+        val prefs = getSharedPreferences("step_counter_prefs", Context.MODE_PRIVATE)
+        sessionBaselineSteps = prefs.getLong("session_start_value", -1L)
+
+        milestoneStepListener = object : SensorEventListener {
+            override fun onSensorChanged(event: SensorEvent) {
+                val currentValue = event.values[0].toLong()
+                currentSessionSteps = if (sessionBaselineSteps == -1L) 0
+                    else maxOf(currentValue - sessionBaselineSteps, 0)
+            }
+            override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
+        }
+
+        sm.registerListener(milestoneStepListener, sensor, SensorManager.SENSOR_DELAY_NORMAL)
+        stepSensorManager = sm
+    }
+
+    private fun unregisterMilestoneStepListener() {
+        milestoneStepListener?.let { listener ->
+            stepSensorManager?.unregisterListener(listener)
+        }
+        milestoneStepListener = null
+        stepSensorManager = null
+        sessionBaselineSteps = -1L
+        currentSessionSteps = 0L
+    }
+
+    private fun checkMilestones(elapsedSeconds: Long) {
+        if (isPaused || milestoneConfig == null || appInForeground) return
+
+        val config = milestoneConfig!!
+        val t = nextThresholds
+        val hitLines = mutableListOf<String>()
+
+        // Duration
+        if (t.durationSecs != null && elapsedSeconds >= t.durationSecs!!) {
+            val mins = t.durationSecs!! / 60
+            hitLines.add("$mins min!")
+            t.durationSecs = t.durationSecs!! + (config.duration.interval * 60).toLong()
+        }
+
+        // Steps (from sensor listener)
+        if (t.steps != null && currentSessionSteps >= t.steps!!) {
+            hitLines.add("${t.steps} steps!")
+            t.steps = t.steps!! + config.steps.interval.toLong()
+        }
+
+        // Calories (baseMet × weight × hours)
+        if (t.calories != null) {
+            val currentCalories = config.baseMet * config.userWeight * (elapsedSeconds.toDouble() / 3600.0)
+            if (currentCalories >= t.calories!!) {
+                hitLines.add("${t.calories!!.toInt()} cal!")
+                t.calories = t.calories!! + config.calories.interval
+            }
+        }
+
+        // Distance (read from SharedPreferences, updated by JS background location task)
+        if (t.distanceMeters != null) {
+            val distPrefs = getSharedPreferences("milestone_distance", Context.MODE_PRIVATE)
+            val currentDistance = distPrefs.getFloat("cumulative_meters", 0f).toDouble()
+            if (currentDistance >= t.distanceMeters!!) {
+                val km = t.distanceMeters!! / 1000.0
+                hitLines.add("$km km!")
+                t.distanceMeters = t.distanceMeters!! + config.distance.interval * 1000.0
+            }
+        }
+
+        if (hitLines.isNotEmpty()) {
+            fireMilestoneNotification(hitLines)
+            persistThresholds()
+        }
+    }
+
+    private fun persistThresholds() {
+        try {
+            val json = JSONObject()
+            json.put("steps", nextThresholds.steps ?: JSONObject.NULL)
+            json.put("durationSecs", nextThresholds.durationSecs ?: JSONObject.NULL)
+            json.put("distanceMeters", nextThresholds.distanceMeters ?: JSONObject.NULL)
+            json.put("calories", nextThresholds.calories ?: JSONObject.NULL)
+
+            val prefs = getSharedPreferences("milestone_thresholds", Context.MODE_PRIVATE)
+            prefs.edit().putString("thresholds", json.toString()).apply()
+        } catch (e: Exception) {
+            Log.e("NativeTimer", "Failed to persist thresholds", e)
+        }
+    }
+
+    private fun fireMilestoneNotification(lines: List<String>) {
+        val nm = notificationManager ?: getSystemService(android.app.NotificationManager::class.java) ?: return
+
+        // Ensure milestone notification channel exists
+        val channel = NotificationChannel(
+            "milestone_alerts",
+            "Activity Milestones",
+            android.app.NotificationManager.IMPORTANCE_HIGH,
+        ).apply {
+            enableVibration(true)
+            vibrationPattern = longArrayOf(0, 300, 100, 300)
+            val soundUri = Uri.parse("android.resource://$packageName/${R.raw.mixkit_alert_bells_echo_765}")
+            setSound(soundUri, AudioAttributes.Builder()
+                .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                .build())
+            lockscreenVisibility = android.app.Notification.VISIBILITY_PUBLIC
+        }
+        nm.createNotificationChannel(channel)
+
+        val bodyText = lines.joinToString(", ")
+
+        val notification = NotificationCompat.Builder(this, "milestone_alerts")
+            .setSmallIcon(R.drawable.small_notification_icon)
+            .setContentTitle("Milestone!")
+            .setContentText(bodyText)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setAutoCancel(true)
+            .setTimeoutAfter(15000)
+            .build()
+
+        nm.notify(3001, notification)
+    }
+
     override fun onDestroy() {
         tickRunnable?.let { handler?.removeCallbacks(it) }
+        unregisterMilestoneStepListener()
+        // Clear milestone SharedPreferences
+        getSharedPreferences("milestone_config", Context.MODE_PRIVATE).edit().clear().apply()
+        getSharedPreferences("milestone_thresholds", Context.MODE_PRIVATE).edit().clear().apply()
+        getSharedPreferences("milestone_distance", Context.MODE_PRIVATE).edit().clear().apply()
         super.onDestroy()
     }
 

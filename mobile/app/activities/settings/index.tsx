@@ -1,9 +1,13 @@
-import { View } from "react-native";
+import { ScrollView, View } from "react-native";
 import Mapbox from "@rnmapbox/maps";
 import AppText from "@/components/AppText";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import PageContainer from "@/components/PageContainer";
-import { useActivitySettingsStore } from "@/lib/stores/activitySettingsStore";
+import Toggle from "@/components/toggle";
+import {
+  useActivitySettingsStore,
+  MilestoneAlertSettings,
+} from "@/lib/stores/activitySettingsStore";
 import { MAP_STYLES, LINE_COLORS } from "@/features/activities/lib/mapConstants";
 import { useTranslation } from "react-i18next";
 import { Check } from "lucide-react-native";
@@ -37,6 +41,12 @@ const BOUNDS = {
   sw: [Math.min(...lons), Math.min(...lats)] as [number, number],
 };
 
+// Milestone interval options
+const STEP_OPTIONS = [500, 1000, 2000, 5000];
+const DURATION_OPTIONS = [5, 10, 15, 30];
+const DISTANCE_OPTIONS = [0.5, 1, 2, 5];
+const CALORIE_OPTIONS = [50, 100, 200, 500];
+
 export default function ActivitySettingsScreen() {
   const { t } = useTranslation("activities");
 
@@ -53,10 +63,28 @@ export default function ActivitySettingsScreen() {
     (state) => state.setDefaultLineColorIndex,
   );
 
+  const milestoneAlerts = useActivitySettingsStore(
+    (state) => state.milestoneAlerts,
+  );
+  const setMilestoneAlerts = useActivitySettingsStore(
+    (state) => state.setMilestoneAlerts,
+  );
+
   const lineColor = LINE_COLORS[defaultLineColorIndex];
 
+  const updateMetric = (
+    metric: keyof MilestoneAlertSettings,
+    update: Partial<{ enabled: boolean; interval: number }>,
+  ) => {
+    setMilestoneAlerts({
+      ...milestoneAlerts,
+      [metric]: { ...milestoneAlerts[metric], ...update },
+    });
+  };
+
   return (
-      <PageContainer>
+    <ScrollView showsVerticalScrollIndicator={false}>
+      <PageContainer className="mb-5">
         <AppText className="text-2xl text-center mb-10">
           {t("activities.settings.title")}
         </AppText>
@@ -175,6 +203,203 @@ export default function ActivitySettingsScreen() {
             })}
           </View>
         </View>
+
+        {/* Milestone Alerts Section */}
+        <View className="gap-2 mt-8">
+          <AppText className="text-lg">
+            {t("activities.settings.milestoneAlerts.title")}
+          </AppText>
+          <AppText className="text-sm text-gray-400">
+            {t("activities.settings.milestoneAlerts.description")}
+          </AppText>
+
+          <View className="gap-4 mt-3">
+            {/* Steps */}
+            <View>
+              <View className="flex-row items-center justify-between">
+                <AppText className="text-base">
+                  {t("activities.settings.milestoneAlerts.steps")}
+                </AppText>
+                <Toggle
+                  isOn={milestoneAlerts.steps.enabled}
+                  onToggle={() =>
+                    updateMetric("steps", {
+                      enabled: !milestoneAlerts.steps.enabled,
+                    })
+                  }
+                />
+              </View>
+              {milestoneAlerts.steps.enabled && (
+                <View className="flex-row flex-wrap gap-2 mt-2">
+                  {STEP_OPTIONS.map((val) => (
+                    <AnimatedButton
+                      key={val}
+                      onPress={() => updateMetric("steps", { interval: val })}
+                      className={`basis-[23%] flex-grow py-2 rounded-lg border-2 items-center ${
+                        milestoneAlerts.steps.interval === val
+                          ? "bg-blue-700 border-blue-500"
+                          : "bg-slate-800 border-slate-600"
+                      }`}
+                    >
+                      <AppText
+                        className={`text-sm ${
+                          milestoneAlerts.steps.interval === val
+                            ? "text-white"
+                            : "text-gray-300"
+                        }`}
+                      >
+                        {t("activities.settings.milestoneAlerts.everySteps", {
+                          count: val,
+                        })}
+                      </AppText>
+                    </AnimatedButton>
+                  ))}
+                </View>
+              )}
+            </View>
+
+            {/* Duration */}
+            <View>
+              <View className="flex-row items-center justify-between">
+                <AppText className="text-base">
+                  {t("activities.settings.milestoneAlerts.duration")}
+                </AppText>
+                <Toggle
+                  isOn={milestoneAlerts.duration.enabled}
+                  onToggle={() =>
+                    updateMetric("duration", {
+                      enabled: !milestoneAlerts.duration.enabled,
+                    })
+                  }
+                />
+              </View>
+              {milestoneAlerts.duration.enabled && (
+                <View className="flex-row flex-wrap gap-2 mt-2">
+                  {DURATION_OPTIONS.map((val) => (
+                    <AnimatedButton
+                      key={val}
+                      onPress={() =>
+                        updateMetric("duration", { interval: val })
+                      }
+                      className={`basis-[23%] flex-grow py-2 rounded-lg border-2 items-center ${
+                        milestoneAlerts.duration.interval === val
+                          ? "bg-blue-700 border-blue-500"
+                          : "bg-slate-800 border-slate-600"
+                      }`}
+                    >
+                      <AppText
+                        className={`text-sm ${
+                          milestoneAlerts.duration.interval === val
+                            ? "text-white"
+                            : "text-gray-300"
+                        }`}
+                      >
+                        {t(
+                          "activities.settings.milestoneAlerts.everyMinutes",
+                          { count: val },
+                        )}
+                      </AppText>
+                    </AnimatedButton>
+                  ))}
+                </View>
+              )}
+            </View>
+
+            {/* Distance */}
+            <View>
+              <View className="flex-row items-center justify-between">
+                <AppText className="text-base">
+                  {t("activities.settings.milestoneAlerts.distance")}
+                </AppText>
+                <Toggle
+                  isOn={milestoneAlerts.distance.enabled}
+                  onToggle={() =>
+                    updateMetric("distance", {
+                      enabled: !milestoneAlerts.distance.enabled,
+                    })
+                  }
+                />
+              </View>
+              {milestoneAlerts.distance.enabled && (
+                <View className="flex-row flex-wrap gap-2 mt-2">
+                  {DISTANCE_OPTIONS.map((val) => (
+                    <AnimatedButton
+                      key={val}
+                      onPress={() =>
+                        updateMetric("distance", { interval: val })
+                      }
+                      className={`basis-[23%] flex-grow py-2 rounded-lg border-2 items-center ${
+                        milestoneAlerts.distance.interval === val
+                          ? "bg-blue-700 border-blue-500"
+                          : "bg-slate-800 border-slate-600"
+                      }`}
+                    >
+                      <AppText
+                        className={`text-sm ${
+                          milestoneAlerts.distance.interval === val
+                            ? "text-white"
+                            : "text-gray-300"
+                        }`}
+                      >
+                        {t("activities.settings.milestoneAlerts.everyKm", {
+                          count: val,
+                        })}
+                      </AppText>
+                    </AnimatedButton>
+                  ))}
+                </View>
+              )}
+            </View>
+
+            {/* Calories */}
+            <View>
+              <View className="flex-row items-center justify-between">
+                <AppText className="text-base">
+                  {t("activities.settings.milestoneAlerts.calories")}
+                </AppText>
+                <Toggle
+                  isOn={milestoneAlerts.calories.enabled}
+                  onToggle={() =>
+                    updateMetric("calories", {
+                      enabled: !milestoneAlerts.calories.enabled,
+                    })
+                  }
+                />
+              </View>
+              {milestoneAlerts.calories.enabled && (
+                <View className="flex-row flex-wrap gap-2 mt-2">
+                  {CALORIE_OPTIONS.map((val) => (
+                    <AnimatedButton
+                      key={val}
+                      onPress={() =>
+                        updateMetric("calories", { interval: val })
+                      }
+                      className={`basis-[23%] flex-grow py-2 rounded-lg border-2 items-center ${
+                        milestoneAlerts.calories.interval === val
+                          ? "bg-blue-700 border-blue-500"
+                          : "bg-slate-800 border-slate-600"
+                      }`}
+                    >
+                      <AppText
+                        className={`text-sm ${
+                          milestoneAlerts.calories.interval === val
+                            ? "text-white"
+                            : "text-gray-300"
+                        }`}
+                      >
+                        {t(
+                          "activities.settings.milestoneAlerts.everyCalories",
+                          { count: val },
+                        )}
+                      </AppText>
+                    </AnimatedButton>
+                  ))}
+                </View>
+              )}
+            </View>
+          </View>
+        </View>
       </PageContainer>
+    </ScrollView>
   );
 }

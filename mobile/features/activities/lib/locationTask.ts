@@ -113,6 +113,37 @@ TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
 
       lastPoint = { latitude: point.latitude, longitude: point.longitude };
     }
+
+    // Update cumulative distance for native milestone checking
+    try {
+      const allPoints = await db.getAllAsync<{
+        latitude: number;
+        longitude: number;
+      }>(
+        `SELECT latitude, longitude
+         FROM gps_points
+         WHERE is_stationary = 0 AND bad_signal = 0
+         ORDER BY timestamp ASC`,
+      );
+
+      let totalDistance = 0;
+      for (let i = 1; i < allPoints.length; i++) {
+        const prev = allPoints[i - 1];
+        const curr = allPoints[i];
+        const dist = haversine(
+          prev.latitude,
+          prev.longitude,
+          curr.latitude,
+          curr.longitude,
+        );
+        if (dist >= 2) totalDistance += dist;
+      }
+
+      const { NativeModules } = require("react-native");
+      NativeModules.NativeTimer?.updateCumulativeDistance(totalDistance);
+    } catch (e) {
+      debugLog("BG_TASK", `Distance update failed: ${e}`);
+    }
   } catch (error) {
     const msg = error instanceof Error ? error.message : "Unknown error";
     debugLog("BG_TASK", `ERROR: ${msg}`);

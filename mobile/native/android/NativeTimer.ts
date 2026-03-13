@@ -61,3 +61,46 @@ export function stopNativeTimer() {
     nativeTimer.stopTimer();
   }
 }
+
+export function setMilestoneConfig(config: {
+  steps: { enabled: boolean; interval: number };
+  duration: { enabled: boolean; interval: number };
+  distance: { enabled: boolean; interval: number };
+  calories: { enabled: boolean; interval: number };
+  baseMet: number;
+  userWeight: number;
+}) {
+  if (Platform.OS === "android" && nativeTimer) {
+    nativeTimer.setMilestoneConfig(JSON.stringify(config));
+  }
+}
+
+export function clearMilestoneConfig() {
+  if (Platform.OS === "android" && nativeTimer) {
+    nativeTimer.clearMilestoneConfig();
+  }
+}
+
+export function setAppInForeground(inForeground: boolean) {
+  if (Platform.OS === "android" && nativeTimer) {
+    nativeTimer.setAppInForeground(inForeground);
+  }
+}
+
+export async function getMilestoneThresholds(): Promise<{
+  steps: number | null;
+  durationSecs: number | null;
+  distanceMeters: number | null;
+  calories: number | null;
+} | null> {
+  if (Platform.OS !== "android" || !nativeTimer) return null;
+  const json: string | null = await nativeTimer.getMilestoneThresholds();
+  if (!json) return null;
+  return JSON.parse(json);
+}
+
+export function updateCumulativeDistance(meters: number) {
+  if (Platform.OS === "android" && nativeTimer) {
+    nativeTimer.updateCumulativeDistance(meters);
+  }
+}

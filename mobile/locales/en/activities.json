@@ -69,7 +69,8 @@
       "stretching": "Stretching",
       "climbing": "Climbing",
       "swimming": "Swimming",
-      "cycling": "Cycling",
+      "cycling_outdoor": "Cycling (outdoor)",
+      "cycling_indoor": "Cycling (indoor)",
       "gym": "Gym",
       "pilates": "Pilates",
       "dancing": "Dancing",
@@ -82,7 +83,23 @@
       "walking": "Walking",
       "driving": "Driving",
       "mindfulness": "Mindfulness",
-      "cross_training": "Cross Training"
+      "cross_training": "Cross Training",
+      "walking_treadmill": "Walking (treadmill)",
+      "running_treadmill": "Running (treadmill)",
+      "stair_climber": "Stair Climber",
+      "cross_trainer_machine": "Cross Trainer",
+      "rowing_machine": "Rowing Machine",
+      "ski_erg": "Ski Erg",
+      "assault_bike": "Assault Bike",
+      "nordic_walking": "Nordic Walking",
+      "roller_skating": "Roller Skating",
+      "skiing_cross_country": "Skiing (cross-country)",
+      "skiing_downhill": "Skiing (downhill)",
+      "ice_skating": "Ice Skating",
+      "skateboarding": "Skateboarding",
+      "kickboxing": "Kickboxing",
+      "martial_arts": "Martial Arts",
+      "jump_rope": "Jump Rope"
     },
     "analyticsScreen": {
       "title": "Analytics",
@@ -202,7 +219,11 @@
       "errorMetOutOfRange": "MET out of range",
       "errorMetRangeDesc": "Please enter a value between 1.0 and 20.0",
       "successSaved": "Activity saved successfully!",
-      "errorSaveFailed": "Failed to save activity. Please try again."
+      "errorSaveFailed": "Failed to save activity. Please try again.",
+      "trackingOptions": "Tracking Options",
+      "gpsTracking": "GPS Tracking",
+      "stepsTracking": "Steps",
+      "caloriesTracking": "Calories"
     },
     "editActivityScreen": {
       "title": "Edit Activity",
@@ -226,7 +247,11 @@
       "successEdited": "Activity edited successfully!",
       "errorEditFailed": "Failed to edit activity. Please try again.",
       "successDeleted": "Activity deleted successfully!",
-      "errorDeleteFailed": "Failed to delete activity. Please try again."
+      "errorDeleteFailed": "Failed to delete activity. Please try again.",
+      "trackingOptions": "Tracking Options",
+      "gpsTracking": "GPS Tracking",
+      "stepsTracking": "Steps",
+      "caloriesTracking": "Calories"
     },
     "editTemplateScreen": {
       "title": "Edit Template",

@@ -3,8 +3,9 @@ import { useState } from "react";
 import SaveButton from "@/components/buttons/SaveButton";
 import Toast from "react-native-toast-message";
 import FullScreenLoader from "@/components/FullScreenLoader";
-import { View, TouchableWithoutFeedback, Keyboard } from "react-native";
+import { View, TouchableWithoutFeedback, Keyboard, ScrollView } from "react-native";
 import AppText from "@/components/AppText";
+import Toggle from "@/components/toggle";
 import { useQueryClient } from "@tanstack/react-query";
 import PageContainer from "@/components/PageContainer";
 import { addActivity } from "@/database/activities/add-activity";
@@ -22,6 +23,9 @@ export default function AddActivity() {
   const [categoryId, setCategoryId] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [openCategoryModal, setOpenCategoryModal] = useState(false);
+  const [isGpsRelevant, setIsGpsRelevant] = useState(true);
+  const [isStepRelevant, setIsStepRelevant] = useState(true);
+  const [isCaloriesRelevant, setIsCaloriesRelevant] = useState(true);
 
   const queryClient = useQueryClient();
 
@@ -72,6 +76,9 @@ export default function AddActivity() {
       name,
       base_met: finalMet,
       category_id: categoryId,
+      is_gps_relevant: isGpsRelevant,
+      is_step_relevant: isStepRelevant,
+      is_calories_relevant: isCaloriesRelevant,
     };
 
     try {
@@ -87,6 +94,9 @@ export default function AddActivity() {
       setMet("");
       setCategory("");
       setCategoryId("");
+      setIsGpsRelevant(true);
+      setIsStepRelevant(true);
+      setIsCaloriesRelevant(true);
     } catch {
       Toast.show({
         type: "error",
@@ -99,75 +109,94 @@ export default function AddActivity() {
 
   return (
     <>
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <PageContainer className="justify-between flex-1">
-          <View>
-            <AppText className="text-2xl mb-10 text-center">
-              {t("activities.addActivityScreen.title")}
-            </AppText>
-            <View className="mb-5">
-              <AppInput
-                value={name}
-                setValue={setName}
-                placeholder={t(
-                  "activities.addActivityScreen.activityNamePlaceholder",
-                )}
-                label={t("activities.addActivityScreen.activityNameLabel")}
-              />
-            </View>
-            <View className="mb-5">
-              <AppInput
-                value={met}
-                setValue={(text) => {
-                  // Only allow numbers and decimal point
-                  if (/^\d*\.?\d{0,2}$/.test(text) || text === "") {
-                    const numValue = parseFloat(text);
-
-                    if (text === "" || (numValue >= 1 && numValue <= 20)) {
-                      setMet(text);
-                    }
-                  }
-                }}
-                keyboardType="numeric"
-                placeholder={t("activities.addActivityScreen.metPlaceholder")}
-                label={t("activities.addActivityScreen.metLabel")}
-              />
-              <AppText className="text-gray-400 text-sm mt-1">
-                {t("activities.addActivityScreen.metDescription")}
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <PageContainer className="justify-between flex-1">
+            <View>
+              <AppText className="text-2xl mb-10 text-center">
+                {t("activities.addActivityScreen.title")}
               </AppText>
-            </View>
-            <AppText className="mb-2">
-              {t("activities.addActivityScreen.selectCategory")}
-            </AppText>
-            <AnimatedButton
-              onPress={() => setOpenCategoryModal(true)}
-              label={
-                category || t("activities.addActivityScreen.selectCategory")
-              }
-              className="bg-blue-800 py-2 w-full rounded-md shadow-md border-2 border-blue-500"
-              textClassName="text-gray-100 text-center"
-            />
-            <FullScreenModal
-              isOpen={openCategoryModal}
-              onClose={() => setOpenCategoryModal(false)}
-            >
-              <CategoryDropdown
-                onSelect={(category) => {
-                  setCategoryId(category.id);
-                  setCategory(category.name);
-                  setOpenCategoryModal(false);
-                }}
+              <View className="mb-5">
+                <AppInput
+                  value={name}
+                  setValue={setName}
+                  placeholder={t(
+                    "activities.addActivityScreen.activityNamePlaceholder",
+                  )}
+                  label={t("activities.addActivityScreen.activityNameLabel")}
+                />
+              </View>
+              <View className="mb-5">
+                <AppInput
+                  value={met}
+                  setValue={(text) => {
+                    // Only allow numbers and decimal point
+                    if (/^\d*\.?\d{0,2}$/.test(text) || text === "") {
+                      const numValue = parseFloat(text);
+
+                      if (text === "" || (numValue >= 1 && numValue <= 20)) {
+                        setMet(text);
+                      }
+                    }
+                  }}
+                  keyboardType="numeric"
+                  placeholder={t("activities.addActivityScreen.metPlaceholder")}
+                  label={t("activities.addActivityScreen.metLabel")}
+                />
+                <AppText className="text-gray-400 text-sm mt-1">
+                  {t("activities.addActivityScreen.metDescription")}
+                </AppText>
+              </View>
+              <AppText className="mb-2">
+                {t("activities.addActivityScreen.selectCategory")}
+              </AppText>
+              <AnimatedButton
+                onPress={() => setOpenCategoryModal(true)}
+                label={
+                  category || t("activities.addActivityScreen.selectCategory")
+                }
+                className="bg-blue-800 py-2 w-full rounded-md shadow-md border-2 border-blue-500"
+                textClassName="text-gray-100 text-center"
               />
-            </FullScreenModal>
-          </View>
-          <View className="mt-10">
-            <SaveButton
-              onPress={handleSave}
-              label={t("activities.addActivityScreen.saveButton")}
-            />
-          </View>
-        </PageContainer>
-      </TouchableWithoutFeedback>
+              <FullScreenModal
+                isOpen={openCategoryModal}
+                onClose={() => setOpenCategoryModal(false)}
+              >
+                <CategoryDropdown
+                  onSelect={(category) => {
+                    setCategoryId(category.id);
+                    setCategory(category.name);
+                    setOpenCategoryModal(false);
+                  }}
+                />
+              </FullScreenModal>
+              <View className="mt-8">
+                <AppText className="text-lg mb-4">
+                  {t("activities.addActivityScreen.trackingOptions")}
+                </AppText>
+                <View className="flex-row items-center justify-between mb-3 px-2">
+                  <AppText>{t("activities.addActivityScreen.gpsTracking")}</AppText>
+                  <Toggle isOn={isGpsRelevant} onToggle={() => setIsGpsRelevant((prev) => !prev)} />
+                </View>
+                <View className="flex-row items-center justify-between mb-3 px-2">
+                  <AppText>{t("activities.addActivityScreen.stepsTracking")}</AppText>
+                  <Toggle isOn={isStepRelevant} onToggle={() => setIsStepRelevant((prev) => !prev)} />
+                </View>
+                <View className="flex-row items-center justify-between mb-3 px-2">
+                  <AppText>{t("activities.addActivityScreen.caloriesTracking")}</AppText>
+                  <Toggle isOn={isCaloriesRelevant} onToggle={() => setIsCaloriesRelevant((prev) => !prev)} />
+                </View>
+              </View>
+            </View>
+            <View className="mt-10">
+              <SaveButton
+                onPress={handleSave}
+                label={t("activities.addActivityScreen.saveButton")}
+              />
+            </View>
+          </PageContainer>
+        </TouchableWithoutFeedback>
+      </ScrollView>
       <FullScreenLoader
         visible={isSaving}
         message={t("activities.addActivityScreen.savingActivity")}

@@ -28,6 +28,8 @@ type FullScreenMapProps = {
   isLoadingPosition: boolean;
   isHydrated: boolean;
   liveCalories?: number;
+  isStepRelevant?: boolean;
+  isCaloriesRelevant?: boolean;
   onNotesPress?: () => void;
   currentPosition?: {
     latitude: number;
@@ -51,6 +53,8 @@ export default function FullScreenMap({
   isLoadingPosition,
   isHydrated,
   liveCalories,
+  isStepRelevant,
+  isCaloriesRelevant,
   onNotesPress,
 }: FullScreenMapProps) {
   const insets = useSafeAreaInsets();
@@ -290,6 +294,8 @@ export default function FullScreenMap({
         averagePacePerKm={averagePacePerKm}
         currentStepCount={currentStepCount}
         liveCalories={liveCalories}
+        isStepRelevant={isStepRelevant}
+        isCaloriesRelevant={isCaloriesRelevant}
       />
       <View
         className="absolute z-50 top-5 right-10"

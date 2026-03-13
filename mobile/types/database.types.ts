@@ -46,6 +46,9 @@ export type Database = {
           created_at: string
           id: string
           is_active: boolean
+          is_calories_relevant: boolean
+          is_gps_relevant: boolean
+          is_step_relevant: boolean
           name: string
           slug: string | null
           updated_at: string | null
@@ -57,6 +60,9 @@ export type Database = {
           created_at?: string
           id?: string
           is_active?: boolean
+          is_calories_relevant?: boolean
+          is_gps_relevant?: boolean
+          is_step_relevant?: boolean
           name: string
           slug?: string | null
           updated_at?: string | null
@@ -68,6 +74,9 @@ export type Database = {
           created_at?: string
           id?: string
           is_active?: boolean
+          is_calories_relevant?: boolean
+          is_gps_relevant?: boolean
+          is_step_relevant?: boolean
           name?: string
           slug?: string | null
           updated_at?: string | null

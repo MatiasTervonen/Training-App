@@ -293,6 +293,8 @@ export type PhaseData = {
   activity_name: string;
   activity_slug: string | null;
   activity_met: number;
+  is_step_relevant: boolean;
+  is_calories_relevant: boolean;
   input_mode: PhaseInputMode;
   duration_seconds: number;
   steps: number | null;

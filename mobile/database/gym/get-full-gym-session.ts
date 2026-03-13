@@ -35,7 +35,7 @@ export async function getFullGymSession(sessionId: string) {
     .from("sessions")
     .select(
       `*, session_stats(*),
-      gym_session_phases(*, activities(name, slug, base_met)),
+      gym_session_phases(*, activities(name, slug, base_met, is_step_relevant, is_calories_relevant)),
       gym_session_exercises(
         *,
         gym_exercises(

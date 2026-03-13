@@ -33,6 +33,8 @@ type SessionStatsProps = {
   totalDistance?: number;
   hasStartedTracking?: boolean;
   averagePacePerKm?: number;
+  isStepRelevant?: boolean;
+  isCaloriesRelevant?: boolean;
 };
 
 export default function SessionStats({
@@ -47,6 +49,8 @@ export default function SessionStats({
   totalDistance = 0,
   hasStartedTracking = false,
   averagePacePerKm = 0,
+  isStepRelevant = true,
+  isCaloriesRelevant = true,
 }: SessionStatsProps) {
   const labels = getDistanceUnitLabels();
   const activeSession = useTimerStore((state) => state.activeSession);
@@ -96,16 +100,22 @@ export default function SessionStats({
                 onPause={stopGPStracking}
                 color="#3b82f6"
               />
-              <View className="z-[999] flex-row gap-4 items-center mt-2">
-                <View className="flex-row gap-2 items-center">
-                  <Footprints size={20} color="#f3f4f6" />
-                  <AppText className="text-xl z-[999]">{currentStepCount}</AppText>
+              {(isStepRelevant || isCaloriesRelevant) && (
+                <View className="z-[999] flex-row gap-4 items-center mt-2">
+                  {isStepRelevant && (
+                    <View className="flex-row gap-2 items-center">
+                      <Footprints size={20} color="#f3f4f6" />
+                      <AppText className="text-xl z-[999]">{currentStepCount}</AppText>
+                    </View>
+                  )}
+                  {isCaloriesRelevant && (
+                    <View className="flex-row gap-1 items-center">
+                      <Flame size={20} color="#f97316" />
+                      <AppText className="text-xl z-[999]">{liveCalories ?? 0} kcal</AppText>
+                    </View>
+                  )}
                 </View>
-                <View className="flex-row gap-1 items-center">
-                  <Flame size={20} color="#f97316" />
-                  <AppText className="text-xl z-[999]">{liveCalories ?? 0} kcal</AppText>
-                </View>
-              </View>
+              )}
             </View>
             <View>
               <AppText className="text-xl z-[999]">
@@ -127,14 +137,18 @@ export default function SessionStats({
               }}
               color="#3b82f6"
             />
-            <View className="flex-row gap-3 items-center">
-              <Footprints size={28} color="#f3f4f6" />
-              <AppText className="text-3xl z-[999]">{currentStepCount}</AppText>
-            </View>
-            <View className="flex-row gap-2 items-center">
-              <Flame size={28} color="#f97316" />
-              <AppText className="text-3xl z-[999]">{liveCalories ?? 0} kcal</AppText>
-            </View>
+            {isStepRelevant && (
+              <View className="flex-row gap-3 items-center">
+                <Footprints size={28} color="#f3f4f6" />
+                <AppText className="text-3xl z-[999]">{currentStepCount}</AppText>
+              </View>
+            )}
+            {isCaloriesRelevant && (
+              <View className="flex-row gap-2 items-center">
+                <Flame size={28} color="#f97316" />
+                <AppText className="text-3xl z-[999]">{liveCalories ?? 0} kcal</AppText>
+              </View>
+            )}
           </>
         )}
       </View>

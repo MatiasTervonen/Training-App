@@ -305,7 +305,25 @@
         "green": "Vihreä",
         "purple": "Violetti",
         "yellow": "Keltainen"
+      },
+      "milestoneAlerts": {
+        "title": "Välitavoiteilmoitukset",
+        "description": "Saat ilmoituksen kun saavutat välitavoitteen aktiviteetin aikana",
+        "steps": "Askeleet",
+        "duration": "Kesto",
+        "distance": "Matka",
+        "calories": "Kalorit",
+        "everySteps": "Joka {{count}}",
+        "everyMinutes": "Joka {{count}} min",
+        "everyKm": "Joka {{count}} km",
+        "everyCalories": "Joka {{count}}"
       }
+    },
+    "milestoneAlerts": {
+      "toastSteps": "{{count}} askelta!",
+      "toastMinutes": "{{count}} min!",
+      "toastKm": "{{count}} km!",
+      "toastCalories": "{{count}} kal!"
     },
     "templatesScreen": {
       "title": "Omat pohjat",

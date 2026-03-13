@@ -305,7 +305,25 @@
         "green": "Green",
         "purple": "Purple",
         "yellow": "Yellow"
+      },
+      "milestoneAlerts": {
+        "title": "Milestone Alerts",
+        "description": "Get notified when you reach a milestone during an activity",
+        "steps": "Steps",
+        "duration": "Duration",
+        "distance": "Distance",
+        "calories": "Calories",
+        "everySteps": "Every {{count}}",
+        "everyMinutes": "Every {{count}} min",
+        "everyKm": "Every {{count}} km",
+        "everyCalories": "Every {{count}}"
       }
+    },
+    "milestoneAlerts": {
+      "toastSteps": "{{count}} steps!",
+      "toastMinutes": "{{count}} min!",
+      "toastKm": "{{count}} km!",
+      "toastCalories": "{{count}} cal!"
     },
     "templatesScreen": {
       "title": "My Templates",

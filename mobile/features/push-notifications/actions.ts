@@ -142,6 +142,13 @@ export async function configureNotificationChannels() {
       importance: Notifications.AndroidImportance.HIGH,
       sound: "default",
     }),
+    Notifications.setNotificationChannelAsync("milestone_alerts", {
+      name: "Activity Milestones",
+      importance: Notifications.AndroidImportance.HIGH,
+      sound: "default",
+      vibrationPattern: [0, 300, 100, 300],
+      lockscreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC,
+    }),
   ]);
 }
 

@@ -362,13 +362,21 @@
       "start": "aloita",
       "created": "Luotu:",
       "distance": "Matka:",
-      "startActivity": "Aloita aktiviteetti"
+      "startActivity": "Aloita aktiviteetti",
+      "timesCompleted": "Suoritettu {{count}} kertaa",
+      "lastCompleted": "Viimeisin",
+      "avgDuration": "Keskim. kesto",
+      "avgPace": "Keskim. vauhti",
+      "avgSpeed": "Keskim. nopeus",
+      "avgDistance": "Keskim. matka",
+      "statsTitle": "Historiatilastot"
     },
     "templateHistory": {
       "loading": "Ladataan historiaa...",
       "loadError": "Pohjan historian lataus epäonnistui. Yritä myöhemmin uudelleen.",
       "noHistory": "Tälle pohjalle ei ole vielä tallennettuja sessioita.",
       "personalBests": "Henkilökohtaiset ennätykset",
+      "personalBest": "Henkilökohtainen ennätys",
       "fastestPace": "Nopein vauhti",
       "shortestDuration": "Lyhin kesto",
       "minPerKm": "min/km",

@@ -104,6 +104,12 @@ export default function TemplatesPage() {
               item={expandedItem}
               onStartActivity={() => startActivity(expandedItem)}
               isStartingActivity={isStartingActivity}
+              onHistory={() =>
+                openHistory(
+                  expandedItem.template.id,
+                  expandedItem.template.name,
+                )
+              }
             />
           </FullScreenModal>
         )}

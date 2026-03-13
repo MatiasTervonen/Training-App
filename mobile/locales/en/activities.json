@@ -362,13 +362,21 @@
       "start": "start",
       "created": "Created:",
       "distance": "Distance:",
-      "startActivity": "Start Activity"
+      "startActivity": "Start Activity",
+      "timesCompleted": "Completed {{count}} times",
+      "lastCompleted": "Last",
+      "avgDuration": "Avg Duration",
+      "avgPace": "Avg Pace",
+      "avgSpeed": "Avg Speed",
+      "avgDistance": "Avg Distance",
+      "statsTitle": "History Stats"
     },
     "templateHistory": {
       "loading": "Loading history...",
       "loadError": "Failed to load template history. Please try again later.",
       "noHistory": "No sessions recorded for this template yet.",
       "personalBests": "Personal Bests",
+      "personalBest": "Personal Best",
       "fastestPace": "Fastest Pace",
       "shortestDuration": "Shortest Duration",
       "minPerKm": "min/km",

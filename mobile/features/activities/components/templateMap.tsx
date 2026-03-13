@@ -1,23 +1,22 @@
 import Mapbox from "@rnmapbox/maps";
-import { Pressable, View } from "react-native";
-import { useEffect, useState } from "react";
+import { View } from "react-native";
 import { templateSummary } from "@/types/session";
-import { Move, Lock } from "lucide-react-native";
+import { Fullscreen } from "lucide-react-native";
+import AnimatedButton from "@/components/buttons/animatedButton";
+import { LINE_COLORS } from "@/features/activities/lib/mapConstants";
 import { useActivitySettingsStore } from "@/lib/stores/activitySettingsStore";
 
 type MapProps = {
   template: templateSummary;
-  setScrollEnabled: (value: boolean) => void;
-  setSwipeEnabled: (value: boolean) => void;
+  setFullScreen: (value: boolean) => void;
 };
 
-export default function TemplateMap({
-  template,
-  setScrollEnabled,
-  setSwipeEnabled,
-}: MapProps) {
+export default function TemplateMap({ template, setFullScreen }: MapProps) {
   const defaultMapStyle = useActivitySettingsStore((s) => s.defaultMapStyle);
-  const [mapActive, setMapActive] = useState(false);
+  const defaultLineColorIndex = useActivitySettingsStore(
+    (s) => s.defaultLineColorIndex,
+  );
+  const lineColor = LINE_COLORS[defaultLineColorIndex];
 
   const coordinates = template.route!.coordinates;
 
@@ -34,7 +33,6 @@ export default function TemplateMap({
   const lats = coordinates.map((c) => c[1]);
 
   const ne: [number, number] = [Math.max(...lons), Math.max(...lats)];
-
   const sw: [number, number] = [Math.min(...lons), Math.min(...lats)];
 
   const startEndGeoJSON = {
@@ -59,23 +57,9 @@ export default function TemplateMap({
     ],
   };
 
-  const toggleMapActive = () => {
-    const next = !mapActive;
-    setMapActive(next);
-    setScrollEnabled(!next);
-    setSwipeEnabled(!next);
-  };
-
-  useEffect(() => {
-    return () => {
-      setSwipeEnabled(true);
-      setScrollEnabled(true);
-    };
-  }, [setSwipeEnabled, setScrollEnabled]);
-
   return (
     <View style={{ height: 300 }}>
-      <View pointerEvents={mapActive ? "auto" : "none"} style={{ flex: 1 }}>
+      <View pointerEvents="none" style={{ flex: 1 }}>
         <Mapbox.MapView
           style={{ flex: 1 }}
           styleURL={defaultMapStyle}
@@ -105,7 +89,7 @@ export default function TemplateMap({
             <Mapbox.LineLayer
               id="track-layer"
               style={{
-                lineColor: "rgba(59,130,246,0.4)",
+                lineColor: lineColor.glow,
                 lineCap: "round",
                 lineJoin: "round",
                 lineWidth: 10,
@@ -116,7 +100,7 @@ export default function TemplateMap({
               id="track-core"
               aboveLayerID="track-layer"
               style={{
-                lineColor: "#3b82f6",
+                lineColor: lineColor.core,
                 lineWidth: 4,
                 lineCap: "round",
                 lineJoin: "round",
@@ -142,18 +126,14 @@ export default function TemplateMap({
           </Mapbox.ShapeSource>
         </Mapbox.MapView>
       </View>
-      <Pressable
-        onPress={toggleMapActive}
+      <AnimatedButton
+        onPress={() => setFullScreen(true)}
         className="absolute z-50 p-2 rounded-full bg-blue-700 border-2 border-blue-500"
-        style={{ bottom: 15, right: 25 }}
+        style={{ bottom: 15, right: 15 }}
         hitSlop={10}
       >
-        {mapActive ? (
-          <Lock size={22} color="#f3f4f6" />
-        ) : (
-          <Move size={22} color="#f3f4f6" />
-        )}
-      </Pressable>
+        <Fullscreen size={22} color="#f3f4f6" />
+      </AnimatedButton>
     </View>
   );
 }

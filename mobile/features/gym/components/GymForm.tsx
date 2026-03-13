@@ -277,10 +277,10 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
       !warmupResumedRef.current
     ) {
       warmupResumedRef.current = true;
-      warmupTracking.resume(warmup.tracking_started_at);
+      warmupTracking.resume(warmup.tracking_started_at, warmup.activity_slug);
       setWarmupCollapsed(false);
     }
-  }, [warmup?.is_tracking, warmup?.tracking_started_at, warmupTracking]);
+  }, [warmup?.is_tracking, warmup?.tracking_started_at, warmup?.activity_slug, warmupTracking]);
 
   useEffect(() => {
     if (
@@ -290,10 +290,10 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
       !cooldownResumedRef.current
     ) {
       cooldownResumedRef.current = true;
-      cooldownTracking.resume(cooldown.tracking_started_at);
+      cooldownTracking.resume(cooldown.tracking_started_at, cooldown.activity_slug);
       setCooldownCollapsed(false);
     }
-  }, [cooldown?.is_tracking, cooldown?.tracking_started_at, cooldownTracking]);
+  }, [cooldown?.is_tracking, cooldown?.tracking_started_at, cooldown?.activity_slug, cooldownTracking]);
 
   // Use selectors to avoid re-rendering on uiTick changes
   const activeSession = useTimerStore((state) => state.activeSession);
@@ -429,13 +429,13 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
       setWarmup(phaseData);
       setWarmupCollapsed(false);
       if (inputMode === "live") {
-        warmupTracking.start();
+        warmupTracking.start(activity.slug ?? null);
       }
     } else {
       setCooldown(phaseData);
       setCooldownCollapsed(false);
       if (inputMode === "live") {
-        cooldownTracking.start();
+        cooldownTracking.start(activity.slug ?? null);
       }
     }
 
@@ -464,6 +464,7 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
             ...prev,
             duration_seconds: result.duration_seconds,
             steps: result.steps,
+            distance_meters: prev.is_step_relevant ? result.distance_meters : null,
             is_tracking: false,
           }
         : prev,
@@ -529,6 +530,7 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
     const tracking = phaseType === "warmup" ? warmupTracking : cooldownTracking;
     const setCollapsed =
       phaseType === "warmup" ? setWarmupCollapsed : setCooldownCollapsed;
+    const phase = phaseType === "warmup" ? warmup : cooldown;
 
     setter((prev) =>
       prev
@@ -540,7 +542,7 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
         : prev,
     );
     setCollapsed(false);
-    tracking.start();
+    tracking.start(phase?.activity_slug ?? null);
   };
 
   // useSaveSession hook to save the session
@@ -697,6 +699,7 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
                     calories={warmupCalories}
                     isStepRelevant={warmup.is_step_relevant}
                     isCaloriesRelevant={warmup.is_calories_relevant}
+                    estimatedDistance={warmup.is_step_relevant ? warmupTracking.estimatedDistance : 0}
                     onStop={() => handleStopPhaseTracking("warmup")}
                     onSwitchToManual={() => handleSwitchToManual("warmup")}
                     onChangeActivity={() => handleChangePhaseActivity("warmup")}
@@ -752,6 +755,7 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
                   <PhaseCard
                     mode="collapsed"
                     phase={warmup}
+                    userWeight={userWeight}
                     isExpanded={!warmupCollapsed}
                     onExpand={() => setWarmupCollapsed((p) => !p)}
                     onChangeActivity={() => handleChangePhaseActivity("warmup")}
@@ -902,6 +906,7 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
                     calories={cooldownCalories}
                     isStepRelevant={cooldown.is_step_relevant}
                     isCaloriesRelevant={cooldown.is_calories_relevant}
+                    estimatedDistance={cooldown.is_step_relevant ? cooldownTracking.estimatedDistance : 0}
                     onStop={() => handleStopPhaseTracking("cooldown")}
                     onSwitchToManual={() => handleSwitchToManual("cooldown")}
                     onChangeActivity={() => handleChangePhaseActivity("cooldown")}
@@ -959,6 +964,7 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
                   <PhaseCard
                     mode="collapsed"
                     phase={cooldown}
+                    userWeight={userWeight}
                     isExpanded={!cooldownCollapsed}
                     onExpand={() => setCooldownCollapsed((p) => !p)}
                     onChangeActivity={() => handleChangePhaseActivity("cooldown")}

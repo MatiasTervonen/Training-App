@@ -5,6 +5,7 @@ import {
   Platform,
   Keyboard,
   Pressable,
+  ScrollView,
 } from "react-native";
 import AppText from "@/components/AppText";
 import BodyText from "@/components/BodyText";
@@ -17,6 +18,7 @@ import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { useUserStore } from "@/lib/stores/useUserStore";
+import { supabase } from "@/lib/supabase";
 
 export default function AboutYouScreen() {
   const router = useRouter();
@@ -31,6 +33,7 @@ export default function AboutYouScreen() {
   );
 
   const [weight, setWeight] = useState("");
+  const [height, setHeight] = useState("");
   const [unit, setUnit] = useState<"kg" | "lbs">(
     currentUnit === "lbs" ? "lbs" : "kg",
   );
@@ -39,22 +42,35 @@ export default function AboutYouScreen() {
   );
 
   const handleContinue = () => {
+    const profileUpdates: Record<string, string | number | null> = {
+      weight_unit: unit,
+      distance_unit: distanceUnit,
+    };
+
+    if (height) {
+      const numHeight = parseFloat(height);
+      if (!isNaN(numHeight) && numHeight >= 50 && numHeight <= 300) {
+        profileUpdates.height_cm = numHeight;
+      }
+    }
+
     if (weight) {
       const numWeight = parseFloat(weight);
       const minWeight = unit === "kg" ? 30 : 66;
       const maxWeight = unit === "kg" ? 300 : 660;
 
       if (!isNaN(numWeight) && numWeight >= minWeight && numWeight <= maxWeight) {
-        useUserStore.getState().setUserProfile({
-          weight_unit: unit,
-          distance_unit: distanceUnit,
-        });
+        supabase
+          .rpc("weight_save_weight", {
+            p_title: t("aboutYou.startingWeight"),
+            p_notes: "",
+            p_weight: numWeight,
+          })
+          .then();
       }
-    } else {
-      useUserStore.getState().setUserProfile({
-        distance_unit: distanceUnit,
-      });
     }
+
+    useUserStore.getState().setUserProfile(profileUpdates);
     router.push("/onboarding/complete");
   };
 
@@ -67,7 +83,11 @@ export default function AboutYouScreen() {
       className="flex-1"
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
-      <Pressable className="flex-1 px-6 justify-center" onPress={Keyboard.dismiss}>
+      <ScrollView
+        contentContainerClassName="flex-grow justify-center px-6"
+        keyboardShouldPersistTaps="handled"
+      >
+        <Pressable className="flex-1" onPress={Keyboard.dismiss}>
         <OnboardingBackButton />
         <OnboardingProgressBar currentStep={4} />
 
@@ -131,6 +151,26 @@ export default function AboutYouScreen() {
           <AppText className="text-2xl ml-3 text-slate-400">{unit}</AppText>
         </View>
 
+        {/* Height input */}
+        <AppText className="text-xl text-center mb-4">
+          {t("aboutYou.heightLabel")}
+        </AppText>
+        <View className="flex-row items-center justify-center mb-8">
+          <TextInput
+            value={height}
+            onChangeText={(text) => {
+              const filtered = text.replace(/[^0-9]/g, "");
+              setHeight(filtered);
+            }}
+            placeholder="0"
+            placeholderTextColor="#64748b"
+            keyboardType="number-pad"
+            className="bg-slate-800 border-2 border-slate-700 rounded-lg text-center text-gray-100 text-3xl py-3 px-6 w-40 font-russo"
+            maxLength={3}
+          />
+          <AppText className="text-2xl ml-3 text-slate-400">cm</AppText>
+        </View>
+
         {/* Distance unit */}
         <AppText className="text-xl text-center mb-4">
           {t("aboutYou.distanceUnit")}
@@ -182,7 +222,8 @@ export default function AboutYouScreen() {
         </View>
 
         <SkipOnboardingButton onSkip={skipOnboarding} />
-      </Pressable>
+        </Pressable>
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 }

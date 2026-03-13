@@ -33,6 +33,7 @@ type props = {
   draftVideos?: DraftVideo[];
   templateId?: string | null;
   onProgress?: (progress: number | undefined) => void;
+  stepDistanceMeters?: number | null;
 };
 
 async function getFileSize(uri: string): Promise<number> {
@@ -54,6 +55,7 @@ export async function saveActivitySession({
   draftVideos = [],
   templateId = null,
   onProgress,
+  stepDistanceMeters = null,
 }: props) {
   const {
     data: { session },
@@ -174,6 +176,7 @@ export async function saveActivitySession({
         p_images: uploadedImages,
         p_videos: uploadedVideos,
         p_template_id: templateId ?? undefined,
+        p_step_distance_meters: stepDistanceMeters ?? undefined,
       },
     );
 

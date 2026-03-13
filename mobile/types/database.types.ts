@@ -2272,6 +2272,7 @@ export type Database = {
           display_name: string
           distance_unit: string
           email: string | null
+          height_cm: number | null
           id: string
           profile_picture: string | null
           role: string
@@ -2284,6 +2285,7 @@ export type Database = {
           display_name: string
           distance_unit?: string
           email?: string | null
+          height_cm?: number | null
           id: string
           profile_picture?: string | null
           role?: string
@@ -2296,6 +2298,7 @@ export type Database = {
           display_name?: string
           distance_unit?: string
           email?: string | null
+          height_cm?: number | null
           id?: string
           profile_picture?: string | null
           role?: string
@@ -2462,7 +2465,7 @@ export type Database = {
         Returns: undefined
       }
       activities_compute_session_stats: {
-        Args: { p_session_id: string; p_steps: number }
+        Args: { p_session_id: string; p_steps: number; p_step_distance_meters?: number }
         Returns: undefined
       }
       activities_get_full_session: {
@@ -2484,6 +2487,7 @@ export type Database = {
           p_notes: string
           p_start_time: string
           p_steps: number
+          p_step_distance_meters?: number
           p_template_id?: string
           p_title: string
           p_track: Json

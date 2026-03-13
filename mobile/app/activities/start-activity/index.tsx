@@ -34,6 +34,7 @@ import { useAveragePace } from "@/features/activities/hooks/useAveragePace";
 import { hasStepsPermission } from "@/features/activities/stepToggle/stepPermission";
 import { useStepHydration } from "@/features/activities/hooks/useStepHydration";
 import { useLiveStepCounter } from "@/features/activities/hooks/useLiveStepCounter";
+import useStepDistance from "@/features/activities/hooks/useStepDistance";
 import {
   requestStepPermission,
   hasStepSensor,
@@ -107,6 +108,7 @@ export default function StartActivityScreen() {
   const [isGpsRelevant, setIsGpsRelevant] = useState(false);
   const [isStepRelevant, setIsStepRelevant] = useState(true);
   const [isCaloriesRelevant, setIsCaloriesRelevant] = useState(true);
+  const [activitySlug, setActivitySlug] = useState<string | null>(null);
   const [showBatteryHint, setShowBatteryHint] = useState(false);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
 
@@ -245,6 +247,7 @@ export default function StartActivityScreen() {
     setIsGpsRelevant(true);
     setIsStepRelevant(true);
     setIsCaloriesRelevant(true);
+    setActivitySlug(null);
     setAllowGPS(false);
     setTrack([]);
     setSteps(0);
@@ -277,6 +280,7 @@ export default function StartActivityScreen() {
     setIsGpsRelevant,
     setIsStepRelevant,
     setIsCaloriesRelevant,
+    setActivitySlug,
   });
 
   // useStartGPStracking hook to start the GPS tracking and useStopGPStracking hook to stop the GPS tracking
@@ -401,6 +405,12 @@ export default function StartActivityScreen() {
     setSteps,
   });
 
+  // Step-based distance estimation for non-GPS mode
+  const stepDistance = useStepDistance(
+    !allowGPS && isStepRelevant && stepsAllowed ? steps : 0,
+    activitySlug,
+  );
+
   // useTemplateRoute hook to get the template route
   const { route, setRoute, isLoadingTemplateRoute } = useTemplateRoute();
 
@@ -451,6 +461,7 @@ export default function StartActivityScreen() {
               setIsGpsRelevant(activity.is_gps_relevant);
               setIsStepRelevant(activity.is_step_relevant);
               setIsCaloriesRelevant(activity.is_calories_relevant);
+              setActivitySlug(activity.slug ?? null);
 
               // Force GPS off when not relevant for this activity
               if (!activity.is_gps_relevant) {
@@ -597,6 +608,7 @@ export default function StartActivityScreen() {
             liveCalories={liveCalories}
             isStepRelevant={isStepRelevant}
             isCaloriesRelevant={isCaloriesRelevant}
+            estimatedDistance={stepDistance}
           />
           <MilestoneToast toast={toast} />
           <View className="absolute z-50 bottom-20 right-5">

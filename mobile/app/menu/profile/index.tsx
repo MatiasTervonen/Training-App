@@ -29,6 +29,7 @@ export default function ProfileScreen() {
   const [userName, setUserName] = useState("");
   const [weightUnit, setWeightUnit] = useState("");
   const [distanceUnit, setDistanceUnit] = useState("");
+  const [heightCm, setHeightCm] = useState("");
   const [selectedProfilePic, setSelectedProfilePic] =
     useState<UploadFile | null>(null);
 
@@ -36,6 +37,7 @@ export default function ProfileScreen() {
   const weightUnitZ = useUserStore((state) => state.profile?.weight_unit);
   const distanceUnitZ = useUserStore((state) => state.profile?.distance_unit);
   const profilePicZ = useUserStore((state) => state.profile?.profile_picture);
+  const heightCmZ = useUserStore((state) => state.profile?.height_cm);
 
   const setUserProfile = useUserStore((state) => state.setUserProfile);
 
@@ -43,8 +45,9 @@ export default function ProfileScreen() {
     setUserName(userNameZ || "");
     setWeightUnit(weightUnitZ || "kg");
     setDistanceUnit(distanceUnitZ || "km");
+    setHeightCm(heightCmZ ? String(heightCmZ) : "");
     setSelectedProfilePic(null);
-  }, [userNameZ, weightUnitZ, distanceUnitZ, profilePicZ]);
+  }, [userNameZ, weightUnitZ, distanceUnitZ, profilePicZ, heightCmZ]);
 
   const checkFileSize = async (uri: string) => {
     try {
@@ -159,11 +162,13 @@ export default function ProfileScreen() {
         });
       }
 
+      const parsedHeight = heightCm ? parseFloat(heightCm) : null;
       const payload = {
         display_name: userName,
         weight_unit: weightUnit,
         distance_unit: distanceUnit,
         profile_picture: profilePictureUrl,
+        height_cm: parsedHeight && parsedHeight > 0 ? parsedHeight : null,
       };
 
       await saveUserProfile(payload);
@@ -241,6 +246,18 @@ export default function ProfileScreen() {
                   { value: "mi", label: "mi" },
                 ]}
               />
+            </View>
+            <View className="mt-5">
+              <AppInput
+                value={heightCm}
+                setValue={setHeightCm}
+                label={t("menu:profile.height")}
+                placeholder={t("menu:profile.heightPlaceholder")}
+                keyboardType="numeric"
+              />
+              <AppText className="text-sm text-gray-500 mt-2">
+                {t("menu:profile.heightHint")}
+              </AppText>
             </View>
           </View>
           <View>

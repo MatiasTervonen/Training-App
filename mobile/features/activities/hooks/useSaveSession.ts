@@ -14,6 +14,12 @@ import { filterTrackBeforeSaving } from "../lib/filterTrackBeforeSaving";
 import { useTranslation } from "react-i18next";
 import { DraftRecording, DraftVideo } from "@/types/session";
 import { useActivitySessionSummaryStore } from "@/lib/stores/activitySessionSummaryStore";
+import {
+  getMovementType,
+  getStrideLength,
+  getDistanceFromSteps,
+} from "@/features/activities/lib/strideLength";
+import { useUserStore } from "@/lib/stores/useUserStore";
 
 type DraftImage = {
   id: string;
@@ -152,6 +158,15 @@ export default function useSaveActivitySession({
 
       const steps = stepsAllowed ? await loadStepsFromNative() : 0;
 
+      // Compute step-based distance for non-GPS sessions
+      let stepDistanceMeters: number | null = null;
+      if (!allowGPS && stepsAllowed && steps > 0) {
+        const heightCm = useUserStore.getState().profile?.height_cm ?? null;
+        const movementType = getMovementType(activitySlug);
+        const stride = getStrideLength(heightCm, movementType);
+        stepDistanceMeters = getDistanceFromSteps(steps, stride);
+      }
+
       const { sessionId } = await saveActivitySession({
         title,
         notes,
@@ -166,6 +181,7 @@ export default function useSaveActivitySession({
         draftVideos,
         templateId,
         onProgress: (p) => setSavingProgress?.(p),
+        stepDistanceMeters,
       });
 
       // Fetch the real DB-computed stats for the share card

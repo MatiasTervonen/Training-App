@@ -5,9 +5,9 @@ import AppInput from "@/components/AppInput";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import { PhaseData, PhaseType, TemplatePhaseData } from "@/types/session";
 import { LinearGradient } from "expo-linear-gradient";
-import { X, ChevronDown, ChevronUp, Footprints, Flame, ArrowLeftRight } from "lucide-react-native";
+import { X, ChevronDown, ChevronUp, Footprints, Flame, ArrowLeftRight, Ruler } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
-import { formatDurationLong } from "@/lib/formatDate";
+import { formatDurationLong, formatMeters } from "@/lib/formatDate";
 
 type LivePhaseCardProps = {
   mode: "live";
@@ -19,6 +19,7 @@ type LivePhaseCardProps = {
   calories: number;
   isStepRelevant?: boolean;
   isCaloriesRelevant?: boolean;
+  estimatedDistance?: number;
   onStop: () => void;
   onRemove: () => void;
   onSwitchToManual?: () => void;
@@ -43,6 +44,7 @@ type ManualPhaseCardProps = {
 type CollapsedPhaseCardProps = {
   mode: "collapsed";
   phase: PhaseData;
+  userWeight: number;
   onRemove: () => void;
   onExpand: () => void;
   isExpanded: boolean;
@@ -145,33 +147,87 @@ export default function PhaseCard(props: Props) {
             </AnimatedButton>
           </View>
         </View>
-        <View className="flex-row justify-center gap-6 mb-4">
-          <FixedWidthDigits
-            text={formatDurationLong(props.elapsedSeconds)}
-            className="text-2xl"
-            charWidth={17}
-          />
-          {props.isStepRelevant !== false && (
-            <View className="flex-row items-center gap-1">
-              <Footprints color="#9ca3af" size={20} />
+        {props.isStepRelevant !== false ? (
+          <View className="flex-row flex-wrap mb-4">
+            <View className="w-1/2 items-center pb-3">
               <FixedWidthDigits
-                text={props.steps.toLocaleString()}
-                className="text-2xl"
-                charWidth={17}
+                text={formatDurationLong(props.elapsedSeconds)}
+                className="text-xl"
+                charWidth={14}
               />
+              <AppText className="text-xs text-gray-400 mt-1">
+                {t("gym.phase.time")}
+              </AppText>
             </View>
-          )}
-          {props.isCaloriesRelevant !== false && (
-            <View className="flex-row items-center gap-1">
-              <Flame color="#f97316" size={20} />
-              <FixedWidthDigits
-                text={String(props.calories)}
-                className="text-2xl"
-                charWidth={17}
-              />
+            <View className="w-1/2 items-center pb-3">
+              <View className="flex-row items-center gap-1">
+                <Footprints color="#9ca3af" size={16} />
+                <FixedWidthDigits
+                  text={props.steps.toLocaleString()}
+                  className="text-xl"
+                  charWidth={14}
+                />
+              </View>
+              <AppText className="text-xs text-gray-400 mt-1">
+                {t("gym.phase.steps")}
+              </AppText>
             </View>
-          )}
-        </View>
+            <View className="w-1/2 items-center">
+              <View className="flex-row items-center gap-1">
+                <Ruler color="#60a5fa" size={16} />
+                <AppText className="text-xl text-blue-300">
+                  ~{formatMeters(props.estimatedDistance ?? 0)}
+                </AppText>
+              </View>
+              <AppText className="text-xs text-gray-400 mt-1">
+                {t("gym.phase.distance")}
+              </AppText>
+            </View>
+            {props.isCaloriesRelevant !== false && (
+              <View className="w-1/2 items-center">
+                <View className="flex-row items-center gap-1">
+                  <Flame color="#f97316" size={16} />
+                  <FixedWidthDigits
+                    text={String(props.calories)}
+                    className="text-xl"
+                    charWidth={14}
+                  />
+                </View>
+                <AppText className="text-xs text-gray-400 mt-1">
+                  {t("gym.phase.calories")}
+                </AppText>
+              </View>
+            )}
+          </View>
+        ) : (
+          <View className="flex-row justify-center gap-6 mb-4">
+            <FixedWidthDigits
+              text={formatDurationLong(props.elapsedSeconds)}
+              className="text-2xl"
+              charWidth={17}
+            />
+            {props.isStepRelevant !== false && (
+              <View className="flex-row items-center gap-1">
+                <Footprints color="#9ca3af" size={20} />
+                <FixedWidthDigits
+                  text={props.steps.toLocaleString()}
+                  className="text-2xl"
+                  charWidth={17}
+                />
+              </View>
+            )}
+            {props.isCaloriesRelevant !== false && (
+              <View className="flex-row items-center gap-1">
+                <Flame color="#f97316" size={20} />
+                <FixedWidthDigits
+                  text={String(props.calories)}
+                  className="text-2xl"
+                  charWidth={17}
+                />
+              </View>
+            )}
+          </View>
+        )}
         <AnimatedButton
           onPress={props.onStop}
           className="btn-danger py-1 items-center"
@@ -250,7 +306,7 @@ export default function PhaseCard(props: Props) {
   }
 
   // collapsed mode
-  const { phase, onRemove, onExpand, isExpanded, onChangeActivity } = props;
+  const { phase, userWeight, onRemove, onExpand, isExpanded, onChangeActivity } = props;
   const formattedDuration = formatDurationLong(phase.duration_seconds);
   const summary = [
     formattedDuration,
@@ -296,28 +352,54 @@ export default function PhaseCard(props: Props) {
       </AnimatedButton>
 
       {isExpanded && (
-        <View className="px-4 pb-4 gap-2">
-          <View className="flex-row gap-4">
-            <View className="flex-1">
-              <AppText className="text-sm text-gray-400">
+        <View className="px-3 pb-3">
+          <View className="border-b border-blue-700 flex-row">
+            <View className="flex-1 items-center">
+              <AppText className="p-2 text-sm text-gray-400">
                 {t("gym.phase.time")}
               </AppText>
-              <AppText>{formattedDuration}</AppText>
             </View>
             {phase.is_step_relevant && phase.steps != null && (
-              <View className="flex-1">
-                <AppText className="text-sm text-gray-400">
+              <View className="flex-1 items-center">
+                <AppText className="p-2 text-sm text-gray-400">
                   {t("gym.phase.steps")}
                 </AppText>
-                <AppText>{phase.steps.toLocaleString()}</AppText>
               </View>
             )}
-            {phase.distance_meters != null && (
-              <View className="flex-1">
-                <AppText className="text-sm text-gray-400">
+            {phase.distance_meters != null && phase.distance_meters > 0 && (
+              <View className="flex-1 items-center">
+                <AppText className="p-2 text-sm text-gray-400">
                   {t("gym.phase.distance")}
                 </AppText>
-                <AppText>{phase.distance_meters}</AppText>
+              </View>
+            )}
+            {phase.is_calories_relevant && phase.duration_seconds > 0 && (
+              <View className="flex-1 items-center">
+                <AppText className="p-2 text-sm text-gray-400">
+                  {t("gym.phase.calories")}
+                </AppText>
+              </View>
+            )}
+          </View>
+          <View className="flex-row">
+            <View className="flex-1 items-center">
+              <AppText className="p-2">{formattedDuration}</AppText>
+            </View>
+            {phase.is_step_relevant && phase.steps != null && (
+              <View className="flex-1 items-center">
+                <AppText className="p-2">{phase.steps.toLocaleString()}</AppText>
+              </View>
+            )}
+            {phase.distance_meters != null && phase.distance_meters > 0 && (
+              <View className="flex-1 items-center">
+                <AppText className="p-2">~{formatMeters(phase.distance_meters)}</AppText>
+              </View>
+            )}
+            {phase.is_calories_relevant && phase.duration_seconds > 0 && (
+              <View className="flex-1 items-center">
+                <AppText className="p-2">
+                  {Math.round(phase.activity_met * userWeight * (phase.duration_seconds / 3600))}
+                </AppText>
               </View>
             )}
           </View>

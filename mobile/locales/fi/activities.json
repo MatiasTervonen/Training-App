@@ -160,6 +160,7 @@
       "duration": "Kesto",
       "movingTime": "Liikkeessä",
       "distance": "Matka",
+      "estimatedDistance": "Arv. matka",
       "avgPace": "Ka. vauhti",
       "moving": "(liikkuessa)",
       "minPerKm": "min/km",

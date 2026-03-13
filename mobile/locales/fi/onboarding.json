@@ -52,8 +52,10 @@
     "pictureFormatError": "Vain JPEG-, PNG- ja WebP-kuvat ovat tuettuja"
   },
   "aboutYou": {
-    "title": "Mikä on painosi?",
-    "description": "Painoasi käytetään aktiviteettien aikana kulutettujen kalorien arviointiin. Voit päivittää sen milloin tahansa Paino-osiossa.",
+    "title": "Tietoja sinusta",
+    "description": "Painoasi käytetään kalorien arviointiin ja pituuttasi matkan laskemiseen askeleista. Voit päivittää näitä milloin tahansa.",
+    "heightLabel": "Pituus (cm)",
+    "startingWeight": "Aloituspaino",
     "distanceUnit": "Etäisyyden yksikkö",
     "continue": "Jatka",
     "skipStep": "Ohita"
@@ -71,6 +73,7 @@
       "exactAlarms": "Tarkat hälytykset",
       "batteryOptimization": "Akun optimointi",
       "weight": "Paino",
+      "height": "Pituus",
       "distanceUnit": "Etäisyys"
     }
   },

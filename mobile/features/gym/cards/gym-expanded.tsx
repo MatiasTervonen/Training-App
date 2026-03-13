@@ -1,4 +1,4 @@
-import { formatDateShort, formatDurationLong, formatTime, convertMetersForDisplay } from "@/lib/formatDate";
+import { formatDateShort, formatDurationLong, formatTime, formatMeters } from "@/lib/formatDate";
 import { PhaseType } from "@/types/session";
 import { useUserStore } from "@/lib/stores/useUserStore";
 import { FullGymSession } from "@/database/gym/get-full-gym-session";
@@ -462,7 +462,7 @@ function PhaseDisplayCard({
           )}
           {distanceMeters != null && distanceMeters > 0 && (
             <View className="flex-1 items-center">
-              <AppText className="p-2">{convertMetersForDisplay(distanceMeters)}</AppText>
+              <AppText className="p-2">~{formatMeters(distanceMeters)}</AppText>
             </View>
           )}
           {calories != null && calories > 0 && (

@@ -86,7 +86,7 @@ type GymFormData = Pick<
     distance_meters: number | null;
     is_manual: boolean | null;
     calories: number | null;
-    activities: { name: string; slug: string | null; base_met: number } | null;
+    activities: { name: string; slug: string | null; base_met: number; is_step_relevant: boolean; is_calories_relevant: boolean } | null;
   }[];
 };
 
@@ -167,6 +167,8 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
       activity_name: wp.activities.name,
       activity_slug: wp.activities.slug,
       activity_met: wp.activities.base_met,
+      is_step_relevant: wp.activities.is_step_relevant ?? true,
+      is_calories_relevant: wp.activities.is_calories_relevant ?? true,
       input_mode: wp.is_manual ? "manual" : "live",
       duration_seconds: wp.duration_seconds,
       steps: wp.steps,
@@ -186,6 +188,8 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
       activity_name: cd.activities.name,
       activity_slug: cd.activities.slug,
       activity_met: cd.activities.base_met,
+      is_step_relevant: cd.activities.is_step_relevant ?? true,
+      is_calories_relevant: cd.activities.is_calories_relevant ?? true,
       input_mode: cd.is_manual ? "manual" : "live",
       duration_seconds: cd.duration_seconds,
       steps: cd.steps,
@@ -405,6 +409,8 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
       activity_name: activity.name,
       activity_slug: activity.slug ?? null,
       activity_met: activity.base_met,
+      is_step_relevant: activity.is_step_relevant,
+      is_calories_relevant: activity.is_calories_relevant,
       input_mode: inputMode,
       duration_seconds: 0,
       steps: null,
@@ -638,6 +644,8 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
                     elapsedSeconds={warmupTracking.elapsedSeconds}
                     steps={warmupTracking.steps}
                     calories={warmupCalories}
+                    isStepRelevant={warmup.is_step_relevant}
+                    isCaloriesRelevant={warmup.is_calories_relevant}
                     onStop={() => handleStopPhaseTracking("warmup")}
                     onRemove={async () => {
                       const confirmed = await confirmAction({
@@ -681,6 +689,7 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
                     phaseType="warmup"
                     activityName={warmup.activity_name}
                     activitySlug={warmup.activity_slug}
+                    isStepRelevant={warmup.is_step_relevant}
                     onRemove={async () => {
                       const confirmed = await confirmAction({
                         title: t("gym.phase.confirmRemoveTitle"),
@@ -842,6 +851,8 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
                     elapsedSeconds={cooldownTracking.elapsedSeconds}
                     steps={cooldownTracking.steps}
                     calories={cooldownCalories}
+                    isStepRelevant={cooldown.is_step_relevant}
+                    isCaloriesRelevant={cooldown.is_calories_relevant}
                     onStop={() => handleStopPhaseTracking("cooldown")}
                     onRemove={async () => {
                       const confirmed = await confirmAction({
@@ -885,6 +896,7 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
                     phaseType="cooldown"
                     activityName={cooldown.activity_name}
                     activitySlug={cooldown.activity_slug}
+                    isStepRelevant={cooldown.is_step_relevant}
                     onRemove={async () => {
                       const confirmed = await confirmAction({
                         title: t("gym.phase.confirmRemoveTitle"),

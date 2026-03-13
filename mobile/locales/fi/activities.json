@@ -69,7 +69,8 @@
       "stretching": "Venyttely",
       "climbing": "Kiipeily",
       "swimming": "Uinti",
-      "cycling": "Pyöräily",
+      "cycling_outdoor": "Pyöräily (ulko)",
+      "cycling_indoor": "Pyöräily (sisä)",
       "gym": "Kuntosali",
       "pilates": "Pilates",
       "dancing": "Tanssi",
@@ -82,7 +83,23 @@
       "walking": "Kävely",
       "driving": "Ajaminen",
       "mindfulness": "Tietoisuus",
-      "cross_training": "Cross Training"
+      "cross_training": "Cross Training",
+      "walking_treadmill": "Kävely (juoksumatto)",
+      "running_treadmill": "Juoksu (juoksumatto)",
+      "stair_climber": "Porraskone",
+      "cross_trainer_machine": "Crosstrainer",
+      "rowing_machine": "Soutulaite",
+      "ski_erg": "Hiihtolaite",
+      "assault_bike": "Assault Bike",
+      "nordic_walking": "Sauvakävely",
+      "roller_skating": "Rullaluistelu",
+      "skiing_cross_country": "Hiihto (murtomaahiihto)",
+      "skiing_downhill": "Hiihto (laskettelu)",
+      "ice_skating": "Luistelu",
+      "skateboarding": "Rullalautailu",
+      "kickboxing": "Potkunyrkkeily",
+      "martial_arts": "Kamppailulajit",
+      "jump_rope": "Hyppynaru"
     },
     "analyticsScreen": {
       "title": "Analytiikka",
@@ -202,7 +219,11 @@
       "errorMetOutOfRange": "MET-arvo rajojen ulkopuolella",
       "errorMetRangeDesc": "Syötä arvo välillä 1.0 - 20.0",
       "successSaved": "Aktiviteetti tallennettu onnistuneesti!",
-      "errorSaveFailed": "Aktiviteetin tallennus epäonnistui. Yritä uudelleen."
+      "errorSaveFailed": "Aktiviteetin tallennus epäonnistui. Yritä uudelleen.",
+      "trackingOptions": "Seurantavalinnat",
+      "gpsTracking": "GPS-seuranta",
+      "stepsTracking": "Askeleet",
+      "caloriesTracking": "Kalorit"
     },
     "editActivityScreen": {
       "title": "Muokkaa aktiviteettia",
@@ -226,7 +247,11 @@
       "successEdited": "Aktiviteetti päivitetty onnistuneesti!",
       "errorEditFailed": "Aktiviteetin päivitys epäonnistui. Yritä uudelleen.",
       "successDeleted": "Aktiviteetti poistettu onnistuneesti!",
-      "errorDeleteFailed": "Aktiviteetin poisto epäonnistui. Yritä uudelleen."
+      "errorDeleteFailed": "Aktiviteetin poisto epäonnistui. Yritä uudelleen.",
+      "trackingOptions": "Seurantavalinnat",
+      "gpsTracking": "GPS-seuranta",
+      "stepsTracking": "Askeleet",
+      "caloriesTracking": "Kalorit"
     },
     "editTemplateScreen": {
       "title": "Muokkaa pohjaa",

@@ -104,6 +104,9 @@ export default function StartActivityScreen() {
   const [draftImages, setDraftImages] = useState<DraftImage[]>([]);
   const [draftVideos, setDraftVideos] = useState<DraftVideo[]>([]);
   const [baseMet, setBaseMet] = useState(0);
+  const [isGpsRelevant, setIsGpsRelevant] = useState(true);
+  const [isStepRelevant, setIsStepRelevant] = useState(true);
+  const [isCaloriesRelevant, setIsCaloriesRelevant] = useState(true);
   const [showBatteryHint, setShowBatteryHint] = useState(false);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
 
@@ -239,6 +242,9 @@ export default function StartActivityScreen() {
     setNotes("");
     setActivityName("");
     setBaseMet(0);
+    setIsGpsRelevant(true);
+    setIsStepRelevant(true);
+    setIsCaloriesRelevant(true);
     setAllowGPS(false);
     setTrack([]);
     setSteps(0);
@@ -268,6 +274,9 @@ export default function StartActivityScreen() {
     setDraftImages,
     setDraftVideos,
     setBaseMet,
+    setIsGpsRelevant,
+    setIsStepRelevant,
+    setIsCaloriesRelevant,
   });
 
   // useStartGPStracking hook to start the GPS tracking and useStopGPStracking hook to stop the GPS tracking
@@ -439,6 +448,14 @@ export default function StartActivityScreen() {
               setActivityName(translatedName);
               setTitle(`${translatedName}`);
               setBaseMet(activity.base_met);
+              setIsGpsRelevant(activity.is_gps_relevant);
+              setIsStepRelevant(activity.is_step_relevant);
+              setIsCaloriesRelevant(activity.is_calories_relevant);
+
+              // Force GPS off when not relevant for this activity
+              if (!activity.is_gps_relevant) {
+                setAllowGPS(false);
+              }
 
               await AsyncStorage.mergeItem(
                 "activity_draft",
@@ -447,44 +464,51 @@ export default function StartActivityScreen() {
                   activityName: translatedName,
                   activitySlug: activity.slug ?? null,
                   baseMet: activity.base_met,
+                  isGpsRelevant: activity.is_gps_relevant,
+                  isStepRelevant: activity.is_step_relevant,
+                  isCaloriesRelevant: activity.is_calories_relevant,
                 }),
               );
             }}
           />
-          <View className="flex-row items-center my-7  justify-between px-4">
-            {allowGPS ? (
-              <AppText className="text-lg">
-                {t("activities.startActivityScreen.disableLocationTracking")}
-              </AppText>
-            ) : (
-              <Link href="/menu/settings">
-                <AppText className="text-lg">
-                  {t("activities.startActivityScreen.enableLocationTracking")}
-                </AppText>
-              </Link>
-            )}
-            <Toggle
-              disabled={isRunning}
-              isOn={allowGPS}
-              onToggle={async () => {
-                if (!gpsEnabledGlobally) {
-                  setShowModal(true);
-                  return;
-                }
+          {isGpsRelevant && (
+            <>
+              <View className="flex-row items-center my-7  justify-between px-4">
+                {allowGPS ? (
+                  <AppText className="text-lg">
+                    {t("activities.startActivityScreen.disableLocationTracking")}
+                  </AppText>
+                ) : (
+                  <Link href="/menu/settings">
+                    <AppText className="text-lg">
+                      {t("activities.startActivityScreen.enableLocationTracking")}
+                    </AppText>
+                  </Link>
+                )}
+                <Toggle
+                  disabled={isRunning}
+                  isOn={allowGPS}
+                  onToggle={async () => {
+                    if (!gpsEnabledGlobally) {
+                      setShowModal(true);
+                      return;
+                    }
 
-                setAllowGPS((prev) => !prev);
-              }}
-            />
-          </View>
-          {showBatteryHint && (
-            <Pressable
-              className="px-4 -mt-4 mb-4"
-              onPress={() => requestIgnoreBatteryOptimizations()}
-            >
-              <AppTextNC className="text-sm text-blue-500 underline">
-                {t("activities.startActivityScreen.batteryOptHint")}
-              </AppTextNC>
-            </Pressable>
+                    setAllowGPS((prev) => !prev);
+                  }}
+                />
+              </View>
+              {showBatteryHint && (
+                <Pressable
+                  className="px-4 -mt-4 mb-4"
+                  onPress={() => requestIgnoreBatteryOptimizations()}
+                >
+                  <AppTextNC className="text-sm text-blue-500 underline">
+                    {t("activities.startActivityScreen.batteryOptHint")}
+                  </AppTextNC>
+                </Pressable>
+              )}
+            </>
           )}
           {showStepToggle && (
             <View className="flex-row items-center mb-10 justify-between px-4">
@@ -529,6 +553,8 @@ export default function StartActivityScreen() {
             hasStartedTracking={hasStartedTracking}
             averagePacePerKm={averagePacePerKm}
             currentStepCount={steps}
+            isStepRelevant={isStepRelevant}
+            isCaloriesRelevant={isCaloriesRelevant}
             isLoadingTemplateRoute={isLoadingTemplateRoute}
             isLoadingPosition={
               (isRunning && track.length === 0) || isGpsWarmingUp
@@ -565,6 +591,8 @@ export default function StartActivityScreen() {
             title={title || "Activity"}
             currentStepCount={steps}
             liveCalories={liveCalories}
+            isStepRelevant={isStepRelevant}
+            isCaloriesRelevant={isCaloriesRelevant}
           />
           <MilestoneToast toast={toast} />
           <View className="absolute z-50 bottom-20 right-5">

@@ -64,7 +64,7 @@ export default function GymSession(gym_session: FullGymSession) {
       distance_meters: number | null;
       calories: number | null;
       is_manual: boolean;
-      activities: { name: string; slug: string | null; base_met: number } | null;
+      activities: { name: string; slug: string | null; base_met: number; is_step_relevant: boolean; is_calories_relevant: boolean } | null;
     }[];
   }).gym_session_phases ?? [];
 

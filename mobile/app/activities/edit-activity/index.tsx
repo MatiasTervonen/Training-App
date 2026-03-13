@@ -10,6 +10,7 @@ import {
   ScrollView,
 } from "react-native";
 import AppText from "@/components/AppText";
+import Toggle from "@/components/toggle";
 import { useQueryClient } from "@tanstack/react-query";
 import PageContainer from "@/components/PageContainer";
 import { editActivity } from "@/database/activities/edit-activity";
@@ -34,6 +35,9 @@ export default function EditActivity() {
     null,
   );
   const [openCategoryModal, setOpenCategoryModal] = useState(false);
+  const [isGpsRelevant, setIsGpsRelevant] = useState(true);
+  const [isStepRelevant, setIsStepRelevant] = useState(true);
+  const [isCaloriesRelevant, setIsCaloriesRelevant] = useState(true);
 
   const queryClient = useQueryClient();
 
@@ -100,6 +104,9 @@ export default function EditActivity() {
       base_met: finalMet,
       category_id: categoryId,
       id: selectedActivity!.id,
+      is_gps_relevant: isGpsRelevant,
+      is_step_relevant: isStepRelevant,
+      is_calories_relevant: isCaloriesRelevant,
     };
 
     try {
@@ -154,6 +161,9 @@ export default function EditActivity() {
     setCategory("");
     setCategoryId("");
     setSelectedActivity(null);
+    setIsGpsRelevant(true);
+    setIsStepRelevant(true);
+    setIsCaloriesRelevant(true);
   };
 
   return (
@@ -171,6 +181,9 @@ export default function EditActivity() {
                 activity.activity_categories?.name ?? "",
               ),
             );
+            setIsGpsRelevant(activity.is_gps_relevant);
+            setIsStepRelevant(activity.is_step_relevant);
+            setIsCaloriesRelevant(activity.is_calories_relevant);
           }}
         />
       ) : (
@@ -228,6 +241,23 @@ export default function EditActivity() {
                     }}
                   />
                 </FullScreenModal>
+                <View className="mt-8">
+                  <AppText className="text-lg mb-4">
+                    {t("activities.editActivityScreen.trackingOptions")}
+                  </AppText>
+                  <View className="flex-row items-center justify-between mb-3 px-2">
+                    <AppText>{t("activities.editActivityScreen.gpsTracking")}</AppText>
+                    <Toggle isOn={isGpsRelevant} onToggle={() => setIsGpsRelevant((prev) => !prev)} />
+                  </View>
+                  <View className="flex-row items-center justify-between mb-3 px-2">
+                    <AppText>{t("activities.editActivityScreen.stepsTracking")}</AppText>
+                    <Toggle isOn={isStepRelevant} onToggle={() => setIsStepRelevant((prev) => !prev)} />
+                  </View>
+                  <View className="flex-row items-center justify-between mb-3 px-2">
+                    <AppText>{t("activities.editActivityScreen.caloriesTracking")}</AppText>
+                    <Toggle isOn={isCaloriesRelevant} onToggle={() => setIsCaloriesRelevant((prev) => !prev)} />
+                  </View>
+                </View>
               </View>
               <View className="mt-20 flex flex-col gap-5">
                 <View className="flex-row gap-4">

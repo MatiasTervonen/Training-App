@@ -18,6 +18,9 @@ export default function useSaveDraft({
   setDraftImages,
   setDraftVideos,
   setBaseMet,
+  setIsGpsRelevant,
+  setIsStepRelevant,
+  setIsCaloriesRelevant,
 }: {
   title: string;
   notes: string;
@@ -31,6 +34,9 @@ export default function useSaveDraft({
   setDraftImages: (images: DraftImage[]) => void;
   setDraftVideos: (videos: DraftVideo[]) => void;
   setBaseMet?: (baseMet: number) => void;
+  setIsGpsRelevant?: (v: boolean) => void;
+  setIsStepRelevant?: (v: boolean) => void;
+  setIsCaloriesRelevant?: (v: boolean) => void;
 }) {
   const { t } = useTranslation("activities");
 
@@ -63,6 +69,15 @@ export default function useSaveDraft({
           setActivityName(name);
           if (draft.baseMet && setBaseMet) {
             setBaseMet(draft.baseMet);
+          }
+          if (setIsGpsRelevant && draft.isGpsRelevant !== undefined) {
+            setIsGpsRelevant(draft.isGpsRelevant);
+          }
+          if (setIsStepRelevant && draft.isStepRelevant !== undefined) {
+            setIsStepRelevant(draft.isStepRelevant);
+          }
+          if (setIsCaloriesRelevant && draft.isCaloriesRelevant !== undefined) {
+            setIsCaloriesRelevant(draft.isCaloriesRelevant);
           }
         }
       } catch (error) {

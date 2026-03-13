@@ -17,6 +17,8 @@ type LivePhaseCardProps = {
   elapsedSeconds: number;
   steps: number;
   calories: number;
+  isStepRelevant?: boolean;
+  isCaloriesRelevant?: boolean;
   onStop: () => void;
   onRemove: () => void;
 };
@@ -26,6 +28,7 @@ type ManualPhaseCardProps = {
   phaseType: PhaseType;
   activityName: string;
   activitySlug: string | null;
+  isStepRelevant?: boolean;
   onRemove: () => void;
   onSave: (data: {
     duration_seconds: number;
@@ -135,22 +138,26 @@ export default function PhaseCard(props: Props) {
             className="text-2xl"
             charWidth={17}
           />
-          <View className="flex-row items-center gap-1">
-            <Footprints color="#9ca3af" size={20} />
-            <FixedWidthDigits
-              text={props.steps.toLocaleString()}
-              className="text-2xl"
-              charWidth={17}
-            />
-          </View>
-          <View className="flex-row items-center gap-1">
-            <Flame color="#f97316" size={20} />
-            <FixedWidthDigits
-              text={String(props.calories)}
-              className="text-2xl"
-              charWidth={17}
-            />
-          </View>
+          {props.isStepRelevant !== false && (
+            <View className="flex-row items-center gap-1">
+              <Footprints color="#9ca3af" size={20} />
+              <FixedWidthDigits
+                text={props.steps.toLocaleString()}
+                className="text-2xl"
+                charWidth={17}
+              />
+            </View>
+          )}
+          {props.isCaloriesRelevant !== false && (
+            <View className="flex-row items-center gap-1">
+              <Flame color="#f97316" size={20} />
+              <FixedWidthDigits
+                text={String(props.calories)}
+                className="text-2xl"
+                charWidth={17}
+              />
+            </View>
+          )}
         </View>
         <AnimatedButton
           onPress={props.onStop}
@@ -225,7 +232,7 @@ export default function PhaseCard(props: Props) {
   const formattedDuration = formatDurationLong(phase.duration_seconds);
   const summary = [
     formattedDuration,
-    phase.steps ? `${phase.steps.toLocaleString()} ${t("gym.phase.stepsLabel")}` : null,
+    phase.is_step_relevant && phase.steps ? `${phase.steps.toLocaleString()} ${t("gym.phase.stepsLabel")}` : null,
   ]
     .filter(Boolean)
     .join(" · ");
@@ -268,7 +275,7 @@ export default function PhaseCard(props: Props) {
               </AppText>
               <AppText>{formattedDuration}</AppText>
             </View>
-            {phase.steps != null && (
+            {phase.is_step_relevant && phase.steps != null && (
               <View className="flex-1">
                 <AppText className="text-sm text-gray-400">
                   {t("gym.phase.steps")}
@@ -295,6 +302,7 @@ function ManualEntryCard({
   phaseType,
   activityName,
   activitySlug,
+  isStepRelevant = true,
   onRemove,
   onSave,
 }: ManualPhaseCardProps) {
@@ -373,13 +381,15 @@ function ManualEntryCard({
               />
             </View>
           </View>
-          <AppInput
-            value={stepsInput}
-            onChangeText={setStepsInput}
-            placeholder={t("gym.phase.steps")}
-            label={t("gym.phase.steps")}
-            keyboardType="numeric"
-          />
+          {isStepRelevant && (
+            <AppInput
+              value={stepsInput}
+              onChangeText={setStepsInput}
+              placeholder={t("gym.phase.steps")}
+              label={t("gym.phase.steps")}
+              keyboardType="numeric"
+            />
+          )}
           <AnimatedButton
             onPress={handleSave}
             className="btn-base py-2 items-center mt-2"

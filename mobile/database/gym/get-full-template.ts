@@ -13,7 +13,7 @@ export async function getFullTemplate(sessionId: string) {
     .from("gym_templates")
     .select(
       `id, name, user_id, updated_at, created_at,
-       gym_template_phases(*, activities(name, slug, base_met)),
+       gym_template_phases(*, activities(name, slug, base_met, is_step_relevant, is_calories_relevant)),
        gym_template_exercises(
          id,
          exercise_id,

@@ -136,7 +136,7 @@ export default function HabitDetailScreen() {
   return (
     <ScrollView
       showsVerticalScrollIndicator={false}
-      contentContainerClassName="flex-1"
+      contentContainerClassName="grow"
     >
       <PageContainer className="justify-between">
         <View>

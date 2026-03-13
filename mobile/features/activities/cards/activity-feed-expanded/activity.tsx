@@ -114,7 +114,7 @@ export default function ActivitySession(
                 </View>
               </View>
 
-              <AppText className="text-sm text-gray-400">
+              <AppText className="text-sm text-gray-400" numberOfLines={1}>
                 {formatDateShort(activity_session.session.start_time)}  ·  {formatTime(activity_session.session.start_time)} – {formatTime(activity_session.session.end_time)}
               </AppText>
               {activity_session.session.notes && (

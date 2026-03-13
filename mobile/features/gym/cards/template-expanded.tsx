@@ -15,9 +15,27 @@ type Props = {
 
 export default function GymTemplate({ item, onStartWorkout }: Props) {
   const { t } = useTranslation("gym");
+  const { t: tActivities } = useTranslation("activities");
   const groupedExercises = GroupTemplateExercise(
     item.gym_template_exercises || [],
   );
+
+  const phases = item.gym_template_phases ?? [];
+  const warmup = phases.find((p) => p.phase_type === "warmup");
+  const cooldown = phases.find((p) => p.phase_type === "cooldown");
+
+  const getTranslatedName = (name: string, slug: string | null) => {
+    if (slug) {
+      const translated = tActivities(
+        `activities.activityNames.${slug}`,
+        { defaultValue: "" },
+      );
+      if (translated && translated !== `activities.activityNames.${slug}`) {
+        return translated;
+      }
+    }
+    return name;
+  };
 
   return (
     <View className="flex-1">
@@ -39,6 +57,18 @@ export default function GymTemplate({ item, onStartWorkout }: Props) {
               {item.name}
             </AppText>
           </View>
+          {warmup?.activities && (
+            <LinearGradient
+              colors={["#065f46", "#0f172a", "#0f172a"]}
+              start={{ x: 1, y: 0 }}
+              end={{ x: 0, y: 1 }}
+              className="mt-6 px-4 py-2 rounded-md overflow-hidden shadow-md border-2 border-emerald-700"
+            >
+              <AppText className="text-lg text-gray-100">
+                {t("gym.phase.warmup")}: {getTranslatedName(warmup.activities.name, warmup.activities.slug)}
+              </AppText>
+            </LinearGradient>
+          )}
           {Object.entries(groupedExercises).map(([superset_id, group]) => (
             <LinearGradient
               key={superset_id}
@@ -79,6 +109,18 @@ export default function GymTemplate({ item, onStartWorkout }: Props) {
               ))}
             </LinearGradient>
           ))}
+          {cooldown?.activities && (
+            <LinearGradient
+              colors={["#065f46", "#0f172a", "#0f172a"]}
+              start={{ x: 1, y: 0 }}
+              end={{ x: 0, y: 1 }}
+              className="mt-6 px-4 py-2 rounded-md overflow-hidden shadow-md border-2 border-emerald-700"
+            >
+              <AppText className="text-lg text-gray-100">
+                {t("gym.phase.cooldown")}: {getTranslatedName(cooldown.activities.name, cooldown.activities.slug)}
+              </AppText>
+            </LinearGradient>
+          )}
         </PageContainer>
       </ScrollView>
 

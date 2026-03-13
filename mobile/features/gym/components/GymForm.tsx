@@ -341,8 +341,8 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
       path: "/gym/gym",
     });
 
-    startSession(title);
-  }, [title, setActiveSession, startSession, t]);
+    startSession(t("gym:gym.title"));
+  }, [setActiveSession, startSession, t]);
 
   useEffect(() => {
     const checkTemplateFlag = async () => {
@@ -397,6 +397,11 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
     setPhasePickerType(phaseType);
     setPhasePickerOpen(true);
     setIsExerciseModalOpen(false);
+  };
+
+  const handleChangePhaseActivity = (phaseType: PhaseType) => {
+    setPhasePickerType(phaseType);
+    setPhasePickerOpen(true);
   };
 
   const handlePhaseActivitySelected = (
@@ -466,6 +471,33 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
     setCollapsed(true);
   };
 
+  const handleSwitchToManual = async (phaseType: PhaseType) => {
+    const confirmed = await confirmAction({
+      title: t("gym.phase.confirmSwitchToManualTitle"),
+      message: t("gym.phase.confirmSwitchToManualMessage"),
+    });
+    if (!confirmed) return;
+
+    const tracking =
+      phaseType === "warmup" ? warmupTracking : cooldownTracking;
+    const setter = phaseType === "warmup" ? setWarmup : setCooldown;
+
+    await tracking.stop();
+    setter((prev) =>
+      prev
+        ? {
+            ...prev,
+            input_mode: "manual",
+            is_manual: true,
+            is_tracking: false,
+            duration_seconds: 0,
+            steps: null,
+            tracking_started_at: null,
+          }
+        : prev,
+    );
+  };
+
   const handleManualPhaseSave = (
     phaseType: PhaseType,
     data: {
@@ -490,6 +522,25 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
         : prev,
     );
     setCollapsed(true);
+  };
+
+  const handleStartPhaseTracking = (phaseType: PhaseType) => {
+    const setter = phaseType === "warmup" ? setWarmup : setCooldown;
+    const tracking = phaseType === "warmup" ? warmupTracking : cooldownTracking;
+    const setCollapsed =
+      phaseType === "warmup" ? setWarmupCollapsed : setCooldownCollapsed;
+
+    setter((prev) =>
+      prev
+        ? {
+            ...prev,
+            is_tracking: true,
+            tracking_started_at: Date.now(),
+          }
+        : prev,
+    );
+    setCollapsed(false);
+    tracking.start();
   };
 
   // useSaveSession hook to save the session
@@ -542,7 +593,7 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
           : t("timer:timer.notification.inProgress");
       updateNativeTimerLabel(
         startTimestamp,
-        title,
+        t("gym:gym.title"),
         mode,
         statusText,
         t("timer:timer.notification.pauseTimer"),
@@ -551,7 +602,7 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
           : undefined,
       );
     }
-  }, [title, setActiveSession, startTimestamp, mode, t]);
+  }, [setActiveSession, startTimestamp, mode, t]);
 
   useEffect(() => {
     const prev = prevExerciseCountRef.current;
@@ -647,6 +698,8 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
                     isStepRelevant={warmup.is_step_relevant}
                     isCaloriesRelevant={warmup.is_calories_relevant}
                     onStop={() => handleStopPhaseTracking("warmup")}
+                    onSwitchToManual={() => handleSwitchToManual("warmup")}
+                    onChangeActivity={() => handleChangePhaseActivity("warmup")}
                     onRemove={async () => {
                       const confirmed = await confirmAction({
                         title: t("gym.phase.confirmRemoveTitle"),
@@ -657,12 +710,16 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
                       setWarmup(null);
                     }}
                   />
-                ) : warmup.input_mode === "pending" ? (
+                ) : !warmup.is_manual &&
+                  !warmup.is_tracking &&
+                  warmup.duration_seconds === 0 ? (
                   <PhaseCard
                     mode="pending"
                     phaseType="warmup"
                     activityName={warmup.activity_name}
                     activitySlug={warmup.activity_slug}
+                    onStart={() => handleStartPhaseTracking("warmup")}
+                    onChangeActivity={() => handleChangePhaseActivity("warmup")}
                     onRemove={async () => {
                       const confirmed = await confirmAction({
                         title: t("gym.phase.confirmRemoveTitle"),
@@ -670,16 +727,6 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
                       });
                       if (!confirmed) return;
                       setWarmup(null);
-                    }}
-                    onSelectMode={(mode) => {
-                      if (mode === "live") {
-                        const now = Date.now();
-                        setWarmup((prev) => prev ? { ...prev, input_mode: "live", is_tracking: true, tracking_started_at: now } : prev);
-                        warmupTracking.start();
-                      } else {
-                        setWarmup((prev) => prev ? { ...prev, input_mode: "manual", is_manual: true } : prev);
-                      }
-                      if (!startTimestamp) handleStartSession();
                     }}
                   />
                 ) : warmup.is_manual &&
@@ -690,6 +737,7 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
                     activityName={warmup.activity_name}
                     activitySlug={warmup.activity_slug}
                     isStepRelevant={warmup.is_step_relevant}
+                    onChangeActivity={() => handleChangePhaseActivity("warmup")}
                     onRemove={async () => {
                       const confirmed = await confirmAction({
                         title: t("gym.phase.confirmRemoveTitle"),
@@ -706,6 +754,7 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
                     phase={warmup}
                     isExpanded={!warmupCollapsed}
                     onExpand={() => setWarmupCollapsed((p) => !p)}
+                    onChangeActivity={() => handleChangePhaseActivity("warmup")}
                     onRemove={async () => {
                       const confirmed = await confirmAction({
                         title: t("gym.phase.confirmRemoveTitle"),
@@ -854,6 +903,8 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
                     isStepRelevant={cooldown.is_step_relevant}
                     isCaloriesRelevant={cooldown.is_calories_relevant}
                     onStop={() => handleStopPhaseTracking("cooldown")}
+                    onSwitchToManual={() => handleSwitchToManual("cooldown")}
+                    onChangeActivity={() => handleChangePhaseActivity("cooldown")}
                     onRemove={async () => {
                       const confirmed = await confirmAction({
                         title: t("gym.phase.confirmRemoveTitle"),
@@ -864,12 +915,16 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
                       setCooldown(null);
                     }}
                   />
-                ) : cooldown.input_mode === "pending" ? (
+                ) : !cooldown.is_manual &&
+                  !cooldown.is_tracking &&
+                  cooldown.duration_seconds === 0 ? (
                   <PhaseCard
                     mode="pending"
                     phaseType="cooldown"
                     activityName={cooldown.activity_name}
                     activitySlug={cooldown.activity_slug}
+                    onStart={() => handleStartPhaseTracking("cooldown")}
+                    onChangeActivity={() => handleChangePhaseActivity("cooldown")}
                     onRemove={async () => {
                       const confirmed = await confirmAction({
                         title: t("gym.phase.confirmRemoveTitle"),
@@ -877,16 +932,6 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
                       });
                       if (!confirmed) return;
                       setCooldown(null);
-                    }}
-                    onSelectMode={(mode) => {
-                      if (mode === "live") {
-                        const now = Date.now();
-                        setCooldown((prev) => prev ? { ...prev, input_mode: "live", is_tracking: true, tracking_started_at: now } : prev);
-                        cooldownTracking.start();
-                      } else {
-                        setCooldown((prev) => prev ? { ...prev, input_mode: "manual", is_manual: true } : prev);
-                      }
-                      if (!startTimestamp) handleStartSession();
                     }}
                   />
                 ) : cooldown.is_manual &&
@@ -897,6 +942,7 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
                     activityName={cooldown.activity_name}
                     activitySlug={cooldown.activity_slug}
                     isStepRelevant={cooldown.is_step_relevant}
+                    onChangeActivity={() => handleChangePhaseActivity("cooldown")}
                     onRemove={async () => {
                       const confirmed = await confirmAction({
                         title: t("gym.phase.confirmRemoveTitle"),
@@ -915,6 +961,7 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
                     phase={cooldown}
                     isExpanded={!cooldownCollapsed}
                     onExpand={() => setCooldownCollapsed((p) => !p)}
+                    onChangeActivity={() => handleChangePhaseActivity("cooldown")}
                     onRemove={async () => {
                       const confirmed = await confirmAction({
                         title: t("gym.phase.confirmRemoveTitle"),

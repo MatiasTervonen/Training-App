@@ -76,7 +76,7 @@ export default function TemplatesPage() {
       gym_template_phases?: {
         phase_type: string;
         activity_id: string;
-        activities: { name: string; slug: string | null; base_met: number } | null;
+        activities: { name: string; slug: string | null; base_met: number; is_step_relevant: boolean; is_calories_relevant: boolean } | null;
       }[];
     }).gym_template_phases;
 
@@ -92,12 +92,15 @@ export default function TemplatesPage() {
           activity_name: wp.activities.name,
           activity_slug: wp.activities.slug,
           activity_met: wp.activities.base_met,
-          input_mode: "pending" as const,
+          is_step_relevant: wp.activities.is_step_relevant,
+          is_calories_relevant: wp.activities.is_calories_relevant,
+          input_mode: "live" as const,
           duration_seconds: 0,
           steps: null,
           distance_meters: null,
           is_manual: false,
           is_tracking: false,
+          tracking_started_at: null,
         };
       }
       const cd = templatePhases.find((p) => p.phase_type === "cooldown");
@@ -108,12 +111,15 @@ export default function TemplatesPage() {
           activity_name: cd.activities.name,
           activity_slug: cd.activities.slug,
           activity_met: cd.activities.base_met,
-          input_mode: "pending" as const,
+          is_step_relevant: cd.activities.is_step_relevant,
+          is_calories_relevant: cd.activities.is_calories_relevant,
+          input_mode: "live" as const,
           duration_seconds: 0,
           steps: null,
           distance_meters: null,
           is_manual: false,
           is_tracking: false,
+          tracking_started_at: null,
         };
       }
     }

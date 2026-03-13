@@ -325,10 +325,15 @@
       "manualEntry": "Manuaalinen syöttö",
       "min": "min",
       "stepsLabel": "askelta",
+      "changeActivity": "Vaihda aktiviteetti",
       "confirmRemoveTitle": "Poista vaihe",
       "confirmRemoveMessage": "Haluatko varmasti poistaa tämän vaiheen?",
       "confirmStopTitle": "Lopeta seuranta",
-      "confirmStopMessage": "Haluatko varmasti lopettaa seurannan?"
+      "confirmStopMessage": "Haluatko varmasti lopettaa seurannan?",
+      "enterManuallyInstead": "Syötä käsin sen sijaan",
+      "confirmSwitchToManualTitle": "Vaihda manuaaliseen",
+      "confirmSwitchToManualMessage": "Tämä lopettaa live-seurannan ja hävittää tallennetut tiedot. Jatketaanko?",
+      "start": "Aloita"
     }
   }
 }

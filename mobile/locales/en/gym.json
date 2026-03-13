@@ -323,10 +323,15 @@
       "manualEntry": "Manual entry",
       "min": "min",
       "stepsLabel": "steps",
+      "changeActivity": "Change Activity",
       "confirmRemoveTitle": "Remove Phase",
       "confirmRemoveMessage": "Are you sure you want to remove this phase?",
       "confirmStopTitle": "Stop Tracking",
-      "confirmStopMessage": "Are you sure you want to stop tracking?"
+      "confirmStopMessage": "Are you sure you want to stop tracking?",
+      "enterManuallyInstead": "Enter manually instead",
+      "confirmSwitchToManualTitle": "Switch to Manual",
+      "confirmSwitchToManualMessage": "This will stop live tracking and discard the recorded data. Continue?",
+      "start": "Start"
     }
   }
 }

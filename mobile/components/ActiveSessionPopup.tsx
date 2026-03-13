@@ -93,7 +93,11 @@ export default function ActiveSessionPopup() {
           <View className="flex-row flex-1 justify-between items-center gap-5 ml-10">
             <Timer textClassName="text-3xl" />
             {activeSession.label && (
-              <AppText numberOfLines={1} ellipsizeMode="tail" className=" mr-8">
+              <AppText
+                numberOfLines={1}
+                ellipsizeMode="tail"
+                className="mr-8 text-lg"
+              >
                 {activeSession.label}
               </AppText>
             )}

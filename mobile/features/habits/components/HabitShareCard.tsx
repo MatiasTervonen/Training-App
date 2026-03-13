@@ -17,9 +17,9 @@ type HabitShareCardProps = {
 
 const HabitShareCard = forwardRef<View, HabitShareCardProps>(
   ({ habitName, stats, theme, size }, ref) => {
-    const { t } = useTranslation("habits");
+    const { t, i18n } = useTranslation("habits");
 
-    const dateText = new Date().toLocaleDateString(undefined, {
+    const dateText = new Date().toLocaleDateString(i18n.language, {
       year: "numeric",
       month: "long",
       day: "numeric",

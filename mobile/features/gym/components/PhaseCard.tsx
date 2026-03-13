@@ -5,7 +5,7 @@ import AppInput from "@/components/AppInput";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import { PhaseData, PhaseType, TemplatePhaseData } from "@/types/session";
 import { LinearGradient } from "expo-linear-gradient";
-import { X, ChevronDown, ChevronUp, Footprints, Flame } from "lucide-react-native";
+import { X, ChevronDown, ChevronUp, Footprints, Flame, ArrowLeftRight } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import { formatDurationLong } from "@/lib/formatDate";
 
@@ -21,6 +21,8 @@ type LivePhaseCardProps = {
   isCaloriesRelevant?: boolean;
   onStop: () => void;
   onRemove: () => void;
+  onSwitchToManual?: () => void;
+  onChangeActivity?: () => void;
 };
 
 type ManualPhaseCardProps = {
@@ -30,6 +32,7 @@ type ManualPhaseCardProps = {
   activitySlug: string | null;
   isStepRelevant?: boolean;
   onRemove: () => void;
+  onChangeActivity?: () => void;
   onSave: (data: {
     duration_seconds: number;
     distance_meters: number | null;
@@ -43,15 +46,18 @@ type CollapsedPhaseCardProps = {
   onRemove: () => void;
   onExpand: () => void;
   isExpanded: boolean;
+  onChangeActivity?: () => void;
 };
+
 
 type PendingPhaseCardProps = {
   mode: "pending";
   phaseType: PhaseType;
   activityName: string;
   activitySlug: string | null;
+  onStart: () => void;
   onRemove: () => void;
-  onSelectMode: (mode: "live" | "manual") => void;
+  onChangeActivity?: () => void;
 };
 
 type TemplatePhaseCardProps = {
@@ -128,9 +134,16 @@ export default function PhaseCard(props: Props) {
             {phaseLabel(props.phaseType)}:{" "}
             {getTranslatedName(props.activityName, props.activitySlug)}
           </AppText>
-          <AnimatedButton onPress={props.onRemove} hitSlop={10}>
-            <X color="#f87171" size={20} />
-          </AnimatedButton>
+          <View className="flex-row items-center gap-3">
+            {props.onChangeActivity && (
+              <AnimatedButton onPress={props.onChangeActivity} hitSlop={10}>
+                <ArrowLeftRight color="#9ca3af" size={16} />
+              </AnimatedButton>
+            )}
+            <AnimatedButton onPress={props.onRemove} hitSlop={10}>
+              <X color="#f87171" size={20} />
+            </AnimatedButton>
+          </View>
         </View>
         <View className="flex-row justify-center gap-6 mb-4">
           <FixedWidthDigits
@@ -165,6 +178,16 @@ export default function PhaseCard(props: Props) {
         >
           <AppText className="text-base">{t("gym.phase.stop")}</AppText>
         </AnimatedButton>
+        {props.onSwitchToManual && (
+          <AnimatedButton
+            onPress={props.onSwitchToManual}
+            className="mt-2 items-center"
+          >
+            <AppText className="text-sm text-gray-400">
+              {t("gym.phase.enterManuallyInstead")}
+            </AppText>
+          </AnimatedButton>
+        )}
       </LinearGradient>
     );
   }
@@ -181,29 +204,28 @@ export default function PhaseCard(props: Props) {
         end={{ x: 0, y: 1 }}
         className="rounded-md overflow-hidden border-2 border-blue-600 p-4"
       >
-        <View className="flex-row items-center justify-between mb-4">
+        <View className="flex-row items-center justify-between mb-3">
           <AppText className="text-lg flex-1" numberOfLines={1}>
             {phaseLabel(props.phaseType)}:{" "}
             {getTranslatedName(props.activityName, props.activitySlug)}
           </AppText>
-          <AnimatedButton onPress={props.onRemove} hitSlop={10}>
-            <X color="#f87171" size={20} />
-          </AnimatedButton>
+          <View className="flex-row items-center gap-3">
+            {props.onChangeActivity && (
+              <AnimatedButton onPress={props.onChangeActivity} hitSlop={10}>
+                <ArrowLeftRight color="#9ca3af" size={16} />
+              </AnimatedButton>
+            )}
+            <AnimatedButton onPress={props.onRemove} hitSlop={10}>
+              <X color="#f87171" size={20} />
+            </AnimatedButton>
+          </View>
         </View>
-        <View className="flex-row gap-3">
-          <AnimatedButton
-            onPress={() => props.onSelectMode("live")}
-            className="btn-base flex-1 py-2 items-center"
-          >
-            <AppText className="text-base">{t("gym.phase.trackLive")}</AppText>
-          </AnimatedButton>
-          <AnimatedButton
-            onPress={() => props.onSelectMode("manual")}
-            className="btn-neutral flex-1 py-2 items-center"
-          >
-            <AppText className="text-base">{t("gym.phase.enterManually")}</AppText>
-          </AnimatedButton>
-        </View>
+        <AnimatedButton
+          onPress={props.onStart}
+          className="btn-base py-2 items-center"
+        >
+          <AppText className="text-lg">{t("gym.phase.start")}</AppText>
+        </AnimatedButton>
       </LinearGradient>
     );
   }
@@ -228,7 +250,7 @@ export default function PhaseCard(props: Props) {
   }
 
   // collapsed mode
-  const { phase, onRemove, onExpand, isExpanded } = props;
+  const { phase, onRemove, onExpand, isExpanded, onChangeActivity } = props;
   const formattedDuration = formatDurationLong(phase.duration_seconds);
   const summary = [
     formattedDuration,
@@ -258,12 +280,19 @@ export default function PhaseCard(props: Props) {
             {phaseLabel(phase.phase_type)}: {getTranslatedName(phase.activity_name, phase.activity_slug)} · {summary}
           </AppText>
         </View>
-        <AnimatedButton
-          onPress={onRemove}
-          hitSlop={10}
-        >
-          <X color="#f87171" size={20} />
-        </AnimatedButton>
+        <View className="flex-row items-center gap-3">
+          {onChangeActivity && (
+            <AnimatedButton onPress={onChangeActivity} hitSlop={10}>
+              <ArrowLeftRight color="#9ca3af" size={16} />
+            </AnimatedButton>
+          )}
+          <AnimatedButton
+            onPress={onRemove}
+            hitSlop={10}
+          >
+            <X color="#f87171" size={20} />
+          </AnimatedButton>
+        </View>
       </AnimatedButton>
 
       {isExpanded && (
@@ -304,6 +333,7 @@ function ManualEntryCard({
   activitySlug,
   isStepRelevant = true,
   onRemove,
+  onChangeActivity,
   onSave,
 }: ManualPhaseCardProps) {
   const { t } = useTranslation("gym");
@@ -356,9 +386,16 @@ function ManualEntryCard({
           <AppText className="text-lg flex-1" numberOfLines={1}>
             {phaseLabel}: {translatedName}
           </AppText>
-          <AnimatedButton onPress={onRemove} hitSlop={10}>
-            <X color="#f87171" size={20} />
-          </AnimatedButton>
+          <View className="flex-row items-center gap-3">
+            {onChangeActivity && (
+              <AnimatedButton onPress={onChangeActivity} hitSlop={10}>
+                <ArrowLeftRight color="#9ca3af" size={16} />
+              </AnimatedButton>
+            )}
+            <AnimatedButton onPress={onRemove} hitSlop={10}>
+              <X color="#f87171" size={20} />
+            </AnimatedButton>
+          </View>
         </View>
         <View className="gap-3">
           <View className="flex-row gap-3">

@@ -104,7 +104,7 @@ export default function StartActivityScreen() {
   const [draftImages, setDraftImages] = useState<DraftImage[]>([]);
   const [draftVideos, setDraftVideos] = useState<DraftVideo[]>([]);
   const [baseMet, setBaseMet] = useState(0);
-  const [isGpsRelevant, setIsGpsRelevant] = useState(true);
+  const [isGpsRelevant, setIsGpsRelevant] = useState(false);
   const [isStepRelevant, setIsStepRelevant] = useState(true);
   const [isCaloriesRelevant, setIsCaloriesRelevant] = useState(true);
   const [showBatteryHint, setShowBatteryHint] = useState(false);
@@ -473,15 +473,19 @@ export default function StartActivityScreen() {
           />
           {isGpsRelevant && (
             <>
-              <View className="flex-row items-center my-7  justify-between px-4">
+              <View className="flex-row items-center mt-7  justify-between px-4">
                 {allowGPS ? (
                   <AppText className="text-lg">
-                    {t("activities.startActivityScreen.disableLocationTracking")}
+                    {t(
+                      "activities.startActivityScreen.disableLocationTracking",
+                    )}
                   </AppText>
                 ) : (
                   <Link href="/menu/settings">
                     <AppText className="text-lg">
-                      {t("activities.startActivityScreen.enableLocationTracking")}
+                      {t(
+                        "activities.startActivityScreen.enableLocationTracking",
+                      )}
                     </AppText>
                   </Link>
                 )}
@@ -511,7 +515,7 @@ export default function StartActivityScreen() {
             </>
           )}
           {showStepToggle && (
-            <View className="flex-row items-center mb-10 justify-between px-4">
+            <View className="flex-row items-center justify-between px-4">
               <AppText className="text-lg">
                 {t("activities.startActivityScreen.enableStepsTracking")}
               </AppText>
@@ -537,7 +541,7 @@ export default function StartActivityScreen() {
                 userWeight,
               });
             }}
-            className="justify-center items-center py-2 bg-blue-800 rounded-md shadow-md border-2 border-blue-500"
+            className="justify-center items-center py-2 bg-blue-800 rounded-md shadow-md border-2 border-blue-500 mt-7"
             textClassName="text-gray-100 text-center"
           />
         </PageContainer>

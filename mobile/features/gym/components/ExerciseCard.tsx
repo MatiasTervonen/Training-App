@@ -66,7 +66,7 @@ export default function ExerciseCard({
 
   return (
     <View className="py-2 px-4">
-      <View className="flex-row items-center justify-between">
+      <View className="flex-row  justify-between">
         <Pressable
           onPress={onToggleExpand}
           disabled={!onToggleExpand}
@@ -131,8 +131,8 @@ export default function ExerciseCard({
               numberOfLines={1}
             >
               {history?.sets
-                    .map((set) => `${set.weight}kg × ${set.reps}`)
-                    .join(" • ")}
+                .map((set) => `${set.weight}kg × ${set.reps}`)
+                .join(" • ")}
             </AppText>
           </View>
         ) : (

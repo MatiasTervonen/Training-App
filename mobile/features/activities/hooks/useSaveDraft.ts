@@ -70,15 +70,9 @@ export default function useSaveDraft({
           if (draft.baseMet && setBaseMet) {
             setBaseMet(draft.baseMet);
           }
-          if (setIsGpsRelevant && draft.isGpsRelevant !== undefined) {
-            setIsGpsRelevant(draft.isGpsRelevant);
-          }
-          if (setIsStepRelevant && draft.isStepRelevant !== undefined) {
-            setIsStepRelevant(draft.isStepRelevant);
-          }
-          if (setIsCaloriesRelevant && draft.isCaloriesRelevant !== undefined) {
-            setIsCaloriesRelevant(draft.isCaloriesRelevant);
-          }
+          // Relevance flags are NOT restored from draft — they come from
+          // the ActivityDropdown onSelect callback when the user picks an activity.
+          // Restoring them here caused the GPS toggle to flash on page entry.
         }
       } catch (error) {
         handleError(error, {

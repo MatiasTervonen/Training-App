@@ -37,8 +37,42 @@
         "notes": "Notes",
         "reminder": "Reminder",
         "habits": "Habits",
-        "report": "Report"
+        "report": "Report",
+        "tutorial": "Tutorial"
       }
+    },
+    "tutorial": {
+      "title": "Welcome to MyTrack!",
+      "subtitle": "Your complete guide to getting started",
+      "gym": {
+        "title": "Gym Tracking",
+        "desc": "Log your workouts with exercises, sets, reps, and weight. Use templates to save your favorite routines."
+      },
+      "activities": {
+        "title": "Activities",
+        "desc": "Track outdoor activities like running, cycling, and walking with GPS, duration, and distance."
+      },
+      "weight": {
+        "title": "Weight Tracking",
+        "desc": "Log your weight and track your progress over time with charts and statistics."
+      },
+      "notes": {
+        "title": "Notes",
+        "desc": "Write notes and organize them into folders. Add voice recordings, images, and videos."
+      },
+      "reminders": {
+        "title": "Reminders",
+        "desc": "Set one-time or recurring reminders with push notifications to stay on track."
+      },
+      "habits": {
+        "title": "Habits",
+        "desc": "Build daily habits and track your streaks. See your consistency on the feed."
+      },
+      "todo": {
+        "title": "To-Do Lists",
+        "desc": "Create task lists to organize your training goals and daily tasks."
+      },
+      "tap_to_read": "Tap Details to read the full guide"
     },
     "loadingMore": "Loading more...",
     "noMoreSessions": "No more sessions",

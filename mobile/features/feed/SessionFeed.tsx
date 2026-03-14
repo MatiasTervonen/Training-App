@@ -34,6 +34,7 @@ import useUpdateFeedItem from "@/features/feed/hooks/useUpdateFeedItem";
 import ActivitySession from "@/features/activities/cards/activity-feed-expanded/activity";
 import ActivitySessionEdit from "@/features/activities/cards/activity-edit";
 import ReportSession from "@/features/reports/cards/report-expanded";
+import TutorialSession from "@/features/feed-cards/tutorial-expanded";
 import useUpdateFeedItemToTop from "./hooks/useUpdateFeedItemToTop";
 import { useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
@@ -353,6 +354,8 @@ export default function SessionFeed({ expandReminderId }: SessionFeedProps) {
           {expandedItem.type === "reports" && (
             <ReportSession item={expandedItem} />
           )}
+
+          {expandedItem.type === "tutorial" && <TutorialSession />}
 
           {expandedItem.type === "activity_sessions" && (
             <>

@@ -37,8 +37,42 @@
         "notes": "Muistiinpanot",
         "reminder": "Muistutus",
         "habits": "Tavat",
-        "report": "Raportti"
+        "report": "Raportti",
+        "tutorial": "Opas"
       }
+    },
+    "tutorial": {
+      "title": "Tervetuloa MyTrackiin!",
+      "subtitle": "Täydellinen opas alkuun pääsemiseen",
+      "gym": {
+        "title": "Kuntosaliharjoittelu",
+        "desc": "Kirjaa treenisi liikkeineen, sarjoineen, toistoineen ja painoineen. Käytä pohjia tallentaaksesi suosikkirutiinisi."
+      },
+      "activities": {
+        "title": "Aktiviteetit",
+        "desc": "Seuraa ulkoilma-aktiviteetteja kuten juoksu, pyöräily ja kävely GPS:n, keston ja matkan avulla."
+      },
+      "weight": {
+        "title": "Painonseuranta",
+        "desc": "Kirjaa painosi ja seuraa edistymistäsi ajan myötä kaavioiden ja tilastojen avulla."
+      },
+      "notes": {
+        "title": "Muistiinpanot",
+        "desc": "Kirjoita muistiinpanoja ja järjestä ne kansioihin. Lisää äänityksiä, kuvia ja videoita."
+      },
+      "reminders": {
+        "title": "Muistutukset",
+        "desc": "Aseta kertaluonteisia tai toistuvia muistutuksia push-ilmoituksilla pysyäksesi aikataulussa."
+      },
+      "habits": {
+        "title": "Tavat",
+        "desc": "Rakenna päivittäisiä tapoja ja seuraa putkiasi. Näe johdonmukaisuutesi syötteessä."
+      },
+      "todo": {
+        "title": "Tehtävälistat",
+        "desc": "Luo tehtävälistoja järjestääksesi harjoitustavoitteesi ja päivittäiset tehtäväsi."
+      },
+      "tap_to_read": "Napauta Tiedot lukeaksesi koko oppaan"
     },
     "loadingMore": "Ladataan lisää...",
     "noMoreSessions": "Ei enempää sessioita",

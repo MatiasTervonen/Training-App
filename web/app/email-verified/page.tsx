@@ -34,7 +34,7 @@ export default function EmailVerified() {
       <div className="flex flex-col items-center justify-center gap-10 max-w-xl border-2 py-10 px-5 sm:px-10 rounded-xl bg-slate-900 shadow-lg">
         <h1 className="text-2xl ">{APP_NAME}</h1>
         <h2 className="text-green-400">Email Verified Successfully</h2>
-        <p className="text-center">
+        <p className="text-center font-body">
           Your email has been verified. You can now log in!
           <br />
           Redirection to login page in

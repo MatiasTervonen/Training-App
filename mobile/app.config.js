@@ -38,7 +38,7 @@ export default {
     slug: "mytrack",
     version: "1.0.0",
     orientation: "default",
-    icon: "./assets/images/ios-tinted-icon.png",
+    icon: "./assets/images/app-logos/kurvi_icon_ice_blue_rounded-converted-1024-1024.png",
     scheme: "mytrack",
     userInterfaceStyle: "automatic",
     newArchEnabled: true,
@@ -46,10 +46,14 @@ export default {
       supportsTablet: true,
     },
     android: {
+      statusBar: {
+        backgroundColor: "#0f172a",
+        barStyle: "light-content",
+      },
       googleServicesFile: "./google-services.json",
       adaptiveIcon: {
-        foregroundImage: "./assets/images/adaptive-icon.png",
-        backgroundColor: "#ffffff",
+        foregroundImage: "./assets/images/app-logos/Android-logo.png",
+        backgroundColor: "#0f172a",
       },
       edgeToEdgeEnabled: true,
       package: "com.layer100crypto.MyTrack",
@@ -87,8 +91,9 @@ export default {
       [
         "expo-splash-screen",
         {
-          image: "./assets/images/splash-icon.png",
-          imageWidth: 200,
+          image:
+            "./assets/images/app-logos/kurvi_ice_blue_final_copnverted.png",
+          imageWidth: 250,
           resizeMode: "contain",
           backgroundColor: "#0f172a",
         },
@@ -111,7 +116,7 @@ export default {
       [
         "expo-notifications",
         {
-          icon: "./assets/images/small-notification-icon.png",
+          icon: "./assets/images/app-logos/ic_stat_kurvi_icon_ice_blue_transparent.png",
           color: "#0f172a",
           androidCollapsedTitle: "{appName} Notifications",
         },

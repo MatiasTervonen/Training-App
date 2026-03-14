@@ -179,7 +179,7 @@ const StepsShareCard = forwardRef<View, StepsShareCardProps>(
           {/* Header - App branding */}
           <View className="flex-row items-center gap-4">
             <Image
-              source={require("@/assets/images/android-chrome-192x192.png")}
+              source={require("@/assets/images/app-logos/kurvi_icon_ice_blue_rounded-converted-1024-1024.png")}
               style={{ width: 64, height: 64, borderRadius: 8 }}
             />
             <AppText style={{ fontSize: 36, color: colors.accent }}>
@@ -247,7 +247,7 @@ const StepsShareCard = forwardRef<View, StepsShareCardProps>(
         {/* Header - App branding */}
         <View className="flex-row items-center gap-4">
           <Image
-            source={require("@/assets/images/android-chrome-192x192.png")}
+            source={require("@/assets/images/app-logos/kurvi_icon_ice_blue_rounded-converted-1024-1024.png")}
             style={{ width: isStory ? 80 : 64, height: isStory ? 80 : 64, borderRadius: 8 }}
           />
           <AppText style={{ fontSize: isStory ? 44 : 36, color: colors.accent }}>

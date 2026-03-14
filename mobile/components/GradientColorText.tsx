@@ -7,18 +7,20 @@ type GradientColorTextProps = {
   children: ReactNode;
   colors?: readonly [string, string, ...string[]];
   style?: object;
+  textClassName?: string;
 };
 
 export default function GradientColorText({
   children,
   colors,
   style,
+  textClassName,
 }: GradientColorTextProps) {
   return (
     <MaskedView
       maskElement={
         <AppText
-          className="text-4xl text-center"
+          className={textClassName || "text-4xl text-center"}
           style={{ backgroundColor: "transparent" }}
         >
           {children}

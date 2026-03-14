@@ -14,6 +14,7 @@ import android.net.Uri
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
+import android.os.PowerManager
 import android.util.Log
 import android.view.View
 import android.widget.RemoteViews
@@ -59,6 +60,7 @@ class TimerService : Service() {
     private var sessionBaselineSteps: Long = -1L
     private var currentSessionSteps: Long = 0L
     private var timerStartTime: Long = 0L
+    private var wakeLock: PowerManager.WakeLock? = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val action = intent?.getStringExtra("action") ?: "start"
@@ -74,6 +76,7 @@ class TimerService : Service() {
             milestoneConfig = null
             nextThresholds = MilestoneThresholds()
             unregisterMilestoneStepListener()
+            releaseWakeLock()
             return START_STICKY
         }
         if (action == "set_foreground") {
@@ -161,7 +164,7 @@ class TimerService : Service() {
         }
 
         notificationBuilder = NotificationCompat.Builder(this, "timer_channel")
-            .setSmallIcon(R.drawable.small_notification_icon)
+            .setSmallIcon(R.drawable.ic_stat_kurvi_icon_ice_blue_transparent)
             .setOngoing(true)
             .setShowWhen(false)
             .setColorized(true)
@@ -302,6 +305,9 @@ class TimerService : Service() {
                 registerMilestoneStepListener()
             }
 
+            // Keep CPU awake so Handler ticks continue when screen is off
+            acquireWakeLock()
+
             Log.d("NativeTimer", "Milestone config loaded: steps=${config.steps.enabled}, duration=${config.duration.enabled}, distance=${config.distance.enabled}, calories=${config.calories.enabled}")
         } catch (e: Exception) {
             Log.e("NativeTimer", "Failed to load milestone config", e)
@@ -340,7 +346,9 @@ class TimerService : Service() {
     }
 
     private fun checkMilestones(elapsedSeconds: Long) {
-        if (isPaused || milestoneConfig == null || appInForeground) return
+        // Always track thresholds (even in foreground) so native stays in sync with JS.
+        // Only fire notifications when app is backgrounded.
+        if (isPaused || milestoneConfig == null) return
 
         val config = milestoneConfig!!
         val t = nextThresholds
@@ -380,8 +388,11 @@ class TimerService : Service() {
         }
 
         if (hitLines.isNotEmpty()) {
-            fireMilestoneNotification(hitLines)
             persistThresholds()
+            // Only fire notification when app is in background
+            if (!appInForeground) {
+                fireMilestoneNotification(hitLines)
+            }
         }
     }
 
@@ -423,7 +434,7 @@ class TimerService : Service() {
         val bodyText = lines.joinToString(", ")
 
         val notification = NotificationCompat.Builder(this, "milestone_alerts")
-            .setSmallIcon(R.drawable.small_notification_icon)
+            .setSmallIcon(R.drawable.ic_stat_kurvi_icon_ice_blue_transparent)
             .setContentTitle("Milestone!")
             .setContentText(bodyText)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
@@ -434,9 +445,26 @@ class TimerService : Service() {
         nm.notify(3001, notification)
     }
 
+    private fun acquireWakeLock() {
+        if (wakeLock != null) return
+        val pm = getSystemService(Context.POWER_SERVICE) as PowerManager
+        wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyTrack::MilestoneAlerts")
+        wakeLock?.acquire()
+        Log.d("NativeTimer", "WakeLock acquired for milestone alerts")
+    }
+
+    private fun releaseWakeLock() {
+        wakeLock?.let {
+            if (it.isHeld) it.release()
+            Log.d("NativeTimer", "WakeLock released")
+        }
+        wakeLock = null
+    }
+
     override fun onDestroy() {
         tickRunnable?.let { handler?.removeCallbacks(it) }
         unregisterMilestoneStepListener()
+        releaseWakeLock()
         // Clear milestone SharedPreferences
         getSharedPreferences("milestone_config", Context.MODE_PRIVATE).edit().clear().apply()
         getSharedPreferences("milestone_thresholds", Context.MODE_PRIVATE).edit().clear().apply()

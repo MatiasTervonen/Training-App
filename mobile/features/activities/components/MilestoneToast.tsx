@@ -5,6 +5,7 @@ import Animated, {
   useAnimatedStyle,
   withTiming,
   withDelay,
+  withSequence,
 } from "react-native-reanimated";
 import AppText from "@/components/AppText";
 import { MilestoneToast as MilestoneToastType } from "@/features/activities/hooks/useMilestoneAlerts";
@@ -18,8 +19,10 @@ export default function MilestoneToast({ toast }: Props) {
 
   useEffect(() => {
     if (toast) {
-      opacity.value = withTiming(1, { duration: 200 });
-      opacity.value = withDelay(3000, withTiming(0, { duration: 500 }));
+      opacity.value = withSequence(
+        withTiming(1, { duration: 200 }),
+        withDelay(2800, withTiming(0, { duration: 500 })),
+      );
     }
   }, [toast, opacity]);
 

@@ -51,6 +51,7 @@ export function useMilestoneAlerts(
   });
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isInForeground = useRef(AppState.currentState === "active");
+  const isInitialized = useRef(false);
 
   const milestoneSettings = useActivitySettingsStore(
     (s) => s.milestoneAlerts,
@@ -66,6 +67,9 @@ export function useMilestoneAlerts(
 
         setAppInForeground(nextState === "active");
 
+        // When returning to foreground, sync thresholds from native service.
+        // Native service always tracks thresholds (even in foreground),
+        // so it's always the source of truth.
         if (!wasForeground && nextState === "active" && isActive) {
           const nativeThresholds = await getMilestoneThresholds();
           if (nativeThresholds) {
@@ -99,29 +103,50 @@ export function useMilestoneAlerts(
     }, 3500);
   }, []);
 
-  // Initialize thresholds when session becomes active
+  // Initialize thresholds when session becomes active.
+  // Always read from native service first — it tracks thresholds persistently
+  // and stays in sync even across component unmount/remount (navigation).
+  // Only fall back to settings values if native has no thresholds yet (fresh session).
   useEffect(() => {
-    if (!isActive || !milestoneSettings) return;
+    if (!isActive || !milestoneSettings) {
+      isInitialized.current = false;
+      return;
+    }
 
-    thresholds.current = {
-      steps: milestoneSettings.steps.enabled
-        ? milestoneSettings.steps.interval
-        : null,
-      duration: milestoneSettings.duration.enabled
-        ? milestoneSettings.duration.interval * 60
-        : null,
-      distance: milestoneSettings.distance.enabled
-        ? milestoneSettings.distance.interval * 1000
-        : null,
-      calories: milestoneSettings.calories.enabled
-        ? milestoneSettings.calories.interval
-        : null,
-    };
+    isInitialized.current = false;
+
+    getMilestoneThresholds().then((nativeThresholds) => {
+      if (nativeThresholds) {
+        thresholds.current = {
+          steps: nativeThresholds.steps,
+          duration: nativeThresholds.durationSecs,
+          distance: nativeThresholds.distanceMeters,
+          calories: nativeThresholds.calories,
+        };
+      } else {
+        // Fresh session start — initialize from settings
+        thresholds.current = {
+          steps: milestoneSettings.steps.enabled
+            ? milestoneSettings.steps.interval
+            : null,
+          duration: milestoneSettings.duration.enabled
+            ? milestoneSettings.duration.interval * 60
+            : null,
+          distance: milestoneSettings.distance.enabled
+            ? milestoneSettings.distance.interval * 1000
+            : null,
+          calories: milestoneSettings.calories.enabled
+            ? milestoneSettings.calories.interval
+            : null,
+        };
+      }
+      isInitialized.current = true;
+    });
   }, [isActive, milestoneSettings]);
 
   // Check thresholds on every metric update (foreground only)
   useEffect(() => {
-    if (!isActive || !isInForeground.current) return;
+    if (!isActive || !isInForeground.current || !isInitialized.current) return;
 
     const th = thresholds.current;
     const hitLines: string[] = [];
@@ -184,6 +209,7 @@ export function useMilestoneAlerts(
         distance: null,
         calories: null,
       };
+      isInitialized.current = false;
     }
   }, [isActive]);
 

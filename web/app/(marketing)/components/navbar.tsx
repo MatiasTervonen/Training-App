@@ -1,12 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import InstallApp from "@/components/installApp";
 import { Menu, CircleX } from "lucide-react";
 import { useState, useRef } from "react";
 import { useClickOutside } from "@/components/clickOutside";
 import { useInstallPrompt } from "@/lib/useInstallPrompt";
-import { APP_NAME } from "@/lib/app-config";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -20,8 +20,21 @@ export default function Navbar() {
   return (
     <>
       <nav className="flex justify-between items-center px-5 py-3 text-gray-100">
-        <div className="text-3xl py-5">
-          <Link href={"/"}>{APP_NAME}</Link>
+        <div className="py-5">
+          <Link href={"/"} className="flex items-center gap-3">
+            <Image
+              src="/app-logos/kurvi_icon_ice_blue_rounded.svg"
+              alt="Kurvi icon"
+              width={40}
+              height={40}
+            />
+            <Image
+              src="/app-logos/kurvi_ice_blue_final.svg"
+              alt="Kurvi"
+              width={180}
+              height={49}
+            />
+          </Link>
         </div>
         <div className="hidden md:flex items-center gap-4">
           <Link href={"/login"}>

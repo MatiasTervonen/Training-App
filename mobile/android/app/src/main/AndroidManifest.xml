@@ -2,24 +2,28 @@
   <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
   <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
   <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+  <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION"/>
   <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
   <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION"/>
+  <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE"/>
   <uses-permission android:name="android.permission.INTERNET"/>
   <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
+  <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
   <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+  <uses-permission android:name="android.permission.READ_MEDIA_AUDIO"/>
+  <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
+  <uses-permission android:name="android.permission.READ_MEDIA_VIDEO"/>
+  <uses-permission android:name="android.permission.READ_MEDIA_VISUAL_USER_SELECTED"/>
+  <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
   <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+  <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"/>
+  <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
   <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+  <uses-permission android:name="android.permission.USE_EXACT_ALARM"/>
+  <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT"/>
   <uses-permission android:name="android.permission.VIBRATE"/>
   <uses-permission android:name="android.permission.WAKE_LOCK"/>
   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-  <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
-  <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
-  <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
-  <uses-permission android:name="android.permission.USE_EXACT_ALARM"/>
-  <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT"/>
-  <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE"/>
-  <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"/>
-  <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION"/>
   <uses-permission android:name="com.google.android.gms.permission.ACTIVITY_RECOGNITION"/>
   <queries>
     <intent>
@@ -28,7 +32,7 @@
       <data android:scheme="https"/>
     </intent>
   </queries>
-  <application android:name=".MainApplication" android:label="@string/app_name" android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round" android:allowBackup="true" android:theme="@style/AppTheme" android:supportsRtl="true" android:enableOnBackInvokedCallback="false">
+  <application android:name=".MainApplication" android:label="@string/app_name" android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round" android:allowBackup="true" android:theme="@style/AppTheme" android:supportsRtl="true" android:enableOnBackInvokedCallback="false" android:requestLegacyExternalStorage="true">
     <meta-data android:name="com.google.firebase.messaging.default_notification_color" android:resource="@color/notification_icon_color"/>
     <meta-data android:name="com.google.firebase.messaging.default_notification_icon" android:resource="@drawable/notification_icon"/>
     <meta-data android:name="expo.modules.notifications.default_notification_color" android:resource="@color/notification_icon_color"/>
@@ -37,6 +41,19 @@
     <meta-data android:name="expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH" android:value="ALWAYS"/>
     <meta-data android:name="expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS" android:value="0"/>
     <service android:name="com.reactnativeandroidwidget.RNWidgetCollectionService" android:permission="android.permission.BIND_REMOTEVIEWS"/>
+    <service android:name=".alarm.AlarmService" android:exported="false" android:foregroundServiceType="specialUse">
+      <property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE" android:value="alarm"/>
+    </service>
+    <service android:name=".timer.TimerService" android:exported="false" android:foregroundServiceType="specialUse">
+      <property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE" android:value="timer"/>
+    </service>
+    <service android:name=".resttimer.RestTimerService" android:exported="false" android:foregroundServiceType="specialUse">
+      <property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE" android:value="rest_timer"/>
+    </service>
+    <service android:name=".step.StepTrackingService" android:exported="false" android:foregroundServiceType="specialUse">
+      <property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE" android:value="step_tracking"/>
+    </service>
+    <service android:name=".step.StepGoalTaskService" android:exported="false"/>
     <activity android:name=".MainActivity" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" android:theme="@style/Theme.App.SplashScreen" android:exported="true" android:screenOrientation="unspecified">
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>
@@ -55,7 +72,7 @@
         <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
       </intent-filter>
     </activity>
-    <!-- Alarm system components -->
+    <activity android:name=".alarm.AlarmActivity" android:exported="false" android:showOnLockScreen="true" android:turnScreenOn="true" android:launchMode="singleTask" android:theme="@style/Theme.AppCompat.NoActionBar" android:excludeFromRecents="true" android:taskAffinity=""/>
     <receiver android:name=".alarm.AlarmReceiver" android:exported="false"/>
     <receiver android:name=".alarm.StopAlarmReceiver" android:exported="false"/>
     <receiver android:name=".alarm.SnoozeAlarmReceiver" android:exported="false"/>
@@ -64,61 +81,11 @@
         <action android:name="android.intent.action.BOOT_COMPLETED"/>
       </intent-filter>
     </receiver>
-    <service
-      android:name=".alarm.AlarmService"
-      android:exported="false"
-      android:foregroundServiceType="specialUse">
-      <property
-        android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
-        android:value="alarm"/>
-    </service>
-    <activity
-      android:name=".alarm.AlarmActivity"
-      android:exported="false"
-      android:showOnLockScreen="true"
-      android:turnScreenOn="true"
-      android:launchMode="singleTask"
-      android:theme="@style/Theme.AppCompat.NoActionBar"
-      android:excludeFromRecents="true"
-      android:taskAffinity=""/>
-    <!-- Timer receivers -->
     <receiver android:name=".timer.PauseTimerReceiver" android:exported="false"/>
     <receiver android:name=".timer.ResumeTimerReceiver" android:exported="false"/>
     <receiver android:name=".timer.ExtendTimerReceiver" android:exported="false"/>
-    <!-- Timer service -->
-    <service
-      android:name=".timer.TimerService"
-      android:exported="false"
-      android:foregroundServiceType="specialUse">
-      <property
-        android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
-        android:value="timer"/>
-    </service>
-    <!-- Rest Timer service -->
     <receiver android:name=".resttimer.StopRestTimerReceiver" android:exported="false"/>
-    <service
-      android:name=".resttimer.RestTimerService"
-      android:exported="false"
-      android:foregroundServiceType="specialUse">
-      <property
-        android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
-        android:value="rest_timer"/>
-    </service>
-    <!-- Activity Recognition receiver for step filtering -->
-    <receiver
-      android:name=".step.ActivityRecognitionReceiver"
-      android:exported="false"/>
-    <!-- Step tracking foreground service -->
-    <service
-      android:name=".step.StepTrackingService"
-      android:exported="false"
-      android:foregroundServiceType="specialUse">
-      <property
-        android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
-        android:value="step_tracking"/>
-    </service>
-    <!-- Headless JS task for marking step habits done in background -->
-    <service android:name=".step.StepGoalTaskService" android:exported="false"/>
+    <receiver android:name=".step.ActivityRecognitionReceiver" android:exported="false"/>
     <receiver android:name=".widget.QuickLinks" android:exported="false" android:label="MyTrack Quick Links">
       <intent-filter>
         <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
@@ -132,6 +99,11 @@
         <action android:name="com.layer100crypto.MyTrack.WIDGET_CLICK"/>
       </intent-filter>
       <meta-data android:name="android.appwidget.provider" android:resource="@xml/widgetprovider_steps"/>
+    </receiver>
+    <receiver android:name=".step.StepWidgetUpdateReceiver" android:exported="false">
+      <intent-filter>
+        <action android:name="android.intent.action.USER_PRESENT"/>
+      </intent-filter>
     </receiver>
   </application>
 </manifest>

@@ -92,7 +92,7 @@ export async function POST(request: NextRequest) {
             notification: {
               title: item.title,
               body: item.notes,
-              icon: "/android-chrome-192x192.png",
+              icon: "/favicon/web-app-manifest-192x192.png",
             },
           })
         );

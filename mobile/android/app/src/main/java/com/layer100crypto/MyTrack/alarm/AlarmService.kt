@@ -218,7 +218,7 @@ class AlarmService : Service() {
         val builder = NotificationCompat.Builder(this, channelId)
             .setContentTitle(alarmTitle)
             .setContentText(contentText)
-            .setSmallIcon(R.drawable.small_notification_icon)
+            .setSmallIcon(R.drawable.ic_stat_kurvi_icon_ice_blue_transparent)
             .setOngoing(true)
             .setContentIntent(openPendingIntent)
             .setFullScreenIntent(fullScreenPendingIntent, true)

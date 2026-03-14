@@ -220,7 +220,7 @@ const GPSLayout = forwardRef<View, GPSLayoutProps>(
             <FlexibleStatsGrid stats={selectedStats} theme={theme} />
             <View className="flex-row items-center gap-3 self-end mt-4">
               <Image
-                source={require("@/assets/images/android-chrome-192x192.png")}
+                source={require("@/assets/images/app-logos/kurvi_icon_ice_blue_rounded-converted-1024-1024.png")}
                 className="w-[64px] h-[64px] rounded-xl"
               />
               <AppText className="text-[38px]" style={{ color: noGradientOverride?.textMuted ?? colors.textMuted, ...textShadow }}>
@@ -287,7 +287,7 @@ const GPSLayout = forwardRef<View, GPSLayoutProps>(
           <FlexibleStatsGrid stats={selectedStats} theme={theme} />
           <View className="flex-row items-center gap-3 self-end mt-4">
             <Image
-              source={require("@/assets/images/android-chrome-192x192.png")}
+              source={require("@/assets/images/app-logos/kurvi_icon_ice_blue_rounded-converted-1024-1024.png")}
               className="w-[64px] h-[64px] rounded-xl"
             />
             <AppText className="text-[38px]" style={{ color: noGradientOverride?.textMuted ?? colors.textMuted, ...textShadow }}>
@@ -354,7 +354,7 @@ const NoGPSLayout = forwardRef<View, NoGPSLayoutProps>(
           {/* App logo at bottom */}
           <View className="flex-row items-center gap-3 self-end">
             <Image
-              source={require("@/assets/images/android-chrome-192x192.png")}
+              source={require("@/assets/images/app-logos/kurvi_icon_ice_blue_rounded-converted-1024-1024.png")}
               className="w-[64px] h-[64px] rounded-xl"
             />
             <AppText className="text-[38px]" style={{ color: colors.textMuted }}>
@@ -400,7 +400,7 @@ const NoGPSLayout = forwardRef<View, NoGPSLayoutProps>(
 
           <View className="flex-row items-center gap-3 self-end">
             <Image
-              source={require("@/assets/images/android-chrome-192x192.png")}
+              source={require("@/assets/images/app-logos/kurvi_icon_ice_blue_rounded-converted-1024-1024.png")}
               className="w-[64px] h-[64px] rounded-xl"
             />
             <AppText className="text-[38px]" style={{ color: colors.textMuted }}>
@@ -446,7 +446,7 @@ const NoGPSLayout = forwardRef<View, NoGPSLayoutProps>(
         {/* App logo at bottom-right */}
         <View className="flex-row items-center gap-3 self-end">
           <Image
-            source={require("@/assets/images/android-chrome-192x192.png")}
+            source={require("@/assets/images/app-logos/kurvi_icon_ice_blue_rounded-converted-1024-1024.png")}
             className="w-[64px] h-[64px] rounded-xl"
           />
           <AppText className="text-[38px]" style={{ color: colors.textMuted }}>

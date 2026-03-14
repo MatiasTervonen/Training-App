@@ -36,7 +36,7 @@ const HabitShareCard = forwardRef<View, HabitShareCardProps>(
           {/* Header - App branding */}
           <View className="flex-row items-center gap-4">
             <Image
-              source={require("@/assets/images/android-chrome-192x192.png")}
+              source={require("@/assets/images/app-logos/kurvi_icon_ice_blue_rounded-converted-1024-1024.png")}
               style={{ width: 64, height: 64, borderRadius: 8 }}
             />
             <AppText style={{ fontSize: 36, color: theme.colors.accent }}>
@@ -117,7 +117,7 @@ const HabitShareCard = forwardRef<View, HabitShareCardProps>(
             {/* Header - App branding */}
             <View className="flex-row items-center gap-4">
               <Image
-                source={require("@/assets/images/android-chrome-192x192.png")}
+                source={require("@/assets/images/app-logos/kurvi_icon_ice_blue_rounded-converted-1024-1024.png")}
                 style={{ width: 80, height: 80, borderRadius: 8 }}
               />
               <AppText style={{ fontSize: 44, color: theme.colors.accent }}>
@@ -206,7 +206,7 @@ const HabitShareCard = forwardRef<View, HabitShareCardProps>(
         {/* Header - App branding */}
         <View className="flex-row items-center gap-4">
           <Image
-            source={require("@/assets/images/android-chrome-192x192.png")}
+            source={require("@/assets/images/app-logos/kurvi_icon_ice_blue_rounded-converted-1024-1024.png")}
             style={{ width: 64, height: 64, borderRadius: 8 }}
           />
           <AppText style={{ fontSize: 36, color: theme.colors.accent }}>

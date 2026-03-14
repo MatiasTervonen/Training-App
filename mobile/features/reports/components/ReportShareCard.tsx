@@ -240,7 +240,7 @@ const ReportShareCard = forwardRef<View, ReportShareCardProps>(
         {/* Footer */}
         <View className="flex-row items-center gap-3 self-end">
           <Image
-            source={require("@/assets/images/android-chrome-192x192.png")}
+            source={require("@/assets/images/app-logos/kurvi_icon_ice_blue_rounded-converted-1024-1024.png")}
             style={{ width: isLarger ? 56 : 48, height: isLarger ? 56 : 48, borderRadius: 8 }}
           />
           <AppText

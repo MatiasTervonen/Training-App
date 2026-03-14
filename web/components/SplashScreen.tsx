@@ -15,10 +15,10 @@ export default function SplashScreen({
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950">
         <div className="flex flex-col items-center gap-4">
           <Image
-            src="/android-chrome-192x192.png"
-            alt="App Logo"
-            width={96}
-            height={96}
+            src="/app-logos/kurvi_ice_blue_final_copnverted.png"
+            alt="Kurvi Logo"
+            width={300}
+            height={82}
             priority
             className="animate-pulse"
           />

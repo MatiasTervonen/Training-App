@@ -49,7 +49,7 @@ const ShareCard = forwardRef<View, ShareCardProps>(
           {/* Header - App branding */}
           <View className="flex-row items-center gap-4">
             <Image
-              source={require("@/assets/images/android-chrome-192x192.png")}
+              source={require("@/assets/images/app-logos/kurvi_icon_ice_blue_rounded-converted-1024-1024.png")}
               className="w-[64px] h-[64px] rounded-lg"
             />
             <AppText
@@ -165,7 +165,7 @@ const ShareCard = forwardRef<View, ShareCardProps>(
         {/* Header - App branding */}
         <View className="flex-row items-center gap-4">
           <Image
-            source={require("@/assets/images/android-chrome-192x192.png")}
+            source={require("@/assets/images/app-logos/kurvi_icon_ice_blue_rounded-converted-1024-1024.png")}
             style={{ width: isStory ? 80 : 64, height: isStory ? 80 : 64, borderRadius: 8 }}
           />
           <AppText

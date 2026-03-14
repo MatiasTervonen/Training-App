@@ -14,6 +14,7 @@
     android:initialLayout="@layout/rn_widget"
     android:previewImage="@drawable/steps_preview"
 
+    android:configure="com.layer100crypto.MyTrack.WidgetConfigurationActivity"
     android:widgetFeatures="reconfigurable|configuration_optional"
 
     android:updatePeriodMillis="1800000"

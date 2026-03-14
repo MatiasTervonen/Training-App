@@ -77,7 +77,7 @@ class RestTimerService : Service() {
         expandedViews = inlineViews
 
         notificationBuilder = NotificationCompat.Builder(this, "rest_timer_channel")
-            .setSmallIcon(R.drawable.small_notification_icon)
+            .setSmallIcon(R.drawable.ic_stat_kurvi_icon_ice_blue_transparent)
             .setOngoing(true)
             .setShowWhen(false)
             .setColorized(true)

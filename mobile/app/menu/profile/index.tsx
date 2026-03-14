@@ -1,4 +1,4 @@
-import { View, Pressable, Keyboard } from "react-native";
+import { View, ScrollView } from "react-native";
 import AppText from "@/components/AppText";
 import AppInput from "@/components/AppInput";
 import ProfilePicture from "@/components/ProfilePicture";
@@ -30,6 +30,8 @@ export default function ProfileScreen() {
   const [weightUnit, setWeightUnit] = useState("");
   const [distanceUnit, setDistanceUnit] = useState("");
   const [heightCm, setHeightCm] = useState("");
+  const [heightFt, setHeightFt] = useState("");
+  const [heightIn, setHeightIn] = useState("");
   const [selectedProfilePic, setSelectedProfilePic] =
     useState<UploadFile | null>(null);
 
@@ -46,6 +48,14 @@ export default function ProfileScreen() {
     setWeightUnit(weightUnitZ || "kg");
     setDistanceUnit(distanceUnitZ || "km");
     setHeightCm(heightCmZ ? String(heightCmZ) : "");
+    if (heightCmZ) {
+      const totalInches = heightCmZ / 2.54;
+      setHeightFt(String(Math.floor(totalInches / 12)));
+      setHeightIn(String(Math.round(totalInches % 12)));
+    } else {
+      setHeightFt("");
+      setHeightIn("");
+    }
     setSelectedProfilePic(null);
   }, [userNameZ, weightUnitZ, distanceUnitZ, profilePicZ, heightCmZ]);
 
@@ -162,7 +172,17 @@ export default function ProfileScreen() {
         });
       }
 
-      const parsedHeight = heightCm ? parseFloat(heightCm) : null;
+      let parsedHeight: number | null = null;
+      if (distanceUnit === "mi") {
+        const ft = parseFloat(heightFt) || 0;
+        const inches = parseFloat(heightIn) || 0;
+        if (ft > 0 || inches > 0) {
+          parsedHeight = Math.round((ft * 12 + inches) * 2.54);
+        }
+      } else {
+        parsedHeight = heightCm ? parseFloat(heightCm) : null;
+      }
+
       const payload = {
         display_name: userName,
         weight_unit: weightUnit,
@@ -191,7 +211,11 @@ export default function ProfileScreen() {
 
   return (
     <>
-      <Pressable onPress={Keyboard.dismiss} className="flex-1">
+      <ScrollView
+        contentContainerClassName="flex-grow"
+        keyboardDismissMode="on-drag"
+        showsVerticalScrollIndicator={false}
+      >
         <PageContainer className="justify-between">
           <View>
             <View>
@@ -248,19 +272,42 @@ export default function ProfileScreen() {
               />
             </View>
             <View className="mt-5">
-              <AppInput
-                value={heightCm}
-                setValue={setHeightCm}
-                label={t("menu:profile.height")}
-                placeholder={t("menu:profile.heightPlaceholder")}
-                keyboardType="numeric"
-              />
+              {distanceUnit === "mi" ? (
+                <View className="flex-row gap-3">
+                  <View className="flex-1">
+                    <AppInput
+                      value={heightFt}
+                      setValue={setHeightFt}
+                      label={t("menu:profile.heightFt")}
+                      placeholder={t("menu:profile.heightFtPlaceholder")}
+                      keyboardType="numeric"
+                    />
+                  </View>
+                  <View className="flex-1">
+                    <AppInput
+                      value={heightIn}
+                      setValue={setHeightIn}
+                      label={t("menu:profile.heightIn")}
+                      placeholder={t("menu:profile.heightInPlaceholder")}
+                      keyboardType="numeric"
+                    />
+                  </View>
+                </View>
+              ) : (
+                <AppInput
+                  value={heightCm}
+                  setValue={setHeightCm}
+                  label={t("menu:profile.heightMetric")}
+                  placeholder={t("menu:profile.heightPlaceholder")}
+                  keyboardType="numeric"
+                />
+              )}
               <AppText className="text-sm text-gray-500 mt-2">
                 {t("menu:profile.heightHint")}
               </AppText>
             </View>
           </View>
-          <View>
+          <View className="mt-10">
             <SaveButton
               onPress={async () => {
                 if (!userName.trim()) {
@@ -277,7 +324,7 @@ export default function ProfileScreen() {
             />
           </View>
         </PageContainer>
-      </Pressable>
+      </ScrollView>
       <FullScreenLoader
         visible={isSaving}
         message={t("menu:profile.savingProfile")}

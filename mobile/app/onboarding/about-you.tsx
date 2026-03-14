@@ -1,12 +1,5 @@
-import {
-  View,
-  TextInput,
-  KeyboardAvoidingView,
-  Platform,
-  Keyboard,
-  Pressable,
-  ScrollView,
-} from "react-native";
+import { View, TextInput, Keyboard, Pressable } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import AppText from "@/components/AppText";
 import BodyText from "@/components/BodyText";
 import AnimatedButton from "@/components/buttons/animatedButton";
@@ -28,26 +21,29 @@ export default function AboutYouScreen() {
   const currentUnit = useUserStore(
     (state) => state.profile?.weight_unit ?? (i18n.language === "fi" ? "kg" : "lbs"),
   );
-  const currentDistanceUnit = useUserStore(
-    (state) => state.profile?.distance_unit ?? (i18n.language === "fi" ? "km" : "mi"),
-  );
-
   const [weight, setWeight] = useState("");
   const [height, setHeight] = useState("");
+  const [heightFt, setHeightFt] = useState("");
+  const [heightIn, setHeightIn] = useState("");
   const [unit, setUnit] = useState<"kg" | "lbs">(
     currentUnit === "lbs" ? "lbs" : "kg",
   );
-  const [distanceUnit, setDistanceUnit] = useState<"km" | "mi">(
-    currentDistanceUnit === "mi" ? "mi" : "km",
+  const [heightUnit, setHeightUnit] = useState<"cm" | "ft">(
+    i18n.language === "fi" ? "cm" : "ft",
   );
 
   const handleContinue = () => {
     const profileUpdates: Record<string, string | number | null> = {
       weight_unit: unit,
-      distance_unit: distanceUnit,
     };
 
-    if (height) {
+    if (heightUnit === "ft") {
+      const ft = parseFloat(heightFt) || 0;
+      const inches = parseFloat(heightIn) || 0;
+      if (ft > 0 || inches > 0) {
+        profileUpdates.height_cm = Math.round((ft * 12 + inches) * 2.54);
+      }
+    } else if (height) {
       const numHeight = parseFloat(height);
       if (!isNaN(numHeight) && numHeight >= 50 && numHeight <= 300) {
         profileUpdates.height_cm = numHeight;
@@ -71,40 +67,35 @@ export default function AboutYouScreen() {
     }
 
     useUserStore.getState().setUserProfile(profileUpdates);
-    router.push("/onboarding/complete");
+    router.push("/onboarding/preferences");
   };
 
-  const handleSkipStep = () => {
-    router.push("/onboarding/complete");
-  };
 
   return (
-    <KeyboardAvoidingView
-      className="flex-1"
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    <KeyboardAwareScrollView
+      contentContainerStyle={{ flexGrow: 1, justifyContent: "center", paddingHorizontal: 24, paddingVertical: 24 }}
     >
-      <ScrollView
-        contentContainerClassName="flex-grow justify-center px-6"
-        keyboardShouldPersistTaps="handled"
-      >
-        <Pressable className="flex-1" onPress={Keyboard.dismiss}>
+      <Pressable className="flex-1 justify-center" onPress={Keyboard.dismiss}>
         <OnboardingBackButton />
         <OnboardingProgressBar currentStep={4} />
 
-        <View className="mt-8">
-          <AppText className="text-3xl text-center mb-4">
+        <View className="mt-6">
+          <AppText className="text-2xl text-center mb-2">
             {t("aboutYou.title")}
           </AppText>
-          <BodyText className="text-center text-base mb-8">
+          <BodyText className="text-center text-base mb-6">
             {t("aboutYou.description")}
           </BodyText>
         </View>
 
-        {/* Unit toggle */}
-        <View className="flex-row justify-center mb-6 gap-3">
+        {/* Weight section */}
+        <AppText className="text-lg text-center mb-3">
+          {t("aboutYou.weightTitle")}
+        </AppText>
+        <View className="flex-row justify-center mb-4 gap-3">
           <AnimatedButton
             onPress={() => setUnit("kg")}
-            className={`px-6 py-2 rounded-lg border-2 ${
+            className={`w-20 py-2 rounded-lg border-2 items-center ${
               unit === "kg"
                 ? "bg-blue-900/40 border-blue-500"
                 : "bg-slate-800 border-slate-700"
@@ -116,7 +107,7 @@ export default function AboutYouScreen() {
           </AnimatedButton>
           <AnimatedButton
             onPress={() => setUnit("lbs")}
-            className={`px-6 py-2 rounded-lg border-2 ${
+            className={`w-20 py-2 rounded-lg border-2 items-center ${
               unit === "lbs"
                 ? "bg-blue-900/40 border-blue-500"
                 : "bg-slate-800 border-slate-700"
@@ -131,7 +122,7 @@ export default function AboutYouScreen() {
         </View>
 
         {/* Weight input */}
-        <View className="flex-row items-center justify-center mb-8">
+        <View className="flex-row items-center justify-center mb-6">
           <TextInput
             value={weight}
             onChangeText={(text) => {
@@ -145,66 +136,93 @@ export default function AboutYouScreen() {
             placeholder="0"
             placeholderTextColor="#64748b"
             keyboardType="decimal-pad"
-            className="bg-slate-800 border-2 border-slate-700 rounded-lg text-center text-gray-100 text-3xl py-3 px-6 w-40 font-russo"
+            className="bg-slate-800 border-2 border-slate-700 rounded-lg text-center text-gray-100 text-2xl py-2 px-4 w-36 font-russo"
             maxLength={6}
           />
-          <AppText className="text-2xl ml-3 text-slate-400">{unit}</AppText>
+          <AppText className="text-xl ml-3 text-slate-400 w-10">{unit}</AppText>
+        </View>
+
+        {/* Height section */}
+        <AppText className="text-lg text-center mb-3">
+          {t("aboutYou.heightTitle")}
+        </AppText>
+        <View className="flex-row justify-center mb-4 gap-3">
+          <AnimatedButton
+            onPress={() => setHeightUnit("cm")}
+            className={`w-20 py-2 rounded-lg border-2 items-center ${
+              heightUnit === "cm"
+                ? "bg-blue-900/40 border-blue-500"
+                : "bg-slate-800 border-slate-700"
+            }`}
+          >
+            <AppText
+              className={heightUnit === "cm" ? "text-blue-400" : "text-slate-400"}
+            >
+              cm
+            </AppText>
+          </AnimatedButton>
+          <AnimatedButton
+            onPress={() => setHeightUnit("ft")}
+            className={`w-20 py-2 rounded-lg border-2 items-center ${
+              heightUnit === "ft"
+                ? "bg-blue-900/40 border-blue-500"
+                : "bg-slate-800 border-slate-700"
+            }`}
+          >
+            <AppText
+              className={heightUnit === "ft" ? "text-blue-400" : "text-slate-400"}
+            >
+              ft
+            </AppText>
+          </AnimatedButton>
         </View>
 
         {/* Height input */}
-        <AppText className="text-xl text-center mb-4">
-          {t("aboutYou.heightLabel")}
-        </AppText>
-        <View className="flex-row items-center justify-center mb-8">
-          <TextInput
-            value={height}
-            onChangeText={(text) => {
-              const filtered = text.replace(/[^0-9]/g, "");
-              setHeight(filtered);
-            }}
-            placeholder="0"
-            placeholderTextColor="#64748b"
-            keyboardType="number-pad"
-            className="bg-slate-800 border-2 border-slate-700 rounded-lg text-center text-gray-100 text-3xl py-3 px-6 w-40 font-russo"
-            maxLength={3}
-          />
-          <AppText className="text-2xl ml-3 text-slate-400">cm</AppText>
-        </View>
-
-        {/* Distance unit */}
-        <AppText className="text-xl text-center mb-4">
-          {t("aboutYou.distanceUnit")}
-        </AppText>
-        <View className="flex-row justify-center mb-8 gap-3">
-          <AnimatedButton
-            onPress={() => setDistanceUnit("km")}
-            className={`px-6 py-2 rounded-lg border-2 ${
-              distanceUnit === "km"
-                ? "bg-blue-900/40 border-blue-500"
-                : "bg-slate-800 border-slate-700"
-            }`}
-          >
-            <AppText
-              className={distanceUnit === "km" ? "text-blue-400" : "text-slate-400"}
-            >
-              km
-            </AppText>
-          </AnimatedButton>
-          <AnimatedButton
-            onPress={() => setDistanceUnit("mi")}
-            className={`px-6 py-2 rounded-lg border-2 ${
-              distanceUnit === "mi"
-                ? "bg-blue-900/40 border-blue-500"
-                : "bg-slate-800 border-slate-700"
-            }`}
-          >
-            <AppText
-              className={distanceUnit === "mi" ? "text-blue-400" : "text-slate-400"}
-            >
-              mi
-            </AppText>
-          </AnimatedButton>
-        </View>
+        {heightUnit === "ft" ? (
+          <View className="mb-6">
+            <View className="flex-row justify-center gap-4">
+              <View className="flex-row items-center">
+                <TextInput
+                  value={heightFt}
+                  onChangeText={(text) => setHeightFt(text.replace(/[^0-9]/g, ""))}
+                  placeholder={t("aboutYou.heightFtPlaceholder")}
+                  placeholderTextColor="#64748b"
+                  keyboardType="number-pad"
+                  className="bg-slate-800 border-2 border-slate-700 rounded-lg text-center text-gray-100 text-2xl py-2 px-4 w-20 font-russo"
+                  maxLength={1}
+                />
+                <AppText className="text-xl ml-2 text-slate-400">ft</AppText>
+              </View>
+              <View className="flex-row items-center">
+                <TextInput
+                  value={heightIn}
+                  onChangeText={(text) => setHeightIn(text.replace(/[^0-9]/g, ""))}
+                  placeholder={t("aboutYou.heightInPlaceholder")}
+                  placeholderTextColor="#64748b"
+                  keyboardType="number-pad"
+                  className="bg-slate-800 border-2 border-slate-700 rounded-lg text-center text-gray-100 text-2xl py-2 px-4 w-20 font-russo"
+                  maxLength={2}
+                />
+                <AppText className="text-xl ml-2 text-slate-400">in</AppText>
+              </View>
+            </View>
+          </View>
+        ) : (
+          <>
+            <View className="flex-row items-center justify-center mb-6">
+              <TextInput
+                value={height}
+                onChangeText={(text) => setHeight(text.replace(/[^0-9]/g, ""))}
+                placeholder="0"
+                placeholderTextColor="#64748b"
+                keyboardType="number-pad"
+                className="bg-slate-800 border-2 border-slate-700 rounded-lg text-center text-gray-100 text-2xl py-2 px-4 w-36 font-russo"
+                maxLength={3}
+              />
+              <AppText className="text-xl ml-3 text-slate-400">cm</AppText>
+            </View>
+          </>
+        )}
 
         <AnimatedButton
           onPress={handleContinue}
@@ -213,17 +231,8 @@ export default function AboutYouScreen() {
           textClassName="text-lg"
         />
 
-        <View className="items-center mt-4">
-          <AnimatedButton onPress={handleSkipStep} className="py-2 px-4">
-            <AppText className="text-slate-400 text-sm underline">
-              {t("aboutYou.skipStep")}
-            </AppText>
-          </AnimatedButton>
-        </View>
-
         <SkipOnboardingButton onSkip={skipOnboarding} />
         </Pressable>
-      </ScrollView>
-    </KeyboardAvoidingView>
+    </KeyboardAwareScrollView>
   );
 }

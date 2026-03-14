@@ -126,7 +126,7 @@ export default function SecurityPage() {
       }
 
       const res = await fetch(
-        `${process.env.EXPO_PUBLIC_API_URL}/api/user/delete-account`,
+        `${process.env.EXPO_PUBLIC_API_URL_PROD}/api/user/delete-account`,
         {
           method: "POST",
           headers: {
@@ -146,6 +146,7 @@ export default function SecurityPage() {
         signOut();
       }, 3000);
     } catch (error) {
+      console.log("Error deleting account:", error);
       handleError(error, {
         message: "Error deleting account",
         route: "security settings",

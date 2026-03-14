@@ -54,11 +54,18 @@
   "aboutYou": {
     "title": "Tietoja sinusta",
     "description": "Painoasi käytetään kalorien arviointiin ja pituuttasi matkan laskemiseen askeleista. Voit päivittää näitä milloin tahansa.",
-    "heightLabel": "Pituus (cm)",
+    "weightTitle": "Paino",
+    "heightTitle": "Pituus",
+    "heightFtPlaceholder": "esim. 5",
+    "heightInPlaceholder": "esim. 9",
     "startingWeight": "Aloituspaino",
+    "continue": "Jatka"
+  },
+  "preferences": {
+    "title": "Asetukset",
+    "description": "Valitse haluamasi etäisyyden yksikkö aktiviteeteille.",
     "distanceUnit": "Etäisyyden yksikkö",
-    "continue": "Jatka",
-    "skipStep": "Ohita"
+    "continue": "Jatka"
   },
   "complete": {
     "title": "Kaikki valmista!",

@@ -75,9 +75,15 @@ export default function useSaveDraft({
           if (setActivitySlug) {
             setActivitySlug(draft.activitySlug ?? null);
           }
-          // Relevance flags are NOT restored from draft — they come from
-          // the ActivityDropdown onSelect callback when the user picks an activity.
-          // Restoring them here caused the GPS toggle to flash on page entry.
+          if (draft.isGpsRelevant !== undefined && setIsGpsRelevant) {
+            setIsGpsRelevant(draft.isGpsRelevant);
+          }
+          if (draft.isStepRelevant !== undefined && setIsStepRelevant) {
+            setIsStepRelevant(draft.isStepRelevant);
+          }
+          if (draft.isCaloriesRelevant !== undefined && setIsCaloriesRelevant) {
+            setIsCaloriesRelevant(draft.isCaloriesRelevant);
+          }
         }
       } catch (error) {
         handleError(error, {
@@ -88,7 +94,7 @@ export default function useSaveDraft({
       }
     };
     loadDraft();
-  }, [setTitle, setNotes, setActivityName, setDraftRecordings, setDraftImages, setDraftVideos, t]);
+  }, [setTitle, setNotes, setActivityName, setDraftRecordings, setDraftImages, setDraftVideos, setBaseMet, setIsGpsRelevant, setIsStepRelevant, setIsCaloriesRelevant, setActivitySlug, t]);
 
   const saveActivityDraft = useDebouncedCallback(
     async () => {

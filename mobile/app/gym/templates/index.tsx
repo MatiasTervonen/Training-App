@@ -18,6 +18,7 @@ import PageContainer from "@/components/PageContainer";
 import { full_gym_template } from "@/types/models";
 import { useTimerStore } from "@/lib/stores/timerStore";
 import { useTranslation } from "react-i18next";
+import { Dumbbell } from "lucide-react-native";
 
 type templateSummary = {
   id: string;
@@ -204,9 +205,19 @@ export default function TemplatesPage() {
         )}
 
         {!isLoading && templates.length === 0 && (
-          <AppText className="text-gray-300 text-center">
-            {t("gym.TemplatesScreen.noTemplates")}
-          </AppText>
+          <View className="items-center mt-[20%] px-8">
+            <View className="items-center">
+              <View className="w-20 h-20 rounded-full bg-slate-800 border border-slate-700 items-center justify-center mb-5">
+                <Dumbbell size={36} color="#94a3b8" />
+              </View>
+              <AppText className="text-xl text-center mb-3">
+                {t("gym.TemplatesScreen.noTemplates")}
+              </AppText>
+              <AppText className="text-sm text-gray-400 text-center leading-5">
+                {t("gym.TemplatesScreen.noTemplatesDesc")}
+              </AppText>
+            </View>
+          </View>
         )}
 
         {templates &&

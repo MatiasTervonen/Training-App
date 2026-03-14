@@ -13,7 +13,7 @@ import { isHabitScheduledForDate } from "@/features/habits/utils/isHabitSchedule
 import { Confetti } from "react-native-fast-confetti";
 import { useTranslation } from "react-i18next";
 import { useState, useCallback, useMemo, useRef, useEffect } from "react";
-import { Plus } from "lucide-react-native";
+import { Plus, ListChecks } from "lucide-react-native";
 import * as Haptics from "expo-haptics";
 
 function getMonthRange(year: number, month: number) {
@@ -124,16 +124,18 @@ export default function HabitsScreen() {
             </View>
           ) : habits.length === 0 ? (
             <View className="flex-1 justify-between">
-              <AppText className="text-2xl text-center mb-6">
-                {t("title")}
-              </AppText>
-              <View className="items-center gap-3">
-                <AppText className="text-gray-400 text-lg text-center">
-                  {t("noHabits")}
-                </AppText>
-                <AppText className="text-gray-500 text-center px-4">
-                  {t("emptyDescription")}
-                </AppText>
+              <View className="items-center mt-[20%] px-8">
+                <View className="items-center">
+                  <View className="w-20 h-20 rounded-full bg-slate-800 border border-slate-700 items-center justify-center mb-5">
+                    <ListChecks size={36} color="#94a3b8" />
+                  </View>
+                  <AppText className="text-xl text-center mb-3">
+                    {t("noHabits")}
+                  </AppText>
+                  <AppText className="text-sm text-gray-400 text-center leading-5">
+                    {t("emptyDescription")}
+                  </AppText>
+                </View>
               </View>
               <View>
                 <LinkButton label={t("createFirst")} href="/habits/create">

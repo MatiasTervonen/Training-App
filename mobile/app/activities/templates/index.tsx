@@ -15,6 +15,7 @@ import { useDeleteTemplate } from "@/features/activities/templates/hooks/useDele
 import { useTemplateHistory } from "@/features/activities/templates/hooks/useTemplateHistory";
 import TemplateHistoryModal from "@/features/activities/templates/components/TemplateHistoryModal";
 import { useTranslation } from "react-i18next";
+import { Route } from "lucide-react-native";
 
 export default function TemplatesPage() {
   const { t } = useTranslation("activities");
@@ -71,13 +72,18 @@ export default function TemplatesPage() {
         )}
 
         {!isLoading && templates.length === 0 && (
-          <View className="bg-slate-900 rounded-md mt-20 px-10 items-center justify-center gap-2">
-            <AppText className="text-gray-300 text-lg">
-              {t("activities.templatesScreen.noTemplates")}
-            </AppText>
-            <AppText className="text-gray-300 text-lg">
-              {t("activities.templatesScreen.noTemplatesHint")}
-            </AppText>
+          <View className="items-center mt-[20%] px-8">
+            <View className="items-center">
+              <View className="w-20 h-20 rounded-full bg-slate-800 border border-slate-700 items-center justify-center mb-5">
+                <Route size={36} color="#94a3b8" />
+              </View>
+              <AppText className="text-xl text-center mb-3">
+                {t("activities.templatesScreen.noTemplates")}
+              </AppText>
+              <AppText className="text-sm text-gray-400 text-center leading-5">
+                {t("activities.templatesScreen.noTemplatesHint")}
+              </AppText>
+            </View>
           </View>
         )}
 

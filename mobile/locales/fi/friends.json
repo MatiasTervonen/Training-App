@@ -3,6 +3,7 @@
     "title": "Kaverit",
     "myFriends": "Kaverini",
     "noFriends": "Ei vielä kavereita",
+    "noFriendsDesc": "Lähetä kaveripyyntö aloittaaksesi",
     "sendRequest": "Lähetä pyyntö",
     "sendFriendRequest": "Lähetä kaveripyyntö",
     "placeholder": "Syötä kaverin näyttönimi",

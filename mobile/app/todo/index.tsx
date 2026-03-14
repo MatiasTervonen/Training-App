@@ -24,7 +24,7 @@ import useDeleteSession from "@/features/feed/hooks/useDeleteSession";
 import useUpdateFeedItem from "@/features/feed/hooks/useUpdateFeedItem";
 import { useTranslation } from "react-i18next";
 import AnimatedButton from "@/components/buttons/animatedButton";
-import { Plus } from "lucide-react-native";
+import { Plus, ClipboardList } from "lucide-react-native";
 import type { TodoFilter } from "@/database/todo/get-todo-sessions";
 
 type TodoExtraFields = { completed?: number; total?: number } | null;
@@ -90,8 +90,14 @@ export default function TodoScreen() {
     return t("todo.noTodoLists");
   };
 
+  const getEmptyDescription = () => {
+    if (filter === "active") return t("todo.noActiveTodoListsDesc");
+    if (filter === "completed") return t("todo.noCompletedTodoListsDesc");
+    return t("todo.noTodoListsDesc");
+  };
+
   const filterTabs = (
-    <View className="my-3 mx-4 bg-slate-800 rounded-lg">
+    <View className="mt-3 mb-1 mx-4 bg-slate-800 rounded-lg">
       <View className="flex-row p-1 gap-2">
         {FILTERS.map((f) => {
           const isActive = filter === f;
@@ -131,9 +137,19 @@ export default function TodoScreen() {
         </AppText>
       ) : !data ||
         (unpinnedFeed.length === 0 && filteredPinned.length === 0) ? (
-        <AppText className="text-center text-lg mt-10 mx-auto px-10">
-          {getEmptyMessage()}
-        </AppText>
+        <View className="flex-1 items-center mt-[30%] px-8">
+          <View className="items-center">
+            <View className="w-20 h-20 rounded-full bg-slate-800 border border-slate-700 items-center justify-center mb-5">
+              <ClipboardList size={36} color="#94a3b8" />
+            </View>
+            <AppText className="text-xl text-center mb-3">
+              {getEmptyMessage()}
+            </AppText>
+            <AppText className="text-sm text-gray-400 text-center leading-5">
+              {getEmptyDescription()}
+            </AppText>
+          </View>
+        </View>
       ) : (
         <FlatList
           data={unpinnedFeed}

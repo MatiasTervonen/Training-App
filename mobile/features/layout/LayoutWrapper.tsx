@@ -19,6 +19,7 @@ import i18n from "@/app/i18n";
 import { useNotificationSubscription } from "@/features/notifications/hooks/useNotificationSubscription";
 import useNotificationNavigation from "@/features/notifications/useNotificationNavigation";
 import { useStepGoalSync } from "@/features/habits/hooks/useStepGoalSync";
+import { queryClient } from "@/lib/queryClient";
 
 export default function LayoutWrapper({
   children,
@@ -70,6 +71,8 @@ export default function LayoutWrapper({
             fetchUserSettings(),
           ]);
           loginUser(profileData as UserProfile, settingsData as UserSettings);
+          // Clear any stale query results from before authentication
+          queryClient.invalidateQueries();
           // Only override device language if user explicitly set a preference
           if (settingsData?.language) {
             i18n.changeLanguage(settingsData.language);

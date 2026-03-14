@@ -16,6 +16,7 @@ import { useRejectFriendRequest } from "@/features/friends/hooks/useRejectFriend
 import { useTranslation } from "react-i18next";
 import Toast from "react-native-toast-message";
 import { handleError } from "@/utils/handleError";
+import { Users } from "lucide-react-native";
 
 export default function FriendsScreen() {
   const { t } = useTranslation("friends");
@@ -131,9 +132,19 @@ export default function FriendsScreen() {
                   </View>
                 ))
               ) : (
-                <AppText className="text-gray-400 text-center mb-10">
-                  {t("friends.noFriends")}
-                </AppText>
+                <View className="items-center my-6 px-4">
+                  <View className="items-center">
+                    <View className="w-20 h-20 rounded-full bg-slate-800 border border-slate-700 items-center justify-center mb-5">
+                      <Users size={36} color="#94a3b8" />
+                    </View>
+                    <AppText className="text-xl text-center mb-3">
+                      {t("friends.noFriends")}
+                    </AppText>
+                    <AppText className="text-sm text-gray-400 text-center leading-5">
+                      {t("friends.noFriendsDesc")}
+                    </AppText>
+                  </View>
+                </View>
               )}
             </View>
           </>

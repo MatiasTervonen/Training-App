@@ -174,15 +174,15 @@ export default function AddActivity() {
                 <AppText className="text-lg mb-4">
                   {t("activities.addActivityScreen.trackingOptions")}
                 </AppText>
-                <View className="flex-row items-center justify-between mb-3 px-2">
+                <View className="flex-row items-center justify-between mb-5 px-2">
                   <AppText>{t("activities.addActivityScreen.gpsTracking")}</AppText>
                   <Toggle isOn={isGpsRelevant} onToggle={() => setIsGpsRelevant((prev) => !prev)} />
                 </View>
-                <View className="flex-row items-center justify-between mb-3 px-2">
+                <View className="flex-row items-center justify-between mb-5 px-2">
                   <AppText>{t("activities.addActivityScreen.stepsTracking")}</AppText>
                   <Toggle isOn={isStepRelevant} onToggle={() => setIsStepRelevant((prev) => !prev)} />
                 </View>
-                <View className="flex-row items-center justify-between mb-3 px-2">
+                <View className="flex-row items-center justify-between mb-5 px-2">
                   <AppText>{t("activities.addActivityScreen.caloriesTracking")}</AppText>
                   <Toggle isOn={isCaloriesRelevant} onToggle={() => setIsCaloriesRelevant((prev) => !prev)} />
                 </View>

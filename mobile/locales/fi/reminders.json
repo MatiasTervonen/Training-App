@@ -71,7 +71,9 @@
       "repeating": "Toistuvat"
     },
     "noRemindersUpcoming": "Ei tulevia muistutuksia",
+    "noRemindersUpcomingDesc": "Luo uusi muistutus painamalla +",
     "noRemindersDelivered": "Ei toimitettuja muistutuksia",
+    "noRemindersDeliveredDesc": "Toimitetut muistutukset näkyvät täällä",
     "loadingDetails": "Ladataan muistutuksen tietoja...",
     "errorLoading": "Virhe muistutusten lataamisessa. Yritä uudelleen!",
     "noReminders": "Ei {{tab}} muistutuksia.",

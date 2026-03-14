@@ -7,7 +7,7 @@ type Props = {
 
 export default function OnboardingProgressBar({
   currentStep,
-  totalSteps = 6,
+  totalSteps = 7,
 }: Props) {
   return (
     <View className="flex-row justify-center items-center gap-2 py-4">

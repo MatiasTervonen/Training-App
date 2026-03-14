@@ -3,7 +3,7 @@ import { useRouter } from "expo-router";
 import Toast from "react-native-toast-message";
 import { useTranslation } from "react-i18next";
 import { saveWeight } from "@/database/weight/save-weight";
-import { DraftVideo } from "@/types/session";
+import { DraftVideo, weight } from "@/types/session";
 
 type DraftRecording = {
   id: string;
@@ -47,6 +47,21 @@ export default function useSaveWeight({
       Toast.show({ type: "info", text1: t("common.media.videoStillCompressing") });
       return;
     }
+
+    const today = new Date().toLocaleDateString("en-CA");
+    const cached = queryClient.getQueryData<weight[]>(["get-weight"]);
+    const alreadyLogged = cached?.some(
+      (entry) => new Date(entry.created_at).toLocaleDateString("en-CA") === today,
+    );
+    if (alreadyLogged) {
+      Toast.show({
+        type: "error",
+        text1: t("weight:weight.alreadyLoggedTitle"),
+        text2: t("weight:weight.alreadyLoggedMessage"),
+      });
+      return;
+    }
+
     if (!title.trim()) {
       Toast.show({
         type: "error",

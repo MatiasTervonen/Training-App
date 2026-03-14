@@ -21,12 +21,18 @@ import useTogglePin from "@/features/feed/hooks/useTogglePin";
 import useDeleteSession from "@/features/feed/hooks/useDeleteSession";
 import useUpdateFeedItem from "@/features/feed/hooks/useUpdateFeedItem";
 import { useTranslation } from "react-i18next";
+import { MapPin } from "lucide-react-native";
+import useActivityTypes from "@/features/activities/hooks/useActivityTypes";
+import ActivityTypeFilterChips from "@/features/activities/components/ActivityTypeFilterChips";
 
 export default function MyActivitiesScreen() {
   const { t } = useTranslation("activities");
   const [expandedItem, setExpandedItem] = useState<FeedItemUI | null>(null);
   const [editingItem, setEditingItem] = useState<FeedItemUI | null>(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
+
+  const { activityTypes } = useActivityTypes();
 
   const {
     data,
@@ -38,16 +44,18 @@ export default function MyActivitiesScreen() {
     isFetchingNextPage,
     pinnedFeed,
     unpinnedFeed,
-  } = useMyActivitiesFeed();
+    queryKey,
+    pinnedContext,
+  } = useMyActivitiesFeed(selectedSlug ?? undefined);
 
   // handle feedItem pin toggling
-  const { togglePin } = useTogglePin(["myActivitySessions"]);
+  const { togglePin } = useTogglePin(queryKey);
 
   // handle feedItem deletion
   const { handleDelete } = useDeleteSession();
 
   // handle feed item updates
-  const { updateFeedItem } = useUpdateFeedItem(["myActivitySessions"]);
+  const { updateFeedItem } = useUpdateFeedItem(queryKey);
 
   const {
     activitySessionFull,
@@ -63,6 +71,12 @@ export default function MyActivitiesScreen() {
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
     >
+      <ActivityTypeFilterChips
+        activityTypes={activityTypes}
+        selectedSlug={selectedSlug}
+        onSelectAll={() => setSelectedSlug(null)}
+        onSelectType={setSelectedSlug}
+      />
       {isLoading ? (
         <FeedSkeleton count={5} />
       ) : error ? (
@@ -70,9 +84,19 @@ export default function MyActivitiesScreen() {
           {t("activities.mySessions.loadError")}
         </AppText>
       ) : !data || (unpinnedFeed.length === 0 && pinnedFeed.length === 0) ? (
-        <AppText className="text-center text-lg mt-20 mx-auto px-10">
-          {t("activities.mySessions.noSessions")}
-        </AppText>
+        <View className="flex-1 items-center mt-[20%] px-8">
+          <View className="items-center">
+            <View className="w-20 h-20 rounded-full bg-slate-800 border border-slate-700 items-center justify-center mb-5">
+              <MapPin size={36} color="#94a3b8" />
+            </View>
+            <AppText className="text-xl text-center mb-3">
+              {t("activities.mySessions.noSessions")}
+            </AppText>
+            <AppText className="text-sm text-gray-400 text-center leading-5">
+              {t("activities.mySessions.noSessionsDesc")}
+            </AppText>
+          </View>
+        </View>
       ) : (
         <FlatList
           data={unpinnedFeed}
@@ -80,7 +104,6 @@ export default function MyActivitiesScreen() {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{
             paddingBottom: 100,
-            paddingTop: pinnedFeed.length === 0 ? 30 : 0,
           }}
           onEndReached={() => {
             if (hasNextPage && !isFetchingNextPage) {
@@ -111,7 +134,7 @@ export default function MyActivitiesScreen() {
                     feedItem.id,
                     feedItem.type,
                     feedItem.feed_context,
-                    "activities",
+                    pinnedContext,
                   )
                 }
                 onDelete={() => {
@@ -131,13 +154,16 @@ export default function MyActivitiesScreen() {
             />
           }
           ListHeaderComponent={
-            <FeedHeader
-              pinnedFeed={pinnedFeed}
-              setExpandedItem={setExpandedItem}
-              setEditingItem={setEditingItem}
-              pinned_context="activities"
-              queryKey={["myActivitySessions"]}
-            />
+            <>
+              <FeedHeader
+                pinnedFeed={pinnedFeed}
+                setExpandedItem={setExpandedItem}
+                setEditingItem={setEditingItem}
+                pinned_context={pinnedContext}
+                queryKey={queryKey}
+              />
+              {pinnedFeed.length === 0 && <View className="h-5" />}
+            </>
           }
         />
       )}

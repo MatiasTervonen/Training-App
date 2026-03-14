@@ -26,7 +26,7 @@ import useTogglePin from "@/features/feed/hooks/useTogglePin";
 import useDeleteSession from "@/features/feed/hooks/useDeleteSession";
 import { useTranslation } from "react-i18next";
 import AnimatedButton from "@/components/buttons/animatedButton";
-import { Plus, Info } from "lucide-react-native";
+import { Plus, Info, Bell } from "lucide-react-native";
 import { useUserStore } from "@/lib/stores/useUserStore";
 import BodyText from "@/components/BodyText";
 import LinkButton from "@/components/buttons/LinkButton";
@@ -76,8 +76,13 @@ export default function RemindersScreen() {
     return t("reminders.noRemindersDelivered");
   };
 
+  const getEmptyDescription = () => {
+    if (filter === "upcoming") return t("reminders.noRemindersUpcomingDesc");
+    return t("reminders.noRemindersDeliveredDesc");
+  };
+
   const filterTabs = (
-    <View className="my-3 mx-4 bg-slate-800 rounded-lg">
+    <View className="mt-3 mb-1 mx-4 bg-slate-800 rounded-lg">
       <View className="flex-row p-1 gap-2">
         {FILTERS.map((f) => {
           const isActive = filter === f;
@@ -117,9 +122,19 @@ export default function RemindersScreen() {
         </AppText>
       ) : !data ||
         (unpinnedFeed.length === 0 && pinnedFeed.length === 0) ? (
-        <AppText className="text-center text-lg mt-10 mx-auto px-10">
-          {getEmptyMessage()}
-        </AppText>
+        <View className="flex-1 items-center mt-[30%] px-8">
+          <View className="items-center">
+            <View className="w-20 h-20 rounded-full bg-slate-800 border border-slate-700 items-center justify-center mb-5">
+              <Bell size={36} color="#94a3b8" />
+            </View>
+            <AppText className="text-xl text-center mb-3">
+              {getEmptyMessage()}
+            </AppText>
+            <AppText className="text-sm text-gray-400 text-center leading-5">
+              {getEmptyDescription()}
+            </AppText>
+          </View>
+        </View>
       ) : (
         <FlatList
           data={unpinnedFeed}

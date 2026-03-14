@@ -26,7 +26,6 @@ export async function POST(request: Request) {
 
   const { error: authTableError } = await adminSupabase.auth.admin.deleteUser(
     user.sub,
-    true,
   );
 
   if (authTableError) {

@@ -1,10 +1,16 @@
 import { useQueryClient, useInfiniteQuery } from "@tanstack/react-query";
-import { getActivitySessions } from "@/database/activities/myActivitySessions/get-sessions";
+import { getActivitySessions, getActivityPinnedContext } from "@/database/activities/myActivitySessions/get-sessions";
 import { FeedData } from "@/types/session";
 import { useEffect, useMemo } from "react";
 
-export default function useMyActivitiesFeed() {
+export default function useMyActivitiesFeed(activitySlug?: string) {
   const queryClient = useQueryClient();
+
+  const queryKey = activitySlug
+    ? ["myActivitySessions", activitySlug]
+    : ["myActivitySessions"];
+
+  const pinnedContext = getActivityPinnedContext(activitySlug);
 
   const {
     data,
@@ -16,9 +22,9 @@ export default function useMyActivitiesFeed() {
     isFetchingNextPage,
     isSuccess,
   } = useInfiniteQuery({
-    queryKey: ["myActivitySessions"],
+    queryKey,
     queryFn: ({ pageParam = 0 }) =>
-      getActivitySessions({ pageParam, limit: 10 }),
+      getActivitySessions({ pageParam, limit: 10, activitySlug }),
     initialPageParam: 0,
     getNextPageParam: (lastPage) => lastPage.nextPage,
   });
@@ -27,7 +33,7 @@ export default function useMyActivitiesFeed() {
 
   useEffect(() => {
     return () => {
-      queryClient.setQueryData<FeedData>(["myActivitySessions"], (old) => {
+      queryClient.setQueryData<FeedData>(queryKey, (old) => {
         if (!old) return old;
 
         return {
@@ -37,7 +43,7 @@ export default function useMyActivitiesFeed() {
         };
       });
     };
-  }, [queryClient]);
+  }, [queryClient, activitySlug]);
 
   const { pinnedFeed, unpinnedFeed } = useMemo(() => {
     const pinned: NonNullable<typeof data>["pages"][0]["feed"] = [];
@@ -62,5 +68,7 @@ export default function useMyActivitiesFeed() {
     isSuccess,
     pinnedFeed,
     unpinnedFeed,
+    queryKey,
+    pinnedContext,
   };
 }

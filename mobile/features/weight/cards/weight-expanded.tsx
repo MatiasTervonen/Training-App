@@ -65,7 +65,7 @@ export default function WeightSession({
     <ScrollView showsVerticalScrollIndicator={false}>
     <PageContainer>
       <AppText className="text-sm text-gray-400 text-center">
-        {t("weight.created")}: {formatDate(weight.created_at!)}
+        {formatDate(weight.created_at!)}
       </AppText>
       <View className="justify-between flex-1">
         <View>

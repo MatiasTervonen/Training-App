@@ -10,7 +10,8 @@
     "mySessions": {
       "title": "My Sessions",
       "loadError": "Failed to load gym sessions. Please try again later.",
-      "noSessions": "No gym sessions yet. Add a session to get started!",
+      "noSessions": "No gym sessions yet",
+      "noSessionsDesc": "Your completed gym sessions will appear here",
       "loadingDetails": "Loading gym session details...",
       "loadDetailsError": "Failed to load gym session details. Please try again later."
     },
@@ -70,7 +71,8 @@
       "deleteError2": "Please try again.",
       "title": "My Templates",
       "errorLoading": "Error loading templates. Please try again!",
-      "noTemplates": "No templates found. Create your first template!",
+      "noTemplates": "No templates yet",
+      "noTemplatesDesc": "Create your first gym template to get started",
       "errorLoadingExpanded": "Error loading template details. Please try again!",
       "loadingExpanded": "Loading details...",
       "createTemplate": "Create Template",
@@ -196,7 +198,8 @@
       "title": "Workout Analytics",
       "loading": "Loading...",
       "error": "Error loading workout data. Try again!",
-      "noData": "No workout data available. Start logging your workouts to see analytics!"
+      "noData": "No workout data yet",
+      "noDataDesc": "Start logging your workouts to see analytics here"
     },
     "saveSession": {
       "titleRequired": "Title is required.",

@@ -16,10 +16,12 @@
     "mySessions": {
       "title": "My Sessions",
       "loadError": "Failed to load activity sessions. Please try again later.",
-      "noSessions": "No activity sessions yet. Add a session to get started!",
+      "noSessions": "No activities yet",
+      "noSessionsDesc": "Start tracking your activities like running, cycling, walking and more. Your session history will appear here.",
       "loadingDetails": "Loading activity session details...",
       "loadingSession": "Loading activity session...",
-      "loadDetailsError": "Failed to load activity session details. Please try again later."
+      "loadDetailsError": "Failed to load activity session details. Please try again later.",
+      "all": "All"
     },
     "activeSessionError": "You already have an active session.",
     "activeSessionErrorSub": "Finish it before starting a new one.",
@@ -116,7 +118,8 @@
       "session": "session",
       "sessions": "sessions",
       "noActivitiesInPeriod": "No activities in this period",
-      "noData": "No data yet. Start your first activity session to see analytics here!",
+      "noData": "No data yet",
+      "noDataDesc": "Start your first activity session to see analytics here",
       "unknown": "Unknown"
     },
     "startActivityScreen": {
@@ -354,8 +357,8 @@
     "templatesScreen": {
       "title": "My Templates",
       "loadError": "Error loading templates. Try again!",
-      "noTemplates": "No templates found.",
-      "noTemplatesHint": "Create a new template to get started!",
+      "noTemplates": "No templates yet",
+      "noTemplatesHint": "Create a new template to get started",
       "edit": "Edit",
       "delete": "Delete",
       "history": "History",

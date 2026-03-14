@@ -149,5 +149,6 @@ export default function useSaveGymDraft({
 
   return {
     saveGymDraft,
+    hasLoadedDraft,
   };
 }

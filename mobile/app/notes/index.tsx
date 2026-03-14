@@ -23,7 +23,7 @@ import FolderFilterChips from "@/features/notes/components/FolderFilterChips";
 import MoveToFolderSheet from "@/features/notes/components/MoveToFolderSheet";
 import type { FolderFilter } from "@/database/notes/get-notes";
 import AnimatedButton from "@/components/buttons/animatedButton";
-import { Plus, FolderCog } from "lucide-react-native";
+import { Plus, FolderCog, StickyNote } from "lucide-react-native";
 
 export default function NotesScreen() {
   const { t } = useTranslation("notes");
@@ -47,7 +47,7 @@ export default function NotesScreen() {
   }, [selectedFolderId]);
 
   const queryClient = useQueryClient();
-  const { folders, isLoading: foldersLoading } = useFolders();
+  const { folders } = useFolders();
 
   const {
     data,
@@ -79,14 +79,12 @@ export default function NotesScreen() {
     <View>
       <View className="flex-row items-center">
         <View className="flex-1">
-          {folders.length > 0 && (
-            <FolderFilterChips
-              folders={folders}
-              selectedFolderId={selectedFolderId}
-              onSelectAll={() => setSelectedFolderId(null)}
-              onSelectFolder={(id) => setSelectedFolderId(id)}
-            />
-          )}
+          <FolderFilterChips
+            folders={folders}
+            selectedFolderId={selectedFolderId}
+            onSelectAll={() => setSelectedFolderId(null)}
+            onSelectFolder={(id) => setSelectedFolderId(id)}
+          />
         </View>
         <AnimatedButton
           onPress={() => router.push("/notes/folders" as never)}
@@ -105,7 +103,7 @@ export default function NotesScreen() {
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
     >
-      {!foldersLoading && headerContent}
+      {headerContent}
       {isLoading ? (
         <FeedSkeleton count={5} />
       ) : error ? (
@@ -113,9 +111,21 @@ export default function NotesScreen() {
           {t("notes.failedToLoad")}
         </AppText>
       ) : !data || (unpinnedFeed.length === 0 && pinnedFeed.length === 0) ? (
-        <AppText className="text-center text-lg mt-10 mx-auto">
-          {getEmptyMessage()}
-        </AppText>
+        <View className="flex-1 items-center mt-[30%] px-8">
+          <View className="items-center">
+            <View className="w-20 h-20 rounded-full bg-slate-800 border border-slate-700 items-center justify-center mb-5">
+              <StickyNote size={36} color="#94a3b8" />
+            </View>
+            <AppText className="text-xl text-center mb-3">
+              {getEmptyMessage()}
+            </AppText>
+            <AppText className="text-sm text-gray-400 text-center leading-5">
+              {selectedFolderId
+                ? t("notes.folders.moveToFolder")
+                : t("notes.noNotesDesc")}
+            </AppText>
+          </View>
+        </View>
       ) : (
         <FlatList
           data={unpinnedFeed}

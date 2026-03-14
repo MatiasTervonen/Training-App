@@ -1,6 +1,7 @@
 package com.layer100crypto.MyTrack.step
 
 import com.layer100crypto.MyTrack.R
+import android.Manifest
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -10,15 +11,18 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.pm.PackageManager
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import android.util.Log
+import androidx.core.content.ContextCompat
 import com.layer100crypto.MyTrack.MainActivity
 import java.text.NumberFormat
 import java.util.Locale
@@ -47,6 +51,7 @@ class StepTrackingService : Service(), SensorEventListener {
     private var helper: StepCounterHelper? = null
     private var screenUnlockReceiver: BroadcastReceiver? = null
     private var isSetUp = false
+    private var receivedSensorEvent = false
 
     // Step goal tracking
     private data class StepGoal(val id: String, val target: Int)
@@ -69,6 +74,11 @@ class StepTrackingService : Service(), SensorEventListener {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         if (intent?.action == "RELOAD_GOALS") {
             reloadGoals()
+            return START_STICKY
+        }
+
+        if (intent?.action == "ENSURE_SENSOR") {
+            ensureSensorRegistered()
             return START_STICKY
         }
 
@@ -104,6 +114,7 @@ class StepTrackingService : Service(), SensorEventListener {
     // SensorEventListener — always record hardware step sensor values.
     // TYPE_STEP_COUNTER is hardware-backed and already filters for real steps.
     override fun onSensorChanged(event: SensorEvent) {
+        receivedSensorEvent = true
         val currentValue = event.values[0].toLong()
         val h = helper ?: return
         h.recordReadingWithValue(currentValue)
@@ -124,14 +135,14 @@ class StepTrackingService : Service(), SensorEventListener {
             return
         }
 
-        sm.registerListener(
+        val registered = sm.registerListener(
             this,
             stepSensor,
             SensorManager.SENSOR_DELAY_NORMAL,
             0 // No batching — deliver events immediately
         )
         sensorManager = sm
-        Log.d(TAG, "Sensor listener registered")
+        Log.d(TAG, "Sensor listener registered, success=$registered")
     }
 
     private fun registerScreenUnlockReceiver() {
@@ -187,6 +198,47 @@ class StepTrackingService : Service(), SensorEventListener {
     private fun updateNotification() {
         val notificationManager = getSystemService(NotificationManager::class.java)
         notificationManager.notify(NOTIFICATION_ID, buildNotification())
+
+        // Self-healing: if no sensor events have ever been received,
+        // the listener may have been registered without ACTIVITY_RECOGNITION permission.
+        // Re-register once the permission is granted.
+        if (!receivedSensorEvent) {
+            ensureSensorRegistered()
+        }
+    }
+
+    /**
+     * Re-registers the step sensor listener if the ACTIVITY_RECOGNITION permission
+     * is now granted but no sensor events have been received yet.
+     * This handles the case where the service started before the permission was granted
+     * (e.g. after clearing app data).
+     */
+    private fun ensureSensorRegistered() {
+        if (receivedSensorEvent) return
+
+        // Check ACTIVITY_RECOGNITION permission on Android 10+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val granted = ContextCompat.checkSelfPermission(
+                this, Manifest.permission.ACTIVITY_RECOGNITION
+            ) == PackageManager.PERMISSION_GRANTED
+            if (!granted) {
+                Log.d(TAG, "ACTIVITY_RECOGNITION not granted, skipping sensor re-registration")
+                return
+            }
+        }
+
+        val sm = getSystemService(Context.SENSOR_SERVICE) as? SensorManager ?: return
+        val stepSensor = sm.getDefaultSensor(Sensor.TYPE_STEP_COUNTER) ?: return
+
+        // Unregister old listener if any
+        sensorManager?.unregisterListener(this)
+
+        // Re-register
+        val registered = sm.registerListener(
+            this, stepSensor, SensorManager.SENSOR_DELAY_NORMAL, 0
+        )
+        sensorManager = sm
+        Log.d(TAG, "Sensor listener re-registered, success=$registered")
     }
 
     // --- Step Goal Checking ---

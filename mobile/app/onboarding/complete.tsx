@@ -92,7 +92,7 @@ export default function CompleteScreen() {
   return (
     <View className="flex-1 px-6 justify-center">
       <OnboardingBackButton />
-      <OnboardingProgressBar currentStep={5} />
+      <OnboardingProgressBar currentStep={6} />
 
       <View className="mt-8">
         <AppText className="text-3xl text-center mb-4">

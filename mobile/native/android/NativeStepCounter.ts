@@ -87,6 +87,12 @@ export function addLiveStepListener(
   return DeviceEventEmitter.addListener(LIVE_STEP_EVENT, callback);
 }
 
+export function ensureStepSensor(): void {
+  if (Platform.OS === "android" && nativeStepCounter) {
+    nativeStepCounter.ensureStepSensor();
+  }
+}
+
 export function setStepGoals(
   goals: { id: string; target: number }[],
   notifTitle: string,

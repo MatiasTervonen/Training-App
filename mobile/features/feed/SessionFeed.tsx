@@ -37,6 +37,7 @@ import ReportSession from "@/features/reports/cards/report-expanded";
 import useUpdateFeedItemToTop from "./hooks/useUpdateFeedItemToTop";
 import { useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
+import { LayoutDashboard } from "lucide-react-native";
 
 type SessionFeedProps = {
   expandReminderId?: string;
@@ -170,9 +171,19 @@ export default function SessionFeed({ expandReminderId }: SessionFeedProps) {
           {t("feed.loadError")}
         </AppText>
       ) : !data || (unpinnedFeed.length === 0 && pinnedFeed.length === 0) ? (
-        <AppText className="text-center text-lg mt-20 mx-auto px-10">
-          {t("feed.noSessions")}
-        </AppText>
+        <View className="flex-1 items-center mt-[30%] px-8">
+          <View className="items-center">
+            <View className="w-20 h-20 rounded-full bg-slate-800 border border-slate-700 items-center justify-center mb-5">
+              <LayoutDashboard size={36} color="#94a3b8" />
+            </View>
+            <AppText className="text-xl text-center mb-3">
+              {t("feed.noSessions")}
+            </AppText>
+            <AppText className="text-sm text-gray-400 text-center leading-5">
+              {t("feed.noSessionsDesc")}
+            </AppText>
+          </View>
+        </View>
       ) : (
         <>
           <FlatList
@@ -499,9 +510,14 @@ export default function SessionFeed({ expandReminderId }: SessionFeedProps) {
               onClose={() => setEditingItem(null)}
               onSave={(updatedItem) => {
                 updateFeedItem(updatedItem);
+                queryClient.invalidateQueries({
+                  queryKey: ["fullWeightSession", editingItem.source_id],
+                });
                 setHasUnsavedChanges(false);
                 setEditingItem(null);
               }}
+              weightMedia={weightSessionFull}
+              isLoadingMedia={isLoadingWeightSession}
               onDirtyChange={setHasUnsavedChanges}
             />
           )}

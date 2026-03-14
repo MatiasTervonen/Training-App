@@ -71,7 +71,9 @@
       "repeating": "Repeating"
     },
     "noRemindersUpcoming": "No upcoming reminders",
+    "noRemindersUpcomingDesc": "Tap + to create a new reminder",
     "noRemindersDelivered": "No delivered reminders",
+    "noRemindersDeliveredDesc": "Delivered reminders will appear here",
     "loadingDetails": "Loading reminder details...",
     "errorLoading": "Error loading reminders. Try again!",
     "noReminders": "No {{tab}} reminders.",

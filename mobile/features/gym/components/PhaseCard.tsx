@@ -333,7 +333,7 @@ export default function PhaseCard(props: Props) {
             <ChevronDown color="#9ca3af" size={16} />
           )}
           <AppText className="flex-1" numberOfLines={1}>
-            {phaseLabel(phase.phase_type)}: {getTranslatedName(phase.activity_name, phase.activity_slug)} · {summary}
+            {phaseLabel(phase.phase_type)}: {getTranslatedName(phase.activity_name, phase.activity_slug)}
           </AppText>
         </View>
         <View className="flex-row items-center gap-3">

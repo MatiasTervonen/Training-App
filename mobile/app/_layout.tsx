@@ -54,6 +54,7 @@ import { hasStepsPermission } from "@/features/activities/stepToggle/stepPermiss
 import {
   startStepTrackingService,
   getTodaySteps,
+  ensureStepSensor,
 } from "@/native/android/NativeStepCounter";
 import { requestWidgetUpdate } from "react-native-android-widget";
 import { StepsWidget } from "@/features/widgets/StepsWidget";
@@ -85,6 +86,9 @@ async function onAppStateChange(status: AppStateStatus) {
 
   // Update Steps widget with fresh data and saved config when app comes to foreground
   if (status === "active" && Platform.OS === "android") {
+    // Ensure the step sensor is registered (handles permission granted after service start)
+    ensureStepSensor();
+
     try {
       const [steps, config] = await Promise.all([
         getTodaySteps(),

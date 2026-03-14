@@ -12,6 +12,7 @@ import WeightRow from "@/features/weight/RowAllDataTable";
 import WeightShareModal from "@/features/weight/components/WeightShareModal";
 import { useTranslation } from "react-i18next";
 import i18n from "@/app/i18n";
+import { Scale } from "lucide-react-native";
 
 type AllDataProps = {
   data: weight[];
@@ -126,6 +127,23 @@ export default function AllDataTable({ data, isLoading, error }: AllDataProps) {
       <SectionList
         sections={sections}
         ListHeaderComponent={renderHeader}
+        ListEmptyComponent={
+          !isLoading && !error ? (
+            <View className="items-center mt-[10%] px-8">
+              <View className="items-center">
+                <View className="w-20 h-20 rounded-full bg-slate-800 border border-slate-700 items-center justify-center mb-5">
+                  <Scale size={36} color="#94a3b8" />
+                </View>
+                <AppText className="text-xl text-center mb-3">
+                  {t("weight.analyticsScreen.noWeightEntries")}
+                </AppText>
+                <AppText className="text-sm text-gray-400 text-center leading-5">
+                  {t("weight.analyticsScreen.noWeightEntriesDesc")}
+                </AppText>
+              </View>
+            </View>
+          ) : null
+        }
         keyExtractor={(item) => item.id}
         renderSectionHeader={({ section }) => (
           <View className="bg-gray-800 px-4 py-2 flex-row justify-between items-center">

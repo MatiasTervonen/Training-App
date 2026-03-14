@@ -26,6 +26,7 @@ import SaveButton from "@/components/buttons/SaveButton";
 import FullScreenLoader from "@/components/FullScreenLoader";
 import useUpdateTimer from "@/features/timer/hooks/useUpdateTimer";
 import { useTranslation } from "react-i18next";
+import { Timer } from "lucide-react-native";
 
 export default function MyTimersScreen() {
   const { t } = useTranslation(["timer"]);
@@ -151,9 +152,19 @@ export default function MyTimersScreen() {
           {t("timer.errorLoadingTimers")}
         </AppText>
       ) : timers && timers.length === 0 ? (
-        <AppText className="text-center text-gray-300 mt-20 text-xl">
-          {t("timer.noTimers")}
-        </AppText>
+        <View className="items-center mt-[20%] px-8">
+          <View className="items-center">
+            <View className="w-20 h-20 rounded-full bg-slate-800 border border-slate-700 items-center justify-center mb-5">
+              <Timer size={36} color="#94a3b8" />
+            </View>
+            <AppText className="text-xl text-center mb-3">
+              {t("timer.noTimers")}
+            </AppText>
+            <AppText className="text-sm text-gray-400 text-center leading-5">
+              {t("timer.noTimersDesc")}
+            </AppText>
+          </View>
+        </View>
       ) : (
         timers?.map((timer) => (
           <View key={timer.id} className="mb-4">

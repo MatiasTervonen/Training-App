@@ -10,7 +10,8 @@
     "mySessions": {
       "title": "Omat sessiot",
       "loadError": "Kuntosalisessioiden lataus epäonnistui. Yritä myöhemmin uudelleen.",
-      "noSessions": "Ei kuntosalisessioita vielä. Lisää sessio aloittaaksesi!",
+      "noSessions": "Ei vielä kuntosalisessioita",
+      "noSessionsDesc": "Valmiit kuntosalisessiot näkyvät täällä",
       "loadingDetails": "Ladataan kuntosalisession tietoja...",
       "loadDetailsError": "Kuntosalisession tietojen lataus epäonnistui. Yritä myöhemmin uudelleen."
     },
@@ -70,7 +71,8 @@
       "deleteError2": "Yritä uudelleen.",
       "title": "Omat harjoituspohjat",
       "errorLoading": "Virhe harjoituspohjien lataamisessa. Yritä uudelleen!",
-      "noTemplates": "Harjoituspohjia ei löytynyt. Luo ensimmäinen harjoituspohjasi!",
+      "noTemplates": "Ei vielä harjoituspohjia",
+      "noTemplatesDesc": "Luo ensimmäinen harjoituspohja aloittaaksesi",
       "errorLoadingExpanded": "Virhe harjoituspohjan tietojen lataamisessa. Yritä uudelleen!",
       "loadingExpanded": "Ladataan tietoja...",
       "createTemplate": "Luo harjoituspohja",
@@ -198,7 +200,8 @@
       "title": "Harjoitusanalytiikka",
       "loading": "Ladataan...",
       "error": "Virhe harjoitustietojen lataamisessa. Yritä uudelleen!",
-      "noData": "Harjoitustietoja ei saatavilla. Aloita harjoitusten kirjaaminen nähdäksesi analytiikkaa!"
+      "noData": "Ei vielä harjoitustietoja",
+      "noDataDesc": "Aloita harjoitusten kirjaaminen nähdäksesi analytiikkaa täällä"
     },
     "saveSession": {
       "titleRequired": "Otsikko vaaditaan.",

@@ -18,6 +18,7 @@ export default function useChartImage(
   const values = chartData
     .map((item) => item.value)
     .filter((v): v is number => v !== null);
+  const uniqueValues = new Set(values).size;
   const minWeight = values.length > 0 ? Math.min(...values) : 0;
   const maxWeight = values.length > 0 ? Math.max(...values) : 100;
 
@@ -59,7 +60,8 @@ export default function useChartImage(
           data: chartData.map((item) => item.value),
           type: "line",
           smooth: true,
-          showSymbol: false,
+          showSymbol: uniqueValues <= 1,
+          symbolSize: 14,
           lineStyle: {
             color: "#93c5fd",
             width: 5,
@@ -106,7 +108,7 @@ setTimeout(function(){
 </script>
 </body>
 </html>`;
-  }, [chartData, minWeight, maxWeight, labelColor, gridColor]);
+  }, [chartData, minWeight, maxWeight, uniqueValues, labelColor, gridColor]);
 
   return html;
 }

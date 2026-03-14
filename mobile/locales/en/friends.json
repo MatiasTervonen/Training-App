@@ -3,6 +3,7 @@
     "title": "Friends",
     "myFriends": "My Friends",
     "noFriends": "No friends yet",
+    "noFriendsDesc": "Send a friend request to get started",
     "sendRequest": "Send Request",
     "sendFriendRequest": "Send Friend Request",
     "placeholder": "Enter friend's display name",

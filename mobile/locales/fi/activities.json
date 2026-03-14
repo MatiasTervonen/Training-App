@@ -16,10 +16,12 @@
     "mySessions": {
       "title": "Omat sessiot",
       "loadError": "Aktiviteettisessioiden lataus epäonnistui. Yritä myöhemmin uudelleen.",
-      "noSessions": "Ei aktiviteettisessioita vielä. Lisää sessio aloittaaksesi!",
+      "noSessions": "Ei vielä aktiviteetteja",
+      "noSessionsDesc": "Aloita aktiviteettien seuranta, kuten juoksu, pyöräily, kävely ja muut. Sessiohistoriasi näkyy täällä.",
       "loadingDetails": "Ladataan aktiviteettisession tietoja...",
       "loadingSession": "Ladataan aktiviteettisessiota...",
-      "loadDetailsError": "Aktiviteettisession tietojen lataus epäonnistui. Yritä myöhemmin uudelleen."
+      "loadDetailsError": "Aktiviteettisession tietojen lataus epäonnistui. Yritä myöhemmin uudelleen.",
+      "all": "Kaikki"
     },
     "activeSessionError": "Sinulla on jo aktiivinen sessio.",
     "activeSessionErrorSub": "Lopeta se ennen uuden aloittamista.",
@@ -116,7 +118,8 @@
       "session": "sessio",
       "sessions": "sessiota",
       "noActivitiesInPeriod": "Ei aktiviteetteja tällä ajanjaksolla",
-      "noData": "Ei vielä tietoja. Aloita ensimmäinen aktiviteettisessio nähdäksesi analytiikkaa täällä!",
+      "noData": "Ei vielä tietoja",
+      "noDataDesc": "Aloita ensimmäinen aktiviteettisessio nähdäksesi analytiikkaa täällä",
       "unknown": "Tuntematon"
     },
     "startActivityScreen": {
@@ -354,8 +357,8 @@
     "templatesScreen": {
       "title": "Omat pohjat",
       "loadError": "Virhe ladattaessa pohjia. Yritä uudelleen!",
-      "noTemplates": "Pohjia ei löytynyt.",
-      "noTemplatesHint": "Luo uusi pohja aloittaaksesi!",
+      "noTemplates": "Ei vielä pohjia",
+      "noTemplatesHint": "Luo uusi pohja aloittaaksesi",
       "edit": "Muokkaa",
       "delete": "Poista",
       "history": "Historia",

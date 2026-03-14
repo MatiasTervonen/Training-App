@@ -12,6 +12,7 @@ import AppInput from "@/components/AppInput";
 import AppText from "@/components/AppText";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import { useTranslation } from "react-i18next";
+import { Dumbbell } from "lucide-react-native";
 
 type Props = {
   onSelect: (exercise: userExercise) => void;
@@ -99,9 +100,18 @@ export default function ExerciseDropdownEdit({
               <ActivityIndicator />
             </View>
           ) : exercises?.length === 0 ? (
-            <View className="items-center self-center gap-3 text-lg px-5 mt-20">
-              <AppText>{t("gym.exerciseDropdown.noExercisesFound")}</AppText>
-              <AppText>{t("gym.exerciseDropdownEdit.addNewExercise")}</AppText>
+            <View className="items-center mt-[20%] px-8">
+              <View className="items-center">
+                <View className="w-20 h-20 rounded-full bg-slate-800 border border-slate-700 items-center justify-center mb-5">
+                  <Dumbbell size={36} color="#94a3b8" />
+                </View>
+                <AppText className="text-xl text-center mb-3">
+                  {t("gym.exerciseDropdown.noExercisesFound")}
+                </AppText>
+                <AppText className="text-sm text-gray-400 text-center leading-5">
+                  {t("gym.exerciseDropdownEdit.addNewExercise")}
+                </AppText>
+              </View>
             </View>
           ) : searchQuery.length > 0 && filteredExercises?.length === 0 ? (
             <View className="items-center self-center gap-3 text-lg px-5 mt-20">

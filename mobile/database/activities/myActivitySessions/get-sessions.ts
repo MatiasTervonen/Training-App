@@ -2,32 +2,49 @@ import { supabase } from "@/lib/supabase";
 import { handleError } from "@/utils/handleError";
 import { FeedItemUI } from "@/types/session";
 
+export function getActivityPinnedContext(activitySlug?: string): string {
+  if (!activitySlug) return "activities";
+  return `activities:type:${activitySlug}`;
+}
+
 export async function getActivitySessions({
   pageParam = 0,
   limit = 10,
+  activitySlug,
 }: {
   pageParam?: number;
   limit?: number;
+  activitySlug?: string;
 }): Promise<{
   feed: FeedItemUI[];
   nextPage: number | null;
 }> {
   const from = pageParam * limit;
   const to = from + limit - 1;
+  const pinnedContext = getActivityPinnedContext(activitySlug);
 
-  const pinnedPromise =
-    pageParam === 0
-      ? supabase
-          .from("pinned_items")
-          .select(`feed_items(*)`)
-          .eq("pinned_context", "activities")
-          .order("created_at", { ascending: false })
-      : Promise.resolve({ data: [], error: null });
+  let pinnedPromise;
+  if (pageParam === 0) {
+    const q = supabase
+      .from("pinned_items")
+      .select(`feed_items(*)`)
+      .eq("pinned_context", pinnedContext)
+      .order("created_at", { ascending: false });
+    pinnedPromise = q;
+  } else {
+    pinnedPromise = Promise.resolve({ data: [], error: null });
+  }
 
-  const feedPromise = supabase
+  const feedQuery = supabase
     .from("feed_items")
     .select("*")
-    .eq("type", "activity_sessions")
+    .eq("type", "activity_sessions");
+
+  if (activitySlug) {
+    feedQuery.eq("extra_fields->>activity_slug", activitySlug);
+  }
+
+  const feedPromise = feedQuery
     .order("activity_at", { ascending: false })
     .range(from, to);
 

@@ -276,6 +276,15 @@ class StepCounterModule(private val reactContext: ReactApplicationContext)
         reactContext.startService(intent)
     }
 
+    // --- Sensor Health Check ---
+
+    @ReactMethod
+    fun ensureStepSensor() {
+        val intent = Intent(reactContext, StepTrackingService::class.java)
+        intent.action = "ENSURE_SENSOR"
+        reactContext.startService(intent)
+    }
+
     // --- Live Step Updates (for activity sessions) ---
 
     @ReactMethod

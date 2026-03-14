@@ -15,6 +15,7 @@ import PageContainer from "@/components/PageContainer";
 import * as Device from "expo-device";
 import { useTranslation } from "react-i18next";
 import { hasStepsPermission } from "@/features/activities/stepToggle/stepPermission";
+import { BarChart3 } from "lucide-react-native";
 
 type RangeType = "week" | "month" | "3months";
 
@@ -109,13 +110,18 @@ export default function ActivityAnalytics() {
   if (hasNoData) {
     return (
       <PageContainer>
-        <AppText className="text-2xl text-center mb-6">
-          {t("activities.analyticsScreen.title")}
-        </AppText>
-        <View className="items-center mt-20 px-4">
-          <AppText className="text-gray-300 text-center text-lg">
-            {t("activities.analyticsScreen.noData")}
-          </AppText>
+        <View className="items-center mt-[30%] px-8">
+          <View className="items-center">
+            <View className="w-20 h-20 rounded-full bg-slate-800 border border-slate-700 items-center justify-center mb-5">
+              <BarChart3 size={36} color="#94a3b8" />
+            </View>
+            <AppText className="text-xl text-center mb-3">
+              {t("activities.analyticsScreen.noData")}
+            </AppText>
+            <AppText className="text-sm text-gray-400 text-center leading-5">
+              {t("activities.analyticsScreen.noDataDesc")}
+            </AppText>
+          </View>
         </View>
       </PageContainer>
     );

@@ -79,15 +79,15 @@ export default function ExerciseCard({
           >
             {index + 1}. {exercise.name}
           </AppText>
-          <View className="flex-row items-center gap-3 mt-1">
-            <AppText className="text-gray-400">
+          <View className="flex-row items-center justify-between mt-1">
+            <AppText className="text-gray-400 shrink" numberOfLines={1}>
               {t(`gym.equipment.${exercise.equipment?.toLowerCase()}`)} /{" "}
               {t(
                 `gym.muscleGroups.${exercise.muscle_group?.toLowerCase().replace(/ /g, "_")}`,
               )}
             </AppText>
             {mode === "session" && !showContent && exercise.sets.length > 0 && (
-              <View className="bg-gray-600 px-2 py-0.5 rounded">
+              <View className="bg-gray-600 px-2 py-0.5 rounded ml-2">
                 <AppText className="text-sm text-gray-300">
                   {exercise.sets.length} {t("gym.exerciseCard.setsLabel")}
                 </AppText>
@@ -139,7 +139,7 @@ export default function ExerciseCard({
           <View />
         )}
         {onToggleExpand && (
-          <Pressable onPress={onToggleExpand} className="pl-2">
+          <Pressable onPress={onToggleExpand} hitSlop={10} className="pl-2">
             {showContent ? (
               <ChevronUp color="#9ca3af" size={24} />
             ) : (

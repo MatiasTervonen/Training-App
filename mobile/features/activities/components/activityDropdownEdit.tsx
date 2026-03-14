@@ -17,6 +17,7 @@ import {
 } from "@/database/activities/get-user-activities";
 import { useDebouncedCallback } from "use-debounce";
 import { useTranslation } from "react-i18next";
+import { Route } from "lucide-react-native";
 
 type Props = {
   onSelect: (activity: UserActivity) => void;
@@ -122,13 +123,18 @@ export default function UserActivityDropdownEdit({ onSelect }: Props) {
               <ActivityIndicator />
             </View>
           ) : !isSearching && listData.length === 0 ? (
-            <View className="items-center self-center gap-3 text-lg px-5 mt-20">
-              <AppText>
-                {t("activities.activityDropdownEdit.noActivities")}
-              </AppText>
-              <AppText>
-                {t("activities.activityDropdownEdit.addNewActivity")}
-              </AppText>
+            <View className="items-center mt-[20%] px-8">
+              <View className="items-center">
+                <View className="w-20 h-20 rounded-full bg-slate-800 border border-slate-700 items-center justify-center mb-5">
+                  <Route size={36} color="#94a3b8" />
+                </View>
+                <AppText className="text-xl text-center mb-3">
+                  {t("activities.activityDropdownEdit.noActivities")}
+                </AppText>
+                <AppText className="text-sm text-gray-400 text-center leading-5">
+                  {t("activities.activityDropdownEdit.addNewActivity")}
+                </AppText>
+              </View>
             </View>
           ) : (
             <FlatList

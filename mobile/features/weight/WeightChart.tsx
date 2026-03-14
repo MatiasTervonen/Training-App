@@ -190,6 +190,11 @@ export default function WeightChart({
     return `${startFormatted} - ${endFormatted}`;
   }
 
+  const values = chartData.map((item) => item.value).filter((v): v is number => v !== null);
+  const uniqueValues = new Set(values).size;
+  const minWeight = values.length > 0 ? Math.min(...values) : 0;
+  const maxWeight = values.length > 0 ? Math.max(...values) : 100;
+
   const firstValue = chartData[0]?.value;
   const lastValue = chartData[chartData.length - 1]?.value;
 
@@ -203,11 +208,9 @@ export default function WeightChart({
         : rounded < 0
           ? `- ${Math.abs(rounded)}`
           : `${rounded}`;
+  } else if (values.length > 0) {
+    weightDifference = 0;
   }
-
-  const values = chartData.map((item) => item.value).filter((v): v is number => v !== null);
-  const minWeight = values.length > 0 ? Math.min(...values) : 0;
-  const maxWeight = values.length > 0 ? Math.max(...values) : 100;
 
   const option = useMemo(
     () => ({
@@ -241,7 +244,8 @@ export default function WeightChart({
           data: chartData.map((item) => item.value),
           type: "line",
           smooth: true,
-          showSymbol: false,
+          showSymbol: uniqueValues <= 1,
+          symbolSize: 8,
           itemStyle: {
             color: "#3b82f6", // dot color (Tailwind blue-500)
             borderColor: "#60a5fa", // outline
@@ -269,7 +273,7 @@ export default function WeightChart({
       ],
       grid: { top: 20, right: 20, bottom: 40, left: 20 },
     }),
-    [chartData, minWeight, maxWeight],
+    [chartData, minWeight, maxWeight, uniqueValues],
   );
 
   const chartRef = useRef<ReturnType<typeof echarts.init> | null>(null);

@@ -32,6 +32,12 @@ import {
   isIgnoringBatteryOptimizations,
   requestIgnoreBatteryOptimizations,
 } from "@/native/android/NativeBatteryOptimization";
+import { useUserStore } from "@/lib/stores/useUserStore";
+import {
+  registerForPushNotificationsAsync,
+  SaveTokenToServer,
+} from "@/features/push-notifications/actions";
+import { updateGpsTrackingStatus } from "@/features/activities/gpsToggle/actions";
 
 export default function PermissionsScreen() {
   const router = useRouter();
@@ -82,7 +88,21 @@ export default function PermissionsScreen() {
 
   const handleEnableNotifications = async () => {
     const { status } = await Notifications.requestPermissionsAsync();
-    setNotificationsGranted(status === "granted");
+    const granted = status === "granted";
+    setNotificationsGranted(granted);
+
+    if (granted) {
+      try {
+        const platform = Platform.OS === "ios" ? "ios" : "android";
+        const token = await registerForPushNotificationsAsync(t);
+        if (token) {
+          await SaveTokenToServer(token, platform);
+          useUserStore.getState().setUserSettings({ push_enabled: true });
+        }
+      } catch {
+        // OS permission granted but token registration failed — user can retry in Settings
+      }
+    }
   };
 
   const handleEnableLocation = async () => {
@@ -91,7 +111,19 @@ export default function PermissionsScreen() {
     if (fgStatus === "granted") {
       const { status: bgStatus } =
         await Location.requestBackgroundPermissionsAsync();
-      setLocationGranted(bgStatus === "granted");
+      const granted = bgStatus === "granted";
+      setLocationGranted(granted);
+
+      if (granted) {
+        try {
+          await updateGpsTrackingStatus(true);
+          useUserStore.getState().setUserSettings({
+            gps_tracking_enabled: true,
+          });
+        } catch {
+          // OS permission granted but DB update failed — user can retry in Settings
+        }
+      }
     }
   };
 

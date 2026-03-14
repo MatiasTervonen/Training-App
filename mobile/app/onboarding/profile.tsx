@@ -165,9 +165,6 @@ export default function ProfileSetupScreen() {
     router.push("/onboarding/about-you");
   };
 
-  const handleSkipStep = () => {
-    router.push("/onboarding/about-you");
-  };
 
   return (
     <>
@@ -220,14 +217,6 @@ export default function ProfileSetupScreen() {
               textClassName="text-lg"
               disabled={isSaving}
             />
-
-            <View className="items-center mt-4">
-              <AnimatedButton onPress={handleSkipStep} className="py-2 px-4">
-                <AppText className="text-slate-400 text-sm underline">
-                  {t("profile.skipStep")}
-                </AppText>
-              </AnimatedButton>
-            </View>
 
             <SkipOnboardingButton onSkip={skipOnboarding} />
           </View>

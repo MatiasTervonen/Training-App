@@ -93,6 +93,11 @@ export default function WeightFeedChart({ data }: WeightFeedChartProps) {
     });
   }, [fullDateRange, filteredData, data, locale]);
 
+  const values = chartData.map((item) => item.value).filter((v): v is number => v !== null);
+  const uniqueValues = new Set(values).size;
+  const minWeight = values.length > 0 ? Math.min(...values) : 0;
+  const maxWeight = values.length > 0 ? Math.max(...values) : 100;
+
   const firstValue = chartData[0]?.value;
   const lastValue = chartData[chartData.length - 1]?.value;
 
@@ -106,11 +111,9 @@ export default function WeightFeedChart({ data }: WeightFeedChartProps) {
         : rounded < 0
           ? `- ${Math.abs(rounded)}`
           : `${rounded}`;
+  } else if (values.length > 0) {
+    weightDifference = 0;
   }
-
-  const values = chartData.map((item) => item.value).filter((v): v is number => v !== null);
-  const minWeight = values.length > 0 ? Math.min(...values) : 0;
-  const maxWeight = values.length > 0 ? Math.max(...values) : 100;
 
   const option = useMemo(
     () => ({
@@ -144,7 +147,8 @@ export default function WeightFeedChart({ data }: WeightFeedChartProps) {
           data: chartData.map((item) => item.value),
           type: "line",
           smooth: true,
-          showSymbol: false,
+          showSymbol: uniqueValues <= 1,
+          symbolSize: 8,
           itemStyle: {
             color: "#3b82f6",
             borderColor: "#60a5fa",
@@ -171,7 +175,7 @@ export default function WeightFeedChart({ data }: WeightFeedChartProps) {
       ],
       grid: { top: 20, right: 20, bottom: 40, left: 20 },
     }),
-    [chartData, minWeight, maxWeight],
+    [chartData, minWeight, maxWeight, uniqueValues],
   );
 
   useEffect(() => {

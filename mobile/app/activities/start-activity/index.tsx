@@ -526,7 +526,7 @@ export default function StartActivityScreen() {
             </>
           )}
           {showStepToggle && (
-            <View className="flex-row items-center justify-between px-4">
+            <View className="flex-row items-center mt-7 justify-between px-4">
               <AppText className="text-lg">
                 {t("activities.startActivityScreen.enableStepsTracking")}
               </AppText>

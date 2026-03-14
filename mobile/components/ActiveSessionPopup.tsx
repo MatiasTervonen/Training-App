@@ -91,7 +91,7 @@ export default function ActiveSessionPopup() {
           className="w-full py-3 flex-row items-center z-50"
         >
           <View className="flex-row flex-1 justify-between items-center gap-5 ml-10">
-            <Timer textClassName="text-3xl" />
+            <Timer textClassName="text-2xl" />
             {activeSession.label && (
               <AppText
                 numberOfLines={1}

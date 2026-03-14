@@ -20,6 +20,7 @@ import GymSession from "@/features/gym/cards/gym-expanded";
 import useTogglePin from "@/features/feed/hooks/useTogglePin";
 import useDeleteSession from "@/features/feed/hooks/useDeleteSession";
 import { useTranslation } from "react-i18next";
+import { Dumbbell } from "lucide-react-native";
 
 export default function MyGymScreen() {
   const { t } = useTranslation("gym");
@@ -66,9 +67,19 @@ export default function MyGymScreen() {
           {t("gym.mySessions.loadError")}
         </AppText>
       ) : !data || (unpinnedFeed.length === 0 && pinnedFeed.length === 0) ? (
-        <AppText className="text-center text-lg mt-20 mx-auto px-10">
-          {t("gym.mySessions.noSessions")}
-        </AppText>
+        <View className="flex-1 items-center mt-[30%] px-8">
+          <View className="items-center">
+            <View className="w-20 h-20 rounded-full bg-slate-800 border border-slate-700 items-center justify-center mb-5">
+              <Dumbbell size={36} color="#94a3b8" />
+            </View>
+            <AppText className="text-xl text-center mb-3">
+              {t("gym.mySessions.noSessions")}
+            </AppText>
+            <AppText className="text-sm text-gray-400 text-center leading-5">
+              {t("gym.mySessions.noSessionsDesc")}
+            </AppText>
+          </View>
+        </View>
       ) : (
         <FlatList
           data={unpinnedFeed}

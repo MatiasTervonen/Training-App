@@ -9,7 +9,7 @@ import { MAX_REPORTS } from "@/types/report";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import Toast from "react-native-toast-message";
-import { Plus } from "lucide-react-native";
+import { Plus, FileText } from "lucide-react-native";
 
 export default function ReportsScreen() {
   const { t } = useTranslation("reports");
@@ -42,13 +42,18 @@ export default function ReportsScreen() {
 
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {schedules.length === 0 ? (
-          <View className="items-center py-10">
-            <AppText className="text-gray-400 text-center">
-              {t("reports.noReports")}
-            </AppText>
-            <AppText className="text-gray-500 text-sm text-center mt-2">
-              {t("reports.createFirst")}
-            </AppText>
+          <View className="items-center mt-[20%] px-8">
+            <View className="items-center">
+              <View className="w-20 h-20 rounded-full bg-slate-800 border border-slate-700 items-center justify-center mb-5">
+                <FileText size={36} color="#94a3b8" />
+              </View>
+              <AppText className="text-xl text-center mb-3">
+                {t("reports.noReports")}
+              </AppText>
+              <AppText className="text-sm text-gray-400 text-center leading-5">
+                {t("reports.createFirst")}
+              </AppText>
+            </View>
           </View>
         ) : (
           <View className="gap-3">

@@ -10,10 +10,12 @@ import * as Notifications from "expo-notifications";
 import { useUserStore } from "@/lib/stores/useUserStore";
 import Toast from "react-native-toast-message";
 import { syncNotifications } from "@/database/reminders/syncNotifications";
+import { syncHabitNotifications } from "@/database/habits/syncHabitNotifications";
 import { useEffect } from "react";
 import { syncAlarms } from "@/database/reminders/syncAlarms";
 import { cancelAllNativeAlarms } from "@/native/android/NativeAlarm";
 import { useTranslation } from "react-i18next";
+import { updatePushEnabledStatus } from "./updatePushEnabledStatus";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -44,12 +46,14 @@ export default function PushNotificationManager() {
 
       await SaveTokenToServer(token, platform);
 
+      await updatePushEnabledStatus(true);
       useUserStore.getState().setUserSettings({
         push_enabled: true,
       });
 
       await Promise.all([
         syncNotifications(),
+        syncHabitNotifications(),
         platform === "android" ? syncAlarms() : Promise.resolve(),
       ]);
 
@@ -98,6 +102,7 @@ export default function PushNotificationManager() {
             : Promise.resolve(),
         ]);
 
+        await updatePushEnabledStatus(false);
         useUserStore.getState().setUserSettings({
           push_enabled: false,
         });

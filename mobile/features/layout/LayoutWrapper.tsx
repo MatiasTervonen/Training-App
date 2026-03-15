@@ -6,7 +6,7 @@ import {
 import { useAppReadyStore } from "@/lib/stores/appReadyStore";
 import { useEffect, useRef, useCallback, useState } from "react";
 import { useRouter, usePathname } from "expo-router";
-import { Linking, Alert, View, ActivityIndicator } from "react-native";
+import { Linking, Alert, View, ActivityIndicator, Platform } from "react-native";
 import * as Notifications from "expo-notifications";
 import { supabase } from "@/lib/supabase";
 import { getRouteForNotification } from "@/features/notifications/getRouteForNotification";
@@ -20,6 +20,9 @@ import { useNotificationSubscription } from "@/features/notifications/hooks/useN
 import useNotificationNavigation from "@/features/notifications/useNotificationNavigation";
 import { useStepGoalSync } from "@/features/habits/hooks/useStepGoalSync";
 import { queryClient } from "@/lib/queryClient";
+import { syncNotifications } from "@/database/reminders/syncNotifications";
+import { syncHabitNotifications } from "@/database/habits/syncHabitNotifications";
+import { syncAlarms } from "@/database/reminders/syncAlarms";
 
 export default function LayoutWrapper({
   children,
@@ -73,6 +76,17 @@ export default function LayoutWrapper({
           loginUser(profileData as UserProfile, settingsData as UserSettings);
           // Clear any stale query results from before authentication
           queryClient.invalidateQueries();
+
+          // Sync notifications if push is enabled (handles reinstall/re-login)
+          if (settingsData?.push_enabled) {
+            Promise.all([
+              syncNotifications(),
+              syncHabitNotifications(),
+              Platform.OS === "android" ? syncAlarms() : Promise.resolve(),
+            ]).catch(() => {
+              // Non-critical — notifications will be missing but app still works
+            });
+          }
           // Only override device language if user explicitly set a preference
           if (settingsData?.language) {
             i18n.changeLanguage(settingsData.language);

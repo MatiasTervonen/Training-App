@@ -89,8 +89,8 @@ export default function SessionStats({
     <View className={gpsEnabled ? "bg-slate-950 py-5" : "flex-1 bg-slate-950 py-5"} style={style}>
       <View className={gpsEnabled ? "flex-row items-center justify-around mb-5" : "flex-1 items-center justify-evenly"}>
         {gpsEnabled ? (
-          <>
-            <View>
+          <View className="w-full">
+            <View className="flex-row items-center justify-around">
               <Timer
                 textClassName="text-2xl z-[999]"
                 manualSession={{
@@ -102,32 +102,28 @@ export default function SessionStats({
                 onPause={stopGPStracking}
                 color="#3b82f6"
               />
-              {(isStepRelevant || isCaloriesRelevant) && (
-                <View className="z-[999] flex-row gap-4 items-center mt-2">
-                  {isStepRelevant && (
-                    <View className="flex-row gap-2 items-center">
-                      <Footprints size={20} color="#f3f4f6" />
-                      <AppText className="text-xl z-[999]">{currentStepCount}</AppText>
-                    </View>
-                  )}
-                  {isCaloriesRelevant && (
-                    <View className="flex-row gap-1 items-center">
-                      <Flame size={20} color="#f97316" />
-                      <AppText className="text-xl z-[999]">{liveCalories ?? 0} kcal</AppText>
-                    </View>
-                  )}
-                </View>
-              )}
-            </View>
-            <View>
               <AppText className="text-xl z-[999]">
                 {formatAveragePace(averagePacePerKm)} {labels.pace}
               </AppText>
-              <AppText className="text-xl z-[999] mt-2">
+            </View>
+            <View className="flex-row items-center justify-around mt-3">
+              {isStepRelevant && (
+                <View className="flex-row gap-2 items-center">
+                  <Footprints size={20} color="#f3f4f6" />
+                  <AppText className="text-xl z-[999]">{currentStepCount}</AppText>
+                </View>
+              )}
+              {isCaloriesRelevant && (
+                <View className="flex-row gap-1 items-center">
+                  <Flame size={20} color="#f97316" />
+                  <AppText className="text-xl z-[999]">{liveCalories ?? 0} kcal</AppText>
+                </View>
+              )}
+              <AppText className="text-xl z-[999]">
                 {formatMeters(totalDistance)}
               </AppText>
             </View>
-          </>
+          </View>
         ) : (
           <>
             <Timer

@@ -171,7 +171,13 @@ export default Sentry.wrap(function RootLayout() {
   GpsTrackingPermission();
 
   if (!fontsLoaded) {
-    return null;
+    return (
+      <StatusBar
+        barStyle="light-content"
+        backgroundColor="#020617"
+        translucent={false}
+      />
+    );
   }
 
   return (

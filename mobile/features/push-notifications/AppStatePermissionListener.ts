@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import * as Notifications from "expo-notifications";
 import { AppState } from "react-native";
 import { deleteTokenFromServer } from "./actions";
+import { updatePushEnabledStatus } from "./updatePushEnabledStatus";
 
 export default function AppStatePermissionListener() {
   // Listen for app state changes and update push notifications toggle state accordingly. Check permissions when app is opened.
@@ -16,6 +17,7 @@ export default function AppStatePermissionListener() {
 
         await Notifications.cancelAllScheduledNotificationsAsync();
 
+        await updatePushEnabledStatus(false);
         useUserStore.getState().setUserSettings({
           push_enabled: false,
         });

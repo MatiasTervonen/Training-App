@@ -38,6 +38,7 @@ import {
   SaveTokenToServer,
 } from "@/features/push-notifications/actions";
 import { updateGpsTrackingStatus } from "@/features/activities/gpsToggle/actions";
+import { updatePushEnabledStatus } from "@/features/push-notifications/updatePushEnabledStatus";
 
 export default function PermissionsScreen() {
   const router = useRouter();
@@ -97,6 +98,7 @@ export default function PermissionsScreen() {
         const token = await registerForPushNotificationsAsync(t);
         if (token) {
           await SaveTokenToServer(token, platform);
+          await updatePushEnabledStatus(true);
           useUserStore.getState().setUserSettings({ push_enabled: true });
         }
       } catch {

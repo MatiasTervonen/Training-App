@@ -515,7 +515,7 @@ export default function StartActivityScreen() {
               </View>
               {showBatteryHint && (
                 <Pressable
-                  className="px-4 -mt-4 mb-4"
+                  className="px-4 mt-1"
                   onPress={() => requestIgnoreBatteryOptimizations()}
                 >
                   <AppTextNC className="text-sm text-blue-500 underline">
@@ -526,7 +526,7 @@ export default function StartActivityScreen() {
             </>
           )}
           {showStepToggle && (
-            <View className="flex-row items-center mt-7 justify-between px-4">
+            <View className="flex-row items-center mt-5 justify-between px-4">
               <AppText className="text-lg">
                 {t("activities.startActivityScreen.enableStepsTracking")}
               </AppText>

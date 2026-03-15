@@ -271,7 +271,7 @@ export default function ActivityShareModal({
           >
             <Mapbox.MapView
               ref={mapViewRef}
-              key={`${size}-${hideMapDetails}-${lineColorIndex}-${mapStyleIndex}`}
+              key={`${size}-${hideMapDetails}`}
               style={MAP_VIEW_STYLE}
               {...(hideMapDetails && noLabelsStyleJSON
                 ? { styleJSON: noLabelsStyleJSON }

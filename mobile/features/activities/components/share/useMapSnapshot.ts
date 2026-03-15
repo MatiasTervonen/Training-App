@@ -49,6 +49,7 @@ export default function useMapSnapshot(
   const snappingRef = useRef(false);
   const genRef = useRef(0);
   const fallbackTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const styleLoadedRef = useRef(false);
   const [noLabelsStyleJSON, setNoLabelsStyleJSON] = useState<string | null>(
     null,
   );
@@ -76,6 +77,7 @@ export default function useMapSnapshot(
     prevDepsKeyRef.current = depsKey;
     genRef.current += 1;
     snappingRef.current = false;
+    styleLoadedRef.current = false;
     if (fallbackTimerRef.current) {
       clearTimeout(fallbackTimerRef.current);
       fallbackTimerRef.current = null;
@@ -165,6 +167,7 @@ export default function useMapSnapshot(
   }, []);
 
   const onMapDidFinishLoading = useCallback(() => {
+    styleLoadedRef.current = true;
     // Don't snapshot here — the ShapeSource route layer may not be rendered
     // yet. But set a fallback in case onMapIdle never fires (e.g. cached tiles).
     if (fallbackTimerRef.current) {
@@ -181,6 +184,9 @@ export default function useMapSnapshot(
   }, [takeSnapshot]);
 
   const onMapIdle = useCallback(async () => {
+    // Ignore idle events that fire before the style has finished loading —
+    // Mapbox can reach "idle" before tiles are rendered on first style switch.
+    if (!styleLoadedRef.current) return;
     // Cancel the fallback timer — idle fired normally
     if (fallbackTimerRef.current) {
       clearTimeout(fallbackTimerRef.current);

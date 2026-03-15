@@ -1,6 +1,7 @@
 import "dotenv/config";
 import { APP_NAME } from "./lib/app-config";
 
+
 /** @type {import('react-native-android-widget').WithAndroidWidgetsParams} */
 const widgetConfig = {
   widgets: [
@@ -93,7 +94,7 @@ export default {
         {
           image:
             "./assets/images/app-logos/kurvi_ice_blue_final_copnverted.png",
-          imageWidth: 250,
+          imageWidth: 150,
           resizeMode: "contain",
           backgroundColor: "#0f172a",
         },

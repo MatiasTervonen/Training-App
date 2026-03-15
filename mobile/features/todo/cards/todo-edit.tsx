@@ -2,10 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import SaveButton from "@/components/buttons/SaveButton";
 import FullScreenLoader from "@/components/FullScreenLoader";
 import Toast from "react-native-toast-message";
-import {
-  full_todo_session_optional_id,
-  FeedItemUI,
-} from "@/types/session";
+import { full_todo_session_optional_id, FeedItemUI } from "@/types/session";
 import { editTodo } from "@/database/todo/edit-todo";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import { View, Pressable, Keyboard } from "react-native";
@@ -21,6 +18,37 @@ import { nanoid } from "nanoid/non-secure";
 import { TodoTaskMedia } from "@/database/todo/get-todo-media";
 import TodoTaskCard from "@/features/todo/components/TodoTaskCard";
 import ImageViewerModal from "@/features/notes/components/ImageViewerModal";
+
+const applyTaskMedia = (
+  tasks: full_todo_session_optional_id["todo_tasks"],
+  media: TodoTaskMedia,
+) =>
+  tasks.map((task) => {
+    const m = task.id ? media[task.id] : undefined;
+    if (!m) return task;
+    return {
+      ...task,
+      existingVoice: m.voice?.map((v) => ({
+        id: v.id,
+        uri: v.uri,
+        storage_path: v.storage_path,
+        duration_ms: v.duration_ms,
+      })),
+      existingImages: m.images?.map((img) => ({
+        id: img.id,
+        uri: img.uri,
+        storage_path: img.storage_path,
+      })),
+      existingVideos: m.videos?.map((v) => ({
+        id: v.id,
+        uri: v.uri,
+        thumbnailUri: v.thumbnailUri,
+        storage_path: v.storage_path,
+        thumbnail_storage_path: v.thumbnail_storage_path,
+        duration_ms: v.duration_ms,
+      })),
+    };
+  });
 
 type Props = {
   todo_session: full_todo_session_optional_id;
@@ -39,39 +67,11 @@ export default function EditTodo({
 }: Props) {
   const { t } = useTranslation(["todo", "common"]);
 
-  const applyTaskMedia = (
-    tasks: typeof todo_session.todo_tasks,
-    media: TodoTaskMedia,
-  ) =>
-    tasks.map((task) => {
-      const m = task.id ? media[task.id] : undefined;
-      if (!m) return task;
-      return {
-        ...task,
-        existingVoice: m.voice?.map((v) => ({
-          id: v.id,
-          uri: v.uri,
-          storage_path: v.storage_path,
-          duration_ms: v.duration_ms,
-        })),
-        existingImages: m.images?.map((img) => ({
-          id: img.id,
-          uri: img.uri,
-          storage_path: img.storage_path,
-        })),
-        existingVideos: m.videos?.map((v) => ({
-          id: v.id,
-          uri: v.uri,
-          thumbnailUri: v.thumbnailUri,
-          storage_path: v.storage_path,
-          thumbnail_storage_path: v.thumbnail_storage_path,
-          duration_ms: v.duration_ms,
-        })),
-      };
-    });
-
   const initData = taskMedia
-    ? { ...todo_session, todo_tasks: applyTaskMedia(todo_session.todo_tasks, taskMedia) }
+    ? {
+        ...todo_session,
+        todo_tasks: applyTaskMedia(todo_session.todo_tasks, taskMedia),
+      }
     : todo_session;
 
   const [originalData, setOriginalData] = useState(initData);
@@ -170,8 +170,15 @@ export default function EditTodo({
   const updated = new Date().toISOString();
 
   const handleSave = async () => {
-    if (sessionData.todo_tasks.some((task) => task.draftVideos?.some((v) => v.isCompressing))) {
-      Toast.show({ type: "info", text1: t("common:common.media.videoStillCompressing") });
+    if (
+      sessionData.todo_tasks.some((task) =>
+        task.draftVideos?.some((v) => v.isCompressing),
+      )
+    ) {
+      Toast.show({
+        type: "info",
+        text1: t("common:common.media.videoStillCompressing"),
+      });
       return;
     }
 
@@ -294,9 +301,7 @@ export default function EditTodo({
                     notes={task.notes ?? ""}
                     isExpanded={expandedIndex === index}
                     onToggleExpand={() =>
-                      setExpandedIndex(
-                        expandedIndex === index ? null : index,
-                      )
+                      setExpandedIndex(expandedIndex === index ? null : index)
                     }
                     onTaskChange={(value) =>
                       updateTask(index, () => ({ task: value }))
@@ -316,7 +321,9 @@ export default function EditTodo({
                         draftImages: image.isLoading
                           ? [...(t.draftImages ?? []), image]
                           : !image.uri
-                            ? (t.draftImages ?? []).filter((img) => img.id !== image.id)
+                            ? (t.draftImages ?? []).filter(
+                                (img) => img.id !== image.id,
+                              )
                             : (t.draftImages ?? []).map((img) =>
                                 img.id === image.id ? image : img,
                               ),
@@ -324,11 +331,19 @@ export default function EditTodo({
                     }
                     onAddVideo={(video) =>
                       updateTask(index, (t) => ({
-                        draftVideos: (t.draftVideos ?? []).some((v) => v.id === video.id)
+                        draftVideos: (t.draftVideos ?? []).some(
+                          (v) => v.id === video.id,
+                        )
                           ? !video.uri
-                            ? (t.draftVideos ?? []).filter((v) => v.id !== video.id)
-                            : (t.draftVideos ?? []).map((v) => v.id === video.id ? video : v)
-                          : video.isCompressing ? [...(t.draftVideos ?? []), video] : (t.draftVideos ?? []),
+                            ? (t.draftVideos ?? []).filter(
+                                (v) => v.id !== video.id,
+                              )
+                            : (t.draftVideos ?? []).map((v) =>
+                                v.id === video.id ? video : v,
+                              )
+                          : video.isCompressing
+                            ? [...(t.draftVideos ?? []), video]
+                            : (t.draftVideos ?? []),
                       }))
                     }
                     onAddRecording={(uri, durationMs) =>
@@ -353,9 +368,7 @@ export default function EditTodo({
                     }
                     onDeleteDraftVideo={(id) =>
                       updateTask(index, (t) => ({
-                        draftVideos: t.draftVideos?.filter(
-                          (v) => v.id !== id,
-                        ),
+                        draftVideos: t.draftVideos?.filter((v) => v.id !== id),
                       }))
                     }
                     onDeleteDraftRecording={(id) =>
@@ -367,9 +380,14 @@ export default function EditTodo({
                     }
                     onDeleteExistingImage={(id) => {
                       const task = sessionData.todo_tasks[index];
-                      const image = task.existingImages?.find((img) => img.id === id);
+                      const image = task.existingImages?.find(
+                        (img) => img.id === id,
+                      );
                       if (image) {
-                        setDeletedImagePaths((prev) => [...prev, image.storage_path]);
+                        setDeletedImagePaths((prev) => [
+                          ...prev,
+                          image.storage_path,
+                        ]);
                       }
                       setDeletedImageIds((prev) => [...prev, id]);
                       updateTask(index, (t) => ({
@@ -380,10 +398,13 @@ export default function EditTodo({
                     }}
                     onDeleteExistingVideo={(id) => {
                       const task = sessionData.todo_tasks[index];
-                      const video = task.existingVideos?.find((v) => v.id === id);
+                      const video = task.existingVideos?.find(
+                        (v) => v.id === id,
+                      );
                       if (video) {
                         const paths = [video.storage_path];
-                        if (video.thumbnail_storage_path) paths.push(video.thumbnail_storage_path);
+                        if (video.thumbnail_storage_path)
+                          paths.push(video.thumbnail_storage_path);
                         setDeletedVideoPaths((prev) => [...prev, ...paths]);
                       }
                       setDeletedVideoIds((prev) => [...prev, id]);
@@ -395,9 +416,14 @@ export default function EditTodo({
                     }}
                     onDeleteExistingVoice={(id) => {
                       const task = sessionData.todo_tasks[index];
-                      const voice = task.existingVoice?.find((v) => v.id === id);
+                      const voice = task.existingVoice?.find(
+                        (v) => v.id === id,
+                      );
                       if (voice) {
-                        setDeletedVoicePaths((prev) => [...prev, voice.storage_path]);
+                        setDeletedVoicePaths((prev) => [
+                          ...prev,
+                          voice.storage_path,
+                        ]);
                       }
                       setDeletedVoiceIds((prev) => [...prev, id]);
                       updateTask(index, (t) => ({

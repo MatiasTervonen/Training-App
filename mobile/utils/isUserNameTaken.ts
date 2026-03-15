@@ -1,4 +1,5 @@
 import { Session } from "@supabase/supabase-js";
+import { API_URL } from "@/utils/apiUrl";
 
 export const isUserNameTaken = async (
   name: string,
@@ -6,7 +7,7 @@ export const isUserNameTaken = async (
 ): Promise<boolean | null> => {
   try {
     const response = await fetch(
-      `${process.env.EXPO_PUBLIC_API_URL}/api/settings/userName-available?name=${encodeURIComponent(name)}`,
+      `${API_URL}/api/settings/userName-available?name=${encodeURIComponent(name)}`,
       {
         headers: {
           Authorization: `Bearer ${session?.access_token}`,

@@ -13,6 +13,7 @@ import { saveUserProfile } from "@/database/settings/save-user-profile";
 import { validateUserName } from "@/database/settings/validateUserName";
 import { handleError } from "@/utils/handleError";
 import { supabase } from "@/lib/supabase";
+import { API_URL } from "@/utils/apiUrl";
 import PageContainer from "@/components/PageContainer";
 import mime from "mime";
 import { useTranslation } from "react-i18next";
@@ -123,7 +124,7 @@ export default function ProfileScreen() {
       } as any);
 
       const response = await fetch(
-        `${process.env.EXPO_PUBLIC_API_URL_PROD}/api/settings/save-profilePic-mobile`,
+        `${API_URL}/api/settings/save-profilePic-mobile`,
         {
           method: "POST",
           headers: {

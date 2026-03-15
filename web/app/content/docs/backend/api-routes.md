@@ -52,13 +52,15 @@ The **server client** (`utils/supabase/server.ts`) automatically forwards the `A
 
 ## Mobile App Usage
 
-The mobile app uses `EXPO_PUBLIC_API_URL` as the base URL and passes the Supabase access token:
+The mobile app uses `API_URL` from `@/utils/apiUrl` as the base URL. It automatically picks `EXPO_PUBLIC_API_URL_DEV` or `EXPO_PUBLIC_API_URL_PROD` based on `__DEV__`:
 
 ```typescript
+import { API_URL } from "@/utils/apiUrl";
+
 const { data: { session } } = await supabase.auth.getSession();
 
 const res = await fetch(
-  `${process.env.EXPO_PUBLIC_API_URL}/api/user/delete-account`,
+  `${API_URL}/api/user/delete-account`,
   {
     method: "POST",
     headers: {
@@ -72,7 +74,7 @@ const res = await fetch(
 
 ### `POST /api/user/delete-account`
 
-Deletes the authenticated user's account. Uses the **admin client** because `auth.admin.deleteUser()` requires the service-role key.
+Deletes the authenticated user's account. Uses the **admin client** because `auth.admin.deleteUser()` requires the service-role key. After deletion, cleans up all user files from storage buckets (notes-voice, notes-images, media-videos, feedback-images, profile-pictures).
 
 - **Auth:** Bearer token → `adminSupabase.auth.getClaims(token)`
 - **Client:** Admin (service-role)

@@ -13,6 +13,7 @@ import ProfilePicture from "@/components/ProfilePicture";
 import OnboardingProgressBar from "@/features/onboarding/OnboardingProgressBar";
 import SkipOnboardingButton from "@/features/onboarding/SkipOnboardingButton";
 import OnboardingBackButton from "@/features/onboarding/OnboardingBackButton";
+import { API_URL } from "@/utils/apiUrl";
 import { useSkipOnboarding } from "@/features/onboarding/useSkipOnboarding";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
@@ -91,7 +92,7 @@ export default function ProfileSetupScreen() {
       } as any);
 
       const response = await fetch(
-        `${process.env.EXPO_PUBLIC_API_URL_PROD}/api/settings/save-profilePic-mobile`,
+        `${API_URL}/api/settings/save-profilePic-mobile`,
         {
           method: "POST",
           headers: {

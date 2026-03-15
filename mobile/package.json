@@ -3,7 +3,7 @@
   "main": "index.ts",
   "version": "1.0.0",
   "scripts": {
-    "start": "expo start",
+    "start": "node scripts/update-dev-ip.js && expo start",
     "reset-project": "node ./scripts/reset-project.js",
     "android": "expo run:android",
     "android:release": "expo run:android --variant release",

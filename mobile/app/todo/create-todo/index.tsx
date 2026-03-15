@@ -139,6 +139,7 @@ export default function CreateTodo() {
   return (
     <View className="flex-1">
       <KeyboardAwareScrollView
+        bottomOffset={50}
         contentContainerStyle={{ flexGrow: 1 }}
         showsVerticalScrollIndicator={false}
       >

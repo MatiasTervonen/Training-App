@@ -40,7 +40,7 @@ export default {
     version: "1.0.0",
     orientation: "default",
     icon: "./assets/images/app-logos/kurvi_icon_ice_blue_rounded-converted-1024-1024.png",
-    scheme: "mytrack",
+    scheme: "kurvi",
     userInterfaceStyle: "automatic",
     newArchEnabled: true,
     ios: {

@@ -73,6 +73,7 @@ export default function AboutYouScreen() {
 
   return (
     <KeyboardAwareScrollView
+      bottomOffset={50}
       contentContainerStyle={{ flexGrow: 1, justifyContent: "center", paddingHorizontal: 24, paddingVertical: 24 }}
     >
       <Pressable className="flex-1 justify-center" onPress={Keyboard.dismiss}>

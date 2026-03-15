@@ -1,10 +1,5 @@
-import {
-  View,
-  Alert,
-  Keyboard,
-  TouchableWithoutFeedback,
-  ScrollView,
-} from "react-native";
+import { View, Alert, Keyboard, Pressable } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import AppText from "@/components/AppText";
 import { useState, useEffect } from "react";
 import { useSignOut } from "@/lib/handleSignout";
@@ -16,6 +11,8 @@ import PageContainer from "@/components/PageContainer";
 import { useConfirmAction } from "@/lib/confirmAction";
 import { useUserStore } from "@/lib/stores/useUserStore";
 import { useTranslation } from "react-i18next";
+import BodyText from "@/components/BodyText";
+import { API_URL } from "@/utils/apiUrl";
 
 export default function SecurityPage() {
   const { t } = useTranslation();
@@ -126,7 +123,7 @@ export default function SecurityPage() {
       }
 
       const res = await fetch(
-        `${process.env.EXPO_PUBLIC_API_URL_PROD}/api/user/delete-account`,
+        `${API_URL}/api/user/delete-account`,
         {
           method: "POST",
           headers: {
@@ -158,29 +155,31 @@ export default function SecurityPage() {
   };
 
   return (
-    <ScrollView>
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+    <KeyboardAwareScrollView bottomOffset={50}>
+      <Pressable onPress={Keyboard.dismiss} className="flex-1">
         <PageContainer className="items-center">
           <AppText className="text-2xl mb-10">
             {t("menu:security.title")}
           </AppText>
-          {isGoogleUser ? (
+          {isGoogleUser || isGuest ? (
             <View className="mb-10">
               <AppText className="text-xl mb-5 underline text-center">
                 {t("menu:security.resetPassword.title")}
               </AppText>
-              <AppText className="text-gray-400 text-center">
-                {t("menu:security.googleAccount")}
-              </AppText>
+              <BodyText className="text-gray-400 text-center">
+                {isGuest
+                  ? t("menu:security.guestAccount")
+                  : t("menu:security.googleAccount")}
+              </BodyText>
             </View>
           ) : (
             <>
               <AppText className="text-xl mb-5 underline">
                 {t("menu:security.resetPassword.title")}
               </AppText>
-              <AppText className="text-gray-300 mb-5 text-sm">
+              <BodyText className="text-gray-300 mb-5 text-sm">
                 {t("menu:security.resetPassword.description")}
-              </AppText>
+              </BodyText>
               <View className="w-full mb-5">
                 <AppInput
                   label={t("menu:security.resetPassword.newPassword")}
@@ -222,36 +221,24 @@ export default function SecurityPage() {
                   Placeholder
                 </AppText>
               )}
-              {isGuest ? (
-                <View className="w-full">
-                  <SaveButtonSpinner
-                    onPress={handleSavePassword}
-                    label={t("menu:security.resetPassword.saveNotAllowed")}
-                    disabled={isGuest}
-                    loading={loading}
-                    className="bg-gray-600 border-gray-400 hover:bg-gray-500"
-                  />
-                </View>
-              ) : (
-                <View className="w-full">
-                  <SaveButtonSpinner
-                    onPress={handleSavePassword}
-                    label={loading ? t("common.saving") : t("common.save")}
-                    disabled={loading}
-                    loading={loading}
-                    className="btn-base"
-                  />
-                </View>
-              )}
+              <View className="w-full">
+                <SaveButtonSpinner
+                  onPress={handleSavePassword}
+                  label={loading ? t("common.saving") : t("common.save")}
+                  disabled={loading}
+                  loading={loading}
+                  className="btn-base"
+                />
+              </View>
             </>
           )}
 
           <AppText className="mt-10 underline text-xl">
             {t("menu:security.deleteAccount.title")}
           </AppText>
-          <AppText className="my-5 text-gray-300">
+          <BodyText className="my-5 text-gray-300">
             {t("menu:security.deleteAccount.description")}
-          </AppText>
+          </BodyText>
           <View className="w-full mb-5">
             <AppInput
               label={t("menu:security.deleteAccount.inputLabel")}
@@ -286,7 +273,7 @@ export default function SecurityPage() {
             />
           </View>
         </PageContainer>
-      </TouchableWithoutFeedback>
-    </ScrollView>
+      </Pressable>
+    </KeyboardAwareScrollView>
   );
 }

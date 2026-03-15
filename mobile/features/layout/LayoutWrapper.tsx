@@ -30,6 +30,20 @@ export default function LayoutWrapper({
   children: React.ReactNode;
 }) {
   const [sessionChecked, setSessionChecked] = useState(false);
+  // Only show the loading spinner when a notification tap needs to redirect —
+  // normal app opens should render children immediately (no spinner flash).
+  const [hasPendingNotification] = useState(() => {
+    const lastResponse = Notifications.getLastNotificationResponse();
+    if (!lastResponse) return false;
+    if (
+      lastResponse.actionIdentifier !==
+      Notifications.DEFAULT_ACTION_IDENTIFIER
+    )
+      return false;
+    return !!getRouteForNotification(
+      lastResponse.notification.request.content.data,
+    );
+  });
 
   const router = useRouter();
   const pathname = usePathname();
@@ -98,12 +112,13 @@ export default function LayoutWrapper({
 
         // Check onboarding status after login (strict === false so undefined/missing is treated as completed)
         const latestSettings = useUserStore.getState().settings;
-        if (
-          !skipRedirect &&
-          latestSettings?.has_completed_onboarding === false &&
-          !currentPathname.startsWith("/onboarding")
-        ) {
-          router.replace("/onboarding");
+        if (latestSettings?.has_completed_onboarding === false) {
+          if (
+            !skipRedirect &&
+            !currentPathname.startsWith("/onboarding")
+          ) {
+            router.replace("/onboarding");
+          }
           return;
         }
 
@@ -142,8 +157,8 @@ export default function LayoutWrapper({
 
             const hasDeepLink =
               initialUrl != null &&
-              initialUrl.startsWith("mytrack://") &&
-              initialUrl.length > "mytrack://".length;
+              initialUrl.startsWith("kurvi://") &&
+              initialUrl.length > "kurvi://".length;
 
             // Check if a notification tap will handle navigation
             const hasNotificationNav =
@@ -192,7 +207,7 @@ export default function LayoutWrapper({
     }
   }, [pathname, setModalPageConfig]);
 
-  if (!sessionChecked) {
+  if (!sessionChecked && hasPendingNotification) {
     return (
       <View className="flex-1 justify-center items-center bg-slate-900">
         <ActivityIndicator size="large" color="#9ca3af" />

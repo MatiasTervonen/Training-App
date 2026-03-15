@@ -651,6 +651,7 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
       )}
 
       <KeyboardAwareScrollView
+        bottomOffset={50}
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={{ flexGrow: 1 }}
         showsVerticalScrollIndicator={false}

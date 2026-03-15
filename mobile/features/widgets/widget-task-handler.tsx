@@ -72,7 +72,8 @@ export async function widgetTaskHandler(props: WidgetTaskHandlerProps) {
       const route =
         props.clickActionData?.route ?? props.clickAction;
       if (route) {
-        Linking.openURL(`mytrack://${route}`);
+        const scheme = __DEV__ ? 'kurvi-dev' : 'kurvi';
+        Linking.openURL(`${scheme}://${route}`);
       }
       break;
     }

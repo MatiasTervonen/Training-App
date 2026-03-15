@@ -175,9 +175,11 @@ export default function PhaseCard(props: Props) {
             <View className="w-1/2 items-center">
               <View className="flex-row items-center gap-1">
                 <Ruler color="#60a5fa" size={16} />
-                <AppText className="text-xl text-blue-300">
-                  ~{formatMeters(props.estimatedDistance ?? 0)}
-                </AppText>
+                <FixedWidthDigits
+                  text={`~${formatMeters(props.estimatedDistance ?? 0)}`}
+                  className="text-xl text-blue-300"
+                  charWidth={14}
+                />
               </View>
               <AppText className="text-xs text-gray-400 mt-1">
                 {t("gym.phase.distance")}

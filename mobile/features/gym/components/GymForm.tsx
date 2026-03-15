@@ -17,6 +17,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getLastExerciseHistory } from "@/database/gym/last-exercise-history";
 import { useTimerStore } from "@/lib/stores/timerStore";
+import { useRestTimerStore } from "@/lib/stores/restTimerStore";
 import { useConfirmAction } from "@/lib/confirmAction";
 import GroupGymExercises from "@/features/gym/lib/GroupGymExercises";
 import ExerciseCard from "@/features/gym/components/ExerciseCard";
@@ -244,7 +245,7 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
 
   // useSaveGymDraft hook to save the draft
 
-  useSaveGymDraft({
+  const { hasLoadedDraft } = useSaveGymDraft({
     exercises,
     notes,
     title,
@@ -380,6 +381,7 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
 
   const resetSession = () => {
     clearEverything();
+    useRestTimerStore.getState().clearRestTimer();
     AsyncStorage.removeItem("gym_session_draft");
     AsyncStorage.removeItem("startedFromTemplate");
     setSupersetExercise([]);
@@ -620,17 +622,25 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
   const toggleExercise = useCallback((exerciseId: string) => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     setCollapsedExercises((prev) => {
-      const next = new Set(prev);
-      if (next.has(exerciseId)) {
-        next.delete(exerciseId);
-      } else {
+      const isCurrentlyExpanded = !prev.has(exerciseId);
+      if (isCurrentlyExpanded) {
+        // Already expanded — collapse it
+        const next = new Set(prev);
         next.add(exerciseId);
+        return next;
       }
-      return next;
+      // Expanding this card — collapse all others
+      const allCollapsed = new Set(exercises.map((ex) => ex.exercise_id));
+      allCollapsed.delete(exerciseId);
+      return allCollapsed;
     });
-  }, []);
+  }, [exercises]);
 
   const groupedExercises = GroupGymExercises(exercises);
+
+  if (!isEditing && !hasLoadedDraft) {
+    return <FullScreenLoader visible message="" />;
+  }
 
   return (
     <>

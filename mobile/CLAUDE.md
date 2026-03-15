@@ -43,6 +43,10 @@
 ## TypeScript
 - Never use `any` type. Fix TypeScript errors with proper types. If you're unsure of the type, read the codebase to find the correct one.
 
+## Native Code (CRITICAL)
+- NEVER run `npx expo prebuild` or `npx expo prebuild --clean`. It deletes all custom native code (widgets, custom activities, sound assets, build config).
+- Always make targeted edits to specific native files (e.g., AndroidManifest.xml) instead of regenerating.
+
 ## Post-Implementation Review
 - After implementing a feature from the `specs/` folder, scan the changed code against the best practices references in `.agents/skills/react-native-best-practices/references/` and `.agents/skills/react-data-patterns/references/`. Focus on Critical and High impact patterns only.
 

@@ -6,7 +6,7 @@ import {
 import { useAppReadyStore } from "@/lib/stores/appReadyStore";
 import { useEffect, useRef, useCallback, useState } from "react";
 import { useRouter, usePathname } from "expo-router";
-import { Linking, Alert, View, ActivityIndicator, Platform } from "react-native";
+import { Linking, Alert, View, Platform } from "react-native";
 import * as Notifications from "expo-notifications";
 import { supabase } from "@/lib/supabase";
 import { getRouteForNotification } from "@/features/notifications/getRouteForNotification";
@@ -23,6 +23,7 @@ import { queryClient } from "@/lib/queryClient";
 import { syncNotifications } from "@/database/reminders/syncNotifications";
 import { syncHabitNotifications } from "@/database/habits/syncHabitNotifications";
 import { syncAlarms } from "@/database/reminders/syncAlarms";
+import BootScreen from "@/features/feed/fakeFeedLoader";
 
 export default function LayoutWrapper({
   children,
@@ -30,23 +31,13 @@ export default function LayoutWrapper({
   children: React.ReactNode;
 }) {
   const [sessionChecked, setSessionChecked] = useState(false);
-  // Only show the loading spinner when a notification tap needs to redirect —
-  // normal app opens should render children immediately (no spinner flash).
-  const [hasPendingNotification] = useState(() => {
-    const lastResponse = Notifications.getLastNotificationResponse();
-    if (!lastResponse) return false;
-    if (
-      lastResponse.actionIdentifier !==
-      Notifications.DEFAULT_ACTION_IDENTIFIER
-    )
-      return false;
-    return !!getRouteForNotification(
-      lastResponse.notification.request.content.data,
-    );
-  });
 
   const router = useRouter();
   const pathname = usePathname();
+
+  // Track whether INITIAL_SESSION handled a deep link / notification tap,
+  // so the subsequent SIGNED_IN event doesn't redirect to dashboard.
+  const deepLinkHandledRef = useRef(false);
 
   // Keep pathname in a ref so the auth listener always has the current value
   const pathnameRef = useRef(pathname);
@@ -169,6 +160,7 @@ export default function LayoutWrapper({
               );
 
             if (hasDeepLink || hasNotificationNav) {
+              deepLinkHandledRef.current = true;
               await handleSessionChange(session, true);
               const settings = useUserStore.getState().settings;
               if (settings?.has_completed_onboarding === false) {
@@ -187,7 +179,9 @@ export default function LayoutWrapper({
         }
 
         if (event === "SIGNED_IN") {
-          handleSessionChange(session);
+          // If INITIAL_SESSION already handled a deep link / notification,
+          // skip redirect so we don't override that navigation.
+          handleSessionChange(session, deepLinkHandledRef.current);
         } else {
           // TOKEN_REFRESHED, SIGNED_OUT — no redirect
           handleSessionChange(session, true);
@@ -207,12 +201,8 @@ export default function LayoutWrapper({
     }
   }, [pathname, setModalPageConfig]);
 
-  if (!sessionChecked && hasPendingNotification) {
-    return (
-      <View className="flex-1 justify-center items-center bg-slate-900">
-        <ActivityIndicator size="large" color="#9ca3af" />
-      </View>
-    );
+  if (!sessionChecked) {
+    return <BootScreen />;
   }
 
   const noModalRoutes = ["/", "/login"];

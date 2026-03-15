@@ -11,15 +11,20 @@ import {
 import { startStepSession } from "@/native/android/NativeStepCounter";
 import { useState } from "react";
 import { useRouter } from "expo-router";
+import { useUserStore } from "@/lib/stores/useUserStore";
 
 export function useStartActivity() {
   const activeSession = useTimerStore((state) => state.activeSession);
   const setActiveSession = useTimerStore((state) => state.setActiveSession);
   const startSession = useTimerStore((state) => state.startSession);
+  const gpsEnabledGlobally = useUserStore(
+    (state) => state.settings?.gps_tracking_enabled,
+  );
   const { startGPStracking } = useStartGPStracking();
   const { stopGPStracking } = useStopGPStracking();
   const router = useRouter();
   const [isStartingActivity, setIsStartingActivity] = useState(false);
+  const [showGpsModal, setShowGpsModal] = useState(false);
 
   const startActivity = async (template: templateSummary) => {
     if (activeSession) {
@@ -28,6 +33,12 @@ export function useStartActivity() {
         text1: "You already have an active session.",
         text2: "Finish it before starting a new one.",
       });
+      return;
+    }
+
+    // If GPS is disabled globally, show modal directing user to settings
+    if (!gpsEnabledGlobally) {
+      setShowGpsModal(true);
       return;
     }
 
@@ -41,6 +52,9 @@ export function useStartActivity() {
       activitySlug: template.activity.slug ?? null,
       baseMet: template.activity.base_met,
       templateId: template.template.id,
+      isGpsRelevant: template.activity.is_gps_relevant,
+      isStepRelevant: template.activity.is_step_relevant,
+      isCaloriesRelevant: template.activity.is_calories_relevant,
     };
 
     await Promise.all([
@@ -48,14 +62,14 @@ export function useStartActivity() {
       stopGPStracking(),
     ]);
 
+    // Always clear old GPS data first to avoid loading stale points
+    await clearLocalSessionDatabase();
+
     const initializeDatabase = async () => {
       const db = await getDatabase();
 
       try {
-        // First drop any leftover table from previous sessions
-        await clearLocalSessionDatabase();
-
-        // Then create fresh table for new session
+        // Create fresh table for new session
         await db.execAsync(`
           CREATE TABLE IF NOT EXISTS gps_points (
             timestamp INTEGER NOT NULL,
@@ -127,5 +141,7 @@ export function useStartActivity() {
   return {
     startActivity,
     isStartingActivity,
+    showGpsModal,
+    dismissGpsModal: () => setShowGpsModal(false),
   };
 }

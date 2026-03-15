@@ -239,6 +239,9 @@ export type templateSummary = {
     name: string;
     slug: string | null;
     base_met: number;
+    is_gps_relevant: boolean;
+    is_step_relevant: boolean;
+    is_calories_relevant: boolean;
   };
   route: {
     type: "LineString";

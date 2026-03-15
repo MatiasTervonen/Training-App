@@ -2,6 +2,8 @@ import { FlexWidget, TextWidget, SvgWidget } from "react-native-android-widget";
 import type { StepsConfig } from "@/features/widgets/widget-constants";
 import { DEFAULT_STEPS_CONFIG } from "@/features/widgets/widget-constants";
 
+const WIDGET_SCHEME = __DEV__ ? "kurvi-dev" : "kurvi";
+
 const COLORS = {
   background: "#020618",
   text: "#ffffff",
@@ -127,7 +129,7 @@ export function StepsWidget({
   return (
     <FlexWidget
       clickAction="OPEN_URI"
-      clickActionData={{ uri: "mytrack://activities" }}
+      clickActionData={{ uri: `${WIDGET_SCHEME}://activities` }}
       style={{
         flexDirection: "column",
         backgroundColor: COLORS.background,

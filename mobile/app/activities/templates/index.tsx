@@ -16,6 +16,7 @@ import { useTemplateHistory } from "@/features/activities/templates/hooks/useTem
 import TemplateHistoryModal from "@/features/activities/templates/components/TemplateHistoryModal";
 import { useTranslation } from "react-i18next";
 import { Route } from "lucide-react-native";
+import InfoModal from "@/components/InfoModal";
 
 export default function TemplatesPage() {
   const { t } = useTranslation("activities");
@@ -35,7 +36,8 @@ export default function TemplatesPage() {
   });
 
   // useStartActivity hook to start an activity from a template
-  const { startActivity, isStartingActivity } = useStartActivity();
+  const { startActivity, isStartingActivity, showGpsModal, dismissGpsModal } =
+    useStartActivity();
 
   // useDeleteTemplate hook to delete a template
   const { handleDeleteTemplate } = useDeleteTemplate();
@@ -126,6 +128,18 @@ export default function TemplatesPage() {
           history={Array.isArray(history) ? history : []}
           templateName={historyTemplateName}
           error={historyError ? historyError.message : null}
+        />
+        <InfoModal
+          visible={showGpsModal}
+          onClose={dismissGpsModal}
+          title={t("activities.infoModal.locationTrackingDisabled")}
+          description={t("activities.infoModal.enableLocationMessage")}
+          cancelLabel={t("activities.infoModal.cancel")}
+          confirmLabel={t("activities.infoModal.settings")}
+          onConfirm={() => {
+            dismissGpsModal();
+            router.push("/menu/settings");
+          }}
         />
       </PageContainer>
     </ScrollView>

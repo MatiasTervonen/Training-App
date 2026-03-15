@@ -54,8 +54,11 @@ export default function usePhaseTracking() {
     const base = previousSteps ?? 0;
     setBaseSteps(base);
     baseStepsRef.current = base;
-    setSessionSteps(0);
-    await startStepSession();
+    // Don't start a new step session — the native session_start_value
+    // from the original start() is still in SharedPreferences.
+    // Hydrate the accumulated steps from the native counter instead.
+    const currentSessionSteps = await getSessionSteps();
+    setSessionSteps(currentSessionSteps);
     startLiveStepUpdates();
     setIsTracking(true);
   }, []);

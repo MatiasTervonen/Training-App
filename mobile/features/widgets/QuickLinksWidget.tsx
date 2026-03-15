@@ -3,6 +3,8 @@ import type { WidgetInfo } from "react-native-android-widget";
 import type { QuickLinksConfig } from "@/features/widgets/widget-constants";
 import { LINK_TARGETS } from "@/features/widgets/widget-constants";
 
+const WIDGET_SCHEME = __DEV__ ? "kurvi-dev" : "kurvi";
+
 interface QuickLinksWidgetProps {
   config: QuickLinksConfig;
   widgetInfo: WidgetInfo;
@@ -21,7 +23,7 @@ function IconButton({ iconSvg, route }: { iconSvg: string; route: string }) {
   return (
     <FlexWidget
       clickAction="OPEN_URI"
-      clickActionData={{ uri: `mytrack://${route}` }}
+      clickActionData={{ uri: `${WIDGET_SCHEME}://${route}` }}
       style={{
         alignItems: "center",
         justifyContent: "center",

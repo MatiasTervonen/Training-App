@@ -45,7 +45,7 @@ export default function BaseFeedCard({
        border rounded-md flex-col justify-between transition-colors min-h-[159px] overflow-hidden ${
          pinned
            ? `border-yellow-200 bg-yellow-400`
-           : "bg-slate-700 border-gray-100"
+           : "bg-slate-700 border-slate-300"
        }`}
     >
       {/* Header */}

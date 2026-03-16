@@ -14,7 +14,6 @@ import { DraftRecording, DraftVideo } from "@/types/session";
 import FullScreenModal from "@/components/FullScreenModal";
 import PageContainer from "@/components/PageContainer";
 import ImageViewerModal from "@/features/notes/components/ImageViewerModal";
-
 type DraftImage = { id: string; uri: string; isLoading?: boolean };
 
 type NotesModalProps = {

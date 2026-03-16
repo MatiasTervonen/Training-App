@@ -60,12 +60,12 @@ export default function Navbar() {
         </View>
       </LinearGradient>
       {["/dashboard", "/menu", "/sessions"].includes(pathname) && (
-        <View className="flex-row justify-between bg-slate-600 w-full text-center text-gray-100">
+        <View className="flex-row justify-between bg-slate-700 w-full text-center text-gray-100">
           <Link href="/menu" asChild>
             <Pressable
               className={
                 pathname === "/menu"
-                  ? "bg-slate-500 p-3 w-1/3 items-center"
+                  ? "bg-slate-600 p-3 w-1/3 items-center"
                   : "p-3 w-1/3 items-center"
               }
             >
@@ -77,7 +77,7 @@ export default function Navbar() {
             <Pressable
               className={
                 pathname === "/dashboard"
-                  ? "bg-slate-500 p-3 w-1/3 items-center"
+                  ? "bg-slate-600 p-3 w-1/3 items-center"
                   : "p-3 w-1/3 items-center"
               }
             >
@@ -88,7 +88,7 @@ export default function Navbar() {
             <Pressable
               className={
                 pathname === "/sessions"
-                  ? "bg-slate-500 p-3 w-1/3 items-center"
+                  ? "bg-slate-600 p-3 w-1/3 items-center"
                   : "p-3 w-1/3 items-center"
               }
             >

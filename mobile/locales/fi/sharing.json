@@ -1,0 +1,9 @@
+{
+  "sharing": {
+    "title": "Jakamisasetukset",
+    "description": "Valitse mitä jaat kavereille oletuksena. Voit muuttaa tätä jokaiselle harjoitukselle tallennettaessa.",
+    "gymSessions": "Kuntosaliharjoitukset",
+    "activities": "Aktiviteetit",
+    "saved": "Asetukset tallennettu"
+  }
+}

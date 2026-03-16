@@ -187,8 +187,10 @@ export default function useSaveSession({
             exact: true,
           }),
         ]);
+
+        router.push("/dashboard");
       } else {
-        await saveSession({
+        const { sessionId } = await saveSession({
           title,
           notes,
           duration: durationInSeconds,
@@ -207,11 +209,7 @@ export default function useSaveSession({
             exact: true,
           }),
         ]);
-      }
 
-      if (isEditing) {
-        router.push("/dashboard");
-      } else {
         const weightUnit =
           useUserStore.getState().profile?.weight_unit ?? "kg";
         useSessionSummaryStore.getState().setSummary({
@@ -222,6 +220,7 @@ export default function useSaveSession({
           notes,
           weightUnit,
           phases,
+          sessionId,
         });
         router.push("/gym/training-finished");
       }

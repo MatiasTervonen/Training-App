@@ -134,7 +134,7 @@ export async function saveSession({
 
     onProgress?.(undefined);
 
-    const { error } = await supabase.rpc("gym_save_session", {
+    const { data: sessionId, error } = await supabase.rpc("gym_save_session", {
       p_exercises: exercises,
       p_notes: notes,
       p_duration: duration,
@@ -151,7 +151,7 @@ export async function saveSession({
       throw error;
     }
 
-    return { success: true };
+    return { success: true, sessionId: sessionId as string };
   } catch (error) {
     if (uploadedRecordings.length > 0) {
       await supabase.storage.from("notes-voice").remove(uploadedRecordings.map((r) => r.storage_path));

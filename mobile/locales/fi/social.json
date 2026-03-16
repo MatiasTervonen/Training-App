@@ -1,0 +1,14 @@
+{
+  "social": {
+    "myFeed": "Oma syöte",
+    "friendsFeed": "Kaverit",
+    "noFriendPosts": "Ei vielä kavereiden julkaisuja",
+    "noFriendsYet": "Lisää kavereita nähdäksesi heidän aktiviteettinsa täällä",
+    "shareWithFriends": "Jaa kavereille",
+    "likes": "tykkäystä",
+    "like": "tykkäys",
+    "liked": "Tykätty",
+    "details": "Tiedot",
+    "readOnly": "Vain luku -näkymä"
+  }
+}

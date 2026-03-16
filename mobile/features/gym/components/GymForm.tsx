@@ -49,6 +49,7 @@ import PhaseActivityPicker from "@/features/gym/components/PhaseActivityPicker";
 import usePhaseTracking from "@/features/gym/hooks/usePhaseTracking";
 import { getWeight } from "@/database/weight/get-weight";
 
+
 if (
   Platform.OS === "android" &&
   UIManager.setLayoutAnimationEnabledExperimental

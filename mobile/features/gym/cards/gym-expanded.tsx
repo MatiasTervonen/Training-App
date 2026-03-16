@@ -22,7 +22,7 @@ import { DraftRecordingItem } from "@/features/notes/components/draftRecording";
 import ImageViewerModal from "@/features/notes/components/ImageViewerModal";
 import ShareModal from "@/features/gym/components/ShareModal";
 
-export default function GymSession(gym_session: FullGymSession) {
+export default function GymSession(gym_session: FullGymSession & { readOnly?: boolean }) {
   const { t } = useTranslation("gym");
   const [exerciseId, setExerciseId] = useState("");
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
@@ -122,12 +122,14 @@ export default function GymSession(gym_session: FullGymSession) {
               <AppText className="text-xl text-center flex-1">
                 {gym_session.title}
               </AppText>
-              <AnimatedButton
-                onPress={() => setIsShareModalOpen(true)}
-                hitSlop={10}
-              >
-                <Share2 color="#9ca3af" size={20} />
-              </AnimatedButton>
+              {!gym_session.readOnly && (
+                <AnimatedButton
+                  onPress={() => setIsShareModalOpen(true)}
+                  hitSlop={10}
+                >
+                  <Share2 color="#9ca3af" size={20} />
+                </AnimatedButton>
+              )}
             </View>
             <AppText className="text-sm text-gray-400">
               {formatDateShort(gym_session.start_time)}  ·  {formatTime(gym_session.start_time)} – {formatTime(gym_session.end_time)}
@@ -248,12 +250,14 @@ export default function GymSession(gym_session: FullGymSession) {
                     >
                       {index + 1}. {exercise.gym_exercises.name}
                     </AppText>
-                    <AnimatedButton
-                      hitSlop={10}
-                      onPress={() => openHistory(exercise.gym_exercises.id)}
-                    >
-                      <History color="#f3f4f6" />
-                    </AnimatedButton>
+                    {!gym_session.readOnly && (
+                      <AnimatedButton
+                        hitSlop={10}
+                        onPress={() => openHistory(exercise.gym_exercises.id)}
+                      >
+                        <History color="#f3f4f6" />
+                      </AnimatedButton>
+                    )}
                   </View>
                   <View className="flex-row items-center ">
                     <AppText className="text-gray-400 mt-1">

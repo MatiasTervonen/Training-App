@@ -1,5 +1,5 @@
-import { useEffect, useState, useCallback, useMemo } from "react";
-import { useNavigation } from "expo-router";
+import { useEffect, useState, useCallback, useMemo, useRef } from "react";
+import { useNavigation, useRouter } from "expo-router";
 import { View, ScrollView, LayoutChangeEvent, ActivityIndicator, PixelRatio } from "react-native";
 import AppText from "@/components/AppText";
 import { Image } from "expo-image";
@@ -17,10 +17,13 @@ import {
   getAvailableStats,
   getDefaultSelectedKeys,
 } from "@/features/activities/lib/activityShareCardUtils";
-import { Download, Share2, ChevronDown, ChevronUp } from "lucide-react-native";
+import { Download, Share2, ChevronDown, ChevronUp, Users } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
 import * as Haptics from "expo-haptics";
+import Toggle from "@/components/toggle";
+import useSharingDefaults from "@/features/sharing/hooks/useSharingDefaults";
+import { updateFeedItemVisibility } from "@/database/social-feed/update-visibility";
 import Mapbox from "@rnmapbox/maps";
 import { MAP_STYLES, LINE_COLORS } from "@/features/activities/lib/mapConstants";
 import { useActivitySettingsStore } from "@/lib/stores/activitySettingsStore";
@@ -44,6 +47,24 @@ export default function ActivityFinishedScreen() {
   const [containerWidth, setContainerWidth] = useState(0);
   const [containerHeight, setContainerHeight] = useState(0);
   const [settingsExpanded, setSettingsExpanded] = useState(false);
+
+  // Share with friends — pre-fill from defaults
+  const { data: sharingDefaults } = useSharingDefaults();
+  const [sharedWithFriends, setSharedWithFriends] = useState(false);
+  const defaultApplied = useRef(false);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (sharingDefaults && !defaultApplied.current) {
+      defaultApplied.current = true;
+      const actDefault = sharingDefaults.find(
+        (d) => d.session_type === "activity_sessions",
+      );
+      if (actDefault?.share_with_friends) {
+        setSharedWithFriends(true);
+      }
+    }
+  }, [sharingDefaults]);
 
   const {
     theme: themeId,
@@ -307,6 +328,22 @@ export default function ActivityFinishedScreen() {
         </View>
       )}
 
+      {/* Share with friends */}
+      {summary?.sessionId && (
+        <View className="mt-6 flex-row items-center justify-between py-3 border-b border-gray-700">
+          <View className="flex-row items-center gap-3">
+            <Users size={20} color="#67e8f9" />
+            <AppText className="text-gray-100">
+              {t("social:social.shareWithFriends")}
+            </AppText>
+          </View>
+          <Toggle
+            isOn={sharedWithFriends}
+            onToggle={() => setSharedWithFriends((prev) => !prev)}
+          />
+        </View>
+      )}
+
       {/* Collapsible Customize Card section */}
       {summary && (
         <View className="mt-6">
@@ -420,11 +457,30 @@ export default function ActivityFinishedScreen() {
 
       {/* Done button */}
       <View className="w-full pb-10 mt-8">
-        <LinkButton href="/dashboard">
+        <AnimatedButton
+          className="btn-base py-3"
+          onPress={async () => {
+            if (sharedWithFriends && summary?.sessionId) {
+              try {
+                await updateFeedItemVisibility(
+                  summary.sessionId,
+                  "activity_sessions",
+                  "friends",
+                );
+              } catch {
+                Toast.show({
+                  type: "error",
+                  text1: t("common:common.error"),
+                });
+              }
+            }
+            router.push("/dashboard");
+          }}
+        >
           <AppText className="text-center">
             {t("activities.share.done")}
           </AppText>
-        </LinkButton>
+        </AnimatedButton>
       </View>
 
       {/* Hidden MapView for snapshot */}

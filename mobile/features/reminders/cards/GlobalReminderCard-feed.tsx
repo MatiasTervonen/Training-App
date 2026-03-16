@@ -32,7 +32,7 @@ export default function GlobalReminderCard({
       onExpand={onExpand}
       onEdit={onEdit}
       onHide={onHide}
-      typeIcon={<Bell size={20} color={pinned ? "#0f172a" : "#cbd5e1"} />}
+      typeIcon={<Bell size={20} color={"#cbd5e1"} />}
       typeName={t("feed.card.types.reminder")}
       showUpdatedAt={true}
       statsContent={
@@ -48,11 +48,11 @@ export default function GlobalReminderCard({
           {payload.notify_at && (
             <View className="flex-row items-center gap-2">
               <AppText
-                className={`${pinned ? "text-slate-900" : "text-slate-300"}`}
+                className={`${"text-slate-300"}`}
               >
                 {formatDateTime(payload.notify_at)}
               </AppText>
-              <Bell size={20} color={pinned ? "#0f172a" : "#cbd5e1"} />
+              <Bell size={20} color={"#cbd5e1"} />
             </View>
           )}
         </>

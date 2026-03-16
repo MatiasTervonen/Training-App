@@ -71,14 +71,18 @@ export default function MyActivitiesScreen() {
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
     >
-      <ActivityTypeFilterChips
-        activityTypes={activityTypes}
-        selectedSlug={selectedSlug}
-        onSelectAll={() => setSelectedSlug(null)}
-        onSelectType={setSelectedSlug}
-      />
+      <View className="absolute top-0 left-0 right-0 z-10">
+        <ActivityTypeFilterChips
+          activityTypes={activityTypes}
+          selectedSlug={selectedSlug}
+          onSelectAll={() => setSelectedSlug(null)}
+          onSelectType={setSelectedSlug}
+        />
+      </View>
       {isLoading ? (
-        <FeedSkeleton count={5} />
+        <View className="pt-[50px]">
+          <FeedSkeleton count={5} />
+        </View>
       ) : error ? (
         <AppText className="text-center text-lg mt-20 mx-auto px-10">
           {t("activities.mySessions.loadError")}
@@ -104,6 +108,7 @@ export default function MyActivitiesScreen() {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{
             paddingBottom: 100,
+            paddingTop: 50,
           }}
           onEndReached={() => {
             if (hasNextPage && !isFetchingNextPage) {
@@ -113,6 +118,7 @@ export default function MyActivitiesScreen() {
           refreshControl={
             <RefreshControl
               refreshing={refreshing}
+              progressViewOffset={50}
               onRefresh={async () => {
                 setRefreshing(true);
                 await mutateFeed();
@@ -122,7 +128,7 @@ export default function MyActivitiesScreen() {
           }
           onEndReachedThreshold={0.5}
           renderItem={({ item: feedItem }) => (
-            <View className={`px-4 ${unpinnedFeed ? "pb-10" : ""}`}>
+            <View className={`px-4 ${unpinnedFeed ? "pb-5" : ""}`}>
               <FeedCard
                 item={feedItem as FeedItemUI}
                 pinned={false}

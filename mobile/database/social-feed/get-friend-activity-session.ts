@@ -1,5 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import { handleError } from "@/utils/handleError";
+import type { FullActivitySession } from "@/types/models";
 
 export async function getFriendActivitySession(feedItemId: string) {
   const { data, error } = await supabase.rpc("get_friend_activity_session", {
@@ -15,5 +16,5 @@ export async function getFriendActivitySession(feedItemId: string) {
     throw new Error("Error fetching friend activity session");
   }
 
-  return data;
+  return data as unknown as FullActivitySession;
 }

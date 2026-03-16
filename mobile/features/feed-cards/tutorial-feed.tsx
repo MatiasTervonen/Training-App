@@ -24,18 +24,18 @@ export default function TutorialCard({
       onExpand={onExpand}
       onHide={onHide}
       typeIcon={
-        <BookOpen size={20} color={pinned ? "#0f172a" : "#cbd5e1"} />
+        <BookOpen size={20} color={"#cbd5e1"} />
       }
       typeName={t("feed.card.types.tutorial")}
       statsContent={
         <View>
           <AppText
-            className={`${pinned ? "text-slate-900" : "text-slate-300"}`}
+            className={`${"text-slate-300"}`}
           >
             {t("feed.tutorial.subtitle")}
           </AppText>
           <AppText
-            className={`text-sm mt-1 ${pinned ? "text-slate-700" : "text-slate-400"}`}
+            className={`text-sm mt-1 ${"text-slate-400"}`}
           >
             {t("feed.tutorial.tap_to_read")}
           </AppText>

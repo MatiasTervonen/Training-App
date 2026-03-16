@@ -44,50 +44,52 @@ export default function ActivityTypeFilterChips({
   }, [selectedSlug, activityTypes, screenWidth]);
 
   return (
-    <ScrollView
-      ref={scrollRef}
-      horizontal
-      showsHorizontalScrollIndicator={false}
-      contentContainerStyle={{ paddingHorizontal: SCROLL_PADDING }}
-      className="mt-3 mb-1 mx-4 bg-slate-800 rounded-lg flex-none"
-    >
-      <View className="flex-row p-1 gap-2">
-        <AnimatedButton
-          onPress={onSelectAll}
-          className={`w-[100px] py-2 px-3 rounded-md ${isAllSelected ? "bg-slate-700" : ""}`}
-        >
-          <AppTextNC
-            numberOfLines={1}
-            className={`text-center font-medium ${
-              isAllSelected ? "text-cyan-400" : "text-gray-200"
-            }`}
+    <View className="mt-[6px] mb-1 mx-3 bg-slate-800 rounded-lg">
+      <ScrollView
+        ref={scrollRef}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{ paddingHorizontal: 4 }}
+        className="flex-1"
+      >
+        <View className="flex-row p-1 gap-2">
+          <AnimatedButton
+            onPress={onSelectAll}
+            className={`w-[100px] py-2 px-3 rounded-md ${isAllSelected ? "bg-slate-700" : ""}`}
           >
-            {t("activities.mySessions.all")}
-          </AppTextNC>
-        </AnimatedButton>
-
-        {activityTypes.map((type) => {
-          const isActive = selectedSlug === type.slug;
-          const translationKey = `activities.activityNames.${type.slug}`;
-          const translated = t(translationKey, { defaultValue: type.name });
-          return (
-            <AnimatedButton
-              key={type.slug}
-              onPress={() => onSelectType(type.slug)}
-              className={`w-[100px] py-2 px-3 rounded-md ${isActive ? "bg-slate-700" : ""}`}
+            <AppTextNC
+              numberOfLines={1}
+              className={`text-center font-medium ${
+                isAllSelected ? "text-cyan-400" : "text-gray-200"
+              }`}
             >
-              <AppTextNC
-                numberOfLines={1}
-                className={`text-center font-medium ${
-                  isActive ? "text-cyan-400" : "text-gray-200"
-                }`}
+              {t("activities.mySessions.all")}
+            </AppTextNC>
+          </AnimatedButton>
+
+          {activityTypes.map((type) => {
+            const isActive = selectedSlug === type.slug;
+            const translationKey = `activities.activityNames.${type.slug}`;
+            const translated = t(translationKey, { defaultValue: type.name });
+            return (
+              <AnimatedButton
+                key={type.slug}
+                onPress={() => onSelectType(type.slug)}
+                className={`w-[100px] py-2 px-3 rounded-md ${isActive ? "bg-slate-700" : ""}`}
               >
-                {translated}
-              </AppTextNC>
-            </AnimatedButton>
-          );
-        })}
-      </View>
-    </ScrollView>
+                <AppTextNC
+                  numberOfLines={1}
+                  className={`text-center font-medium ${
+                    isActive ? "text-cyan-400" : "text-gray-200"
+                  }`}
+                >
+                  {translated}
+                </AppTextNC>
+              </AnimatedButton>
+            );
+          })}
+        </View>
+      </ScrollView>
+    </View>
   );
 }

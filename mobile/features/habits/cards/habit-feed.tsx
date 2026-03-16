@@ -32,13 +32,13 @@ export default function HabitSummaryCard({
       onDelete={onDelete}
       onExpand={onExpand}
       onHide={onHide}
-      typeIcon={<Repeat size={20} color={pinned ? "#0f172a" : "#cbd5e1"} />}
+      typeIcon={<Repeat size={20} color={"#cbd5e1"} />}
       typeName={t("feed.card.types.habits")}
       statsContent={
         <View className="gap-1">
           <View className="flex-row gap-2 items-center">
             <AppText
-              className={`${pinned ? "text-slate-900" : "text-slate-300"}`}
+              className={`${"text-slate-300"}`}
             >
               {t("feed.card.completed")}: {payload.completed} / {payload.total}
             </AppText>
@@ -48,7 +48,7 @@ export default function HabitSummaryCard({
             <View className="flex-row gap-1 items-center">
               <Flame size={14} color="#f97316" />
               <AppText
-                className={`text-sm ${pinned ? "text-slate-900" : "text-slate-400"}`}
+                className={`text-sm ${"text-slate-400"}`}
               >
                 {tHabits("feed.streak", { count: payload.current_streak })}
               </AppText>

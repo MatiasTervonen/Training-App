@@ -1,6 +1,6 @@
 import { usePathname, Link } from "expo-router";
 import { View, Pressable } from "react-native";
-import AppText from "@/components/AppText";
+import AppTextNC from "@/components/AppTextNC";
 import { MessageCircle } from "lucide-react-native";
 import { Image } from "expo-image";
 import { useUserStore } from "@/lib/stores/useUserStore";
@@ -60,41 +60,44 @@ export default function Navbar() {
         </View>
       </LinearGradient>
       {["/dashboard", "/menu", "/sessions"].includes(pathname) && (
-        <View className="flex-row justify-between bg-slate-700 w-full text-center text-gray-100">
-          <Link href="/menu" asChild>
-            <Pressable
-              className={
-                pathname === "/menu"
-                  ? "bg-slate-600 p-3 w-1/3 items-center"
-                  : "p-3 w-1/3 items-center"
-              }
-            >
-              <AppText className="pr-[1px]">{t("navbar.menu")}</AppText>
-            </Pressable>
-          </Link>
+        <View className="bg-slate-800">
+          <View className="flex-row p-1 gap-2">
+            <Link href="/menu" asChild>
+              <Pressable
+                className={`flex-1 py-2 px-3 rounded-md ${
+                  pathname === "/menu" ? "bg-slate-700" : ""
+                }`}
+              >
+                <AppTextNC className={`text-center font-medium ${
+                  pathname === "/menu" ? "text-cyan-400" : "text-gray-200"
+                }`}>{t("navbar.menu")}</AppTextNC>
+              </Pressable>
+            </Link>
 
-          <Link href={"/dashboard"} asChild>
-            <Pressable
-              className={
-                pathname === "/dashboard"
-                  ? "bg-slate-600 p-3 w-1/3 items-center"
-                  : "p-3 w-1/3 items-center"
-              }
-            >
-              <AppText className="pr-[1px]">{t("navbar.feed")}</AppText>
-            </Pressable>
-          </Link>
-          <Link href="/sessions" asChild>
-            <Pressable
-              className={
-                pathname === "/sessions"
-                  ? "bg-slate-600 p-3 w-1/3 items-center"
-                  : "p-3 w-1/3 items-center"
-              }
-            >
-              <AppText className="pr-[1px]">{t("navbar.sessions")}</AppText>
-            </Pressable>
-          </Link>
+            <Link href={"/dashboard"} asChild>
+              <Pressable
+                className={`flex-1 py-2 px-3 rounded-md ${
+                  pathname === "/dashboard" ? "bg-slate-700" : ""
+                }`}
+              >
+                <AppTextNC className={`text-center font-medium ${
+                  pathname === "/dashboard" ? "text-cyan-400" : "text-gray-200"
+                }`}>{t("navbar.feed")}</AppTextNC>
+              </Pressable>
+            </Link>
+
+            <Link href="/sessions" asChild>
+              <Pressable
+                className={`flex-1 py-2 px-3 rounded-md ${
+                  pathname === "/sessions" ? "bg-slate-700" : ""
+                }`}
+              >
+                <AppTextNC className={`text-center font-medium ${
+                  pathname === "/sessions" ? "text-cyan-400" : "text-gray-200"
+                }`}>{t("navbar.sessions")}</AppTextNC>
+              </Pressable>
+            </Link>
+          </View>
         </View>
       )}
       <ActiveSessionPopup />

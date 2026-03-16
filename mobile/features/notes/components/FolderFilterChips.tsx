@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, ReactNode } from "react";
 import { ScrollView, View, useWindowDimensions } from "react-native";
 import AppTextNC from "@/components/AppTextNC";
 import AnimatedButton from "@/components/buttons/animatedButton";
@@ -15,6 +15,7 @@ type FolderFilterChipsProps = {
   selectedFolderId: string | null;
   onSelectAll: () => void;
   onSelectFolder: (folderId: string) => void;
+  rightIcon?: ReactNode;
 };
 
 export default function FolderFilterChips({
@@ -22,6 +23,7 @@ export default function FolderFilterChips({
   selectedFolderId,
   onSelectAll,
   onSelectFolder,
+  rightIcon,
 }: FolderFilterChipsProps) {
   const { t } = useTranslation("notes");
   const isAllSelected = !selectedFolderId;
@@ -44,14 +46,15 @@ export default function FolderFilterChips({
   }, [selectedFolderId, folders, screenWidth]);
 
   return (
-    <ScrollView
-      ref={scrollRef}
-      horizontal
-      showsHorizontalScrollIndicator={false}
-      contentContainerStyle={{ paddingHorizontal: SCROLL_PADDING }}
-      className="mt-3 mb-1 mx-4 bg-slate-800 rounded-lg"
-    >
-      <View className="flex-row p-1 gap-2">
+    <View className="mt-[6px] mb-1 mx-3 bg-slate-800 rounded-lg flex-row items-center">
+      <ScrollView
+        ref={scrollRef}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{ paddingHorizontal: 4 }}
+        className="flex-1"
+      >
+        <View className="flex-row p-1 gap-2">
         <AnimatedButton
           onPress={onSelectAll}
           className={`w-[100px] py-2 px-3 rounded-md ${isAllSelected ? "bg-slate-700" : ""}`}
@@ -85,7 +88,9 @@ export default function FolderFilterChips({
             </AnimatedButton>
           );
         })}
-      </View>
-    </ScrollView>
+        </View>
+      </ScrollView>
+      {rightIcon}
+    </View>
   );
 }

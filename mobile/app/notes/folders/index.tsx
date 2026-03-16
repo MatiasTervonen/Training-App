@@ -6,11 +6,12 @@ import useFolders from "@/features/notes/hooks/useFolders";
 import useCreateFolder from "@/features/notes/hooks/useCreateFolder";
 import useRenameFolder from "@/features/notes/hooks/useRenameFolder";
 import useDeleteFolder from "@/features/notes/hooks/useDeleteFolder";
-import { Trash2, Pencil, Check, X, ArrowRight } from "lucide-react-native";
+import { Trash2, Pencil, Check, X, ArrowRight, FolderCog } from "lucide-react-native";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import type { FolderWithCount } from "@/database/notes/get-folders";
+import FolderFilterChips from "@/features/notes/components/FolderFilterChips";
 
 export default function ManageFoldersScreen() {
   const { t } = useTranslation("notes");
@@ -61,11 +62,18 @@ export default function ManageFoldersScreen() {
 
   return (
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+        <FolderFilterChips
+          folders={folders}
+          selectedFolderId={"__folders__"}
+          onSelectAll={() => router.push("/notes")}
+          onSelectFolder={(id) => router.push({ pathname: "/notes", params: { folder: id } })}
+          rightIcon={
+            <View className="py-2 px-3 ml-1 mr-2 rounded-md bg-slate-700 items-center justify-center">
+              <FolderCog size={20} color="#22d3ee" />
+            </View>
+          }
+        />
         <View className="px-5 pt-5 pb-20">
-          <AppText className="text-2xl text-center mb-8">
-            {t("notes.folders.title")}
-          </AppText>
-
           {/* Create folder input */}
           <View className="gap-4 mb-8">
             <View className="flex-1">

@@ -217,7 +217,7 @@ export default function SessionFeed({ expandReminderId }: SessionFeedProps) {
               keyExtractor={(item) => item.id}
               contentContainerStyle={{
                 paddingBottom: 100,
-                paddingTop: pinnedFeed.length === 0 ? 30 : 0,
+                paddingTop: pinnedFeed.length === 0 ? 12 : 0,
               }}
               showsHorizontalScrollIndicator={false}
               showsVerticalScrollIndicator={false}
@@ -238,7 +238,7 @@ export default function SessionFeed({ expandReminderId }: SessionFeedProps) {
               }}
               onEndReachedThreshold={0.5}
               renderItem={({ item: feedItem }) => (
-                <View className={`px-4 ${unpinnedFeed ? "pb-10" : ""}`}>
+                <View className={`px-4 ${unpinnedFeed ? "pb-5" : ""}`}>
                   <FeedCard
                     item={feedItem as FeedItemUI}
                     pinned={false}
@@ -319,7 +319,7 @@ export default function SessionFeed({ expandReminderId }: SessionFeedProps) {
             <FlatList
               data={socialFeed.items}
               keyExtractor={(item) => item.id}
-              contentContainerStyle={{ paddingBottom: 100 }}
+              contentContainerStyle={{ paddingBottom: 100, paddingTop: 4 }}
               showsVerticalScrollIndicator={false}
               refreshControl={
                 <RefreshControl

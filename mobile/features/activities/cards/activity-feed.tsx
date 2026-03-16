@@ -52,24 +52,24 @@ export default function ActivityCard({
       onExpand={onExpand}
       onEdit={onEdit}
       onHide={onHide}
-      typeIcon={<Activity size={20} color={pinned ? "#0f172a" : "#cbd5e1"} />}
+      typeIcon={<Activity size={20} color={"#cbd5e1"} />}
       typeName={getActivityTypeName()}
       statsContent={
         <View className="flex-row items-center gap-5">
           {payload.distance > 0 && (
             <View className="flex-row items-center gap-2">
-              <Route size={20} color={pinned ? "#0f172a" : "#cbd5e1"} />
+              <Route size={20} color={"#cbd5e1"} />
               <AppText
-                className={`${pinned ? "text-slate-900" : "text-slate-300"}`}
+                className={`${"text-slate-300"}`}
               >
                 {formatMeters(payload.distance)}
               </AppText>
             </View>
           )}
           <View className="flex-row items-center gap-2">
-            <Timer size={20} color={pinned ? "#0f172a" : "#cbd5e1"} />
+            <Timer size={20} color={"#cbd5e1"} />
             <AppText
-              className={`${pinned ? "text-slate-900" : "text-slate-300"}`}
+              className={`${"text-slate-300"}`}
             >
               {formatDuration(payload.duration)}
             </AppText>

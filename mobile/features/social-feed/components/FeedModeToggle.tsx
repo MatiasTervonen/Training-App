@@ -16,7 +16,6 @@ export default function FeedModeToggle({ feedMode, setFeedMode }: Props) {
     <View className="absolute bottom-8 right-6 z-50">
       <View className="absolute -inset-1 rounded-full bg-cyan-400/30" />
       <View className="absolute -inset-3 rounded-full bg-cyan-400/15" />
-      <View className="absolute -inset-5 rounded-full bg-cyan-400/5" />
       <AnimatedButton
         onPress={() => setFeedMode(isFriends ? "my" : "friends")}
         className="w-14 h-14 rounded-full items-center justify-center shadow-xl bg-slate-800 border-2 border-cyan-300 shadow-cyan-400/60"

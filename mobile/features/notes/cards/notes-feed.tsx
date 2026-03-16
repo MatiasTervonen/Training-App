@@ -50,7 +50,7 @@ export default function NotesCard({
       onMoveToFolder={onMoveToFolder}
       onHide={onHide}
       typeIcon={
-        <NotebookPen size={20} color={pinned ? "#0f172a" : "#cbd5e1"} />
+        <NotebookPen size={20} color={"#cbd5e1"} />
       }
       typeName={t("feed.card.types.notes")}
       statsContent={
@@ -85,7 +85,7 @@ export default function NotesCard({
           )}
           {payload.notes && (
             <BodyText
-              className={` ${pinned ? "text-slate-900" : "text-slate-300"}`}
+              className={` ${"text-slate-300"}`}
               numberOfLines={2}
             >
               {stripHtml(payload.notes)}

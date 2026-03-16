@@ -76,24 +76,20 @@ export default function NotesScreen() {
   };
 
   const headerContent = (
-    <View>
-      <View className="flex-row items-center">
-        <View className="flex-1">
-          <FolderFilterChips
-            folders={folders}
-            selectedFolderId={selectedFolderId}
-            onSelectAll={() => setSelectedFolderId(null)}
-            onSelectFolder={(id) => setSelectedFolderId(id)}
-          />
-        </View>
+    <FolderFilterChips
+      folders={folders}
+      selectedFolderId={selectedFolderId}
+      onSelectAll={() => setSelectedFolderId(null)}
+      onSelectFolder={(id) => setSelectedFolderId(id)}
+      rightIcon={
         <AnimatedButton
           onPress={() => router.push("/notes/folders" as never)}
-          className="pr-4 pl-2 py-3"
+          className="px-3 py-2 ml-1 mr-2"
         >
           <FolderCog size={20} color="#94a3b8" />
         </AnimatedButton>
-      </View>
-    </View>
+      }
+    />
   );
 
   return (
@@ -103,9 +99,13 @@ export default function NotesScreen() {
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
     >
-      {headerContent}
+      <View className="absolute top-0 left-0 right-0 z-10">
+        {headerContent}
+      </View>
       {isLoading ? (
-        <FeedSkeleton count={5} />
+        <View className="pt-[50px]">
+          <FeedSkeleton count={5} />
+        </View>
       ) : error ? (
         <AppText className="text-center text-lg mt-10 mx-auto">
           {t("notes.failedToLoad")}
@@ -133,6 +133,7 @@ export default function NotesScreen() {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{
             paddingBottom: 100,
+            paddingTop: 50,
           }}
           onEndReached={() => {
             if (hasNextPage && !isFetchingNextPage) {
@@ -142,6 +143,7 @@ export default function NotesScreen() {
           refreshControl={
             <RefreshControl
               refreshing={refreshing}
+              progressViewOffset={50}
               onRefresh={async () => {
                 setRefreshing(true);
                 await mutateFeed();
@@ -151,7 +153,7 @@ export default function NotesScreen() {
           }
           onEndReachedThreshold={0.5}
           renderItem={({ item: feedItem }) => (
-            <View className={`px-4 ${unpinnedFeed ? "pb-10" : ""}`}>
+            <View className={`px-4 ${unpinnedFeed ? "pb-5" : ""}`}>
               <FeedCard
                 item={feedItem as FeedItemUI}
                 pinned={false}

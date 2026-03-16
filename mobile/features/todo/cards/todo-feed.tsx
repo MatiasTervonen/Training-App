@@ -37,7 +37,7 @@ export default function TodoCard({
       onExpand={onExpand}
       onEdit={onEdit}
       onHide={onHide}
-      typeIcon={<ListTodo size={20} color={pinned ? "#0f172a" : "#cbd5e1"} />}
+      typeIcon={<ListTodo size={20} color={"#cbd5e1"} />}
       typeName={t("feed.card.types.todo")}
       statsContent={
         <View>
@@ -71,7 +71,7 @@ export default function TodoCard({
           )}
           <View className="flex-row gap-2 items-center">
             <AppText
-              className={`${pinned ? "text-slate-900" : "text-slate-300"}`}
+              className={`${"text-slate-300"}`}
             >
               {t("feed.card.completed")}: {payload.completed} / {payload.total}
             </AppText>

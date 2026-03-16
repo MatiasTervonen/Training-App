@@ -46,24 +46,24 @@ export default function LocalReminderCard({
       onExpand={onExpand}
       onEdit={onEdit}
       onHide={onHide}
-      typeIcon={<Bell size={20} color={pinned ? "#0f172a" : "#cbd5e1"} />}
+      typeIcon={<Bell size={20} color={"#cbd5e1"} />}
       typeName={t("feed.card.types.reminder")}
       showUpdatedAt={true}
       statsContent={
         <>
           <View className="flex-row items-center gap-2">
             <AppText
-              className={`${pinned ? "text-slate-900" : "text-slate-300"}`}
+              className={`${"text-slate-300"}`}
             >
               {payload.notify_at_time &&
                 formatNotifyTime(payload.notify_at_time!)}
               {payload.notify_date && formatDateTime(payload.notify_date!)}
             </AppText>
-            <Bell size={20} color={pinned ? "#0f172a" : "#cbd5e1"} />
+            <Bell size={20} color={"#cbd5e1"} />
           </View>
           {payload.weekdays && payload.weekdays.length > 0 && (
             <AppText
-              className={`ml-4 ${pinned ? "text-slate-900" : "text-slate-300"}`}
+              className={`ml-4 ${"text-slate-300"}`}
             >
               {payload.weekdays.map((dayNum) => days[dayNum - 1]).join(", ")}
             </AppText>

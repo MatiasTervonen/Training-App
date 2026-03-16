@@ -497,6 +497,7 @@ export type Database = {
           type: string
           updated_at: string | null
           user_id: string
+          visibility: string
         }
         Insert: {
           activity_at?: string | null
@@ -510,6 +511,7 @@ export type Database = {
           type: string
           updated_at?: string | null
           user_id?: string
+          visibility?: string
         }
         Update: {
           activity_at?: string | null
@@ -523,10 +525,47 @@ export type Database = {
           type?: string
           updated_at?: string | null
           user_id?: string
+          visibility?: string
         }
         Relationships: [
           {
             foreignKeyName: "feed_items_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      feed_likes: {
+        Row: {
+          created_at: string
+          feed_item_id: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          feed_item_id: string
+          id?: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          feed_item_id?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feed_likes_feed_item_id_fkey"
+            columns: ["feed_item_id"]
+            isOneToOne: false
+            referencedRelation: "feed_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "feed_likes_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "users"
@@ -1883,6 +1922,41 @@ export type Database = {
           },
         ]
       }
+      sharing_defaults: {
+        Row: {
+          created_at: string
+          id: string
+          session_type: string
+          share_with_friends: boolean
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          session_type: string
+          share_with_friends?: boolean
+          updated_at?: string | null
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          session_type?: string
+          share_with_friends?: boolean
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sharing_defaults_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       steps_daily: {
         Row: {
           created_at: string
@@ -2465,7 +2539,11 @@ export type Database = {
         Returns: undefined
       }
       activities_compute_session_stats: {
-        Args: { p_session_id: string; p_steps: number; p_step_distance_meters?: number }
+        Args: {
+          p_session_id: string
+          p_step_distance_meters?: number
+          p_steps: number
+        }
         Returns: undefined
       }
       activities_get_full_session: {
@@ -2486,12 +2564,13 @@ export type Database = {
           p_images?: Json
           p_notes: string
           p_start_time: string
-          p_steps: number
           p_step_distance_meters?: number
+          p_steps: number
           p_template_id?: string
           p_title: string
           p_track: Json
           p_videos?: Json
+          p_visibility?: string
         }
         Returns: string
       }
@@ -2519,6 +2598,7 @@ export type Database = {
           type: string
           updated_at: string | null
           user_id: string
+          visibility: string
         }
         SetofOptions: {
           from: "*"
@@ -2545,6 +2625,34 @@ export type Database = {
           type: string
           updated_at: string
           user_id: string
+        }[]
+      }
+      get_friend_activity_session: {
+        Args: { p_feed_item_id: string }
+        Returns: Json
+      }
+      get_friend_gym_session: {
+        Args: { p_feed_item_id: string }
+        Returns: Json
+      }
+      get_friends_feed: {
+        Args: { p_limit: number; p_offset: number }
+        Returns: {
+          activity_at: string
+          author_display_name: string
+          author_profile_picture: string
+          created_at: string
+          extra_fields: Json
+          id: string
+          like_count: number
+          occurred_at: string
+          source_id: string
+          title: string
+          type: string
+          updated_at: string
+          user_has_liked: boolean
+          user_id: string
+          visibility: string
         }[]
       }
       get_jwt: { Args: never; Returns: Json }
@@ -2576,6 +2684,7 @@ export type Database = {
           type: string
           updated_at: string | null
           user_id: string
+          visibility: string
         }
         SetofOptions: {
           from: "*"
@@ -2616,6 +2725,7 @@ export type Database = {
           p_start_time: string
           p_title: string
           p_videos?: Json
+          p_visibility?: string
         }
         Returns: string
       }
@@ -2659,6 +2769,7 @@ export type Database = {
           type: string
           updated_at: string | null
           user_id: string
+          visibility: string
         }
         SetofOptions: {
           from: "*"
@@ -2686,6 +2797,7 @@ export type Database = {
           type: string
           updated_at: string | null
           user_id: string
+          visibility: string
         }[]
         SetofOptions: {
           from: "*"
@@ -2744,6 +2856,7 @@ export type Database = {
           type: string
           updated_at: string | null
           user_id: string
+          visibility: string
         }
         SetofOptions: {
           from: "*"
@@ -2777,6 +2890,7 @@ export type Database = {
           type: string
           updated_at: string | null
           user_id: string
+          visibility: string
         }
         SetofOptions: {
           from: "*"
@@ -2817,6 +2931,7 @@ export type Database = {
           type: string
           updated_at: string | null
           user_id: string
+          visibility: string
         }[]
         SetofOptions: {
           from: "*"
@@ -2901,6 +3016,7 @@ export type Database = {
           type: string
           updated_at: string | null
           user_id: string
+          visibility: string
         }
         SetofOptions: {
           from: "*"
@@ -2932,6 +3048,7 @@ export type Database = {
           type: string
           updated_at: string | null
           user_id: string
+          visibility: string
         }
         SetofOptions: {
           from: "*"
@@ -2954,6 +3071,7 @@ export type Database = {
           type: string
           updated_at: string | null
           user_id: string
+          visibility: string
         }[]
         SetofOptions: {
           from: "*"
@@ -2966,9 +3084,16 @@ export type Database = {
         Args: { p_title: string; p_todo_list: Json }
         Returns: string
       }
+      toggle_feed_like: { Args: { p_feed_item_id: string }; Returns: boolean }
       weight_edit_weight: {
         Args: {
+          p_deleted_image_ids?: string[]
+          p_deleted_recording_ids?: string[]
+          p_deleted_video_ids?: string[]
           p_id: string
+          p_new_images?: Json
+          p_new_recordings?: Json
+          p_new_videos?: Json
           p_notes: string
           p_title: string
           p_updated_at: string
@@ -2986,6 +3111,7 @@ export type Database = {
           type: string
           updated_at: string | null
           user_id: string
+          visibility: string
         }
         SetofOptions: {
           from: "*"

@@ -97,7 +97,7 @@ export default function TodoScreen() {
   };
 
   const filterTabs = (
-    <View className="mt-3 mb-1 mx-4 bg-slate-800 rounded-lg">
+    <View className="mt-[6px] mb-1 mx-3 bg-slate-800 rounded-lg">
       <View className="flex-row p-1 gap-2">
         {FILTERS.map((f) => {
           const isActive = filter === f;
@@ -128,9 +128,13 @@ export default function TodoScreen() {
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
     >
-      {filterTabs}
+      <View className="absolute top-0 left-0 right-0 z-10">
+        {filterTabs}
+      </View>
       {isLoading ? (
-        <FeedSkeleton count={5} />
+        <View className="pt-[50px]">
+          <FeedSkeleton count={5} />
+        </View>
       ) : error ? (
         <AppText className="text-center text-lg mt-20 mx-auto px-10">
           {t("todo.failedToLoad")}
@@ -157,6 +161,7 @@ export default function TodoScreen() {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{
             paddingBottom: 100,
+            paddingTop: 50,
           }}
           onEndReached={() => {
             if (hasNextPage && !isFetchingNextPage) {
@@ -166,6 +171,7 @@ export default function TodoScreen() {
           refreshControl={
             <RefreshControl
               refreshing={refreshing}
+              progressViewOffset={50}
               onRefresh={async () => {
                 setRefreshing(true);
                 await mutateFeed();

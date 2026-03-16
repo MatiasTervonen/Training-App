@@ -40,18 +40,18 @@ export default function ReportCard({
       onExpand={onExpand}
       onHide={onHide}
       typeIcon={
-        <FileBarChart size={20} color={pinned ? "#0f172a" : "#cbd5e1"} />
+        <FileBarChart size={20} color={"#cbd5e1"} />
       }
       typeName={t("feed:feed.card.types.report")}
       statsContent={
         <View>
           <AppText
-            className={`text-sm ${pinned ? "text-slate-700" : "text-slate-400"}`}
+            className={`text-sm ${"text-slate-400"}`}
           >
             {dateRange}
           </AppText>
           <AppText
-            className={`mt-1 ${pinned ? "text-slate-900" : "text-slate-300"}`}
+            className={`mt-1 ${"text-slate-300"}`}
           >
             {featureLabels}
           </AppText>

@@ -1,5 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import { handleError } from "@/utils/handleError";
+import type { FullGymSession } from "@/database/gym/get-full-gym-session";
 
 export async function getFriendGymSession(feedItemId: string) {
   const { data, error } = await supabase.rpc("get_friend_gym_session", {
@@ -15,5 +16,5 @@ export async function getFriendGymSession(feedItemId: string) {
     throw new Error("Error fetching friend gym session");
   }
 
-  return data;
+  return data as unknown as FullGymSession;
 }

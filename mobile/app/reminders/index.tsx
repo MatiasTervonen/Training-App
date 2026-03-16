@@ -82,7 +82,7 @@ export default function RemindersScreen() {
   };
 
   const filterTabs = (
-    <View className="mt-3 mb-1 mx-4 bg-slate-800 rounded-lg">
+    <View className="mt-[6px] mb-1 mx-3 bg-slate-800 rounded-lg">
       <View className="flex-row p-1 gap-2">
         {FILTERS.map((f) => {
           const isActive = filter === f;
@@ -113,9 +113,13 @@ export default function RemindersScreen() {
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
     >
-      {filterTabs}
+      <View className="absolute top-0 left-0 right-0 z-10">
+        {filterTabs}
+      </View>
       {isLoading ? (
-        <FeedSkeleton count={5} />
+        <View className="pt-[50px]">
+          <FeedSkeleton count={5} />
+        </View>
       ) : error ? (
         <AppText className="text-center text-lg mt-20 mx-auto px-10">
           {t("reminders.errorLoading")}
@@ -142,6 +146,7 @@ export default function RemindersScreen() {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{
             paddingBottom: 100,
+            paddingTop: 50,
           }}
           onEndReached={() => {
             if (hasNextPage && !isFetchingNextPage) {
@@ -151,6 +156,7 @@ export default function RemindersScreen() {
           refreshControl={
             <RefreshControl
               refreshing={refreshing}
+              progressViewOffset={50}
               onRefresh={async () => {
                 setRefreshing(true);
                 await mutateFeed();
@@ -160,7 +166,7 @@ export default function RemindersScreen() {
           }
           onEndReachedThreshold={0.5}
           renderItem={({ item: feedItem }) => (
-            <View className={`px-4 ${unpinnedFeed ? "pb-10" : ""}`}>
+            <View className={`px-4 ${unpinnedFeed ? "pb-5" : ""}`}>
               <FeedCard
                 item={feedItem as FeedItemUI}
                 pinned={false}

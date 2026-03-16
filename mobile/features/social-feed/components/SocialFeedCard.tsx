@@ -6,6 +6,7 @@ import { SocialFeedItem } from "@/types/social-feed";
 import { Dumbbell, Activity, Mic, ImageIcon, Video } from "lucide-react-native";
 import { formatMeters, formatDuration } from "@/lib/formatDate";
 import { useTranslation } from "react-i18next";
+import { LinearGradient } from "expo-linear-gradient";
 
 type Props = {
   item: SocialFeedItem;
@@ -147,8 +148,17 @@ export default function SocialFeedCard({ item, onToggleLike, onExpand }: Props) 
     </View>
   );
 
+  const gradientColors: [string, string] = item.type === "gym_sessions"
+    ? ["rgba(59,130,246,0.12)", "rgba(59,130,246,0.03)"]
+    : ["rgba(34,197,94,0.12)", "rgba(34,197,94,0.03)"];
+
   return (
-    <View className="border-b border-slate-700">
+    <LinearGradient
+      colors={gradientColors}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+      className="border border-slate-700 rounded-xl mx-4 my-2 overflow-hidden"
+    >
       {/* Author header with type badge */}
       <SocialFeedCardHeader item={item} typeIcon={typeIcon} />
 
@@ -167,6 +177,6 @@ export default function SocialFeedCard({ item, onToggleLike, onExpand }: Props) 
 
       {/* Footer with like & details */}
       <SocialFeedCardFooter item={item} onToggleLike={onToggleLike} onExpand={onExpand} />
-    </View>
+    </LinearGradient>
   );
 }

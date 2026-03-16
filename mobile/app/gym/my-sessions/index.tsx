@@ -87,7 +87,7 @@ export default function MyGymScreen() {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{
             paddingBottom: 100,
-            paddingTop: pinnedFeed.length === 0 ? 30 : 0,
+            paddingTop: pinnedFeed.length === 0 ? 12 : 0,
           }}
           onEndReached={() => {
             if (hasNextPage && !isFetchingNextPage) {
@@ -106,7 +106,7 @@ export default function MyGymScreen() {
           }
           onEndReachedThreshold={0.5}
           renderItem={({ item: feedItem }) => (
-            <View className={`px-4 ${unpinnedFeed ? "pb-10" : ""}`}>
+            <View className={`px-4 ${unpinnedFeed ? "pb-5" : ""}`}>
               <FeedCard
                 item={feedItem as FeedItemUI}
                 pinned={false}

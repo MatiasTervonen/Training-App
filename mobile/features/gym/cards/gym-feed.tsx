@@ -38,7 +38,7 @@ export default function GymCard({
       onExpand={onExpand}
       onEdit={onEdit}
       onHide={onHide}
-      typeIcon={<Dumbbell size={20} color={pinned ? "#0f172a" : "#cbd5e1"} />}
+      typeIcon={<Dumbbell size={20} color={"#cbd5e1"} />}
       typeName={t("feed.card.types.gym")}
       statsContent={
         <View>
@@ -68,12 +68,12 @@ export default function GymCard({
             {payload.exercises_count > 0 && payload.sets_count > 0 && (
               <View className="gap-4 flex-row items-center">
                 <AppText
-                  className={` ${pinned ? "text-slate-900" : "text-slate-300"}`}
+                  className={` ${"text-slate-300"}`}
                 >
                   {t("feed.card.exercises")}: {payload.exercises_count}
                 </AppText>
                 <AppText
-                  className={`${pinned ? "text-slate-900" : "text-slate-300"}`}
+                  className={`${"text-slate-300"}`}
                 >
                   {t("feed.card.sets")}: {payload.sets_count}
                 </AppText>
@@ -81,9 +81,9 @@ export default function GymCard({
             )}
             {payload.duration > 0 && (
               <View className="flex-row items-center gap-2">
-                <Timer size={20} color={pinned ? "#0f172a" : "#cbd5e1"} />
+                <Timer size={20} color={"#cbd5e1"} />
                 <AppText
-                  className={` ${pinned ? "text-slate-900" : "text-slate-300"}`}
+                  className={` ${"text-slate-300"}`}
                 >
                   {Math.floor(payload.duration / 60)} {t("feed.card.min")}
                 </AppText>

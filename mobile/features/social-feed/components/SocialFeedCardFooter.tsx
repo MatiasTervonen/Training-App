@@ -15,7 +15,7 @@ export default function SocialFeedCardFooter({ item, onToggleLike, onExpand }: P
   const { t } = useTranslation("social");
 
   return (
-    <View className="flex-row items-center justify-between px-4 pb-4 pt-1">
+    <View className="flex-row items-center justify-between px-4 py-2 border-t border-slate-700/50 mt-1">
       <AnimatedButton
         onPress={onToggleLike}
         className="flex-row items-center gap-2"

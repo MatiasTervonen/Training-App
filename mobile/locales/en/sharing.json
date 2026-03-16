@@ -1,0 +1,9 @@
+{
+  "sharing": {
+    "title": "Sharing Settings",
+    "description": "Choose what to share with friends by default. You can change this for each session when saving.",
+    "gymSessions": "Gym sessions",
+    "activities": "Activities",
+    "saved": "Settings saved"
+  }
+}

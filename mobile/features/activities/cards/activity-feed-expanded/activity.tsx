@@ -34,6 +34,7 @@ type ActivitySessionProps = FullActivitySession & {
   media?: ActivitySessionMedia;
   isLoadingMedia?: boolean;
   mediaError?: unknown;
+  readOnly?: boolean;
 };
 
 export default function ActivitySession(
@@ -91,27 +92,29 @@ export default function ActivitySession(
                 <AppText className="text-xl text-center flex-1">
                   {activity_session.session.title}
                 </AppText>
-                <View className="flex-row items-center gap-4">
-                  {hasTemplate && (
+                {!activity_session.readOnly && (
+                  <View className="flex-row items-center gap-4">
+                    {hasTemplate && (
+                      <AnimatedButton
+                        onPress={() =>
+                          openHistory(
+                            activity_session.session.template_id!,
+                            activity_session.session.title,
+                          )
+                        }
+                        hitSlop={10}
+                      >
+                        <History color="#9ca3af" size={20} />
+                      </AnimatedButton>
+                    )}
                     <AnimatedButton
-                      onPress={() =>
-                        openHistory(
-                          activity_session.session.template_id!,
-                          activity_session.session.title,
-                        )
-                      }
+                      onPress={() => setIsShareModalOpen(true)}
                       hitSlop={10}
                     >
-                      <History color="#9ca3af" size={20} />
+                      <Share2 color="#9ca3af" size={20} />
                     </AnimatedButton>
-                  )}
-                  <AnimatedButton
-                    onPress={() => setIsShareModalOpen(true)}
-                    hitSlop={10}
-                  >
-                    <Share2 color="#9ca3af" size={20} />
-                  </AnimatedButton>
-                </View>
+                  </View>
+                )}
               </View>
 
               <AppText className="text-sm text-gray-400" numberOfLines={1}>
@@ -206,7 +209,7 @@ export default function ActivitySession(
               </AppText>
             )}
           </View>
-          {hasRoute && (
+          {hasRoute && !activity_session.readOnly && (
             <View className="mt-20">
               <AnimatedButton
                 onPress={() => setShowModal(true)}

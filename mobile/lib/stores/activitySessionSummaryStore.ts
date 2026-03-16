@@ -15,6 +15,7 @@ export type ActivitySessionSummary = {
   averageSpeed: number | null;
   steps: number | null;
   calories: number | null;
+  sessionId?: string;
 };
 
 interface ActivitySessionSummaryStore {

@@ -207,6 +207,7 @@ export default function useSaveActivitySession({
         averageSpeed: stats?.avg_speed ?? null,
         steps: stats?.steps ?? null,
         calories: stats?.calories ?? null,
+        sessionId,
       });
 
       resetSession();

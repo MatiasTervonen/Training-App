@@ -15,3 +15,5 @@ export { default as friends } from "./friends.json";
 export { default as notifications } from "./notifications.json";
 export { default as habits } from "./habits.json";
 export { default as reports } from "./reports.json";
+export { default as social } from "./social.json";
+export { default as sharing } from "./sharing.json";

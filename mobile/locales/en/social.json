@@ -1,0 +1,14 @@
+{
+  "social": {
+    "myFeed": "My Feed",
+    "friendsFeed": "Friends",
+    "noFriendPosts": "No posts from friends yet",
+    "noFriendsYet": "Add friends to see their activity here",
+    "shareWithFriends": "Share with friends",
+    "likes": "likes",
+    "like": "like",
+    "liked": "Liked",
+    "details": "Details",
+    "readOnly": "Read-only view"
+  }
+}

@@ -18,6 +18,7 @@ export type SessionSummary = {
   notes: string;
   weightUnit: string;
   phases?: SessionSummaryPhase[];
+  sessionId?: string;
 };
 
 interface SessionSummaryStore {

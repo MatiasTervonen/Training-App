@@ -95,6 +95,7 @@ export default function StartActivityScreen() {
   const [showModal, setShowModal] = useState(false);
   const [showNotesModal, setShowNotesModal] = useState(false);
   const [hasStartedTracking, setHasStartedTracking] = useState(false);
+
   const [showStepsModal, setShowStepsModal] = useState(false);
   const [steps, setSteps] = useState(0);
   const [showStepToggle, setShowStepToggle] = useState(false);

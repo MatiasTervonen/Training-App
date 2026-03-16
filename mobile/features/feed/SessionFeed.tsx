@@ -36,9 +36,16 @@ import ActivitySessionEdit from "@/features/activities/cards/activity-edit";
 import ReportSession from "@/features/reports/cards/report-expanded";
 import TutorialSession from "@/features/feed-cards/tutorial-expanded";
 import useUpdateFeedItemToTop from "./hooks/useUpdateFeedItemToTop";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
-import { LayoutDashboard } from "lucide-react-native";
+import { LayoutDashboard, Users } from "lucide-react-native";
+import useSocialFeed from "@/features/social-feed/hooks/useSocialFeed";
+import useToggleLike from "@/features/social-feed/hooks/useToggleLike";
+import SocialFeedCard from "@/features/social-feed/components/SocialFeedCard";
+import FeedModeToggle from "@/features/social-feed/components/FeedModeToggle";
+import { SocialFeedItem } from "@/types/social-feed";
+import { getFriendGymSession } from "@/database/social-feed/get-friend-gym-session";
+import { getFriendActivitySession } from "@/database/social-feed/get-friend-activity-session";
 
 type SessionFeedProps = {
   expandReminderId?: string;
@@ -50,9 +57,11 @@ export default function SessionFeed({ expandReminderId }: SessionFeedProps) {
   const queryClient = useQueryClient();
   const { t } = useTranslation("feed");
 
+  const [feedMode, setFeedMode] = useState<"my" | "friends">("my");
   const [expandedItem, setExpandedItem] = useState<FeedItemUI | null>(null);
   const [editingItem, setEditingItem] = useState<FeedItemUI | null>(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [expandedSocialItem, setExpandedSocialItem] = useState<SocialFeedItem | null>(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [hasUnsavedExpandedChanges, setHasUnsavedExpandedChanges] =
     useState(false);
@@ -146,6 +155,23 @@ export default function SessionFeed({ expandReminderId }: SessionFeedProps) {
     refetchFullTodoMedia,
   } = useFullSessions(expandedItem, editingItem);
 
+  // Social feed hooks
+  const socialFeed = useSocialFeed();
+  const { mutate: toggleLikeMutation } = useToggleLike();
+
+  // Fetch full friend session when expanded
+  const { data: friendGymData, isLoading: isLoadingFriendGym } = useQuery({
+    queryKey: ["friendGymSession", expandedSocialItem?.id],
+    queryFn: () => getFriendGymSession(expandedSocialItem!.id),
+    enabled: !!expandedSocialItem && expandedSocialItem.type === "gym_sessions",
+  });
+
+  const { data: friendActivityData, isLoading: isLoadingFriendActivity } = useQuery({
+    queryKey: ["friendActivitySession", expandedSocialItem?.id],
+    queryFn: () => getFriendActivitySession(expandedSocialItem!.id),
+    enabled: !!expandedSocialItem && expandedSocialItem.type === "activity_sessions",
+  });
+
   // useUpdateFeedItem hook to update feed item in cache
   const { updateFeedItem } = useUpdateFeedItem();
 
@@ -163,111 +189,167 @@ export default function SessionFeed({ expandReminderId }: SessionFeedProps) {
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
     >
-      {isLoading || !data ? (
+      {feedMode === "my" ? (
         <>
-          <FeedSkeleton count={5} />
-        </>
-      ) : error ? (
-        <AppText className="text-center text-lg mt-20 mx-auto px-10">
-          {t("feed.loadError")}
-        </AppText>
-      ) : !data || (unpinnedFeed.length === 0 && pinnedFeed.length === 0) ? (
-        <View className="flex-1 items-center mt-[30%] px-8">
-          <View className="items-center">
-            <View className="w-20 h-20 rounded-full bg-slate-800 border border-slate-700 items-center justify-center mb-5">
-              <LayoutDashboard size={36} color="#94a3b8" />
+          {isLoading || !data ? (
+            <FeedSkeleton count={5} />
+          ) : error ? (
+            <AppText className="text-center text-lg mt-20 mx-auto px-10">
+              {t("feed.loadError")}
+            </AppText>
+          ) : !data || (unpinnedFeed.length === 0 && pinnedFeed.length === 0) ? (
+            <View className="flex-1 items-center mt-[30%] px-8">
+              <View className="items-center">
+                <View className="w-20 h-20 rounded-full bg-slate-800 border border-slate-700 items-center justify-center mb-5">
+                  <LayoutDashboard size={36} color="#94a3b8" />
+                </View>
+                <AppText className="text-xl text-center mb-3">
+                  {t("feed.noSessions")}
+                </AppText>
+                <AppText className="text-sm text-gray-400 text-center leading-5">
+                  {t("feed.noSessionsDesc")}
+                </AppText>
+              </View>
             </View>
-            <AppText className="text-xl text-center mb-3">
-              {t("feed.noSessions")}
-            </AppText>
-            <AppText className="text-sm text-gray-400 text-center leading-5">
-              {t("feed.noSessionsDesc")}
-            </AppText>
-          </View>
-        </View>
-      ) : (
-        <>
-          <FlatList
-            data={unpinnedFeed}
-            keyExtractor={(item) => item.id}
-            contentContainerStyle={{
-              paddingBottom: 100,
-              paddingTop: pinnedFeed.length === 0 ? 30 : 0,
-            }}
-            showsHorizontalScrollIndicator={false}
-            showsVerticalScrollIndicator={false}
-            refreshControl={
-              <RefreshControl
-                refreshing={refreshing}
-                onRefresh={async () => {
-                  setRefreshing(true);
-                  await mutateFeed();
-                  setRefreshing(false);
-                }}
-              />
-            }
-            onEndReached={() => {
-              if (hasNextPage && !isFetchingNextPage) {
-                fetchNextPage();
-              }
-            }}
-            onEndReachedThreshold={0.5}
-            renderItem={({ item: feedItem }) => (
-              <View className={`px-4 ${unpinnedFeed ? "pb-10" : ""}`}>
-                <FeedCard
-                  item={feedItem as FeedItemUI}
-                  pinned={false}
-                  onExpand={() => {
-                    if (feedItem.type === "habits") {
-                      router.push("/habits");
-                      return;
-                    }
-                    setExpandedItem(feedItem);
-                  }}
-                  onTogglePin={() =>
-                    togglePin(
-                      feedItem.id,
-                      feedItem.type,
-                      feedItem.feed_context,
-                      "main",
-                    )
-                  }
-                  onDelete={() => {
-                    handleDelete(feedItem.source_id, feedItem.type);
-                  }}
-                  onHide={() => handleHide(feedItem.id)}
-                  onEdit={() => {
-                    if (feedItem.type === "habits") {
-                      router.push("/habits");
-                      return;
-                    }
-                    if (feedItem.type === "gym_sessions") {
-                      router.push(`/gym/gym/${feedItem.source_id}`);
-                    } else {
-                      setEditingItem({ ...feedItem, id: feedItem.source_id });
-                    }
+          ) : (
+            <FlatList
+              data={unpinnedFeed}
+              keyExtractor={(item) => item.id}
+              contentContainerStyle={{
+                paddingBottom: 100,
+                paddingTop: pinnedFeed.length === 0 ? 30 : 0,
+              }}
+              showsHorizontalScrollIndicator={false}
+              showsVerticalScrollIndicator={false}
+              refreshControl={
+                <RefreshControl
+                  refreshing={refreshing}
+                  onRefresh={async () => {
+                    setRefreshing(true);
+                    await mutateFeed();
+                    setRefreshing(false);
                   }}
                 />
+              }
+              onEndReached={() => {
+                if (hasNextPage && !isFetchingNextPage) {
+                  fetchNextPage();
+                }
+              }}
+              onEndReachedThreshold={0.5}
+              renderItem={({ item: feedItem }) => (
+                <View className={`px-4 ${unpinnedFeed ? "pb-10" : ""}`}>
+                  <FeedCard
+                    item={feedItem as FeedItemUI}
+                    pinned={false}
+                    onExpand={() => {
+                      if (feedItem.type === "habits") {
+                        router.push("/habits");
+                        return;
+                      }
+                      setExpandedItem(feedItem);
+                    }}
+                    onTogglePin={() =>
+                      togglePin(
+                        feedItem.id,
+                        feedItem.type,
+                        feedItem.feed_context,
+                        "main",
+                      )
+                    }
+                    onDelete={() => {
+                      handleDelete(feedItem.source_id, feedItem.type);
+                    }}
+                    onHide={() => handleHide(feedItem.id)}
+                    onEdit={() => {
+                      if (feedItem.type === "habits") {
+                        router.push("/habits");
+                        return;
+                      }
+                      if (feedItem.type === "gym_sessions") {
+                        router.push(`/gym/gym/${feedItem.source_id}`);
+                      } else {
+                        setEditingItem({ ...feedItem, id: feedItem.source_id });
+                      }
+                    }}
+                  />
+                </View>
+              )}
+              ListHeaderComponent={
+                <FeedHeader
+                  pinnedFeed={pinnedFeed}
+                  setExpandedItem={setExpandedItem}
+                  setEditingItem={setEditingItem}
+                  pinned_context="main"
+                />
+              }
+              ListFooterComponent={
+                <FeedFooter
+                  isFetchingNextPage={isFetchingNextPage}
+                  hasNextPage={hasNextPage}
+                  data={data}
+                />
+              }
+            />
+          )}
+        </>
+      ) : (
+        <>
+          {socialFeed.isLoading ? (
+            <FeedSkeleton count={5} />
+          ) : socialFeed.error ? (
+            <AppText className="text-center text-lg mt-20 mx-auto px-10">
+              {t("feed.loadError")}
+            </AppText>
+          ) : socialFeed.items.length === 0 ? (
+            <View className="flex-1 items-center mt-[30%] px-8">
+              <View className="items-center">
+                <View className="w-20 h-20 rounded-full bg-slate-800 border border-slate-700 items-center justify-center mb-5">
+                  <Users size={36} color="#94a3b8" />
+                </View>
+                <AppText className="text-xl text-center mb-3">
+                  {t("social:social.noFriendPosts")}
+                </AppText>
+                <AppText className="text-sm text-gray-400 text-center leading-5">
+                  {t("social:social.noFriendsYet")}
+                </AppText>
               </View>
-            )}
-            ListHeaderComponent={
-              <FeedHeader
-                pinnedFeed={pinnedFeed}
-                setExpandedItem={setExpandedItem}
-                setEditingItem={setEditingItem}
-                pinned_context="main"
-              />
-            }
-            ListFooterComponent={
-              <FeedFooter
-                isFetchingNextPage={isFetchingNextPage}
-                hasNextPage={hasNextPage}
-                data={data}
-              />
-            }
-          />
+            </View>
+          ) : (
+            <FlatList
+              data={socialFeed.items}
+              keyExtractor={(item) => item.id}
+              contentContainerStyle={{ paddingBottom: 100 }}
+              showsVerticalScrollIndicator={false}
+              refreshControl={
+                <RefreshControl
+                  refreshing={refreshing}
+                  onRefresh={async () => {
+                    setRefreshing(true);
+                    await socialFeed.refetch();
+                    setRefreshing(false);
+                  }}
+                />
+              }
+              onEndReached={() => {
+                if (socialFeed.hasNextPage && !socialFeed.isFetchingNextPage) {
+                  socialFeed.fetchNextPage();
+                }
+              }}
+              onEndReachedThreshold={0.5}
+              renderItem={({ item: socialItem }) => (
+                <SocialFeedCard
+                  item={socialItem}
+                  onToggleLike={() => toggleLikeMutation(socialItem.id)}
+                  onExpand={() => setExpandedSocialItem(socialItem)}
+                />
+              )}
+            />
+          )}
         </>
       )}
+
+      <FeedModeToggle feedMode={feedMode} setFeedMode={setFeedMode} />
 
       {expandedItem && (
         <FullScreenModal
@@ -523,6 +605,49 @@ export default function SessionFeed({ expandReminderId }: SessionFeedProps) {
               isLoadingMedia={isLoadingWeightSession}
               onDirtyChange={setHasUnsavedChanges}
             />
+          )}
+        </FullScreenModal>
+      )}
+
+      {expandedSocialItem && (
+        <FullScreenModal
+          isOpen={!!expandedSocialItem}
+          onClose={() => setExpandedSocialItem(null)}
+        >
+          {expandedSocialItem.type === "gym_sessions" && (
+            <>
+              {isLoadingFriendGym ? (
+                <View className="gap-5 items-center justify-center mt-40 px-10">
+                  <AppText className="text-lg">{t("feed.loadingGym")}</AppText>
+                  <ActivityIndicator />
+                </View>
+              ) : friendGymData ? (
+                <GymSession {...friendGymData} readOnly />
+              ) : (
+                <AppText className="text-center text-xl mt-40 px-10">
+                  {t("feed.gymError")}
+                </AppText>
+              )}
+            </>
+          )}
+          {expandedSocialItem.type === "activity_sessions" && (
+            <>
+              {isLoadingFriendActivity ? (
+                <View className="gap-5 items-center justify-center mt-40 px-10">
+                  <AppText className="text-lg">{t("feed.loadingActivity")}</AppText>
+                  <ActivityIndicator />
+                </View>
+              ) : friendActivityData ? (
+                <ActivitySession
+                  {...friendActivityData}
+                  readOnly
+                />
+              ) : (
+                <AppText className="text-center text-xl mt-40 px-10">
+                  {t("feed.activityError")}
+                </AppText>
+              )}
+            </>
           )}
         </FullScreenModal>
       )}

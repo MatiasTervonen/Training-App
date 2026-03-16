@@ -2,7 +2,7 @@
 
 ## Overview
 
-Add a social feed where users can see their friends' training activities, and interact with likes and comments. The feature builds on the existing `friends` system and `feed_items` table.
+Add a social feed where users can see their friends' training activities and interact with likes. The feature builds on the existing `friends` system and `feed_items` table. Comments may be added as a future enhancement.
 
 ---
 
@@ -55,13 +55,13 @@ Same pattern as the personal feed — lightweight preview card + expandable full
 |  "Push Day"                              |
 |  Exercises: 5   Sets: 18   45 min       |
 |------------------------------------------|
-|  [heart] 3    [comment] 2     [Details>] |
+|  [heart] 3 likes              [Details>] |
 +------------------------------------------+
 ```
 
 - Uses the same `extra_fields` summary data as current feed cards (no extra DB query)
 - Adds author header row: profile picture (32px circle) + display name + relative time
-- Replaces the dropdown menu (no edit/pin/delete on friend posts) with like/comment footer
+- Replaces the dropdown menu (no edit/pin/delete on friend posts) with like footer
 - Keeps the "Details" button for expansion
 - Reuses the stats rendering logic from existing cards (GymCard, ActivityCard, WeightCard)
 
@@ -72,8 +72,7 @@ Opens a `FullScreenModal` with the same expanded components (`GymSession`, `Acti
 - No edit button, no delete, no pin
 - No exercise history button (friend's private data)
 - No share card button (their session)
-- Like/comment section at the bottom of the expanded view
-- Comment input with keyboard-aware positioning
+- Like button at the bottom of the expanded view
 
 **How to fetch the full session data for a friend's post?**
 
@@ -228,59 +227,7 @@ CREATE POLICY "Users can delete own likes"
   USING (user_id = auth.uid());
 ```
 
-### 4. Create `feed_comments` table
-
-```sql
-CREATE TABLE feed_comments (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  feed_item_id UUID NOT NULL REFERENCES feed_items(id) ON DELETE CASCADE,
-  user_id UUID NOT NULL DEFAULT auth.uid() REFERENCES users(id) ON DELETE CASCADE,
-  content TEXT NOT NULL CHECK (char_length(content) <= 500),
-  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-  updated_at TIMESTAMPTZ
-);
-
-CREATE INDEX idx_feed_comments_feed_item ON feed_comments(feed_item_id);
-CREATE INDEX idx_feed_comments_user ON feed_comments(user_id);
-
--- RLS
-ALTER TABLE feed_comments ENABLE ROW LEVEL SECURITY;
-
--- Same visibility logic as likes
-CREATE POLICY "Users can read comments on visible feed items"
-  ON feed_comments FOR SELECT
-  USING (
-    EXISTS (
-      SELECT 1 FROM feed_items fi
-      WHERE fi.id = feed_item_id
-      AND (
-        fi.user_id = auth.uid()
-        OR (
-          fi.visibility = 'friends'
-          AND EXISTS (
-            SELECT 1 FROM friends
-            WHERE (user1_id = auth.uid() AND user2_id = fi.user_id)
-               OR (user1_id = fi.user_id AND user2_id = auth.uid())
-          )
-        )
-      )
-    )
-  );
-
-CREATE POLICY "Users can insert own comments"
-  ON feed_comments FOR INSERT
-  WITH CHECK (user_id = auth.uid());
-
-CREATE POLICY "Users can update own comments"
-  ON feed_comments FOR UPDATE
-  USING (user_id = auth.uid());
-
-CREATE POLICY "Users can delete own comments"
-  ON feed_comments FOR DELETE
-  USING (user_id = auth.uid());
-```
-
-### 5. Update `feed_items` RLS for friend visibility
+### 4. Update `feed_items` RLS for friend visibility
 
 Add a new SELECT policy so friends can read shared items:
 
@@ -299,7 +246,7 @@ CREATE POLICY "Friends can read shared feed items"
 
 The existing policy `"allow user to CRUD own items"` continues to work for the user's own feed.
 
-### 6. Update `users` RLS for social feed
+### 5. Update `users` RLS for social feed
 
 Friends need to see each other's display_name and profile_picture in the social feed. Add:
 
@@ -317,7 +264,7 @@ CREATE POLICY "Friends can read friend profiles"
 
 Check if the existing "authenticated users can read profiles" policy already covers this — if so, skip.
 
-### 7. RPC: `get_friends_feed`
+### 6. RPC: `get_friends_feed`
 
 ```sql
 DROP FUNCTION IF EXISTS get_friends_feed(integer, integer);
@@ -337,7 +284,6 @@ RETURNS TABLE (
   author_display_name TEXT,
   author_profile_picture TEXT,
   like_count BIGINT,
-  comment_count BIGINT,
   user_has_liked BOOLEAN
 )
 LANGUAGE plpgsql
@@ -360,7 +306,6 @@ BEGIN
     u.display_name AS author_display_name,
     u.profile_picture AS author_profile_picture,
     COALESCE(lk.cnt, 0) AS like_count,
-    COALESCE(cm.cnt, 0) AS comment_count,
     EXISTS (
       SELECT 1 FROM feed_likes fl
       WHERE fl.feed_item_id = fi.id AND fl.user_id = auth.uid()
@@ -370,9 +315,6 @@ BEGIN
   LEFT JOIN LATERAL (
     SELECT COUNT(*) AS cnt FROM feed_likes WHERE feed_item_id = fi.id
   ) lk ON true
-  LEFT JOIN LATERAL (
-    SELECT COUNT(*) AS cnt FROM feed_comments WHERE feed_item_id = fi.id
-  ) cm ON true
   WHERE fi.visibility = 'friends'
     AND fi.user_id != auth.uid()
     AND EXISTS (
@@ -387,7 +329,7 @@ END;
 $$;
 ```
 
-### 8. RPC: `toggle_feed_like`
+### 7. RPC: `toggle_feed_like`
 
 ```sql
 DROP FUNCTION IF EXISTS toggle_feed_like(uuid);
@@ -418,46 +360,7 @@ END;
 $$;
 ```
 
-### 9. RPC: `get_feed_comments`
-
-```sql
-DROP FUNCTION IF EXISTS get_feed_comments(uuid, integer, integer);
-CREATE FUNCTION get_feed_comments(
-  p_feed_item_id uuid,
-  p_limit integer DEFAULT 20,
-  p_offset integer DEFAULT 0
-)
-RETURNS TABLE (
-  id UUID,
-  user_id UUID,
-  content TEXT,
-  created_at TIMESTAMPTZ,
-  author_display_name TEXT,
-  author_profile_picture TEXT
-)
-LANGUAGE plpgsql
-SECURITY INVOKER
-AS $$
-BEGIN
-  RETURN QUERY
-  SELECT
-    fc.id,
-    fc.user_id,
-    fc.content,
-    fc.created_at,
-    u.display_name AS author_display_name,
-    u.profile_picture AS author_profile_picture
-  FROM feed_comments fc
-  JOIN users u ON u.id = fc.user_id
-  WHERE fc.feed_item_id = p_feed_item_id
-  ORDER BY fc.created_at ASC
-  LIMIT p_limit
-  OFFSET p_offset;
-END;
-$$;
-```
-
-### 10. Update existing save RPCs
+### 8. Update existing save RPCs
 
 Every save RPC that creates a `feed_items` row needs to accept a `p_visibility` parameter:
 
@@ -477,7 +380,7 @@ Pass `p_visibility` into the `INSERT INTO feed_items` statement.
 
 `supabase/migrations/YYYYMMDDHHmmss_social_feed.sql`
 
-Contains all schema changes from above: visibility column, sharing_defaults table, feed_likes, feed_comments, RLS policies, RPC functions.
+Contains all schema changes from above: visibility column, sharing_defaults table, feed_likes, RLS policies, RPC functions.
 
 #### 1.2 Sharing Settings Page
 
@@ -554,7 +457,7 @@ export async function getFriendsFeed(offset: number) {
 }
 ```
 
-#### 2.4 Like/Comment Database Functions
+#### 2.4 Like Database Function
 
 `database/social-feed/toggle-like.ts`
 ```ts
@@ -566,42 +469,7 @@ export async function toggleLike(feedItemId: string) {
 }
 ```
 
-`database/social-feed/add-comment.ts`
-```ts
-export async function addComment(feedItemId: string, content: string) {
-  const { data, error } = await supabase
-    .from("feed_comments")
-    .insert({ feed_item_id: feedItemId, content })
-    .select()
-    .single();
-  return { data, error };
-}
-```
-
-`database/social-feed/delete-comment.ts`
-```ts
-export async function deleteComment(commentId: string) {
-  const { error } = await supabase
-    .from("feed_comments")
-    .delete()
-    .eq("id", commentId);
-  return { error };
-}
-```
-
-`database/social-feed/get-comments.ts`
-```ts
-export async function getComments(feedItemId: string, offset = 0) {
-  const { data, error } = await supabase.rpc("get_feed_comments", {
-    p_feed_item_id: feedItemId,
-    p_limit: 20,
-    p_offset: offset,
-  });
-  return { data, error };
-}
-```
-
-#### 2.5 Mutation Hooks
+#### 2.5 Like Mutation Hook
 
 `features/social-feed/hooks/useToggleLike.ts`
 ```ts
@@ -626,30 +494,6 @@ export function useToggleLike() {
 }
 ```
 
-`features/social-feed/hooks/useAddComment.ts`
-```ts
-export function useAddComment(feedItemId: string) {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (content: string) => addComment(feedItemId, content),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["comments", feedItemId] });
-      queryClient.invalidateQueries({ queryKey: ["social-feed"] });
-    },
-  });
-}
-```
-
-`features/social-feed/hooks/useComments.ts`
-```ts
-export function useComments(feedItemId: string) {
-  return useQuery({
-    queryKey: ["comments", feedItemId],
-    queryFn: () => getComments(feedItemId),
-  });
-}
-```
-
 #### 2.6 SocialFeedCard Component
 
 `features/social-feed/components/SocialFeedCard.tsx`
@@ -666,44 +510,18 @@ Wraps the existing card type renderers but adds social context:
 |  (reuse statsContent from BaseFeedCard)  |
 |                                          |
 |------------------------------------------|
-|  [heart] 3 likes    [comment] 2 comments |
+|  [heart] 3 likes              [Details>] |
 +------------------------------------------+
 ```
 
 Structure:
 - **Header row**: Profile picture (32x32 circle), display name, relative timestamp
 - **Body**: Render the same stats content as the existing feed cards (reuse GymCard, ActivityCard, WeightCard stat sections)
-- **Footer row**: Like button (heart icon, filled if liked), like count, comment icon, comment count
+- **Footer row**: Like button (heart icon, filled if liked), like count, Details button for expansion
 - Tap like button -> `useToggleLike` mutation
-- Tap comment area -> open comment sheet
+- Tap Details -> open read-only expanded view
 
-#### 2.7 Comment Sheet
-
-`features/social-feed/components/CommentSheet.tsx`
-
-Bottom sheet (or modal) that opens when tapping comments on a social card:
-
-```
-+------------------------------------------+
-|  Comments (2)                     [X]    |
-|------------------------------------------|
-|  [avatar] FriendA  - 1h ago              |
-|  Great workout!                          |
-|                                          |
-|  [avatar] You  - 30m ago                 |
-|  Thanks!                        [delete] |
-|                                          |
-|------------------------------------------|
-|  [input: Write a comment...]    [Send]   |
-+------------------------------------------+
-```
-
-- FlatList of comments with user info
-- Delete button only on own comments
-- Text input + send button at bottom
-- Keyboard-aware (input stays above keyboard)
-
-#### 2.8 Dashboard Feed Toggle
+#### 2.7 Dashboard Feed Toggle
 
 Update `app/dashboard/index.tsx` (or wherever the main feed lives):
 
@@ -737,10 +555,9 @@ When `feedMode === "friends"`:
 
 ### Phase 3: Notifications (Future Enhancement)
 
-Push notifications when someone likes or comments on your post. This can be a follow-up — the `notifications` table already exists with realtime enabled.
+Push notifications when someone likes your post. This can be a follow-up — the `notifications` table already exists with realtime enabled.
 
 - On like: insert into `notifications` with `type: 'like'`
-- On comment: insert into `notifications` with `type: 'comment'`
 - Use Supabase database triggers or Edge Functions
 
 ---
@@ -765,17 +582,7 @@ type SocialFeedItem = {
   author_display_name: string;
   author_profile_picture: string | null;
   like_count: number;
-  comment_count: number;
   user_has_liked: boolean;
-};
-
-type FeedComment = {
-  id: string;
-  user_id: string;
-  content: string;
-  created_at: string;
-  author_display_name: string;
-  author_profile_picture: string | null;
 };
 ```
 
@@ -794,14 +601,6 @@ type FeedComment = {
     "shareWithFriends": "Share with friends",
     "likes": "likes",
     "like": "like",
-    "comments": "comments",
-    "comment": "comment",
-    "writeComment": "Write a comment...",
-    "send": "Send",
-    "deleteComment": "Delete comment?",
-    "commentDeleted": "Comment deleted",
-    "commentAdded": "Comment posted",
-    "commentError": "Failed to post comment",
     "ago": "ago"
   }
 }
@@ -811,21 +610,13 @@ type FeedComment = {
 ```json
 {
   "social": {
-    "myFeed": "Oma syote",
+    "myFeed": "Oma syöte",
     "friendsFeed": "Kaverit",
-    "noFriendPosts": "Ei viela kavereiden julkaisuja",
-    "noFriendsYet": "Lisaa kavereita nahdaksesi heidan aktiviteettinsa taalla",
+    "noFriendPosts": "Ei vielä kavereiden julkaisuja",
+    "noFriendsYet": "Lisää kavereita nähdäksesi heidän aktiviteettinsa täällä",
     "shareWithFriends": "Jaa kavereille",
-    "likes": "tykkaysta",
-    "like": "tykkays",
-    "comments": "kommenttia",
-    "comment": "kommentti",
-    "writeComment": "Kirjoita kommentti...",
-    "send": "Laheta",
-    "deleteComment": "Poista kommentti?",
-    "commentDeleted": "Kommentti poistettu",
-    "commentAdded": "Kommentti lisatty",
-    "commentError": "Kommentin lisaaminen epaonnistui",
+    "likes": "tykkäystä",
+    "like": "tykkäys",
     "ago": "sitten"
   }
 }
@@ -850,7 +641,7 @@ type FeedComment = {
 {
   "sharing": {
     "title": "Jakamisasetukset",
-    "description": "Valitse mita jaat kavereille oletuksena. Voit muuttaa tata jokaiselle harjoitukselle tallennettaessa.",
+    "description": "Valitse mitä jaat kavereille oletuksena. Voit muuttaa tätä jokaiselle harjoitukselle tallennettaessa.",
     "gymSessions": "Kuntosaliharjoitukset",
     "activities": "Aktiviteetit",
     "habitCompletions": "Tapasuoritukset",
@@ -858,8 +649,6 @@ type FeedComment = {
   }
 }
 ```
-
-NOTE: Finnish translations above use plain a/o - must be replaced with proper a/o characters (with umlauts) during implementation.
 
 ---
 
@@ -873,9 +662,6 @@ mobile/
       get-friend-gym-session.ts
       get-friend-activity-session.ts
       toggle-like.ts
-      add-comment.ts
-      delete-comment.ts
-      get-comments.ts
     sharing/
       get-sharing-defaults.ts
       upsert-sharing-default.ts
@@ -884,15 +670,10 @@ mobile/
       hooks/
         useSocialFeed.ts
         useToggleLike.ts
-        useAddComment.ts
-        useDeleteComment.ts
-        useComments.ts
       components/
         SocialFeedCard.tsx
         SocialFeedCardHeader.tsx
         SocialFeedCardFooter.tsx
-        CommentSheet.tsx
-        CommentItem.tsx
         FeedModeToggle.tsx
     sharing/
       hooks/
@@ -921,9 +702,9 @@ supabase/
 ## Implementation Order
 
 ### Step 1: Database migration
-- Add visibility column, sharing_defaults, feed_likes, feed_comments tables
+- Add visibility column, sharing_defaults, feed_likes tables
 - Add RLS policies
-- Add RPC functions (get_friends_feed, toggle_feed_like, get_feed_comments)
+- Add RPC functions (get_friends_feed, toggle_feed_like)
 - Update existing save RPCs to accept p_visibility
 
 ### Step 2: Sharing settings
@@ -935,13 +716,12 @@ supabase/
 ### Step 3: Per-session visibility toggle
 - Add toggle to gym save flow
 - Add toggle to activity save flow
-- Add toggle to weight save flow
 - Wire sharing_defaults as default value for toggle
 - Update save functions to pass visibility
 
 ### Step 4: Social feed page
 - Social feed data fetcher + hook
-- SocialFeedCard component (header with avatar/name + reused stats body + like/comment footer)
+- SocialFeedCard component (header with avatar/name + reused stats body + like footer)
 - Feed mode toggle on dashboard ("My Feed" | "Friends")
 - Empty states
 - Translations
@@ -951,7 +731,7 @@ supabase/
 - Database fetch functions for each
 - Add `readOnly` prop to expanded view components (GymSession, ActivitySession, WeightSession)
   - Hides: edit button, delete, pin, exercise history, share card
-  - Shows: like/comment section at bottom
+  - Shows: like button at bottom
 - Adapt `useFullSessions` to detect friend posts (`user_id !== currentUserId`) and call friend RPCs
 - Social feed "Details" button opens FullScreenModal with read-only expanded view
 
@@ -960,15 +740,9 @@ supabase/
 - Like button on SocialFeedCard with optimistic update
 - Like count display
 
-### Step 7: Comments
-- Comment database functions + hooks
-- CommentSheet component
-- Comment count on SocialFeedCard
-- Add/delete comments
-
-### Step 8: Polish
-- Like/comment on own shared posts (user should see their own shared items in social feed too, or see likes/comments from the personal feed)
-- Notifications for likes/comments (future)
+### Step 7: Polish
+- Likes on own shared posts (user should see likes on their own shared items from the personal feed)
+- Notifications for likes (future)
 - Pull-to-refresh on social feed
 
 ---
@@ -978,9 +752,15 @@ supabase/
 - **No friends**: Show "Add friends to see their activity" with link to friends page
 - **Friends but no shared posts**: Show "No posts from friends yet"
 - **User unfriends someone**: Their posts disappear from feed (RLS handles this automatically)
-- **User changes visibility after likes/comments exist**: Likes/comments remain in DB but become invisible via RLS (feed_item visibility = 'private' means friends can't see it or its interactions)
-- **Deleted post**: CASCADE delete removes feed_item + likes + comments
-- **Own shared posts**: User can see likes/comments on their own shared posts from their personal feed (need to add like/comment counts to personal feed cards too, or show in expanded view)
+- **User changes visibility after likes exist**: Likes remain in DB but become invisible via RLS (feed_item visibility = 'private' means friends can't see it or its likes)
+- **Deleted post**: CASCADE delete removes feed_item + likes
+- **Own shared posts**: User can see likes on their own shared posts from their personal feed (need to add like counts to personal feed cards too, or show in expanded view)
 - **Rapid like toggling**: Optimistic update + debounce prevents flickering
-- **Long comments**: Max 500 chars enforced in DB, show character counter in input
-- **Empty comment**: Prevent submission of whitespace-only comments (client-side validation)
+
+---
+
+## Future Enhancements
+
+- **Comments**: Add `feed_comments` table, CommentSheet component, and comment counts on cards. Designed to layer on top of the likes system without breaking changes.
+- **Like notifications**: Push notification when someone likes your shared post.
+- **Live session updates**: Polling-based refresh when viewing a friend's in-progress gym session.

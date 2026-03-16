@@ -46,7 +46,6 @@ import {
   clearMilestoneConfig,
 } from "@/native/android/NativeTimer";
 import { useMilestoneAlerts } from "@/features/activities/hooks/useMilestoneAlerts";
-import MilestoneToast from "@/features/activities/components/MilestoneToast";
 import { useActivitySettingsStore } from "@/lib/stores/activitySettingsStore";
 import { useTemplateRoute } from "@/features/activities/hooks/useTemplateRoute";
 import { findWarmupStartIndex } from "@/features/activities/lib/findWarmupStartIndex";
@@ -346,7 +345,7 @@ export default function StartActivityScreen() {
     return Math.round(baseMet * userWeight * (effectiveMovingTime / 3600));
   }, [baseMet, userWeight, effectiveMovingTime]);
 
-  const { toast } = useMilestoneAlerts(
+  useMilestoneAlerts(
     {
       steps,
       durationSeconds: effectiveMovingTime,
@@ -355,6 +354,19 @@ export default function StartActivityScreen() {
     },
     isRunning,
   );
+
+  // Sync native milestone config when settings change mid-session
+  useEffect(() => {
+    if (!activeSession) return;
+    setMilestoneConfig({
+      steps: milestoneSettings.steps,
+      duration: milestoneSettings.duration,
+      distance: milestoneSettings.distance,
+      calories: milestoneSettings.calories,
+      baseMet,
+      userWeight,
+    });
+  }, [milestoneSettings, activeSession, baseMet, userWeight]);
 
   // useSaveActivitySession hook to save the activity session
   const { handleSaveSession } = useSaveActivitySession({
@@ -579,7 +591,7 @@ export default function StartActivityScreen() {
             liveCalories={liveCalories}
             onNotesPress={() => setShowNotesModal(true)}
           />
-          <MilestoneToast toast={toast} />
+
           <DebugOverlay
             trackLength={track.length}
             isHydrated={isHydrated}
@@ -610,7 +622,7 @@ export default function StartActivityScreen() {
             isCaloriesRelevant={isCaloriesRelevant}
             estimatedDistance={stepDistance}
           />
-          <MilestoneToast toast={toast} />
+
           <View className="absolute z-50 bottom-20 right-5">
             <AnimatedButton
               onPress={() => setShowNotesModal(true)}

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef } from "react";
 import { AppState } from "react-native";
 import * as Haptics from "expo-haptics";
 import { createAudioPlayer, setAudioModeAsync } from "expo-audio";
@@ -8,6 +8,7 @@ import {
   getMilestoneThresholds,
 } from "@/native/android/NativeTimer";
 import { useTranslation } from "react-i18next";
+import Toast from "react-native-toast-message";
 
 setAudioModeAsync({
   interruptionMode: "duckOthers",
@@ -32,26 +33,21 @@ interface ThresholdState {
   calories: number | null;
 }
 
-export interface MilestoneToast {
-  id: string;
-  lines: string[];
-}
-
 export function useMilestoneAlerts(
   metrics: MilestoneMetrics,
   isActive: boolean,
 ) {
   const { t } = useTranslation("activities");
-  const [toast, setToast] = useState<MilestoneToast | null>(null);
   const thresholds = useRef<ThresholdState>({
     steps: null,
     duration: null,
     distance: null,
     calories: null,
   });
-  const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isInForeground = useRef(AppState.currentState === "active");
   const isInitialized = useRef(false);
+  const metricsRef = useRef(metrics);
+  metricsRef.current = metrics;
 
   const milestoneSettings = useActivitySettingsStore(
     (s) => s.milestoneAlerts,
@@ -92,27 +88,70 @@ export function useMilestoneAlerts(
     };
   }, [isActive]);
 
-  const showToast = useCallback((lines: string[]) => {
-    if (toastTimer.current) clearTimeout(toastTimer.current);
-
-    setToast({ id: Date.now().toString(), lines });
-
-    toastTimer.current = setTimeout(() => {
-      setToast(null);
-      toastTimer.current = null;
-    }, 3500);
-  }, []);
+  const showMilestoneToast = (lines: string[]) => {
+    Toast.show({
+      type: "milestone",
+      text1: lines[0],
+      text2: lines.length > 1 ? lines.slice(1).join("\n") : undefined,
+      visibilityTime: 5000,
+    });
+  };
 
   // Initialize thresholds when session becomes active.
   // Always read from native service first — it tracks thresholds persistently
   // and stays in sync even across component unmount/remount (navigation).
   // Only fall back to settings values if native has no thresholds yet (fresh session).
+  // When settings change mid-session, update thresholds directly without re-reading
+  // stale native state.
   useEffect(() => {
     if (!isActive || !milestoneSettings) {
       isInitialized.current = false;
       return;
     }
 
+    // Mid-session settings change — update thresholds directly from new settings
+    if (isInitialized.current) {
+      const th = thresholds.current;
+      const m = metricsRef.current;
+
+      // Steps
+      if (milestoneSettings.steps.enabled && th.steps === null) {
+        const interval = milestoneSettings.steps.interval;
+        th.steps = Math.ceil((m.steps + 1) / interval) * interval;
+      } else if (!milestoneSettings.steps.enabled) {
+        th.steps = null;
+      }
+
+      // Duration
+      if (milestoneSettings.duration.enabled && th.duration === null) {
+        const intervalSecs = milestoneSettings.duration.interval * 60;
+        th.duration =
+          Math.ceil((m.durationSeconds + 1) / intervalSecs) * intervalSecs;
+      } else if (!milestoneSettings.duration.enabled) {
+        th.duration = null;
+      }
+
+      // Distance
+      if (milestoneSettings.distance.enabled && th.distance === null) {
+        const intervalMeters = milestoneSettings.distance.interval * 1000;
+        th.distance =
+          Math.ceil((m.distanceMeters + 1) / intervalMeters) * intervalMeters;
+      } else if (!milestoneSettings.distance.enabled) {
+        th.distance = null;
+      }
+
+      // Calories
+      if (milestoneSettings.calories.enabled && th.calories === null) {
+        const interval = milestoneSettings.calories.interval;
+        th.calories = Math.ceil((m.calories + 1) / interval) * interval;
+      } else if (!milestoneSettings.calories.enabled) {
+        th.calories = null;
+      }
+
+      return;
+    }
+
+    // First initialization — read from native or initialize from settings
     isInitialized.current = false;
 
     getMilestoneThresholds().then((nativeThresholds) => {
@@ -187,7 +226,7 @@ export function useMilestoneAlerts(
       milestoneSound.seekTo(0);
       milestoneSound.play();
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      showToast(hitLines);
+      showMilestoneToast(hitLines);
     }
   }, [
     isActive,
@@ -196,7 +235,6 @@ export function useMilestoneAlerts(
     metrics.distanceMeters,
     metrics.calories,
     milestoneSettings,
-    showToast,
     t,
   ]);
 
@@ -213,12 +251,5 @@ export function useMilestoneAlerts(
     }
   }, [isActive]);
 
-  // Cleanup toast timer on unmount
-  useEffect(() => {
-    return () => {
-      if (toastTimer.current) clearTimeout(toastTimer.current);
-    };
-  }, []);
-
-  return { toast };
+  return {};
 }

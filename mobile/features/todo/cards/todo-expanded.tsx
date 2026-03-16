@@ -297,7 +297,7 @@ export default function TodoSession({
                                         }
                                       />
                                     </View>
-                                    <AppText className="text-xl text-center mb-10 border-b border-gray-700 pb-2">
+                                    <AppText className="text-lg text-center mb-10 border-b border-gray-700 pb-2 pr-8">
                                       {task.task}
                                     </AppText>
                                     <BodyText className="text-left">

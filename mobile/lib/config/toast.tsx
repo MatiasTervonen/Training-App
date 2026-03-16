@@ -70,4 +70,26 @@ export const toastConfig = {
       }}
     />
   ),
+
+  milestone: (props: JSX.IntrinsicAttributes & BaseToastProps) => (
+    <BaseToast
+      {...props}
+      style={{ borderWidth: 1, borderColor: "#f59e0b", borderLeftWidth: 5, borderLeftColor: "#f59e0b", backgroundColor: "#0f1520", overflow: "hidden" }}
+      contentContainerStyle={{
+        paddingHorizontal: 15,
+        paddingVertical: 10,
+      }}
+      text1Style={{
+        fontFamily: "Lexend-Medium",
+        fontSize: 18,
+        color: "#f3f4f6",
+      }}
+      text2Style={{
+        fontFamily: "Lexend-Medium",
+        fontSize: 15,
+        color: "#d1d5db",
+      }}
+      text2NumberOfLines={5}
+    />
+  ),
 };

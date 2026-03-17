@@ -19,6 +19,9 @@ import Toast from "react-native-toast-message";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import Toggle from "@/components/toggle";
 import { Checkbox } from "expo-checkbox";
+import { TimerPicker } from "react-native-timer-picker";
+import { LinearGradient } from "expo-linear-gradient";
+import * as Haptics from "expo-haptics";
 
 export default function CreateHabitScreen() {
   const { t, i18n } = useTranslation("habits");
@@ -32,9 +35,11 @@ export default function CreateHabitScreen() {
   const { scheduleHabitReminder, cancelHabitReminder } =
     useHabitNotifications();
 
-  const [habitType, setHabitType] = useState<"manual" | "steps">("manual");
+  const [habitType, setHabitType] = useState<"manual" | "steps" | "duration">("manual");
   const [name, setName] = useState("");
   const [stepGoal, setStepGoal] = useState("");
+  const [durationPicker, setDurationPicker] = useState({ hours: 0, minutes: 0, seconds: 0 });
+  const [alarmType, setAlarmType] = useState<"normal" | "priority">("normal");
   const [frequencyMode, setFrequencyMode] = useState<"daily" | "specific">("daily");
   const [selectedDays, setSelectedDays] = useState<number[]>([]);
   const [reminderEnabled, setReminderEnabled] = useState(false);
@@ -47,6 +52,8 @@ export default function CreateHabitScreen() {
   // Display order: Mon first
   const displayOrder = [1, 2, 3, 4, 5, 6, 0] as const; // indices into dayKeys
 
+  const durationInSeconds = durationPicker.hours * 3600 + durationPicker.minutes * 60;
+
   // Pre-fill when editing
   useEffect(() => {
     if (isEditing) {
@@ -55,7 +62,16 @@ export default function CreateHabitScreen() {
         setHabitType(habit.type);
         if (habit.type === "steps" && habit.target_value) {
           setStepGoal(String(habit.target_value));
+        } else if (habit.type === "duration" && habit.target_value) {
+          const totalSec = habit.target_value;
+          const hours = Math.floor(totalSec / 3600);
+          const minutes = Math.floor((totalSec % 3600) / 60);
+          setDurationPicker({ hours, minutes, seconds: 0 });
+          setAlarmType(habit.alarm_type);
         } else {
+          setName(habit.name);
+        }
+        if (habit.type !== "steps") {
           setName(habit.name);
         }
         if (habit.frequency_days) {
@@ -79,17 +95,20 @@ export default function CreateHabitScreen() {
       name,
       stepGoal,
       habitType,
+      durationInSeconds,
+      alarmType,
       frequencyMode,
       selectedDays: [...selectedDays].sort(),
       reminderEnabled,
       reminderTimestamp: reminderTime.getTime(),
     }),
-    [name, stepGoal, habitType, frequencyMode, selectedDays, reminderEnabled, reminderTime],
+    [name, stepGoal, habitType, durationInSeconds, alarmType, frequencyMode, selectedDays, reminderEnabled, reminderTime],
   );
 
   const handleAutoSave = useCallback(async () => {
     if (habitType === "manual" && !name.trim()) return;
     if (habitType === "steps" && (!stepGoal || parseInt(stepGoal, 10) <= 0)) return;
+    if (habitType === "duration" && (durationInSeconds <= 0 || !name.trim())) return;
 
     const isStepsType = habitType === "steps";
     const parsedGoal = parseInt(stepGoal, 10);
@@ -98,7 +117,7 @@ export default function CreateHabitScreen() {
       : name.trim();
 
     const timeStr =
-      !isStepsType && reminderEnabled
+      habitType !== "steps" && reminderEnabled
         ? `${String(reminderTime.getHours()).padStart(2, "0")}:${String(reminderTime.getMinutes()).padStart(2, "0")}:00`
         : null;
     const freqDays =
@@ -106,12 +125,19 @@ export default function CreateHabitScreen() {
         ? selectedDays
         : null;
 
+    const targetValue = isStepsType
+      ? parsedGoal
+      : habitType === "duration"
+        ? durationInSeconds
+        : null;
+
     await editMutation.mutateAsync({
       habitId: id!,
       name: habitName,
       reminderTime: timeStr,
       frequencyDays: freqDays,
-      targetValue: isStepsType ? parsedGoal : null,
+      targetValue,
+      alarmType: habitType === "duration" ? alarmType : undefined,
     });
 
     // Update notification
@@ -126,7 +152,7 @@ export default function CreateHabitScreen() {
       );
     }
   }, [
-    habitType, name, stepGoal, reminderEnabled, reminderTime,
+    habitType, name, stepGoal, durationInSeconds, alarmType, reminderEnabled, reminderTime,
     frequencyMode, selectedDays, id, editMutation,
     cancelHabitReminder, scheduleHabitReminder, t,
   ]);
@@ -140,6 +166,7 @@ export default function CreateHabitScreen() {
   const handleSave = async () => {
     if (habitType === "manual" && !name.trim()) return;
     if (habitType === "steps" && (!stepGoal || parseInt(stepGoal, 10) <= 0)) return;
+    if (habitType === "duration" && (durationInSeconds <= 0 || !name.trim())) return;
 
     const isSteps = habitType === "steps";
     const parsedGoal = parseInt(stepGoal, 10);
@@ -147,12 +174,18 @@ export default function CreateHabitScreen() {
       ? t("stepHabitName", { steps: parsedGoal.toLocaleString() })
       : name.trim();
 
-    const timeStr = !isSteps && reminderEnabled
+    const timeStr = habitType !== "steps" && reminderEnabled
       ? `${String(reminderTime.getHours()).padStart(2, "0")}:${String(reminderTime.getMinutes()).padStart(2, "0")}:00`
       : null;
     const freqDays = frequencyMode === "specific" && selectedDays.length > 0
       ? selectedDays
       : null;
+
+    const targetValue = isSteps
+      ? parsedGoal
+      : habitType === "duration"
+        ? durationInSeconds
+        : null;
 
     setIsSaving(true);
     try {
@@ -162,7 +195,8 @@ export default function CreateHabitScreen() {
           name: habitName,
           reminderTime: timeStr,
           frequencyDays: freqDays,
-          targetValue: isSteps ? parsedGoal : null,
+          targetValue,
+          alarmType: habitType === "duration" ? alarmType : undefined,
         });
 
         // Update notification
@@ -183,7 +217,8 @@ export default function CreateHabitScreen() {
           frequencyDays: freqDays,
           sortOrder: habits.length,
           type: habitType,
-          targetValue: isSteps ? parsedGoal : null,
+          targetValue,
+          alarmType: habitType === "duration" ? alarmType : "normal",
         });
 
         if (timeStr && result) {
@@ -208,14 +243,23 @@ export default function CreateHabitScreen() {
   const formattedTime = `${String(reminderTime.getHours()).padStart(2, "0")}:${String(reminderTime.getMinutes()).padStart(2, "0")}`;
 
   const isSteps = habitType === "steps";
+  const isDuration = habitType === "duration";
   const canSave = isSteps
     ? !!stepGoal && parseInt(stepGoal, 10) > 0
-    : !!name.trim();
+    : isDuration
+      ? !!name.trim() && durationInSeconds > 0
+      : !!name.trim();
+
+  // Use onTouchStart for keyboard dismiss when duration type has picker
+  const WrapperComponent = isDuration ? View : Pressable;
+  const wrapperProps = isDuration
+    ? { onTouchStart: () => Keyboard.dismiss(), className: "flex-1" }
+    : { onPress: () => Keyboard.dismiss(), className: "flex-1" };
 
   return (
     <PageContainer>
       <AutoSaveIndicator status={status} />
-      <Pressable onPress={Keyboard.dismiss} className="flex-1">
+      <WrapperComponent {...wrapperProps}>
         <ScrollView className="flex-1">
           <AppText className="text-2xl text-center mb-6">
             {isEditing ? t("editHabit") : t("addHabit")}
@@ -243,11 +287,19 @@ export default function CreateHabitScreen() {
                       textClassName="text-gray-100"
                     />
                   </View>
+                  <View className="flex-1">
+                    <AnimatedButton
+                      onPress={() => setHabitType("duration")}
+                      className={habitType === "duration" ? "btn-base" : "btn-neutral"}
+                      label={t("typeDuration")}
+                      textClassName="text-gray-100"
+                    />
+                  </View>
                 </View>
               </View>
             )}
 
-            {/* Name input (manual) or Step goal input (steps) */}
+            {/* Name input (manual / duration) or Step goal input (steps) */}
             <View className="mt-5">
               {isSteps ? (
                 <AppInput
@@ -266,6 +318,81 @@ export default function CreateHabitScreen() {
                 />
               )}
             </View>
+
+            {/* Duration picker - only for duration type */}
+            {isDuration && (
+              <View className="gap-4">
+                <AppText className="text-lg">{t("durationTarget")}</AppText>
+                <View
+                  className="items-center bg-slate-800/60 rounded-2xl border border-slate-700/50 px-2 py-4"
+                  onTouchStart={(e) => e.stopPropagation()}
+                >
+                  <TimerPicker
+                    onDurationChange={setDurationPicker}
+                    initialValue={{ hours: durationPicker.hours, minutes: durationPicker.minutes, seconds: 0 }}
+                    hideSeconds
+                    LinearGradient={LinearGradient}
+                    padWithNItems={2}
+                    hourLabel={t("common:common.h", { defaultValue: "h" })}
+                    minuteLabel={t("common:common.m", { defaultValue: "m" })}
+                    pickerFeedback={() => Haptics.selectionAsync()}
+                    styles={{
+                      theme: "dark",
+                      backgroundColor: "transparent",
+                      pickerItem: {
+                        fontSize: 28,
+                        color: "#94a3b8",
+                      },
+                      selectedPickerItem: {
+                        fontSize: 34,
+                        color: "#f1f5f9",
+                      },
+                      pickerLabel: {
+                        fontSize: 14,
+                        color: "#64748b",
+                        marginTop: 0,
+                      },
+                      pickerContainer: {
+                        marginRight: 6,
+                      },
+                    }}
+                  />
+                </View>
+              </View>
+            )}
+
+            {/* Alarm type toggle - only for duration type */}
+            {isDuration && (
+              <View className="gap-4">
+                <AppText className="text-lg">{t("alarmType")}</AppText>
+                <View className="flex-row gap-3">
+                  <View className="flex-1">
+                    <AnimatedButton
+                      onPress={() => setAlarmType("normal")}
+                      className={alarmType === "normal" ? "btn-base" : "btn-neutral"}
+                      textClassName="text-gray-100"
+                    >
+                      <AppText className="text-center">{t("alarmNormal")}</AppText>
+                      <AppText className="text-xs text-gray-400 text-center mt-1">
+                        {t("alarmNormalDesc")}
+                      </AppText>
+                    </AnimatedButton>
+                  </View>
+                  <View className="flex-1">
+                    <AnimatedButton
+                      onPress={() => setAlarmType("priority")}
+                      className={alarmType === "priority" ? "btn-base" : "btn-neutral"}
+                      textClassName="text-gray-100"
+                    >
+                      <AppText className="text-center">{t("alarmPriority")}</AppText>
+                      <AppText className="text-xs text-gray-400 text-center mt-1">
+                        {t("alarmPriorityDesc")}
+                      </AppText>
+                    </AnimatedButton>
+                  </View>
+                </View>
+              </View>
+            )}
 
             {/* Frequency selection */}
             <View className="gap-4">
@@ -382,7 +509,7 @@ export default function CreateHabitScreen() {
             />
           </View>
         )}
-      </Pressable>
+      </WrapperComponent>
       {!isEditing && (
         <FullScreenLoader visible={isSaving} message={t("common:common.saving")} />
       )}

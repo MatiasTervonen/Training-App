@@ -20,6 +20,7 @@ import { useState, useCallback } from "react";
 import Toast from "react-native-toast-message";
 import * as Haptics from "expo-haptics";
 import { Share2 } from "lucide-react-native";
+import { formatDuration } from "@/lib/formatDate";
 
 function getMonthRange(year: number, month: number) {
   const start = `${year}-${String(month + 1).padStart(2, "0")}-01`;
@@ -163,6 +164,16 @@ export default function HabitDetailScreen() {
               </AppText>
               <AppText className="text-lg text-gray-100">
                 {habit.target_value.toLocaleString()} {t("steps")}
+              </AppText>
+            </View>
+          )}
+          {habit.type === "duration" && habit.target_value && (
+            <View className="bg-gray-800 rounded-lg px-4 py-3 mb-4">
+              <AppText className="text-gray-400 text-sm">
+                {t("durationTarget")}
+              </AppText>
+              <AppText className="text-lg text-gray-100">
+                {formatDuration(habit.target_value)}
               </AppText>
             </View>
           )}

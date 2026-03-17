@@ -21,6 +21,7 @@ import useRotation from "@/features/timer/hooks/useRotation";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
+import { useHabitTimer } from "@/features/habits/hooks/useHabitTimer";
 
 export default function SettingsScreen() {
   const { t } = useTranslation("timer");
@@ -48,7 +49,11 @@ export default function SettingsScreen() {
     alarmSoundPlaying,
     totalDuration,
     clearEverything,
+    activeSession,
   } = useTimerStore();
+
+  const isHabitSession = activeSession?.type === "habit";
+  const { cancelHabitTimer } = useHabitTimer();
 
   const handleReset = () => {
     setPickerDuration({ hours: 0, minutes: 0, seconds: 0 });
@@ -90,6 +95,17 @@ export default function SettingsScreen() {
   };
 
   const cancelTimer = async () => {
+    if (isHabitSession) {
+      // Habit timer cancel: saves progress, shows confirm dialog
+      if (player) {
+        try { player.pause(); player.seekTo(0); } catch {}
+      }
+      await cancelHabitTimer();
+      handleReset();
+      router.replace("/habits");
+      return;
+    }
+
     const confirmCancel = await confirmAction({
       title: t("timer.cancelTimerTitle"),
       message: t("timer.cancelTimerMessage"),

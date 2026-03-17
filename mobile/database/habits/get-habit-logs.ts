@@ -12,7 +12,7 @@ export async function getHabitLogs({
 }) {
   let query = supabase
     .from("habit_logs")
-    .select("habit_id, completed_date")
+    .select("habit_id, completed_date, accumulated_seconds")
     .gte("completed_date", startDate)
     .lte("completed_date", endDate);
 

@@ -39,6 +39,7 @@ import { toastConfig } from "@/lib/config/toast";
 import useNotificationResponse from "@/features/feed/hooks/useNotificationResponse";
 import { HabitBgSyncListener } from "@/features/habits/hooks/useHabitBgSync";
 import { StepHabitAutoCompleteListener } from "@/features/habits/hooks/useStepHabitAutoComplete";
+import { HabitTimerListener } from "@/features/habits/hooks/useHabitTimer";
 import { useAppReadyStore } from "@/lib/stores/appReadyStore";
 import BootScreen from "@/features/feed/fakeFeedLoader";
 import SaveAreaInset from "@/features/layout/SaveAreaInset";
@@ -192,6 +193,7 @@ export default Sentry.wrap(function RootLayout() {
               <GlobalReminderSnoozedListener />
               <HabitBgSyncListener />
               <StepHabitAutoCompleteListener />
+              <HabitTimerListener />
               <StatusBar
                 barStyle="light-content"
                 backgroundColor="#020617"

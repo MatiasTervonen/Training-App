@@ -47,9 +47,15 @@ export default function HabitsScreen() {
   );
   const allDoneToday =
     scheduledToday.length > 0 &&
-    scheduledToday.every((h) =>
-      logs.some((l) => l.habit_id === h.id && l.completed_date === today),
-    );
+    scheduledToday.every((h) => {
+      const log = logs.find((l) => l.habit_id === h.id && l.completed_date === today);
+      if (!log) return false;
+      // Duration habits: only completed when accumulated >= target
+      if (h.type === "duration" && h.target_value) {
+        return (log.accumulated_seconds ?? 0) >= h.target_value;
+      }
+      return true;
+    });
 
   useEffect(() => {
     if (allDoneToday && !hasShownConfetti.current) {

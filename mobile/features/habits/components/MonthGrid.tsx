@@ -40,21 +40,32 @@ function formatDate(year: number, month: number, day: number) {
   return `${year}-${m}-${d}`;
 }
 
+function isDurationLogCompleted(log: HabitLog, habits: Habit[]) {
+  const habit = habits.find((h) => h.id === log.habit_id);
+  if (habit?.type === "duration" && habit.target_value) {
+    return (log.accumulated_seconds ?? 0) >= habit.target_value;
+  }
+  return true; // non-duration logs are always "completed" if they exist
+}
+
 function getDayStatus(
   date: string,
   logs: HabitLog[],
   totalHabits: number,
+  habits: Habit[],
   habitId?: string,
 ): DayStatus {
   if (totalHabits === 0) return "empty";
 
   const dayLogs = logs.filter((log) => log.completed_date === date);
+  // Filter to only actually completed logs
+  const completedLogs = dayLogs.filter((log) => isDurationLogCompleted(log, habits));
 
   if (habitId) {
-    return dayLogs.length > 0 ? "all" : "none";
+    return completedLogs.length > 0 ? "all" : "none";
   }
 
-  const uniqueHabits = new Set(dayLogs.map((log) => log.habit_id)).size;
+  const uniqueHabits = new Set(completedLogs.map((log) => log.habit_id)).size;
 
   if (uniqueHabits === 0) return "none";
   if (uniqueHabits >= totalHabits) return "all";
@@ -158,7 +169,7 @@ export default function MonthGrid({
             const scheduledCount = habits
               ? countScheduledHabits(habits, date)
               : (totalHabits ?? 0);
-            const status = isFuture ? "empty" : getDayStatus(date, logs, scheduledCount, habitId);
+            const status = isFuture ? "empty" : getDayStatus(date, logs, scheduledCount, habits ?? [], habitId);
             const isSelected = date === selectedDate;
             const isToday = date === today;
             const statusColor = getStatusColor(status);

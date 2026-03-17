@@ -7,21 +7,28 @@ export async function editHabit({
   reminderTime,
   frequencyDays,
   targetValue,
+  alarmType,
 }: {
   habitId: string;
   name: string;
   reminderTime: string | null;
   frequencyDays: number[] | null;
   targetValue?: number | null;
+  alarmType?: "normal" | "priority";
 }) {
+  const updateData: Record<string, unknown> = {
+    name,
+    reminder_time: reminderTime,
+    frequency_days: frequencyDays,
+    target_value: targetValue ?? null,
+  };
+  if (alarmType !== undefined) {
+    updateData.alarm_type = alarmType;
+  }
+
   const { error } = await supabase
     .from("habits")
-    .update({
-      name,
-      reminder_time: reminderTime,
-      frequency_days: frequencyDays,
-      target_value: targetValue ?? null,
-    })
+    .update(updateData)
     .eq("id", habitId);
 
   if (error) {

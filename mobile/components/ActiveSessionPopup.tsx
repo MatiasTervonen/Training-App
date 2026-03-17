@@ -52,6 +52,15 @@ export default function ActiveSessionPopup() {
     return null;
   }
   if (
+    pathname === "/timer/empty-timer" &&
+    activeSession.type === "habit"
+  ) {
+    return null;
+  }
+  if (pathname === "/habits" && activeSession.type === "habit") {
+    return null;
+  }
+  if (
     pathname === "/timer/start-stopwatch" &&
     activeSession.type === t("timer:timer.stopwatch.title")
   ) {

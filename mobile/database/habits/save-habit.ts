@@ -8,13 +8,15 @@ export async function saveHabit({
   sortOrder,
   type = "manual",
   targetValue = null,
+  alarmType = "normal",
 }: {
   name: string;
   reminderTime: string | null;
   frequencyDays: number[] | null;
   sortOrder: number;
-  type?: "manual" | "steps";
+  type?: "manual" | "steps" | "duration";
   targetValue?: number | null;
+  alarmType?: "normal" | "priority";
 }) {
   const { data, error } = await supabase
     .from("habits")
@@ -25,6 +27,7 @@ export async function saveHabit({
       sort_order: sortOrder,
       type,
       target_value: targetValue,
+      alarm_type: alarmType,
     })
     .select()
     .single();

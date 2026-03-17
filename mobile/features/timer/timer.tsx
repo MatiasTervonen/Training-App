@@ -58,7 +58,10 @@ export default function Timer({
     endTimestamp,
     totalDuration,
     paused,
+    activeSession,
   } = useTimerStore();
+
+  const isHabitSession = activeSession?.type === "habit";
 
   useEffect(() => {
     if (alarmFired) {
@@ -145,78 +148,82 @@ export default function Timer({
               }}
             />
           </View>
-          <View className="flex-1">
-            <AnimatedButton
-              label={t("timer.notification.restart")}
-              onPress={() => {
-                if (!totalDuration) return;
+          {!isHabitSession && (
+            <>
+              <View className="flex-1">
+                <AnimatedButton
+                  label={t("timer.notification.restart")}
+                  onPress={() => {
+                    if (!totalDuration) return;
 
-                clearEverything();
-                cancelNativeAlarm("timer");
-                scheduleNativeAlarm(
-                  Date.now() + totalDuration * 1000,
-                  "timer",
-                  t("timer.title"),
-                  "timer",
-                  "",
-                  t("timer.notification.tapToOpenTimer"),
-                  t("timer.notification.timesUp"),
-                  t("timer.notification.stopAlarm"),
-                  t("timer.notification.extendTimer"),
-                );
-                startTimer(totalDuration, t("timer.title"));
-                setActiveSession({
-                  type: t("timer.title"),
-                  label: t("timer.title"),
-                  path: "/timer/empty-timer",
-                });
-              }}
-              className="btn-base flex-row gap-2 justify-center items-center"
-              textClassName="text-gray-100"
-            >
-              <RotateCcw size={20} color="#f3f4f6" />
-            </AnimatedButton>
-          </View>
-          <View className="flex-1">
-            <AnimatedButton
-              label={t("timer.notification.extendTimer")}
-              onPress={() => {
-                onStopAlarmSound?.();
-                stopNativeAlarm();
+                    clearEverything();
+                    cancelNativeAlarm("timer");
+                    scheduleNativeAlarm(
+                      Date.now() + totalDuration * 1000,
+                      "timer",
+                      t("timer.title"),
+                      "timer",
+                      "",
+                      t("timer.notification.tapToOpenTimer"),
+                      t("timer.notification.timesUp"),
+                      t("timer.notification.stopAlarm"),
+                      t("timer.notification.extendTimer"),
+                    );
+                    startTimer(totalDuration, t("timer.title"));
+                    setActiveSession({
+                      type: t("timer.title"),
+                      label: t("timer.title"),
+                      path: "/timer/empty-timer",
+                    });
+                  }}
+                  className="btn-base flex-row gap-2 justify-center items-center"
+                  textClassName="text-gray-100"
+                >
+                  <RotateCcw size={20} color="#f3f4f6" />
+                </AnimatedButton>
+              </View>
+              <View className="flex-1">
+                <AnimatedButton
+                  label={t("timer.notification.extendTimer")}
+                  onPress={() => {
+                    onStopAlarmSound?.();
+                    stopNativeAlarm();
 
-                const snoozeDuration = 60;
-                const newEndTimestamp = Date.now() + snoozeDuration * 1000;
+                    const snoozeDuration = 60;
+                    const newEndTimestamp = Date.now() + snoozeDuration * 1000;
 
-                cancelNativeAlarm("timer");
-                scheduleNativeAlarm(
-                  newEndTimestamp,
-                  "timer",
-                  t("timer.title"),
-                  "timer",
-                  "",
-                  t("timer.notification.tapToOpenTimer"),
-                  t("timer.notification.timesUp"),
-                  t("timer.notification.stopAlarm"),
-                  t("timer.notification.extendTimer"),
-                );
+                    cancelNativeAlarm("timer");
+                    scheduleNativeAlarm(
+                      newEndTimestamp,
+                      "timer",
+                      t("timer.title"),
+                      "timer",
+                      "",
+                      t("timer.notification.tapToOpenTimer"),
+                      t("timer.notification.timesUp"),
+                      t("timer.notification.stopAlarm"),
+                      t("timer.notification.extendTimer"),
+                    );
 
-                startNativeTimer(
-                  newEndTimestamp,
-                  t("timer.title"),
-                  "countdown",
-                  t("timer.notification.timeRemaining"),
-                  t("timer.notification.pauseTimer"),
-                  t("timer.notification.extendTimer"),
-                );
+                    startNativeTimer(
+                      newEndTimestamp,
+                      t("timer.title"),
+                      "countdown",
+                      t("timer.notification.timeRemaining"),
+                      t("timer.notification.pauseTimer"),
+                      t("timer.notification.extendTimer"),
+                    );
 
-                useTimerStore
-                  .getState()
-                  .snoozedTimer(newEndTimestamp, snoozeDuration);
-              }}
-              className="btn-neutral"
-              textClassName="text-gray-100"
-            />
-          </View>
+                    useTimerStore
+                      .getState()
+                      .snoozedTimer(newEndTimestamp, snoozeDuration);
+                  }}
+                  className="btn-neutral"
+                  textClassName="text-gray-100"
+                />
+              </View>
+            </>
+          )}
         </View>
       )}
     </View>

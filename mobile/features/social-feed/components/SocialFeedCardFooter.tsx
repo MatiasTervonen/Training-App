@@ -1,7 +1,7 @@
 import { View } from "react-native";
 import AppText from "@/components/AppText";
 import AnimatedButton from "@/components/buttons/animatedButton";
-import { Heart, SquareArrowOutUpRight } from "lucide-react-native";
+import { Heart, MessageCircle, SquareArrowOutUpRight } from "lucide-react-native";
 import { SocialFeedItem } from "@/types/social-feed";
 import { useTranslation } from "react-i18next";
 
@@ -9,9 +9,10 @@ type Props = {
   item: SocialFeedItem;
   onToggleLike: () => void;
   onExpand: () => void;
+  onOpenComments: () => void;
 };
 
-export default function SocialFeedCardFooter({ item, onToggleLike, onExpand }: Props) {
+export default function SocialFeedCardFooter({ item, onToggleLike, onExpand, onOpenComments }: Props) {
   const { t } = useTranslation("social");
 
   return (
@@ -31,6 +32,18 @@ export default function SocialFeedCardFooter({ item, onToggleLike, onExpand }: P
             ? `${item.like_count} ${item.like_count === 1 ? t("social.like") : t("social.likes")}`
             : t("social.like")}
         </AppText>
+      </AnimatedButton>
+
+      {/* Comment button */}
+      <AnimatedButton
+        onPress={onOpenComments}
+        className="flex-row items-center gap-2"
+        hitSlop={10}
+      >
+        <MessageCircle size={18} color="#64748b" />
+        {item.comment_count > 0 && (
+          <AppText className="text-slate-500 text-sm">{item.comment_count}</AppText>
+        )}
       </AnimatedButton>
 
       <AnimatedButton

@@ -44,6 +44,7 @@ import useToggleLike from "@/features/social-feed/hooks/useToggleLike";
 import SocialFeedCard from "@/features/social-feed/components/SocialFeedCard";
 import FeedModeToggle from "@/features/social-feed/components/FeedModeToggle";
 import { SocialFeedItem } from "@/types/social-feed";
+import CommentSheet from "@/features/social-feed/components/CommentSheet";
 import { getFriendGymSession } from "@/database/social-feed/get-friend-gym-session";
 import { getFriendActivitySession } from "@/database/social-feed/get-friend-activity-session";
 
@@ -62,6 +63,7 @@ export default function SessionFeed({ expandReminderId }: SessionFeedProps) {
   const [editingItem, setEditingItem] = useState<FeedItemUI | null>(null);
   const [refreshing, setRefreshing] = useState(false);
   const [expandedSocialItem, setExpandedSocialItem] = useState<SocialFeedItem | null>(null);
+  const [commentFeedItemId, setCommentFeedItemId] = useState<string | null>(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [hasUnsavedExpandedChanges, setHasUnsavedExpandedChanges] =
     useState(false);
@@ -342,6 +344,7 @@ export default function SessionFeed({ expandReminderId }: SessionFeedProps) {
                   item={socialItem}
                   onToggleLike={() => toggleLikeMutation(socialItem.id)}
                   onExpand={() => setExpandedSocialItem(socialItem)}
+                  onOpenComments={() => setCommentFeedItemId(socialItem.id)}
                 />
               )}
             />
@@ -595,6 +598,11 @@ export default function SessionFeed({ expandReminderId }: SessionFeedProps) {
           )}
         </FullScreenModal>
       )}
+
+      <CommentSheet
+        feedItemId={commentFeedItemId}
+        onClose={() => setCommentFeedItemId(null)}
+      />
 
       {expandedSocialItem && (
         <FullScreenModal

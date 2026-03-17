@@ -15,6 +15,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import LayoutWrapper from "@/features/layout/LayoutWrapper";
 import Toast from "react-native-toast-message";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import {
   QueryClientProvider,
   focusManager,
@@ -187,6 +188,7 @@ export default Sentry.wrap(function RootLayout() {
         <QueryClientProvider client={queryClient}>
           <MenuProvider>
             <PaperProvider>
+            <BottomSheetModalProvider>
               <TimerFinishListener />
               <AlarmPlayingListener />
               <GlobalReminderSnoozedListener />
@@ -207,6 +209,7 @@ export default Sentry.wrap(function RootLayout() {
                 !pathname.startsWith("/onboarding") &&
                 !pathname.startsWith("/habits") &&
                 (!fontsLoaded || !feedReady) && <BootScreen />}
+            </BottomSheetModalProvider>
             </PaperProvider>
             <Toast config={toastConfig} position="top" />
           </MenuProvider>

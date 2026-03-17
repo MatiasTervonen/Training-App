@@ -12,6 +12,7 @@ type Props = {
   item: SocialFeedItem;
   onToggleLike: () => void;
   onExpand: () => void;
+  onOpenComments: () => void;
 };
 
 function GymStats({ item }: { item: SocialFeedItem }) {
@@ -136,7 +137,7 @@ function getActivityTypeName(item: SocialFeedItem, t: (key: string, options?: Re
   return payload.activity_name;
 }
 
-export default function SocialFeedCard({ item, onToggleLike, onExpand }: Props) {
+export default function SocialFeedCard({ item, onToggleLike, onExpand, onOpenComments }: Props) {
   const { t } = useTranslation("feed");
   const { t: tActivities } = useTranslation("activities");
 
@@ -179,7 +180,7 @@ export default function SocialFeedCard({ item, onToggleLike, onExpand }: Props) 
       </View>
 
       {/* Footer with like & details */}
-      <SocialFeedCardFooter item={item} onToggleLike={onToggleLike} onExpand={onExpand} />
+      <SocialFeedCardFooter item={item} onToggleLike={onToggleLike} onExpand={onExpand} onOpenComments={onOpenComments} />
     </LinearGradient>
   );
 }

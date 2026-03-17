@@ -5,10 +5,12 @@ import { useTimerStore } from "@/lib/stores/timerStore";
 import Toast from "react-native-toast-message";
 import { List, ChartNoAxesCombined, Settings } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
+import { SESSION_COLORS } from "@/lib/sessionColors";
 
 export default function SessionsScreen() {
   const { t } = useTranslation("gym");
   const activeSession = useTimerStore((state) => state.activeSession);
+  const colors = SESSION_COLORS.gym;
 
   const handleClick = () => {
     if (activeSession && activeSession?.type !== "gym") {
@@ -30,30 +32,34 @@ export default function SessionsScreen() {
         label={t("gym.startEmptyWorkout")}
         href="/gym/gym"
         onPress={handleClick}
+        gradientColors={colors.gradient}
+        borderColor={colors.border}
       />
 
       <View className="border border-gray-400 rounded-md" />
-      <LinkButton label={t("gym.createTemplate")} href="/gym/create-template" />
-      <LinkButton label={t("gym.templates")} href="/gym/templates" />
+      <LinkButton label={t("gym.createTemplate")} href="/gym/create-template" gradientColors={colors.gradient} borderColor={colors.border} />
+      <LinkButton label={t("gym.templates")} href="/gym/templates" gradientColors={colors.gradient} borderColor={colors.border} />
 
       <View className="border border-gray-400 rounded-md" />
-      <LinkButton label={t("gym.addExercise")} href="/gym/add-exercise" />
-      <LinkButton label={t("gym.editExercise")} href="/gym/edit-exercise" />
+      <LinkButton label={t("gym.addExercise")} href="/gym/add-exercise" gradientColors={colors.gradient} borderColor={colors.border} />
+      <LinkButton label={t("gym.editExercise")} href="/gym/edit-exercise" gradientColors={colors.gradient} borderColor={colors.border} />
 
       <View className="border border-gray-400 rounded-md" />
       <LinkButton
         label={t("gym.workoutAnalytics")}
         href="/gym/workout-analytics"
+        gradientColors={colors.gradient}
+        borderColor={colors.border}
       >
-        <ChartNoAxesCombined color="#f3f4f6" className="ml-2" />
+        <ChartNoAxesCombined color={colors.icon} className="ml-2" />
       </LinkButton>
-      <LinkButton label={t("gym.mySessions.title")} href="/gym/my-sessions">
-        <List color="#f3f4f6" className="ml-2" />
+      <LinkButton label={t("gym.mySessions.title")} href="/gym/my-sessions" gradientColors={colors.gradient} borderColor={colors.border}>
+        <List color={colors.icon} className="ml-2" />
       </LinkButton>
 
       <View className="border border-gray-400 rounded-md" />
-      <LinkButton label={t("gym.settings.title")} href="/gym/settings">
-        <Settings color="#f3f4f6" className="ml-2" />
+      <LinkButton label={t("gym.settings.title")} href="/gym/settings" gradientColors={colors.gradient} borderColor={colors.border}>
+        <Settings color={colors.icon} className="ml-2" />
       </LinkButton>
     </View>
   );

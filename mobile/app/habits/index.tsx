@@ -15,6 +15,7 @@ import { useTranslation } from "react-i18next";
 import { useState, useCallback, useMemo, useRef, useEffect } from "react";
 import { Plus, ListChecks } from "lucide-react-native";
 import * as Haptics from "expo-haptics";
+import { SESSION_COLORS } from "@/lib/sessionColors";
 
 function getMonthRange(year: number, month: number) {
   const start = `${year}-${String(month + 1).padStart(2, "0")}-01`;
@@ -25,6 +26,7 @@ function getMonthRange(year: number, month: number) {
 
 export default function HabitsScreen() {
   const { t } = useTranslation("habits");
+  const colors = SESSION_COLORS.habits;
   const today = new Date().toLocaleDateString("en-CA");
   const [selectedDate, setSelectedDate] = useState(today);
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
@@ -138,8 +140,8 @@ export default function HabitsScreen() {
                 </View>
               </View>
               <View>
-                <LinkButton label={t("createFirst")} href="/habits/create">
-                  <Plus size={20} color="#f3f4f6" />
+                <LinkButton label={t("createFirst")} href="/habits/create" gradientColors={colors.gradient} borderColor={colors.border}>
+                  <Plus size={20} color={colors.icon} />
                 </LinkButton>
               </View>
             </View>
@@ -175,8 +177,8 @@ export default function HabitsScreen() {
       {!isLoading && habits.length > 0 && (
         <View className="px-5 py-3">
           <View className="max-w-md mx-auto w-full">
-            <LinkButton label={t("addHabit")} href="/habits/create">
-              <Plus size={20} color="#f3f4f6" />
+            <LinkButton label={t("addHabit")} href="/habits/create" gradientColors={colors.gradient} borderColor={colors.border}>
+              <Plus size={20} color={colors.icon} />
             </LinkButton>
           </View>
         </View>

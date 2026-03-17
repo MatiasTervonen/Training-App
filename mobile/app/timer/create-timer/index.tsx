@@ -1,14 +1,16 @@
-import { View, TouchableWithoutFeedback, Keyboard } from "react-native";
+import { View, Keyboard } from "react-native";
 import AppText from "@/components/AppText";
 import SaveButton from "@/components/buttons/SaveButton";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import AppInput from "@/components/AppInput";
 import PageContainer from "@/components/PageContainer";
 import DeleteButton from "@/components/buttons/DeleteButton";
 import FullScreenLoader from "@/components/FullScreenLoader";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import NumberInput from "@/components/NumberInput";
 import SubNotesInput from "@/components/SubNotesInput";
+import { TimerPicker } from "react-native-timer-picker";
+import { LinearGradient } from "expo-linear-gradient";
+import * as Haptics from "expo-haptics";
 import useSaveDraft from "@/features/timer/hooks/useSaveDraft";
 import useSaveTimer from "@/features/timer/hooks/useSaveTimer";
 import { useTranslation } from "react-i18next";
@@ -16,45 +18,46 @@ import { useTranslation } from "react-i18next";
 export default function SettingsScreen() {
   const { t } = useTranslation("timer");
   const [title, setTitle] = useState("");
-  const [alarmMinutes, setAlarmMinutes] = useState("");
-  const [alarmSeconds, setAlarmSeconds] = useState("");
+  const [pickerDuration, setPickerDuration] = useState({ hours: 0, minutes: 0, seconds: 0 });
   const [isSaving, setIsSaving] = useState(false);
   const [notes, setNotes] = useState("");
+
+  const durationInSeconds =
+    pickerDuration.hours * 3600 + pickerDuration.minutes * 60 + pickerDuration.seconds;
 
   const handleReset = () => {
     AsyncStorage.removeItem("activeSession");
     AsyncStorage.removeItem("timer:timer");
     AsyncStorage.removeItem("timer_session_draft");
     setTitle("");
-    setAlarmMinutes("");
-    setAlarmSeconds("");
+    setPickerDuration({ hours: 0, minutes: 0, seconds: 0 });
     setNotes("");
   };
 
-  // useSaveDraft hook to save draft timer
+  const stableSetPickerDuration = useCallback(
+    (d: { hours: number; minutes: number; seconds: number }) => setPickerDuration(d),
+    [],
+  );
+
   useSaveDraft({
     title,
     notes,
+    durationInSeconds,
     setTitle,
     setNotes,
-    setAlarmMinutes,
-    setAlarmSeconds,
-    alarmMinutes,
-    alarmSeconds,
+    setPickerDuration: stableSetPickerDuration,
   });
 
-  // useSaveTimer hook to save timer
   const { handleSaveTimer } = useSaveTimer({
     title,
     notes,
     setIsSaving,
-    alarmMinutes,
-    alarmSeconds,
+    durationInSeconds,
     handleReset,
   });
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+    <View className="flex-1" onTouchStart={Keyboard.dismiss}>
       <PageContainer className="justify-between">
         <View className="gap-5">
           <AppText className="text-2xl text-center mb-5">
@@ -72,25 +75,36 @@ export default function SettingsScreen() {
             setValue={setNotes}
             placeholder={t("timer.notesPlaceholder")}
           />
-          <View className="flex-row gap-2 mb-4 w-full">
-            <View className="flex-1">
-              <NumberInput
-                label={t("timer.minutes")}
-                value={alarmMinutes}
-                onChangeText={setAlarmMinutes}
-                placeholder={t("timer.minutes")}
-                keyboardType="numeric"
-              />
-            </View>
-            <View className="flex-1">
-              <NumberInput
-                label={t("timer.seconds")}
-                value={alarmSeconds}
-                onChangeText={setAlarmSeconds}
-                placeholder={t("timer.seconds")}
-                keyboardType="numeric"
-              />
-            </View>
+          <View className="items-center bg-slate-800/60 rounded-2xl border border-slate-700/50 py-4 px-2" onTouchStart={(e) => e.stopPropagation()}>
+            <TimerPicker
+              onDurationChange={setPickerDuration}
+              LinearGradient={LinearGradient}
+              padWithNItems={2}
+              hourLabel={t("timer.h")}
+              minuteLabel={t("timer.m")}
+              secondLabel={t("timer.s")}
+              pickerFeedback={() => Haptics.selectionAsync()}
+              styles={{
+                theme: "dark",
+                backgroundColor: "transparent",
+                pickerItem: {
+                  fontSize: 28,
+                  color: "#94a3b8",
+                },
+                selectedPickerItem: {
+                  fontSize: 34,
+                  color: "#f1f5f9",
+                },
+                pickerLabel: {
+                  fontSize: 14,
+                  color: "#64748b",
+                  marginTop: 0,
+                },
+                pickerContainer: {
+                  marginRight: 6,
+                },
+              }}
+            />
           </View>
         </View>
         <View className="flex-row gap-4">
@@ -103,6 +117,6 @@ export default function SettingsScreen() {
         </View>
         <FullScreenLoader visible={isSaving} message={t("timer.savingTimer")} />
       </PageContainer>
-    </TouchableWithoutFeedback>
+    </View>
   );
 }

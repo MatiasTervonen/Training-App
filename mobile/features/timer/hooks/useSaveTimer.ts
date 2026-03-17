@@ -7,22 +7,20 @@ export default function useSaveTimer({
   title,
   notes,
   setIsSaving,
-  alarmMinutes,
-  alarmSeconds,
+  durationInSeconds,
   handleReset,
 }: {
   title: string;
   notes: string;
   setIsSaving: (isSaving: boolean) => void;
-  alarmMinutes: string;
-  alarmSeconds: string;
+  durationInSeconds: number;
   handleReset: () => void;
 }) {
   const queryClient = useQueryClient();
   const router = useRouter();
 
   const handleSaveTimer = async () => {
-    if (!title || !alarmMinutes || !alarmSeconds) {
+    if (!title || durationInSeconds === 0) {
       Toast.show({
         type: "error",
         text1: "Please fill in all fields",
@@ -32,14 +30,10 @@ export default function useSaveTimer({
 
     setIsSaving(true);
 
-    const minutes = parseInt(alarmMinutes) || 0;
-    const seconds = parseInt(alarmSeconds) || 0;
-    const totalSeconds = minutes * 60 + seconds;
-
     try {
       await saveTimer({
         title,
-        durationInSeconds: totalSeconds,
+        durationInSeconds,
         notes,
       });
 

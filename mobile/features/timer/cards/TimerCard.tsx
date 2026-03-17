@@ -25,13 +25,13 @@ export default function TimerCard({
   const { t } = useTranslation("common");
 
   return (
-    <PageContainer className="justify-between pb-5">
+    <PageContainer className="justify-between">
       <View>
         <AppText className="text-sm text-gray-300  text-center">
           {t("common.created")} {formatDate(item.created_at)}
         </AppText>
         {item.updated_at && (
-          <AppText className="text-sm text-yellow-500 mt-2 text-center">
+          <AppText className="text-sm text-gray-400 mt-2 text-center">
             {t("common.updated")} {formatDate(item.updated_at)}
           </AppText>
         )}
@@ -39,8 +39,8 @@ export default function TimerCard({
           <AppText className="text-xl text-center mb-5 border-b border-gray-700 pb-2">
             {item.title}
           </AppText>
-          <View className="bg-blue-900 px-6 py-2 rounded-md mx-auto flex-row items-center gap-4">
-            <TimerIcon size={20} color="#f3f4f6" />
+          <View className="bg-orange-900/50 border border-orange-500/30 px-6 py-2 rounded-md mx-auto flex-row items-center gap-4">
+            <TimerIcon size={20} color="#fb923c" />
             <AppText className="text-center text-lg">
               {formatDurationLong(item.time_seconds)}
             </AppText>

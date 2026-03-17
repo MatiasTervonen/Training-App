@@ -31,6 +31,7 @@
 
 ## Keyboard
 - On pages with text inputs, always wrap the page content with `<Pressable onPress={Keyboard.dismiss} className="flex-1">` so the keyboard dismisses when tapping outside. Never use `TouchableWithoutFeedback` — always use `Pressable`.
+- On pages that have BOTH text inputs AND scroll-based pickers (e.g., `TimerPicker`), do NOT use `Pressable` for keyboard dismiss — it intercepts the picker's scroll gestures. Instead, use `<View onTouchStart={Keyboard.dismiss}>` on the outer wrapper and `onTouchStart={(e) => e.stopPropagation()}` on the picker container to prevent keyboard dismiss from firing when interacting with the picker.
 
 ## Imports
 - Always use absolute paths when importing — never use relative paths.

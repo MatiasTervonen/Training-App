@@ -15,6 +15,7 @@ import { useArchiveHabit } from "@/features/habits/hooks/useArchiveHabit";
 import { useHabitNotifications } from "@/features/habits/hooks/useHabitNotifications";
 import { useTranslation } from "react-i18next";
 import { useLocalSearchParams, useRouter } from "expo-router";
+import { SESSION_COLORS } from "@/lib/sessionColors";
 import { useState, useCallback } from "react";
 import Toast from "react-native-toast-message";
 import * as Haptics from "expo-haptics";
@@ -29,6 +30,7 @@ function getMonthRange(year: number, month: number) {
 
 export default function HabitDetailScreen() {
   const { t } = useTranslation("habits");
+  const colors = SESSION_COLORS.habits;
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
 
@@ -188,6 +190,8 @@ export default function HabitDetailScreen() {
             <LinkButton
               label={t("seeFullHistory")}
               href={`/habits/${id}/history`}
+              gradientColors={colors.gradient}
+              borderColor={colors.border}
             />
           )}
           <AnimatedButton

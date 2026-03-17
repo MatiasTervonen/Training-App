@@ -15,6 +15,8 @@ interface LinkButtonProps {
   label?: string;
   children?: React.ReactNode;
   onPress?: () => boolean | void;
+  gradientColors?: [string, string];
+  borderColor?: string;
 }
 
 export default function LinkButton({
@@ -22,6 +24,8 @@ export default function LinkButton({
   label,
   onPress,
   children,
+  gradientColors,
+  borderColor,
 }: LinkButtonProps) {
   const scale = useSharedValue(1);
   const opacity = useSharedValue(1);
@@ -69,7 +73,31 @@ export default function LinkButton({
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
     >
-      <Animated.View style={animatedStyle} className="btn-base">
+      <Animated.View
+        style={[
+          animatedStyle,
+          gradientColors ? { borderColor, borderWidth: 2 } : undefined,
+        ]}
+        className={
+          gradientColors
+            ? "px-3 py-2 rounded-md shadow-md overflow-hidden"
+            : "btn-base"
+        }
+      >
+        {gradientColors && (
+          <LinearGradient
+            colors={gradientColors}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={{
+              position: "absolute",
+              top: 0,
+              bottom: 0,
+              left: 0,
+              right: 0,
+            }}
+          />
+        )}
         {/* Light sweep gradient */}
         <Animated.View
           style={[
@@ -78,7 +106,7 @@ export default function LinkButton({
               position: "absolute",
               top: 0,
               bottom: 0,
-              width: 80, // width of the light bar
+              width: 80,
             },
           ]}
         >
@@ -91,7 +119,9 @@ export default function LinkButton({
         </Animated.View>
         <View className="flex-row items-center justify-center gap-2">
           {label && (
-            <AppText className="text-base text-center" numberOfLines={1}>{label}</AppText>
+            <AppText className="text-base text-center" numberOfLines={1}>
+              {label}
+            </AppText>
           )}
           {children}
         </View>

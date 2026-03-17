@@ -1,7 +1,7 @@
 import {
   View,
   ActivityIndicator,
-  TouchableWithoutFeedback,
+  Pressable,
   Keyboard,
 } from "react-native";
 import AppText from "@/components/AppText";
@@ -15,6 +15,9 @@ import TimerCard from "@/features/timer/cards/TimerCard";
 import { deleteTimer } from "@/database/timer/delete-timer";
 import { updateTimer } from "@/database/timer/update-timer";
 import Toast from "react-native-toast-message";
+import { TimerPicker } from "react-native-timer-picker";
+import { LinearGradient } from "expo-linear-gradient";
+import * as Haptics from "expo-haptics";
 
 import { router } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -22,7 +25,6 @@ import { useTimerStore } from "@/lib/stores/timerStore";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import AppInput from "@/components/AppInput";
 import SubNotesInput from "@/components/SubNotesInput";
-import NumberInput from "@/components/NumberInput";
 import AutoSaveIndicator from "@/components/AutoSaveIndicator";
 import { useAutoSave } from "@/hooks/useAutoSave";
 import { useTranslation } from "react-i18next";
@@ -36,8 +38,7 @@ export default function MyTimersScreen() {
   // Edit form state
   const [editTitle, setEditTitle] = useState("");
   const [editNotes, setEditNotes] = useState("");
-  const [editMinutes, setEditMinutes] = useState("");
-  const [editSeconds, setEditSeconds] = useState("");
+  const [editPickerDuration, setEditPickerDuration] = useState({ hours: 0, minutes: 0, seconds: 0 });
 
   const { setActiveSession, startTimer } = useTimerStore();
 
@@ -69,13 +70,14 @@ export default function MyTimersScreen() {
   };
 
   const openEditModal = (timer: timers) => {
-    const minutes = Math.floor(timer.time_seconds / 60);
-    const seconds = timer.time_seconds % 60;
-
+    const total = timer.time_seconds;
     setEditTitle(timer.title);
     setEditNotes(timer.notes || "");
-    setEditMinutes(String(minutes));
-    setEditSeconds(String(seconds));
+    setEditPickerDuration({
+      hours: Math.floor(total / 3600),
+      minutes: Math.floor((total % 3600) / 60),
+      seconds: total % 60,
+    });
     setEditingItem(timer);
     setExpandedItem(null);
   };
@@ -84,33 +86,31 @@ export default function MyTimersScreen() {
     setEditingItem(null);
     setEditTitle("");
     setEditNotes("");
-    setEditMinutes("");
-    setEditSeconds("");
+    setEditPickerDuration({ hours: 0, minutes: 0, seconds: 0 });
   };
+
+  const editDurationInSeconds =
+    editPickerDuration.hours * 3600 + editPickerDuration.minutes * 60 + editPickerDuration.seconds;
 
   const autoSaveData = useMemo(
     () => ({
       title: editTitle,
       notes: editNotes,
-      minutes: editMinutes,
-      seconds: editSeconds,
+      durationInSeconds: editDurationInSeconds,
     }),
-    [editTitle, editNotes, editMinutes, editSeconds],
+    [editTitle, editNotes, editDurationInSeconds],
   );
 
   const handleAutoSave = useCallback(
-    async (data: { title: string; notes: string; minutes: string; seconds: string }) => {
-      if (!editingItem || !data.title || !data.minutes || !data.seconds) {
+    async (data: { title: string; notes: string; durationInSeconds: number }) => {
+      if (!editingItem || !data.title || data.durationInSeconds === 0) {
         throw new Error("Invalid data");
       }
-
-      const totalSeconds =
-        parseInt(data.minutes, 10) * 60 + parseInt(data.seconds, 10);
 
       await updateTimer({
         id: editingItem.id,
         title: data.title,
-        durationInSeconds: totalSeconds,
+        durationInSeconds: data.durationInSeconds,
         notes: data.notes,
       });
 
@@ -222,54 +222,66 @@ export default function MyTimersScreen() {
           onClose={closeEditModal}
           confirmBeforeClose={hasPendingChanges}
         >
-          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View className="flex-1" onTouchStart={Keyboard.dismiss}>
             <PageContainer className="justify-between">
               <AutoSaveIndicator status={status} />
-              <View className="gap-5">
-                <AppText className="text-2xl text-center mb-5">
-                  {t("timer.editTimer")}
-                </AppText>
-                <AppInput
-                  label={t("timer.titleLabel")}
-                  value={editTitle}
-                  setValue={setEditTitle}
-                  placeholder={t("timer.titlePlaceholder")}
-                />
-                <SubNotesInput
-                  label={t("timer.notesLabel")}
-                  value={editNotes}
-                  setValue={setEditNotes}
-                  placeholder={t("timer.notesPlaceholder")}
-                />
-                <View className="flex-row gap-2 mb-4 w-full">
-                  <View className="flex-1">
-                    <NumberInput
-                      label={t("timer.minutes")}
-                      value={editMinutes}
-                      onChangeText={setEditMinutes}
-                      placeholder={t("timer.minutes")}
-                      keyboardType="numeric"
-                    />
-                  </View>
-                  <View className="flex-1">
-                    <NumberInput
-                      label={t("timer.seconds")}
-                      value={editSeconds}
-                      onChangeText={setEditSeconds}
-                      placeholder={t("timer.seconds")}
-                      keyboardType="numeric"
-                    />
-                  </View>
-                </View>
-              </View>
-              <AnimatedButton
-                className="bg-gray-700 rounded-md shadow-md border-2 border-gray-500 py-2"
-                label={t("common:common.cancel")}
-                onPress={() => setEditingItem(null)}
-                textClassName="text-gray-100 text-center"
+            <View className="gap-5">
+              <AppText className="text-2xl text-center mb-5">
+                {t("timer.editTimer")}
+              </AppText>
+              <AppInput
+                label={t("timer.titleLabel")}
+                value={editTitle}
+                setValue={setEditTitle}
+                placeholder={t("timer.titlePlaceholder")}
               />
+              <SubNotesInput
+                label={t("timer.notesLabel")}
+                value={editNotes}
+                setValue={setEditNotes}
+                placeholder={t("timer.notesPlaceholder")}
+              />
+              <View className="items-center bg-[#0c1425] rounded-2xl border border-slate-700/50 py-4 px-2 overflow-hidden" onTouchStart={(e) => e.stopPropagation()}>
+                <TimerPicker
+                  initialValue={editPickerDuration}
+                  onDurationChange={setEditPickerDuration}
+                  LinearGradient={LinearGradient}
+                  padWithNItems={2}
+                  hourLabel={t("timer.h")}
+                  minuteLabel={t("timer.m")}
+                  secondLabel={t("timer.s")}
+                  pickerFeedback={() => Haptics.selectionAsync()}
+                  styles={{
+                    theme: "dark",
+                    backgroundColor: "transparent",
+                    pickerItem: {
+                      fontSize: 28,
+                      color: "#94a3b8",
+                    },
+                    selectedPickerItem: {
+                      fontSize: 34,
+                      color: "#f1f5f9",
+                    },
+                    pickerLabel: {
+                      fontSize: 14,
+                      color: "#64748b",
+                      marginTop: 0,
+                    },
+                    pickerContainer: {
+                      marginRight: 6,
+                    },
+                  }}
+                />
+              </View>
+            </View>
+            <AnimatedButton
+              className="btn-neutral py-2"
+              label={t("common:common.cancel")}
+              onPress={() => setEditingItem(null)}
+              textClassName="text-gray-100 text-center"
+            />
             </PageContainer>
-          </TouchableWithoutFeedback>
+          </View>
         </FullScreenModal>
       )}
     </PageContainer>

@@ -1,7 +1,9 @@
-import { Pressable, View, Keyboard, DeviceEventEmitter } from "react-native";
+import { Pressable, View, DeviceEventEmitter } from "react-native";
 import AppText from "@/components/AppText";
-import NumberInput from "@/components/NumberInput";
 import { AlarmClock, CircleX } from "lucide-react-native";
+import { TimerPicker } from "react-native-timer-picker";
+import { LinearGradient } from "expo-linear-gradient";
+import * as Haptics from "expo-haptics";
 import { useTimerStore } from "@/lib/stores/timerStore";
 import { useState, useEffect } from "react";
 import Toast from "react-native-toast-message";
@@ -14,25 +16,23 @@ import {
 } from "@/native/android/NativeAlarm";
 import { useAudioPlayer } from "expo-audio";
 import { formatDurationLong } from "@/lib/formatDate";
-import useRotation from "@/features/timer/hooks/useRotation";
 import { useConfirmAction } from "@/lib/confirmAction";
+import useRotation from "@/features/timer/hooks/useRotation";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
 
 export default function SettingsScreen() {
   const { t } = useTranslation("timer");
-  const [alarmMinutes, setAlarmMinutes] = useState("");
-  const [alarmSeconds, setAlarmSeconds] = useState("");
+  const [pickerDuration, setPickerDuration] = useState({ hours: 0, minutes: 0, seconds: 0 });
   const [skipPlaying, setSkipPlaying] = useState(false);
 
   const confirmAction = useConfirmAction();
+  const { isLandscape } = useRotation();
 
   const audioSource = require("@/assets/audio/mixkit-classic-alarm-995.wav");
 
   const player = useAudioPlayer(audioSource);
-
-  const { isLandscape } = useRotation();
 
   const {
     setAlarmFired,
@@ -50,18 +50,16 @@ export default function SettingsScreen() {
     clearEverything,
   } = useTimerStore();
 
-  const handleReset = async () => {
-    setAlarmMinutes("");
-    setAlarmSeconds("");
+  const handleReset = () => {
+    setPickerDuration({ hours: 0, minutes: 0, seconds: 0 });
   };
 
-  const minutes = parseInt(alarmMinutes) || 0;
-  const seconds = parseInt(alarmSeconds) || 0;
-  const totalDurationInSeconds = minutes * 60 + seconds;
+  const totalDurationInSeconds =
+    pickerDuration.hours * 3600 + pickerDuration.minutes * 60 + pickerDuration.seconds;
   const totalDurationMs = (totalDuration ?? 0) * 1000;
 
   const handleStartTimer = () => {
-    if (minutes === 0 && seconds === 0) {
+    if (totalDurationInSeconds === 0) {
       Toast.show({
         type: "error",
         text1: t("timer.setDurationError"),
@@ -184,15 +182,12 @@ export default function SettingsScreen() {
   }, [player]);
 
   return (
-    <Pressable
-      onPress={() => {
-        Keyboard.dismiss();
-        handleStopTimer();
-      }}
-      className="flex-1"
-    >
-      <View className="flex-1 px-4">
-        {hasSessionStarted ? (
+    <View className="flex-1 px-4">
+      {hasSessionStarted ? (
+        <Pressable
+          onPress={handleStopTimer}
+          className="flex-1"
+        >
           <View className="flex-1 items-center">
             {mode === "countdown" && totalDuration && (
               <AppText className="text-gray-300 text-xl mt-5">
@@ -220,61 +215,56 @@ export default function SettingsScreen() {
               </AnimatedButton>
             </View>
           </View>
-        ) : (
-          <View className="flex-1 justify-between max-w-lg mx-auto w-full mt-5 mb-5">
-            <View className="gap-5 flex-row justify-center items-center">
-              <AppText className="text-2xl text-center">
-                {t("timer.title")}
-              </AppText>
-              <AlarmClock color="#d1d5db" size={30} />
-            </View>
-            <View
-              className={`gap-10 mb-5 px-10 justify-center items-center ${
-                isLandscape ? "flex-row px-0 gap-5" : "flex-col"
-              }`}
-            >
-              <View className={`${isLandscape ? "w-1/2" : "w-full"}`}>
-                <NumberInput
-                  label={t("timer.minutes")}
-                  placeholder="0 min"
-                  value={alarmMinutes}
-                  onChangeText={(value) => setAlarmMinutes(value)}
-                />
-              </View>
-              <View className={`${isLandscape ? "w-1/2" : "w-full"}`}>
-                <NumberInput
-                  label={t("timer.seconds")}
-                  placeholder="0 sec"
-                  value={alarmSeconds}
-                  onChangeText={(value) => setAlarmSeconds(value)}
-                />
-              </View>
-            </View>
-            <View
-              className={`justify-center gap-5 items-center ${
-                isLandscape ? "flex-row" : "flex-col"
-              }`}
-            >
-              <View className={`${isLandscape ? "w-1/2" : "w-full"}`}>
-                <AnimatedButton
-                  label={t("timer.start")}
-                  onPress={handleStartTimer}
-                  className="bg-blue-800 py-2 rounded-md shadow-md border-2 border-blue-500"
-                  textClassName="text-gray-100 text-center"
-                />
-              </View>
-              <View className={`${isLandscape ? "w-1/2" : "w-full pb-5"}`}>
-                <AnimatedButton
-                  label={t("timer.clear")}
-                  onPress={handleReset}
-                  className=" bg-red-600 border-2 border-red-400 py-2 shadow-md rounded-md"
-                  textClassName="text-gray-100 text-center"
-                />
-              </View>
-            </View>
+        </Pressable>
+      ) : (
+        <View className="flex-1 justify-between max-w-lg mx-auto w-full mt-2 mb-4">
+          <View className="flex-row justify-center items-center gap-3">
+            <AppText className="text-2xl text-center">
+              {t("timer.title")}
+            </AppText>
+            <AlarmClock color="#d1d5db" size={30} />
           </View>
-        )}
-      </View>
-    </Pressable>
+          <View className={`items-center bg-slate-800/60 rounded-2xl border border-slate-700/50 px-2 ${isLandscape ? "py-1" : "py-4"}`}>
+            <TimerPicker
+              onDurationChange={setPickerDuration}
+              LinearGradient={LinearGradient}
+              padWithNItems={isLandscape ? 1 : 2}
+              hourLabel={t("timer.h")}
+              minuteLabel={t("timer.m")}
+              secondLabel={t("timer.s")}
+              pickerFeedback={() =>
+                Haptics.selectionAsync()
+              }
+              styles={{
+                theme: "dark",
+                backgroundColor: "transparent",
+                pickerItem: {
+                  fontSize: isLandscape ? 20 : 28,
+                  color: "#94a3b8",
+                },
+                selectedPickerItem: {
+                  fontSize: isLandscape ? 26 : 34,
+                  color: "#f1f5f9",
+                },
+                pickerLabel: {
+                  fontSize: isLandscape ? 11 : 14,
+                  color: "#64748b",
+                  marginTop: 0,
+                },
+                pickerContainer: {
+                  marginRight: 6,
+                },
+              }}
+            />
+          </View>
+          <AnimatedButton
+            label={t("timer.start")}
+            onPress={handleStartTimer}
+            className="btn-base py-2"
+            textClassName="text-gray-100 text-center"
+          />
+        </View>
+      )}
+    </View>
   );
 }

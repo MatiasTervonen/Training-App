@@ -29,12 +29,14 @@ import { Plus, Info, Bell } from "lucide-react-native";
 import { useUserStore } from "@/lib/stores/useUserStore";
 import BodyText from "@/components/BodyText";
 import LinkButton from "@/components/buttons/LinkButton";
+import { SESSION_COLORS } from "@/lib/sessionColors";
 import type { ReminderFilter } from "@/database/reminders/get-reminders-feed";
 
 const FILTERS: ReminderFilter[] = ["upcoming", "delivered"];
 
 export default function RemindersScreen() {
   const { t } = useTranslation("reminders");
+  const colors = SESSION_COLORS.reminders;
   const router = useRouter();
   const queryClient = useQueryClient();
   const [expandedItem, setExpandedItem] = useState<FeedItemUI | null>(null);
@@ -278,12 +280,14 @@ export default function RemindersScreen() {
             </BodyText>
             <View className="flex-row gap-4">
               <View className="flex-1">
-                <LinkButton href="/sessions" label={t("reminders.back")} />
+                <LinkButton href="/sessions" label={t("reminders.back")} gradientColors={colors.gradient} borderColor={colors.border} />
               </View>
               <View className="flex-1">
                 <LinkButton
                   href="/menu/settings"
                   label={t("reminders.settings")}
+                  gradientColors={colors.gradient}
+                  borderColor={colors.border}
                 />
               </View>
             </View>

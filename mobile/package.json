@@ -94,6 +94,7 @@
     "react-native-share": "^12.2.5",
     "react-native-sortables": "^1.9.4",
     "react-native-svg": "15.12.1",
+    "react-native-timer-picker": "^2.6.1",
     "react-native-toast-message": "^2.3.3",
     "react-native-url-polyfill": "^2.0.0",
     "react-native-web": "~0.21.1",

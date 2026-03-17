@@ -19,6 +19,7 @@ import DraggableList from "@/components/DraggableList";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useCallback, useEffect, useState } from "react";
 import { LinkProps } from "expo-router";
+import { SESSION_COLORS, SessionColors } from "@/lib/sessionColors";
 
 const STORAGE_KEY = "sessions-order";
 
@@ -27,18 +28,19 @@ type SessionItem = {
   labelKey: string;
   href: LinkProps["href"];
   icon: LucideIcon;
+  colors: SessionColors;
 };
 
 const DEFAULT_ITEMS: SessionItem[] = [
-  { id: "gym", labelKey: "sessions.gym", href: "/gym", icon: Dumbbell },
-  { id: "activities", labelKey: "sessions.activities", href: "/activities", icon: Activity },
-  { id: "notes", labelKey: "sessions.notes", href: "/notes", icon: NotebookPen },
-  { id: "timer", labelKey: "sessions.timer", href: "/timer", icon: Timer },
-  { id: "weight", labelKey: "sessions.bodyWeight", href: "/weight", icon: Weight },
-  { id: "todo", labelKey: "sessions.todoList", href: "/todo", icon: ListTodo },
-  { id: "reminders", labelKey: "sessions.reminders", href: "/reminders", icon: Bell },
-  { id: "habits", labelKey: "sessions.habits", href: "/habits", icon: CalendarCheck },
-  { id: "reports", labelKey: "sessions.reports", href: "/reports", icon: FileBarChart },
+  { id: "gym", labelKey: "sessions.gym", href: "/gym", icon: Dumbbell, colors: SESSION_COLORS.gym },
+  { id: "activities", labelKey: "sessions.activities", href: "/activities", icon: Activity, colors: SESSION_COLORS.activities },
+  { id: "notes", labelKey: "sessions.notes", href: "/notes", icon: NotebookPen, colors: SESSION_COLORS.notes },
+  { id: "timer", labelKey: "sessions.timer", href: "/timer", icon: Timer, colors: SESSION_COLORS.timer },
+  { id: "weight", labelKey: "sessions.bodyWeight", href: "/weight", icon: Weight, colors: SESSION_COLORS.weight },
+  { id: "todo", labelKey: "sessions.todoList", href: "/todo", icon: ListTodo, colors: SESSION_COLORS.todo },
+  { id: "reminders", labelKey: "sessions.reminders", href: "/reminders", icon: Bell, colors: SESSION_COLORS.reminders },
+  { id: "habits", labelKey: "sessions.habits", href: "/habits", icon: CalendarCheck, colors: SESSION_COLORS.habits },
+  { id: "reports", labelKey: "sessions.reports", href: "/reports", icon: FileBarChart, colors: SESSION_COLORS.reports },
 ];
 
 function sortByOrder(order: string[]): SessionItem[] {
@@ -91,8 +93,13 @@ export default function SessionsScreen() {
           const Icon = item.icon;
           return (
             <View className="mb-4">
-              <LinkButton label={t(item.labelKey)} href={item.href}>
-                <Icon size={20} color="#f3f4f6" />
+              <LinkButton
+                label={t(item.labelKey)}
+                href={item.href}
+                gradientColors={item.colors.gradient}
+                borderColor={item.colors.border}
+              >
+                <Icon size={20} color={item.colors.icon} />
               </LinkButton>
             </View>
           );

@@ -12,12 +12,14 @@ import {
 import InfoModal from "@/components/InfoModal";
 import { useTranslation } from "react-i18next";
 import { useUserStore } from "@/lib/stores/useUserStore";
+import { SESSION_COLORS } from "@/lib/sessionColors";
 import { router } from "expo-router";
 
 export default function TimerScreen() {
   const { t } = useTranslation("timer");
   const [showModal, setShowModal] = useState(false);
   const [showPushModal, setShowPushModal] = useState(false);
+  const colors = SESSION_COLORS.timer;
 
   const activeSession = useTimerStore((state) => state.activeSession);
 
@@ -73,18 +75,24 @@ export default function TimerScreen() {
             onPress={handleClick}
             label={t("timer.startTimer")}
             href="/timer/empty-timer"
+            gradientColors={colors.gradient}
+            borderColor={colors.border}
           />
           <LinkButton
             onPress={handleClick}
             label={t("timer.startStopwatch")}
             href="/timer/start-stopwatch"
+            gradientColors={colors.gradient}
+            borderColor={colors.border}
           />
           <View className="border border-gray-400 rounded-md my-2" />
           <LinkButton
             label={t("timer.createTimer")}
             href="/timer/create-timer"
+            gradientColors={colors.gradient}
+            borderColor={colors.border}
           />
-          <LinkButton label={t("timer.myTimers")} href="/timer/my-timers" />
+          <LinkButton label={t("timer.myTimers")} href="/timer/my-timers" gradientColors={colors.gradient} borderColor={colors.border} />
         </View>
       </PageContainer>
 

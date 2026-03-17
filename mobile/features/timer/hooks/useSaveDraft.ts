@@ -3,27 +3,25 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDebouncedCallback } from "use-debounce";
 import { handleError } from "@/utils/handleError";
 
+type PickerDuration = { hours: number; minutes: number; seconds: number };
+
 export default function useSaveDraft({
   title,
   notes,
+  durationInSeconds,
   setTitle,
   setNotes,
-  setAlarmMinutes,
-  setAlarmSeconds,
-  alarmMinutes,
-  alarmSeconds,
+  setPickerDuration,
 }: {
   title: string;
   notes: string;
+  durationInSeconds: number;
   setTitle: (title: string) => void;
   setNotes: (notes: string) => void;
-  setAlarmMinutes: (alarmMinutes: string) => void;
-  setAlarmSeconds: (alarmSeconds: string) => void;
-  alarmMinutes: string;
-  alarmSeconds: string;
+  setPickerDuration: (d: PickerDuration) => void;
 }) {
   const [isLoaded, setIsLoaded] = useState(false);
-  
+
   useEffect(() => {
     const loadDraft = async () => {
       try {
@@ -33,10 +31,12 @@ export default function useSaveDraft({
           setTitle(draft.title || "");
           setNotes(draft.notes || "");
           if (draft.durationInSeconds) {
-            setAlarmMinutes(
-              Math.floor(draft.durationInSeconds / 60).toString()
-            );
-            setAlarmSeconds((draft.durationInSeconds % 60).toString());
+            const total = draft.durationInSeconds;
+            setPickerDuration({
+              hours: Math.floor(total / 3600),
+              minutes: Math.floor((total % 3600) / 60),
+              seconds: total % 60,
+            });
           }
         }
       } catch (error) {
@@ -51,16 +51,13 @@ export default function useSaveDraft({
     };
 
     loadDraft();
-  }, [setIsLoaded, setTitle, setNotes, setAlarmMinutes, setAlarmSeconds]);
+  }, [setIsLoaded, setTitle, setNotes, setPickerDuration]);
 
   const saveTimerDraft = useDebouncedCallback(async () => {
-    const minutes = parseInt(alarmMinutes) || 0;
-    const seconds = parseInt(alarmSeconds) || 0;
-    const totalSeconds = minutes * 60 + seconds;
     const draft = {
       title,
       notes,
-      durationInSeconds: totalSeconds,
+      durationInSeconds,
     };
     await AsyncStorage.setItem("timer_session_draft", JSON.stringify(draft));
   }, 1000);
@@ -68,7 +65,7 @@ export default function useSaveDraft({
   useEffect(() => {
     if (!isLoaded) return;
     saveTimerDraft();
-  }, [title, alarmMinutes, alarmSeconds, notes, isLoaded, saveTimerDraft]);
+  }, [title, durationInSeconds, notes, isLoaded, saveTimerDraft]);
 
   return {
     saveTimerDraft,

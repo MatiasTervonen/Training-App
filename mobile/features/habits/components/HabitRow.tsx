@@ -49,7 +49,7 @@ export default function HabitRow({
               }}
             />
           </View>
-          <AppText className="text-xs text-gray-400 mt-1">
+          <AppText className="text-xs text-gray-400 mt-1 font-mono">
             {isCompleted
               ? currentSteps.toLocaleString()
               : t("stepProgress", {

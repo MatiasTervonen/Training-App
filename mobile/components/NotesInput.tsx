@@ -1,4 +1,5 @@
 import { TextInputProps, View, TextInput } from "react-native";
+import { useState } from "react";
 import AppText from "@/components/AppText";
 import { LinearGradient } from "expo-linear-gradient";
 import { useTranslation } from "react-i18next";
@@ -9,6 +10,7 @@ type NotesInputProps = TextInputProps & {
   label?: string;
   className?: string;
   height?: number;
+  autoGrow?: boolean;
 };
 
 const DEFAULT_HEIGHT = 300;
@@ -19,9 +21,11 @@ export default function NotesInput({
   label,
   className,
   height = DEFAULT_HEIGHT,
+  autoGrow = false,
   ...props
 }: NotesInputProps) {
   const { t } = useTranslation();
+  const [contentHeight, setContentHeight] = useState(height);
 
   return (
     <View>
@@ -39,12 +43,24 @@ export default function NotesInput({
           spellCheck={false}
           autoCorrect={false}
           multiline
-          scrollEnabled
+          scrollEnabled={!autoGrow}
           textAlignVertical="top"
           value={value}
           onChangeText={setValue}
+          onContentSizeChange={
+            autoGrow
+              ? (e) => {
+                  const h = e.nativeEvent.contentSize.height + 24;
+                  setContentHeight(Math.max(height, h));
+                }
+              : undefined
+          }
           className={`p-3 text-gray-100 font-lexend text-[15px] leading-[24px] ${className ?? ""}`}
-          style={{ height, lineHeight: 20 }}
+          style={
+            autoGrow
+              ? { minHeight: height, height: contentHeight, lineHeight: 20 }
+              : { height, lineHeight: 20 }
+          }
           maxLength={500000}
           {...props}
         />

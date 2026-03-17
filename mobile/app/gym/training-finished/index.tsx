@@ -259,7 +259,7 @@ export default function TrainingFinishedScreen() {
                 });
               }
             }
-            router.push("/dashboard");
+            router.replace("/dashboard");
           }}
         >
           <AppText className="text-center">{t("gym.share.done")}</AppText>

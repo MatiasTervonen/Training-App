@@ -12,7 +12,7 @@ import FullScreenModal from "@/components/FullScreenModal";
 import { Checkbox } from "expo-checkbox";
 import { checkedTodo } from "@/database/todo/check-todo";
 import { full_todo_session, todo_tasks } from "@/types/models";
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import DropDownModal from "@/components/DropDownModal";
 import DraggableList from "@/components/DraggableList";
 import PageContainer from "@/components/PageContainer";
@@ -83,31 +83,39 @@ export default function TodoSession({
     setSessionData((prev) => ({ ...prev, todo_tasks: reordered }));
   };
 
-  const handleAutoSave = useCallback(
-    async (data: typeof sessionData) => {
-      const updated = new Date().toISOString();
-
-      const updatedFeedItem = await checkedTodo({
-        updated_at: updated,
-        list_id: data.id,
-        todo_tasks: data.todo_tasks.map((task, index) => ({
-          id: task.id ?? null,
-          list_id: task.list_id,
-          is_completed: task.is_completed,
-          position: index,
-        })),
-      });
-
-      lastSavedRef.current = data.todo_tasks;
-      setOriginalOrder(data.todo_tasks);
-
-      onSave(updatedFeedItem as FeedItemUI);
-    },
-    [onSave],
+  // Only track task completion and order — ignore updated_at and other fields
+  // to prevent infinite save loops when the parent updates initialTodo after save
+  const autoSaveData = useMemo(
+    () =>
+      sessionData.todo_tasks.map((t) => ({
+        id: t.id,
+        is_completed: t.is_completed,
+      })),
+    [sessionData.todo_tasks],
   );
 
+  const handleAutoSave = useCallback(async () => {
+    const updated = new Date().toISOString();
+
+    const updatedFeedItem = await checkedTodo({
+      updated_at: updated,
+      list_id: sessionData.id,
+      todo_tasks: sessionData.todo_tasks.map((task, index) => ({
+        id: task.id ?? null,
+        list_id: task.list_id,
+        is_completed: task.is_completed,
+        position: index,
+      })),
+    });
+
+    lastSavedRef.current = sessionData.todo_tasks;
+    setOriginalOrder(sessionData.todo_tasks);
+
+    onSave(updatedFeedItem as FeedItemUI);
+  }, [sessionData, onSave]);
+
   const { status, hasPendingChanges } = useAutoSave({
-    data: sessionData,
+    data: autoSaveData,
     onSave: handleAutoSave,
   });
 

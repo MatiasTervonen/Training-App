@@ -60,9 +60,17 @@ export function useAutoSave<T>({
 
     isSavingRef.current = true;
     if (mountedRef.current) setStatus("saving");
+    const savingStart = Date.now();
 
     try {
       await onSaveRef.current(saveData);
+      if (!mountedRef.current) return;
+
+      // Ensure "saving" is visible for at least 600ms before showing "saved"
+      const elapsed = Date.now() - savingStart;
+      if (elapsed < 600) {
+        await new Promise((r) => setTimeout(r, 600 - elapsed));
+      }
       if (!mountedRef.current) return;
 
       baselineRef.current = JSON.stringify(saveData);

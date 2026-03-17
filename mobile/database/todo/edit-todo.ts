@@ -6,6 +6,7 @@ import { File } from "expo-file-system/next";
 
 type TodoTaskEdit = {
   id: string | null;
+  tempId?: string;
   task: string;
   notes?: string;
   position: number;
@@ -142,6 +143,7 @@ export async function editTodo({
 
       tasksWithMedia.push({
         id: task.id,
+        temp_id: task.tempId ?? undefined,
         task: task.task,
         notes: task.notes,
         position: task.position,

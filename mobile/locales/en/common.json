@@ -20,9 +20,9 @@
     "moveToFolder": "Move to Folder",
     "created": "Created:",
     "unsavedChanges": "unsaved changes",
-    "unsavedChangesDiscard": "You have unsaved changes. Discard them?",
-    "keepEditing": "Keep editing",
-    "discard": "Discard",
+    "unsavedChangesDiscard": "Changes are still saving. Close anyway?",
+    "keepEditing": "Wait",
+    "discard": "Close",
     "autoSave": {
       "saving": "Saving...",
       "saved": "Saved",

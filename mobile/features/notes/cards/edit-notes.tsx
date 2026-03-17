@@ -3,7 +3,8 @@ import NotesInput from "@/components/NotesInput";
 import AppInput from "@/components/AppInput";
 import FullScreenLoader from "@/components/FullScreenLoader";
 import AppText from "@/components/AppText";
-import { View, ScrollView } from "react-native";
+import { View } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import { editNotes } from "@/database/notes/edit-notes";
 import PageContainer from "@/components/PageContainer";
 import { FeedItemUI, DraftVideo } from "@/types/session";
@@ -252,7 +253,7 @@ export default function EditNotes({
   return (
     <View className="flex-1">
       <AutoSaveIndicator status={status} />
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+      <KeyboardAwareScrollView contentContainerStyle={{ flexGrow: 1 }} bottomOffset={50}>
         <PageContainer className="mb-5">
           <AppText className="text-xl text-center mt-5 mb-10">
             {t("notes.editScreen.title")}
@@ -270,6 +271,7 @@ export default function EditNotes({
             setValue={setNotes}
             label={t("notes.notesLabel")}
             placeholder={t("notes.notesPlaceholder")}
+            autoGrow
           />
           {/* Existing Voice Recordings */}
           {(voiceCount > 0 ||
@@ -425,7 +427,7 @@ export default function EditNotes({
             />
           </View>
         </PageContainer>
-      </ScrollView>
+      </KeyboardAwareScrollView>
       <FullScreenLoader
         visible={savingProgress !== undefined}
         message={t("common:common.media.uploading")}

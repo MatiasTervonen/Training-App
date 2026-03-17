@@ -20,9 +20,9 @@
     "moveToFolder": "Siirrä kansioon",
     "created": "Luotu:",
     "unsavedChanges": "tallentamattomia muutoksia",
-    "unsavedChangesDiscard": "Sinulla on tallentamattomia muutoksia. Hylätäänkö ne?",
-    "keepEditing": "Jatka",
-    "discard": "Hylkää",
+    "unsavedChangesDiscard": "Muutoksia tallennetaan vielä. Suljetaanko silti?",
+    "keepEditing": "Odota",
+    "discard": "Sulje",
     "autoSave": {
       "saving": "Tallennetaan...",
       "saved": "Tallennettu",

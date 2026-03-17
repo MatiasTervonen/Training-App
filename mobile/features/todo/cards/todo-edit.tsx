@@ -215,6 +215,7 @@ export default function EditTodo({
       title: sessionData.title,
       tasks: sessionData.todo_tasks.map((task, index) => ({
         id: task.id ?? null,
+        tempId: task.tempId,
         task: task.task,
         notes: task.notes ?? undefined,
         position: index,
@@ -232,6 +233,28 @@ export default function EditTodo({
       deletedVideoIds,
       deletedVideoPaths,
     });
+
+    // After save: assign tempId as id for new tasks so the next auto-save
+    // uses the UPDATE path instead of INSERT (prevents duplicate tasks).
+    // Clear draft media for new tasks to prevent re-upload on the next save
+    // triggered by the id change.
+    setSessionData((prev) => ({
+      ...prev,
+      todo_tasks: prev.todo_tasks.map((task) =>
+        task.id
+          ? task
+          : {
+              ...task,
+              id: task.tempId,
+              draftRecordings: [],
+              draftImages: [],
+              draftVideos: [],
+            },
+      ),
+    }));
+    // Don't clear deleted arrays — the baseline already includes them,
+    // and clearing would change autoSaveData, triggering a second save cycle.
+    // Re-sending already-deleted IDs is a no-op in the RPC.
 
     onSave({ ...updatedFeedItem, feed_context: todo_session.feed_context });
   }, [

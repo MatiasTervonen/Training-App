@@ -211,7 +211,7 @@ export default function useSaveActivitySession({
       });
 
       resetSession();
-      router.push("/activities/activity-finished");
+      router.replace("/activities/activity-finished");
     } catch (error) {
       console.error("Error saving activity session", error);
       Toast.show({

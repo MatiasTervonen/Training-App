@@ -474,7 +474,7 @@ export default function ActivityFinishedScreen() {
                 });
               }
             }
-            router.push("/dashboard");
+            router.replace("/dashboard");
           }}
         >
           <AppText className="text-center">

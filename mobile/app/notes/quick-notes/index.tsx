@@ -1,4 +1,5 @@
-import { View, ScrollView } from "react-native";
+import { View } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import AppText from "@/components/AppText";
 import AppInput from "@/components/AppInput";
 import { useState } from "react";
@@ -90,7 +91,7 @@ export default function NotesScreen() {
 
   return (
     <View className="flex-1">
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+      <KeyboardAwareScrollView contentContainerStyle={{ flexGrow: 1 }} bottomOffset={50}>
         <PageContainer className="justify-between">
           <View>
             <AppText className="text-2xl text-center mb-10">
@@ -109,6 +110,7 @@ export default function NotesScreen() {
               setValue={setNotes}
               label={t("notes.notesLabel")}
               placeholder={t("notes.notesPlaceholder")}
+              autoGrow
             />
             {draftRecordings.length > 0 && (
               <View className="mt-5">
@@ -229,7 +231,7 @@ export default function NotesScreen() {
             </View>
           </View>
         </PageContainer>
-      </ScrollView>
+      </KeyboardAwareScrollView>
       <FullScreenLoader
         visible={isSaving}
         message={savingProgress !== undefined ? t("common:common.media.uploading") : t("notes.savingNotes")}

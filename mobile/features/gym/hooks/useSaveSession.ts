@@ -222,7 +222,7 @@ export default function useSaveSession({
           phases,
           sessionId,
         });
-        router.push("/gym/training-finished");
+        router.replace("/gym/training-finished");
       }
 
       useRestTimerStore.getState().clearRestTimer();

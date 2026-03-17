@@ -75,26 +75,6 @@ type Props =
   | PendingPhaseCardProps
   | TemplatePhaseCardProps;
 
-function FixedWidthDigits({
-  text,
-  className,
-  charWidth,
-}: {
-  text: string;
-  className?: string;
-  charWidth: number;
-}) {
-  return (
-    <View className="flex-row">
-      {text.split("").map((char, i) => (
-        <View key={i} style={{ width: char === ":" ? charWidth * 0.5 : charWidth, alignItems: "center" }}>
-          <AppText className={className}>{char}</AppText>
-        </View>
-      ))}
-    </View>
-  );
-}
-
 export default function PhaseCard(props: Props) {
   const { t } = useTranslation("gym");
   const { t: tActivities } = useTranslation("activities");
@@ -150,11 +130,9 @@ export default function PhaseCard(props: Props) {
         {props.isStepRelevant !== false ? (
           <View className="flex-row flex-wrap mb-4">
             <View className="w-1/2 items-center pb-3">
-              <FixedWidthDigits
-                text={formatDurationLong(props.elapsedSeconds)}
-                className="text-xl"
-                charWidth={14}
-              />
+              <AppText className="text-xl font-mono font-bold">
+                {formatDurationLong(props.elapsedSeconds)}
+              </AppText>
               <AppText className="text-xs text-gray-400 mt-1">
                 {t("gym.phase.time")}
               </AppText>
@@ -162,11 +140,9 @@ export default function PhaseCard(props: Props) {
             <View className="w-1/2 items-center pb-3">
               <View className="flex-row items-center gap-1">
                 <Footprints color="#9ca3af" size={16} />
-                <FixedWidthDigits
-                  text={props.steps.toLocaleString()}
-                  className="text-xl"
-                  charWidth={14}
-                />
+                <AppText className="text-xl font-mono font-bold">
+                  {props.steps.toLocaleString()}
+                </AppText>
               </View>
               <AppText className="text-xs text-gray-400 mt-1">
                 {t("gym.phase.steps")}
@@ -175,11 +151,9 @@ export default function PhaseCard(props: Props) {
             <View className="w-1/2 items-center">
               <View className="flex-row items-center gap-1">
                 <Ruler color="#60a5fa" size={16} />
-                <FixedWidthDigits
-                  text={`~${formatMeters(props.estimatedDistance ?? 0)}`}
-                  className="text-xl text-blue-300"
-                  charWidth={14}
-                />
+                <AppText className="text-xl font-mono font-bold text-blue-300">
+                  ~{formatMeters(props.estimatedDistance ?? 0)}
+                </AppText>
               </View>
               <AppText className="text-xs text-gray-400 mt-1">
                 {t("gym.phase.distance")}
@@ -189,11 +163,9 @@ export default function PhaseCard(props: Props) {
               <View className="w-1/2 items-center">
                 <View className="flex-row items-center gap-1">
                   <Flame color="#f97316" size={16} />
-                  <FixedWidthDigits
-                    text={String(props.calories)}
-                    className="text-xl"
-                    charWidth={14}
-                  />
+                  <AppText className="text-xl font-mono font-bold">
+                    {String(props.calories)}
+                  </AppText>
                 </View>
                 <AppText className="text-xs text-gray-400 mt-1">
                   {t("gym.phase.calories")}
@@ -203,29 +175,23 @@ export default function PhaseCard(props: Props) {
           </View>
         ) : (
           <View className="flex-row justify-center gap-6 mb-4">
-            <FixedWidthDigits
-              text={formatDurationLong(props.elapsedSeconds)}
-              className="text-2xl"
-              charWidth={17}
-            />
+            <AppText className="text-2xl font-mono font-bold">
+              {formatDurationLong(props.elapsedSeconds)}
+            </AppText>
             {props.isStepRelevant !== false && (
               <View className="flex-row items-center gap-1">
                 <Footprints color="#9ca3af" size={20} />
-                <FixedWidthDigits
-                  text={props.steps.toLocaleString()}
-                  className="text-2xl"
-                  charWidth={17}
-                />
+                <AppText className="text-2xl font-mono font-bold">
+                  {props.steps.toLocaleString()}
+                </AppText>
               </View>
             )}
             {props.isCaloriesRelevant !== false && (
               <View className="flex-row items-center gap-1">
                 <Flame color="#f97316" size={20} />
-                <FixedWidthDigits
-                  text={String(props.calories)}
-                  className="text-2xl"
-                  charWidth={17}
-                />
+                <AppText className="text-2xl font-mono font-bold">
+                  {String(props.calories)}
+                </AppText>
               </View>
             )}
           </View>
@@ -385,21 +351,21 @@ export default function PhaseCard(props: Props) {
           </View>
           <View className="flex-row">
             <View className="flex-1 items-center">
-              <AppText className="p-2">{formattedDuration}</AppText>
+              <AppText className="p-2 font-mono">{formattedDuration}</AppText>
             </View>
             {phase.is_step_relevant && phase.steps != null && (
               <View className="flex-1 items-center">
-                <AppText className="p-2">{phase.steps.toLocaleString()}</AppText>
+                <AppText className="p-2 font-mono">{phase.steps.toLocaleString()}</AppText>
               </View>
             )}
             {phase.distance_meters != null && phase.distance_meters > 0 && (
               <View className="flex-1 items-center">
-                <AppText className="p-2">~{formatMeters(phase.distance_meters)}</AppText>
+                <AppText className="p-2 font-mono">~{formatMeters(phase.distance_meters)}</AppText>
               </View>
             )}
             {phase.is_calories_relevant && phase.duration_seconds > 0 && (
               <View className="flex-1 items-center">
-                <AppText className="p-2">
+                <AppText className="p-2 font-mono">
                   {Math.round(phase.activity_met * userWeight * (phase.duration_seconds / 3600))}
                 </AppText>
               </View>

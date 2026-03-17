@@ -6,7 +6,7 @@ import {
 import { useAppReadyStore } from "@/lib/stores/appReadyStore";
 import { useEffect, useRef, useCallback, useState } from "react";
 import { useRouter, usePathname } from "expo-router";
-import { Linking, Alert, View, Platform } from "react-native";
+import { Linking, Alert,Platform } from "react-native";
 import * as Notifications from "expo-notifications";
 import { supabase } from "@/lib/supabase";
 import { getRouteForNotification } from "@/features/notifications/getRouteForNotification";
@@ -181,10 +181,13 @@ export default function LayoutWrapper({
         if (event === "SIGNED_IN") {
           // If INITIAL_SESSION already handled a deep link / notification,
           // skip redirect so we don't override that navigation.
-          await handleSessionChange(session, deepLinkHandledRef.current);
+          // NOTE: Do NOT await — exchangeCodeForSession (Google sign-in) holds
+          // the auth lock when emitting SIGNED_IN. Awaiting here deadlocks
+          // because supabase.from() queries call getSession() which re-acquires the lock.
+          handleSessionChange(session, deepLinkHandledRef.current);
         } else {
           // TOKEN_REFRESHED, SIGNED_OUT — no redirect
-          await handleSessionChange(session, true);
+          handleSessionChange(session, true);
         }
       },
     );

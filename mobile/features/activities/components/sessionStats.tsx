@@ -102,7 +102,7 @@ export default function SessionStats({
                 onPause={stopGPStracking}
                 color="#3b82f6"
               />
-              <AppText className="text-xl z-[999]">
+              <AppText className="text-xl font-mono font-bold z-[999]">
                 {formatAveragePace(averagePacePerKm)} {labels.pace}
               </AppText>
             </View>
@@ -110,16 +110,16 @@ export default function SessionStats({
               {isStepRelevant && (
                 <View className="flex-row gap-2 items-center">
                   <Footprints size={20} color="#f3f4f6" />
-                  <AppText className="text-xl z-[999]">{currentStepCount}</AppText>
+                  <AppText className="text-xl font-mono font-bold z-[999]">{currentStepCount}</AppText>
                 </View>
               )}
               {isCaloriesRelevant && (
                 <View className="flex-row gap-1 items-center">
                   <Flame size={20} color="#f97316" />
-                  <AppText className="text-xl z-[999]">{liveCalories ?? 0} kcal</AppText>
+                  <AppText className="text-xl font-mono font-bold z-[999]">{liveCalories ?? 0} kcal</AppText>
                 </View>
               )}
-              <AppText className="text-xl z-[999]">
+              <AppText className="text-xl font-mono font-bold z-[999]">
                 {formatMeters(totalDistance)}
               </AppText>
             </View>
@@ -138,13 +138,13 @@ export default function SessionStats({
             {isStepRelevant && (
               <View className="flex-row gap-3 items-center">
                 <Footprints size={28} color="#f3f4f6" />
-                <AppText className="text-3xl z-[999]">{currentStepCount}</AppText>
+                <AppText className="text-3xl font-mono font-bold z-[999]">{currentStepCount}</AppText>
               </View>
             )}
             {isStepRelevant && (
               <View className="flex-row gap-3 items-center">
                 <Ruler size={28} color="#60a5fa" />
-                <AppText className="text-3xl z-[999] text-blue-300">
+                <AppText className="text-3xl font-mono font-bold z-[999] text-blue-300">
                   ~{formatMeters(estimatedDistance)}
                 </AppText>
               </View>
@@ -152,7 +152,7 @@ export default function SessionStats({
             {isCaloriesRelevant && (
               <View className="flex-row gap-2 items-center">
                 <Flame size={28} color="#f97316" />
-                <AppText className="text-3xl z-[999]">{liveCalories ?? 0} kcal</AppText>
+                <AppText className="text-3xl font-mono font-bold z-[999]">{liveCalories ?? 0} kcal</AppText>
               </View>
             )}
           </>
@@ -165,7 +165,7 @@ export default function SessionStats({
               <View className="items-center justify-center">
                 <View className="flex-row items-center gap-2">
                   <View className="border-2 border-blue-500 rounded-full w-14 h-14 items-center justify-center mb-2">
-                    <AppText className="text-xl">
+                    <AppText className="text-xl font-mono font-bold">
                       {formatSpeedFromMs(lastMovingPoint?.speed ?? 0)}
                     </AppText>
                   </View>
@@ -192,7 +192,7 @@ export default function SessionStats({
               <View className="items-center justify-center">
                 <View className="flex-row items-center gap-2">
                   <View className="border-2 border-blue-500 rounded-full w-14 h-14 items-center justify-center mb-2">
-                    <AppText className="text-xl">
+                    <AppText className="text-xl font-mono font-bold">
                       {Math.round(lastMovingPoint.heading)}
                     </AppText>
                   </View>
@@ -221,7 +221,7 @@ export default function SessionStats({
               <View className="items-center justify-center">
                 <View className="flex-row items-center gap-2">
                   <View className="border-2 border-blue-500 rounded-full w-14 h-14 items-center justify-center mb-2">
-                    <AppText className="text-xl">
+                    <AppText className="text-xl font-mono font-bold">
                       {formatAltitude(lastMovingPoint.altitude).split(" ")[0]}
                     </AppText>
                   </View>

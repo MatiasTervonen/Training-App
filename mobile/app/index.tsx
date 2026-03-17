@@ -1,15 +1,32 @@
 import AppText from "@/components/AppText";
-import { View, Dimensions, ScrollView } from "react-native";
+import { View, Dimensions, ScrollView, BackHandler } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import GradientColorText from "@/components/GradientColorText";
 import { Image } from "expo-image";
 import GradientButton from "@/components/buttons/GradientButton";
-import { useRouter } from "expo-router";
+import { useRouter, useFocusEffect } from "expo-router";
+import { useCallback } from "react";
 import PageContainer from "@/components/PageContainer";
 import { APP_NAME } from "@/lib/app-config";
 
 export default function Index() {
   const router = useRouter();
+
+  // After logout, stale authenticated routes may remain in the back stack.
+  // Block the back button here so pressing back doesn't navigate to them.
+  // When there's no history (fresh launch), allow default behavior (minimize app).
+  useFocusEffect(
+    useCallback(() => {
+      const onBackPress = () => {
+        if (router.canGoBack()) {
+          return true;
+        }
+        return false;
+      };
+      const sub = BackHandler.addEventListener("hardwareBackPress", onBackPress);
+      return () => sub.remove();
+    }, [router]),
+  );
 
   const screenWidth = Dimensions.get("window").width;
   const maxWidth = 250;

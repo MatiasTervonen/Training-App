@@ -14,4 +14,17 @@ export type SocialFeedItem = {
   author_profile_picture: string | null;
   like_count: number;
   user_has_liked: boolean;
+  comment_count: number;
+};
+
+export type FeedComment = {
+  id: string;
+  feed_item_id: string;
+  user_id: string;
+  parent_id: string | null;
+  content: string;
+  created_at: string;
+  author_display_name: string;
+  author_profile_picture: string | null;
+  reply_to_display_name: string | null;
 };

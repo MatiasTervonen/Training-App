@@ -16,6 +16,7 @@
 - Always use NativeWind (`className`) for styling — never use inline `style` props.
 - Always use `AppText` component for text — never use raw `<Text>`.
 - Never write custom button styles — use existing ones from `app/components/buttons`.
+- Never use bold (`font-bold`, `font-semibold`, etc.) on Russo One text — the font is already bold by design.
 
 ## Buttons
 - Always use `AnimatedButton` instead of `Pressable` for buttons — never use raw `Pressable` as a button.

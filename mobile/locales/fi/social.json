@@ -9,6 +9,15 @@
     "like": "tykkäys",
     "liked": "Tykätty",
     "details": "Tiedot",
-    "readOnly": "Vain luku -näkymä"
+    "readOnly": "Vain luku -näkymä",
+    "comments": "Kommentit",
+    "comment": "kommentti",
+    "commentPlural": "kommenttia",
+    "noComments": "Ei vielä kommentteja",
+    "addComment": "Kirjoita kommentti...",
+    "send": "Lähetä",
+    "deleteComment": "Poista kommentti",
+    "reply": "Vastaa",
+    "replyingTo": "Vastaus käyttäjälle {{name}}"
   }
 }

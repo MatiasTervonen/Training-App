@@ -9,6 +9,15 @@
     "like": "like",
     "liked": "Liked",
     "details": "Details",
-    "readOnly": "Read-only view"
+    "readOnly": "Read-only view",
+    "comments": "Comments",
+    "comment": "comment",
+    "commentPlural": "comments",
+    "noComments": "No comments yet",
+    "addComment": "Write a comment...",
+    "send": "Send",
+    "deleteComment": "Delete comment",
+    "reply": "Reply",
+    "replyingTo": "Replying to {{name}}"
   }
 }

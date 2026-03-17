@@ -75,7 +75,7 @@ export default function LayoutWrapper({
       try {
         if (!profile || !settings) {
           const [profileData, settingsData] = await Promise.all([
-            fetchUserProfile(),
+            fetchUserProfile(session.user.id),
             fetchUserSettings(),
           ]);
           loginUser(profileData as UserProfile, settingsData as UserSettings);
@@ -181,10 +181,10 @@ export default function LayoutWrapper({
         if (event === "SIGNED_IN") {
           // If INITIAL_SESSION already handled a deep link / notification,
           // skip redirect so we don't override that navigation.
-          handleSessionChange(session, deepLinkHandledRef.current);
+          await handleSessionChange(session, deepLinkHandledRef.current);
         } else {
           // TOKEN_REFRESHED, SIGNED_OUT — no redirect
-          handleSessionChange(session, true);
+          await handleSessionChange(session, true);
         }
       },
     );

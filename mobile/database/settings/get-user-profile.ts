@@ -1,20 +1,11 @@
 import { supabase } from "@/lib/supabase";
 import { handleError } from "@/utils/handleError";
 
-export async function fetchUserProfile() {
-  const {
-    data: { session },
-    error: sessionError,
-  } = await supabase.auth.getSession();
-
-  if (sessionError || !session || !session.user) {
-    throw new Error("Unauthorized");
-  }
-
+export async function fetchUserProfile(userId: string) {
   const { data, error } = await supabase
     .from("users")
     .select("id, display_name, weight_unit, distance_unit, profile_picture, role, height_cm")
-    .eq("id", session.user.id)
+    .eq("id", userId)
     .single();
 
   if (error) {

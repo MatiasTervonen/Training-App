@@ -484,6 +484,55 @@ export type Database = {
           },
         ]
       }
+      feed_comments: {
+        Row: {
+          content: string
+          created_at: string
+          feed_item_id: string
+          id: string
+          parent_id: string | null
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          feed_item_id: string
+          id?: string
+          parent_id?: string | null
+          user_id?: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          feed_item_id?: string
+          id?: string
+          parent_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feed_comments_feed_item_id_fkey"
+            columns: ["feed_item_id"]
+            isOneToOne: false
+            referencedRelation: "feed_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "feed_comments_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "feed_comments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "feed_comments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       feed_items: {
         Row: {
           activity_at: string | null
@@ -2607,10 +2656,36 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      add_feed_comment: {
+        Args: {
+          p_content: string
+          p_feed_item_id: string
+          p_parent_id?: string
+        }
+        Returns: string
+      }
+      delete_feed_comment: {
+        Args: { p_comment_id: string }
+        Returns: undefined
+      }
       delete_friend: { Args: { p_friend_id: string }; Returns: undefined }
       feed_delete_session: {
         Args: { p_id: string; p_type: string }
         Returns: undefined
+      }
+      get_feed_comments: {
+        Args: { p_feed_item_id: string }
+        Returns: {
+          author_display_name: string
+          author_profile_picture: string
+          content: string
+          created_at: string
+          feed_item_id: string
+          id: string
+          parent_id: string
+          reply_to_display_name: string
+          user_id: string
+        }[]
       }
       get_feed_sorted: {
         Args: { p_limit: number; p_offset: number }
@@ -2625,6 +2700,7 @@ export type Database = {
           type: string
           updated_at: string
           user_id: string
+          visibility: string
         }[]
       }
       get_friend_activity_session: {
@@ -2641,6 +2717,7 @@ export type Database = {
           activity_at: string
           author_display_name: string
           author_profile_picture: string
+          comment_count: number
           created_at: string
           extra_fields: Json
           id: string
@@ -3001,6 +3078,10 @@ export type Database = {
           p_title: string
         }
         Returns: undefined
+      }
+      storage_friend_can_read: {
+        Args: { p_bucket: string; p_path: string }
+        Returns: boolean
       }
       todo_check_todo: {
         Args: { p_list_id: string; p_todo_tasks: Json; p_updated_at: string }

@@ -21,7 +21,9 @@ export default function SessionStats({ activity_session, hasRoute }: SessionStat
   const labels = getDistanceUnitLabels();
   const stats = activity_session.stats;
   const session = activity_session.session;
-  const hasStepDistance = !hasRoute && (stats?.distance_meters ?? 0) > 0;
+  const isStepRelevant = activity_session.activity?.is_step_relevant !== false;
+  const isCaloriesRelevant = activity_session.activity?.is_calories_relevant !== false;
+  const hasStepDistance = !hasRoute && isStepRelevant && (stats?.distance_meters ?? 0) > 0;
 
   return (
     <LinearGradient
@@ -30,7 +32,7 @@ export default function SessionStats({ activity_session, hasRoute }: SessionStat
       end={{ x: 0, y: 1 }}
       className={`p-4 overflow-hidden shadow-md ${hasRoute ? "rounded-b-lg" : "rounded-lg mt-5"}`}
     >
-      <View className="flex-row gap-2 mb-2">
+      <View className={`flex-row gap-2${isStepRelevant || isCaloriesRelevant || hasRoute ? " mb-2" : ""}`}>
         <StatCard
           label={t("activities.sessionStats.duration")}
           value={formatDurationLong(session.duration ?? 0)}
@@ -55,7 +57,7 @@ export default function SessionStats({ activity_session, hasRoute }: SessionStat
         )}
       </View>
       {hasRoute && (
-        <View className="flex-row gap-2 mb-2">
+        <View className={`flex-row gap-2${isStepRelevant || isCaloriesRelevant ? " mb-2" : ""}`}>
           <StatCard
             label={t("activities.sessionStats.avgPace")}
             value={`${formatAveragePace(stats?.avg_pace ?? 0)} ${labels.pace}`}
@@ -66,16 +68,22 @@ export default function SessionStats({ activity_session, hasRoute }: SessionStat
           />
         </View>
       )}
-      <View className="flex-row gap-2">
-        <StatCard
-          label={t("activities.sessionStats.steps")}
-          value={String(stats?.steps ?? 0)}
-        />
-        <StatCard
-          label={t("activities.sessionStats.calories")}
-          value={String(stats?.calories ?? 0)}
-        />
-      </View>
+      {(isStepRelevant || isCaloriesRelevant) && (
+        <View className="flex-row gap-2">
+          {isStepRelevant && (
+            <StatCard
+              label={t("activities.sessionStats.steps")}
+              value={String(stats?.steps ?? 0)}
+            />
+          )}
+          {isCaloriesRelevant && (
+            <StatCard
+              label={t("activities.sessionStats.calories")}
+              value={String(stats?.calories ?? 0)}
+            />
+          )}
+        </View>
+      )}
     </LinearGradient>
   );
 }

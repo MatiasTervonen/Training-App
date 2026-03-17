@@ -1,4 +1,4 @@
-import { Ellipsis, SquareArrowOutUpRight } from "lucide-react-native";
+import { Ellipsis, SquareArrowOutUpRight, Users } from "lucide-react-native";
 import { View } from "react-native";
 import AppText from "@/components/AppText";
 import DropdownMenu from "@/components/DropdownMenu";
@@ -121,6 +121,7 @@ export default function BaseFeedCard({
           <AppText className="text-slate-400 text-sm">
             {formatDateShort(item.created_at)}
           </AppText>
+          {item.visibility === "friends" && <Users size={14} color="#64748b" />}
         </View>
         <AnimatedButton
           onPress={onExpand}

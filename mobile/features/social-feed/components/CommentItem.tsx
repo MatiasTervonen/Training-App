@@ -1,6 +1,7 @@
 import { memo } from "react";
 import { View, Image, Alert } from "react-native";
 import AppText from "@/components/AppText";
+import BodyText from "@/components/BodyText";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import { Trash2 } from "lucide-react-native";
 import { FeedComment } from "@/types/social-feed";
@@ -29,7 +30,12 @@ type CommentItemProps = {
   onReply: () => void;
 };
 
-function CommentItem({ comment, isOwnComment, onDelete, onReply }: CommentItemProps) {
+function CommentItem({
+  comment,
+  isOwnComment,
+  onDelete,
+  onReply,
+}: CommentItemProps) {
   const { t } = useTranslation(["social", "common"]);
   const isReply = !!comment.parent_id;
 
@@ -40,7 +46,11 @@ function CommentItem({ comment, isOwnComment, onDelete, onReply }: CommentItemPr
       "",
       [
         { text: t("common:common.cancel"), style: "cancel" },
-        { text: t("common:common.delete"), style: "destructive", onPress: onDelete },
+        {
+          text: t("common:common.delete"),
+          style: "destructive",
+          onPress: onDelete,
+        },
       ],
       { cancelable: true },
     );
@@ -54,8 +64,12 @@ function CommentItem({ comment, isOwnComment, onDelete, onReply }: CommentItemPr
           className={`rounded-full bg-slate-600 ${isReply ? "w-7 h-7" : "w-9 h-9"}`}
         />
       ) : (
-        <View className={`rounded-full bg-slate-600 items-center justify-center ${isReply ? "w-7 h-7" : "w-9 h-9"}`}>
-          <AppText className={`text-gray-300 ${isReply ? "text-xs" : "text-sm"}`}>
+        <View
+          className={`rounded-full bg-slate-600 items-center justify-center ${isReply ? "w-7 h-7" : "w-9 h-9"}`}
+        >
+          <AppText
+            className={`text-gray-300 ${isReply ? "text-xs" : "text-sm"}`}
+          >
             {comment.author_display_name?.charAt(0)?.toUpperCase() ?? "?"}
           </AppText>
         </View>
@@ -64,7 +78,9 @@ function CommentItem({ comment, isOwnComment, onDelete, onReply }: CommentItemPr
         <View className="flex-row items-center justify-between">
           <AppText className="text-sm">{comment.author_display_name}</AppText>
           <View className="flex-row items-center gap-2">
-            <AppText className="text-xs text-slate-500">{getRelativeTime(comment.created_at)}</AppText>
+            <AppText className="text-xs text-slate-500">
+              {getRelativeTime(comment.created_at)}
+            </AppText>
             {isOwnComment && (
               <AnimatedButton onPress={handleDelete} hitSlop={8}>
                 <Trash2 size={14} color="#64748b" />
@@ -72,15 +88,19 @@ function CommentItem({ comment, isOwnComment, onDelete, onReply }: CommentItemPr
             )}
           </View>
         </View>
-        <AppText className="text-[13px] text-slate-400 mt-1 font-lexend leading-5">
+        <BodyText className="text-[13px] text-slate-400 mt-1 leading-5">
           {isReply && comment.reply_to_display_name && (
-            <AppText className="text-sm text-blue-400 font-lexend">@{comment.reply_to_display_name} </AppText>
+            <BodyText className="text-sm text-blue-400">
+              @{comment.reply_to_display_name}{" "}
+            </BodyText>
           )}
           {comment.content}
-        </AppText>
+        </BodyText>
         {!isReply && (
-          <AnimatedButton onPress={onReply} className="mt-1.5">
-            <AppText className="text-xs text-slate-500">{t("social:social.reply")}</AppText>
+          <AnimatedButton onPress={onReply} className="mt-1.5" hitSlop={12}>
+            <AppText className="text-xs text-slate-500">
+              {t("social:social.reply")}
+            </AppText>
           </AnimatedButton>
         )}
       </View>

@@ -27,11 +27,11 @@ export default function SocialFeedCardFooter({ item, onToggleLike, onExpand, onO
           color={item.user_has_liked ? "#ef4444" : "#64748b"}
           fill={item.user_has_liked ? "#ef4444" : "transparent"}
         />
-        <AppText className={item.user_has_liked ? "text-red-400 text-sm" : "text-slate-500 text-sm"}>
-          {item.like_count > 0
-            ? `${item.like_count} ${item.like_count === 1 ? t("social.like") : t("social.likes")}`
-            : t("social.like")}
-        </AppText>
+        {item.like_count > 0 && (
+          <AppText className={item.user_has_liked ? "text-red-400 text-sm" : "text-slate-500 text-sm"}>
+            {item.like_count}
+          </AppText>
+        )}
       </AnimatedButton>
 
       {/* Comment button */}

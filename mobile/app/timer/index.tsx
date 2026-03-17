@@ -75,6 +75,7 @@ export default function TimerScreen() {
             href="/timer/empty-timer"
           />
           <LinkButton
+            onPress={handleClick}
             label={t("timer.startStopwatch")}
             href="/timer/start-stopwatch"
           />

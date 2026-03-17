@@ -53,7 +53,7 @@ export default function NotesSession({
           {t("notes.expandedView.created")} {formatDate(note.created_at!)}
         </AppText>
         {note.updated_at && (
-          <AppText className="text-sm text-yellow-500 mt-2 text-center">
+          <AppText className="text-sm text-slate-400 mt-2 text-center">
             {t("notes.expandedView.updated")} {formatDate(note.updated_at)}
           </AppText>
         )}

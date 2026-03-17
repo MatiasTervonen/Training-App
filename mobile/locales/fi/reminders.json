@@ -6,6 +6,9 @@
     "global": "Globaali",
     "created": "Luotu:",
     "updated": "Päivitetty:",
+    "typeLabel": "Tyyppi",
+    "timeLabel": "Aika",
+    "weekdaysLabel": "Toistuu",
     "edit": "Muokkaa",
     "delete": "Poista",
     "validation": {
@@ -48,6 +51,7 @@
     "titlePlaceholder": "Otsikko...",
     "notesLabel": "Muistiinpanot...",
     "notesPlaceholder": "Muistiinpanot...",
+    "notifyTime": "Ilmoitusaika",
     "setNotifyTime": "Aseta ilmoitusaika",
     "repeatOnDays": "Toista näinä päivinä:",
     "enableHighPriority": "Ota käyttöön tärkeä muistutus",

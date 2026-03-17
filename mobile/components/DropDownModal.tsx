@@ -59,7 +59,7 @@ export default function DropDownModal({
             style={{ width: screenWidth * 0.85 }}
           >
             {label && (
-              <AppText className="mb-6 text-center text-xl px-4">
+              <AppText className="mb-6 text-center text-lg px-4">
                 {label}
               </AppText>
             )}
@@ -72,7 +72,7 @@ export default function DropDownModal({
                 }}
                 className="flex-row items-center border p-2 my-2 rounded-xl mx-6 px-4 bg-slate-800 border-slate-700"
               >
-                <AppText className="text-xl flex-1 text-center">
+                <AppText className="flex-1 text-center">
                   {option.label}
                 </AppText>
               </AnimatedButton>

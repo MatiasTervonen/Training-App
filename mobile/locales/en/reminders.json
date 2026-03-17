@@ -6,6 +6,9 @@
     "global": "Global",
     "created": "Created:",
     "updated": "Updated:",
+    "typeLabel": "Type",
+    "timeLabel": "Time",
+    "weekdaysLabel": "Repeats on",
     "edit": "Edit",
     "delete": "Delete",
     "validation": {
@@ -48,6 +51,7 @@
     "titlePlaceholder": "Title...",
     "notesLabel": "Notes...",
     "notesPlaceholder": "Notes...",
+    "notifyTime": "Notify time",
     "setNotifyTime": "Set Notify Time",
     "repeatOnDays": "Repeat on these days:",
     "enableHighPriority": "Enable high priority reminder",

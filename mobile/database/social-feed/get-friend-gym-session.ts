@@ -16,5 +16,48 @@ export async function getFriendGymSession(feedItemId: string) {
     throw new Error("Error fetching friend gym session");
   }
 
-  return data as unknown as FullGymSession;
+  const raw = data as Record<string, unknown>;
+
+  // Generate signed URLs for media (RPC only returns storage_path)
+  const rawImages = (raw.sessionImages ?? []) as { id: string; storage_path: string }[];
+  const rawVideos = (raw.sessionVideos ?? []) as { id: string; storage_path: string; thumbnail_storage_path: string | null; duration_ms: number | null }[];
+  const rawVoice = (raw.sessionVoiceRecordings ?? []) as { id: string; storage_path: string; duration_ms: number | null }[];
+
+  const sessionImages = await Promise.all(
+    rawImages.map(async (img) => {
+      const { data: urlData, error: urlError } = await supabase.storage
+        .from("notes-images")
+        .createSignedUrl(img.storage_path, 3600);
+      if (urlError) console.error("Signed URL error (image):", urlError.message, "path:", img.storage_path);
+      return { ...img, uri: urlData?.signedUrl ?? "" };
+    }),
+  );
+
+  const sessionVideos = await Promise.all(
+    rawVideos.map(async (vid) => {
+      const { data: videoUrlData } = await supabase.storage
+        .from("media-videos")
+        .createSignedUrl(vid.storage_path, 3600);
+      const thumbnailUri = vid.thumbnail_storage_path
+        ? (await supabase.storage.from("media-videos").createSignedUrl(vid.thumbnail_storage_path, 3600)).data?.signedUrl ?? ""
+        : "";
+      return { ...vid, uri: videoUrlData?.signedUrl ?? "", thumbnailUri };
+    }),
+  );
+
+  const sessionVoiceRecordings = await Promise.all(
+    rawVoice.map(async (v) => {
+      const { data: urlData } = await supabase.storage
+        .from("notes-voice")
+        .createSignedUrl(v.storage_path, 3600);
+      return { ...v, uri: urlData?.signedUrl ?? "" };
+    }),
+  );
+
+  return {
+    ...raw,
+    sessionImages: sessionImages.filter((img) => img.uri !== ""),
+    sessionVideos: sessionVideos.filter((v) => v.uri !== ""),
+    sessionVoiceRecordings: sessionVoiceRecordings.filter((v) => v.uri !== ""),
+  } as unknown as FullGymSession;
 }

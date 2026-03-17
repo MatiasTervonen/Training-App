@@ -49,7 +49,7 @@ export default function ActivityTemplateExpanded({
             {formatDate(item.template.created_at)}
           </AppText>
           {item.template.updated_at && (
-            <AppText className="text-sm text-yellow-500 mt-2 text-center">
+            <AppText className="text-sm text-slate-400 mt-2 text-center">
               {t("activities.templatesScreen.updated")}{" "}
               {formatDate(item.template.updated_at)}
             </AppText>

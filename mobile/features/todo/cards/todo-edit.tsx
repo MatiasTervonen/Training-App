@@ -1,6 +1,4 @@
-import { useState, useEffect, useRef } from "react";
-import SaveButton from "@/components/buttons/SaveButton";
-import FullScreenLoader from "@/components/FullScreenLoader";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import Toast from "react-native-toast-message";
 import { full_todo_session_optional_id, FeedItemUI } from "@/types/session";
 import { editTodo } from "@/database/todo/edit-todo";
@@ -11,13 +9,14 @@ import AppText from "@/components/AppText";
 import AppInput from "@/components/AppInput";
 import PageContainer from "@/components/PageContainer";
 import { useConfirmAction } from "@/lib/confirmAction";
-import { Dot } from "lucide-react-native";
 import * as Crypto from "expo-crypto";
 import { useTranslation } from "react-i18next";
 import { nanoid } from "nanoid/non-secure";
 import { TodoTaskMedia } from "@/database/todo/get-todo-media";
 import TodoTaskCard from "@/features/todo/components/TodoTaskCard";
 import ImageViewerModal from "@/features/notes/components/ImageViewerModal";
+import AutoSaveIndicator from "@/components/AutoSaveIndicator";
+import { useAutoSave } from "@/hooks/useAutoSave";
 
 const applyTaskMedia = (
   tasks: full_todo_session_optional_id["todo_tasks"],
@@ -75,7 +74,6 @@ export default function EditTodo({
     : todo_session;
 
   const [originalData, setOriginalData] = useState(initData);
-  const [isSaving, setIsSaving] = useState(false);
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
   const mediaAppliedRef = useRef(!!taskMedia);
 
@@ -167,18 +165,38 @@ export default function EditTodo({
       setExpandedIndex(expandedIndex - 1);
   };
 
-  const updated = new Date().toISOString();
+  const autoSaveData = useMemo(
+    () => ({
+      title: sessionData.title,
+      tasks: sessionData.todo_tasks.map((t) => ({
+        id: t.id,
+        tempId: t.tempId,
+        task: t.task,
+        notes: t.notes,
+        is_completed: t.is_completed,
+        draftRecordingIds: t.draftRecordings?.map((r) => r.id) ?? [],
+        draftImageIds:
+          t.draftImages?.filter((i) => !i.isLoading).map((i) => i.id) ?? [],
+        draftVideoIds:
+          t.draftVideos?.filter((v) => !v.isCompressing).map((v) => v.id) ?? [],
+        existingImageIds: t.existingImages?.map((i) => i.id) ?? [],
+        existingVideoIds: t.existingVideos?.map((v) => v.id) ?? [],
+        existingVoiceIds: t.existingVoice?.map((v) => v.id) ?? [],
+      })),
+      deletedIds,
+      deletedVoiceIds,
+      deletedImageIds,
+      deletedVideoIds,
+    }),
+    [sessionData, deletedIds, deletedVoiceIds, deletedImageIds, deletedVideoIds],
+  );
 
-  const handleSave = async () => {
+  const handleAutoSave = useCallback(async () => {
     if (
       sessionData.todo_tasks.some((task) =>
         task.draftVideos?.some((v) => v.isCompressing),
       )
     ) {
-      Toast.show({
-        type: "info",
-        text1: t("common:common.media.videoStillCompressing"),
-      });
       return;
     }
 
@@ -187,65 +205,63 @@ export default function EditTodo({
     );
 
     if (hasEmptyTasks) {
-      Toast.show({
-        type: "error",
-        text1: t("todo.editScreen.emptyTasksError"),
-        text2: t("todo.editScreen.emptyTasksErrorSub"),
-      });
       return;
     }
 
-    setIsSaving(true);
+    const updated = new Date().toISOString();
 
-    try {
-      const updatedFeedItem = await editTodo({
-        id: sessionData.id,
-        title: sessionData.title,
-        tasks: sessionData.todo_tasks.map((task, index) => ({
-          id: task.id ?? null,
-          task: task.task,
-          notes: task.notes ?? undefined,
-          position: index,
-          updated_at: updated,
-          newRecordings: task.draftRecordings,
-          newImages: task.draftImages,
-          newVideos: task.draftVideos,
-        })),
-        deletedIds,
+    const updatedFeedItem = await editTodo({
+      id: sessionData.id,
+      title: sessionData.title,
+      tasks: sessionData.todo_tasks.map((task, index) => ({
+        id: task.id ?? null,
+        task: task.task,
+        notes: task.notes ?? undefined,
+        position: index,
         updated_at: updated,
-        deletedVoiceIds,
-        deletedVoicePaths,
-        deletedImageIds,
-        deletedImagePaths,
-        deletedVideoIds,
-        deletedVideoPaths,
-      });
+        newRecordings: task.draftRecordings,
+        newImages: task.draftImages,
+        newVideos: task.draftVideos,
+      })),
+      deletedIds,
+      updated_at: updated,
+      deletedVoiceIds,
+      deletedVoicePaths,
+      deletedImageIds,
+      deletedImagePaths,
+      deletedVideoIds,
+      deletedVideoPaths,
+    });
 
-      onSave({ ...updatedFeedItem, feed_context: todo_session.feed_context });
-      onClose();
-      Toast.show({
-        type: "success",
-        text1: t("todo.editScreen.updateSuccess"),
-      });
-    } catch {
-      Toast.show({
-        type: "error",
-        text1: t("todo.editScreen.updateError"),
-      });
-    } finally {
-      setIsSaving(false);
-    }
-  };
+    onSave({ ...updatedFeedItem, feed_context: todo_session.feed_context });
+  }, [
+    sessionData,
+    deletedIds,
+    deletedVoiceIds,
+    deletedVoicePaths,
+    deletedImageIds,
+    deletedImagePaths,
+    deletedVideoIds,
+    deletedVideoPaths,
+    onSave,
+    todo_session.feed_context,
+  ]);
 
-  const hasChanges =
-    JSON.stringify(sessionData) !== JSON.stringify(originalData) ||
-    deletedVoiceIds.length > 0 ||
-    deletedImageIds.length > 0 ||
-    deletedVideoIds.length > 0;
+  const { status, hasPendingChanges } = useAutoSave({
+    data: autoSaveData,
+    onSave: handleAutoSave,
+    enabled:
+      !sessionData.todo_tasks.some((t) =>
+        t.draftVideos?.some((v) => v.isCompressing),
+      ) &&
+      !sessionData.todo_tasks.some((t) =>
+        t.draftImages?.some((i) => i.isLoading),
+      ),
+  });
 
   useEffect(() => {
-    onDirtyChange?.(hasChanges);
-  }, [hasChanges, onDirtyChange]);
+    onDirtyChange?.(hasPendingChanges);
+  }, [hasPendingChanges, onDirtyChange]);
 
   const getViewerImages = (taskIndex: number) => {
     const task = sessionData.todo_tasks[taskIndex];
@@ -262,16 +278,7 @@ export default function EditTodo({
 
   return (
     <View className="flex-1">
-      {hasChanges && (
-        <View className="bg-gray-900 absolute top-5 left-5 z-50 py-1 px-4 flex-row items-center rounded-lg">
-          <AppText className="text-sm text-yellow-500">
-            {t("todo.session.unsavedChanges")}
-          </AppText>
-          <View className="animate-pulse">
-            <Dot color="#eab308" />
-          </View>
-        </View>
-      )}
+      <AutoSaveIndicator status={status} />
 
       <KeyboardAwareScrollView
         showsVerticalScrollIndicator={false}
@@ -449,24 +456,10 @@ export default function EditTodo({
                 className="btn-base py-2"
                 textClassName="text-gray-100 text-center"
               />
-              <SaveButton
-                disabled={!hasChanges}
-                onPress={handleSave}
-                label={
-                  !hasChanges
-                    ? t("todo.session.save")
-                    : t("todo.session.saveChanges")
-                }
-              />
             </View>
           </PageContainer>
         </Pressable>
       </KeyboardAwareScrollView>
-
-      <FullScreenLoader
-        visible={isSaving}
-        message={t("todo.editScreen.savingTodoList")}
-      />
 
       {viewerTaskIndex !== null &&
         getViewerImages(viewerTaskIndex).length > 0 &&

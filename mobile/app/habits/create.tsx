@@ -2,6 +2,7 @@ import { View, ScrollView, Pressable, Keyboard, Platform } from "react-native";
 import AppText from "@/components/AppText";
 import AppInput from "@/components/AppInput";
 import PageContainer from "@/components/PageContainer";
+import AutoSaveIndicator from "@/components/AutoSaveIndicator";
 
 import SaveButton from "@/components/buttons/SaveButton";
 import FullScreenLoader from "@/components/FullScreenLoader";
@@ -9,9 +10,10 @@ import { useSaveHabit } from "@/features/habits/hooks/useSaveHabit";
 import { useEditHabit } from "@/features/habits/hooks/useEditHabit";
 import { useHabits } from "@/features/habits/hooks/useHabits";
 import { useHabitNotifications } from "@/features/habits/hooks/useHabitNotifications";
+import { useAutoSave } from "@/hooks/useAutoSave";
 import { useTranslation } from "react-i18next";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import DatePicker from "react-native-date-picker";
 import Toast from "react-native-toast-message";
 import AnimatedButton from "@/components/buttons/animatedButton";
@@ -70,6 +72,70 @@ export default function CreateHabitScreen() {
       }
     }
   }, [isEditing, id, habits]);
+
+  // Auto-save (edit mode only)
+  const autoSaveData = useMemo(
+    () => ({
+      name,
+      stepGoal,
+      habitType,
+      frequencyMode,
+      selectedDays: [...selectedDays].sort(),
+      reminderEnabled,
+      reminderTimestamp: reminderTime.getTime(),
+    }),
+    [name, stepGoal, habitType, frequencyMode, selectedDays, reminderEnabled, reminderTime],
+  );
+
+  const handleAutoSave = useCallback(async () => {
+    if (habitType === "manual" && !name.trim()) return;
+    if (habitType === "steps" && (!stepGoal || parseInt(stepGoal, 10) <= 0)) return;
+
+    const isStepsType = habitType === "steps";
+    const parsedGoal = parseInt(stepGoal, 10);
+    const habitName = isStepsType
+      ? t("stepHabitName", { steps: parsedGoal.toLocaleString() })
+      : name.trim();
+
+    const timeStr =
+      !isStepsType && reminderEnabled
+        ? `${String(reminderTime.getHours()).padStart(2, "0")}:${String(reminderTime.getMinutes()).padStart(2, "0")}:00`
+        : null;
+    const freqDays =
+      frequencyMode === "specific" && selectedDays.length > 0
+        ? selectedDays
+        : null;
+
+    await editMutation.mutateAsync({
+      habitId: id!,
+      name: habitName,
+      reminderTime: timeStr,
+      frequencyDays: freqDays,
+      targetValue: isStepsType ? parsedGoal : null,
+    });
+
+    // Update notification
+    await cancelHabitReminder(id!);
+    if (timeStr) {
+      await scheduleHabitReminder(
+        id!,
+        habitName,
+        timeStr,
+        t("reminderBody", { habitName }),
+        freqDays,
+      );
+    }
+  }, [
+    habitType, name, stepGoal, reminderEnabled, reminderTime,
+    frequencyMode, selectedDays, id, editMutation,
+    cancelHabitReminder, scheduleHabitReminder, t,
+  ]);
+
+  const { status } = useAutoSave({
+    data: autoSaveData,
+    onSave: handleAutoSave,
+    enabled: isEditing,
+  });
 
   const handleSave = async () => {
     if (habitType === "manual" && !name.trim()) return;
@@ -148,6 +214,7 @@ export default function CreateHabitScreen() {
 
   return (
     <PageContainer>
+      <AutoSaveIndicator status={status} />
       <Pressable onPress={Keyboard.dismiss} className="flex-1">
         <ScrollView className="flex-1">
           <AppText className="text-2xl text-center mb-6">
@@ -306,15 +373,19 @@ export default function CreateHabitScreen() {
           </View>
         </ScrollView>
 
-        <View className="pt-4">
-          <SaveButton
-            onPress={handleSave}
-            label={t("save")}
-            disabled={!canSave}
-          />
-        </View>
+        {!isEditing && (
+          <View className="pt-4">
+            <SaveButton
+              onPress={handleSave}
+              label={t("save")}
+              disabled={!canSave}
+            />
+          </View>
+        )}
       </Pressable>
-      <FullScreenLoader visible={isSaving} message={t("common:common.saving")} />
+      {!isEditing && (
+        <FullScreenLoader visible={isSaving} message={t("common:common.saving")} />
+      )}
     </PageContainer>
   );
 }

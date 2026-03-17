@@ -49,7 +49,7 @@ export default function GymTemplate({ item, onStartWorkout }: Props) {
               {t("gym.templateView.created")} {formatDate(item.created_at)}
             </AppText>
             {item.updated_at && (
-              <AppText className="text-sm text-yellow-500 mt-2 text-center">
+              <AppText className="text-sm text-slate-400 mt-2 text-center">
                 {t("gym.templateView.updated")} {formatDate(item.updated_at)}
               </AppText>
             )}

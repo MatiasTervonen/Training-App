@@ -1,17 +1,14 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import NotesInput from "@/components/NotesInput";
 import AppInput from "@/components/AppInput";
-import SaveButton from "@/components/buttons/SaveButton";
 import FullScreenLoader from "@/components/FullScreenLoader";
-import Toast from "react-native-toast-message";
 import AppText from "@/components/AppText";
 import { View, ScrollView } from "react-native";
 import { editNotes } from "@/database/notes/edit-notes";
 import PageContainer from "@/components/PageContainer";
-import { Dot } from "lucide-react-native";
 import { FeedItemUI, DraftVideo } from "@/types/session";
 import { FullNotesSession } from "@/database/notes/get-full-notes";
-import { DraftRecordingItem } from "../components/draftRecording";
+import { DraftRecordingItem } from "@/features/notes/components/draftRecording";
 import { nanoid } from "nanoid/non-secure";
 import { useConfirmAction } from "@/lib/confirmAction";
 import { NotesVoiceSkeleton } from "@/components/skeletetons";
@@ -21,6 +18,8 @@ import DraftImageItem from "@/features/notes/components/DraftImageItem";
 import DraftVideoItem from "@/features/notes/components/DraftVideoItem";
 import ImageViewerModal from "@/features/notes/components/ImageViewerModal";
 import MediaToolbar from "@/features/notes/components/MediaToolbar";
+import AutoSaveIndicator from "@/components/AutoSaveIndicator";
+import { useAutoSave } from "@/hooks/useAutoSave";
 
 type Props = {
   note: FeedItemUI;
@@ -90,14 +89,12 @@ export default function EditNotes({
   const confirmAction = useConfirmAction();
   const [title, setValue] = useState(note.title);
   const [notes, setNotes] = useState(payload.notes);
-  const [isSaving, setIsSaving] = useState(false);
   const [savingProgress, setSavingProgress] = useState<number | undefined>(
     undefined,
   );
   const [selectedFolderId, setSelectedFolderId] = useState<string | null>(
     payload.folder_id ?? null,
   );
-  const initialFolderId = payload.folder_id ?? null;
   const { folders, isLoading: isFoldersLoading } = useFolders();
 
   // Voice recordings state
@@ -120,9 +117,6 @@ export default function EditNotes({
   const [deletedVideoIds, setDeletedVideoIds] = useState<string[]>([]);
   const [deletedVideoPaths, setDeletedVideoPaths] = useState<string[]>([]);
   const [newVideos, setNewVideos] = useState<DraftVideo[]>([]);
-
-  const initialTitle = note.title || "";
-  const initialNotes = payload.notes || "";
 
   // Sync existing recordings, images, and videos from props
   useEffect(() => {
@@ -206,77 +200,58 @@ export default function EditNotes({
     setNewVideos((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const handleSubmit = async () => {
-    if (newVideos.some((v) => v.isCompressing)) {
-      Toast.show({
-        type: "info",
-        text1: t("common:common.media.videoStillCompressing"),
-      });
+  // Auto-save data object
+  const autoSaveData = useMemo(() => ({
+    title, notes, selectedFolderId,
+    deletedRecordingIds, newRecordings: newRecordings.map(r => r.id),
+    deletedImageIds, newImages: newImages.filter(i => !i.isLoading).map(i => i.id),
+    deletedVideoIds, newVideos: newVideos.filter(v => !v.isCompressing).map(v => v.id),
+  }), [title, notes, selectedFolderId, deletedRecordingIds, newRecordings, deletedImageIds, newImages, deletedVideoIds, newVideos]);
+
+  const handleAutoSave = useCallback(async () => {
+    if (newVideos.some((v) => v.isCompressing) || newImages.some((i) => i.isLoading)) {
       return;
     }
 
-    setIsSaving(true);
-    setSavingProgress(undefined);
+    const updatedFeedItem = await editNotes({
+      id: note.source_id,
+      title,
+      notes,
+      updated_at: new Date().toISOString(),
+      folderId: selectedFolderId,
+      deletedRecordingIds,
+      deletedRecordingPaths,
+      newRecordings,
+      deletedImageIds,
+      deletedImagePaths,
+      newImages,
+      deletedVideoIds,
+      deletedVideoPaths,
+      newVideos,
+      onProgress: (p) => setSavingProgress(p),
+    });
 
-    try {
-      const updatedFeedItem = await editNotes({
-        id: note.source_id,
-        title,
-        notes,
-        updated_at: new Date().toISOString(),
-        folderId: selectedFolderId,
-        deletedRecordingIds,
-        deletedRecordingPaths,
-        newRecordings,
-        deletedImageIds,
-        deletedImagePaths,
-        newImages,
-        deletedVideoIds,
-        deletedVideoPaths,
-        newVideos,
-        onProgress: (p) => setSavingProgress(p),
-      });
+    onSave({ ...updatedFeedItem, feed_context: note.feed_context });
+  }, [
+    note.source_id, note.feed_context, title, notes, selectedFolderId,
+    deletedRecordingIds, deletedRecordingPaths, newRecordings,
+    deletedImageIds, deletedImagePaths, newImages,
+    deletedVideoIds, deletedVideoPaths, newVideos, onSave,
+  ]);
 
-      onSave({ ...updatedFeedItem, feed_context: note.feed_context });
-      onClose();
-    } catch {
-      Toast.show({
-        type: "error",
-        text1: t("notes:notes.editScreen.errorTitle"),
-        text2: t("notes:notes.editScreen.errorMessage"),
-      });
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-  const hasChanges =
-    title !== initialTitle ||
-    notes !== initialNotes ||
-    selectedFolderId !== initialFolderId ||
-    deletedRecordingIds.length > 0 ||
-    newRecordings.length > 0 ||
-    deletedImageIds.length > 0 ||
-    newImages.length > 0 ||
-    deletedVideoIds.length > 0 ||
-    newVideos.length > 0;
+  const { status, hasPendingChanges } = useAutoSave({
+    data: autoSaveData,
+    onSave: handleAutoSave,
+    enabled: !newVideos.some(v => v.isCompressing) && !newImages.some(i => i.isLoading),
+  });
 
   useEffect(() => {
-    onDirtyChange?.(hasChanges);
-  }, [hasChanges, onDirtyChange]);
+    onDirtyChange?.(hasPendingChanges);
+  }, [hasPendingChanges, onDirtyChange]);
 
   return (
     <View className="flex-1">
-      {hasChanges && (
-        <View className="bg-gray-900 absolute top-5 left-5 z-50 py-1 px-4 flex-row items-center rounded-lg">
-          <AppText className="text-sm text-yellow-500">
-            {hasChanges ? t("notes.editScreen.unsavedChanges") : ""}
-          </AppText>
-          <View className="animate-pulse">
-            <Dot color="#eab308" />
-          </View>
-        </View>
-      )}
+      <AutoSaveIndicator status={status} />
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <PageContainer className="mb-5">
           <AppText className="text-xl text-center mt-5 mb-10">
@@ -451,24 +426,9 @@ export default function EditNotes({
           </View>
         </PageContainer>
       </ScrollView>
-      <View className="px-5 pb-5 pt-3">
-        <SaveButton
-          disabled={!hasChanges}
-          onPress={handleSubmit}
-          label={
-            !hasChanges
-              ? t("notes.editScreen.save")
-              : t("notes.editScreen.saveChanges")
-          }
-        />
-      </View>
       <FullScreenLoader
-        visible={isSaving}
-        message={
-          savingProgress !== undefined
-            ? t("common:common.media.uploading")
-            : t("notes:notes.editScreen.savingNotes")
-        }
+        visible={savingProgress !== undefined}
+        message={t("common:common.media.uploading")}
         progress={savingProgress}
       />
       {(() => {

@@ -1,15 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import SubNotesInput from "@/components/SubNotesInput";
 import AppInput from "@/components/AppInput";
-import SaveButton from "@/components/buttons/SaveButton";
 import FullScreenLoader from "@/components/FullScreenLoader";
-import Toast from "react-native-toast-message";
 import AppText from "@/components/AppText";
 import { View, ScrollView, Pressable, Keyboard } from "react-native";
 import { editWeight } from "@/database/weight/edit-weight";
 import PageContainer from "@/components/PageContainer";
 import { FeedItemUI, DraftVideo } from "@/types/session";
-import { Dot } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import { FullWeightSession } from "@/database/weight/get-full-weight";
 import { DraftRecordingItem } from "@/features/notes/components/draftRecording";
@@ -20,6 +17,8 @@ import DraftImageItem from "@/features/notes/components/DraftImageItem";
 import DraftVideoItem from "@/features/notes/components/DraftVideoItem";
 import ImageViewerModal from "@/features/notes/components/ImageViewerModal";
 import MediaToolbar from "@/features/notes/components/MediaToolbar";
+import AutoSaveIndicator from "@/components/AutoSaveIndicator";
+import { useAutoSave } from "@/hooks/useAutoSave";
 
 type Props = {
   weight: FeedItemUI;
@@ -75,7 +74,6 @@ type ExistingVideo = {
 
 export default function EditWeight({
   weight,
-  onClose,
   onSave,
   weightMedia,
   isLoadingMedia = false,
@@ -93,7 +91,6 @@ export default function EditWeight({
   const [weightValue, setWeightValue] = useState(
     payload.weight != null ? payload.weight.toString() : "",
   );
-  const [isSaving, setIsSaving] = useState(false);
   const [savingProgress, setSavingProgress] = useState<number | undefined>(
     undefined,
   );
@@ -120,11 +117,6 @@ export default function EditWeight({
   const [deletedVideoIds, setDeletedVideoIds] = useState<string[]>([]);
   const [deletedVideoPaths, setDeletedVideoPaths] = useState<string[]>([]);
   const [newVideos, setNewVideos] = useState<DraftVideo[]>([]);
-
-  const initialTitle = weight.title || "";
-  const initialNotes = payload.notes || "";
-  const initialWeight =
-    payload.weight != null ? payload.weight.toString() : "";
 
   // Sync existing media from props
   useEffect(() => {
@@ -208,77 +200,59 @@ export default function EditWeight({
     setNewVideos((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const handleSubmit = async () => {
-    if (newVideos.some((v) => v.isCompressing)) {
-      Toast.show({
-        type: "info",
-        text1: t("common:common.media.videoStillCompressing"),
-      });
-      return;
-    }
+  // Auto-save data with stable identifiers for JSON comparison
+  const autoSaveData = useMemo(() => ({
+    title, notes, weightValue,
+    deletedRecordingIds, newRecordings: newRecordings.map(r => r.id),
+    deletedImageIds, newImages: newImages.filter(i => !i.isLoading).map(i => i.id),
+    deletedVideoIds, newVideos: newVideos.filter(v => !v.isCompressing).map(v => v.id),
+  }), [title, notes, weightValue, deletedRecordingIds, newRecordings, deletedImageIds, newImages, deletedVideoIds, newVideos]);
 
-    setIsSaving(true);
-    setSavingProgress(undefined);
+  const handleAutoSave = useCallback(async () => {
+    if (newVideos.some((v) => v.isCompressing)) return;
+    if (newImages.some((i) => i.isLoading)) return;
 
-    try {
-      const updatedFeedItem = await editWeight({
-        id: weight.source_id,
-        title,
-        notes,
-        weight: Number(weightValue),
-        updated_at: new Date().toISOString(),
-        deletedRecordingIds,
-        deletedRecordingPaths,
-        newRecordings,
-        deletedImageIds,
-        deletedImagePaths,
-        newImages,
-        deletedVideoIds,
-        deletedVideoPaths,
-        newVideos,
-        onProgress: (p) => setSavingProgress(p),
-      });
+    const updatedFeedItem = await editWeight({
+      id: weight.source_id,
+      title,
+      notes,
+      weight: Number(weightValue),
+      updated_at: new Date().toISOString(),
+      deletedRecordingIds,
+      deletedRecordingPaths,
+      newRecordings,
+      deletedImageIds,
+      deletedImagePaths,
+      newImages,
+      deletedVideoIds,
+      deletedVideoPaths,
+      newVideos,
+      onProgress: (p) => setSavingProgress(p),
+    });
 
-      onSave({ ...updatedFeedItem, feed_context: weight.feed_context });
-      onClose();
-    } catch {
-      Toast.show({
-        type: "error",
-        text1: t("weight:weight.editScreen.errorTitle"),
-        text2: t("weight:weight.editScreen.errorMessage"),
-      });
-    } finally {
-      setIsSaving(false);
-    }
-  };
+    onSave({ ...updatedFeedItem, feed_context: weight.feed_context });
+  }, [
+    weight.source_id, weight.feed_context,
+    title, notes, weightValue,
+    deletedRecordingIds, deletedRecordingPaths, newRecordings,
+    deletedImageIds, deletedImagePaths, newImages,
+    deletedVideoIds, deletedVideoPaths, newVideos,
+    onSave,
+  ]);
 
-  const hasChanges =
-    title !== initialTitle ||
-    notes !== initialNotes ||
-    weightValue !== initialWeight ||
-    deletedRecordingIds.length > 0 ||
-    newRecordings.length > 0 ||
-    deletedImageIds.length > 0 ||
-    newImages.length > 0 ||
-    deletedVideoIds.length > 0 ||
-    newVideos.length > 0;
+  const { status, hasPendingChanges } = useAutoSave({
+    data: autoSaveData,
+    onSave: handleAutoSave,
+    enabled: !newVideos.some(v => v.isCompressing) && !newImages.some(i => i.isLoading),
+  });
 
   useEffect(() => {
-    onDirtyChange?.(hasChanges);
-  }, [hasChanges, onDirtyChange]);
+    onDirtyChange?.(hasPendingChanges);
+  }, [hasPendingChanges, onDirtyChange]);
 
   return (
     <View className="flex-1">
-      {hasChanges && (
-        <View className="bg-gray-900 absolute top-5 left-5 z-50 py-1 px-4 flex-row items-center rounded-lg">
-          <AppText className="text-sm text-yellow-500">
-            {t("weight.editScreen.unsavedChanges")}
-          </AppText>
-          <View className="animate-pulse">
-            <Dot color="#eab308" />
-          </View>
-        </View>
-      )}
+      <AutoSaveIndicator status={status} />
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <Pressable onPress={Keyboard.dismiss} className="flex-1">
           <PageContainer className="mb-5">
@@ -477,24 +451,9 @@ export default function EditWeight({
           </PageContainer>
         </Pressable>
       </ScrollView>
-      <View className="px-5 pb-5 pt-3">
-        <SaveButton
-          disabled={!hasChanges}
-          onPress={handleSubmit}
-          label={
-            !hasChanges
-              ? t("weight.editScreen.save")
-              : t("weight.editScreen.saveChanges")
-          }
-        />
-      </View>
       <FullScreenLoader
-        visible={isSaving}
-        message={
-          savingProgress !== undefined
-            ? t("common:common.media.uploading")
-            : t("weight:weight.editScreen.savingWeight")
-        }
+        visible={savingProgress !== undefined}
+        message={t("common:common.media.uploading")}
         progress={savingProgress}
       />
       {(() => {

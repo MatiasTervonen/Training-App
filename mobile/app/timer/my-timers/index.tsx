@@ -8,11 +8,12 @@ import AppText from "@/components/AppText";
 import PageContainer from "@/components/PageContainer";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getTimer } from "@/database/timer/get-timers";
-import { useState } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { timers } from "@/types/models";
 import FullScreenModal from "@/components/FullScreenModal";
 import TimerCard from "@/features/timer/cards/TimerCard";
 import { deleteTimer } from "@/database/timer/delete-timer";
+import { updateTimer } from "@/database/timer/update-timer";
 import Toast from "react-native-toast-message";
 
 import { router } from "expo-router";
@@ -22,9 +23,8 @@ import AnimatedButton from "@/components/buttons/animatedButton";
 import AppInput from "@/components/AppInput";
 import SubNotesInput from "@/components/SubNotesInput";
 import NumberInput from "@/components/NumberInput";
-import SaveButton from "@/components/buttons/SaveButton";
-import FullScreenLoader from "@/components/FullScreenLoader";
-import useUpdateTimer from "@/features/timer/hooks/useUpdateTimer";
+import AutoSaveIndicator from "@/components/AutoSaveIndicator";
+import { useAutoSave } from "@/hooks/useAutoSave";
 import { useTranslation } from "react-i18next";
 import { Timer } from "lucide-react-native";
 
@@ -38,7 +38,6 @@ export default function MyTimersScreen() {
   const [editNotes, setEditNotes] = useState("");
   const [editMinutes, setEditMinutes] = useState("");
   const [editSeconds, setEditSeconds] = useState("");
-  const [isSaving, setIsSaving] = useState(false);
 
   const { setActiveSession, startTimer } = useTimerStore();
 
@@ -89,21 +88,41 @@ export default function MyTimersScreen() {
     setEditSeconds("");
   };
 
-  const hasUnsavedChanges = editingItem
-    ? editTitle !== editingItem.title ||
-      editNotes !== (editingItem.notes || "") ||
-      editMinutes !== String(Math.floor(editingItem.time_seconds / 60)) ||
-      editSeconds !== String(editingItem.time_seconds % 60)
-    : false;
+  const autoSaveData = useMemo(
+    () => ({
+      title: editTitle,
+      notes: editNotes,
+      minutes: editMinutes,
+      seconds: editSeconds,
+    }),
+    [editTitle, editNotes, editMinutes, editSeconds],
+  );
 
-  const { handleUpdateTimer } = useUpdateTimer({
-    id: editingItem?.id || "",
-    title: editTitle,
-    notes: editNotes,
-    setIsSaving,
-    alarmMinutes: editMinutes,
-    alarmSeconds: editSeconds,
-    onSuccess: closeEditModal,
+  const handleAutoSave = useCallback(
+    async (data: { title: string; notes: string; minutes: string; seconds: string }) => {
+      if (!editingItem || !data.title || !data.minutes || !data.seconds) {
+        throw new Error("Invalid data");
+      }
+
+      const totalSeconds =
+        parseInt(data.minutes, 10) * 60 + parseInt(data.seconds, 10);
+
+      await updateTimer({
+        id: editingItem.id,
+        title: data.title,
+        durationInSeconds: totalSeconds,
+        notes: data.notes,
+      });
+
+      queryClient.invalidateQueries({ queryKey: ["timers"], exact: true });
+    },
+    [editingItem, queryClient],
+  );
+
+  const { status, hasPendingChanges } = useAutoSave({
+    data: autoSaveData,
+    onSave: handleAutoSave,
+    enabled: !!editingItem,
   });
 
   const startSavedTimer = (timer: timers) => {
@@ -201,10 +220,11 @@ export default function MyTimersScreen() {
         <FullScreenModal
           isOpen={!!editingItem}
           onClose={closeEditModal}
-          confirmBeforeClose={hasUnsavedChanges}
+          confirmBeforeClose={hasPendingChanges}
         >
           <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <PageContainer className="justify-between">
+              <AutoSaveIndicator status={status} />
               <View className="gap-5">
                 <AppText className="text-2xl text-center mb-5">
                   {t("timer.editTimer")}
@@ -242,21 +262,11 @@ export default function MyTimersScreen() {
                   </View>
                 </View>
               </View>
-              <View className="gap-4">
-                <SaveButton
-                  onPress={handleUpdateTimer}
-                  label={t("timer.update")}
-                />
-                <AnimatedButton
-                  className="bg-gray-700 rounded-md shadow-md border-2 border-gray-500 py-2"
-                  label={t("common:common.cancel")}
-                  onPress={() => setEditingItem(null)}
-                  textClassName="text-gray-100 text-center"
-                />
-              </View>
-              <FullScreenLoader
-                visible={isSaving}
-                message={t("timer.updatingTimer")}
+              <AnimatedButton
+                className="bg-gray-700 rounded-md shadow-md border-2 border-gray-500 py-2"
+                label={t("common:common.cancel")}
+                onPress={() => setEditingItem(null)}
+                textClassName="text-gray-100 text-center"
               />
             </PageContainer>
           </TouchableWithoutFeedback>

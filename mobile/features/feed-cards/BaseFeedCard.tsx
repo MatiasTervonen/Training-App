@@ -27,26 +27,26 @@ type BaseCardProps = {
 function getGradientColors(type: string): [string, string] {
   switch (type) {
     case "gym_sessions":
-      return ["rgba(59,130,246,0.12)", "rgba(59,130,246,0.03)"];
+      return ["rgba(59,130,246,0.12)", "rgba(59,130,246,0.04)"];
     case "activity_sessions":
-      return ["rgba(34,197,94,0.12)", "rgba(34,197,94,0.03)"];
+      return ["rgba(34,197,94,0.12)", "rgba(34,197,94,0.04)"];
     case "notes":
-      return ["rgba(168,85,247,0.12)", "rgba(168,85,247,0.03)"];
+      return ["rgba(168,85,247,0.12)", "rgba(168,85,247,0.04)"];
     case "weight":
-      return ["rgba(245,158,11,0.12)", "rgba(245,158,11,0.03)"];
+      return ["rgba(245,158,11,0.12)", "rgba(245,158,11,0.04)"];
     case "todo_lists":
-      return ["rgba(6,182,212,0.12)", "rgba(6,182,212,0.03)"];
+      return ["rgba(6,182,212,0.12)", "rgba(6,182,212,0.04)"];
     case "global_reminders":
     case "local_reminders":
-      return ["rgba(234,179,8,0.12)", "rgba(234,179,8,0.03)"];
+      return ["rgba(234,179,8,0.12)", "rgba(234,179,8,0.04)"];
     case "habits":
-      return ["rgba(244,63,94,0.12)", "rgba(244,63,94,0.03)"];
+      return ["rgba(244,63,94,0.12)", "rgba(244,63,94,0.04)"];
     case "reports":
-      return ["rgba(99,102,241,0.12)", "rgba(99,102,241,0.03)"];
+      return ["rgba(99,102,241,0.12)", "rgba(99,102,241,0.04)"];
     case "tutorial":
-      return ["rgba(20,184,166,0.12)", "rgba(20,184,166,0.03)"];
+      return ["rgba(20,184,166,0.12)", "rgba(20,184,166,0.04)"];
     default:
-      return ["rgba(100,116,139,0.12)", "rgba(100,116,139,0.03)"];
+      return ["rgba(100,116,139,0.12)", "rgba(100,116,139,0.04)"];
   }
 }
 
@@ -66,7 +66,7 @@ export default function BaseFeedCard({
 }: BaseCardProps) {
   const { t } = useTranslation("feed");
   const gradientColors = pinned
-    ? ["rgba(234,179,8,0.15)", "rgba(234,179,8,0.05)"] as [string, string]
+    ? (["rgba(250,204,21,0.40)", "rgba(250,204,21,0.15)"] as [string, string])
     : getGradientColors(item.type);
 
   return (
@@ -74,13 +74,17 @@ export default function BaseFeedCard({
       colors={gradientColors}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
-      className={`border rounded-xl overflow-hidden min-h-[160px] ${
-        pinned ? "border-yellow-500/60" : "border-slate-700"
+      className={`border rounded-md overflow-hidden min-h-[160px] ${
+        pinned ? "border-yellow-400/70" : "border-slate-700"
       }`}
     >
       {/* Header - title + menu */}
       <View className="flex-row justify-between items-center px-4 pt-2 pb-1">
-        <AppText className="flex-1 mr-4 text-lg" numberOfLines={1} ellipsizeMode="tail">
+        <AppText
+          className="flex-1 mr-4 text-lg"
+          numberOfLines={1}
+          ellipsizeMode="tail"
+        >
           {item.title}
         </AppText>
         <DropdownMenu
@@ -95,14 +99,12 @@ export default function BaseFeedCard({
       </View>
 
       {/* Stats content */}
-      <View className="flex-1 justify-center px-4 pb-2">
-        {statsContent}
-      </View>
+      <View className="flex-1 justify-center px-4 pb-2">{statsContent}</View>
 
       {/* Updated timestamp (optional) */}
       {showUpdatedAt && item.updated_at && (
         <View className="px-4 pb-1">
-          <AppText className="text-xs text-yellow-500">
+          <AppText className="text-sm text-slate-400">
             {t("feed.card.updated")} {formatDate(item.updated_at)}
           </AppText>
         </View>
@@ -112,11 +114,11 @@ export default function BaseFeedCard({
       <View className="flex-row items-center justify-between bg-slate-900/40 px-4 py-2">
         <View className="flex-row items-center gap-2">
           {typeIcon}
-          <AppText className="text-slate-400 text-xs">
+          <AppText className="text-slate-400 text-sm">
             {typeName || t("feed.card.types.activity")}
           </AppText>
-          <AppText className="text-slate-500 text-xs">·</AppText>
-          <AppText className="text-slate-400 text-xs">
+          <AppText className="text-slate-500 text-sm">·</AppText>
+          <AppText className="text-slate-400 text-sm">
             {formatDateShort(item.created_at)}
           </AppText>
         </View>
@@ -126,7 +128,9 @@ export default function BaseFeedCard({
           hitSlop={15}
         >
           <SquareArrowOutUpRight size={18} color="#64748b" />
-          <AppText className="text-slate-500 text-sm">{t("feed.card.details")}</AppText>
+          <AppText className="text-slate-500 text-sm">
+            {t("feed.card.details")}
+          </AppText>
         </AnimatedButton>
       </View>
     </LinearGradient>

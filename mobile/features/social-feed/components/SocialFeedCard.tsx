@@ -83,33 +83,20 @@ function ActivityStats({ item }: { item: SocialFeedItem }) {
   const payload = item.extra_fields as {
     duration: number;
     distance: number;
-    activity_name: string;
-    activity_slug?: string;
-  };
-
-  const getActivityTypeName = () => {
-    if (payload.activity_slug) {
-      const translated = t(`activities.activityNames.${payload.activity_slug}`, { defaultValue: "" });
-      if (translated && translated !== `activities.activityNames.${payload.activity_slug}`) {
-        return translated;
-      }
-    }
-    return payload.activity_name;
   };
 
   return (
     <View className="gap-2">
-      <AppText className="text-slate-400 text-sm">{getActivityTypeName()}</AppText>
       <View className="flex-row items-center gap-5">
         {payload.distance > 0 && (
           <View className="items-center">
             <AppText className="text-lg">{formatMeters(payload.distance)}</AppText>
-            <AppText className="text-xs text-slate-400">{t("activities.distance")}</AppText>
+            <AppText className="text-xs text-slate-400">{t("activities.sessionStats.distance")}</AppText>
           </View>
         )}
         <View className="items-center">
           <AppText className="text-lg">{formatDuration(payload.duration)}</AppText>
-          <AppText className="text-xs text-slate-400">{t("activities.duration")}</AppText>
+          <AppText className="text-xs text-slate-400">{t("activities.sessionStats.duration")}</AppText>
         </View>
       </View>
     </View>
@@ -138,13 +125,29 @@ function getTypeName(type: string, t: (key: string) => string) {
   }
 }
 
+function getActivityTypeName(item: SocialFeedItem, t: (key: string, options?: Record<string, string>) => string) {
+  const payload = item.extra_fields as { activity_name: string; activity_slug?: string };
+  if (payload.activity_slug) {
+    const translated = t(`activities.activityNames.${payload.activity_slug}`, { defaultValue: "" });
+    if (translated && translated !== `activities.activityNames.${payload.activity_slug}`) {
+      return translated;
+    }
+  }
+  return payload.activity_name;
+}
+
 export default function SocialFeedCard({ item, onToggleLike, onExpand }: Props) {
   const { t } = useTranslation("feed");
+  const { t: tActivities } = useTranslation("activities");
+
+  const typeName = item.type === "activity_sessions"
+    ? getActivityTypeName(item, tActivities)
+    : getTypeName(item.type, t);
 
   const typeIcon = (
     <View className="flex-row items-center gap-1.5">
       {getTypeIcon(item.type)}
-      <AppText className="text-slate-400 text-xs">{getTypeName(item.type, t)}</AppText>
+      <AppText className="text-slate-400 text-xs">{typeName}</AppText>
     </View>
   );
 

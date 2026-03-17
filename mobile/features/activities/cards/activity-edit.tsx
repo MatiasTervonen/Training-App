@@ -1,11 +1,8 @@
-import { Keyboard, TouchableWithoutFeedback, View } from "react-native";
+import { Keyboard, Pressable, View } from "react-native";
 import AppText from "@/components/AppText";
 import PageContainer from "@/components/PageContainer";
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import AppInput from "@/components/AppInput";
-import SaveButton from "@/components/buttons/SaveButton";
-import FullScreenLoader from "@/components/FullScreenLoader";
-import Toast from "react-native-toast-message";
 import SubNotesInput from "@/components/SubNotesInput";
 import ActivityDropdown from "@/features/activities/components/activityDropdown";
 import AnimatedButton from "@/components/buttons/animatedButton";
@@ -14,7 +11,8 @@ import { activities_with_category, FullActivitySession } from "@/types/models";
 import { editActivitySession } from "@/database/activities/edit-session";
 import { FeedItemUI } from "@/types/session";
 import { useTranslation } from "react-i18next";
-import { Dot } from "lucide-react-native";
+import AutoSaveIndicator from "@/components/AutoSaveIndicator";
+import { useAutoSave } from "@/hooks/useAutoSave";
 
 type Props = {
   activity: FullActivitySession & { feed_context: "pinned" | "feed" };
@@ -32,27 +30,43 @@ export default function ActivitySessionEdit({
   const { t } = useTranslation("activities");
   const [title, setTitle] = useState(activity?.session.title || "");
   const [notes, setNotes] = useState(activity?.session.notes || "");
-  const [isLoading, setIsLoading] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const [selectedActivity, setSelectedActivity] =
     useState<activities_with_category>(
       activity?.activity as activities_with_category,
     );
 
-  const [originalData] = useState({
-    title: activity?.session.title || "",
-    notes: activity?.session.notes || "",
-    activityId: activity?.activity?.id,
+  const autoSaveData = useMemo(
+    () => ({ title, notes, activityId: selectedActivity?.id }),
+    [title, notes, selectedActivity?.id],
+  );
+
+  const handleAutoSave = useCallback(
+    async (data: typeof autoSaveData) => {
+      if (data.title.trim() === "") {
+        throw new Error("Title is empty");
+      }
+
+      const updatedFeedItem = await editActivitySession({
+        id: activity.session.id,
+        title: data.title,
+        notes: data.notes,
+        activityId: data.activityId!,
+      });
+
+      onSave({ ...updatedFeedItem, feed_context: activity.feed_context });
+    },
+    [activity.session.id, activity.feed_context, onSave],
+  );
+
+  const { status, hasPendingChanges } = useAutoSave({
+    data: autoSaveData,
+    onSave: handleAutoSave,
   });
 
-  const hasChanges =
-    title !== originalData.title ||
-    notes !== originalData.notes ||
-    selectedActivity?.id !== originalData.activityId;
-
   useEffect(() => {
-    onDirtyChange?.(hasChanges);
-  }, [hasChanges, onDirtyChange]);
+    onDirtyChange?.(hasPendingChanges);
+  }, [hasPendingChanges, onDirtyChange]);
 
   const getActivityName = useCallback(
     (act: activities_with_category | null) => {
@@ -73,50 +87,10 @@ export default function ActivitySessionEdit({
     [t],
   );
 
-  const handleSubmit = async () => {
-    if (title.trim() === "") {
-      Toast.show({
-        type: "error",
-        text1: t("activities.editSession.errorTitle"),
-        text2: t("activities.editSession.errorEmptyTitle"),
-      });
-      return;
-    }
-
-    try {
-      setIsLoading(true);
-      const updatedFeedItem = await editActivitySession({
-        id: activity.session.id,
-        title,
-        notes,
-        activityId: selectedActivity!.id,
-      });
-
-      onSave({ ...updatedFeedItem, feed_context: activity.feed_context });
-      onClose();
-    } catch (error) {
-      console.error("Error saving activity session", error);
-      Toast.show({
-        type: "error",
-        text1: t("activities.editSession.errorTitle"),
-        text2: t("activities.editSession.errorGeneric"),
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   return (
     <View className="flex-1">
-      {hasChanges && (
-        <View className="bg-gray-900 absolute top-5 left-5 z-50 py-1 px-4 flex-row items-center rounded-lg">
-          <AppText className="text-sm text-yellow-500">{t("common:common.unsavedChanges")}</AppText>
-          <View className="animate-pulse">
-            <Dot color="#eab308" />
-          </View>
-        </View>
-      )}
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <AutoSaveIndicator status={status} />
+      <Pressable onPress={Keyboard.dismiss} className="flex-1">
         <PageContainer className="justify-between mt-5">
           <View className="gap-5">
           <AppText className="text-xl text-center mb-5">
@@ -161,16 +135,8 @@ export default function ActivitySessionEdit({
             <View className="h-5" />
           </FullScreenModal>
         </View>
-        <SaveButton
-          onPress={handleSubmit}
-          label={t("activities.editSession.saveSession")}
-        />
-        <FullScreenLoader
-          visible={isLoading}
-          message={t("activities.editSession.savingSession")}
-        />
       </PageContainer>
-    </TouchableWithoutFeedback>
+    </Pressable>
     </View>
   );
 }

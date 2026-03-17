@@ -1,8 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import SubNotesInput from "@/components/SubNotesInput";
 import AppInput from "@/components/AppInput";
-import SaveButton from "@/components/buttons/SaveButton";
-import FullScreenLoader from "@/components/FullScreenLoader";
+import AutoSaveIndicator from "@/components/AutoSaveIndicator";
 import AppText from "@/components/AppText";
 import { View, TouchableWithoutFeedback, Keyboard } from "react-native";
 import DatePicker from "react-native-date-picker";
@@ -12,12 +11,16 @@ import { formatDateTime, formatTime } from "@/lib/formatDate";
 import PageContainer from "@/components/PageContainer";
 import { Checkbox } from "expo-checkbox";
 import { FeedItemUI } from "@/types/session";
-import useSaveReminder from "@/features/reminders/hooks/edit-reminder/useSaveReminder";
 import useSetNotification from "@/features/reminders/hooks/edit-reminder/useSetNotification";
 import { canUseExactAlarm } from "@/native/android/EnsureExactAlarmPermission";
 import Toggle from "@/components/toggle";
 import { useTranslation } from "react-i18next";
-import { Dot } from "lucide-react-native";
+import AppTextNC from "@/components/AppTextNC";
+import { useAutoSave } from "@/hooks/useAutoSave";
+import { editLocalReminder } from "@/database/reminders/edit-local-reminder";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as Notifications from "expo-notifications";
+import { useQueryClient } from "@tanstack/react-query";
 
 type Props = {
   reminder: FeedItemUI;
@@ -43,11 +46,11 @@ export default function HandleEditLocalReminder({
   onDirtyChange,
 }: Props) {
   const { t, i18n } = useTranslation("reminders");
+  const queryClient = useQueryClient();
   const payload = reminder.extra_fields as unknown as reminderPayload;
 
   const [title, setValue] = useState(reminder.title);
-  const [notes, setNotes] = useState(payload.notes);
-  const [isSaving, setIsSaving] = useState(false);
+  const [notes, setNotes] = useState(payload.notes ?? "");
   const [notifyAt, setNotifyAt] = useState<Date>(() => {
     if (payload.notify_date) {
       return new Date(payload.notify_date);
@@ -58,7 +61,7 @@ export default function HandleEditLocalReminder({
 
       const [h, m, s] = payload.notify_at_time.split(":").map(Number);
 
-      base.setHours(h, m, s || 0);
+      base.setHours(h, m, s || 0, 0);
 
       return base;
     }
@@ -82,22 +85,6 @@ export default function HandleEditLocalReminder({
     t("reminders.days.sat"),
   ];
 
-  const originalNotifyAt = payload.notify_date
-    ? new Date(payload.notify_date).getTime()
-    : payload.notify_at_time
-      ? (() => { const b = new Date(); const [h, m, s] = payload.notify_at_time.split(":").map(Number); b.setHours(h, m, s || 0); return b.getTime(); })()
-      : new Date().getTime();
-  const hasChanges =
-    title !== reminder.title ||
-    notes !== payload.notes ||
-    notifyAt.getTime() !== originalNotifyAt ||
-    JSON.stringify(weekdays) !== JSON.stringify(payload.weekdays || []) ||
-    mode !== (payload.mode || "normal");
-
-  useEffect(() => {
-    onDirtyChange?.(hasChanges);
-  }, [hasChanges, onDirtyChange]);
-
   const formattedNotifyAt =
     payload.type === "one-time"
       ? formatDateTime(notifyAt!)
@@ -113,142 +100,218 @@ export default function HandleEditLocalReminder({
     mode,
   });
 
-  const { handleSave } = useSaveReminder({
+  const autoSaveData = useMemo(
+    () => ({
+      title,
+      notes,
+      notifyAtMs: notifyAt.getTime(),
+      weekdays: JSON.stringify(weekdays),
+      mode,
+    }),
+    [title, notes, notifyAt, weekdays, mode],
+  );
+
+  const handleAutoSave = useCallback(async () => {
+    if (title.trim().length === 0 || !notifyAt) {
+      throw new Error("Validation failed");
+    }
+
+    if (payload.type === "one-time" && notifyAt < new Date()) {
+      throw new Error("Validation failed");
+    }
+
+    const reminderId = reminder.source_id;
+    const updated = new Date().toISOString();
+
+    // Cancel old notifications
+    const stored = await AsyncStorage.getItem(`notification:${reminderId}`);
+    const oldIds: string[] = stored ? JSON.parse(stored) : [];
+
+    await Promise.all(
+      oldIds.map((id) => Notifications.cancelScheduledNotificationAsync(id)),
+    );
+
+    const newIds = await scheduleNotifications();
+    const normalizedIds = newIds
+      ? Array.isArray(newIds)
+        ? newIds
+        : [newIds]
+      : [];
+
+    if (normalizedIds.length) {
+      await AsyncStorage.setItem(
+        `reminder:${reminderId}`,
+        JSON.stringify(normalizedIds),
+      );
+    }
+
+    const updatedFeedItem = await editLocalReminder({
+      id: reminderId,
+      title,
+      notes,
+      seen_at: undefined,
+      notify_at_time:
+        payload.type === "weekly" || payload.type === "daily"
+          ? notifyAt.toTimeString().slice(0, 8)
+          : undefined,
+      notify_date:
+        payload.type === "one-time" ? notifyAt.toISOString() : undefined,
+      weekdays,
+      type: payload.type as "weekly" | "daily" | "one-time",
+      updated_at: updated,
+      mode,
+    });
+
+    if ("feed_context" in reminder) {
+      onSave({
+        ...updatedFeedItem,
+        feed_context: reminder.feed_context,
+      });
+    }
+
+    queryClient.invalidateQueries({ queryKey: ["feed"], exact: true });
+    queryClient.invalidateQueries({ queryKey: ["reminders"] });
+  }, [
     title,
-    notes: notes || "",
+    notes,
     notifyAt,
-    setIsSaving,
-    reminder,
-    type: payload.type,
-    onSave,
-    onClose,
-    scheduleNotifications,
     weekdays,
     mode,
+    payload.type,
+    reminder,
+    scheduleNotifications,
+    onSave,
+    queryClient,
+  ]);
+
+  const { status, hasPendingChanges } = useAutoSave({
+    data: autoSaveData,
+    onSave: handleAutoSave,
   });
+
+  useEffect(() => {
+    onDirtyChange?.(hasPendingChanges);
+  }, [hasPendingChanges, onDirtyChange]);
 
   return (
     <View className="flex-1">
-      {hasChanges && (
-        <View className="bg-gray-900 absolute top-5 left-5 z-50 py-1 px-4 flex-row items-center rounded-lg">
-          <AppText className="text-sm text-yellow-500">{t("common:common.unsavedChanges")}</AppText>
-          <View className="animate-pulse">
-            <Dot color="#eab308" />
-          </View>
-        </View>
-      )}
+      <AutoSaveIndicator status={status} />
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-        <PageContainer className="justify-between mb-5">
+        <PageContainer className="justify-between">
           <View>
             <AppText className=" text-xl text-center mb-10 mt-5">
               {t("reminders.editReminder")}
-          </AppText>
-          <View className="mb-5">
-            <AppInput
-              value={title || ""}
-              onChangeText={setValue}
-              placeholder={t("reminders.titlePlaceholder")}
-              label={t("reminders.titleLabel")}
+            </AppText>
+            <View className="mb-5">
+              <AppInput
+                value={title || ""}
+                onChangeText={setValue}
+                placeholder={t("reminders.titlePlaceholder")}
+                label={t("reminders.titleLabel")}
+              />
+            </View>
+            <SubNotesInput
+              value={notes || ""}
+              setValue={setNotes}
+              placeholder={t("reminders.notesPlaceholder")}
+              label={t("reminders.notesLabel")}
             />
-          </View>
-          <SubNotesInput
-            value={notes || ""}
-            setValue={setNotes}
-            placeholder={t("reminders.notesPlaceholder")}
-            label={t("reminders.notesLabel")}
-          />
-          <View>
-            <AnimatedButton
-              label={
-                notifyAt ? formattedNotifyAt : t("reminders.setNotifyTime")
-              }
-              onPress={() => setOpen(true)}
-              className="bg-blue-800 py-2 rounded-md shadow-md border-2 border-blue-500 flex-row gap-2 justify-center items-center mt-10"
-              textClassName="text-gray-100"
-            >
-              <Plus color="#f3f4f6" />
-            </AnimatedButton>
-          </View>
-          <DatePicker
-            date={notifyAt}
-            onDateChange={setNotifyAt}
-            mode={payload.type === "one-time" ? "datetime" : "time"}
-            modal
-            minimumDate={payload.type === "one-time" ? new Date() : undefined}
-            open={open}
-            locale={i18n.language}
-            title={payload.type === "one-time" ? t("common:datePicker.selectDateTime") : t("common:datePicker.selectTime")}
-            confirmText={t("common:datePicker.confirm")}
-            cancelText={t("common:datePicker.cancel")}
-            onConfirm={(date) => {
-              setOpen(false);
-              setNotifyAt(date);
-            }}
-            onCancel={() => {
-              setOpen(false);
-            }}
-          />
-          {payload.type === "weekly" && (
-            <View className="mt-5">
-              <View className="flex-row gap-6">
-                <AppText>{t("reminders.repeatOnDays")}</AppText>
-              </View>
-              <View className="flex-row justify-between mt-3 px-4">
-                {days.map((day, index) => {
-                  const dayNumber = index + 1; // Expo weekdays: 1 = Sunday, 7 = Saturday
-                  const isChecked = weekdays.includes(dayNumber);
-
-                  return (
-                    <View key={day} className="items-center mt-2">
-                      <Checkbox
-                        hitSlop={10}
-                        value={isChecked}
-                        onValueChange={(newValue) => {
-                          if (newValue) {
-                            setWeekdays((prev) => [...prev, dayNumber]);
-                          } else {
-                            setWeekdays((prev) =>
-                              prev.filter((day) => day !== dayNumber),
-                            );
-                          }
-                        }}
-                      />
-                      <AppText className="mt-2">{day}</AppText>
-                    </View>
-                  );
-                })}
-              </View>
-            </View>
-          )}
-          <View className="flex-row items-center justify-between px-4 mt-10">
             <View>
-              <AppText>{t("reminders.enableHighPriority")}</AppText>
-              <AppText className="text-gray-400 text-sm">
-                {t("reminders.highPriorityDescription")}
-              </AppText>
-            </View>
-            <Toggle
-              isOn={mode === "alarm"}
-              onToggle={async () => {
-                const allowed = await canUseExactAlarm();
-                if (!allowed) {
-                  return;
+              <AppTextNC className="mt-5 mb-1 text-slate-300">
+                {t("reminders.notifyTime")}
+              </AppTextNC>
+              <AnimatedButton
+                label={
+                  notifyAt ? formattedNotifyAt : t("reminders.setNotifyTime")
                 }
-
-                setMode(mode === "alarm" ? "normal" : "alarm");
+                onPress={() => setOpen(true)}
+                className="bg-blue-800 py-2 rounded-md shadow-md border-2 border-blue-500 flex-row gap-2 justify-center items-center"
+                textClassName="text-gray-100"
+              >
+                <Plus color="#f3f4f6" />
+              </AnimatedButton>
+            </View>
+            <DatePicker
+              date={notifyAt}
+              onDateChange={setNotifyAt}
+              mode={payload.type === "one-time" ? "datetime" : "time"}
+              modal
+              minimumDate={payload.type === "one-time" ? new Date() : undefined}
+              open={open}
+              locale={i18n.language}
+              title={
+                payload.type === "one-time"
+                  ? t("common:datePicker.selectDateTime")
+                  : t("common:datePicker.selectTime")
+              }
+              confirmText={t("common:datePicker.confirm")}
+              cancelText={t("common:datePicker.cancel")}
+              onConfirm={(date) => {
+                setOpen(false);
+                setNotifyAt(date);
+              }}
+              onCancel={() => {
+                setOpen(false);
               }}
             />
+            {payload.type === "weekly" && (
+              <View className="mt-5">
+                <View className="flex-row gap-6">
+                  <AppTextNC className="text-gray-300">
+                    {t("reminders.repeatOnDays")}
+                  </AppTextNC>
+                </View>
+                <View className="flex-row justify-between mt-3 px-4">
+                  {days.map((day, index) => {
+                    const dayNumber = index + 1; // Expo weekdays: 1 = Sunday, 7 = Saturday
+                    const isChecked = weekdays.includes(dayNumber);
+
+                    return (
+                      <View key={day} className="items-center mt-2">
+                        <Checkbox
+                          hitSlop={10}
+                          value={isChecked}
+                          onValueChange={(newValue) => {
+                            if (newValue) {
+                              setWeekdays((prev) => [...prev, dayNumber]);
+                            } else {
+                              setWeekdays((prev) =>
+                                prev.filter((day) => day !== dayNumber),
+                              );
+                            }
+                          }}
+                        />
+                        <AppText className="mt-2">{day}</AppText>
+                      </View>
+                    );
+                  })}
+                </View>
+              </View>
+            )}
+            <View className="flex-row items-center justify-between px-4 mt-10">
+              <View>
+                <AppTextNC className="text-slate-200">
+                  {t("reminders.enableHighPriority")}
+                </AppTextNC>
+                <AppTextNC className="text-slate-400 text-sm">
+                  {t("reminders.highPriorityDescription")}
+                </AppTextNC>
+              </View>
+              <Toggle
+                isOn={mode === "alarm"}
+                onToggle={async () => {
+                  const allowed = await canUseExactAlarm();
+                  if (!allowed) {
+                    return;
+                  }
+
+                  setMode(mode === "alarm" ? "normal" : "alarm");
+                }}
+              />
+            </View>
           </View>
-        </View>
-        <View className="pt-10">
-          <SaveButton onPress={handleSave} />
-        </View>
-        <FullScreenLoader
-          visible={isSaving}
-          message={t("reminders.savingReminder")}
-        />
-      </PageContainer>
-    </TouchableWithoutFeedback>
+        </PageContainer>
+      </TouchableWithoutFeedback>
     </View>
   );
 }

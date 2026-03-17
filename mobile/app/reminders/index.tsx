@@ -5,7 +5,6 @@ import {
   FlatList,
   RefreshControl,
   Modal,
-  ActivityIndicator,
 } from "react-native";
 import { useState } from "react";
 import { useRouter } from "expo-router";
@@ -18,12 +17,12 @@ import useMyRemindersFeed from "@/features/reminders/hooks/useMyRemindersFeed";
 import FeedCard from "@/features/feed-cards/FeedCard";
 import { FeedItemUI, FeedData } from "@/types/session";
 import FeedHeader from "@/features/feed/FeedHeader";
-import useFullReminder from "@/features/reminders/hooks/useFullReminder";
-import MyReminderSession from "@/features/reminders/cards/myReminder-expanded";
-import EditMyGlobalReminder from "@/features/reminders/cards/editMyGlobalReminder";
-import EditMyLocalReminder from "@/features/reminders/cards/editMyLocalReminder";
+import ReminderSession from "@/features/reminders/cards/reminder-expanded-feed";
+import HandleEditGlobalReminder from "@/features/reminders/cards/editGlobalReminder";
+import HandleEditLocalReminder from "@/features/reminders/cards/editLocalReminder";
 import useTogglePin from "@/features/feed/hooks/useTogglePin";
 import useDeleteSession from "@/features/feed/hooks/useDeleteSession";
+import useUpdateFeedItemToTop from "@/features/feed/hooks/useUpdateFeedItemToTop";
 import { useTranslation } from "react-i18next";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import { Plus, Info, Bell } from "lucide-react-native";
@@ -62,14 +61,7 @@ export default function RemindersScreen() {
 
   const { togglePin } = useTogglePin(queryKey);
   const { handleDelete } = useDeleteSession();
-
-  const {
-    reminderFull,
-    globalReminderByTab,
-    localReminder,
-    isLoading: isLoadingReminder,
-    error: reminderError,
-  } = useFullReminder(expandedItem, editingItem);
+  const { updateFeedItemToTop } = useUpdateFeedItemToTop();
 
   const getEmptyMessage = () => {
     if (filter === "upcoming") return t("reminders.noRemindersUpcoming");
@@ -226,20 +218,7 @@ export default function RemindersScreen() {
           isOpen={!!expandedItem}
           onClose={() => setExpandedItem(null)}
         >
-          {isLoadingReminder ? (
-            <View className="gap-5 items-center justify-center mt-40 px-10">
-              <AppText className="text-lg">
-                {t("reminders.loadingDetails")}
-              </AppText>
-              <ActivityIndicator />
-            </View>
-          ) : reminderError ? (
-            <AppText className="text-center text-xl mt-40 px-10">
-              {t("reminders.errorLoading")}
-            </AppText>
-          ) : (
-            reminderFull && <MyReminderSession {...reminderFull} />
-          )}
+          <ReminderSession {...expandedItem} />
         </FullScreenModal>
       )}
 
@@ -252,32 +231,15 @@ export default function RemindersScreen() {
           }}
           confirmBeforeClose={hasUnsavedChanges}
         >
-          {isLoadingReminder ? (
-            <View className="gap-5 items-center justify-center mt-40 px-10">
-              <AppText className="text-lg">
-                {t("reminders.loadingDetails")}
-              </AppText>
-              <ActivityIndicator />
-            </View>
-          ) : reminderError ? (
-            <AppText className="text-center text-xl mt-40 px-10">
-              {t("reminders.errorLoading")}
-            </AppText>
-          ) : (
-            globalReminderByTab && (
-              <EditMyGlobalReminder
-                reminder={globalReminderByTab}
-                onClose={() => {
-                  queryClient.invalidateQueries({
-                    queryKey: ["myReminders"],
-                  });
-                  setHasUnsavedChanges(false);
-                  setEditingItem(null);
-                }}
-                onDirtyChange={setHasUnsavedChanges}
-              />
-            )
-          )}
+          <HandleEditGlobalReminder
+            reminder={editingItem}
+            onClose={() => setEditingItem(null)}
+            onSave={(updatedItem) => {
+              updateFeedItemToTop(updatedItem);
+              queryClient.invalidateQueries({ queryKey: ["myReminders"] });
+            }}
+            onDirtyChange={setHasUnsavedChanges}
+          />
         </FullScreenModal>
       )}
 
@@ -290,33 +252,15 @@ export default function RemindersScreen() {
           }}
           confirmBeforeClose={hasUnsavedChanges}
         >
-          {isLoadingReminder ? (
-            <View className="gap-5 items-center justify-center mt-40 px-10">
-              <AppText className="text-lg">
-                {t("reminders.loadingDetails")}
-              </AppText>
-              <ActivityIndicator />
-            </View>
-          ) : reminderError ? (
-            <AppText className="text-center text-xl mt-40 px-10">
-              {t("reminders.errorLoading")}
-            </AppText>
-          ) : (
-            localReminder && (
-              <EditMyLocalReminder
-                reminder={localReminder}
-                onClose={() => setEditingItem(null)}
-                onSave={async () => {
-                  await queryClient.invalidateQueries({
-                    queryKey: ["myReminders"],
-                  });
-                  setHasUnsavedChanges(false);
-                  setEditingItem(null);
-                }}
-                onDirtyChange={setHasUnsavedChanges}
-              />
-            )
-          )}
+          <HandleEditLocalReminder
+            reminder={editingItem}
+            onClose={() => setEditingItem(null)}
+            onSave={(updatedItem) => {
+              updateFeedItemToTop(updatedItem);
+              queryClient.invalidateQueries({ queryKey: ["myReminders"] });
+            }}
+            onDirtyChange={setHasUnsavedChanges}
+          />
         </FullScreenModal>
       )}
 

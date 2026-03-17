@@ -1,6 +1,5 @@
 import AppInput from "@/components/AppInput";
-import { useState } from "react";
-import SaveButton from "@/components/buttons/SaveButton";
+import { useState, useCallback, useMemo } from "react";
 import Toast from "react-native-toast-message";
 import FullScreenLoader from "@/components/FullScreenLoader";
 import {
@@ -19,6 +18,8 @@ import DeleteButton from "@/components/buttons/DeleteButton";
 import { useQueryClient } from "@tanstack/react-query";
 import PageContainer from "@/components/PageContainer";
 import { useTranslation } from "react-i18next";
+import AutoSaveIndicator from "@/components/AutoSaveIndicator";
+import { useAutoSave } from "@/hooks/useAutoSave";
 
 type Exercise = {
   id: string;
@@ -42,45 +43,32 @@ export default function EditExercises() {
 
   const queryClient = useQueryClient();
 
-  const handleUpdateExercise = async () => {
-    if (!name || !equipment || !muscle_group || !main_group) {
-      Toast.show({
-        type: "error",
-        text1: t("gym.editExerciseScreen.fillAllFields"),
-      });
-      return;
-    }
-    setIsSaving(true);
+  const autoSaveData = useMemo(
+    () => ({ name, equipment, muscle_group, main_group }),
+    [name, equipment, muscle_group, main_group],
+  );
 
-    const exerciseData = {
+  const handleAutoSave = useCallback(async () => {
+    if (!name || !equipment || !muscle_group || !main_group) {
+      throw new Error("All fields are required");
+    }
+
+    await editExercise({
       id: selectedExercise!.id,
       name,
       equipment,
       muscle_group,
       main_group,
-    };
+    });
 
-    try {
-      await editExercise(exerciseData);
+    queryClient.invalidateQueries({ queryKey: ["userExercises"], exact: true });
+  }, [name, equipment, muscle_group, main_group, selectedExercise, queryClient]);
 
-      await queryClient.invalidateQueries({
-        queryKey: ["userExercises"],
-        exact: true,
-      });
-      Toast.show({
-        type: "success",
-        text1: t("gym.editExerciseScreen.updateSuccess"),
-      });
-      resetFields();
-    } catch {
-      Toast.show({
-        type: "error",
-        text1: t("gym.editExerciseScreen.updateError"),
-      });
-    } finally {
-      setIsSaving(false);
-    }
-  };
+  const { status } = useAutoSave({
+    data: autoSaveData,
+    onSave: handleAutoSave,
+    enabled: !!selectedExercise,
+  });
 
   const handleDeleteExercise = async (exerciseId: string) => {
     setIsDeleting(true);
@@ -109,14 +97,6 @@ export default function EditExercises() {
     }
   };
 
-  const resetFields = () => {
-    setName("");
-    setEquipment("");
-    setMuscleGroup("");
-    setMainGroup("");
-    setSelectedExercise(null);
-  };
-
   if (!selectedExercise) {
     return (
       <ExerciseDropdownEdit
@@ -133,9 +113,11 @@ export default function EditExercises() {
   }
 
   return (
-    <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <PageContainer className="justify-between">
+    <View className="flex-1">
+      <AutoSaveIndicator status={status} />
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <PageContainer className="justify-between">
           <View className="gap-4">
             <AppText className="text-2xl text-center mb-5">
               {t("gym.editExerciseScreen.title")}
@@ -223,20 +205,10 @@ export default function EditExercises() {
             />
           </View>
           <View className="mt-20 flex flex-col gap-5">
-            <View className="flex-row gap-4">
-              <View className="flex-1">
-                <DeleteButton
-                  onPress={() => handleDeleteExercise(selectedExercise.id)}
-                  label={t("gym.editExerciseScreen.deleteExercise")}
-                />
-              </View>
-              <View className="flex-1">
-                <SaveButton
-                  onPress={handleUpdateExercise}
-                  label={t("gym.editExerciseScreen.updateExercise")}
-                />
-              </View>
-            </View>
+            <DeleteButton
+              onPress={() => handleDeleteExercise(selectedExercise.id)}
+              label={t("gym.editExerciseScreen.deleteExercise")}
+            />
           </View>
 
           <FullScreenLoader
@@ -247,8 +219,9 @@ export default function EditExercises() {
                 : t("gym.editExerciseScreen.savingExercise")
             }
           />
-        </PageContainer>
-      </TouchableWithoutFeedback>
-    </ScrollView>
+          </PageContainer>
+        </TouchableWithoutFeedback>
+      </ScrollView>
+    </View>
   );
 }

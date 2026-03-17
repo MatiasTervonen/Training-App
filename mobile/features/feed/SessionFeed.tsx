@@ -406,7 +406,6 @@ export default function SessionFeed({ expandReminderId }: SessionFeedProps) {
                     onSave={(updatedItem) => {
                       updateFeedItemToTop(updatedItem);
                       refetchFullTodo();
-                      setHasUnsavedExpandedChanges(false);
                     }}
                     onDirtyChange={setHasUnsavedExpandedChanges}
                     taskMedia={todoMediaFull}
@@ -488,8 +487,6 @@ export default function SessionFeed({ expandReminderId }: SessionFeedProps) {
                 queryClient.invalidateQueries({
                   queryKey: ["fullNotesSession", editingItem.source_id],
                 });
-                setHasUnsavedChanges(false);
-                setEditingItem(null);
               }}
               voiceRecordings={notesSessionFull}
               isLoadingVoice={isLoadingNotesSession}
@@ -503,8 +500,6 @@ export default function SessionFeed({ expandReminderId }: SessionFeedProps) {
               onClose={() => setEditingItem(null)}
               onSave={(updatedItem) => {
                 updateFeedItemToTop(updatedItem);
-                setHasUnsavedChanges(false);
-                setEditingItem(null);
               }}
               onDirtyChange={setHasUnsavedChanges}
             />
@@ -516,8 +511,6 @@ export default function SessionFeed({ expandReminderId }: SessionFeedProps) {
               onClose={() => setEditingItem(null)}
               onSave={(updatedItem) => {
                 updateFeedItemToTop(updatedItem);
-                setHasUnsavedChanges(false);
-                setEditingItem(null);
               }}
               onDirtyChange={setHasUnsavedChanges}
             />
@@ -545,8 +538,6 @@ export default function SessionFeed({ expandReminderId }: SessionFeedProps) {
                         refetchFullTodo(),
                         refetchFullTodoMedia(),
                       ]);
-                      setHasUnsavedChanges(false);
-                      setEditingItem(null);
                     }}
                     onDirtyChange={setHasUnsavedChanges}
                     taskMedia={todoMediaFull}
@@ -579,8 +570,6 @@ export default function SessionFeed({ expandReminderId }: SessionFeedProps) {
                         updateFeedItem(updatedItem),
                         refetchFullActivity(),
                       ]);
-                      setHasUnsavedChanges(false);
-                      setEditingItem(null);
                     }}
                     onDirtyChange={setHasUnsavedChanges}
                   />
@@ -598,8 +587,6 @@ export default function SessionFeed({ expandReminderId }: SessionFeedProps) {
                 queryClient.invalidateQueries({
                   queryKey: ["fullWeightSession", editingItem.source_id],
                 });
-                setHasUnsavedChanges(false);
-                setEditingItem(null);
               }}
               weightMedia={weightSessionFull}
               isLoadingMedia={isLoadingWeightSession}
@@ -639,7 +626,9 @@ export default function SessionFeed({ expandReminderId }: SessionFeedProps) {
                 </View>
               ) : friendActivityData ? (
                 <ActivitySession
-                  {...friendActivityData}
+                  {...friendActivityData.session}
+                  voiceRecordings={friendActivityData.voiceRecordings}
+                  media={friendActivityData.media}
                   readOnly
                 />
               ) : (

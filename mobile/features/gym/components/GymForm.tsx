@@ -1,6 +1,7 @@
 import { View, LayoutAnimation, UIManager, Platform } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import AppText from "@/components/AppText";
+import AppInput from "@/components/AppInput";
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { useRouter } from "expo-router";
 import {
@@ -8,6 +9,7 @@ import {
   ExerciseEntry,
   ExerciseInput,
   emptyExerciseEntry,
+  FeedData,
   PhaseData,
   PhaseType,
   PhaseInputMode,
@@ -28,6 +30,9 @@ import ExerciseHistoryModal from "@/features/gym/components/ExerciseHistoryModal
 import SaveButton from "@/components/buttons/SaveButton";
 import DeleteButton from "@/components/buttons/DeleteButton";
 import FullScreenLoader from "@/components/FullScreenLoader";
+import AutoSaveIndicator from "@/components/AutoSaveIndicator";
+import { useAutoSave } from "@/hooks/useAutoSave";
+import { editSession } from "@/database/gym/edit-session";
 import { LinearGradient } from "expo-linear-gradient";
 import Timer from "@/components/timer";
 import PageContainer from "@/components/PageContainer";
@@ -114,7 +119,7 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
         })) || [],
     })),
   );
-  const [notes, setNotes] = useState("");
+  const [notes, setNotes] = useState(session.notes || "");
   const [exerciseInputs, setExerciseInputs] = useState<ExerciseInput[]>(
     (session.gym_session_exercises || []).map(() => ({
       weight: "",
@@ -369,6 +374,7 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
     exerciseType,
     supersetExercise,
     normalExercises,
+    isEditing,
   });
 
   // useLogSetForExercise hook to log the set for the exercise
@@ -573,6 +579,147 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
     cooldown,
   });
 
+  // Auto-save for edit mode
+  const autoSaveData = useMemo(() => {
+    if (!isEditing) return null;
+    return {
+      title,
+      notes,
+      durationEdit,
+      exercises: exercises.map((e) => ({
+        exerciseId: e.exercise_id,
+        sets: e.sets,
+        notes: e.notes,
+      })),
+      deletedImageIds,
+      deletedVideoIds,
+      deletedRecordingIds,
+      draftImageIds: draftImages.map((i) => i.id),
+      draftVideoIds: draftVideos
+        .filter((v) => !v.isCompressing)
+        .map((v) => v.id),
+      draftRecordingIds: draftRecordings.map((r) => r.id),
+      warmupDuration: warmup?.duration_seconds ?? 0,
+      cooldownDuration: cooldown?.duration_seconds ?? 0,
+    };
+  }, [
+    isEditing,
+    title,
+    notes,
+    durationEdit,
+    exercises,
+    deletedImageIds,
+    deletedVideoIds,
+    deletedRecordingIds,
+    draftImages,
+    draftVideos,
+    draftRecordings,
+    warmup,
+    cooldown,
+  ]);
+
+  const handleAutoSave = useCallback(async () => {
+    if (draftVideos.some((v) => v.isCompressing)) return;
+    if (warmup?.is_tracking || cooldown?.is_tracking) return;
+    if (title.trim() === "") return;
+
+    const phases: {
+      phase_type: string;
+      activity_id: string;
+      duration_seconds: number;
+      steps: number | null;
+      distance_meters: number | null;
+      is_manual: boolean;
+    }[] = [];
+    if (warmup && warmup.duration_seconds > 0) {
+      phases.push({
+        phase_type: "warmup",
+        activity_id: warmup.activity_id,
+        duration_seconds: warmup.duration_seconds,
+        steps: warmup.steps,
+        distance_meters: warmup.distance_meters,
+        is_manual: warmup.is_manual,
+      });
+    }
+    if (cooldown && cooldown.duration_seconds > 0) {
+      phases.push({
+        phase_type: "cooldown",
+        activity_id: cooldown.activity_id,
+        duration_seconds: cooldown.duration_seconds,
+        steps: cooldown.steps,
+        distance_meters: cooldown.distance_meters,
+        is_manual: cooldown.is_manual,
+      });
+    }
+
+    const updatedFeedItem = await editSession({
+      id: session.id,
+      title,
+      notes,
+      durationEdit,
+      exercises,
+      newImages: draftImages,
+      newVideos: draftVideos,
+      newRecordings: draftRecordings,
+      deletedImageIds,
+      deletedImagePaths,
+      deletedVideoIds,
+      deletedVideoPaths,
+      deletedRecordingIds,
+      deletedRecordingPaths,
+      phases,
+    });
+
+    await Promise.all([
+      queryClient.setQueryData<FeedData>(["feed"], (oldData) => {
+        if (!oldData) return oldData;
+        return {
+          ...oldData,
+          pages: oldData.pages.map((page) => ({
+            ...page,
+            feed: page.feed.map((item) =>
+              item.id === updatedFeedItem.id
+                ? { ...item, ...updatedFeedItem }
+                : item,
+            ),
+          })),
+        };
+      }),
+      queryClient.invalidateQueries({
+        queryKey: ["fullGymSession", session.id],
+        exact: true,
+      }),
+    ]);
+  }, [
+    title,
+    notes,
+    durationEdit,
+    exercises,
+    draftImages,
+    draftVideos,
+    draftRecordings,
+    deletedImageIds,
+    deletedImagePaths,
+    deletedVideoIds,
+    deletedVideoPaths,
+    deletedRecordingIds,
+    deletedRecordingPaths,
+    warmup,
+    cooldown,
+    session.id,
+    queryClient,
+  ]);
+
+  const { status } = useAutoSave({
+    data: autoSaveData,
+    onSave: handleAutoSave,
+    enabled:
+      isEditing &&
+      !draftVideos.some((v) => v.isCompressing) &&
+      !warmup?.is_tracking &&
+      !cooldown?.is_tracking,
+  });
+
   // Keep a ref to the latest activeSession for use inside effects
   const activeSessionRef = useRef(activeSession);
   activeSessionRef.current = activeSession;
@@ -640,7 +787,7 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
   const groupedExercises = GroupGymExercises(exercises);
 
   if (!isEditing && !hasLoadedDraft) {
-    return <FullScreenLoader visible message="" />;
+    return null;
   }
 
   return (
@@ -660,6 +807,8 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
           <RestTimerDisplay />
         </View>
       )}
+
+      {isEditing && <AutoSaveIndicator status={status} />}
 
       <KeyboardAwareScrollView
         bottomOffset={50}
@@ -693,6 +842,15 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
                   })()}
                 </AppText>
               </AnimatedButton>
+              {isEditing && (
+                <AppInput
+                  value={String(Math.round(durationEdit / 60))}
+                  setValue={(v) => setDurationEdit(Math.round(Number(v) * 60))}
+                  placeholder={t("gym.gymForm.editDurationPlaceholder")}
+                  label={t("gym.gymForm.editDurationLabel")}
+                  keyboardType="numeric"
+                />
+              )}
             </View>
           </View>
 
@@ -1089,22 +1247,25 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
               <Plus size={20} color="#f3f4f6" />
             </AnimatedButton>
 
-            <View className="flex-row gap-4 mt-20">
-              <View className="flex-1">
-                {isEditing ? (
-                  <DeleteButton
-                    confirm={false}
-                    label={t("gym.gymForm.editDeleteButtonLabel")}
-                    onPress={() => router.push("/dashboard")}
-                  />
-                ) : (
+            {isEditing ? (
+              <View className="mt-20">
+                <AnimatedButton
+                  label={t("gym.gymForm.editDeleteButtonLabel")}
+                  onPress={() => router.push("/dashboard")}
+                  className="btn-neutral py-3"
+                  textClassName="text-center text-gray-100"
+                />
+              </View>
+            ) : (
+              <View className="flex-row gap-4 mt-20">
+                <View className="flex-1">
                   <DeleteButton onPress={resetSession} />
-                )}
+                </View>
+                <View className="flex-1">
+                  <SaveButton onPress={handleSaveSession} />
+                </View>
               </View>
-              <View className="flex-1">
-                <SaveButton onPress={handleSaveSession} />
-              </View>
-            </View>
+            )}
           </>
         </PageContainer>
       </KeyboardAwareScrollView>
@@ -1117,8 +1278,7 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
         notes={notes}
         setNotes={setNotes}
         isEditing={isEditing}
-        durationEdit={durationEdit}
-        setDurationEdit={setDurationEdit}
+        autoSaveStatus={isEditing ? status : undefined}
         draftRecordings={draftRecordings}
         setDraftRecordings={setDraftRecordings}
         draftImages={draftImages}
@@ -1168,7 +1328,7 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
       />
 
       <FullScreenLoader
-        visible={isSaving}
+        visible={isSaving && !isEditing}
         message={
           savingProgress !== undefined
             ? t("common:common.media.uploading")

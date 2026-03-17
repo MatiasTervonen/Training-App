@@ -5,4 +5,7 @@
   <string name="expo_splash_screen_status_bar_translucent" translatable="false">false</string>
   <string name="widget_quicklinks_description" translatable="false">Quick shortcuts to app pages</string>
   <string name="widget_steps_description" translatable="false">Today\'s step count</string>
+  <string name="step_channel_name">Step Tracking</string>
+  <string name="step_channel_description">Shows step tracking progress</string>
+  <string name="step_notification_text">Tracking steps: %s today</string>
 </resources>

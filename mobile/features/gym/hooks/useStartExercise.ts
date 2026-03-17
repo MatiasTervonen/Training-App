@@ -12,6 +12,7 @@ export default function useStartExercise({
   exerciseType,
   supersetExercise,
   normalExercises,
+  isEditing = false,
 }: {
   exercises: ExerciseEntry[];
   setExercises: (
@@ -32,11 +33,12 @@ export default function useStartExercise({
   exerciseType: string;
   supersetExercise: ExerciseEntry[];
   normalExercises: ExerciseEntry[];
+  isEditing?: boolean;
 }) {
   const startExercise = () => {
     const newSupersetId = Crypto.randomUUID();
 
-    if (!useTimerStore.getState().startTimestamp) {
+    if (!isEditing && !useTimerStore.getState().startTimestamp) {
       handleStartSession();
     }
 

@@ -1,0 +1,5 @@
+<resources>
+  <string name="step_channel_name">Askelseuranta</string>
+  <string name="step_channel_description">Näyttää askelseurannan edistymisen</string>
+  <string name="step_notification_text">Askeleita tänään: %s</string>
+</resources>

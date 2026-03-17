@@ -14,6 +14,8 @@ import { DraftVideo, DraftRecording } from "@/types/session";
 import FullScreenModal from "@/components/FullScreenModal";
 import PageContainer from "@/components/PageContainer";
 import ImageViewerModal from "@/features/notes/components/ImageViewerModal";
+import AutoSaveIndicator from "@/components/AutoSaveIndicator";
+import { AutoSaveStatus } from "@/hooks/useAutoSave";
 import {
   SessionImage,
   SessionVideo,
@@ -30,8 +32,6 @@ type GymNotesModalProps = {
   notes: string;
   setNotes: (notes: string) => void;
   isEditing?: boolean;
-  durationEdit?: number;
-  setDurationEdit?: (value: number) => void;
   draftRecordings: DraftRecording[];
   setDraftRecordings: (value: SetStateAction<DraftRecording[]>) => void;
   draftImages: DraftImage[];
@@ -44,6 +44,7 @@ type GymNotesModalProps = {
   onDeleteExistingImage?: (id: string) => void;
   onDeleteExistingVideo?: (id: string) => void;
   onDeleteExistingRecording?: (id: string) => void;
+  autoSaveStatus?: AutoSaveStatus;
 };
 
 export default function GymNotesModal({
@@ -54,8 +55,6 @@ export default function GymNotesModal({
   notes,
   setNotes,
   isEditing,
-  durationEdit,
-  setDurationEdit,
   draftRecordings,
   setDraftRecordings,
   draftImages,
@@ -68,6 +67,7 @@ export default function GymNotesModal({
   onDeleteExistingImage,
   onDeleteExistingVideo,
   onDeleteExistingRecording,
+  autoSaveStatus,
 }: GymNotesModalProps) {
   const { t } = useTranslation(["gym", "notes"]);
   const confirmAction = useConfirmAction();
@@ -80,6 +80,7 @@ export default function GymNotesModal({
 
   return (
     <FullScreenModal isOpen={isOpen} onClose={onClose}>
+      {autoSaveStatus && <AutoSaveIndicator status={autoSaveStatus} />}
       <ScrollView
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
@@ -95,17 +96,6 @@ export default function GymNotesModal({
             setValue={setTitle}
             placeholder={t("gym.gymForm.titlePlaceholder")}
           />
-
-          {isEditing && durationEdit !== undefined && setDurationEdit && (
-            <View className="mt-5">
-              <AppInput
-                value={String(durationEdit)}
-                setValue={(v) => setDurationEdit(Number(v))}
-                placeholder={t("gym.gymForm.editDurationPlaceholder")}
-                label={t("gym.gymForm.editDurationLabel")}
-              />
-            </View>
-          )}
 
           <View className="mt-5">
             <NotesInput

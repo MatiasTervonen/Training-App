@@ -23,6 +23,11 @@
     "unsavedChangesDiscard": "Sinulla on tallentamattomia muutoksia. Hylätäänkö ne?",
     "keepEditing": "Jatka",
     "discard": "Hylkää",
+    "autoSave": {
+      "saving": "Tallennetaan...",
+      "saved": "Tallennettu",
+      "error": "Tallennus epäonnistui"
+    },
     "copyToClipboard": "Kopioi leikepöydälle",
     "copiedToClipboard": "Kopioitu leikepöydälle",
     "media": {

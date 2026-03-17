@@ -356,9 +356,20 @@ export default function StartActivityScreen() {
     isRunning,
   );
 
-  // Sync native milestone config when settings change mid-session
+  // Sync native milestone config when settings change mid-session.
+  // Skip the first run — config is already set by the start button handler,
+  // and calling setMilestoneConfig on remount resets native thresholds
+  // which causes already-fired milestones to re-trigger.
+  const milestonesSynced = useRef(false);
   useEffect(() => {
-    if (!activeSession) return;
+    if (!activeSession) {
+      milestonesSynced.current = false;
+      return;
+    }
+    if (!milestonesSynced.current) {
+      milestonesSynced.current = true;
+      return;
+    }
     setMilestoneConfig({
       steps: milestoneSettings.steps,
       duration: milestoneSettings.duration,

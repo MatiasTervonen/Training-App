@@ -1,10 +1,10 @@
-import { Bell, CalendarSync } from "lucide-react-native";
+import { Bell, CalendarSync, AlertTriangle } from "lucide-react-native";
 import { View } from "react-native";
 import AppText from "@/components/AppText";
 import BodyText from "@/components/BodyText";
+import PageContainer from "@/components/PageContainer";
 import { FeedItemUI } from "@/types/session";
 import { formatNotifyTime, formatDate, formatDateTime } from "@/lib/formatDate";
-import { LinearGradient } from "expo-linear-gradient";
 import { useTranslation } from "react-i18next";
 
 const typeTranslationKeys: Record<string, string> = {
@@ -39,66 +39,83 @@ export default function ReminderSession(reminder: FeedItemUI) {
   ];
 
   return (
-    <LinearGradient
-      colors={["#1e3a8a", "#0f172a", "#0f172a"]}
-      start={{ x: 1, y: 0 }} // bottom-left
-      end={{ x: 0, y: 1 }} // top-right
-      className={`mt-20 mb-10 px-6 rounded-xl w-full border border-slate-700 overflow-hidden shadow-md ${payload.mode === "alarm" ? "pb-0" : "pt-10"}`}
-    >
-      {payload.mode === "alarm" && (
-        <AppText className="text-sm text-yellow-500 my-4">
-          {t("reminders.highPriorityReminder")}
-        </AppText>
-      )}
-      <View className="flex-row items-center justify-center bg-slate-700 p-5 rounded-md border border-gray-400">
-        <CalendarSync color="#f3f4f6" />
-        <AppText className="ml-3 text-xl text-center">
-          {t(`reminders.${typeTranslationKeys[payload.type] || payload.type}`)}
-        </AppText>
-      </View>
-      <View className="flex-row items-center justify-center bg-slate-700 p-5 rounded-md mt-4 border border-gray-400">
-        <Bell color="#f3f4f6" />
-        {payload.type === "one-time" ? (
-          <AppText className="text-center ml-3 text-lg">
-            {formatDateTime(payload.notify_date!)}
-          </AppText>
-        ) : reminder.type === "global" ||
-          reminder.type === "global_reminders" ? (
-          <AppText className="text-center ml-3 text-lg">
-            {formatDateTime(payload.notify_at!)}
-          </AppText>
-        ) : (
-          <AppText className="text-center ml-3 text-lg">
-            {formatNotifyTime(payload.notify_at_time!)}
-          </AppText>
-        )}
-      </View>
-      {payload.weekdays && payload.weekdays.length > 0 && (
-        <View className="bg-slate-700 rounded-md p-5 mt-5 border border-gray-400">
-          <AppText className="text-center text-lg ">
-            {payload.weekdays.map((dayNum) => days[dayNum - 1]).join(", ")}
-          </AppText>
-        </View>
-      )}
-      <View className="bg-slate-700 mt-5 rounded-md p-5 w-full border border-gray-400 shadow-md">
-        <AppText className="text-xl break-words text-center">
-          {reminder.title}
-        </AppText>
-      </View>
-      {payload.notes && (
-        <View className="whitespace-pre-wrap break-words bg-slate-700 p-4 rounded-md shadow-md mt-5 border border-gray-400">
-          <BodyText className="text-center">{payload.notes}</BodyText>
-        </View>
-      )}
-
-      <AppText className="text-sm text-gray-300 mt-8 mb-2">
+    <PageContainer>
+      <AppText className="text-sm text-gray-400 text-center">
         {t("reminders.created")} {formatDate(reminder.created_at)}
       </AppText>
       {reminder.updated_at && (
-        <AppText className="text-sm text-yellow-500 mb-2">
+        <AppText className="text-sm text-slate-400 mt-1 text-center">
           {t("reminders.updated")} {formatDate(reminder.updated_at)}
         </AppText>
       )}
-    </LinearGradient>
+
+      {payload.mode === "alarm" && (
+        <View className="flex-row items-center justify-center gap-2 mt-4 bg-yellow-500/15 rounded-md px-3 py-2 self-center">
+          <AlertTriangle size={16} color="#eab308" />
+          <AppText className="text-sm text-yellow-500">
+            {t("reminders.highPriorityReminder")}
+          </AppText>
+        </View>
+      )}
+
+      <AppText className="text-2xl text-center mt-5 break-words">
+        {reminder.title}
+      </AppText>
+
+      <View className="bg-slate-900 rounded-md shadow-md mt-6">
+        {/* Type */}
+        <View className="flex-row items-center px-4 py-4 border-b border-gray-700">
+          <CalendarSync size={20} color="#94a3b8" />
+          <AppText className="text-slate-400 text-sm ml-3">
+            {t("reminders.typeLabel")}
+          </AppText>
+          <AppText className="ml-auto text-lg">
+            {t(`reminders.${typeTranslationKeys[payload.type] || payload.type}`)}
+          </AppText>
+        </View>
+
+        {/* Time */}
+        <View className="flex-row items-center px-4 py-4 border-b border-gray-700">
+          <Bell size={20} color="#94a3b8" />
+          <AppText className="text-slate-400 text-sm ml-3">
+            {t("reminders.timeLabel")}
+          </AppText>
+          <AppText className="ml-auto text-lg">
+            {payload.type === "one-time"
+              ? formatDateTime(payload.notify_date!)
+              : reminder.type === "global" ||
+                  reminder.type === "global_reminders"
+                ? formatDateTime(payload.notify_at!)
+                : formatNotifyTime(payload.notify_at_time!)}
+          </AppText>
+        </View>
+
+        {/* Weekdays */}
+        {payload.weekdays && payload.weekdays.length > 0 && (
+          <View className="px-4 py-4 border-b border-gray-700">
+            <AppText className="text-slate-400 text-sm mb-2">
+              {t("reminders.weekdaysLabel")}
+            </AppText>
+            <View className="flex-row flex-wrap gap-2">
+              {payload.weekdays.map((dayNum) => (
+                <View
+                  key={dayNum}
+                  className="bg-slate-800 rounded-md px-3 py-1"
+                >
+                  <AppText className="text-sm">{days[dayNum - 1]}</AppText>
+                </View>
+              ))}
+            </View>
+          </View>
+        )}
+
+        {/* Notes */}
+        {payload.notes && (
+          <View className="px-4 py-4">
+            <BodyText className="leading-5">{payload.notes}</BodyText>
+          </View>
+        )}
+      </View>
+    </PageContainer>
   );
 }

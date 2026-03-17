@@ -179,6 +179,29 @@ export function useMilestoneAlerts(
             : null,
         };
       }
+
+      // Advance past any already-exceeded thresholds silently (no toast).
+      // This prevents re-firing old milestones when the component remounts
+      // mid-session (e.g. navigating away and back).
+      const m = metricsRef.current;
+      const th = thresholds.current;
+      if (th.steps !== null && milestoneSettings.steps.interval > 0) {
+        while (th.steps <= m.steps)
+          th.steps += milestoneSettings.steps.interval;
+      }
+      if (th.duration !== null && milestoneSettings.duration.interval > 0) {
+        const intervalSecs = milestoneSettings.duration.interval * 60;
+        while (th.duration <= m.durationSeconds) th.duration += intervalSecs;
+      }
+      if (th.distance !== null && milestoneSettings.distance.interval > 0) {
+        const intervalMeters = milestoneSettings.distance.interval * 1000;
+        while (th.distance <= m.distanceMeters) th.distance += intervalMeters;
+      }
+      if (th.calories !== null && milestoneSettings.calories.interval > 0) {
+        while (th.calories <= m.calories)
+          th.calories += milestoneSettings.calories.interval;
+      }
+
       isInitialized.current = true;
     });
   }, [isActive, milestoneSettings]);

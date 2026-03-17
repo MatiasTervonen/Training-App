@@ -1,9 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import SubNotesInput from "@/components/SubNotesInput";
 import AppInput from "@/components/AppInput";
-import SaveButton from "@/components/buttons/SaveButton";
-import FullScreenLoader from "@/components/FullScreenLoader";
-import Toast from "react-native-toast-message";
+import AutoSaveIndicator from "@/components/AutoSaveIndicator";
 import AppText from "@/components/AppText";
 import {
   View,
@@ -20,11 +18,15 @@ import PageContainer from "@/components/PageContainer";
 import { FeedItemUI } from "@/types/session";
 import { useQueryClient } from "@tanstack/react-query";
 import Toggle from "@/components/toggle";
-import { canUseExactAlarm, requestExactAlarm } from "@/native/android/EnsureExactAlarmPermission";
+import {
+  canUseExactAlarm,
+  requestExactAlarm,
+} from "@/native/android/EnsureExactAlarmPermission";
 import InfoModal from "@/components/InfoModal";
 import useSetNotification from "@/features/reminders/hooks/global/useSetNotification";
-import { Dot } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
+import AppTextNC from "@/components/AppTextNC";
+import { useAutoSave } from "@/hooks/useAutoSave";
 
 type Props = {
   reminder: FeedItemUI;
@@ -46,13 +48,12 @@ export default function HandleEditGlobalReminder({
   onSave,
   onDirtyChange,
 }: Props) {
-  const { t, i18n } = useTranslation("common");
+  const { t, i18n } = useTranslation("reminders");
   const queryClient = useQueryClient();
   const payload = reminder.extra_fields as unknown as reminderPayload;
 
   const [title, setValue] = useState(reminder.title);
-  const [notes, setNotes] = useState(payload.notes);
-  const [isSaving, setIsSaving] = useState(false);
+  const [notes, setNotes] = useState(payload.notes ?? "");
   const [notifyAt, setNotifyAt] = useState(
     payload.notify_at ? new Date(payload.notify_at) : null,
   );
@@ -86,43 +87,19 @@ export default function HandleEditGlobalReminder({
     mode,
   });
 
-  const originalNotifyAt = payload.notify_at ? new Date(payload.notify_at).getTime() : null;
-  const currentNotifyAt = notifyAt ? notifyAt.getTime() : null;
-  const hasChanges =
-    title !== reminder.title ||
-    notes !== payload.notes ||
-    currentNotifyAt !== originalNotifyAt ||
-    mode !== (payload.mode || "normal");
+  const autoSaveData = useMemo(
+    () => ({
+      title,
+      notes,
+      notifyAtMs: notifyAt?.getTime() ?? null,
+      mode,
+    }),
+    [title, notes, notifyAt, mode],
+  );
 
-  useEffect(() => {
-    onDirtyChange?.(hasChanges);
-  }, [hasChanges, onDirtyChange]);
-
-  const formattedNotifyAt = formatDateTime(notifyAt!);
-
-  const handleSubmit = async () => {
-    if (title.trim().length === 0) {
-      Toast.show({
-        type: "error",
-        text1: "Title is required",
-      });
-      return;
-    }
-
-    if (!notifyAt) {
-      Toast.show({
-        type: "error",
-        text1: "Notify time is required",
-      });
-      return;
-    }
-
-    if (notifyAt < new Date()) {
-      Toast.show({
-        type: "error",
-        text1: "Notify time must be in the future.",
-      });
-      return;
+  const handleAutoSave = useCallback(async () => {
+    if (title.trim().length === 0 || !notifyAt || notifyAt < new Date()) {
+      throw new Error("Validation failed");
     }
 
     const delivered =
@@ -130,75 +107,81 @@ export default function HandleEditGlobalReminder({
 
     const updated = new Date().toISOString();
 
-    setIsSaving(true);
+    const updatedFeedItem = await editGlobalReminder({
+      id: reminder.source_id,
+      title,
+      notes,
+      delivered,
+      notify_at: notifyAt.toISOString(),
+      updated_at: updated,
+      seen_at: updated,
+      mode,
+    });
 
-    try {
-      const updatedFeedItem = await editGlobalReminder({
-        id: reminder.source_id,
-        title,
-        notes,
-        delivered,
-        notify_at: notifyAt.toISOString(),
-        updated_at: updated,
-        seen_at: updated,
-        mode,
-      });
-
-      // Schedule notification/alarm if time changed to future
-      if (notifyAt && notifyAt.getTime() > Date.now()) {
-        await setNotification(reminder.source_id);
-      }
-
-      onSave({ ...updatedFeedItem, feed_context: reminder.feed_context });
-      onClose();
-      queryClient.invalidateQueries({ queryKey: ["feed"], exact: true });
-      queryClient.invalidateQueries({ queryKey: ["reminders"] });
-    } catch {
-      Toast.show({
-        type: "error",
-        text1: "Error editing global reminder",
-        text2: "Try again later.",
-      });
-    } finally {
-      setIsSaving(false);
+    if (notifyAt && notifyAt.getTime() > Date.now()) {
+      await setNotification(reminder.source_id);
     }
-  };
+
+    onSave({ ...updatedFeedItem, feed_context: reminder.feed_context });
+    queryClient.invalidateQueries({ queryKey: ["feed"], exact: true });
+    queryClient.invalidateQueries({ queryKey: ["reminders"] });
+  }, [
+    title,
+    notes,
+    notifyAt,
+    mode,
+    payload.delivered,
+    reminder.source_id,
+    reminder.feed_context,
+    setNotification,
+    onSave,
+    queryClient,
+  ]);
+
+  const { status, hasPendingChanges } = useAutoSave({
+    data: autoSaveData,
+    onSave: handleAutoSave,
+  });
+
+  useEffect(() => {
+    onDirtyChange?.(hasPendingChanges);
+  }, [hasPendingChanges, onDirtyChange]);
+
+  const formattedNotifyAt = formatDateTime(notifyAt!);
 
   return (
     <>
-      {hasChanges && (
-        <View className="bg-gray-900 absolute top-5 left-5 z-50 py-1 px-4 flex-row items-center rounded-lg">
-          <AppText className="text-sm text-yellow-500">{t("common.unsavedChanges")}</AppText>
-          <View className="animate-pulse">
-            <Dot color="#eab308" />
-          </View>
-        </View>
-      )}
+      <AutoSaveIndicator status={status} />
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-        <PageContainer className="justify-between mb-5">
+        <PageContainer className="justify-between">
           <View>
             <AppText className=" text-xl text-center mb-10 mt-5">
-              Edit your reminder
+              {t("reminders.editReminder")}
             </AppText>
             <View className="mb-5">
               <AppInput
                 value={title || ""}
                 onChangeText={setValue}
-                placeholder="Reminder title..."
-                label="Title..."
+                placeholder={t("reminders.titlePlaceholder")}
+                label={t("reminders.titleLabel")}
               />
             </View>
             <SubNotesInput
               value={notes || ""}
               setValue={setNotes}
-              placeholder="Notes... (optional)"
-              label="Notes..."
+              placeholder={t("reminders.notesPlaceholder")}
+              label={t("reminders.notesLabel")}
             />
             <View>
+              <AppTextNC className="mt-5 mb-1 text-slate-300">
+                {t("reminders.notifyTime")}
+              </AppTextNC>
               <AnimatedButton
-                label={notifyAt ? formattedNotifyAt : "Set Notify Time"}
+                label={
+                  notifyAt ? formattedNotifyAt : t("reminders.setNotifyTime")
+                }
                 onPress={() => setOpen(true)}
-                className="bg-blue-800 py-2 rounded-md shadow-md border-2 border-blue-500 flex-row gap-2 justify-center items-center mt-10"
+                className="bg-blue-800 py-2 rounded-md shadow-md border-2 border-blue-500 flex-row gap-2 justify-center items-center"
                 textClassName="text-gray-100"
               >
                 <Plus color="#f3f4f6" />
@@ -212,9 +195,9 @@ export default function HandleEditGlobalReminder({
               minimumDate={new Date()}
               open={open}
               locale={i18n.language}
-              title={t("datePicker.selectDateTime")}
-              confirmText={t("datePicker.confirm")}
-              cancelText={t("datePicker.cancel")}
+              title={t("common:datePicker.selectDateTime")}
+              confirmText={t("common:datePicker.confirm")}
+              cancelText={t("common:datePicker.cancel")}
               onConfirm={(date) => {
                 setOpen(false);
                 setNotifyAt(date);
@@ -225,10 +208,12 @@ export default function HandleEditGlobalReminder({
             />
             <View className="flex-row items-center justify-between px-4 mt-10">
               <View>
-                <AppText>Enable high priority reminder</AppText>
-                <AppText className="text-gray-400 text-sm">
-                  (Continue to alarm until dismissed)
-                </AppText>
+                <AppTextNC className="text-slate-200">
+                  {t("reminders.enableHighPriority")}
+                </AppTextNC>
+                <AppTextNC className="text-slate-400 text-sm">
+                  {t("reminders.highPriorityDescription")}
+                </AppTextNC>
               </View>
               <Toggle
                 isOn={mode === "alarm"}
@@ -244,10 +229,6 @@ export default function HandleEditGlobalReminder({
               />
             </View>
           </View>
-          <View className="pt-10">
-            <SaveButton onPress={handleSubmit} />
-          </View>
-          <FullScreenLoader visible={isSaving} message="Saving reminder..." />
         </PageContainer>
       </TouchableWithoutFeedback>
 

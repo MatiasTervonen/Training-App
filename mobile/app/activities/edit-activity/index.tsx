@@ -1,6 +1,5 @@
 import AppInput from "@/components/AppInput";
-import { useState, useCallback } from "react";
-import SaveButton from "@/components/buttons/SaveButton";
+import { useState, useCallback, useMemo } from "react";
 import Toast from "react-native-toast-message";
 import FullScreenLoader from "@/components/FullScreenLoader";
 import {
@@ -22,6 +21,8 @@ import CategoryDropdown from "@/features/activities/components/categoryDropDown"
 import FullScreenModal from "@/components/FullScreenModal";
 import { UserActivity } from "@/database/activities/get-user-activities";
 import { useTranslation } from "react-i18next";
+import AutoSaveIndicator from "@/components/AutoSaveIndicator";
+import { useAutoSave } from "@/hooks/useAutoSave";
 
 export default function EditActivity() {
   const { t } = useTranslation("activities");
@@ -56,50 +57,30 @@ export default function EditActivity() {
     [t],
   );
 
-  const handleSave = async () => {
-    if (!name) {
-      Toast.show({
-        type: "error",
-        text1: t("activities.editActivityScreen.errorNameRequired"),
-      });
-      return;
-    }
+  const autoSaveData = useMemo(
+    () => ({ name, met, categoryId, isGpsRelevant, isStepRelevant, isCaloriesRelevant }),
+    [name, met, categoryId, isGpsRelevant, isStepRelevant, isCaloriesRelevant],
+  );
 
-    if (!category) {
-      Toast.show({
-        type: "error",
-        text1: t("activities.editActivityScreen.errorCategoryRequired"),
-      });
-      return;
+  const handleAutoSave = useCallback(async () => {
+    if (!name) {
+      throw new Error("Name is required");
+    }
+    if (!categoryId) {
+      throw new Error("Category is required");
     }
 
     const metValue = parseFloat(met);
-
-    // Validate MET value
     if (!met || met === "." || isNaN(metValue)) {
-      Toast.show({
-        type: "error",
-        text1: t("activities.editActivityScreen.errorInvalidMet"),
-        text2: t("activities.editActivityScreen.errorInvalidMetDesc"),
-      });
-      return;
+      throw new Error("Invalid MET value");
     }
-
     if (metValue < 1 || metValue > 20) {
-      Toast.show({
-        type: "error",
-        text1: t("activities.editActivityScreen.errorMetOutOfRange"),
-        text2: t("activities.editActivityScreen.errorMetRangeDesc"),
-      });
-      return;
+      throw new Error("MET value out of range");
     }
 
-    // Round to 2 decimals for consistency
     const finalMet = Number(metValue.toFixed(2));
 
-    setIsSaving(true);
-
-    const activityData = {
+    await editActivity({
       name,
       base_met: finalMet,
       category_id: categoryId,
@@ -107,26 +88,16 @@ export default function EditActivity() {
       is_gps_relevant: isGpsRelevant,
       is_step_relevant: isStepRelevant,
       is_calories_relevant: isCaloriesRelevant,
-    };
+    });
 
-    try {
-      await editActivity(activityData);
+    queryClient.invalidateQueries({ queryKey: ["userActivities"], exact: true });
+  }, [name, met, categoryId, isGpsRelevant, isStepRelevant, isCaloriesRelevant, selectedActivity, queryClient]);
 
-      queryClient.invalidateQueries({ queryKey: ["userActivities"], exact: true });
-      Toast.show({
-        type: "success",
-        text1: t("activities.editActivityScreen.successEdited"),
-      });
-      resetFields();
-    } catch {
-      Toast.show({
-        type: "error",
-        text1: t("activities.editActivityScreen.errorEditFailed"),
-      });
-    } finally {
-      setIsSaving(false);
-    }
-  };
+  const { status } = useAutoSave({
+    data: autoSaveData,
+    onSave: handleAutoSave,
+    enabled: !!selectedActivity,
+  });
 
   const handleDeleteActivity = async (activityId: string) => {
     setIsDeleting(true);
@@ -187,10 +158,12 @@ export default function EditActivity() {
           }}
         />
       ) : (
-        <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-            <PageContainer className="justify-between flex-1">
-              <View>
+        <View className="flex-1">
+          <AutoSaveIndicator status={status} />
+          <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+              <PageContainer className="justify-between flex-1">
+                <View>
                 <AppText className="text-2xl mb-10 text-center">
                   {t("activities.editActivityScreen.title")}
                 </AppText>
@@ -260,17 +233,10 @@ export default function EditActivity() {
                 </View>
               </View>
               <View className="mt-20 flex flex-col gap-5">
-                <View className="flex-row gap-4">
-                  <View className="flex-1">
-                    <DeleteButton
-                      onPress={() => handleDeleteActivity(selectedActivity!.id)}
-                      label={t("activities.editActivityScreen.deleteButton")}
-                    />
-                  </View>
-                  <View className="flex-1">
-                    <SaveButton onPress={handleSave} label={t("activities.editActivityScreen.updateButton")} />
-                  </View>
-                </View>
+                <DeleteButton
+                  onPress={() => handleDeleteActivity(selectedActivity!.id)}
+                  label={t("activities.editActivityScreen.deleteButton")}
+                />
                 <AnimatedButton
                   onPress={() => {
                     resetFields();
@@ -280,13 +246,14 @@ export default function EditActivity() {
                   textClassName="text-gray-100"
                 />
               </View>
-            </PageContainer>
-          </TouchableWithoutFeedback>
-          <FullScreenLoader
-            visible={isSaving}
-            message={isDeleting ? t("activities.editActivityScreen.deletingActivity") : t("activities.editActivityScreen.savingActivity")}
-          />
-        </ScrollView>
+              </PageContainer>
+            </TouchableWithoutFeedback>
+            <FullScreenLoader
+              visible={isSaving}
+              message={isDeleting ? t("activities.editActivityScreen.deletingActivity") : t("activities.editActivityScreen.savingActivity")}
+            />
+          </ScrollView>
+        </View>
       )}
     </>
   );

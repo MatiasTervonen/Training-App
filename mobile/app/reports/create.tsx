@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { View, ScrollView, Keyboard } from "react-native";
 import AppText from "@/components/AppText";
 import AppInput from "@/components/AppInput";
 import PageContainer from "@/components/PageContainer";
+import AutoSaveIndicator from "@/components/AutoSaveIndicator";
 import SaveButton from "@/components/buttons/SaveButton";
 import FullScreenLoader from "@/components/FullScreenLoader";
 import FeatureCheckbox from "@/features/reports/components/FeatureCheckbox";
@@ -10,6 +11,7 @@ import SchedulePicker from "@/features/reports/components/SchedulePicker";
 import useReportSchedules from "@/features/reports/hooks/useReportSchedules";
 import useSaveReportSchedule from "@/features/reports/hooks/useSaveReportSchedule";
 import useUpdateReportSchedule from "@/features/reports/hooks/useUpdateReportSchedule";
+import { useAutoSave } from "@/hooks/useAutoSave";
 import { REPORT_FEATURES, ReportFeature, ScheduleType } from "@/types/report";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
@@ -87,6 +89,46 @@ export default function CreateReportScreen() {
     });
   };
 
+  // Auto-save (edit mode only)
+  const autoSaveData = useMemo(
+    () => ({
+      title,
+      selectedFeatures: Array.from(selectedFeatures).sort(),
+      scheduleType,
+      deliveryDayOfWeek,
+      deliveryDayOfMonth,
+      deliveryHour,
+    }),
+    [title, selectedFeatures, scheduleType, deliveryDayOfWeek, deliveryDayOfMonth, deliveryHour],
+  );
+
+  const handleAutoSave = useCallback(async () => {
+    if (!title.trim()) throw new Error("Title required");
+    if (selectedFeatures.size === 0) throw new Error("At least one feature required");
+
+    const isWeekly =
+      scheduleType === "weekly" || scheduleType === "biweekly";
+
+    await updateMutation.mutateAsync({
+      scheduleId: id!,
+      title: title.trim(),
+      includedFeatures: Array.from(selectedFeatures),
+      scheduleType,
+      deliveryDayOfWeek: isWeekly ? deliveryDayOfWeek : null,
+      deliveryDayOfMonth: isWeekly ? null : deliveryDayOfMonth,
+      deliveryHour,
+    });
+  }, [
+    title, selectedFeatures, scheduleType, deliveryDayOfWeek,
+    deliveryDayOfMonth, deliveryHour, id, updateMutation,
+  ]);
+
+  const { status } = useAutoSave({
+    data: autoSaveData,
+    onSave: handleAutoSave,
+    enabled: isEditing,
+  });
+
   const handleSave = async () => {
     if (!title.trim()) {
       Toast.show({ type: "error", text1: t("reports.titleRequired") });
@@ -134,6 +176,7 @@ export default function CreateReportScreen() {
 
   return (
     <>
+      <AutoSaveIndicator status={status} />
       <ScrollView
         className="flex-1"
         showsVerticalScrollIndicator={false}
@@ -182,20 +225,24 @@ export default function CreateReportScreen() {
             />
           </View>
 
-          <View className="pt-10">
-            <SaveButton
-              onPress={handleSave}
-              label={t("reports.save")}
-              disabled={!canSave}
-            />
-          </View>
+          {!isEditing && (
+            <View className="pt-10">
+              <SaveButton
+                onPress={handleSave}
+                label={t("reports.save")}
+                disabled={!canSave}
+              />
+            </View>
+          )}
         </PageContainer>
       </ScrollView>
 
-      <FullScreenLoader
-        visible={isSaving}
-        message={t("common:common.saving")}
-      />
+      {!isEditing && (
+        <FullScreenLoader
+          visible={isSaving}
+          message={t("common:common.saving")}
+        />
+      )}
     </>
   );
 }

@@ -163,10 +163,10 @@ class StepTrackingService : Service(), SensorEventListener {
     private fun createNotificationChannel() {
         val channel = NotificationChannel(
             CHANNEL_ID,
-            "Step Tracking",
+            getString(R.string.step_channel_name),
             NotificationManager.IMPORTANCE_LOW
         ).apply {
-            description = "Shows step tracking progress"
+            description = getString(R.string.step_channel_description)
             setShowBadge(false)
         }
 
@@ -188,7 +188,7 @@ class StepTrackingService : Service(), SensorEventListener {
 
         return Notification.Builder(this, CHANNEL_ID)
             .setContentTitle(getString(R.string.app_name))
-            .setContentText("Tracking steps: $formattedSteps today")
+            .setContentText(getString(R.string.step_notification_text, formattedSteps))
             .setSmallIcon(R.drawable.ic_stat_kurvi_icon_ice_blue_transparent)
             .setContentIntent(pendingIntent)
             .setOngoing(true)

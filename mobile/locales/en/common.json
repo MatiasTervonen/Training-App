@@ -23,6 +23,11 @@
     "unsavedChangesDiscard": "You have unsaved changes. Discard them?",
     "keepEditing": "Keep editing",
     "discard": "Discard",
+    "autoSave": {
+      "saving": "Saving...",
+      "saved": "Saved",
+      "error": "Save failed"
+    },
     "copyToClipboard": "Copy to Clipboard",
     "copiedToClipboard": "Copied to Clipboard",
     "media": {

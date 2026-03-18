@@ -11,6 +11,9 @@
       "title": "Friend Request Accepted",
       "body": "{{name}} accepted your friend request"
     },
+    "feedLikeTitle": "New Like",
+    "feedCommentTitle": "New Comment",
+    "feedReplyTitle": "New Reply",
     "sections": {
       "today": "Today",
       "yesterday": "Yesterday",

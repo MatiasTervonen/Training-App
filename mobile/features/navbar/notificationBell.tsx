@@ -6,7 +6,15 @@ import {
   SectionList,
   Dimensions,
 } from "react-native";
-import { Bell, UserPlus, UserCheck, BellRing } from "lucide-react-native";
+import {
+  Bell,
+  UserPlus,
+  UserCheck,
+  BellRing,
+  Heart,
+  MessageCircle,
+  Reply,
+} from "lucide-react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import AppText from "@/components/AppText";
@@ -25,6 +33,12 @@ function getNotificationIcon(type: string) {
       return <UserPlus size={18} color="#3b82f6" />;
     case "friend_accepted":
       return <UserCheck size={18} color="#22c55e" />;
+    case "feed_like":
+      return <Heart size={18} color="#ef4444" />;
+    case "feed_comment":
+      return <MessageCircle size={18} color="#3b82f6" />;
+    case "feed_reply":
+      return <Reply size={18} color="#8b5cf6" />;
     default:
       return <BellRing size={18} color="#9ca3af" />;
   }
@@ -35,6 +49,10 @@ function getNavigationTarget(type: string): string | null {
     case "friend_request":
     case "friend_accepted":
       return "/menu/friends";
+    case "feed_like":
+    case "feed_comment":
+    case "feed_reply":
+      return "/";
     default:
       return null;
   }

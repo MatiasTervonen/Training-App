@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import FullScreenModal from "@/components/FullScreenModal";
 import { ActivityIndicator, View } from "react-native";
 import AppText from "@/components/AppText";
+import ErrorMessage from "@/components/ErrorMessage";
 import AppTextNC from "@/components/AppTextNC";
 import { TemplateHistorySession } from "@/types/session";
 import { FlatList } from "react-native-gesture-handler";
@@ -105,9 +106,7 @@ export default function TemplateHistoryModal({
             <ActivityIndicator size="large" />
           </View>
         ) : error ? (
-          <AppText className="text-center mt-40 px-10 text-lg">
-            {t("activities.templateHistory.loadError")}
-          </AppText>
+          <ErrorMessage message={t("activities.templateHistory.loadError")} fullPage />
         ) : history.length === 0 ? (
           <AppText className="text-center mt-40 px-10 text-lg">
             {t("activities.templateHistory.noHistory")}

@@ -1,5 +1,4 @@
 import {
-  Pressable,
   ScrollView,
   TouchableWithoutFeedback,
   View,
@@ -475,19 +474,19 @@ export default function TemplateForm() {
                     <ChevronDown className="text-gray-100" color="#f3f4f6" />
                   </View>
                 </View>
-                <Pressable
+                <AnimatedButton
                   onPress={() => {
                     handleAddExercise();
                     setIsExerciseModalOpen(false);
                   }}
-                  className="justify-center items-center w-1/2 px-2 bg-blue-800 rounded-md shadow-md border-2 border-blue-500 text-gray-100 text-lg"
+                  className="justify-center items-center w-1/2 btn-add"
                 >
                   <AppText>
                     {exerciseType === "Super-Set"
                       ? t("gym.templateForm.addSuperSet")
                       : t("gym.templateForm.addExercise")}
                   </AppText>
-                </Pressable>
+                </AnimatedButton>
               </View>
             </FullScreenModal>
 
@@ -508,7 +507,7 @@ export default function TemplateForm() {
                   setIsExerciseModalOpen(true);
                 }}
                 label={t("gym.templateForm.addExercise")}
-                className="btn-base flex-row justify-center items-center"
+                className="btn-add flex-row justify-center items-center"
                 textClassName="px-4"
               >
                 <Plus size={20} color="#f3f4f6" />

@@ -1,5 +1,6 @@
 import { View, ActivityIndicator } from "react-native";
 import AppText from "@/components/AppText";
+import ErrorMessage from "@/components/ErrorMessage";
 import AppTextNC from "@/components/AppTextNC";
 import { weight } from "@/types/session";
 import WeightChart from "@/features/weight/WeightChart";
@@ -72,9 +73,7 @@ export default function HeaderAllDataTable({
           </View>
         ) : error ? (
           <View className="flex-1 justify-center items-center mt-10">
-            <AppText className="text-red-500">
-              {t("weight.analyticsScreen.error")}
-            </AppText>
+            <ErrorMessage message={t("weight.analyticsScreen.error")} />
           </View>
         ) : (
           <WeightChart range={range} data={data} />

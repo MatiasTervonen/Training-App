@@ -104,7 +104,7 @@ export function DraftRecordingItem({
   };
 
   return (
-    <View className="bg-slate-950 rounded-xl border-2 border-blue-500 mb-4">
+    <View className="bg-slate-950 rounded-xl border-[1.5px] border-blue-500/60 mb-4">
       {/* Play/Pause Button */}
       <View className="px-4 py-3 rounded-t-xl flex-row justify-between items-center">
         <AnimatedButton

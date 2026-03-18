@@ -15,7 +15,7 @@ import DraftImageItem from "@/features/notes/components/DraftImageItem";
 import DraftVideoItem from "@/features/notes/components/DraftVideoItem";
 import { DraftRecordingItem } from "@/features/notes/components/draftRecording";
 import ImageViewerModal from "@/features/notes/components/ImageViewerModal";
-import { NotesVoiceSkeleton } from "@/components/skeletetons";
+
 
 type RowAllDataProps = {
   item: weight;
@@ -93,9 +93,9 @@ export default function WeightRow({
             </Pressable>
           </View>
 
-          {isLoadingMedia && (
-            <View className="mt-3">
-              <NotesVoiceSkeleton count={1} />
+          {isLoadingMedia && item.has_media && (
+            <View className="mt-3 items-center">
+              <AppText className="text-gray-500 text-sm">{t("common:common.loading")}</AppText>
             </View>
           )}
 

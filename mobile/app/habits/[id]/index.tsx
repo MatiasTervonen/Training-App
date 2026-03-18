@@ -160,7 +160,7 @@ export default function HabitDetailScreen() {
             {!stats && <View className="w-8" />}
           </View>
           {habit.type === "steps" && habit.target_value && (
-            <View className="bg-gray-800 rounded-lg px-4 py-3 mb-4">
+            <View className="bg-slate-500/10 border border-slate-500/20 rounded-lg px-4 py-3 mb-4">
               <AppText className="text-gray-400 text-sm">
                 {t("stepGoal")}
               </AppText>
@@ -170,7 +170,7 @@ export default function HabitDetailScreen() {
             </View>
           )}
           {habit.type === "duration" && habit.target_value && (
-            <View className="bg-gray-800 rounded-lg px-4 py-3 mb-4">
+            <View className="bg-slate-500/10 border border-slate-500/20 rounded-lg px-4 py-3 mb-4">
               <AppText className="text-gray-400 text-sm">
                 {t("durationTarget")}
               </AppText>
@@ -218,7 +218,7 @@ export default function HabitDetailScreen() {
               }
               router.push(`/habits/create?id=${id}`);
             }}
-            className="btn-base"
+            className="btn-edit"
             label={t("common:common.edit")}
             textClassName="text-gray-100 text-center"
           />

@@ -87,7 +87,7 @@ export default function ManageFoldersScreen() {
               <AnimatedButton
                 onPress={handleCreate}
                 disabled={!newFolderName.trim() || isCreating}
-                className="btn-base"
+                className="btn-add"
               >
                 <AppText className="text-gray-100 text-center">
                   {t("notes.folders.createFolder")}

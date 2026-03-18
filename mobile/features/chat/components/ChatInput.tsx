@@ -150,7 +150,7 @@ export default function ChatInput({
           }}
           className="w-[44px] h-[44px] rounded-full items-center justify-center bg-slate-800"
         >
-          <Plus color={showToolbar ? "#67e8f9" : "#94a3b8"} size={22} />
+          <Plus color={showToolbar ? "#06b6d4" : "#94a3b8"} size={22} />
         </AnimatedButton>
 
         <View className="flex-1 bg-slate-800 rounded-2xl px-4 min-h-[44px] justify-center max-h-[120px]">
@@ -170,10 +170,10 @@ export default function ChatInput({
 
         <AnimatedButton
           onPress={handleSend}
-          className="w-[44px] h-[44px] rounded-full items-center justify-center bg-slate-800 border-2 border-cyan-300"
+          className="w-[44px] h-[44px] rounded-full items-center justify-center bg-slate-800 border-[1.5px] border-cyan-500/40"
           disabled={!canSend}
         >
-          <Send color="#67e8f9" size={20} />
+          <Send color="#06b6d4" size={20} />
         </AnimatedButton>
       </View>
 
@@ -184,7 +184,6 @@ export default function ChatInput({
             onImageSelected={handleImageSelected}
             onVideoSelected={handleVideoSelected}
             showFolderButton={false}
-            variant="chat"
           />
         </View>
       )}

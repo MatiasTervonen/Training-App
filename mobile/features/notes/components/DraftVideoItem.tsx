@@ -47,7 +47,7 @@ export default function DraftVideoItem({
     <>
       <AnimatedButton
         onPress={() => !isCompressing && setPlayerVisible(true)}
-        className="relative mb-3 rounded-md overflow-hidden border-2 border-blue-500 bg-slate-950"
+        className="relative mb-3 rounded-md overflow-hidden border-[1.5px] border-blue-500/60 bg-slate-950"
       >
         <Image
           source={{ uri: thumbnailUri }}

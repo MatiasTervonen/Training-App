@@ -244,7 +244,7 @@ export default function CreateTodo() {
               <AnimatedButton
                 label={t("todo.editScreen.addTask")}
                 onPress={handleAddTask}
-                className="btn-base py-2"
+                className="btn-add py-2"
                 textClassName="text-gray-100 text-center"
               />
               <View className="flex-row gap-5">

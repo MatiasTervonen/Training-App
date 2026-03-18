@@ -23,6 +23,7 @@ import FolderFilterChips from "@/features/notes/components/FolderFilterChips";
 import MoveToFolderSheet from "@/features/notes/components/MoveToFolderSheet";
 import type { FolderFilter } from "@/database/notes/get-notes";
 import AnimatedButton from "@/components/buttons/animatedButton";
+import FloatingActionButton from "@/components/buttons/FloatingActionButton";
 import { Plus, FolderCog, StickyNote } from "lucide-react-native";
 
 export default function NotesScreen() {
@@ -195,17 +196,9 @@ export default function NotesScreen() {
         />
       )}
 
-      <View className="absolute bottom-8 right-6">
-        <View className="absolute -inset-1 rounded-full bg-cyan-400/30" />
-        <View className="absolute -inset-3 rounded-full bg-cyan-400/15" />
-        <View className="absolute -inset-5 rounded-full bg-cyan-400/5" />
-        <AnimatedButton
-          onPress={() => router.push("/notes/quick-notes")}
-          className="w-14 h-14 rounded-full bg-slate-800 items-center justify-center shadow-xl shadow-cyan-400/60 border-2 border-cyan-300"
-        >
-          <Plus size={30} color="#67e8f9" />
-        </AnimatedButton>
-      </View>
+      <FloatingActionButton onPress={() => router.push("/notes/quick-notes")}>
+        <Plus size={30} color="#06b6d4" />
+      </FloatingActionButton>
 
       {expandedItem && (
         <FullScreenModal

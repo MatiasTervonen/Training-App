@@ -21,7 +21,7 @@ import DraftVideoItem from "@/features/notes/components/DraftVideoItem";
 import { DraftRecordingItem } from "@/features/notes/components/draftRecording";
 import ImageViewerModal from "@/features/notes/components/ImageViewerModal";
 import ShareModal from "@/features/gym/components/ShareModal";
-import ShareWithFriendsToggle from "@/features/social-feed/components/ShareWithFriendsToggle";
+import ShareWithFriendsButton from "@/features/social-feed/components/ShareWithFriendsToggle";
 
 export default function GymSession(gym_session: FullGymSession & { readOnly?: boolean }) {
   const { t } = useTranslation("gym");
@@ -124,12 +124,20 @@ export default function GymSession(gym_session: FullGymSession & { readOnly?: bo
                 {gym_session.title}
               </AppText>
               {!gym_session.readOnly && (
-                <AnimatedButton
-                  onPress={() => setIsShareModalOpen(true)}
-                  hitSlop={10}
-                >
-                  <Share2 color="#9ca3af" size={20} />
-                </AnimatedButton>
+                <View className="items-center">
+                  <AnimatedButton
+                    onPress={() => setIsShareModalOpen(true)}
+                    hitSlop={10}
+                  >
+                    <Share2 color="#9ca3af" size={20} />
+                  </AnimatedButton>
+                  <View className="absolute top-[34px]">
+                    <ShareWithFriendsButton
+                      sourceId={gym_session.id}
+                      sessionType="gym_sessions"
+                    />
+                  </View>
+                </View>
               )}
             </View>
             <AppText className="text-sm text-gray-400">
@@ -210,12 +218,6 @@ export default function GymSession(gym_session: FullGymSession & { readOnly?: bo
               </View>
             )}
           </LinearGradient>
-          {!gym_session.readOnly && (
-            <ShareWithFriendsToggle
-              sourceId={gym_session.id}
-              sessionType="gym_sessions"
-            />
-          )}
         </View>
         {warmupPhase && warmupPhase.activities && (
           <PhaseDisplayCard
@@ -237,8 +239,8 @@ export default function GymSession(gym_session: FullGymSession & { readOnly?: bo
             end={{ x: 0, y: 1 }}
             className={`mt-5 rounded-md overflow-hidden  ${
               group.length > 1
-                ? "border-2 border-blue-700"
-                : "border-2 border-gray-600"
+                ? "border-[1.5px] border-blue-700"
+                : "border-[1.5px] border-gray-600"
             }`}
           >
             {group.length > 1 && (
@@ -428,7 +430,7 @@ function PhaseDisplayCard({
       colors={["#065f46", "#0f172a", "#0f172a"]}
       start={{ x: 1, y: 0 }}
       end={{ x: 0, y: 1 }}
-      className="mt-5 rounded-md overflow-hidden border-2 border-emerald-600 p-4"
+      className="mt-5 rounded-md overflow-hidden border-[1.5px] border-emerald-600 p-4"
     >
       <AppText className="text-lg mb-2">
         {phaseLabel}: {translatedName}

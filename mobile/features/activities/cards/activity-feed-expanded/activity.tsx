@@ -1,6 +1,7 @@
 import { FullActivitySession } from "@/types/models";
 import { View, ScrollView, Modal } from "react-native";
 import AppText from "@/components/AppText";
+import ErrorMessage from "@/components/ErrorMessage";
 import BodyText from "@/components/BodyText";
 import PageContainer from "@/components/PageContainer";
 import { formatDateShort, formatTime } from "@/lib/formatDate";
@@ -9,6 +10,7 @@ import Map from "./components/map";
 import SessionStats from "./components/sessionStats";
 import { LinearGradient } from "expo-linear-gradient";
 import AnimatedButton from "@/components/buttons/animatedButton";
+import SaveButton from "@/components/buttons/SaveButton";
 import AppInput from "@/components/AppInput";
 import SubNotesInput from "@/components/SubNotesInput";
 import FullScreenLoader from "@/components/FullScreenLoader";
@@ -26,7 +28,7 @@ import ImageViewerModal from "@/features/notes/components/ImageViewerModal";
 import { NotesVoiceSkeleton } from "@/components/skeletetons";
 import { useTemplateHistory } from "@/features/activities/templates/hooks/useTemplateHistory";
 import TemplateHistoryModal from "@/features/activities/templates/components/TemplateHistoryModal";
-import ShareWithFriendsToggle from "@/features/social-feed/components/ShareWithFriendsToggle";
+import ShareWithFriendsButton from "@/features/social-feed/components/ShareWithFriendsToggle";
 
 type ActivitySessionProps = FullActivitySession & {
   voiceRecordings?: ActivityVoiceRecording[];
@@ -108,18 +110,28 @@ export default function ActivitySession(
                         <History color="#9ca3af" size={20} />
                       </AnimatedButton>
                     )}
-                    <AnimatedButton
-                      onPress={() => setIsShareModalOpen(true)}
-                      hitSlop={10}
-                    >
-                      <Share2 color="#9ca3af" size={20} />
-                    </AnimatedButton>
+                    <View className="items-center">
+                      <AnimatedButton
+                        onPress={() => setIsShareModalOpen(true)}
+                        hitSlop={10}
+                      >
+                        <Share2 color="#9ca3af" size={20} />
+                      </AnimatedButton>
+                      <View className="absolute top-[34px]">
+                        <ShareWithFriendsButton
+                          sourceId={activity_session.session.id}
+                          sessionType="activity_sessions"
+                        />
+                      </View>
+                    </View>
                   </View>
                 )}
               </View>
 
               <AppText className="text-sm text-gray-400" numberOfLines={1}>
-                {formatDateShort(activity_session.session.start_time)}  ·  {formatTime(activity_session.session.start_time)} – {formatTime(activity_session.session.end_time)}
+                {formatDateShort(activity_session.session.start_time)} ·{" "}
+                {formatTime(activity_session.session.start_time)} –{" "}
+                {formatTime(activity_session.session.end_time)}
               </AppText>
               {activity_session.session.notes && (
                 <BodyText className="text-left mt-5">
@@ -164,9 +176,7 @@ export default function ActivitySession(
             )}
 
             {!!activity_session.voiceError && (
-              <AppText className="text-center text-red-500 mt-10">
-                {t("activities.sessionDetails.voiceLoadError")}
-              </AppText>
+              <ErrorMessage message={t("activities.sessionDetails.voiceLoadError")} />
             )}
 
             {/* Images */}
@@ -205,16 +215,7 @@ export default function ActivitySession(
             )}
 
             {!!activity_session.mediaError && (
-              <AppText className="text-center text-red-500 mt-10">
-                {t("activities.sessionDetails.mediaLoadError")}
-              </AppText>
-            )}
-
-            {!activity_session.readOnly && (
-              <ShareWithFriendsToggle
-                sourceId={activity_session.session.id}
-                sessionType="activity_sessions"
-              />
+              <ErrorMessage message={t("activities.sessionDetails.mediaLoadError")} />
             )}
           </View>
           {hasRoute && !activity_session.readOnly && (
@@ -222,7 +223,7 @@ export default function ActivitySession(
               <AnimatedButton
                 onPress={() => setShowModal(true)}
                 label={t("activities.sessionDetails.saveAsTemplate")}
-                className="btn-base"
+                className="btn-save"
               />
             </View>
           )}
@@ -266,11 +267,9 @@ export default function ActivitySession(
                 />
               </View>
               <View className="flex-1">
-                <AnimatedButton
+                <SaveButton
                   onPress={saveAsTemplate}
                   label={t("activities.sessionDetails.save")}
-                  className="btn-base"
-                  textClassName="text-gray-100 text-center"
                 />
               </View>
             </View>

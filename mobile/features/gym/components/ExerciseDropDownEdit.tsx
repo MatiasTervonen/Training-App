@@ -10,6 +10,7 @@ import { getUserExercises } from "@/database/gym/user-exercises";
 import { useQuery } from "@tanstack/react-query";
 import AppInput from "@/components/AppInput";
 import AppText from "@/components/AppText";
+import ErrorMessage from "@/components/ErrorMessage";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import { useTranslation } from "react-i18next";
 import { Dumbbell } from "lucide-react-native";
@@ -91,9 +92,7 @@ export default function ExerciseDropdownEdit({
                        bg-slate-900 border-gray-100  mt-10 flex-1"
         >
           {isError ? (
-            <AppText className="text-red-500 text-xl mt-20 text-center">
-              {t("gym.exerciseDropdown.loadError")}
-            </AppText>
+            <ErrorMessage message={t("gym.exerciseDropdown.loadError")} fullPage />
           ) : isLoading ? (
             <View className="items-center justify-center gap-3 mt-20">
               <AppText className=" text-xl">{t("gym.exerciseDropdown.loadingExercises")}</AppText>

@@ -62,7 +62,7 @@ export default function GymTemplate({ item, onStartWorkout }: Props) {
               colors={["#065f46", "#0f172a", "#0f172a"]}
               start={{ x: 1, y: 0 }}
               end={{ x: 0, y: 1 }}
-              className="mt-6 px-4 py-2 rounded-md overflow-hidden shadow-md border-2 border-emerald-700"
+              className="mt-6 px-4 py-2 rounded-md overflow-hidden shadow-md border-[1.5px] border-emerald-700"
             >
               <AppText className="text-lg text-gray-100">
                 {t("gym.phase.warmup")}: {getTranslatedName(warmup.activities.name, warmup.activities.slug)}
@@ -77,8 +77,8 @@ export default function GymTemplate({ item, onStartWorkout }: Props) {
               end={{ x: 0, y: 1 }}
               className={`mt-6 px-4 py-2 rounded-md overflow-hidden shadow-md  ${
                 group.length > 1
-                  ? "border-2 border-blue-700"
-                  : "border-2 border-gray-600"
+                  ? "border-[1.5px] border-blue-700"
+                  : "border-[1.5px] border-gray-600"
               }`}
             >
               {group.length > 1 && (
@@ -114,7 +114,7 @@ export default function GymTemplate({ item, onStartWorkout }: Props) {
               colors={["#065f46", "#0f172a", "#0f172a"]}
               start={{ x: 1, y: 0 }}
               end={{ x: 0, y: 1 }}
-              className="mt-6 px-4 py-2 rounded-md overflow-hidden shadow-md border-2 border-emerald-700"
+              className="mt-6 px-4 py-2 rounded-md overflow-hidden shadow-md border-[1.5px] border-emerald-700"
             >
               <AppText className="text-lg text-gray-100">
                 {t("gym.phase.cooldown")}: {getTranslatedName(cooldown.activities.name, cooldown.activities.slug)}

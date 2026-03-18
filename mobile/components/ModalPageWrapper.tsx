@@ -1,4 +1,5 @@
 import AppText from "@/components/AppText";
+import BodyText from "@/components/BodyText";
 import { View, Dimensions } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { SquareArrowLeft, SquareArrowRight } from "lucide-react-native";
@@ -148,7 +149,7 @@ export default function ModalPageWrapper({
   return (
     <View className="flex-1">
       <View className="flex-1 absolute inset-0 flex-row justify-between bg-slate-900 pt-[10px]">
-        <View className="flex-col items-center gap-2 ml-2">
+        <View className="flex-col items-center gap-2 ml-4">
           {isTransitioning && resolvedLeftLabel && (
             <>
               <View>
@@ -156,17 +157,17 @@ export default function ModalPageWrapper({
                   .toUpperCase()
                   .split("")
                   .map((letter, index) => (
-                    <AppText className="text-center text-xl" key={index}>
+                    <BodyText className="text-center text-base text-gray-400" key={index}>
                       {letter}
-                    </AppText>
+                    </BodyText>
                   ))}
               </View>
-              <SquareArrowLeft size={35} color={"#f3f4f6"} />
+              <SquareArrowLeft size={24} color={"#9ca3af"} />
             </>
           )}
         </View>
 
-        <View className="flex-col items-center gap-2 mr-2">
+        <View className="flex-col items-center gap-2 mr-4">
           {isTransitioning && resolvedRightLabel && (
             <>
               <View>
@@ -174,12 +175,12 @@ export default function ModalPageWrapper({
                   .toUpperCase()
                   .split("")
                   .map((letter, index) => (
-                    <AppText className="text-center text-xl" key={index}>
+                    <BodyText className="text-center text-base text-gray-400" key={index}>
                       {letter}
-                    </AppText>
+                    </BodyText>
                   ))}
               </View>
-              <SquareArrowRight size={35} color={"#f3f4f6"} />
+              <SquareArrowRight size={24} color={"#9ca3af"} />
             </>
           )}
         </View>

@@ -110,6 +110,7 @@ export type weight = {
   notes: string | null;
   title: string | null;
   weight: number;
+  has_media: boolean;
 };
 
 export type TrackPoint = {

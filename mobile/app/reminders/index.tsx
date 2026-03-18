@@ -25,6 +25,7 @@ import useDeleteSession from "@/features/feed/hooks/useDeleteSession";
 import useUpdateFeedItemToTop from "@/features/feed/hooks/useUpdateFeedItemToTop";
 import { useTranslation } from "react-i18next";
 import AnimatedButton from "@/components/buttons/animatedButton";
+import FloatingActionButton from "@/components/buttons/FloatingActionButton";
 import { Plus, Info, Bell } from "lucide-react-native";
 import { useUserStore } from "@/lib/stores/useUserStore";
 import BodyText from "@/components/BodyText";
@@ -203,17 +204,9 @@ export default function RemindersScreen() {
         />
       )}
 
-      <View className="absolute bottom-8 right-6">
-        <View className="absolute -inset-1 rounded-full bg-cyan-400/30" />
-        <View className="absolute -inset-3 rounded-full bg-cyan-400/15" />
-        <View className="absolute -inset-5 rounded-full bg-cyan-400/5" />
-        <AnimatedButton
-          onPress={() => router.push("/reminders/create-reminder")}
-          className="w-14 h-14 rounded-full bg-slate-800 items-center justify-center shadow-xl shadow-cyan-400/60 border-2 border-cyan-300"
-        >
-          <Plus size={30} color="#67e8f9" />
-        </AnimatedButton>
-      </View>
+      <FloatingActionButton onPress={() => router.push("/reminders/create-reminder")}>
+        <Plus size={30} color="#06b6d4" />
+      </FloatingActionButton>
 
       {expandedItem && (
         <FullScreenModal

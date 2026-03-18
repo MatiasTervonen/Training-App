@@ -18,6 +18,7 @@ import { useUserStore } from "@/lib/stores/useUserStore";
 import { useTimerStore } from "@/lib/stores/timerStore";
 import { ChatMessage } from "@/types/chat";
 import { KeyboardAvoidingView } from "react-native-keyboard-controller";
+import { LinearGradient } from "expo-linear-gradient";
 
 function shouldShowTimestamp(
   current: ChatMessage,
@@ -138,9 +139,14 @@ export default function ChatScreen() {
   const isActive = conversation?.is_active ?? true;
 
   return (
-    <View className="flex-1 bg-slate-900">
+    <LinearGradient
+      className="flex-1"
+      colors={["#020618", "#1d293d"]}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+    >
       {/* Header */}
-      <View className="flex-row items-center gap-3 px-4 py-3 border-b border-slate-700 bg-slate-900">
+      <View className="flex-row items-center gap-3 px-4 py-3 border-b border-slate-700">
         <Pressable onPress={() => router.back()} className="p-1">
           <ChevronLeft color="#f3f4f6" size={24} />
         </Pressable>
@@ -193,6 +199,6 @@ export default function ChatScreen() {
           disabledMessage={!isActive ? t("chat.inactive") : undefined}
         />
       </KeyboardAvoidingView>
-    </View>
+    </LinearGradient>
   );
 }

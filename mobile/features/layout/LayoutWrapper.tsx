@@ -181,13 +181,16 @@ export default function LayoutWrapper({
         if (event === "SIGNED_IN") {
           // If INITIAL_SESSION already handled a deep link / notification,
           // skip redirect so we don't override that navigation.
-          // NOTE: Do NOT await — exchangeCodeForSession (Google sign-in) holds
-          // the auth lock when emitting SIGNED_IN. Awaiting here deadlocks
-          // because supabase.from() queries call getSession() which re-acquires the lock.
-          handleSessionChange(session, deepLinkHandledRef.current);
+          // NOTE: Deferred via setTimeout so it runs after the auth lock is
+          // released. signInWithPassword / exchangeCodeForSession hold the
+          // lock when emitting SIGNED_IN — calling supabase.from() inside
+          // the callback deadlocks because the queries call getSession()
+          // which re-acquires the same lock.
+          const skipRedirect = deepLinkHandledRef.current;
+          setTimeout(() => handleSessionChange(session, skipRedirect), 0);
         } else {
-          // TOKEN_REFRESHED, SIGNED_OUT — no redirect
-          handleSessionChange(session, true);
+          // TOKEN_REFRESHED, SIGNED_OUT — no redirect (deferred for same lock reason)
+          setTimeout(() => handleSessionChange(session, true), 0);
         }
       },
     );

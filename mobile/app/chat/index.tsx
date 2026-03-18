@@ -4,7 +4,7 @@ import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import AppText from "@/components/AppText";
 import BodyText from "@/components/BodyText";
-import AnimatedButton from "@/components/buttons/animatedButton";
+import FloatingActionButton from "@/components/buttons/FloatingActionButton";
 import PageContainer from "@/components/PageContainer";
 import ConversationItem from "@/features/chat/components/ConversationItem";
 import FriendPickerSheet from "@/features/chat/components/FriendPickerSheet";
@@ -13,6 +13,7 @@ import { getOrCreateDm } from "@/database/chat/get-or-create-dm";
 import { useFriends } from "@/features/friends/hooks/useFriends";
 import { Conversation } from "@/types/chat";
 import { MessageSquarePlus } from "lucide-react-native";
+import { LinearGradient } from "expo-linear-gradient";
 import Toast from "react-native-toast-message";
 
 export default function ChatListScreen() {
@@ -77,7 +78,12 @@ export default function ChatListScreen() {
   }
 
   return (
-    <View className="flex-1 bg-slate-900">
+    <LinearGradient
+      className="flex-1"
+      colors={["#020618", "#1d293d"]}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+    >
       <View className="px-4 pt-5 pb-3">
         <AppText className="text-2xl">{t("chat.title")}</AppText>
       </View>
@@ -104,27 +110,19 @@ export default function ChatListScreen() {
       />
 
       {/* Floating new chat button */}
-      <View className="absolute bottom-8 right-6 z-50">
-        <View className="absolute -inset-1 rounded-full bg-cyan-400/30" />
-        <View className="absolute -inset-3 rounded-full bg-cyan-400/15" />
-        <AnimatedButton
-          onPress={() => setShowFriendPicker(true)}
-          className="w-14 h-14 rounded-full items-center justify-center shadow-xl bg-slate-800 border-2 border-cyan-300 shadow-cyan-400/60"
-          disabled={isCreating}
-        >
-          {isCreating ? (
-            <ActivityIndicator size={20} color="#67e8f9" />
-          ) : (
-            <MessageSquarePlus size={26} color="#67e8f9" />
-          )}
-        </AnimatedButton>
-      </View>
+      <FloatingActionButton onPress={() => setShowFriendPicker(true)} disabled={isCreating}>
+        {isCreating ? (
+          <ActivityIndicator size={20} color="#06b6d4" />
+        ) : (
+          <MessageSquarePlus size={26} color="#06b6d4" />
+        )}
+      </FloatingActionButton>
 
       <FriendPickerSheet
         visible={showFriendPicker}
         onClose={() => setShowFriendPicker(false)}
         onSelectFriend={handleSelectFriend}
       />
-    </View>
+    </LinearGradient>
   );
 }

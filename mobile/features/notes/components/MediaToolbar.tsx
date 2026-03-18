@@ -40,7 +40,6 @@ type Props = {
   currentImageCount?: number;
   currentVideoCount?: number;
   currentVoiceCount?: number;
-  variant?: "default" | "chat";
 };
 
 export default function MediaToolbar({
@@ -54,7 +53,6 @@ export default function MediaToolbar({
   currentImageCount = 0,
   currentVideoCount = 0,
   currentVoiceCount = 0,
-  variant = "default",
 }: Props) {
   const { t } = useTranslation(["notes", "common"]);
   const [showRecordingModal, setShowRecordingModal] = useState(false);
@@ -471,49 +469,45 @@ export default function MediaToolbar({
 
   return (
     <>
-      <View className={`rounded-md flex-row overflow-hidden ${
-        variant === "chat"
-          ? "bg-slate-800 border-2 border-cyan-300"
-          : "bg-blue-800 border-[1.5px] border-blue-500"
-      }`}>
+      <View className="rounded-md flex-row overflow-hidden bg-slate-800 border-[1.5px] border-cyan-500/40">
         <AnimatedButton
           onPress={handleRecordingPress}
           className="flex-1 py-1.5 items-center justify-center"
         >
-          <Mic color={voiceAtLimit ? "#6b7280" : variant === "chat" ? "#67e8f9" : "white"} size={20} />
+          <Mic color={voiceAtLimit ? "#6b7280" : "#06b6d4"} size={20} />
         </AnimatedButton>
 
-        <View className={`w-px ${variant === "chat" ? "bg-cyan-300" : "bg-blue-500"}`} />
+        <View className="w-px bg-cyan-500/40" />
 
         <AnimatedButton
           onPress={handleImagePress}
           className="flex-1 py-1.5 items-center justify-center"
         >
-          <ImagePlus color={imagesAtLimit ? "#6b7280" : variant === "chat" ? "#67e8f9" : "white"} size={20} />
+          <ImagePlus color={imagesAtLimit ? "#6b7280" : "#06b6d4"} size={20} />
         </AnimatedButton>
 
         {onVideoSelected && (
           <>
-            <View className={`w-px ${variant === "chat" ? "bg-cyan-300" : "bg-blue-500"}`} />
+            <View className="w-px bg-cyan-500/40" />
             <AnimatedButton
               onPress={handleVideoPress}
               className="flex-1 py-1.5 items-center justify-center"
             >
-              <Video color={videosAtLimit ? "#6b7280" : variant === "chat" ? "#67e8f9" : "white"} size={20} />
+              <Video color={videosAtLimit ? "#6b7280" : "#06b6d4"} size={20} />
             </AnimatedButton>
           </>
         )}
 
         {showFolder && (
           <>
-            <View className={`w-px ${variant === "chat" ? "bg-cyan-300" : "bg-blue-500"}`} />
+            <View className="w-px bg-cyan-500/40" />
 
             <AnimatedButton
               onPress={() => setShowFolderModal(true)}
               className="flex-1 py-1.5 items-center justify-center"
             >
               <FolderOpen
-                color={hasFolderSelected ? "#3b82f6" : variant === "chat" ? "#67e8f9" : "white"}
+                color={hasFolderSelected ? "#3b82f6" : "#06b6d4"}
                 size={20}
               />
             </AnimatedButton>

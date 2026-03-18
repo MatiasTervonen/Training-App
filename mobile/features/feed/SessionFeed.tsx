@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import AppText from "@/components/AppText";
+import ErrorMessage from "@/components/ErrorMessage";
 import {
   FlatList,
   RefreshControl,
@@ -223,9 +224,7 @@ export default function SessionFeed({
           {isLoading || !data ? (
             <FeedSkeleton count={5} />
           ) : error ? (
-            <AppText className="text-center text-lg mt-20 mx-auto px-10">
-              {t("feed.loadError")}
-            </AppText>
+            <ErrorMessage message={t("feed.loadError")} fullPage />
           ) : !data ||
             (unpinnedFeed.length === 0 && pinnedFeed.length === 0) ? (
             <View className="flex-1 items-center mt-[30%] px-8">
@@ -328,9 +327,7 @@ export default function SessionFeed({
           {socialFeed.isLoading ? (
             <FeedSkeleton count={5} />
           ) : socialFeed.error ? (
-            <AppText className="text-center text-lg mt-20 mx-auto px-10">
-              {t("feed.loadError")}
-            </AppText>
+            <ErrorMessage message={t("feed.loadError")} fullPage />
           ) : socialFeed.items.length === 0 ? (
             <View className="flex-1 items-center mt-[30%] px-8">
               <View className="items-center">

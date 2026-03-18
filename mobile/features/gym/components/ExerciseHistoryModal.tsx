@@ -3,6 +3,7 @@ import FullScreenModal from "@/components/FullScreenModal";
 import { ActivityIndicator, View } from "react-native";
 import { formatDateShort } from "@/lib/formatDate";
 import AppText from "@/components/AppText";
+import ErrorMessage from "@/components/ErrorMessage";
 import { HistoryResult } from "@/types/session";
 import { FlatList } from "react-native-gesture-handler";
 import { LinearGradient } from "expo-linear-gradient";
@@ -86,9 +87,7 @@ export default function ExerciseHistoryModal({
             <ActivityIndicator size="large" />
           </View>
         ) : error ? (
-          <AppText className="text-center mt-40 px-10 text-lg">
-            {t("gym.exerciseHistory.loadError")}
-          </AppText>
+          <ErrorMessage message={t("gym.exerciseHistory.loadError")} fullPage />
         ) : history.length === 0 ? (
           <AppText className="text-center mt-40 px-10 text-lg">
             {t("gym.exerciseHistory.noHistory")}

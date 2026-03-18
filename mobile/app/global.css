@@ -4,15 +4,24 @@
 
 @layer utilities {
   .btn-base {
-    @apply bg-blue-800 px-3 py-2 rounded-md shadow-md border-2 border-blue-500;
+    @apply bg-slate-400/20 px-3 py-2 rounded-md shadow-md border border-slate-400/40;
   }
   .btn-danger {
-    @apply bg-red-800 px-3 py-2 rounded-md shadow-md border-2 border-red-500;
+    @apply bg-red-500/20 px-3 py-2 rounded-md shadow-md border border-red-500/40;
   }
   .btn-disabled {
-    @apply bg-gray-400 px-3 py-2 rounded-md shadow-md border-2 border-gray-500;
+    @apply bg-gray-500/20 px-3 py-2 rounded-md shadow-md border border-gray-500/40;
+  }
+  .btn-add {
+    @apply bg-blue-500/20 px-3 py-2 rounded-md shadow-md border border-blue-500/40;
+  }
+  .btn-save {
+    @apply bg-green-500/20 px-3 py-2 rounded-md shadow-md border border-green-500/40;
+  }
+  .btn-edit {
+    @apply bg-amber-500/20 px-3 py-2 rounded-md shadow-md border border-amber-500/40;
   }
   .btn-neutral {
-    @apply bg-gray-700 border-2 border-gray-500 px-3 py-2 shadow-md rounded-md;
+    @apply bg-gray-500/20 border border-gray-500/40 px-3 py-2 shadow-md rounded-md;
   }
 }

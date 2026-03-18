@@ -17,7 +17,7 @@ export default function SaveButton({
 
   return (
     <AnimatedButton
-      className="btn-base"
+      className="btn-save"
       label={label ?? t("common.save")}
       onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); onPress(); }}
       textClassName="text-gray-100 text-center"

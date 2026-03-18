@@ -122,15 +122,12 @@ export default function SecurityPage() {
         throw new Error("Unauthorized");
       }
 
-      const res = await fetch(
-        `${API_URL}/api/user/delete-account`,
-        {
-          method: "POST",
-          headers: {
-            authorization: `Bearer ${session.access_token}`,
-          },
+      const res = await fetch(`${API_URL}/api/user/delete-account`, {
+        method: "POST",
+        headers: {
+          authorization: `Bearer ${session.access_token}`,
         },
-      );
+      });
 
       if (!res.ok) {
         const body = await res.json();
@@ -227,7 +224,7 @@ export default function SecurityPage() {
                   label={loading ? t("common.saving") : t("common.save")}
                   disabled={loading}
                   loading={loading}
-                  className="btn-base"
+                  className="btn-save"
                 />
               </View>
             </>

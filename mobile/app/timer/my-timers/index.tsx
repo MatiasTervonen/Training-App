@@ -188,7 +188,7 @@ export default function MyTimersScreen() {
         timers?.map((timer) => (
           <View key={timer.id} className="mb-4">
             <AnimatedButton
-              className="bg-blue-800 py-2 rounded-md shadow-md border-2 border-blue-500 items-center"
+              className="btn-base py-2 items-center"
               textClassName="text-gray-100"
               onPress={() => {
                 setExpandedItem(timer);

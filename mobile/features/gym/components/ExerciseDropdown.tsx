@@ -12,6 +12,7 @@ import { getExercises } from "@/database/gym/get-exercises";
 import { getRecentExercises } from "@/database/gym/recent-exercises";
 import AppInput from "@/components/AppInput";
 import AppText from "@/components/AppText";
+import ErrorMessage from "@/components/ErrorMessage";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import { useTranslation } from "react-i18next";
 import { useUserStore } from "@/lib/stores/useUserStore";
@@ -157,9 +158,7 @@ export default function ExerciseDropdown({
                     bg-slate-900 border border-gray-100 mt-10 flex-1 rounded-md overflow-hidden"
         >
           {isError ? (
-            <AppText className="text-red-500 text-xl mt-20 text-center px-10">
-              {t("gym.exerciseDropdown.loadError")}
-            </AppText>
+            <ErrorMessage message={t("gym.exerciseDropdown.loadError")} fullPage />
           ) : isLoading ? (
             <View className="items-center justify-center gap-3 mt-20">
               <AppText className="text-xl">

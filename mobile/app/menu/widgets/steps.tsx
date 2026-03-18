@@ -88,7 +88,7 @@ export default function StepsConfigPage() {
         </AppText>
 
         <View className="gap-5">
-          <View className="flex-row justify-between items-center py-3 px-4 bg-slate-800 rounded-lg">
+          <View className="flex-row justify-between items-center py-3 px-4 bg-slate-500/10 border border-slate-500/20 rounded-lg">
             <AppText className="text-lg">
               {t("widgets:widgets.steps.showGoal")}
             </AppText>

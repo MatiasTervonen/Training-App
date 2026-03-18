@@ -2,6 +2,7 @@ import { formatDate } from "@/lib/formatDate";
 import { useUserStore } from "@/lib/stores/useUserStore";
 import { View, ActivityIndicator, ScrollView } from "react-native";
 import AppText from "@/components/AppText";
+import ErrorMessage from "@/components/ErrorMessage";
 import BodyText from "@/components/BodyText";
 import PageContainer from "@/components/PageContainer";
 import LinkButton from "@/components/buttons/LinkButton";
@@ -126,9 +127,7 @@ export default function WeightSession({
               {isLoadingMedia ? (
                 <NotesVoiceSkeleton count={voiceCount} />
               ) : mediaError ? (
-                <AppText className="text-center text-red-500 mt-2">
-                  {t("weight.mediaLoadError")}
-                </AppText>
+                <ErrorMessage message={t("weight.mediaLoadError")} />
               ) : (
                 weightMedia?.voiceRecordings.map((recording) => (
                   <DraftRecordingItem
@@ -148,12 +147,8 @@ export default function WeightSession({
               </View>
             </View>
           ) : error ? (
-            <View className="mt-5 bg-slate-900 shadow-md rounded-md p-4 h-[340px]">
-              <View className="justify-center items-center flex-1">
-                <AppText className="text-red-500">
-                  {t("weight.chartError")}
-                </AppText>
-              </View>
+            <View className="mt-5 bg-slate-900 shadow-md rounded-md p-4 h-[340px] justify-center">
+              <ErrorMessage message={t("weight.chartError")} />
             </View>
           ) : (
             weightData &&

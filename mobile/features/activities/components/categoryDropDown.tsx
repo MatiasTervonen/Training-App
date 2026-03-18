@@ -1,4 +1,5 @@
 import AppText from "@/components/AppText";
+import ErrorMessage from "@/components/ErrorMessage";
 import { useQuery } from "@tanstack/react-query";
 import {
     TouchableWithoutFeedback,
@@ -102,9 +103,7 @@ export default function CategoryDropdown({ onSelect }: Props) {
                     bg-slate-900 border border-gray-100 mt-10 flex-1 rounded-md overflow-hidden"
                 >
                     {error ? (
-                        <AppText className="text-red-500 text-xl mt-20 text-center">
-                            {t("activities.categoryDropdown.loadError")}
-                        </AppText>
+                        <ErrorMessage message={t("activities.categoryDropdown.loadError")} fullPage />
                     ) : isLoading ? (
                         <View className="items-center justify-center gap-3 mt-20">
                             <AppText className="text-xl">

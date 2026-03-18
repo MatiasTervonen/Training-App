@@ -24,6 +24,7 @@ import useDeleteSession from "@/features/feed/hooks/useDeleteSession";
 import useUpdateFeedItem from "@/features/feed/hooks/useUpdateFeedItem";
 import { useTranslation } from "react-i18next";
 import AnimatedButton from "@/components/buttons/animatedButton";
+import FloatingActionButton from "@/components/buttons/FloatingActionButton";
 import { Plus, ClipboardList } from "lucide-react-native";
 import type { TodoFilter } from "@/database/todo/get-todo-sessions";
 
@@ -181,7 +182,7 @@ export default function TodoScreen() {
           }
           onEndReachedThreshold={0.5}
           renderItem={({ item: feedItem }) => (
-            <View className={`px-4 ${unpinnedFeed ? "pb-10" : ""}`}>
+            <View className={`px-4 ${unpinnedFeed ? "pb-5" : ""}`}>
               <FeedCard
                 item={feedItem as FeedItemUI}
                 pinned={false}
@@ -224,17 +225,9 @@ export default function TodoScreen() {
         />
       )}
 
-      <View className="absolute bottom-8 right-6">
-        <View className="absolute -inset-1 rounded-full bg-cyan-400/30" />
-        <View className="absolute -inset-3 rounded-full bg-cyan-400/15" />
-        <View className="absolute -inset-5 rounded-full bg-cyan-400/5" />
-        <AnimatedButton
-          onPress={() => router.push("/todo/create-todo")}
-          className="w-14 h-14 rounded-full bg-slate-800 items-center justify-center shadow-xl shadow-cyan-400/60 border-2 border-cyan-300"
-        >
-          <Plus size={30} color="#67e8f9" />
-        </AnimatedButton>
-      </View>
+      <FloatingActionButton onPress={() => router.push("/todo/create-todo")}>
+        <Plus size={30} color="#06b6d4" />
+      </FloatingActionButton>
 
       {expandedItem && (
         <FullScreenModal

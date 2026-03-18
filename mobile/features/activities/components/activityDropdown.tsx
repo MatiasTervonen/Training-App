@@ -1,4 +1,5 @@
 import AppText from "@/components/AppText";
+import ErrorMessage from "@/components/ErrorMessage";
 import { useQuery } from "@tanstack/react-query";
 import { getActivities } from "@/database/activities/get-activities";
 import {
@@ -144,9 +145,7 @@ export default function ActivityDropdown({ onSelect }: Props) {
                     bg-slate-900 border border-gray-100 mt-10 flex-1 rounded-md overflow-hidden"
         >
           {isError ? (
-            <AppText className="text-red-500 text-xl">
-              {t("activities.activityDropdown.loadError")}
-            </AppText>
+            <ErrorMessage message={t("activities.activityDropdown.loadError")} fullPage />
           ) : isLoading ? (
             <View className="items-center justify-center gap-3 mt-20">
               <AppText className="text-xl">

@@ -13,7 +13,7 @@ export default function EditButton({
 }: EditButtonProps) {
   return (
     <AnimatedButton
-      className="bg-amber-700 rounded-md shadow-md border-2 border-amber-500 py-2"
+      className="btn-edit py-2"
       label={label}
       onPress={onPress}
       textClassName="text-gray-100 text-center"

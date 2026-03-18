@@ -1,6 +1,7 @@
 import { formatDate } from "@/lib/formatDate";
 import { View, ScrollView } from "react-native";
 import AppText from "@/components/AppText";
+import ErrorMessage from "@/components/ErrorMessage";
 import CopyText from "@/components/CopyToClipboard";
 import PageContainer from "@/components/PageContainer";
 import { FeedItemUI } from "@/types/session";
@@ -111,9 +112,7 @@ export default function NotesSession({
               {isLoadingVoice ? (
                 <NotesVoiceSkeleton count={voiceCount} />
               ) : error ? (
-                <AppText className="text-center text-red-500 mt-10">
-                  {t("notes.expandedView.voiceLoadError")}
-                </AppText>
+                <ErrorMessage message={t("notes.expandedView.voiceLoadError")} />
               ) : (
                 voiceRecordings?.voiceRecordings.map((recording) => (
                   <DraftRecordingItem

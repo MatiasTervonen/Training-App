@@ -77,6 +77,31 @@ export function useHabitTimer() {
     async (habit: Habit, accumulatedSeconds: number) => {
       const store = useTimerStore.getState();
 
+      // If this habit's timer is paused, resume it instead of starting fresh
+      if (
+        store.activeSession?.type === "habit" &&
+        store.paused &&
+        context?.habitId === habit.id
+      ) {
+        store.resumeTimer(habit.name);
+        // Re-schedule native alarm for the remaining time
+        const newEnd = useTimerStore.getState().endTimestamp;
+        if (newEnd) {
+          const soundType =
+            habit.alarm_type === "priority" ? "habit-priority" : "habit";
+          scheduleNativeAlarm(
+            newEnd,
+            "timer",
+            habit.name,
+            soundType,
+            "",
+            t("habitTimerDone", { habitName: habit.name }),
+            t("durationCompleted"),
+          );
+        }
+        return;
+      }
+
       if (store.activeSession) {
         Toast.show({ type: "error", text1: t("habitTimerActive") });
         return;
@@ -116,7 +141,7 @@ export function useHabitTimer() {
         t("durationCompleted"),
       );
     },
-    [t],
+    [t, context],
   );
 
   const pauseHabitTimer = useCallback(async () => {

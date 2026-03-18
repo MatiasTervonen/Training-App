@@ -3,6 +3,7 @@ import { useState, useCallback } from "react";
 import AppText from "@/components/AppText";
 import AppInput from "@/components/AppInput";
 import AnimatedButton from "@/components/buttons/animatedButton";
+import SaveButton from "@/components/buttons/SaveButton";
 import { PhaseData, PhaseType, TemplatePhaseData } from "@/types/session";
 import { LinearGradient } from "expo-linear-gradient";
 import { X, ChevronDown, ChevronUp, Footprints, Flame, ArrowLeftRight, Ruler } from "lucide-react-native";
@@ -477,12 +478,10 @@ function ManualEntryCard({
               keyboardType="numeric"
             />
           )}
-          <AnimatedButton
+          <SaveButton
             onPress={handleSave}
-            className="btn-base py-2 items-center mt-2"
-          >
-            <AppText className="text-lg">{t("gym.phase.save")}</AppText>
-          </AnimatedButton>
+            label={t("gym.phase.save")}
+          />
         </View>
       </LinearGradient>
     </Pressable>

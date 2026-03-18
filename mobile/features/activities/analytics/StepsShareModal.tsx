@@ -174,7 +174,7 @@ export default function StepsShareModal({
                   topOffset: 60,
                 });
               }}
-              className="flex-1 btn-neutral flex-row items-center justify-center gap-2"
+              className="flex-1 btn- flex-row items-center justify-center gap-2"
               disabled={isSaving || isSharing}
             >
               <Download color="#f3f4f6" size={18} />

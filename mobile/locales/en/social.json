@@ -4,7 +4,7 @@
     "friendsFeed": "Friends",
     "noFriendPosts": "No posts from friends yet",
     "noFriendsYet": "Add friends to see their activity here",
-    "shareWithFriends": "Share with friends",
+    "shareWithFriends": "Post to social feed",
     "likes": "likes",
     "like": "like",
     "liked": "Liked",
@@ -18,6 +18,15 @@
     "send": "Send",
     "deleteComment": "Delete comment",
     "reply": "Reply",
-    "replyingTo": "Replying to {{name}}"
+    "replyingTo": "Replying to {{name}}",
+    "sharedWithFriends": "Posted to social feed",
+    "removedFromFriends": "Removed from social feed",
+    "shareWithFriendsTitle": "Post to social feed",
+    "shareWithFriendsMessage": "This session will be visible to your friends on the social feed.",
+    "removeFromFriendsTitle": "Remove from social feed",
+    "removeFromFriendsMessage": "This session will no longer be visible on the social feed.",
+    "shareConfirm": "Post",
+    "removeConfirm": "Remove",
+    "cancel": "Cancel"
   }
 }

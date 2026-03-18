@@ -54,7 +54,6 @@ import PhaseActivityPicker from "@/features/gym/components/PhaseActivityPicker";
 import usePhaseTracking from "@/features/gym/hooks/usePhaseTracking";
 import { getWeight } from "@/database/weight/get-weight";
 
-
 if (
   Platform.OS === "android" &&
   UIManager.setLayoutAnimationEnabledExperimental
@@ -93,7 +92,13 @@ type GymFormData = Pick<
     distance_meters: number | null;
     is_manual: boolean | null;
     calories: number | null;
-    activities: { name: string; slug: string | null; base_met: number; is_step_relevant: boolean; is_calories_relevant: boolean } | null;
+    activities: {
+      name: string;
+      slug: string | null;
+      base_met: number;
+      is_step_relevant: boolean;
+      is_calories_relevant: boolean;
+    } | null;
   }[];
 };
 
@@ -222,12 +227,18 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
 
   const warmupCalories = useMemo(() => {
     if (!warmup?.activity_met) return 0;
-    return Math.round(warmup.activity_met * userWeight * (warmupTracking.elapsedSeconds / 3600));
+    return Math.round(
+      warmup.activity_met * userWeight * (warmupTracking.elapsedSeconds / 3600),
+    );
   }, [warmup?.activity_met, userWeight, warmupTracking.elapsedSeconds]);
 
   const cooldownCalories = useMemo(() => {
     if (!cooldown?.activity_met) return 0;
-    return Math.round(cooldown.activity_met * userWeight * (cooldownTracking.elapsedSeconds / 3600));
+    return Math.round(
+      cooldown.activity_met *
+        userWeight *
+        (cooldownTracking.elapsedSeconds / 3600),
+    );
   }, [cooldown?.activity_met, userWeight, cooldownTracking.elapsedSeconds]);
 
   const [showNotesModal, setShowNotesModal] = useState(false);
@@ -287,7 +298,12 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
       warmupTracking.resume(warmup.tracking_started_at, warmup.activity_slug);
       setWarmupCollapsed(false);
     }
-  }, [warmup?.is_tracking, warmup?.tracking_started_at, warmup?.activity_slug, warmupTracking]);
+  }, [
+    warmup?.is_tracking,
+    warmup?.tracking_started_at,
+    warmup?.activity_slug,
+    warmupTracking,
+  ]);
 
   useEffect(() => {
     if (
@@ -297,10 +313,18 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
       !cooldownResumedRef.current
     ) {
       cooldownResumedRef.current = true;
-      cooldownTracking.resume(cooldown.tracking_started_at, cooldown.activity_slug);
+      cooldownTracking.resume(
+        cooldown.tracking_started_at,
+        cooldown.activity_slug,
+      );
       setCooldownCollapsed(false);
     }
-  }, [cooldown?.is_tracking, cooldown?.tracking_started_at, cooldown?.activity_slug, cooldownTracking]);
+  }, [
+    cooldown?.is_tracking,
+    cooldown?.tracking_started_at,
+    cooldown?.activity_slug,
+    cooldownTracking,
+  ]);
 
   // Use selectors to avoid re-rendering on uiTick changes
   const activeSession = useTimerStore((state) => state.activeSession);
@@ -460,8 +484,7 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
     });
     if (!confirmed) return;
 
-    const tracking =
-      phaseType === "warmup" ? warmupTracking : cooldownTracking;
+    const tracking = phaseType === "warmup" ? warmupTracking : cooldownTracking;
     const setter = phaseType === "warmup" ? setWarmup : setCooldown;
     const setCollapsed =
       phaseType === "warmup" ? setWarmupCollapsed : setCooldownCollapsed;
@@ -473,7 +496,9 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
             ...prev,
             duration_seconds: result.duration_seconds,
             steps: result.steps,
-            distance_meters: prev.is_step_relevant ? result.distance_meters : null,
+            distance_meters: prev.is_step_relevant
+              ? result.distance_meters
+              : null,
             is_tracking: false,
           }
         : prev,
@@ -488,8 +513,7 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
     });
     if (!confirmed) return;
 
-    const tracking =
-      phaseType === "warmup" ? warmupTracking : cooldownTracking;
+    const tracking = phaseType === "warmup" ? warmupTracking : cooldownTracking;
     const setter = phaseType === "warmup" ? setWarmup : setCooldown;
 
     await tracking.stop();
@@ -767,22 +791,25 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
     addedViaModalRef.current = false;
   }, [exercises.length, exercises]);
 
-  const toggleExercise = useCallback((exerciseId: string) => {
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-    setCollapsedExercises((prev) => {
-      const isCurrentlyExpanded = !prev.has(exerciseId);
-      if (isCurrentlyExpanded) {
-        // Already expanded — collapse it
-        const next = new Set(prev);
-        next.add(exerciseId);
-        return next;
-      }
-      // Expanding this card — collapse all others
-      const allCollapsed = new Set(exercises.map((ex) => ex.exercise_id));
-      allCollapsed.delete(exerciseId);
-      return allCollapsed;
-    });
-  }, [exercises]);
+  const toggleExercise = useCallback(
+    (exerciseId: string) => {
+      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+      setCollapsedExercises((prev) => {
+        const isCurrentlyExpanded = !prev.has(exerciseId);
+        if (isCurrentlyExpanded) {
+          // Already expanded — collapse it
+          const next = new Set(prev);
+          next.add(exerciseId);
+          return next;
+        }
+        // Expanding this card — collapse all others
+        const allCollapsed = new Set(exercises.map((ex) => ex.exercise_id));
+        allCollapsed.delete(exerciseId);
+        return allCollapsed;
+      });
+    },
+    [exercises],
+  );
 
   const groupedExercises = GroupGymExercises(exercises);
 
@@ -869,7 +896,11 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
                     calories={warmupCalories}
                     isStepRelevant={warmup.is_step_relevant}
                     isCaloriesRelevant={warmup.is_calories_relevant}
-                    estimatedDistance={warmup.is_step_relevant ? warmupTracking.estimatedDistance : 0}
+                    estimatedDistance={
+                      warmup.is_step_relevant
+                        ? warmupTracking.estimatedDistance
+                        : 0
+                    }
                     onStop={() => handleStopPhaseTracking("warmup")}
                     onSwitchToManual={() => handleSwitchToManual("warmup")}
                     onChangeActivity={() => handleChangePhaseActivity("warmup")}
@@ -902,8 +933,7 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
                       setWarmup(null);
                     }}
                   />
-                ) : warmup.is_manual &&
-                  warmup.duration_seconds === 0 ? (
+                ) : warmup.is_manual && warmup.duration_seconds === 0 ? (
                   <PhaseCard
                     mode="manual"
                     phaseType="warmup"
@@ -1076,10 +1106,16 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
                     calories={cooldownCalories}
                     isStepRelevant={cooldown.is_step_relevant}
                     isCaloriesRelevant={cooldown.is_calories_relevant}
-                    estimatedDistance={cooldown.is_step_relevant ? cooldownTracking.estimatedDistance : 0}
+                    estimatedDistance={
+                      cooldown.is_step_relevant
+                        ? cooldownTracking.estimatedDistance
+                        : 0
+                    }
                     onStop={() => handleStopPhaseTracking("cooldown")}
                     onSwitchToManual={() => handleSwitchToManual("cooldown")}
-                    onChangeActivity={() => handleChangePhaseActivity("cooldown")}
+                    onChangeActivity={() =>
+                      handleChangePhaseActivity("cooldown")
+                    }
                     onRemove={async () => {
                       const confirmed = await confirmAction({
                         title: t("gym.phase.confirmRemoveTitle"),
@@ -1099,7 +1135,9 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
                     activityName={cooldown.activity_name}
                     activitySlug={cooldown.activity_slug}
                     onStart={() => handleStartPhaseTracking("cooldown")}
-                    onChangeActivity={() => handleChangePhaseActivity("cooldown")}
+                    onChangeActivity={() =>
+                      handleChangePhaseActivity("cooldown")
+                    }
                     onRemove={async () => {
                       const confirmed = await confirmAction({
                         title: t("gym.phase.confirmRemoveTitle"),
@@ -1109,15 +1147,16 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
                       setCooldown(null);
                     }}
                   />
-                ) : cooldown.is_manual &&
-                  cooldown.duration_seconds === 0 ? (
+                ) : cooldown.is_manual && cooldown.duration_seconds === 0 ? (
                   <PhaseCard
                     mode="manual"
                     phaseType="cooldown"
                     activityName={cooldown.activity_name}
                     activitySlug={cooldown.activity_slug}
                     isStepRelevant={cooldown.is_step_relevant}
-                    onChangeActivity={() => handleChangePhaseActivity("cooldown")}
+                    onChangeActivity={() =>
+                      handleChangePhaseActivity("cooldown")
+                    }
                     onRemove={async () => {
                       const confirmed = await confirmAction({
                         title: t("gym.phase.confirmRemoveTitle"),
@@ -1126,9 +1165,7 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
                       if (!confirmed) return;
                       setCooldown(null);
                     }}
-                    onSave={(data) =>
-                      handleManualPhaseSave("cooldown", data)
-                    }
+                    onSave={(data) => handleManualPhaseSave("cooldown", data)}
                   />
                 ) : (
                   <PhaseCard
@@ -1137,7 +1174,9 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
                     userWeight={userWeight}
                     isExpanded={!cooldownCollapsed}
                     onExpand={() => setCooldownCollapsed((p) => !p)}
-                    onChangeActivity={() => handleChangePhaseActivity("cooldown")}
+                    onChangeActivity={() =>
+                      handleChangePhaseActivity("cooldown")
+                    }
                     onRemove={async () => {
                       const confirmed = await confirmAction({
                         title: t("gym.phase.confirmRemoveTitle"),
@@ -1214,7 +1253,7 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
                       startExercise();
                       setIsExerciseModalOpen(false);
                     }}
-                    className="justify-center items-center py-2 bg-blue-800 rounded-md shadow-md border-2 border-blue-500"
+                    className="justify-center items-center btn-base"
                   >
                     <AppText className="text-lg">
                       {exerciseType === "Super-Set"
@@ -1241,7 +1280,7 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
                 setNormalExercises([emptyExerciseEntry]);
                 setIsExerciseModalOpen(true);
               }}
-              className="mt-10 w-2/4 items-center justify-center mx-auto flex-row gap-2 bg-blue-800 py-2 rounded-md border-2 border-blue-500"
+              className="mt-10 w-2/4 items-center justify-center mx-auto flex-row gap-2 btn-base"
               label={t("gym.gymForm.addExerciseButtonLabel")}
             >
               <Plus size={20} color="#f3f4f6" />

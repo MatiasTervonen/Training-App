@@ -138,7 +138,7 @@ export default function RecordingModal({
     >
       <View className="flex-1 bg-black/50 justify-end">
         <View
-          className="bg-slate-900 rounded-t-2xl px-6 pt-6 border-2 border-b-0 border-blue-500"
+          className="bg-slate-900 rounded-t-2xl px-6 pt-6 border-[1.5px] border-b-0 border-blue-500/60"
           style={{ paddingBottom: insets.bottom + 16 }}
         >
           <View className="items-center mb-5">

@@ -90,7 +90,7 @@ export default function HabitRow({
   return (
     <AnimatedButton
       onPress={onPress}
-      className="py-3 px-4 bg-gray-800 rounded-lg mb-2"
+      className="py-3 px-4 bg-slate-500/10 border border-slate-500/20 rounded-lg mb-2"
     >
       <View className="flex-row items-center justify-between">
         <AppText

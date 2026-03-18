@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { View, ScrollView, ActivityIndicator } from "react-native";
 import AppText from "@/components/AppText";
+import ErrorMessage from "@/components/ErrorMessage";
 import PageContainer from "@/components/PageContainer";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import ReportSection from "@/features/reports/components/ReportSection";
@@ -47,9 +48,7 @@ export default function ReportSession({ item }: ReportSessionProps) {
 
   if (error || !report) {
     return (
-      <View className="gap-2 justify-center items-center pt-40">
-        <AppText className="text-lg">{t("feed:feed.reportError")}</AppText>
-      </View>
+      <ErrorMessage message={t("feed:feed.reportError")} fullPage />
     );
   }
 

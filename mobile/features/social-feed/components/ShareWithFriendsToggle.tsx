@@ -1,15 +1,14 @@
 import { useCallback, useState } from "react";
-import { View } from "react-native";
-import AppText from "@/components/AppText";
-import Toggle from "@/components/toggle";
+import { Alert } from "react-native";
 import { Users } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
 import { updateFeedItemVisibility } from "@/database/social-feed/update-visibility";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
+import AnimatedButton from "@/components/buttons/animatedButton";
 
-type ShareWithFriendsToggleProps = {
+type ShareWithFriendsButtonProps = {
   sourceId: string;
   sessionType: "gym_sessions" | "activity_sessions";
 };
@@ -29,10 +28,10 @@ async function getFeedItemVisibility(
   return (data.visibility as "private" | "friends") ?? "private";
 }
 
-export default function ShareWithFriendsToggle({
+export default function ShareWithFriendsButton({
   sourceId,
   sessionType,
-}: ShareWithFriendsToggleProps) {
+}: ShareWithFriendsButtonProps) {
   const { t } = useTranslation("social");
   const queryClient = useQueryClient();
   const [optimisticValue, setOptimisticValue] = useState<boolean | null>(null);
@@ -44,7 +43,7 @@ export default function ShareWithFriendsToggle({
 
   const isShared = optimisticValue ?? visibility === "friends";
 
-  const handleToggle = useCallback(async () => {
+  const performToggle = useCallback(async () => {
     const newValue = !isShared;
     setOptimisticValue(newValue);
     try {
@@ -57,6 +56,12 @@ export default function ShareWithFriendsToggle({
       queryClient.invalidateQueries({
         queryKey: ["feed-item-visibility", sourceId, sessionType],
       });
+      Toast.show({
+        type: "success",
+        text1: newValue
+          ? t("social.sharedWithFriends")
+          : t("social.removedFromFriends"),
+      });
     } catch {
       setOptimisticValue(null);
       Toast.show({
@@ -66,17 +71,31 @@ export default function ShareWithFriendsToggle({
     }
   }, [isShared, sourceId, sessionType, queryClient, t]);
 
+  const handlePress = useCallback(() => {
+    Alert.alert(
+      isShared
+        ? t("social.removeFromFriendsTitle")
+        : t("social.shareWithFriendsTitle"),
+      isShared
+        ? t("social.removeFromFriendsMessage")
+        : t("social.shareWithFriendsMessage"),
+      [
+        { text: t("social.cancel"), style: "cancel" },
+        {
+          text: isShared
+            ? t("social.removeConfirm")
+            : t("social.shareConfirm"),
+          onPress: performToggle,
+        },
+      ],
+    );
+  }, [isShared, performToggle, t]);
+
   if (visibility === undefined) return null;
 
   return (
-    <View className="flex-row items-center justify-between py-4 px-4 mt-5 rounded-lg bg-slate-800/50 border border-slate-700">
-      <View className="flex-row items-center gap-3">
-        <Users size={20} color="#67e8f9" />
-        <AppText className="text-gray-100">
-          {t("social.shareWithFriends")}
-        </AppText>
-      </View>
-      <Toggle isOn={isShared} onToggle={handleToggle} />
-    </View>
+    <AnimatedButton onPress={handlePress} hitSlop={10}>
+      <Users size={20} color={isShared ? "#67e8f9" : "#9ca3af"} />
+    </AnimatedButton>
   );
 }

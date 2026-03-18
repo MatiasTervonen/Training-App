@@ -67,7 +67,7 @@ export default function ImagePicker({ onImageSelected }: Props) {
     <AnimatedButton
       label={t("notes.images.addImage")}
       onPress={handlePress}
-      className="bg-blue-800 border-blue-500 border-2 py-2 rounded-md flex-row items-center justify-center gap-2"
+      className="btn-add flex-row items-center justify-center gap-2"
     >
       <ImagePlus color="white" size={24} />
     </AnimatedButton>

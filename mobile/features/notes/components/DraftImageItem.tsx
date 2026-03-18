@@ -15,7 +15,7 @@ export default function DraftImageItem({ uri, isLoading, onDelete, onPress }: Pr
     <AnimatedButton
       onPress={onPress ?? (() => {})}
       disabled={isLoading}
-      className="relative mb-3 rounded-md overflow-hidden border-2 border-blue-500 bg-slate-950"
+      className="relative mb-3 rounded-md overflow-hidden border-[1.5px] border-blue-500/60 bg-slate-950"
     >
       {isLoading ? (
         <View className="w-full h-48 items-center justify-center">

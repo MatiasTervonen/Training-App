@@ -4,7 +4,7 @@
     "friendsFeed": "Kaverit",
     "noFriendPosts": "Ei vielä kavereiden julkaisuja",
     "noFriendsYet": "Lisää kavereita nähdäksesi heidän aktiviteettinsa täällä",
-    "shareWithFriends": "Jaa kavereille",
+    "shareWithFriends": "Julkaise sosiaaliseen syötteeseen",
     "likes": "tykkäystä",
     "like": "tykkäys",
     "liked": "Tykätty",
@@ -18,6 +18,15 @@
     "send": "Lähetä",
     "deleteComment": "Poista kommentti",
     "reply": "Vastaa",
-    "replyingTo": "Vastaus käyttäjälle {{name}}"
+    "replyingTo": "Vastaus käyttäjälle {{name}}",
+    "sharedWithFriends": "Julkaistu sosiaaliseen syötteeseen",
+    "removedFromFriends": "Poistettu sosiaalisesta syötteestä",
+    "shareWithFriendsTitle": "Julkaise sosiaaliseen syötteeseen",
+    "shareWithFriendsMessage": "Tämä harjoitus näkyy kavereillesi sosiaalisessa syötteessä.",
+    "removeFromFriendsTitle": "Poista sosiaalisesta syötteestä",
+    "removeFromFriendsMessage": "Tämä harjoitus ei näy enää sosiaalisessa syötteessä.",
+    "shareConfirm": "Julkaise",
+    "removeConfirm": "Poista",
+    "cancel": "Peruuta"
   }
 }

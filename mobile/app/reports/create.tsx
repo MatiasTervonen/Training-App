@@ -39,6 +39,7 @@ export default function CreateReportScreen() {
   const [deliveryDayOfMonth, setDeliveryDayOfMonth] = useState(1);
   const [deliveryHour, setDeliveryHour] = useState(8);
   const [isSaving, setIsSaving] = useState(false);
+  const [prefilled, setPrefilled] = useState(false);
 
   // Pre-fill for editing
   useEffect(() => {
@@ -51,6 +52,7 @@ export default function CreateReportScreen() {
         setDeliveryDayOfWeek(schedule.delivery_day_of_week ?? 1);
         setDeliveryDayOfMonth(schedule.delivery_day_of_month ?? 1);
         setDeliveryHour(schedule.delivery_hour);
+        setPrefilled(true);
       }
     }
   }, [isEditing, id, schedules]);
@@ -126,7 +128,7 @@ export default function CreateReportScreen() {
   const { status } = useAutoSave({
     data: autoSaveData,
     onSave: handleAutoSave,
-    enabled: isEditing,
+    enabled: isEditing && prefilled,
   });
 
   const handleSave = async () => {

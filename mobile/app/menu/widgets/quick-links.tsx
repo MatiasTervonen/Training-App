@@ -80,7 +80,7 @@ export default function QuickLinksConfigPage() {
         {LINK_TARGETS.map((target) => (
           <View
             key={target.key}
-            className="flex-row justify-between items-center py-3 px-4 bg-slate-800 rounded-lg"
+            className="flex-row justify-between items-center py-3 px-4 bg-slate-500/10 border border-slate-500/20 rounded-lg"
           >
             <AppText className="text-lg">{getLabel(target)}</AppText>
             <Toggle

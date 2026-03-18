@@ -18,6 +18,10 @@ Every command run in the terminal must include a short explanation of what it do
 - When filtering data by date ranges, ensure both sides use the same timezone basis (both local or both UTC).
 - Get the user's IANA timezone with `Intl.DateTimeFormat().resolvedOptions().timeZone` (e.g., `"Europe/Helsinki"`).
 
+## React Patterns
+- Avoid `useEffect` for derived state — if a value can be computed from props or other state, compute it during render (plain variable or `useMemo`) instead of syncing via `useEffect` + `setState`. Only use `useEffect` for actual side effects: subscriptions, network requests, timers, and syncing with external systems.                                                         
+          
+
 ### SQL / Supabase RPC side
 - Supabase runs in UTC. `CURRENT_DATE`, `now()::date`, and `column::date` all use UTC — never use them for user-facing date logic.
 - Always accept the user's local date as a `p_date DATE` parameter from JS instead of using `CURRENT_DATE`.

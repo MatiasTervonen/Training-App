@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useMemo, useRef } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { useNavigation } from "expo-router";
 import { useRouter } from "expo-router";
 import { View, ScrollView, LayoutChangeEvent } from "react-native";
@@ -17,8 +17,8 @@ import { useTranslation } from "react-i18next";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
 import * as Haptics from "expo-haptics";
 import Toggle from "@/components/toggle";
-import useSharingDefaults from "@/features/sharing/hooks/useSharingDefaults";
 import { updateFeedItemVisibility } from "@/database/social-feed/update-visibility";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function TrainingFinishedScreen() {
   const { t } = useTranslation("gym");
@@ -30,24 +30,9 @@ export default function TrainingFinishedScreen() {
   const [containerWidth, setContainerWidth] = useState(0);
   const [containerHeight, setContainerHeight] = useState(0);
   const [settingsExpanded, setSettingsExpanded] = useState(false);
-
-  // Share with friends — pre-fill from defaults
-  const { data: sharingDefaults } = useSharingDefaults();
   const [sharedWithFriends, setSharedWithFriends] = useState(false);
-  const defaultApplied = useRef(false);
   const router = useRouter();
-
-  useEffect(() => {
-    if (sharingDefaults && !defaultApplied.current) {
-      defaultApplied.current = true;
-      const gymDefault = sharingDefaults.find(
-        (d) => d.session_type === "gym_sessions",
-      );
-      if (gymDefault?.share_with_friends) {
-        setSharedWithFriends(true);
-      }
-    }
-  }, [sharingDefaults]);
+  const queryClient = useQueryClient();
 
   const theme = useMemo(() => getTheme(themeId), [themeId]);
   const dims = SHARE_CARD_DIMENSIONS[size];
@@ -117,6 +102,26 @@ export default function TrainingFinishedScreen() {
       text2: success ? undefined : t("gym.share.saveError"),
     });
   }, [saveCardToGallery, size, t]);
+
+  const handleToggleShareWithFriends = useCallback(async () => {
+    if (!summary?.sessionId) return;
+    const newValue = !sharedWithFriends;
+    setSharedWithFriends(newValue);
+    try {
+      await updateFeedItemVisibility(
+        summary.sessionId,
+        "gym_sessions",
+        newValue ? "friends" : "private",
+      );
+      queryClient.invalidateQueries({ queryKey: ["social-feed"] });
+    } catch {
+      setSharedWithFriends(!newValue);
+      Toast.show({
+        type: "error",
+        text1: t("common:common.error"),
+      });
+    }
+  }, [summary?.sessionId, sharedWithFriends, queryClient, t]);
 
   return (
     <ScrollView
@@ -205,7 +210,7 @@ export default function TrainingFinishedScreen() {
           </View>
           <Toggle
             isOn={sharedWithFriends}
-            onToggle={() => setSharedWithFriends((prev) => !prev)}
+            onToggle={handleToggleShareWithFriends}
           />
         </View>
       )}
@@ -244,23 +249,7 @@ export default function TrainingFinishedScreen() {
       <View className="w-full pb-10 mt-8">
         <AnimatedButton
           className="btn-base py-3"
-          onPress={async () => {
-            if (sharedWithFriends && summary?.sessionId) {
-              try {
-                await updateFeedItemVisibility(
-                  summary.sessionId,
-                  "gym_sessions",
-                  "friends",
-                );
-              } catch {
-                Toast.show({
-                  type: "error",
-                  text1: t("common:common.error"),
-                });
-              }
-            }
-            router.replace("/dashboard");
-          }}
+          onPress={() => router.replace("/dashboard")}
         >
           <AppText className="text-center">{t("gym.share.done")}</AppText>
         </AnimatedButton>

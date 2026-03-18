@@ -21,6 +21,7 @@ import DraftVideoItem from "@/features/notes/components/DraftVideoItem";
 import { DraftRecordingItem } from "@/features/notes/components/draftRecording";
 import ImageViewerModal from "@/features/notes/components/ImageViewerModal";
 import ShareModal from "@/features/gym/components/ShareModal";
+import ShareWithFriendsToggle from "@/features/social-feed/components/ShareWithFriendsToggle";
 
 export default function GymSession(gym_session: FullGymSession & { readOnly?: boolean }) {
   const { t } = useTranslation("gym");
@@ -209,6 +210,12 @@ export default function GymSession(gym_session: FullGymSession & { readOnly?: bo
               </View>
             )}
           </LinearGradient>
+          {!gym_session.readOnly && (
+            <ShareWithFriendsToggle
+              sourceId={gym_session.id}
+              sessionType="gym_sessions"
+            />
+          )}
         </View>
         {warmupPhase && warmupPhase.activities && (
           <PhaseDisplayCard

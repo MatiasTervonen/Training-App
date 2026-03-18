@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useMemo, useRef } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { useNavigation, useRouter } from "expo-router";
 import { View, ScrollView, LayoutChangeEvent, ActivityIndicator, PixelRatio } from "react-native";
 import AppText from "@/components/AppText";
@@ -22,7 +22,6 @@ import { useTranslation } from "react-i18next";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
 import * as Haptics from "expo-haptics";
 import Toggle from "@/components/toggle";
-import useSharingDefaults from "@/features/sharing/hooks/useSharingDefaults";
 import { updateFeedItemVisibility } from "@/database/social-feed/update-visibility";
 import { useQueryClient } from "@tanstack/react-query";
 import Mapbox from "@rnmapbox/maps";
@@ -48,25 +47,9 @@ export default function ActivityFinishedScreen() {
   const [containerWidth, setContainerWidth] = useState(0);
   const [containerHeight, setContainerHeight] = useState(0);
   const [settingsExpanded, setSettingsExpanded] = useState(false);
-
-  // Share with friends — pre-fill from defaults
-  const { data: sharingDefaults } = useSharingDefaults();
   const [sharedWithFriends, setSharedWithFriends] = useState(false);
-  const defaultApplied = useRef(false);
   const router = useRouter();
   const queryClient = useQueryClient();
-
-  useEffect(() => {
-    if (sharingDefaults && !defaultApplied.current) {
-      defaultApplied.current = true;
-      const actDefault = sharingDefaults.find(
-        (d) => d.session_type === "activity_sessions",
-      );
-      if (actDefault?.share_with_friends) {
-        setSharedWithFriends(true);
-      }
-    }
-  }, [sharingDefaults]);
 
   const {
     theme: themeId,
@@ -221,6 +204,26 @@ export default function ActivityFinishedScreen() {
     });
   }, [saveCardToGallery, size, t]);
 
+  const handleToggleShareWithFriends = useCallback(async () => {
+    if (!summary?.sessionId) return;
+    const newValue = !sharedWithFriends;
+    setSharedWithFriends(newValue);
+    try {
+      await updateFeedItemVisibility(
+        summary.sessionId,
+        "activity_sessions",
+        newValue ? "friends" : "private",
+      );
+      queryClient.invalidateQueries({ queryKey: ["social-feed"] });
+    } catch {
+      setSharedWithFriends(!newValue);
+      Toast.show({
+        type: "error",
+        text1: t("common:common.error"),
+      });
+    }
+  }, [summary?.sessionId, sharedWithFriends, queryClient, t]);
+
   const showHiddenMap =
     summary?.hasRoute && routeFeature && bounds &&
     (!hideMapDetails || privacyStyleReady);
@@ -341,7 +344,7 @@ export default function ActivityFinishedScreen() {
           </View>
           <Toggle
             isOn={sharedWithFriends}
-            onToggle={() => setSharedWithFriends((prev) => !prev)}
+            onToggle={handleToggleShareWithFriends}
           />
         </View>
       )}
@@ -461,24 +464,7 @@ export default function ActivityFinishedScreen() {
       <View className="w-full pb-10 mt-8">
         <AnimatedButton
           className="btn-base py-3"
-          onPress={async () => {
-            if (sharedWithFriends && summary?.sessionId) {
-              try {
-                await updateFeedItemVisibility(
-                  summary.sessionId,
-                  "activity_sessions",
-                  "friends",
-                );
-                queryClient.invalidateQueries({ queryKey: ["social-feed"] });
-              } catch {
-                Toast.show({
-                  type: "error",
-                  text1: t("common:common.error"),
-                });
-              }
-            }
-            router.replace("/dashboard");
-          }}
+          onPress={() => router.replace("/dashboard")}
         >
           <AppText className="text-center">
             {t("activities.share.done")}

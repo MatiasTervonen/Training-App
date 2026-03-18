@@ -26,6 +26,7 @@ import ImageViewerModal from "@/features/notes/components/ImageViewerModal";
 import { NotesVoiceSkeleton } from "@/components/skeletetons";
 import { useTemplateHistory } from "@/features/activities/templates/hooks/useTemplateHistory";
 import TemplateHistoryModal from "@/features/activities/templates/components/TemplateHistoryModal";
+import ShareWithFriendsToggle from "@/features/social-feed/components/ShareWithFriendsToggle";
 
 type ActivitySessionProps = FullActivitySession & {
   voiceRecordings?: ActivityVoiceRecording[];
@@ -207,6 +208,13 @@ export default function ActivitySession(
               <AppText className="text-center text-red-500 mt-10">
                 {t("activities.sessionDetails.mediaLoadError")}
               </AppText>
+            )}
+
+            {!activity_session.readOnly && (
+              <ShareWithFriendsToggle
+                sourceId={activity_session.session.id}
+                sessionType="activity_sessions"
+              />
             )}
           </View>
           {hasRoute && !activity_session.readOnly && (

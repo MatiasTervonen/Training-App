@@ -50,24 +50,49 @@ import { getFriendActivitySession } from "@/database/social-feed/get-friend-acti
 
 type SessionFeedProps = {
   expandReminderId?: string;
+  initialFeedMode?: "my" | "friends";
+  initialCommentFeedItemId?: string;
 };
 
-export default function SessionFeed({ expandReminderId }: SessionFeedProps) {
+export default function SessionFeed({
+  expandReminderId,
+  initialFeedMode,
+  initialCommentFeedItemId,
+}: SessionFeedProps) {
   const setFeedReady = useAppReadyStore((state) => state.setFeedReady);
   const feedReady = useAppReadyStore((state) => state.feedReady);
   const queryClient = useQueryClient();
   const { t } = useTranslation("feed");
 
-  const [feedMode, setFeedMode] = useState<"my" | "friends">("my");
+  const [feedMode, setFeedMode] = useState<"my" | "friends">(
+    initialFeedMode ?? "my",
+  );
   const [expandedItem, setExpandedItem] = useState<FeedItemUI | null>(null);
   const [editingItem, setEditingItem] = useState<FeedItemUI | null>(null);
   const [refreshing, setRefreshing] = useState(false);
-  const [expandedSocialItem, setExpandedSocialItem] = useState<SocialFeedItem | null>(null);
-  const [commentFeedItemId, setCommentFeedItemId] = useState<string | null>(null);
+  const [expandedSocialItem, setExpandedSocialItem] =
+    useState<SocialFeedItem | null>(null);
+  const [commentFeedItemId, setCommentFeedItemId] = useState<string | null>(
+    initialCommentFeedItemId ?? null,
+  );
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [hasUnsavedExpandedChanges, setHasUnsavedExpandedChanges] =
     useState(false);
   const expandedReminderRef = useRef<string | null>(null);
+
+  // Sync feed mode when navigating from notification while already on dashboard
+  useEffect(() => {
+    if (initialFeedMode) {
+      setFeedMode(initialFeedMode);
+    }
+  }, [initialFeedMode]);
+
+  // Auto-open comment sheet when navigating from comment/reply notification
+  useEffect(() => {
+    if (initialCommentFeedItemId) {
+      setCommentFeedItemId(initialCommentFeedItemId);
+    }
+  }, [initialCommentFeedItemId]);
 
   const router = useRouter();
 
@@ -168,11 +193,13 @@ export default function SessionFeed({ expandReminderId }: SessionFeedProps) {
     enabled: !!expandedSocialItem && expandedSocialItem.type === "gym_sessions",
   });
 
-  const { data: friendActivityData, isLoading: isLoadingFriendActivity } = useQuery({
-    queryKey: ["friendActivitySession", expandedSocialItem?.id],
-    queryFn: () => getFriendActivitySession(expandedSocialItem!.id),
-    enabled: !!expandedSocialItem && expandedSocialItem.type === "activity_sessions",
-  });
+  const { data: friendActivityData, isLoading: isLoadingFriendActivity } =
+    useQuery({
+      queryKey: ["friendActivitySession", expandedSocialItem?.id],
+      queryFn: () => getFriendActivitySession(expandedSocialItem!.id),
+      enabled:
+        !!expandedSocialItem && expandedSocialItem.type === "activity_sessions",
+    });
 
   // useUpdateFeedItem hook to update feed item in cache
   const { updateFeedItem } = useUpdateFeedItem();
@@ -199,7 +226,8 @@ export default function SessionFeed({ expandReminderId }: SessionFeedProps) {
             <AppText className="text-center text-lg mt-20 mx-auto px-10">
               {t("feed.loadError")}
             </AppText>
-          ) : !data || (unpinnedFeed.length === 0 && pinnedFeed.length === 0) ? (
+          ) : !data ||
+            (unpinnedFeed.length === 0 && pinnedFeed.length === 0) ? (
             <View className="flex-1 items-center mt-[30%] px-8">
               <View className="items-center">
                 <View className="w-20 h-20 rounded-full bg-slate-800 border border-slate-700 items-center justify-center mb-5">
@@ -321,7 +349,7 @@ export default function SessionFeed({ expandReminderId }: SessionFeedProps) {
             <FlatList
               data={socialFeed.items}
               keyExtractor={(item) => item.id}
-              contentContainerStyle={{ paddingBottom: 100, paddingTop: 4 }}
+              contentContainerStyle={{ paddingBottom: 100, paddingTop: 12 }}
               showsVerticalScrollIndicator={false}
               refreshControl={
                 <RefreshControl
@@ -629,7 +657,9 @@ export default function SessionFeed({ expandReminderId }: SessionFeedProps) {
             <>
               {isLoadingFriendActivity ? (
                 <View className="gap-5 items-center justify-center mt-40 px-10">
-                  <AppText className="text-lg">{t("feed.loadingActivity")}</AppText>
+                  <AppText className="text-lg">
+                    {t("feed.loadingActivity")}
+                  </AppText>
                   <ActivityIndicator />
                 </View>
               ) : friendActivityData ? (

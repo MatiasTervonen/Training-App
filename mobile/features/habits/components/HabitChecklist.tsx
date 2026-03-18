@@ -28,7 +28,6 @@ export default function HabitChecklist({
   const {
     startHabitTimer,
     pauseHabitTimer,
-    resumeHabitTimer,
     activeHabitId,
     habitTimerState,
   } = useHabitTimer();
@@ -120,7 +119,7 @@ export default function HabitChecklist({
                     : undefined
                 }
                 onPauseTimer={isDuration ? pauseHabitTimer : undefined}
-                onResumeTimer={isDuration ? resumeHabitTimer : undefined}
+                onResumeTimer={isDuration && isToday ? () => startHabitTimer(habit, getAccumulatedSeconds(habit.id)) : undefined}
               />
             );
           })}

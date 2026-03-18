@@ -56,11 +56,26 @@
   "habitTimerStart": "Aloita",
   "habitTimerPause": "Tauko",
   "habitTimerResume": "Jatka",
-  "habitTimerDone": "{{habitName}} — Valmis!",
+  "habitTimerDone": "🎉 {{habitName}} — Valmis!",
+  "cannotEditWhileTimerRunning": "Pysäytä ajastin ennen muokkausta",
   "habitTimerActive": "Toinen ajastin on käynnissä. Pysäytä se ensin.",
   "habitTimerCancelTitle": "Pysäytä ajastin?",
   "habitTimerCancelMessage": "Edistymisesi tallennetaan.",
   "durationCompleted": "Tavoite saavutettu!",
+  "reminderDisabledPush": "Push-ilmoitukset ovat pois päältä. Ota käyttöön",
+  "reminderDisabledPushLink": "Asetuksista",
+  "durationPushDisabled": {
+    "title": "Push-ilmoitukset vaaditaan",
+    "description": "Kestotavat vaativat push-ilmoitukset näyttääkseen hälytyksen, kun tavoite on saavutettu.",
+    "back": "Takaisin",
+    "settings": "Asetukset"
+  },
+  "alarmPermission": {
+    "title": "Salli hälytysten asettaminen",
+    "description": "Kestotavat vaativat hälytysluvan ilmoittaakseen, kun tavoite on saavutettu.\n\nIlman tätä lupaa ajastinhälytys ei toimi.",
+    "back": "Takaisin",
+    "allow": "Salli"
+  },
   "frequency": "Toistuvuus",
   "frequencyDaily": "Päivittäin",
   "frequencySpecific": "Tietyt päivät",

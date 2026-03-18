@@ -1,8 +1,14 @@
-import { View, ScrollView, Pressable, Keyboard, Platform } from "react-native";
+import { View, ScrollView, Platform, AppState, Modal } from "react-native";
 import AppText from "@/components/AppText";
+import AppTextNC from "@/components/AppTextNC";
 import AppInput from "@/components/AppInput";
 import PageContainer from "@/components/PageContainer";
 import AutoSaveIndicator from "@/components/AutoSaveIndicator";
+import InfoModal from "@/components/InfoModal";
+import BodyText from "@/components/BodyText";
+import LinkButton from "@/components/buttons/LinkButton";
+import { Info } from "lucide-react-native";
+import { SESSION_COLORS } from "@/lib/sessionColors";
 
 import SaveButton from "@/components/buttons/SaveButton";
 import FullScreenLoader from "@/components/FullScreenLoader";
@@ -19,9 +25,14 @@ import Toast from "react-native-toast-message";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import Toggle from "@/components/toggle";
 import { Checkbox } from "expo-checkbox";
-import { TimerPicker } from "react-native-timer-picker";
+import { TimerPickerModal } from "react-native-timer-picker";
 import { LinearGradient } from "expo-linear-gradient";
 import * as Haptics from "expo-haptics";
+import { useUserStore } from "@/lib/stores/useUserStore";
+import {
+  canUseExactAlarm,
+  requestExactAlarm,
+} from "@/native/android/EnsureExactAlarmPermission";
 
 export default function CreateHabitScreen() {
   const { t, i18n } = useTranslation("habits");
@@ -35,24 +46,40 @@ export default function CreateHabitScreen() {
   const { scheduleHabitReminder, cancelHabitReminder } =
     useHabitNotifications();
 
-  const [habitType, setHabitType] = useState<"manual" | "steps" | "duration">("manual");
+  const [habitType, setHabitType] = useState<"manual" | "steps" | "duration">(
+    "manual",
+  );
   const [name, setName] = useState("");
   const [stepGoal, setStepGoal] = useState("");
-  const [durationPicker, setDurationPicker] = useState({ hours: 0, minutes: 0, seconds: 0 });
+  const [durationPicker, setDurationPicker] = useState({
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+  });
   const [alarmType, setAlarmType] = useState<"normal" | "priority">("normal");
-  const [frequencyMode, setFrequencyMode] = useState<"daily" | "specific">("daily");
+  const [frequencyMode, setFrequencyMode] = useState<"daily" | "specific">(
+    "daily",
+  );
   const [selectedDays, setSelectedDays] = useState<number[]>([]);
   const [reminderEnabled, setReminderEnabled] = useState(false);
   const [reminderTime, setReminderTime] = useState(new Date());
   const [timePickerOpen, setTimePickerOpen] = useState(false);
+  const [durationPickerOpen, setDurationPickerOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [prefilled, setPrefilled] = useState(false);
+  const [showAlarmModal, setShowAlarmModal] = useState(false);
+
+  const pushEnabled = useUserStore((state) => state.settings?.push_enabled);
+  const colors = SESSION_COLORS.habits;
+  const showDurationPushModal = habitType === "duration" && pushEnabled === false;
 
   // Day labels: 1=Sun, 2=Mon, ..., 7=Sat (Expo notification weekday numbering)
   const dayKeys = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"] as const;
   // Display order: Mon first
   const displayOrder = [1, 2, 3, 4, 5, 6, 0] as const; // indices into dayKeys
 
-  const durationInSeconds = durationPicker.hours * 3600 + durationPicker.minutes * 60;
+  const durationInSeconds =
+    durationPicker.hours * 3600 + durationPicker.minutes * 60;
 
   // Pre-fill when editing
   useEffect(() => {
@@ -85,9 +112,30 @@ export default function CreateHabitScreen() {
           date.setHours(parseInt(h, 10), parseInt(m, 10), 0, 0);
           setReminderTime(date);
         }
+        setPrefilled(true);
       }
     }
   }, [isEditing, id, habits]);
+
+  // Re-check alarm permission when returning from system settings
+  useEffect(() => {
+    const sub = AppState.addEventListener("change", async (state) => {
+      if (state !== "active") return;
+      const allowed = await canUseExactAlarm();
+      if (allowed) {
+        setShowAlarmModal(false);
+        setAlarmType("priority");
+      }
+    });
+    return () => sub.remove();
+  }, []);
+
+  // Disable reminder if push is off
+  useEffect(() => {
+    if (!pushEnabled && reminderEnabled) {
+      setReminderEnabled(false);
+    }
+  }, [pushEnabled, reminderEnabled]);
 
   // Auto-save (edit mode only)
   const autoSaveData = useMemo(
@@ -102,13 +150,25 @@ export default function CreateHabitScreen() {
       reminderEnabled,
       reminderTimestamp: reminderTime.getTime(),
     }),
-    [name, stepGoal, habitType, durationInSeconds, alarmType, frequencyMode, selectedDays, reminderEnabled, reminderTime],
+    [
+      name,
+      stepGoal,
+      habitType,
+      durationInSeconds,
+      alarmType,
+      frequencyMode,
+      selectedDays,
+      reminderEnabled,
+      reminderTime,
+    ],
   );
 
   const handleAutoSave = useCallback(async () => {
     if (habitType === "manual" && !name.trim()) return;
-    if (habitType === "steps" && (!stepGoal || parseInt(stepGoal, 10) <= 0)) return;
-    if (habitType === "duration" && (durationInSeconds <= 0 || !name.trim())) return;
+    if (habitType === "steps" && (!stepGoal || parseInt(stepGoal, 10) <= 0))
+      return;
+    if (habitType === "duration" && (durationInSeconds <= 0 || !name.trim()))
+      return;
 
     const isStepsType = habitType === "steps";
     const parsedGoal = parseInt(stepGoal, 10);
@@ -152,21 +212,34 @@ export default function CreateHabitScreen() {
       );
     }
   }, [
-    habitType, name, stepGoal, durationInSeconds, alarmType, reminderEnabled, reminderTime,
-    frequencyMode, selectedDays, id, editMutation,
-    cancelHabitReminder, scheduleHabitReminder, t,
+    habitType,
+    name,
+    stepGoal,
+    durationInSeconds,
+    alarmType,
+    reminderEnabled,
+    reminderTime,
+    frequencyMode,
+    selectedDays,
+    id,
+    editMutation,
+    cancelHabitReminder,
+    scheduleHabitReminder,
+    t,
   ]);
 
   const { status } = useAutoSave({
     data: autoSaveData,
     onSave: handleAutoSave,
-    enabled: isEditing,
+    enabled: isEditing && prefilled,
   });
 
   const handleSave = async () => {
     if (habitType === "manual" && !name.trim()) return;
-    if (habitType === "steps" && (!stepGoal || parseInt(stepGoal, 10) <= 0)) return;
-    if (habitType === "duration" && (durationInSeconds <= 0 || !name.trim())) return;
+    if (habitType === "steps" && (!stepGoal || parseInt(stepGoal, 10) <= 0))
+      return;
+    if (habitType === "duration" && (durationInSeconds <= 0 || !name.trim()))
+      return;
 
     const isSteps = habitType === "steps";
     const parsedGoal = parseInt(stepGoal, 10);
@@ -174,12 +247,14 @@ export default function CreateHabitScreen() {
       ? t("stepHabitName", { steps: parsedGoal.toLocaleString() })
       : name.trim();
 
-    const timeStr = habitType !== "steps" && reminderEnabled
-      ? `${String(reminderTime.getHours()).padStart(2, "0")}:${String(reminderTime.getMinutes()).padStart(2, "0")}:00`
-      : null;
-    const freqDays = frequencyMode === "specific" && selectedDays.length > 0
-      ? selectedDays
-      : null;
+    const timeStr =
+      habitType !== "steps" && reminderEnabled
+        ? `${String(reminderTime.getHours()).padStart(2, "0")}:${String(reminderTime.getMinutes()).padStart(2, "0")}:00`
+        : null;
+    const freqDays =
+      frequencyMode === "specific" && selectedDays.length > 0
+        ? selectedDays
+        : null;
 
     const targetValue = isSteps
       ? parsedGoal
@@ -250,22 +325,22 @@ export default function CreateHabitScreen() {
       ? !!name.trim() && durationInSeconds > 0
       : !!name.trim();
 
-  // Use onTouchStart for keyboard dismiss when duration type has picker
-  const WrapperComponent = isDuration ? View : Pressable;
-  const wrapperProps = isDuration
-    ? { onTouchStart: () => Keyboard.dismiss(), className: "flex-1" }
-    : { onPress: () => Keyboard.dismiss(), className: "flex-1" };
-
   return (
-    <PageContainer>
-      <AutoSaveIndicator status={status} />
-      <WrapperComponent {...wrapperProps}>
-        <ScrollView className="flex-1">
+    <>
+      <ScrollView
+        className="flex-1"
+        showsVerticalScrollIndicator={false}
+        contentContainerClassName="flex-grow"
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="on-drag"
+      >
+        <PageContainer>
+          <AutoSaveIndicator status={status} />
           <AppText className="text-2xl text-center mb-6">
             {isEditing ? t("editHabit") : t("addHabit")}
           </AppText>
 
-          <View className="gap-10">
+          <View className="gap-8">
             {/* Habit type selector - only show when creating, and only on Android */}
             {!isEditing && Platform.OS === "android" && (
               <View className="gap-4">
@@ -274,7 +349,9 @@ export default function CreateHabitScreen() {
                   <View className="flex-1">
                     <AnimatedButton
                       onPress={() => setHabitType("manual")}
-                      className={habitType === "manual" ? "btn-base" : "btn-neutral"}
+                      className={
+                        habitType === "manual" ? "btn-base" : "btn-neutral"
+                      }
                       label={t("typeManual")}
                       textClassName="text-gray-100"
                     />
@@ -282,7 +359,9 @@ export default function CreateHabitScreen() {
                   <View className="flex-1">
                     <AnimatedButton
                       onPress={() => setHabitType("steps")}
-                      className={habitType === "steps" ? "btn-base" : "btn-neutral"}
+                      className={
+                        habitType === "steps" ? "btn-base" : "btn-neutral"
+                      }
                       label={t("typeSteps")}
                       textClassName="text-gray-100"
                     />
@@ -290,7 +369,9 @@ export default function CreateHabitScreen() {
                   <View className="flex-1">
                     <AnimatedButton
                       onPress={() => setHabitType("duration")}
-                      className={habitType === "duration" ? "btn-base" : "btn-neutral"}
+                      className={
+                        habitType === "duration" ? "btn-base" : "btn-neutral"
+                      }
                       label={t("typeDuration")}
                       textClassName="text-gray-100"
                     />
@@ -300,7 +381,7 @@ export default function CreateHabitScreen() {
             )}
 
             {/* Name input (manual / duration) or Step goal input (steps) */}
-            <View className="mt-5">
+            <View>
               {isSteps ? (
                 <AppInput
                   value={stepGoal}
@@ -323,74 +404,108 @@ export default function CreateHabitScreen() {
             {isDuration && (
               <View className="gap-4">
                 <AppText className="text-lg">{t("durationTarget")}</AppText>
-                <View
-                  className="items-center bg-slate-800/60 rounded-2xl border border-slate-700/50 px-2 py-4"
-                  onTouchStart={(e) => e.stopPropagation()}
+                <AnimatedButton
+                  onPress={() => setDurationPickerOpen(true)}
+                  className="btn-neutral px-4 py-3"
                 >
-                  <TimerPicker
-                    onDurationChange={setDurationPicker}
-                    initialValue={{ hours: durationPicker.hours, minutes: durationPicker.minutes, seconds: 0 }}
-                    hideSeconds
-                    LinearGradient={LinearGradient}
-                    padWithNItems={2}
-                    hourLabel={t("common:common.h", { defaultValue: "h" })}
-                    minuteLabel={t("common:common.m", { defaultValue: "m" })}
-                    pickerFeedback={() => Haptics.selectionAsync()}
-                    styles={{
-                      theme: "dark",
-                      backgroundColor: "transparent",
-                      pickerItem: {
-                        fontSize: 28,
-                        color: "#94a3b8",
-                      },
-                      selectedPickerItem: {
-                        fontSize: 34,
-                        color: "#f1f5f9",
-                      },
-                      pickerLabel: {
-                        fontSize: 14,
-                        color: "#64748b",
-                        marginTop: 0,
-                      },
-                      pickerContainer: {
-                        marginRight: 6,
-                      },
-                    }}
-                  />
-                </View>
+                  <AppText className="text-lg text-center">
+                    {durationPicker.hours > 0 || durationPicker.minutes > 0
+                      ? `${durationPicker.hours}${t("common:common.h", { defaultValue: "h" })} ${durationPicker.minutes}${t("common:common.m", { defaultValue: "m" })}`
+                      : t("durationTargetPlaceholder", {
+                          defaultValue: "0h 0m",
+                        })}
+                  </AppText>
+                </AnimatedButton>
+                <TimerPickerModal
+                  visible={durationPickerOpen}
+                  setIsVisible={setDurationPickerOpen}
+                  onConfirm={({ hours, minutes }) => {
+                    setDurationPicker({ hours, minutes, seconds: 0 });
+                    setDurationPickerOpen(false);
+                  }}
+                  onCancel={() => setDurationPickerOpen(false)}
+                  initialValue={{
+                    hours: durationPicker.hours,
+                    minutes: durationPicker.minutes,
+                    seconds: 0,
+                  }}
+                  hideSeconds
+                  LinearGradient={LinearGradient}
+                  padWithNItems={2}
+                  hourLabel={t("common:common.h", { defaultValue: "h" })}
+                  minuteLabel={t("common:common.m", { defaultValue: "m" })}
+                  modalTitle={t("durationTarget")}
+                  confirmButtonText={t("common:datePicker.confirm")}
+                  cancelButtonText={t("common:datePicker.cancel")}
+                  pickerFeedback={() => Haptics.selectionAsync()}
+                  styles={{
+                    theme: "dark",
+                    backgroundColor: "#1e293b",
+                    contentContainer: {
+                      width: 300,
+                      paddingVertical: 24,
+                    },
+                    pickerItem: {
+                      fontSize: 28,
+                      color: "#94a3b8",
+                    },
+                    selectedPickerItem: {
+                      fontSize: 34,
+                      color: "#f1f5f9",
+                    },
+                    pickerLabel: {
+                      fontSize: 14,
+                      color: "#64748b",
+                      marginTop: 0,
+                    },
+                    pickerContainer: {
+                      marginRight: 6,
+                    },
+                    modalTitle: {
+                      color: "#f1f5f9",
+                      fontSize: 18,
+                    },
+                    confirmButton: {
+                      backgroundColor: "#3b82f6",
+                      borderColor: "#3b82f6",
+                      color: "#f1f5f9",
+                      fontSize: 16,
+                    },
+                    cancelButton: {
+                      backgroundColor: "#334155",
+                      borderColor: "#475569",
+                      color: "#f1f5f9",
+                      fontSize: 16,
+                    },
+                  }}
+                />
               </View>
             )}
 
             {/* Alarm type toggle - only for duration type */}
             {isDuration && (
-              <View className="gap-4">
-                <AppText className="text-lg">{t("alarmType")}</AppText>
-                <View className="flex-row gap-3">
-                  <View className="flex-1">
-                    <AnimatedButton
-                      onPress={() => setAlarmType("normal")}
-                      className={alarmType === "normal" ? "btn-base" : "btn-neutral"}
-                      textClassName="text-gray-100"
-                    >
-                      <AppText className="text-center">{t("alarmNormal")}</AppText>
-                      <AppText className="text-xs text-gray-400 text-center mt-1">
-                        {t("alarmNormalDesc")}
-                      </AppText>
-                    </AnimatedButton>
-                  </View>
-                  <View className="flex-1">
-                    <AnimatedButton
-                      onPress={() => setAlarmType("priority")}
-                      className={alarmType === "priority" ? "btn-base" : "btn-neutral"}
-                      textClassName="text-gray-100"
-                    >
-                      <AppText className="text-center">{t("alarmPriority")}</AppText>
-                      <AppText className="text-xs text-gray-400 text-center mt-1">
-                        {t("alarmPriorityDesc")}
-                      </AppText>
-                    </AnimatedButton>
-                  </View>
+              <View className="flex-row items-center justify-between">
+                <View>
+                  <AppText className="text-lg">{t("alarmType")}</AppText>
+                  <AppText className="text-gray-400 text-sm">
+                    {t("alarmPriorityDesc")}
+                  </AppText>
                 </View>
+                <Toggle
+                  isOn={alarmType === "priority"}
+                  onToggle={async () => {
+                    if (alarmType === "normal") {
+                      const allowed = await canUseExactAlarm();
+                      if (!allowed) {
+                        setShowAlarmModal(true);
+                        return;
+                      }
+                    }
+                    setAlarmType((prev) =>
+                      prev === "normal" ? "priority" : "normal",
+                    );
+                  }}
+                />
               </View>
             )}
 
@@ -404,7 +519,9 @@ export default function CreateHabitScreen() {
                       setFrequencyMode("daily");
                       setSelectedDays([]);
                     }}
-                    className={frequencyMode === "daily" ? "btn-base" : "btn-neutral"}
+                    className={
+                      frequencyMode === "daily" ? "btn-base" : "btn-neutral"
+                    }
                     label={t("frequencyDaily")}
                     textClassName="text-gray-100"
                   />
@@ -412,7 +529,9 @@ export default function CreateHabitScreen() {
                 <View className="flex-1">
                   <AnimatedButton
                     onPress={() => setFrequencyMode("specific")}
-                    className={frequencyMode === "specific" ? "btn-base" : "btn-neutral"}
+                    className={
+                      frequencyMode === "specific" ? "btn-base" : "btn-neutral"
+                    }
                     label={t("frequencySpecific")}
                     textClassName="text-gray-100"
                   />
@@ -421,7 +540,9 @@ export default function CreateHabitScreen() {
 
               {frequencyMode === "specific" && (
                 <View>
-                  <AppText className="text-gray-400 mb-3">{t("selectDays")}</AppText>
+                  <AppText className="text-gray-400 mb-3">
+                    {t("selectDays")}
+                  </AppText>
                   <View className="flex-row justify-between px-2">
                     {displayOrder.map((idx) => {
                       const dayNumber = idx + 1; // 1=Sun, 2=Mon, ..., 7=Sat
@@ -459,9 +580,24 @@ export default function CreateHabitScreen() {
                   <AppText className="text-lg">{t("reminder")}</AppText>
                   <Toggle
                     isOn={reminderEnabled}
-                    onToggle={() => setReminderEnabled((v) => !v)}
+                    onToggle={() => {
+                      if (!pushEnabled) return;
+                      setReminderEnabled((v) => !v);
+                    }}
+                    disabled={!pushEnabled}
                   />
                 </View>
+                {!pushEnabled && (
+                  <AppTextNC className="text-gray-400 text-xs">
+                    {t("reminderDisabledPush")}{" "}
+                    <AppTextNC
+                      className="text-blue-400 text-xs underline"
+                      onPress={() => router.push("/menu/settings")}
+                    >
+                      {t("reminderDisabledPushLink")}
+                    </AppTextNC>
+                  </AppTextNC>
+                )}
 
                 {reminderEnabled && (
                   <View>
@@ -496,23 +632,74 @@ export default function CreateHabitScreen() {
                 )}
               </View>
             )}
-
           </View>
-        </ScrollView>
 
-        {!isEditing && (
-          <View className="pt-4">
-            <SaveButton
-              onPress={handleSave}
-              label={t("save")}
-              disabled={!canSave}
-            />
-          </View>
-        )}
-      </WrapperComponent>
+          <View className="flex-1" />
+
+          {!isEditing && (
+            <View className="pt-20">
+              <SaveButton
+                onPress={handleSave}
+                label={t("save")}
+                disabled={!canSave}
+              />
+            </View>
+          )}
+        </PageContainer>
+      </ScrollView>
       {!isEditing && (
-        <FullScreenLoader visible={isSaving} message={t("common:common.saving")} />
+        <FullScreenLoader
+          visible={isSaving}
+          message={t("common:common.saving")}
+        />
       )}
-    </PageContainer>
+
+      <Modal visible={showDurationPushModal} transparent={true} animationType="slide">
+        <View className="flex-1 justify-center items-center bg-black/50 px-5">
+          <View className="bg-slate-700 rounded-lg p-6 w-full border-2 border-gray-100">
+            <View className="mb-5">
+              <Info size={35} color="#fbbf24" />
+            </View>
+            <AppText className="text-xl mb-6 text-center">
+              {t("durationPushDisabled.title")}
+            </AppText>
+            <BodyText className="text-lg mb-6 text-center">
+              {t("durationPushDisabled.description")}
+            </BodyText>
+            <View className="flex-row gap-4">
+              <View className="flex-1">
+                <AnimatedButton
+                  onPress={() => setHabitType("manual")}
+                  className="btn-neutral"
+                  label={t("durationPushDisabled.back")}
+                  textClassName="text-gray-100 text-center"
+                />
+              </View>
+              <View className="flex-1">
+                <LinkButton
+                  href="/menu/settings"
+                  label={t("durationPushDisabled.settings")}
+                  gradientColors={colors.gradient}
+                  borderColor={colors.border}
+                />
+              </View>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      <InfoModal
+        visible={showAlarmModal}
+        onClose={() => setShowAlarmModal(false)}
+        title={t("alarmPermission.title")}
+        description={t("alarmPermission.description")}
+        cancelLabel={t("alarmPermission.back")}
+        confirmLabel={t("alarmPermission.allow")}
+        onConfirm={async () => {
+          await requestExactAlarm();
+          setShowAlarmModal(false);
+        }}
+      />
+    </>
   );
 }

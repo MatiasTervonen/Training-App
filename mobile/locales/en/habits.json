@@ -56,11 +56,26 @@
   "habitTimerStart": "Start",
   "habitTimerPause": "Pause",
   "habitTimerResume": "Resume",
-  "habitTimerDone": "{{habitName}} — Done!",
+  "habitTimerDone": "🎉 {{habitName}} — Done!",
+  "cannotEditWhileTimerRunning": "Stop the timer before editing",
   "habitTimerActive": "Another timer is active. Pause it first.",
   "habitTimerCancelTitle": "Stop timer?",
   "habitTimerCancelMessage": "Your progress will be saved.",
   "durationCompleted": "Target reached!",
+  "reminderDisabledPush": "Push notifications are disabled. Enable in",
+  "reminderDisabledPushLink": "Settings",
+  "durationPushDisabled": {
+    "title": "Push notifications required",
+    "description": "Duration habits need push notifications enabled to show the alarm when the target is reached.",
+    "back": "Back",
+    "settings": "Settings"
+  },
+  "alarmPermission": {
+    "title": "Allow setting alarms",
+    "description": "Duration habits require alarm permission to notify you when the target is reached.\n\nWithout this permission, the timer alarm won't work.",
+    "back": "Back",
+    "allow": "Allow"
+  },
   "frequency": "Frequency",
   "frequencyDaily": "Daily",
   "frequencySpecific": "Specific days",

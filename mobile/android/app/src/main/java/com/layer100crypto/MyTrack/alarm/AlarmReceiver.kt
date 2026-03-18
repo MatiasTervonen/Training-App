@@ -1,11 +1,19 @@
 package com.layer100crypto.MyTrack.alarm
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
+import android.os.Build
 import android.os.PowerManager
+import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import com.layer100crypto.MyTrack.AppForegroundState
+import com.layer100crypto.MyTrack.MainActivity
+import com.layer100crypto.MyTrack.R
 import com.layer100crypto.MyTrack.ReactEventEmitter
 import com.layer100crypto.MyTrack.timer.TimerService
 import java.util.Calendar
@@ -29,8 +37,18 @@ class AlarmReceiver : BroadcastReceiver() {
         val isScreenOn = powerManager.isInteractive
 
         // Stop the timer countdown notification — the alarm replaces it
-        if (soundType == "timer") {
+        if (soundType == "timer" || soundType == "habit-priority" || soundType == "habit") {
             context.stopService(Intent(context, TimerService::class.java))
+        }
+
+        // Normal habit: just post a simple notification, no looping alarm
+        if (soundType == "habit") {
+            postSimpleHabitNotification(context, title, timesUpText)
+            // Always notify JS so it can complete the habit
+            ReactEventEmitter.sendTimerFinished(context, reminderId, title)
+            AlarmScheduler(context).cleanUpFiredOneTimeAlarm(reminderId)
+            scheduleNextRepeat(context, reminderId)
+            return
         }
 
         // For timers: JS handles the alarm when in foreground AND screen is on
@@ -82,6 +100,47 @@ class AlarmReceiver : BroadcastReceiver() {
 
         // Schedule next occurrence for repeating alarms
         scheduleNextRepeat(context, reminderId)
+    }
+
+    private fun postSimpleHabitNotification(context: Context, title: String, contentText: String) {
+        val channelId = "habit_completion"
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                channelId,
+                "Habit Completion",
+                NotificationManager.IMPORTANCE_HIGH
+            ).apply {
+                description = "Habit timer completion notifications"
+            }
+            context.getSystemService(NotificationManager::class.java)
+                .createNotificationChannel(channel)
+        }
+
+        val openIntent = Intent(context, MainActivity::class.java).apply {
+            action = Intent.ACTION_VIEW
+            data = Uri.parse("mytrack://dashboard")
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or
+                    Intent.FLAG_ACTIVITY_CLEAR_TOP or
+                    Intent.FLAG_ACTIVITY_SINGLE_TOP
+        }
+
+        val pendingIntent = PendingIntent.getActivity(
+            context, 0, openIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val notification = NotificationCompat.Builder(context, channelId)
+            .setContentTitle(title)
+            .setContentText(contentText)
+            .setSmallIcon(R.drawable.ic_stat_kurvi_icon_ice_blue_transparent)
+            .setAutoCancel(true)
+            .setContentIntent(pendingIntent)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .build()
+
+        context.getSystemService(NotificationManager::class.java)
+            .notify(System.currentTimeMillis().toInt(), notification)
     }
 
     private fun scheduleNextRepeat(context: Context, reminderId: String) {

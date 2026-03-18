@@ -15,7 +15,7 @@
 ## Styling
 - Always use NativeWind (`className`) for styling — never use inline `style` props.
 - Always use `AppText` component for text — never use raw `<Text>`.
-- `AppText` defaults to `text-gray-100` — don't add it redundantly.
+- `AppText` defaults to `text-gray-100` — don't add it redundantly. Overriding the color on `AppText` does not work — when you need a different text color, use `AppTextNC` instead.
 - For Lexend font, use `BodyText` component — never override `AppText` with `font-lexend`, the Russo One base class wins and the override is ignored.
 - Never write custom button styles — use existing ones from `app/components/buttons`.
 - Never use bold (`font-bold`, `font-semibold`, etc.) on Russo One text — the font is already bold by design.

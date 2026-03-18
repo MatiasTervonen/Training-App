@@ -21,6 +21,7 @@ import Toast from "react-native-toast-message";
 import * as Haptics from "expo-haptics";
 import { Share2 } from "lucide-react-native";
 import { formatDuration } from "@/lib/formatDate";
+import { useHabitTimer } from "@/features/habits/hooks/useHabitTimer";
 
 function getMonthRange(year: number, month: number) {
   const start = `${year}-${String(month + 1).padStart(2, "0")}-01`;
@@ -52,6 +53,7 @@ export default function HabitDetailScreen() {
   const archiveMutation = useArchiveHabit();
   const { cancelHabitReminder } = useHabitNotifications();
   const [shareVisible, setShareVisible] = useState(false);
+  const { activeHabitId } = useHabitTimer();
 
   const now = new Date();
   const createdDate = habit ? new Date(habit.created_at) : null;
@@ -206,7 +208,16 @@ export default function HabitDetailScreen() {
             />
           )}
           <AnimatedButton
-            onPress={() => router.push(`/habits/create?id=${id}`)}
+            onPress={() => {
+              if (activeHabitId === id) {
+                Toast.show({
+                  type: "error",
+                  text1: t("cannotEditWhileTimerRunning"),
+                });
+                return;
+              }
+              router.push(`/habits/create?id=${id}`);
+            }}
             className="btn-base"
             label={t("common:common.edit")}
             textClassName="text-gray-100 text-center"

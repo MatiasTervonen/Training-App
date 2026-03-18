@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { DeviceEventEmitter, Platform } from "react-native";
 import { useRouter } from "expo-router";
 import { stopNativeAlarm } from "@/native/android/NativeAlarm";
+import { useTimerStore } from "@/lib/stores/timerStore";
 
 type AlarmInfo = {
   reminderId: string;
@@ -22,6 +23,9 @@ export default function AlarmPlayingListener() {
         // Stop the alarm immediately
         stopNativeAlarm();
 
+        const isHabitSession =
+          useTimerStore.getState().activeSession?.type === "habit";
+
         // Navigate based on alarm type - this will expand the reminder
         if (
           (data.soundType === "reminder" ||
@@ -29,7 +33,7 @@ export default function AlarmPlayingListener() {
           data.reminderId
         ) {
           router.push(`/dashboard?reminderId=${data.reminderId}`);
-        } else if (data.soundType === "timer") {
+        } else if (data.soundType === "timer" && !isHabitSession) {
           router.push("/timer/empty-timer");
         } else {
           router.push("/dashboard");

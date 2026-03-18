@@ -94,14 +94,17 @@ class AlarmActivity : AppCompatActivity() {
             }
         }
 
-        // Handle snooze/extend button
-        val snoozeDurationMinutes = if (soundType == "reminder" || soundType == "global-reminder") 5 else 1
-        val snoozeButtonLabel = snoozeTextValue
-        findViewById<Button>(R.id.snoozeButton).apply {
-            text = snoozeButtonLabel
-            visibility = android.view.View.VISIBLE
-            setOnClickListener {
-                snoozeAlarm(snoozeDurationMinutes)
+        // Handle snooze/extend button - hide for habit alarms since they auto-complete
+        val isHabitAlarm = soundType == "habit" || soundType == "habit-priority"
+        if (!isHabitAlarm) {
+            val snoozeDurationMinutes = if (soundType == "reminder" || soundType == "global-reminder") 5 else 1
+            val snoozeButtonLabel = snoozeTextValue
+            findViewById<Button>(R.id.snoozeButton).apply {
+                text = snoozeButtonLabel
+                visibility = android.view.View.VISIBLE
+                setOnClickListener {
+                    snoozeAlarm(snoozeDurationMinutes)
+                }
             }
         }
     }
@@ -170,6 +173,8 @@ class AlarmActivity : AppCompatActivity() {
         val route = if ((soundType == "reminder" || soundType == "global-reminder") && reminderId.isNotEmpty()) {
             "mytrack://dashboard?reminderId=$reminderId"
         } else if (soundType == "reminder" || soundType == "global-reminder") {
+            "mytrack://dashboard"
+        } else if (soundType == "habit" || soundType == "habit-priority") {
             "mytrack://dashboard"
         } else {
             "mytrack://timer/empty-timer"

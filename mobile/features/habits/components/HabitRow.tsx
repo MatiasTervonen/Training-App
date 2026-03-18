@@ -1,4 +1,4 @@
-import { View } from "react-native";
+import { View, Text } from "react-native";
 import AppText from "@/components/AppText";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import Toggle from "@/components/toggle";
@@ -63,10 +63,10 @@ function DurationProgress({
           style={{ width: `${progress * 100}%` }}
         />
       </View>
-      <AppText className="text-xs text-gray-400 mt-1">
+      <Text className="text-xs text-gray-400 mt-1 font-mono">
         {formatDurationLong(currentAccumulated)} /{" "}
         {formatDurationLong(targetSeconds)}
-      </AppText>
+      </Text>
     </View>
   );
 }

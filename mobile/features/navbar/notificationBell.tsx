@@ -26,6 +26,7 @@ import { useMarkAllAsRead } from "@/features/notifications/hooks/useMarkAllAsRea
 import { getTimeAgo } from "@/features/notifications/utils/timeAgo";
 import { groupByTimePeriod } from "@/features/notifications/utils/groupByTimePeriod";
 import { Notification } from "@/types/models";
+import BodyText from "@/components/BodyText";
 
 function getNotificationIcon(type: string) {
   switch (type) {
@@ -44,15 +45,37 @@ function getNotificationIcon(type: string) {
   }
 }
 
-function getNavigationTarget(type: string): string | null {
-  switch (type) {
+function getNavigationTarget(
+  notification: Notification,
+): { pathname: string; params?: Record<string, string> } | null {
+  switch (notification.type) {
     case "friend_request":
     case "friend_accepted":
-      return "/menu/friends";
+      return { pathname: "/menu/friends" };
     case "feed_like":
+      return {
+        pathname: "/dashboard",
+        params: {
+          feedMode: "friends",
+          ...(notification.data?.feedItemId
+            ? { feedItemId: notification.data.feedItemId as string }
+            : {}),
+        },
+      };
     case "feed_comment":
     case "feed_reply":
-      return "/";
+      return {
+        pathname: "/dashboard",
+        params: {
+          feedMode: "friends",
+          ...(notification.data?.feedItemId
+            ? {
+                feedItemId: notification.data.feedItemId as string,
+                openComments: "true",
+              }
+            : {}),
+        },
+      };
     default:
       return null;
   }
@@ -82,7 +105,7 @@ export default function NotificationBell() {
       }
       setIsOpen(false);
 
-      const target = getNavigationTarget(notification.type);
+      const target = getNavigationTarget(notification);
       if (target) {
         router.push(target as never);
       }
@@ -107,9 +130,9 @@ export default function NotificationBell() {
         </AppText>
         <View className="flex-row items-center gap-2 text-sm">
           {getNotificationIcon(item.type)}
-          <AppText className="text-gray-100 text-sm flex-1">
+          <BodyText className="text-gray-100 text-sm flex-1">
             {item.body}
-          </AppText>
+          </BodyText>
           {!item.is_read && (
             <View className="w-2 h-2 rounded-full bg-blue-500" />
           )}

@@ -228,7 +228,7 @@ export default function GymSession(gym_session: FullGymSession & { readOnly?: bo
             colors={["#1e3a8a", "#0f172a", "#0f172a"]}
             start={{ x: 1, y: 0 }}
             end={{ x: 0, y: 1 }}
-            className={`mt-10 rounded-md overflow-hidden  ${
+            className={`mt-5 rounded-md overflow-hidden  ${
               group.length > 1
                 ? "border-2 border-blue-700"
                 : "border-2 border-gray-600"

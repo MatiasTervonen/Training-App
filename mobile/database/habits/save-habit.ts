@@ -33,6 +33,7 @@ export async function saveHabit({
     .single();
 
   if (error) {
+    console.error("Error saving habit:", error);
     handleError(error, {
       message: "Error saving habit",
       route: "/database/habits/save-habit",

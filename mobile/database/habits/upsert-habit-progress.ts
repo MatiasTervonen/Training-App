@@ -16,6 +16,7 @@ export async function upsertHabitProgress(
   );
 
   if (error) {
+    console.error("Error updating habit progress:", error);
     handleError(error, {
       message: "Error updating habit progress",
       route: "/database/habits/upsert-habit-progress",

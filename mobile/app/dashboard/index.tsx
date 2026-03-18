@@ -8,7 +8,13 @@ export default function FeedScreen() {
   const { t } = useTranslation("common");
   const router = useRouter();
   const { setModalPageConfig } = useModalPageConfig();
-  const { reminderId } = useLocalSearchParams<{ reminderId?: string }>();
+  const { reminderId, feedMode, feedItemId, openComments } =
+    useLocalSearchParams<{
+      reminderId?: string;
+      feedMode?: "my" | "friends";
+      feedItemId?: string;
+      openComments?: string;
+    }>();
 
   useEffect(() => {
     setModalPageConfig({
@@ -21,7 +27,13 @@ export default function FeedScreen() {
 
   return (
     <>
-      <SessionFeed expandReminderId={reminderId} />
+      <SessionFeed
+        expandReminderId={reminderId}
+        initialFeedMode={feedMode}
+        initialCommentFeedItemId={
+          openComments === "true" ? feedItemId : undefined
+        }
+      />
     </>
   );
 }

@@ -100,9 +100,9 @@ export default function SettingsScreen() {
       if (player) {
         try { player.pause(); player.seekTo(0); } catch {}
       }
+      router.replace("/dashboard");
       await cancelHabitTimer();
       handleReset();
-      router.replace("/habits");
       return;
     }
 
@@ -124,7 +124,6 @@ export default function SettingsScreen() {
     clearEverything();
     AsyncStorage.removeItem("timer_session_draft");
     handleReset();
-    router.replace("/timer/empty-timer");
   };
 
   const hasSessionStarted = remainingMs !== null || startTimestamp !== null;

@@ -161,7 +161,7 @@ export default function SocialFeedCard({ item, onToggleLike, onExpand, onOpenCom
       colors={gradientColors}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
-      className="border border-slate-700 rounded-xl mx-4 my-2 overflow-hidden"
+      className="border border-slate-700 rounded-md mx-4 my-2 overflow-hidden"
     >
       {/* Author header with type badge */}
       <SocialFeedCardHeader item={item} typeIcon={typeIcon} />

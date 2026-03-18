@@ -132,8 +132,8 @@ export default function Timer({
           </AnimatedButton>
         )
       ) : (
-        <View className="flex-row gap-3">
-          <View className="flex-1">
+        <View className="flex-row gap-3 justify-center">
+          <View className={isHabitSession ? "w-1/2" : "flex-1"}>
             <AnimatedButton
               label={t("timer.notification.stopAlarm")}
               className="btn-danger"

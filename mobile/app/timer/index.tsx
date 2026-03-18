@@ -1,7 +1,7 @@
 import AppText from "@/components/AppText";
 import LinkButton from "@/components/buttons/LinkButton";
 import PageContainer from "@/components/PageContainer";
-import { View, AppState } from "react-native";
+import { View, Modal, AppState } from "react-native";
 import { useTimerStore } from "@/lib/stores/timerStore";
 import Toast from "react-native-toast-message";
 import { useEffect, useState } from "react";
@@ -10,6 +10,8 @@ import {
   requestExactAlarm,
 } from "@/native/android/EnsureExactAlarmPermission";
 import InfoModal from "@/components/InfoModal";
+import BodyText from "@/components/BodyText";
+import { Info } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import { useUserStore } from "@/lib/stores/useUserStore";
 import { SESSION_COLORS } from "@/lib/sessionColors";
@@ -17,17 +19,18 @@ import { router } from "expo-router";
 
 export default function TimerScreen() {
   const { t } = useTranslation("timer");
-  const [showModal, setShowModal] = useState(false);
-  const [showPushModal, setShowPushModal] = useState(false);
+  const [showAlarmModal, setShowAlarmModal] = useState(false);
   const colors = SESSION_COLORS.timer;
 
   const activeSession = useTimerStore((state) => state.activeSession);
+  const pushEnabled = useUserStore((state) => state.settings?.push_enabled);
+  const showPushModal = pushEnabled === false;
 
   useEffect(() => {
     const checkPermission = async () => {
       const allowed = await canUseExactAlarm();
       if (!allowed) {
-        setShowModal(true);
+        setShowAlarmModal(true);
       }
     };
     checkPermission();
@@ -51,18 +54,15 @@ export default function TimerScreen() {
       if (state !== "active") return;
 
       const allowed = await canUseExactAlarm();
-      if (allowed && showModal) {
-        setShowModal(false);
-        if (!useUserStore.getState().settings?.push_enabled) {
-          setShowPushModal(true);
-        }
+      if (allowed && showAlarmModal) {
+        setShowAlarmModal(false);
       }
     });
 
     return () => {
       sub.remove();
     };
-  }, [showModal]);
+  }, [showAlarmModal]);
 
   return (
     <>
@@ -97,9 +97,9 @@ export default function TimerScreen() {
       </PageContainer>
 
       <InfoModal
-        visible={showModal}
+        visible={showAlarmModal}
         onClose={() => {
-          setShowModal(false);
+          setShowAlarmModal(false);
           router.back();
         }}
         title={t("timer.alarmPermission.title")}
@@ -109,18 +109,34 @@ export default function TimerScreen() {
         onConfirm={() => requestExactAlarm()}
       />
 
-      <InfoModal
-        visible={showPushModal}
-        onClose={() => setShowPushModal(false)}
-        title={t("timer.pushPermission.title")}
-        description={t("timer.pushPermission.description")}
-        cancelLabel={t("timer.pushPermission.skip")}
-        confirmLabel={t("timer.pushPermission.settings")}
-        onConfirm={() => {
-          setShowPushModal(false);
-          router.push("/menu/settings");
-        }}
-      />
+      <Modal visible={showPushModal} transparent={true} animationType="slide">
+        <View className="flex-1 justify-center items-center bg-black/50 px-5">
+          <View className="bg-slate-700 rounded-lg p-6 w-full border-2 border-gray-100">
+            <View className="mb-5">
+              <Info size={35} color="#fbbf24" />
+            </View>
+            <AppText className="text-xl mb-6 text-center">
+              {t("timer.pushPermission.title")}
+            </AppText>
+            <BodyText className="text-lg mb-6 text-center">
+              {t("timer.pushPermission.description")}
+            </BodyText>
+            <View className="flex-row gap-4">
+              <View className="flex-1">
+                <LinkButton href="/sessions" label={t("timer.pushPermission.skip")} gradientColors={colors.gradient} borderColor={colors.border} />
+              </View>
+              <View className="flex-1">
+                <LinkButton
+                  href="/menu/settings"
+                  label={t("timer.pushPermission.settings")}
+                  gradientColors={colors.gradient}
+                  borderColor={colors.border}
+                />
+              </View>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </>
   );
 }

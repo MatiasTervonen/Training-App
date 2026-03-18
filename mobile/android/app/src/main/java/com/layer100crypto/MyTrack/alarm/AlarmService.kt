@@ -99,6 +99,7 @@ class AlarmService : Service() {
 
         val soundUri: Uri = when (soundType) {
             "timer" -> Uri.parse("android.resource://$packageName/${R.raw.mixkit_classic_alarm_995}")
+            "habit-priority" -> android.provider.Settings.System.DEFAULT_ALARM_ALERT_URI
             "reminder", "global-reminder" -> Uri.parse("android.resource://$packageName/${R.raw.mixkit_classic_alarm_995}")
 
             else ->
@@ -140,9 +141,12 @@ class AlarmService : Service() {
         }
 
         // Determine route based on alarm type
+        val isHabitAlarm = soundType == "habit" || soundType == "habit-priority"
         val route = if ((soundType == "reminder" || soundType == "global-reminder") && reminderId.isNotEmpty()) {
             "mytrack://dashboard?reminderId=$reminderId"
         } else if (soundType == "reminder" || soundType == "global-reminder") {
+            "mytrack://dashboard"
+        } else if (isHabitAlarm) {
             "mytrack://dashboard"
         } else {
             "mytrack://timer/empty-timer"
@@ -215,13 +219,14 @@ class AlarmService : Service() {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
+        val useFullScreen = soundType != "habit"
+
         val builder = NotificationCompat.Builder(this, channelId)
             .setContentTitle(alarmTitle)
             .setContentText(contentText)
             .setSmallIcon(R.drawable.ic_stat_kurvi_icon_ice_blue_transparent)
             .setOngoing(true)
             .setContentIntent(openPendingIntent)
-            .setFullScreenIntent(fullScreenPendingIntent, true)
             .setAutoCancel(false)
             .setCategory(NotificationCompat.CATEGORY_ALARM)
             .setPriority(NotificationCompat.PRIORITY_MAX)
@@ -231,6 +236,10 @@ class AlarmService : Service() {
             .setUsesChronometer(true)
             .setWhen(System.currentTimeMillis())
             .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
+
+        if (useFullScreen) {
+            builder.setFullScreenIntent(fullScreenPendingIntent, true)
+        }
 
         return builder.build()
     }

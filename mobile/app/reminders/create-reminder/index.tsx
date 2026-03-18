@@ -1,11 +1,6 @@
 import { useState, useEffect } from "react";
-import {
-  View,
-  Pressable,
-  Keyboard,
-  AppState,
-  ScrollView,
-} from "react-native";
+import { View, AppState } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import AppText from "@/components/AppText";
 import AppTextNC from "@/components/AppTextNC";
 import SaveButton from "@/components/buttons/SaveButton";
@@ -13,7 +8,6 @@ import DeleteButton from "@/components/buttons/DeleteButton";
 import AppInput from "@/components/AppInput";
 import SubNotesInput from "@/components/SubNotesInput";
 import FullScreenLoader from "@/components/FullScreenLoader";
-import PageContainer from "@/components/PageContainer";
 import DatePicker from "react-native-date-picker";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import { Plus, Info } from "lucide-react-native";
@@ -26,6 +20,7 @@ import {
 } from "@/native/android/EnsureExactAlarmPermission";
 import InfoModal from "@/components/InfoModal";
 import { useTranslation } from "react-i18next";
+import BodyText from "@/components/BodyText";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDebouncedCallback } from "use-debounce";
 import useSaveReminder from "@/features/reminders/hooks/global/useSaveReminder";
@@ -231,18 +226,11 @@ export default function CreateReminderScreen() {
   };
 
   return (
-    <>
-      <ScrollView
-        contentContainerStyle={{ flexGrow: 1 }}
-        showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="handled"
-      >
-        <Pressable onPress={Keyboard.dismiss} className="flex-1">
-          <PageContainer>
-            <View className="justify-between flex-1">
-            <View className="gap-5">
-            {/* Type selector — 2x2 grid */}
-            <View className="bg-slate-800 rounded-lg mb-6 p-1 gap-1">
+    <View className="flex-1">
+      <KeyboardAwareScrollView contentContainerStyle={{ flexGrow: 1 }} bottomOffset={50}>
+        {/* Type selector — 2x2 grid */}
+        <View className="px-5 pt-2 pb-3">
+          <View className="bg-slate-800 rounded-lg p-1 gap-1 max-w-md mx-auto w-full">
               <View className="flex-row gap-1">
                 {TYPES.slice(0, 2).map(({ key, labelKey }) => {
                   const isActive = selectedType === key;
@@ -283,15 +271,18 @@ export default function CreateReminderScreen() {
                   );
                 })}
               </View>
-            </View>
-
+          </View>
+        </View>
+        <View className="flex-1 w-full px-5 pb-10">
+        <View className="flex-1 max-w-md mx-auto w-full justify-between">
+          <View>
             {/* Global info banner */}
             {selectedType === "global" && (
               <View className="flex-row items-center mb-4">
                 <Info color="#9ca3af" size={18} />
-                <AppText className="text-gray-400 text-sm ml-2">
+                <BodyText className="text-gray-400 text-sm ml-2 shrink">
                   {t("reminders.globalInfo")}
-                </AppText>
+                </BodyText>
               </View>
             )}
 
@@ -299,9 +290,9 @@ export default function CreateReminderScreen() {
             {selectedType === "one-time" && (
               <View className="flex-row items-center mb-4">
                 <Info color="#9ca3af" size={18} />
-                <AppText className="text-gray-400 text-sm ml-2">
+                <BodyText className="text-gray-400 text-sm ml-2 shrink">
                   {t("reminders.oneTimeInfo")}
-                </AppText>
+                </BodyText>
               </View>
             )}
 
@@ -309,9 +300,9 @@ export default function CreateReminderScreen() {
             {selectedType === "daily" && (
               <View className="flex-row items-center mb-4">
                 <Info color="#9ca3af" size={18} />
-                <AppText className="text-gray-400 text-sm ml-2">
+                <BodyText className="text-gray-400 text-sm ml-2 shrink">
                   {t("reminders.dailyInfo")}
-                </AppText>
+                </BodyText>
               </View>
             )}
 
@@ -319,9 +310,9 @@ export default function CreateReminderScreen() {
             {selectedType === "weekly" && (
               <View className="flex-row items-center mb-4">
                 <Info color="#9ca3af" size={18} />
-                <AppText className="text-gray-400 text-sm ml-2">
+                <BodyText className="text-gray-400 text-sm ml-2 shrink">
                   {t("reminders.weeklyInfo")}
-                </AppText>
+                </BodyText>
               </View>
             )}
 
@@ -349,7 +340,7 @@ export default function CreateReminderScreen() {
                 <AnimatedButton
                   label={formattedTime ?? t("reminders.setNotifyTime")}
                   onPress={() => setOpen(true)}
-                  className="bg-blue-800 py-2 rounded-md shadow-md border-2 border-blue-500 flex-row gap-2 justify-center items-center"
+                  className="btn-base flex-row gap-2 justify-center items-center"
                   textClassName="text-gray-100"
                 >
                   <Plus color="#f3f4f6" />
@@ -380,7 +371,7 @@ export default function CreateReminderScreen() {
               {/* Weekday checkboxes (weekly only) */}
               {selectedType === "weekly" && (
                 <View className="mt-2">
-                  <AppText>{t("reminders.repeatOnDays")}</AppText>
+                  <BodyText>{t("reminders.repeatOnDays")}</BodyText>
                   <View className="flex-row justify-between mt-3 px-4">
                     {days.map((day, index) => {
                       const dayNumber = index + 1;
@@ -400,7 +391,7 @@ export default function CreateReminderScreen() {
                               }
                             }}
                           />
-                          <AppText className="mt-2">{day}</AppText>
+                          <BodyText className="mt-2">{day}</BodyText>
                         </View>
                       );
                     })}
@@ -411,10 +402,10 @@ export default function CreateReminderScreen() {
               {/* High priority toggle */}
               <View className="flex-row items-center justify-between px-4 mt-5">
                 <View>
-                  <AppText>{t("reminders.enableHighPriority")}</AppText>
-                  <AppText className="text-gray-400 text-sm">
+                  <BodyText>{t("reminders.enableHighPriority")}</BodyText>
+                  <BodyText className="text-gray-400 text-sm">
                     {t("reminders.highPriorityDescription")}
-                  </AppText>
+                  </BodyText>
                 </View>
                 <Toggle
                   isOn={mode === "alarm"}
@@ -428,27 +419,23 @@ export default function CreateReminderScreen() {
                   }}
                 />
               </View>
+          </View>
+          </View>
+          <View className="flex-row gap-4">
+            <View className="flex-1">
+              <DeleteButton onPress={resetReminder} />
             </View>
-            </View>
-
-            <View className="flex-row gap-4">
-              <View className="flex-1">
-                <DeleteButton onPress={resetReminder} />
-              </View>
-              <View className="flex-1">
-                <SaveButton onPress={handleSave} />
-              </View>
+            <View className="flex-1">
+              <SaveButton onPress={handleSave} />
             </View>
           </View>
-
-          <FullScreenLoader
-            visible={isSaving}
-            message={t("reminders.savingReminder")}
-          />
-          </PageContainer>
-        </Pressable>
-      </ScrollView>
-
+        </View>
+        </View>
+      </KeyboardAwareScrollView>
+      <FullScreenLoader
+        visible={isSaving}
+        message={t("reminders.savingReminder")}
+      />
       <InfoModal
         visible={showModal}
         onClose={() => setShowModal(false)}
@@ -461,6 +448,6 @@ export default function CreateReminderScreen() {
           setShowModal(false);
         }}
       />
-    </>
+    </View>
   );
 }

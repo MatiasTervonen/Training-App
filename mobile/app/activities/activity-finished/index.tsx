@@ -229,11 +229,11 @@ export default function ActivityFinishedScreen() {
     (!hideMapDetails || privacyStyleReady);
 
   return (
+    <View className="flex-1" onLayout={onContainerLayout}>
     <ScrollView
       className="flex-1 px-5"
       contentContainerStyle={{ flexGrow: 1 }}
       showsVerticalScrollIndicator={false}
-      onLayout={onContainerLayout}
     >
       {/* Header */}
       <View className="items-center mt-10 gap-2">
@@ -367,7 +367,7 @@ export default function ActivityFinishedScreen() {
           </AnimatedButton>
 
           {settingsExpanded && (
-            <View className="mt-4 gap-5">
+            <View className="mt-4 pb-6 gap-5">
               {availableStats.length > 2 && (
                 <StatToggleChips
                   availableStats={availableStats}
@@ -459,18 +459,6 @@ export default function ActivityFinishedScreen() {
           )}
         </View>
       )}
-
-      {/* Done button */}
-      <View className="w-full pb-10 mt-8">
-        <AnimatedButton
-          className="btn-base py-3"
-          onPress={() => router.replace("/dashboard")}
-        >
-          <AppText className="text-center">
-            {t("activities.share.done")}
-          </AppText>
-        </AnimatedButton>
-      </View>
 
       {/* Hidden MapView for snapshot */}
       {showHiddenMap && (
@@ -570,5 +558,17 @@ export default function ActivityFinishedScreen() {
         </View>
       )}
     </ScrollView>
+      {/* Done button */}
+      <View className="px-5 pb-5 pt-3 border-t border-gray-700">
+        <AnimatedButton
+          className="btn-start py-3"
+          onPress={() => router.replace("/dashboard")}
+        >
+          <AppText className="text-center">
+            {t("activities.share.done")}
+          </AppText>
+        </AnimatedButton>
+      </View>
+    </View>
   );
 }

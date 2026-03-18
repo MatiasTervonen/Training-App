@@ -389,6 +389,7 @@ export default function SessionFeed({
             expandedReminderRef.current = null;
           }}
           confirmBeforeClose={hasUnsavedExpandedChanges}
+          scrollable={false}
         >
           {expandedItem.type === "notes" && (
             <NotesSession
@@ -505,6 +506,7 @@ export default function SessionFeed({
             setEditingItem(null);
           }}
           confirmBeforeClose={hasUnsavedChanges}
+          scrollable={false}
         >
           {editingItem.type === "notes" && (
             <EditNotes
@@ -633,6 +635,7 @@ export default function SessionFeed({
         <FullScreenModal
           isOpen={!!expandedSocialItem}
           onClose={() => setExpandedSocialItem(null)}
+          scrollable={false}
         >
           {expandedSocialItem.type === "gym_sessions" && (
             <>

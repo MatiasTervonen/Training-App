@@ -1,6 +1,7 @@
 import { formatDate } from "@/lib/formatDate";
 import GroupTemplateExercise from "@/features/gym/lib/GroupTemplateExercises";
-import { ScrollView, View } from "react-native";
+import { ScrollView, View, NativeSyntheticEvent, NativeScrollEvent } from "react-native";
+import { useFullScreenModalScroll } from "@/components/FullScreenModal";
 import AppText from "@/components/AppText";
 import PageContainer from "@/components/PageContainer";
 import { LinearGradient } from "expo-linear-gradient";
@@ -16,6 +17,13 @@ type Props = {
 export default function GymTemplate({ item, onStartWorkout }: Props) {
   const { t } = useTranslation("gym");
   const { t: tActivities } = useTranslation("activities");
+  const modalScroll = useFullScreenModalScroll();
+
+  const handleScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+    if (modalScroll) {
+      modalScroll.innerScrollY.value = e.nativeEvent.contentOffset.y;
+    }
+  };
   const groupedExercises = GroupTemplateExercise(
     item.gym_template_exercises || [],
   );
@@ -42,6 +50,8 @@ export default function GymTemplate({ item, onStartWorkout }: Props) {
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ flexGrow: 1 }}
+        onScroll={handleScroll}
+        scrollEventThrottle={16}
       >
         <PageContainer>
           <View className="mb-5 justify-center items-center">
@@ -128,7 +138,7 @@ export default function GymTemplate({ item, onStartWorkout }: Props) {
         <AnimatedButton
           onPress={onStartWorkout}
           label={t("gym.templateView.startWorkout")}
-          className="btn-base"
+          className="btn-start"
         />
       </View>
     </View>

@@ -822,7 +822,7 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
       {isEditing ? (
         ""
       ) : (
-        <View className="flex-row items-center gap-4 bg-gray-600 p-2 px-4 w-full z-40 sticky top-0">
+        <View className="flex-row items-center gap-4 bg-slate-800 p-2 px-4 w-full z-40 sticky top-0">
           <Timer
             textClassName="text-xl"
             manualSession={{
@@ -996,8 +996,8 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
                   end={{ x: 0, y: 1 }}
                   className={`mt-5 rounded-md overflow-hidden ${
                     group.length > 1
-                      ? "border-2 border-blue-700"
-                      : "border-2 border-gray-600"
+                      ? "border-[1.5px] border-blue-700"
+                      : "border-[1.5px] border-gray-600"
                   }`}
                 >
                   {group.length > 1 && (
@@ -1197,6 +1197,7 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
                 setExerciseType("Normal");
                 queryClient.invalidateQueries({ queryKey: ["exercises"] });
               }}
+              scrollable={false}
             >
               <View className="flex-1">
                 <ExerciseSelectorList
@@ -1220,7 +1221,7 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
                   onSelectPhase={handlePhaseSelect}
                 />
               </View>
-              <View className="flex-row gap-3 px-2 mt-5 mb-10 z-50">
+              <View className="flex-row gap-3 px-2 mt-5 mb-5 z-50">
                 <View className="flex-1">
                   <SelectInput
                     label={t("gym.exerciseDropdown.exerciseTypeTitle")}

@@ -26,6 +26,7 @@ import InfoModal from "@/components/InfoModal";
 import useSetNotification from "@/features/reminders/hooks/global/useSetNotification";
 import { useTranslation } from "react-i18next";
 import AppTextNC from "@/components/AppTextNC";
+import BodyText from "@/components/BodyText";
 import { useAutoSave } from "@/hooks/useAutoSave";
 
 type Props = {
@@ -181,7 +182,7 @@ export default function HandleEditGlobalReminder({
                   notifyAt ? formattedNotifyAt : t("reminders.setNotifyTime")
                 }
                 onPress={() => setOpen(true)}
-                className="bg-blue-800 py-2 rounded-md shadow-md border-2 border-blue-500 flex-row gap-2 justify-center items-center"
+                className="btn-base flex-row gap-2 justify-center items-center"
                 textClassName="text-gray-100"
               >
                 <Plus color="#f3f4f6" />
@@ -208,12 +209,10 @@ export default function HandleEditGlobalReminder({
             />
             <View className="flex-row items-center justify-between px-4 mt-10">
               <View>
-                <AppTextNC className="text-slate-200">
-                  {t("reminders.enableHighPriority")}
-                </AppTextNC>
-                <AppTextNC className="text-slate-400 text-sm">
+                <BodyText>{t("reminders.enableHighPriority")}</BodyText>
+                <BodyText className="text-gray-400 text-sm">
                   {t("reminders.highPriorityDescription")}
-                </AppTextNC>
+                </BodyText>
               </View>
               <Toggle
                 isOn={mode === "alarm"}

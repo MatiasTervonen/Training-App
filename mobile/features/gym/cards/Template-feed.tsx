@@ -1,9 +1,12 @@
 import { formatDate, formatDateShort } from "@/lib/formatDate";
-import { Dumbbell } from "lucide-react-native";
+import { Dumbbell, SquareArrowOutUpRight } from "lucide-react-native";
 import AppText from "@/components/AppText";
-import { View, Pressable } from "react-native";
+import BodyText from "@/components/BodyText";
+import { View } from "react-native";
 import DropDownModal from "@/components/DropDownModal";
 import { useTranslation } from "react-i18next";
+import { LinearGradient } from "expo-linear-gradient";
+import AnimatedButton from "@/components/buttons/animatedButton";
 
 type templateSummary = {
   id: string;
@@ -27,23 +30,29 @@ export default function TemplateCard({
   onExpand,
   onEdit,
 }: Props) {
-  const { t } = useTranslation("common");
+  const { t } = useTranslation(["gym", "common"]);
 
   return (
-    <View className="border border-gray-700 rounded-md justify-center bg-slate-900 mb-10">
-      <View className="flex-row justify-between items-center my-2 mx-4">
+    <LinearGradient
+      colors={["rgba(59,130,246,0.12)", "rgba(59,130,246,0.04)"]}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+      className="border border-slate-700 rounded-md overflow-hidden"
+    >
+      {/* Header - title + menu */}
+      <View className="flex-row justify-between items-center px-4 pt-2 pb-1">
         <AppText
-          className="mr-8 text-lg flex-1"
+          className="flex-1 mr-4 text-lg"
           numberOfLines={1}
           ellipsizeMode="tail"
         >
           {item.name}
         </AppText>
         <DropDownModal
-          label={`${item.name}`}
+          label={item.name}
           options={[
-            { value: "edit", label: t("common.edit") },
-            { value: "delete", label: t("common.delete") },
+            { value: "edit", label: t("common:common.edit") },
+            { value: "delete", label: t("common:common.delete") },
           ]}
           onChange={(value) => {
             switch (value) {
@@ -60,27 +69,38 @@ export default function TemplateCard({
         />
       </View>
 
-      {item.updated_at ? (
-        <AppText className=" text-yellow-500 text-sm ml-4 mb-2">
-          {t("common.updated")} {formatDate(item.updated_at)}
-        </AppText>
-      ) : (
-        <View className="h-[17.8px]" />
-      )}
+      {/* Updated timestamp */}
+      <View className="px-4 pb-2">
+        <BodyText className={`text-sm ${item.updated_at ? "text-slate-400" : "text-transparent"}`}>
+          {item.updated_at
+            ? `${t("common:common.updated")} ${formatDate(item.updated_at)}`
+            : " "}
+        </BodyText>
+      </View>
 
-      <Pressable
-        onPress={onExpand}
-        className="flex-row items-center justify-between px-5 bg-blue-600 py-2 rounded-br-md rounded-bl-md "
-      >
-        <AppText className="text-slate-300">
-          {formatDateShort(item.created_at)}
-        </AppText>
-
-        <View className="flex-row items-center gap-5">
-          <AppText className="text-slate-300">{t("common.start")}</AppText>
+      {/* Footer - type, date, details */}
+      <View className="flex-row items-center justify-between bg-slate-900/40 px-4 py-2">
+        <View className="flex-row items-center gap-2">
           <Dumbbell size={20} color="#cbd5e1" />
+          <AppText className="text-slate-400 text-sm">
+            {t("gym:gym.TemplatesScreen.templateType")}
+          </AppText>
+          <AppText className="text-slate-500 text-sm">·</AppText>
+          <AppText className="text-slate-400 text-sm">
+            {formatDateShort(item.created_at)}
+          </AppText>
         </View>
-      </Pressable>
-    </View>
+        <AnimatedButton
+          onPress={onExpand}
+          className="flex-row items-center gap-2"
+          hitSlop={15}
+        >
+          <SquareArrowOutUpRight size={18} color="#64748b" />
+          <AppText className="text-slate-500 text-sm">
+            {t("gym:gym.TemplatesScreen.details")}
+          </AppText>
+        </AnimatedButton>
+      </View>
+    </LinearGradient>
   );
 }

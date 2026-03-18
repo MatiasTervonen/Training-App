@@ -1,6 +1,7 @@
 import { View } from "react-native";
 import { BookOpen } from "lucide-react-native";
 import AppText from "@/components/AppText";
+import BodyText from "@/components/BodyText";
 import { FeedCardProps } from "@/types/session";
 import BaseFeedCard from "@/features/feed-cards/BaseFeedCard";
 import { useTranslation } from "react-i18next";
@@ -29,16 +30,12 @@ export default function TutorialCard({
       typeName={t("feed.card.types.tutorial")}
       statsContent={
         <View>
-          <AppText
-            className={`${"text-slate-300"}`}
-          >
+          <BodyText className="text-slate-300">
             {t("feed.tutorial.subtitle")}
-          </AppText>
-          <AppText
-            className={`text-sm mt-1 ${"text-slate-400"}`}
-          >
+          </BodyText>
+          <BodyText className="text-sm mt-1 text-slate-400">
             {t("feed.tutorial.tap_to_read")}
-          </AppText>
+          </BodyText>
         </View>
       }
     />

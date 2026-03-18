@@ -2,6 +2,7 @@ import { Bell } from "lucide-react-native";
 import { formatDateTime, formatNotifyTime } from "@/lib/formatDate";
 import { View } from "react-native";
 import AppText from "@/components/AppText";
+import BodyText from "@/components/BodyText";
 import { FeedCardProps } from "@/types/session";
 import BaseFeedCard from "@/features/feed-cards/BaseFeedCard";
 import { useTranslation } from "react-i18next";
@@ -52,17 +53,17 @@ export default function LocalReminderCard({
       statsContent={
         <View className="gap-1">
           <View className="flex-row items-center gap-2">
-            <AppText className="text-slate-300">
+            <BodyText className="text-slate-300">
               {payload.notify_at_time &&
                 formatNotifyTime(payload.notify_at_time!)}
               {payload.notify_date && formatDateTime(payload.notify_date!)}
-            </AppText>
+            </BodyText>
             <Bell size={20} color={"#cbd5e1"} />
           </View>
           {payload.weekdays && payload.weekdays.length > 0 && (
-            <AppText className="text-slate-400 text-sm">
+            <BodyText className="text-slate-400 text-sm">
               {payload.weekdays.map((dayNum) => days[dayNum - 1]).join(" · ")}
-            </AppText>
+            </BodyText>
           )}
         </View>
       }

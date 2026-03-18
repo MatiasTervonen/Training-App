@@ -1,13 +1,14 @@
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, createContext, useContext, useEffect, useState } from "react";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
+  useAnimatedScrollHandler,
   withSpring,
   withTiming,
+  SharedValue,
 } from "react-native-reanimated";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
-import { CircleX } from "lucide-react-native";
-import { View, Pressable, Dimensions } from "react-native";
+import { View, Dimensions } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Portal } from "react-native-paper";
 import { useFullScreenModalConfig } from "@/lib/stores/fullScreenModalConfig";
@@ -16,19 +17,35 @@ import AnimatedButton from "@/components/buttons/animatedButton";
 import { useTranslation } from "react-i18next";
 import { scheduleOnRN } from "react-native-worklets";
 
+type FullScreenModalScrollContextType = {
+  innerScrollY: SharedValue<number>;
+};
+
+const FullScreenModalScrollContext =
+  createContext<FullScreenModalScrollContextType | null>(null);
+
+export function useFullScreenModalScroll() {
+  return useContext(FullScreenModalScrollContext);
+}
+
 export default function FullScreenModal({
   isOpen,
   onClose,
   children,
   confirmBeforeClose = false,
+  scrollable = true,
 }: {
   isOpen: boolean;
   onClose: () => void;
   children: ReactNode;
   confirmBeforeClose?: boolean;
+  scrollable?: boolean;
 }) {
   const { t } = useTranslation("common");
-  const translateX = useSharedValue(0);
+  const translateY = useSharedValue(0);
+  const scrollY = useSharedValue(0);
+  const innerScrollY = useSharedValue(0);
+  const startY = useSharedValue(0);
   const [showConfirm, setShowConfirm] = useState(false);
   const insets = useSafeAreaInsets();
 
@@ -37,18 +54,16 @@ export default function FullScreenModal({
   );
   const swipeEnabled = fullScreenModalConfig?.swipeEnabled ?? true;
 
-  // Max width == max-w-3xl (768px) for the count of swipe dinstance to navigation
-
-  const rawScreenWidth = Dimensions.get("window").width;
-  const screenWidth = Math.min(rawScreenWidth, 768);
+  const screenHeight = Dimensions.get("window").height;
 
   useEffect(() => {
     if (isOpen) {
-      // reset modal position when reopened
-      translateX.value = 0;
+      translateY.value = 0;
+      scrollY.value = 0;
+      innerScrollY.value = 0;
       setShowConfirm(false);
     }
-  }, [isOpen, translateX]);
+  }, [isOpen, translateY, scrollY]);
 
   const handleClose = () => {
     if (confirmBeforeClose) {
@@ -58,48 +73,99 @@ export default function FullScreenModal({
     }
   };
 
-  const pan = Gesture.Pan()
-    .enabled((swipeEnabled ?? true) && !showConfirm)
-    .activeOffsetX([-40, 40])
-    .failOffsetY([-12, 12])
-    .onChange((event) => {
-      translateX.value = event.translationX * 0.7;
-    })
-    .onFinalize(() => {
-      const threshold = screenWidth * 0.2; // Minimum swipe distance to trigger close
-      const exitDistance = screenWidth * 1.2; // Distance to move off-screen
+  const scrollHandler = useAnimatedScrollHandler({
+    onScroll: (event) => {
+      scrollY.value = event.contentOffset.y;
+    },
+  });
 
-      if (Math.abs(translateX.value) > threshold) {
-        if (confirmBeforeClose) {
-          // Spring back to center and show confirmation immediately
-          translateX.value = withSpring(0, {
-            stiffness: 220,
-            damping: 15,
-            mass: 1,
-          });
-          scheduleOnRN(handleClose);
-        } else {
-          // Animate off-screen and close
-          translateX.value = withTiming(
-            translateX.value > 0 ? exitDistance : -exitDistance,
-            { duration: 300 },
-            () => {
-              scheduleOnRN(onClose);
-            },
-          );
-        }
-      } else {
-        // Otherwise, spring back to original position
-        translateX.value = withSpring(0, {
+  const onChangeHandler = (event: { translationY: number }) => {
+    'worklet';
+    translateY.value = Math.max(0, event.translationY * 0.7);
+  };
+
+  const onFinalizeHandler = (_event: unknown, success: boolean) => {
+    'worklet';
+    const threshold = screenHeight * 0.15;
+
+    if (success && translateY.value > threshold) {
+      if (confirmBeforeClose) {
+        translateY.value = withSpring(0, {
           stiffness: 220,
           damping: 15,
           mass: 1,
         });
+        scheduleOnRN(handleClose);
+      } else {
+        translateY.value = withTiming(
+          screenHeight,
+          { duration: 300 },
+          () => {
+            scheduleOnRN(onClose);
+          },
+        );
       }
-    });
+    } else {
+      translateY.value = withSpring(0, {
+        stiffness: 220,
+        damping: 15,
+        mass: 1,
+      });
+    }
+  };
+
+  // scrollable: modal owns the ScrollView, dismiss only at top
+  const scrollablePan = Gesture.Pan()
+    .enabled((swipeEnabled ?? true) && !showConfirm)
+    .manualActivation(true)
+    .onTouchesDown((e) => {
+      'worklet';
+      if (e.numberOfTouches === 1) {
+        startY.value = e.allTouches[0].absoluteY;
+      }
+    })
+    .onTouchesMove((e, state) => {
+      'worklet';
+      if (e.numberOfTouches === 1) {
+        const dy = e.allTouches[0].absoluteY - startY.value;
+        if (dy > 15 && scrollY.value <= 1) {
+          state.activate();
+        } else if (dy < -15 || dy > 15) {
+          state.fail();
+        }
+      }
+    })
+    .onChange(onChangeHandler)
+    .onFinalize(onFinalizeHandler);
+
+  // non-scrollable: children have their own scroll, only dismiss when inner scroll is at top
+  const nonScrollablePan = Gesture.Pan()
+    .enabled((swipeEnabled ?? true) && !showConfirm)
+    .manualActivation(true)
+    .onTouchesDown((e) => {
+      'worklet';
+      if (e.numberOfTouches === 1) {
+        startY.value = e.allTouches[0].absoluteY;
+      }
+    })
+    .onTouchesMove((e, state) => {
+      'worklet';
+      if (e.numberOfTouches === 1) {
+        const dy = e.allTouches[0].absoluteY - startY.value;
+        if (dy > 15 && innerScrollY.value <= 1) {
+          state.activate();
+        } else if (dy < -15 || dy > 15) {
+          state.fail();
+        }
+      }
+    })
+    .onChange(onChangeHandler)
+    .onFinalize(onFinalizeHandler);
+
+  const pan = scrollable ? scrollablePan : nonScrollablePan;
 
   const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: translateX.value }],
+    transform: [{ translateY: translateY.value }],
   }));
 
   if (!isOpen) return null;
@@ -113,19 +179,31 @@ export default function FullScreenModal({
             style={[animatedStyle]}
           >
             <View className="flex-1 bg-[#1d293d]">
-              <Pressable
-                onPress={handleClose}
-                className="absolute top-4 right-4 z-[999]"
-                hitSlop={10}
-              >
-                <CircleX size={30} color="#f3f4f6" />
-              </Pressable>
-              <View
-                className="flex-1 max-w-xl px-2 w-full"
-                style={{ paddingBottom: insets.bottom }}
-              >
-                {children}
-              </View>
+              {scrollable ? (
+                <Animated.ScrollView
+                  className="flex-1"
+                  contentContainerStyle={{ flexGrow: 1 }}
+                  scrollEventThrottle={16}
+                  onScroll={scrollHandler}
+                  showsVerticalScrollIndicator={false}
+                >
+                  <View
+                    className="flex-1 max-w-xl px-2 w-full"
+                    style={{ paddingBottom: insets.bottom }}
+                  >
+                    {children}
+                  </View>
+                </Animated.ScrollView>
+              ) : (
+                <FullScreenModalScrollContext.Provider value={{ innerScrollY }}>
+                  <View
+                    className="flex-1 max-w-xl px-2 w-full"
+                    style={{ paddingBottom: insets.bottom }}
+                  >
+                    {children}
+                  </View>
+                </FullScreenModalScrollContext.Provider>
+              )}
 
               {showConfirm && (
                 <View className="absolute inset-0 bg-black/70 items-center justify-center z-50 rounded-t-2xl">

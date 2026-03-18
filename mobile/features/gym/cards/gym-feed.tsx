@@ -1,6 +1,7 @@
 import { Dumbbell, Timer, ImageIcon, Mic, Video } from "lucide-react-native";
 import { View } from "react-native";
 import AppText from "@/components/AppText";
+import BodyText from "@/components/BodyText";
 import { FeedCardProps } from "@/types/session";
 import BaseFeedCard from "@/features/feed-cards/BaseFeedCard";
 import { useTranslation } from "react-i18next";
@@ -67,26 +68,20 @@ export default function GymCard({
           <View className="flex-row gap-6 items-center">
             {payload.exercises_count > 0 && payload.sets_count > 0 && (
               <View className="gap-4 flex-row items-center">
-                <AppText
-                  className={` ${"text-slate-300"}`}
-                >
+                <BodyText className="text-slate-300">
                   {t("feed.card.exercises")}: {payload.exercises_count}
-                </AppText>
-                <AppText
-                  className={`${"text-slate-300"}`}
-                >
+                </BodyText>
+                <BodyText className="text-slate-300">
                   {t("feed.card.sets")}: {payload.sets_count}
-                </AppText>
+                </BodyText>
               </View>
             )}
             {payload.duration > 0 && (
               <View className="flex-row items-center gap-2">
                 <Timer size={20} color={"#cbd5e1"} />
-                <AppText
-                  className={` ${"text-slate-300"}`}
-                >
+                <BodyText className="text-slate-300">
                   {Math.floor(payload.duration / 60)} {t("feed.card.min")}
-                </AppText>
+                </BodyText>
               </View>
             )}
           </View>

@@ -38,7 +38,7 @@ export default function PhaseActivityPicker({
   };
 
   return (
-    <FullScreenModal isOpen={isOpen} onClose={onClose}>
+    <FullScreenModal isOpen={isOpen} onClose={onClose} scrollable={false}>
       <View className="flex-1">
         <AppText className="text-xl text-center mt-6 mb-2">
           {t("gym.phase.selectActivity")}

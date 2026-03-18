@@ -34,7 +34,7 @@ export default function MoveToFolderSheet({
   };
 
   return (
-    <FullScreenModal isOpen={isOpen} onClose={onClose}>
+    <FullScreenModal isOpen={isOpen} onClose={onClose} scrollable={false}>
       <View className="flex-1 px-5 pt-10">
         <AppText className="text-xl text-center mb-6">
           {t("notes.folders.moveToFolder")}

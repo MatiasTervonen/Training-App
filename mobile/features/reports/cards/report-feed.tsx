@@ -1,6 +1,7 @@
 import { View } from "react-native";
 import { FileBarChart } from "lucide-react-native";
 import AppText from "@/components/AppText";
+import BodyText from "@/components/BodyText";
 import { FeedCardProps } from "@/types/session";
 import BaseFeedCard from "@/features/feed-cards/BaseFeedCard";
 import { useTranslation } from "react-i18next";
@@ -45,16 +46,12 @@ export default function ReportCard({
       typeName={t("feed:feed.card.types.report")}
       statsContent={
         <View>
-          <AppText
-            className={`text-sm ${"text-slate-400"}`}
-          >
+          <BodyText className="text-sm text-slate-400">
             {dateRange}
-          </AppText>
-          <AppText
-            className={`mt-1 ${"text-slate-300"}`}
-          >
+          </BodyText>
+          <BodyText className="mt-1 text-slate-300">
             {featureLabels}
-          </AppText>
+          </BodyText>
           <AppText>{" "}</AppText>
         </View>
       }

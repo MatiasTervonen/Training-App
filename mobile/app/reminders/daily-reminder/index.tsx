@@ -1,9 +1,5 @@
-import {
-  View,
-  TouchableWithoutFeedback,
-  Keyboard,
-  AppState,
-} from "react-native";
+import { View, AppState } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import AppText from "@/components/AppText";
 import SaveButton from "@/components/buttons/SaveButton";
 import DeleteButton from "@/components/buttons/DeleteButton";
@@ -24,6 +20,7 @@ import Toggle from "@/components/toggle";
 import { canUseExactAlarm, requestExactAlarm } from "@/native/android/EnsureExactAlarmPermission";
 import InfoModal from "@/components/InfoModal";
 import { useTranslation } from "react-i18next";
+import BodyText from "@/components/BodyText";
 
 export default function ReminderScreen() {
   const { t, i18n } = useTranslation("reminders");
@@ -89,20 +86,20 @@ export default function ReminderScreen() {
   });
 
   return (
-    <>
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <PageContainer>
-          <View className="justify-between flex-1">
+    <View className="flex-1">
+      <KeyboardAwareScrollView contentContainerStyle={{ flexGrow: 1 }} bottomOffset={50}>
+        <PageContainer className="justify-between">
+          <View>
+            <AppText className="text-xl text-center mb-2">
+              {t("reminders.dailyReminder")}
+            </AppText>
+            <View className="flex-row items-center justify-center mb-5">
+              <Info color="#9ca3af" size={18} />
+              <BodyText className="text-gray-400 text-sm ml-2 shrink">
+                {t("reminders.dailyInfo")}
+              </BodyText>
+            </View>
             <View className="gap-5">
-              <AppText className="text-xl text-center">
-                {t("reminders.dailyReminder")}
-              </AppText>
-              <View className="flex-row items-center justify-center">
-                <Info color="#9ca3af" size={18} />
-                <AppText className="text-gray-400 text-sm ml-2">
-                  {t("reminders.dailyInfo")}
-                </AppText>
-              </View>
               <View>
                 <AppInput
                   value={title}
@@ -123,7 +120,7 @@ export default function ReminderScreen() {
                     notifyAt ? formattedTime : t("reminders.setNotifyTime")
                   }
                   onPress={() => setOpen(true)}
-                  className="bg-blue-800 py-2 rounded-md shadow-md border-2 border-blue-500 flex-row gap-2 justify-center items-center"
+                  className="btn-base flex-row gap-2 justify-center items-center"
                   textClassName="text-gray-100"
                 >
                   <Plus color="#f3f4f6" />
@@ -149,10 +146,10 @@ export default function ReminderScreen() {
               />
               <View className="flex-row items-center justify-between px-4 mt-5">
                 <View>
-                  <AppText>{t("reminders.enableHighPriority")}</AppText>
-                  <AppText className="text-gray-400 text-sm">
+                  <BodyText>{t("reminders.enableHighPriority")}</BodyText>
+                  <BodyText className="text-gray-400 text-sm">
                     {t("reminders.highPriorityDescription")}
-                  </AppText>
+                  </BodyText>
                 </View>
                 <Toggle
                   isOn={mode === "alarm"}
@@ -168,22 +165,21 @@ export default function ReminderScreen() {
                 />
               </View>
             </View>
-            <View className="flex-row gap-4">
-              <View className="flex-1">
-                <DeleteButton onPress={resetReminder} />
-              </View>
-              <View className="flex-1">
-                <SaveButton onPress={saveReminder} />
-              </View>
+          </View>
+          <View className="flex-row gap-4">
+            <View className="flex-1">
+              <DeleteButton onPress={resetReminder} />
+            </View>
+            <View className="flex-1">
+              <SaveButton onPress={saveReminder} />
             </View>
           </View>
-          <FullScreenLoader
-            visible={isSaving}
-            message={t("reminders.savingReminder")}
-          />
         </PageContainer>
-      </TouchableWithoutFeedback>
-
+      </KeyboardAwareScrollView>
+      <FullScreenLoader
+        visible={isSaving}
+        message={t("reminders.savingReminder")}
+      />
       <InfoModal
         visible={showModal}
         onClose={() => setShowModal(false)}
@@ -196,6 +192,6 @@ export default function ReminderScreen() {
           setShowModal(false);
         }}
       />
-    </>
+    </View>
   );
 }

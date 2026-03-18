@@ -1,6 +1,7 @@
 import { Bell, Check } from "lucide-react-native";
 import { View } from "react-native";
 import AppText from "@/components/AppText";
+import BodyText from "@/components/BodyText";
 import { FeedCardProps } from "@/types/session";
 import BaseFeedCard from "@/features/feed-cards/BaseFeedCard";
 import { formatDateTime } from "@/lib/formatDate";
@@ -40,18 +41,16 @@ export default function GlobalReminderCard({
           {payload.delivered && (
             <View className="flex-row items-center gap-2 bg-gray-900 rounded-md px-2">
               <Check size={30} color="#4ade80" />
-              <AppText className="text-slate-300">
+              <BodyText className="text-slate-300">
                 {t("feed.card.delivered")}
-              </AppText>
+              </BodyText>
             </View>
           )}
           {payload.notify_at && (
             <View className="flex-row items-center gap-2">
-              <AppText
-                className={`${"text-slate-300"}`}
-              >
+              <BodyText className="text-slate-300">
                 {formatDateTime(payload.notify_at)}
-              </AppText>
+              </BodyText>
               <Bell size={20} color={"#cbd5e1"} />
             </View>
           )}

@@ -124,11 +124,11 @@ export default function TrainingFinishedScreen() {
   }, [summary?.sessionId, sharedWithFriends, queryClient, t]);
 
   return (
+    <View className="flex-1" onLayout={onContainerLayout}>
     <ScrollView
       className="flex-1 px-5"
       contentContainerStyle={{ flexGrow: 1 }}
       showsVerticalScrollIndicator={false}
-      onLayout={onContainerLayout}
     >
       {/* Header */}
       <View className="items-center mt-10 gap-2">
@@ -233,7 +233,7 @@ export default function TrainingFinishedScreen() {
           </AnimatedButton>
 
           {settingsExpanded && (
-            <View className="mt-4">
+            <View className="mt-4 pb-6">
               <ShareCardPicker
                 selectedSize={size}
                 onSizeChange={setSize}
@@ -245,15 +245,16 @@ export default function TrainingFinishedScreen() {
         </View>
       )}
 
+    </ScrollView>
       {/* Done button */}
-      <View className="w-full pb-10 mt-8">
+      <View className="px-5 pb-5 pt-3 border-t border-gray-700">
         <AnimatedButton
-          className="btn-base py-3"
+          className="btn-start py-3"
           onPress={() => router.replace("/dashboard")}
         >
           <AppText className="text-center">{t("gym.share.done")}</AppText>
         </AnimatedButton>
       </View>
-    </ScrollView>
+    </View>
   );
 }

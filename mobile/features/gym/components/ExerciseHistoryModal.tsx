@@ -77,7 +77,7 @@ export default function ExerciseHistoryModal({
   };
 
   return (
-    <FullScreenModal isOpen={isOpen} onClose={onClose}>
+    <FullScreenModal isOpen={isOpen} onClose={onClose} scrollable={false}>
       <View className="flex-1 px-5">
         {isLoading ? (
           <View className="justify-center items-center mt-40 gap-5 mx-4">

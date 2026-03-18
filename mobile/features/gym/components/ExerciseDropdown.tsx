@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -7,11 +7,15 @@ import {
   SectionList,
   TouchableWithoutFeedback,
   Keyboard,
+  NativeSyntheticEvent,
+  NativeScrollEvent,
 } from "react-native";
+import { useFullScreenModalScroll } from "@/components/FullScreenModal";
 import { getExercises } from "@/database/gym/get-exercises";
 import { getRecentExercises } from "@/database/gym/recent-exercises";
 import AppInput from "@/components/AppInput";
 import AppText from "@/components/AppText";
+import BodyText from "@/components/BodyText";
 import ErrorMessage from "@/components/ErrorMessage";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import { useTranslation } from "react-i18next";
@@ -43,6 +47,16 @@ export default function ExerciseDropdown({
   const { t } = useTranslation("gym");
   const [searchQuery, setSearchQuery] = useState("");
   const language = useUserStore((state) => state.settings?.language ?? "en");
+  const modalScroll = useFullScreenModalScroll();
+
+  const handleScroll = useCallback(
+    (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+      if (modalScroll) {
+        modalScroll.innerScrollY.value = e.nativeEvent.contentOffset.y;
+      }
+    },
+    [modalScroll],
+  );
 
   const {
     data: allExercisesData,
@@ -176,6 +190,8 @@ export default function ExerciseDropdown({
                 paddingBottom: 100,
               }}
               showsVerticalScrollIndicator={false}
+              onScroll={handleScroll}
+              scrollEventThrottle={16}
               sections={sections}
               keyExtractor={(item) => item.id}
               renderItem={({ item, section, index }) => {
@@ -200,13 +216,13 @@ export default function ExerciseDropdown({
                   >
                     <View className="justify-between">
                       <View className="flex-row justify-between items-center">
-                        <AppText
-                          className="text-lg mb-1 mr-4 flex-1"
+                        <BodyText
+                          className="text-[17px] mb-1 mr-4 flex-1"
                           numberOfLines={1}
                           ellipsizeMode="tail"
                         >
                           {exerciseItem.name}
-                        </AppText>
+                        </BodyText>
                         <AppText className="text-md text-gray-300 shrink-0">
                           {t(`gym.muscleGroups.${exerciseItem.muscle_group}`)}
                         </AppText>

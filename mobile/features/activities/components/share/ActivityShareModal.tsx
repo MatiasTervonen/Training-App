@@ -1,14 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { View, Modal, ScrollView, LayoutChangeEvent, ActivityIndicator, PixelRatio } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { View, ActivityIndicator, PixelRatio } from "react-native";
 import AppText from "@/components/AppText";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import ActivityShareCard from "@/features/activities/components/share/ActivityShareCard";
 import StatToggleChips from "@/features/activities/components/share/StatToggleChips";
 import useMapSnapshot from "@/features/activities/components/share/useMapSnapshot";
-import useShareCard from "@/lib/hooks/useShareCard";
-import useShareCardPreferences from "@/lib/hooks/useShareCardPreferences";
-import ShareCardPicker from "@/lib/components/share/ShareCardPicker";
 import { getTheme, SHARE_CARD_DIMENSIONS } from "@/lib/share/themes";
 import {
   getAvailableStats,
@@ -16,15 +12,12 @@ import {
 } from "@/features/activities/lib/activityShareCardUtils";
 import { ActivitySessionSummary } from "@/lib/stores/activitySessionSummaryStore";
 import { FullActivitySession } from "@/types/models";
-import { Download, Share2 } from "lucide-react-native";
-import ToastMessage from "react-native-toast-message";
-import { Toast } from "react-native-toast-message/lib/src/Toast";
-import { toastConfig } from "@/lib/config/toast";
 import { useTranslation } from "react-i18next";
-import * as Haptics from "expo-haptics";
 import Mapbox from "@rnmapbox/maps";
 import { MAP_STYLES, LINE_COLORS } from "@/features/activities/lib/mapConstants";
 import { useActivitySettingsStore } from "@/lib/stores/activitySettingsStore";
+import useShareCardPreferences from "@/lib/hooks/useShareCardPreferences";
+import ShareModalShell from "@/lib/components/share/ShareModalShell";
 
 const MAP_VIEW_STYLE = { flex: 1 };
 
@@ -46,19 +39,11 @@ export default function ActivityShareModal({
   activitySession,
 }: ActivityShareModalProps) {
   const { t } = useTranslation("activities");
-  const [containerWidth, setContainerWidth] = useState(0);
-  const [containerHeight, setContainerHeight] = useState(0);
-  const { cardRef, isSharing, isSaving, shareCard, saveCardToGallery } =
-    useShareCard("activity-");
 
   const {
     theme: themeId,
     size,
-    setTheme,
-    setSize,
   } = useShareCardPreferences();
-
-  const insets = useSafeAreaInsets();
 
   // Local-only map style + route color (don't affect global settings)
   const globalMapStyleIndex = useActivitySettingsStore((s) => {
@@ -175,89 +160,161 @@ export default function ActivityShareModal({
     });
   }, []);
 
-  const onLayout = useCallback((e: LayoutChangeEvent) => {
-    setContainerWidth(e.nativeEvent.layout.width);
-    setContainerHeight(e.nativeEvent.layout.height);
-  }, []);
-
-  // Fixed preview area height so switching sizes doesn't shift the layout
-  const previewAreaHeight = useMemo(
-    () => containerHeight * 0.4,
-    [containerHeight],
-  );
-
-  const shareCardScale = useMemo(() => {
-    if (containerWidth === 0 || previewAreaHeight === 0) return 0.3;
-    const scaleX = (containerWidth - 40) / dims.width;
-    const scaleY = previewAreaHeight / dims.height;
-    return Math.min(scaleX, scaleY);
-  }, [containerWidth, previewAreaHeight, dims]);
-
-  const containerStyle = useMemo(
-    () => ({
-      width: dims.width * shareCardScale,
-      height: dims.height * shareCardScale,
-      overflow: "hidden" as const,
-    }),
-    [dims, shareCardScale],
-  );
-
-  const transformStyle = useMemo(
-    () => ({
-      transform: [{ scale: shareCardScale }],
-      transformOrigin: "top left" as const,
-    }),
-    [shareCardScale],
-  );
-
-  const handleShare = useCallback(async () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    const success = await shareCard(size);
-    if (!success) {
-      onClose();
-      Toast.show({
-        type: "error",
-        text1: t("common:common.error"),
-        text2: t("activities.share.shareError"),
-      });
-    }
-  }, [shareCard, size, onClose, t]);
-
-  const handleSave = useCallback(async () => {
-    const success = await saveCardToGallery(size);
-    Toast.show({
-      type: success ? "success" : "error",
-      text1: success
-        ? t("activities.share.saveSuccess")
-        : t("common:common.error"),
-      text2: success ? undefined : t("activities.share.saveError"),
-      topOffset: 60,
-    });
-  }, [saveCardToGallery, size, t]);
-
   const showHiddenMap =
     visible && summary.hasRoute && routeFeature && bounds &&
     (!hideMapDetails || privacyStyleReady);
 
   return (
-    <Modal
+    <ShareModalShell
       visible={visible}
-      transparent
-      animationType="fade"
-      onRequestClose={onClose}
-    >
-      <View
-        className="flex-1 bg-black/95 px-5"
-        style={{
-          paddingTop: insets.top + 16,
-          paddingBottom: insets.bottom + 16,
-        }}
-        onLayout={onLayout}
-      >
-        {/* Wait for layout measurement before rendering content to prevent jump */}
-        {containerHeight === 0 ? null : <>
-        {/* Hidden offscreen map for snapshot capture */}
-        {showHiddenMap && (
+      onClose={onClose}
+      prefix="activity-"
+      scrollable
+      extraDisabled={isLoadingSnapshot}
+      shareCardPickerProps={{
+        showGradient,
+        onShowGradientChange: setShowGradient,
+      }}
+      labels={{
+        save: t("activities.share.save"),
+        saving: t("activities.share.saving"),
+        share: t("activities.share.share"),
+        sharing: t("activities.share.sharing"),
+        close: t("activities.share.close"),
+        saveSuccess: t("activities.share.saveSuccess"),
+        saveError: t("activities.share.saveError"),
+        shareError: t("activities.share.shareError"),
+        error: t("common:common.error"),
+      }}
+      renderCard={({ cardRef, theme: cardTheme, size: cardSize }) => (
+        <>
+          {/* Cold open: show placeholder until first snapshot is ready */}
+          {isLoadingSnapshot && !mapSnapshotUri && summary.hasRoute ? (
+            <View
+              className="items-center justify-center rounded-lg"
+              style={{
+                width: SHARE_CARD_DIMENSIONS[cardSize].width,
+                height: SHARE_CARD_DIMENSIONS[cardSize].height,
+                backgroundColor: cardTheme.colors.background[0],
+              }}
+            >
+              <ActivityIndicator size="large" color={cardTheme.colors.accent} />
+              <AppText className="text-sm text-gray-400 mt-3">
+                {t("activities.share.loadingMap")}
+              </AppText>
+            </View>
+          ) : (
+            <>
+              <ActivityShareCard
+                key={`${showGradient}`}
+                ref={cardRef}
+                title={summary.title}
+                date={summary.date}
+                activityName={summary.activityName}
+                activitySlug={summary.activitySlug}
+                hasRoute={summary.hasRoute}
+                mapSnapshotUri={mapSnapshotUri}
+                selectedStats={selectedStats}
+                theme={cardTheme}
+                size={cardSize}
+                showGradient={showGradient}
+              />
+              {/* Loading overlay while map snapshot is re-rendering */}
+              {isLoadingSnapshot && mapSnapshotUri && (
+                <View className="absolute inset-0 items-center justify-center bg-black/40 rounded-lg">
+                  <ActivityIndicator size="large" color="#ffffff" />
+                </View>
+              )}
+            </>
+          )}
+        </>
+      )}
+      middleContent={() => (
+        <View className="gap-5 mt-4">
+          {availableStats.length > 2 && (
+            <View className="w-full">
+              <StatToggleChips
+                availableStats={availableStats}
+                selectedKeys={selectedKeys}
+                onToggle={handleToggle}
+              />
+            </View>
+          )}
+
+          {summary.hasRoute && (
+            <View className="w-full gap-3">
+              {/* Map style picker */}
+              <View className="gap-1">
+                <AppText className="text-sm text-gray-400">
+                  {t("activities.share.mapStyle")}
+                </AppText>
+                <View className="flex-row gap-2">
+                  {MAP_STYLES.map((style, i) => (
+                    <AnimatedButton
+                      key={style.labelKey}
+                      onPress={() => setMapStyleIndex(i)}
+                      className={`px-4 py-2 rounded-full border ${
+                        mapStyleIndex === i
+                          ? "bg-blue-700 border-blue-500"
+                          : "bg-transparent border-gray-600"
+                      }`}
+                    >
+                      <AppText
+                        className={`text-sm ${mapStyleIndex === i ? "text-gray-100" : "text-gray-400"}`}
+                      >
+                        {t(`activities.settings.mapStyles.${style.labelKey}`)}
+                      </AppText>
+                    </AnimatedButton>
+                  ))}
+                </View>
+              </View>
+
+              {/* Route color picker */}
+              <View className="gap-1">
+                <AppText className="text-sm text-gray-400">
+                  {t("activities.share.routeColor")}
+                </AppText>
+                <View className="flex-row gap-3">
+                  {LINE_COLORS.map((color, i) => (
+                    <AnimatedButton
+                      key={color.labelKey}
+                      onPress={() => setLineColorIndex(i)}
+                      className="items-center gap-1"
+                    >
+                      <View
+                        className={`w-[32px] h-[32px] rounded-full ${
+                          lineColorIndex === i
+                            ? "border-2 border-white"
+                            : "border border-gray-600"
+                        }`}
+                        style={{ backgroundColor: color.core }}
+                      />
+                    </AnimatedButton>
+                  ))}
+                </View>
+              </View>
+
+              {/* Toggle button */}
+              <AnimatedButton
+                onPress={() => setHideMapDetails((prev) => !prev)}
+                className={`px-4 py-2 rounded-full border self-start ${
+                  hideMapDetails
+                    ? "bg-blue-700 border-blue-500"
+                    : "bg-transparent border-gray-600"
+                }`}
+              >
+                <AppText
+                  className={`text-sm ${hideMapDetails ? "text-gray-100" : "text-gray-400"}`}
+                >
+                  {t("activities.share.hideMapDetails")}
+                </AppText>
+              </AnimatedButton>
+            </View>
+          )}
+        </View>
+      )}
+      outsideContent={
+        showHiddenMap ? (
           <View
             style={{
               position: "absolute",
@@ -352,196 +409,8 @@ export default function ActivityShareModal({
               )}
             </Mapbox.MapView>
           </View>
-        )}
-
-        {/* Card preview — fixed height so switching sizes doesn't shift layout */}
-        <View
-          className="items-center justify-center"
-          style={{ height: previewAreaHeight }}
-        >
-          <View style={containerStyle}>
-            {/* Cold open: show placeholder until first snapshot is ready */}
-            {isLoadingSnapshot && !mapSnapshotUri && summary.hasRoute ? (
-              <View
-                className="items-center justify-center rounded-lg"
-                style={{
-                  width: containerStyle.width,
-                  height: containerStyle.height,
-                  backgroundColor: theme.colors.background[0],
-                }}
-              >
-                <ActivityIndicator size="large" color={theme.colors.accent} />
-                <AppText className="text-sm text-gray-400 mt-3">
-                  {t("activities.share.loadingMap")}
-                </AppText>
-              </View>
-            ) : (
-              <>
-                <View style={transformStyle}>
-                  <ActivityShareCard
-                    key={`${showGradient}`}
-                    ref={cardRef}
-                    title={summary.title}
-                    date={summary.date}
-                    activityName={summary.activityName}
-                    activitySlug={summary.activitySlug}
-                    hasRoute={summary.hasRoute}
-                    mapSnapshotUri={mapSnapshotUri}
-                    selectedStats={selectedStats}
-                    theme={theme}
-                    size={size}
-                    showGradient={showGradient}
-                  />
-                </View>
-                {/* Loading overlay while map snapshot is re-rendering */}
-                {isLoadingSnapshot && mapSnapshotUri && (
-                  <View className="absolute inset-0 items-center justify-center bg-black/40 rounded-lg">
-                    <ActivityIndicator size="large" color="#ffffff" />
-                  </View>
-                )}
-              </>
-            )}
-          </View>
-        </View>
-
-        {/* Middle content — toggles, pickers */}
-        <ScrollView className="flex-1 mt-6" showsVerticalScrollIndicator={false} contentContainerStyle={{ flexGrow: 1, justifyContent: "space-between" }}>
-          {/* Top: controls */}
-          <View className="gap-5">
-            {availableStats.length > 2 && (
-              <View className="w-full">
-                <StatToggleChips
-                  availableStats={availableStats}
-                  selectedKeys={selectedKeys}
-                  onToggle={handleToggle}
-                />
-              </View>
-            )}
-
-            {summary.hasRoute && (
-              <View className="w-full gap-3">
-                {/* Map style picker */}
-                <View className="gap-1">
-                  <AppText className="text-sm text-gray-400">
-                    {t("activities.share.mapStyle")}
-                  </AppText>
-                  <View className="flex-row gap-2">
-                    {MAP_STYLES.map((style, i) => (
-                      <AnimatedButton
-                        key={style.labelKey}
-                        onPress={() => setMapStyleIndex(i)}
-                        className={`px-4 py-2 rounded-full border ${
-                          mapStyleIndex === i
-                            ? "bg-blue-700 border-blue-500"
-                            : "bg-transparent border-gray-600"
-                        }`}
-                      >
-                        <AppText
-                          className={`text-sm ${mapStyleIndex === i ? "text-gray-100" : "text-gray-400"}`}
-                        >
-                          {t(`activities.settings.mapStyles.${style.labelKey}`)}
-                        </AppText>
-                      </AnimatedButton>
-                    ))}
-                  </View>
-                </View>
-
-                {/* Route color picker */}
-                <View className="gap-1">
-                  <AppText className="text-sm text-gray-400">
-                    {t("activities.share.routeColor")}
-                  </AppText>
-                  <View className="flex-row gap-3">
-                    {LINE_COLORS.map((color, i) => (
-                      <AnimatedButton
-                        key={color.labelKey}
-                        onPress={() => setLineColorIndex(i)}
-                        className="items-center gap-1"
-                      >
-                        <View
-                          className={`w-[32px] h-[32px] rounded-full ${
-                            lineColorIndex === i
-                              ? "border-2 border-white"
-                              : "border border-gray-600"
-                          }`}
-                          style={{ backgroundColor: color.core }}
-                        />
-                      </AnimatedButton>
-                    ))}
-                  </View>
-                </View>
-
-                {/* Toggle button */}
-                <AnimatedButton
-                  onPress={() => setHideMapDetails((prev) => !prev)}
-                  className={`px-4 py-2 rounded-full border self-start ${
-                    hideMapDetails
-                      ? "bg-blue-700 border-blue-500"
-                      : "bg-transparent border-gray-600"
-                  }`}
-                >
-                  <AppText
-                    className={`text-sm ${hideMapDetails ? "text-gray-100" : "text-gray-400"}`}
-                  >
-                    {t("activities.share.hideMapDetails")}
-                  </AppText>
-                </AnimatedButton>
-              </View>
-            )}
-
-            <View className="w-full">
-              <ShareCardPicker
-                selectedSize={size}
-                onSizeChange={setSize}
-                selectedTheme={themeId}
-                onThemeChange={setTheme}
-                showGradient={showGradient}
-                onShowGradientChange={setShowGradient}
-              />
-            </View>
-          </View>
-
-          {/* Bottom buttons */}
-          <View className="w-full gap-3 mt-8">
-            <View className="flex-row gap-3">
-              <AnimatedButton
-                onPress={handleSave}
-                className="flex-1 btn-neutral flex-row items-center justify-center gap-2"
-                disabled={isSaving || isSharing || isLoadingSnapshot}
-              >
-                <Download color="#f3f4f6" size={18} />
-                <AppText className="text-base text-center" numberOfLines={1}>
-                  {isSaving
-                    ? t("activities.share.saving")
-                    : t("activities.share.save")}
-                </AppText>
-              </AnimatedButton>
-              <AnimatedButton
-                onPress={handleShare}
-                className="flex-1 btn-base flex-row items-center justify-center gap-2"
-                disabled={isSharing || isSaving || isLoadingSnapshot}
-              >
-                <Share2 color="#f3f4f6" size={18} />
-                <AppText className="text-base text-center" numberOfLines={1}>
-                  {isSharing
-                    ? t("activities.share.sharing")
-                    : t("activities.share.share")}
-                </AppText>
-              </AnimatedButton>
-            </View>
-            <AnimatedButton
-              onPress={onClose}
-              className="btn-neutral items-center justify-center"
-            >
-              <AppText className="text-base text-center">
-                {t("activities.share.close")}
-              </AppText>
-            </AnimatedButton>
-          </View>
-        </ScrollView>
-        </>}
-      </View>
-      <ToastMessage config={toastConfig} position="top" />
-    </Modal>
+        ) : null
+      }
+    />
   );
 }

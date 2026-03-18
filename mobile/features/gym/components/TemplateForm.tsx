@@ -425,6 +425,7 @@ export default function TemplateForm() {
               onClose={() => {
                 setIsExerciseModalOpen(false);
               }}
+              scrollable={false}
             >
               <ExerciseSelectorList
                 draftExercises={

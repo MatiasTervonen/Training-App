@@ -7,7 +7,8 @@ import {
   formatDateShort,
   getDistanceUnitLabels,
 } from "@/lib/formatDate";
-import { ScrollView, View } from "react-native";
+import { ScrollView, View, NativeSyntheticEvent, NativeScrollEvent } from "react-native";
+import { useFullScreenModalScroll } from "@/components/FullScreenModal";
 import AppText from "@/components/AppText";
 import PageContainer from "@/components/PageContainer";
 import { templateSummary } from "@/types/session";
@@ -37,12 +38,19 @@ export default function ActivityTemplateExpanded({
   const { t } = useTranslation("activities");
   const [fullScreen, setFullScreen] = useState(false);
   const labels = getDistanceUnitLabels();
+  const modalScroll = useFullScreenModalScroll();
+
+  const handleScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+    if (modalScroll) {
+      modalScroll.innerScrollY.value = e.nativeEvent.contentOffset.y;
+    }
+  };
 
   const hasStats = item.template.times_completed > 0;
 
   return (
     <View className="flex-1">
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView showsVerticalScrollIndicator={false} onScroll={handleScroll} scrollEventThrottle={16}>
         <PageContainer className="mb-10">
           <AppText className="text-sm text-gray-300 text-center">
             {t("activities.templatesScreen.created")}{" "}

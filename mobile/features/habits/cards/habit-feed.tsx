@@ -1,6 +1,7 @@
 import { Check, Repeat, Flame } from "lucide-react-native";
 import { View } from "react-native";
 import AppText from "@/components/AppText";
+import BodyText from "@/components/BodyText";
 import { FeedCardProps } from "@/types/session";
 import BaseFeedCard from "@/features/feed-cards/BaseFeedCard";
 import { useTranslation } from "react-i18next";
@@ -37,21 +38,17 @@ export default function HabitSummaryCard({
       statsContent={
         <View className="gap-1">
           <View className="flex-row gap-2 items-center">
-            <AppText
-              className={`${"text-slate-300"}`}
-            >
+            <BodyText className="text-slate-300">
               {t("feed.card.completed")}: {payload.completed} / {payload.total}
-            </AppText>
+            </BodyText>
             {allDone && <Check color="#22c55e" size={20} />}
           </View>
           {payload.current_streak > 0 && (
             <View className="flex-row gap-1 items-center">
               <Flame size={14} color="#f97316" />
-              <AppText
-                className={`text-sm ${"text-slate-400"}`}
-              >
+              <BodyText className="text-sm text-slate-400">
                 {tHabits("feed.streak", { count: payload.current_streak })}
-              </AppText>
+              </BodyText>
             </View>
           )}
         </View>

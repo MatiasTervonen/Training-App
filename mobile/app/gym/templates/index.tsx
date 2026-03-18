@@ -14,6 +14,7 @@ import { useConfirmAction } from "@/lib/confirmAction";
 import { getFullTemplate } from "@/database/gym/get-full-template";
 import { TemplateSkeleton } from "@/components/skeletetons";
 import AppText from "@/components/AppText";
+import ErrorMessage from "@/components/ErrorMessage";
 import PageContainer from "@/components/PageContainer";
 import { full_gym_template } from "@/types/models";
 import { useTimerStore } from "@/lib/stores/timerStore";
@@ -199,9 +200,7 @@ export default function TemplatesPage() {
         {!error && isLoading && <TemplateSkeleton count={6} />}
 
         {error && (
-          <AppText className="text-red-500 text-center">
-            {t("gym.TemplatesScreen.errorLoading")}
-          </AppText>
+          <ErrorMessage message={t("gym.TemplatesScreen.errorLoading")} />
         )}
 
         {!isLoading && templates.length === 0 && (
@@ -222,20 +221,21 @@ export default function TemplatesPage() {
 
         {templates &&
           templates.map((template: templateSummary, index: number) => (
-            <TemplateCard
-              index={index}
-              key={template.id}
-              item={template}
-              onDelete={() => handleDeleteTemplate(template.id)}
-              onExpand={() => setExpandedItem(template as full_gym_template)}
-              onEdit={() => {
-                router.push(`/gym/templates/${template.id}`);
-              }}
-            />
+            <View key={template.id} className="pb-5">
+              <TemplateCard
+                index={index}
+                item={template}
+                onDelete={() => handleDeleteTemplate(template.id)}
+                onExpand={() => setExpandedItem(template as full_gym_template)}
+                onEdit={() => {
+                  router.push(`/gym/templates/${template.id}`);
+                }}
+              />
+            </View>
           ))}
 
         {expandedItem && (
-          <FullScreenModal isOpen={true} onClose={() => setExpandedItem(null)}>
+          <FullScreenModal isOpen={true} onClose={() => setExpandedItem(null)} scrollable={false}>
             {isLoadingTemplateSession ? (
               <View className="gap-5 items-center justify-center pt-40">
                 <AppText className="text-lg">

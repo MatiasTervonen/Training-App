@@ -250,6 +250,7 @@ export default function TodoSession({
 
                           {open === taskIndex && (
                             <FullScreenModal
+                              scrollable={false}
                               onClose={() => {
                                 setOpen(null);
                                 setViewerIndex(-1);

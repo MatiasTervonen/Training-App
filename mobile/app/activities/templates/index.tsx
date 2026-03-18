@@ -107,7 +107,7 @@ export default function TemplatesPage() {
           ))}
 
         {expandedItem && (
-          <FullScreenModal isOpen={true} onClose={() => setExpandedItem(null)}>
+          <FullScreenModal isOpen={true} onClose={() => setExpandedItem(null)} scrollable={false}>
             <ActivityTemplateExpanded
               item={expandedItem}
               onStartActivity={() => startActivity(expandedItem)}

@@ -122,7 +122,7 @@ export default function MyGymScreen() {
                   )
                 }
                 onDelete={() => {
-                  handleDelete(feedItem.source_id, feedItem.type);
+                  handleDelete(feedItem.source_id, feedItem.type, ["myGymSessions"]);
                 }}
                 onEdit={() => {
                   router.push(`/gym/gym/${feedItem.source_id}`);

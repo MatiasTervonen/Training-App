@@ -1,4 +1,5 @@
 import AppText from "@/components/AppText";
+import BodyText from "@/components/BodyText";
 import ErrorMessage from "@/components/ErrorMessage";
 import { useQuery } from "@tanstack/react-query";
 import { getActivities } from "@/database/activities/get-activities";
@@ -8,7 +9,10 @@ import {
   View,
   ActivityIndicator,
   SectionList,
+  NativeSyntheticEvent,
+  NativeScrollEvent,
 } from "react-native";
+import { useFullScreenModalScroll } from "@/components/FullScreenModal";
 import AppInput from "@/components/AppInput";
 import { useCallback, useState, useMemo } from "react";
 import { getRecentActivities } from "@/database/activities/recent-activities";
@@ -22,6 +26,7 @@ type Props = {
 
 export default function ActivityDropdown({ onSelect }: Props) {
   const { t } = useTranslation("activities");
+  const modalScroll = useFullScreenModalScroll();
   const [inputValue, setInputValue] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedActivity, setSelectedActivity] =
@@ -118,6 +123,15 @@ export default function ActivityDropdown({ onSelect }: Props) {
     });
   }
 
+  const handleScroll = useCallback(
+    (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+      if (modalScroll) {
+        modalScroll.innerScrollY.value = e.nativeEvent.contentOffset.y;
+      }
+    },
+    [modalScroll],
+  );
+
   const handleSelectActivity = (activity: activities_with_category) => {
     setSearchQuery("");
     onSelect(activity);
@@ -163,6 +177,8 @@ export default function ActivityDropdown({ onSelect }: Props) {
                 paddingBottom: 100,
               }}
               showsVerticalScrollIndicator={false}
+              onScroll={handleScroll}
+              scrollEventThrottle={16}
               sections={sections}
               keyExtractor={(item: activities_with_category) => item.id}
               renderItem={({ item, index }: { item: activities_with_category; index: number }) => {
@@ -177,13 +193,13 @@ export default function ActivityDropdown({ onSelect }: Props) {
                   >
                     <View className="justify-between">
                       <View className="flex-row justify-between items-center">
-                        <AppText
-                          className="text-lg mb-1 mr-4 flex-1"
+                        <BodyText
+                          className="text-[17px] mb-1 mr-4 flex-1"
                           numberOfLines={1}
                           ellipsizeMode="tail"
                         >
                           {getActivityName(item)}
-                        </AppText>
+                        </BodyText>
                         <AppText className="text-md text-gray-300 shrink-0">
                           {getCategoryName(item)}
                         </AppText>

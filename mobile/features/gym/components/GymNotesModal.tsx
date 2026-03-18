@@ -79,7 +79,7 @@ export default function GymNotesModal({
   ];
 
   return (
-    <FullScreenModal isOpen={isOpen} onClose={onClose}>
+    <FullScreenModal isOpen={isOpen} onClose={onClose} scrollable={false}>
       {autoSaveStatus && <AutoSaveIndicator status={autoSaveStatus} />}
       <ScrollView
         showsVerticalScrollIndicator={false}

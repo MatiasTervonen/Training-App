@@ -61,6 +61,7 @@ import {
   requestIgnoreBatteryOptimizations,
 } from "@/native/android/NativeBatteryOptimization";
 import AppTextNC from "@/components/AppTextNC";
+import BodyText from "@/components/BodyText";
 
 type DraftImage = {
   id: string;
@@ -510,18 +511,18 @@ export default function StartActivityScreen() {
             <>
               <View className="flex-row items-center mt-7  justify-between px-4">
                 {allowGPS ? (
-                  <AppText className="text-lg">
+                  <BodyText className="text-lg">
                     {t(
                       "activities.startActivityScreen.disableLocationTracking",
                     )}
-                  </AppText>
+                  </BodyText>
                 ) : (
                   <Link href="/menu/settings">
-                    <AppText className="text-lg">
+                    <BodyText className="text-lg">
                       {t(
                         "activities.startActivityScreen.enableLocationTracking",
                       )}
-                    </AppText>
+                    </BodyText>
                   </Link>
                 )}
                 <Toggle
@@ -551,9 +552,9 @@ export default function StartActivityScreen() {
           )}
           {showStepToggle && (
             <View className="flex-row items-center mt-5 justify-between px-4">
-              <AppText className="text-lg">
+              <BodyText className="text-lg">
                 {t("activities.startActivityScreen.enableStepsTracking")}
-              </AppText>
+              </BodyText>
               <Toggle
                 disabled={isRunning}
                 isOn={false}
@@ -576,7 +577,7 @@ export default function StartActivityScreen() {
                 userWeight,
               });
             }}
-            className="justify-center items-center py-2 bg-blue-800 rounded-md shadow-md border-2 border-blue-500 mt-7"
+            className="justify-center items-center mt-7  btn-start"
             textClassName="text-gray-100 text-center"
           />
         </PageContainer>

@@ -1,5 +1,6 @@
 import { View } from "react-native";
 import AppText from "@/components/AppText";
+import BodyText from "@/components/BodyText";
 import SocialFeedCardHeader from "@/features/social-feed/components/SocialFeedCardHeader";
 import SocialFeedCardFooter from "@/features/social-feed/components/SocialFeedCardFooter";
 import { SocialFeedItem } from "@/types/social-feed";
@@ -34,22 +35,22 @@ function GymStats({ item }: { item: SocialFeedItem }) {
       <View className="flex-row items-center gap-5">
         {payload.exercises_count > 0 && (
           <View className="items-center">
-            <AppText className="text-lg">{payload.exercises_count}</AppText>
-            <AppText className="text-xs text-slate-400">{t("feed.card.exercises")}</AppText>
+            <BodyText className="text-lg">{payload.exercises_count}</BodyText>
+            <BodyText className="text-xs text-slate-400">{t("feed.card.exercises")}</BodyText>
           </View>
         )}
         {payload.sets_count > 0 && (
           <View className="items-center">
-            <AppText className="text-lg">{payload.sets_count}</AppText>
-            <AppText className="text-xs text-slate-400">{t("feed.card.sets")}</AppText>
+            <BodyText className="text-lg">{payload.sets_count}</BodyText>
+            <BodyText className="text-xs text-slate-400">{t("feed.card.sets")}</BodyText>
           </View>
         )}
         {payload.duration > 0 && (
           <View className="items-center">
-            <AppText className="text-lg">
+            <BodyText className="text-lg">
               {Math.floor(payload.duration / 60)}
-            </AppText>
-            <AppText className="text-xs text-slate-400">{t("feed.card.min")}</AppText>
+            </BodyText>
+            <BodyText className="text-xs text-slate-400">{t("feed.card.min")}</BodyText>
           </View>
         )}
       </View>
@@ -91,13 +92,13 @@ function ActivityStats({ item }: { item: SocialFeedItem }) {
       <View className="flex-row items-center gap-5">
         {payload.distance > 0 && (
           <View className="items-center">
-            <AppText className="text-lg">{formatMeters(payload.distance)}</AppText>
-            <AppText className="text-xs text-slate-400">{t("activities.sessionStats.distance")}</AppText>
+            <BodyText className="text-lg">{formatMeters(payload.distance)}</BodyText>
+            <BodyText className="text-xs text-slate-400">{t("activities.sessionStats.distance")}</BodyText>
           </View>
         )}
         <View className="items-center">
-          <AppText className="text-lg">{formatDuration(payload.duration)}</AppText>
-          <AppText className="text-xs text-slate-400">{t("activities.sessionStats.duration")}</AppText>
+          <BodyText className="text-lg">{formatDuration(payload.duration)}</BodyText>
+          <BodyText className="text-xs text-slate-400">{t("activities.sessionStats.duration")}</BodyText>
         </View>
       </View>
     </View>

@@ -1,9 +1,5 @@
-import {
-  View,
-  Pressable,
-  Keyboard,
-  ScrollView,
-} from "react-native";
+import { View } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import AppText from "@/components/AppText";
 import AppInput from "@/components/AppInput";
 import SelectInput from "@/components/Selectinput";
@@ -124,10 +120,10 @@ export default function FeedbackScreen() {
   };
 
   return (
-    <>
-      <Pressable onPress={Keyboard.dismiss} accessible={false} className="flex-1">
+    <View className="flex-1">
+      <KeyboardAwareScrollView contentContainerStyle={{ flexGrow: 1 }} bottomOffset={50}>
         <PageContainer className="justify-between">
-          <ScrollView showsVerticalScrollIndicator={false} className="flex-1">
+          <View>
             <AppText className="text-2xl text-center mb-10">
               {t("menu:feedback.title")}
             </AppText>
@@ -154,6 +150,7 @@ export default function FeedbackScreen() {
                 setValue={setMessage}
                 label={t("menu:feedback.messageLabel")}
                 placeholder={t("menu:feedback.messagePlaceholder")}
+                autoGrow
               />
             </View>
             <View className="mb-4">
@@ -169,7 +166,7 @@ export default function FeedbackScreen() {
                 <ImagePicker onImageSelected={handleImageSelected} />
               )}
             </View>
-          </ScrollView>
+          </View>
           <View className="flex-row gap-3 pt-3">
             <AnimatedButton
               onPress={handleDelete}
@@ -185,7 +182,7 @@ export default function FeedbackScreen() {
             />
           </View>
         </PageContainer>
-      </Pressable>
+      </KeyboardAwareScrollView>
       <FullScreenLoader
         visible={isSending}
         message={t("menu:feedback.sending")}
@@ -198,6 +195,6 @@ export default function FeedbackScreen() {
           onClose={() => setViewerIndex(-1)}
         />
       )}
-    </>
+    </View>
   );
 }

@@ -1,6 +1,7 @@
 import { ListTodo, Check, Mic, ImageIcon, Video } from "lucide-react-native";
 import { View } from "react-native";
 import AppText from "@/components/AppText";
+import BodyText from "@/components/BodyText";
 import { FeedCardProps } from "@/types/session";
 import BaseFeedCard from "@/features/feed-cards/BaseFeedCard";
 import { useTranslation } from "react-i18next";
@@ -70,11 +71,9 @@ export default function TodoCard({
             </View>
           )}
           <View className="flex-row gap-2 items-center">
-            <AppText
-              className={`${"text-slate-300"}`}
-            >
+            <BodyText className="text-slate-300">
               {t("feed.card.completed")}: {payload.completed} / {payload.total}
-            </AppText>
+            </BodyText>
             {payload.completed === payload.total && <Check color="#22c55e" />}
           </View>
         </View>

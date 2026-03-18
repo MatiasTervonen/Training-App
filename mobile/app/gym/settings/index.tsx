@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { View, Keyboard, Pressable } from "react-native";
 import AppText from "@/components/AppText";
+import BodyText from "@/components/BodyText";
 import AppInput from "@/components/AppInput";
 import Toggle from "@/components/toggle";
 import PageContainer from "@/components/PageContainer";
@@ -48,12 +49,12 @@ export default function GymSettingsScreen() {
             <View className="gap-2">
               <View className="flex-row items-center justify-between">
                 <View className="flex-1 mr-4">
-                  <AppText className="text-lg">
+                  <BodyText className="text-lg">
                     {t("gym.settings.restTimerEnabled")}
-                  </AppText>
-                  <AppText className="text-sm text-gray-400">
+                  </BodyText>
+                  <BodyText className="text-sm text-gray-400">
                     {t("gym.settings.restTimerDescription")}
-                  </AppText>
+                  </BodyText>
                 </View>
                 <Toggle
                   isOn={restTimerEnabled}

@@ -1,9 +1,5 @@
-import {
-  View,
-  TouchableWithoutFeedback,
-  Keyboard,
-  AppState,
-} from "react-native";
+import { View, AppState } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import AppText from "@/components/AppText";
 import SaveButton from "@/components/buttons/SaveButton";
 import DeleteButton from "@/components/buttons/DeleteButton";
@@ -25,6 +21,7 @@ import Toggle from "@/components/toggle";
 import { canUseExactAlarm, requestExactAlarm } from "@/native/android/EnsureExactAlarmPermission";
 import InfoModal from "@/components/InfoModal";
 import { useTranslation } from "react-i18next";
+import BodyText from "@/components/BodyText";
 
 export default function ReminderScreen() {
   const { t, i18n } = useTranslation("reminders");
@@ -104,133 +101,132 @@ export default function ReminderScreen() {
   });
 
   return (
-    <>
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <PageContainer>
-          <View className="justify-between flex-1">
+    <View className="flex-1">
+      <KeyboardAwareScrollView contentContainerStyle={{ flexGrow: 1 }} bottomOffset={50}>
+        <PageContainer className="justify-between">
+          <View>
+            <AppText className="text-xl text-center mb-2">
+              {t("reminders.weeklyReminders")}
+            </AppText>
+            <View className="flex-row items-center justify-center mb-5">
+              <Info color="#9ca3af" size={18} />
+              <BodyText className="text-gray-400 text-sm ml-2 shrink">
+                {t("reminders.weeklyInfo")}
+              </BodyText>
+            </View>
             <View className="gap-5">
-              <AppText className="text-xl text-center">
-                {t("reminders.weeklyReminders")}
-              </AppText>
-              <View className="flex-row items-center justify-center">
-                <Info color="#9ca3af" size={18} />
-                <AppText className="text-gray-400 text-sm ml-2">
-                  {t("reminders.weeklyInfo")}
-                </AppText>
-              </View>
-              <View>
-                <AppInput
-                  value={title}
-                  setValue={setValue}
-                  placeholder={t("reminders.titlePlaceholder")}
-                  label={t("reminders.titleLabel")}
-                />
-              </View>
-              <SubNotesInput
-                value={notes}
-                setValue={setNotes}
-                placeholder={t("reminders.notesPlaceholder")}
-                label={t("reminders.notesLabel")}
+            <View>
+              <AppInput
+                value={title}
+                setValue={setValue}
+                placeholder={t("reminders.titlePlaceholder")}
+                label={t("reminders.titleLabel")}
               />
-              <View>
-                <AnimatedButton
-                  label={
-                    notifyAt ? formattedTime : t("reminders.setNotifyTime")
-                  }
-                  onPress={() => setOpen(true)}
-                  className="bg-blue-800 py-2 rounded-md shadow-md border-2 border-blue-500 flex-row gap-2 justify-center items-center"
-                  textClassName="text-gray-100"
-                >
-                  <Plus color="#f3f4f6" />
-                </AnimatedButton>
+            </View>
+            <SubNotesInput
+              value={notes}
+              setValue={setNotes}
+              placeholder={t("reminders.notesPlaceholder")}
+              label={t("reminders.notesLabel")}
+            />
+            <View>
+              <AnimatedButton
+                label={
+                  notifyAt ? formattedTime : t("reminders.setNotifyTime")
+                }
+                onPress={() => setOpen(true)}
+                className="btn-base flex-row gap-2 justify-center items-center"
+                textClassName="text-gray-100"
+              >
+                <Plus color="#f3f4f6" />
+              </AnimatedButton>
+            </View>
+            <DatePicker
+              date={notifyAt || new Date()}
+              onDateChange={setNotifyAt}
+              mode="time"
+              modal
+              open={open}
+              locale={i18n.language}
+              title={t("common:datePicker.selectTime")}
+              confirmText={t("common:datePicker.confirm")}
+              cancelText={t("common:datePicker.cancel")}
+              onConfirm={(date) => {
+                setOpen(false);
+                setNotifyAt(date);
+              }}
+              onCancel={() => {
+                setOpen(false);
+              }}
+            />
+
+            <View className="mt-5">
+              <View className="flex-row gap-6">
+                <BodyText>{t("reminders.repeatOnDays")}</BodyText>
               </View>
-              <DatePicker
-                date={notifyAt || new Date()}
-                onDateChange={setNotifyAt}
-                mode="time"
-                modal
-                open={open}
-                locale={i18n.language}
-                title={t("common:datePicker.selectTime")}
-                confirmText={t("common:datePicker.confirm")}
-                cancelText={t("common:datePicker.cancel")}
-                onConfirm={(date) => {
-                  setOpen(false);
-                  setNotifyAt(date);
-                }}
-                onCancel={() => {
-                  setOpen(false);
-                }}
-              />
+              <View className="flex-row justify-between mt-3 px-4">
+                {days.map((day, index) => {
+                  const dayNumber = index + 1; // Expo weekdays: 1 = Sunday, 7 = Saturday
+                  const isChecked = weekdays.includes(dayNumber);
 
-              <View className="mt-5">
-                <View className="flex-row gap-6">
-                  <AppText>{t("reminders.repeatOnDays")}</AppText>
-                </View>
-                <View className="flex-row justify-between mt-3 px-4">
-                  {days.map((day, index) => {
-                    const dayNumber = index + 1; // Expo weekdays: 1 = Sunday, 7 = Saturday
-                    const isChecked = weekdays.includes(dayNumber);
-
-                    return (
-                      <View key={day} className="items-center mt-2">
-                        <Checkbox
-                          hitSlop={10}
-                          value={isChecked}
-                          onValueChange={(newValue) => {
-                            if (newValue) {
-                              setWeekdays((prev) => [...prev, dayNumber]);
-                            } else {
-                              setWeekdays((prev) =>
-                                prev.filter((day) => day !== dayNumber),
-                              );
-                            }
-                          }}
-                        />
-                        <AppText className="mt-2">{day}</AppText>
-                      </View>
-                    );
-                  })}
-                </View>
-              </View>
-
-              <View className="flex-row items-center justify-between px-4 mt-5">
-                <View>
-                  <AppText>{t("reminders.enableHighPriority")}</AppText>
-                  <AppText className="text-gray-400 text-sm">
-                    {t("reminders.highPriorityDescription")}
-                  </AppText>
-                </View>
-                <Toggle
-                  isOn={mode === "alarm"}
-                  onToggle={async () => {
-                    const allowed = await canUseExactAlarm();
-                    if (!allowed) {
-                      setShowModal(true);
-                      return;
-                    }
-
-                    setMode(mode === "alarm" ? "normal" : "alarm");
-                  }}
-                />
+                  return (
+                    <View key={day} className="items-center mt-2">
+                      <Checkbox
+                        hitSlop={10}
+                        value={isChecked}
+                        onValueChange={(newValue) => {
+                          if (newValue) {
+                            setWeekdays((prev) => [...prev, dayNumber]);
+                          } else {
+                            setWeekdays((prev) =>
+                              prev.filter((day) => day !== dayNumber),
+                            );
+                          }
+                        }}
+                      />
+                      <BodyText className="mt-2">{day}</BodyText>
+                    </View>
+                  );
+                })}
               </View>
             </View>
-            <View className="flex-row gap-4">
-              <View className="flex-1">
-                <DeleteButton onPress={resetReminder} />
+
+            <View className="flex-row items-center justify-between px-4 mt-5">
+              <View>
+                <BodyText>{t("reminders.enableHighPriority")}</BodyText>
+                <BodyText className="text-gray-400 text-sm">
+                  {t("reminders.highPriorityDescription")}
+                </BodyText>
               </View>
-              <View className="flex-1">
-                <SaveButton onPress={saveReminder} />
-              </View>
+              <Toggle
+                isOn={mode === "alarm"}
+                onToggle={async () => {
+                  const allowed = await canUseExactAlarm();
+                  if (!allowed) {
+                    setShowModal(true);
+                    return;
+                  }
+
+                  setMode(mode === "alarm" ? "normal" : "alarm");
+                }}
+              />
+            </View>
             </View>
           </View>
-          <FullScreenLoader
-            visible={isSaving}
-            message={t("reminders.savingReminder")}
-          />
+          <View className="flex-row gap-4">
+            <View className="flex-1">
+              <DeleteButton onPress={resetReminder} />
+            </View>
+            <View className="flex-1">
+              <SaveButton onPress={saveReminder} />
+            </View>
+          </View>
         </PageContainer>
-      </TouchableWithoutFeedback>
-
+      </KeyboardAwareScrollView>
+      <FullScreenLoader
+        visible={isSaving}
+        message={t("reminders.savingReminder")}
+      />
       <InfoModal
         visible={showModal}
         onClose={() => setShowModal(false)}
@@ -243,6 +239,6 @@ export default function ReminderScreen() {
           setShowModal(false);
         }}
       />
-    </>
+    </View>
   );
 }

@@ -1,5 +1,6 @@
 import { View } from "react-native";
 import AppText from "@/components/AppText";
+import BodyText from "@/components/BodyText";
 import ChartTabSwitcher from "@/features/gym/analytics/AnalytictsChartTabSwitcher";
 import * as echarts from "echarts/core";
 import {
@@ -169,13 +170,13 @@ export default function AnalyticsForm({ data, heatmap }: AnalyticsFormProps) {
         </AppText>
         <View className="sm:flex items-center justify-center gap-10 ml-4">
           <View className="flex flex-col gap-5">
-            <AppText className="text-lg text-slate-200">
+            <BodyText className="text-lg text-slate-200">
               {t("gym.analytics.totalWorkouts")}: {data.total_sessions}
-            </AppText>
-            <AppText className="text-lg mb-5 text-slate-200">
+            </BodyText>
+            <BodyText className="text-lg mb-5 text-slate-200">
               {t("gym.analytics.averageDuration")}:{" "}
               {formatDuration(data.avg_duration)}
-            </AppText>
+            </BodyText>
           </View>
         </View>
         <View
@@ -199,12 +200,12 @@ export default function AnalyticsForm({ data, heatmap }: AnalyticsFormProps) {
         </View>
       </View>
       <View className="mt-6 px-4 gap-4">
-        <AppText className="text-slate-300 text-sm">
+        <BodyText className="text-slate-300 text-sm">
           {t("gym.analytics.note")}
-        </AppText>
-        <AppText className="text-slate-300 text-sm">
+        </BodyText>
+        <BodyText className="text-slate-300 text-sm">
           {t("gym.analytics.comingSoon")}
-        </AppText>
+        </BodyText>
       </View>
     </View>
   );

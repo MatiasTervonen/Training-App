@@ -1,5 +1,6 @@
 import { Scale, Mic, ImageIcon, Video } from "lucide-react-native";
 import AppText from "@/components/AppText";
+import BodyText from "@/components/BodyText";
 import { useUserStore } from "@/lib/stores/useUserStore";
 import { FeedCardProps } from "@/types/session";
 import BaseFeedCard from "@/features/feed-cards/BaseFeedCard";
@@ -66,11 +67,9 @@ export default function WeightCard({
               )}
             </View>
           )}
-          <AppText
-            className={` ${"text-slate-300"}`}
-          >
+          <BodyText className="text-slate-300">
             {payload.weight} {weightUnit}
-          </AppText>
+          </BodyText>
           <AppText>{" "}</AppText>
         </View>
       }

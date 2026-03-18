@@ -16,6 +16,7 @@ import { canUseExactAlarm } from "@/native/android/EnsureExactAlarmPermission";
 import Toggle from "@/components/toggle";
 import { useTranslation } from "react-i18next";
 import AppTextNC from "@/components/AppTextNC";
+import BodyText from "@/components/BodyText";
 import { useAutoSave } from "@/hooks/useAutoSave";
 import { editLocalReminder } from "@/database/reminders/edit-local-reminder";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -225,7 +226,7 @@ export default function HandleEditLocalReminder({
                   notifyAt ? formattedNotifyAt : t("reminders.setNotifyTime")
                 }
                 onPress={() => setOpen(true)}
-                className="bg-blue-800 py-2 rounded-md shadow-md border-2 border-blue-500 flex-row gap-2 justify-center items-center"
+                className="btn-base flex-row gap-2 justify-center items-center"
                 textClassName="text-gray-100"
               >
                 <Plus color="#f3f4f6" />
@@ -257,9 +258,9 @@ export default function HandleEditLocalReminder({
             {payload.type === "weekly" && (
               <View className="mt-5">
                 <View className="flex-row gap-6">
-                  <AppTextNC className="text-gray-300">
+                  <BodyText>
                     {t("reminders.repeatOnDays")}
-                  </AppTextNC>
+                  </BodyText>
                 </View>
                 <View className="flex-row justify-between mt-3 px-4">
                   {days.map((day, index) => {
@@ -281,7 +282,7 @@ export default function HandleEditLocalReminder({
                             }
                           }}
                         />
-                        <AppText className="mt-2">{day}</AppText>
+                        <BodyText className="mt-2">{day}</BodyText>
                       </View>
                     );
                   })}
@@ -290,12 +291,10 @@ export default function HandleEditLocalReminder({
             )}
             <View className="flex-row items-center justify-between px-4 mt-10">
               <View>
-                <AppTextNC className="text-slate-200">
-                  {t("reminders.enableHighPriority")}
-                </AppTextNC>
-                <AppTextNC className="text-slate-400 text-sm">
+                <BodyText>{t("reminders.enableHighPriority")}</BodyText>
+                <BodyText className="text-gray-400 text-sm">
                   {t("reminders.highPriorityDescription")}
-                </AppTextNC>
+                </BodyText>
               </View>
               <Toggle
                 isOn={mode === "alarm"}

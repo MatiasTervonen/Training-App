@@ -1,4 +1,5 @@
 import AppText from "@/components/AppText";
+import BodyText from "@/components/BodyText";
 import PageContainer from "@/components/PageContainer";
 import { last30DaysAnalytics } from "@/database/gym/analytics/last-30-days";
 import { useQuery } from "@tanstack/react-query";
@@ -32,15 +33,15 @@ export default function AnalyticsScreen() {
       <PageContainer>
         {isUnifiedLoading ? (
           <View className="items-center gap-2 mt-20">
-            <AppText className="text-gray-300 text-center text-xl">
+            <BodyText className="text-gray-300 text-center text-xl">
               {t("gym.analyticsScreen.loading")}
-            </AppText>
+            </BodyText>
             <ActivityIndicator size="large" color="#ffffff" />
           </View>
         ) : unifiedError ? (
-          <AppText className="text-red-500 text-center mt-20 text-lg">
+          <BodyText className="text-red-500 text-center mt-20 text-lg">
             {t("gym.analyticsScreen.error")}
-          </AppText>
+          </BodyText>
         ) : !data || data.total_sessions === 0 ? (
           <View className="items-center mt-[30%] px-8">
             <View className="items-center">
@@ -50,9 +51,9 @@ export default function AnalyticsScreen() {
               <AppText className="text-xl text-center mb-3">
                 {t("gym.analyticsScreen.noData")}
               </AppText>
-              <AppText className="text-sm text-gray-400 text-center leading-5">
+              <BodyText className="text-sm text-gray-400 text-center leading-5">
                 {t("gym.analyticsScreen.noDataDesc")}
-              </AppText>
+              </BodyText>
             </View>
           </View>
         ) : (

@@ -55,7 +55,7 @@ export default function NotesModal({
   const allImages = draftImages.map((img) => ({ id: img.id, uri: img.uri }));
 
   return (
-    <FullScreenModal isOpen={isOpen} onClose={onClose}>
+    <FullScreenModal isOpen={isOpen} onClose={onClose} scrollable={false}>
       <ScrollView
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"

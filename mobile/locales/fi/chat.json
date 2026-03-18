@@ -12,6 +12,12 @@
     "selectFriend": "Valitse kaveri",
     "noFriends": "Lisää kavereita aloittaaksesi keskustelun",
     "inactive": "Et ole enää kaveri tämän käyttäjän kanssa",
-    "messageSendError": "Viestin lähetys epäonnistui"
+    "messageSendError": "Viestin lähetys epäonnistui",
+    "mediaPhoto": "Kuva",
+    "mediaVideo": "Video",
+    "mediaVoice": "Ääniviesti",
+    "mediaUploadError": "Median lähetys epäonnistui",
+    "attachMedia": "Liitä media",
+    "sending": "Lähetetään..."
   }
 }

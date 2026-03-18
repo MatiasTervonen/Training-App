@@ -18,6 +18,7 @@ export function uploadFileToStorage(
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
     xhr.open("POST", `${supabaseUrl}/storage/v1/object/${bucket}/${path}`);
+    xhr.timeout = 120_000; // 2 minutes
 
     xhr.setRequestHeader("Authorization", `Bearer ${accessToken}`);
     xhr.setRequestHeader("apikey", anonKey);
@@ -39,6 +40,7 @@ export function uploadFileToStorage(
     };
 
     xhr.onerror = () => reject(new Error("Network error during upload"));
+    xhr.ontimeout = () => reject(new Error("Upload timed out"));
 
     const fileName = path.split("/").pop() || "file";
     const formData = new FormData();

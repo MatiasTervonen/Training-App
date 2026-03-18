@@ -9,7 +9,8 @@ export default function useSendMessage(conversationId: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (content: string) => sendMessage(conversationId, content),
+    mutationFn: (content: string) =>
+      sendMessage({ conversationId, content, messageType: "text" }),
 
     onMutate: async (content) => {
       await queryClient.cancelQueries({
@@ -32,6 +33,10 @@ export default function useSendMessage(conversationId: string) {
         conversation_id: conversationId,
         sender_id: session?.user?.id ?? "",
         content,
+        message_type: "text",
+        media_storage_path: null,
+        media_thumbnail_path: null,
+        media_duration_ms: null,
         created_at: new Date().toISOString(),
         sender_display_name: profile?.display_name ?? "",
         sender_profile_picture: profile?.profile_picture ?? null,

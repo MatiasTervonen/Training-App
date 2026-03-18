@@ -10,6 +10,7 @@ import ChatInput from "@/features/chat/components/ChatInput";
 import DateSeparator from "@/features/chat/components/DateSeparator";
 import useMessages from "@/features/chat/hooks/useMessages";
 import useSendMessage from "@/features/chat/hooks/useSendMessage";
+import useSendMediaMessage from "@/features/chat/hooks/useSendMediaMessage";
 import useMarkRead from "@/features/chat/hooks/useMarkRead";
 import useChatRealtime from "@/features/chat/hooks/useChatRealtime";
 import useConversations from "@/features/chat/hooks/useConversations";
@@ -64,6 +65,7 @@ export default function ChatScreen() {
     isFetchingNextPage,
   } = useMessages(conversationId!);
   const sendMessage = useSendMessage(conversationId!);
+  const sendMediaMessage = useSendMediaMessage(conversationId!);
   const markRead = useMarkRead(conversationId!);
   const { data: conversations } = useConversations();
 
@@ -84,6 +86,18 @@ export default function ChatScreen() {
       sendMessage.mutate(content);
     },
     [sendMessage],
+  );
+
+  const handleSendMedia = useCallback(
+    (payload: {
+      messageType: "image" | "video" | "voice";
+      uri: string;
+      thumbnailUri?: string;
+      durationMs?: number;
+    }) => {
+      sendMediaMessage.mutate(payload);
+    },
+    [sendMediaMessage],
   );
 
   const renderItem = useCallback(
@@ -174,6 +188,7 @@ export default function ChatScreen() {
         {/* Input */}
         <ChatInput
           onSend={handleSend}
+          onSendMedia={handleSendMedia}
           disabled={!isActive}
           disabledMessage={!isActive ? t("chat.inactive") : undefined}
         />

@@ -44,11 +44,18 @@ function ConversationItem({ conversation, onPress }: ConversationItemProps) {
   const displayName =
     conversation.other_user_display_name ?? conversation.conversation_name ?? "";
 
-  const lastMessagePreview = conversation.last_message_content
-    ? conversation.last_message_sender_id === conversation.other_user_id
-      ? conversation.last_message_content
-      : `${t("chat.you")}: ${conversation.last_message_content}`
-    : "";
+  const lastMessagePreview = (() => {
+    const type = conversation.last_message_type ?? "text";
+    const isFromOther = conversation.last_message_sender_id === conversation.other_user_id;
+    const prefix = isFromOther ? "" : `${t("chat.you")}: `;
+
+    if (type === "image") return `${prefix}${t("chat.mediaPhoto")}`;
+    if (type === "video") return `${prefix}${t("chat.mediaVideo")}`;
+    if (type === "voice") return `${prefix}${t("chat.mediaVoice")}`;
+    return conversation.last_message_content
+      ? `${prefix}${conversation.last_message_content}`
+      : "";
+  })();
 
   const timeStr = formatTime(conversation.last_message_at);
   const displayTime =

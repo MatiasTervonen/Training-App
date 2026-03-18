@@ -1,13 +1,31 @@
 import { supabase } from "@/lib/supabase";
 import { handleError } from "@/utils/handleError";
+import { MessageType } from "@/types/chat";
 
-export async function sendMessage(
-  conversationId: string,
-  content: string,
-): Promise<string> {
+type SendMessageParams = {
+  conversationId: string;
+  content?: string | null;
+  messageType?: MessageType;
+  mediaStoragePath?: string | null;
+  mediaThumbnailPath?: string | null;
+  mediaDurationMs?: number | null;
+};
+
+export async function sendMessage({
+  conversationId,
+  content = null,
+  messageType = "text",
+  mediaStoragePath = null,
+  mediaThumbnailPath = null,
+  mediaDurationMs = null,
+}: SendMessageParams): Promise<string> {
   const { data, error } = await supabase.rpc("send_message", {
     p_conversation_id: conversationId,
     p_content: content,
+    p_message_type: messageType,
+    p_media_storage_path: mediaStoragePath,
+    p_media_thumbnail_path: mediaThumbnailPath,
+    p_media_duration_ms: mediaDurationMs,
   });
 
   if (error) {

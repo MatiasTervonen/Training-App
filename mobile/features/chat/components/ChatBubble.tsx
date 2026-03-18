@@ -1,6 +1,7 @@
 import { memo } from "react";
 import { View } from "react-native";
 import BodyText from "@/components/BodyText";
+import ChatMediaBubble from "@/features/chat/components/ChatMediaBubble";
 import { ChatMessage } from "@/types/chat";
 
 type ChatBubbleProps = {
@@ -15,20 +16,28 @@ function formatMessageTime(dateString: string): string {
 }
 
 function ChatBubble({ message, isOwn, showTimestamp }: ChatBubbleProps) {
+  const isMedia = message.message_type !== "text";
+
   return (
     <View
       className={`px-4 mb-1 ${isOwn ? "items-end" : "items-start"}`}
     >
       <View
-        className={`max-w-[80%] px-3 py-2 rounded-2xl ${
+        className={`max-w-[80%] rounded-2xl ${
+          message.message_type === "voice" ? "px-4 py-3" : isMedia ? "p-1" : "px-3 py-2"
+        } ${
           isOwn
             ? "bg-blue-600 rounded-br-sm"
             : "bg-slate-700 rounded-bl-sm"
         }`}
       >
-        <BodyText className="text-base text-slate-100">
-          {message.content}{"  "}
-        </BodyText>
+        {isMedia ? (
+          <ChatMediaBubble message={message} isOwn={isOwn} />
+        ) : (
+          <BodyText className="text-base text-slate-100">
+            {message.content}{"  "}
+          </BodyText>
+        )}
       </View>
       {showTimestamp && (
         <BodyText className="text-[10px] text-slate-500 mt-0.5 px-1">

@@ -17,3 +17,4 @@ export { default as habits } from "./habits.json";
 export { default as reports } from "./reports.json";
 export { default as social } from "./social.json";
 export { default as sharing } from "./sharing.json";
+export { default as chat } from "./chat.json";

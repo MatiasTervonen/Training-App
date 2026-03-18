@@ -1,10 +1,12 @@
 import { usePathname, Link } from "expo-router";
 import { View, Pressable } from "react-native";
+import AppText from "@/components/AppText";
 import AppTextNC from "@/components/AppTextNC";
 import { MessageCircle } from "lucide-react-native";
 import { Image } from "expo-image";
 import { useUserStore } from "@/lib/stores/useUserStore";
 import NotificationBell from "@/features/navbar/notificationBell";
+import useTotalUnreadCount from "@/features/chat/hooks/useTotalUnreadCount";
 import { LinearGradient } from "expo-linear-gradient";
 import ActiveSessionPopup from "@/components/ActiveSessionPopup";
 import { useTranslation } from "react-i18next";
@@ -16,6 +18,8 @@ export default function Navbar() {
   const profilePictureRaw = useUserStore(
     (state) => state.profile?.profile_picture || null,
   );
+
+  const { data: unreadCount } = useTotalUnreadCount();
 
   if (pathname === "/login" || pathname === "/" || pathname === "/onboarding")
     return null; // Don't render the navbar on the login page
@@ -42,6 +46,13 @@ export default function Navbar() {
           <Link href="/chat" asChild>
             <Pressable className="w-[40px] h-[40px] rounded-full border-2 border-blue-500 items-center justify-center bg-slate-800">
               <MessageCircle color="white" size={20} />
+              {!!unreadCount && unreadCount > 0 && (
+                <View className="absolute -top-1 -right-2 w-5 h-5 bg-red-500 rounded-full items-center justify-center z-50">
+                  <AppText className="text-gray-100 text-[10px] font-bold leading-none">
+                    {unreadCount > 9 ? "9+" : unreadCount}
+                  </AppText>
+                </View>
+              )}
             </Pressable>
           </Link>
           <Link href="/menu" asChild>

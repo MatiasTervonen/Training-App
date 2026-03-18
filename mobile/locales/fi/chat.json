@@ -1,0 +1,17 @@
+{
+  "chat": {
+    "title": "Viestit",
+    "newChat": "Uusi viesti",
+    "noConversations": "Ei vielä viestejä",
+    "startChat": "Aloita keskustelu kaverin kanssa!",
+    "typeMessage": "Kirjoita viesti...",
+    "send": "Lähetä",
+    "today": "Tänään",
+    "yesterday": "Eilen",
+    "you": "Sinä",
+    "selectFriend": "Valitse kaveri",
+    "noFriends": "Lisää kavereita aloittaaksesi keskustelun",
+    "inactive": "Et ole enää kaveri tämän käyttäjän kanssa",
+    "messageSendError": "Viestin lähetys epäonnistui"
+  }
+}

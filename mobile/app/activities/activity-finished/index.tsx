@@ -24,6 +24,7 @@ import * as Haptics from "expo-haptics";
 import Toggle from "@/components/toggle";
 import useSharingDefaults from "@/features/sharing/hooks/useSharingDefaults";
 import { updateFeedItemVisibility } from "@/database/social-feed/update-visibility";
+import { useQueryClient } from "@tanstack/react-query";
 import Mapbox from "@rnmapbox/maps";
 import { MAP_STYLES, LINE_COLORS } from "@/features/activities/lib/mapConstants";
 import { useActivitySettingsStore } from "@/lib/stores/activitySettingsStore";
@@ -53,6 +54,7 @@ export default function ActivityFinishedScreen() {
   const [sharedWithFriends, setSharedWithFriends] = useState(false);
   const defaultApplied = useRef(false);
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     if (sharingDefaults && !defaultApplied.current) {
@@ -467,6 +469,7 @@ export default function ActivityFinishedScreen() {
                   "activity_sessions",
                   "friends",
                 );
+                queryClient.invalidateQueries({ queryKey: ["social-feed"] });
               } catch {
                 Toast.show({
                   type: "error",

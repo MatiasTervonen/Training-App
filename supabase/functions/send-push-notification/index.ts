@@ -3,20 +3,8 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 interface WebhookPayload {
   type: "INSERT" | "UPDATE";
   table: string;
-  record: {
-    id: string;
-    sender_id: string;
-    receiver_id: string;
-    status: string;
-    created_at: string;
-  };
-  old_record?: {
-    id: string;
-    sender_id: string;
-    receiver_id: string;
-    status: string;
-    created_at: string;
-  };
+  record: Record<string, unknown>;
+  old_record?: Record<string, unknown>;
 }
 
 interface ExpoPushMessage {
@@ -58,6 +46,14 @@ Deno.serve(async (req: Request) => {
       await handleFriendAccepted(supabase, payload.record);
     }
 
+    if (payload.type === "INSERT" && payload.table === "feed_likes") {
+      await handleFeedLike(supabase, payload.record);
+    }
+
+    if (payload.type === "INSERT" && payload.table === "feed_comments") {
+      await handleFeedComment(supabase, payload.record);
+    }
+
     return new Response(JSON.stringify({ success: true }), {
       headers: { "Content-Type": "application/json" },
       status: 200,
@@ -73,13 +69,16 @@ Deno.serve(async (req: Request) => {
 
 async function handleFriendRequest(
   supabase: ReturnType<typeof createClient>,
-  record: WebhookPayload["record"],
+  record: Record<string, unknown>,
 ) {
+  const senderId = record.sender_id as string;
+  const receiverId = record.receiver_id as string;
+
   // Look up sender's display name
   const { data: sender } = await supabase
     .from("users")
     .select("display_name")
-    .eq("id", record.sender_id)
+    .eq("id", senderId)
     .single();
 
   const senderName = sender?.display_name ?? "Someone";
@@ -88,17 +87,17 @@ async function handleFriendRequest(
   const { data: tokens } = await supabase
     .from("user_push_mobile_subscriptions")
     .select("token")
-    .eq("user_id", record.receiver_id)
+    .eq("user_id", receiverId)
     .eq("is_active", true);
 
   // Insert notification into the notifications table
   await supabase.from("notifications").insert({
-    user_id: record.receiver_id,
+    user_id: receiverId,
     type: "friend_request",
     title: "New Friend Request",
     body: `${senderName} sent you a friend request`,
     data: {
-      senderId: record.sender_id,
+      senderId,
       senderName,
       requestId: record.id,
     },
@@ -112,7 +111,7 @@ async function handleFriendRequest(
       body: `${senderName} sent you a friend request`,
       data: {
         type: "friend_request",
-        senderId: record.sender_id,
+        senderId,
       },
       channelId: "social",
       sound: "default",
@@ -124,13 +123,16 @@ async function handleFriendRequest(
 
 async function handleFriendAccepted(
   supabase: ReturnType<typeof createClient>,
-  record: WebhookPayload["record"],
+  record: Record<string, unknown>,
 ) {
+  const senderId = record.sender_id as string;
+  const receiverId = record.receiver_id as string;
+
   // Look up receiver's display name (the one who accepted)
   const { data: accepter } = await supabase
     .from("users")
     .select("display_name")
-    .eq("id", record.receiver_id)
+    .eq("id", receiverId)
     .single();
 
   const accepterName = accepter?.display_name ?? "Someone";
@@ -139,17 +141,17 @@ async function handleFriendAccepted(
   const { data: tokens } = await supabase
     .from("user_push_mobile_subscriptions")
     .select("token")
-    .eq("user_id", record.sender_id)
+    .eq("user_id", senderId)
     .eq("is_active", true);
 
   // Insert notification for the sender
   await supabase.from("notifications").insert({
-    user_id: record.sender_id,
+    user_id: senderId,
     type: "friend_accepted",
     title: "Friend Request Accepted",
     body: `${accepterName} accepted your friend request`,
     data: {
-      accepterId: record.receiver_id,
+      accepterId: receiverId,
       accepterName,
       requestId: record.id,
     },
@@ -163,13 +165,177 @@ async function handleFriendAccepted(
       body: `${accepterName} accepted your friend request`,
       data: {
         type: "friend_accepted",
-        accepterId: record.receiver_id,
+        accepterId: receiverId,
       },
       channelId: "social",
       sound: "default",
     }));
 
     await sendExpoPushNotifications(messages);
+  }
+}
+
+async function handleFeedLike(
+  supabase: ReturnType<typeof createClient>,
+  record: Record<string, unknown>,
+) {
+  const likerId = record.user_id as string;
+  const feedItemId = record.feed_item_id as string;
+
+  // Get the feed item to find the post author
+  const { data: feedItem } = await supabase
+    .from("feed_items")
+    .select("user_id, title")
+    .eq("id", feedItemId)
+    .single();
+
+  if (!feedItem) return;
+
+  // Don't notify yourself
+  if (feedItem.user_id === likerId) return;
+
+  // Get liker's display name
+  const { data: liker } = await supabase
+    .from("users")
+    .select("display_name")
+    .eq("id", likerId)
+    .single();
+
+  const likerName = liker?.display_name ?? "Someone";
+
+  // Get post author's push tokens
+  const { data: tokens } = await supabase
+    .from("user_push_mobile_subscriptions")
+    .select("token")
+    .eq("user_id", feedItem.user_id)
+    .eq("is_active", true);
+
+  // Insert in-app notification
+  await supabase.from("notifications").insert({
+    user_id: feedItem.user_id,
+    type: "feed_like",
+    title: "New Like",
+    body: `${likerName} liked your post`,
+    data: {
+      feedItemId,
+      likerId,
+      likerName,
+    },
+  });
+
+  // Send push
+  if (tokens && tokens.length > 0) {
+    const messages: ExpoPushMessage[] = tokens.map((t) => ({
+      to: t.token,
+      title: "New Like",
+      body: `${likerName} liked your post`,
+      data: { type: "feed_like", feedItemId },
+      channelId: "social",
+      sound: "default",
+    }));
+    await sendExpoPushNotifications(messages);
+  }
+}
+
+async function handleFeedComment(
+  supabase: ReturnType<typeof createClient>,
+  record: Record<string, unknown>,
+) {
+  const commenterId = record.user_id as string;
+  const feedItemId = record.feed_item_id as string;
+  const parentId = record.parent_id as string | null;
+
+  // Get commenter's display name
+  const { data: commenter } = await supabase
+    .from("users")
+    .select("display_name")
+    .eq("id", commenterId)
+    .single();
+
+  const commenterName = commenter?.display_name ?? "Someone";
+
+  if (parentId) {
+    // REPLY: notify the parent comment author
+    const { data: parentComment } = await supabase
+      .from("feed_comments")
+      .select("user_id")
+      .eq("id", parentId)
+      .single();
+
+    if (!parentComment) return;
+    if (parentComment.user_id === commenterId) return;
+
+    const { data: tokens } = await supabase
+      .from("user_push_mobile_subscriptions")
+      .select("token")
+      .eq("user_id", parentComment.user_id)
+      .eq("is_active", true);
+
+    await supabase.from("notifications").insert({
+      user_id: parentComment.user_id,
+      type: "feed_reply",
+      title: "New Reply",
+      body: `${commenterName} replied to your comment`,
+      data: {
+        feedItemId,
+        commentId: record.id,
+        commenterId,
+        commenterName,
+      },
+    });
+
+    if (tokens && tokens.length > 0) {
+      const messages: ExpoPushMessage[] = tokens.map((t) => ({
+        to: t.token,
+        title: "New Reply",
+        body: `${commenterName} replied to your comment`,
+        data: { type: "feed_reply", feedItemId },
+        channelId: "social",
+        sound: "default",
+      }));
+      await sendExpoPushNotifications(messages);
+    }
+  } else {
+    // TOP-LEVEL COMMENT: notify the post author
+    const { data: feedItem } = await supabase
+      .from("feed_items")
+      .select("user_id")
+      .eq("id", feedItemId)
+      .single();
+
+    if (!feedItem) return;
+    if (feedItem.user_id === commenterId) return;
+
+    const { data: tokens } = await supabase
+      .from("user_push_mobile_subscriptions")
+      .select("token")
+      .eq("user_id", feedItem.user_id)
+      .eq("is_active", true);
+
+    await supabase.from("notifications").insert({
+      user_id: feedItem.user_id,
+      type: "feed_comment",
+      title: "New Comment",
+      body: `${commenterName} commented on your post`,
+      data: {
+        feedItemId,
+        commentId: record.id,
+        commenterId,
+        commenterName,
+      },
+    });
+
+    if (tokens && tokens.length > 0) {
+      const messages: ExpoPushMessage[] = tokens.map((t) => ({
+        to: t.token,
+        title: "New Comment",
+        body: `${commenterName} commented on your post`,
+        data: { type: "feed_comment", feedItemId },
+        channelId: "social",
+        sound: "default",
+      }));
+      await sendExpoPushNotifications(messages);
+    }
   }
 }
 

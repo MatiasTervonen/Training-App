@@ -11,6 +11,9 @@
       "title": "Kaveripyyntö hyväksytty",
       "body": "{{name}} hyväksyi kaveripyyntösi"
     },
+    "feedLikeTitle": "Uusi tykkäys",
+    "feedCommentTitle": "Uusi kommentti",
+    "feedReplyTitle": "Uusi vastaus",
     "sections": {
       "today": "Tänään",
       "yesterday": "Eilen",

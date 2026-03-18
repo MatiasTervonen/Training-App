@@ -10,5 +10,12 @@ export function getRouteForNotification(
   if (data.type === "habit") {
     return "/habits";
   }
+  if (
+    data.type === "feed_like" ||
+    data.type === "feed_comment" ||
+    data.type === "feed_reply"
+  ) {
+    return "/";
+  }
   return null;
 }

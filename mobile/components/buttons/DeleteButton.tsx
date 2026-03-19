@@ -44,7 +44,6 @@ export default function DeleteButton({
     <AnimatedButton
       className="btn-danger"
       onPress={handleDelete}
-      textClassName="text-gray-100 text-center"
       label={label ?? t("common.delete")}
     />
   );

@@ -39,7 +39,7 @@ export default function PreferencesScreen() {
         <AppText className="text-2xl text-center mb-2">
           {t("preferences.title")}
         </AppText>
-        <BodyText className="text-center text-base mb-8">
+        <BodyText className="text-center mb-8">
           {t("preferences.description")}
         </BodyText>
       </View>

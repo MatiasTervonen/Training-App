@@ -1,6 +1,5 @@
 import { View, ScrollView, Platform, AppState, Modal } from "react-native";
 import AppText from "@/components/AppText";
-import AppTextNC from "@/components/AppTextNC";
 import AppInput from "@/components/AppInput";
 import PageContainer from "@/components/PageContainer";
 import AutoSaveIndicator from "@/components/AutoSaveIndicator";
@@ -71,7 +70,8 @@ export default function CreateHabitScreen() {
 
   const pushEnabled = useUserStore((state) => state.settings?.push_enabled);
   const colors = SESSION_COLORS.habits;
-  const showDurationPushModal = habitType === "duration" && pushEnabled === false;
+  const showDurationPushModal =
+    habitType === "duration" && pushEnabled === false;
 
   // Day labels: 1=Sun, 2=Mon, ..., 7=Sat (Expo notification weekday numbering)
   const dayKeys = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"] as const;
@@ -344,36 +344,35 @@ export default function CreateHabitScreen() {
             {/* Habit type selector - only show when creating, and only on Android */}
             {!isEditing && Platform.OS === "android" && (
               <View className="gap-4">
-                <AppText className="text-lg">{t("habitType")}</AppText>
+                <AppText className="text-lg">
+                  {t("habitType")}
+                </AppText>
                 <View className="flex-row gap-3">
                   <View className="flex-1">
                     <AnimatedButton
                       onPress={() => setHabitType("manual")}
                       className={
-                        habitType === "manual" ? "btn-base" : "btn-neutral"
+                        habitType === "manual" ? "btn-add" : "btn-neutral"
                       }
                       label={t("typeManual")}
-                      textClassName="text-gray-100"
                     />
                   </View>
                   <View className="flex-1">
                     <AnimatedButton
                       onPress={() => setHabitType("steps")}
                       className={
-                        habitType === "steps" ? "btn-base" : "btn-neutral"
+                        habitType === "steps" ? "btn-add" : "btn-neutral"
                       }
                       label={t("typeSteps")}
-                      textClassName="text-gray-100"
                     />
                   </View>
                   <View className="flex-1">
                     <AnimatedButton
                       onPress={() => setHabitType("duration")}
                       className={
-                        habitType === "duration" ? "btn-base" : "btn-neutral"
+                        habitType === "duration" ? "btn-add" : "btn-neutral"
                       }
                       label={t("typeDuration")}
-                      textClassName="text-gray-100"
                     />
                   </View>
                 </View>
@@ -403,7 +402,9 @@ export default function CreateHabitScreen() {
             {/* Duration picker - only for duration type */}
             {isDuration && (
               <View className="gap-4">
-                <AppText className="text-lg">{t("durationTarget")}</AppText>
+                <AppText className="text-lg">
+                  {t("durationTarget")}
+                </AppText>
                 <AnimatedButton
                   onPress={() => setDurationPickerOpen(true)}
                   className="btn-neutral px-4 py-3"
@@ -486,7 +487,9 @@ export default function CreateHabitScreen() {
             {isDuration && (
               <View className="flex-row items-center justify-between">
                 <View>
-                  <AppText className="text-lg">{t("alarmType")}</AppText>
+                  <AppText className="text-lg">
+                    {t("alarmType")}
+                  </AppText>
                   <AppText className="text-gray-400 text-sm">
                     {t("alarmPriorityDesc")}
                   </AppText>
@@ -511,7 +514,9 @@ export default function CreateHabitScreen() {
 
             {/* Frequency selection */}
             <View className="gap-4">
-              <AppText className="text-lg">{t("frequency")}</AppText>
+              <AppText className="text-lg">
+                {t("frequency")}
+              </AppText>
               <View className="flex-row gap-3">
                 <View className="flex-1">
                   <AnimatedButton
@@ -520,20 +525,18 @@ export default function CreateHabitScreen() {
                       setSelectedDays([]);
                     }}
                     className={
-                      frequencyMode === "daily" ? "btn-base" : "btn-neutral"
+                      frequencyMode === "daily" ? "btn-add" : "btn-neutral"
                     }
                     label={t("frequencyDaily")}
-                    textClassName="text-gray-100"
                   />
                 </View>
                 <View className="flex-1">
                   <AnimatedButton
                     onPress={() => setFrequencyMode("specific")}
                     className={
-                      frequencyMode === "specific" ? "btn-base" : "btn-neutral"
+                      frequencyMode === "specific" ? "btn-add" : "btn-neutral"
                     }
                     label={t("frequencySpecific")}
-                    textClassName="text-gray-100"
                   />
                 </View>
               </View>
@@ -577,7 +580,9 @@ export default function CreateHabitScreen() {
             {!isSteps && (
               <View className="gap-4">
                 <View className="flex-row items-center justify-between">
-                  <AppText className="text-lg">{t("reminder")}</AppText>
+                  <AppText className="text-lg">
+                    {t("reminder")}
+                  </AppText>
                   <Toggle
                     isOn={reminderEnabled}
                     onToggle={() => {
@@ -588,15 +593,15 @@ export default function CreateHabitScreen() {
                   />
                 </View>
                 {!pushEnabled && (
-                  <AppTextNC className="text-gray-400 text-xs">
+                  <AppText className="text-gray-400 text-xs">
                     {t("reminderDisabledPush")}{" "}
-                    <AppTextNC
+                    <AppText
                       className="text-blue-400 text-xs underline"
                       onPress={() => router.push("/menu/settings")}
                     >
                       {t("reminderDisabledPushLink")}
-                    </AppTextNC>
-                  </AppTextNC>
+                    </AppText>
+                  </AppText>
                 )}
 
                 {reminderEnabled && (
@@ -654,7 +659,11 @@ export default function CreateHabitScreen() {
         />
       )}
 
-      <Modal visible={showDurationPushModal} transparent={true} animationType="slide">
+      <Modal
+        visible={showDurationPushModal}
+        transparent={true}
+        animationType="slide"
+      >
         <View className="flex-1 justify-center items-center bg-black/50 px-5">
           <View className="bg-slate-700 rounded-lg p-6 w-full border-2 border-gray-100">
             <View className="mb-5">
@@ -672,7 +681,6 @@ export default function CreateHabitScreen() {
                   onPress={() => setHabitType("manual")}
                   className="btn-neutral"
                   label={t("durationPushDisabled.back")}
-                  textClassName="text-gray-100 text-center"
                 />
               </View>
               <View className="flex-1">

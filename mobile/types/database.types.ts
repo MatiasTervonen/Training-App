@@ -159,6 +159,7 @@ export type Database = {
           id: string
           name: string
           notes: string | null
+          sort_order: number
           updated_at: string | null
           user_id: string
         }
@@ -170,6 +171,7 @@ export type Database = {
           id?: string
           name: string
           notes?: string | null
+          sort_order?: number
           updated_at?: string | null
           user_id?: string
         }
@@ -181,6 +183,7 @@ export type Database = {
           id?: string
           name?: string
           notes?: string | null
+          sort_order?: number
           updated_at?: string | null
           user_id?: string
         }
@@ -222,121 +225,63 @@ export type Database = {
         }
         Relationships: []
       }
-      chat_conversation_participants: {
-        Row: {
-          conversation_id: string | null
-          created_at: string
-          id: string
-          joined_at: string | null
-          user_id: string | null
-        }
-        Insert: {
-          conversation_id?: string | null
-          created_at?: string
-          id?: string
-          joined_at?: string | null
-          user_id?: string | null
-        }
-        Update: {
-          conversation_id?: string | null
-          created_at?: string
-          id?: string
-          joined_at?: string | null
-          user_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "chat_conversation_participants_conversation_id_fkey"
-            columns: ["conversation_id"]
-            isOneToOne: false
-            referencedRelation: "chat_conversations"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       chat_conversations: {
         Row: {
           created_at: string
           id: string
-          is_group: boolean | null
+          is_group: boolean
           name: string | null
+          updated_at: string
         }
         Insert: {
           created_at?: string
           id?: string
-          is_group?: boolean | null
+          is_group?: boolean
           name?: string | null
+          updated_at?: string
         }
         Update: {
           created_at?: string
           id?: string
-          is_group?: boolean | null
+          is_group?: boolean
           name?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
-      chat_message_status: {
-        Row: {
-          created_at: string
-          id: string
-          message_id: string | null
-          status: string | null
-          updated_at: string | null
-          user_id: string | null
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          message_id?: string | null
-          status?: string | null
-          updated_at?: string | null
-          user_id?: string | null
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          message_id?: string | null
-          status?: string | null
-          updated_at?: string | null
-          user_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "chat_message_status_message_id_fkey"
-            columns: ["message_id"]
-            isOneToOne: false
-            referencedRelation: "chat_messages"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       chat_messages: {
         Row: {
-          attachment_url: string | null
           content: string | null
-          conversation_id: string | null
+          conversation_id: string
           created_at: string
           id: string
-          read_by: string | null
-          sender_id: string | null
+          media_duration_ms: number | null
+          media_storage_path: string | null
+          media_thumbnail_path: string | null
+          message_type: string
+          sender_id: string
         }
         Insert: {
-          attachment_url?: string | null
           content?: string | null
-          conversation_id?: string | null
+          conversation_id: string
           created_at?: string
           id?: string
-          read_by?: string | null
-          sender_id?: string | null
+          media_duration_ms?: number | null
+          media_storage_path?: string | null
+          media_thumbnail_path?: string | null
+          message_type?: string
+          sender_id?: string
         }
         Update: {
-          attachment_url?: string | null
           content?: string | null
-          conversation_id?: string | null
+          conversation_id?: string
           created_at?: string
           id?: string
-          read_by?: string | null
-          sender_id?: string | null
+          media_duration_ms?: number | null
+          media_storage_path?: string | null
+          media_thumbnail_path?: string | null
+          message_type?: string
+          sender_id?: string
         }
         Relationships: [
           {
@@ -344,6 +289,55 @@ export type Database = {
             columns: ["conversation_id"]
             isOneToOne: false
             referencedRelation: "chat_conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chat_messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      chat_participants: {
+        Row: {
+          conversation_id: string
+          id: string
+          is_active: boolean
+          joined_at: string
+          last_read_at: string
+          user_id: string
+        }
+        Insert: {
+          conversation_id: string
+          id?: string
+          is_active?: boolean
+          joined_at?: string
+          last_read_at?: string
+          user_id?: string
+        }
+        Update: {
+          conversation_id?: string
+          id?: string
+          is_active?: boolean
+          joined_at?: string
+          last_read_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_participants_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "chat_conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chat_participants_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
             referencedColumns: ["id"]
           },
         ]
@@ -1209,6 +1203,7 @@ export type Database = {
           created_at: string
           id: string
           name: string
+          sort_order: number
           updated_at: string | null
           user_id: string
         }
@@ -1216,6 +1211,7 @@ export type Database = {
           created_at?: string
           id?: string
           name: string
+          sort_order?: number
           updated_at?: string | null
           user_id?: string
         }
@@ -1223,6 +1219,7 @@ export type Database = {
           created_at?: string
           id?: string
           name?: string
+          sort_order?: number
           updated_at?: string | null
           user_id?: string
         }
@@ -1238,6 +1235,7 @@ export type Database = {
       }
       habit_logs: {
         Row: {
+          accumulated_seconds: number | null
           completed_date: string
           created_at: string
           habit_id: string
@@ -1245,6 +1243,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          accumulated_seconds?: number | null
           completed_date: string
           created_at?: string
           habit_id: string
@@ -1252,6 +1251,7 @@ export type Database = {
           user_id?: string
         }
         Update: {
+          accumulated_seconds?: number | null
           completed_date?: string
           created_at?: string
           habit_id?: string
@@ -1277,6 +1277,7 @@ export type Database = {
       }
       habits: {
         Row: {
+          alarm_type: string
           created_at: string
           frequency_days: number[] | null
           id: string
@@ -1289,6 +1290,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          alarm_type?: string
           created_at?: string
           frequency_days?: number[] | null
           id?: string
@@ -1301,6 +1303,7 @@ export type Database = {
           user_id?: string
         }
         Update: {
+          alarm_type?: string
           created_at?: string
           frequency_days?: number[] | null
           id?: string
@@ -2604,6 +2607,10 @@ export type Database = {
         Returns: Json
       }
       activities_get_templates: { Args: never; Returns: Json }
+      activities_reorder_templates: {
+        Args: { p_ids: string[] }
+        Returns: undefined
+      }
       activities_save_activity: {
         Args: {
           p_activity_id: string
@@ -2673,6 +2680,24 @@ export type Database = {
         Args: { p_id: string; p_type: string }
         Returns: undefined
       }
+      get_conversations: {
+        Args: never
+        Returns: {
+          conversation_id: string
+          conversation_name: string
+          is_active: boolean
+          is_group: boolean
+          last_message_at: string
+          last_message_content: string
+          last_message_sender_id: string
+          last_message_type: string
+          other_user_display_name: string
+          other_user_id: string
+          other_user_profile_picture: string
+          unread_count: number
+          updated_at: string
+        }[]
+      }
       get_feed_comments: {
         Args: { p_feed_item_id: string }
         Returns: {
@@ -2733,6 +2758,24 @@ export type Database = {
         }[]
       }
       get_jwt: { Args: never; Returns: Json }
+      get_messages: {
+        Args: { p_before?: string; p_conversation_id: string; p_limit?: number }
+        Returns: {
+          content: string
+          conversation_id: string
+          created_at: string
+          id: string
+          media_duration_ms: number
+          media_storage_path: string
+          media_thumbnail_path: string
+          message_type: string
+          sender_display_name: string
+          sender_id: string
+          sender_profile_picture: string
+        }[]
+      }
+      get_or_create_dm: { Args: { p_friend_id: string }; Returns: string }
+      get_total_unread_count: { Args: never; Returns: number }
       gym_edit_session: {
         Args: {
           p_deleted_image_ids?: string[]
@@ -2790,6 +2833,7 @@ export type Database = {
           sets: Json
         }[]
       }
+      gym_reorder_templates: { Args: { p_ids: string[] }; Returns: undefined }
       gym_save_session: {
         Args: {
           p_duration: number
@@ -2819,7 +2863,12 @@ export type Database = {
         Returns: boolean
       }
       hide_feed_item: { Args: { p_feed_item_id: string }; Returns: undefined }
+      is_chat_partner: { Args: { p_other_user_id: string }; Returns: boolean }
       last_30d_analytics: { Args: never; Returns: Json }
+      mark_conversation_read: {
+        Args: { p_conversation_id: string }
+        Returns: undefined
+      }
       notes_edit_note: {
         Args: {
           p_deleted_image_ids?: string[]
@@ -3078,6 +3127,17 @@ export type Database = {
           p_title: string
         }
         Returns: undefined
+      }
+      send_message: {
+        Args: {
+          p_content?: string
+          p_conversation_id: string
+          p_media_duration_ms?: number
+          p_media_storage_path?: string
+          p_media_thumbnail_path?: string
+          p_message_type?: string
+        }
+        Returns: string
       }
       storage_friend_can_read: {
         Args: { p_bucket: string; p_path: string }

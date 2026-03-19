@@ -339,7 +339,7 @@ export default function TemplateForm() {
                   }`}
                 >
                   {group.length > 1 && (
-                    <AppText className="text-lg text-gray-100 my-2 text-center">
+                    <AppText className="text-lg my-2 text-center">
                       {t("gym.templateForm.superSetLabel")}
                     </AppText>
                   )}

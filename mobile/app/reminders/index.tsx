@@ -1,11 +1,5 @@
 import AppText from "@/components/AppText";
-import AppTextNC from "@/components/AppTextNC";
-import {
-  View,
-  FlatList,
-  RefreshControl,
-  Modal,
-} from "react-native";
+import { View, FlatList, RefreshControl } from "react-native";
 import { useState } from "react";
 import { useRouter } from "expo-router";
 import { useQueryClient } from "@tanstack/react-query";
@@ -26,12 +20,15 @@ import useUpdateFeedItemToTop from "@/features/feed/hooks/useUpdateFeedItemToTop
 import { useTranslation } from "react-i18next";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import FloatingActionButton from "@/components/buttons/FloatingActionButton";
-import { Plus, Info, Bell } from "lucide-react-native";
+import { Plus, Bell } from "lucide-react-native";
+import InfoModal from "@/components/InfoModal";
 import { useUserStore } from "@/lib/stores/useUserStore";
 import BodyText from "@/components/BodyText";
 import LinkButton from "@/components/buttons/LinkButton";
 import { SESSION_COLORS } from "@/lib/sessionColors";
 import type { ReminderFilter } from "@/database/reminders/get-reminders-feed";
+import BodyTextNC from "@/components/BodyTextNC";
+import AppTextNC from "@/components/AppTextNC";
 
 const FILTERS: ReminderFilter[] = ["upcoming", "delivered"];
 
@@ -112,13 +109,11 @@ export default function RemindersScreen() {
         {filterTabs}
       </View>
       {isLoading ? (
-        <View className="pt-[50px]">
-          <FeedSkeleton count={5} />
-        </View>
+        <FeedSkeleton count={5} subFeed />
       ) : error ? (
-        <AppText className="text-center text-lg mt-20 mx-auto px-10">
+        <BodyText className="text-center text-lg mt-20 mx-auto px-10">
           {t("reminders.errorLoading")}
-        </AppText>
+        </BodyText>
       ) : !data ||
         (unpinnedFeed.length === 0 && pinnedFeed.length === 0) ? (
         <View className="flex-1 items-center mt-[30%] px-8">
@@ -129,9 +124,9 @@ export default function RemindersScreen() {
             <AppText className="text-xl text-center mb-3">
               {getEmptyMessage()}
             </AppText>
-            <AppText className="text-sm text-gray-400 text-center leading-5">
+            <BodyTextNC className="text-sm text-gray-400 text-center">
               {getEmptyDescription()}
-            </AppText>
+            </BodyTextNC>
           </View>
         </View>
       ) : (
@@ -259,34 +254,27 @@ export default function RemindersScreen() {
         </FullScreenModal>
       )}
 
-      <Modal visible={showPushModal} transparent={true} animationType="slide">
-        <View className="flex-1 justify-center items-center bg-black/50 px-5">
-          <View className="bg-slate-700 rounded-lg p-6 w-full border-2 border-gray-100">
-            <View className="mb-5">
-              <Info size={35} color="#fbbf24" />
+      <InfoModal
+        visible={showPushModal}
+        onClose={() => {}}
+        title={t("reminders.pushDisabledTitle")}
+        description={t("reminders.pushDisabledMessage")}
+        customActions={
+          <>
+            <View className="flex-1">
+              <LinkButton href="/sessions" label={t("reminders.back")} gradientColors={colors.gradient} borderColor={colors.border} />
             </View>
-            <AppText className="text-xl mb-6 text-center">
-              {t("reminders.pushDisabledTitle")}
-            </AppText>
-            <BodyText className="text-lg mb-6 text-center">
-              {t("reminders.pushDisabledMessage")}
-            </BodyText>
-            <View className="flex-row gap-4">
-              <View className="flex-1">
-                <LinkButton href="/sessions" label={t("reminders.back")} gradientColors={colors.gradient} borderColor={colors.border} />
-              </View>
-              <View className="flex-1">
-                <LinkButton
-                  href="/menu/settings"
-                  label={t("reminders.settings")}
-                  gradientColors={colors.gradient}
-                  borderColor={colors.border}
-                />
-              </View>
+            <View className="flex-1">
+              <LinkButton
+                href="/menu/settings"
+                label={t("reminders.settings")}
+                gradientColors={colors.gradient}
+                borderColor={colors.border}
+              />
             </View>
-          </View>
-        </View>
-      </Modal>
+          </>
+        }
+      />
     </LinearGradient>
   );
 }

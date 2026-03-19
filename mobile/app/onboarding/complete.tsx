@@ -98,7 +98,7 @@ export default function CompleteScreen() {
         <AppText className="text-3xl text-center mb-4">
           {t("complete.title")}
         </AppText>
-        <BodyText className="text-center text-base mb-8">
+        <BodyText className="text-center mb-8">
           {t("complete.body")}
         </BodyText>
       </View>
@@ -125,7 +125,6 @@ export default function CompleteScreen() {
         onPress={handleFinish}
         className="btn-base py-3"
         label={t("complete.start")}
-        textClassName="text-lg"
         disabled={isLoading}
       />
     </View>

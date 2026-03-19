@@ -102,12 +102,6 @@ export default function useSaveSession({
 
     if (!confirmSave) return;
 
-    const hasPhases = (warmup && warmup.duration_seconds > 0) || (cooldown && cooldown.duration_seconds > 0);
-    if (exercises.length === 0 && notes.trim() === "" && !hasPhases) return;
-
-    setIsSaving(true);
-    setSavingProgress?.(undefined);
-
     // Get timer state only when saving, not on every render
     const { startTimestamp, isRunning, remainingMs } = useTimerStore.getState();
 
@@ -115,6 +109,19 @@ export default function useSaveSession({
       isRunning && startTimestamp
         ? Math.floor((Date.now() - startTimestamp) / 1000)
         : Math.floor((remainingMs ?? 0) / 1000);
+
+    const hasPhases = (warmup && warmup.duration_seconds > 0) || (cooldown && cooldown.duration_seconds > 0);
+    if (exercises.length === 0 && notes.trim() === "" && !hasPhases && durationInSeconds === 0) {
+      Toast.show({
+        type: "error",
+        text1: t("common:common.error"),
+        text2: t("gym.saveSession.emptySession"),
+      });
+      return;
+    }
+
+    setIsSaving(true);
+    setSavingProgress?.(undefined);
 
     // Build phases array from warmup/cooldown state
     const phases: {
@@ -184,6 +191,13 @@ export default function useSaveSession({
           }),
           queryClient.invalidateQueries({
             queryKey: ["fullGymSession", session.id],
+            exact: true,
+          }),
+          queryClient.invalidateQueries({
+            queryKey: ["social-feed"],
+          }),
+          queryClient.invalidateQueries({
+            queryKey: ["myGymSessions"],
             exact: true,
           }),
         ]);

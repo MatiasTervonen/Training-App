@@ -20,6 +20,7 @@ type Props = {
   visible: boolean;
   onClose: () => void;
   onRecordingComplete: (uri: string, durationMs: number) => void;
+  recordLabel?: string;
 };
 
 RecordingPresets.VOICE_HIGH_QUALITY = {
@@ -31,6 +32,7 @@ export default function RecordingModal({
   visible,
   onClose,
   onRecordingComplete,
+  recordLabel,
 }: Props) {
   const { t } = useTranslation(["notes", "common"]);
   const insets = useSafeAreaInsets();
@@ -41,6 +43,10 @@ export default function RecordingModal({
   const audioRecorder = useAudioRecorder(RecordingPresets.VOICE_HIGH_QUALITY);
   const recorderState = useAudioRecorderState(audioRecorder);
   const autoStoppedRef = useRef(false);
+  const onCloseRef = useRef(onClose);
+  const onRecordingCompleteRef = useRef(onRecordingComplete);
+  onCloseRef.current = onClose;
+  onRecordingCompleteRef.current = onRecordingComplete;
 
   const maxDurationMs = MEDIA_LIMITS.MAX_VOICE_DURATION_SEC * 1000;
 
@@ -57,11 +63,16 @@ export default function RecordingModal({
         if (uri == null) return;
         setIsPaused(false);
         setHasStarted(false);
-        onRecordingComplete(uri, maxDurationMs);
-        onClose();
+        onRecordingCompleteRef.current(uri, maxDurationMs);
+        onCloseRef.current();
       });
     }
-  }, [recorderState.durationMillis, recorderState.isRecording]);
+  }, [
+    recorderState.durationMillis,
+    recorderState.isRecording,
+    audioRecorder,
+    maxDurationMs,
+  ]);
 
   const record = async () => {
     autoStoppedRef.current = false;
@@ -144,10 +155,7 @@ export default function RecordingModal({
           <View className="items-center mb-5">
             <View className="flex-row items-center gap-3 mb-4">
               <Mic color="#3b82f6" size={28} />
-              <AppText
-                className="text-2xl text-blue-400"
-                style={{ width: 72 }}
-              >
+              <AppText className="text-2xl text-blue-400" style={{ width: 72 }}>
                 {formatDurationNotesVoice(recorderState.durationMillis)}
               </AppText>
             </View>
@@ -160,13 +168,13 @@ export default function RecordingModal({
             <AnimatedButton
               label={
                 !hasStarted
-                  ? t("notes.voiceRecording.recordVoiceNote")
+                  ? (recordLabel ?? t("notes.voiceRecording.recordVoiceNote"))
                   : isPaused
                     ? t("notes.voiceRecording.resumeRecording")
                     : t("notes.voiceRecording.pauseRecording")
               }
               onPress={record}
-              className="bg-blue-800 border-blue-500 border-2 py-3 px-6 rounded-md items-center justify-center w-full"
+              className="btn-add w-full"
             />
           </View>
 
@@ -174,12 +182,12 @@ export default function RecordingModal({
             <AnimatedButton
               label={t("notes.voiceRecording.cancel")}
               onPress={cancelRecording}
-              className="flex-1 bg-red-800 py-3 rounded-md border-2 border-red-500 justify-center items-center"
+              className="btn-danger flex-1"
             />
             <AnimatedButton
               label={t("notes.voiceRecording.finish")}
               onPress={stopRecording}
-              className="flex-1 bg-blue-800 border-blue-500 border-2 py-3 rounded-md justify-center items-center"
+              className="btn-save flex-1"
               disabled={!hasStarted}
             />
           </View>

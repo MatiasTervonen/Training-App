@@ -82,6 +82,11 @@ class StepTrackingService : Service(), SensorEventListener {
             return START_STICKY
         }
 
+        if (intent?.action == "UPDATE_NOTIFICATION_TEXT") {
+            updateNotification()
+            return START_STICKY
+        }
+
         Log.d(TAG, "Service starting")
 
         createNotificationChannel()
@@ -178,6 +183,15 @@ class StepTrackingService : Service(), SensorEventListener {
         val steps = helper?.getTodaySteps() ?: 0L
         val formattedSteps = NumberFormat.getNumberInstance(Locale.getDefault()).format(steps)
 
+        // Use translated text from JS if available, fall back to Android string resource
+        val notifPrefs = getSharedPreferences("step_counter_notif_prefs", Context.MODE_PRIVATE)
+        val textTemplate = notifPrefs.getString("notification_text", null)
+        val contentText = if (textTemplate != null) {
+            textTemplate.replace("{{steps}}", formattedSteps)
+        } else {
+            getString(R.string.step_notification_text, formattedSteps)
+        }
+
         val openAppIntent = Intent(this, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
         }
@@ -188,7 +202,7 @@ class StepTrackingService : Service(), SensorEventListener {
 
         return Notification.Builder(this, CHANNEL_ID)
             .setContentTitle(getString(R.string.app_name))
-            .setContentText(getString(R.string.step_notification_text, formattedSteps))
+            .setContentText(contentText)
             .setSmallIcon(R.drawable.ic_stat_kurvi_icon_ice_blue_transparent)
             .setContentIntent(pendingIntent)
             .setOngoing(true)

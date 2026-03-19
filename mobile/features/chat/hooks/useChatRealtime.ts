@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useQueryClient, InfiniteData } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
-import { ChatMessage } from "@/types/chat";
+import { ChatMessage, LinkPreview } from "@/types/chat";
 
 export default function useChatRealtime(
   conversationId: string,
@@ -51,6 +51,39 @@ export default function useChatRealtime(
           queryClient.invalidateQueries({
             queryKey: ["total-unread-count"],
           });
+        },
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "chat_messages",
+          filter: `conversation_id=eq.${conversationId}`,
+        },
+        (payload) => {
+          const updated = payload.new as { id: string; sender_id: string; link_preview: LinkPreview | null };
+
+          // Only handle link_preview updates from other users
+          if (updated.sender_id === currentUserId) return;
+          if (!updated.link_preview) return;
+
+          queryClient.setQueryData<InfiniteData<ChatMessage[]>>(
+            ["messages", conversationId],
+            (old) => {
+              if (!old) return old;
+              return {
+                ...old,
+                pages: old.pages.map((page) =>
+                  page.map((msg) =>
+                    msg.id === updated.id
+                      ? { ...msg, link_preview: updated.link_preview }
+                      : msg,
+                  ),
+                ),
+              };
+            },
+          );
         },
       )
       .subscribe();

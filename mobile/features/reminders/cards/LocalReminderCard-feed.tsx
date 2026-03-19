@@ -6,6 +6,7 @@ import BodyText from "@/components/BodyText";
 import { FeedCardProps } from "@/types/session";
 import BaseFeedCard from "@/features/feed-cards/BaseFeedCard";
 import { useTranslation } from "react-i18next";
+import BodyTextNC from "@/components/BodyTextNC";
 
 type reminderPayload = {
   notify_date: string;
@@ -53,17 +54,17 @@ export default function LocalReminderCard({
       statsContent={
         <View className="gap-1">
           <View className="flex-row items-center gap-2">
-            <BodyText className="text-slate-300">
+            <BodyTextNC className="text-slate-300">
               {payload.notify_at_time &&
                 formatNotifyTime(payload.notify_at_time!)}
               {payload.notify_date && formatDateTime(payload.notify_date!)}
-            </BodyText>
+            </BodyTextNC>
             <Bell size={20} color={"#cbd5e1"} />
           </View>
           {payload.weekdays && payload.weekdays.length > 0 && (
-            <BodyText className="text-slate-400 text-sm">
+            <BodyTextNC className="text-slate-400 text-sm">
               {payload.weekdays.map((dayNum) => days[dayNum - 1]).join(" · ")}
-            </BodyText>
+            </BodyTextNC>
           )}
         </View>
       }

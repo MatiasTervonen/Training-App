@@ -16,7 +16,6 @@ export default function EditButton({
       className="btn-edit py-2"
       label={label}
       onPress={onPress}
-      textClassName="text-gray-100 text-center"
       disabled={disabled}
     />
   );

@@ -37,6 +37,10 @@ import GoogleIcon from "@/components/icons/GoogleIcon";
 import { Confetti, ConfettiMethods } from "react-native-fast-confetti";
 import { useTranslation } from "react-i18next";
 import { APP_NAME } from "@/lib/app-config";
+import BodyText from "@/components/BodyText";
+import BodyTextNC from "@/components/BodyTextNC";
+import BodyInput from "@/components/BodyInput";
+import AppTextNC from "@/components/AppTextNC";
 
 export default function LoginScreen() {
   const { t } = useTranslation("login");
@@ -145,7 +149,7 @@ export default function LoginScreen() {
                 style={{ height: screenHeight }}
                 className="justify-center max-w-md mx-auto w-full flex-1 pb-20"
               >
-                <AppInput
+                <BodyInput
                   label={t("login.email")}
                   setValue={(text) => {
                     setLogin({ ...login, email: text });
@@ -159,7 +163,7 @@ export default function LoginScreen() {
                   keyboardType="email-address"
                 />
                 <View className="mt-4">
-                  <AppInput
+                  <BodyInput
                     label={t("login.password")}
                     setValue={(text) => setLogin({ ...login, password: text })}
                     value={login.password}
@@ -193,9 +197,9 @@ export default function LoginScreen() {
                 </View>
                 <View className="flex-row items-center mt-5 mb-3">
                   <View className="flex-1 h-px bg-gray-600" />
-                  <AppText className="mx-4 text-gray-400">
+                  <AppTextNC className="mx-4 text-gray-400">
                     {t("login.or")}
-                  </AppText>
+                  </AppTextNC>
                   <View className="flex-1 h-px bg-gray-600" />
                 </View>
                 <AnimatedButton
@@ -211,12 +215,12 @@ export default function LoginScreen() {
                   <AppText>{t("login.signInWithGoogle")}</AppText>
                 </AnimatedButton>
                 <View className="mt-4 items-center">
-                  <AppText
+                  <BodyText
                     onPress={() => setGuestModalOpen(true)}
                     className="text-center text-lg mb-2 underline"
                   >
                     {t("login.logInAsGuest")}
-                  </AppText>
+                  </BodyText>
                 </View>
                 <View className="mt-3 items-center">
                   <ForgotPasswordText onPress={() => setModalOpen(true)} />
@@ -234,7 +238,7 @@ export default function LoginScreen() {
                 style={{ height: screenHeight }}
                 className="justify-center max-w-md mx-auto w-full pb-20"
               >
-                <AppInput
+                <BodyInput
                   label={t("login.email")}
                   setValue={(text) => {
                     setSignup({ ...signup, email: text });
@@ -248,7 +252,7 @@ export default function LoginScreen() {
                   keyboardType="email-address"
                 />
                 <View className="mt-4">
-                  <AppInput
+                  <BodyInput
                     label={t("login.password")}
                     setValue={(text) =>
                       setSignup({ ...signup, password: text })
@@ -263,7 +267,7 @@ export default function LoginScreen() {
                   />
                 </View>
                 <View className="mt-4">
-                  <AppInput
+                  <BodyInput
                     label={t("login.confirmPassword")}
                     setValue={(text) =>
                       setSignup({ ...signup, confirmPassword: text })
@@ -298,9 +302,9 @@ export default function LoginScreen() {
 
                 <View className="flex-row items-center mt-5 mb-3">
                   <View className="flex-1 h-px bg-gray-600" />
-                  <AppText className="mx-4 text-gray-400">
+                  <AppTextNC className="mx-4 text-gray-400">
                     {t("login.or")}
-                  </AppText>
+                  </AppTextNC>
                   <View className="flex-1 h-px bg-gray-600" />
                 </View>
                 <AnimatedButton
@@ -325,11 +329,11 @@ export default function LoginScreen() {
             </Animated.View>
 
             <View className="absolute bottom-0 left-0 w-full flex flex-col justify-center gap-2 pb-5 px-6">
-              <AppText className="text-center mb-5 text-xl">
+              <BodyText className="text-center mb-5 text-xl">
                 {activeForm
                   ? t("login.alreadyHaveAccount")
                   : t("login.dontHaveAccount")}
-              </AppText>
+              </BodyText>
               <View className="max-w-md mx-auto w-full">
                 <GradientButton
                   label={activeForm ? t("login.logIn") : t("login.signUp")}
@@ -357,9 +361,9 @@ export default function LoginScreen() {
             <AppText className="text-xl mt-5 text-center">
               {t("login.signUpSuccess.title")}
             </AppText>
-            <AppText className="text-green-500 text-center">
+            <BodyTextNC className="text-green-500 text-center">
               {t("login.signUpSuccess.message")}
-            </AppText>
+            </BodyTextNC>
 
             <View className="mt-6 items-center">
               <ResendEmailText onPress={() => setModal2Open(true)} />
@@ -380,12 +384,12 @@ export default function LoginScreen() {
         >
           <View className="flex-1 justify-between items-center p-6">
             <View className="gap-5">
-              <AppText className="text-xl underline mt-5 text-gray-100 text-center">
+              <AppText className="text-xl underline mt-5 text-center">
                 {t("login.resendEmail.title")}
               </AppText>
-              <AppText className="text-gray-300 text-center">
+              <BodyTextNC className="text-gray-300 text-center">
                 {t("login.resendEmail.description")}
-              </AppText>
+              </BodyTextNC>
               <AppInput
                 label={t("login.email")}
                 setValue={(text) => {
@@ -437,12 +441,12 @@ export default function LoginScreen() {
         >
           <View className="flex-1 justify-between items-center p-6">
             <View className="gap-5">
-              <AppText className="text-xl underline mt-5 text-gray-100 text-center">
+              <AppText className="text-xl underline mt-5 text-center">
                 {t("login.forgotPassword.title")}
               </AppText>
-              <AppText className="text-gray-300 text-center">
+              <BodyTextNC className="text-gray-300 text-center">
                 {t("login.forgotPassword.description")}
-              </AppText>
+              </BodyTextNC>
               <AppInput
                 label={t("login.email")}
                 setValue={(text) => {
@@ -491,15 +495,15 @@ export default function LoginScreen() {
           <GradientColorText style={{ width: 140, height: 36 }}>
             {APP_NAME}
           </GradientColorText>
-          <AppText className="text-2xl underline mt-5 text-gray-100 text-center">
+          <AppText className="text-2xl underline mt-5 text-center">
             {t("login.guest.title")}
           </AppText>
-          <AppText className="text-gray-300 text-center text-lg">
+          <BodyTextNC className="text-gray-300 text-center text-lg">
             {t("login.guest.description")}
-          </AppText>
-          <AppText className="text-center text-gray-300">
+          </BodyTextNC>
+          <BodyTextNC className="text-center text-gray-300">
             {t("login.guest.testInfo")}
-          </AppText>
+          </BodyTextNC>
           <View className="w-full">
             <GradientButton
               label={t("login.guest.continue")}

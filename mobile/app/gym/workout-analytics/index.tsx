@@ -8,6 +8,7 @@ import { ScrollView, ActivityIndicator, View } from "react-native";
 import { last30DaysAnalyticsRPC } from "@/database/gym/analytics/last-30-days-rpc";
 import { useTranslation } from "react-i18next";
 import { BarChart3 } from "lucide-react-native";
+import BodyTextNC from "@/components/BodyTextNC";
 
 export default function AnalyticsScreen() {
   const { t } = useTranslation("gym");
@@ -29,19 +30,22 @@ export default function AnalyticsScreen() {
   const unifiedError = error || heatMapError;
 
   return (
-    <ScrollView contentContainerStyle={{ paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
+    <ScrollView
+      contentContainerStyle={{ paddingBottom: 40 }}
+      showsVerticalScrollIndicator={false}
+    >
       <PageContainer>
         {isUnifiedLoading ? (
           <View className="items-center gap-2 mt-20">
-            <BodyText className="text-gray-300 text-center text-xl">
+            <BodyText className="text-center text-xl">
               {t("gym.analyticsScreen.loading")}
             </BodyText>
             <ActivityIndicator size="large" color="#ffffff" />
           </View>
         ) : unifiedError ? (
-          <BodyText className="text-red-500 text-center mt-20 text-lg">
+          <BodyTextNC className="text-red-500 text-center mt-20 text-lg">
             {t("gym.analyticsScreen.error")}
-          </BodyText>
+          </BodyTextNC>
         ) : !data || data.total_sessions === 0 ? (
           <View className="items-center mt-[30%] px-8">
             <View className="items-center">
@@ -51,9 +55,9 @@ export default function AnalyticsScreen() {
               <AppText className="text-xl text-center mb-3">
                 {t("gym.analyticsScreen.noData")}
               </AppText>
-              <BodyText className="text-sm text-gray-400 text-center leading-5">
+              <BodyTextNC className="text-sm text-gray-400 text-center leading-5">
                 {t("gym.analyticsScreen.noDataDesc")}
-              </BodyText>
+              </BodyTextNC>
             </View>
           </View>
         ) : (

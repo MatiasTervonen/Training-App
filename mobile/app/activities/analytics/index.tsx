@@ -2,7 +2,6 @@ import { useState, useEffect, useMemo } from "react";
 import { View, ActivityIndicator, ScrollView } from "react-native";
 import { useQuery } from "@tanstack/react-query";
 import AppText from "@/components/AppText";
-import AppTextNC from "@/components/AppTextNC";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import StepsChart from "@/features/activities/analytics/StepsChart";
 import ActivityBreakdownChart from "@/features/activities/analytics/ActivityBreakdownChart";
@@ -16,6 +15,7 @@ import * as Device from "expo-device";
 import { useTranslation } from "react-i18next";
 import { hasStepsPermission } from "@/features/activities/stepToggle/stepPermission";
 import { BarChart3 } from "lucide-react-native";
+import AppTextNC from "@/components/AppTextNC";
 
 type RangeType = "week" | "month" | "3months";
 
@@ -130,7 +130,7 @@ export default function ActivityAnalytics() {
   return (
     <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
       <PageContainer>
-        <View className="flex-row bg-slate-800 rounded-lg p-1 mb-4">
+        <View className="flex-row bg-slate-800 rounded-lg p-1">
           {ranges.map((range) => (
             <AnimatedButton
               key={range.key}
@@ -153,7 +153,7 @@ export default function ActivityAnalytics() {
           ))}
         </View>
         {stepsPermitted && (
-          <>
+          <View className="pt-5">
             <StepsChart
               range={selectedRange}
               data={stepsData}
@@ -163,17 +163,17 @@ export default function ActivityAnalytics() {
             {todaySteps > 0 && (
               <View className="mt-4 bg-slate-900 rounded-xl p-4">
                 <View className="flex-row justify-between items-center">
-                  <AppText className="text-gray-400">
+                  <AppTextNC className="text-gray-400">
                     {t("activities.analyticsScreen.today")}
-                  </AppText>
-                  <AppText className="text-2xl font-bold text-green-400">
+                  </AppTextNC>
+                  <AppTextNC className="text-2xl font-bold text-green-400">
                     {todaySteps.toLocaleString()}{" "}
                     {t("activities.analyticsScreen.steps")}
-                  </AppText>
+                  </AppTextNC>
                 </View>
               </View>
             )}
-          </>
+          </View>
         )}
         <View className="mt-4">
           <ActivityBreakdownChart

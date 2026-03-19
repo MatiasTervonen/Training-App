@@ -79,7 +79,8 @@
       "createTemplate": "Luo harjoituspohja",
       "loadingTemplates": "Ladataan harjoituspohjia...",
       "templateType": "Harjoituspohja",
-      "details": "Tiedot"
+      "details": "Tiedot",
+      "start": "Aloita"
     },
     "addExerciseScreen": {
       "title": "Lisää liikkeitä",
@@ -212,7 +213,8 @@
       "phaseStillRunningSub": "Pysäytä lämmittely tai jäähdyttely ensin.",
       "confirmTitle": "Vahvista sessio",
       "confirmMessage": "Haluatko varmasti lopettaa tämän session?",
-      "saveError": "Session tallentaminen epäonnistui. Yritä uudelleen."
+      "saveError": "Session tallentaminen epäonnistui. Yritä uudelleen.",
+      "emptySession": "Käynnistä ajastin tai lisää liikkeitä ennen tallennusta."
     },
     "session": {
       "duration": "Kesto",

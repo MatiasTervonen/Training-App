@@ -48,7 +48,7 @@ export default function GradientButton({
       >
         <Pressable
           disabled={disabled}
-          className="py-2 border-2 border-blue-700 rounded-md"
+          className="py-2 border-[1.5px] border-blue-700 rounded-md"
           onPress={onPress}
           android_ripple={{ color: "#666" }}
           onPressIn={handlePressIn}

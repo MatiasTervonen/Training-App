@@ -189,7 +189,6 @@ export default function MyTimersScreen() {
           <View key={timer.id} className="mb-4">
             <AnimatedButton
               className="btn-base py-2 items-center"
-              textClassName="text-gray-100"
               onPress={() => {
                 setExpandedItem(timer);
               }}
@@ -278,7 +277,6 @@ export default function MyTimersScreen() {
               className="btn-neutral py-2"
               label={t("common:common.cancel")}
               onPress={() => setEditingItem(null)}
-              textClassName="text-gray-100 text-center"
             />
             </PageContainer>
           </View>

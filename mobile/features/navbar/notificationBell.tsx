@@ -130,7 +130,7 @@ export default function NotificationBell() {
         </AppText>
         <View className="flex-row items-center gap-2 text-sm">
           {getNotificationIcon(item.type)}
-          <BodyText className="text-gray-100 text-sm flex-1">
+          <BodyText className="text-sm flex-1">
             {item.body}
           </BodyText>
           {!item.is_read && (
@@ -160,7 +160,7 @@ export default function NotificationBell() {
         <Bell size={20} color="white" />
         {unreadCount != null && unreadCount > 0 && (
           <View className="absolute -top-1 -right-2 w-5 h-5 bg-red-500 rounded-full items-center justify-center z-50">
-            <AppText className="text-gray-100 text-[10px] font-bold leading-none">
+            <AppText className="text-[10px] font-bold leading-none">
               {unreadCount > 9 ? "9+" : unreadCount}
             </AppText>
           </View>
@@ -184,7 +184,7 @@ export default function NotificationBell() {
             <Pressable onPress={() => {}}>
               <View className="p-4">
                 <View className="flex-row items-center gap-2 mb-4 justify-center">
-                  <AppText className="text-gray-100 text-lg">
+                  <AppText className="text-lg">
                     {t("notifications.title")}
                   </AppText>
                   <Bell size={20} color="#f3f4f6" />

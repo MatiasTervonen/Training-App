@@ -7,6 +7,7 @@ import Toggle from "@/components/toggle";
 import PageContainer from "@/components/PageContainer";
 import { useGymSettingsStore } from "@/lib/stores/gymSettingsStore";
 import { useTranslation } from "react-i18next";
+import BodyTextNC from "@/components/BodyTextNC";
 
 export default function GymSettingsScreen() {
   const { t } = useTranslation("gym");
@@ -52,9 +53,9 @@ export default function GymSettingsScreen() {
                   <BodyText className="text-lg">
                     {t("gym.settings.restTimerEnabled")}
                   </BodyText>
-                  <BodyText className="text-sm text-gray-400">
+                  <BodyTextNC className="text-sm text-gray-400">
                     {t("gym.settings.restTimerDescription")}
-                  </BodyText>
+                  </BodyTextNC>
                 </View>
                 <Toggle
                   isOn={restTimerEnabled}

@@ -276,7 +276,6 @@ export default function SettingsScreen() {
             label={t("timer.start")}
             onPress={handleStartTimer}
             className="btn-base py-2"
-            textClassName="text-gray-100 text-center"
           />
         </View>
       )}

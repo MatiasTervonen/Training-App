@@ -39,7 +39,7 @@ export default function PermissionCard({
         <AppText className="text-lg flex-1">{title}</AppText>
         {isGranted && <Check size={20} color="#22c55e" />}
       </View>
-      <BodyText className="mb-3">{description}</BodyText>
+      <BodyText className="text-gray-200 mb-3">{description}</BodyText>
       {isGranted ? (
         <View className="bg-green-900/30 border border-green-700 py-2 rounded-md">
           <AppText className="text-center text-green-400 text-sm">

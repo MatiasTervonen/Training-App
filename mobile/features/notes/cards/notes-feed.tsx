@@ -3,9 +3,9 @@ import { FeedCardProps } from "@/types/session";
 import BaseFeedCard from "@/features/feed-cards/BaseFeedCard";
 import { View } from "react-native";
 import { useTranslation } from "react-i18next";
-import BodyText from "@/components/BodyText";
 import AppText from "@/components/AppText";
 import { stripHtml } from "@/lib/stripHtml";
+import BodyTextNC from "@/components/BodyTextNC";
 
 type notesPayload = {
   notes: string;
@@ -84,12 +84,12 @@ export default function NotesCard({
             </View>
           )}
           {payload.notes && (
-            <BodyText
+            <BodyTextNC
               className={` ${"text-slate-300"}`}
               numberOfLines={2}
             >
               {stripHtml(payload.notes)}
-            </BodyText>
+            </BodyTextNC>
           )}
         </View>
       }

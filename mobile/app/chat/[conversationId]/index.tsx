@@ -16,7 +16,7 @@ import useChatRealtime from "@/features/chat/hooks/useChatRealtime";
 import useConversations from "@/features/chat/hooks/useConversations";
 import { useUserStore } from "@/lib/stores/useUserStore";
 import { useTimerStore } from "@/lib/stores/timerStore";
-import { ChatMessage } from "@/types/chat";
+import { ChatMessage, LinkPreview } from "@/types/chat";
 import { KeyboardAvoidingView } from "react-native-keyboard-controller";
 import { LinearGradient } from "expo-linear-gradient";
 
@@ -83,8 +83,8 @@ export default function ChatScreen() {
   }, [conversationId, messages.length]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleSend = useCallback(
-    (content: string) => {
-      sendMessage.mutate(content);
+    (content: string, preview?: LinkPreview | null) => {
+      sendMessage.mutate({ content, preview });
     },
     [sendMessage],
   );

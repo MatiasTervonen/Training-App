@@ -62,7 +62,7 @@ export default function ReminderSession(reminder: FeedItemUI) {
         {reminder.title}
       </AppText>
 
-      <View className="bg-slate-900 rounded-md shadow-md mt-6">
+      <View className="bg-white/5 border border-white/10 rounded-md mt-6">
         {/* Type */}
         <View className="flex-row items-center px-4 py-4 border-b border-gray-700">
           <CalendarSync size={20} color="#94a3b8" />
@@ -100,7 +100,7 @@ export default function ReminderSession(reminder: FeedItemUI) {
               {payload.weekdays.map((dayNum) => (
                 <View
                   key={dayNum}
-                  className="bg-slate-800 rounded-md px-3 py-1"
+                  className="bg-white/10 rounded-md px-3 py-1"
                 >
                   <AppText className="text-sm">{days[dayNum - 1]}</AppText>
                 </View>
@@ -112,7 +112,7 @@ export default function ReminderSession(reminder: FeedItemUI) {
         {/* Notes */}
         {payload.notes && (
           <View className="px-4 py-4">
-            <BodyText className="leading-5">{payload.notes}</BodyText>
+            <BodyText className="text-gray-200 leading-5">{payload.notes}</BodyText>
           </View>
         )}
       </View>

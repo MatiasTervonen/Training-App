@@ -1,5 +1,5 @@
 import { View, ActivityIndicator, Modal } from "react-native";
-import AppText from "@/components/AppText";
+import BodyText from "@/components/BodyText";
 
 type FullScreenLoaderProps = {
   visible?: boolean;
@@ -23,7 +23,7 @@ export default function FullScreenLoader({
     >
       <View className="flex-1 bg-slate-500/30 justify-center items-center">
         <View className="p-6 bg-[#1C2431] rounded-xl border-2 border-blue-500 w-2/4">
-          <AppText className="mb-4 text-lg text-center">{message}</AppText>
+          <BodyText className="mb-4 text-lg text-center">{message}</BodyText>
           {showProgress ? (
             <View>
               <View className="h-2 bg-slate-700 rounded-full overflow-hidden">
@@ -32,9 +32,9 @@ export default function FullScreenLoader({
                   style={{ width: `${Math.min(Math.round(progress * 100), 100)}%` }}
                 />
               </View>
-              <AppText className="text-center text-sm mt-2 text-slate-300">
+              <BodyText className="text-center text-sm mt-2">
                 {Math.min(Math.round(progress * 100), 100)}%
-              </AppText>
+              </BodyText>
             </View>
           ) : (
             <ActivityIndicator size="large" color="#0000ff" />

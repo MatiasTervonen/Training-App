@@ -48,7 +48,7 @@ export default function Navbar() {
               <MessageCircle color="white" size={20} />
               {!!unreadCount && unreadCount > 0 && (
                 <View className="absolute -top-1 -right-2 w-5 h-5 bg-red-500 rounded-full items-center justify-center z-50">
-                  <AppText className="text-gray-100 text-[10px] font-bold leading-none">
+                  <AppText className="text-[10px] font-bold leading-none">
                     {unreadCount > 9 ? "9+" : unreadCount}
                   </AppText>
                 </View>

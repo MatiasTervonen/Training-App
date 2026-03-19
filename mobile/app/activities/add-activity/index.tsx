@@ -155,8 +155,7 @@ export default function AddActivity() {
                 label={
                   category || t("activities.addActivityScreen.selectCategory")
                 }
-                className="bg-blue-800 py-2 w-full rounded-md shadow-md border-2 border-blue-500"
-                textClassName="text-gray-100 text-center"
+                className="btn-add"
               />
               <FullScreenModal
                 isOpen={openCategoryModal}

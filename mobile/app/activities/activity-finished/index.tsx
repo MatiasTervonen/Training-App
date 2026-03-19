@@ -3,7 +3,6 @@ import { useNavigation, useRouter } from "expo-router";
 import { View, ScrollView, LayoutChangeEvent, ActivityIndicator, PixelRatio } from "react-native";
 import AppText from "@/components/AppText";
 import { Image } from "expo-image";
-import LinkButton from "@/components/buttons/LinkButton";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import ActivityShareCard from "@/features/activities/components/share/ActivityShareCard";
 import StatToggleChips from "@/features/activities/components/share/StatToggleChips";
@@ -27,6 +26,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import Mapbox from "@rnmapbox/maps";
 import { MAP_STYLES, LINE_COLORS } from "@/features/activities/lib/mapConstants";
 import { useActivitySettingsStore } from "@/lib/stores/activitySettingsStore";
+import BodyTextNC from "@/components/BodyTextNC";
+import AppTextNC from "@/components/AppTextNC";
 
 const MAP_VIEW_STYLE = { flex: 1 };
 
@@ -246,9 +247,9 @@ export default function ActivityFinishedScreen() {
             className="w-10 h-10"
           />
         </View>
-        <AppText className="text-sm text-gray-400">
+        <BodyTextNC className="text-sm text-gray-400">
           {t("activities.share.subtitle")}
-        </AppText>
+        </BodyTextNC>
       </View>
 
       {/* Share Card Preview - fixed height to prevent layout shift */}
@@ -268,9 +269,9 @@ export default function ActivityFinishedScreen() {
                 }}
               >
                 <ActivityIndicator size="large" color={theme.colors.accent} />
-                <AppText className="text-sm text-gray-400 mt-3">
+                <BodyTextNC className="text-sm text-gray-400 mt-3">
                   {t("activities.share.loadingMap")}
-                </AppText>
+                </BodyTextNC>
               </View>
             ) : (
               <>
@@ -338,7 +339,7 @@ export default function ActivityFinishedScreen() {
         <View className="mt-6 flex-row items-center justify-between py-3 border-b border-gray-700">
           <View className="flex-row items-center gap-3">
             <Users size={20} color="#67e8f9" />
-            <AppText className="text-gray-100">
+            <AppText>
               {t("social:social.shareWithFriends")}
             </AppText>
           </View>
@@ -380,9 +381,9 @@ export default function ActivityFinishedScreen() {
                 <View className="w-full gap-3">
                   {/* Map style picker */}
                   <View className="gap-1">
-                    <AppText className="text-sm text-gray-400">
+                    <BodyTextNC className="text-sm text-gray-400">
                       {t("activities.share.mapStyle")}
-                    </AppText>
+                    </BodyTextNC>
                     <View className="flex-row gap-2">
                       {MAP_STYLES.map((style, i) => (
                         <AnimatedButton
@@ -394,11 +395,11 @@ export default function ActivityFinishedScreen() {
                               : "bg-transparent border-gray-600"
                           }`}
                         >
-                          <AppText
+                          <AppTextNC
                             className={`text-sm ${mapStyleIndex === i ? "text-gray-100" : "text-gray-400"}`}
                           >
                             {t(`activities.settings.mapStyles.${style.labelKey}`)}
-                          </AppText>
+                          </AppTextNC>
                         </AnimatedButton>
                       ))}
                     </View>
@@ -406,9 +407,9 @@ export default function ActivityFinishedScreen() {
 
                   {/* Route color picker */}
                   <View className="gap-1">
-                    <AppText className="text-sm text-gray-400">
+                    <BodyTextNC className="text-sm text-gray-400">
                       {t("activities.share.routeColor")}
-                    </AppText>
+                    </BodyTextNC>
                     <View className="flex-row gap-3">
                       {LINE_COLORS.map((color, i) => (
                         <AnimatedButton
@@ -438,11 +439,11 @@ export default function ActivityFinishedScreen() {
                         : "bg-transparent border-gray-600"
                     }`}
                   >
-                    <AppText
+                    <AppTextNC
                       className={`text-sm ${hideMapDetails ? "text-gray-100" : "text-gray-400"}`}
                     >
                       {t("activities.share.hideMapDetails")}
-                    </AppText>
+                    </AppTextNC>
                   </AnimatedButton>
                 </View>
               )}

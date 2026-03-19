@@ -19,7 +19,7 @@ export default function SaveButtonSpinner({
 }: SaveButtonProps) {
   return (
     <AnimatedButton
-      className={`flex-row justify-center items-center gap-3 btn-save ${className}`}
+      className={`flex-row justify-center items-center gap-3 ${className}`}
       onPress={onPress}
       disabled={disabled}
     >

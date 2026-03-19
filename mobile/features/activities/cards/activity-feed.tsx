@@ -89,14 +89,14 @@ export default function ActivityCard({
             {payload.distance > 0 && (
               <View className="flex-row items-center gap-2">
                 <Route size={20} color={"#cbd5e1"} />
-                <BodyText className="text-slate-300">
+                <BodyText>
                   {formatMeters(payload.distance)}
                 </BodyText>
               </View>
             )}
             <View className="flex-row items-center gap-2">
               <Timer size={20} color={"#cbd5e1"} />
-              <BodyText className="text-slate-300">
+              <BodyText>
                 {formatDuration(payload.duration)}
               </BodyText>
             </View>

@@ -1,6 +1,7 @@
 import { formatDate } from "@/lib/formatDate";
 import { useUserStore } from "@/lib/stores/useUserStore";
-import { View, ActivityIndicator, ScrollView } from "react-native";
+import { View, ActivityIndicator, ScrollView, NativeSyntheticEvent, NativeScrollEvent } from "react-native";
+import { useFullScreenModalScroll } from "@/components/FullScreenModal";
 import AppText from "@/components/AppText";
 import ErrorMessage from "@/components/ErrorMessage";
 import BodyText from "@/components/BodyText";
@@ -42,6 +43,13 @@ export default function WeightSession({
 }: WeightSessionProps) {
   const { t } = useTranslation("weight");
   const [viewerIndex, setViewerIndex] = useState(-1);
+  const modalScroll = useFullScreenModalScroll();
+
+  const handleScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+    if (modalScroll) {
+      modalScroll.innerScrollY.value = e.nativeEvent.contentOffset.y;
+    }
+  };
   const payload = weight.extra_fields as weightPayload;
   const imageCount = payload["image-count"] ?? 0;
   const videoCount = payload["video-count"] ?? 0;
@@ -63,7 +71,7 @@ export default function WeightSession({
 
   return (
   <>
-    <ScrollView showsVerticalScrollIndicator={false}>
+    <ScrollView showsVerticalScrollIndicator={false} onScroll={handleScroll} scrollEventThrottle={16}>
     <PageContainer>
       <AppText className="text-sm text-gray-400 text-center">
         {formatDate(weight.created_at!)}
@@ -73,7 +81,7 @@ export default function WeightSession({
           <AppText className="my-5 text-2xl text-center break-words">
             {weight.title}
           </AppText>
-          <View className="bg-slate-900 p-4 rounded-md shadow-md mt-5">
+          <View className="bg-white/5 border border-white/10 p-4 rounded-md mt-5">
             <View className="flex flex-col">
               {payload.notes && (
                 <BodyText className="mb-5 text-center">
@@ -141,19 +149,19 @@ export default function WeightSession({
           )}
 
           {isLoading ? (
-            <View className="mt-5 bg-slate-900 shadow-md rounded-md p-4 h-[340px]">
+            <View className="mt-5 bg-white/5 border border-white/10 rounded-md p-4 h-[340px]">
               <View className="justify-center items-center flex-1">
                 <ActivityIndicator size="large" color="#f3f4f6" />
               </View>
             </View>
           ) : error ? (
-            <View className="mt-5 bg-slate-900 shadow-md rounded-md p-4 h-[340px] justify-center">
+            <View className="mt-5 bg-white/5 border border-white/10 rounded-md p-4 h-[340px] justify-center">
               <ErrorMessage message={t("weight.chartError")} />
             </View>
           ) : (
             weightData &&
             weightData.length > 0 && (
-              <View className="mt-5 bg-slate-900 shadow-md rounded-md">
+              <View className="mt-5 bg-white/5 border border-white/10 rounded-md">
                 <WeightFeedChart data={weightData} />
               </View>
             )

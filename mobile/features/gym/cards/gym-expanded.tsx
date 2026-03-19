@@ -3,8 +3,10 @@ import { PhaseType } from "@/types/session";
 import { useUserStore } from "@/lib/stores/useUserStore";
 import { FullGymSession } from "@/database/gym/get-full-gym-session";
 import GroupExercises from "@/features/gym/lib/GroupExercises";
-import { View, ScrollView } from "react-native";
+import { View, ScrollView, NativeSyntheticEvent, NativeScrollEvent } from "react-native";
+import { useFullScreenModalScroll } from "@/components/FullScreenModal";
 import AppText from "@/components/AppText";
+import AppTextNC from "@/components/AppTextNC";
 import BodyText from "@/components/BodyText";
 import { LinearGradient } from "expo-linear-gradient";
 import PageContainer from "@/components/PageContainer";
@@ -25,6 +27,7 @@ import ShareWithFriendsButton from "@/features/social-feed/components/ShareWithF
 
 export default function GymSession(gym_session: FullGymSession & { readOnly?: boolean }) {
   const { t } = useTranslation("gym");
+  const modalScroll = useFullScreenModalScroll();
   const [exerciseId, setExerciseId] = useState("");
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [viewerIndex, setViewerIndex] = useState(-1);
@@ -104,13 +107,19 @@ export default function GymSession(gym_session: FullGymSession & { readOnly?: bo
     enabled: isHistoryOpen && !!exerciseId,
   });
 
+  const handleScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+    if (modalScroll) {
+      modalScroll.innerScrollY.value = e.nativeEvent.contentOffset.y;
+    }
+  };
+
   const openHistory = (exerciseId: string) => {
     setExerciseId(exerciseId);
     setIsHistoryOpen(true);
   };
 
   return (
-    <ScrollView showsVerticalScrollIndicator={false}>
+    <ScrollView showsVerticalScrollIndicator={false} onScroll={handleScroll} scrollEventThrottle={16}>
       <PageContainer className="mb-10">
         <View>
           <LinearGradient
@@ -140,9 +149,9 @@ export default function GymSession(gym_session: FullGymSession & { readOnly?: bo
                 </View>
               )}
             </View>
-            <AppText className="text-sm text-gray-400">
+            <AppTextNC className="text-sm text-gray-400">
               {formatDateShort(gym_session.start_time)}  ·  {formatTime(gym_session.start_time)} – {formatTime(gym_session.end_time)}
-            </AppText>
+            </AppTextNC>
 
             <View className="w-full gap-2">
               <View className="flex-row gap-2">
@@ -176,7 +185,7 @@ export default function GymSession(gym_session: FullGymSession & { readOnly?: bo
             </View>
 
             {gym_session.notes && (
-              <BodyText className="text-gray-200 whitespace-pre-wrap break-words overflow-hidden">
+              <BodyText className="whitespace-pre-wrap break-words overflow-hidden">
                 {gym_session.notes}
               </BodyText>
             )}
@@ -240,7 +249,7 @@ export default function GymSession(gym_session: FullGymSession & { readOnly?: bo
             className={`mt-5 rounded-md overflow-hidden  ${
               group.length > 1
                 ? "border-[1.5px] border-blue-700"
-                : "border-[1.5px] border-gray-600"
+                : "border-[1.5px] border-gray-700"
             }`}
           >
             {group.length > 1 && (
@@ -269,7 +278,7 @@ export default function GymSession(gym_session: FullGymSession & { readOnly?: bo
                     )}
                   </View>
                   <View className="flex-row items-center ">
-                    <AppText className="text-gray-400 mt-1">
+                    <AppTextNC className="text-gray-400 mt-1">
                       {t(
                         `gym.equipment.${exercise.gym_exercises.equipment?.toLowerCase()}`,
                       )}{" "}
@@ -277,7 +286,7 @@ export default function GymSession(gym_session: FullGymSession & { readOnly?: bo
                       {t(
                         `gym.muscleGroups.${exercise.gym_exercises.muscle_group?.toLowerCase().replace(/ /g, "_")}`,
                       )}
-                    </AppText>
+                    </AppTextNC>
                   </View>
                 </View>
                 {exercise.notes && (
@@ -289,24 +298,24 @@ export default function GymSession(gym_session: FullGymSession & { readOnly?: bo
                 <View className="w-full">
                   <View className="border-b border-gray-600 flex-row">
                     <View className="flex-1 items-center">
-                      <AppText className="p-2 text-sm text-gray-400">
+                      <AppTextNC className="p-2 text-sm text-gray-400">
                         {t("gym.session.set")}
-                      </AppText>
+                      </AppTextNC>
                     </View>
                     <View className="flex-1 items-center">
-                      <AppText className="p-2 text-sm text-gray-400">
+                      <AppTextNC className="p-2 text-sm text-gray-400">
                         {t("gym.session.weight")}
-                      </AppText>
+                      </AppTextNC>
                     </View>
                     <View className="flex-1 items-center">
-                      <AppText className="p-2 text-sm text-gray-400">
+                      <AppTextNC className="p-2 text-sm text-gray-400">
                         {t("gym.session.reps")}
-                      </AppText>
+                      </AppTextNC>
                     </View>
                     <View className="flex-1 items-center">
-                      <AppText className="p-2 text-sm text-gray-400">
+                      <AppTextNC className="p-2 text-sm text-gray-400">
                         {t("gym.session.rpe")}
-                      </AppText>
+                      </AppTextNC>
                     </View>
                     <View className="w-8" />
                   </View>
@@ -430,7 +439,7 @@ function PhaseDisplayCard({
       colors={["#065f46", "#0f172a", "#0f172a"]}
       start={{ x: 1, y: 0 }}
       end={{ x: 0, y: 1 }}
-      className="mt-5 rounded-md overflow-hidden border-[1.5px] border-emerald-600 p-4"
+      className="mt-5 rounded-md overflow-hidden border-[1.5px] border-emerald-700 p-4"
     >
       <AppText className="text-lg mb-2">
         {phaseLabel}: {translatedName}
@@ -438,29 +447,29 @@ function PhaseDisplayCard({
       <View className="w-full">
         <View className="border-b border-emerald-700 flex-row">
           <View className="flex-1 items-center">
-            <AppText className="p-2 text-sm text-gray-400">
+            <AppTextNC className="p-2 text-sm text-gray-400">
               {t("gym.phase.time")}
-            </AppText>
+            </AppTextNC>
           </View>
           {steps != null && steps > 0 && (
             <View className="flex-1 items-center">
-              <AppText className="p-2 text-sm text-gray-400">
+              <AppTextNC className="p-2 text-sm text-gray-400">
                 {t("gym.phase.stepsLabel")}
-              </AppText>
+              </AppTextNC>
             </View>
           )}
           {distanceMeters != null && distanceMeters > 0 && (
             <View className="flex-1 items-center">
-              <AppText className="p-2 text-sm text-gray-400">
+              <AppTextNC className="p-2 text-sm text-gray-400">
                 {t("gym.phase.distance")}
-              </AppText>
+              </AppTextNC>
             </View>
           )}
           {calories != null && calories > 0 && (
             <View className="flex-1 items-center">
-              <AppText className="p-2 text-sm text-gray-400">
+              <AppTextNC className="p-2 text-sm text-gray-400">
                 {t("gym.session.calories")}
-              </AppText>
+              </AppTextNC>
             </View>
           )}
         </View>

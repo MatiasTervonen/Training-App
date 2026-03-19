@@ -15,13 +15,13 @@ import useSetNotification from "@/features/reminders/hooks/edit-reminder/useSetN
 import { canUseExactAlarm } from "@/native/android/EnsureExactAlarmPermission";
 import Toggle from "@/components/toggle";
 import { useTranslation } from "react-i18next";
-import AppTextNC from "@/components/AppTextNC";
 import BodyText from "@/components/BodyText";
 import { useAutoSave } from "@/hooks/useAutoSave";
 import { editLocalReminder } from "@/database/reminders/edit-local-reminder";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Notifications from "expo-notifications";
 import { useQueryClient } from "@tanstack/react-query";
+import BodyTextNC from "@/components/BodyTextNC";
 
 type Props = {
   reminder: FeedItemUI;
@@ -218,16 +218,15 @@ export default function HandleEditLocalReminder({
               label={t("reminders.notesLabel")}
             />
             <View>
-              <AppTextNC className="mt-5 mb-1 text-slate-300">
+              <AppText className="mt-5 mb-1 text-slate-300">
                 {t("reminders.notifyTime")}
-              </AppTextNC>
+              </AppText>
               <AnimatedButton
                 label={
                   notifyAt ? formattedNotifyAt : t("reminders.setNotifyTime")
                 }
                 onPress={() => setOpen(true)}
                 className="btn-base flex-row gap-2 justify-center items-center"
-                textClassName="text-gray-100"
               >
                 <Plus color="#f3f4f6" />
               </AnimatedButton>
@@ -258,7 +257,7 @@ export default function HandleEditLocalReminder({
             {payload.type === "weekly" && (
               <View className="mt-5">
                 <View className="flex-row gap-6">
-                  <BodyText>
+                  <BodyText >
                     {t("reminders.repeatOnDays")}
                   </BodyText>
                 </View>
@@ -282,7 +281,7 @@ export default function HandleEditLocalReminder({
                             }
                           }}
                         />
-                        <BodyText className="mt-2">{day}</BodyText>
+                        <BodyText className="text-gray-200 mt-2">{day}</BodyText>
                       </View>
                     );
                   })}
@@ -292,9 +291,9 @@ export default function HandleEditLocalReminder({
             <View className="flex-row items-center justify-between px-4 mt-10">
               <View>
                 <BodyText>{t("reminders.enableHighPriority")}</BodyText>
-                <BodyText className="text-gray-400 text-sm">
+                <BodyTextNC className="text-gray-400 text-sm">
                   {t("reminders.highPriorityDescription")}
-                </BodyText>
+                </BodyTextNC>
               </View>
               <Toggle
                 isOn={mode === "alarm"}

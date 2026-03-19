@@ -42,6 +42,7 @@ export default function AddExercises() {
       await addExercise(exerciseData);
 
       queryClient.invalidateQueries({ queryKey: ["userExercises"], exact: true });
+      queryClient.invalidateQueries({ queryKey: ["exercises"] });
       Toast.show({
         type: "success",
         text1: t("gym.addExerciseScreen.saveSuccess"),

@@ -1,6 +1,6 @@
 import { View } from "react-native";
-import AppText from "@/components/AppText";
 import { AlertTriangle } from "lucide-react-native";
+import BodyTextNC from "./BodyTextNC";
 
 type Props = {
   message: string;
@@ -11,7 +11,7 @@ export default function ErrorMessage({ message, fullPage }: Props) {
   const box = (
     <View className="bg-red-500/10 border border-red-500/30 rounded-lg px-4 py-3 flex-row items-center gap-3">
       <AlertTriangle size={18} color="#ef4444" />
-      <AppText className="text-sm text-red-400 flex-1">{message}</AppText>
+      <BodyTextNC className="text-sm text-red-400 flex-1">{message}</BodyTextNC>
     </View>
   );
 

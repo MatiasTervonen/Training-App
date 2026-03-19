@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { View } from "react-native";
-import AppText from "@/components/AppText";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import ReportShareCard from "@/features/reports/components/ReportShareCard";
 import { useTranslation } from "react-i18next";
@@ -8,6 +7,7 @@ import * as Haptics from "expo-haptics";
 import { ReportFeature, ReportData } from "@/types/report";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
 import ShareModalShell from "@/lib/components/share/ShareModalShell";
+import AppTextNC from "@/components/AppTextNC";
 
 type ReportShareModalProps = {
   visible: boolean;
@@ -100,9 +100,9 @@ export default function ReportShareModal({
       middleContent={() =>
         availableFeatures.length > 1 ? (
           <View className="w-full mt-4">
-            <AppText className="text-sm text-gray-400 mb-2">
+            <AppTextNC className="text-sm text-gray-400 mb-2">
               {t("reports.share.showOnCard")}
-            </AppText>
+            </AppTextNC>
             <View className="flex-row flex-wrap gap-2">
               {availableFeatures.map((feature) => {
                 const isSelected = selectedFeatures.has(feature);
@@ -116,11 +116,11 @@ export default function ReportShareModal({
                         : "bg-transparent border-gray-500"
                     }`}
                   >
-                    <AppText
+                    <AppTextNC
                       className={`text-sm ${isSelected ? "text-gray-100" : "text-gray-400"}`}
                     >
                       {t(`reports.features.${feature}`)}
-                    </AppText>
+                    </AppTextNC>
                   </AnimatedButton>
                 );
               })}

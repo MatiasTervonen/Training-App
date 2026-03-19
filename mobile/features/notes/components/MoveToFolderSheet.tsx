@@ -1,5 +1,7 @@
-import { View, Pressable, ScrollView } from "react-native";
+import { View, Pressable, ScrollView, NativeSyntheticEvent, NativeScrollEvent } from "react-native";
+import { useFullScreenModalScroll } from "@/components/FullScreenModal";
 import AppText from "@/components/AppText";
+import BodyText from "@/components/BodyText";
 import { Check, FolderOpen, X } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import FullScreenModal from "@/components/FullScreenModal";
@@ -21,8 +23,33 @@ export default function MoveToFolderSheet({
   currentFolderId,
   folders,
 }: MoveToFolderSheetProps) {
+  return (
+    <FullScreenModal isOpen={isOpen} onClose={onClose} scrollable={false}>
+      <MoveToFolderContent
+        noteId={noteId}
+        currentFolderId={currentFolderId}
+        folders={folders}
+        onClose={onClose}
+      />
+    </FullScreenModal>
+  );
+}
+
+function MoveToFolderContent({
+  noteId,
+  currentFolderId,
+  folders,
+  onClose,
+}: Omit<MoveToFolderSheetProps, "isOpen">) {
   const { t } = useTranslation("notes");
   const { handleMove } = useMoveNoteToFolder();
+  const modalScroll = useFullScreenModalScroll();
+
+  const handleScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+    if (modalScroll) {
+      modalScroll.innerScrollY.value = e.nativeEvent.contentOffset.y;
+    }
+  };
 
   const onSelect = async (folderId: string | null, folderName?: string) => {
     if (folderId === currentFolderId) {
@@ -34,13 +61,12 @@ export default function MoveToFolderSheet({
   };
 
   return (
-    <FullScreenModal isOpen={isOpen} onClose={onClose} scrollable={false}>
       <View className="flex-1 px-5 pt-10">
         <AppText className="text-xl text-center mb-6">
           {t("notes.folders.moveToFolder")}
         </AppText>
 
-        <ScrollView showsVerticalScrollIndicator={false}>
+        <ScrollView showsVerticalScrollIndicator={false} onScroll={handleScroll} scrollEventThrottle={16}>
           {currentFolderId && (
             <Pressable
               onPress={() => onSelect(null)}
@@ -48,9 +74,9 @@ export default function MoveToFolderSheet({
             >
               <View className="flex-row items-center gap-3">
                 <X size={18} color="#ef4444" />
-                <AppText className="text-red-400">
+                <BodyText className="text-red-400">
                   {t("notes.folders.removeFromFolder")}
-                </AppText>
+                </BodyText>
               </View>
             </Pressable>
           )}
@@ -67,7 +93,7 @@ export default function MoveToFolderSheet({
               >
                 <View className="flex-row items-center gap-3">
                   <FolderOpen size={18} color="#94a3b8" />
-                  <AppText className="text-slate-200">{folder.name}</AppText>
+                  <BodyText className="text-slate-200">{folder.name}</BodyText>
                 </View>
                 {isCurrentFolder && <Check size={18} color="#3b82f6" />}
               </Pressable>
@@ -75,12 +101,11 @@ export default function MoveToFolderSheet({
           })}
 
           {folders.length === 0 && (
-            <AppText className="text-center text-lg mt-10 text-slate-400">
+            <BodyText className="text-center text-lg mt-10 text-slate-400">
               {t("notes.folders.noFolders")}
-            </AppText>
+            </BodyText>
           )}
         </ScrollView>
       </View>
-    </FullScreenModal>
   );
 }

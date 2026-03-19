@@ -6,6 +6,7 @@ import { PieChart } from "echarts/charts";
 import { LegendComponent } from "echarts/components";
 import { SkiaRenderer, SkiaChart } from "@wuba/react-native-echarts";
 import { useTranslation } from "react-i18next";
+import BodyTextNC from "@/components/BodyTextNC";
 
 type ActivityBreakdownChartProps = {
   data: {
@@ -162,9 +163,9 @@ export default function ActivityBreakdownChart({
   if (totalSessions === 0) {
     return (
       <View className="bg-slate-900 rounded-2xl p-4 items-center justify-center min-h-[360.8px]">
-        <AppText className="text-gray-400">
+        <BodyTextNC className="text-gray-400">
           {t("activities.analyticsScreen.noActivitiesInPeriod")}
-        </AppText>
+        </BodyTextNC>
       </View>
     );
   }
@@ -174,12 +175,12 @@ export default function ActivityBreakdownChart({
       <AppText className="text-lg font-medium text-center mb-2">
         {t("activities.analyticsScreen.activityBreakdown")}
       </AppText>
-      <AppText className="text-gray-400 text-center text-sm mb-1">
+      <BodyTextNC className="text-gray-400 text-center text-sm mb-1">
         {totalSessions}{" "}
         {totalSessions === 1
           ? t("activities.analyticsScreen.session")
           : t("activities.analyticsScreen.sessions")}
-      </AppText>
+      </BodyTextNC>
 
       <View
         style={{

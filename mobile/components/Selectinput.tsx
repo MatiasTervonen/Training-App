@@ -68,11 +68,19 @@ export default function SelectInput({
         >
           <View
             onStartShouldSetResponder={() => true}
-            style={{ maxHeight: "75%", width: screenWidth * 0.85 }}
-            className="border-2 border-slate-300 rounded-xl bg-slate-900 py-5 justify-center"
+            style={{
+              maxHeight: "75%",
+              width: screenWidth * 0.85,
+              shadowColor: "#3b82f6",
+              shadowOffset: { width: 0, height: 0 },
+              shadowOpacity: 0.4,
+              shadowRadius: 20,
+              elevation: 20,
+            }}
+            className="border-[1.5px] border-slate-600 rounded-xl bg-slate-900 py-5 justify-center"
           >
             {label && (
-              <AppText className="mb-6 text-center text-xl px-4">
+              <AppText className="mb-6 text-center text-lg px-4">
                 {label}
               </AppText>
             )}
@@ -86,7 +94,7 @@ export default function SelectInput({
                   }}
                   className={`flex-row items-center border p-2 my-2 rounded-xl mx-6 px-4 ${option.value === value ? "bg-blue-900/40 border-blue-500" : "bg-slate-800 border-slate-700"}`}
                 >
-                  <AppText className="text-xl flex-1">{option.label}</AppText>
+                  <AppText className="flex-1 text-center">{option.label}</AppText>
                   {option.value === value && (
                     <View className="ml-auto">
                       <View className="w-6 h-6 rounded-full bg-blue-500 items-center justify-center">

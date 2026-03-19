@@ -1,11 +1,15 @@
 import { useEffect, useMemo } from "react";
 import { useHabits } from "@/features/habits/hooks/useHabits";
-import { setStepGoals } from "@/native/android/NativeStepCounter";
+import {
+  setStepGoals,
+  setStepNotificationText,
+} from "@/native/android/NativeStepCounter";
 import { useTranslation } from "react-i18next";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export function useStepGoalSync() {
   const { t } = useTranslation("habits");
+  const { t: tActivities } = useTranslation("activities");
   const { data: habits = [] } = useHabits();
 
   const stepGoals = useMemo(
@@ -23,10 +27,15 @@ export function useStepGoalSync() {
       t("stepGoalBody", { steps: "{{steps}}" }),
     );
 
+    // Sync translated notification text for the persistent step tracking notification
+    setStepNotificationText(
+      tActivities("activities.stepNotificationText", { steps: "{{steps}}" }),
+    );
+
     // Also store in AsyncStorage for widget to read
     AsyncStorage.setItem(
       "step_habit_targets",
       JSON.stringify(stepGoals.map((g) => g.target)),
     );
-  }, [stepGoals, t]);
+  }, [stepGoals, t, tActivities]);
 }

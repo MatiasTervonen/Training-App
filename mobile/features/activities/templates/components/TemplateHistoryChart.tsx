@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { View, ScrollView } from "react-native";
 import AppText from "@/components/AppText";
-import AppTextNC from "@/components/AppTextNC";
+import BodyText from "@/components/BodyText";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import { ChevronLeft, ChevronRight } from "lucide-react-native";
 import * as echarts from "echarts/core";
@@ -15,6 +15,7 @@ import {
 import { formatAveragePace, formatDurationLong } from "@/lib/formatDate";
 import { useUserStore } from "@/lib/stores/useUserStore";
 import { useTranslation } from "react-i18next";
+import BodyTextNC from "@/components/BodyTextNC";
 
 type RangeType = "1m" | "3m" | "6m" | "1y";
 
@@ -302,13 +303,13 @@ export default function TemplateHistoryChart({
               }`}
               hitSlop={10}
             >
-              <AppTextNC
+              <AppText
                 className={`text-center font-medium ${
                   metric === opt.key ? "text-cyan-400" : "text-gray-200"
                 }`}
               >
                 {opt.label}
-              </AppTextNC>
+              </AppText>
             </AnimatedButton>
           ))}
         </View>
@@ -326,13 +327,13 @@ export default function TemplateHistoryChart({
               }`}
               hitSlop={20}
             >
-              <AppTextNC
+              <AppText
                 className={`text-center font-medium ${
                   range === opt.key ? "text-cyan-400" : "text-gray-200"
                 }`}
               >
                 {opt.label}
-              </AppTextNC>
+              </AppText>
             </AnimatedButton>
           ))}
         </View>
@@ -350,9 +351,9 @@ export default function TemplateHistoryChart({
           >
             <ChevronLeft size={20} color={canGoBack ? "#22d3ee" : "#f3f4f6"} />
           </AnimatedButton>
-          <AppText className="text-center text-sm min-w-[200px]">
+          <BodyText className="text-center text-sm min-w-[200px]">
             {formatDateRange(rangeStart, rangeEnd)}
-          </AppText>
+          </BodyText>
           <AnimatedButton
             onPress={() => setOffset((prev) => Math.max(0, prev - 1))}
             className="ml-3 bg-slate-800 p-1 rounded"
@@ -383,9 +384,9 @@ export default function TemplateHistoryChart({
             style={{ width: "100%", minHeight: 250 }}
             className="justify-center items-center"
           >
-            <AppText className="text-center text-gray-400 text-sm">
+            <BodyTextNC className="text-center text-gray-400 text-sm">
               {t("activities.templateHistory.noChartData")}
-            </AppText>
+            </BodyTextNC>
           </View>
         )}
       </View>

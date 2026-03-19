@@ -8,6 +8,7 @@ import { Dumbbell, Activity, Mic, ImageIcon, Video } from "lucide-react-native";
 import { formatMeters, formatDuration } from "@/lib/formatDate";
 import { useTranslation } from "react-i18next";
 import { LinearGradient } from "expo-linear-gradient";
+import BodyTextNC from "@/components/BodyTextNC";
 
 type Props = {
   item: SocialFeedItem;
@@ -36,21 +37,21 @@ function GymStats({ item }: { item: SocialFeedItem }) {
         {payload.exercises_count > 0 && (
           <View className="items-center">
             <BodyText className="text-lg">{payload.exercises_count}</BodyText>
-            <BodyText className="text-xs text-slate-400">{t("feed.card.exercises")}</BodyText>
+            <BodyTextNC className="text-xs text-slate-400">{t("feed.card.exercises")}</BodyTextNC>
           </View>
         )}
         {payload.sets_count > 0 && (
           <View className="items-center">
             <BodyText className="text-lg">{payload.sets_count}</BodyText>
-            <BodyText className="text-xs text-slate-400">{t("feed.card.sets")}</BodyText>
+            <BodyTextNC className="text-xs text-slate-400">{t("feed.card.sets")}</BodyTextNC>
           </View>
         )}
         {payload.duration > 0 && (
           <View className="items-center">
-            <BodyText className="text-lg">
+            <BodyText className="text-gray-200 text-lg">
               {Math.floor(payload.duration / 60)}
             </BodyText>
-            <BodyText className="text-xs text-slate-400">{t("feed.card.min")}</BodyText>
+            <BodyTextNC className="text-xs text-slate-400">{t("feed.card.min")}</BodyTextNC>
           </View>
         )}
       </View>
@@ -92,13 +93,13 @@ function ActivityStats({ item }: { item: SocialFeedItem }) {
       <View className="flex-row items-center gap-5">
         {payload.distance > 0 && (
           <View className="items-center">
-            <BodyText className="text-lg">{formatMeters(payload.distance)}</BodyText>
-            <BodyText className="text-xs text-slate-400">{t("activities.sessionStats.distance")}</BodyText>
+            <BodyText className=" text-lg">{formatMeters(payload.distance)}</BodyText>
+            <BodyTextNC className="text-xs text-slate-400">{t("activities.sessionStats.distance")}</BodyTextNC>
           </View>
         )}
         <View className="items-center">
           <BodyText className="text-lg">{formatDuration(payload.duration)}</BodyText>
-          <BodyText className="text-xs text-slate-400">{t("activities.sessionStats.duration")}</BodyText>
+          <BodyTextNC className="text-xs text-slate-400">{t("activities.sessionStats.duration")}</BodyTextNC>
         </View>
       </View>
     </View>

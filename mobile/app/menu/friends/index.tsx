@@ -1,10 +1,4 @@
-import {
-  View,
-  Keyboard,
-  ScrollView,
-  ActivityIndicator,
-  Pressable,
-} from "react-native";
+import { View, ScrollView, ActivityIndicator } from "react-native";
 import AppText from "@/components/AppText";
 import FriendRequestForm from "@/features/friends/FriendRequestForm";
 import FriendCard from "@/features/friends/FriendCard";
@@ -17,6 +11,8 @@ import { useTranslation } from "react-i18next";
 import Toast from "react-native-toast-message";
 import { handleError } from "@/utils/handleError";
 import { Users } from "lucide-react-native";
+import PageContainer from "@/components/PageContainer";
+import AppTextNC from "@/components/AppTextNC";
 
 export default function FriendsScreen() {
   const { t } = useTranslation("friends");
@@ -68,12 +64,12 @@ export default function FriendsScreen() {
   const isLoading = friendsLoading || requestsLoading;
 
   return (
-    <Pressable onPress={Keyboard.dismiss} className="flex-1">
-      <ScrollView
-        className="flex-1 w-full px-5 pt-5 pb-10"
-        contentContainerClassName="max-w-md mx-auto w-full grow"
-        keyboardShouldPersistTaps="handled"
-      >
+    <ScrollView
+      className="flex-1"
+      contentContainerClassName=" grow"
+      keyboardShouldPersistTaps="handled"
+    >
+      <PageContainer>
         <AppText className="text-2xl text-center mb-10">
           {t("friends.title")}
         </AppText>
@@ -85,7 +81,7 @@ export default function FriendsScreen() {
         ) : (
           <>
             {requests && requests.length > 0 && (
-              <View className="mt-5 px-4 rounded-md shadow-md bg-slate-950 border-slate-700 border-2 mb-5">
+              <View className="mt-5 rounded-md shadow-md bg-slate-950 border-slate-800 border-[1.5px] mb-5">
                 <View className="items-center justify-center mt-5 mb-5">
                   <AppText className="text-lg">
                     {t("friends.pendingRequests")}
@@ -104,14 +100,12 @@ export default function FriendsScreen() {
                         className="btn-base flex-1 py-1.5 px-8"
                         label={t("friends.accept")}
                         onPress={() => handleAccept(request.sender_id)}
-                        textClassName="text-gray-100 text-center"
                         disabled={acceptRequest.isPending}
                       />
                       <AnimatedButton
                         className="btn-danger flex-1 py-1.5 px-8"
                         label={t("friends.reject")}
                         onPress={() => handleReject(request.id)}
-                        textClassName="text-gray-100 text-center"
                         disabled={rejectRequest.isPending}
                       />
                     </View>
@@ -121,9 +115,9 @@ export default function FriendsScreen() {
               </View>
             )}
 
-            <View className="mt-5 px-2 rounded-md shadow-md bg-slate-950 border-slate-700 border-2 flex-1">
+            <View className="mt-5 px-2 rounded-md shadow-md bg-slate-950 border-slate-800 border-[1.5px] flex-1">
               <View className="items-center justify-center mt-5 mb-10">
-                <AppText className="text-2xl">{t("friends.myFriends")}</AppText>
+                <AppText className="text-xl">{t("friends.myFriends")}</AppText>
               </View>
               {friends && friends.length > 0 ? (
                 friends.map((friend) => (
@@ -137,19 +131,19 @@ export default function FriendsScreen() {
                     <View className="w-20 h-20 rounded-full bg-slate-800 border border-slate-700 items-center justify-center mb-5">
                       <Users size={36} color="#94a3b8" />
                     </View>
-                    <AppText className="text-xl text-center mb-3">
+                    <AppText className="text-lg text-center mb-3">
                       {t("friends.noFriends")}
                     </AppText>
-                    <AppText className="text-sm text-gray-400 text-center leading-5">
+                    <AppTextNC className="text-sm text-gray-400 text-center leading-5">
                       {t("friends.noFriendsDesc")}
-                    </AppText>
+                    </AppTextNC>
                   </View>
                 </View>
               )}
             </View>
           </>
         )}
-      </ScrollView>
-    </Pressable>
+      </PageContainer>
+    </ScrollView>
   );
 }

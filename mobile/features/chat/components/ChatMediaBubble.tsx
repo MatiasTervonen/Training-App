@@ -11,6 +11,7 @@ import { supabase } from "@/lib/supabase";
 import { formatDurationNotesVoice } from "@/lib/formatDate";
 import { ChatMessage } from "@/types/chat";
 import { localMediaUriCache } from "@/features/chat/hooks/useSendMediaMessage";
+import BodyTextNC from "@/components/BodyTextNC";
 
 // Module-level cache for signed URLs so they survive cell recycling in FlatList.
 // Keys are storage paths, values are signed URLs (valid for 1 hour).
@@ -192,7 +193,7 @@ function ChatMediaBubble({ message, isOwn }: ChatMediaBubbleProps) {
             )}
             {message.media_duration_ms != null && (
               <View className="absolute bottom-2 left-2 bg-black/60 rounded px-1.5 py-0.5">
-                <BodyText className="text-xs text-white">
+                <BodyText className="text-xs">
                   {formatDurationNotesVoice(message.media_duration_ms)}
                 </BodyText>
               </View>
@@ -217,7 +218,7 @@ function ChatMediaBubble({ message, isOwn }: ChatMediaBubbleProps) {
       return (
         <AnimatedButton onPress={handleRetry}>
           <View className="w-[200px] h-8 items-center justify-center">
-            <BodyText className="text-xs text-slate-400">Tap to retry</BodyText>
+            <BodyTextNC className="text-xs text-slate-400">Tap to retry</BodyTextNC>
           </View>
         </AnimatedButton>
       );

@@ -207,6 +207,8 @@ export default function useSaveActivitySession({
         averageSpeed: stats?.avg_speed ?? null,
         steps: stats?.steps ?? null,
         calories: stats?.calories ?? null,
+        isStepRelevant: fullSession.activity?.is_step_relevant ?? true,
+        isCaloriesRelevant: fullSession.activity?.is_calories_relevant ?? true,
         sessionId,
       });
 

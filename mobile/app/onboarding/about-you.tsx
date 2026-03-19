@@ -84,7 +84,7 @@ export default function AboutYouScreen() {
           <AppText className="text-2xl text-center mb-2">
             {t("aboutYou.title")}
           </AppText>
-          <BodyText className="text-center text-base mb-6">
+          <BodyText className="text-center mb-6">
             {t("aboutYou.description")}
           </BodyText>
         </View>

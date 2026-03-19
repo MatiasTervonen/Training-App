@@ -1,5 +1,3 @@
-import AppText from "@/components/AppText";
-import BodyText from "@/components/BodyText";
 import { View, Dimensions } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { SquareArrowLeft, SquareArrowRight } from "lucide-react-native";
@@ -17,6 +15,7 @@ import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { useTransitionDirectionStore } from "@/lib/stores/transitionDirection";
 import { useModalPageConfig } from "@/lib/stores/modalPageConfig";
 import { scheduleOnRN } from "react-native-worklets";
+import BodyTextNC from "./BodyTextNC";
 
 type Props = {
   children: ReactNode;
@@ -157,9 +156,9 @@ export default function ModalPageWrapper({
                   .toUpperCase()
                   .split("")
                   .map((letter, index) => (
-                    <BodyText className="text-center text-base text-gray-400" key={index}>
+                    <BodyTextNC className="text-center text-gray-400" key={index}>
                       {letter}
-                    </BodyText>
+                    </BodyTextNC>
                   ))}
               </View>
               <SquareArrowLeft size={24} color={"#9ca3af"} />
@@ -175,9 +174,9 @@ export default function ModalPageWrapper({
                   .toUpperCase()
                   .split("")
                   .map((letter, index) => (
-                    <BodyText className="text-center text-base text-gray-400" key={index}>
+                    <BodyTextNC className="text-center text-gray-400" key={index}>
                       {letter}
-                    </BodyText>
+                    </BodyTextNC>
                   ))}
               </View>
               <SquareArrowRight size={24} color={"#9ca3af"} />

@@ -1,12 +1,12 @@
 import { View, ActivityIndicator } from "react-native";
 import AppText from "@/components/AppText";
 import ErrorMessage from "@/components/ErrorMessage";
-import AppTextNC from "@/components/AppTextNC";
 import { weight } from "@/types/session";
 import WeightChart from "@/features/weight/WeightChart";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import { Share2 } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
+import AppTextNC from "@/components/AppTextNC";
 
 type RangeType = "week" | "month" | "year";
 
@@ -39,7 +39,7 @@ export default function HeaderAllDataTable({
 
   return (
     <>
-      <View className="flex-row items-center gap-2 mb-5 mx-4 mt-5">
+      <View className="flex-row items-center gap-2 mb-2 mx-4 mt-2">
         <View className="flex-row flex-1 bg-slate-800 rounded-lg p-1">
           {ranges.map((option) => (
             <AnimatedButton

@@ -1,14 +1,17 @@
 import { formatDate } from "@/lib/formatDate";
-import { View, ScrollView } from "react-native";
+import {
+  View,
+  ScrollView,
+  NativeSyntheticEvent,
+  NativeScrollEvent,
+} from "react-native";
+import FullScreenModal, {
+  useFullScreenModalScroll,
+} from "@/components/FullScreenModal";
 import AppText from "@/components/AppText";
 import BodyText from "@/components/BodyText";
 import AnimatedButton from "@/components/buttons/animatedButton";
-import {
-  Check,
-  SquareArrowOutUpRight,
-  ArrowDownUp,
-} from "lucide-react-native";
-import FullScreenModal from "@/components/FullScreenModal";
+import { Check, SquareArrowOutUpRight, ArrowDownUp } from "lucide-react-native";
 import { Checkbox } from "expo-checkbox";
 import { checkedTodo } from "@/database/todo/check-todo";
 import { full_todo_session, todo_tasks } from "@/types/models";
@@ -35,6 +38,25 @@ type TodoSessionProps = {
   taskMedia?: TodoTaskMedia;
 };
 
+function ModalScrollView({ children }: { children: React.ReactNode }) {
+  const modalScroll = useFullScreenModalScroll();
+  const handleScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+    if (modalScroll) {
+      modalScroll.innerScrollY.value = e.nativeEvent.contentOffset.y;
+    }
+  };
+  return (
+    <ScrollView
+      contentContainerStyle={{ flexGrow: 1 }}
+      showsVerticalScrollIndicator={false}
+      onScroll={handleScroll}
+      scrollEventThrottle={16}
+    >
+      {children}
+    </ScrollView>
+  );
+}
+
 export default function TodoSession({
   initialTodo,
   onSave,
@@ -42,6 +64,7 @@ export default function TodoSession({
   taskMedia,
 }: TodoSessionProps) {
   const { t } = useTranslation("todo");
+  const modalScroll = useFullScreenModalScroll();
   const [open, setOpen] = useState<number | null>(null);
   const [viewerIndex, setViewerIndex] = useState(-1);
   const [viewerTaskId, setViewerTaskId] = useState<string | null>(null);
@@ -163,6 +186,12 @@ export default function TodoSession({
         showsVerticalScrollIndicator={false}
         scrollEnabled={scrollEnabled}
         contentContainerStyle={{ flexGrow: 1 }}
+        onScroll={(e: NativeSyntheticEvent<NativeScrollEvent>) => {
+          if (modalScroll) {
+            modalScroll.innerScrollY.value = e.nativeEvent.contentOffset.y;
+          }
+        }}
+        scrollEventThrottle={16}
       >
         <View className="max-w-lg justify-between pt-5 pb-10 flex-1 px-4">
           <View className="items-center">
@@ -171,8 +200,7 @@ export default function TodoSession({
             </AppText>
             {sessionData.updated_at && (
               <AppText className="text-sm text-slate-400 mt-1 text-center">
-                {t("todo.session.updated")}{" "}
-                {formatDate(sessionData.updated_at)}
+                {t("todo.session.updated")} {formatDate(sessionData.updated_at)}
               </AppText>
             )}
             <View className="bg-slate-950 rounded-xl pb-5 w-full mt-5">
@@ -258,10 +286,7 @@ export default function TodoSession({
                               }}
                               isOpen={true}
                             >
-                              <ScrollView
-                                contentContainerStyle={{ flexGrow: 1 }}
-                                showsVerticalScrollIndicator={false}
-                              >
+                              <ModalScrollView>
                                 <PageContainer className="mb-10">
                                   <AppText className="text-sm text-gray-300 text-center">
                                     {t("todo.session.created")}{" "}
@@ -273,7 +298,7 @@ export default function TodoSession({
                                       {formatDate(task.updated_at)}
                                     </AppText>
                                   )}
-                                  <View className="relative items-center bg-slate-900 pt-5 pb-10 px-5 rounded-md shadow-md mt-5">
+                                  <View className="relative items-center bg-white/5 border border-white/10 pt-5 pb-10 px-5 rounded-md mt-5">
                                     <View className="absolute top-2 right-2 z-10">
                                       <CopyText
                                         textToCopy={
@@ -349,7 +374,7 @@ export default function TodoSession({
                                     )}
                                   </View>
                                 </PageContainer>
-                              </ScrollView>
+                              </ModalScrollView>
                               {viewerTaskId &&
                                 (taskMedia?.[viewerTaskId]?.images?.length ??
                                   0) > 0 &&

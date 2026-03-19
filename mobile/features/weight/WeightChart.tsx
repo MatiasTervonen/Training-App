@@ -2,7 +2,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react-native";
 import { useState, useEffect, useRef, useMemo } from "react";
 import { weight } from "@/types/session";
 import { View } from "react-native";
-import AppText from "@/components/AppText";
+import BodyText from "@/components/BodyText";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import { useUserStore } from "@/lib/stores/useUserStore";
 import * as echarts from "echarts/core";
@@ -294,7 +294,7 @@ export default function WeightChart({
       chart.dispose();
       chartRef.current = null;
     };
-  }, [size]);
+  }, [size, option]);
 
   // Update chart options when data changes
   useEffect(() => {
@@ -316,9 +316,9 @@ export default function WeightChart({
         >
           <ChevronLeft color={canGoBack ? "#22d3ee" : "#f3f4f6"} />
         </AnimatedButton>
-        <AppText className="min-w-[200px] text-center">
+        <BodyText className="text-gray-200 min-w-[200px] text-center">
           {formatDateRange(start, end)}
-        </AppText>
+        </BodyText>
         <AnimatedButton
           onPress={() => setOffset((prev) => Math.max(0, prev - 1))}
           className="ml-4 bg-slate-800 p-1 rounded"
@@ -329,9 +329,9 @@ export default function WeightChart({
           <ChevronRight color={offset === 0 ? "#f3f4f6" : "#22d3ee"} />
         </AnimatedButton>
       </View>
-      <AppText className="text-center mb-4 px-10">
+      <BodyText className="text-gray-200 text-center mb-4 px-10">
         {t(`weight.analyticsScreen.${range}`)}: {weightDifference} {weightUnit}
-      </AppText>
+      </BodyText>
       <View
         className="bg-slate-900 shadow-md"
         style={{

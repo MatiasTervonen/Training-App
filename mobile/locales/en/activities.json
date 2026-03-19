@@ -157,7 +157,12 @@
       "savingTemplate": "Saving template...",
       "recordings": "Recordings",
       "voiceLoadError": "Failed to load voice recordings.",
-      "mediaLoadError": "Failed to load media."
+      "mediaLoadError": "Failed to load media.",
+      "saveErrorTitle": "Error saving template",
+      "saveErrorName": "Please enter a template name",
+      "saveSuccessTitle": "Template saved",
+      "saveSuccessMessage": "Template has been saved successfully.",
+      "saveErrorMessage": "Please try again later."
     },
     "sessionStats": {
       "duration": "Duration",
@@ -364,6 +369,7 @@
       "history": "History",
       "updated": "updated:",
       "start": "start",
+      "details": "Details",
       "created": "Created:",
       "distance": "Distance:",
       "startActivity": "Start Activity",
@@ -394,6 +400,7 @@
       "range6m": "6M",
       "range1y": "1Y",
       "noChartData": "Not enough data points to show chart"
-    }
+    },
+    "stepNotificationText": "Tracking steps: {{steps}} today"
   }
 }

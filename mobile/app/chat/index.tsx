@@ -3,7 +3,6 @@ import { View, FlatList, ActivityIndicator } from "react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import AppText from "@/components/AppText";
-import BodyText from "@/components/BodyText";
 import FloatingActionButton from "@/components/buttons/FloatingActionButton";
 import PageContainer from "@/components/PageContainer";
 import ConversationItem from "@/features/chat/components/ConversationItem";
@@ -15,6 +14,7 @@ import { Conversation } from "@/types/chat";
 import { MessageSquarePlus } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import Toast from "react-native-toast-message";
+import BodyTextNC from "@/components/BodyTextNC";
 
 export default function ChatListScreen() {
   const { t } = useTranslation("chat");
@@ -102,9 +102,9 @@ export default function ChatListScreen() {
             <AppText className="text-lg text-slate-400 mb-2">
               {t("chat.noConversations")}
             </AppText>
-            <BodyText className="text-slate-500 text-center">
+            <BodyTextNC className="text-slate-500 text-center">
               {t("chat.startChat")}
-            </BodyText>
+            </BodyTextNC>
           </View>
         }
       />

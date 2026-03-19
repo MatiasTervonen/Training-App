@@ -137,7 +137,6 @@ export default function Timer({
             <AnimatedButton
               label={t("timer.notification.stopAlarm")}
               className="btn-danger"
-              textClassName="text-gray-100"
               onPress={() => {
                 Haptics.notificationAsync(
                   Haptics.NotificationFeedbackType.Success,
@@ -177,7 +176,6 @@ export default function Timer({
                     });
                   }}
                   className="btn-base flex-row gap-2 justify-center items-center"
-                  textClassName="text-gray-100"
                 >
                   <RotateCcw size={20} color="#f3f4f6" />
                 </AnimatedButton>
@@ -219,7 +217,6 @@ export default function Timer({
                       .snoozedTimer(newEndTimestamp, snoozeDuration);
                   }}
                   className="btn-neutral"
-                  textClassName="text-gray-100"
                 />
               </View>
             </>

@@ -1,5 +1,13 @@
 export type MessageType = "text" | "image" | "video" | "voice";
 
+export type LinkPreview = {
+  url: string;
+  title: string | null;
+  description: string | null;
+  image: string | null;
+  site_name: string | null;
+};
+
 export type Conversation = {
   conversation_id: string;
   is_group: boolean;
@@ -28,8 +36,10 @@ export type ChatMessage = {
   media_storage_path: string | null;
   media_thumbnail_path: string | null;
   media_duration_ms: number | null;
+  link_preview: LinkPreview | null;
   // Client-only fields for optimistic updates:
   _localMediaUri?: string;
   _localThumbnailUri?: string;
   _isUploading?: boolean;
+  _isFetchingPreview?: boolean;
 };

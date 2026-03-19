@@ -3,6 +3,7 @@ import AppText from "@/components/AppText";
 import PageContainer from "@/components/PageContainer";
 import { useTranslation } from "react-i18next";
 import { BookOpen } from "lucide-react-native";
+import BodyTextNC from "@/components/BodyTextNC";
 
 const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL;
 const TUTORIAL_IMAGE_BASE = `${SUPABASE_URL}/storage/v1/object/public/tutorial-images`;
@@ -58,9 +59,9 @@ export default function TutorialSession() {
           <AppText className="text-2xl text-center">
             {t("feed.tutorial.title")}
           </AppText>
-          <AppText className="text-gray-400 text-center mt-2">
+          <BodyTextNC className="text-gray-400 text-center mt-2">
             {t("feed.tutorial.subtitle")}
-          </AppText>
+          </BodyTextNC>
         </View>
 
         <View className="gap-6 pb-10">
@@ -78,9 +79,9 @@ export default function TutorialSession() {
                 <AppText className="text-lg mb-2">
                   {t(section.titleKey)}
                 </AppText>
-                <AppText className="text-sm text-gray-400 leading-5">
+                <BodyTextNC className="text-sm text-gray-400">
                   {t(section.descKey)}
-                </AppText>
+                </BodyTextNC>
               </View>
             </View>
           ))}

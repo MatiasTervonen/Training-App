@@ -1001,7 +1001,7 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
                   }`}
                 >
                   {group.length > 1 && (
-                    <AppText className="text-gray-100 text-lg text-center my-2">
+                    <AppText className="text-lg text-center my-2">
                       {t("gym.gymForm.superSet")}
                     </AppText>
                   )}
@@ -1293,7 +1293,6 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
                   label={t("gym.gymForm.editDeleteButtonLabel")}
                   onPress={() => router.push("/dashboard")}
                   className="btn-neutral py-3"
-                  textClassName="text-center text-gray-100"
                 />
               </View>
             ) : (

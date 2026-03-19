@@ -217,7 +217,7 @@ export default function ExerciseDropdown({
                     <View className="justify-between">
                       <View className="flex-row justify-between items-center">
                         <BodyText
-                          className="text-[17px] mb-1 mr-4 flex-1"
+                          className="text-gray-200 text-[17px] mb-1 mr-4 flex-1"
                           numberOfLines={1}
                           ellipsizeMode="tail"
                         >

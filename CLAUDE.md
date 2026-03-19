@@ -6,6 +6,8 @@ Before making any changes, always read the CLAUDE.md in the relevant app directo
 - `mobile/CLAUDE.md` — mobile-specific rules
 - `web/CLAUDE.md` — web-specific rules
 
+Developer docs: `web/app/content/docs/` — covers backend (edge functions, migrations, RPC, database), mobile, web, and tooling. Read the relevant doc before working on unfamiliar areas.
+
 ## Terminal Commands
 Every command run in the terminal must include a short explanation of what it does. This applies to all commands — git, npm, pnpm, supabase, or anything else.
 

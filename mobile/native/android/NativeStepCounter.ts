@@ -93,6 +93,12 @@ export function ensureStepSensor(): void {
   }
 }
 
+export function setStepNotificationText(text: string): void {
+  if (Platform.OS === "android" && nativeStepCounter) {
+    nativeStepCounter.setStepNotificationText(text);
+  }
+}
+
 export function setStepGoals(
   goals: { id: string; target: number }[],
   notifTitle: string,

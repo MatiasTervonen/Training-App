@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { View } from "react-native";
-import AppText from "@/components/AppText";
-import AppTextNC from "@/components/AppTextNC";
+import BodyText from "@/components/BodyText";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import { ChevronLeft, ChevronRight } from "lucide-react-native";
 import * as echarts from "echarts/core";
@@ -10,6 +9,7 @@ import { GridComponent } from "echarts/components";
 import { SkiaRenderer, SkiaChart } from "@wuba/react-native-echarts";
 import { HistoryResult } from "@/types/session";
 import { useTranslation } from "react-i18next";
+import AppTextNC from "@/components/AppTextNC";
 
 type RangeType = "1m" | "3m" | "6m" | "1y";
 
@@ -290,9 +290,9 @@ export default function ExerciseHistoryChart({
           >
             <ChevronLeft size={20} color={canGoBack ? "#22d3ee" : "#f3f4f6"} />
           </AnimatedButton>
-          <AppText className="text-center text-sm min-w-[200px]">
+          <BodyText className="text-gray-200 text-center text-sm min-w-[200px]">
             {formatDateRange(rangeStart, rangeEnd)}
-          </AppText>
+          </BodyText>
           <AnimatedButton
             onPress={() => setOffset((prev) => Math.max(0, prev - 1))}
             className="ml-3 bg-slate-800 p-1 rounded"
@@ -319,9 +319,9 @@ export default function ExerciseHistoryChart({
             <SkiaChart ref={skiaRef} />
           </View>
         ) : (
-          <AppText className="text-center text-gray-400 text-sm py-4">
+          <BodyText className="text-center text-gray-400 text-sm py-4">
             {t("gym.exerciseHistory.noChartData")}
-          </AppText>
+          </BodyText>
         )}
       </View>
     </View>

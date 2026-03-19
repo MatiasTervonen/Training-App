@@ -15,6 +15,8 @@ export type ActivitySessionSummary = {
   averageSpeed: number | null;
   steps: number | null;
   calories: number | null;
+  isStepRelevant?: boolean;
+  isCaloriesRelevant?: boolean;
   sessionId?: string;
 };
 

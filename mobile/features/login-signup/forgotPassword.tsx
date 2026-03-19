@@ -1,4 +1,4 @@
-import AppText from "@/components/AppText";
+import BodyText from "@/components/BodyText";
 import { useTranslation } from "react-i18next";
 
 export default function ForgotPasswordText({
@@ -10,12 +10,12 @@ export default function ForgotPasswordText({
 
   return (
     <>
-      <AppText
+      <BodyText
         className="text-center text-lg  mb-4 underline"
         onPress={onPress}
       >
         {t("login.forgotPassword.link")}
-      </AppText>
+      </BodyText>
     </>
   );
 }

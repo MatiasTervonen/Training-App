@@ -170,10 +170,10 @@ export default function AnalyticsForm({ data, heatmap }: AnalyticsFormProps) {
         </AppText>
         <View className="sm:flex items-center justify-center gap-10 ml-4">
           <View className="flex flex-col gap-5">
-            <BodyText className="text-lg text-slate-200">
+            <BodyText className="text-lg">
               {t("gym.analytics.totalWorkouts")}: {data.total_sessions}
             </BodyText>
-            <BodyText className="text-lg mb-5 text-slate-200">
+            <BodyText className="text-lg mb-5">
               {t("gym.analytics.averageDuration")}:{" "}
               {formatDuration(data.avg_duration)}
             </BodyText>
@@ -200,10 +200,10 @@ export default function AnalyticsForm({ data, heatmap }: AnalyticsFormProps) {
         </View>
       </View>
       <View className="mt-6 px-4 gap-4">
-        <BodyText className="text-slate-300 text-sm">
+        <BodyText className="text-sm">
           {t("gym.analytics.note")}
         </BodyText>
-        <BodyText className="text-slate-300 text-sm">
+        <BodyText className="text-sm">
           {t("gym.analytics.comingSoon")}
         </BodyText>
       </View>

@@ -7,7 +7,12 @@ import {
   formatDateShort,
   getDistanceUnitLabels,
 } from "@/lib/formatDate";
-import { ScrollView, View, NativeSyntheticEvent, NativeScrollEvent } from "react-native";
+import {
+  ScrollView,
+  View,
+  NativeSyntheticEvent,
+  NativeScrollEvent,
+} from "react-native";
 import { useFullScreenModalScroll } from "@/components/FullScreenModal";
 import AppText from "@/components/AppText";
 import PageContainer from "@/components/PageContainer";
@@ -50,7 +55,11 @@ export default function ActivityTemplateExpanded({
 
   return (
     <View className="flex-1">
-      <ScrollView showsVerticalScrollIndicator={false} onScroll={handleScroll} scrollEventThrottle={16}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        onScroll={handleScroll}
+        scrollEventThrottle={16}
+      >
         <PageContainer className="mb-10">
           <AppText className="text-sm text-gray-300 text-center">
             {t("activities.templatesScreen.created")}{" "}
@@ -152,6 +161,7 @@ export default function ActivityTemplateExpanded({
           onPress={onStartActivity}
           label={t("activities.templatesScreen.startActivity")}
           loading={isStartingActivity}
+          className="btn-save"
         />
       </View>
 

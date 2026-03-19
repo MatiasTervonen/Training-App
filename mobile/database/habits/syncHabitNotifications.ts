@@ -4,6 +4,7 @@ import * as Notifications from "expo-notifications";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Platform } from "react-native";
 import { HABIT_CATEGORY_ID } from "@/features/push-notifications/constants";
+import i18n from "@/app/i18n";
 
 const NOTIF_KEY_PREFIX = "habit-notif-";
 
@@ -58,7 +59,7 @@ export async function syncHabitNotifications() {
 
       const content: Notifications.NotificationContentInput = {
         title: habit.name,
-        body: "Time for your habit",
+        body: i18n.t("habits:reminderBody", { habitName: habit.name }),
         sound: true,
         data: { habitId: habit.id, type: "habit" },
         categoryIdentifier: HABIT_CATEGORY_ID,

@@ -3,7 +3,8 @@ import SubNotesInput from "@/components/SubNotesInput";
 import AppInput from "@/components/AppInput";
 import FullScreenLoader from "@/components/FullScreenLoader";
 import AppText from "@/components/AppText";
-import { View, ScrollView, Pressable, Keyboard } from "react-native";
+import { View, ScrollView, Pressable, Keyboard, NativeSyntheticEvent, NativeScrollEvent } from "react-native";
+import { useFullScreenModalScroll } from "@/components/FullScreenModal";
 import { editWeight } from "@/database/weight/edit-weight";
 import PageContainer from "@/components/PageContainer";
 import { FeedItemUI, DraftVideo } from "@/types/session";
@@ -80,6 +81,14 @@ export default function EditWeight({
   onDirtyChange,
 }: Props) {
   const { t } = useTranslation(["weight", "common"]);
+  const modalScroll = useFullScreenModalScroll();
+
+  const handleScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+    if (modalScroll) {
+      modalScroll.innerScrollY.value = e.nativeEvent.contentOffset.y;
+    }
+  };
+
   const payload = weight.extra_fields as weightPayload;
   const voiceCount = payload["voice-count"] ?? 0;
   const imageCount = payload["image-count"] ?? 0;
@@ -253,7 +262,7 @@ export default function EditWeight({
   return (
     <View className="flex-1">
       <AutoSaveIndicator status={status} />
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }} onScroll={handleScroll} scrollEventThrottle={16}>
         <Pressable onPress={Keyboard.dismiss} className="flex-1">
           <PageContainer className="mb-5">
             <AppText className="text-xl text-center mt-5 mb-10">

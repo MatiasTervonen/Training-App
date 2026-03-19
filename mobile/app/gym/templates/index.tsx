@@ -1,6 +1,6 @@
 import { useRouter } from "expo-router";
 import FullScreenModal from "@/components/FullScreenModal";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { ExerciseEntry } from "@/types/session";
 import Toast from "react-native-toast-message";
 import TemplateCard from "@/features/gym/cards/Template-feed";
@@ -20,6 +20,8 @@ import { full_gym_template } from "@/types/models";
 import { useTimerStore } from "@/lib/stores/timerStore";
 import { useTranslation } from "react-i18next";
 import { Dumbbell } from "lucide-react-native";
+import DraggableList from "@/components/DraggableList";
+import { reorderGymTemplates } from "@/database/gym/reorder-templates";
 
 type templateSummary = {
   id: string;
@@ -32,6 +34,7 @@ export default function TemplatesPage() {
   const [expandedItem, setExpandedItem] = useState<full_gym_template | null>(
     null,
   );
+  const [scrollEnabled, setScrollEnabled] = useState(true);
 
   const confirmAction = useConfirmAction();
 
@@ -175,6 +178,17 @@ export default function TemplatesPage() {
       });
     }
   };
+  const handleReorder = useCallback(
+    (reordered: templateSummary[]) => {
+      queryClient.setQueryData(["get-templates"], reordered);
+      const ids = reordered.map((t) => t.id);
+      reorderGymTemplates(ids).catch(() => {
+        queryClient.invalidateQueries({ queryKey: ["get-templates"] });
+      });
+    },
+    [queryClient],
+  );
+
   const templateId = expandedItem?.id;
 
   const {
@@ -191,6 +205,7 @@ export default function TemplatesPage() {
     <ScrollView
       showsVerticalScrollIndicator={false}
       keyboardShouldPersistTaps="handled"
+      scrollEnabled={scrollEnabled}
     >
       <PageContainer>
         <AppText className="text-center mb-10 text-2xl">
@@ -219,20 +234,30 @@ export default function TemplatesPage() {
           </View>
         )}
 
-        {templates &&
-          templates.map((template: templateSummary, index: number) => (
-            <View key={template.id} className="pb-5">
-              <TemplateCard
-                index={index}
-                item={template}
-                onDelete={() => handleDeleteTemplate(template.id)}
-                onExpand={() => setExpandedItem(template as full_gym_template)}
-                onEdit={() => {
-                  router.push(`/gym/templates/${template.id}`);
-                }}
-              />
-            </View>
-          ))}
+        {templates.length > 0 && (
+          <DraggableList
+            items={templates}
+            keyExtractor={(item) => item.id}
+            onReorder={handleReorder}
+            onDragStart={() => setScrollEnabled(false)}
+            onDragEnd={() => setScrollEnabled(true)}
+            renderItem={(template, index) => (
+              <View className="pb-5">
+                <TemplateCard
+                  index={index}
+                  item={template}
+                  onDelete={() => handleDeleteTemplate(template.id)}
+                  onExpand={() =>
+                    setExpandedItem(template as full_gym_template)
+                  }
+                  onEdit={() => {
+                    router.push(`/gym/templates/${template.id}`);
+                  }}
+                />
+              </View>
+            )}
+          />
+        )}
 
         {expandedItem && (
           <FullScreenModal isOpen={true} onClose={() => setExpandedItem(null)} scrollable={false}>

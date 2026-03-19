@@ -1,5 +1,6 @@
 import { formatDate } from "@/lib/formatDate";
-import { View, ScrollView } from "react-native";
+import { View, ScrollView, NativeSyntheticEvent, NativeScrollEvent } from "react-native";
+import { useFullScreenModalScroll } from "@/components/FullScreenModal";
 import AppText from "@/components/AppText";
 import ErrorMessage from "@/components/ErrorMessage";
 import CopyText from "@/components/CopyToClipboard";
@@ -39,6 +40,13 @@ export default function NotesSession({
 }: NotesSessionProps) {
   const { t } = useTranslation("notes");
   const [viewerIndex, setViewerIndex] = useState(-1);
+  const modalScroll = useFullScreenModalScroll();
+
+  const handleScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+    if (modalScroll) {
+      modalScroll.innerScrollY.value = e.nativeEvent.contentOffset.y;
+    }
+  };
   const payload = note.extra_fields as notesPayload;
   const voiceCount = payload["voice-count"] ?? 0;
   const imageCount = payload["image-count"] ?? 0;
@@ -48,7 +56,7 @@ export default function NotesSession({
   const videos = voiceRecordings?.videos ?? [];
 
   return (
-    <ScrollView showsVerticalScrollIndicator={false}>
+    <ScrollView showsVerticalScrollIndicator={false} onScroll={handleScroll} scrollEventThrottle={16}>
       <PageContainer className="mb-10">
         <AppText className="text-sm text-gray-300 text-center">
           {t("notes.expandedView.created")} {formatDate(note.created_at!)}
@@ -58,7 +66,7 @@ export default function NotesSession({
             {t("notes.expandedView.updated")} {formatDate(note.updated_at)}
           </AppText>
         )}
-        <View className="relative bg-slate-900 px-5 pt-5 pb-10 rounded-md shadow-md mt-5">
+        <View className="relative bg-white/5 border border-white/10 px-5 pt-5 pb-10 rounded-md mt-5">
           <View className="absolute top-2 right-2 z-10">
             <CopyText textToCopy={note.title + "\n\n" + stripHtml(payload.notes)} />
           </View>

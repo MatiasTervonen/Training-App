@@ -1,5 +1,6 @@
 import { FullActivitySession } from "@/types/models";
-import { View, ScrollView, Modal } from "react-native";
+import { View, ScrollView, Modal, NativeSyntheticEvent, NativeScrollEvent } from "react-native";
+import { useFullScreenModalScroll } from "@/components/FullScreenModal";
 import AppText from "@/components/AppText";
 import ErrorMessage from "@/components/ErrorMessage";
 import BodyText from "@/components/BodyText";
@@ -29,6 +30,7 @@ import { NotesVoiceSkeleton } from "@/components/skeletetons";
 import { useTemplateHistory } from "@/features/activities/templates/hooks/useTemplateHistory";
 import TemplateHistoryModal from "@/features/activities/templates/components/TemplateHistoryModal";
 import ShareWithFriendsButton from "@/features/social-feed/components/ShareWithFriendsToggle";
+import AppTextNC from "@/components/AppTextNC";
 
 type ActivitySessionProps = FullActivitySession & {
   voiceRecordings?: ActivityVoiceRecording[];
@@ -46,6 +48,13 @@ export default function ActivitySession(
   const { t } = useTranslation("activities");
   const [scrollEnabled, setScrollEnabled] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const modalScroll = useFullScreenModalScroll();
+
+  const handleScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+    if (modalScroll) {
+      modalScroll.innerScrollY.value = e.nativeEvent.contentOffset.y;
+    }
+  };
   const [templateName, setTemplateName] = useState("");
   const [templateNotes, setTemplateNotes] = useState("");
   const [isSaving, setIsSaving] = useState(false);
@@ -81,6 +90,8 @@ export default function ActivitySession(
       scrollEnabled={scrollEnabled}
       contentContainerStyle={{ flexGrow: 1 }}
       showsVerticalScrollIndicator={false}
+      onScroll={handleScroll}
+      scrollEventThrottle={16}
     >
       <PageContainer>
         <View className="flex-1 justify-between">
@@ -128,11 +139,11 @@ export default function ActivitySession(
                 )}
               </View>
 
-              <AppText className="text-sm text-gray-400" numberOfLines={1}>
+              <AppTextNC className="text-sm text-gray-400" numberOfLines={1}>
                 {formatDateShort(activity_session.session.start_time)} ·{" "}
                 {formatTime(activity_session.session.start_time)} –{" "}
                 {formatTime(activity_session.session.end_time)}
-              </AppText>
+              </AppTextNC>
               {activity_session.session.notes && (
                 <BodyText className="text-left mt-5">
                   {activity_session.session.notes}
@@ -232,13 +243,22 @@ export default function ActivitySession(
 
       <Modal visible={showModal} transparent animationType="slide">
         <View className="flex-1 justify-center items-center bg-black/50 px-5">
-          <View className="bg-slate-700 rounded-lg p-6 w-full border-2 border-gray-100">
+          <View
+            className="bg-slate-900 rounded-xl p-6 w-full border-[1.5px] border-slate-600"
+            style={{
+              shadowColor: "#3b82f6",
+              shadowOffset: { width: 0, height: 0 },
+              shadowOpacity: 0.4,
+              shadowRadius: 20,
+              elevation: 20,
+            }}
+          >
             <AppText className="text-xl mb-6 text-center">
               {t("activities.sessionDetails.saveAsTemplate")}
             </AppText>
-            <AppText className="text-lg mb-6 text-center">
+            <BodyText className="text-base mb-6 text-center">
               {t("activities.sessionDetails.saveAsTemplateDesc")}
-            </AppText>
+            </BodyText>
             <AppInput
               value={templateName}
               setValue={setTemplateName}
@@ -263,7 +283,6 @@ export default function ActivitySession(
                   onPress={() => setShowModal(false)}
                   label={t("activities.sessionDetails.cancel")}
                   className="btn-danger"
-                  textClassName="text-gray-100 text-center"
                 />
               </View>
               <View className="flex-1">

@@ -1,4 +1,3 @@
-import { View } from "react-native";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import AllDataTable from "@/features/weight/AllDataTable";

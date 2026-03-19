@@ -276,6 +276,17 @@ class StepCounterModule(private val reactContext: ReactApplicationContext)
         reactContext.startService(intent)
     }
 
+    @ReactMethod
+    fun setStepNotificationText(text: String) {
+        val prefs = reactContext.getSharedPreferences("step_counter_notif_prefs", Context.MODE_PRIVATE)
+        prefs.edit().putString("notification_text", text).apply()
+
+        // Tell the running service to refresh the notification
+        val intent = Intent(reactContext, StepTrackingService::class.java)
+        intent.action = "UPDATE_NOTIFICATION_TEXT"
+        reactContext.startService(intent)
+    }
+
     // --- Sensor Health Check ---
 
     @ReactMethod

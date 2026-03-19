@@ -8,6 +8,7 @@ import AnimatedButton from "@/components/buttons/animatedButton";
 import { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { LinearGradient } from "expo-linear-gradient";
+import BodyTextNC from "@/components/BodyTextNC";
 
 type BaseCardProps = {
   item: FeedCardProps["item"];
@@ -70,6 +71,7 @@ export default function BaseFeedCard({
     : getGradientColors(item.type);
 
   return (
+    <View className="shadow-sm shadow-black/50 elevation-2 rounded-md">
     <LinearGradient
       colors={gradientColors}
       start={{ x: 0, y: 0 }}
@@ -104,9 +106,9 @@ export default function BaseFeedCard({
       {/* Updated timestamp (optional) */}
       {showUpdatedAt && item.updated_at && (
         <View className="px-4 pb-1">
-          <AppText className="text-sm text-slate-400">
+          <BodyTextNC className="text-sm text-slate-400">
             {t("feed.card.updated")} {formatDate(item.updated_at)}
-          </AppText>
+          </BodyTextNC>
         </View>
       )}
 
@@ -135,5 +137,6 @@ export default function BaseFeedCard({
         </AnimatedButton>
       </View>
     </LinearGradient>
+    </View>
   );
 }

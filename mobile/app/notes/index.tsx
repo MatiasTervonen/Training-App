@@ -1,4 +1,5 @@
 import AppText from "@/components/AppText";
+import BodyText from "@/components/BodyText";
 import { View, FlatList, RefreshControl } from "react-native";
 import { useState, useMemo } from "react";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -25,6 +26,7 @@ import type { FolderFilter } from "@/database/notes/get-notes";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import FloatingActionButton from "@/components/buttons/FloatingActionButton";
 import { Plus, FolderCog, StickyNote } from "lucide-react-native";
+import BodyTextNC from "@/components/BodyTextNC";
 
 export default function NotesScreen() {
   const { t } = useTranslation("notes");
@@ -104,13 +106,11 @@ export default function NotesScreen() {
         {headerContent}
       </View>
       {isLoading ? (
-        <View className="pt-[50px]">
-          <FeedSkeleton count={5} />
-        </View>
+        <FeedSkeleton count={5} subFeed />
       ) : error ? (
-        <AppText className="text-center text-lg mt-10 mx-auto">
+        <BodyText className="text-center text-lg mt-10 mx-auto">
           {t("notes.failedToLoad")}
-        </AppText>
+        </BodyText>
       ) : !data || (unpinnedFeed.length === 0 && pinnedFeed.length === 0) ? (
         <View className="flex-1 items-center mt-[30%] px-8">
           <View className="items-center">
@@ -120,11 +120,11 @@ export default function NotesScreen() {
             <AppText className="text-xl text-center mb-3">
               {getEmptyMessage()}
             </AppText>
-            <AppText className="text-sm text-gray-400 text-center leading-5">
+            <BodyTextNC className="text-sm text-gray-400 text-center">
               {selectedFolderId
                 ? t("notes.folders.moveToFolder")
                 : t("notes.noNotesDesc")}
-            </AppText>
+            </BodyTextNC>
           </View>
         </View>
       ) : (

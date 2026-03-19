@@ -172,13 +172,11 @@ export default function FeedbackScreen() {
               onPress={handleDelete}
               className="flex-1 btn-danger py-3"
               label={t("common:common.delete")}
-              textClassName="text-center text-gray-100"
             />
             <AnimatedButton
               onPress={handleSubmit}
               className="flex-1 btn-base py-3"
               label={t("menu:feedback.send")}
-              textClassName="text-center text-gray-100"
             />
           </View>
         </PageContainer>

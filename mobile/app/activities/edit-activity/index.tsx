@@ -58,7 +58,14 @@ export default function EditActivity() {
   );
 
   const autoSaveData = useMemo(
-    () => ({ name, met, categoryId, isGpsRelevant, isStepRelevant, isCaloriesRelevant }),
+    () => ({
+      name,
+      met,
+      categoryId,
+      isGpsRelevant,
+      isStepRelevant,
+      isCaloriesRelevant,
+    }),
     [name, met, categoryId, isGpsRelevant, isStepRelevant, isCaloriesRelevant],
   );
 
@@ -90,8 +97,20 @@ export default function EditActivity() {
       is_calories_relevant: isCaloriesRelevant,
     });
 
-    queryClient.invalidateQueries({ queryKey: ["userActivities"], exact: true });
-  }, [name, met, categoryId, isGpsRelevant, isStepRelevant, isCaloriesRelevant, selectedActivity, queryClient]);
+    queryClient.invalidateQueries({
+      queryKey: ["userActivities"],
+      exact: true,
+    });
+  }, [
+    name,
+    met,
+    categoryId,
+    isGpsRelevant,
+    isStepRelevant,
+    isCaloriesRelevant,
+    selectedActivity,
+    queryClient,
+  ]);
 
   const { status } = useAutoSave({
     data: autoSaveData,
@@ -164,93 +183,124 @@ export default function EditActivity() {
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
               <PageContainer className="justify-between flex-1">
                 <View>
-                <AppText className="text-2xl mb-10 text-center">
-                  {t("activities.editActivityScreen.title")}
-                </AppText>
-                <View className="mb-5">
-                  <AppInput
-                    value={name}
-                    setValue={setName}
-                    placeholder={t("activities.editActivityScreen.activityNamePlaceholder")}
-                    label={t("activities.editActivityScreen.activityNameLabel")}
-                  />
-                </View>
-                <View className="mb-5">
-                  <AppInput
-                    value={met}
-                    setValue={(text) => {
-                      // Only allow numbers and decimal point
-                      if (/^\d*\.?\d{0,2}$/.test(text) || text === "") {
-                        const numValue = parseFloat(text);
+                  <AppText className="text-2xl mb-10 text-center">
+                    {t("activities.editActivityScreen.title")}
+                  </AppText>
+                  <View className="mb-5">
+                    <AppInput
+                      value={name}
+                      setValue={setName}
+                      placeholder={t(
+                        "activities.editActivityScreen.activityNamePlaceholder",
+                      )}
+                      label={t(
+                        "activities.editActivityScreen.activityNameLabel",
+                      )}
+                    />
+                  </View>
+                  <View className="mb-5">
+                    <AppInput
+                      value={met}
+                      setValue={(text) => {
+                        // Only allow numbers and decimal point
+                        if (/^\d*\.?\d{0,2}$/.test(text) || text === "") {
+                          const numValue = parseFloat(text);
 
-                        if (text === "" || (numValue >= 1 && numValue <= 20)) {
-                          setMet(text);
+                          if (
+                            text === "" ||
+                            (numValue >= 1 && numValue <= 20)
+                          ) {
+                            setMet(text);
+                          }
                         }
-                      }
-                    }}
-                    keyboardType="numeric"
-                    placeholder={t("activities.editActivityScreen.metPlaceholder")}
-                    label={t("activities.editActivityScreen.metLabel")}
+                      }}
+                      keyboardType="numeric"
+                      placeholder={t(
+                        "activities.editActivityScreen.metPlaceholder",
+                      )}
+                      label={t("activities.editActivityScreen.metLabel")}
+                    />
+                    <AppText className="text-gray-400 text-sm mt-1">
+                      {t("activities.editActivityScreen.metDescription")}
+                    </AppText>
+                  </View>
+                  <AnimatedButton
+                    onPress={() => setOpenCategoryModal(true)}
+                    label={
+                      category ||
+                      t("activities.editActivityScreen.selectCategory")
+                    }
+                    className="btn-add"
                   />
-                  <AppText className="text-gray-400 text-sm mt-1">
-                    {t("activities.editActivityScreen.metDescription")}
-                  </AppText>
+                  <FullScreenModal
+                    isOpen={openCategoryModal}
+                    onClose={() => setOpenCategoryModal(false)}
+                  >
+                    <CategoryDropdown
+                      onSelect={(category) => {
+                        setCategoryId(category.id);
+                        setCategory(
+                          getCategoryName(category.slug, category.name),
+                        );
+                        setOpenCategoryModal(false);
+                      }}
+                    />
+                  </FullScreenModal>
+                  <View className="mt-8">
+                    <AppText className="text-lg mb-4">
+                      {t("activities.editActivityScreen.trackingOptions")}
+                    </AppText>
+                    <View className="flex-row items-center justify-between mb-3 px-2">
+                      <AppText>
+                        {t("activities.editActivityScreen.gpsTracking")}
+                      </AppText>
+                      <Toggle
+                        isOn={isGpsRelevant}
+                        onToggle={() => setIsGpsRelevant((prev) => !prev)}
+                      />
+                    </View>
+                    <View className="flex-row items-center justify-between mb-3 px-2">
+                      <AppText>
+                        {t("activities.editActivityScreen.stepsTracking")}
+                      </AppText>
+                      <Toggle
+                        isOn={isStepRelevant}
+                        onToggle={() => setIsStepRelevant((prev) => !prev)}
+                      />
+                    </View>
+                    <View className="flex-row items-center justify-between mb-3 px-2">
+                      <AppText>
+                        {t("activities.editActivityScreen.caloriesTracking")}
+                      </AppText>
+                      <Toggle
+                        isOn={isCaloriesRelevant}
+                        onToggle={() => setIsCaloriesRelevant((prev) => !prev)}
+                      />
+                    </View>
+                  </View>
                 </View>
-                <AnimatedButton
-                  onPress={() => setOpenCategoryModal(true)}
-                  label={category || t("activities.editActivityScreen.selectCategory")}
-                  className="bg-blue-800 py-2 w-full rounded-md shadow-md border-2 border-blue-500"
-                  textClassName="text-gray-100 text-center"
-                />
-                <FullScreenModal
-                  isOpen={openCategoryModal}
-                  onClose={() => setOpenCategoryModal(false)}
-                >
-                  <CategoryDropdown
-                    onSelect={(category) => {
-                      setCategoryId(category.id);
-                      setCategory(getCategoryName(category.slug, category.name));
-                      setOpenCategoryModal(false);
-                    }}
+                <View className="mt-20 flex flex-col gap-5">
+                  <DeleteButton
+                    onPress={() => handleDeleteActivity(selectedActivity!.id)}
+                    label={t("activities.editActivityScreen.deleteButton")}
                   />
-                </FullScreenModal>
-                <View className="mt-8">
-                  <AppText className="text-lg mb-4">
-                    {t("activities.editActivityScreen.trackingOptions")}
-                  </AppText>
-                  <View className="flex-row items-center justify-between mb-3 px-2">
-                    <AppText>{t("activities.editActivityScreen.gpsTracking")}</AppText>
-                    <Toggle isOn={isGpsRelevant} onToggle={() => setIsGpsRelevant((prev) => !prev)} />
-                  </View>
-                  <View className="flex-row items-center justify-between mb-3 px-2">
-                    <AppText>{t("activities.editActivityScreen.stepsTracking")}</AppText>
-                    <Toggle isOn={isStepRelevant} onToggle={() => setIsStepRelevant((prev) => !prev)} />
-                  </View>
-                  <View className="flex-row items-center justify-between mb-3 px-2">
-                    <AppText>{t("activities.editActivityScreen.caloriesTracking")}</AppText>
-                    <Toggle isOn={isCaloriesRelevant} onToggle={() => setIsCaloriesRelevant((prev) => !prev)} />
-                  </View>
+                  <AnimatedButton
+                    onPress={() => {
+                      resetFields();
+                    }}
+                    label={t("activities.editActivityScreen.cancelButton")}
+                    className="btn-neutral"
+                  />
                 </View>
-              </View>
-              <View className="mt-20 flex flex-col gap-5">
-                <DeleteButton
-                  onPress={() => handleDeleteActivity(selectedActivity!.id)}
-                  label={t("activities.editActivityScreen.deleteButton")}
-                />
-                <AnimatedButton
-                  onPress={() => {
-                    resetFields();
-                  }}
-                  label={t("activities.editActivityScreen.cancelButton")}
-                  className="bg-red-800 py-2 rounded-md shadow-md border-2 border-red-500 text-lg items-center"
-                  textClassName="text-gray-100"
-                />
-              </View>
               </PageContainer>
             </TouchableWithoutFeedback>
             <FullScreenLoader
               visible={isSaving}
-              message={isDeleting ? t("activities.editActivityScreen.deletingActivity") : t("activities.editActivityScreen.savingActivity")}
+              message={
+                isDeleting
+                  ? t("activities.editActivityScreen.deletingActivity")
+                  : t("activities.editActivityScreen.savingActivity")
+              }
             />
           </ScrollView>
         </View>

@@ -18,6 +18,7 @@
     "mediaVoice": "Ääniviesti",
     "mediaUploadError": "Median lähetys epäonnistui",
     "attachMedia": "Liitä media",
-    "sending": "Lähetetään..."
+    "sending": "Lähetetään...",
+    "recordVoiceMessage": "Nauhoita ääniviesti"
   }
 }

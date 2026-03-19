@@ -8,6 +8,7 @@ import AnimatedButton from "@/components/buttons/animatedButton";
 import MediaToolbar from "@/features/notes/components/MediaToolbar";
 import TaskMediaList from "@/features/todo/components/TaskMediaList";
 import { DraftRecording, DraftImage, DraftVideo } from "@/types/session";
+import AppTextNC from "@/components/AppTextNC";
 
 type ExistingImage = { id: string; uri: string };
 type ExistingVideo = {
@@ -75,7 +76,7 @@ export default function TodoTaskCard({
   onDeleteExistingVideo,
   onDeleteExistingVoice,
   onImagePress,
-  cardClassName = "bg-slate-800",
+  cardClassName = "bg-white/5 border border-white/10",
 }: Props) {
   const { t } = useTranslation("todo");
 
@@ -94,13 +95,13 @@ export default function TodoTaskCard({
         className={`${cardClassName} p-4 rounded-lg mb-3 flex-row items-center`}
       >
         <AppText className="mr-2">{index + 1}.</AppText>
-        <AppText
+        <AppTextNC
           className={`flex-1 ${task ? "text-gray-100" : "text-gray-500"}`}
           numberOfLines={1}
           ellipsizeMode="tail"
         >
           {task || t("todo.taskPlaceholder")}
-        </AppText>
+        </AppTextNC>
         {mediaCount > 0 && (
           <View className="flex-row items-center mr-2">
             <Paperclip size={14} color="#9ca3af" />

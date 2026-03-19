@@ -1,12 +1,12 @@
 import { memo } from "react";
 import { View, Image, Alert } from "react-native";
 import AppText from "@/components/AppText";
-import BodyText from "@/components/BodyText";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import { Trash2 } from "lucide-react-native";
 import { FeedComment } from "@/types/social-feed";
 import { useTranslation } from "react-i18next";
 import * as Haptics from "expo-haptics";
+import BodyTextNC from "@/components/BodyTextNC";
 
 function getRelativeTime(dateString: string): string {
   const now = Date.now();
@@ -88,14 +88,14 @@ function CommentItem({
             )}
           </View>
         </View>
-        <BodyText className="text-[13px] text-slate-400 mt-1 leading-5">
+        <BodyTextNC className="text-[13px] text-slate-400 mt-1 leading-5">
           {isReply && comment.reply_to_display_name && (
-            <BodyText className="text-sm text-blue-400">
+            <BodyTextNC className="text-sm text-blue-400">
               @{comment.reply_to_display_name}{" "}
-            </BodyText>
+            </BodyTextNC>
           )}
           {comment.content}
-        </BodyText>
+        </BodyTextNC>
         {!isReply && (
           <AnimatedButton onPress={onReply} className="mt-1.5" hitSlop={12}>
             <AppText className="text-xs text-slate-500">

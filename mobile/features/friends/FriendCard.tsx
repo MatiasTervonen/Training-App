@@ -49,13 +49,13 @@ export default function FriendCard({ friend }: FriendCardProps) {
     : require("@/assets/images/default-avatar.png");
 
   return (
-    <View className="bg-slate-900 p-4 rounded-md shadow-md flex-row items-center justify-between">
+    <View className="bg-slate-500/10 border border-slate-500/20 rounded-lg p-4 shadow-md flex-row items-center justify-between">
       <View className="flex-row items-center gap-5">
         <Image
           source={imageSource}
-          className="rounded-full border-2 border-blue-500 w-[40px] h-[40px]"
+          className="rounded-full border-[1.5px] border-blue-500 w-[40px] h-[40px]"
         />
-        <AppText className="text-lg">{friend.user.display_name}</AppText>
+        <AppText className="text-base">{friend.user.display_name}</AppText>
       </View>
       <AnimatedButton
         onPress={handleDeleteFriend}

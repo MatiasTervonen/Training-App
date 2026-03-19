@@ -1,5 +1,6 @@
 import { View, ScrollView, ActivityIndicator } from "react-native";
 import AppText from "@/components/AppText";
+import BodyText from "@/components/BodyText";
 import PageContainer from "@/components/PageContainer";
 
 import LinkButton from "@/components/buttons/LinkButton";
@@ -16,6 +17,7 @@ import { useState, useCallback, useMemo, useRef, useEffect } from "react";
 import { Plus, ListChecks } from "lucide-react-native";
 import * as Haptics from "expo-haptics";
 import { SESSION_COLORS } from "@/lib/sessionColors";
+import BodyTextNC from "@/components/BodyTextNC";
 
 function getMonthRange(year: number, month: number) {
   const start = `${year}-${String(month + 1).padStart(2, "0")}-01`;
@@ -140,9 +142,9 @@ export default function HabitsScreen() {
                   <AppText className="text-xl text-center mb-3">
                     {t("noHabits")}
                   </AppText>
-                  <AppText className="text-sm text-gray-400 text-center leading-5">
+                  <BodyTextNC className="text-sm text-gray-400 text-center">
                     {t("emptyDescription")}
-                  </AppText>
+                  </BodyTextNC>
                 </View>
               </View>
               <View>

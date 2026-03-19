@@ -8,6 +8,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useTranslation } from "react-i18next";
 import { FullGymTemplate } from "@/database/gym/get-full-template";
 import AnimatedButton from "@/components/buttons/animatedButton";
+import AppTextNC from "@/components/AppTextNC";
 
 type Props = {
   item: FullGymTemplate;
@@ -74,7 +75,7 @@ export default function GymTemplate({ item, onStartWorkout }: Props) {
               end={{ x: 0, y: 1 }}
               className="mt-6 px-4 py-2 rounded-md overflow-hidden shadow-md border-[1.5px] border-emerald-700"
             >
-              <AppText className="text-lg text-gray-100">
+              <AppText className="text-lg">
                 {t("gym.phase.warmup")}: {getTranslatedName(warmup.activities.name, warmup.activities.slug)}
               </AppText>
             </LinearGradient>
@@ -92,7 +93,7 @@ export default function GymTemplate({ item, onStartWorkout }: Props) {
               }`}
             >
               {group.length > 1 && (
-                <AppText className="text-lg text-gray-100 mb-2 text-center">
+                <AppText className="text-lg mb-2 text-center">
                   {t("gym.gymForm.superSet")}
                 </AppText>
               )}
@@ -100,17 +101,17 @@ export default function GymTemplate({ item, onStartWorkout }: Props) {
                 <View key={exercise.id}>
                   <View className="flex-row items-center justify-between">
                     <AppText
-                      className="text-lg text-gray-100 mr-8 flex-1"
+                      className="text-lg mr-8 flex-1"
                       numberOfLines={1}
                       ellipsizeMode="tail"
                     >
                       {exercise.gym_exercises.name}
                     </AppText>
-                    <AppText className="text-gray-300">
+                    <AppTextNC className="text-gray-300">
                       {t(
                         `gym.muscleGroups.${exercise.gym_exercises.muscle_group}`,
                       )}
-                    </AppText>
+                    </AppTextNC>
                   </View>
                   <AppText className="text-gray-300 mt-2">
                     {t(`gym.equipment.${exercise.gym_exercises.equipment}`)}
@@ -126,7 +127,7 @@ export default function GymTemplate({ item, onStartWorkout }: Props) {
               end={{ x: 0, y: 1 }}
               className="mt-6 px-4 py-2 rounded-md overflow-hidden shadow-md border-[1.5px] border-emerald-700"
             >
-              <AppText className="text-lg text-gray-100">
+              <AppText className="text-lg">
                 {t("gym.phase.cooldown")}: {getTranslatedName(cooldown.activities.name, cooldown.activities.slug)}
               </AppText>
             </LinearGradient>

@@ -164,7 +164,7 @@ export default function HabitDetailScreen() {
               <AppText className="text-gray-400 text-sm">
                 {t("stepGoal")}
               </AppText>
-              <AppText className="text-lg text-gray-100">
+              <AppText className="text-lg">
                 {habit.target_value.toLocaleString()} {t("steps")}
               </AppText>
             </View>
@@ -174,7 +174,7 @@ export default function HabitDetailScreen() {
               <AppText className="text-gray-400 text-sm">
                 {t("durationTarget")}
               </AppText>
-              <AppText className="text-lg text-gray-100">
+              <AppText className="text-lg">
                 {formatDuration(habit.target_value)}
               </AppText>
             </View>
@@ -220,7 +220,6 @@ export default function HabitDetailScreen() {
             }}
             className="btn-edit"
             label={t("common:common.edit")}
-            textClassName="text-gray-100 text-center"
           />
           <View className="flex-row gap-3">
             <View className="flex-1">
@@ -228,7 +227,6 @@ export default function HabitDetailScreen() {
                 onPress={handleArchive}
                 className="btn-neutral"
                 label={t("archive")}
-                textClassName="text-gray-100 text-center"
               />
             </View>
             <View className="flex-1">
@@ -236,7 +234,6 @@ export default function HabitDetailScreen() {
                 onPress={handleDelete}
                 className="btn-danger"
                 label={t("delete")}
-                textClassName="text-gray-100 text-center"
               />
             </View>
           </View>

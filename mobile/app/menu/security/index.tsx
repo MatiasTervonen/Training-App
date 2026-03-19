@@ -13,6 +13,7 @@ import { useUserStore } from "@/lib/stores/useUserStore";
 import { useTranslation } from "react-i18next";
 import BodyText from "@/components/BodyText";
 import { API_URL } from "@/utils/apiUrl";
+import BodyTextNC from "@/components/BodyTextNC";
 
 export default function SecurityPage() {
   const { t } = useTranslation();
@@ -163,18 +164,18 @@ export default function SecurityPage() {
               <AppText className="text-xl mb-5 underline text-center">
                 {t("menu:security.resetPassword.title")}
               </AppText>
-              <BodyText className="text-gray-400 text-center">
+              <BodyTextNC className="text-gray-400 text-center">
                 {isGuest
                   ? t("menu:security.guestAccount")
                   : t("menu:security.googleAccount")}
-              </BodyText>
+              </BodyTextNC>
             </View>
           ) : (
             <>
               <AppText className="text-xl mb-5 underline">
                 {t("menu:security.resetPassword.title")}
               </AppText>
-              <BodyText className="text-gray-300 mb-5 text-sm">
+              <BodyText className="mb-5 text-sm">
                 {t("menu:security.resetPassword.description")}
               </BodyText>
               <View className="w-full mb-5">

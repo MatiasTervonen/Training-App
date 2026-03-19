@@ -78,7 +78,7 @@ export default function ReportsScreen() {
           disabled={atLimit}
         >
           <Plus size={18} color="#f3f4f6" />
-          <AppText className="text-base text-center text-gray-100">
+          <AppText className="text-base text-center">
             {atLimit ? t("reports.maxReached") : t("reports.createReport")}
           </AppText>
         </AnimatedButton>

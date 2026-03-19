@@ -1,6 +1,7 @@
 import { saveTemplate } from "@/database/activities/save-template";
 import { useQueryClient } from "@tanstack/react-query";
 import Toast from "react-native-toast-message";
+import { useTranslation } from "react-i18next";
 
 export default function useSaveTemplate({
   templateName,
@@ -22,13 +23,14 @@ export default function useSaveTemplate({
   onSuccess?: (templateId: string) => void;
 }) {
   const queryClient = useQueryClient();
+  const { t } = useTranslation("activities");
 
   const saveAsTemplate = async () => {
     if (templateName.trim() === "") {
       Toast.show({
         type: "error",
-        text1: "Error saving template",
-        text2: "Please enter a template name",
+        text1: t("activities.sessionDetails.saveErrorTitle"),
+        text2: t("activities.sessionDetails.saveErrorName"),
       });
       return;
     }
@@ -44,8 +46,8 @@ export default function useSaveTemplate({
 
       Toast.show({
         type: "success",
-        text1: "Template saved",
-        text2: "Template has been saved successfully.",
+        text1: t("activities.sessionDetails.saveSuccessTitle"),
+        text2: t("activities.sessionDetails.saveSuccessMessage"),
       });
       setTemplateName("");
       setTemplateNotes("");
@@ -65,8 +67,8 @@ export default function useSaveTemplate({
     } catch {
       Toast.show({
         type: "error",
-        text1: "Error saving template",
-        text2: "Please try again later.",
+        text1: t("activities.sessionDetails.saveErrorTitle"),
+        text2: t("activities.sessionDetails.saveErrorMessage"),
       });
     } finally {
       setIsSaving(false);

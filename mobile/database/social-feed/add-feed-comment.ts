@@ -9,7 +9,7 @@ export async function addFeedComment(
   const { data, error } = await supabase.rpc("add_feed_comment", {
     p_feed_item_id: feedItemId,
     p_content: content,
-    p_parent_id: parentId,
+    p_parent_id: parentId ?? undefined,
   });
 
   if (error) {

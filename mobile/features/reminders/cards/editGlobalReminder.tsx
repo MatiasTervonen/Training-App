@@ -25,7 +25,6 @@ import {
 import InfoModal from "@/components/InfoModal";
 import useSetNotification from "@/features/reminders/hooks/global/useSetNotification";
 import { useTranslation } from "react-i18next";
-import AppTextNC from "@/components/AppTextNC";
 import BodyText from "@/components/BodyText";
 import { useAutoSave } from "@/hooks/useAutoSave";
 
@@ -174,16 +173,15 @@ export default function HandleEditGlobalReminder({
               label={t("reminders.notesLabel")}
             />
             <View>
-              <AppTextNC className="mt-5 mb-1 text-slate-300">
+              <AppText className="mt-5 mb-1 text-slate-300">
                 {t("reminders.notifyTime")}
-              </AppTextNC>
+              </AppText>
               <AnimatedButton
                 label={
                   notifyAt ? formattedNotifyAt : t("reminders.setNotifyTime")
                 }
                 onPress={() => setOpen(true)}
                 className="btn-base flex-row gap-2 justify-center items-center"
-                textClassName="text-gray-100"
               >
                 <Plus color="#f3f4f6" />
               </AnimatedButton>

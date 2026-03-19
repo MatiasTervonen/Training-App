@@ -7,6 +7,7 @@ import BodyText from "@/components/BodyText";
 import { useFriends } from "@/features/friends/hooks/useFriends";
 import { Friends } from "@/types/models";
 import { useTranslation } from "react-i18next";
+import BodyTextNC from "@/components/BodyTextNC";
 
 type FriendPickerSheetProps = {
   visible: boolean;
@@ -89,9 +90,9 @@ export default function FriendPickerSheet({
         renderItem={renderItem}
         ListEmptyComponent={
           <View className="items-center py-10">
-            <BodyText className="text-slate-400">
+            <BodyTextNC className="text-slate-400">
               {t("chat.noFriends")}
-            </BodyText>
+            </BodyTextNC>
           </View>
         }
       />

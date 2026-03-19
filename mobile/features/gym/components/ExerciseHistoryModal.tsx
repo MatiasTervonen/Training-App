@@ -1,16 +1,17 @@
 import { useMemo } from "react";
-import FullScreenModal from "@/components/FullScreenModal";
-import { ActivityIndicator, View } from "react-native";
+import FullScreenModal, { useFullScreenModalScroll } from "@/components/FullScreenModal";
+import { ActivityIndicator, View, NativeSyntheticEvent, NativeScrollEvent, FlatList } from "react-native";
 import { formatDateShort } from "@/lib/formatDate";
 import AppText from "@/components/AppText";
+import AppTextNC from "@/components/AppTextNC";
+import BodyText from "@/components/BodyText";
 import ErrorMessage from "@/components/ErrorMessage";
 import { HistoryResult } from "@/types/session";
-import { FlatList } from "react-native-gesture-handler";
 import { LinearGradient } from "expo-linear-gradient";
 import { useUserStore } from "@/lib/stores/useUserStore";
 import { useTranslation } from "react-i18next";
 import ExerciseHistoryChart from "./ExerciseHistoryChart";
-import AppTextNC from "@/components/AppTextNC";
+import BodyTextNC from "@/components/BodyTextNC";
 
 type ExerciseHistoryModalProps = {
   isOpen: boolean;
@@ -27,10 +28,33 @@ export default function ExerciseHistoryModal({
   history,
   error,
 }: ExerciseHistoryModalProps) {
+  return (
+    <FullScreenModal isOpen={isOpen} onClose={onClose} scrollable={false}>
+      <ExerciseHistoryContent
+        isLoading={isLoading}
+        history={history}
+        error={error}
+      />
+    </FullScreenModal>
+  );
+}
+
+function ExerciseHistoryContent({
+  isLoading,
+  history,
+  error,
+}: Omit<ExerciseHistoryModalProps, "isOpen" | "onClose">) {
   const { t, i18n } = useTranslation("gym");
   const locale = i18n.language;
   const weightUnit =
     useUserStore((state) => state.profile?.weight_unit) || "kg";
+  const modalScroll = useFullScreenModalScroll();
+
+  const handleScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+    if (modalScroll) {
+      modalScroll.innerScrollY.value = e.nativeEvent.contentOffset.y;
+    }
+  };
 
   const exerciseName = history?.[0]?.name;
   const equipment = history?.[0]?.equipment;
@@ -77,21 +101,20 @@ export default function ExerciseHistoryModal({
   };
 
   return (
-    <FullScreenModal isOpen={isOpen} onClose={onClose} scrollable={false}>
       <View className="flex-1 px-5">
         {isLoading ? (
           <View className="justify-center items-center mt-40 gap-5 mx-4">
-            <AppText className="text-lg">
+            <BodyText className="text-lg">
               {t("gym.exerciseHistory.loading")}
-            </AppText>
+            </BodyText>
             <ActivityIndicator size="large" />
           </View>
         ) : error ? (
           <ErrorMessage message={t("gym.exerciseHistory.loadError")} fullPage />
         ) : history.length === 0 ? (
-          <AppText className="text-center mt-40 px-10 text-lg">
+          <BodyText className="text-center mt-40 px-10 text-lg">
             {t("gym.exerciseHistory.noHistory")}
-          </AppText>
+          </BodyText>
         ) : (
           <View className="flex-1">
             <FlatList
@@ -102,15 +125,17 @@ export default function ExerciseHistoryModal({
                 paddingTop: 40,
               }}
               showsVerticalScrollIndicator={false}
+              onScroll={handleScroll}
+              scrollEventThrottle={16}
               ListHeaderComponent={
                 <View className="mb-10">
                   {/* Header */}
                   <AppText className="text-center text-xl">
                     {exerciseName}
                   </AppText>
-                  <AppText className="text-center text-gray-300 mt-2">
+                  <BodyTextNC className="text-center text-gray-300 mt-2">
                     {t(`gym.equipment.${equipment?.toLowerCase()}`)}
-                  </AppText>
+                  </BodyTextNC>
 
                   <ExerciseHistoryChart
                     history={history}
@@ -122,19 +147,19 @@ export default function ExerciseHistoryModal({
                       colors={["#1e3a8a", "#0f172a", "#0f172a"]}
                       start={{ x: 1, y: 0 }}
                       end={{ x: 0, y: 1 }}
-                      className="mt-6 rounded-md px-4 py-4 overflow-hidden border-2 border-gray-600"
+                      className="mt-6 rounded-md px-4 py-4 overflow-hidden border-[1.5px] border-gray-700"
                     >
-                      <AppText className="text-center text-gray-400 text-sm mb-2">
+                      <BodyTextNC className="text-center text-gray-400 text-sm mb-2">
                         {t("gym.exerciseHistory.personalBest")}
-                      </AppText>
+                      </BodyTextNC>
                       <AppTextNC className="text-center text-xl text-cyan-400">
                         {personalBest.weight} {weightUnit} x{" "}
                         {personalBest.reps}{" "}
                         {t("gym.exerciseCard.reps").toLowerCase()}
                       </AppTextNC>
-                      <AppText className="text-center text-gray-400 text-sm mt-1">
+                      <BodyTextNC className="text-center text-gray-400 text-sm mt-1">
                         {formatDateWithYear(personalBest.date)}
-                      </AppText>
+                      </BodyTextNC>
                     </LinearGradient>
                   )}
                 </View>
@@ -144,33 +169,33 @@ export default function ExerciseHistoryModal({
                   colors={["#1e3a8a", "#0f172a", "#0f172a"]}
                   start={{ x: 1, y: 0 }}
                   end={{ x: 0, y: 1 }}
-                  className="py-5 px-4 rounded-md overflow-hidden mb-10 border-2 border-gray-600"
+                  className="py-5 px-4 rounded-md overflow-hidden mb-5 border-[1.5px] border-gray-700"
                 >
-                  <AppText className="text-base text-gray-300 mb-3 text-center">
+                  <BodyTextNC className="text-base text-gray-300 mb-3 text-center">
                     {formatDateShort(session!.date)}
-                  </AppText>
+                  </BodyTextNC>
                     <View className="w-full text-left">
                       <View className="w-full">
-                        <View className="border-b border-gray-600 flex-row">
+                        <View className="border-b border-gray-700 flex-row">
                           <View className="flex-1 items-center">
-                            <AppText className="p-2 text-sm text-gray-400">
+                            <AppTextNC className="p-2 text-sm text-gray-400">
                               {t("gym.session.set")}
-                            </AppText>
+                            </AppTextNC>
                           </View>
                           <View className="flex-1 items-center">
-                            <AppText className="p-2 text-sm text-gray-400">
+                            <AppTextNC className="p-2 text-sm text-gray-400">
                               {t("gym.session.weight")}
-                            </AppText>
+                            </AppTextNC>
                           </View>
                           <View className="flex-1 items-center">
-                            <AppText className="p-2 text-sm text-gray-400">
+                            <AppTextNC className="p-2 text-sm text-gray-400">
                               {t("gym.session.reps")}
-                            </AppText>
+                            </AppTextNC>
                           </View>
                           <View className="flex-1 items-center">
-                            <AppText className="p-2 text-sm text-gray-400">
+                            <AppTextNC className="p-2 text-sm text-gray-400">
                               {t("gym.session.rpe")}
-                            </AppText>
+                            </AppTextNC>
                           </View>
                         </View>
                       </View>
@@ -178,7 +203,7 @@ export default function ExerciseHistoryModal({
                         {session!.sets.map((set, setIndex) => (
                           <View
                             key={setIndex}
-                            className={`border-b border-gray-600 flex-row items-center ${
+                            className={`border-b border-gray-700 flex-row items-center ${
                               set.rpe === "Failure" ? "bg-red-500" : ""
                             } ${set.rpe === "Warm-up" ? "bg-blue-500" : ""}`}
                           >
@@ -212,6 +237,5 @@ export default function ExerciseHistoryModal({
           </View>
         )}
       </View>
-    </FullScreenModal>
   );
 }

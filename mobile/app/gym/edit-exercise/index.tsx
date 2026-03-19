@@ -62,6 +62,7 @@ export default function EditExercises() {
     });
 
     queryClient.invalidateQueries({ queryKey: ["userExercises"], exact: true });
+    queryClient.invalidateQueries({ queryKey: ["exercises"] });
   }, [name, equipment, muscle_group, main_group, selectedExercise, queryClient]);
 
   const { status } = useAutoSave({
@@ -81,6 +82,7 @@ export default function EditExercises() {
         queryKey: ["userExercises"],
         exact: true,
       });
+      await queryClient.invalidateQueries({ queryKey: ["exercises"] });
       Toast.show({
         type: "success",
         text1: t("gym.editExerciseScreen.deleteSuccess"),

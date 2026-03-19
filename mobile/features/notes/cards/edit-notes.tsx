@@ -3,8 +3,9 @@ import NotesInput from "@/components/NotesInput";
 import AppInput from "@/components/AppInput";
 import FullScreenLoader from "@/components/FullScreenLoader";
 import AppText from "@/components/AppText";
-import { View } from "react-native";
+import { View, NativeSyntheticEvent, NativeScrollEvent } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
+import { useFullScreenModalScroll } from "@/components/FullScreenModal";
 import { editNotes } from "@/database/notes/edit-notes";
 import PageContainer from "@/components/PageContainer";
 import { FeedItemUI, DraftVideo } from "@/types/session";
@@ -83,6 +84,14 @@ export default function EditNotes({
   onDirtyChange,
 }: Props) {
   const { t } = useTranslation(["notes", "common"]);
+  const modalScroll = useFullScreenModalScroll();
+
+  const handleScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+    if (modalScroll) {
+      modalScroll.innerScrollY.value = e.nativeEvent.contentOffset.y;
+    }
+  };
+
   const payload = note.extra_fields as notesPayload;
   const voiceCount = payload["voice-count"] ?? 0;
   const imageCount = payload["image-count"] ?? 0;
@@ -253,7 +262,7 @@ export default function EditNotes({
   return (
     <View className="flex-1">
       <AutoSaveIndicator status={status} />
-      <KeyboardAwareScrollView contentContainerStyle={{ flexGrow: 1 }} bottomOffset={50}>
+      <KeyboardAwareScrollView contentContainerStyle={{ flexGrow: 1 }} bottomOffset={50} onScroll={handleScroll} scrollEventThrottle={16}>
         <PageContainer className="mb-5">
           <AppText className="text-xl text-center mt-5 mb-10">
             {t("notes.editScreen.title")}

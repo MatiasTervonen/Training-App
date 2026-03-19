@@ -5,7 +5,7 @@ export async function getTemplates() {
   const { data: template, error: templateError } = await supabase
     .from("gym_templates")
     .select("id, name, created_at, updated_at")
-    .order("created_at", { ascending: false });
+    .order("sort_order", { ascending: true });
 
   if (templateError || !template) {
     handleError(templateError, {

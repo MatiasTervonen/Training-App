@@ -3,7 +3,13 @@ import AppText from "@/components/AppText";
 import { LinearGradient } from "expo-linear-gradient";
 import { useTranslation } from "react-i18next";
 import { formatDuration, formatMeters } from "@/lib/formatDate";
-import { Dumbbell, Activity, Scale, Repeat, ListTodo } from "lucide-react-native";
+import {
+  Dumbbell,
+  Activity,
+  Scale,
+  Repeat,
+  ListTodo,
+} from "lucide-react-native";
 import {
   ReportFeature,
   GymReportData,
@@ -13,6 +19,8 @@ import {
   TodoReportData,
   ReportData,
 } from "@/types/report";
+import BodyTextNC from "@/components/BodyTextNC";
+import BodyText from "@/components/BodyText";
 
 const FEATURE_ICONS: Record<ReportFeature, React.ReactNode> = {
   gym: <Dumbbell size={20} color="#cbd5e1" />,
@@ -44,31 +52,45 @@ type ReportSectionProps = {
   data: ReportData;
 };
 
-function StatRow({ label, value, delta }: {
+function StatRow({
+  label,
+  value,
+  delta,
+}: {
   label: string;
   value: string;
   delta?: Delta;
 }) {
   return (
     <View className="flex-row items-center py-2 border-b border-gray-700/50">
-      <AppText className="text-gray-400 text-sm flex-1">{label}</AppText>
+      <BodyTextNC className="text-gray-400 text-sm flex-1">{label}</BodyTextNC>
       <View className="w-20 items-center">
         {delta && delta.direction === "up" && (
-          <AppText className="text-xs text-green-400">▲ {delta.text}</AppText>
+          <BodyTextNC className="text-xs text-green-400">
+            ▲ {delta.text}
+          </BodyTextNC>
         )}
         {delta && delta.direction === "down" && (
-          <AppText className="text-xs text-red-400">▼ {delta.text}</AppText>
+          <BodyTextNC className="text-xs text-red-400">
+            ▼ {delta.text}
+          </BodyTextNC>
         )}
         {delta && delta.direction === "same" && (
-          <AppText className="text-xs text-gray-500">—</AppText>
+          <BodyTextNC className="text-xs text-gray-500">—</BodyTextNC>
         )}
       </View>
-      <AppText className="text-gray-100 text-sm w-24 text-right">{value}</AppText>
+      <BodyText className="text-sm w-24 text-right">{value}</BodyText>
     </View>
   );
 }
 
-function GymSection({ data, prev }: { data: GymReportData; prev?: GymReportData }) {
+function GymSection({
+  data,
+  prev,
+}: {
+  data: GymReportData;
+  prev?: GymReportData;
+}) {
   const { t } = useTranslation("reports");
   return (
     <>
@@ -85,12 +107,16 @@ function GymSection({ data, prev }: { data: GymReportData; prev?: GymReportData 
       <StatRow
         label={t("reports.expanded.totalDuration")}
         value={formatDuration(data.total_duration)}
-        delta={makeDelta(data.total_duration, prev?.total_duration, (n) => formatDuration(n))}
+        delta={makeDelta(data.total_duration, prev?.total_duration, (n) =>
+          formatDuration(n),
+        )}
       />
       <StatRow
         label={t("reports.expanded.avgDuration")}
         value={formatDuration(data.avg_duration)}
-        delta={makeDelta(data.avg_duration, prev?.avg_duration, (n) => formatDuration(n))}
+        delta={makeDelta(data.avg_duration, prev?.avg_duration, (n) =>
+          formatDuration(n),
+        )}
       />
       <StatRow
         label={t("reports.expanded.totalCalories")}
@@ -106,7 +132,13 @@ function GymSection({ data, prev }: { data: GymReportData; prev?: GymReportData 
   );
 }
 
-function ActivitiesSection({ data, prev }: { data: ActivitiesReportData; prev?: ActivitiesReportData }) {
+function ActivitiesSection({
+  data,
+  prev,
+}: {
+  data: ActivitiesReportData;
+  prev?: ActivitiesReportData;
+}) {
   const { t } = useTranslation("reports");
   return (
     <>
@@ -118,12 +150,18 @@ function ActivitiesSection({ data, prev }: { data: ActivitiesReportData; prev?: 
       <StatRow
         label={t("reports.expanded.totalDistance")}
         value={formatMeters(data.total_distance_meters)}
-        delta={makeDelta(data.total_distance_meters, prev?.total_distance_meters, (n) => formatMeters(n))}
+        delta={makeDelta(
+          data.total_distance_meters,
+          prev?.total_distance_meters,
+          (n) => formatMeters(n),
+        )}
       />
       <StatRow
         label={t("reports.expanded.totalDuration")}
         value={formatDuration(data.total_duration)}
-        delta={makeDelta(data.total_duration, prev?.total_duration, (n) => formatDuration(n))}
+        delta={makeDelta(data.total_duration, prev?.total_duration, (n) =>
+          formatDuration(n),
+        )}
       />
       <StatRow
         label={t("reports.expanded.totalCalories")}
@@ -139,7 +177,13 @@ function ActivitiesSection({ data, prev }: { data: ActivitiesReportData; prev?: 
   );
 }
 
-function WeightSection({ data, prev }: { data: WeightReportData; prev?: WeightReportData }) {
+function WeightSection({
+  data,
+  prev,
+}: {
+  data: WeightReportData;
+  prev?: WeightReportData;
+}) {
   const { t } = useTranslation("reports");
   const formatKg = (n: number) => `${n.toFixed(1)} kg`;
   return (
@@ -152,30 +196,56 @@ function WeightSection({ data, prev }: { data: WeightReportData; prev?: WeightRe
       <StatRow
         label={t("reports.expanded.startWeight")}
         value={data.start_weight != null ? `${data.start_weight} kg` : "-"}
-        delta={data.start_weight != null ? makeDelta(data.start_weight, prev?.start_weight, formatKg) : null}
+        delta={
+          data.start_weight != null
+            ? makeDelta(data.start_weight, prev?.start_weight, formatKg)
+            : null
+        }
       />
       <StatRow
         label={t("reports.expanded.endWeight")}
         value={data.end_weight != null ? `${data.end_weight} kg` : "-"}
-        delta={data.end_weight != null ? makeDelta(data.end_weight, prev?.end_weight, formatKg) : null}
+        delta={
+          data.end_weight != null
+            ? makeDelta(data.end_weight, prev?.end_weight, formatKg)
+            : null
+        }
       />
       <StatRow
         label={t("reports.expanded.weightChange")}
-        value={data.change != null ? `${data.change > 0 ? "+" : ""}${data.change} kg` : "-"}
-        delta={data.change != null ? makeDelta(data.change, prev?.change, formatKg) : null}
+        value={
+          data.change != null
+            ? `${data.change > 0 ? "+" : ""}${data.change} kg`
+            : "-"
+        }
+        delta={
+          data.change != null
+            ? makeDelta(data.change, prev?.change, formatKg)
+            : null
+        }
       />
     </>
   );
 }
 
-function HabitsSection({ data, prev }: { data: HabitsReportData; prev?: HabitsReportData }) {
+function HabitsSection({
+  data,
+  prev,
+}: {
+  data: HabitsReportData;
+  prev?: HabitsReportData;
+}) {
   const { t } = useTranslation("reports");
   return (
     <>
       <StatRow
         label={t("reports.expanded.completionRate")}
         value={`${data.completion_rate}%`}
-        delta={makeDelta(data.completion_rate, prev?.completion_rate, (n) => `${n}%`)}
+        delta={makeDelta(
+          data.completion_rate,
+          prev?.completion_rate,
+          (n) => `${n}%`,
+        )}
       />
       <StatRow
         label={t("reports.expanded.daysAllDone")}
@@ -191,7 +261,13 @@ function HabitsSection({ data, prev }: { data: HabitsReportData; prev?: HabitsRe
   );
 }
 
-function TodoSection({ data, prev }: { data: TodoReportData; prev?: TodoReportData }) {
+function TodoSection({
+  data,
+  prev,
+}: {
+  data: TodoReportData;
+  prev?: TodoReportData;
+}) {
   const { t } = useTranslation("reports");
   return (
     <>
@@ -239,15 +315,38 @@ export default function ReportSection({ feature, data }: ReportSectionProps) {
     >
       <View className="flex-row items-center gap-2 mb-2">
         {FEATURE_ICONS[feature]}
-        <AppText className="text-lg text-gray-100">
-          {t(FEATURE_LABELS[feature])}
-        </AppText>
+        <AppText className="text-lg">{t(FEATURE_LABELS[feature])}</AppText>
       </View>
-      {feature === "gym" && <GymSection data={featureData as GymReportData} prev={prev as GymReportData | undefined} />}
-      {feature === "activities" && <ActivitiesSection data={featureData as ActivitiesReportData} prev={prev as ActivitiesReportData | undefined} />}
-      {feature === "weight" && <WeightSection data={featureData as WeightReportData} prev={prev as WeightReportData | undefined} />}
-      {feature === "habits" && <HabitsSection data={featureData as HabitsReportData} prev={prev as HabitsReportData | undefined} />}
-      {feature === "todo" && <TodoSection data={featureData as TodoReportData} prev={prev as TodoReportData | undefined} />}
+      {feature === "gym" && (
+        <GymSection
+          data={featureData as GymReportData}
+          prev={prev as GymReportData | undefined}
+        />
+      )}
+      {feature === "activities" && (
+        <ActivitiesSection
+          data={featureData as ActivitiesReportData}
+          prev={prev as ActivitiesReportData | undefined}
+        />
+      )}
+      {feature === "weight" && (
+        <WeightSection
+          data={featureData as WeightReportData}
+          prev={prev as WeightReportData | undefined}
+        />
+      )}
+      {feature === "habits" && (
+        <HabitsSection
+          data={featureData as HabitsReportData}
+          prev={prev as HabitsReportData | undefined}
+        />
+      )}
+      {feature === "todo" && (
+        <TodoSection
+          data={featureData as TodoReportData}
+          prev={prev as TodoReportData | undefined}
+        />
+      )}
     </LinearGradient>
   );
 }

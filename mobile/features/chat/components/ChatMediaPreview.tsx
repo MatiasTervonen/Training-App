@@ -71,7 +71,7 @@ function ChatMediaPreview({
               )}
             </View>
             {durationMs != null && (
-              <BodyText className="text-sm text-slate-300">
+              <BodyText className="text-sm">
                 {formatDurationNotesVoice(durationMs)}
               </BodyText>
             )}
@@ -81,7 +81,7 @@ function ChatMediaPreview({
         {type === "voice" && (
           <View className="flex-row items-center gap-2">
             <Mic color="#94a3b8" size={20} />
-            <BodyText className="text-sm text-slate-300">
+            <BodyText className="text-sm">
               {t("chat.mediaVoice")} {durationMs != null ? formatDurationNotesVoice(durationMs) : ""}
             </BodyText>
           </View>

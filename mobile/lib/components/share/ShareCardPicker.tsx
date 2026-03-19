@@ -7,6 +7,7 @@ import {
   SHARE_THEMES,
 } from "@/lib/share/themes";
 import { useTranslation } from "react-i18next";
+import AppTextNC from "@/components/AppTextNC";
 
 type ShareCardPickerProps = {
   selectedSize: ShareCardSize;
@@ -66,11 +67,11 @@ export default function ShareCardPicker({
                   className={`rounded-sm border ${isSelected ? "border-white" : "border-gray-400"}`}
                   style={{ width: boxW, height: boxH }}
                 />
-                <AppText
+                <AppTextNC
                   className={`text-sm ${isSelected ? "text-gray-100" : "text-gray-400"}`}
                 >
                   {t(`share.${s.labelKey}`)}
-                </AppText>
+                </AppTextNC>
               </AnimatedButton>
             );
           })}
@@ -79,9 +80,9 @@ export default function ShareCardPicker({
 
       {/* Theme picker */}
       <View className="gap-2">
-        <AppText className="text-sm text-gray-400">
+        <AppTextNC className="text-sm text-gray-400">
           {t("share.themeLabel")}
-        </AppText>
+        </AppTextNC>
         <View className="flex-row flex-wrap gap-2">
           {SHARE_THEMES.map((theme) => {
             const isSelected = selectedTheme === theme.id;
@@ -107,11 +108,11 @@ export default function ShareCardPicker({
                   }`}
                   style={{ backgroundColor: previewColor }}
                 />
-                <AppText
+                <AppTextNC  
                   className={`text-sm ${isSelected ? "text-gray-100" : "text-gray-400"}`}
                 >
                   {t(`share.${labelKey}`)}
-                </AppText>
+                </AppTextNC>
               </AnimatedButton>
             );
           })}
@@ -124,11 +125,11 @@ export default function ShareCardPicker({
                   : "bg-transparent border-gray-600"
               }`}
             >
-              <AppText
+              <AppTextNC
                 className={`text-sm ${!showGradient ? "text-gray-100" : "text-gray-400"}`}
               >
                 {t("share.hideShadow")}
-              </AppText>
+              </AppTextNC>
             </AnimatedButton>
           )}
         </View>

@@ -1,9 +1,9 @@
 import { View } from "react-native";
-import AppText from "@/components/AppText";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import { Dumbbell, Activity, Weight, CalendarCheck, ListTodo, Check } from "lucide-react-native";
 import { ReportFeature } from "@/types/report";
 import * as Haptics from "expo-haptics";
+import AppTextNC from "@/components/AppTextNC";
 
 const FEATURE_ICONS: Record<ReportFeature, typeof Dumbbell> = {
   gym: Dumbbell,
@@ -43,13 +43,13 @@ export default function FeatureCheckbox({
       }`}
     >
       <Icon size={20} color={selected ? "#93c5fd" : "#9ca3af"} />
-      <AppText
+      <AppTextNC
         className={`flex-1 ml-3 text-base ${
           selected ? "text-gray-100" : "text-gray-400"
         }`}
       >
         {label}
-      </AppText>
+      </AppTextNC>
       <View
         className={`w-6 h-6 rounded items-center justify-center ${
           selected ? "bg-blue-600" : "bg-gray-700 border border-gray-500"

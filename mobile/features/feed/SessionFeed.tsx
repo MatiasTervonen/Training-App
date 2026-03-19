@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import AppText from "@/components/AppText";
+import BodyText from "@/components/BodyText";
 import ErrorMessage from "@/components/ErrorMessage";
 import {
   FlatList,
@@ -48,6 +49,7 @@ import { SocialFeedItem } from "@/types/social-feed";
 import CommentSheet from "@/features/social-feed/components/CommentSheet";
 import { getFriendGymSession } from "@/database/social-feed/get-friend-gym-session";
 import { getFriendActivitySession } from "@/database/social-feed/get-friend-activity-session";
+import BodyTextNC from "@/components/BodyTextNC";
 
 type SessionFeedProps = {
   expandReminderId?: string;
@@ -235,9 +237,9 @@ export default function SessionFeed({
                 <AppText className="text-xl text-center mb-3">
                   {t("feed.noSessions")}
                 </AppText>
-                <AppText className="text-sm text-gray-400 text-center leading-5">
+                <BodyTextNC className="text-sm text-gray-400 text-center">
                   {t("feed.noSessionsDesc")}
-                </AppText>
+                </BodyTextNC>
               </View>
             </View>
           ) : (
@@ -246,7 +248,7 @@ export default function SessionFeed({
               keyExtractor={(item) => item.id}
               contentContainerStyle={{
                 paddingBottom: 100,
-                paddingTop: pinnedFeed.length === 0 ? 12 : 0,
+                paddingTop: pinnedFeed.length === 0 ? 20 : 0,
               }}
               showsHorizontalScrollIndicator={false}
               showsVerticalScrollIndicator={false}
@@ -337,9 +339,9 @@ export default function SessionFeed({
                 <AppText className="text-xl text-center mb-3">
                   {t("social:social.noFriendPosts")}
                 </AppText>
-                <AppText className="text-sm text-gray-400 text-center leading-5">
+                <BodyTextNC className="text-sm text-gray-400 text-center">
                   {t("social:social.noFriendsYet")}
-                </AppText>
+                </BodyTextNC>
               </View>
             </View>
           ) : (
@@ -419,14 +421,14 @@ export default function SessionFeed({
             <>
               {isLoadingTodoSession ? (
                 <View className="gap-2 justify-center items-center pt-40">
-                  <AppText className="text-lg">{t("feed.loadingTodo")}</AppText>
+                  <BodyText className="text-lg">{t("feed.loadingTodo")}</BodyText>
                   <ActivityIndicator />
                 </View>
               ) : todoSessionError ? (
                 <View>
-                  <AppText className="gap-2 justify-center mt-20 text-lg">
+                  <BodyText className="gap-2 justify-center mt-20 text-lg">
                     {t("feed.todoError")}
-                  </AppText>
+                  </BodyText>
                 </View>
               ) : (
                 todoSessionFull && (
@@ -448,13 +450,13 @@ export default function SessionFeed({
             <>
               {isLoadingGymSession ? (
                 <View className="gap-5 items-center justify-center mt-40 px-10">
-                  <AppText className="text-lg">{t("feed.loadingGym")}</AppText>
+                  <BodyText className="text-lg">{t("feed.loadingGym")}</BodyText>
                   <ActivityIndicator />
                 </View>
               ) : GymSessionError ? (
-                <AppText className="text-center text-xl mt-40 px-10">
+                <BodyText className="text-center text-xl mt-40 px-10">
                   {t("feed.gymError")}
-                </AppText>
+                </BodyText>
               ) : (
                 GymSessionFull && <GymSession {...GymSessionFull} />
               )}
@@ -471,15 +473,15 @@ export default function SessionFeed({
             <>
               {isLoadingActivitySession ? (
                 <View className="gap-5 items-center justify-center mt-40 px-10">
-                  <AppText className="text-lg">
+                  <BodyText className="text-lg">
                     {t("feed.loadingActivity")}
-                  </AppText>
+                  </BodyText>
                   <ActivityIndicator />
                 </View>
               ) : activitySessionError ? (
-                <AppText className="text-center text-xl mt-40 px-10">
+                <BodyText className="text-center text-xl mt-40 px-10">
                   {t("feed.activityError")}
-                </AppText>
+                </BodyText>
               ) : (
                 activitySessionFull && (
                   <ActivitySession
@@ -550,13 +552,13 @@ export default function SessionFeed({
             <>
               {isLoadingTodoSession ? (
                 <View className="gap-5 items-center justify-center mt-40 px-10">
-                  <AppText className="text-lg">{t("feed.loadingTodo")}</AppText>
+                  <BodyText className="text-lg">{t("feed.loadingTodo")}</BodyText>
                   <ActivityIndicator />
                 </View>
               ) : todoSessionError ? (
-                <AppText className="text-center text-xl mt-40 px-10">
+                <BodyText className="text-gray-200 text-center text-xl mt-40 px-10">
                   {t("feed.todoError")}
-                </AppText>
+                </BodyText>
               ) : (
                 todoSessionFull && (
                   <EditTodo
@@ -581,15 +583,15 @@ export default function SessionFeed({
             <>
               {isLoadingActivitySession ? (
                 <View className="gap-5 items-center justify-center mt-40 px-10">
-                  <AppText className="text-lg">
+                  <BodyText className="text-lg">
                     {t("feed.loadingActivity")}
-                  </AppText>
+                  </BodyText>
                   <ActivityIndicator />
                 </View>
               ) : activitySessionError ? (
-                <AppText className="text-center text-xl mt-40 px-10">
+                <BodyText className="text-center text-xl mt-40 px-10">
                   {t("feed.activityError")}
-                </AppText>
+                </BodyText>
               ) : (
                 activitySessionFull && (
                   <ActivitySessionEdit
@@ -641,15 +643,15 @@ export default function SessionFeed({
             <>
               {isLoadingFriendGym ? (
                 <View className="gap-5 items-center justify-center mt-40 px-10">
-                  <AppText className="text-lg">{t("feed.loadingGym")}</AppText>
+                  <BodyText className="text-lg">{t("feed.loadingGym")}</BodyText>
                   <ActivityIndicator />
                 </View>
               ) : friendGymData ? (
                 <GymSession {...friendGymData} readOnly />
               ) : (
-                <AppText className="text-center text-xl mt-40 px-10">
+                <BodyText className="text-center text-xl mt-40 px-10">
                   {t("feed.gymError")}
-                </AppText>
+                </BodyText>
               )}
             </>
           )}
@@ -657,9 +659,9 @@ export default function SessionFeed({
             <>
               {isLoadingFriendActivity ? (
                 <View className="gap-5 items-center justify-center mt-40 px-10">
-                  <AppText className="text-lg">
+                  <BodyText className="text-lg">
                     {t("feed.loadingActivity")}
-                  </AppText>
+                  </BodyText>
                   <ActivityIndicator />
                 </View>
               ) : friendActivityData ? (
@@ -670,9 +672,9 @@ export default function SessionFeed({
                   readOnly
                 />
               ) : (
-                <AppText className="text-center text-xl mt-40 px-10">
+                <BodyText className="text-center text-xl mt-40 px-10">
                   {t("feed.activityError")}
-                </AppText>
+                </BodyText>
               )}
             </>
           )}

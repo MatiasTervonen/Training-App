@@ -1,18 +1,25 @@
 import { useMutation, useQueryClient, InfiniteData } from "@tanstack/react-query";
 import { sendMessage } from "@/database/chat/send-message";
-import { ChatMessage } from "@/types/chat";
+import { fetchLinkPreview } from "@/database/chat/fetch-link-preview";
+import { ChatMessage, LinkPreview } from "@/types/chat";
 import { useUserStore } from "@/lib/stores/useUserStore";
 import { supabase } from "@/lib/supabase";
+import { extractFirstUrl } from "@/lib/chat/linkUtils";
 import Toast from "react-native-toast-message";
+
+type SendMessageInput = {
+  content: string;
+  preview?: LinkPreview | null;
+};
 
 export default function useSendMessage(conversationId: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (content: string) =>
+    mutationFn: ({ content }: SendMessageInput) =>
       sendMessage({ conversationId, content, messageType: "text" }),
 
-    onMutate: async (content) => {
+    onMutate: async ({ content, preview }: SendMessageInput) => {
       await queryClient.cancelQueries({
         queryKey: ["messages", conversationId],
       });
@@ -37,6 +44,7 @@ export default function useSendMessage(conversationId: string) {
         media_storage_path: null,
         media_thumbnail_path: null,
         media_duration_ms: null,
+        link_preview: preview ?? null,
         created_at: new Date().toISOString(),
         sender_display_name: profile?.display_name ?? "",
         sender_profile_picture: profile?.profile_picture ?? null,
@@ -60,7 +68,33 @@ export default function useSendMessage(conversationId: string) {
       return { previousMessages };
     },
 
-    onError: (err, _content, context) => {
+    onSuccess: async (messageId, { content }) => {
+      const url = extractFirstUrl(content);
+      if (!url) return;
+
+      // Always call with messageId to save preview to DB (triggers realtime for receiver)
+      const preview = await fetchLinkPreview(messageId, url);
+      if (!preview) return;
+
+      queryClient.setQueryData<InfiniteData<ChatMessage[]>>(
+        ["messages", conversationId],
+        (old) => {
+          if (!old) return old;
+          return {
+            ...old,
+            pages: old.pages.map((page) =>
+              page.map((msg) =>
+                msg.id === messageId || (msg.id.startsWith("temp-") && msg.content === content)
+                  ? { ...msg, link_preview: preview }
+                  : msg,
+              ),
+            ),
+          };
+        },
+      );
+    },
+
+    onError: (err, _input, context) => {
       console.error("Send message error:", err);
       Toast.show({ type: "error", text1: "Failed to send message", text2: String(err) });
       if (context?.previousMessages) {

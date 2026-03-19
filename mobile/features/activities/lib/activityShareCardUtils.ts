@@ -63,8 +63,8 @@ export function getAvailableStats(
     });
   }
 
-  // Calories - always available
-  if (summary.calories && summary.calories > 0) {
+  // Calories - only when relevant for the activity type
+  if (summary.isCaloriesRelevant !== false && summary.calories && summary.calories > 0) {
     stats.push({
       key: "calories",
       label: t("activities.share.calories"),
@@ -72,8 +72,8 @@ export function getAvailableStats(
     });
   }
 
-  // Steps - only when steps > 0
-  if (summary.steps && summary.steps > 0) {
+  // Steps - only when relevant for the activity type
+  if (summary.isStepRelevant !== false && summary.steps && summary.steps > 0) {
     stats.push({
       key: "steps",
       label: t("activities.share.steps"),

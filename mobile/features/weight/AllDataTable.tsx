@@ -3,6 +3,7 @@ import { useUserStore } from "@/lib/stores/useUserStore";
 import { weight } from "@/types/session";
 import { View, SectionList } from "react-native";
 import AppText from "@/components/AppText";
+import BodyText from "@/components/BodyText";
 import { useConfirmAction } from "@/lib/confirmAction";
 import { deleteSession } from "@/database/feed/deleteSession";
 import Toast from "react-native-toast-message";
@@ -13,6 +14,7 @@ import WeightShareModal from "@/features/weight/components/WeightShareModal";
 import { useTranslation } from "react-i18next";
 import i18n from "@/app/i18n";
 import { Scale } from "lucide-react-native";
+import BodyTextNC from "@/components/BodyTextNC";
 
 type AllDataProps = {
   data: weight[];
@@ -137,9 +139,9 @@ export default function AllDataTable({ data, isLoading, error }: AllDataProps) {
                 <AppText className="text-xl text-center mb-3">
                   {t("weight.analyticsScreen.noWeightEntries")}
                 </AppText>
-                <AppText className="text-sm text-gray-400 text-center leading-5">
+                <BodyTextNC className="text-sm text-gray-400 text-center">
                   {t("weight.analyticsScreen.noWeightEntriesDesc")}
-                </AppText>
+                </BodyTextNC>
               </View>
             </View>
           ) : null
@@ -150,9 +152,9 @@ export default function AllDataTable({ data, isLoading, error }: AllDataProps) {
             <AppText className="text-lg">
               {section.title}
             </AppText>
-            <AppText>
+            <BodyText>
               {section.difference} {weightUnit}
-            </AppText>
+            </BodyText>
           </View>
         )}
         renderItem={({ item }) => (

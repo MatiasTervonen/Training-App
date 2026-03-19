@@ -141,6 +141,7 @@ export default function useSendMediaMessage(conversationId: string) {
         media_storage_path: null,
         media_thumbnail_path: null,
         media_duration_ms: durationMs ?? null,
+        link_preview: null,
         created_at: new Date().toISOString(),
         sender_display_name: profile?.display_name ?? "",
         sender_profile_picture: profile?.profile_picture ?? null,

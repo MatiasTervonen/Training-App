@@ -5,7 +5,7 @@ import AnimatedButton from "@/components/buttons/animatedButton";
 import ActivityShareCard from "@/features/activities/components/share/ActivityShareCard";
 import StatToggleChips from "@/features/activities/components/share/StatToggleChips";
 import useMapSnapshot from "@/features/activities/components/share/useMapSnapshot";
-import { getTheme, SHARE_CARD_DIMENSIONS } from "@/lib/share/themes";
+import { SHARE_CARD_DIMENSIONS } from "@/lib/share/themes";
 import {
   getAvailableStats,
   getDefaultSelectedKeys,
@@ -14,10 +14,14 @@ import { ActivitySessionSummary } from "@/lib/stores/activitySessionSummaryStore
 import { FullActivitySession } from "@/types/models";
 import { useTranslation } from "react-i18next";
 import Mapbox from "@rnmapbox/maps";
-import { MAP_STYLES, LINE_COLORS } from "@/features/activities/lib/mapConstants";
+import {
+  MAP_STYLES,
+  LINE_COLORS,
+} from "@/features/activities/lib/mapConstants";
 import { useActivitySettingsStore } from "@/lib/stores/activitySettingsStore";
 import useShareCardPreferences from "@/lib/hooks/useShareCardPreferences";
 import ShareModalShell from "@/lib/components/share/ShareModalShell";
+import AppTextNC from "@/components/AppTextNC";
 
 const MAP_VIEW_STYLE = { flex: 1 };
 
@@ -40,10 +44,7 @@ export default function ActivityShareModal({
 }: ActivityShareModalProps) {
   const { t } = useTranslation("activities");
 
-  const {
-    theme: themeId,
-    size,
-  } = useShareCardPreferences();
+  const { size } = useShareCardPreferences();
 
   // Local-only map style + route color (don't affect global settings)
   const globalMapStyleIndex = useActivitySettingsStore((s) => {
@@ -72,7 +73,6 @@ export default function ActivityShareModal({
   const lineColor = LINE_COLORS[lineColorIndex];
   const mapStyleUrl = MAP_STYLES[mapStyleIndex].url;
 
-  const theme = useMemo(() => getTheme(themeId), [themeId]);
   const dims = useMemo(() => SHARE_CARD_DIMENSIONS[size], [size]);
 
   // Hidden MapView dimensions: divide by pixel ratio so takeSnap() produces
@@ -106,6 +106,8 @@ export default function ActivityShareModal({
       averageSpeed: stats?.avg_speed ?? null,
       steps: stats?.steps ?? null,
       calories: stats?.calories ?? null,
+      isStepRelevant: activitySession.activity?.is_step_relevant ?? true,
+      isCaloriesRelevant: activitySession.activity?.is_calories_relevant ?? true,
     };
   }, [activitySession]);
 
@@ -161,7 +163,10 @@ export default function ActivityShareModal({
   }, []);
 
   const showHiddenMap =
-    visible && summary.hasRoute && routeFeature && bounds &&
+    visible &&
+    summary.hasRoute &&
+    routeFeature &&
+    bounds &&
     (!hideMapDetails || privacyStyleReady);
 
   return (
@@ -259,11 +264,11 @@ export default function ActivityShareModal({
                           : "bg-transparent border-gray-600"
                       }`}
                     >
-                      <AppText
+                      <AppTextNC
                         className={`text-sm ${mapStyleIndex === i ? "text-gray-100" : "text-gray-400"}`}
                       >
                         {t(`activities.settings.mapStyles.${style.labelKey}`)}
-                      </AppText>
+                      </AppTextNC>
                     </AnimatedButton>
                   ))}
                 </View>
@@ -303,11 +308,11 @@ export default function ActivityShareModal({
                     : "bg-transparent border-gray-600"
                 }`}
               >
-                <AppText
+                <AppTextNC
                   className={`text-sm ${hideMapDetails ? "text-gray-100" : "text-gray-400"}`}
                 >
                   {t("activities.share.hideMapDetails")}
-                </AppText>
+                </AppTextNC>
               </AnimatedButton>
             </View>
           )}

@@ -80,9 +80,7 @@ export default function MyActivitiesScreen() {
         />
       </View>
       {isLoading ? (
-        <View className="pt-[50px]">
-          <FeedSkeleton count={5} />
-        </View>
+        <FeedSkeleton count={5} subFeed />
       ) : error ? (
         <AppText className="text-center text-lg mt-20 mx-auto px-10">
           {t("activities.mySessions.loadError")}

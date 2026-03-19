@@ -1,12 +1,13 @@
 import { formatDate, formatDateShort } from "@/lib/formatDate";
 import { Dumbbell, SquareArrowOutUpRight } from "lucide-react-native";
 import AppText from "@/components/AppText";
-import BodyText from "@/components/BodyText";
 import { View } from "react-native";
 import DropDownModal from "@/components/DropDownModal";
 import { useTranslation } from "react-i18next";
 import { LinearGradient } from "expo-linear-gradient";
 import AnimatedButton from "@/components/buttons/animatedButton";
+import BodyTextNC from "@/components/BodyTextNC";
+import AppTextNC from "@/components/AppTextNC";
 
 type templateSummary = {
   id: string;
@@ -71,24 +72,26 @@ export default function TemplateCard({
 
       {/* Updated timestamp */}
       <View className="px-4 pb-2">
-        <BodyText className={`text-sm ${item.updated_at ? "text-slate-400" : "text-transparent"}`}>
+        <BodyTextNC
+          className={`text-sm ${item.updated_at ? "text-slate-400" : "text-transparent"}`}
+        >
           {item.updated_at
             ? `${t("common:common.updated")} ${formatDate(item.updated_at)}`
             : " "}
-        </BodyText>
+        </BodyTextNC>
       </View>
 
       {/* Footer - type, date, details */}
       <View className="flex-row items-center justify-between bg-slate-900/40 px-4 py-2">
         <View className="flex-row items-center gap-2">
           <Dumbbell size={20} color="#cbd5e1" />
-          <AppText className="text-slate-400 text-sm">
+          <AppTextNC className="text-slate-400 text-sm">
             {t("gym:gym.TemplatesScreen.templateType")}
-          </AppText>
-          <AppText className="text-slate-500 text-sm">·</AppText>
-          <AppText className="text-slate-400 text-sm">
+          </AppTextNC>
+          <AppTextNC className="text-slate-500 text-sm">·</AppTextNC>
+          <AppTextNC className="text-slate-400 text-sm">
             {formatDateShort(item.created_at)}
-          </AppText>
+          </AppTextNC>
         </View>
         <AnimatedButton
           onPress={onExpand}
@@ -96,9 +99,9 @@ export default function TemplateCard({
           hitSlop={15}
         >
           <SquareArrowOutUpRight size={18} color="#64748b" />
-          <AppText className="text-slate-500 text-sm">
-            {t("gym:gym.TemplatesScreen.details")}
-          </AppText>
+          <AppTextNC className="text-slate-500 text-sm">
+            {t("gym:gym.TemplatesScreen.start")}
+          </AppTextNC>
         </AnimatedButton>
       </View>
     </LinearGradient>

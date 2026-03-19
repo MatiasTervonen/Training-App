@@ -2,9 +2,9 @@ import { memo } from "react";
 import { View, Pressable } from "react-native";
 import { Image } from "expo-image";
 import AppText from "@/components/AppText";
-import BodyText from "@/components/BodyText";
 import { Conversation } from "@/types/chat";
 import { useTranslation } from "react-i18next";
+import BodyTextNC from "@/components/BodyTextNC";
 
 type ConversationItemProps = {
   conversation: Conversation;
@@ -75,12 +75,12 @@ function ConversationItem({ conversation, onPress }: ConversationItemProps) {
           <AppText className="text-base" numberOfLines={1}>
             {displayName}
           </AppText>
-          <BodyText className="text-xs text-slate-400 ml-2">
+          <BodyTextNC className="text-xs text-slate-400 ml-2">
             {displayTime}
-          </BodyText>
+          </BodyTextNC>
         </View>
         <View className="flex-row items-center justify-between mt-0.5">
-          <BodyText
+          <BodyTextNC
             className={`text-sm flex-1 mr-2 ${
               conversation.unread_count > 0
                 ? "text-slate-200"
@@ -89,10 +89,10 @@ function ConversationItem({ conversation, onPress }: ConversationItemProps) {
             numberOfLines={1}
           >
             {lastMessagePreview}
-          </BodyText>
+          </BodyTextNC>
           {conversation.unread_count > 0 && (
             <View className="w-5 h-5 bg-blue-500 rounded-full items-center justify-center">
-              <AppText className="text-gray-100 text-[10px] font-bold leading-none">
+              <AppText className="text-[10px] font-bold leading-none">
                 {conversation.unread_count > 9
                   ? "9+"
                   : conversation.unread_count}

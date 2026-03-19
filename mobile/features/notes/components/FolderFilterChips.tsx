@@ -1,6 +1,6 @@
 import { useEffect, useRef, ReactNode } from "react";
 import { ScrollView, View, useWindowDimensions } from "react-native";
-import AppTextNC from "@/components/AppTextNC";
+import AppText from "@/components/AppText";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import { useTranslation } from "react-i18next";
 import type { FolderWithCount } from "@/database/notes/get-folders";
@@ -59,14 +59,14 @@ export default function FolderFilterChips({
           onPress={onSelectAll}
           className={`w-[100px] py-2 px-3 rounded-md ${isAllSelected ? "bg-slate-700" : ""}`}
         >
-          <AppTextNC
+          <AppText
             numberOfLines={1}
             className={`text-center font-medium ${
               isAllSelected ? "text-cyan-400" : "text-gray-200"
             }`}
           >
             {t("notes.folders.all")}
-          </AppTextNC>
+          </AppText>
         </AnimatedButton>
 
         {folders.map((folder) => {
@@ -77,14 +77,14 @@ export default function FolderFilterChips({
               onPress={() => onSelectFolder(folder.id)}
               className={`w-[100px] py-2 px-3 rounded-md ${isActive ? "bg-slate-700" : ""}`}
             >
-              <AppTextNC
+              <AppText
                 numberOfLines={1}
                 className={`text-center font-medium ${
                   isActive ? "text-cyan-400" : "text-gray-200"
                 }`}
               >
                 {folder.name}
-              </AppTextNC>
+              </AppText>
             </AnimatedButton>
           );
         })}

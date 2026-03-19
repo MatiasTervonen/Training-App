@@ -244,7 +244,7 @@ export default function ActivitySettingsScreen() {
                       <AppText
                         className={`text-sm ${
                           milestoneAlerts.steps.interval === val
-                            ? "text-white"
+                            ? "text-gray-100"
                             : "text-gray-300"
                         }`}
                       >

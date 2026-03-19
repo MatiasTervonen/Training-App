@@ -96,7 +96,7 @@ export default function GpsToggleManager() {
   };
 
   return (
-    <View className="bg-slate-800 rounded-lg p-4">
+    <View className="bg-slate-500/10 border border-slate-500/20 rounded-lg p-4">
       <AppText className="underline text-lg">
         {t("menu:settings.locationTracking.title")}
       </AppText>

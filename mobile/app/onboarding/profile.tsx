@@ -184,7 +184,7 @@ export default function ProfileSetupScreen() {
             <AppText className="text-3xl text-center mb-4">
               {t("profile.title")}
             </AppText>
-            <BodyText className="text-center text-base mb-8">
+            <BodyText className="text-center mb-8">
               {t("profile.description")}
             </BodyText>
           </View>

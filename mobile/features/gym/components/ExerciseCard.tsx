@@ -16,6 +16,7 @@ import { Toast } from "react-native-toast-message/lib/src/Toast";
 import SubNotesInput from "@/components/SubNotesInput";
 import { useTranslation } from "react-i18next";
 import AnimatedButton from "@/components/buttons/animatedButton";
+import BodyTextNC from "@/components/BodyTextNC";
 
 type ExerciseCardProps = {
   index: number;
@@ -73,24 +74,24 @@ export default function ExerciseCard({
           className="flex-1 mr-2"
         >
           <AppText
-            className="text-gray-100 text-lg"
+            className="text-lg"
             numberOfLines={1}
             ellipsizeMode="tail"
           >
             {index + 1}. {exercise.name}
           </AppText>
           <View className="flex-row items-center justify-between mt-1">
-            <AppText className="text-gray-400 shrink" numberOfLines={1}>
+            <BodyTextNC className="text-gray-400 shrink" numberOfLines={1}>
               {t(`gym.equipment.${exercise.equipment?.toLowerCase()}`)} /{" "}
               {t(
                 `gym.muscleGroups.${exercise.muscle_group?.toLowerCase().replace(/ /g, "_")}`,
               )}
-            </AppText>
+            </BodyTextNC>
             {mode === "session" && !showContent && exercise.sets.length > 0 && (
               <View className="bg-gray-600 px-2 py-0.5 rounded ml-2">
-                <AppText className="text-sm text-gray-300">
+                <BodyTextNC className="text-sm text-gray-300">
                   {exercise.sets.length} {t("gym.exerciseCard.setsLabel")}
-                </AppText>
+                </BodyTextNC>
               </View>
             )}
           </View>
@@ -123,17 +124,17 @@ export default function ExerciseCard({
       <View className="flex-row items-center justify-between mt-2">
         {history?.sets && history?.sets.length > 0 ? (
           <View className="flex-row items-center bg-gray-700/50 px-2 py-0.5 rounded shrink">
-            <AppText className="text-sm text-gray-300 shrink-0">
+            <BodyTextNC className="text-sm text-gray-300 shrink-0">
               {t("gym.exerciseCard.last")}{" "}
-            </AppText>
-            <AppText
+            </BodyTextNC>
+            <BodyTextNC
               className="text-sm text-green-400 shrink"
               numberOfLines={1}
             >
               {history?.sets
                 .map((set) => `${set.weight}kg × ${set.reps}`)
                 .join(" • ")}
-            </AppText>
+            </BodyTextNC>
           </View>
         ) : (
           <View />

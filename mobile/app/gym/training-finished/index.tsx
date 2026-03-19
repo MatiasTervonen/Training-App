@@ -1,10 +1,8 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
-import { useNavigation } from "expo-router";
-import { useRouter } from "expo-router";
+import { useNavigation, useRouter } from "expo-router";
 import { View, ScrollView, LayoutChangeEvent } from "react-native";
 import AppText from "@/components/AppText";
 import { Image } from "expo-image";
-import LinkButton from "@/components/buttons/LinkButton";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import ShareCard from "@/features/gym/components/ShareCard";
 import ShareCardPicker from "@/lib/components/share/ShareCardPicker";
@@ -19,6 +17,7 @@ import * as Haptics from "expo-haptics";
 import Toggle from "@/components/toggle";
 import { updateFeedItemVisibility } from "@/database/social-feed/update-visibility";
 import { useQueryClient } from "@tanstack/react-query";
+import BodyTextNC from "@/components/BodyTextNC";
 
 export default function TrainingFinishedScreen() {
   const { t } = useTranslation("gym");
@@ -139,9 +138,9 @@ export default function TrainingFinishedScreen() {
             className="w-10 h-10"
           />
         </View>
-        <AppText className="text-sm text-gray-400">
+        <BodyTextNC className="text-sm text-gray-400">
           {t("gym.share.subtitle")}
-        </AppText>
+        </BodyTextNC>
       </View>
 
       {/* Share Card Preview - fixed height */}
@@ -204,7 +203,7 @@ export default function TrainingFinishedScreen() {
         <View className="mt-6 flex-row items-center justify-between py-3 border-b border-gray-700">
           <View className="flex-row items-center gap-3">
             <Users size={20} color="#67e8f9" />
-            <AppText className="text-gray-100">
+            <AppText>
               {t("social:social.shareWithFriends")}
             </AppText>
           </View>

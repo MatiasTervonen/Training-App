@@ -37,7 +37,7 @@ export default function WelcomeScreen() {
         <AppText className="text-3xl text-center mb-4">
           {t("welcome.title")}
         </AppText>
-        <BodyText className="text-center text-base mb-10">
+        <BodyText className="text-center mb-10">
           {t("welcome.body")}
         </BodyText>
       </View>

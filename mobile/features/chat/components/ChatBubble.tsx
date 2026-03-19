@@ -1,7 +1,10 @@
 import { memo } from "react";
-import { View } from "react-native";
+import { View, Linking } from "react-native";
 import BodyText from "@/components/BodyText";
+import BodyTextNC from "@/components/BodyTextNC";
 import ChatMediaBubble from "@/features/chat/components/ChatMediaBubble";
+import LinkPreviewCard from "@/features/chat/components/LinkPreviewCard";
+import { parseMessageWithLinks } from "@/lib/chat/linkUtils";
 import { ChatMessage } from "@/types/chat";
 
 type ChatBubbleProps = {
@@ -34,9 +37,28 @@ function ChatBubble({ message, isOwn, showTimestamp }: ChatBubbleProps) {
         {isMedia ? (
           <ChatMediaBubble message={message} isOwn={isOwn} />
         ) : (
-          <BodyText className="text-base text-slate-100">
-            {message.content}{"  "}
-          </BodyText>
+          <>
+            <BodyText className="text-base text-slate-100">
+              {parseMessageWithLinks(message.content ?? "").map(
+                (segment, i) =>
+                  segment.isUrl ? (
+                    <BodyTextNC
+                      key={i}
+                      className="text-base text-cyan-300 underline"
+                      onPress={() => Linking.openURL(segment.text)}
+                    >
+                      {segment.text}
+                    </BodyTextNC>
+                  ) : (
+                    segment.text
+                  ),
+              )}
+              {"  "}
+            </BodyText>
+            {message.link_preview && (
+              <LinkPreviewCard preview={message.link_preview} isOwn={isOwn} />
+            )}
+          </>
         )}
       </View>
       {showTimestamp && (

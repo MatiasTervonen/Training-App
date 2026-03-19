@@ -157,7 +157,12 @@
       "savingTemplate": "Tallennetaan pohjaa...",
       "recordings": "Äänitallenteet",
       "voiceLoadError": "Äänitallenteiden lataaminen epäonnistui.",
-      "mediaLoadError": "Median lataaminen epäonnistui."
+      "mediaLoadError": "Median lataaminen epäonnistui.",
+      "saveErrorTitle": "Virhe pohjan tallennuksessa",
+      "saveErrorName": "Syötä pohjan nimi",
+      "saveSuccessTitle": "Pohja tallennettu",
+      "saveSuccessMessage": "Pohja on tallennettu onnistuneesti.",
+      "saveErrorMessage": "Yritä myöhemmin uudelleen."
     },
     "sessionStats": {
       "duration": "Kesto",
@@ -364,6 +369,7 @@
       "history": "Historia",
       "updated": "päivitetty:",
       "start": "aloita",
+      "details": "Tiedot",
       "created": "Luotu:",
       "distance": "Matka:",
       "startActivity": "Aloita aktiviteetti",
@@ -394,6 +400,7 @@
       "range6m": "6K",
       "range1y": "1V",
       "noChartData": "Ei tarpeeksi datapisteitä kaavion näyttämiseen"
-    }
+    },
+    "stepNotificationText": "Askeleita tänään: {{steps}}"
   }
 }

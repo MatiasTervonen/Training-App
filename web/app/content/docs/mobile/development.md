@@ -12,7 +12,7 @@ For development you can use Android emulator or your physical device. Below are 
 
 Download and install Android Studio from [here](https://developer.android.com/studio).
 
-From Android Studio, open Virtual Device Manager and create a new virtual device. 
+From Android Studio, open Virtual Device Manager and create a new virtual device.
 
 ## Physical device
 
@@ -23,6 +23,34 @@ Check if your device or emulator is connected and recognized by running the foll
 ```bash
 adb devices
 ```
+
+## Choosing which device to run on
+
+When both a physical device and emulator are connected, you need to specify which one to target. By default, Expo picks the first device in the `adb devices` list.
+
+### Development server (`expo start`)
+
+Start the dev server and press `shift + a` to get a device picker:
+
+```bash
+npx expo start
+# Then press shift + a to select from connected Android devices
+```
+
+### Development build (`expo run:android`)
+
+Use the `--device` flag with the **AVD name** of the emulator (not the adb ID):
+
+```bash
+# Find the AVD name
+adb -s emulator-5554 emu avd name
+# Example output: Pixel_9
+
+# Run on the emulator using the AVD name
+npx expo run:android --device Pixel_9
+```
+
+Note: The `--device` flag expects the emulator's AVD name (e.g., `Pixel_9`), **not** the adb device ID (e.g., `emulator-5554`).
 
 ## Debug vs Release builds
 

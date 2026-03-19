@@ -55,8 +55,15 @@ export default function DropDownModal({
         >
           <View
             onStartShouldSetResponder={() => true}
-            className="border-2 border-slate-300 rounded-xl bg-slate-900 py-5 justify-center"
-            style={{ width: screenWidth * 0.85 }}
+            className="border-[1.5px] border-slate-600 rounded-xl bg-slate-900 py-5 justify-center"
+            style={{
+              width: screenWidth * 0.85,
+              shadowColor: "#3b82f6",
+              shadowOffset: { width: 0, height: 0 },
+              shadowOpacity: 0.4,
+              shadowRadius: 20,
+              elevation: 20,
+            }}
           >
             {label && (
               <AppText className="mb-6 text-center text-lg px-4">

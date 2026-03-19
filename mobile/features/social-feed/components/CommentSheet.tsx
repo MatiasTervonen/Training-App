@@ -35,6 +35,8 @@ export default function CommentSheet({ feedItemId, onClose }: CommentSheetProps)
   const insets = useSafeAreaInsets();
   const snapPoints = useMemo(() => ["50%", "90%"], []);
   const keyboardVisibleRef = useRef(false);
+  const feedItemIdRef = useRef(feedItemId);
+  feedItemIdRef.current = feedItemId;
 
   const [inputText, setInputText] = useState("");
   const [replyingTo, setReplyingTo] = useState<ReplyState>(null);
@@ -54,7 +56,9 @@ export default function CommentSheet({ feedItemId, onClose }: CommentSheetProps)
   useEffect(() => {
     const showSub = Keyboard.addListener("keyboardDidShow", () => {
       keyboardVisibleRef.current = true;
-      bottomSheetRef.current?.snapToIndex(1);
+      if (feedItemIdRef.current) {
+        bottomSheetRef.current?.snapToIndex(1);
+      }
     });
     const hideSub = Keyboard.addListener("keyboardDidHide", () => {
       keyboardVisibleRef.current = false;

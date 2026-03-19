@@ -8,10 +8,13 @@ import Animated, {
   withSequence,
 } from "react-native-reanimated";
 import AppText from "@/components/AppText";
-import { MilestoneToast as MilestoneToastType } from "@/features/activities/hooks/useMilestoneAlerts";
+
+interface MilestoneToastData {
+  lines: string[];
+}
 
 interface Props {
-  toast: MilestoneToastType | null;
+  toast: MilestoneToastData | null;
 }
 
 export default function MilestoneToast({ toast }: Props) {

@@ -2,6 +2,7 @@ import { View } from "react-native";
 import AppText from "@/components/AppText";
 import LinkButton from "@/components/buttons/LinkButton";
 import { APP_NAME } from "@/lib/app-config";
+import BodyTextNC from "@/components/BodyTextNC";
 
 export default function EmailVerified() {
   return (
@@ -11,10 +12,10 @@ export default function EmailVerified() {
         <AppText className="text-center text-green-400">
           Email Verified Successfully
         </AppText>
-        <AppText className="text-center text-slate-400">
+        <BodyTextNC className="text-center text-slate-400">
           Your email has been successfully verified. You can now log in to your
           account.
-        </AppText>
+        </BodyTextNC>
         <LinkButton href="/login" label="Log in" />
       </View>
     </View>

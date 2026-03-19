@@ -118,7 +118,7 @@ export default function TimerScreen() {
             <AppText className="text-xl mb-6 text-center">
               {t("timer.pushPermission.title")}
             </AppText>
-            <BodyText className="text-lg mb-6 text-center">
+            <BodyText className=" text-lg mb-6 text-center">
               {t("timer.pushPermission.description")}
             </BodyText>
             <View className="flex-row gap-4">

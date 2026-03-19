@@ -14,7 +14,7 @@ export const toastConfig = {
       {...props}
       text1NumberOfLines={2}
       text2NumberOfLines={2}
-      style={{ borderWidth: 1, borderColor: "#3b82f6", borderLeftWidth: 5, borderLeftColor: "green", backgroundColor: "#0f1520", overflow: "hidden" }}
+      style={{ borderWidth: 1, borderColor: "#3b82f6", borderLeftWidth: 5, borderLeftColor: "green", backgroundColor: "#0f1520", height: undefined }}
       contentContainerStyle={{
         paddingHorizontal: 15,
         paddingVertical: 10,
@@ -37,7 +37,7 @@ export const toastConfig = {
       {...props}
       text1NumberOfLines={2}
       text2NumberOfLines={2}
-      style={{ borderWidth: 1, borderColor: "#3b82f6", borderLeftWidth: 5, borderLeftColor: "#3b82f6", backgroundColor: "#0f1520", overflow: "hidden" }}
+      style={{ borderWidth: 1, borderColor: "#3b82f6", borderLeftWidth: 5, borderLeftColor: "#3b82f6", backgroundColor: "#0f1520", height: undefined }}
       contentContainerStyle={{
         paddingHorizontal: 15,
         paddingVertical: 10,
@@ -60,7 +60,7 @@ export const toastConfig = {
       {...props}
       text1NumberOfLines={2}
       text2NumberOfLines={2}
-      style={{ borderWidth: 1, borderColor: "#3b82f6", borderLeftWidth: 5, borderLeftColor: "#ef4444", backgroundColor: "#0f1520", overflow: "hidden" }}
+      style={{ borderWidth: 1, borderColor: "#3b82f6", borderLeftWidth: 5, borderLeftColor: "#ef4444", backgroundColor: "#0f1520", height: undefined }}
       contentContainerStyle={{
         paddingHorizontal: 15,
         paddingVertical: 10,

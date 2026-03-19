@@ -2,6 +2,7 @@ import { View, TextInput, TextInputProps } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import AppText from "@/components/AppText";
 import { useTranslation } from "react-i18next";
+import AppTextNC from "./AppTextNC";
 
 type AppInputProps = TextInputProps & {
   value: string;
@@ -40,9 +41,9 @@ export default function AppInput({
         />
       </View>
       {value.length >= 5000 ? (
-        <AppText className="text-yellow-500 mt-2">
+        <AppTextNC className="text-yellow-500 mt-2">
           {t("common.charLimitReached", { max: 5000 })}
-        </AppText>
+        </AppTextNC>
       ) : null}
     </View>
   );

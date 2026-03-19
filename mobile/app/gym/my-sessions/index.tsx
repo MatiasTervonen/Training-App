@@ -1,4 +1,5 @@
 import AppText from "@/components/AppText";
+import BodyText from "@/components/BodyText";
 import {
   View,
   FlatList,
@@ -21,6 +22,7 @@ import useTogglePin from "@/features/feed/hooks/useTogglePin";
 import useDeleteSession from "@/features/feed/hooks/useDeleteSession";
 import { useTranslation } from "react-i18next";
 import { Dumbbell } from "lucide-react-native";
+import BodyTextNC from "@/components/BodyTextNC";
 
 export default function MyGymScreen() {
   const { t } = useTranslation("gym");
@@ -61,11 +63,11 @@ export default function MyGymScreen() {
       end={{ x: 1, y: 1 }}
     >
       {isLoading ? (
-        <FeedSkeleton count={5} />
+        <FeedSkeleton count={5} subFeed />
       ) : error ? (
-        <AppText className="text-center text-lg mt-20 mx-auto px-10">
+        <BodyText className="text-center text-lg mt-20 mx-auto px-10">
           {t("gym.mySessions.loadError")}
-        </AppText>
+        </BodyText>
       ) : !data || (unpinnedFeed.length === 0 && pinnedFeed.length === 0) ? (
         <View className="flex-1 items-center mt-[30%] px-8">
           <View className="items-center">
@@ -75,9 +77,9 @@ export default function MyGymScreen() {
             <AppText className="text-xl text-center mb-3">
               {t("gym.mySessions.noSessions")}
             </AppText>
-            <AppText className="text-sm text-gray-400 text-center leading-5">
+            <BodyTextNC className="text-sm text-gray-400 text-center">
               {t("gym.mySessions.noSessionsDesc")}
-            </AppText>
+            </BodyTextNC>
           </View>
         </View>
       ) : (
@@ -156,15 +158,15 @@ export default function MyGymScreen() {
         >
           {isLoadingGymSession ? (
             <View className="gap-5 items-center justify-center mt-40 px-10">
-              <AppText className="text-lg">
+              <BodyText className="text-lg">
                 {t("gym.mySessions.loadingDetails")}
-              </AppText>
+              </BodyText>
               <ActivityIndicator />
             </View>
           ) : GymSessionError ? (
-            <AppText className="text-center text-xl mt-40 px-10">
+            <BodyText className="text-center text-xl mt-40 px-10">
               {t("gym.mySessions.loadDetailsError")}
-            </AppText>
+            </BodyText>
           ) : (
             GymSessionFull && <GymSession {...GymSessionFull} />
           )}

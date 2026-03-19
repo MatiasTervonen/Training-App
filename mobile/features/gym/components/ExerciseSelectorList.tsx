@@ -3,6 +3,7 @@ import { CircleX } from "lucide-react-native";
 import { ExerciseEntry, emptyExerciseEntry } from "@/types/session";
 import { generateUUID } from "@/utils/generateUUID";
 import AppText from "@/components/AppText";
+import BodyText from "@/components/BodyText";
 import { Pressable, View } from "react-native";
 import React from "react";
 import { useTranslation } from "react-i18next";
@@ -95,10 +96,10 @@ export default function ExerciseSelectorList({
             className="bg-slate-700 p-2 my-2 px-4 flex-row justify-between items-center mr-20 ml-0"
           >
             <View>
-              <AppText className="">{exercise.name}</AppText>
-              <AppText className="text-sm text-gray-400">
+              <AppText>{exercise.name}</AppText>
+              <BodyText className="text-sm text-gray-400">
                 {t(`gym.equipment.${exercise.equipment?.toLowerCase()}`)} / {t(`gym.muscleGroups.${exercise.muscle_group?.toLowerCase().replace(/ /g, "_")}`)}
-              </AppText>
+              </BodyText>
             </View>
             <Pressable
               hitSlop={10}

@@ -8,6 +8,7 @@ import { formatDurationLong } from "@/lib/formatDate";
 import { useTimerStore } from "@/lib/stores/timerStore";
 import { useHabitContextStore } from "@/features/habits/hooks/useHabitTimer";
 import { Play, Pause, RotateCw } from "lucide-react-native";
+import AppTextNC from "@/components/AppTextNC";
 
 type HabitRowProps = {
   habit: Habit;
@@ -34,9 +35,7 @@ function DurationProgress({
   isCompleted: boolean;
 }) {
   // Subscribe to uiTick only when running (triggers re-render every second)
-  useTimerStore(
-    (s) => (timerState === "running" ? s.uiTick : 0),
-  );
+  useTimerStore((s) => (timerState === "running" ? s.uiTick : 0));
 
   const targetSeconds = habit.target_value!;
   let currentAccumulated = accumulatedSeconds;
@@ -45,8 +44,7 @@ function DurationProgress({
     const store = useTimerStore.getState();
     const ctx = useHabitContextStore.getState().context;
     if (store.endTimestamp && ctx) {
-      const remainingNow =
-        Math.max(0, store.endTimestamp - Date.now()) / 1000;
+      const remainingNow = Math.max(0, store.endTimestamp - Date.now()) / 1000;
       const remainingAtStart = ctx.targetSeconds - ctx.accumulatedAtStart;
       const elapsed = Math.max(0, remainingAtStart - remainingNow);
       currentAccumulated = Math.round(ctx.accumulatedAtStart + elapsed);
@@ -93,11 +91,11 @@ export default function HabitRow({
       className="py-3 px-4 bg-slate-500/10 border border-slate-500/20 rounded-lg mb-2"
     >
       <View className="flex-row items-center justify-between">
-        <AppText
+        <AppTextNC
           className={`flex-1 shrink text-lg mr-3 ${isCompleted ? "text-green-400" : "text-gray-100"}`}
         >
           {habit.name}
-        </AppText>
+        </AppTextNC>
         {isDurationHabit && !isCompleted ? (
           <DurationTimerButton
             timerState={habitTimerState}
@@ -162,7 +160,9 @@ function DurationTimerButton({
         hitSlop={5}
       >
         <Pause size={14} color="#f3f4f6" />
-        <AppText className="text-sm">{t("habitTimerPause")}</AppText>
+        <AppText className="text-sm">
+          {t("habitTimerPause")}
+        </AppText>
       </AnimatedButton>
     );
   }
@@ -175,7 +175,9 @@ function DurationTimerButton({
         hitSlop={5}
       >
         <RotateCw size={14} color="#f3f4f6" />
-        <AppText className="text-sm">{t("habitTimerResume")}</AppText>
+        <AppText className="text-sm">
+          {t("habitTimerResume")}
+        </AppText>
       </AnimatedButton>
     );
   }
@@ -187,7 +189,9 @@ function DurationTimerButton({
       hitSlop={5}
     >
       <Play size={14} color="#f3f4f6" />
-      <AppText className="text-sm">{t("habitTimerStart")}</AppText>
+      <AppText className="text-sm">
+        {t("habitTimerStart")}
+      </AppText>
     </AnimatedButton>
   );
 }

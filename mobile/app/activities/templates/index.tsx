@@ -1,8 +1,8 @@
 import { useRouter } from "expo-router";
 import FullScreenModal from "@/components/FullScreenModal";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { ScrollView, View } from "react-native";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { TemplateSkeleton } from "@/components/skeletetons";
 import AppText from "@/components/AppText";
 import PageContainer from "@/components/PageContainer";
@@ -17,14 +17,18 @@ import TemplateHistoryModal from "@/features/activities/templates/components/Tem
 import { useTranslation } from "react-i18next";
 import { Route } from "lucide-react-native";
 import InfoModal from "@/components/InfoModal";
+import DraggableList from "@/components/DraggableList";
+import { reorderActivityTemplates } from "@/database/activities/reorder-templates";
 
 export default function TemplatesPage() {
   const { t } = useTranslation("activities");
   const [expandedItem, setExpandedItem] = useState<templateSummary | null>(
     null,
   );
+  const [scrollEnabled, setScrollEnabled] = useState(true);
 
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const {
     data: templates = [],
@@ -53,10 +57,24 @@ export default function TemplatesPage() {
     closeHistory,
   } = useTemplateHistory();
 
+  const handleReorder = useCallback(
+    (reordered: templateSummary[]) => {
+      queryClient.setQueryData(["get-activity-templates"], reordered);
+      const ids = reordered.map((t) => t.template.id);
+      reorderActivityTemplates(ids).catch(() => {
+        queryClient.invalidateQueries({
+          queryKey: ["get-activity-templates"],
+        });
+      });
+    },
+    [queryClient],
+  );
+
   return (
     <ScrollView
       showsVerticalScrollIndicator={false}
       keyboardShouldPersistTaps="handled"
+      scrollEnabled={scrollEnabled}
     >
       <PageContainer>
         <AppText className="text-center mb-10 text-2xl">
@@ -89,22 +107,33 @@ export default function TemplatesPage() {
           </View>
         )}
 
-        {templates &&
-          templates.map((template: templateSummary, index: number) => (
-            <ActivityTemplateCard
-              index={index}
-              key={template.template.id}
-              item={template}
-              onDelete={() => handleDeleteTemplate(template.template.id)}
-              onExpand={() => setExpandedItem(template)}
-              onEdit={() => {
-                router.push(`/activities/templates/${template.template.id}`);
-              }}
-              onHistory={() =>
-                openHistory(template.template.id, template.template.name)
-              }
-            />
-          ))}
+        {templates.length > 0 && (
+          <DraggableList
+            items={templates}
+            keyExtractor={(item) => item.template.id}
+            onReorder={handleReorder}
+            onDragStart={() => setScrollEnabled(false)}
+            onDragEnd={() => setScrollEnabled(true)}
+            renderItem={(template, index) => (
+              <View className="pb-5">
+                <ActivityTemplateCard
+                  index={index}
+                  item={template}
+                  onDelete={() => handleDeleteTemplate(template.template.id)}
+                  onExpand={() => setExpandedItem(template)}
+                  onEdit={() => {
+                    router.push(
+                      `/activities/templates/${template.template.id}`,
+                    );
+                  }}
+                  onHistory={() =>
+                    openHistory(template.template.id, template.template.name)
+                  }
+                />
+              </View>
+            )}
+          />
+        )}
 
         {expandedItem && (
           <FullScreenModal isOpen={true} onClose={() => setExpandedItem(null)} scrollable={false}>

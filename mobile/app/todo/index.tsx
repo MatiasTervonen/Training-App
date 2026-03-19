@@ -1,5 +1,5 @@
 import AppText from "@/components/AppText";
-import AppTextNC from "@/components/AppTextNC";
+import BodyText from "@/components/BodyText";
 import {
   View,
   FlatList,
@@ -27,6 +27,7 @@ import AnimatedButton from "@/components/buttons/animatedButton";
 import FloatingActionButton from "@/components/buttons/FloatingActionButton";
 import { Plus, ClipboardList } from "lucide-react-native";
 import type { TodoFilter } from "@/database/todo/get-todo-sessions";
+import AppTextNC from "@/components/AppTextNC";
 
 type TodoExtraFields = { completed?: number; total?: number } | null;
 
@@ -133,13 +134,11 @@ export default function TodoScreen() {
         {filterTabs}
       </View>
       {isLoading ? (
-        <View className="pt-[50px]">
-          <FeedSkeleton count={5} />
-        </View>
+        <FeedSkeleton count={5} subFeed />
       ) : error ? (
-        <AppText className="text-center text-lg mt-20 mx-auto px-10">
+        <BodyText className="text-center text-lg mt-20 mx-auto px-10">
           {t("todo.failedToLoad")}
-        </AppText>
+        </BodyText>
       ) : !data ||
         (unpinnedFeed.length === 0 && filteredPinned.length === 0) ? (
         <View className="flex-1 items-center mt-[30%] px-8">
@@ -150,9 +149,9 @@ export default function TodoScreen() {
             <AppText className="text-xl text-center mb-3">
               {getEmptyMessage()}
             </AppText>
-            <AppText className="text-sm text-gray-400 text-center leading-5">
+            <BodyText className="text-sm text-gray-400 text-center">
               {getEmptyDescription()}
-            </AppText>
+            </BodyText>
           </View>
         </View>
       ) : (
@@ -240,13 +239,13 @@ export default function TodoScreen() {
         >
           {isLoadingTodoSession ? (
             <View className="gap-5 items-center justify-center mt-40 px-10">
-              <AppText className="text-lg">{t("todo.loadingDetails")}</AppText>
+              <BodyText className="text-lg">{t("todo.loadingDetails")}</BodyText>
               <ActivityIndicator />
             </View>
           ) : todoSessionError ? (
-            <AppText className="text-center text-xl mt-40 px-10">
+            <BodyText className="text-center text-xl mt-40 px-10">
               {t("todo.failedToLoadDetails")}
-            </AppText>
+            </BodyText>
           ) : (
             todoSessionFull && (
               <TodoSession
@@ -274,13 +273,13 @@ export default function TodoScreen() {
         >
           {isLoadingTodoSession ? (
             <View className="gap-5 items-center justify-center mt-40 px-10">
-              <AppText className="text-lg">{t("todo.loadingTodoList")}</AppText>
+              <BodyText className="text-lg">{t("todo.loadingTodoList")}</BodyText>
               <ActivityIndicator />
             </View>
           ) : todoSessionError ? (
-            <AppText className="text-center text-xl mt-40 px-10">
+            <BodyText className="text-center text-xl mt-40 px-10">
               {t("todo.failedToLoadDetails")}
-            </AppText>
+            </BodyText>
           ) : (
             todoSessionFull && (
               <EditTodo

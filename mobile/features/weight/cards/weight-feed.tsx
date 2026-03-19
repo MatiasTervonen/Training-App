@@ -1,11 +1,11 @@
 import { Scale, Mic, ImageIcon, Video } from "lucide-react-native";
 import AppText from "@/components/AppText";
-import BodyText from "@/components/BodyText";
 import { useUserStore } from "@/lib/stores/useUserStore";
 import { FeedCardProps } from "@/types/session";
 import BaseFeedCard from "@/features/feed-cards/BaseFeedCard";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
+import BodyTextNC from "@/components/BodyTextNC";
 
 type weightPayload = {
   weight: number;
@@ -67,9 +67,9 @@ export default function WeightCard({
               )}
             </View>
           )}
-          <BodyText className="text-slate-300">
+          <BodyTextNC className="text-slate-300">
             {payload.weight} {weightUnit}
-          </BodyText>
+          </BodyTextNC>
           <AppText>{" "}</AppText>
         </View>
       }

@@ -1,9 +1,10 @@
 import { useMemo } from "react";
-import FullScreenModal from "@/components/FullScreenModal";
-import { ActivityIndicator, View } from "react-native";
+import FullScreenModal, { useFullScreenModalScroll } from "@/components/FullScreenModal";
+import { ActivityIndicator, View, NativeSyntheticEvent, NativeScrollEvent } from "react-native";
 import AppText from "@/components/AppText";
-import ErrorMessage from "@/components/ErrorMessage";
 import AppTextNC from "@/components/AppTextNC";
+import BodyText from "@/components/BodyText";
+import ErrorMessage from "@/components/ErrorMessage";
 import { TemplateHistorySession } from "@/types/session";
 import { FlatList } from "react-native-gesture-handler";
 import { LinearGradient } from "expo-linear-gradient";
@@ -17,6 +18,7 @@ import {
   formatSpeed,
   getDistanceUnitLabels,
 } from "@/lib/formatDate";
+import BodyTextNC from "@/components/BodyTextNC";
 
 type TemplateHistoryModalProps = {
   isOpen: boolean;
@@ -35,9 +37,34 @@ export default function TemplateHistoryModal({
   templateName,
   error,
 }: TemplateHistoryModalProps) {
+  return (
+    <FullScreenModal isOpen={isOpen} onClose={onClose} scrollable={false}>
+      <TemplateHistoryContent
+        isLoading={isLoading}
+        history={history}
+        templateName={templateName}
+        error={error}
+      />
+    </FullScreenModal>
+  );
+}
+
+function TemplateHistoryContent({
+  isLoading,
+  history,
+  templateName,
+  error,
+}: Omit<TemplateHistoryModalProps, "isOpen" | "onClose">) {
   const { t, i18n } = useTranslation("activities");
   const locale = i18n.language;
   const labels = getDistanceUnitLabels();
+  const modalScroll = useFullScreenModalScroll();
+
+  const handleScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+    if (modalScroll) {
+      modalScroll.innerScrollY.value = e.nativeEvent.contentOffset.y;
+    }
+  };
 
   const personalBests = useMemo(() => {
     if (!history || history.length === 0) return null;
@@ -96,21 +123,20 @@ export default function TemplateHistoryModal({
   };
 
   return (
-    <FullScreenModal isOpen={isOpen} onClose={onClose} scrollable={false}>
       <View className="flex-1 px-5">
         {isLoading ? (
           <View className="justify-center items-center mt-40 gap-5 mx-4">
-            <AppText className="text-lg">
+            <BodyText className="text-lg">
               {t("activities.templateHistory.loading")}
-            </AppText>
+            </BodyText>
             <ActivityIndicator size="large" />
           </View>
         ) : error ? (
           <ErrorMessage message={t("activities.templateHistory.loadError")} fullPage />
         ) : history.length === 0 ? (
-          <AppText className="text-center mt-40 px-10 text-lg">
+          <BodyText className="text-center mt-40 px-10 text-lg">
             {t("activities.templateHistory.noHistory")}
-          </AppText>
+          </BodyText>
         ) : (
           <View className="flex-1">
             <FlatList
@@ -121,6 +147,8 @@ export default function TemplateHistoryModal({
                 paddingTop: 40,
               }}
               showsVerticalScrollIndicator={false}
+              onScroll={handleScroll}
+              scrollEventThrottle={16}
               ListHeaderComponent={
                 <View className="mb-10">
                   {/* Header */}
@@ -136,9 +164,9 @@ export default function TemplateHistoryModal({
                       end={{ x: 1, y: 1 }}
                       className="mt-6 rounded-md px-4 py-4 overflow-hidden border-2 border-amber-500/60"
                     >
-                      <AppText className="text-center text-amber-400 text-sm mb-3">
+                      <BodyTextNC className="text-center text-amber-400 text-sm mb-3">
                         {t("activities.templateHistory.personalBests")}
-                      </AppText>
+                      </BodyTextNC>
                       <View className="flex-row gap-4">
                         {personalBests.fastestPace && (
                           <View className="flex-1 items-center">
@@ -147,14 +175,14 @@ export default function TemplateHistoryModal({
                                 personalBests.fastestPace.value,
                               )}
                             </AppTextNC>
-                            <AppText className="text-gray-400 text-xs mt-1">
+                            <BodyTextNC className="text-gray-400 text-xs mt-1">
                               {labels.pace}
-                            </AppText>
-                            <AppText className="text-gray-500 text-xs mt-1">
+                            </BodyTextNC>
+                            <BodyTextNC className="text-gray-500 text-xs mt-1">
                               {formatDateWithYear(
                                 personalBests.fastestPace.date,
                               )}
-                            </AppText>
+                            </BodyTextNC>
                           </View>
                         )}
                         {personalBests.shortestDuration && (
@@ -164,14 +192,14 @@ export default function TemplateHistoryModal({
                                 personalBests.shortestDuration.value,
                               )}
                             </AppTextNC>
-                            <AppText className="text-gray-400 text-xs mt-1">
+                            <BodyTextNC className="text-gray-400 text-xs mt-1">
                               {t("activities.templateHistory.shortestDuration")}
-                            </AppText>
-                            <AppText className="text-gray-500 text-xs mt-1">
+                            </BodyTextNC>
+                            <BodyTextNC className="text-gray-500 text-xs mt-1">
                               {formatDateWithYear(
                                 personalBests.shortestDuration.date,
                               )}
-                            </AppText>
+                            </BodyTextNC>
                           </View>
                         )}
                       </View>
@@ -186,9 +214,9 @@ export default function TemplateHistoryModal({
                 const isBest = bestSessionIds.has(session.session_id);
                 return (
                 <View className="mb-8">
-                  <AppText className="text-lg mb-3 text-center">
+                  <BodyText className="text-lg mb-3 text-center">
                     {formatSessionDate(session.start_time)}
-                  </AppText>
+                  </BodyText>
                   <LinearGradient
                     colors={isBest ? ["#78350f", "#1e1b4b", "#0f172a"] : ["#1e3a8a", "#0f172a", "#0f172a"]}
                     start={isBest ? { x: 0, y: 0 } : { x: 1, y: 0 }}
@@ -196,9 +224,9 @@ export default function TemplateHistoryModal({
                     className={`pb-4 px-4 rounded-md overflow-hidden border-2 ${isBest ? "pt-2 border-amber-500/60" : "pt-4 border-gray-600"}`}
                   >
                     {isBest && (
-                      <AppText className="text-amber-400 text-xs text-center mt-1 mb-3">
+                      <BodyTextNC className="text-amber-400 text-xs text-center mt-1 mb-3">
                         {t("activities.templateHistory.personalBest")}
-                      </AppText>
+                      </BodyTextNC>
                     )}
                     <View className="gap-2">
                       {/* Row 1: Duration, Moving Time, Distance */}
@@ -267,6 +295,5 @@ export default function TemplateHistoryModal({
           </View>
         )}
       </View>
-    </FullScreenModal>
   );
 }

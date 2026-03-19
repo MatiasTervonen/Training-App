@@ -21,6 +21,7 @@ import { canUseExactAlarm, requestExactAlarm } from "@/native/android/EnsureExac
 import InfoModal from "@/components/InfoModal";
 import { useTranslation } from "react-i18next";
 import BodyText from "@/components/BodyText";
+import BodyTextNC from "@/components/BodyTextNC";
 
 export default function ReminderScreen() {
   const { t, i18n } = useTranslation("reminders");
@@ -95,9 +96,9 @@ export default function ReminderScreen() {
             </AppText>
             <View className="flex-row items-center justify-center mb-5">
               <Info color="#9ca3af" size={18} />
-              <BodyText className="text-gray-400 text-sm ml-2 shrink">
+              <BodyTextNC className="text-gray-400 text-sm ml-2 shrink">
                 {t("reminders.globalInfo")}
-              </BodyText>
+              </BodyTextNC>
             </View>
             <View className="gap-5">
             <View>
@@ -121,7 +122,6 @@ export default function ReminderScreen() {
                 }
                 onPress={() => setOpen(true)}
                 className="btn-base flex-row gap-2 justify-center items-center"
-                textClassName="text-gray-100"
               >
                 <Plus color="#f3f4f6" />
               </AnimatedButton>
@@ -147,7 +147,7 @@ export default function ReminderScreen() {
             />
             <View className="flex-row items-center justify-between px-4 mt-5">
               <View>
-                <BodyText>{t("reminders.enableHighPriority")}</BodyText>
+                <BodyText className="text-gray-200">{t("reminders.enableHighPriority")}</BodyText>
                 <BodyText className="text-gray-400 text-sm">
                   {t("reminders.highPriorityDescription")}
                 </BodyText>

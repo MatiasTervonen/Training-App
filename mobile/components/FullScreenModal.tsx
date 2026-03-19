@@ -43,9 +43,10 @@ export default function FullScreenModal({
 }) {
   const { t } = useTranslation("common");
   const translateY = useSharedValue(0);
-  const scrollY = useSharedValue(0);
   const innerScrollY = useSharedValue(0);
   const startY = useSharedValue(0);
+  const failedThisTouch = useSharedValue(false);
+  const isDismissing = useSharedValue(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const insets = useSafeAreaInsets();
 
@@ -59,11 +60,11 @@ export default function FullScreenModal({
   useEffect(() => {
     if (isOpen) {
       translateY.value = 0;
-      scrollY.value = 0;
       innerScrollY.value = 0;
+      isDismissing.value = false;
       setShowConfirm(false);
     }
-  }, [isOpen, translateY, scrollY]);
+  }, [isOpen, translateY, innerScrollY, isDismissing]);
 
   const handleClose = () => {
     if (confirmBeforeClose) {
@@ -73,96 +74,73 @@ export default function FullScreenModal({
     }
   };
 
+  const threshold = screenHeight * 0.15;
+
+  // Track scroll position for the scrollable case (no dismiss logic here)
   const scrollHandler = useAnimatedScrollHandler({
     onScroll: (event) => {
-      scrollY.value = event.contentOffset.y;
+      innerScrollY.value = event.contentOffset.y;
     },
   });
 
-  const onChangeHandler = (event: { translationY: number }) => {
-    'worklet';
-    translateY.value = Math.max(0, event.translationY * 0.7);
-  };
-
-  const onFinalizeHandler = (_event: unknown, success: boolean) => {
-    'worklet';
-    const threshold = screenHeight * 0.15;
-
-    if (success && translateY.value > threshold) {
-      if (confirmBeforeClose) {
-        translateY.value = withSpring(0, {
-          stiffness: 220,
-          damping: 15,
-          mass: 1,
-        });
-        scheduleOnRN(handleClose);
-      } else {
-        translateY.value = withTiming(
-          screenHeight,
-          { duration: 300 },
-          () => {
-            scheduleOnRN(onClose);
-          },
-        );
-      }
-    } else {
-      translateY.value = withSpring(0, {
-        stiffness: 220,
-        damping: 15,
-        mass: 1,
-      });
-    }
-  };
-
-  // scrollable: modal owns the ScrollView, dismiss only at top
-  const scrollablePan = Gesture.Pan()
+  // Unified pan gesture for dismiss — works for both scrollable and non-scrollable.
+  // Children with their own ScrollView must report scroll position via
+  // useFullScreenModalScroll() context so innerScrollY reflects the real position.
+  const pan = Gesture.Pan()
     .enabled((swipeEnabled ?? true) && !showConfirm)
     .manualActivation(true)
     .onTouchesDown((e) => {
       'worklet';
       if (e.numberOfTouches === 1) {
         startY.value = e.allTouches[0].absoluteY;
+        failedThisTouch.value = false;
       }
     })
     .onTouchesMove((e, state) => {
       'worklet';
-      if (e.numberOfTouches === 1) {
-        const dy = e.allTouches[0].absoluteY - startY.value;
-        if (dy > 15 && scrollY.value <= 1) {
-          state.activate();
-        } else if (dy < -15 || dy > 15) {
-          state.fail();
-        }
-      }
-    })
-    .onChange(onChangeHandler)
-    .onFinalize(onFinalizeHandler);
-
-  // non-scrollable: children have their own scroll, only dismiss when inner scroll is at top
-  const nonScrollablePan = Gesture.Pan()
-    .enabled((swipeEnabled ?? true) && !showConfirm)
-    .manualActivation(true)
-    .onTouchesDown((e) => {
-      'worklet';
-      if (e.numberOfTouches === 1) {
-        startY.value = e.allTouches[0].absoluteY;
-      }
-    })
-    .onTouchesMove((e, state) => {
-      'worklet';
+      if (failedThisTouch.value) return;
       if (e.numberOfTouches === 1) {
         const dy = e.allTouches[0].absoluteY - startY.value;
         if (dy > 15 && innerScrollY.value <= 1) {
           state.activate();
         } else if (dy < -15 || dy > 15) {
+          failedThisTouch.value = true;
           state.fail();
         }
       }
     })
-    .onChange(onChangeHandler)
-    .onFinalize(onFinalizeHandler);
-
-  const pan = scrollable ? scrollablePan : nonScrollablePan;
+    .onChange((event: { translationY: number }) => {
+      'worklet';
+      translateY.value = Math.max(0, event.translationY * 0.7);
+    })
+    .onFinalize((_event, success) => {
+      'worklet';
+      if (success && translateY.value > threshold) {
+        isDismissing.value = true;
+        if (confirmBeforeClose) {
+          translateY.value = withSpring(0, {
+            stiffness: 220,
+            damping: 15,
+            mass: 1,
+          });
+          scheduleOnRN(handleClose);
+        } else {
+          translateY.value = withTiming(
+            screenHeight,
+            { duration: 300 },
+            () => {
+              scheduleOnRN(onClose);
+            },
+          );
+        }
+      } else {
+        translateY.value = withSpring(0, {
+          stiffness: 220,
+          damping: 15,
+          mass: 1,
+        });
+      }
+    });
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: translateY.value }],
@@ -178,32 +156,34 @@ export default function FullScreenModal({
             className="rounded-t-2xl h-[95%] w-full z-50 max-w-3xl overflow-hidden"
             style={[animatedStyle]}
           >
-            <View className="flex-1 bg-[#1d293d]">
-              {scrollable ? (
-                <Animated.ScrollView
-                  className="flex-1"
-                  contentContainerStyle={{ flexGrow: 1 }}
-                  scrollEventThrottle={16}
-                  onScroll={scrollHandler}
-                  showsVerticalScrollIndicator={false}
-                >
+            <View className="flex-1 bg-[#131c2b]">
+              <FullScreenModalScrollContext.Provider value={{ innerScrollY }}>
+                {scrollable ? (
+                  <Animated.ScrollView
+                    className="flex-1"
+                    contentContainerStyle={{ flexGrow: 1 }}
+                    scrollEventThrottle={16}
+                    onScroll={scrollHandler}
+                    showsVerticalScrollIndicator={false}
+                    bounces={false}
+                    overScrollMode="never"
+                  >
+                    <View
+                      className="flex-1 max-w-xl px-2 w-full"
+                      style={{ paddingBottom: insets.bottom }}
+                    >
+                      {children}
+                    </View>
+                  </Animated.ScrollView>
+                ) : (
                   <View
                     className="flex-1 max-w-xl px-2 w-full"
                     style={{ paddingBottom: insets.bottom }}
                   >
                     {children}
                   </View>
-                </Animated.ScrollView>
-              ) : (
-                <FullScreenModalScrollContext.Provider value={{ innerScrollY }}>
-                  <View
-                    className="flex-1 max-w-xl px-2 w-full"
-                    style={{ paddingBottom: insets.bottom }}
-                  >
-                    {children}
-                  </View>
-                </FullScreenModalScrollContext.Provider>
-              )}
+                )}
+              </FullScreenModalScrollContext.Provider>
 
               {showConfirm && (
                 <View className="absolute inset-0 bg-black/70 items-center justify-center z-50 rounded-t-2xl">
@@ -216,7 +196,6 @@ export default function FullScreenModal({
                         onPress={() => setShowConfirm(false)}
                         className="flex-1 btn-base py-3"
                         label={t("common.keepEditing")}
-                        textClassName="text-center text-gray-100"
                       />
                       <AnimatedButton
                         onPress={() => {
@@ -225,7 +204,6 @@ export default function FullScreenModal({
                         }}
                         className="flex-1 btn-danger py-3"
                         label={t("common.discard")}
-                        textClassName="text-center text-gray-100"
                       />
                     </View>
                   </View>

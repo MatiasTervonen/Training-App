@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useCallback, useSyncExternalStore } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ShareCardThemeId, ShareCardSize } from "@/lib/share/themes";
 
@@ -14,51 +14,55 @@ const DEFAULTS: Preferences = {
   size: "square",
 };
 
+type StoreState = Preferences & { isLoaded: boolean };
+
+let store: StoreState = { ...DEFAULTS, isLoaded: false };
+const listeners = new Set<() => void>();
+
+function getSnapshot(): StoreState {
+  return store;
+}
+
+function subscribe(cb: () => void): () => void {
+  listeners.add(cb);
+  return () => listeners.delete(cb);
+}
+
+function emit() {
+  listeners.forEach((cb) => cb());
+}
+
+function update(next: Preferences) {
+  store = { ...next, isLoaded: true };
+  AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+  emit();
+}
+
+// Load persisted preferences once at module init
+AsyncStorage.getItem(STORAGE_KEY).then((raw) => {
+  let prefs = DEFAULTS;
+  if (raw) {
+    try {
+      const parsed = JSON.parse(raw) as Partial<Preferences>;
+      prefs = { ...DEFAULTS, ...parsed };
+    } catch {
+      // ignore parse errors
+    }
+  }
+  store = { ...prefs, isLoaded: true };
+  emit();
+});
+
 export default function useShareCardPreferences() {
-  const [theme, setThemeState] = useState<ShareCardThemeId>(DEFAULTS.theme);
-  const [size, setSizeState] = useState<ShareCardSize>(DEFAULTS.size);
-  const [isLoaded, setIsLoaded] = useState(false);
+  const { theme, size, isLoaded } = useSyncExternalStore(subscribe, getSnapshot);
 
-  useEffect(() => {
-    AsyncStorage.getItem(STORAGE_KEY).then((raw) => {
-      if (raw) {
-        try {
-          const parsed = JSON.parse(raw) as Preferences;
-          if (parsed.theme) setThemeState(parsed.theme);
-          if (parsed.size) setSizeState(parsed.size);
-        } catch {
-          // ignore parse errors
-        }
-      }
-      setIsLoaded(true);
-    });
+  const setTheme = useCallback((t: ShareCardThemeId) => {
+    update({ theme: t, size: store.size });
   }, []);
 
-  const persist = useCallback((next: Preferences) => {
-    AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+  const setSize = useCallback((s: ShareCardSize) => {
+    update({ theme: store.theme, size: s });
   }, []);
-
-  const setTheme = useCallback(
-    (t: ShareCardThemeId) => {
-      setThemeState(t);
-      setSizeState((s) => {
-        persist({ theme: t, size: s });
-        return s;
-      });
-    },
-    [persist],
-  );
-
-  const setSize = useCallback(
-    (s: ShareCardSize) => {
-      setSizeState(s);
-      setThemeState((t) => {
-        persist({ theme: t, size: s });
-        return t;
-      });
-    },
-    [persist],
-  );
 
   return { theme, size, setTheme, setSize, isLoaded };
 }

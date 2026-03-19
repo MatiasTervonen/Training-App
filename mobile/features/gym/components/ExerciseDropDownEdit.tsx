@@ -14,6 +14,7 @@ import ErrorMessage from "@/components/ErrorMessage";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import { useTranslation } from "react-i18next";
 import { Dumbbell } from "lucide-react-native";
+import AppTextNC from "@/components/AppTextNC";
 
 type Props = {
   onSelect: (exercise: userExercise) => void;
@@ -107,9 +108,9 @@ export default function ExerciseDropdownEdit({
                 <AppText className="text-xl text-center mb-3">
                   {t("gym.exerciseDropdown.noExercisesFound")}
                 </AppText>
-                <AppText className="text-sm text-gray-400 text-center leading-5">
+                <AppTextNC className="text-sm text-gray-400 text-center leading-5">
                   {t("gym.exerciseDropdownEdit.addNewExercise")}
-                </AppText>
+                </AppTextNC>
               </View>
             </View>
           ) : searchQuery.length > 0 && filteredExercises?.length === 0 ? (
@@ -140,13 +141,13 @@ export default function ExerciseDropdownEdit({
                         >
                           {item.name}
                         </AppText>
-                        <AppText className="text-md text-gray-300 shrink-0">
+                        <AppTextNC className="text-md text-gray-300 shrink-0">
                           {t(`gym.muscleGroups.${item.muscle_group}`)}
-                        </AppText>
+                        </AppTextNC>
                       </View>
-                      <AppText className="text-md text-gray-400">
+                      <AppTextNC className="text-md text-gray-400">
                         {t(`gym.equipment.${item.equipment}`)}
-                      </AppText>
+                      </AppTextNC>
                     </View>
                   </AnimatedButton>
                 );

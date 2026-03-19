@@ -79,7 +79,8 @@
       "createTemplate": "Create Template",
       "loadingTemplates": "Loading templates...",
       "templateType": "Template",
-      "details": "Details"
+      "details": "Details",
+      "start": "Start"
     },
     "addExerciseScreen": {
       "title": "Add Exercises",
@@ -210,7 +211,8 @@
       "phaseStillRunningSub": "Stop warm-up or cool-down first.",
       "confirmTitle": "Confirm Finish Session",
       "confirmMessage": "Are you sure you want to finish this session?",
-      "saveError": "Failed to save session. Please try again."
+      "saveError": "Failed to save session. Please try again.",
+      "emptySession": "Start the timer or add exercises before saving."
     },
     "session": {
       "duration": "Duration",

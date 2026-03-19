@@ -18,6 +18,7 @@
     "mediaVoice": "Voice message",
     "mediaUploadError": "Failed to send media",
     "attachMedia": "Attach media",
-    "sending": "Sending..."
+    "sending": "Sending...",
+    "recordVoiceMessage": "Record Voice Message"
   }
 }

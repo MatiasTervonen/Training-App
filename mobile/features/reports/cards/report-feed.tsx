@@ -1,12 +1,12 @@
 import { View } from "react-native";
 import { FileBarChart } from "lucide-react-native";
 import AppText from "@/components/AppText";
-import BodyText from "@/components/BodyText";
 import { FeedCardProps } from "@/types/session";
 import BaseFeedCard from "@/features/feed-cards/BaseFeedCard";
 import { useTranslation } from "react-i18next";
 import { formatDateShort } from "@/lib/formatDate";
 import { ReportFeature } from "@/types/report";
+import BodyTextNC from "@/components/BodyTextNC";
 
 type ReportPayload = {
   period_start: string;
@@ -46,12 +46,12 @@ export default function ReportCard({
       typeName={t("feed:feed.card.types.report")}
       statsContent={
         <View>
-          <BodyText className="text-sm text-slate-400">
+          <BodyTextNC className="text-sm text-slate-400">
             {dateRange}
-          </BodyText>
-          <BodyText className="mt-1 text-slate-300">
+          </BodyTextNC>
+          <BodyTextNC className="mt-1 text-slate-300">
             {featureLabels}
-          </BodyText>
+          </BodyTextNC>
           <AppText>{" "}</AppText>
         </View>
       }

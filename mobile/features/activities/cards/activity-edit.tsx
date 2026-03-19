@@ -116,7 +116,6 @@ export default function ActivitySessionEdit({
               onPress={() => setShowDropdown(true)}
               label={getActivityName(selectedActivity)}
               className="btn-base py-2 w-full"
-              textClassName="text-gray-100 text-center"
             />
           </View>
           <FullScreenModal

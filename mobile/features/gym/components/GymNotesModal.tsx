@@ -1,4 +1,5 @@
-import { ScrollView, View } from "react-native";
+import { ScrollView, View, NativeSyntheticEvent, NativeScrollEvent } from "react-native";
+import { useFullScreenModalScroll } from "@/components/FullScreenModal";
 import AppText from "@/components/AppText";
 import { useTranslation } from "react-i18next";
 import AppInput from "@/components/AppInput";
@@ -72,6 +73,13 @@ export default function GymNotesModal({
   const { t } = useTranslation(["gym", "notes"]);
   const confirmAction = useConfirmAction();
   const [viewerIndex, setViewerIndex] = useState(-1);
+  const modalScroll = useFullScreenModalScroll();
+
+  const handleScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+    if (modalScroll) {
+      modalScroll.innerScrollY.value = e.nativeEvent.contentOffset.y;
+    }
+  };
 
   const allImages = [
     ...existingImages.map((img) => ({ id: img.id, uri: img.uri })),
@@ -84,6 +92,8 @@ export default function GymNotesModal({
       <ScrollView
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
+        onScroll={handleScroll}
+        scrollEventThrottle={16}
       >
         <PageContainer className="pt-10">
           <AppText className="text-2xl mb-6 text-center">

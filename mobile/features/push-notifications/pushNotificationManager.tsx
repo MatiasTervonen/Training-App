@@ -64,7 +64,7 @@ export default function PushNotificationManager() {
     } catch {
       Toast.show({
         type: "error",
-        text1: t("common.error"),
+        text1: t("common:common.error"),
         text2: t("settings.pushNotifications.enableError"),
       });
     }
@@ -114,7 +114,7 @@ export default function PushNotificationManager() {
       } catch {
         Toast.show({
           type: "error",
-          text1: t("common.error"),
+          text1: t("common:common.error"),
           text2: t("settings.pushNotifications.disableError"),
         });
       }
@@ -124,7 +124,7 @@ export default function PushNotificationManager() {
   }
 
   return (
-    <View className="bg-slate-800 rounded-lg p-4">
+    <View className="bg-slate-500/10 border border-slate-500/20 rounded-lg p-4">
       <AppText className="underline text-lg">
         {t("settings.pushNotifications.title")}
       </AppText>

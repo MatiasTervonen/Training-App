@@ -8,7 +8,7 @@ type StatCardProps = {
 
 export default function StatCard({ label, value }: StatCardProps) {
   return (
-    <View className="flex-1 min-w-[30%] items-center justify-center gap-1 border-blue-500 border py-3 px-2 rounded-lg bg-slate-950/50">
+    <View className="flex-1 min-w-[30%] items-center justify-center gap-1 py-3 px-2 rounded-lg bg-white/5">
       <AppText
         className="text-xs text-gray-400"
         numberOfLines={1}
@@ -16,7 +16,7 @@ export default function StatCard({ label, value }: StatCardProps) {
       >
         {label}
       </AppText>
-      <AppText className="text-base text-gray-100 text-center">{value}</AppText>
+      <AppText className="text-base text-center">{value}</AppText>
     </View>
   );
 }

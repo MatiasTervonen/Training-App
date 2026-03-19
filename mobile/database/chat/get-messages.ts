@@ -12,7 +12,7 @@ export async function getMessages(
   const { data, error } = await supabase.rpc("get_messages", {
     p_conversation_id: conversationId,
     p_limit: limit,
-    p_before: before ?? null,
+    p_before: before ?? undefined,
   });
 
   if (error) {

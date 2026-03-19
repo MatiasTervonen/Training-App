@@ -1,9 +1,9 @@
 import { useEffect, useRef } from "react";
 import { ScrollView, View, useWindowDimensions } from "react-native";
-import AppTextNC from "@/components/AppTextNC";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import { useTranslation } from "react-i18next";
 import type { ActivityType } from "@/database/activities/myActivitySessions/get-activity-types";
+import AppTextNC from "@/components/AppTextNC";
 
 const TAB_WIDTH = 100;
 const GAP = 8;

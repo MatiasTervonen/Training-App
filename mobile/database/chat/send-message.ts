@@ -21,11 +21,11 @@ export async function sendMessage({
 }: SendMessageParams): Promise<string> {
   const { data, error } = await supabase.rpc("send_message", {
     p_conversation_id: conversationId,
-    p_content: content,
+    p_content: content ?? undefined,
     p_message_type: messageType,
-    p_media_storage_path: mediaStoragePath,
-    p_media_thumbnail_path: mediaThumbnailPath,
-    p_media_duration_ms: mediaDurationMs,
+    p_media_storage_path: mediaStoragePath ?? undefined,
+    p_media_thumbnail_path: mediaThumbnailPath ?? undefined,
+    p_media_duration_ms: mediaDurationMs ?? undefined,
   });
 
   if (error) {

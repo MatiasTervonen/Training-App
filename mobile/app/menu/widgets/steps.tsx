@@ -102,7 +102,7 @@ export default function StepsConfigPage() {
                   <AppText className="text-gray-400">
                     {t("widgets:widgets.steps.dailyGoal")}
                   </AppText>
-                  <AppText className="text-lg text-gray-100">
+                  <AppText className="text-lg">
                     {stepHabitTarget.toLocaleString()} {t("widgets:widgets.steps.stepsUnit")}
                   </AppText>
                   <AppText className="text-sm text-gray-500">

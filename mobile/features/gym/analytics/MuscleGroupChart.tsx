@@ -1,6 +1,6 @@
 import { Dimensions, View } from "react-native";
 import { useMemo } from "react";
-import AppText from "@/components/AppText";
+import BodyText from "@/components/BodyText";
 import AnimatedBar from "@/features/gym/analytics/AnimatedBar";
 import { useTranslation } from "react-i18next";
 
@@ -31,7 +31,7 @@ export default function MuscleGroupChart({ data }: { data: muscle_groups }) {
           <View key={index} className="flex-row items-center justify-between border-b border-slate-700/50">
             <View className="flex-row items-center flex-1">
               <View className="absolute z-50">
-                <AppText className="pl-2">{item.label}</AppText>
+                <BodyText className="pl-2">{item.label}</BodyText>
               </View>
 
               <AnimatedBar
@@ -42,7 +42,7 @@ export default function MuscleGroupChart({ data }: { data: muscle_groups }) {
               />
             </View>
 
-            <AppText className="ml-2 min-w-[40px] text-right">{item.value}</AppText>
+            <BodyText className="ml-2 min-w-[40px] text-right">{item.value}</BodyText>
           </View>
         );
       })}

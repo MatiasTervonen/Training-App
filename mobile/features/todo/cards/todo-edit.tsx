@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
-import Toast from "react-native-toast-message";
 import { full_todo_session_optional_id, FeedItemUI } from "@/types/session";
 import { editTodo } from "@/database/todo/edit-todo";
 import AnimatedButton from "@/components/buttons/animatedButton";
-import { View, Pressable, Keyboard } from "react-native";
+import { View, Pressable, Keyboard, NativeSyntheticEvent, NativeScrollEvent } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
+import { useFullScreenModalScroll } from "@/components/FullScreenModal";
 import AppText from "@/components/AppText";
 import AppInput from "@/components/AppInput";
 import PageContainer from "@/components/PageContainer";
@@ -65,6 +65,13 @@ export default function EditTodo({
   taskMedia,
 }: Props) {
   const { t } = useTranslation(["todo", "common"]);
+  const modalScroll = useFullScreenModalScroll();
+
+  const handleScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+    if (modalScroll) {
+      modalScroll.innerScrollY.value = e.nativeEvent.contentOffset.y;
+    }
+  };
 
   const initData = taskMedia
     ? {
@@ -73,7 +80,6 @@ export default function EditTodo({
       }
     : todo_session;
 
-  const [originalData, setOriginalData] = useState(initData);
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
   const mediaAppliedRef = useRef(!!taskMedia);
 
@@ -82,12 +88,10 @@ export default function EditTodo({
   useEffect(() => {
     if (taskMedia && !mediaAppliedRef.current) {
       mediaAppliedRef.current = true;
-      const apply = (prev: typeof sessionData) => ({
+      setSessionData((prev) => ({
         ...prev,
         todo_tasks: applyTaskMedia(prev.todo_tasks, taskMedia),
-      });
-      setSessionData(apply);
-      setOriginalData(apply);
+      }));
     }
   }, [taskMedia]);
 
@@ -200,25 +204,23 @@ export default function EditTodo({
       return;
     }
 
-    const hasEmptyTasks = sessionData.todo_tasks.some(
-      (task) => task.task.trim().length === 0,
-    );
-
-    if (hasEmptyTasks) {
-      return;
-    }
-
     const updated = new Date().toISOString();
+
+    // Filter out empty tasks — they aren't ready to save yet, but don't
+    // block saving title changes and edits to other tasks.
+    const nonEmptyTasks = sessionData.todo_tasks
+      .map((task, index) => ({ task, position: index }))
+      .filter(({ task }) => task.task.trim().length > 0);
 
     const updatedFeedItem = await editTodo({
       id: sessionData.id,
       title: sessionData.title,
-      tasks: sessionData.todo_tasks.map((task, index) => ({
+      tasks: nonEmptyTasks.map(({ task, position }) => ({
         id: task.id ?? null,
         tempId: task.tempId,
         task: task.task,
         notes: task.notes ?? undefined,
-        position: index,
+        position,
         updated_at: updated,
         newRecordings: task.draftRecordings,
         newImages: task.draftImages,
@@ -237,11 +239,14 @@ export default function EditTodo({
     // After save: assign tempId as id for new tasks so the next auto-save
     // uses the UPDATE path instead of INSERT (prevents duplicate tasks).
     // Clear draft media for new tasks to prevent re-upload on the next save
-    // triggered by the id change.
+    // triggered by the id change. Only for tasks that were actually saved.
+    const savedTempIds = new Set(
+      nonEmptyTasks.map(({ task }) => task.tempId),
+    );
     setSessionData((prev) => ({
       ...prev,
       todo_tasks: prev.todo_tasks.map((task) =>
-        task.id
+        task.id || !savedTempIds.has(task.tempId)
           ? task
           : {
               ...task,
@@ -306,6 +311,8 @@ export default function EditTodo({
       <KeyboardAwareScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ flexGrow: 1 }}
+        onScroll={handleScroll}
+        scrollEventThrottle={16}
       >
         <Pressable onPress={Keyboard.dismiss} className="flex-1">
           <PageContainer className="justify-between items-center gap-5 max-w-lg">
@@ -466,7 +473,7 @@ export default function EditTodo({
                       setViewerTaskIndex(index);
                       setViewerIndex(imgIdx);
                     }}
-                    cardClassName="bg-slate-900"
+                    cardClassName="bg-white/5 border border-white/10"
                   />
                 ))}
               </View>
@@ -477,7 +484,6 @@ export default function EditTodo({
                 onPress={addNewTask}
                 label={t("todo.editScreen.addTask")}
                 className="btn-base py-2"
-                textClassName="text-gray-100 text-center"
               />
             </View>
           </PageContainer>

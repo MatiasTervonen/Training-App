@@ -89,7 +89,7 @@ export default function ManageFoldersScreen() {
                 disabled={!newFolderName.trim() || isCreating}
                 className="btn-add"
               >
-                <AppText className="text-gray-100 text-center">
+                <AppText className="text-center">
                   {t("notes.folders.createFolder")}
                 </AppText>
               </AnimatedButton>

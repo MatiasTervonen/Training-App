@@ -40,6 +40,7 @@ type Props = {
   currentImageCount?: number;
   currentVideoCount?: number;
   currentVoiceCount?: number;
+  recordLabel?: string;
 };
 
 export default function MediaToolbar({
@@ -53,6 +54,7 @@ export default function MediaToolbar({
   currentImageCount = 0,
   currentVideoCount = 0,
   currentVoiceCount = 0,
+  recordLabel,
 }: Props) {
   const { t } = useTranslation(["notes", "common"]);
   const [showRecordingModal, setShowRecordingModal] = useState(false);
@@ -519,6 +521,7 @@ export default function MediaToolbar({
         visible={showRecordingModal}
         onClose={() => setShowRecordingModal(false)}
         onRecordingComplete={onRecordingComplete}
+        recordLabel={recordLabel}
       />
 
       <Modal

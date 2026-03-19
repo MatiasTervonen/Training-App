@@ -147,7 +147,7 @@ export default function ShareModalShell({
       <View className="flex-row gap-3">
         <AnimatedButton
           onPress={handleSave}
-          className="flex-1 btn-neutral flex-row items-center justify-center gap-2"
+          className="flex-1 btn-save flex-row items-center justify-center gap-2"
           disabled={disabled}
         >
           <Download color="#f3f4f6" size={18} />
@@ -157,7 +157,7 @@ export default function ShareModalShell({
         </AnimatedButton>
         <AnimatedButton
           onPress={handleShare}
-          className="flex-1 btn-base flex-row items-center justify-center gap-2"
+          className="flex-1 btn-add flex-row items-center justify-center gap-2"
           disabled={disabled}
         >
           <Share2 color="#f3f4f6" size={18} />

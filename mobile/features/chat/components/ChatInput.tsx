@@ -1,11 +1,14 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { View, TextInput, Keyboard } from "react-native";
 import AnimatedButton from "@/components/buttons/animatedButton";
-import { Send, Plus } from "lucide-react-native";
+import { Send, Plus, X } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import MediaToolbar from "@/features/notes/components/MediaToolbar";
 import ChatMediaPreview from "@/features/chat/components/ChatMediaPreview";
-import type { MessageType } from "@/types/chat";
+import LinkPreviewCard from "@/features/chat/components/LinkPreviewCard";
+import { extractFirstUrl } from "@/lib/chat/linkUtils";
+import { fetchLinkPreviewOnly } from "@/database/chat/fetch-link-preview";
+import type { MessageType, LinkPreview } from "@/types/chat";
 import type { DraftVideo } from "@/types/session";
 
 type MediaPayload = {
@@ -16,7 +19,7 @@ type MediaPayload = {
 };
 
 type ChatInputProps = {
-  onSend: (content: string) => void;
+  onSend: (content: string, preview?: LinkPreview | null) => void;
   onSendMedia: (payload: MediaPayload) => void;
   disabled?: boolean;
   disabledMessage?: string;
@@ -33,6 +36,37 @@ export default function ChatInput({
   const [showToolbar, setShowToolbar] = useState(false);
   const [pendingMedia, setPendingMedia] = useState<MediaPayload | null>(null);
   const [isCompressing, setIsCompressing] = useState(false);
+  const [inputPreview, setInputPreview] = useState<LinkPreview | null>(null);
+  const [previewDismissed, setPreviewDismissed] = useState(false);
+  const lastFetchedUrl = useRef<string | null>(null);
+  const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Detect URL in text and fetch preview with debounce
+  useEffect(() => {
+    const url = extractFirstUrl(text);
+
+    if (!url) {
+      setInputPreview(null);
+      lastFetchedUrl.current = null;
+      setPreviewDismissed(false);
+      return;
+    }
+
+    // Already fetched this URL or user dismissed it
+    if (url === lastFetchedUrl.current || previewDismissed) return;
+
+    if (debounceTimer.current) clearTimeout(debounceTimer.current);
+
+    debounceTimer.current = setTimeout(async () => {
+      lastFetchedUrl.current = url;
+      const preview = await fetchLinkPreviewOnly(url);
+      setInputPreview(preview);
+    }, 500);
+
+    return () => {
+      if (debounceTimer.current) clearTimeout(debounceTimer.current);
+    };
+  }, [text, previewDismissed]);
 
   const handleSend = useCallback(() => {
     if (pendingMedia) {
@@ -46,9 +80,12 @@ export default function ChatInput({
 
     const trimmed = text.trim();
     if (!trimmed || disabled) return;
-    onSend(trimmed);
+    onSend(trimmed, inputPreview);
     setText("");
-  }, [text, disabled, onSend, onSendMedia, pendingMedia, isCompressing]);
+    setInputPreview(null);
+    lastFetchedUrl.current = null;
+    setPreviewDismissed(false);
+  }, [text, disabled, onSend, onSendMedia, pendingMedia, isCompressing, inputPreview]);
 
   const handleImageSelected = useCallback(
     (image: { id: string; uri: string; isLoading: boolean }) => {
@@ -131,6 +168,23 @@ export default function ChatInput({
 
   return (
     <View>
+      {inputPreview && !pendingMedia && (
+        <View className="px-4 pt-2 bg-slate-900 border-t border-slate-700">
+          <View className="relative">
+            <LinkPreviewCard preview={inputPreview} isOwn />
+            <AnimatedButton
+              onPress={() => {
+                setInputPreview(null);
+                setPreviewDismissed(true);
+              }}
+              className="absolute top-1 right-1 w-6 h-6 rounded-full bg-slate-800/80 items-center justify-center"
+            >
+              <X color="#94a3b8" size={14} />
+            </AnimatedButton>
+          </View>
+        </View>
+      )}
+
       {pendingMedia && (
         <ChatMediaPreview
           type={pendingMedia.messageType}
@@ -184,6 +238,7 @@ export default function ChatInput({
             onImageSelected={handleImageSelected}
             onVideoSelected={handleVideoSelected}
             showFolderButton={false}
+            recordLabel={t("chat.recordVoiceMessage")}
           />
         </View>
       )}

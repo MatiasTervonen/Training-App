@@ -45,7 +45,7 @@ export default function FriendRequestForm() {
   };
 
   return (
-    <View className="flex flex-col gap-3 bg-slate-950 p-5 rounded-md shadow-md border-slate-700 border-2">
+    <View className="flex flex-col gap-3 bg-slate-950 p-5 rounded-md shadow-md border-slate-800 border-[1.5px]">
       <AppInput
         label={t("friends.sendFriendRequest")}
         placeholder={t("friends.placeholder")}

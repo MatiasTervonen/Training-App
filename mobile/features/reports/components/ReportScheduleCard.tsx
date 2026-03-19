@@ -4,6 +4,7 @@ import EditButton from "@/components/buttons/EditButton";
 import DeleteButton from "@/components/buttons/DeleteButton";
 import { useTranslation } from "react-i18next";
 import { ReportSchedule, SCHEDULE_TYPES } from "@/types/report";
+import AppTextNC from "@/components/AppTextNC";
 
 type ReportScheduleCardProps = {
   schedule: ReportSchedule;
@@ -40,15 +41,15 @@ export default function ReportScheduleCard({
 
   return (
     <View className="bg-gray-800/50 rounded-xl p-4 border border-gray-700/50">
-      <AppText className="text-lg text-gray-100 mb-1">
+      <AppText className="text-lg mb-1">
         {schedule.title}
       </AppText>
-      <AppText className="text-sm text-gray-400 mb-1">
+      <AppTextNC className="text-sm text-gray-400 mb-1">
         {t(scheduleLabel)} · {deliveryDay} · {deliveryTime}
-      </AppText>
-      <AppText className="text-sm text-gray-400 mb-3">
+      </AppTextNC>
+      <AppTextNC className="text-sm text-gray-400 mb-3">
         {featureLabels}
-      </AppText>
+      </AppTextNC>
       <View className="flex-row gap-3">
         <View className="flex-1">
           <EditButton onPress={onEdit} label={t("reports.editReport")} />

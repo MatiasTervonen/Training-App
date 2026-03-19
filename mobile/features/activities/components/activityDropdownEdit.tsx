@@ -7,7 +7,10 @@ import {
   View,
   ActivityIndicator,
   FlatList,
+  NativeSyntheticEvent,
+  NativeScrollEvent,
 } from "react-native";
+import { useFullScreenModalScroll } from "@/components/FullScreenModal";
 import AppInput from "@/components/AppInput";
 import { useState, useCallback } from "react";
 
@@ -27,6 +30,13 @@ type Props = {
 export default function UserActivityDropdownEdit({ onSelect }: Props) {
   const { t } = useTranslation("activities");
   const [inputValue, setInputValue] = useState("");
+  const modalScroll = useFullScreenModalScroll();
+
+  const handleScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+    if (modalScroll) {
+      modalScroll.innerScrollY.value = e.nativeEvent.contentOffset.y;
+    }
+  };
   const [filteredActivities, setFilteredActivities] = useState<UserActivity[]>(
     [],
   );
@@ -141,6 +151,8 @@ export default function UserActivityDropdownEdit({ onSelect }: Props) {
                 paddingBottom: 100,
               }}
               showsVerticalScrollIndicator={false}
+              onScroll={handleScroll}
+              scrollEventThrottle={16}
               data={inputValue.length > 0 ? filteredActivities : data || []}
               keyExtractor={(item) => item.id}
               ListHeaderComponent={

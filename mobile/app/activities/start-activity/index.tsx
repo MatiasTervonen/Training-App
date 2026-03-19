@@ -60,7 +60,6 @@ import {
   isIgnoringBatteryOptimizations,
   requestIgnoreBatteryOptimizations,
 } from "@/native/android/NativeBatteryOptimization";
-import AppTextNC from "@/components/AppTextNC";
 import BodyText from "@/components/BodyText";
 
 type DraftImage = {
@@ -543,9 +542,9 @@ export default function StartActivityScreen() {
                   className="px-4 mt-1"
                   onPress={() => requestIgnoreBatteryOptimizations()}
                 >
-                  <AppTextNC className="text-sm text-blue-500 underline">
+                  <AppText className="text-sm text-blue-500 underline">
                     {t("activities.startActivityScreen.batteryOptHint")}
-                  </AppTextNC>
+                  </AppText>
                 </Pressable>
               )}
             </>
@@ -578,7 +577,6 @@ export default function StartActivityScreen() {
               });
             }}
             className="justify-center items-center mt-7  btn-start"
-            textClassName="text-gray-100 text-center"
           />
         </PageContainer>
       ) : allowGPS ? (

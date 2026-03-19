@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
 import { View, AppState } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
-import AppText from "@/components/AppText";
-import AppTextNC from "@/components/AppTextNC";
 import SaveButton from "@/components/buttons/SaveButton";
 import DeleteButton from "@/components/buttons/DeleteButton";
 import AppInput from "@/components/AppInput";
@@ -31,6 +29,8 @@ import useSetNotificationGlobal from "@/features/reminders/hooks/global/useSetNo
 import useSetNotificationOnetime from "@/features/reminders/hooks/onetime/useSetNotification";
 import useSetNotificationDaily from "@/features/reminders/hooks/daily/useSetNotification";
 import useSetNotificationWeekly from "@/features/reminders/hooks/weekly/useSetNotification";
+import BodyTextNC from "@/components/BodyTextNC";
+import AppTextNC from "@/components/AppTextNC";
 
 type ReminderType = "one-time" | "daily" | "weekly" | "global";
 
@@ -138,21 +138,21 @@ export default function CreateReminderScreen() {
   }, []);
 
   // Notification hooks (all called unconditionally per Rules of Hooks)
-  const { setNotification: setNotificationGlobal } =
-    useSetNotificationGlobal({
-      notifyAt: notifyAt!,
-      title,
-      notes,
-      mode,
-    });
+  const { setNotification: setNotificationGlobal } = useSetNotificationGlobal({
+    notifyAt: notifyAt!,
+    title,
+    notes,
+    mode,
+  });
 
-  const { setNotification: setNotificationOnetime } =
-    useSetNotificationOnetime({
+  const { setNotification: setNotificationOnetime } = useSetNotificationOnetime(
+    {
       notifyAt: notifyAt!,
       title,
       notes,
       mode,
-    });
+    },
+  );
 
   const { setNotification: setNotificationDaily } = useSetNotificationDaily({
     notifyAt: notifyAt!,
@@ -161,14 +161,13 @@ export default function CreateReminderScreen() {
     mode,
   });
 
-  const { setNotification: setNotificationWeekly } =
-    useSetNotificationWeekly({
-      notifyAt: notifyAt!,
-      title,
-      notes,
-      weekdays,
-      mode,
-    });
+  const { setNotification: setNotificationWeekly } = useSetNotificationWeekly({
+    notifyAt: notifyAt!,
+    title,
+    notes,
+    weekdays,
+    mode,
+  });
 
   // Save hooks (all called unconditionally)
   const { saveReminder: saveGlobal } = useSaveReminder({
@@ -227,209 +226,217 @@ export default function CreateReminderScreen() {
 
   return (
     <View className="flex-1">
-      <KeyboardAwareScrollView contentContainerStyle={{ flexGrow: 1 }} bottomOffset={50}>
+      <KeyboardAwareScrollView
+        contentContainerStyle={{ flexGrow: 1 }}
+        bottomOffset={50}
+      >
         {/* Type selector — 2x2 grid */}
         <View className="px-5 pt-2 pb-3">
           <View className="bg-slate-800 rounded-lg p-1 gap-1 max-w-md mx-auto w-full">
-              <View className="flex-row gap-1">
-                {TYPES.slice(0, 2).map(({ key, labelKey }) => {
-                  const isActive = selectedType === key;
-                  return (
-                    <AnimatedButton
-                      key={key}
-                      onPress={() => setSelectedType(key)}
-                      className={`flex-1 py-2 px-3 rounded-md ${isActive ? "bg-slate-700" : ""}`}
+            <View className="flex-row gap-1">
+              {TYPES.slice(0, 2).map(({ key, labelKey }) => {
+                const isActive = selectedType === key;
+                return (
+                  <AnimatedButton
+                    key={key}
+                    onPress={() => setSelectedType(key)}
+                    className={`flex-1 py-2 px-3 rounded-md ${isActive ? "bg-slate-700" : ""}`}
+                  >
+                    <AppTextNC
+                      className={`text-center font-medium ${
+                        isActive ? "text-cyan-400" : "text-gray-200"
+                      }`}
                     >
-                      <AppTextNC
-                        className={`text-center font-medium ${
-                          isActive ? "text-cyan-400" : "text-gray-200"
-                        }`}
-                      >
-                        {t(labelKey)}
-                      </AppTextNC>
-                    </AnimatedButton>
-                  );
-                })}
-              </View>
-              <View className="flex-row gap-1">
-                {TYPES.slice(2).map(({ key, labelKey }) => {
-                  const isActive = selectedType === key;
-                  return (
-                    <AnimatedButton
-                      key={key}
-                      onPress={() => setSelectedType(key)}
-                      className={`flex-1 py-2 px-3 rounded-md ${isActive ? "bg-slate-700" : ""}`}
+                      {t(labelKey)}
+                    </AppTextNC>
+                  </AnimatedButton>
+                );
+              })}
+            </View>
+            <View className="flex-row gap-1">
+              {TYPES.slice(2).map(({ key, labelKey }) => {
+                const isActive = selectedType === key;
+                return (
+                  <AnimatedButton
+                    key={key}
+                    onPress={() => setSelectedType(key)}
+                    className={`flex-1 py-2 px-3 rounded-md ${isActive ? "bg-slate-700" : ""}`}
+                  >
+                    <AppTextNC
+                      className={`text-center font-medium ${
+                        isActive ? "text-cyan-400" : "text-gray-200"
+                      }`}
                     >
-                      <AppTextNC
-                        className={`text-center font-medium ${
-                          isActive ? "text-cyan-400" : "text-gray-200"
-                        }`}
-                      >
-                        {t(labelKey)}
-                      </AppTextNC>
-                    </AnimatedButton>
-                  );
-                })}
-              </View>
+                      {t(labelKey)}
+                    </AppTextNC>
+                  </AnimatedButton>
+                );
+              })}
+            </View>
           </View>
         </View>
         <View className="flex-1 w-full px-5 pb-10">
-        <View className="flex-1 max-w-md mx-auto w-full justify-between">
-          <View>
-            {/* Global info banner */}
-            {selectedType === "global" && (
-              <View className="flex-row items-center mb-4">
-                <Info color="#9ca3af" size={18} />
-                <BodyText className="text-gray-400 text-sm ml-2 shrink">
-                  {t("reminders.globalInfo")}
-                </BodyText>
-              </View>
-            )}
-
-            {/* One-time info banner */}
-            {selectedType === "one-time" && (
-              <View className="flex-row items-center mb-4">
-                <Info color="#9ca3af" size={18} />
-                <BodyText className="text-gray-400 text-sm ml-2 shrink">
-                  {t("reminders.oneTimeInfo")}
-                </BodyText>
-              </View>
-            )}
-
-            {/* Daily info banner */}
-            {selectedType === "daily" && (
-              <View className="flex-row items-center mb-4">
-                <Info color="#9ca3af" size={18} />
-                <BodyText className="text-gray-400 text-sm ml-2 shrink">
-                  {t("reminders.dailyInfo")}
-                </BodyText>
-              </View>
-            )}
-
-            {/* Weekly info banner */}
-            {selectedType === "weekly" && (
-              <View className="flex-row items-center mb-4">
-                <Info color="#9ca3af" size={18} />
-                <BodyText className="text-gray-400 text-sm ml-2 shrink">
-                  {t("reminders.weeklyInfo")}
-                </BodyText>
-              </View>
-            )}
-
-            <View className="gap-5">
-              {/* Title */}
-              <View>
-                <AppInput
-                  value={title}
-                  setValue={setTitle}
-                  placeholder={t("reminders.titlePlaceholder")}
-                  label={t("reminders.titleLabel")}
-                />
-              </View>
-
-              {/* Notes */}
-              <SubNotesInput
-                value={notes}
-                setValue={setNotes}
-                placeholder={t("reminders.notesPlaceholder")}
-                label={t("reminders.notesLabel")}
-              />
-
-              {/* DateTime/Time picker */}
-              <View>
-                <AnimatedButton
-                  label={formattedTime ?? t("reminders.setNotifyTime")}
-                  onPress={() => setOpen(true)}
-                  className="btn-base flex-row gap-2 justify-center items-center"
-                  textClassName="text-gray-100"
-                >
-                  <Plus color="#f3f4f6" />
-                </AnimatedButton>
-              </View>
-              <DatePicker
-                date={notifyAt || new Date()}
-                onDateChange={setNotifyAt}
-                mode={usesDatetime ? "datetime" : "time"}
-                modal
-                minimumDate={usesDatetime ? new Date() : undefined}
-                open={open}
-                locale={i18n.language}
-                title={
-                  usesDatetime
-                    ? t("common:datePicker.selectDateTime")
-                    : t("common:datePicker.selectTime")
-                }
-                confirmText={t("common:datePicker.confirm")}
-                cancelText={t("common:datePicker.cancel")}
-                onConfirm={(date) => {
-                  setOpen(false);
-                  setNotifyAt(date);
-                }}
-                onCancel={() => setOpen(false)}
-              />
-
-              {/* Weekday checkboxes (weekly only) */}
-              {selectedType === "weekly" && (
-                <View className="mt-2">
-                  <BodyText>{t("reminders.repeatOnDays")}</BodyText>
-                  <View className="flex-row justify-between mt-3 px-4">
-                    {days.map((day, index) => {
-                      const dayNumber = index + 1;
-                      const isChecked = weekdays.includes(dayNumber);
-                      return (
-                        <View key={day} className="items-center mt-2">
-                          <Checkbox
-                            hitSlop={10}
-                            value={isChecked}
-                            onValueChange={(newValue) => {
-                              if (newValue) {
-                                setWeekdays((prev) => [...prev, dayNumber]);
-                              } else {
-                                setWeekdays((prev) =>
-                                  prev.filter((d) => d !== dayNumber),
-                                );
-                              }
-                            }}
-                          />
-                          <BodyText className="mt-2">{day}</BodyText>
-                        </View>
-                      );
-                    })}
-                  </View>
+          <View className="flex-1 max-w-md mx-auto w-full justify-between">
+            <View>
+              {/* Global info banner */}
+              {selectedType === "global" && (
+                <View className="flex-row items-center mb-4">
+                  <Info color="#9ca3af" size={18} />
+                  <BodyTextNC className="text-gray-400 text-sm ml-2 shrink">
+                    {t("reminders.globalInfo")}
+                  </BodyTextNC>
                 </View>
               )}
 
-              {/* High priority toggle */}
-              <View className="flex-row items-center justify-between px-4 mt-5">
-                <View>
-                  <BodyText>{t("reminders.enableHighPriority")}</BodyText>
-                  <BodyText className="text-gray-400 text-sm">
-                    {t("reminders.highPriorityDescription")}
-                  </BodyText>
+              {/* One-time info banner */}
+              {selectedType === "one-time" && (
+                <View className="flex-row items-center mb-4">
+                  <Info color="#9ca3af" size={18} />
+                  <BodyTextNC className="text-gray-400 text-sm ml-2 shrink">
+                    {t("reminders.oneTimeInfo")}
+                  </BodyTextNC>
                 </View>
-                <Toggle
-                  isOn={mode === "alarm"}
-                  onToggle={async () => {
-                    const allowed = await canUseExactAlarm();
-                    if (!allowed) {
-                      setShowModal(true);
-                      return;
-                    }
-                    setMode(mode === "alarm" ? "normal" : "alarm");
-                  }}
+              )}
+
+              {/* Daily info banner */}
+              {selectedType === "daily" && (
+                <View className="flex-row items-center mb-4">
+                  <Info color="#9ca3af" size={18} />
+                  <BodyTextNC className="text-gray-400 text-sm ml-2 shrink">
+                    {t("reminders.dailyInfo")}
+                  </BodyTextNC>
+                </View>
+              )}
+
+              {/* Weekly info banner */}
+              {selectedType === "weekly" && (
+                <View className="flex-row items-center mb-4">
+                  <Info color="#9ca3af" size={18} />
+                  <BodyTextNC className="text-gray-400 text-sm ml-2 shrink">
+                    {t("reminders.weeklyInfo")}
+                  </BodyTextNC>
+                </View>
+              )}
+
+              <View className="gap-5">
+                {/* Title */}
+                <View>
+                  <AppInput
+                    value={title}
+                    setValue={setTitle}
+                    placeholder={t("reminders.titlePlaceholder")}
+                    label={t("reminders.titleLabel")}
+                  />
+                </View>
+
+                {/* Notes */}
+                <SubNotesInput
+                  value={notes}
+                  setValue={setNotes}
+                  placeholder={t("reminders.notesPlaceholder")}
+                  label={t("reminders.notesLabel")}
                 />
+
+                {/* DateTime/Time picker */}
+                <View>
+                  <AnimatedButton
+                    label={formattedTime ?? t("reminders.setNotifyTime")}
+                    onPress={() => setOpen(true)}
+                    className="btn-base flex-row gap-2 justify-center items-center"
+                  >
+                    <Plus color="#f3f4f6" />
+                  </AnimatedButton>
+                </View>
+                <DatePicker
+                  date={notifyAt || new Date()}
+                  onDateChange={setNotifyAt}
+                  mode={usesDatetime ? "datetime" : "time"}
+                  modal
+                  minimumDate={usesDatetime ? new Date() : undefined}
+                  open={open}
+                  locale={i18n.language}
+                  title={
+                    usesDatetime
+                      ? t("common:datePicker.selectDateTime")
+                      : t("common:datePicker.selectTime")
+                  }
+                  confirmText={t("common:datePicker.confirm")}
+                  cancelText={t("common:datePicker.cancel")}
+                  onConfirm={(date) => {
+                    setOpen(false);
+                    setNotifyAt(date);
+                  }}
+                  onCancel={() => setOpen(false)}
+                />
+
+                {/* Weekday checkboxes (weekly only) */}
+                {selectedType === "weekly" && (
+                  <View className="mt-2">
+                    <BodyText>
+                      {t("reminders.repeatOnDays")}
+                    </BodyText>
+                    <View className="flex-row justify-between mt-3 px-4">
+                      {days.map((day, index) => {
+                        const dayNumber = index + 1;
+                        const isChecked = weekdays.includes(dayNumber);
+                        return (
+                          <View key={day} className="items-center mt-2">
+                            <Checkbox
+                              hitSlop={10}
+                              value={isChecked}
+                              onValueChange={(newValue) => {
+                                if (newValue) {
+                                  setWeekdays((prev) => [...prev, dayNumber]);
+                                } else {
+                                  setWeekdays((prev) =>
+                                    prev.filter((d) => d !== dayNumber),
+                                  );
+                                }
+                              }}
+                            />
+                            <BodyText className="text-gray-200 mt-2">
+                              {day}
+                            </BodyText>
+                          </View>
+                        );
+                      })}
+                    </View>
+                  </View>
+                )}
+
+                {/* High priority toggle */}
+                <View className="flex-row items-center justify-between px-4 mt-5">
+                  <View>
+                    <BodyText >
+                      {t("reminders.enableHighPriority")}
+                    </BodyText>
+                    <BodyTextNC className="text-gray-400 text-sm">
+                      {t("reminders.highPriorityDescription")}
+                    </BodyTextNC>
+                  </View>
+                  <Toggle
+                    isOn={mode === "alarm"}
+                    onToggle={async () => {
+                      const allowed = await canUseExactAlarm();
+                      if (!allowed) {
+                        setShowModal(true);
+                        return;
+                      }
+                      setMode(mode === "alarm" ? "normal" : "alarm");
+                    }}
+                  />
+                </View>
               </View>
-          </View>
-          </View>
-          <View className="flex-row gap-4">
-            <View className="flex-1">
-              <DeleteButton onPress={resetReminder} />
             </View>
-            <View className="flex-1">
-              <SaveButton onPress={handleSave} />
+            <View className="flex-row gap-4">
+              <View className="flex-1">
+                <DeleteButton onPress={resetReminder} />
+              </View>
+              <View className="flex-1">
+                <SaveButton onPress={handleSave} />
+              </View>
             </View>
           </View>
-        </View>
         </View>
       </KeyboardAwareScrollView>
       <FullScreenLoader

@@ -1,11 +1,5 @@
 import { useState, useCallback, useMemo } from "react";
-import {
-  View,
-  Pressable,
-  Modal,
-  SectionList,
-  Dimensions,
-} from "react-native";
+import { View, Pressable, Modal, SectionList, Dimensions } from "react-native";
 import {
   Bell,
   UserPlus,
@@ -14,6 +8,7 @@ import {
   Heart,
   MessageCircle,
   Reply,
+  Send,
 } from "lucide-react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
@@ -40,6 +35,8 @@ function getNotificationIcon(type: string) {
       return <MessageCircle size={18} color="#3b82f6" />;
     case "feed_reply":
       return <Reply size={18} color="#8b5cf6" />;
+    case "chat_message":
+      return <Send size={18} color="#22d3ee" />;
     default:
       return <BellRing size={18} color="#9ca3af" />;
   }
@@ -76,6 +73,16 @@ function getNavigationTarget(
             : {}),
         },
       };
+    case "chat_message":
+      return notification.data?.conversationId
+        ? {
+            pathname: "/chat/[conversationId]",
+            params: {
+              conversationId: notification.data.conversationId as string,
+              name: (notification.data.senderName as string) ?? "",
+            },
+          }
+        : null;
     default:
       return null;
   }
@@ -130,9 +137,7 @@ export default function NotificationBell() {
         </AppText>
         <View className="flex-row items-center gap-2 text-sm">
           {getNotificationIcon(item.type)}
-          <BodyText className="text-sm flex-1">
-            {item.body}
-          </BodyText>
+          <BodyText className="text-sm flex-1">{item.body}</BodyText>
           {!item.is_read && (
             <View className="w-2 h-2 rounded-full bg-blue-500" />
           )}
@@ -155,7 +160,7 @@ export default function NotificationBell() {
     <View>
       <Pressable
         onPress={() => setIsOpen(true)}
-        className="w-[40px] h-[40px] rounded-full border-2 border-blue-500 items-center justify-center"
+        className="w-[40px] h-[40px] rounded-full border-[1.5px] border-blue-500/50 items-center justify-center"
       >
         <Bell size={20} color="white" />
         {unreadCount != null && unreadCount > 0 && (
@@ -173,10 +178,7 @@ export default function NotificationBell() {
         transparent
         animationType="fade"
       >
-        <Pressable
-          className="flex-1"
-          onPress={() => setIsOpen(false)}
-        >
+        <Pressable className="flex-1" onPress={() => setIsOpen(false)}>
           <View
             className="mt-28 self-end mr-4 border-2 border-blue-500 rounded-md bg-slate-950 shadow-lg"
             style={{ width: screenWidth * 0.85, maxHeight: 450 }}
@@ -200,6 +202,7 @@ export default function NotificationBell() {
                   </AnimatedButton>
                 )}
                 <SectionList
+                  showsVerticalScrollIndicator={false}
                   sections={sections}
                   keyExtractor={(item) => item.id}
                   renderItem={renderNotification}
@@ -211,6 +214,9 @@ export default function NotificationBell() {
                     </View>
                   )}
                   ListEmptyComponent={renderEmpty}
+                  initialNumToRender={8}
+                  maxToRenderPerBatch={5}
+                  windowSize={3}
                   style={{ maxHeight: 340 }}
                 />
               </View>

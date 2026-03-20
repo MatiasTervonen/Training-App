@@ -17,6 +17,23 @@ import BodyTextNC from "@/components/BodyTextNC";
 // Keys are storage paths, values are signed URLs (valid for 1 hour).
 const signedUrlCache = new Map<string, string>();
 
+// Cache image dimensions so they survive FlatList recycling — no layout jump on revisit.
+const imageDimsCache = new Map<string, { width: number; height: number }>();
+
+const IMG_MAX_WIDTH = 280;
+const IMG_MIN_HEIGHT = 150;
+const IMG_MAX_HEIGHT = 350;
+
+function computeImageSize(dims: { width: number; height: number } | null) {
+  if (!dims) return { width: IMG_MAX_WIDTH, height: IMG_MAX_WIDTH };
+  const aspect = dims.height / dims.width;
+  const height = Math.round(IMG_MAX_WIDTH * aspect);
+  return {
+    width: IMG_MAX_WIDTH,
+    height: Math.min(IMG_MAX_HEIGHT, Math.max(IMG_MIN_HEIGHT, height)),
+  };
+}
+
 function getCachedUrl(storagePath: string | null): string | null {
   if (!storagePath) return null;
   return signedUrlCache.get(storagePath) ?? localMediaUriCache.get(storagePath) ?? null;
@@ -25,9 +42,10 @@ function getCachedUrl(storagePath: string | null): string | null {
 type ChatMediaBubbleProps = {
   message: ChatMessage;
   isOwn: boolean;
+  onLongPress?: () => void;
 };
 
-function ChatMediaBubble({ message, isOwn }: ChatMediaBubbleProps) {
+function ChatMediaBubble({ message, isOwn, onLongPress }: ChatMediaBubbleProps) {
   const [mediaUrl, setMediaUrl] = useState<string | null>(
     () => message._localMediaUri ?? getCachedUrl(message.media_storage_path),
   );
@@ -37,6 +55,9 @@ function ChatMediaBubble({ message, isOwn }: ChatMediaBubbleProps) {
   const [loadFailed, setLoadFailed] = useState(false);
   const [imageViewerVisible, setImageViewerVisible] = useState(false);
   const [videoPlayerVisible, setVideoPlayerVisible] = useState(false);
+  const [imageSize, setImageSize] = useState(() =>
+    computeImageSize(imageDimsCache.get(message.id) ?? null)
+  );
 
   const resolveSignedUrl = useCallback(
     async (path: string, setter: (url: string) => void) => {
@@ -51,7 +72,6 @@ function ChatMediaBubble({ message, isOwn }: ChatMediaBubbleProps) {
         .from("chat-media")
         .createSignedUrl(path, 3600);
       if (error || !data?.signedUrl) {
-        console.error("Failed to get signed URL:", error?.message ?? "no URL");
         setLoadFailed(true);
         return;
       }
@@ -111,7 +131,7 @@ function ChatMediaBubble({ message, isOwn }: ChatMediaBubbleProps) {
   // Failed state — tap to retry
   const failedPlaceholder = (
     <AnimatedButton onPress={handleRetry}>
-      <View className="w-[240px] h-[180px] rounded-xl overflow-hidden bg-slate-700 items-center justify-center">
+      <View style={{ width: 280, height: 200 }} className="rounded-xl overflow-hidden bg-slate-700 items-center justify-center">
         <ImageOff color="#94a3b8" size={32} />
         <BodyText className="text-xs text-slate-400 mt-1">Tap to retry</BodyText>
       </View>
@@ -124,8 +144,8 @@ function ChatMediaBubble({ message, isOwn }: ChatMediaBubbleProps) {
 
     return (
       <>
-        <AnimatedButton onPress={() => mediaUrl && setImageViewerVisible(true)}>
-          <View className="w-[240px] h-[180px] rounded-xl overflow-hidden bg-slate-700">
+        <AnimatedButton onPress={() => mediaUrl && setImageViewerVisible(true)} onLongPress={onLongPress} delayLongPress={400}>
+          <View style={imageSize} className="rounded-xl overflow-hidden bg-slate-700">
             {mediaUrl && (
               <Image
                 source={{ uri: mediaUrl }}
@@ -134,6 +154,11 @@ function ChatMediaBubble({ message, isOwn }: ChatMediaBubbleProps) {
                 contentFit="cover"
                 cachePolicy="memory-disk"
                 transition={200}
+                onLoad={(e) => {
+                  const dims = { width: e.source.width, height: e.source.height };
+                  imageDimsCache.set(message.id, dims);
+                  setImageSize(computeImageSize(dims));
+                }}
               />
             )}
             {(!mediaUrl || message._isUploading) && (
@@ -164,8 +189,8 @@ function ChatMediaBubble({ message, isOwn }: ChatMediaBubbleProps) {
 
     return (
       <>
-        <AnimatedButton onPress={() => mediaUrl && setVideoPlayerVisible(true)}>
-          <View className="w-[240px] h-[180px] rounded-xl overflow-hidden bg-slate-700">
+        <AnimatedButton onPress={() => mediaUrl && setVideoPlayerVisible(true)} onLongPress={onLongPress} delayLongPress={400}>
+          <View style={{ width: 280, height: 200 }} className="rounded-xl overflow-hidden bg-slate-700">
             {displayThumbnail && (
               <Image
                 source={{ uri: displayThumbnail }}

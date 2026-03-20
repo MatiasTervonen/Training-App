@@ -62,7 +62,42 @@ export default function useChatRealtime(
           filter: `conversation_id=eq.${conversationId}`,
         },
         (payload) => {
-          const updated = payload.new as { id: string; sender_id: string; link_preview: LinkPreview | null };
+          const updated = payload.new as {
+            id: string;
+            sender_id: string;
+            link_preview: LinkPreview | null;
+            deleted_at: string | null;
+            content: string | null;
+          };
+
+          // Handle deletion updates from other users
+          if (updated.deleted_at && updated.sender_id !== currentUserId) {
+            queryClient.setQueryData<InfiniteData<ChatMessage[]>>(
+              ["messages", conversationId],
+              (old) => {
+                if (!old) return old;
+                return {
+                  ...old,
+                  pages: old.pages.map((page) =>
+                    page.map((msg) =>
+                      msg.id === updated.id
+                        ? {
+                            ...msg,
+                            content: null,
+                            media_storage_path: null,
+                            media_thumbnail_path: null,
+                            media_duration_ms: null,
+                            link_preview: null,
+                            deleted_at: updated.deleted_at,
+                          }
+                        : msg,
+                    ),
+                  ),
+                };
+              },
+            );
+            return;
+          }
 
           // Only handle link_preview updates from other users
           if (updated.sender_id === currentUserId) return;
@@ -84,6 +119,27 @@ export default function useChatRealtime(
               };
             },
           );
+        },
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "chat_participants",
+          filter: `conversation_id=eq.${conversationId}`,
+        },
+        (payload) => {
+          const updated = payload.new as {
+            user_id: string;
+            last_read_at: string | null;
+          };
+          // When the other user reads messages, refresh read receipts
+          if (updated.user_id !== currentUserId) {
+            queryClient.invalidateQueries({
+              queryKey: ["other-last-read", conversationId],
+            });
+          }
         },
       )
       .subscribe();

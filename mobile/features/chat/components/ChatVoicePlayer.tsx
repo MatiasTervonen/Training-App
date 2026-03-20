@@ -66,8 +66,8 @@ function ChatVoicePlayerInner({ uri, durationMs, isOwn }: ChatVoicePlayerProps) 
       ? formatDurationNotesVoice(displayMs)
       : formatDurationNotesVoice(durationMs ?? 0);
 
-  const trackClass = isOwn ? "bg-blue-800" : "bg-slate-500";
-  const fillClass = isOwn ? "bg-blue-400" : "bg-slate-300";
+  const trackClass = isOwn ? "bg-cyan-950" : "bg-slate-500";
+  const fillClass = isOwn ? "bg-cyan-400" : "bg-slate-300";
 
   return (
     <View className="flex-row items-center gap-2">

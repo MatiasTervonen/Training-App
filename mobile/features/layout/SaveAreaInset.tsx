@@ -1,5 +1,6 @@
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { View } from "react-native";
+import { usePathname } from "expo-router";
 import useScreenOrientation from "@/features/layout/hooks/useScreenOrientation";
 import Navbar from "@/features/navbar/Navbar";
 
@@ -9,9 +10,13 @@ export default function SaveAreaInset({
   children: React.ReactNode;
 }) {
   const insets = useSafeAreaInsets();
+  const pathname = usePathname();
 
   // useScreenOrientation hook to get screen orientation and hide navbar on timer page when in landscape mode
   const { hideNawbar } = useScreenOrientation();
+
+  const isOnboarding = pathname.startsWith("/onboarding");
+  const showNavbar = !hideNawbar && !isOnboarding;
 
   return (
     <View
@@ -26,7 +31,7 @@ export default function SaveAreaInset({
         hideNawbar ? "max-w-screen" : "max-w-3xl"
       }`}
     >
-      {!hideNawbar && <Navbar />}
+      {showNavbar && <Navbar />}
       {children}
     </View>
   );

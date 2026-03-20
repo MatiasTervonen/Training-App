@@ -68,7 +68,7 @@ function ConversationItem({ conversation, onPress }: ConversationItemProps) {
     >
       <Image
         source={imageSource}
-        className="w-12 h-12 rounded-full border-2 border-blue-500"
+        className="w-12 h-12 rounded-full"
       />
       <View className="flex-1 min-w-0">
         <View className="flex-row items-center justify-between">

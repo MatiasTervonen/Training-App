@@ -2,9 +2,8 @@ import { View } from "react-native";
 import AppText from "@/components/AppText";
 import BodyText from "@/components/BodyText";
 import AnimatedButton from "@/components/buttons/animatedButton";
-import OnboardingProgressBar from "@/features/onboarding/OnboardingProgressBar";
+import OnboardingLayout from "@/features/onboarding/OnboardingLayout";
 import SkipOnboardingButton from "@/features/onboarding/SkipOnboardingButton";
-import OnboardingBackButton from "@/features/onboarding/OnboardingBackButton";
 import { useSkipOnboarding } from "@/features/onboarding/useSkipOnboarding";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
@@ -31,65 +30,66 @@ export default function PreferencesScreen() {
   };
 
   return (
-    <View className="flex-1 px-6 justify-center">
-      <OnboardingBackButton />
-      <OnboardingProgressBar currentStep={5} />
-
-      <View className="mt-8">
+    <OnboardingLayout
+      currentStep={5}
+      footer={
+        <>
+          <AnimatedButton
+            onPress={handleContinue}
+            className="btn-base py-3"
+            label={t("preferences.continue")}
+            textClassName="text-lg"
+          />
+          <SkipOnboardingButton onSkip={skipOnboarding} />
+        </>
+      }
+    >
+      <View>
         <AppText className="text-2xl text-center mb-2">
           {t("preferences.title")}
         </AppText>
         <BodyText className="text-center mb-8">
           {t("preferences.description")}
         </BodyText>
-      </View>
 
-      <AppText className="text-lg text-center mb-3">
-        {t("preferences.distanceUnit")}
-      </AppText>
-      <View className="flex-row justify-center mb-8 gap-3">
-        <AnimatedButton
-          onPress={() => setDistanceUnit("km")}
-          className={`w-20 py-2 rounded-lg border-2 items-center ${
-            distanceUnit === "km"
-              ? "bg-blue-900/40 border-blue-500"
-              : "bg-slate-800 border-slate-700"
-          }`}
-        >
-          <AppText
-            className={
-              distanceUnit === "km" ? "text-blue-400" : "text-slate-400"
-            }
+        <AppText className="text-lg text-center mb-3">
+          {t("preferences.distanceUnit")}
+        </AppText>
+        <View className="flex-row justify-center gap-3">
+          <AnimatedButton
+            onPress={() => setDistanceUnit("km")}
+            className={`w-20 py-2 rounded-lg border-2 items-center ${
+              distanceUnit === "km"
+                ? "bg-blue-900/40 border-blue-500"
+                : "bg-slate-800 border-slate-700"
+            }`}
           >
-            km
-          </AppText>
-        </AnimatedButton>
-        <AnimatedButton
-          onPress={() => setDistanceUnit("mi")}
-          className={`w-20 py-2 rounded-lg border-2 items-center ${
-            distanceUnit === "mi"
-              ? "bg-blue-900/40 border-blue-500"
-              : "bg-slate-800 border-slate-700"
-          }`}
-        >
-          <AppText
-            className={
-              distanceUnit === "mi" ? "text-blue-400" : "text-slate-400"
-            }
+            <AppText
+              className={
+                distanceUnit === "km" ? "text-blue-400" : "text-slate-400"
+              }
+            >
+              km
+            </AppText>
+          </AnimatedButton>
+          <AnimatedButton
+            onPress={() => setDistanceUnit("mi")}
+            className={`w-20 py-2 rounded-lg border-2 items-center ${
+              distanceUnit === "mi"
+                ? "bg-blue-900/40 border-blue-500"
+                : "bg-slate-800 border-slate-700"
+            }`}
           >
-            mi
-          </AppText>
-        </AnimatedButton>
+            <AppText
+              className={
+                distanceUnit === "mi" ? "text-blue-400" : "text-slate-400"
+              }
+            >
+              mi
+            </AppText>
+          </AnimatedButton>
+        </View>
       </View>
-
-      <AnimatedButton
-        onPress={handleContinue}
-        className="btn-base py-3"
-        label={t("preferences.continue")}
-        textClassName="text-lg"
-      />
-
-      <SkipOnboardingButton onSkip={skipOnboarding} />
-    </View>
+    </OnboardingLayout>
   );
 }

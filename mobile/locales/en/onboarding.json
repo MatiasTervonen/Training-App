@@ -46,7 +46,6 @@
     "userNameHint": "Lowercase letters, numbers, and underscores only (max 15 characters)",
     "userNameTaken": "This username is already taken",
     "continue": "Continue",
-    "skipStep": "Skip",
     "saving": "Saving profile...",
     "pictureSizeError": "Image must be smaller than 5 MB",
     "pictureFormatError": "Only JPEG, PNG, and WebP images are supported"
@@ -56,8 +55,8 @@
     "description": "Your weight is used to estimate calories burned, and your height helps calculate distance from steps. You can update these anytime.",
     "weightTitle": "Weight",
     "heightTitle": "Height",
-    "heightFtPlaceholder": "e.g. 5",
-    "heightInPlaceholder": "e.g. 9",
+    "heightFtPlaceholder": "5",
+    "heightInPlaceholder": "9",
     "startingWeight": "Starting weight",
     "continue": "Continue"
   },
@@ -70,7 +69,7 @@
   "complete": {
     "title": "You're all set!",
     "body": "You can always adjust your settings, permissions, and profile from the menu. Enjoy tracking!",
-    "start": "Start using {{appName}}",
+    "start": "Let's go!",
     "summary": {
       "language": "Language",
       "userName": "Username",

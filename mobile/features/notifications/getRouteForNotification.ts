@@ -33,5 +33,14 @@ export function getRouteForNotification(
       },
     } as Href;
   }
+  if (data.type === "chat_message" && data.conversationId) {
+    return {
+      pathname: "/chat/[conversationId]",
+      params: {
+        conversationId: data.conversationId as string,
+        name: (data.senderName as string) ?? "",
+      },
+    } as Href;
+  }
   return null;
 }

@@ -14,6 +14,7 @@
     "feedLikeTitle": "Uusi tykkäys",
     "feedCommentTitle": "Uusi kommentti",
     "feedReplyTitle": "Uusi vastaus",
+    "chatMessageTitle": "Uusi viesti",
     "sections": {
       "today": "Tänään",
       "yesterday": "Eilen",

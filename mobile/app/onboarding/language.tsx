@@ -1,10 +1,9 @@
 import { View } from "react-native";
 import AppText from "@/components/AppText";
 import AnimatedButton from "@/components/buttons/animatedButton";
-import OnboardingProgressBar from "@/features/onboarding/OnboardingProgressBar";
+import OnboardingLayout from "@/features/onboarding/OnboardingLayout";
 import LanguageCard from "@/features/onboarding/LanguageCard";
 import SkipOnboardingButton from "@/features/onboarding/SkipOnboardingButton";
-import OnboardingBackButton from "@/features/onboarding/OnboardingBackButton";
 import { useSkipOnboarding } from "@/features/onboarding/useSkipOnboarding";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
@@ -31,11 +30,21 @@ export default function LanguageScreen() {
   };
 
   return (
-    <View className="flex-1 px-6 justify-center">
-      <OnboardingBackButton />
-      <OnboardingProgressBar currentStep={1} />
-
-      <View className="mt-8 mb-8">
+    <OnboardingLayout
+      currentStep={1}
+      footer={
+        <>
+          <AnimatedButton
+            onPress={() => router.push("/onboarding/permissions")}
+            className="btn-base py-3"
+            label={t("language.continue")}
+            textClassName="text-lg"
+          />
+          <SkipOnboardingButton onSkip={skipOnboarding} />
+        </>
+      }
+    >
+      <View>
         <AppText className="text-3xl text-center mb-8">
           {t("language.title")}
         </AppText>
@@ -53,15 +62,6 @@ export default function LanguageScreen() {
           onSelect={() => handleSelectLanguage("fi")}
         />
       </View>
-
-      <AnimatedButton
-        onPress={() => router.push("/onboarding/permissions")}
-        className="btn-base py-3"
-        label={t("language.continue")}
-        textClassName="text-lg"
-      />
-
-      <SkipOnboardingButton onSkip={skipOnboarding} />
-    </View>
+    </OnboardingLayout>
   );
 }

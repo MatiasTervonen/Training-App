@@ -42,7 +42,7 @@
       }
     },
     "tutorial": {
-      "title": "Welcome to MyTrack!",
+      "title": "Welcome to {{appName}}!",
       "subtitle": "Your complete guide to getting started",
       "gym": {
         "title": "Gym Tracking",
@@ -71,6 +71,14 @@
       "todo": {
         "title": "To-Do Lists",
         "desc": "Create task lists to organize your training goals and daily tasks."
+      },
+      "chat": {
+        "title": "Chat",
+        "desc": "Message your friends, share sessions, and react to messages. Send text, images, videos, and voice messages."
+      },
+      "reports": {
+        "title": "Reports",
+        "desc": "Get weekly and monthly summaries of your training, weight, habits, and activities."
       },
       "tap_to_read": "Tap Details to read the full guide"
     },

@@ -41,7 +41,7 @@
     "resendEmail": {
       "title": "Lähetä vahvistussähköposti uudelleen",
       "description": "Syötä sähköpostisi ja lähetämme sinulle linkin sähköpostin vahvistamiseen.",
-      "resendButton": "Lähetä vahvistussähköposti uudelleen",
+      "resendButton": "Lähetä uudelleen",
       "didntGetEmail": "Etkö saanut sähköpostia?"
     },
     "signUpSuccess": {

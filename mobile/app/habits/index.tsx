@@ -1,6 +1,5 @@
 import { View, ScrollView, ActivityIndicator } from "react-native";
 import AppText from "@/components/AppText";
-import BodyText from "@/components/BodyText";
 import PageContainer from "@/components/PageContainer";
 
 import LinkButton from "@/components/buttons/LinkButton";

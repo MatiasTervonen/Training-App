@@ -4,6 +4,7 @@ import PageContainer from "@/components/PageContainer";
 import { useTranslation } from "react-i18next";
 import { BookOpen } from "lucide-react-native";
 import BodyTextNC from "@/components/BodyTextNC";
+import { APP_NAME } from "@/lib/app-config";
 
 const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL;
 const TUTORIAL_IMAGE_BASE = `${SUPABASE_URL}/storage/v1/object/public/tutorial-images`;
@@ -44,6 +45,16 @@ const TUTORIAL_SECTIONS = [
     titleKey: "feed.tutorial.todo.title",
     descKey: "feed.tutorial.todo.desc",
   },
+  {
+    image: `${TUTORIAL_IMAGE_BASE}/chat.webp`,
+    titleKey: "feed.tutorial.chat.title",
+    descKey: "feed.tutorial.chat.desc",
+  },
+  {
+    image: `${TUTORIAL_IMAGE_BASE}/reports.webp`,
+    titleKey: "feed.tutorial.reports.title",
+    descKey: "feed.tutorial.reports.desc",
+  },
 ];
 
 export default function TutorialSession() {
@@ -57,7 +68,7 @@ export default function TutorialSession() {
             <BookOpen size={32} color="#93c5fd" />
           </View>
           <AppText className="text-2xl text-center">
-            {t("feed.tutorial.title")}
+            {t("feed.tutorial.title", { appName: APP_NAME })}
           </AppText>
           <BodyTextNC className="text-gray-400 text-center mt-2">
             {t("feed.tutorial.subtitle")}

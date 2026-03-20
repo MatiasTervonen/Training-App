@@ -19,6 +19,25 @@
     "mediaUploadError": "Median lähetys epäonnistui",
     "attachMedia": "Liitä media",
     "sending": "Lähetetään...",
-    "recordVoiceMessage": "Nauhoita ääniviesti"
+    "recordVoiceMessage": "Nauhoita ääniviesti",
+    "reply": "Vastaa",
+    "copy": "Kopioi",
+    "forward": "Välitä",
+    "delete": "Poista",
+    "deleteConfirmTitle": "Poista viesti",
+    "deleteConfirmMessage": "Tämä viesti poistetaan kaikilta.",
+    "messageDeleted": "Tämä viesti on poistettu",
+    "messageForwarded": "Viesti välitetty",
+    "messageCopied": "Viesti kopioitu",
+    "replyingTo": "Vastaat käyttäjälle {{name}}",
+    "forwardTo": "Välitä",
+    "photo": "Kuva",
+    "video": "Video",
+    "voiceMessage": "Ääniviesti",
+    "cancel": "Peruuta",
+    "sendToChat": "Lähetä chattiin",
+    "sendingToChat": "Lähetetään...",
+    "shareCardSent": "Lähetetty chattiin",
+    "typing": "kirjoittaa..."
   }
 }

@@ -111,6 +111,17 @@ export default function StepsChart({
     setOffset(0);
   }
 
+  const oldestDate = useMemo(() => {
+    if (data.length === 0) return null;
+    return new Date(Math.min(...data.map((r) => new Date(r.day).getTime())));
+  }, [data]);
+
+  const canGoBack = useMemo(() => {
+    if (!oldestDate) return false;
+    const [nextStart] = addOffsetToDate(today, range, offset + 1);
+    return nextStart >= oldestDate;
+  }, [oldestDate, today, range, offset]);
+
   const fullDateRange = generateDateRange(start, end);
 
   const stepsMap = useMemo(() => {
@@ -296,8 +307,10 @@ export default function StepsChart({
         <AnimatedButton
           onPress={() => setOffset((prev) => prev + 1)}
           className="mr-4 bg-slate-800 p-1 rounded"
+          disabled={!canGoBack}
+          style={{ opacity: canGoBack ? 1 : 0.5 }}
         >
-          <ChevronLeft color="#4ade80" size={20} />
+          <ChevronLeft color={canGoBack ? "#4ade80" : "#f3f4f6"} size={20} />
         </AnimatedButton>
         <AppText className="min-w-[200px] text-center text-sm">
           {formatDateRange(start, end)}

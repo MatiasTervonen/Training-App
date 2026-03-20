@@ -54,6 +54,10 @@ Deno.serve(async (req: Request) => {
       await handleFeedComment(supabase, payload.record);
     }
 
+    if (payload.type === "INSERT" && payload.table === "chat_messages") {
+      await handleChatMessage(supabase, payload.record);
+    }
+
     return new Response(JSON.stringify({ success: true }), {
       headers: { "Content-Type": "application/json" },
       status: 200,
@@ -331,6 +335,94 @@ async function handleFeedComment(
         title: "New Comment",
         body: `${commenterName} commented on your post`,
         data: { type: "feed_comment", feedItemId },
+        channelId: "social",
+        sound: "default",
+      }));
+      await sendExpoPushNotifications(messages);
+    }
+  }
+}
+
+async function handleChatMessage(
+  supabase: ReturnType<typeof createClient>,
+  record: Record<string, unknown>,
+) {
+  const senderId = record.sender_id as string;
+  const conversationId = record.conversation_id as string;
+  const messageType = record.message_type as string;
+  const content = record.content as string | null;
+
+  // Get sender's display name
+  const { data: sender } = await supabase
+    .from("users")
+    .select("display_name")
+    .eq("id", senderId)
+    .single();
+
+  const senderName = sender?.display_name ?? "Someone";
+
+  // Get the other participant in the conversation
+  const { data: participants } = await supabase
+    .from("chat_participants")
+    .select("user_id")
+    .eq("conversation_id", conversationId)
+    .neq("user_id", senderId)
+    .eq("is_active", true);
+
+  if (!participants || participants.length === 0) return;
+
+  // Build notification body based on message type
+  let body: string;
+  switch (messageType) {
+    case "image":
+      body = `📷 ${senderName} sent a photo`;
+      break;
+    case "video":
+      body = `🎥 ${senderName} sent a video`;
+      break;
+    case "voice":
+      body = `🎤 ${senderName} sent a voice message`;
+      break;
+    default:
+      body = `${senderName}: ${content?.slice(0, 100) ?? ""}`;
+      break;
+  }
+
+  // Notify each participant (supports future group chats)
+  for (const participant of participants) {
+    const recipientId = participant.user_id;
+
+    // Get recipient's push tokens
+    const { data: tokens } = await supabase
+      .from("user_push_mobile_subscriptions")
+      .select("token")
+      .eq("user_id", recipientId)
+      .eq("is_active", true);
+
+    // Insert in-app notification
+    await supabase.from("notifications").insert({
+      user_id: recipientId,
+      type: "chat_message",
+      title: senderName,
+      body,
+      data: {
+        conversationId,
+        senderId,
+        senderName,
+      },
+    });
+
+    // Send push
+    if (tokens && tokens.length > 0) {
+      const messages: ExpoPushMessage[] = tokens.map((t) => ({
+        to: t.token,
+        title: senderName,
+        body,
+        data: {
+          type: "chat_message",
+          conversationId,
+          senderId,
+        },
         channelId: "social",
         sound: "default",
       }));

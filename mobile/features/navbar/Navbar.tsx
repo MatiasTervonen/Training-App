@@ -44,7 +44,7 @@ export default function Navbar() {
         <View className="flex-row items-center gap-3">
           <NotificationBell />
           <Link href="/chat" asChild>
-            <Pressable className="w-[40px] h-[40px] rounded-full border-2 border-blue-500 items-center justify-center bg-slate-800">
+            <Pressable className="w-[40px] h-[40px] rounded-full border-[1.5px] border-blue-500/50 items-center justify-center bg-slate-800">
               <MessageCircle color="white" size={20} />
               {!!unreadCount && unreadCount > 0 && (
                 <View className="absolute -top-1 -right-2 w-5 h-5 bg-red-500 rounded-full items-center justify-center z-50">
@@ -56,7 +56,7 @@ export default function Navbar() {
             </Pressable>
           </Link>
           <Link href="/menu" asChild>
-            <Pressable className="w-[40px] h-[40px] rounded-full border-2 border-blue-500 items-center justify-center">
+            <Pressable className="w-[40px] h-[40px] rounded-full border-[1.5px] border-blue-500/50 items-center justify-center">
               <Image
                 source={
                   profilePictureRaw

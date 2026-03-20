@@ -4,6 +4,7 @@ import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useUserStore } from "@/lib/stores/useUserStore";
 import { saveOnboardingStatus } from "@/database/settings/save-onboarding-status";
+import { saveUserProfile } from "@/database/settings/save-user-profile";
 
 export function useSkipOnboarding() {
   const [isSkipping, setIsSkipping] = useState(false);
@@ -21,7 +22,17 @@ export function useSkipOnboarding() {
             has_completed_onboarding: true,
           });
           try {
-            await saveOnboardingStatus(true);
+            const profile = useUserStore.getState().profile;
+            await Promise.all([
+              saveOnboardingStatus(true),
+              saveUserProfile({
+                display_name: profile?.display_name || "",
+                weight_unit: profile?.weight_unit || "kg",
+                distance_unit: profile?.distance_unit || "km",
+                profile_picture: profile?.profile_picture || null,
+                height_cm: profile?.height_cm || null,
+              }),
+            ]);
           } catch {
             // Saved locally, will sync later
           }

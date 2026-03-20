@@ -24,6 +24,12 @@ export type Conversation = {
   is_active: boolean;
 };
 
+export type ReactionSummary = {
+  emoji: string;
+  count: number;
+  user_reacted: boolean;
+};
+
 export type ChatMessage = {
   id: string;
   conversation_id: string;
@@ -37,6 +43,13 @@ export type ChatMessage = {
   media_thumbnail_path: string | null;
   media_duration_ms: number | null;
   link_preview: LinkPreview | null;
+  deleted_at: string | null;
+  reply_to_message_id: string | null;
+  reply_to_content: string | null;
+  reply_to_sender_name: string | null;
+  reply_to_message_type: MessageType | null;
+  reply_to_deleted_at: string | null;
+  reactions: ReactionSummary[];
   // Client-only fields for optimistic updates:
   _localMediaUri?: string;
   _localThumbnailUri?: string;

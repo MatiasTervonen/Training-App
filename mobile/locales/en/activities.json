@@ -118,6 +118,7 @@
       "session": "session",
       "sessions": "sessions",
       "noActivitiesInPeriod": "No activities in this period",
+      "accumulatedDistance": "Accumulated Distance",
       "noData": "No data yet",
       "noDataDesc": "Start your first activity session to see analytics here",
       "unknown": "Unknown"

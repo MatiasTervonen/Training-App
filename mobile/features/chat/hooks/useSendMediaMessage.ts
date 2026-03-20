@@ -21,6 +21,8 @@ type SendMediaParams = {
   uri: string;
   thumbnailUri?: string;
   durationMs?: number;
+  replyToMessageId?: string | null;
+  replyToMessage?: ChatMessage | null;
 };
 
 // Module-level cache: maps storagePath → localFileUri so ChatMediaBubble
@@ -38,6 +40,7 @@ export default function useSendMediaMessage(conversationId: string) {
       uri,
       thumbnailUri,
       durationMs,
+      replyToMessageId,
     }: SendMediaParams) => {
       uploadedPathsRef.current = [];
 
@@ -111,12 +114,13 @@ export default function useSendMediaMessage(conversationId: string) {
         mediaStoragePath,
         mediaThumbnailPath,
         mediaDurationMs: durationMs ?? null,
+        replyToMessageId,
       });
 
       return messageId;
     },
 
-    onMutate: async ({ messageType, uri, thumbnailUri, durationMs }) => {
+    onMutate: async ({ messageType, uri, thumbnailUri, durationMs, replyToMessageId, replyToMessage }) => {
       await queryClient.cancelQueries({
         queryKey: ["messages", conversationId],
       });
@@ -142,6 +146,13 @@ export default function useSendMediaMessage(conversationId: string) {
         media_thumbnail_path: null,
         media_duration_ms: durationMs ?? null,
         link_preview: null,
+        deleted_at: null,
+        reply_to_message_id: replyToMessageId ?? null,
+        reply_to_content: replyToMessage?.content ?? null,
+        reply_to_sender_name: replyToMessage?.sender_display_name ?? null,
+        reply_to_message_type: replyToMessage?.message_type ?? null,
+        reply_to_deleted_at: replyToMessage?.deleted_at ?? null,
+        reactions: [],
         created_at: new Date().toISOString(),
         sender_display_name: profile?.display_name ?? "",
         sender_profile_picture: profile?.profile_picture ?? null,

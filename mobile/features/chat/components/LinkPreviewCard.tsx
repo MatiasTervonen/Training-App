@@ -30,7 +30,7 @@ export default function LinkPreviewCard({
     <AnimatedButton
       onPress={() => Linking.openURL(preview.url)}
       className={`mt-1.5 rounded-xl overflow-hidden ${
-        isOwn ? "bg-blue-700/50" : "bg-slate-600/50"
+        isOwn ? "bg-cyan-900/50" : "bg-slate-600/50"
       }`}
     >
       {preview.image && (

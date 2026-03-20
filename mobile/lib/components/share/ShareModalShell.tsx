@@ -1,14 +1,16 @@
 import { ReactNode, useCallback, useEffect, useMemo, useState } from "react";
-import { View, Modal, ScrollView, LayoutChangeEvent } from "react-native";
+import { View, Modal, ScrollView, LayoutChangeEvent, FlatList, ActivityIndicator } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Image } from "expo-image";
 import AppText from "@/components/AppText";
+import BodyTextNC from "@/components/BodyTextNC";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import ShareCardPicker from "@/lib/components/share/ShareCardPicker";
 import useShareCard from "@/lib/hooks/useShareCard";
 import useShareCardPreferences from "@/lib/hooks/useShareCardPreferences";
 import useSwipeToDismiss from "@/lib/hooks/useSwipeToDismiss";
 import { getTheme, SHARE_CARD_DIMENSIONS, ShareCardTheme, ShareCardSize, ShareCardThemeId } from "@/lib/share/themes";
-import { Download, Share2 } from "lucide-react-native";
+import { Download, Share2, MessageCircle, ChevronLeft } from "lucide-react-native";
 import ToastMessage from "react-native-toast-message";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
 import { toastConfig } from "@/lib/config/toast";
@@ -16,6 +18,11 @@ import * as Haptics from "expo-haptics";
 import { GestureDetector, GestureHandlerRootView } from "react-native-gesture-handler";
 import Animated from "react-native-reanimated";
 import { RefObject } from "react";
+import { useFriends } from "@/features/friends/hooks/useFriends";
+import { sendShareCardToChat } from "@/database/chat/send-share-card";
+import { useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
+import { Friends } from "@/types/models";
 
 export type ShareModalShellRenderCardProps = {
   cardRef: RefObject<View | null>;
@@ -64,8 +71,15 @@ export default function ShareModalShell({
 }: ShareModalShellProps) {
   const [containerWidth, setContainerWidth] = useState(0);
   const [containerHeight, setContainerHeight] = useState(0);
-  const { cardRef, isSharing, isSaving, shareCard, saveCardToGallery } =
+  const { cardRef, isSharing, isSaving, shareCard, saveCardToGallery, captureCard } =
     useShareCard(prefix);
+  const queryClient = useQueryClient();
+  const { t } = useTranslation("chat");
+
+  const [showFriendPicker, setShowFriendPicker] = useState(false);
+  const [isSendingToChat, setIsSendingToChat] = useState(false);
+  const [capturedUri, setCapturedUri] = useState<string | null>(null);
+  const { data: friends } = useFriends();
 
   const {
     theme: themeId,
@@ -80,7 +94,11 @@ export default function ShareModalShell({
   const { panGesture, contentStyle, bgStyle, reset } = useSwipeToDismiss(onClose);
 
   useEffect(() => {
-    if (visible) reset();
+    if (visible) {
+      reset();
+      setShowFriendPicker(false);
+      setCapturedUri(null);
+    }
   }, [visible]);
 
   const onLayout = useCallback((e: LayoutChangeEvent) => {
@@ -117,7 +135,7 @@ export default function ShareModalShell({
     [shareCardScale],
   );
 
-  const disabled = isSaving || isSharing || extraDisabled;
+  const disabled = isSaving || isSharing || isSendingToChat || extraDisabled;
 
   const handleShare = useCallback(async () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -141,6 +159,67 @@ export default function ShareModalShell({
       topOffset: 60,
     });
   }, [saveCardToGallery, size, labels]);
+
+  const handleSendToChat = useCallback(async () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    const uri = await captureCard(size);
+    if (!uri) {
+      Toast.show({ type: "error", text1: labels.error, topOffset: 60 });
+      return;
+    }
+    setCapturedUri(uri);
+    setShowFriendPicker(true);
+  }, [captureCard, size, labels]);
+
+  const handleSelectFriend = useCallback(
+    async (friendId: string) => {
+      if (!capturedUri) return;
+      setIsSendingToChat(true);
+      try {
+        await sendShareCardToChat(capturedUri, friendId);
+        Toast.show({
+          type: "success",
+          text1: t("chat.shareCardSent"),
+          topOffset: 60,
+        });
+        setShowFriendPicker(false);
+        queryClient.invalidateQueries({ queryKey: ["conversations"] });
+        queryClient.invalidateQueries({ queryKey: ["messages"] });
+      } catch {
+        Toast.show({
+          type: "error",
+          text1: t("chat.messageSendError"),
+          topOffset: 60,
+        });
+      } finally {
+        setIsSendingToChat(false);
+      }
+    },
+    [capturedUri, t, queryClient],
+  );
+
+  const renderFriendItem = useCallback(
+    ({ item }: { item: Friends }) => {
+      const imageSource = item.user.profile_picture
+        ? { uri: item.user.profile_picture }
+        : require("@/assets/images/default-avatar.png");
+
+      return (
+        <AnimatedButton
+          onPress={() => handleSelectFriend(item.user.id)}
+          className="flex-row items-center gap-3 px-4 py-3"
+          disabled={isSendingToChat}
+        >
+          <Image
+            source={imageSource}
+            className="w-10 h-10 rounded-full"
+          />
+          <AppText className="text-base flex-1">{item.user.display_name}</AppText>
+        </AnimatedButton>
+      );
+    },
+    [handleSelectFriend, isSendingToChat],
+  );
 
   const buttons = (
     <View className="w-full gap-3 mt-8">
@@ -167,6 +246,16 @@ export default function ShareModalShell({
         </AnimatedButton>
       </View>
       <AnimatedButton
+        onPress={handleSendToChat}
+        className="btn-base flex-row items-center justify-center gap-2"
+        disabled={disabled}
+      >
+        <MessageCircle color="#f3f4f6" size={18} />
+        <AppText className="text-base text-center" numberOfLines={1}>
+          {t("chat.sendToChat")}
+        </AppText>
+      </AnimatedButton>
+      <AnimatedButton
         onPress={onClose}
         className="btn-neutral items-center justify-center"
       >
@@ -175,6 +264,47 @@ export default function ShareModalShell({
         </AppText>
       </AnimatedButton>
     </View>
+  );
+
+  const friendPickerContent = (
+    <GestureDetector gesture={panGesture}>
+      <View className="flex-1">
+        <View className="flex-row items-center mb-4">
+          <AnimatedButton
+            onPress={() => setShowFriendPicker(false)}
+            className="p-1"
+            disabled={isSendingToChat}
+          >
+            <ChevronLeft color="#f3f4f6" size={24} />
+          </AnimatedButton>
+          <AppText className="text-lg flex-1 text-center mr-8">
+            {t("chat.selectFriend")}
+          </AppText>
+        </View>
+
+        {isSendingToChat ? (
+          <View className="flex-1 items-center justify-center">
+            <ActivityIndicator size="large" color="#22d3ee" />
+            <BodyTextNC className="text-slate-400 mt-3">
+              {t("chat.sendingToChat")}
+            </BodyTextNC>
+          </View>
+        ) : (
+          <FlatList
+            data={friends ?? []}
+            keyExtractor={(item: Friends) => item.id}
+            renderItem={renderFriendItem}
+            ListEmptyComponent={
+              <View className="items-center py-10">
+                <BodyTextNC className="text-slate-400">
+                  {t("chat.noFriends")}
+                </BodyTextNC>
+              </View>
+            }
+          />
+        )}
+      </View>
+    </GestureDetector>
   );
 
   return (
@@ -195,7 +325,9 @@ export default function ShareModalShell({
             }}
             onLayout={onLayout}
           >
-            {containerHeight === 0 ? null : (
+            {containerHeight === 0 ? null : showFriendPicker ? (
+              friendPickerContent
+            ) : (
               <>
                 {/* Card preview — swipe here to dismiss */}
                 <GestureDetector gesture={panGesture}>

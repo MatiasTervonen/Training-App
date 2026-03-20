@@ -1,18 +1,14 @@
-import {
-  View,
-  KeyboardAvoidingView,
-  Platform,
-  Keyboard,
-  Pressable,
-} from "react-native";
+import { View, Keyboard, Pressable } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
+import { Image } from "expo-image";
 import AppText from "@/components/AppText";
 import BodyText from "@/components/BodyText";
 import AppInput from "@/components/AppInput";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import ProfilePicture from "@/components/ProfilePicture";
 import OnboardingProgressBar from "@/features/onboarding/OnboardingProgressBar";
-import SkipOnboardingButton from "@/features/onboarding/SkipOnboardingButton";
 import OnboardingBackButton from "@/features/onboarding/OnboardingBackButton";
+import SkipOnboardingButton from "@/features/onboarding/SkipOnboardingButton";
 import { API_URL } from "@/utils/apiUrl";
 import { useSkipOnboarding } from "@/features/onboarding/useSkipOnboarding";
 import { useRouter } from "expo-router";
@@ -166,51 +162,60 @@ export default function ProfileSetupScreen() {
     router.push("/onboarding/about-you");
   };
 
-
   return (
     <>
-      <KeyboardAvoidingView
-        className="flex-1"
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-      >
-        <Pressable
-          className="flex-1 px-6 justify-center"
-          onPress={Keyboard.dismiss}
-        >
+      <Pressable className="flex-1" onPress={Keyboard.dismiss}>
+        <View className="flex-1 px-6">
           <OnboardingBackButton />
+
+          <View className="items-center pt-14 pb-2">
+            <Image
+              source={require("@/assets/images/app-logos/kurvi_ice_blue_final_copnverted.png")}
+              className="w-40 h-14"
+              contentFit="contain"
+            />
+          </View>
+
           <OnboardingProgressBar currentStep={3} />
 
-          <View className="mt-8">
-            <AppText className="text-3xl text-center mb-4">
-              {t("profile.title")}
-            </AppText>
-            <BodyText className="text-center mb-8">
-              {t("profile.description")}
-            </BodyText>
-          </View>
+          <KeyboardAwareScrollView
+            className="flex-1"
+            bottomOffset={50}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ flexGrow: 1, justifyContent: "center" }}
+          >
+            <View>
+              <AppText className="text-3xl text-center mb-4">
+                {t("profile.title")}
+              </AppText>
+              <BodyText className="text-center mb-8">
+                {t("profile.description")}
+              </BodyText>
 
-          <AppInput
-            value={userName}
-            setValue={(value) => {
-              setUserName(
-                value
-                  .toLowerCase()
-                  .replace(/[^a-z0-9_]/g, "")
-                  .slice(0, 15),
-              );
-            }}
-            label={t("profile.userName")}
-            placeholder={existingName}
-          />
-          <AppText className="text-sm text-gray-500 mt-2">
-            {t("profile.userNameHint")}
-          </AppText>
+              <AppInput
+                value={userName}
+                setValue={(value) => {
+                  setUserName(
+                    value
+                      .toLowerCase()
+                      .replace(/[^a-z0-9_]/g, "")
+                      .slice(0, 15),
+                  );
+                }}
+                label={t("profile.userName")}
+                placeholder={existingName}
+              />
+              <AppText className="text-sm text-gray-500 mt-2">
+                {t("profile.userNameHint")}
+              </AppText>
 
-          <View className="mt-8">
-            <ProfilePicture onFileSelected={setSelectedProfilePic} />
-          </View>
+              <View className="mt-8">
+                <ProfilePicture onFileSelected={setSelectedProfilePic} />
+              </View>
+            </View>
+          </KeyboardAwareScrollView>
 
-          <View className="mt-8">
+          <View className="pb-6">
             <AnimatedButton
               onPress={handleContinue}
               className="btn-base py-3"
@@ -218,11 +223,10 @@ export default function ProfileSetupScreen() {
               textClassName="text-lg"
               disabled={isSaving}
             />
-
             <SkipOnboardingButton onSkip={skipOnboarding} />
           </View>
-        </Pressable>
-      </KeyboardAvoidingView>
+        </View>
+      </Pressable>
       <FullScreenLoader
         visible={isSaving}
         message={t("profile.saving")}

@@ -8,7 +8,8 @@ import ChatMediaPreview from "@/features/chat/components/ChatMediaPreview";
 import LinkPreviewCard from "@/features/chat/components/LinkPreviewCard";
 import { extractFirstUrl } from "@/lib/chat/linkUtils";
 import { fetchLinkPreviewOnly } from "@/database/chat/fetch-link-preview";
-import type { MessageType, LinkPreview } from "@/types/chat";
+import ReplyInputBar from "@/features/chat/components/ReplyInputBar";
+import type { MessageType, LinkPreview, ChatMessage } from "@/types/chat";
 import type { DraftVideo } from "@/types/session";
 
 type MediaPayload = {
@@ -23,6 +24,9 @@ type ChatInputProps = {
   onSendMedia: (payload: MediaPayload) => void;
   disabled?: boolean;
   disabledMessage?: string;
+  replyTo?: ChatMessage | null;
+  onCancelReply?: () => void;
+  onTyping?: () => void;
 };
 
 export default function ChatInput({
@@ -30,6 +34,9 @@ export default function ChatInput({
   onSendMedia,
   disabled = false,
   disabledMessage,
+  replyTo,
+  onCancelReply,
+  onTyping,
 }: ChatInputProps) {
   const { t } = useTranslation("chat");
   const [text, setText] = useState("");
@@ -168,6 +175,10 @@ export default function ChatInput({
 
   return (
     <View>
+      {replyTo && onCancelReply && (
+        <ReplyInputBar message={replyTo} onDismiss={onCancelReply} />
+      )}
+
       {inputPreview && !pendingMedia && (
         <View className="px-4 pt-2 bg-slate-900 border-t border-slate-700">
           <View className="relative">
@@ -210,7 +221,10 @@ export default function ChatInput({
         <View className="flex-1 bg-slate-800 rounded-2xl px-4 min-h-[44px] justify-center max-h-[120px]">
           <TextInput
             value={text}
-            onChangeText={setText}
+            onChangeText={(v) => {
+              setText(v);
+              if (v.length > 0) onTyping?.();
+            }}
             placeholder={t("chat.typeMessage")}
             placeholderTextColor="#64748b"
             multiline

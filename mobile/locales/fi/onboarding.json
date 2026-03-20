@@ -1,6 +1,6 @@
 {
   "welcome": {
-    "title": "Tervetuloa {{appName}}iin!",
+    "title": "Tervetuloa Kurviin!",
     "body": "Tehdään alkuasetukset. Tämä kestää noin minuutin. Voit ohittaa milloin tahansa — kaiken voi määrittää myöhemmin Asetuksissa.",
     "letsGo": "Aloitetaan",
     "skip": "Ohita, teen asetukset myöhemmin"
@@ -46,7 +46,6 @@
     "userNameHint": "Pienet kirjaimet, numerot ja alaviivat (enintään 15 merkkiä)",
     "userNameTaken": "Tämä käyttäjänimi on jo varattu",
     "continue": "Jatka",
-    "skipStep": "Ohita",
     "saving": "Tallennetaan profiilia...",
     "pictureSizeError": "Kuvan on oltava alle 5 Mt",
     "pictureFormatError": "Vain JPEG-, PNG- ja WebP-kuvat ovat tuettuja"
@@ -56,8 +55,8 @@
     "description": "Painoasi käytetään kalorien arviointiin ja pituuttasi matkan laskemiseen askeleista. Voit päivittää näitä milloin tahansa.",
     "weightTitle": "Paino",
     "heightTitle": "Pituus",
-    "heightFtPlaceholder": "esim. 5",
-    "heightInPlaceholder": "esim. 9",
+    "heightFtPlaceholder": "5",
+    "heightInPlaceholder": "9",
     "startingWeight": "Aloituspaino",
     "continue": "Jatka"
   },
@@ -70,7 +69,7 @@
   "complete": {
     "title": "Kaikki valmista!",
     "body": "Voit aina muuttaa asetuksiasi, käyttöoikeuksiasi ja profiiliasi valikosta. Nauti seurannasta!",
-    "start": "Aloita {{appName}}in käyttö",
+    "start": "Aloitetaan!",
     "summary": {
       "language": "Kieli",
       "userName": "Käyttäjänimi",

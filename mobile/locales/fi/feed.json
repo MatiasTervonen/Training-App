@@ -42,7 +42,7 @@
       }
     },
     "tutorial": {
-      "title": "Tervetuloa MyTrackiin!",
+      "title": "Tervetuloa Kurviin!",
       "subtitle": "Täydellinen opas alkuun pääsemiseen",
       "gym": {
         "title": "Kuntosaliharjoittelu",
@@ -71,6 +71,14 @@
       "todo": {
         "title": "Tehtävälistat",
         "desc": "Luo tehtävälistoja järjestääksesi harjoitustavoitteesi ja päivittäiset tehtäväsi."
+      },
+      "chat": {
+        "title": "Chat",
+        "desc": "Viesti ystäviesi kanssa, jaa treenejä ja reagoi viesteihin. Lähetä tekstiä, kuvia, videoita ja ääniviestejä."
+      },
+      "reports": {
+        "title": "Raportit",
+        "desc": "Saat viikoittaiset ja kuukausittaiset yhteenvedot treeneistäsi, painostasi, tavoistasi ja aktiviteeteistasi."
       },
       "tap_to_read": "Napauta Tiedot lukeaksesi koko oppaan"
     },

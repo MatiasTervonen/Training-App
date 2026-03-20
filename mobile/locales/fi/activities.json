@@ -118,6 +118,7 @@
       "session": "sessio",
       "sessions": "sessiota",
       "noActivitiesInPeriod": "Ei aktiviteetteja tällä ajanjaksolla",
+      "accumulatedDistance": "Kertynyt matka",
       "noData": "Ei vielä tietoja",
       "noDataDesc": "Aloita ensimmäinen aktiviteettisessio nähdäksesi analytiikkaa täällä",
       "unknown": "Tuntematon"

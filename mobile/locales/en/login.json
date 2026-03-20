@@ -41,7 +41,7 @@
     "resendEmail": {
       "title": "Resend Verification Email",
       "description": "Enter your email and we'll send you a link to verify your email.",
-      "resendButton": "Resend Verification Email",
+      "resendButton": "Resend",
       "didntGetEmail": "Didn't get an email?"
     },
     "signUpSuccess": {

@@ -59,7 +59,7 @@ export default function FriendPickerSheet({
         >
           <Image
             source={imageSource}
-            className="w-10 h-10 rounded-full border-2 border-blue-500"
+            className="w-10 h-10 rounded-full"
           />
           <AppText className="text-base">{item.user.display_name}</AppText>
         </Pressable>

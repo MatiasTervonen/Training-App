@@ -84,8 +84,8 @@ BEGIN
         AND (h.created_at AT TIME ZONE p_tz)::date <= v_check_date
         AND (h.frequency_days IS NULL OR (EXTRACT(DOW FROM v_check_date)::INT + 1) = ANY(h.frequency_days))
         AND (
-          h.type = 'manual'
-          OR (h.type IN ('steps', 'duration') AND COALESCE(hl.accumulated_seconds, 0) >= h.target_value)
+          h.type IN ('manual', 'steps')
+          OR (h.type = 'duration' AND COALESCE(hl.accumulated_seconds, 0) >= h.target_value)
         );
 
       IF v_day_completed >= v_day_total THEN
@@ -195,8 +195,8 @@ BEGIN
         AND (h.created_at AT TIME ZONE p_tz)::date <= v_check_date
         AND (h.frequency_days IS NULL OR (EXTRACT(DOW FROM v_check_date)::INT + 1) = ANY(h.frequency_days))
         AND (
-          h.type = 'manual'
-          OR (h.type IN ('steps', 'duration') AND COALESCE(hl.accumulated_seconds, 0) >= h.target_value)
+          h.type IN ('manual', 'steps')
+          OR (h.type = 'duration' AND COALESCE(hl.accumulated_seconds, 0) >= h.target_value)
         );
 
       IF v_day_completed >= v_day_total THEN

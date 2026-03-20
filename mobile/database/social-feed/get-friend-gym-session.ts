@@ -1,10 +1,14 @@
 import { supabase } from "@/lib/supabase";
 import { handleError } from "@/utils/handleError";
+import { useUserStore } from "@/lib/stores/useUserStore";
 import type { FullGymSession } from "@/database/gym/get-full-gym-session";
 
 export async function getFriendGymSession(feedItemId: string) {
+  const language = useUserStore.getState().settings?.language ?? "en";
+
   const { data, error } = await supabase.rpc("get_friend_gym_session", {
     p_feed_item_id: feedItemId,
+    p_language: language,
   });
 
   if (error) {

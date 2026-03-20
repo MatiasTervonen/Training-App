@@ -66,5 +66,5 @@ export default function useShareCard(filenamePrefix = "share-") {
     }
   }, [captureCard]);
 
-  return { cardRef, isSharing, isSaving, shareCard, saveCardToGallery };
+  return { cardRef, isSharing, isSaving, shareCard, saveCardToGallery, captureCard };
 }

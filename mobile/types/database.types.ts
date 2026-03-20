@@ -254,33 +254,42 @@ export type Database = {
           content: string | null
           conversation_id: string
           created_at: string
+          deleted_at: string | null
           id: string
+          link_preview: Json | null
           media_duration_ms: number | null
           media_storage_path: string | null
           media_thumbnail_path: string | null
           message_type: string
+          reply_to_message_id: string | null
           sender_id: string
         }
         Insert: {
           content?: string | null
           conversation_id: string
           created_at?: string
+          deleted_at?: string | null
           id?: string
+          link_preview?: Json | null
           media_duration_ms?: number | null
           media_storage_path?: string | null
           media_thumbnail_path?: string | null
           message_type?: string
+          reply_to_message_id?: string | null
           sender_id?: string
         }
         Update: {
           content?: string | null
           conversation_id?: string
           created_at?: string
+          deleted_at?: string | null
           id?: string
+          link_preview?: Json | null
           media_duration_ms?: number | null
           media_storage_path?: string | null
           media_thumbnail_path?: string | null
           message_type?: string
+          reply_to_message_id?: string | null
           sender_id?: string
         }
         Relationships: [
@@ -289,6 +298,13 @@ export type Database = {
             columns: ["conversation_id"]
             isOneToOne: false
             referencedRelation: "chat_conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chat_messages_reply_to_message_id_fkey"
+            columns: ["reply_to_message_id"]
+            isOneToOne: false
+            referencedRelation: "chat_messages"
             referencedColumns: ["id"]
           },
           {
@@ -335,6 +351,45 @@ export type Database = {
           },
           {
             foreignKeyName: "chat_participants_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      chat_reactions: {
+        Row: {
+          created_at: string
+          emoji: string
+          id: string
+          message_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          emoji: string
+          id?: string
+          message_id: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          emoji?: string
+          id?: string
+          message_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_reactions_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "chat_messages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chat_reactions_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "users"
@@ -2676,6 +2731,13 @@ export type Database = {
         Returns: undefined
       }
       delete_friend: { Args: { p_friend_id: string }; Returns: undefined }
+      delete_message: {
+        Args: { p_message_id: string }
+        Returns: {
+          media_path: string
+          thumbnail_path: string
+        }[]
+      }
       feed_delete_session: {
         Args: { p_id: string; p_type: string }
         Returns: undefined
@@ -2733,7 +2795,7 @@ export type Database = {
         Returns: Json
       }
       get_friend_gym_session: {
-        Args: { p_feed_item_id: string }
+        Args: { p_feed_item_id: string; p_language?: string }
         Returns: Json
       }
       get_friends_feed: {
@@ -2764,11 +2826,19 @@ export type Database = {
           content: string
           conversation_id: string
           created_at: string
+          deleted_at: string
           id: string
+          link_preview: Json
           media_duration_ms: number
           media_storage_path: string
           media_thumbnail_path: string
           message_type: string
+          reactions: Json
+          reply_to_content: string
+          reply_to_deleted_at: string
+          reply_to_message_id: string
+          reply_to_message_type: string
+          reply_to_sender_name: string
           sender_display_name: string
           sender_id: string
           sender_profile_picture: string
@@ -3136,6 +3206,7 @@ export type Database = {
           p_media_storage_path?: string
           p_media_thumbnail_path?: string
           p_message_type?: string
+          p_reply_to_message_id?: string
         }
         Returns: string
       }
@@ -3226,6 +3297,10 @@ export type Database = {
         Returns: string
       }
       toggle_feed_like: { Args: { p_feed_item_id: string }; Returns: boolean }
+      toggle_reaction: {
+        Args: { p_emoji: string; p_message_id: string }
+        Returns: boolean
+      }
       weight_edit_weight: {
         Args: {
           p_deleted_image_ids?: string[]

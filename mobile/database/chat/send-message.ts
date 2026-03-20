@@ -9,6 +9,7 @@ type SendMessageParams = {
   mediaStoragePath?: string | null;
   mediaThumbnailPath?: string | null;
   mediaDurationMs?: number | null;
+  replyToMessageId?: string | null;
 };
 
 export async function sendMessage({
@@ -18,6 +19,7 @@ export async function sendMessage({
   mediaStoragePath = null,
   mediaThumbnailPath = null,
   mediaDurationMs = null,
+  replyToMessageId = null,
 }: SendMessageParams): Promise<string> {
   const { data, error } = await supabase.rpc("send_message", {
     p_conversation_id: conversationId,
@@ -26,6 +28,7 @@ export async function sendMessage({
     p_media_storage_path: mediaStoragePath ?? undefined,
     p_media_thumbnail_path: mediaThumbnailPath ?? undefined,
     p_media_duration_ms: mediaDurationMs ?? undefined,
+    p_reply_to_message_id: replyToMessageId ?? undefined,
   });
 
   if (error) {

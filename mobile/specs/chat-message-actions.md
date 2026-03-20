@@ -173,7 +173,7 @@ CREATE INDEX idx_chat_messages_reply_to ON chat_messages(reply_to_message_id)
 CREATE TABLE chat_reactions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   message_id UUID NOT NULL REFERENCES chat_messages(id) ON DELETE CASCADE,
-  user_id UUID NOT NULL DEFAULT auth.uid() REFERENCES auth.users(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL DEFAULT auth.uid() REFERENCES public.users(id) ON DELETE CASCADE,
   emoji TEXT NOT NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   UNIQUE(message_id, user_id, emoji)  -- one reaction per emoji per user per message

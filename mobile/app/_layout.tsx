@@ -140,6 +140,8 @@ export default Sentry.wrap(function RootLayout() {
   useNotificationResponse();
 
 
+
+
   // Subscribe to AppState changes for TanStack Query focus refetching
   useEffect(() => {
     const subscription = AppState.addEventListener("change", onAppStateChange);

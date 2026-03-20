@@ -2,10 +2,9 @@ import { View, ScrollView, Platform, Linking, AppState } from "react-native";
 import AppText from "@/components/AppText";
 import BodyText from "@/components/BodyText";
 import AnimatedButton from "@/components/buttons/animatedButton";
-import OnboardingProgressBar from "@/features/onboarding/OnboardingProgressBar";
+import OnboardingLayout from "@/features/onboarding/OnboardingLayout";
 import PermissionCard from "@/features/onboarding/PermissionCard";
 import SkipOnboardingButton from "@/features/onboarding/SkipOnboardingButton";
-import OnboardingBackButton from "@/features/onboarding/OnboardingBackButton";
 import { useSkipOnboarding } from "@/features/onboarding/useSkipOnboarding";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
@@ -138,116 +137,108 @@ export default function PermissionsScreen() {
     }
   };
 
-  const handleEnableExactAlarm = async () => {
+  const handleEnableExactAlarm = () => {
     requestExactAlarm();
-    // Check after a short delay since this opens system settings
-    setTimeout(async () => {
-      const canAlarm = await canUseExactAlarm();
-      setExactAlarmGranted(canAlarm);
-    }, 1000);
+    // AppState listener re-checks permissions when user returns from system settings
   };
 
   const handleDisableBatteryOpt = async () => {
     await requestIgnoreBatteryOptimizations();
-    // Check after a short delay since this opens system settings
-    setTimeout(async () => {
-      const ignoring = await isIgnoringBatteryOptimizations();
-      setBatteryOptDisabled(ignoring);
-    }, 1000);
+    // AppState listener re-checks permissions when user returns from system settings
   };
 
   return (
-    <View className="flex-1 px-6">
-      <OnboardingBackButton />
-      <View className="pt-6">
-        <OnboardingProgressBar currentStep={2} />
+    <OnboardingLayout
+      currentStep={2}
+      footer={
+        <>
+          <AnimatedButton
+            onPress={() => router.push("/onboarding/profile")}
+            className="btn-base py-3"
+            label={t("permissions.continue")}
+            textClassName="text-lg"
+          />
+          <SkipOnboardingButton onSkip={skipOnboarding} />
+        </>
+      }
+    >
+      <View className="flex-1">
+        <AppText className="text-3xl text-center mt-4 mb-2">
+          {t("permissions.title")}
+        </AppText>
+        <BodyText className="text-center mb-4">
+          {t("permissions.subtitle")}
+        </BodyText>
+
+        <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+          <PermissionCard
+            icon={Bell}
+            title={t("permissions.notifications.title")}
+            description={t("permissions.notifications.description")}
+            isGranted={notificationsGranted}
+            onEnable={handleEnableNotifications}
+            enableLabel={t("permissions.enable")}
+            enabledLabel={t("permissions.enabled")}
+            openSettingsLabel={t("permissions.openSettings")}
+            onOpenSettings={() => Linking.openSettings()}
+          />
+
+          <PermissionCard
+            icon={MapPin}
+            title={t("permissions.location.title")}
+            description={t("permissions.location.description")}
+            isGranted={locationGranted}
+            onEnable={handleEnableLocation}
+            enableLabel={t("permissions.enable")}
+            enabledLabel={t("permissions.enabled")}
+            openSettingsLabel={t("permissions.openSettings")}
+            onOpenSettings={() => Linking.openSettings()}
+          />
+
+          {Platform.OS === "android" && (
+            <>
+              <PermissionCard
+                icon={Footprints}
+                title={t("permissions.stepCounter.title")}
+                description={t("permissions.stepCounter.description")}
+                isGranted={stepsGranted}
+                onEnable={handleEnableSteps}
+                enableLabel={t("permissions.enable")}
+                enabledLabel={t("permissions.enabled")}
+                openSettingsLabel={t("permissions.openSettings")}
+                isPermanentlyDenied={stepsPermanentlyDenied}
+                onOpenSettings={() => Linking.openSettings()}
+              />
+
+              <PermissionCard
+                icon={AlarmClock}
+                title={t("permissions.exactAlarms.title")}
+                description={t("permissions.exactAlarms.description")}
+                isGranted={exactAlarmGranted}
+                onEnable={handleEnableExactAlarm}
+                enableLabel={t("permissions.enable")}
+                enabledLabel={t("permissions.enabled")}
+                openSettingsLabel={t("permissions.openSettings")}
+                onOpenSettings={() => Linking.openSettings()}
+              />
+
+              <PermissionCard
+                icon={BatteryWarning}
+                title={t("permissions.batteryOptimization.title")}
+                description={t("permissions.batteryOptimization.description")}
+                isGranted={batteryOptDisabled}
+                onEnable={handleDisableBatteryOpt}
+                enableLabel={t("permissions.disable")}
+                enabledLabel={t("permissions.disabled")}
+                openSettingsLabel={t("permissions.openSettings")}
+                onOpenSettings={() => Linking.openSettings()}
+              />
+            </>
+          )}
+
+          <View className="h-4" />
+        </ScrollView>
       </View>
-
-      <AppText className="text-3xl text-center mt-4 mb-2">
-        {t("permissions.title")}
-      </AppText>
-      <BodyText className="text-center mb-6">
-        {t("permissions.subtitle")}
-      </BodyText>
-
-      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        <PermissionCard
-          icon={Bell}
-          title={t("permissions.notifications.title")}
-          description={t("permissions.notifications.description")}
-          isGranted={notificationsGranted}
-          onEnable={handleEnableNotifications}
-          enableLabel={t("permissions.enable")}
-          enabledLabel={t("permissions.enabled")}
-          openSettingsLabel={t("permissions.openSettings")}
-          onOpenSettings={() => Linking.openSettings()}
-        />
-
-        <PermissionCard
-          icon={MapPin}
-          title={t("permissions.location.title")}
-          description={t("permissions.location.description")}
-          isGranted={locationGranted}
-          onEnable={handleEnableLocation}
-          enableLabel={t("permissions.enable")}
-          enabledLabel={t("permissions.enabled")}
-          openSettingsLabel={t("permissions.openSettings")}
-          onOpenSettings={() => Linking.openSettings()}
-        />
-
-        {Platform.OS === "android" && (
-          <>
-            <PermissionCard
-              icon={Footprints}
-              title={t("permissions.stepCounter.title")}
-              description={t("permissions.stepCounter.description")}
-              isGranted={stepsGranted}
-              onEnable={handleEnableSteps}
-              enableLabel={t("permissions.enable")}
-              enabledLabel={t("permissions.enabled")}
-              openSettingsLabel={t("permissions.openSettings")}
-              isPermanentlyDenied={stepsPermanentlyDenied}
-              onOpenSettings={() => Linking.openSettings()}
-            />
-
-            <PermissionCard
-              icon={AlarmClock}
-              title={t("permissions.exactAlarms.title")}
-              description={t("permissions.exactAlarms.description")}
-              isGranted={exactAlarmGranted}
-              onEnable={handleEnableExactAlarm}
-              enableLabel={t("permissions.enable")}
-              enabledLabel={t("permissions.enabled")}
-              openSettingsLabel={t("permissions.openSettings")}
-              onOpenSettings={() => Linking.openSettings()}
-            />
-
-            <PermissionCard
-              icon={BatteryWarning}
-              title={t("permissions.batteryOptimization.title")}
-              description={t("permissions.batteryOptimization.description")}
-              isGranted={batteryOptDisabled}
-              onEnable={handleDisableBatteryOpt}
-              enableLabel={t("permissions.disable")}
-              enabledLabel={t("permissions.disabled")}
-              openSettingsLabel={t("permissions.openSettings")}
-              onOpenSettings={() => Linking.openSettings()}
-            />
-          </>
-        )}
-
-        <View className="h-4" />
-      </ScrollView>
-
-      <View className="pb-6">
-        <AnimatedButton
-          onPress={() => router.push("/onboarding/profile")}
-          className="btn-base py-3"
-          label={t("permissions.continue")}
-          textClassName="text-lg"
-        />
-        <SkipOnboardingButton onSkip={skipOnboarding} />
-      </View>
-    </View>
+    </OnboardingLayout>
   );
 }

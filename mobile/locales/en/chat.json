@@ -19,6 +19,25 @@
     "mediaUploadError": "Failed to send media",
     "attachMedia": "Attach media",
     "sending": "Sending...",
-    "recordVoiceMessage": "Record Voice Message"
+    "recordVoiceMessage": "Record Voice Message",
+    "reply": "Reply",
+    "copy": "Copy",
+    "forward": "Forward",
+    "delete": "Delete",
+    "deleteConfirmTitle": "Delete message",
+    "deleteConfirmMessage": "This message will be deleted for everyone.",
+    "messageDeleted": "This message was deleted",
+    "messageForwarded": "Message forwarded",
+    "messageCopied": "Message copied",
+    "replyingTo": "Replying to {{name}}",
+    "forwardTo": "Forward to",
+    "photo": "Photo",
+    "video": "Video",
+    "voiceMessage": "Voice message",
+    "cancel": "Cancel",
+    "sendToChat": "Send to Chat",
+    "sendingToChat": "Sending...",
+    "shareCardSent": "Sent to chat",
+    "typing": "typing..."
   }
 }

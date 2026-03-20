@@ -82,7 +82,7 @@ export default function ProfilePicture({ data, onFileSelected }: Props) {
   return (
     <>
       <AppText>{t("profile.profilePictureLabel")}</AppText>
-      <View className="w-[80px] h-[80px] rounded-full border-2 border-blue-500 items-center justify-center my-4">
+      <View className="w-[80px] h-[80px] rounded-full items-center justify-center my-4">
         <Image
           source={
             fileName

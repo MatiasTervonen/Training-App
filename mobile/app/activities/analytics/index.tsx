@@ -5,6 +5,7 @@ import AppText from "@/components/AppText";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import StepsChart from "@/features/activities/analytics/StepsChart";
 import ActivityBreakdownChart from "@/features/activities/analytics/ActivityBreakdownChart";
+import DistanceChart from "@/features/activities/analytics/DistanceChart";
 import StepsShareModal from "@/features/activities/analytics/StepsShareModal";
 import { getStepsData } from "@/database/activities/get-steps";
 import { getActivitySessions } from "@/database/activities/get-activity-sessions";
@@ -175,6 +176,12 @@ export default function ActivityAnalytics() {
             )}
           </View>
         )}
+        <View className="mt-4">
+          <DistanceChart
+            range={selectedRange}
+            data={sessionsData}
+          />
+        </View>
         <View className="mt-4">
           <ActivityBreakdownChart
             data={sessionsData}

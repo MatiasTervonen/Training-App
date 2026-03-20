@@ -4,7 +4,6 @@ import { TrackPoint } from "@/types/session";
 import useForeground from "./useForeground";
 import { useTimerStore } from "@/lib/stores/timerStore";
 import { handleError } from "@/utils/handleError";
-import { debugLog } from "../lib/debugLogger";
 
 export function useTrackHydration({
   setTrack,
@@ -23,12 +22,10 @@ export function useTrackHydration({
 
   const hydrateFromDatabase = useCallback(async () => {
     if (isHydratingRef.current) {
-      debugLog("HYDRATION", "Skipped — already hydrating");
       return;
     }
     isHydratingRef.current = true;
     setIsHydrated(false);
-    debugLog("HYDRATION", "hydrateFromDatabase() called");
 
     try {
       const db = await getDatabase();
@@ -57,23 +54,10 @@ export function useTrackHydration({
         confidence: point.confidence,
       }));
 
-      const lastTs =
-        points.length > 0
-          ? new Date(points[points.length - 1].timestamp).toLocaleTimeString()
-          : "none";
-      const stationaryCount = points.filter((p) => p.isStationary).length;
-      const badSignalCount = points.filter((p) => p.isBadSignal).length;
-      debugLog(
-        "HYDRATION",
-        `Loaded ${points.length} pts (stationary=${stationaryCount}, badSignal=${badSignalCount}, last=${lastTs})`,
-      );
-
       lastHydratedCountRef.current = points.length;
       setTrack(points);
       onHydrated(points);
     } catch (error) {
-      const msg = error instanceof Error ? error.message : "Unknown error";
-      debugLog("HYDRATION", `ERROR: ${msg}`);
       handleError(error, {
         message: "Error hydrating from database",
         route: "/features/activities/hooks/useTrackHydration",
@@ -87,7 +71,6 @@ export function useTrackHydration({
   // Hydrate on initial mount if there's an active GPS session
   useEffect(() => {
     if (activeSession?.gpsAllowed) {
-      debugLog("HYDRATION", "Initial mount hydration");
       hydrateFromDatabase();
     }
   }, [activeSession, hydrateFromDatabase]);
@@ -99,7 +82,6 @@ export function useTrackHydration({
     // When going TO background, mark as not hydrated so the foreground tracker
     // won't start until hydration completes when we return
     if (wasForeground && !isForeground && activeSession?.gpsAllowed) {
-      debugLog("BG_TRANSITION", "Going to background, setIsHydrated(false)");
       setIsHydrated(false);
     }
 
@@ -111,10 +93,7 @@ export function useTrackHydration({
     let verifyTimeoutId: ReturnType<typeof setTimeout> | null = null;
 
     if (!wasForeground && isForeground && activeSession?.gpsAllowed) {
-      debugLog("HYDRATION", "Foreground detected, starting 500ms timer");
-
       timeoutId = setTimeout(() => {
-        debugLog("HYDRATION", "500ms timer fired, calling hydrateFromDatabase");
         hydrateFromDatabase();
       }, 500);
 
@@ -127,24 +106,17 @@ export function useTrackHydration({
           );
           const dbCount = result?.cnt ?? 0;
 
-          debugLog("HYDRATION", `Verification: DB has ${dbCount} pts`);
-
           if (dbCount > lastHydratedCountRef.current) {
-            debugLog(
-              "HYDRATION",
-              `Late saves detected (${lastHydratedCountRef.current} → ${dbCount}), re-hydrating`,
-            );
             hydrateFromDatabase();
           }
         } catch (error) {
-          debugLog("HYDRATION", `Verification error: ${error}`);
+          // Verification failed silently
         }
       }, 3000);
     }
 
     return () => {
       if (timeoutId) {
-        debugLog("HYDRATION", "Timer cancelled (effect cleanup)");
         clearTimeout(timeoutId);
       }
       if (verifyTimeoutId) {

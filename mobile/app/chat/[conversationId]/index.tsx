@@ -28,6 +28,7 @@ import { ChatMessage, LinkPreview } from "@/types/chat";
 import { KeyboardAvoidingView } from "react-native-keyboard-controller";
 import { LinearGradient } from "expo-linear-gradient";
 import Toast from "react-native-toast-message";
+import { setActiveChatId } from "@/lib/stores/activeChatStore";
 
 function shouldShowTimestamp(
   current: ChatMessage,
@@ -53,6 +54,8 @@ function shouldShowDateSeparator(
   );
   return currentDate !== previousDate;
 }
+
+const CHAT_CONTENT_STYLE = { paddingVertical: 8 };
 
 export default function ChatScreen() {
   const { conversationId, name, avatar } = useLocalSearchParams<{
@@ -98,19 +101,24 @@ export default function ChatScreen() {
 
   useChatRealtime(conversationId!, currentUserId);
   const { data: otherLastRead } = useOtherLastRead(conversationId!);
-  const { isOtherTyping, sendTyping } = useTypingIndicator(
-    conversationId!,
-    currentUserId,
-  );
+  const { isOtherTyping, sendTyping, stopTyping, broadcastRead } =
+    useTypingIndicator(conversationId!, currentUserId);
+
+  // Track active chat for push notification suppression
+  useEffect(() => {
+    setActiveChatId(conversationId!);
+    return () => setActiveChatId(null);
+  }, [conversationId]);
 
   useEffect(() => {
     if (conversationId) {
-      markRead.mutate();
+      markRead.mutate(undefined, { onSuccess: () => broadcastRead() });
     }
   }, [conversationId, messages.length]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleSend = useCallback(
     (content: string, preview?: LinkPreview | null) => {
+      stopTyping();
       sendMessage.mutate({
         content,
         preview,
@@ -119,7 +127,7 @@ export default function ChatScreen() {
       });
       setReplyTo(null);
     },
-    [sendMessage, replyTo],
+    [sendMessage, replyTo, stopTyping],
   );
 
   const handleSendMedia = useCallback(
@@ -349,7 +357,7 @@ export default function ChatScreen() {
                 </View>
               ) : null
             }
-            contentContainerStyle={{ paddingVertical: 8 }}
+            contentContainerStyle={CHAT_CONTENT_STYLE}
           />
         )}
 

@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { View } from "react-native";
 import { useTranslation } from "react-i18next";
 import { Reply, Copy, Forward, Trash2 } from "lucide-react-native";
@@ -17,7 +18,7 @@ type MessageToolbarProps = {
   onReaction: (emoji: string) => void;
 };
 
-export default function MessageToolbar({
+function MessageToolbar({
   message,
   isOwn,
   onReply,
@@ -106,3 +107,5 @@ export default function MessageToolbar({
     </View>
   );
 }
+
+export default memo(MessageToolbar);

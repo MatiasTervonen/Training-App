@@ -11,7 +11,6 @@ export async function toggleReaction(
   });
 
   if (error) {
-    console.error("toggle_reaction RPC error:", error.message, error.code, error.details);
     handleError(error, {
       message: "Error toggling reaction",
       route: "/database/chat/toggle-reaction",

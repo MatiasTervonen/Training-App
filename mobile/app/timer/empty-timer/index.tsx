@@ -35,22 +35,20 @@ export default function SettingsScreen() {
 
   const player = useAudioPlayer(audioSource);
 
-  const {
-    setAlarmFired,
-    setActiveSession,
-    startTimer,
-    remainingMs,
-    mode,
-    startTimestamp,
-    endTimestamp,
-    isRunning,
-    alarmFired,
-    setAlarmSoundPlaying,
-    alarmSoundPlaying,
-    totalDuration,
-    clearEverything,
-    activeSession,
-  } = useTimerStore();
+  const setAlarmFired = useTimerStore((s) => s.setAlarmFired);
+  const setActiveSession = useTimerStore((s) => s.setActiveSession);
+  const startTimer = useTimerStore((s) => s.startTimer);
+  const remainingMs = useTimerStore((s) => s.remainingMs);
+  const mode = useTimerStore((s) => s.mode);
+  const startTimestamp = useTimerStore((s) => s.startTimestamp);
+  const endTimestamp = useTimerStore((s) => s.endTimestamp);
+  const isRunning = useTimerStore((s) => s.isRunning);
+  const alarmFired = useTimerStore((s) => s.alarmFired);
+  const setAlarmSoundPlaying = useTimerStore((s) => s.setAlarmSoundPlaying);
+  const alarmSoundPlaying = useTimerStore((s) => s.alarmSoundPlaying);
+  const totalDuration = useTimerStore((s) => s.totalDuration);
+  const clearEverything = useTimerStore((s) => s.clearEverything);
+  const activeSession = useTimerStore((s) => s.activeSession);
 
   const isHabitSession = activeSession?.type === "habit";
   const { cancelHabitTimer } = useHabitTimer();

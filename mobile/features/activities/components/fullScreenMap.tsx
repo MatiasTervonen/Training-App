@@ -10,7 +10,6 @@ import { findWarmupStartIndex } from "../lib/findWarmupStartIndex";
 import { processLiveTrack } from "../lib/smoothCoordinates";
 import AppText from "@/components/AppText";
 import { useRouter } from "expo-router";
-import { debugLog } from "../lib/debugLogger";
 import { MAP_STYLES } from "@/features/activities/lib/mapConstants";
 import { useActivitySettingsStore } from "@/lib/stores/activitySettingsStore";
 
@@ -83,10 +82,7 @@ export default function FullScreenMap({
     // isHydrated goes false→true after returning from background
     if (isHydrated && !wasHydrated) {
       setIsFollowingUser(true);
-      setSourceKey((prev) => {
-        debugLog("MAP", `Hydration complete, remounting ShapeSource (key=${prev + 1})`);
-        return prev + 1;
-      });
+      setSourceKey((prev) => prev + 1);
     }
   }, [isHydrated]);
 
@@ -96,16 +92,12 @@ export default function FullScreenMap({
 
   const trackSegments = useMemo(() => {
     if (warmupStartIndex === null) {
-      debugLog("MAP", `trackSegments: warmupStartIndex=null, track=${track.length} pts → 0 segments`);
       return [];
     }
 
     // Pass full track including stationary points - processLiveTrack handles filtering
     // This ensures gap detection works correctly when user stops for a while
-    const segments = processLiveTrack(track.slice(warmupStartIndex));
-    const totalPts = segments.reduce((sum, s) => sum + s.length, 0);
-    debugLog("MAP", `trackSegments: ${segments.length} segment(s), ${totalPts} rendered pts (from ${track.length} track pts, warmup=${warmupStartIndex})`);
-    return segments;
+    return processLiveTrack(track.slice(warmupStartIndex));
   }, [track, warmupStartIndex]);
 
   const trackShape = useMemo(() => {

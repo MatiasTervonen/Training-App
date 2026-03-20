@@ -46,20 +46,18 @@ export default function Timer({
     ),
   }));
 
-  const {
-    isRunning,
-    startTimer,
-    pauseTimer,
-    alarmFired,
-    setActiveSession,
-    resumeTimer,
-    clearEverything,
-    remainingMs,
-    endTimestamp,
-    totalDuration,
-    paused,
-    activeSession,
-  } = useTimerStore();
+  const isRunning = useTimerStore((s) => s.isRunning);
+  const startTimer = useTimerStore((s) => s.startTimer);
+  const pauseTimer = useTimerStore((s) => s.pauseTimer);
+  const alarmFired = useTimerStore((s) => s.alarmFired);
+  const setActiveSession = useTimerStore((s) => s.setActiveSession);
+  const resumeTimer = useTimerStore((s) => s.resumeTimer);
+  const clearEverything = useTimerStore((s) => s.clearEverything);
+  const remainingMs = useTimerStore((s) => s.remainingMs);
+  const endTimestamp = useTimerStore((s) => s.endTimestamp);
+  const totalDuration = useTimerStore((s) => s.totalDuration);
+  const paused = useTimerStore((s) => s.paused);
+  const activeSession = useTimerStore((s) => s.activeSession);
 
   const isHabitSession = activeSession?.type === "habit";
 

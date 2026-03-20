@@ -160,23 +160,6 @@ export const getDistanceUnitLabels = () => {
   };
 };
 
-export const convertMetersForDisplay = (meters: number) => {
-  const distanceUnit = useUserStore.getState().profile?.distance_unit ?? "km";
-  if (distanceUnit === "mi") {
-    return Math.round(meters * 3.28084);
-  }
-  return meters;
-};
-
-export const convertInputToMeters = (value: number) => {
-  const distanceUnit = useUserStore.getState().profile?.distance_unit ?? "km";
-  if (distanceUnit === "mi") {
-    return Math.round(value / 3.28084);
-  }
-  return value;
-};
-
-
 export function formatDurationNotesVoice(ms?: number) {
   if (!ms) return "0:00";
   const s = Math.floor(ms / 1000);

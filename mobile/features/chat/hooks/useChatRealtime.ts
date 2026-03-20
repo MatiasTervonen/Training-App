@@ -46,10 +46,13 @@ export default function useChatRealtime(
             },
           );
 
-          // Refresh conversations list
+          // Refresh conversations list and read receipts
           queryClient.invalidateQueries({ queryKey: ["conversations"] });
           queryClient.invalidateQueries({
             queryKey: ["total-unread-count"],
+          });
+          queryClient.invalidateQueries({
+            queryKey: ["other-last-read", conversationId],
           });
         },
       )
@@ -119,27 +122,6 @@ export default function useChatRealtime(
               };
             },
           );
-        },
-      )
-      .on(
-        "postgres_changes",
-        {
-          event: "UPDATE",
-          schema: "public",
-          table: "chat_participants",
-          filter: `conversation_id=eq.${conversationId}`,
-        },
-        (payload) => {
-          const updated = payload.new as {
-            user_id: string;
-            last_read_at: string | null;
-          };
-          // When the other user reads messages, refresh read receipts
-          if (updated.user_id !== currentUserId) {
-            queryClient.invalidateQueries({
-              queryKey: ["other-last-read", conversationId],
-            });
-          }
         },
       )
       .subscribe();

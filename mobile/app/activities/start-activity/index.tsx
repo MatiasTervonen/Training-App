@@ -53,8 +53,6 @@ import { useModalPageConfig } from "@/lib/stores/modalPageConfig";
 import { useTranslation } from "react-i18next";
 import NotesModal from "@/features/activities/components/notesModal";
 import { NotebookPen } from "lucide-react-native";
-import { debugLog } from "@/features/activities/lib/debugLogger";
-import DebugOverlay from "@/features/activities/components/debugOverlay";
 import { getWeight } from "@/database/weight/get-weight";
 import {
   isIgnoringBatteryOptimizations,
@@ -400,10 +398,6 @@ export default function StartActivityScreen() {
   // Memoize the hydration callback to prevent unnecessary database calls
   const handleHydrated = useCallback(
     (points: TrackPoint[]) => {
-      debugLog(
-        "MAIN",
-        `handleHydrated: ${points.length} pts, setting isHydrated=true`,
-      );
       replaceFromHydration(points);
       setIsHydrated(true);
     },
@@ -447,10 +441,7 @@ export default function StartActivityScreen() {
     isHydrated,
     track,
     onPoint: (point) => {
-      setTrack((prev) => {
-        debugLog("MAIN", `onPoint: track ${prev.length} → ${prev.length + 1}`);
-        return [...prev, point];
-      });
+      setTrack((prev) => [...prev, point]);
       addPoint(point);
     },
   });
@@ -603,11 +594,6 @@ export default function StartActivityScreen() {
             onNotesPress={() => setShowNotesModal(true)}
           />
 
-          <DebugOverlay
-            trackLength={track.length}
-            isHydrated={isHydrated}
-            isGpsWarmingUp={isGpsWarmingUp}
-          />
           <View className="flex-row gap-5 px-5 pt-2 pb-3 bg-slate-950">
             <View className="flex-1 shrink-0">
               <DeleteButton

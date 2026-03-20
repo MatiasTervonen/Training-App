@@ -1,4 +1,4 @@
-import { feed_items, notes, activities_with_category } from "./models";
+import { feed_items, activities_with_category } from "./models";
 
 export type Template = {
   id: string;
@@ -126,16 +126,6 @@ export type TrackPoint = {
   confidence?: number;
 };
 
-export type Location = {
-  latitude: number;
-  longitude: number;
-  altitude: number | null;
-  accuracy: number | null;
-  speed: number | null;
-  heading: number | null;
-  timestamp: number;
-};
-
 export type FeedCardProps = {
   item: FeedItemUI;
   pinned: boolean;
@@ -145,15 +135,6 @@ export type FeedCardProps = {
   onEdit: () => void;
   onMoveToFolder?: () => void;
   onHide?: () => void;
-};
-
-export type NotesFeedCardProps = {
-  item: notes;
-  pinned: boolean;
-  onTogglePin: () => void;
-  onDelete: () => void;
-  onExpand: () => void;
-  onEdit: () => void;
 };
 
 // For editing todo sessions
@@ -248,13 +229,6 @@ export type templateSummary = {
     type: "LineString";
     coordinates: [number, number][];
   } | null;
-};
-
-export type editMyNotes = {
-  id: string;
-  title: string;
-  notes: string;
-  updated_at: string;
 };
 
 export type DraftRecording = {

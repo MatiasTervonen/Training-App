@@ -84,8 +84,7 @@ export default function useToggleReaction(conversationId: string) {
       return { previousMessages };
     },
 
-    onError: (err, _input, context) => {
-      console.error("Toggle reaction error:", err);
+    onError: (_err, _input, context) => {
       if (context?.previousMessages) {
         queryClient.setQueryData(
           ["messages", conversationId],

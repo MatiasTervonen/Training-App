@@ -63,7 +63,7 @@ export default function MyGymScreen() {
       end={{ x: 1, y: 1 }}
     >
       {isLoading ? (
-        <FeedSkeleton count={5} subFeed />
+        <FeedSkeleton count={5} />
       ) : error ? (
         <BodyText className="text-center text-lg mt-20 mx-auto px-10">
           {t("gym.mySessions.loadError")}
@@ -89,7 +89,7 @@ export default function MyGymScreen() {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{
             paddingBottom: 100,
-            paddingTop: pinnedFeed.length === 0 ? 12 : 0,
+            paddingTop: pinnedFeed.length === 0 ? 20 : 0,
           }}
           onEndReached={() => {
             if (hasNextPage && !isFetchingNextPage) {

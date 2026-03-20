@@ -23,17 +23,15 @@ export default function Stopwatch({
 
   const isLandscape = width > height;
 
-  const {
-    isRunning,
-    pauseTimer,
-    setActiveSession,
-    resumeTimer,
-    startTimestamp,
-    clearEverything,
-    remainingMs,
-    startSession,
-    paused,
-  } = useTimerStore();
+  const isRunning = useTimerStore((s) => s.isRunning);
+  const pauseTimer = useTimerStore((s) => s.pauseTimer);
+  const setActiveSession = useTimerStore((s) => s.setActiveSession);
+  const resumeTimer = useTimerStore((s) => s.resumeTimer);
+  const startTimestamp = useTimerStore((s) => s.startTimestamp);
+  const clearEverything = useTimerStore((s) => s.clearEverything);
+  const remainingMs = useTimerStore((s) => s.remainingMs);
+  const startSession = useTimerStore((s) => s.startSession);
+  const paused = useTimerStore((s) => s.paused);
 
   const handleStart = () => {
     setActiveSession({

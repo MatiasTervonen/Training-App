@@ -46,6 +46,11 @@
 - Translation files are in `locales`.
 - Always use proper ä/ö characters in Finnish — never substitute with plain a/o
 
+## Zustand
+- Always use selectors when reading from Zustand stores — never destructure the hook call directly.
+  - Bad: `const { isRunning } = useTimerStore();` — re-renders on ANY store change.
+  - Good: `const isRunning = useTimerStore((s) => s.isRunning);` — only re-renders when `isRunning` changes.
+
 ## TypeScript
 - Never use `any` type. Fix TypeScript errors with proper types. If you're unsure of the type, read the codebase to find the correct one.
 

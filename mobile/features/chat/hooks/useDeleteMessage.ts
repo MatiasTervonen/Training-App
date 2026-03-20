@@ -15,18 +15,18 @@ export default function useDeleteMessage(conversationId: string) {
       const result = await deleteMessage(messageId);
 
       // Clean up storage files if media was attached
+      const cleanups: Promise<unknown>[] = [];
       if (result.media_path) {
-        await supabase.storage
-          .from("chat-media")
-          .remove([result.media_path])
-          .catch(() => {});
+        cleanups.push(
+          supabase.storage.from("chat-media").remove([result.media_path]).catch(() => {}),
+        );
       }
       if (result.thumbnail_path) {
-        await supabase.storage
-          .from("chat-media")
-          .remove([result.thumbnail_path])
-          .catch(() => {});
+        cleanups.push(
+          supabase.storage.from("chat-media").remove([result.thumbnail_path]).catch(() => {}),
+        );
       }
+      await Promise.all(cleanups);
 
       return result;
     },

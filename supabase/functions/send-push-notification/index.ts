@@ -14,6 +14,7 @@ interface ExpoPushMessage {
   data: Record<string, string>;
   channelId: string;
   sound: string;
+  _collapseId?: string;
 }
 
 Deno.serve(async (req: Request) => {
@@ -399,20 +400,8 @@ async function handleChatMessage(
       .eq("user_id", recipientId)
       .eq("is_active", true);
 
-    // Insert in-app notification
-    await supabase.from("notifications").insert({
-      user_id: recipientId,
-      type: "chat_message",
-      title: senderName,
-      body,
-      data: {
-        conversationId,
-        senderId,
-        senderName,
-      },
-    });
-
-    // Send push
+    // Push notification only — no in-app notification for chat messages
+    // (chat has its own unread count badge, bell notifications would flood)
     if (tokens && tokens.length > 0) {
       const messages: ExpoPushMessage[] = tokens.map((t) => ({
         to: t.token,
@@ -425,6 +414,7 @@ async function handleChatMessage(
         },
         channelId: "social",
         sound: "default",
+        _collapseId: `chat:${conversationId}`,
       }));
       await sendExpoPushNotifications(messages);
     }

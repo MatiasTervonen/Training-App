@@ -5,6 +5,6 @@ export default function useTotalUnreadCount() {
   return useQuery<number>({
     queryKey: ["total-unread-count"],
     queryFn: getTotalUnreadCount,
-    refetchInterval: 60000,
+    staleTime: 0,
   });
 }

@@ -3,7 +3,6 @@ import { useCallback, useEffect, useRef } from "react";
 import { TrackPoint } from "@/types/session";
 import { useTimerStore } from "@/lib/stores/timerStore";
 import { handleError } from "@/utils/handleError";
-import { debugLog } from "../lib/debugLogger";
 
 export function usePersistToDatabase() {
   const trackRef = useRef<TrackPoint[]>([]);
@@ -82,7 +81,6 @@ export function usePersistToDatabase() {
   }, []);
 
   const replaceFromHydration = useCallback(async (points: TrackPoint[]) => {
-    debugLog("PERSIST", `replaceFromHydration: ${points.length} pts`);
     trackRef.current = points;
     lastPersistedLengthRef.current = points.length;
     lastPersistRef.current = Date.now();

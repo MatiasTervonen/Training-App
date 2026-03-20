@@ -6,6 +6,7 @@ import { useUserStore } from "@/lib/stores/useUserStore";
 import { supabase } from "@/lib/supabase";
 import { extractFirstUrl } from "@/lib/chat/linkUtils";
 import Toast from "react-native-toast-message";
+import { useTranslation } from "react-i18next";
 
 type SendMessageInput = {
   content: string;
@@ -16,6 +17,7 @@ type SendMessageInput = {
 
 export default function useSendMessage(conversationId: string) {
   const queryClient = useQueryClient();
+  const { t } = useTranslation("chat");
 
   return useMutation({
     mutationFn: ({ content, replyToMessageId }: SendMessageInput) =>
@@ -108,9 +110,8 @@ export default function useSendMessage(conversationId: string) {
       );
     },
 
-    onError: (err, _input, context) => {
-      console.error("Send message error:", err);
-      Toast.show({ type: "error", text1: "Failed to send message", text2: String(err) });
+    onError: (_err, _input, context) => {
+      Toast.show({ type: "error", text1: t("chat.messageSendError") });
       if (context?.previousMessages) {
         queryClient.setQueryData(
           ["messages", conversationId],

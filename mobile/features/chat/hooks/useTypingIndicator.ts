@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState, useCallback } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 
 export default function useTypingIndicator(
   conversationId: string,
   currentUserId: string | null,
 ) {
+  const queryClient = useQueryClient();
   const [isOtherTyping, setIsOtherTyping] = useState(false);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastSentRef = useRef(0);
@@ -28,6 +30,18 @@ export default function useTypingIndicator(
           setIsOtherTyping(false);
         }, 3000);
       })
+      .on("broadcast", { event: "stop_typing" }, () => {
+        setIsOtherTyping(false);
+        if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      })
+      .on("broadcast", { event: "read" }, (payload) => {
+        const senderId = payload.payload?.userId as string | undefined;
+        if (!senderId || senderId === currentUserId) return;
+
+        queryClient.invalidateQueries({
+          queryKey: ["other-last-read", conversationId],
+        });
+      })
       .subscribe();
 
     return () => {
@@ -35,7 +49,7 @@ export default function useTypingIndicator(
       supabase.removeChannel(channel);
       channelRef.current = null;
     };
-  }, [conversationId, currentUserId]);
+  }, [conversationId, currentUserId, queryClient]);
 
   const sendTyping = useCallback(() => {
     const now = Date.now();
@@ -49,5 +63,21 @@ export default function useTypingIndicator(
     });
   }, [currentUserId]);
 
-  return { isOtherTyping, sendTyping };
+  const stopTyping = useCallback(() => {
+    channelRef.current?.send({
+      type: "broadcast",
+      event: "stop_typing",
+      payload: {},
+    });
+  }, []);
+
+  const broadcastRead = useCallback(() => {
+    channelRef.current?.send({
+      type: "broadcast",
+      event: "read",
+      payload: { userId: currentUserId },
+    });
+  }, [currentUserId]);
+
+  return { isOtherTyping, sendTyping, stopTyping, broadcastRead };
 }

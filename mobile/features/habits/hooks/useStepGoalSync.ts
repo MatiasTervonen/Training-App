@@ -10,17 +10,21 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 export function useStepGoalSync() {
   const { t } = useTranslation("habits");
   const { t: tActivities } = useTranslation("activities");
-  const { data: habits = [] } = useHabits();
+  const { data: habits, isSuccess } = useHabits();
 
   const stepGoals = useMemo(
     () =>
-      habits
+      (habits ?? [])
         .filter((h) => h.type === "steps" && h.target_value)
         .map((h) => ({ id: h.id, target: h.target_value! })),
     [habits],
   );
 
   useEffect(() => {
+    // Don't sync until habits have loaded — writing an empty array while
+    // the query is still in flight would reset the widget goal to 10 000.
+    if (!isSuccess) return;
+
     setStepGoals(
       stepGoals,
       t("stepGoalReached"),
@@ -37,5 +41,5 @@ export function useStepGoalSync() {
       "step_habit_targets",
       JSON.stringify(stepGoals.map((g) => g.target)),
     );
-  }, [stepGoals, t, tActivities]);
+  }, [stepGoals, isSuccess, t, tActivities]);
 }

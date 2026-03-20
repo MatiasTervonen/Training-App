@@ -72,6 +72,14 @@ export async function registerForPushNotificationsAsync(
 export async function SaveTokenToServer(token: string, platform: string) {
   const deviceId = await getDeviceId();
 
+  // Clean up any stale rows with the same token but different device_id
+  // (happens when app is reinstalled and device_id regenerates)
+  await supabase
+    .from("user_push_mobile_subscriptions")
+    .delete()
+    .eq("token", token)
+    .neq("device_id", deviceId);
+
   const { error } = await supabase
     .from("user_push_mobile_subscriptions")
     .upsert(
@@ -173,11 +181,30 @@ export async function configureNotificationCategories() {
 
 export async function configurePushNotificationsWhenAppIsOpen() {
   Notifications.setNotificationHandler({
-    handleNotification: async () => ({
-      shouldPlaySound: true,
-      shouldSetBadge: false,
-      shouldShowBanner: true,
-      shouldShowList: true,
-    }),
+    handleNotification: async (notification) => {
+      const data = notification.request.content.data;
+
+      // Suppress chat push if the user is already viewing that conversation
+      if (data?.type === "chat_message" && data?.conversationId) {
+        const { getActiveChatId } = await import(
+          "@/lib/stores/activeChatStore"
+        );
+        if (getActiveChatId() === data.conversationId) {
+          return {
+            shouldPlaySound: false,
+            shouldSetBadge: false,
+            shouldShowBanner: false,
+            shouldShowList: false,
+          };
+        }
+      }
+
+      return {
+        shouldPlaySound: true,
+        shouldSetBadge: false,
+        shouldShowBanner: true,
+        shouldShowList: true,
+      };
+    },
   });
 }

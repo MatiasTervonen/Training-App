@@ -9,7 +9,6 @@ import {
   createInitialState,
   MovementState,
 } from "../lib/stationaryDetection";
-import { debugLog } from "../lib/debugLogger";
 
 export function useForegroundLocationTracker({
   allowGPS,
@@ -29,7 +28,7 @@ export function useForegroundLocationTracker({
   track: TrackPoint[];
 }) {
   const { isForeground } = useForeground();
-  const { activeSession } = useTimerStore();
+  const activeSession = useTimerStore((s) => s.activeSession);
 
   const goodFixCountRef = useRef(0);
   const gpsReadyRef = useRef(false);
@@ -116,21 +115,12 @@ export function useForegroundLocationTracker({
       lastAcceptedTimestamp: lastPoint.timestamp,
     };
 
-    debugLog(
-      "FG_TRACKER",
-      `Synced lastAcceptedPoint from hydrated track (${track.length} pts, badSignal=${badSignalCount})`,
-    );
   }, [isHydrated, track]);
 
   // Start the location tracking when the component is in the foreground and the GPS is allowed and the activity is running
   // Wait for hydration to complete before starting to track
   useEffect(() => {
     if (!isForeground || !allowGPS || !isRunning || !isHydrated) return;
-
-    debugLog(
-      "FG_TRACKER",
-      `Starting GPS watch (fg=${isForeground}, gps=${allowGPS}, run=${isRunning}, hyd=${isHydrated})`,
-    );
 
     let cancelled = false;
     let sub: Location.LocationSubscription | null = null;
@@ -192,14 +182,12 @@ export function useForegroundLocationTracker({
               if (goodFixCountRef.current >= WARMUP_REQUIRED_FIXES) {
                 gpsReadyRef.current = true;
                 setIsGpsWarmingUp(false);
-                debugLog("FG_TRACKER", `GPS ready after warmup (acc=${accuracy.toFixed(0)}m)`);
               }
             } else {
               goodFixCountRef.current = 0; // Reset on bad fix
             }
 
             if (!gpsReadyRef.current) {
-              debugLog("FG_TRACKER", `Warmup: ${goodFixCountRef.current}/${WARMUP_REQUIRED_FIXES} fixes (acc=${accuracy.toFixed(0)}m)`);
               return; // Skip this point, warmup not complete
             }
           }
@@ -221,10 +209,6 @@ export function useForegroundLocationTracker({
           }
 
           // ---------- Save point ----------
-          debugLog(
-            "FG_TRACKER",
-            `Point saved (acc=${(point.accuracy ?? 0).toFixed(0)}m, moving=${result.isMoving}, badSig=${result.isBadSignal})`,
-          );
           onPointRef.current({
             ...point,
             isStationary: result.isBadSignal ? false : !result.isMoving, // Don't mark as stationary if bad signal
@@ -250,7 +234,6 @@ export function useForegroundLocationTracker({
     start();
 
     return () => {
-      debugLog("FG_TRACKER", "GPS watch cleaned up");
       cancelled = true;
       sub?.remove(); // Clean up the subscription if it exists
     };

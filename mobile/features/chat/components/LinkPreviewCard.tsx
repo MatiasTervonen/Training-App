@@ -1,6 +1,7 @@
-import { View, Linking, Image, Text } from "react-native";
+import { View, Linking, Image } from "react-native";
 import { Link2 } from "lucide-react-native";
 import AnimatedButton from "@/components/buttons/animatedButton";
+import BodyTextNC from "@/components/BodyTextNC";
 import { LinkPreview } from "@/types/chat";
 
 type LinkPreviewCardProps = {
@@ -42,29 +43,29 @@ export default function LinkPreviewCard({
       )}
       <View className="px-3 py-2 gap-0.5">
         {preview.title && (
-          <Text
-            className="font-lexend text-[13px] leading-[17px] text-slate-100"
+          <BodyTextNC
+            className="text-[13px] leading-[17px] text-slate-100"
             numberOfLines={2}
           >
             {preview.title}
-          </Text>
+          </BodyTextNC>
         )}
         {preview.description && (
-          <Text
-            className="font-lexend text-[11px] leading-[15px] text-slate-300"
+          <BodyTextNC
+            className="text-[11px] leading-[15px] text-slate-300"
             numberOfLines={4}
           >
             {preview.description}
-          </Text>
+          </BodyTextNC>
         )}
         <View className="flex-row items-center gap-1 mt-0.5">
           <Link2 color="#cbd5e1" size={11} />
-          <Text
-            className="font-lexend text-[11px] leading-[15px] text-slate-300"
+          <BodyTextNC
+            className="text-[11px] leading-[15px] text-slate-300"
             numberOfLines={1}
           >
             {getDomain(preview.url)}
-          </Text>
+          </BodyTextNC>
         </View>
       </View>
     </AnimatedButton>

@@ -27,18 +27,16 @@ export default function Timer({
   onStart,
   onPause,
 }: TimerProps) {
-  const {
-    isRunning,
-    startSession,
-    pauseTimer,
-    setActiveSession,
-    activeSession,
-    resumeTimer,
-    startTimestamp,
-    remainingMs,
-    endTimestamp,
-    mode,
-  } = useTimerStore();
+  const isRunning = useTimerStore((s) => s.isRunning);
+  const startSession = useTimerStore((s) => s.startSession);
+  const pauseTimer = useTimerStore((s) => s.pauseTimer);
+  const setActiveSession = useTimerStore((s) => s.setActiveSession);
+  const activeSession = useTimerStore((s) => s.activeSession);
+  const resumeTimer = useTimerStore((s) => s.resumeTimer);
+  const startTimestamp = useTimerStore((s) => s.startTimestamp);
+  const remainingMs = useTimerStore((s) => s.remainingMs);
+  const endTimestamp = useTimerStore((s) => s.endTimestamp);
+  const mode = useTimerStore((s) => s.mode);
 
   const handleStart = () => {
     if (!activeSession && manualSession) {

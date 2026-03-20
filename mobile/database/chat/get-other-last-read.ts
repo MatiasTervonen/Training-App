@@ -7,10 +7,7 @@ export async function getOtherLastRead(
     p_conversation_id: conversationId,
   });
 
-  if (error) {
-    console.error("Error fetching other last read:", error.message);
-    return null;
-  }
+  if (error) return null;
 
   return data as string | null;
 }

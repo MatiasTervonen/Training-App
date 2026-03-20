@@ -40,7 +40,8 @@ export default function MyTimersScreen() {
   const [editNotes, setEditNotes] = useState("");
   const [editPickerDuration, setEditPickerDuration] = useState({ hours: 0, minutes: 0, seconds: 0 });
 
-  const { setActiveSession, startTimer } = useTimerStore();
+  const setActiveSession = useTimerStore((s) => s.setActiveSession);
+  const startTimer = useTimerStore((s) => s.startTimer);
 
   const activeSession = useTimerStore((state) => state.activeSession);
 

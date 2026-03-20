@@ -4,7 +4,6 @@ import { handleError } from "@/utils/handleError";
 import { LocationObject } from "expo-location";
 import { haversine } from "./countDistance";
 import { detectMovement, MovementState } from "./stationaryDetection";
-import { debugLog } from "./debugLogger";
 
 export const LOCATION_TASK_NAME = "location-task";
 
@@ -13,8 +12,6 @@ TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
 
   const { locations } = data as { locations: LocationObject[] };
   if (!locations.length) return;
-
-  debugLog("BG_TASK", `Task fired, ${locations.length} location(s)`);
 
   try {
     const db = await getDatabase();
@@ -91,7 +88,6 @@ TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
       state = result.newState;
 
       if (!result.shouldSave) {
-        debugLog("BG_TASK", `Skipped (acc=${(point.accuracy ?? 0).toFixed(0)}m, moving=${result.isMoving}, badSig=${result.isBadSignal})`);
         continue;
       }
 
@@ -108,8 +104,6 @@ TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
           result.isBadSignal ? 1 : 0,
         ]
       );
-
-      debugLog("BG_TASK", `Saved (acc=${(point.accuracy ?? 0).toFixed(0)}m, moving=${result.isMoving}, badSig=${result.isBadSignal})`);
 
       lastPoint = { latitude: point.latitude, longitude: point.longitude };
     }
@@ -142,11 +136,9 @@ TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
       const { NativeModules } = require("react-native");
       NativeModules.NativeTimer?.updateCumulativeDistance(totalDistance);
     } catch (e) {
-      debugLog("BG_TASK", `Distance update failed: ${e}`);
+      // Distance update failed silently
     }
   } catch (error) {
-    const msg = error instanceof Error ? error.message : "Unknown error";
-    debugLog("BG_TASK", `ERROR: ${msg}`);
     handleError(error, {
       message: "Error persisting points to database",
       route: "/features/activities/lib/locationTask",

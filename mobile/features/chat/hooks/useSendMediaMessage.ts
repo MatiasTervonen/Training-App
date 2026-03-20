@@ -44,10 +44,10 @@ export default function useSendMediaMessage(conversationId: string) {
     }: SendMediaParams) => {
       uploadedPathsRef.current = [];
 
-      const accessToken = await getAccessToken();
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
+      const [accessToken, { data: { session } }] = await Promise.all([
+        getAccessToken(),
+        supabase.auth.getSession(),
+      ]);
       const userId = session?.user?.id;
       if (!userId) throw new Error("Unauthorized");
 
@@ -179,8 +179,7 @@ export default function useSendMediaMessage(conversationId: string) {
       return { previousMessages };
     },
 
-    onError: (err, _variables, context) => {
-      console.error("Send media message error:", err);
+    onError: (_err, _variables, context) => {
       Toast.show({
         type: "error",
         text1: t("chat.mediaUploadError"),

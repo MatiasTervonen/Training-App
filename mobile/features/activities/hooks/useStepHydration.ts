@@ -13,7 +13,7 @@ export function useStepHydration({
 }) {
   const { isForeground } = useForeground();
   const prevForegroundRef = useRef(false);
-  const { activeSession } = useTimerStore();
+  const activeSession = useTimerStore((s) => s.activeSession);
   const isHydratingRef = useRef(false);
 
   const hydrateSteps = useCallback(async () => {

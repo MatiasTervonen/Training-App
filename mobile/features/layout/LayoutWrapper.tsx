@@ -60,6 +60,18 @@ export default function LayoutWrapper({
   // Sync step habit goals to native SharedPreferences for background notifications
   useStepGoalSync();
 
+  // Refresh chat unread badge when a chat push notification arrives in-app
+  useEffect(() => {
+    const sub = Notifications.addNotificationReceivedListener((notification) => {
+      const data = notification.request.content.data;
+      if (data?.type === "chat_message") {
+        queryClient.invalidateQueries({ queryKey: ["total-unread-count"] });
+        queryClient.invalidateQueries({ queryKey: ["conversations"] });
+      }
+    });
+    return () => sub.remove();
+  }, []);
+
   const handleSessionChange = useCallback(
     async (session: Session | null, skipRedirect = false) => {
       const currentPathname = pathnameRef.current;

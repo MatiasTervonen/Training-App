@@ -7,7 +7,6 @@ import {
 import { getDatabase } from "@/database/local-database/database";
 import { clearLocalSessionDatabase } from "@/features/activities/lib/database-actions";
 import { startStepSession } from "@/native/android/NativeStepCounter";
-import { clearLog, debugLog } from "@/features/activities/lib/debugLogger";
 import { Alert } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
@@ -42,13 +41,6 @@ export function useStartActivity({
       });
       return;
     }
-
-    // Clear debug log from previous session
-    clearLog();
-    debugLog(
-      "SESSION",
-      `Starting activity: ${activityName}, gps=${allowGPS}, steps=${stepsAllowed}`,
-    );
 
     // Stop any running GPS tracking first to prevent race conditions
     await stopGPStracking();

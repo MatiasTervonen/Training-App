@@ -85,7 +85,7 @@ function downsample(coords: Coordinate[], maxPoints: number): Coordinate[] {
  * This prevents false gaps when the user is standing still and the OS throttles
  * background tasks (causing time gaps >60s without actually moving).
  */
-export function splitTrackByTimeGaps(
+function splitTrackByTimeGaps(
   track: TrackPoint[],
   gapThresholdMs: number = TIME_GAP_MS,
   standingStillMeters: number = STANDING_STILL_METERS,
@@ -133,7 +133,7 @@ export function splitTrackByTimeGaps(
  * Split coordinates into segments based on distance gaps.
  * Used for saved routes where we don't have timestamps.
  */
-export function splitCoordsByDistanceGaps(
+function splitCoordsByDistanceGaps(
   coords: Coordinate[],
   gapThresholdMeters: number = DISTANCE_GAP_METERS,
 ): Coordinate[][] {

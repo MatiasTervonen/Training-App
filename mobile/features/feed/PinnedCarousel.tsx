@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { View } from "react-native";
 import AppText from "@/components/AppText";
 import BodyText from "@/components/BodyText";
@@ -32,11 +32,10 @@ export default function PinnedCarousel({
   const [activeIndex, setActiveIndex] = useState(0);
   const { t } = useTranslation();
 
-  useEffect(() => {
-    if (activeIndex >= pinnedFeed.length && pinnedFeed.length > 0) {
-      setActiveIndex(0);
-    }
-  }, [pinnedFeed.length, activeIndex]);
+  const safeActiveIndex =
+    activeIndex >= pinnedFeed.length && pinnedFeed.length > 0
+      ? 0
+      : activeIndex;
 
   return (
     <View>
@@ -44,7 +43,7 @@ export default function PinnedCarousel({
         <Pin size={20} color="#d1d5db" />
         <AppText>{t("common.pinned")}</AppText>
         <BodyText>
-          {activeIndex + 1} / {pinnedFeed.length}
+          {safeActiveIndex + 1} / {pinnedFeed.length}
         </BodyText>
       </View>
       <Carousel

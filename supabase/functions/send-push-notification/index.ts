@@ -384,6 +384,9 @@ async function handleChatMessage(
     case "voice":
       body = `🎤 ${senderName} sent a voice message`;
       break;
+    case "location":
+      body = `📍 ${senderName} shared a location`;
+      break;
     default:
       body = `${senderName}: ${content?.slice(0, 100) ?? ""}`;
       break;
@@ -393,30 +396,50 @@ async function handleChatMessage(
   for (const participant of participants) {
     const recipientId = participant.user_id;
 
-    // Get recipient's push tokens
+    // Get recipient's push tokens (include platform to send differently per OS)
     const { data: tokens } = await supabase
       .from("user_push_mobile_subscriptions")
-      .select("token")
+      .select("token, platform")
       .eq("user_id", recipientId)
       .eq("is_active", true);
 
     // Push notification only — no in-app notification for chat messages
     // (chat has its own unread count badge, bell notifications would flood)
     if (tokens && tokens.length > 0) {
-      const messages: ExpoPushMessage[] = tokens.map((t) => ({
-        to: t.token,
-        title: senderName,
-        body,
-        data: {
-          type: "chat_message",
-          conversationId,
-          senderId,
-          tag: `chat:${conversationId}`,
-        },
-        channelId: "social",
-        sound: "default",
-        collapseId: `chat:${conversationId}`,
-      }));
+      const messages: ExpoPushMessage[] = tokens.map((t) => {
+        if (t.platform === "android") {
+          // Android: send data-only (no title/body) so onMessageReceived fires in all states.
+          // Our native ChatFirebaseMessagingDelegate extracts title/message/tag from the body
+          // JSON and builds the notification with a stable tag for automatic replacement.
+          return {
+            to: t.token,
+            data: {
+              type: "chat_message",
+              conversationId,
+              senderId,
+              tag: `chat:${conversationId}`,
+              title: senderName,
+              message: body,
+            },
+            channelId: "social",
+            sound: "default",
+          };
+        }
+        // iOS: send with title/body so APNs displays it; collapseId handles replacement.
+        return {
+          to: t.token,
+          title: senderName,
+          body,
+          data: {
+            type: "chat_message",
+            conversationId,
+            senderId,
+          },
+          channelId: "social",
+          sound: "default",
+          collapseId: `chat:${conversationId}`,
+        };
+      });
       await sendExpoPushNotifications(messages);
     }
   }

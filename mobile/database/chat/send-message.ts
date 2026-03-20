@@ -32,6 +32,8 @@ export async function sendMessage({
   });
 
   if (error) {
+    console.error("[sendMessage] Supabase error:", JSON.stringify(error, null, 2));
+    console.error("[sendMessage] Params:", { conversationId, messageType, content: content?.slice(0, 200) });
     handleError(error, {
       message: "Error sending message",
       route: "/database/chat/send-message",

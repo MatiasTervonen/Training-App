@@ -38,6 +38,40 @@
     "sendToChat": "Send to Chat",
     "sendingToChat": "Sending...",
     "shareCardSent": "Sent to chat",
-    "typing": "typing..."
+    "typing": "typing...",
+    "mediaGymSession": "Gym session",
+    "mediaActivitySession": "Activity session",
+    "mediaSession": "Session",
+    "sessionShare": "Session",
+    "sessionShared": "Session shared",
+    "sessionUnavailable": "Session no longer available",
+    "sessionCard": {
+      "gymSession": "Gym Session",
+      "activitySession": "Activity",
+      "duration": "Duration",
+      "exercises": "Exercises",
+      "sets": "Sets",
+      "volume": "Volume",
+      "distance": "Distance",
+      "pace": "Pace",
+      "calories": "Calories",
+      "tapToView": "Tap to view details"
+    },
+    "location": "Location",
+    "mediaLocation": "Location",
+    "shareLocation": "Share Location",
+    "locationSendError": "Failed to send location",
+    "locationPermissionRequired": "Location permission is required to share your location",
+    "locationCard": {
+      "location": "Location",
+      "tapToView": "Tap to open in maps"
+    },
+    "shareTypePicker": {
+      "title": "How do you want to share?",
+      "imageTitle": "Share as Image",
+      "imageDesc": "Sends the customized card as a photo",
+      "sessionTitle": "Share Session",
+      "sessionDesc": "Friend can tap to view full details"
+    }
   }
 }

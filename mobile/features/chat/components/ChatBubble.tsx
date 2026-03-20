@@ -1,33 +1,31 @@
 import { memo } from "react";
-import { View, Linking } from "react-native";
+import { View, Linking, GestureResponderEvent } from "react-native";
 import { useTranslation } from "react-i18next";
 import { Check, CheckCheck } from "lucide-react-native";
 import BodyText from "@/components/BodyText";
 import BodyTextNC from "@/components/BodyTextNC";
 import ChatMediaBubble from "@/features/chat/components/ChatMediaBubble";
+import ChatSessionCard from "@/features/chat/components/ChatSessionCard";
+import ChatLocationCard from "@/features/chat/components/ChatLocationCard";
 import LinkPreviewCard from "@/features/chat/components/LinkPreviewCard";
 import ReplyPreview from "@/features/chat/components/ReplyPreview";
 import ReactionPills from "@/features/chat/components/ReactionPills";
-import MessageToolbar from "@/features/chat/components/MessageToolbar";
 import AnimatedButton from "@/components/buttons/animatedButton";
+import type { BubbleLayout } from "@/features/chat/components/FloatingToolbarOverlay";
 import { parseMessageWithLinks } from "@/lib/chat/linkUtils";
-import { ChatMessage } from "@/types/chat";
+import { ChatMessage, SessionShareContent, LocationShareContent } from "@/types/chat";
 
 type ChatBubbleProps = {
   message: ChatMessage;
   isOwn: boolean;
   showTimestamp: boolean;
-  isSelected?: boolean;
-  onLongPress?: (message: ChatMessage) => void;
-  onDismiss?: () => void;
+  onLongPress?: (message: ChatMessage, layout: BubbleLayout) => void;
   onReplyPress?: (messageId: string) => void;
   onToggleReaction?: (messageId: string, emoji: string) => void;
-  onReply?: () => void;
-  onCopy?: () => void;
-  onForward?: () => void;
-  onDelete?: () => void;
-  onToolbarReaction?: (emoji: string) => void;
+  onSessionPress?: (data: SessionShareContent, conversationId: string) => void;
+  onLocationPress?: (data: LocationShareContent) => void;
   isHighlighted?: boolean;
+  isSelected?: boolean;
   isRead?: boolean;
 };
 
@@ -40,21 +38,19 @@ function ChatBubble({
   message,
   isOwn,
   showTimestamp,
-  isSelected,
   onLongPress,
-  onDismiss,
   onReplyPress,
   onToggleReaction,
-  onReply,
-  onCopy,
-  onForward,
-  onDelete,
-  onToolbarReaction,
+  onSessionPress,
+  onLocationPress,
   isHighlighted,
+  isSelected,
   isRead,
 }: ChatBubbleProps) {
   const { t } = useTranslation("chat");
-  const isMedia = message.message_type !== "text";
+  const isMedia = message.message_type !== "text" && message.message_type !== "session_share" && message.message_type !== "location";
+  const isSessionShare = message.message_type === "session_share";
+  const isLocation = message.message_type === "location";
   const isDeleted = !!message.deleted_at;
   const timeString = showTimestamp ? formatMessageTime(message.created_at) : null;
 
@@ -67,26 +63,44 @@ function ChatBubble({
   ) : null;
 
   return (
-    <View className={isHighlighted ? "bg-cyan-500/10" : undefined}>
+    <View className={isHighlighted ? "bg-cyan-500/10" : isSelected ? "bg-white/5" : undefined}>
       <View className={`px-4 mb-1 ${isOwn ? "items-end" : "items-start"}`}>
         <AnimatedButton
-          onPress={() => onDismiss?.()}
-          onLongPress={() => {
-            if (!isDeleted && onLongPress) onLongPress(message);
+          onPress={() => {
+            if (isSessionShare && !isDeleted && onSessionPress) {
+              try {
+                const data = JSON.parse(message.content ?? "{}");
+                onSessionPress(data, message.conversation_id);
+              } catch { /* ignore parse errors */ }
+            } else if (isLocation && !isDeleted && onLocationPress) {
+              try {
+                const data = JSON.parse(message.content ?? "{}");
+                onLocationPress(data);
+              } catch { /* ignore parse errors */ }
+            }
+          }}
+          onLongPress={(e: GestureResponderEvent) => {
+            if (!isDeleted && onLongPress) {
+              onLongPress(message, { pageY: e.nativeEvent.pageY });
+            }
           }}
           delayLongPress={400}
           className={`max-w-[80%] rounded-2xl ${
             isDeleted
               ? "px-3 py-1.5"
-              : message.message_type === "voice"
-                ? "px-4 py-3"
-                : isMedia
-                  ? "p-1"
-                  : "px-3 py-1.5"
+              : isSessionShare || isLocation
+                ? "p-0 overflow-hidden"
+                : message.message_type === "voice"
+                  ? "px-4 py-3"
+                  : isMedia
+                    ? "p-1"
+                    : "px-3 py-1.5"
           } ${
-            isOwn
-              ? "bg-cyan-800 rounded-br-sm"
-              : "bg-slate-700 rounded-bl-sm"
+            isSessionShare || isLocation
+              ? ""
+              : isOwn
+                ? "bg-cyan-800 rounded-br-sm"
+                : "bg-slate-700 rounded-bl-sm"
           }`}
         >
           {isDeleted ? (
@@ -114,12 +128,48 @@ function ChatBubble({
                   }
                 />
               )}
-              {isMedia ? (
+              {isSessionShare ? (
+                <View>
+                  <ChatSessionCard
+                    data={(() => {
+                      try { return JSON.parse(message.content ?? "{}"); }
+                      catch { return { session_type: "gym_sessions", source_id: "", title: "Session", stats: {} }; }
+                    })()}
+                  />
+                  {timeString && (
+                    <View className="absolute bottom-1.5 right-1.5 bg-black/50 rounded px-1 py-0.5 flex-row items-center gap-1">
+                      <BodyTextNC className="text-[10px] text-white/80">
+                        {timeString}
+                      </BodyTextNC>
+                      {readReceiptIcon}
+                    </View>
+                  )}
+                </View>
+              ) : isLocation ? (
+                <View>
+                  <ChatLocationCard
+                    data={(() => {
+                      try { return JSON.parse(message.content ?? "{}"); }
+                      catch { return { lat: 0, lng: 0 }; }
+                    })()}
+                  />
+                  {timeString && (
+                    <View className="absolute bottom-1.5 right-1.5 bg-black/50 rounded px-1 py-0.5 flex-row items-center gap-1">
+                      <BodyTextNC className="text-[10px] text-white/80">
+                        {timeString}
+                      </BodyTextNC>
+                      {readReceiptIcon}
+                    </View>
+                  )}
+                </View>
+              ) : isMedia ? (
                 <View>
                   <ChatMediaBubble
                     message={message}
                     isOwn={isOwn}
-                    onLongPress={() => onLongPress?.(message)}
+                    onLongPress={(e) => {
+                      onLongPress?.(message, { pageY: e.nativeEvent.pageY });
+                    }}
                   />
                   {timeString && message.message_type === "voice" ? (
                     <View className="flex-row items-center self-end gap-1 mt-0.5">
@@ -183,19 +233,6 @@ function ChatBubble({
           )}
         </AnimatedButton>
       </View>
-
-      {/* Inline toolbar below the selected bubble */}
-      {isSelected && onReply && onCopy && onForward && onDelete && onToolbarReaction && (
-        <MessageToolbar
-          message={message}
-          isOwn={isOwn}
-          onReply={onReply}
-          onCopy={onCopy}
-          onForward={onForward}
-          onDelete={onDelete}
-          onReaction={onToolbarReaction}
-        />
-      )}
 
       {!isDeleted && (
         <ReactionPills

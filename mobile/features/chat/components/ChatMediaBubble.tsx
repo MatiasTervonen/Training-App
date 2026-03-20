@@ -42,7 +42,7 @@ function getCachedUrl(storagePath: string | null): string | null {
 type ChatMediaBubbleProps = {
   message: ChatMessage;
   isOwn: boolean;
-  onLongPress?: () => void;
+  onLongPress?: (e: import("react-native").GestureResponderEvent) => void;
 };
 
 function ChatMediaBubble({ message, isOwn, onLongPress }: ChatMediaBubbleProps) {

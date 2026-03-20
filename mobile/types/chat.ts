@@ -1,4 +1,18 @@
-export type MessageType = "text" | "image" | "video" | "voice";
+export type MessageType = "text" | "image" | "video" | "voice" | "session_share" | "location";
+
+export type SessionShareContent = {
+  session_type: "gym_sessions" | "activity_sessions";
+  source_id: string;
+  title: string;
+  activity_name?: string;
+  stats: Record<string, number>;
+};
+
+export type LocationShareContent = {
+  lat: number;
+  lng: number;
+  address?: string;
+};
 
 export type LinkPreview = {
   url: string;

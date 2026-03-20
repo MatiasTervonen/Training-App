@@ -3,7 +3,6 @@ import { View } from "react-native";
 import { useTranslation } from "react-i18next";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import BodyTextNC from "@/components/BodyTextNC";
-import AppTextNC from "@/components/AppTextNC";
 import { MessageType } from "@/types/chat";
 
 type ReplyPreviewProps = {
@@ -25,6 +24,15 @@ function getReplyContent(
   if (messageType === "image") return t("chat.photo");
   if (messageType === "video") return t("chat.video");
   if (messageType === "voice") return t("chat.voiceMessage");
+  if (messageType === "session_share") {
+    try {
+      const data = JSON.parse(content ?? "{}");
+      return data.title ?? t("chat.sessionShare");
+    } catch {
+      return t("chat.sessionShare");
+    }
+  }
+  if (messageType === "location") return t("chat.location");
   return content ?? "";
 }
 
@@ -49,9 +57,9 @@ function ReplyPreview({
         <View className="w-1 bg-cyan-400" />
         <View className="px-2 py-1.5 flex-1">
           {senderName && (
-            <AppTextNC className="text-[11px] text-cyan-300" numberOfLines={1}>
+            <BodyTextNC className="text-[11px] text-cyan-300 font-semibold" numberOfLines={1}>
               {senderName}
-            </AppTextNC>
+            </BodyTextNC>
           )}
           <BodyTextNC
             className={`text-xs ${isDeleted ? "italic text-slate-400" : "text-slate-300"}`}

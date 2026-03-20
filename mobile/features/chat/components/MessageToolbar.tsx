@@ -30,9 +30,11 @@ function MessageToolbar({
   const { t } = useTranslation("chat");
   const isDeleted = !!message.deleted_at;
   const isText = message.message_type === "text";
+  const isSessionShare = message.message_type === "session_share";
+  const isLocation = message.message_type === "location";
 
   return (
-    <View className={`my-1.5 px-4 ${isOwn ? "items-end" : "items-start"}`}>
+    <View>
       <View className="bg-slate-800 rounded-2xl border border-slate-600 px-3 py-2.5">
         {/* Quick reactions */}
         {!isDeleted && (
@@ -79,7 +81,7 @@ function MessageToolbar({
             </AnimatedButton>
           )}
 
-          {!isDeleted && (
+          {!isDeleted && !isSessionShare && !isLocation && (
             <AnimatedButton
               onPress={onForward}
               className="items-center gap-1"

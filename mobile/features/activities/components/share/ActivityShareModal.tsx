@@ -12,6 +12,7 @@ import {
 } from "@/features/activities/lib/activityShareCardUtils";
 import { ActivitySessionSummary } from "@/lib/stores/activitySessionSummaryStore";
 import { FullActivitySession } from "@/types/models";
+import { SessionShareContent } from "@/types/chat";
 import { useTranslation } from "react-i18next";
 import Mapbox from "@rnmapbox/maps";
 import {
@@ -111,6 +112,24 @@ export default function ActivityShareModal({
     };
   }, [activitySession]);
 
+  const sessionData = useMemo<SessionShareContent>(() => {
+    const stats = activitySession.stats;
+    const statObj: Record<string, number> = {
+      duration: activitySession.session.duration ?? 0,
+    };
+    if (stats?.distance_meters) statObj.distance_meters = stats.distance_meters;
+    if (stats?.avg_pace) statObj.avg_pace = stats.avg_pace;
+    if (stats?.calories) statObj.calories = stats.calories;
+    if (stats?.steps) statObj.steps = stats.steps;
+    return {
+      session_type: "activity_sessions",
+      source_id: activitySession.session.id,
+      title: activitySession.session.title,
+      activity_name: activitySession.activity?.name ?? undefined,
+      stats: statObj,
+    };
+  }, [activitySession]);
+
   const {
     mapViewRef,
     mapSnapshotUri,
@@ -176,6 +195,7 @@ export default function ActivityShareModal({
       prefix="activity-"
       scrollable
       extraDisabled={isLoadingSnapshot}
+      sessionData={sessionData}
       shareCardPickerProps={{
         showGradient,
         onShowGradientChange: setShowGradient,
@@ -192,16 +212,12 @@ export default function ActivityShareModal({
         error: t("common:common.error"),
       }}
       renderCard={({ cardRef, theme: cardTheme, size: cardSize }) => (
-        <>
+        <View style={{ width: SHARE_CARD_DIMENSIONS[cardSize].width, height: SHARE_CARD_DIMENSIONS[cardSize].height }}>
           {/* Cold open: show placeholder until first snapshot is ready */}
           {isLoadingSnapshot && !mapSnapshotUri && summary.hasRoute ? (
             <View
-              className="items-center justify-center rounded-lg"
-              style={{
-                width: SHARE_CARD_DIMENSIONS[cardSize].width,
-                height: SHARE_CARD_DIMENSIONS[cardSize].height,
-                backgroundColor: cardTheme.colors.background[0],
-              }}
+              className="flex-1 items-center justify-center rounded-lg"
+              style={{ backgroundColor: cardTheme.colors.background[0] }}
             >
               <ActivityIndicator size="large" color={cardTheme.colors.accent} />
               <AppText className="text-sm text-gray-400 mt-3">
@@ -232,7 +248,7 @@ export default function ActivityShareModal({
               )}
             </>
           )}
-        </>
+        </View>
       )}
       middleContent={() => (
         <View className="gap-5 mt-4">
@@ -333,7 +349,7 @@ export default function ActivityShareModal({
           >
             <Mapbox.MapView
               ref={mapViewRef}
-              key={`${size}-${hideMapDetails}`}
+              key={`${size}-${hideMapDetails}-${lineColorIndex}`}
               style={MAP_VIEW_STYLE}
               {...(hideMapDetails && noLabelsStyleJSON
                 ? { styleJSON: noLabelsStyleJSON }

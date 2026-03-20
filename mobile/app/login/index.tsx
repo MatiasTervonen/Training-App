@@ -6,7 +6,6 @@ import {
   Dimensions,
   Alert,
 } from "react-native";
-import AppInput from "@/components/AppInput";
 import AppText from "@/components/AppText";
 import { useRouter } from "expo-router";
 import FullScreenLoader from "@/components/FullScreenLoader";
@@ -390,7 +389,7 @@ export default function LoginScreen() {
               <BodyTextNC className="text-gray-300 text-center">
                 {t("login.resendEmail.description")}
               </BodyTextNC>
-              <AppInput
+              <BodyInput
                 label={t("login.email")}
                 setValue={(text) => {
                   setResendEmail(text);
@@ -409,7 +408,7 @@ export default function LoginScreen() {
                 disabled={!resendEmail}
                 label={t("login.resendEmail.resendButton")}
                 onPress={async () => {
-                  if (!isValidEmail(login.email)) {
+                  if (!isValidEmail(resendEmail)) {
                     Alert.alert("", t("login.invalidEmail"));
                     return;
                   }
@@ -447,7 +446,7 @@ export default function LoginScreen() {
               <BodyTextNC className="text-gray-300 text-center">
                 {t("login.forgotPassword.description")}
               </BodyTextNC>
-              <AppInput
+              <BodyInput
                 label={t("login.email")}
                 setValue={(text) => {
                   setForgotPasswordEmail(text);
@@ -465,7 +464,7 @@ export default function LoginScreen() {
               <GradientButton
                 label={t("login.forgotPassword.sendResetLink")}
                 onPress={async () => {
-                  if (!isValidEmail(login.email)) {
+                  if (!isValidEmail(forgotPasswordEmail)) {
                     Alert.alert("", t("login.invalidEmail"));
                     return;
                   }

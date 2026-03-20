@@ -11,7 +11,7 @@ export default function ForgotPasswordText({
   return (
     <>
       <BodyText
-        className="text-center text-lg  mb-4 underline"
+        className="text-center text-lg mb-4 underline"
         onPress={onPress}
       >
         {t("login.forgotPassword.link")}

@@ -4,6 +4,7 @@ import { FullGymSession } from "@/database/gym/get-full-gym-session";
 import { ExerciseEntry } from "@/types/session";
 import { useTranslation } from "react-i18next";
 import ShareModalShell from "@/lib/components/share/ShareModalShell";
+import { SessionShareContent } from "@/types/chat";
 
 type ShareModalProps = {
   visible: boolean;
@@ -37,6 +38,25 @@ export default function ShareModal({
     }));
   }, [gymSession.gym_session_exercises]);
 
+  const sessionData = useMemo<SessionShareContent>(() => {
+    const totalSets = shareExercises.reduce((sum, ex) => sum + ex.sets.length, 0);
+    const totalVolume = shareExercises.reduce(
+      (sum, ex) => sum + ex.sets.reduce((s, set) => s + (set.weight ?? 0) * (set.reps ?? 0), 0),
+      0,
+    );
+    return {
+      session_type: "gym_sessions",
+      source_id: gymSession.id,
+      title: gymSession.title,
+      stats: {
+        duration: gymSession.duration ?? 0,
+        exercises_count: shareExercises.length,
+        sets_count: totalSets,
+        total_volume: totalVolume,
+      },
+    };
+  }, [gymSession, shareExercises]);
+
   return (
     <ShareModalShell
       visible={visible}
@@ -53,6 +73,7 @@ export default function ShareModal({
         shareError: t("gym.share.shareError"),
         error: t("common:common.error"),
       }}
+      sessionData={sessionData}
       renderCard={({ cardRef, theme, size }) => (
         <ShareCard
           ref={cardRef}

@@ -34,12 +34,14 @@ export default function FullScreenModal({
   children,
   confirmBeforeClose = false,
   scrollable = true,
+  bgClassName = "bg-[#131c2b]",
 }: {
   isOpen: boolean;
   onClose: () => void;
   children: ReactNode;
   confirmBeforeClose?: boolean;
   scrollable?: boolean;
+  bgClassName?: string;
 }) {
   const { t } = useTranslation("common");
   const translateY = useSharedValue(0);
@@ -156,7 +158,10 @@ export default function FullScreenModal({
             className="rounded-t-2xl h-[95%] w-full z-50 max-w-3xl overflow-hidden"
             style={[animatedStyle]}
           >
-            <View className="flex-1 bg-[#131c2b]">
+            <View className={`flex-1 ${bgClassName}`}>
+              <View className="items-center pt-2 pb-0.5">
+                <View className="w-10 h-1 rounded-full bg-slate-500" />
+              </View>
               <FullScreenModalScrollContext.Provider value={{ innerScrollY }}>
                 {scrollable ? (
                   <Animated.ScrollView

@@ -16,7 +16,7 @@ import {
   getAvailableStats,
   getDefaultSelectedKeys,
 } from "@/features/activities/lib/activityShareCardUtils";
-import { Download, Share2, ChevronDown, ChevronUp, Users } from "lucide-react-native";
+import { Download, Share2, MessageCircle, ChevronDown, ChevronUp, Users } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
 import * as Haptics from "expo-haptics";
@@ -28,6 +28,13 @@ import { MAP_STYLES, LINE_COLORS } from "@/features/activities/lib/mapConstants"
 import { useActivitySettingsStore } from "@/lib/stores/activitySettingsStore";
 import BodyTextNC from "@/components/BodyTextNC";
 import AppTextNC from "@/components/AppTextNC";
+import ShareTypePicker from "@/lib/components/share/ShareTypePicker";
+import { useFriends } from "@/features/friends/hooks/useFriends";
+import { sendSessionShareToChat } from "@/database/chat/send-session-share";
+import { SessionShareContent } from "@/types/chat";
+import { Image as ExpoImage } from "expo-image";
+import { FlatList } from "react-native";
+import { Friends } from "@/types/models";
 
 const MAP_VIEW_STYLE = { flex: 1 };
 
@@ -49,6 +56,12 @@ export default function ActivityFinishedScreen() {
   const [containerHeight, setContainerHeight] = useState(0);
   const [settingsExpanded, setSettingsExpanded] = useState(false);
   const [sharedWithFriends, setSharedWithFriends] = useState(false);
+  const [showShareTypePicker, setShowShareTypePicker] = useState(false);
+  const [showFriendPicker, setShowFriendPicker] = useState(false);
+  const [shareMode, setShareMode] = useState<"image" | "session">("image");
+  const [isSendingToChat, setIsSendingToChat] = useState(false);
+  const { data: friends } = useFriends();
+  const { t: tChat } = useTranslation("chat");
   const router = useRouter();
   const queryClient = useQueryClient();
 
@@ -225,9 +238,120 @@ export default function ActivityFinishedScreen() {
     }
   }, [summary?.sessionId, sharedWithFriends, queryClient, t]);
 
+  const sessionData = useMemo<SessionShareContent | null>(() => {
+    if (!summary) return null;
+    const statObj: Record<string, number> = { duration: summary.duration };
+    if (summary.distance) statObj.distance_meters = summary.distance;
+    if (summary.averagePace) statObj.avg_pace = summary.averagePace;
+    if (summary.calories) statObj.calories = summary.calories;
+    if (summary.steps) statObj.steps = summary.steps;
+    return {
+      session_type: "activity_sessions",
+      source_id: summary.sessionId ?? "",
+      title: summary.title,
+      activity_name: summary.activityName ?? undefined,
+      stats: statObj,
+    };
+  }, [summary]);
+
+  const handleSendToChat = useCallback(async () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setShowShareTypePicker(true);
+  }, []);
+
+  const handleSelectShareType = useCallback((mode: "image" | "session") => {
+    setShareMode(mode);
+    setShowShareTypePicker(false);
+    setShowFriendPicker(true);
+  }, []);
+
+  const handleSelectFriend = useCallback(async (friendId: string) => {
+    setIsSendingToChat(true);
+    try {
+      if (shareMode === "session" && sessionData) {
+        await sendSessionShareToChat(friendId, sessionData);
+        Toast.show({ type: "success", text1: tChat("chat.sessionShared") });
+      } else {
+        // For image mode, capture and send the card
+        const uri = await saveCardToGallery(size);
+        if (!uri) throw new Error("Failed to capture");
+        const { sendShareCardToChat } = await import("@/database/chat/send-share-card");
+        await sendShareCardToChat(String(uri), friendId);
+        Toast.show({ type: "success", text1: tChat("chat.shareCardSent") });
+      }
+      setShowFriendPicker(false);
+      queryClient.invalidateQueries({ queryKey: ["conversations"] });
+      queryClient.invalidateQueries({ queryKey: ["messages"] });
+    } catch {
+      Toast.show({ type: "error", text1: tChat("chat.messageSendError") });
+    } finally {
+      setIsSendingToChat(false);
+    }
+  }, [shareMode, sessionData, saveCardToGallery, size, tChat, queryClient]);
+
   const showHiddenMap =
     summary?.hasRoute && routeFeature && bounds &&
     (!hideMapDetails || privacyStyleReady);
+
+  if (showShareTypePicker) {
+    return (
+      <View className="flex-1 px-5 pt-16">
+        <ShareTypePicker
+          onSelectImage={() => handleSelectShareType("image")}
+          onSelectSession={() => handleSelectShareType("session")}
+          onBack={() => setShowShareTypePicker(false)}
+        />
+      </View>
+    );
+  }
+
+  if (showFriendPicker) {
+    return (
+      <View className="flex-1 px-5 pt-16">
+        <View className="flex-row items-center mb-4">
+          <AnimatedButton
+            onPress={() => { setShowFriendPicker(false); setShowShareTypePicker(true); }}
+            className="p-1"
+            disabled={isSendingToChat}
+          >
+            <MessageCircle color="#f3f4f6" size={24} />
+          </AnimatedButton>
+          <AppText className="text-lg flex-1 text-center mr-8">
+            {tChat("chat.selectFriend")}
+          </AppText>
+        </View>
+        {isSendingToChat ? (
+          <View className="flex-1 items-center justify-center">
+            <ActivityIndicator size="large" color="#22d3ee" />
+            <BodyTextNC className="text-slate-400 mt-3">{tChat("chat.sendingToChat")}</BodyTextNC>
+          </View>
+        ) : (
+          <FlatList
+            data={friends ?? []}
+            keyExtractor={(item: Friends) => item.id}
+            renderItem={({ item }: { item: Friends }) => (
+              <AnimatedButton
+                onPress={() => handleSelectFriend(item.user.id)}
+                className="flex-row items-center gap-3 px-4 py-3"
+                disabled={isSendingToChat}
+              >
+                <ExpoImage
+                  source={item.user.profile_picture ? { uri: item.user.profile_picture } : require("@/assets/images/default-avatar.png")}
+                  className="w-10 h-10 rounded-full"
+                />
+                <AppText className="text-base flex-1">{item.user.display_name}</AppText>
+              </AnimatedButton>
+            )}
+            ListEmptyComponent={
+              <View className="items-center py-10">
+                <BodyTextNC className="text-slate-400">{tChat("chat.noFriends")}</BodyTextNC>
+              </View>
+            }
+          />
+        )}
+      </View>
+    );
+  }
 
   return (
     <View className="flex-1" onLayout={onContainerLayout}>
@@ -331,6 +455,16 @@ export default function ActivityFinishedScreen() {
               </AppText>
             </AnimatedButton>
           </View>
+          <AnimatedButton
+            onPress={handleSendToChat}
+            className="btn-neutral flex-row items-center justify-center gap-2"
+            disabled={isSaving || isSharing || isLoadingSnapshot}
+          >
+            <MessageCircle color="#f3f4f6" size={20} />
+            <AppText className="text-base text-center">
+              {tChat("chat.sendToChat")}
+            </AppText>
+          </AnimatedButton>
         </View>
       )}
 

@@ -122,7 +122,7 @@ function ExerciseHistoryContent({
               keyExtractor={(item, index) => `${item!.date}-${index}`}
               contentContainerStyle={{
                 paddingBottom: 50,
-                paddingTop: 40,
+                paddingTop: 4,
               }}
               showsVerticalScrollIndicator={false}
               onScroll={handleScroll}

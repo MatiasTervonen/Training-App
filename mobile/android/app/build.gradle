@@ -170,6 +170,7 @@ dependencies {
     implementation("com.facebook.react:react-android")
     implementation("androidx.work:work-runtime-ktx:2.11.1")
     implementation("com.google.android.gms:play-services-location:21.0.1")
+    implementation("com.google.firebase:firebase-messaging:24.1.1")
 
     def isGifEnabled = (findProperty('expo.gif.enabled') ?: "") == "true";
     def isWebpEnabled = (findProperty('expo.webp.enabled') ?: "") == "true";

@@ -84,6 +84,8 @@ export default function EditTodo({
   const mediaAppliedRef = useRef(!!taskMedia);
 
   const [sessionData, setSessionData] = useState(initData);
+  const sessionDataRef = useRef(sessionData);
+  sessionDataRef.current = sessionData;
 
   useEffect(() => {
     if (taskMedia && !mediaAppliedRef.current) {
@@ -196,8 +198,11 @@ export default function EditTodo({
   );
 
   const handleAutoSave = useCallback(async () => {
+    // Read from ref to always get the freshest state, avoiding stale closures
+    const current = sessionDataRef.current;
+
     if (
-      sessionData.todo_tasks.some((task) =>
+      current.todo_tasks.some((task) =>
         task.draftVideos?.some((v) => v.isCompressing),
       )
     ) {
@@ -208,18 +213,18 @@ export default function EditTodo({
 
     // Filter out empty tasks — they aren't ready to save yet, but don't
     // block saving title changes and edits to other tasks.
-    const nonEmptyTasks = sessionData.todo_tasks
+    const nonEmptyTasks = current.todo_tasks
       .map((task, index) => ({ task, position: index }))
       .filter(({ task }) => task.task.trim().length > 0);
 
     const updatedFeedItem = await editTodo({
-      id: sessionData.id,
-      title: sessionData.title,
+      id: current.id,
+      title: current.title,
       tasks: nonEmptyTasks.map(({ task, position }) => ({
         id: task.id ?? null,
         tempId: task.tempId,
         task: task.task,
-        notes: task.notes ?? undefined,
+        notes: task.notes ?? null,
         position,
         updated_at: updated,
         newRecordings: task.draftRecordings,
@@ -263,7 +268,6 @@ export default function EditTodo({
 
     onSave({ ...updatedFeedItem, feed_context: todo_session.feed_context });
   }, [
-    sessionData,
     deletedIds,
     deletedVoiceIds,
     deletedVoicePaths,

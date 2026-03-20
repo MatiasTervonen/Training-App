@@ -1,7 +1,8 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import { View, TextInput, Keyboard } from "react-native";
 import AnimatedButton from "@/components/buttons/animatedButton";
-import { Send, Plus, X } from "lucide-react-native";
+import BodyTextNC from "@/components/BodyTextNC";
+import { Send, Plus, X, MapPin } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import MediaToolbar from "@/features/notes/components/MediaToolbar";
 import ChatMediaPreview from "@/features/chat/components/ChatMediaPreview";
@@ -13,7 +14,7 @@ import type { MessageType, LinkPreview, ChatMessage } from "@/types/chat";
 import type { DraftVideo } from "@/types/session";
 
 type MediaPayload = {
-  messageType: Exclude<MessageType, "text">;
+  messageType: "image" | "video" | "voice";
   uri: string;
   thumbnailUri?: string;
   durationMs?: number;
@@ -22,6 +23,7 @@ type MediaPayload = {
 type ChatInputProps = {
   onSend: (content: string, preview?: LinkPreview | null) => void;
   onSendMedia: (payload: MediaPayload) => void;
+  onSendLocation?: () => void;
   disabled?: boolean;
   disabledMessage?: string;
   replyTo?: ChatMessage | null;
@@ -32,6 +34,7 @@ type ChatInputProps = {
 export default function ChatInput({
   onSend,
   onSendMedia,
+  onSendLocation,
   disabled = false,
   disabledMessage,
   replyTo,
@@ -92,6 +95,7 @@ export default function ChatInput({
     setInputPreview(null);
     lastFetchedUrl.current = null;
     setPreviewDismissed(false);
+    Keyboard.dismiss();
   }, [text, disabled, onSend, onSendMedia, pendingMedia, isCompressing, inputPreview]);
 
   const handleImageSelected = useCallback(
@@ -246,7 +250,21 @@ export default function ChatInput({
       </View>
 
       {showToolbar && !hasPendingMedia && (
-        <View className="px-4 pb-2 bg-slate-900">
+        <View className="px-4 pb-2 bg-slate-900 gap-2">
+          {onSendLocation && (
+            <AnimatedButton
+              onPress={() => {
+                setShowToolbar(false);
+                onSendLocation();
+              }}
+              className="flex-row items-center gap-2 bg-slate-800 rounded-xl px-4 py-3"
+            >
+              <MapPin size={18} color="#06b6d4" />
+              <BodyTextNC className="text-sm text-slate-200">
+                {t("chat.shareLocation")}
+              </BodyTextNC>
+            </AnimatedButton>
+          )}
           <MediaToolbar
             onRecordingComplete={handleRecordingComplete}
             onImageSelected={handleImageSelected}

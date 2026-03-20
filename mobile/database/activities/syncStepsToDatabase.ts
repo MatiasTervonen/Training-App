@@ -9,7 +9,7 @@ async function backfillMissingDays() {
   } = await supabase.auth.getSession();
 
   if (sessionError || !session || !session.user) {
-    throw new Error("Unauthorized");
+    return;
   }
 
   // Get last saved day from database

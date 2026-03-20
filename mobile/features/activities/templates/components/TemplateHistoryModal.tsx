@@ -1,12 +1,11 @@
 import { useMemo } from "react";
 import FullScreenModal, { useFullScreenModalScroll } from "@/components/FullScreenModal";
-import { ActivityIndicator, View, NativeSyntheticEvent, NativeScrollEvent } from "react-native";
+import { ActivityIndicator, View, NativeSyntheticEvent, NativeScrollEvent, FlatList } from "react-native";
 import AppText from "@/components/AppText";
 import AppTextNC from "@/components/AppTextNC";
 import BodyText from "@/components/BodyText";
 import ErrorMessage from "@/components/ErrorMessage";
 import { TemplateHistorySession } from "@/types/session";
-import { FlatList } from "react-native-gesture-handler";
 import { LinearGradient } from "expo-linear-gradient";
 import { useTranslation } from "react-i18next";
 import StatCard from "@/components/StatCard";
@@ -144,7 +143,7 @@ function TemplateHistoryContent({
               keyExtractor={(item) => item.session_id}
               contentContainerStyle={{
                 paddingBottom: 50,
-                paddingTop: 40,
+                paddingTop: 4,
               }}
               showsVerticalScrollIndicator={false}
               onScroll={handleScroll}

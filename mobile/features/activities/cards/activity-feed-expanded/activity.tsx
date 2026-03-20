@@ -100,44 +100,11 @@ export default function ActivitySession(
               colors={["#1e3a8a", "#0f172a", "#0f172a"]}
               start={{ x: 1, y: 0 }}
               end={{ x: 0, y: 1 }}
-              className="items-center p-5 rounded-lg overflow-hidden shadow-md mt-5"
+              className="items-center p-5 rounded-lg overflow-hidden shadow-md mt-1"
             >
-              <View className="flex-row items-center justify-center mb-2">
-                <AppText className="text-xl text-center flex-1">
-                  {activity_session.session.title}
-                </AppText>
-                {!activity_session.readOnly && (
-                  <View className="flex-row items-center gap-4">
-                    {hasTemplate && (
-                      <AnimatedButton
-                        onPress={() =>
-                          openHistory(
-                            activity_session.session.template_id!,
-                            activity_session.session.title,
-                          )
-                        }
-                        hitSlop={10}
-                      >
-                        <History color="#9ca3af" size={20} />
-                      </AnimatedButton>
-                    )}
-                    <View className="items-center">
-                      <AnimatedButton
-                        onPress={() => setIsShareModalOpen(true)}
-                        hitSlop={10}
-                      >
-                        <Share2 color="#9ca3af" size={20} />
-                      </AnimatedButton>
-                      <View className="absolute top-[34px]">
-                        <ShareWithFriendsButton
-                          sourceId={activity_session.session.id}
-                          sessionType="activity_sessions"
-                        />
-                      </View>
-                    </View>
-                  </View>
-                )}
-              </View>
+              <AppText className="text-xl text-center w-full mb-4">
+                {activity_session.session.title}
+              </AppText>
 
               <AppTextNC className="text-sm text-gray-400" numberOfLines={1}>
                 {formatDateShort(activity_session.session.start_time)} ·{" "}
@@ -148,6 +115,33 @@ export default function ActivitySession(
                 <BodyText className="text-left mt-5">
                   {activity_session.session.notes}
                 </BodyText>
+              )}
+              {!activity_session.readOnly && (
+                <View className="w-full flex-row justify-end items-center gap-4 mt-2">
+                  <ShareWithFriendsButton
+                    sourceId={activity_session.session.id}
+                    sessionType="activity_sessions"
+                  />
+                  {hasTemplate && (
+                    <AnimatedButton
+                      onPress={() =>
+                        openHistory(
+                          activity_session.session.template_id!,
+                          activity_session.session.title,
+                        )
+                      }
+                      hitSlop={10}
+                    >
+                      <History color="#9ca3af" size={20} />
+                    </AnimatedButton>
+                  )}
+                  <AnimatedButton
+                    onPress={() => setIsShareModalOpen(true)}
+                    hitSlop={10}
+                  >
+                    <Share2 color="#9ca3af" size={20} />
+                  </AnimatedButton>
+                </View>
               )}
             </LinearGradient>
             {hasRoute && (

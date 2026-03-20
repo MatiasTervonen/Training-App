@@ -8,7 +8,7 @@ type TodoTaskEdit = {
   id: string | null;
   tempId?: string;
   task: string;
-  notes?: string;
+  notes: string | null;
   position: number;
   updated_at: string;
   newRecordings?: DraftRecording[];

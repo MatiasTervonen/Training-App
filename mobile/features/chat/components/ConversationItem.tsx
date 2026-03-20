@@ -52,6 +52,15 @@ function ConversationItem({ conversation, onPress }: ConversationItemProps) {
     if (type === "image") return `${prefix}${t("chat.mediaPhoto")}`;
     if (type === "video") return `${prefix}${t("chat.mediaVideo")}`;
     if (type === "voice") return `${prefix}${t("chat.mediaVoice")}`;
+    if (type === "session_share") {
+      try {
+        const data = JSON.parse(conversation.last_message_content ?? "{}");
+        return `${prefix}${data.session_type === "gym_sessions" ? t("chat.mediaGymSession") : t("chat.mediaActivitySession")}`;
+      } catch {
+        return `${prefix}${t("chat.mediaSession")}`;
+      }
+    }
+    if (type === "location") return `${prefix}${t("chat.mediaLocation")}`;
     return conversation.last_message_content
       ? `${prefix}${conversation.last_message_content}`
       : "";

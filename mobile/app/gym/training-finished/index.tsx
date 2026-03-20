@@ -10,7 +10,7 @@ import useShareCard from "@/lib/hooks/useShareCard";
 import useShareCardPreferences from "@/lib/hooks/useShareCardPreferences";
 import { getTheme, SHARE_CARD_DIMENSIONS } from "@/lib/share/themes";
 import { useSessionSummaryStore } from "@/lib/stores/sessionSummaryStore";
-import { Download, Share2, ChevronDown, ChevronUp, Users } from "lucide-react-native";
+import { Download, Share2, MessageCircle, ChevronDown, ChevronUp, Users } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
 import * as Haptics from "expo-haptics";
@@ -18,6 +18,14 @@ import Toggle from "@/components/toggle";
 import { updateFeedItemVisibility } from "@/database/social-feed/update-visibility";
 import { useQueryClient } from "@tanstack/react-query";
 import BodyTextNC from "@/components/BodyTextNC";
+import ShareTypePicker from "@/lib/components/share/ShareTypePicker";
+import { useFriends } from "@/features/friends/hooks/useFriends";
+import { sendShareCardToChat } from "@/database/chat/send-share-card";
+import { sendSessionShareToChat } from "@/database/chat/send-session-share";
+import { SessionShareContent } from "@/types/chat";
+import { Image as ExpoImage } from "expo-image";
+import { FlatList, ActivityIndicator } from "react-native";
+import { Friends } from "@/types/models";
 
 export default function TrainingFinishedScreen() {
   const { t } = useTranslation("gym");
@@ -30,8 +38,14 @@ export default function TrainingFinishedScreen() {
   const [containerHeight, setContainerHeight] = useState(0);
   const [settingsExpanded, setSettingsExpanded] = useState(false);
   const [sharedWithFriends, setSharedWithFriends] = useState(false);
+  const [showShareTypePicker, setShowShareTypePicker] = useState(false);
+  const [showFriendPicker, setShowFriendPicker] = useState(false);
+  const [shareMode, setShareMode] = useState<"image" | "session">("image");
+  const [isSendingToChat, setIsSendingToChat] = useState(false);
+  const { data: friends } = useFriends();
   const router = useRouter();
   const queryClient = useQueryClient();
+  const { t: tChat } = useTranslation("chat");
 
   const theme = useMemo(() => getTheme(themeId), [themeId]);
   const dims = SHARE_CARD_DIMENSIONS[size];
@@ -122,6 +136,119 @@ export default function TrainingFinishedScreen() {
     }
   }, [summary?.sessionId, sharedWithFriends, queryClient, t]);
 
+  const sessionData = useMemo<SessionShareContent | null>(() => {
+    if (!summary) return null;
+    const totalSets = summary.exercises.reduce((sum, ex) => sum + ex.sets.length, 0);
+    const totalVolume = summary.exercises.reduce(
+      (sum, ex) => sum + ex.sets.reduce((s, set) => s + (set.weight ?? 0) * (set.reps ?? 0), 0),
+      0,
+    );
+    return {
+      session_type: "gym_sessions",
+      source_id: summary.sessionId ?? "",
+      title: summary.title,
+      stats: {
+        duration: summary.duration,
+        exercises_count: summary.exercises.length,
+        sets_count: totalSets,
+        total_volume: totalVolume,
+      },
+    };
+  }, [summary]);
+
+  const handleSendToChat = useCallback(async () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setShowShareTypePicker(true);
+  }, []);
+
+  const handleSelectShareType = useCallback((mode: "image" | "session") => {
+    setShareMode(mode);
+    setShowShareTypePicker(false);
+    setShowFriendPicker(true);
+  }, []);
+
+  const handleSelectFriend = useCallback(async (friendId: string) => {
+    setIsSendingToChat(true);
+    try {
+      if (shareMode === "session" && sessionData) {
+        await sendSessionShareToChat(friendId, sessionData);
+        Toast.show({ type: "success", text1: tChat("chat.sessionShared") });
+      } else {
+        const uri = await saveCardToGallery(size);
+        if (!uri) throw new Error("Failed to capture");
+        await sendShareCardToChat(String(uri), friendId);
+        Toast.show({ type: "success", text1: tChat("chat.shareCardSent") });
+      }
+      setShowFriendPicker(false);
+      queryClient.invalidateQueries({ queryKey: ["conversations"] });
+      queryClient.invalidateQueries({ queryKey: ["messages"] });
+    } catch {
+      Toast.show({ type: "error", text1: tChat("chat.messageSendError") });
+    } finally {
+      setIsSendingToChat(false);
+    }
+  }, [shareMode, sessionData, saveCardToGallery, size, tChat, queryClient]);
+
+  if (showShareTypePicker) {
+    return (
+      <View className="flex-1 px-5 pt-16">
+        <ShareTypePicker
+          onSelectImage={() => handleSelectShareType("image")}
+          onSelectSession={() => handleSelectShareType("session")}
+          onBack={() => setShowShareTypePicker(false)}
+        />
+      </View>
+    );
+  }
+
+  if (showFriendPicker) {
+    return (
+      <View className="flex-1 px-5 pt-16">
+        <View className="flex-row items-center mb-4">
+          <AnimatedButton
+            onPress={() => { setShowFriendPicker(false); setShowShareTypePicker(true); }}
+            className="p-1"
+            disabled={isSendingToChat}
+          >
+            <MessageCircle color="#f3f4f6" size={24} />
+          </AnimatedButton>
+          <AppText className="text-lg flex-1 text-center mr-8">
+            {tChat("chat.selectFriend")}
+          </AppText>
+        </View>
+        {isSendingToChat ? (
+          <View className="flex-1 items-center justify-center">
+            <ActivityIndicator size="large" color="#22d3ee" />
+            <BodyTextNC className="text-slate-400 mt-3">{tChat("chat.sendingToChat")}</BodyTextNC>
+          </View>
+        ) : (
+          <FlatList
+            data={friends ?? []}
+            keyExtractor={(item: Friends) => item.id}
+            renderItem={({ item }: { item: Friends }) => (
+              <AnimatedButton
+                onPress={() => handleSelectFriend(item.user.id)}
+                className="flex-row items-center gap-3 px-4 py-3"
+                disabled={isSendingToChat}
+              >
+                <ExpoImage
+                  source={item.user.profile_picture ? { uri: item.user.profile_picture } : require("@/assets/images/default-avatar.png")}
+                  className="w-10 h-10 rounded-full"
+                />
+                <AppText className="text-base flex-1">{item.user.display_name}</AppText>
+              </AnimatedButton>
+            )}
+            ListEmptyComponent={
+              <View className="items-center py-10">
+                <BodyTextNC className="text-slate-400">{tChat("chat.noFriends")}</BodyTextNC>
+              </View>
+            }
+          />
+        )}
+      </View>
+    );
+  }
+
   return (
     <View className="flex-1" onLayout={onContainerLayout}>
     <ScrollView
@@ -195,6 +322,16 @@ export default function TrainingFinishedScreen() {
               </AppText>
             </AnimatedButton>
           </View>
+          <AnimatedButton
+            onPress={handleSendToChat}
+            className="btn-neutral flex-row items-center justify-center gap-2"
+            disabled={isSaving || isSharing}
+          >
+            <MessageCircle color="#f3f4f6" size={20} />
+            <AppText className="text-base text-center">
+              {tChat("chat.sendToChat")}
+            </AppText>
+          </AnimatedButton>
         </View>
       )}
 

@@ -267,6 +267,8 @@ export default function TodoScreen() {
           isOpen={!!editingItem}
           onClose={() => {
             setHasUnsavedChanges(false);
+            refetchFullTodo();
+            refetchFullTodoMedia();
             setEditingItem(null);
           }}
           confirmBeforeClose={hasUnsavedChanges}
@@ -289,8 +291,6 @@ export default function TodoScreen() {
                   updateFeedItem(updatedItem);
                   refetchFullTodo();
                   refetchFullTodoMedia();
-                  setHasUnsavedChanges(false);
-                  setEditingItem(null);
                 }}
                 onDirtyChange={setHasUnsavedChanges}
                 taskMedia={todoMediaFull}

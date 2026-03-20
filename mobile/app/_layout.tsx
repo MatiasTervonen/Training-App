@@ -162,7 +162,7 @@ export default Sentry.wrap(function RootLayout() {
         const canReadSteps = await hasStepsPermission();
 
         if (canReadSteps) {
-          backfillMissingDaysThrottled();
+          backfillMissingDaysThrottled().catch(() => {});
         }
       };
 

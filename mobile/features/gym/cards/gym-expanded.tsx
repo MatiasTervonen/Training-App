@@ -126,29 +126,11 @@ export default function GymSession(gym_session: FullGymSession & { readOnly?: bo
             colors={["#1e3a8a", "#0f172a", "#0f172a"]}
             start={{ x: 1, y: 0 }}
             end={{ x: 0, y: 1 }}
-            className="items-center p-5 rounded-lg overflow-hidden shadow-md mt-5 gap-4"
+            className="items-center p-5 rounded-lg overflow-hidden shadow-md mt-1 gap-4"
           >
-            <View className="w-full flex-row items-center mb-2">
-              <AppText className="text-xl text-center flex-1">
-                {gym_session.title}
-              </AppText>
-              {!gym_session.readOnly && (
-                <View className="items-center">
-                  <AnimatedButton
-                    onPress={() => setIsShareModalOpen(true)}
-                    hitSlop={10}
-                  >
-                    <Share2 color="#9ca3af" size={20} />
-                  </AnimatedButton>
-                  <View className="absolute top-[34px]">
-                    <ShareWithFriendsButton
-                      sourceId={gym_session.id}
-                      sessionType="gym_sessions"
-                    />
-                  </View>
-                </View>
-              )}
-            </View>
+            <AppText className="text-xl text-center w-full">
+              {gym_session.title}
+            </AppText>
             <AppTextNC className="text-sm text-gray-400">
               {formatDateShort(gym_session.start_time)}  ·  {formatTime(gym_session.start_time)} – {formatTime(gym_session.end_time)}
             </AppTextNC>
@@ -224,6 +206,21 @@ export default function GymSession(gym_session: FullGymSession & { readOnly?: bo
                     durationMs={recording.duration_ms ?? undefined}
                   />
                 ))}
+              </View>
+            )}
+
+            {!gym_session.readOnly && (
+              <View className="w-full flex-row justify-end items-center gap-4 mt-2">
+                <ShareWithFriendsButton
+                  sourceId={gym_session.id}
+                  sessionType="gym_sessions"
+                />
+                <AnimatedButton
+                  onPress={() => setIsShareModalOpen(true)}
+                  hitSlop={10}
+                >
+                  <Share2 color="#9ca3af" size={20} />
+                </AnimatedButton>
               </View>
             )}
           </LinearGradient>

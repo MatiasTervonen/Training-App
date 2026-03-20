@@ -38,6 +38,40 @@
     "sendToChat": "Lähetä chattiin",
     "sendingToChat": "Lähetetään...",
     "shareCardSent": "Lähetetty chattiin",
-    "typing": "kirjoittaa..."
+    "typing": "kirjoittaa...",
+    "mediaGymSession": "Salitreeni",
+    "mediaActivitySession": "Aktiviteetti",
+    "mediaSession": "Treeni",
+    "sessionShare": "Treeni",
+    "sessionShared": "Treeni jaettu",
+    "sessionUnavailable": "Treeni ei ole enää saatavilla",
+    "sessionCard": {
+      "gymSession": "Salitreeni",
+      "activitySession": "Aktiviteetti",
+      "duration": "Kesto",
+      "exercises": "Liikkeet",
+      "sets": "Sarjat",
+      "volume": "Volyymi",
+      "distance": "Matka",
+      "pace": "Vauhti",
+      "calories": "Kalorit",
+      "tapToView": "Näytä tiedot napauttamalla"
+    },
+    "location": "Sijainti",
+    "mediaLocation": "Sijainti",
+    "shareLocation": "Jaa sijainti",
+    "locationSendError": "Sijainnin lähetys epäonnistui",
+    "locationPermissionRequired": "Sijaintilupa vaaditaan sijainnin jakamiseen",
+    "locationCard": {
+      "location": "Sijainti",
+      "tapToView": "Avaa kartassa napauttamalla"
+    },
+    "shareTypePicker": {
+      "title": "Miten haluat jakaa?",
+      "imageTitle": "Jaa kuvana",
+      "imageDesc": "Lähettää muokatun kortin kuvana",
+      "sessionTitle": "Jaa treeni",
+      "sessionDesc": "Kaveri voi avata ja katsoa kaikki tiedot"
+    }
   }
 }

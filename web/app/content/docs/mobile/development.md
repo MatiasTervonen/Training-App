@@ -52,6 +52,16 @@ npx expo run:android --device Pixel_9
 
 Note: The `--device` flag expects the emulator's AVD name (e.g., `Pixel_9`), **not** the adb device ID (e.g., `emulator-5554`).
 
+## Manual APK install
+
+If `npx expo run:android` builds successfully but fails to install the APK on the emulator, you can install it manually with adb:
+
+```bash
+adb install android/app/build/outputs/apk/debug/app-debug.apk
+```
+
+Run this from the `mobile/` directory. After installing, start the dev server with `npx expo start --dev-client`.
+
 ## Debug vs Release builds
 
 The Android build uses an `applicationIdSuffix ".dev"` for debug builds. This means:

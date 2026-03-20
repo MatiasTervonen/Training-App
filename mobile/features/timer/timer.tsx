@@ -58,6 +58,7 @@ export default function Timer({
   const totalDuration = useTimerStore((s) => s.totalDuration);
   const paused = useTimerStore((s) => s.paused);
   const activeSession = useTimerStore((s) => s.activeSession);
+  useTimerStore((s) => (s.isRunning ? s.uiTick : 0));
 
   const isHabitSession = activeSession?.type === "habit";
 

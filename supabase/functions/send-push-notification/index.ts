@@ -411,10 +411,11 @@ async function handleChatMessage(
           type: "chat_message",
           conversationId,
           senderId,
+          tag: `chat:${conversationId}`,
         },
         channelId: "social",
         sound: "default",
-        _collapseId: `chat:${conversationId}`,
+        collapseId: `chat:${conversationId}`,
       }));
       await sendExpoPushNotifications(messages);
     }

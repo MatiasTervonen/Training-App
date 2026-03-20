@@ -32,6 +32,7 @@ export default function Stopwatch({
   const remainingMs = useTimerStore((s) => s.remainingMs);
   const startSession = useTimerStore((s) => s.startSession);
   const paused = useTimerStore((s) => s.paused);
+  useTimerStore((s) => (s.isRunning ? s.uiTick : 0));
 
   const handleStart = () => {
     setActiveSession({

@@ -37,6 +37,7 @@ export default function Timer({
   const remainingMs = useTimerStore((s) => s.remainingMs);
   const endTimestamp = useTimerStore((s) => s.endTimestamp);
   const mode = useTimerStore((s) => s.mode);
+  useTimerStore((s) => (s.isRunning ? s.uiTick : 0));
 
   const handleStart = () => {
     if (!activeSession && manualSession) {

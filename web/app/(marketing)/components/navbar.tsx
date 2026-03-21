@@ -2,9 +2,8 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Menu, CircleX } from "lucide-react";
-import { useState, useRef } from "react";
-import { useClickOutside } from "@/components/clickOutside";
+import { Menu, X } from "lucide-react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
 function LanguageToggle() {
@@ -46,26 +45,36 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const { t } = useTranslation("marketing");
 
-  const menuRef = useRef<HTMLDivElement>(null);
-
-  useClickOutside(menuRef, () => setIsOpen(false));
+  // Lock body scroll when menu is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
 
   return (
     <>
-      <nav className="flex justify-between items-center px-5 py-3 text-gray-100">
-        <div className="py-5">
-          <Link href={"/"} className="flex items-center gap-3">
+      <nav className="flex justify-between items-center px-5 py-2 text-gray-100">
+        <div className="py-2 sm:py-4">
+          <Link href={"/"} className="flex items-center gap-2 sm:gap-3">
             <Image
               src="/app-logos/kurvi_icon_ice_blue_rounded.svg"
               alt="Kurvi icon"
-              width={40}
-              height={40}
+              width={32}
+              height={32}
+              className="sm:w-10 sm:h-10"
             />
             <Image
               src="/app-logos/kurvi_ice_blue_final.svg"
               alt="Kurvi"
-              width={180}
-              height={49}
+              width={140}
+              height={38}
+              className="sm:w-[180px]"
             />
           </Link>
         </div>
@@ -78,35 +87,23 @@ export default function Navbar() {
           </Link>
         </div>
         <div className="md:hidden">
-          <div className="relative w-10 h-10">
-            <button
-              onClick={() => setIsOpen(true)}
-              className={`absolute inset-0 ${isOpen ? "hidden" : "block"}`}
-            >
-              <Menu className="text-gray-100" size={40} />
-            </button>
-            <button
-              onClick={() => setIsOpen(false)}
-              className={`absolute inset-0 z-50 ${isOpen ? "block" : "hidden"}`}
-            >
-              <CircleX className="text-gray-100" size={40} />
-            </button>
-          </div>
+          <button onClick={() => setIsOpen(true)}>
+            <Menu className="text-gray-100" size={32} />
+          </button>
+
           {isOpen && (
             <>
-              <div className="absolute inset-0  backdrop-blur-sm" />
               <div
-                ref={menuRef}
-                className="absolute left-1/2 -translate-x-1/2 top-20 w-full bg-slate-950 p-4 shadow-lg text-gray-100 z-50 border-y-2 border-blue-500"
-              >
-                <div className="flex flex-col items-center gap-4 my-5">
-                  <LanguageToggle />
-                  <Link href={"/login"}>
-                    <button className="text-white bg-gradient-to-tr from-slate-950 to-blue-700 px-5 py-2 rounded-xl border-[1.5px] border-blue-900 shadow-md shadow-blue-950 hover:from-blue-700 hover:to-slate-950 transform hover:scale-105 transition duration-200">
-                      {t("navbar.login")}
-                    </button>
-                  </Link>
-                </div>
+                className="fixed inset-0 z-40 bg-black/50"
+                onClick={() => setIsOpen(false)}
+              />
+              <div className="absolute left-5 right-5 top-14 z-50 bg-slate-900 border-[1.5px] border-slate-600 rounded-xl shadow-[0_0_20px_rgba(59,130,246,0.4)] py-16 px-8 flex flex-col items-center gap-8">
+                <LanguageToggle />
+                <Link href={"/login"} onClick={() => setIsOpen(false)}>
+                  <button className="text-white bg-gradient-to-tr from-slate-950 to-blue-700 px-5 py-2 rounded-xl border-[1.5px] border-blue-900 shadow-md shadow-blue-950 hover:from-blue-700 hover:to-slate-950 transition duration-200 text-nowrap">
+                    {t("navbar.login")}
+                  </button>
+                </Link>
               </div>
             </>
           )}

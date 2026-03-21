@@ -19,16 +19,16 @@ export const metadata: Metadata = {
   },
   description:
     `The only tracking app you'll ever need. Gym, activities, habits, notes, to-dos, and more — all in one place. ${APP_NAME} keeps everything organized, your way.`,
-  metadataBase: new URL("https://training-app-bay.vercel.app/"),
+  metadataBase: new URL("https://kurvi.io/"),
   openGraph: {
     title: APP_NAME,
     description:
       `The only tracking app you'll ever need. Gym, activities, habits, notes, to-dos, and more — all in one place. ${APP_NAME} keeps everything organized, your way.`,
-    url: "https://training-app-bay.vercel.app/",
+    url: "https://kurvi.io/",
     siteName: APP_NAME,
     images: [
       {
-        url: "https://training-app-bay.vercel.app/Hero-image-3.png",
+        url: "https://kurvi.io/Hero-image-3.png",
         width: 1218,
         height: 927,
         alt: "Home OG Image",

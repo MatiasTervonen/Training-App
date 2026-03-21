@@ -21,6 +21,9 @@ export type Database = {
           created_at: string
           id: string
           is_active: boolean
+          is_calories_relevant: boolean
+          is_gps_relevant: boolean
+          is_step_relevant: boolean
           name: string
           slug: string | null
           updated_at: string | null
@@ -32,6 +35,9 @@ export type Database = {
           created_at?: string
           id?: string
           is_active?: boolean
+          is_calories_relevant?: boolean
+          is_gps_relevant?: boolean
+          is_step_relevant?: boolean
           name: string
           slug?: string | null
           updated_at?: string | null
@@ -43,6 +49,9 @@ export type Database = {
           created_at?: string
           id?: string
           is_active?: boolean
+          is_calories_relevant?: boolean
+          is_gps_relevant?: boolean
+          is_step_relevant?: boolean
           name?: string
           slug?: string | null
           updated_at?: string | null
@@ -150,6 +159,7 @@ export type Database = {
           id: string
           name: string
           notes: string | null
+          sort_order: number
           updated_at: string | null
           user_id: string
         }
@@ -161,6 +171,7 @@ export type Database = {
           id?: string
           name: string
           notes?: string | null
+          sort_order?: number
           updated_at?: string | null
           user_id?: string
         }
@@ -172,6 +183,7 @@ export type Database = {
           id?: string
           name?: string
           notes?: string | null
+          sort_order?: number
           updated_at?: string | null
           user_id?: string
         }
@@ -213,121 +225,72 @@ export type Database = {
         }
         Relationships: []
       }
-      chat_conversation_participants: {
-        Row: {
-          conversation_id: string | null
-          created_at: string
-          id: string
-          joined_at: string | null
-          user_id: string | null
-        }
-        Insert: {
-          conversation_id?: string | null
-          created_at?: string
-          id?: string
-          joined_at?: string | null
-          user_id?: string | null
-        }
-        Update: {
-          conversation_id?: string | null
-          created_at?: string
-          id?: string
-          joined_at?: string | null
-          user_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "chat_conversation_participants_conversation_id_fkey"
-            columns: ["conversation_id"]
-            isOneToOne: false
-            referencedRelation: "chat_conversations"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       chat_conversations: {
         Row: {
           created_at: string
           id: string
-          is_group: boolean | null
+          is_group: boolean
           name: string | null
+          updated_at: string
         }
         Insert: {
           created_at?: string
           id?: string
-          is_group?: boolean | null
+          is_group?: boolean
           name?: string | null
+          updated_at?: string
         }
         Update: {
           created_at?: string
           id?: string
-          is_group?: boolean | null
+          is_group?: boolean
           name?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
-      chat_message_status: {
-        Row: {
-          created_at: string
-          id: string
-          message_id: string | null
-          status: string | null
-          updated_at: string | null
-          user_id: string | null
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          message_id?: string | null
-          status?: string | null
-          updated_at?: string | null
-          user_id?: string | null
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          message_id?: string | null
-          status?: string | null
-          updated_at?: string | null
-          user_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "chat_message_status_message_id_fkey"
-            columns: ["message_id"]
-            isOneToOne: false
-            referencedRelation: "chat_messages"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       chat_messages: {
         Row: {
-          attachment_url: string | null
           content: string | null
-          conversation_id: string | null
+          conversation_id: string
           created_at: string
+          deleted_at: string | null
           id: string
-          read_by: string | null
-          sender_id: string | null
+          link_preview: Json | null
+          media_duration_ms: number | null
+          media_storage_path: string | null
+          media_thumbnail_path: string | null
+          message_type: string
+          reply_to_message_id: string | null
+          sender_id: string
         }
         Insert: {
-          attachment_url?: string | null
           content?: string | null
-          conversation_id?: string | null
+          conversation_id: string
           created_at?: string
+          deleted_at?: string | null
           id?: string
-          read_by?: string | null
-          sender_id?: string | null
+          link_preview?: Json | null
+          media_duration_ms?: number | null
+          media_storage_path?: string | null
+          media_thumbnail_path?: string | null
+          message_type?: string
+          reply_to_message_id?: string | null
+          sender_id?: string
         }
         Update: {
-          attachment_url?: string | null
           content?: string | null
-          conversation_id?: string | null
+          conversation_id?: string
           created_at?: string
+          deleted_at?: string | null
           id?: string
-          read_by?: string | null
-          sender_id?: string | null
+          link_preview?: Json | null
+          media_duration_ms?: number | null
+          media_storage_path?: string | null
+          media_thumbnail_path?: string | null
+          message_type?: string
+          reply_to_message_id?: string | null
+          sender_id?: string
         }
         Relationships: [
           {
@@ -335,6 +298,101 @@ export type Database = {
             columns: ["conversation_id"]
             isOneToOne: false
             referencedRelation: "chat_conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chat_messages_reply_to_message_id_fkey"
+            columns: ["reply_to_message_id"]
+            isOneToOne: false
+            referencedRelation: "chat_messages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chat_messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      chat_participants: {
+        Row: {
+          conversation_id: string
+          id: string
+          is_active: boolean
+          joined_at: string
+          last_read_at: string
+          user_id: string
+        }
+        Insert: {
+          conversation_id: string
+          id?: string
+          is_active?: boolean
+          joined_at?: string
+          last_read_at?: string
+          user_id?: string
+        }
+        Update: {
+          conversation_id?: string
+          id?: string
+          is_active?: boolean
+          joined_at?: string
+          last_read_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_participants_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "chat_conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chat_participants_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      chat_reactions: {
+        Row: {
+          created_at: string
+          emoji: string
+          id: string
+          message_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          emoji: string
+          id?: string
+          message_id: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          emoji?: string
+          id?: string
+          message_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_reactions_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "chat_messages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chat_reactions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
             referencedColumns: ["id"]
           },
         ]
@@ -475,11 +533,61 @@ export type Database = {
           },
         ]
       }
+      feed_comments: {
+        Row: {
+          content: string
+          created_at: string
+          feed_item_id: string
+          id: string
+          parent_id: string | null
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          feed_item_id: string
+          id?: string
+          parent_id?: string | null
+          user_id?: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          feed_item_id?: string
+          id?: string
+          parent_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feed_comments_feed_item_id_fkey"
+            columns: ["feed_item_id"]
+            isOneToOne: false
+            referencedRelation: "feed_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "feed_comments_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "feed_comments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "feed_comments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       feed_items: {
         Row: {
           activity_at: string | null
           created_at: string
           extra_fields: Json
+          hidden_at: string | null
           id: string
           occurred_at: string
           source_id: string
@@ -487,11 +595,13 @@ export type Database = {
           type: string
           updated_at: string | null
           user_id: string
+          visibility: string
         }
         Insert: {
           activity_at?: string | null
           created_at?: string
           extra_fields?: Json
+          hidden_at?: string | null
           id?: string
           occurred_at: string
           source_id: string
@@ -499,11 +609,13 @@ export type Database = {
           type: string
           updated_at?: string | null
           user_id?: string
+          visibility?: string
         }
         Update: {
           activity_at?: string | null
           created_at?: string
           extra_fields?: Json
+          hidden_at?: string | null
           id?: string
           occurred_at?: string
           source_id?: string
@@ -511,10 +623,47 @@ export type Database = {
           type?: string
           updated_at?: string | null
           user_id?: string
+          visibility?: string
         }
         Relationships: [
           {
             foreignKeyName: "feed_items_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      feed_likes: {
+        Row: {
+          created_at: string
+          feed_item_id: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          feed_item_id: string
+          id?: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          feed_item_id?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feed_likes_feed_item_id_fkey"
+            columns: ["feed_item_id"]
+            isOneToOne: false
+            referencedRelation: "feed_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "feed_likes_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "users"
@@ -629,6 +778,47 @@ export type Database = {
           {
             foreignKeyName: "friends_user2_id_fkey"
             columns: ["user2_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      generated_reports: {
+        Row: {
+          created_at: string
+          id: string
+          period_end: string
+          period_start: string
+          report_data: Json
+          schedule_id: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          period_end: string
+          period_start: string
+          report_data?: Json
+          schedule_id: string
+          title: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          period_end?: string
+          period_start?: string
+          report_data?: Json
+          schedule_id?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "generated_reports_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
@@ -816,42 +1006,93 @@ export type Database = {
           },
         ]
       }
+      gym_session_phases: {
+        Row: {
+          activity_id: string
+          calories: number | null
+          created_at: string | null
+          distance_meters: number | null
+          duration_seconds: number
+          id: string
+          is_manual: boolean | null
+          phase_type: string
+          session_id: string
+          steps: number | null
+          user_id: string
+        }
+        Insert: {
+          activity_id: string
+          calories?: number | null
+          created_at?: string | null
+          distance_meters?: number | null
+          duration_seconds: number
+          id?: string
+          is_manual?: boolean | null
+          phase_type: string
+          session_id: string
+          steps?: number | null
+          user_id?: string
+        }
+        Update: {
+          activity_id?: string
+          calories?: number | null
+          created_at?: string | null
+          distance_meters?: number | null
+          duration_seconds?: number
+          id?: string
+          is_manual?: boolean | null
+          phase_type?: string
+          session_id?: string
+          steps?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gym_session_phases_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "gym_session_phases_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       gym_sets: {
         Row: {
           created_at: string
-          distance_meters: number | null
           id: string
           reps: number | null
           rpe: string | null
           session_exercise_id: string
           set_number: number
-          time_min: number | null
           updated_at: string | null
           user_id: string
           weight: number | null
         }
         Insert: {
           created_at?: string
-          distance_meters?: number | null
           id?: string
           reps?: number | null
           rpe?: string | null
           session_exercise_id: string
           set_number: number
-          time_min?: number | null
           updated_at?: string | null
           user_id?: string
           weight?: number | null
         }
         Update: {
           created_at?: string
-          distance_meters?: number | null
           id?: string
           reps?: number | null
           rpe?: string | null
           session_exercise_id?: string
           set_number?: number
-          time_min?: number | null
           updated_at?: string | null
           user_id?: string
           weight?: number | null
@@ -925,6 +1166,48 @@ export type Database = {
           },
         ]
       }
+      gym_template_phases: {
+        Row: {
+          activity_id: string
+          created_at: string | null
+          id: string
+          phase_type: string
+          template_id: string
+          user_id: string
+        }
+        Insert: {
+          activity_id: string
+          created_at?: string | null
+          id?: string
+          phase_type: string
+          template_id: string
+          user_id?: string
+        }
+        Update: {
+          activity_id?: string
+          created_at?: string | null
+          id?: string
+          phase_type?: string
+          template_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gym_template_phases_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "gym_template_phases_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "gym_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       gym_template_sets: {
         Row: {
           id: string
@@ -975,6 +1258,7 @@ export type Database = {
           created_at: string
           id: string
           name: string
+          sort_order: number
           updated_at: string | null
           user_id: string
         }
@@ -982,6 +1266,7 @@ export type Database = {
           created_at?: string
           id?: string
           name: string
+          sort_order?: number
           updated_at?: string | null
           user_id?: string
         }
@@ -989,12 +1274,105 @@ export type Database = {
           created_at?: string
           id?: string
           name?: string
+          sort_order?: number
           updated_at?: string | null
           user_id?: string
         }
         Relationships: [
           {
             foreignKeyName: "gym_templates_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      habit_logs: {
+        Row: {
+          accumulated_seconds: number | null
+          completed_date: string
+          created_at: string
+          habit_id: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          accumulated_seconds?: number | null
+          completed_date: string
+          created_at?: string
+          habit_id: string
+          id?: string
+          user_id?: string
+        }
+        Update: {
+          accumulated_seconds?: number | null
+          completed_date?: string
+          created_at?: string
+          habit_id?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "habit_logs_habit_id_fkey"
+            columns: ["habit_id"]
+            isOneToOne: false
+            referencedRelation: "habits"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "habit_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      habits: {
+        Row: {
+          alarm_type: string
+          created_at: string
+          frequency_days: number[] | null
+          id: string
+          is_active: boolean
+          name: string
+          reminder_time: string | null
+          sort_order: number
+          target_value: number | null
+          type: string
+          user_id: string
+        }
+        Insert: {
+          alarm_type?: string
+          created_at?: string
+          frequency_days?: number[] | null
+          id?: string
+          is_active?: boolean
+          name: string
+          reminder_time?: string | null
+          sort_order?: number
+          target_value?: number | null
+          type?: string
+          user_id?: string
+        }
+        Update: {
+          alarm_type?: string
+          created_at?: string
+          frequency_days?: number[] | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          reminder_time?: string | null
+          sort_order?: number
+          target_value?: number | null
+          type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "habits_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "users"
@@ -1250,6 +1628,47 @@ export type Database = {
           },
         ]
       }
+      notifications: {
+        Row: {
+          body: string
+          created_at: string | null
+          data: Json | null
+          id: string
+          is_read: boolean | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          body: string
+          created_at?: string | null
+          data?: Json | null
+          id?: string
+          is_read?: boolean | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string | null
+          data?: Json | null
+          id?: string
+          is_read?: boolean | null
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pinned_items: {
         Row: {
           created_at: string
@@ -1315,6 +1734,59 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: []
+      }
+      report_schedules: {
+        Row: {
+          created_at: string
+          delivery_day_of_month: number | null
+          delivery_day_of_week: number | null
+          delivery_hour: number
+          id: string
+          included_features: string[]
+          is_active: boolean
+          schedule_type: string
+          timezone: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          delivery_day_of_month?: number | null
+          delivery_day_of_week?: number | null
+          delivery_hour?: number
+          id?: string
+          included_features?: string[]
+          is_active?: boolean
+          schedule_type: string
+          timezone?: string
+          title: string
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          delivery_day_of_month?: number | null
+          delivery_day_of_week?: number | null
+          delivery_hour?: number
+          id?: string
+          included_features?: string[]
+          is_active?: boolean
+          schedule_type?: string
+          timezone?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "report_schedules_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       session_images: {
         Row: {
@@ -1557,6 +2029,41 @@ export type Database = {
           },
         ]
       }
+      sharing_defaults: {
+        Row: {
+          created_at: string
+          id: string
+          session_type: string
+          share_with_friends: boolean
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          session_type: string
+          share_with_friends?: boolean
+          updated_at?: string | null
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          session_type?: string
+          share_with_friends?: boolean
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sharing_defaults_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       steps_daily: {
         Row: {
           created_at: string
@@ -1661,6 +2168,111 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      todo_task_images: {
+        Row: {
+          created_at: string
+          id: string
+          storage_path: string
+          task_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          storage_path: string
+          task_id: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          storage_path?: string
+          task_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "todo_task_images_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "todo_tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      todo_task_videos: {
+        Row: {
+          created_at: string
+          duration_ms: number | null
+          id: string
+          storage_path: string
+          task_id: string
+          thumbnail_storage_path: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          duration_ms?: number | null
+          id?: string
+          storage_path: string
+          task_id: string
+          thumbnail_storage_path?: string | null
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          duration_ms?: number | null
+          id?: string
+          storage_path?: string
+          task_id?: string
+          thumbnail_storage_path?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "todo_task_videos_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "todo_tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      todo_task_voice: {
+        Row: {
+          created_at: string
+          duration_ms: number | null
+          id: string
+          storage_path: string
+          task_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          duration_ms?: number | null
+          id?: string
+          storage_path: string
+          task_id: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          duration_ms?: number | null
+          id?: string
+          storage_path?: string
+          task_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "todo_task_voice_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "todo_tasks"
             referencedColumns: ["id"]
           },
         ]
@@ -1839,7 +2451,9 @@ export type Database = {
           banned_until: string | null
           created_at: string
           display_name: string
+          distance_unit: string
           email: string | null
+          height_cm: number | null
           id: string
           profile_picture: string | null
           role: string
@@ -1850,7 +2464,9 @@ export type Database = {
           banned_until?: string | null
           created_at?: string
           display_name: string
+          distance_unit?: string
           email?: string | null
+          height_cm?: number | null
           id: string
           profile_picture?: string | null
           role?: string
@@ -1861,7 +2477,9 @@ export type Database = {
           banned_until?: string | null
           created_at?: string
           display_name?: string
+          distance_unit?: string
           email?: string | null
+          height_cm?: number | null
           id?: string
           profile_picture?: string | null
           role?: string
@@ -2028,14 +2646,26 @@ export type Database = {
         Returns: undefined
       }
       activities_compute_session_stats: {
-        Args: { p_session_id: string; p_steps: number }
+        Args: {
+          p_session_id: string
+          p_step_distance_meters?: number
+          p_steps: number
+        }
         Returns: undefined
       }
       activities_get_full_session: {
         Args: { p_session_id: string }
         Returns: Json
       }
+      activities_get_template_history: {
+        Args: { p_template_id: string }
+        Returns: Json
+      }
       activities_get_templates: { Args: never; Returns: Json }
+      activities_reorder_templates: {
+        Args: { p_ids: string[] }
+        Returns: undefined
+      }
       activities_save_activity: {
         Args: {
           p_activity_id: string
@@ -2045,10 +2675,13 @@ export type Database = {
           p_images?: Json
           p_notes: string
           p_start_time: string
+          p_step_distance_meters?: number
           p_steps: number
+          p_template_id?: string
           p_title: string
           p_track: Json
           p_videos?: Json
+          p_visibility?: string
         }
         Returns: string
       }
@@ -2068,6 +2701,7 @@ export type Database = {
           activity_at: string | null
           created_at: string
           extra_fields: Json
+          hidden_at: string | null
           id: string
           occurred_at: string
           source_id: string
@@ -2075,6 +2709,7 @@ export type Database = {
           type: string
           updated_at: string | null
           user_id: string
+          visibility: string
         }
         SetofOptions: {
           from: "*"
@@ -2083,10 +2718,61 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      add_feed_comment: {
+        Args: {
+          p_content: string
+          p_feed_item_id: string
+          p_parent_id?: string
+        }
+        Returns: string
+      }
+      delete_feed_comment: {
+        Args: { p_comment_id: string }
+        Returns: undefined
+      }
       delete_friend: { Args: { p_friend_id: string }; Returns: undefined }
+      delete_message: {
+        Args: { p_message_id: string }
+        Returns: {
+          media_path: string
+          thumbnail_path: string
+        }[]
+      }
       feed_delete_session: {
         Args: { p_id: string; p_type: string }
         Returns: undefined
+      }
+      get_conversations: {
+        Args: never
+        Returns: {
+          conversation_id: string
+          conversation_name: string
+          is_active: boolean
+          is_group: boolean
+          last_message_at: string
+          last_message_content: string
+          last_message_sender_id: string
+          last_message_type: string
+          other_user_display_name: string
+          other_user_id: string
+          other_user_profile_picture: string
+          unread_count: number
+          updated_at: string
+        }[]
+      }
+      get_feed_comments: {
+        Args: { p_feed_item_id: string }
+        Returns: {
+          author_display_name: string
+          author_profile_picture: string
+          content: string
+          created_at: string
+          feed_item_id: string
+          id: string
+          parent_id: string
+          reply_to_display_name: string
+          user_id: string
+        }[]
       }
       get_feed_sorted: {
         Args: { p_limit: number; p_offset: number }
@@ -2101,9 +2787,81 @@ export type Database = {
           type: string
           updated_at: string
           user_id: string
+          visibility: string
+        }[]
+      }
+      get_friend_activity_session: {
+        Args: { p_feed_item_id: string }
+        Returns: Json
+      }
+      get_friend_activity_session_by_chat: {
+        Args: { p_conversation_id: string; p_session_id: string }
+        Returns: Json
+      }
+      get_friend_gym_session: {
+        Args: { p_feed_item_id: string; p_language?: string }
+        Returns: Json
+      }
+      get_friend_gym_session_by_chat: {
+        Args: {
+          p_conversation_id: string
+          p_language?: string
+          p_session_id: string
+        }
+        Returns: Json
+      }
+      get_friends_feed: {
+        Args: { p_limit: number; p_offset: number }
+        Returns: {
+          activity_at: string
+          author_display_name: string
+          author_profile_picture: string
+          comment_count: number
+          created_at: string
+          extra_fields: Json
+          id: string
+          like_count: number
+          occurred_at: string
+          source_id: string
+          title: string
+          type: string
+          updated_at: string
+          user_has_liked: boolean
+          user_id: string
+          visibility: string
         }[]
       }
       get_jwt: { Args: never; Returns: Json }
+      get_messages: {
+        Args: { p_before?: string; p_conversation_id: string; p_limit?: number }
+        Returns: {
+          content: string
+          conversation_id: string
+          created_at: string
+          deleted_at: string
+          id: string
+          link_preview: Json
+          media_duration_ms: number
+          media_storage_path: string
+          media_thumbnail_path: string
+          message_type: string
+          reactions: Json
+          reply_to_content: string
+          reply_to_deleted_at: string
+          reply_to_message_id: string
+          reply_to_message_type: string
+          reply_to_sender_name: string
+          sender_display_name: string
+          sender_id: string
+          sender_profile_picture: string
+        }[]
+      }
+      get_or_create_dm: { Args: { p_friend_id: string }; Returns: string }
+      get_other_participant_last_read: {
+        Args: { p_conversation_id: string }
+        Returns: string
+      }
+      get_total_unread_count: { Args: never; Returns: number }
       gym_edit_session: {
         Args: {
           p_deleted_image_ids?: string[]
@@ -2116,6 +2874,7 @@ export type Database = {
           p_new_recordings?: Json
           p_new_videos?: Json
           p_notes: string
+          p_phases?: Json
           p_title: string
           p_updated_at: string
         }
@@ -2123,6 +2882,7 @@ export type Database = {
           activity_at: string | null
           created_at: string
           extra_fields: Json
+          hidden_at: string | null
           id: string
           occurred_at: string
           source_id: string
@@ -2130,6 +2890,7 @@ export type Database = {
           type: string
           updated_at: string | null
           user_id: string
+          visibility: string
         }
         SetofOptions: {
           from: "*"
@@ -2139,7 +2900,12 @@ export type Database = {
         }
       }
       gym_edit_template: {
-        Args: { p_exercises: Json; p_id: string; p_name: string }
+        Args: {
+          p_exercises: Json
+          p_id: string
+          p_name: string
+          p_phases?: Json
+        }
         Returns: string
       }
       gym_latest_history_per_exercise: {
@@ -2153,6 +2919,7 @@ export type Database = {
           sets: Json
         }[]
       }
+      gym_reorder_templates: { Args: { p_ids: string[] }; Returns: undefined }
       gym_save_session: {
         Args: {
           p_duration: number
@@ -2160,18 +2927,34 @@ export type Database = {
           p_exercises: Json
           p_images?: Json
           p_notes: string
+          p_phases?: Json
           p_recordings?: Json
           p_start_time: string
           p_title: string
           p_videos?: Json
+          p_visibility?: string
         }
         Returns: string
       }
       gym_save_template: {
-        Args: { p_exercises: Json; p_name: string }
+        Args: { p_exercises: Json; p_name: string; p_phases?: Json }
         Returns: string
       }
+      habit_get_stats: {
+        Args: { p_date?: string; p_habit_id: string }
+        Returns: Json
+      }
+      habit_toggle_log: {
+        Args: { p_date: string; p_habit_id: string; p_tz?: string }
+        Returns: boolean
+      }
+      hide_feed_item: { Args: { p_feed_item_id: string }; Returns: undefined }
+      is_chat_partner: { Args: { p_other_user_id: string }; Returns: boolean }
       last_30d_analytics: { Args: never; Returns: Json }
+      mark_conversation_read: {
+        Args: { p_conversation_id: string }
+        Returns: undefined
+      }
       notes_edit_note: {
         Args: {
           p_deleted_image_ids?: string[]
@@ -2190,6 +2973,7 @@ export type Database = {
           activity_at: string | null
           created_at: string
           extra_fields: Json
+          hidden_at: string | null
           id: string
           occurred_at: string
           source_id: string
@@ -2197,6 +2981,7 @@ export type Database = {
           type: string
           updated_at: string | null
           user_id: string
+          visibility: string
         }
         SetofOptions: {
           from: "*"
@@ -2216,6 +3001,7 @@ export type Database = {
           activity_at: string | null
           created_at: string
           extra_fields: Json
+          hidden_at: string | null
           id: string
           occurred_at: string
           source_id: string
@@ -2223,6 +3009,7 @@ export type Database = {
           type: string
           updated_at: string | null
           user_id: string
+          visibility: string
         }[]
         SetofOptions: {
           from: "*"
@@ -2245,6 +3032,10 @@ export type Database = {
           p_videos?: Json
         }
         Returns: string
+      }
+      refresh_habit_feed: {
+        Args: { p_date: string; p_tz?: string }
+        Returns: undefined
       }
       reminders_delete_global_reminder: {
         Args: { p_id: string }
@@ -2269,6 +3060,7 @@ export type Database = {
           activity_at: string | null
           created_at: string
           extra_fields: Json
+          hidden_at: string | null
           id: string
           occurred_at: string
           source_id: string
@@ -2276,6 +3068,7 @@ export type Database = {
           type: string
           updated_at: string | null
           user_id: string
+          visibility: string
         }
         SetofOptions: {
           from: "*"
@@ -2301,6 +3094,7 @@ export type Database = {
           activity_at: string | null
           created_at: string
           extra_fields: Json
+          hidden_at: string | null
           id: string
           occurred_at: string
           source_id: string
@@ -2308,6 +3102,7 @@ export type Database = {
           type: string
           updated_at: string | null
           user_id: string
+          visibility: string
         }
         SetofOptions: {
           from: "*"
@@ -2334,6 +3129,29 @@ export type Database = {
           weekdays: Json
         }[]
       }
+      reminders_get_feed: {
+        Args: { p_limit?: number; p_offset?: number; p_tab: string }
+        Returns: {
+          activity_at: string | null
+          created_at: string
+          extra_fields: Json
+          hidden_at: string | null
+          id: string
+          occurred_at: string
+          source_id: string
+          title: string
+          type: string
+          updated_at: string | null
+          user_id: string
+          visibility: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "feed_items"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       reminders_save_global_reminder: {
         Args: {
           p_created_from_device_id?: string
@@ -2357,12 +3175,68 @@ export type Database = {
         }
         Returns: string
       }
+      report_delete_schedule: {
+        Args: { p_schedule_id: string }
+        Returns: undefined
+      }
+      report_generate: {
+        Args: {
+          p_period_end: string
+          p_period_start: string
+          p_report_data: Json
+          p_schedule_id: string
+        }
+        Returns: string
+      }
+      report_get_schedules: { Args: never; Returns: Json }
+      report_save_schedule: {
+        Args: {
+          p_delivery_day_of_month?: number
+          p_delivery_day_of_week?: number
+          p_delivery_hour?: number
+          p_included_features: string[]
+          p_schedule_type: string
+          p_timezone?: string
+          p_title: string
+        }
+        Returns: string
+      }
+      report_update_schedule: {
+        Args: {
+          p_delivery_day_of_month?: number
+          p_delivery_day_of_week?: number
+          p_delivery_hour?: number
+          p_included_features: string[]
+          p_schedule_id: string
+          p_schedule_type: string
+          p_timezone?: string
+          p_title: string
+        }
+        Returns: undefined
+      }
+      send_message: {
+        Args: {
+          p_content?: string
+          p_conversation_id: string
+          p_media_duration_ms?: number
+          p_media_storage_path?: string
+          p_media_thumbnail_path?: string
+          p_message_type?: string
+          p_reply_to_message_id?: string
+        }
+        Returns: string
+      }
+      storage_friend_can_read: {
+        Args: { p_bucket: string; p_path: string }
+        Returns: boolean
+      }
       todo_check_todo: {
         Args: { p_list_id: string; p_todo_tasks: Json; p_updated_at: string }
         Returns: {
           activity_at: string | null
           created_at: string
           extra_fields: Json
+          hidden_at: string | null
           id: string
           occurred_at: string
           source_id: string
@@ -2370,6 +3244,7 @@ export type Database = {
           type: string
           updated_at: string | null
           user_id: string
+          visibility: string
         }
         SetofOptions: {
           from: "*"
@@ -2380,7 +3255,10 @@ export type Database = {
       }
       todo_edit_todo: {
         Args: {
-          p_deleted_ids: string[]
+          p_deleted_ids?: string[]
+          p_deleted_image_ids?: string[]
+          p_deleted_video_ids?: string[]
+          p_deleted_voice_ids?: string[]
           p_id: string
           p_tasks: Json
           p_title: string
@@ -2390,6 +3268,7 @@ export type Database = {
           activity_at: string | null
           created_at: string
           extra_fields: Json
+          hidden_at: string | null
           id: string
           occurred_at: string
           source_id: string
@@ -2397,6 +3276,7 @@ export type Database = {
           type: string
           updated_at: string | null
           user_id: string
+          visibility: string
         }
         SetofOptions: {
           from: "*"
@@ -2405,13 +3285,47 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      todo_get_filtered: {
+        Args: { p_filter: string; p_limit: number; p_offset: number }
+        Returns: {
+          activity_at: string | null
+          created_at: string
+          extra_fields: Json
+          hidden_at: string | null
+          id: string
+          occurred_at: string
+          source_id: string
+          title: string
+          type: string
+          updated_at: string | null
+          user_id: string
+          visibility: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "feed_items"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       todo_save_todo: {
         Args: { p_title: string; p_todo_list: Json }
         Returns: string
       }
+      toggle_feed_like: { Args: { p_feed_item_id: string }; Returns: boolean }
+      toggle_reaction: {
+        Args: { p_emoji: string; p_message_id: string }
+        Returns: boolean
+      }
       weight_edit_weight: {
         Args: {
+          p_deleted_image_ids?: string[]
+          p_deleted_recording_ids?: string[]
+          p_deleted_video_ids?: string[]
           p_id: string
+          p_new_images?: Json
+          p_new_recordings?: Json
+          p_new_videos?: Json
           p_notes: string
           p_title: string
           p_updated_at: string
@@ -2421,6 +3335,7 @@ export type Database = {
           activity_at: string | null
           created_at: string
           extra_fields: Json
+          hidden_at: string | null
           id: string
           occurred_at: string
           source_id: string
@@ -2428,6 +3343,7 @@ export type Database = {
           type: string
           updated_at: string | null
           user_id: string
+          visibility: string
         }
         SetofOptions: {
           from: "*"

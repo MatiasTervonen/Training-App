@@ -20,17 +20,17 @@ export default function WorkoutAnalyticsPage() {
       </h1>
       {isLoading && !data ? (
         <div className="flex flex-col  items-center gap-2 mt-20 px-6">
-          <p className="text-gray-300 text-center text-xl">
+          <p className="text-gray-300 text-center text-xl font-body">
             {t("gym.analyticsScreen.loading")}
           </p>
           <Spinner />
         </div>
       ) : error ? (
-        <p className="text-red-500 text-center mt-20 px-6">
+        <p className="text-red-500 text-center mt-20 px-6 font-body">
           {t("gym.analyticsScreen.error")}
         </p>
       ) : !data || data.analytics.total_sessions === 0 ? (
-        <p className="text-gray-300 text-center mt-20 px-6">
+        <p className="text-gray-300 text-center mt-20 px-6 font-body">
           {t("gym.analyticsScreen.noData")}
         </p>
       ) : (

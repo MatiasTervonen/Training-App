@@ -61,12 +61,12 @@ export default function MyActivitySessionsPage() {
         >
           {refreshing ? (
             <div className="flex text-xl items-center gap-4">
-              <p>{t("common:feed.refreshing")}</p>
+              <p className="font-body">{t("common:feed.refreshing")}</p>
               <Spinner />
             </div>
           ) : pullDistance > 0 ? (
             <div className="flex text-xl items-center gap-2">
-              <p className="text-gray-100/70">
+              <p className="font-body text-gray-100/70">
                 {t("common:feed.pullToRefresh")}
               </p>
             </div>
@@ -76,11 +76,11 @@ export default function MyActivitySessionsPage() {
         {isLoading && !data ? (
           <FeedSkeleton count={6} />
         ) : error ? (
-          <p className="text-center text-lg mt-10">
+          <p className="font-body text-center text-lg mt-10">
             {t("activities:activities.mySessions.loadError")}
           </p>
         ) : !data || (unpinnedFeed.length === 0 && pinnedFeed.length === 0) ? (
-          <p className="text-center text-lg mt-20">
+          <p className="font-body text-center text-lg mt-20">
             {t("activities:activities.mySessions.noSessions")}
           </p>
         ) : (
@@ -121,7 +121,7 @@ export default function MyActivitySessionsPage() {
             })}
             {isFetchingNextPage && (
               <div className="flex flex-col gap-2 items-center mt-10">
-                <p>{t("common:feed.loadingMore")}</p>
+                <p className="font-body">{t("common:feed.loadingMore")}</p>
                 <Spinner />
               </div>
             )}
@@ -129,7 +129,7 @@ export default function MyActivitySessionsPage() {
             {hasNextPage && <div ref={loadMoreRef} className="h-20"></div>}
 
             {!hasNextPage && data?.pages.length > 1 && (
-              <p className="text-center justify-center mt-10 text-gray-300">
+              <p className="font-body text-center justify-center mt-10 text-gray-300">
                 {t("common:feed.noMoreSessions")}
               </p>
             )}
@@ -140,11 +140,11 @@ export default function MyActivitySessionsPage() {
           <Modal onClose={() => setExpandedItem(null)} isOpen={true}>
             {isLoadingActivitySession ? (
               <div className="flex flex-col gap-5 items-center justify-center pt-40 px-10">
-                <p>{t("activities:activities.mySessions.loadingDetails")}</p>
+                <p className="font-body">{t("activities:activities.mySessions.loadingDetails")}</p>
                 <Spinner />
               </div>
             ) : activitySessionError ? (
-              <p className="text-center text-lg mt-40 px-10">
+              <p className="font-body text-center text-lg mt-40 px-10">
                 {t("activities:activities.mySessions.loadDetailsError")}
               </p>
             ) : (
@@ -166,11 +166,11 @@ export default function MyActivitySessionsPage() {
           >
             {isLoadingActivitySession ? (
               <div className="flex flex-col gap-5 items-center justify-center pt-40 px-10">
-                <p>{t("activities:activities.mySessions.loadingDetails")}</p>
+                <p className="font-body">{t("activities:activities.mySessions.loadingDetails")}</p>
                 <Spinner />
               </div>
             ) : activitySessionError ? (
-              <p className="text-center text-lg mt-40 px-10">
+              <p className="font-body text-center text-lg mt-40 px-10">
                 {t("activities:activities.mySessions.loadDetailsError")}
               </p>
             ) : (

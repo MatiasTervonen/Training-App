@@ -1,12 +1,8 @@
-import { supabase } from "@/lib/supabase";
 import { handleError } from "@/utils/handleError";
+import { createClient } from "@/utils/supabase/client";
 import { FeedItemUI } from "@/types/session";
 
 export type ReminderFilter = "upcoming" | "delivered";
-
-export function getPinnedContext(): string {
-  return "reminders";
-}
 
 export async function getRemindersFeed({
   pageParam = 0,
@@ -20,15 +16,15 @@ export async function getRemindersFeed({
   feed: FeedItemUI[];
   nextPage: number | null;
 }> {
+  const supabase = createClient();
   const from = pageParam * limit;
-  const pinnedContext = getPinnedContext();
 
   const pinnedPromise =
     pageParam === 0
       ? supabase
           .from("pinned_items")
           .select(`feed_items(*)`)
-          .eq("pinned_context", pinnedContext)
+          .eq("pinned_context", "reminders")
           .order("created_at", { ascending: false })
       : Promise.resolve({ data: [], error: null });
 

@@ -305,7 +305,7 @@ export default function ShareModalShell({
   return (
     <>
     <FullScreenModal isOpen={visible} onClose={onClose} scrollable={currentStep === "main"} bgClassName="bg-slate-950">
-      <View className="flex-1 px-3 pt-1 pb-4" onLayout={onLayout}>
+      <View className="flex-1 px-3 pt-5 pb-4" onLayout={onLayout}>
         {containerHeight === 0 ? null : currentStep === "friends" ? (
           <View className="flex-1">
             <View className="flex-row items-center mb-4">
@@ -352,27 +352,29 @@ export default function ShareModalShell({
             onSelectSession={() => handleSelectShareType("session")}
           />
         ) : (
-          <View>
-            <View
-              className="items-center justify-center"
-              style={{ height: previewAreaHeight }}
-            >
-              <View style={cardContainerStyle}>
-                <View style={transformStyle}>
-                  {renderCard({ cardRef, theme, size, themeId })}
+          <View className="flex-1 justify-between">
+            <View>
+              <View
+                className="items-center justify-center"
+                style={{ height: previewAreaHeight }}
+              >
+                <View style={cardContainerStyle}>
+                  <View style={transformStyle}>
+                    {renderCard({ cardRef, theme, size, themeId })}
+                  </View>
                 </View>
               </View>
-            </View>
 
-            {middleContent?.({ themeId, size })}
-            <View className="mt-4">
-              <ShareCardPicker
-                selectedSize={size}
-                onSizeChange={setSize}
-                selectedTheme={themeId}
-                onThemeChange={setTheme}
-                {...shareCardPickerProps}
-              />
+              {middleContent?.({ themeId, size })}
+              <View className="mt-4">
+                <ShareCardPicker
+                  selectedSize={size}
+                  onSizeChange={setSize}
+                  selectedTheme={themeId}
+                  onThemeChange={setTheme}
+                  {...shareCardPickerProps}
+                />
+              </View>
             </View>
             {buttons}
           </View>

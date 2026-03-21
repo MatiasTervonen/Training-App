@@ -49,7 +49,7 @@ export default function SignOutButton() {
       <button
         aria-label={t("menu.logOut")}
         onClick={handleSignOut}
-        className="btn-base"
+        className="btn-base w-full"
       >
         <div className="flex items-center gap-2 justify-center">
           <LogOut />

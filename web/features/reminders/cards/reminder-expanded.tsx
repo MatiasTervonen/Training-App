@@ -1,11 +1,16 @@
 "use client";
 
-import { formatDate, formatDateTime } from "@/lib/formatDate";
-import CopyButton from "@/components/buttons/CopyButton";
-import { Bell, CalendarSync } from "lucide-react";
-import { formatNotifyTime } from "@/lib/formatDate";
+import { formatDate, formatDateTime, formatNotifyTime } from "@/lib/formatDate";
+import { Bell, CalendarSync, AlertTriangle } from "lucide-react";
 import { FeedItemUI } from "@/types/session";
 import { useTranslation } from "react-i18next";
+
+const typeTranslationKeys: Record<string, string> = {
+  "one-time": "oneTime",
+  weekly: "weekly",
+  daily: "daily",
+  global_reminders: "global",
+};
 
 type reminderPayload = {
   notify_date: string;
@@ -32,72 +37,84 @@ export default function ReminderSession(reminder: FeedItemUI) {
   ];
 
   return (
-    <div className="page-padding mt-10">
-      <div
-        id="reminder-id"
-        className={`max-w-lg mx-auto rounded-2xl border-2 border-slate-500 bg-linear-to-tr from-gray-900 via-slate-900 to-blue-900 shadow-xl px-4 pb-2 ${payload.mode === "alarm" ? "pt-0" : "pt-10"}`}
-      >
-        {payload.mode === "alarm" && (
-          <p className="text-sm text-yellow-500 my-4">{t("reminders.highPriorityReminder")}</p>
+    <div className="page-padding max-w-lg mx-auto">
+      <p className="text-sm text-gray-400 text-center font-body">
+        {t("reminders.created")} {formatDate(reminder.created_at)}
+      </p>
+      {reminder.updated_at && (
+        <p className="text-sm text-slate-400 mt-1 text-center font-body">
+          {t("reminders.updated")} {formatDate(reminder.updated_at)}
+        </p>
+      )}
+
+      {payload.mode === "alarm" && (
+        <div className="flex items-center justify-center gap-2 mt-4 bg-yellow-500/15 rounded-md px-3 py-2 w-fit mx-auto">
+          <AlertTriangle size={16} className="text-yellow-500" />
+          <span className="text-sm text-yellow-500">
+            {t("reminders.highPriorityReminder")}
+          </span>
+        </div>
+      )}
+
+      <h2 className="text-2xl text-center mt-5 wrap-break-word">
+        {reminder.title}
+      </h2>
+
+      <div className="bg-white/5 border border-white/10 rounded-md mt-6">
+        {/* Type */}
+        <div className="flex items-center px-4 py-4 border-b border-gray-700">
+          <CalendarSync size={20} className="text-slate-400" />
+          <span className="text-slate-400 text-sm ml-3 font-body">
+            {t("reminders.typeLabel")}
+          </span>
+          <span className="ml-auto text-lg">
+            {t(`reminders.${typeTranslationKeys[payload.type] || payload.type}`)}
+          </span>
+        </div>
+
+        {/* Time */}
+        <div className="flex items-center px-4 py-4 border-b border-gray-700">
+          <Bell size={20} className="text-slate-400" />
+          <span className="text-slate-400 text-sm ml-3 font-body">
+            {t("reminders.timeLabel")}
+          </span>
+          <span className="ml-auto text-lg">
+            {payload.type === "one-time"
+              ? formatDateTime(payload.notify_date!)
+              : reminder.type === "global" ||
+                  reminder.type === "global_reminders"
+                ? formatDateTime(payload.notify_at!)
+                : formatNotifyTime(payload.notify_at_time!)}
+          </span>
+        </div>
+
+        {/* Weekdays */}
+        {payload.weekdays && payload.weekdays.length > 0 && (
+          <div className="px-4 py-4 border-b border-gray-700">
+            <span className="text-slate-400 text-sm mb-2 block font-body">
+              {t("reminders.weekdaysLabel")}
+            </span>
+            <div className="flex flex-wrap gap-2">
+              {payload.weekdays.map((dayNum) => (
+                <div
+                  key={dayNum}
+                  className="bg-white/10 rounded-md px-3 py-1"
+                >
+                  <span className="text-sm">{days[dayNum - 1]}</span>
+                </div>
+              ))}
+            </div>
+          </div>
         )}
 
-        <div className="flex flex-col justify-center gap-4">
-          <div className="flex gap-2 items-center justify-center bg-gray-900 rounded-xl py-5 border-2 border-slate-600 w-full">
-            <CalendarSync size={28} />
-            <p className="text-lg">
-              {reminder.type === "global_reminders" ? t("reminders.global") : reminder.type}
+        {/* Notes */}
+        {payload.notes && (
+          <div className="px-4 py-4">
+            <p className="text-gray-200 leading-5 font-body whitespace-pre-wrap">
+              {payload.notes}
             </p>
           </div>
-
-          <div className="flex gap-2 items-center justify-center bg-gray-900 rounded-xl py-5 border-2 border-slate-600 w-full px-2">
-            <Bell size={28} />
-            {reminder.type === "one-time" ? (
-              <p className="text-lg">{formatDateTime(payload.notify_date!)}</p>
-            ) : reminder.type === "global" ||
-              reminder.type === "global_reminders" ? (
-              <p className="text-lg">{formatDateTime(payload.notify_at!)}</p>
-            ) : (
-              <p className="text-lg">
-                {formatNotifyTime(payload.notify_at_time!)}
-              </p>
-            )}
-          </div>
-        </div>
-
-        {payload.weekdays &&
-          Array.isArray(payload.weekdays) &&
-          payload.weekdays.length > 0 && (
-            <div className="bg-gray-900 rounded-xl border-2 border-slate-600 p-4 mt-6">
-              <p className="text-center text-lg ">
-                {(payload.weekdays as number[])
-                  .map((dayNum) => days[dayNum - 1])
-                  .join(", ")}
-              </p>
-            </div>
-          )}
-
-        <div className="bg-gray-900 rounded-xl p-5 mt-6 border-2 border-slate-600 text-center">
-          <p className="text-xl wrap-break-word">{reminder.title}</p>
-        </div>
-
-        {payload.notes && (
-          <div className="mt-6">
-            <div className="bg-gray-900 rounded-xl border-2 border-slate-600 p-4 whitespace-pre-wrap">
-              {payload.notes}
-            </div>
-          </div>
         )}
-        <p className="text-sm text-gray-400 mt-8">
-          {t("reminders.created")} {formatDate(reminder.created_at)}
-        </p>
-        {reminder.updated_at && (
-          <p className="text-sm text-yellow-500 mt-2">
-            {t("reminders.updated")} {formatDate(reminder.updated_at!)}
-          </p>
-        )}
-      </div>
-      <div className="flex justify-center mt-4">
-        <CopyButton targetId="reminder-id" />
       </div>
     </div>
   );

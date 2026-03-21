@@ -39,10 +39,6 @@ export default function GymSession(gym_session: FullGymSession) {
       .filter(Boolean),
   ).size;
 
-  const isCardioExercise = (exercise: {
-    gym_exercises: { main_group: string };
-  }) => exercise.gym_exercises?.main_group.toLowerCase() === "cardio";
-
   const translateRpe = (rpe: string) => {
     const rpeMap: Record<string, string> = {
       "Warm-up": t("gym.exerciseCard.rpeOptions.warmup"),
@@ -59,24 +55,24 @@ export default function GymSession(gym_session: FullGymSession) {
     error: historyError,
     isLoading,
   } = useQuery({
-    queryKey: ["exerciseHistory", exerciseId],
+    queryKey: ["last-exercise-history", exerciseId],
     queryFn: () => getLastExerciseHistory({ exerciseId, language: i18n.language }),
-    enabled: !!exerciseId,
+    enabled: isHistoryOpen && !!exerciseId,
   });
 
-  const openHistory = (exerciseId: string) => {
-    setExerciseId(exerciseId);
+  const openHistory = (id: string) => {
+    setExerciseId(id);
     setIsHistoryOpen(true);
   };
 
   return (
     <div className="max-w-lg mx-auto page-padding">
-      <div className="text-sm text-gray-400 text-center">
+      <div className="text-sm text-gray-400 text-center font-body">
         {formatDate(gym_session.start_time)}
       </div>
-      <div className="flex flex-col gap-4 justify-center items-center bg-slate-900 rounded-md p-5 mt-5">
-        <h2 className="text-xl text-center border-b border-gray-400">{gym_session.title}</h2>
-        <div className="flex items-center gap-2">
+      <div className="flex flex-col gap-4 justify-center items-center bg-linear-to-tr from-gray-900 via-slate-900 to-blue-900 border-[1.5px] border-gray-700 rounded-md p-5 mt-5">
+        <h2 className="text-xl text-center border-b border-gray-700">{gym_session.title}</h2>
+        <div className="flex items-center gap-2 font-body">
           <Clock />
           <p className="text-lg text-center">
             {formatTime(gym_session.start_time)} -{" "}
@@ -112,7 +108,7 @@ export default function GymSession(gym_session: FullGymSession) {
           />
         </div>
         {gym_session.notes && (
-          <p className="mt-4 text-gray-200 whitespace-pre-wrap wrap-break-word overflow-hidden max-w-full">
+          <p className="mt-4 text-gray-200 font-body whitespace-pre-wrap wrap-break-word overflow-hidden max-w-full">
             {gym_session.notes}
           </p>
         )}
@@ -120,10 +116,10 @@ export default function GymSession(gym_session: FullGymSession) {
       {Object.entries(groupedExercises).map(([superset_id, group]) => (
         <div
           key={superset_id}
-          className={`mt-10 bg-linear-to-tr from-gray-900 via-slate-900 to-blue-900 rounded-md ${
+          className={`mt-5 bg-linear-to-tr from-gray-900 via-slate-900 to-blue-900 rounded-md ${
             group.length > 1
-              ? "border-2 border-blue-700"
-              : "border-2 border-gray-700"
+              ? "border-[1.5px] border-blue-700"
+              : "border-[1.5px] border-gray-700"
           }`}
         >
           {group.length > 1 && (
@@ -147,7 +143,7 @@ export default function GymSession(gym_session: FullGymSession) {
                     <History color="#f3f4f6" />
                   </button>
                 </div>
-                <h3 className="text-sm text-gray-400">
+                <h3 className="text-sm text-gray-400 font-body">
                   {t(
                     `gym.equipment.${exercise.gym_exercises.equipment?.toLowerCase()}`,
                   )}{" "}
@@ -157,37 +153,24 @@ export default function GymSession(gym_session: FullGymSession) {
                   )}
                 </h3>
               </div>
-              <div className="py-2 whitespace-pre-wrap wrap-break-word overflow-hidden max-w-full">
+              <div className="py-2 font-body whitespace-pre-wrap wrap-break-word overflow-hidden max-w-full">
                 {exercise.notes || ""}
               </div>
               <table className="w-full text-center">
                 <thead>
-                  <tr className="border-b">
+                  <tr className="border-b border-gray-600">
                     <th className="p-2 font-normal">
                       {t("gym.exerciseCard.set")}
                     </th>
-                    {isCardioExercise(exercise) ? (
-                      <>
-                        <th className="p-2 font-normal">
-                          {t("gym.exerciseCard.timePlaceholder")}
-                        </th>
-                        <th className="p-2 font-normal">
-                          {t("gym.exerciseCard.lengthPlaceholder")}
-                        </th>
-                      </>
-                    ) : (
-                      <>
-                        <th className="p-2 font-normal">
-                          {t("gym.exerciseCard.weight")}
-                        </th>
-                        <th className="p-2 font-normal">
-                          {t("gym.exerciseCard.reps")}
-                        </th>
-                        <th className="p-2 font-normal">
-                          {t("gym.exerciseCard.rpe")}
-                        </th>
-                      </>
-                    )}
+                    <th className="p-2 font-normal">
+                      {t("gym.exerciseCard.weight")}
+                    </th>
+                    <th className="p-2 font-normal">
+                      {t("gym.exerciseCard.reps")}
+                    </th>
+                    <th className="p-2 font-normal">
+                      {t("gym.exerciseCard.rpe")}
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -195,27 +178,17 @@ export default function GymSession(gym_session: FullGymSession) {
                     <tr
                       key={setIndex}
                       className={`${
-                        set.rpe === "Failure" ? "bg-red-500" : "text-gray-100"
-                      } ${set.rpe === "Warm-up" ? "bg-blue-500" : ""} border-b`}
+                        set.rpe === "Failure" ? "bg-red-500 text-white" : "text-gray-100"
+                      } ${set.rpe === "Warm-up" ? "bg-blue-500" : ""} border-b border-gray-600`}
                     >
-                      {isCardioExercise(exercise) ? (
-                        <>
-                          <td className="p-2">{setIndex + 1}</td>
-                          <td className="p-2">{set.time_min}</td>
-                          <td className="p-2">{set.distance_meters}</td>
-                        </>
-                      ) : (
-                        <>
-                          <td className="p-2">{setIndex + 1}</td>
-                          <td className="p-2">
-                            {set.weight} {weightUnit}
-                          </td>
-                          <td className="p-2">{set.reps}</td>
-                          <td className="p-2 max-w-[70px] truncate">
-                            {set.rpe ? translateRpe(set.rpe) : ""}
-                          </td>
-                        </>
-                      )}
+                      <td className="p-2">{setIndex + 1}</td>
+                      <td className="p-2">
+                        {set.weight} {weightUnit}
+                      </td>
+                      <td className="p-2">{set.reps}</td>
+                      <td className="p-2 max-w-[70px] truncate">
+                        {set.rpe ? translateRpe(set.rpe) : ""}
+                      </td>
                     </tr>
                   ))}
                 </tbody>

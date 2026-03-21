@@ -94,12 +94,12 @@ export default function SessionFeed() {
           style={{ height: pullDistance }}
         >
           {refreshing ? (
-            <div className="flex text-xl items-center gap-4">
+            <div className="flex text-xl items-center gap-4 font-body">
               <p>{t("feed.refreshing")}</p>
               <Spinner />
             </div>
           ) : pullDistance > 0 ? (
-            <div className="flex text-xl items-center gap-2">
+            <div className="flex text-xl items-center gap-2 font-body">
               <p className="text-gray-100/70">{t("feed.pullToRefresh")}</p>
             </div>
           ) : null}
@@ -109,9 +109,9 @@ export default function SessionFeed() {
             <FeedSkeleton count={6} />
           </>
         ) : error ? (
-          <p className="text-center text-lg mt-10">{t("feed.failedToLoad")}</p>
+          <p className="text-center text-lg mt-10 font-body">{t("feed.failedToLoad")}</p>
         ) : !data || (unpinnedFeed.length === 0 && pinnedFeed.length === 0) ? (
-          <p className="text-center text-lg mt-20">{t("feed.noSessions")}</p>
+          <p className="text-center text-lg mt-20 font-body">{t("feed.noSessions")}</p>
         ) : (
           <>
             <FeedHeader
@@ -153,7 +153,7 @@ export default function SessionFeed() {
               );
             })}
             {isFetchingNextPage && (
-              <div className="flex flex-col gap-2 items-center mt-10">
+              <div className="flex flex-col gap-2 items-center mt-10 font-body">
                 <p>{t("feed.loadingMore")}</p>
                 <Spinner />
               </div>
@@ -162,7 +162,7 @@ export default function SessionFeed() {
             {hasNextPage && <div ref={loadMoreRef} className="h-20"></div>}
 
             {!hasNextPage && data?.pages.length > 1 && (
-              <p className="text-center justify-center mt-10 text-gray-300">
+              <p className="text-center justify-center mt-10 text-gray-300 font-body">
                 {t("feed.noMoreSessions")}
               </p>
             )}
@@ -192,12 +192,12 @@ export default function SessionFeed() {
             {expandedItem.type === "gym_sessions" && (
               <>
                 {isLoadingGymSession ? (
-                  <div className="flex flex-col gap-5 items-center justify-center pt-40 px-10">
+                  <div className="flex flex-col gap-5 items-center justify-center pt-40 px-10 font-body">
                     <p className="text-lg">{t("feed.loadingGym")}</p>
                     <Spinner />
                   </div>
                 ) : GymSessionError ? (
-                  <p className="text-center text-lg mt-40 px-10">
+                  <p className="text-center text-lg mt-40 px-10 font-body">
                     {t("feed.failedToLoadGymSession")}
                   </p>
                 ) : (
@@ -209,12 +209,12 @@ export default function SessionFeed() {
             {expandedItem.type === "activity_sessions" && (
               <>
                 {isLoadingActivitySession ? (
-                  <div className="flex flex-col gap-5 items-center justify-center pt-40 px-10">
+                  <div className="flex flex-col gap-5 items-center justify-center pt-40 px-10 font-body">
                     <p className="text-lg">{t("feed.loadingActivity")}</p>
                     <Spinner />
                   </div>
                 ) : activitySessionError ? (
-                  <p className="text-center text-lg mt-40 px-10">
+                  <p className="text-center text-lg mt-40 px-10 font-body">
                     {t("feed.activityError")}
                   </p>
                 ) : (
@@ -232,7 +232,7 @@ export default function SessionFeed() {
             {expandedItem.type === "todo_lists" && (
               <>
                 {isLoadingTodoSession ? (
-                  <div className="flex flex-col gap-5 items-center justify-center pt-40 px-10">
+                  <div className="flex flex-col gap-5 items-center justify-center pt-40 px-10 font-body">
                     <p>{t("feed.loadingTodoSession")}</p>
                     <Spinner />
                   </div>
@@ -295,12 +295,12 @@ export default function SessionFeed() {
             {editingItem.type === "todo_lists" && (
               <>
                 {isLoadingTodoSession ? (
-                  <div className="flex flex-col gap-5 items-center justify-center pt-40 px-10">
+                  <div className="flex flex-col gap-5 items-center justify-center pt-40 px-10 font-body">
                     <p>{t("feed.loadingTodo")}</p>
                     <Spinner />
                   </div>
                 ) : TodoSessionError ? (
-                  <p className="text-center text-lg mt-40 px-10">
+                  <p className="text-center text-lg mt-40 px-10 font-body">
                     {t("feed.failedToLoadTodoSession")}
                   </p>
                 ) : (
@@ -337,12 +337,12 @@ export default function SessionFeed() {
             {editingItem.type === "activity_sessions" && (
               <>
                 {isLoadingActivitySession ? (
-                  <div className="flex flex-col gap-5 items-center justify-center pt-40 px-10">
+                  <div className="flex flex-col gap-5 items-center justify-center pt-40 px-10 font-body">
                     <p>{t("feed.loadingActivity")}</p>
                     <Spinner />
                   </div>
                 ) : activitySessionError ? (
-                  <p className="text-center text-lg mt-40 px-10">
+                  <p className="text-center text-lg mt-40 px-10 font-body">
                     {t("feed.activityError")}
                   </p>
                 ) : (

@@ -31,7 +31,7 @@ export default function TitleInput({
         <input
           type="text"
           id={id}
-          className={`w-full p-2 rounded-md border-2 border-gray-400 z-10 placeholder-gray-500  text-gray-100 bg-[linear-gradient(50deg,#0f172a,#1e293b,#333333)] hover:border-blue-500 focus:outline-none focus:border-green-300 ${className}`}
+          className={`w-full p-2 rounded-md border-[1.5px] border-gray-400 z-10 placeholder-gray-500 text-gray-100 bg-[linear-gradient(50deg,#0f172a,#1e293b,#333333)] hover:border-blue-500 focus:outline-none focus:border-green-300 ${className}`}
           value={value}
           onChange={(e) => setValue(e.target.value)}
           spellCheck={false}
@@ -40,7 +40,7 @@ export default function TitleInput({
         />
       </ModalSwipeBlocker>
       {typeof value === "string" && value.length >= 150 ? (
-        <p className="text-yellow-400 mt-2">
+        <p className="text-yellow-400 mt-2 font-body">
           {t("common.charLimitReached", { max: 150 })}
         </p>
       ) : null}

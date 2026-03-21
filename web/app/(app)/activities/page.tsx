@@ -24,27 +24,27 @@ export default function Sessions() {
     <div className="page-padding min-h-full max-w-md mx-auto">
       <h1 className="text-center mb-10 text-2xl ">{t("activities.title")}</h1>
       <div className="flex flex-col gap-5">
-        <LinkButton href="/activities/start-activity" onClick={handleClick}>
+        <LinkButton href="/activities/start-activity" onClick={handleClick} className="link-activities">
           {t("activities.startActivity")}
         </LinkButton>
-        <LinkButton href="/activities/templates">
+        <LinkButton href="/activities/templates" className="link-activities">
           {t("activities.templates")}
         </LinkButton>
         <div className="border border-gray-400 rounded-md" />
-        <LinkButton href="/activities/add-activity">
+        <LinkButton href="/activities/add-activity" className="link-activities">
           {t("activities.addActivity")}
         </LinkButton>
-        <LinkButton href="/activities/edit-activity">
+        <LinkButton href="/activities/edit-activity" className="link-activities">
           {t("activities.editActivity")}
         </LinkButton>
         <div className="border border-gray-400 rounded-md" />
-        <LinkButton href="/activities/analytics">
+        <LinkButton href="/activities/analytics" className="link-activities">
           {t("activities.analytics")}
-          <ChartNoAxesCombined color="#f3f4f6" className="ml-2" />
+          <ChartNoAxesCombined color="#22c55e" className="ml-2" />
         </LinkButton>
-        <LinkButton href="/activities/my-sessions">
+        <LinkButton href="/activities/my-sessions" className="link-activities">
           {t("activities.mySessions.title")}
-          <List color="#f3f4f6" className="ml-2" />
+          <List color="#22c55e" className="ml-2" />
         </LinkButton>
       </div>
     </div>

@@ -10,7 +10,7 @@ import useShareCard from "@/lib/hooks/useShareCard";
 import useShareCardPreferences from "@/lib/hooks/useShareCardPreferences";
 import { getTheme, SHARE_CARD_DIMENSIONS } from "@/lib/share/themes";
 import { useSessionSummaryStore } from "@/lib/stores/sessionSummaryStore";
-import { Download, Share2, MessageCircle, ChevronDown, ChevronUp, Users } from "lucide-react-native";
+import { Download, Share2, MessageCircle, ChevronDown, ChevronUp, ChevronLeft, Users } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
 import * as Haptics from "expo-haptics";
@@ -210,7 +210,7 @@ export default function TrainingFinishedScreen() {
             className="p-1"
             disabled={isSendingToChat}
           >
-            <MessageCircle color="#f3f4f6" size={24} />
+            <ChevronLeft color="#f3f4f6" size={24} />
           </AnimatedButton>
           <AppText className="text-lg flex-1 text-center mr-8">
             {tChat("chat.selectFriend")}

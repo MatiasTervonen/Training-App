@@ -19,17 +19,13 @@ type ExerciseCardProps = {
   lastExerciseHistory: (index: number) => void;
   onInputChange: (
     index: number,
-    field: "weight" | "reps" | "rpe" | "time_min" | "distance_meters",
+    field: "weight" | "reps" | "rpe",
     value: number | string,
   ) => void;
   onAddSet: (index: number) => void;
   onDeleteSet: (exerciseIndex: number, setIndex: number) => void;
   onChangeExercise: (index: number) => void;
   mode?: "session";
-};
-
-const isCardioExercise = (exercise: ExerciseEntry) => {
-  return exercise.main_group?.toLowerCase() === "cardio";
 };
 
 export default function ExerciseCard({
@@ -57,7 +53,7 @@ export default function ExerciseCard({
           <span className="text-gray-100 text-lg">
             {index + 1}. {exercise.name}
           </span>
-          <span className="text-sm text-gray-400">
+          <span className="text-sm text-gray-400 font-body">
             {t(`gym.equipment.${exercise.equipment?.toLowerCase()}`)} /{" "}
             {t(
               `gym.muscleGroups.${exercise.muscle_group?.toLowerCase().replace(/ /g, "_")}`,
@@ -88,59 +84,35 @@ export default function ExerciseCard({
 
           <table className="w-full text-left text-gray-100">
             <thead>
-              <tr className="text-gray-300 border-b">
+              <tr className="text-gray-300 border-b border-gray-600">
                 <th className="p-2 font-normal">
-                  {t("gym.exerciseCard.set")}{" "}
+                  {t("gym.exerciseCard.set")}
                 </th>
-                {isCardioExercise(exercise) ? (
-                  <>
-                    <th className="p-2 font-normal">
-                      {t("gym.exerciseCard.timePlaceholder")}
-                    </th>
-                    <th className="p-2 font-normal">
-                      {t("gym.exerciseCard.lengthPlaceholder")}
-                    </th>
-                  </>
-                ) : (
-                  <>
-                    <th className="p-2 font-normal">
-                      {t("gym.exerciseCard.weight")}
-                    </th>
-                    <th className="p-2 font-normal">
-                      {t("gym.exerciseCard.reps")}
-                    </th>
-                    <th className="p-2 font-normal">
-                      {t("gym.exerciseCard.rpe")}
-                    </th>
-                  </>
-                )}
+                <th className="p-2 font-normal">
+                  {t("gym.exerciseCard.weight")}
+                </th>
+                <th className="p-2 font-normal">
+                  {t("gym.exerciseCard.reps")}
+                </th>
+                <th className="p-2 font-normal">
+                  {t("gym.exerciseCard.rpe")}
+                </th>
               </tr>
             </thead>
             <tbody>
               {exercise.sets.map((set, i) => (
                 <tr
                   key={i}
-                  className={`border-b ${
+                  className={`border-b border-gray-600 ${
                     set.rpe === "Failure" ? "bg-red-800" : ""
                   } ${set.rpe === "Warm-up" ? "bg-blue-500" : ""}`}
                 >
-                  {isCardioExercise(exercise) ? (
-                    <>
-                      <td className="p-2">{i + 1}</td>
-                      <td className="p-2">{set.time_min}</td>
-                      <td className="p-2">{set.distance_meters}</td>
-                    </>
-                  ) : (
-                    <>
-                      <td className="p-2">{i + 1}</td>
-                      <td className="p-2">
-                        {set.weight} {weightUnit}
-                      </td>
-                      <td className="p-2">{set.reps}</td>
-                      <td className="p-2">{set.rpe}</td>
-                    </>
-                  )}
-
+                  <td className="p-2">{i + 1}</td>
+                  <td className="p-2">
+                    {set.weight} {weightUnit}
+                  </td>
+                  <td className="p-2">{set.reps}</td>
+                  <td className="p-2">{set.rpe}</td>
                   <td>
                     <button
                       className="bg-red-600 p-1 rounded text-gray-100 "
@@ -161,107 +133,68 @@ export default function ExerciseCard({
           </table>
 
           <div className="flex items-center justify-center gap-4 mt-6">
-            {isCardioExercise(exercise) ? (
-              <>
-                <div className="flex items-center gap-2 w-2/4">
-                  <SetInput
-                    placeholder="Time in min..."
-                    type="number"
-                    value={input.time_min ?? ""}
-                    onChange={(e) =>
-                      onInputChange(index, "time_min", e.target.value)
-                    }
-                  />
-                </div>
-                <div className="flex items-center gap-5 w-2/4">
-                  <SetInput
-                    placeholder="Length (meters)"
-                    type="number"
-                    value={input.distance_meters ?? ""}
-                    onChange={(e) =>
-                      onInputChange(index, "distance_meters", e.target.value)
-                    }
-                  />
-                </div>
-              </>
-            ) : (
-              <>
-                <div className="flex items-center gap-2 w-2/3">
-                  <SetInput
-                    placeholder="Weight..."
-                    type="text"
-                    inputMode="numeric"
-                    maxLength={5}
-                    value={input.weight ?? ""}
-                    onChange={(e) => {
-                      onInputChange(index, "weight", e.target.value);
-                    }}
-                  />
-                  <SetInput
-                    placeholder="Reps..."
-                    type="text"
-                    inputMode="numeric"
-                    value={input.reps ?? ""}
-                    onChange={(e) => {
-                      if (/^\d*$/.test(e.target.value)) {
-                        onInputChange(index, "reps", e.target.value);
-                      }
-                    }}
-                  />
-                </div>
-                <div className="w-1/3">
-                  <ExerciseTypeSelect
-                    value={input.rpe!}
-                    onChange={(val) => onInputChange(index, "rpe", val)}
-                    options={[
-                      {
-                        value: "Warm-up",
-                        label: t("gym.exerciseCard.rpeOptions.warmup"),
-                      },
-                      {
-                        value: "Easy",
-                        label: t("gym.exerciseCard.rpeOptions.easy"),
-                      },
-                      {
-                        value: "Medium",
-                        label: t("gym.exerciseCard.rpeOptions.medium"),
-                      },
-                      {
-                        value: "Hard",
-                        label: t("gym.exerciseCard.rpeOptions.hard"),
-                      },
-                      {
-                        value: "Failure",
-                        label: t("gym.exerciseCard.rpeOptions.failure"),
-                      },
-                    ]}
-                  />
-                </div>
-              </>
-            )}
+            <div className="flex items-center gap-2 w-2/3">
+              <SetInput
+                placeholder="Weight..."
+                type="text"
+                inputMode="numeric"
+                maxLength={5}
+                value={input.weight ?? ""}
+                onChange={(e) => {
+                  onInputChange(index, "weight", e.target.value);
+                }}
+              />
+              <SetInput
+                placeholder="Reps..."
+                type="text"
+                inputMode="numeric"
+                value={input.reps ?? ""}
+                onChange={(e) => {
+                  if (/^\d*$/.test(e.target.value)) {
+                    onInputChange(index, "reps", e.target.value);
+                  }
+                }}
+              />
+            </div>
+            <div className="w-1/3">
+              <ExerciseTypeSelect
+                value={input.rpe!}
+                onChange={(val) => onInputChange(index, "rpe", val)}
+                options={[
+                  {
+                    value: "Warm-up",
+                    label: t("gym.exerciseCard.rpeOptions.warmup"),
+                  },
+                  {
+                    value: "Easy",
+                    label: t("gym.exerciseCard.rpeOptions.easy"),
+                  },
+                  {
+                    value: "Medium",
+                    label: t("gym.exerciseCard.rpeOptions.medium"),
+                  },
+                  {
+                    value: "Hard",
+                    label: t("gym.exerciseCard.rpeOptions.hard"),
+                  },
+                  {
+                    value: "Failure",
+                    label: t("gym.exerciseCard.rpeOptions.failure"),
+                  },
+                ]}
+              />
+            </div>
           </div>
           <div className="flex items-center justify-center gap-4 my-6">
             <button
               onClick={() => {
-                if (isCardioExercise(exercise)) {
-                  const isTimeEmpty =
-                    !input.time_min || input.time_min.trim() === "";
+                const isRepsEmpty = !input.reps || input.reps.trim() === "";
 
-                  if (isTimeEmpty) {
-                    toast.error(
-                      `${t("gym.exerciseCard.missingData")}, ${t("gym.exerciseCard.fillTime")}`,
-                    );
-                    return;
-                  }
-                } else {
-                  const isRepsEmpty = !input.reps || input.reps.trim() === "";
-
-                  if (isRepsEmpty) {
-                    toast.error(
-                      `${t("gym.exerciseCard.missingData")}, ${t("gym.exerciseCard.fillReps")}`,
-                    );
-                    return;
-                  }
+                if (isRepsEmpty) {
+                  toast.error(
+                    `${t("gym.exerciseCard.missingData")}, ${t("gym.exerciseCard.fillReps")}`,
+                  );
+                  return;
                 }
 
                 onAddSet(index);

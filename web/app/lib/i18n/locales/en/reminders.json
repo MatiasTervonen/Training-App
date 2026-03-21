@@ -4,6 +4,9 @@
     "editReminder": "Edit your reminder",
     "highPriorityReminder": "High-priority reminder",
     "global": "Global",
+    "typeLabel": "Type",
+    "timeLabel": "Time",
+    "weekdaysLabel": "Repeats on",
     "created": "Created:",
     "updated": "Updated:",
     "edit": "Edit",
@@ -51,10 +54,15 @@
     "tabs": {
       "normal": "Normal",
       "repeating": "Repeating",
-      "delivered": "Delivered"
+      "delivered": "Delivered",
+      "upcoming": "Upcoming"
     },
     "errorLoading": "Error loading reminders. Try again!",
     "noReminders": "No {{tab}} reminders.",
+    "noRemindersUpcoming": "No upcoming reminders",
+    "noRemindersUpcomingDesc": "Create a reminder to get notified.",
+    "noRemindersDelivered": "No delivered reminders",
+    "noRemindersDeliveredDesc": "Delivered reminders will appear here.",
     "days": {
       "sun": "Sun",
       "mon": "Mon",

@@ -52,7 +52,7 @@ export default function NotesInput({
         <textarea
           ref={textareaRef}
           className={clsx(
-            "w-full text-md touch-pan-y p-2 rounded-md border-2 border-gray-100 z-10 placeholder-gray-500 bg-[linear-gradient(50deg,#0f172a,#1e293b,#333333)] text-gray-100 hover:border-blue-500 focus:outline-none focus:border-green-300 resize-none overflow-hidden",
+            "w-full text-md touch-pan-y p-2 rounded-md border-[1.5px] border-gray-400 z-10 placeholder-gray-500 font-body bg-[linear-gradient(50deg,#0f172a,#1e293b,#333333)] text-gray-100 hover:border-blue-500 focus:outline-none focus:border-green-300 resize-none overflow-hidden",
             {
               "h-full flex-1": fillAvailableSpace,
             },

@@ -97,7 +97,7 @@ export default function AboutYouScreen() {
 
         <KeyboardAwareScrollView
           className="flex-1"
-          bottomOffset={50}
+          bottomOffset={16}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ flexGrow: 1, justifyContent: "center" }}
         >

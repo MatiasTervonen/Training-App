@@ -57,12 +57,12 @@ export default function Page() {
         <div>
           {isLoading ? (
             <div className="flex flex-col items-center text-gray-400 justify-center h-[300px] w-full mb-5">
-              <p className="mb-4">{t("weight.analyticsScreen.loading")}</p>
+              <p className="mb-4 font-body">{t("weight.analyticsScreen.loading")}</p>
               <Spinner />
             </div>
           ) : error ? (
             <div className="flex flex-col items-center justify-center h-[300px] w-full">
-              <p className="mb-4 text-lg text-red-500">
+              <p className="mb-4 text-lg text-red-500 font-body">
                 {t("weight.analyticsScreen.error")}
               </p>
             </div>

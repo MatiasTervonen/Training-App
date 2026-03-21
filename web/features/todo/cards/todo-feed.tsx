@@ -29,15 +29,17 @@ export default function TodoCard({
       onDelete={onDelete}
       onExpand={onExpand}
       onEdit={onEdit}
-      typeIcon={<ListTodo size={20} className={pinned ? "text-slate-900" : "text-slate-300"} />}
+      typeIcon={<ListTodo size={20} className="text-slate-300" />}
       typeName={t("feed.card.types.todo")}
       showUpdatedAt={true}
       statsContent={
-        <div className={`flex gap-2 items-center ${pinned ? "text-slate-900" : "text-slate-300"}`}>
-          <p>
+        <div className="flex gap-2 items-center text-slate-300">
+          <span>
             {t("feed.card.completed")}: {payload.completed} / {payload.total}
-          </p>
-          {payload.completed === payload.total && <Check color="#22c55e" size={24} />}
+          </span>
+          {payload.completed === payload.total && (
+            <Check color="#22c55e" size={24} />
+          )}
         </div>
       }
     />

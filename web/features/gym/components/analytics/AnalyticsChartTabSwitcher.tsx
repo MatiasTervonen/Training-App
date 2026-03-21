@@ -21,27 +21,31 @@ export default function ChartTabSwitcher({
       <div className="flex items-center justify-center gap-4 mb-4">
         <button
           onClick={() => setActiveTab("muscleGroups")}
-          className={`px-4 py-2 w-[150px] ${
+          className={`px-4 py-2 w-[150px] rounded-md shadow-md cursor-pointer transition-all duration-200 hover:scale-105 text-lg ${
             activeTab === "muscleGroups"
-              ? "text-blue-500 bg-gray-800 rounded-2xl"
-              : ""
-          } cursor-pointer`}
+              ? "bg-blue-500/20 border border-blue-500/40 text-blue-400"
+              : "bg-gray-500/20 border border-gray-500/40 text-gray-400"
+          }`}
         >
           {t("gym.analytics.tabs.exercises")}
         </button>
         <button
           onClick={() => setActiveTab("muscleGroupSets")}
-          className={`px-4 py-2 w-[150px] ${
+          className={`px-4 py-2 w-[150px] rounded-md shadow-md cursor-pointer transition-all duration-200 hover:scale-105 text-lg ${
             activeTab === "muscleGroupSets"
-              ? "text-blue-500 bg-gray-800 rounded-2xl"
-              : ""
-          } cursor-pointer`}
+              ? "bg-blue-500/20 border border-blue-500/40 text-blue-400"
+              : "bg-gray-500/20 border border-gray-500/40 text-gray-400"
+          }`}
         >
           {t("gym.analytics.tabs.sets")}
         </button>
       </div>
-      {activeTab === "muscleGroups" && <MuscleGroupChart data={data} />}
-      {activeTab === "muscleGroupSets" && <MuscleGroupChartSets data={data} />}
+      <div className="mb-2">
+        {activeTab === "muscleGroups" && <MuscleGroupChart data={data} />}
+        {activeTab === "muscleGroupSets" && (
+          <MuscleGroupChartSets data={data} />
+        )}
+      </div>
     </div>
   );
 }

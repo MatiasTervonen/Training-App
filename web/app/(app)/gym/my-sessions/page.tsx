@@ -53,12 +53,12 @@ export default function MySessionsPage() {
           style={{ height: pullDistance }}
         >
           {refreshing ? (
-            <div className="flex text-xl items-center gap-4">
+            <div className="flex text-xl items-center gap-4 font-body">
               <p>{t("common:feed.refreshing")}</p>
               <Spinner />
             </div>
           ) : pullDistance > 0 ? (
-            <div className="flex text-xl items-center gap-2">
+            <div className="flex text-xl items-center gap-2 font-body">
               <p className="text-gray-100/70">
                 {t("common:feed.pullToRefresh")}
               </p>
@@ -69,11 +69,11 @@ export default function MySessionsPage() {
         {isLoading && !data ? (
           <FeedSkeleton count={6} />
         ) : error ? (
-          <p className="text-center text-lg mt-10">
+          <p className="text-center text-lg mt-10 font-body">
             {t("gym:gym.mySessions.loadError")}
           </p>
         ) : !data || (unpinnedFeed.length === 0 && pinnedFeed.length === 0) ? (
-          <p className="text-center text-lg mt-20">
+          <p className="text-center text-lg mt-20 font-body">
             {t("gym:gym.mySessions.noSessions")}
           </p>
         ) : (
@@ -113,7 +113,7 @@ export default function MySessionsPage() {
               );
             })}
             {isFetchingNextPage && (
-              <div className="flex flex-col gap-2 items-center mt-10">
+              <div className="flex flex-col gap-2 items-center mt-10 font-body">
                 <p>{t("common:feed.loadingMore")}</p>
                 <Spinner />
               </div>
@@ -122,7 +122,7 @@ export default function MySessionsPage() {
             {hasNextPage && <div ref={loadMoreRef} className="h-20"></div>}
 
             {!hasNextPage && data?.pages.length > 1 && (
-              <p className="text-center justify-center mt-10 text-gray-300">
+              <p className="text-center justify-center mt-10 text-gray-300 font-body">
                 {t("common:feed.noMoreSessions")}
               </p>
             )}
@@ -132,12 +132,12 @@ export default function MySessionsPage() {
         {expandedItem && (
           <Modal onClose={() => setExpandedItem(null)} isOpen={true}>
             {isLoadingGymSession ? (
-              <div className="flex flex-col gap-5 items-center justify-center pt-40 px-10">
+              <div className="flex flex-col gap-5 items-center justify-center pt-40 px-10 font-body">
                 <p>{t("gym:gym.mySessions.loadingDetails")}</p>
                 <Spinner />
               </div>
             ) : GymSessionError ? (
-              <p className="text-center text-lg mt-40 px-10">
+              <p className="text-center text-lg mt-40 px-10 font-body">
                 {t("gym:gym.mySessions.loadDetailsError")}
               </p>
             ) : (

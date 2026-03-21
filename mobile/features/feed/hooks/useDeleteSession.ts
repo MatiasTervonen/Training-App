@@ -59,6 +59,11 @@ export default function useDeleteSession() {
         });
       }
 
+      if (type === "gym_sessions") {
+        queryClient.invalidateQueries({ queryKey: ["heatmap-analytics"] });
+        queryClient.invalidateQueries({ queryKey: ["last-30-days-analytics"] });
+      }
+
       if (type === "global_reminders" || type === "local_reminders") {
         queryClient.invalidateQueries({
           queryKey: ["reminders"],

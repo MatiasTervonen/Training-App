@@ -34,7 +34,7 @@ export default function DeleteSessionBtn({
 
   return (
     <button
-      className="flex items-center justify-center btn-danger"
+      className="flex items-center justify-center btn-danger w-full"
       onClick={handleDelete}
       disabled={disabled}
     >

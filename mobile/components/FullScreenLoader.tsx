@@ -21,8 +21,17 @@ export default function FullScreenLoader({
       visible={visible}
       statusBarTranslucent
     >
-      <View className="flex-1 bg-slate-500/30 justify-center items-center">
-        <View className="p-6 bg-[#1C2431] rounded-xl border-2 border-blue-500 w-2/4">
+      <View className="flex-1 bg-black/50 justify-center items-center">
+        <View
+          className="p-6 bg-slate-900 rounded-xl border-[1.5px] border-slate-600 w-2/4"
+          style={{
+            shadowColor: "#3b82f6",
+            shadowOffset: { width: 0, height: 0 },
+            shadowOpacity: 0.4,
+            shadowRadius: 20,
+            elevation: 20,
+          }}
+        >
           <BodyText className="mb-4 text-lg text-center">{message}</BodyText>
           {showProgress ? (
             <View>

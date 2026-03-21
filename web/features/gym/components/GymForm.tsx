@@ -57,8 +57,6 @@ export default function GymForm({
           weight: s.weight ?? 0,
           reps: s.reps ?? 0,
           rpe: s.rpe ?? "Medium",
-          time_min: s.time_min ?? 0,
-          distance_meters: s.distance_meters ?? 0,
         })) || [],
     })),
   );
@@ -68,8 +66,6 @@ export default function GymForm({
       weight: "",
       reps: "",
       rpe: "Medium",
-      time_min: "",
-      distance_meters: "",
     })),
   );
   const router = useRouter();

@@ -96,12 +96,15 @@ export default function AnalyticsForm({ data, heatmap }: AnalyticsFormProps) {
         triggerOn: "click",
         confine: true,
         position: "top",
-        backgroundColor: "#020617",
+        backgroundColor: "#0f172a",
+        borderColor: "#3b82f6",
+        borderWidth: 1.5,
+        borderRadius: 12,
+        padding: [10, 14],
         textStyle: {
           color: "#f3f4f6",
           fontFamily: "Russo-One",
         },
-        borderColor: "#2563eb",
         formatter: function (params: {
           data?: { value?: [string, number]; title?: string };
         }) {
@@ -114,6 +117,8 @@ export default function AnalyticsForm({ data, heatmap }: AnalyticsFormProps) {
       },
       visualMap: {
         show: false,
+        min: 0,
+        max: Math.max(...heatmapData.map((d) => (d.value as [string, number])[1]), 1),
         inRange: {
           color: ["#2563eb"],
         },

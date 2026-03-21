@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect, useCallback } from "react";
+import { createPortal } from "react-dom";
 import { useClickOutside } from "@/components/clickOutside";
 import { useTranslation } from "react-i18next";
 
@@ -29,69 +30,103 @@ export default function DropdownMenu({
 }: DropdownMenuProps) {
   const { t } = useTranslation("common");
   const [open, setOpen] = useState(false);
+  const triggerRef = useRef<HTMLButtonElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const [pos, setPos] = useState({ top: 0, right: 0 });
 
   useClickOutside(dropdownRef, () => setOpen(false));
 
-  return (
-    <div className="relative flex items-center" ref={dropdownRef}>
-      <button onClick={() => setOpen((prev) => !prev)}>{button}</button>
+  const updatePos = useCallback(() => {
+    if (!triggerRef.current) return;
+    const rect = triggerRef.current.getBoundingClientRect();
+    setPos({
+      top: rect.bottom + 4,
+      right: window.innerWidth - rect.right,
+    });
+  }, []);
 
-      {open && (
-        <div
-          className={`absolute right-0 top-full flex flex-col border-2 border-blue-500 text-gray-100 shadow-lg rounded-md z-50 w-[150px] bg-linear-to-tr from-gray-900 via-slate-900 to-blue-900 ${className}`}
-          onClick={() => setOpen(false)}
-        >
-          {onEdit && (
-            <button
-              className="border-b py-2  border-blue-500 hover:bg-gray-600 hover:rounded-t"
-              onClick={onEdit}
-            >
-              {t("common.edit")}
-            </button>
-          )}
-          {onTogglePin && (
-            <button
-              className="py-2  border-b border-blue-500 hover:bg-gray-600"
-              onClick={onTogglePin}
-            >
-              {pinned ? t("common.unpin") : t("common.pin")}
-            </button>
-          )}
-          {onHistory && (
-            <button
-              className="py-2 border-b border-blue-500  hover:bg-gray-600 hover:rounded-t"
-              onClick={onHistory}
-            >
-              {t("common.history")}
-            </button>
-          )}
-          {onChange && (
-            <button
-              className="py-2 border-b border-blue-500 hover:bg-gray-600"
-              onClick={onChange}
-            >
-              {t("common.change")}
-            </button>
-          )}
-          {onMoveToFolder && (
-            <button
-              className="py-2 border-b border-blue-500 hover:bg-gray-600"
-              onClick={onMoveToFolder}
-            >
-              {t("common.moveToFolder")}
-            </button>
-          )}
-          {onDelete && (
-            <button
-              className="py-2  hover:bg-gray-600 hover:rounded-b"
-              onClick={onDelete}
-            >
-              {t("common.delete")}
-            </button>
-          )}
-        </div>
-      )}
+  useEffect(() => {
+    if (!open) return;
+    updatePos();
+    window.addEventListener("scroll", () => setOpen(false), true);
+    return () =>
+      window.removeEventListener("scroll", () => setOpen(false), true);
+  }, [open, updatePos]);
+
+  return (
+    <div className="relative flex items-center">
+      <button
+        ref={triggerRef}
+        onClick={() => {
+          setOpen((prev) => !prev);
+        }}
+      >
+        {button}
+      </button>
+
+      {open &&
+        createPortal(
+          <div
+            ref={dropdownRef}
+            className={`fixed z-9999 flex flex-col p-2 rounded-xl border-[1.5px] border-slate-600 shadow-[0_0_20px_rgba(59,130,246,0.4)] w-40 ${className}`}
+            style={{
+              top: pos.top,
+              right: pos.right,
+              backgroundColor: "#0f172a",
+            }}
+            onClick={() => setOpen(false)}
+          >
+            {onEdit && (
+              <button
+                className="m-1 py-3 px-2 bg-slate-800 rounded-lg border border-slate-700 hover:bg-slate-700 transition-colors text-center text-gray-100"
+                onClick={onEdit}
+              >
+                {t("common.edit")}
+              </button>
+            )}
+            {onTogglePin && (
+              <button
+                className="m-1 py-3 px-2 bg-slate-800 rounded-lg border border-slate-700 hover:bg-slate-700 transition-colors text-center text-gray-100"
+                onClick={onTogglePin}
+              >
+                {pinned ? t("common.unpin") : t("common.pin")}
+              </button>
+            )}
+            {onMoveToFolder && (
+              <button
+                className="m-1 py-3 px-2 bg-slate-800 rounded-lg border border-slate-700 hover:bg-slate-700 transition-colors text-center text-gray-100"
+                onClick={onMoveToFolder}
+              >
+                {t("common.moveToFolder")}
+              </button>
+            )}
+            {onHistory && (
+              <button
+                className="m-1 py-3 px-2 bg-slate-800 rounded-lg border border-slate-700 hover:bg-slate-700 transition-colors text-center text-gray-100"
+                onClick={onHistory}
+              >
+                {t("common.history")}
+              </button>
+            )}
+            {onChange && (
+              <button
+                className="m-1 py-3 px-2 bg-slate-800 rounded-lg border border-slate-700 hover:bg-slate-700 transition-colors text-center text-gray-100"
+                onClick={onChange}
+              >
+                {t("common.change")}
+              </button>
+            )}
+            {onDelete && (
+              <button
+                className="m-1 py-3 px-2 bg-slate-800 rounded-lg border border-slate-700 hover:bg-slate-700 transition-colors text-center text-gray-100"
+                onClick={onDelete}
+              >
+                {t("common.delete")}
+              </button>
+            )}
+          </div>,
+          document.body,
+        )}
     </div>
   );
 }

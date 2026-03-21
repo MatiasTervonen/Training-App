@@ -25,35 +25,35 @@ export default function SessionsSidebar() {
           {t("navbar.feed")}
           <Home size={18} />
         </LinkButton>
-        <LinkButton href="/gym">
+        <LinkButton href="/gym" className="link-gym">
           {t("sessions.gym")}
           <Dumbbell size={18} />
         </LinkButton>
-        <LinkButton href="/activities">
+        <LinkButton href="/activities" className="link-activities">
           {t("sessions.activities")}
           <Activity size={18} />
         </LinkButton>
-        <LinkButton href="/notes">
+        <LinkButton href="/notes" className="link-notes">
           {t("sessions.notes")}
           <NotebookPen size={18} />
         </LinkButton>
-        <LinkButton href="/disc-golf">
+        <LinkButton href="/disc-golf" className="link-disc-golf">
           Disc Golf
           <Disc size={18} />
         </LinkButton>
-        <LinkButton href="/timer">
+        <LinkButton href="/timer" className="link-timer">
           {t("sessions.timer")}
           <Timer size={18} />
         </LinkButton>
-        <LinkButton href="/weight">
+        <LinkButton href="/weight" className="link-weight">
           {t("sessions.bodyWeight")}
           <Weight size={18} />
         </LinkButton>
-        <LinkButton href="/todo">
+        <LinkButton href="/todo" className="link-todo">
           {t("sessions.todoList")}
           <ListTodo size={18} />
         </LinkButton>
-        <LinkButton href="/reminders">
+        <LinkButton href="/reminders" className="link-reminders">
           {t("sessions.reminders")}
           <Bell size={18} />
         </LinkButton>

@@ -1,6 +1,6 @@
 import { View } from "react-native";
 import { useTranslation } from "react-i18next";
-import { ImageIcon, LayoutList } from "lucide-react-native";
+import { ImageIcon, LayoutList, ChevronLeft } from "lucide-react-native";
 import AppText from "@/components/AppText";
 import BodyTextNC from "@/components/BodyTextNC";
 import AnimatedButton from "@/components/buttons/animatedButton";
@@ -8,19 +8,33 @@ import AnimatedButton from "@/components/buttons/animatedButton";
 type ShareTypePickerProps = {
   onSelectImage: () => void;
   onSelectSession: () => void;
+  onBack?: () => void;
 };
 
 export default function ShareTypePicker({
   onSelectImage,
   onSelectSession,
+  onBack,
 }: ShareTypePickerProps) {
   const { t } = useTranslation("chat");
 
   return (
     <View className="flex-1 mt-8">
-      <AppText className="text-lg text-center mb-6">
-        {t("chat.shareTypePicker.title")}
-      </AppText>
+      {onBack && (
+        <View className="flex-row items-center mb-4">
+          <AnimatedButton onPress={onBack} className="p-1">
+            <ChevronLeft color="#f3f4f6" size={24} />
+          </AnimatedButton>
+          <AppText className="text-lg flex-1 text-center mr-8">
+            {t("chat.shareTypePicker.title")}
+          </AppText>
+        </View>
+      )}
+      {!onBack && (
+        <AppText className="text-lg text-center mb-6">
+          {t("chat.shareTypePicker.title")}
+        </AppText>
+      )}
 
       <View className="gap-3">
         <AnimatedButton

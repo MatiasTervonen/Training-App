@@ -26,7 +26,7 @@ export default function SaveButtonSpinner({
       aria-label={buttonLabel}
       type="submit"
       onClick={onClick}
-      className={`btn-base flex items-center justify-center gap-2 ${className}`}
+      className={`btn-save w-full flex items-center justify-center gap-2 ${className}`}
       disabled={disabled}
     >
       <p>{buttonLabel}</p>

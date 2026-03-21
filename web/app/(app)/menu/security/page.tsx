@@ -118,14 +118,14 @@ export default function Page() {
       {isGoogleUser ? (
         <div className="mb-10">
           <h2 className="mb-5 underline">{t("security.resetPassword.title")}</h2>
-          <p className="text-gray-400 ">
+          <p className="text-gray-400 font-body">
             {t("security.googleAccount")}
           </p>
         </div>
       ) : (
         <>
           <h2 className="mb-5 underline">{t("security.resetPassword.title")}</h2>
-          <p className="text-gray-300 mb-5 text-sm">
+          <p className="text-gray-300 mb-5 text-sm font-body">
             {t("security.resetPassword.description")}
           </p>
           <div className="mb-5">
@@ -157,9 +157,9 @@ export default function Page() {
             id="confirm-password-input"
           />
           {successMessage ? (
-            <p className="text-green-500 my-5 text-center">{successMessage}</p>
+            <p className="text-green-500 my-5 text-center font-body">{successMessage}</p>
           ) : errorMessage ? (
-            <p className="text-red-500 my-5 text-center">{errorMessage}</p>
+            <p className="text-red-500 my-5 text-center font-body">{errorMessage}</p>
           ) : (
             <p className="mb-5 text-center invisible">Placeholder</p>
           )}
@@ -181,7 +181,7 @@ export default function Page() {
         </>
       )}
       <h2 className="mt-10 underline">{t("security.deleteAccount.title")}</h2>
-      <p className="my-5 text-gray-300">
+      <p className="my-5 text-gray-300 font-body">
         {t("security.deleteAccount.description")}
       </p>
       <div>
@@ -199,9 +199,9 @@ export default function Page() {
         />
       </div>
       {successMessage2 ? (
-        <p className="text-green-500 my-5 text-center">{successMessage2}</p>
+        <p className="text-green-500 my-5 text-center font-body">{successMessage2}</p>
       ) : errorMessage2 ? (
-        <p className="text-red-500 my-5 text-center">{errorMessage2}</p>
+        <p className="text-red-500 my-5 text-center font-body">{errorMessage2}</p>
       ) : (
         <p className="mb-5 text-center invisible">Placeholder</p>
       )}

@@ -24,20 +24,20 @@ export default function TimerPage() {
     <div className="page-padding max-w-md mx-auto">
       <h1 className="text-2xl text-center mb-10">{t("timer.title")}</h1>
       <div className="flex flex-col gap-5 max-w-md mx-auto">
-        <LinkButton href="/timer/empty-timer" onClick={handleClick}>
+        <LinkButton href="/timer/empty-timer" onClick={handleClick} className="link-timer">
           {t("timer.startTimer")}
         </LinkButton>
-        <LinkButton href="/timer/start-stopwatch" onClick={handleClick}>
+        <LinkButton href="/timer/start-stopwatch" onClick={handleClick} className="link-timer">
           <p>{t("timer.startStopwatch")}</p>
-          <Timer />
+          <Timer color="#fb923c" />
         </LinkButton>
         <div className="border border-gray-400 rounded-md" />
-        <LinkButton href="/timer/create-timer">
+        <LinkButton href="/timer/create-timer" className="link-timer">
           {t("timer.createTimer")}
         </LinkButton>
-        <LinkButton href="/timer/my-timers">
+        <LinkButton href="/timer/my-timers" className="link-timer">
           <p>{t("timer.myTimers")}</p>
-          <List />
+          <List color="#fb923c" />
         </LinkButton>
       </div>
     </div>

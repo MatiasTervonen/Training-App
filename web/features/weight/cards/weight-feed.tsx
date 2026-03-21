@@ -32,12 +32,12 @@ export default function WeightCard({
       onDelete={onDelete}
       onExpand={onExpand}
       onEdit={onEdit}
-      typeIcon={<Scale size={20} className={pinned ? "text-slate-900" : "text-slate-300"} />}
+      typeIcon={<Scale size={20} className="text-slate-300" />}
       typeName={t("feed.card.types.weight")}
       statsContent={
-        <p className={`text-lg ${pinned ? "text-slate-900" : "text-slate-300"}`}>
+        <span className="text-lg text-slate-300">
           {payload.weight} {weightUnit}
-        </p>
+        </span>
       }
     />
   );

@@ -76,7 +76,7 @@ export default function Modal({
           }}
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
         >
-          <div className="bg-slate-800 relative md:max-w-3xl mx-auto rounded-xl w-[98%] h-[calc(98dvh)] top-[1dvh] grow overflow-y-auto touch-pan-y">
+          <div className="bg-[#131c2b] relative md:max-w-3xl mx-auto rounded-xl w-[98%] h-[calc(98dvh)] top-[1dvh] grow overflow-y-auto touch-pan-y">
             <button
               className="absolute top-2 right-2 z-10"
               onClick={handleClose}

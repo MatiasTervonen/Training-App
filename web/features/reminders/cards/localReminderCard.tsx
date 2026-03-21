@@ -44,17 +44,17 @@ export default function LocalReminderCard({
       onDelete={onDelete}
       onExpand={onExpand}
       onEdit={onEdit}
-      typeIcon={<Bell size={20} className={pinned ? "text-slate-900" : "text-gray-100"} />}
+      typeIcon={<Bell size={20} className="text-slate-300" />}
       typeName={t("feed.card.types.reminder")}
       showUpdatedAt={!payload.delivered}
       statsContent={
-        <div className={`flex flex-col gap-2 ${pinned ? "text-slate-900" : "text-gray-100"}`}>
+        <div className="flex flex-col gap-2 text-slate-300">
           <div className="flex items-center gap-2">
-            <p>
+            <span>
               {payload.notify_at_time
                 ? formatNotifyTime(payload.notify_at_time)
                 : formatDateTime(payload.notify_date)}
-            </p>
+            </span>
             {payload.seen_at ? (
               <Check size={24} className="text-green-400" />
             ) : (
@@ -64,16 +64,16 @@ export default function LocalReminderCard({
           {payload.weekdays &&
             Array.isArray(payload.weekdays) &&
             payload.weekdays.length > 0 && (
-              <p>
+              <span>
                 {payload.weekdays
                   .map((dayNum: number) => days[dayNum - 1])
                   .join(", ")}
-              </p>
+              </span>
             )}
           {payload.delivered && (
-            <div className="flex items-center gap-2 bg-slate-900 rounded-md w-fit px-2 py-1">
+            <div className="flex items-center gap-2 bg-slate-900/60 rounded-md w-fit px-2 py-1">
               <Check size={20} className="text-green-400" />
-              <p className="text-gray-100">{t("feed.card.delivered")}</p>
+              <span className="text-gray-100">{t("feed.card.delivered")}</span>
             </div>
           )}
         </div>

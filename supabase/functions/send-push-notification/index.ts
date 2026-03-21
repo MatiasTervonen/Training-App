@@ -387,6 +387,19 @@ async function handleChatMessage(
     case "location":
       body = `📍 ${senderName} shared a location`;
       break;
+    case "session_share": {
+      try {
+        const session = JSON.parse(content ?? "{}");
+        if (session.session_type === "activity_sessions") {
+          body = `🏃 ${senderName} shared an activity`;
+        } else {
+          body = `💪 ${senderName} shared a workout`;
+        }
+      } catch {
+        body = `💪 ${senderName} shared a workout`;
+      }
+      break;
+    }
     default:
       body = `${senderName}: ${content?.slice(0, 100) ?? ""}`;
       break;

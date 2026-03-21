@@ -46,12 +46,7 @@ export default function NotesCard({
       onExpand={onExpand}
       onEdit={onEdit}
       onMoveToFolder={onMoveToFolder}
-      typeIcon={
-        <NotebookPen
-          size={20}
-          className={pinned ? "text-slate-900" : "text-slate-300"}
-        />
-      }
+      typeIcon={<NotebookPen size={20} className="text-slate-300" />}
       typeName={t("feed.card.types.notes")}
       showUpdatedAt={true}
       statsContent={
@@ -68,11 +63,7 @@ export default function NotesCard({
               <span className="text-xs text-slate-400">{imageCount}</span>
             </div>
           )}
-          <p
-            className={`line-clamp-2 wrap-break-words ${
-              pinned ? "text-slate-900" : "text-slate-300"
-            }`}
-          >
+          <p className="line-clamp-2 wrap-break-words text-slate-300">
             {stripForPreview(payload.notes)}
           </p>
         </div>

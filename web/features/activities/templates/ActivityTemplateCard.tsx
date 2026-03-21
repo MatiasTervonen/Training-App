@@ -41,51 +41,55 @@ export default function ActivityTemplateCard({
   );
 
   return (
-    <div className="border border-gray-700 rounded-md flex flex-col justify-center transition-colors bg-slate-900 mb-5">
-      <div className="flex justify-between items-center my-2 mx-4">
-        <div className="mr-8 line-clamp-1 text-lg underline">
-          {item.template.name}
+    <div className="shadow-sm shadow-black/50 rounded-md mb-5">
+      <div className="border border-slate-700 rounded-md flex flex-col justify-center transition-colors card-activity overflow-hidden">
+        <div className="flex justify-between items-center px-4 pt-2 pb-1">
+          <div className="mr-8 line-clamp-1 text-lg text-gray-100">
+            {item.template.name}
+          </div>
+          <DropdownMenu
+            button={
+              <div
+                aria-label="More options"
+                className="cursor-pointer text-slate-400"
+              >
+                <Menu size={20} />
+              </div>
+            }
+            onEdit={onEdit}
+            onDelete={onDelete}
+          />
         </div>
-        <DropdownMenu
-          button={
-            <div
-              aria-label="More options"
-              className="flex items-center justify-cente text-gray-100 cursor-pointer"
-            >
-              <Menu size={20} />
-            </div>
-          }
-          onEdit={onEdit}
-          onDelete={onDelete}
-        />
+
+        {item.activity.name && (
+          <div className="px-4 text-slate-300 font-body">
+            {getActivityName(item.activity)}
+          </div>
+        )}
+
+        {item.template.updated_at && (
+          <div className="text-slate-400 text-sm px-4 pb-1 font-body">
+            {t("activities.templatesScreen.updated")}{" "}
+            {formatDate(item.template.updated_at)}
+          </div>
+        )}
+
+        <div className="flex justify-between items-center bg-slate-900/40 px-4 py-2 mt-2">
+          <span className="text-slate-400 text-sm">
+            {formatDateShort(item.template.created_at)}
+          </span>
+          <button
+            aria-label="Expand template card"
+            onClick={onExpand}
+            className="flex items-center gap-2 cursor-pointer"
+          >
+            <span className="text-slate-500 text-sm">
+              {t("activities.templatesScreen.start")}
+            </span>
+            <Activity size={20} className="text-slate-500" />
+          </button>
+        </div>
       </div>
-
-      {item.activity.name && (
-        <div className="ml-4 text-slate-300">{getActivityName(item.activity)}</div>
-      )}
-
-      {item.template.updated_at ? (
-        <div className="text-yellow-500 text-sm ml-4 my-2">
-          {t("activities.templatesScreen.updated")}{" "}
-          {formatDate(item.template.updated_at)}
-        </div>
-      ) : (
-        <div className="h-[18px]" />
-      )}
-
-      <button
-        aria-label="Expand template card"
-        onClick={onExpand}
-        className="flex justify-between items-center px-4 bg-blue-600 rounded-br-md rounded-bl-md hover:bg-blue-500 cursor-pointer py-2"
-      >
-        <div className="text-slate-300 text-sm">
-          {formatDateShort(item.template.created_at)}
-        </div>
-        <div className="flex items-center gap-5">
-          <p className="text-slate-300">{t("activities.templatesScreen.start")}</p>
-          <Activity size={20} color="#cbd5e1" />
-        </div>
-      </button>
     </div>
   );
 }

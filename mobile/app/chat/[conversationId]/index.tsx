@@ -526,16 +526,6 @@ export default function ChatScreen() {
             <BodyTextNC className="text-slate-400 text-center">
               {t("chat.sessionUnavailable")}
             </BodyTextNC>
-            <AnimatedButton
-              onPress={() => {
-                if (sessionModalData) {
-                  handleSessionPress(sessionModalData, sessionModalConversationId);
-                }
-              }}
-              className="btn-base mt-4 px-6 py-2"
-            >
-              <AppText className="text-sm">{t("chat.retry", { defaultValue: "Retry" })}</AppText>
-            </AnimatedButton>
           </View>
         ) : loadedGymSession ? (
           <GymSessionView session={loadedGymSession} />

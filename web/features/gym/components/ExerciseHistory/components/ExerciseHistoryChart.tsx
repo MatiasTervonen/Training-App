@@ -19,7 +19,6 @@ type RangeType = "1m" | "3m" | "6m" | "1y";
 
 type ExerciseHistoryChartProps = {
   history: HistoryResult;
-  isCardio: boolean;
   valueUnit: string;
 };
 
@@ -57,7 +56,6 @@ function getRangeDurationMs(range: RangeType): number {
 
 export default function ExerciseHistoryChart({
   history,
-  isCardio,
   valueUnit,
 }: ExerciseHistoryChartProps) {
   const { t, i18n } = useTranslation("gym");
@@ -72,7 +70,6 @@ export default function ExerciseHistoryChart({
     setOffset(0);
   }
 
-  // Chart data - sorted chronologically
   const allChartData = useMemo(() => {
     if (!history || history.length === 0) return [];
 
@@ -82,38 +79,21 @@ export default function ExerciseHistoryChart({
 
     return sorted
       .map((session) => {
-        if (isCardio) {
-          const bestSet = session.sets.reduce(
-            (best, s) =>
-              (s.distance_meters || 0) > (best.distance_meters || 0)
-                ? s
-                : best,
-            session.sets[0],
-          );
-          if (!bestSet?.distance_meters) return null;
-          return {
-            date: session.date,
-            value: bestSet.distance_meters,
-            reps: bestSet.time_min || 0,
-          };
-        } else {
-          const bestSet = session.sets.reduce(
-            (best, s) =>
-              (s.weight || 0) > (best.weight || 0) ? s : best,
-            session.sets[0],
-          );
-          if (!bestSet?.weight) return null;
-          return {
-            date: session.date,
-            value: bestSet.weight,
-            reps: bestSet.reps || 0,
-          };
-        }
+        const bestSet = session.sets.reduce(
+          (best, s) =>
+            (s.weight || 0) > (best.weight || 0) ? s : best,
+          session.sets[0],
+        );
+        if (!bestSet?.weight) return null;
+        return {
+          date: session.date,
+          value: bestSet.weight,
+          reps: bestSet.reps || 0,
+        };
       })
       .filter(Boolean) as { date: string; value: number; reps: number }[];
-  }, [history, isCardio]);
+  }, [history]);
 
-  // Date boundaries
   const latestDate = useMemo(() => {
     if (allChartData.length === 0) return new Date();
     return new Date(
@@ -128,7 +108,6 @@ export default function ExerciseHistoryChart({
     );
   }, [allChartData]);
 
-  // Filtered chart data based on range + offset
   const { filteredChartData, rangeStart, rangeEnd, canGoBack } = useMemo(() => {
     const durationMs = getRangeDurationMs(range);
     const end = new Date(latestDate.getTime() - durationMs * offset);
@@ -150,7 +129,6 @@ export default function ExerciseHistoryChart({
     };
   }, [allChartData, range, offset, latestDate, oldestDate]);
 
-  // Chart axis config
   const { yAxisDomain, xTickFormatter } = useMemo(() => {
     const values = filteredChartData.map((d) => d.value);
     const max = values.length > 0 ? Math.max(...values) : 100;
@@ -197,7 +175,6 @@ export default function ExerciseHistoryChart({
 
   return (
     <div className="mt-6">
-      {/* Range Selector */}
       <div className="flex justify-center mb-4">
         <div className="flex bg-slate-800 rounded-lg p-1">
           {ranges.map((option) => (
@@ -216,9 +193,8 @@ export default function ExerciseHistoryChart({
         </div>
       </div>
 
-      {/* Date Range + Navigation */}
       <div className="bg-slate-900 shadow-md pt-4 rounded-md">
-        <div className="flex justify-center items-center  text-gray-400">
+        <div className="flex justify-center items-center text-gray-400">
           <button
             onClick={() => setOffset((prev) => prev + 1)}
             disabled={!canGoBack}
@@ -245,7 +221,6 @@ export default function ExerciseHistoryChart({
           </button>
         </div>
 
-        {/* Chart */}
         {filteredChartData.length >= 2 ? (
           <ModalSwipeBlocker>
             <div className="bg-slate-900 shadow-md pt-4 rounded-md">
@@ -312,9 +287,7 @@ export default function ExerciseHistoryChart({
                             {dateLabel}
                           </p>
                           <p style={{ fontSize: 14 }}>
-                            {isCardio
-                              ? `${data.value} m · ${data.reps} ${t("gym.exerciseHistory.timeMin").toLowerCase()}`
-                              : `${data.value} ${valueUnit} x ${data.reps} ${t("gym.exerciseCard.reps").toLowerCase()}`}
+                            {`${data.value} ${valueUnit} x ${data.reps} ${t("gym.exerciseCard.reps").toLowerCase()}`}
                           </p>
                         </div>
                       );

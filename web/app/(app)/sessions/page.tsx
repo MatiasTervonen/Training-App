@@ -20,37 +20,37 @@ export default function Sessions() {
     <div className="page-padding min-h-full max-w-md mx-auto">
       <h1 className="text-center mb-10 text-2xl ">{t("sessions.title")}</h1>
       <div className="flex flex-col gap-5">
-        <LinkButton href="/gym">
+        <LinkButton href="/gym" className="link-gym">
           {t("sessions.gym")}
           <Dumbbell />
         </LinkButton>
-        <LinkButton href="/activities">
+        <LinkButton href="/activities" className="link-activities">
           {t("sessions.activities")}
           <Activity />
         </LinkButton>
 
-        <LinkButton href="/notes">
+        <LinkButton href="/notes" className="link-notes">
           {t("sessions.notes")}
           <NotebookPen />
         </LinkButton>
-        <LinkButton href="/disc-golf">
+        <LinkButton href="/disc-golf" className="link-disc-golf">
           Disc Golf
           <Disc />
         </LinkButton>
 
-        <LinkButton href="/timer">
+        <LinkButton href="/timer" className="link-timer">
           {t("sessions.timer")}
           <Timer />
         </LinkButton>
-        <LinkButton href="/weight">
+        <LinkButton href="/weight" className="link-weight">
           {t("sessions.bodyWeight")}
           <Weight />
         </LinkButton>
-        <LinkButton href="/todo">
+        <LinkButton href="/todo" className="link-todo">
           {t("sessions.todoList")}
           <ListTodo />
         </LinkButton>
-        <LinkButton href="/reminders">
+        <LinkButton href="/reminders" className="link-reminders">
           {t("sessions.reminders")}
           <Bell />
         </LinkButton>

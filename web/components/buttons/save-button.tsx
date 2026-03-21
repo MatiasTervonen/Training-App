@@ -22,7 +22,7 @@ export default function SaveButton({
       aria-label={buttonLabel}
       type="submit"
       onClick={onClick}
-      className={`btn-base ${className}`}
+      className={`btn-save w-full ${className}`}
       disabled={disabled}
     >
       {buttonLabel}

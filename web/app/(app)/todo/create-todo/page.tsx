@@ -1,22 +1,16 @@
 "use client";
 
-import {
-  ListTodo,
-  SquarePen,
-  Trash2,
-  SquareArrowOutUpRight,
-} from "lucide-react";
+import { ListTodo, ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import DeleteSessionBtn from "@/components/buttons/deleteSessionBtn";
-import Modal from "@/components/modal";
 import SaveButton from "@/components/buttons/save-button";
 import FullScreenLoader from "@/components/FullScreenLoader";
 import TitleInput from "@/ui/TitleInput";
 import SubNotesInput from "@/ui/SubNotesInput";
 import useSaveDraft from "@/features/todo/hooks/useSaveDraft";
-import useDeleteItem from "@/features/todo/hooks/useDeleteItem";
 import useSaveTodo from "@/features/todo/hooks/useSaveTodo";
+import { formatDateShort } from "@/lib/formatDate";
 
 type TodoItem = {
   task: string;
@@ -24,233 +18,158 @@ type TodoItem = {
 };
 
 export default function Todo() {
-  const { t } = useTranslation("todo");
-  const [title, setTitle] = useState("");
-  const [task, setTask] = useState("");
-  const [notes, setNotes] = useState("");
-  const [todoList, setTodoList] = useState<TodoItem[]>([]);
-  const [open, setOpen] = useState<number | null>(null);
-  const [edit, setEdit] = useState<number | null>(null);
-  const [modalDraft, setModalDraft] = useState<{ task: string; notes: string }>(
-    {
-      task: "",
-      notes: "",
-    }
-  );
-  const [isLoaded, setIsLoaded] = useState(false);
+  const { t } = useTranslation(["todo", "common"]);
+  const now = formatDateShort(new Date());
 
-  // useSaveDraft hook to save draft todo list
+  const [title, setTitle] = useState(`${t("todo:todo.title")} - ${now}`);
+  const [todoList, setTodoList] = useState<TodoItem[]>([]);
+  const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   useSaveDraft({
     title,
-    task,
-    notes,
+    task: "",
+    notes: "",
     todoList,
     setTitle,
-    setTask,
-    setNotes,
+    setTask: () => {},
+    setNotes: () => {},
     setTodoList,
     setIsLoaded,
     isLoaded,
   });
 
-  // useDeleteItem hook to delete item from todo list
-  const { handleDeleteItem } = useDeleteItem({
-    todoList,
-    setTodoList,
-  });
+  const handleDeleteItem = (index: number) => {
+    const confirmed = window.confirm(t("todo:todo.deleteTaskMessage"));
+    if (!confirmed) return;
+    setTodoList((prev) => prev.filter((_, i) => i !== index));
+    if (expandedIndex === index) setExpandedIndex(null);
+    else if (expandedIndex !== null && expandedIndex > index)
+      setExpandedIndex(expandedIndex - 1);
+  };
 
   const handleDeleteAll = () => {
     localStorage.removeItem("todo_draft");
     setTodoList([]);
-    setTask("");
-    setNotes("");
     setTitle("");
+    setExpandedIndex(null);
   };
 
-  // useSaveTodo hook to save todo list
+  const handleAddTask = () => {
+    const newIndex = todoList.length;
+    setTodoList((prev) => [...prev, { task: "", notes: null }]);
+    setExpandedIndex(newIndex);
+  };
 
-  const { handleSaveTodo, isSaving } = useSaveTodo({ title, todoList, onSuccess: handleDeleteAll });
+  const updateTask = (index: number, updates: Partial<TodoItem>) => {
+    setTodoList((prev) =>
+      prev.map((item, i) => (i === index ? { ...item, ...updates } : item)),
+    );
+  };
+
+  const { handleSaveTodo, isSaving } = useSaveTodo({
+    title,
+    todoList,
+    onSuccess: handleDeleteAll,
+  });
 
   return (
     <div className="flex flex-col justify-between min-h-full max-w-md mx-auto page-padding">
       <div>
-        <div className="flex items-center gap-5 justify-center mb-10">
-          <h1 className="text-2xl">{t("todo.todoList")} </h1>
+        <div className="flex items-center gap-3 justify-center mb-10">
+          <h1 className="text-2xl">{t("todo:todo.todoList")}</h1>
           <ListTodo color="#f3f4f6" size={30} />
         </div>
-        <TitleInput
-          placeholder={t("todo.titlePlaceholder")}
-          label={t("todo.addTitleLabel")}
-          value={title}
-          setValue={setTitle}
-        />
-        <div className="mt-5">
+
+        <div className="mb-5">
           <TitleInput
-            placeholder={t("todo.taskPlaceholder")}
-            label={t("todo.addTaskLabel")}
-            value={task}
-            setValue={setTask}
+            placeholder={t("todo:todo.titlePlaceholder")}
+            label={t("todo:todo.addTitleLabel")}
+            value={title}
+            setValue={setTitle}
           />
         </div>
-        <div className="mt-5">
-          <SubNotesInput
-            placeholder={t("todo.notesPlaceholder")}
-            label={t("todo.addNotesLabel")}
-            notes={notes}
-            setNotes={setNotes}
-          />
-        </div>
-        <button
-          onClick={() => {
-            if (task.trim() === "") return;
-            setTodoList([...todoList, { task, notes }]);
-            setNotes("");
-            setTask("");
-          }}
-          className=" my-5 flex items-center justify-center w-full gap-2 bg-blue-800 py-2 rounded-md shadow-md border-2 border-blue-500 text-lg cursor-pointer hover:bg-blue-700 hover:scale-105 transition-transform duration-200"
-        >
-          {t("todo.add")}
-        </button>
-        <div className="flex flex-col items-center my-10">
-          <div className="bg-slate-950 px-4 rounded-xl pb-5 w-full">
-            <h2 className="my-10 text-2xl text-center wrap-break-word line-clamp-2">
-              {title || t("todo.myTodoListDefault")}
-            </h2>
-            <ul className="flex flex-col gap-5">
-              {todoList.map((item: TodoItem, index: number) => (
-                <li
-                  className=" text-lg border p-2 rounded-md flex justify-between gap-2 bg-slate-900"
+
+        {/* Task cards */}
+        <div className="flex flex-col gap-3">
+          {todoList.map((item, index) => {
+            const isExpanded = expandedIndex === index;
+
+            if (!isExpanded) {
+              return (
+                <button
                   key={index}
+                  onClick={() => setExpandedIndex(index)}
+                  className="bg-white/5 border border-white/10 p-4 rounded-lg flex items-center cursor-pointer hover:bg-white/8 transition-colors"
                 >
-                  <p className="overflow-hidden wrap-break-word line-clamp-2">
-                    {item.task}
-                  </p>
-                  <div className="flex gap-4">
+                  <span className="mr-2">{index + 1}.</span>
+                  <span
+                    className={`flex-1 text-left line-clamp-1 font-body ${item.task ? "text-gray-100" : "text-gray-500"}`}
+                  >
+                    {item.task || t("todo:todo.taskPlaceholder")}
+                  </span>
+                  <ChevronDown size={20} className="text-gray-400" />
+                </button>
+              );
+            }
+
+            return (
+              <div
+                key={index}
+                className="bg-white/5 border border-white/10 p-4 rounded-lg"
+              >
+                <div className="flex justify-between items-center mb-4">
+                  <span>{index + 1}.</span>
+                  <div className="flex items-center gap-3">
                     <button
-                      onClick={() => setOpen(index)}
-                      className="bg-blue-500 px-1 rounded-md hover:bg-blue-400"
+                      onClick={() => handleDeleteItem(index)}
+                      className="text-red-500 cursor-pointer hover:text-red-400"
                     >
-                      <SquareArrowOutUpRight size={20} />
+                      {t("todo:todo.editScreen.delete")}
+                    </button>
+                    <button
+                      onClick={() => setExpandedIndex(null)}
+                      className="cursor-pointer"
+                    >
+                      <ChevronUp size={20} className="text-gray-400" />
                     </button>
                   </div>
-                  {open === index && (
-                    <Modal
-                      onClose={() => {
-                        setOpen(null);
-                        setEdit(null);
-                      }}
-                      isOpen={true}
-                    >
-                      <div className="flex flex-col justify-center items-center max-w-lg mx-auto px-5">
-                        {edit === index ? (
-                          <>
-                            <h3 className="my-5 text-2xl">{t("todo.editTask")}</h3>
-                            <div className="my-10 w-full">
-                              <TitleInput
-                                placeholder={t("todo.editTaskPlaceholder")}
-                                label={t("todo.editTaskLabel")}
-                                value={modalDraft.task}
-                                setValue={(newTask) => {
-                                  setModalDraft({
-                                    ...modalDraft,
-                                    task: newTask,
-                                  });
-                                }}
-                              />
-                            </div>
-                            <div className="w-full">
-                              <SubNotesInput
-                                placeholder={t("todo.notesPlaceholder")}
-                                label={t("todo.addYourNotes")}
-                                notes={modalDraft.notes}
-                                setNotes={(newNotes) => {
-                                  setModalDraft({
-                                    ...modalDraft,
-                                    notes: newNotes,
-                                  });
-                                }}
-                              />
-                            </div>
-                            <div className="w-full flex gap-5 mt-20">
-                              <button
-                                onClick={() => {
-                                  setTodoList((list: TodoItem[]) =>
-                                    list.map((item, i) =>
-                                      i === index
-                                        ? { ...item, ...modalDraft }
-                                        : item
-                                    )
-                                  );
-                                  setEdit(null);
-                                }}
-                                className="w-full px-4 gap-2 bg-blue-800 py-2 rounded-md shadow-xl border-2 border-blue-500 text-lg cursor-pointer hover:bg-blue-700 hover:scale-105 transition-transform duration-200"
-                              >
-                                <p>{t("common:common.save")}</p>
-                              </button>
-                              <button
-                                onClick={() => {
-                                  setEdit(null);
-                                  setModalDraft({ task: "", notes: "" });
-                                }}
-                                className="w-full px-4 gap-2 bg-blue-800 py-2 rounded-md shadow-xl border-2 border-blue-500 text-lg cursor-pointer hover:bg-blue-700 hover:scale-105 transition-transform duration-200"
-                              >
-                                <p>{t("common:common.cancel")}</p>
-                              </button>
-                            </div>
-                          </>
-                        ) : (
-                          <div>
-                            <h3 className=" text-2xl my-10 w-full wrap-break-word overflow-hidden text-center max-w-lg">
-                              {item.task}
-                            </h3>
-                            <p className="text-gray-400 w-full wrap-break-word overflow-hidden text-center">
-                              {item.notes || t("todo.noNotesAvailable")}
-                            </p>
-                            <div className="flex w-full gap-5 mt-20">
-                              <button
-                                onClick={() => {
-                                  setEdit(index);
-                                  setModalDraft({
-                                    task: item.task,
-                                    notes: item.notes ?? "",
-                                  });
-                                }}
-                                className="w-[130px] flex items-center justify-center px-4 gap-2 bg-blue-800 py-2 rounded-md shadow-md border-2 border-blue-500 text-lg cursor-pointer hover:bg-blue-700 hover:scale-105 transition-transform duration-200"
-                              >
-                                <p>{t("todo.edit")}</p>
-                                <SquarePen size={20} />
-                              </button>
-                              <button
-                                onClick={() => {
-                                  handleDeleteItem(index);
-                                }}
-                                className="w-[130px] flex items-center justify-center px-4 gap-2  bg-red-800 py-2 rounded-md shadow-md border-2 border-red-500 text-lg cursor-pointer hover:bg-red-700 hover:scale-105 transition-transform duration-200"
-                              >
-                                <p>{t("todo.delete")}</p>
-                                <Trash2 size={20} />
-                              </button>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </Modal>
-                  )}
-                </li>
-              ))}
-            </ul>
-          </div>
+                </div>
+
+                <TitleInput
+                  value={item.task}
+                  setValue={(value) => updateTask(index, { task: value })}
+                  placeholder={t("todo:todo.taskPlaceholder")}
+                  label={t("todo:todo.editScreen.taskLabel")}
+                />
+
+                <div className="mt-4">
+                  <SubNotesInput
+                    notes={item.notes || ""}
+                    setNotes={(value) => updateTask(index, { notes: value })}
+                    placeholder={t("todo:todo.notesPlaceholder")}
+                    label={t("todo:todo.editScreen.notesLabel")}
+                  />
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
-      <div className="flex flex-row gap-5">
-        <DeleteSessionBtn onDelete={handleDeleteAll} />
-        <SaveButton
-          onClick={() => {
-            handleSaveTodo();
-          }}
-        />
+
+      <div className="flex flex-col gap-5 mt-10">
+        <button onClick={handleAddTask} className="btn-add w-full">
+          {t("todo:todo.editScreen.addTask")}
+        </button>
+        <div className="flex gap-5">
+          <DeleteSessionBtn onDelete={handleDeleteAll} />
+          <SaveButton onClick={handleSaveTodo} />
+        </div>
       </div>
-      {isSaving && <FullScreenLoader message={t("todo.savingTodoList")} />}
+
+      {isSaving && (
+        <FullScreenLoader message={t("todo:todo.savingTodoList")} />
+      )}
     </div>
   );
 }

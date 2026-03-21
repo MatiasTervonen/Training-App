@@ -41,8 +41,13 @@ export default function MuscleGroupChartSets({
               <AnimatedBar
                 targetWidth={barWidth}
                 delay={index * 120}
-                color="#3b82f6"
-                style={{ height: 30 }}
+                color="rgba(59, 130, 246, 0.2)"
+                style={{
+                  height: 30,
+                  borderWidth: 1,
+                  borderColor: "rgba(59, 130, 246, 0.4)",
+                  borderRadius: 3,
+                }}
               />
             </View>
 

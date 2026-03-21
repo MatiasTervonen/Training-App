@@ -26,13 +26,15 @@ export default function ChartTabSwitcher({ data }: ChartTabSwitcherProps) {
       <View className="flex-row items-center justify-center gap-4 mb-2">
         <AnimatedButton
           onPress={() => setActiveTab("muscleGroups")}
-          className={`px-4 py-2 w-[150px] rounded-xl ${
-            activeTab === "muscleGroups" ? "bg-gray-800" : ""
+          className={`w-[150px] rounded-md ${
+            activeTab === "muscleGroups"
+              ? "bg-blue-500/20 border border-blue-500/40 px-4 py-2 shadow-md"
+              : "bg-gray-500/20 border border-gray-500/40 px-4 py-2 shadow-md"
           }`}
         >
           <AppTextNC
             className={`text-center text-lg ${
-              activeTab === "muscleGroups" ? "text-cyan-400" : "text-gray-100"
+              activeTab === "muscleGroups" ? "text-blue-400" : "text-gray-400"
             }`}
           >
             {t("gym.analytics.tabs.exercises")}
@@ -41,15 +43,15 @@ export default function ChartTabSwitcher({ data }: ChartTabSwitcherProps) {
 
         <AnimatedButton
           onPress={() => setActiveTab("muscleGroupSets")}
-          className={`px-4 py-2 w-[150px] rounded-xl ${
-            activeTab === "muscleGroupSets" ? "bg-gray-800" : ""
+          className={`w-[150px] rounded-md ${
+            activeTab === "muscleGroupSets"
+              ? "bg-blue-500/20 border border-blue-500/40 px-4 py-2 shadow-md"
+              : "bg-gray-500/20 border border-gray-500/40 px-4 py-2 shadow-md"
           }`}
         >
           <AppTextNC
             className={`text-center text-lg ${
-              activeTab === "muscleGroupSets"
-                ? "text-cyan-400"
-                : "text-gray-100"
+              activeTab === "muscleGroupSets" ? "text-blue-400" : "text-gray-400"
             }`}
           >
             {t("gym.analytics.tabs.sets")}

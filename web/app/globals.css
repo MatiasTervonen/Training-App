@@ -17,32 +17,109 @@ body {
 
 @layer utilities {
   .btn-base {
-    @apply bg-slate-400/20 px-3 py-2 rounded-md shadow-md border border-slate-400/40;
+    @apply bg-slate-400/20 px-3 py-2 rounded-md shadow-md border border-slate-400/40 hover:scale-105 transition-all duration-200 cursor-pointer;
   }
   .btn-danger {
-    @apply bg-red-500/20 px-3 py-2 rounded-md shadow-md border border-red-500/40;
+    @apply bg-red-500/20 px-3 py-2 rounded-md shadow-md border border-red-500/40 hover:scale-105 transition-all duration-200 cursor-pointer;
   }
   .btn-disabled {
-    @apply bg-gray-500/20 px-3 py-2 rounded-md shadow-md border border-gray-500/40;
+    @apply bg-gray-500/20 px-3 py-2 rounded-md shadow-md border border-gray-500/40 cursor-not-allowed opacity-50;
   }
   .btn-add {
-    @apply bg-blue-500/20 px-3 py-2 rounded-md shadow-md border border-blue-500/40;
+    @apply bg-blue-500/20 px-3 py-2 rounded-md shadow-md border border-blue-500/40 hover:scale-105 transition-all duration-200 cursor-pointer;
   }
   .btn-save {
-    @apply bg-green-500/20 px-3 py-2 rounded-md shadow-md border border-green-500/40;
+    @apply bg-green-500/20 px-3 py-2 rounded-md shadow-md border border-green-500/40 hover:scale-105 transition-all duration-200 cursor-pointer;
   }
   .btn-edit {
-    @apply bg-amber-500/20 px-3 py-2 rounded-md shadow-md border border-amber-500/40;
+    @apply bg-amber-500/20 px-3 py-2 rounded-md shadow-md border border-amber-500/40 hover:scale-105 transition-all duration-200 cursor-pointer;
   }
   .btn-start {
-    @apply bg-emerald-500/25 px-3 py-2 rounded-md shadow-md border border-emerald-500/50;
+    @apply bg-emerald-500/25 px-3 py-2 rounded-md shadow-md border border-emerald-500/50 hover:scale-105 transition-all duration-200 cursor-pointer;
   }
   .btn-neutral {
-    @apply bg-gray-500/20 border border-gray-500/40 px-3 py-2 shadow-md rounded-md;
+    @apply bg-gray-500/20 border border-gray-500/40 px-3 py-2 shadow-md rounded-md hover:scale-105 transition-all duration-200 cursor-pointer;
   }
 
   .page-padding {
     padding: var(--page-padding);
+  }
+
+  /* Feed card type-specific gradient backgrounds (matching mobile) */
+  .card-gym {
+    background: linear-gradient(135deg, rgba(59,130,246,0.12), rgba(59,130,246,0.04));
+  }
+  .card-activity {
+    background: linear-gradient(135deg, rgba(34,197,94,0.12), rgba(34,197,94,0.04));
+  }
+  .card-notes {
+    background: linear-gradient(135deg, rgba(168,85,247,0.12), rgba(168,85,247,0.04));
+  }
+  .card-weight {
+    background: linear-gradient(135deg, rgba(245,158,11,0.12), rgba(245,158,11,0.04));
+  }
+  .card-todo {
+    background: linear-gradient(135deg, rgba(6,182,212,0.12), rgba(6,182,212,0.04));
+  }
+  .card-reminder {
+    background: linear-gradient(135deg, rgba(234,179,8,0.12), rgba(234,179,8,0.04));
+  }
+  .card-habits {
+    background: linear-gradient(135deg, rgba(244,63,94,0.12), rgba(244,63,94,0.04));
+  }
+  .card-reports {
+    background: linear-gradient(135deg, rgba(99,102,241,0.12), rgba(99,102,241,0.04));
+  }
+  .card-tutorial {
+    background: linear-gradient(135deg, rgba(20,184,166,0.12), rgba(20,184,166,0.04));
+  }
+  .card-default {
+    background: linear-gradient(135deg, rgba(100,116,139,0.12), rgba(100,116,139,0.04));
+  }
+  .card-pinned {
+    background: linear-gradient(135deg, rgba(250,204,21,0.40), rgba(250,204,21,0.15));
+  }
+
+  /* Colored link buttons per feature (matching mobile SESSION_COLORS) */
+  .link-gym {
+    @apply rounded-md shadow-md px-3 py-2 hover:scale-105 transition-all duration-200 cursor-pointer;
+    background: linear-gradient(135deg, rgba(59,130,246,0.25), rgba(59,130,246,0.08));
+    border: 1px solid rgba(59,130,246,0.45);
+  }
+  .link-activities {
+    @apply rounded-md shadow-md px-3 py-2 hover:scale-105 transition-all duration-200 cursor-pointer;
+    background: linear-gradient(135deg, rgba(34,197,94,0.25), rgba(34,197,94,0.08));
+    border: 1px solid rgba(34,197,94,0.45);
+  }
+  .link-notes {
+    @apply rounded-md shadow-md px-3 py-2 hover:scale-105 transition-all duration-200 cursor-pointer;
+    background: linear-gradient(135deg, rgba(168,85,247,0.25), rgba(168,85,247,0.08));
+    border: 1px solid rgba(168,85,247,0.45);
+  }
+  .link-timer {
+    @apply rounded-md shadow-md px-3 py-2 hover:scale-105 transition-all duration-200 cursor-pointer;
+    background: linear-gradient(135deg, rgba(251,146,60,0.25), rgba(251,146,60,0.08));
+    border: 1px solid rgba(251,146,60,0.45);
+  }
+  .link-weight {
+    @apply rounded-md shadow-md px-3 py-2 hover:scale-105 transition-all duration-200 cursor-pointer;
+    background: linear-gradient(135deg, rgba(245,158,11,0.25), rgba(245,158,11,0.08));
+    border: 1px solid rgba(245,158,11,0.45);
+  }
+  .link-todo {
+    @apply rounded-md shadow-md px-3 py-2 hover:scale-105 transition-all duration-200 cursor-pointer;
+    background: linear-gradient(135deg, rgba(6,182,212,0.25), rgba(6,182,212,0.08));
+    border: 1px solid rgba(6,182,212,0.45);
+  }
+  .link-reminders {
+    @apply rounded-md shadow-md px-3 py-2 hover:scale-105 transition-all duration-200 cursor-pointer;
+    background: linear-gradient(135deg, rgba(234,179,8,0.25), rgba(234,179,8,0.08));
+    border: 1px solid rgba(234,179,8,0.45);
+  }
+  .link-disc-golf {
+    @apply rounded-md shadow-md px-3 py-2 hover:scale-105 transition-all duration-200 cursor-pointer;
+    background: linear-gradient(135deg, rgba(99,102,241,0.25), rgba(99,102,241,0.08));
+    border: 1px solid rgba(99,102,241,0.45);
   }
 }
 

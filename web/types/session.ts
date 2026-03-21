@@ -23,8 +23,8 @@ type SessionSet = {
   reps: number | null;
   rpe: string | null;
   set_number: number;
-  time_min: number | null;
-  distance_meters: number | null;
+  time_min?: number | null;
+  distance_meters?: number | null;
 };
 
 export type HistoryResult = {
@@ -117,6 +117,7 @@ export type Last30DaysAnalytics = {
   heatMap: {
     title: string;
     created_at: string;
+    duration: number;
   }[];
 };
 

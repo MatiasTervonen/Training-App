@@ -7,7 +7,7 @@ export const FeedSkeleton = ({
   count?: number;
   subFeed?: boolean;
 }) => (
-  <View className={subFeed ? "pt-[50px]" : "pt-5"}>
+  <View style={subFeed ? { paddingTop: 66 } : { paddingTop: 20 }}>
     {[...Array(count)].map((_, i) => (
       <View
         key={i}

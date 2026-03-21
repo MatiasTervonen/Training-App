@@ -30,19 +30,19 @@ export default function GlobalReminderCard({
       onDelete={onDelete}
       onExpand={onExpand}
       onEdit={onEdit}
-      typeIcon={<Bell size={20} className={pinned ? "text-slate-900" : "text-gray-100"} />}
+      typeIcon={<Bell size={20} className="text-slate-300" />}
       typeName={t("feed.card.types.reminder")}
       showUpdatedAt={!payload.delivered}
       statsContent={
-        <div className={`flex flex-col gap-2 ${pinned ? "text-slate-900" : "text-gray-100"}`}>
+        <div className="flex flex-col gap-2 text-slate-300">
           <div className="flex items-center gap-2">
-            <p>{formatDateTime(payload.notify_at)}</p>
+            <span>{formatDateTime(payload.notify_at)}</span>
             <Bell size={20} />
           </div>
           {payload.delivered && (
-            <div className="flex items-center gap-2 bg-gray-900 rounded-md w-fit px-2 py-1">
+            <div className="flex items-center gap-2 bg-slate-900/60 rounded-md w-fit px-2 py-1">
               <Check size={20} className="text-green-400" />
-              <p className="text-gray-100">{t("feed.card.delivered")}</p>
+              <span className="text-gray-100">{t("feed.card.delivered")}</span>
             </div>
           )}
         </div>

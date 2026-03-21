@@ -21,13 +21,13 @@ export default function GymTemplate({ item, onStartWorkout }: Props) {
   return (
     <div className="page-padding max-w-lg mx-auto">
       <div className="flex flex-col gap-2 justify-center items-center">
-        <h2 className="text-sm text-gray-300">
+        <p className="text-sm text-gray-400 font-body">
           {t("common:common.created")} {formatDate(item.created_at)}
-        </h2>
+        </p>
         {item.updated_at && (
-          <h2 className=" text-yellow-500 text-sm">
+          <p className="text-slate-400 text-sm font-body">
             {t("common:common.updated")} {formatDate(item.updated_at)}
-          </h2>
+          </p>
         )}
         <h2 className="text-lg">{item.name}</h2>
       </div>
@@ -54,9 +54,9 @@ export default function GymTemplate({ item, onStartWorkout }: Props) {
                     )}
                   </h3>
                 </div>
-                <h2 className="text-sm text-gray-400 mt-2">
+                <p className="text-sm text-gray-400 mt-2 font-body">
                   {t(`gym.equipment.${exercise.gym_exercises.equipment}`)}
-                </h2>
+                </p>
               </div>
             </div>
           ))}

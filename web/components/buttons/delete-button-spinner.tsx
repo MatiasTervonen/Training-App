@@ -26,7 +26,7 @@ export default function DeleteButtonSpinner({
       aria-label={buttonLabel}
       type="submit"
       onClick={onClick}
-      className={`btn-danger flex items-center justify-center gap-2 ${className}`}
+      className={`btn-danger w-full flex items-center justify-center gap-2 ${className}`}
       disabled={disabled}
     >
       <p>{buttonLabel}</p>

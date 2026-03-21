@@ -34,12 +34,12 @@ export default function WeightSession(weight: FeedItemUI) {
 
   return (
     <div className="text-center max-w-md mx-auto page-padding">
-      <div className="text-sm text-gray-400">
+      <div className="text-sm text-gray-400 font-body">
         {t("weight.created")}: {formatDate(weight.created_at!)}
       </div>
       <div id="notes-id">
         <div className="my-5 text-xl wrap-break-word">{weight.title}</div>
-        <div className="whitespace-pre-wrap wrap-break-word overflow-hidden max-w-full text-left bg-slate-900 p-4 rounded-md shadow-lg">
+        <div className="whitespace-pre-wrap wrap-break-word overflow-hidden max-w-full text-left bg-white/5 p-4 rounded-md shadow-lg font-body">
           <div className="flex flex-col">
             {payload.notes && <p className="mb-5">{payload.notes}</p>}
             <p className="text-center">
@@ -49,13 +49,13 @@ export default function WeightSession(weight: FeedItemUI) {
         </div>
 
         {isLoading ? (
-          <div className="mt-5 bg-slate-900 shadow-md rounded-md p-4 h-[340px]">
+          <div className="mt-5 bg-white/5 shadow-md rounded-md p-4 h-[340px]">
             <div className="flex justify-center items-center h-full">
               <Spinner />
             </div>
           </div>
         ) : error ? (
-          <div className="mt-5 bg-slate-900 shadow-md rounded-md p-4 h-[340px]">
+          <div className="mt-5 bg-white/5 shadow-md rounded-md p-4 h-[340px]">
             <div className="flex justify-center items-center h-full">
               <p className="text-red-500">{t("weight.chartError")}</p>
             </div>

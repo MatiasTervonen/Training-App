@@ -182,7 +182,7 @@ export default function TiptapEditor({
     <div className="flex flex-col w-full flex-1 min-h-0">
       {label && <label className="text-sm text-gray-300 mb-1">{label}</label>}
       <ModalSwipeBlocker className="flex-1 flex flex-col min-h-0">
-        <div className="tiptap-editor rounded-md border-2 border-gray-100 hover:border-blue-500 focus-within:border-blue-500 overflow-hidden flex flex-col flex-1 min-h-0">
+        <div className="tiptap-editor rounded-md border-[1.5px] border-gray-400 hover:border-blue-500 focus-within:border-blue-500 overflow-hidden flex flex-col flex-1 min-h-0">
           <input
             ref={fileInputRef}
             type="file"

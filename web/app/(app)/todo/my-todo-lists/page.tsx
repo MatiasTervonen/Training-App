@@ -67,12 +67,12 @@ export default function MyTodoListsPage() {
         >
           {refreshing ? (
             <div className="flex text-xl items-center gap-4">
-              <p>Refreshing...</p>
+              <p className="font-body">Refreshing...</p>
               <Spinner />
             </div>
           ) : pullDistance > 0 ? (
             <div className="flex text-xl items-center gap-2">
-              <p className="text-gray-100/70">Pull to refresh...</p>
+              <p className="font-body text-gray-100/70">Pull to refresh...</p>
             </div>
           ) : null}
         </div>
@@ -80,11 +80,11 @@ export default function MyTodoListsPage() {
         {isLoading && !data ? (
           <FeedSkeleton count={6} />
         ) : error ? (
-          <p className="text-center text-lg mt-10">
+          <p className="font-body text-center text-lg mt-10">
             Failed to load todo lists. Please try again later.
           </p>
         ) : !data || (unpinnedFeed.length === 0 && pinnedFeed.length === 0) ? (
-          <p className="text-center text-lg mt-20">
+          <p className="font-body text-center text-lg mt-20">
             No todo lists yet. Create a todo list to see it here!
           </p>
         ) : (
@@ -124,7 +124,7 @@ export default function MyTodoListsPage() {
             })}
             {isFetchingNextPage && (
               <div className="flex flex-col gap-2 items-center mt-10">
-                <p>Loading more...</p>
+                <p className="font-body">Loading more...</p>
                 <Spinner />
               </div>
             )}
@@ -132,7 +132,7 @@ export default function MyTodoListsPage() {
             {hasNextPage && <div ref={loadMoreRef} className="h-20"></div>}
 
             {!hasNextPage && data?.pages.length > 1 && (
-              <p className="text-center justify-center mt-10 text-gray-300">
+              <p className="font-body text-center justify-center mt-10 text-gray-300">
                 No more todo lists
               </p>
             )}
@@ -150,11 +150,11 @@ export default function MyTodoListsPage() {
           >
             {isLoadingTodoSession ? (
               <div className="flex flex-col gap-5 items-center justify-center pt-40 px-10">
-                <p>Loading todo session details...</p>
+                <p className="font-body">Loading todo session details...</p>
                 <Spinner />
               </div>
             ) : TodoSessionError ? (
-              <p className="text-center text-lg mt-40 px-10">
+              <p className="font-body text-center text-lg mt-40 px-10">
                 Failed to load todo session details. Please try again later.
               </p>
             ) : (
@@ -186,11 +186,11 @@ export default function MyTodoListsPage() {
           >
             {isLoadingTodoSession ? (
               <div className="flex flex-col gap-5 items-center justify-center pt-40 px-10">
-                <p>Loading todo session details...</p>
+                <p className="font-body">Loading todo session details...</p>
                 <Spinner />
               </div>
             ) : TodoSessionError ? (
-              <p className="text-center text-lg mt-40 px-10">
+              <p className="font-body text-center text-lg mt-40 px-10">
                 Failed to load todo session details. Please try again later.
               </p>
             ) : (

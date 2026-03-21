@@ -4,6 +4,9 @@
     "editReminder": "Muokkaa muistutusta",
     "highPriorityReminder": "Tärkeä muistutus",
     "global": "Globaali",
+    "typeLabel": "Tyyppi",
+    "timeLabel": "Aika",
+    "weekdaysLabel": "Toistuu",
     "created": "Luotu:",
     "updated": "Päivitetty:",
     "edit": "Muokkaa",
@@ -51,10 +54,15 @@
     "tabs": {
       "normal": "Normaalit",
       "repeating": "Toistuvat",
-      "delivered": "Toimitetut"
+      "delivered": "Toimitetut",
+      "upcoming": "Tulevat"
     },
     "errorLoading": "Virhe muistutusten lataamisessa. Yritä uudelleen!",
     "noReminders": "Ei {{tab}} muistutuksia.",
+    "noRemindersUpcoming": "Ei tulevia muistutuksia",
+    "noRemindersUpcomingDesc": "Luo muistutus saadaksesi ilmoituksen.",
+    "noRemindersDelivered": "Ei toimitettuja muistutuksia",
+    "noRemindersDeliveredDesc": "Toimitetut muistutukset näkyvät täällä.",
     "days": {
       "sun": "Su",
       "mon": "Ma",

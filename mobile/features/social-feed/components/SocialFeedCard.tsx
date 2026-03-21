@@ -159,11 +159,12 @@ export default function SocialFeedCard({ item, onToggleLike, onExpand, onOpenCom
     : ["rgba(34,197,94,0.12)", "rgba(34,197,94,0.03)"];
 
   return (
+    <View className="shadow-sm shadow-black/50 elevation-2 rounded-md mx-4 my-2">
     <LinearGradient
       colors={gradientColors}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
-      className="border border-slate-700 rounded-md mx-4 my-2 overflow-hidden"
+      className="border border-slate-700 rounded-md overflow-hidden"
     >
       {/* Author header with type badge */}
       <SocialFeedCardHeader item={item} typeIcon={typeIcon} />
@@ -184,5 +185,6 @@ export default function SocialFeedCard({ item, onToggleLike, onExpand, onOpenCom
       {/* Footer with like & details */}
       <SocialFeedCardFooter item={item} onToggleLike={onToggleLike} onExpand={onExpand} onOpenComments={onOpenComments} />
     </LinearGradient>
+    </View>
   );
 }

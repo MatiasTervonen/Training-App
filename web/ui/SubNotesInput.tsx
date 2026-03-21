@@ -39,7 +39,7 @@ export default function SubNotesInput({
       <ModalSwipeBlocker>
         <textarea
           ref={textareaRef}
-          className="w-full text-md touch-pan-y p-2 rounded-md border-2 border-gray-100 z-10 placeholder-gray-500 bg-[linear-gradient(50deg,#0f172a,#1e293b,#333333)] hover:border-blue-500 focus:outline-none focus:border-green-300 resize-none overflow-hidden"
+          className="w-full text-md touch-pan-y p-2 rounded-md border-[1.5px] border-gray-400 z-10 placeholder-gray-500 font-body bg-[linear-gradient(50deg,#0f172a,#1e293b,#333333)] hover:border-blue-500 focus:outline-none focus:border-green-300 resize-none overflow-hidden"
           placeholder={placeholder}
           value={notes}
           autoComplete="off"
@@ -51,7 +51,7 @@ export default function SubNotesInput({
         />
       </ModalSwipeBlocker>
       {notes.length >= 500 ? (
-        <p className="text-yellow-400 mt-2">
+        <p className="text-yellow-400 mt-2 font-body">
           {t("common.charLimitReached", { max: 500 })}
         </p>
       ) : null}

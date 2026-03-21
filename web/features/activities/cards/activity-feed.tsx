@@ -1,3 +1,5 @@
+"use client";
+
 import { Activity, Route, Timer } from "lucide-react";
 import { formatMeters, formatDuration } from "@/lib/formatDate";
 import { FeedCardProps } from "@/types/session";
@@ -10,6 +12,7 @@ type activityPayload = {
   activity_name: string;
   activity_slug?: string;
 };
+
 export default function ActivityCard({
   item,
   pinned,
@@ -21,14 +24,11 @@ export default function ActivityCard({
   const { t } = useTranslation("activities");
   const payload = item.extra_fields as activityPayload;
 
-  // Get translated activity name using slug, fallback to stored name
   const getActivityTypeName = () => {
     if (payload.activity_slug) {
       const translated = t(
         `activities.activityNames.${payload.activity_slug}`,
-        {
-          defaultValue: "",
-        },
+        { defaultValue: "" },
       );
       if (
         translated &&
@@ -48,23 +48,23 @@ export default function ActivityCard({
       onDelete={onDelete}
       onExpand={onExpand}
       onEdit={onEdit}
-      typeIcon={<Activity size={20} color={pinned ? "#0f172a" : "#cad5e2"} />}
+      typeIcon={<Activity size={20} className="text-slate-300" />}
       typeName={getActivityTypeName()}
       statsContent={
         <div className="flex items-center gap-5">
           {payload.distance > 0 && (
             <div className="flex items-center gap-2">
-              <Route size={20} color={pinned ? "#0f172a" : "#cad5e2"} />
-              <p className={`${pinned ? "text-slate-900" : "text-slate-300"}`}>
+              <Route size={20} className="text-slate-300" />
+              <span className="text-slate-300">
                 {formatMeters(payload.distance)}
-              </p>
+              </span>
             </div>
           )}
           <div className="flex items-center gap-2">
-            <Timer size={20} color={pinned ? "#0f172a" : "#cad5e2"} />
-            <p className={`${pinned ? "text-slate-900" : "#cad5e2"}`}>
+            <Timer size={20} className="text-slate-300" />
+            <span className="text-slate-300">
               {formatDuration(payload.duration)}
-            </p>
+            </span>
           </div>
         </div>
       }

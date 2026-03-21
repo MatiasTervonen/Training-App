@@ -145,7 +145,7 @@ export default function EditTemplatePage() {
           </label>
           <button
             onClick={() => setShowDropdown(true)}
-            className="w-full bg-blue-800 py-2 rounded-md shadow-md border-2 border-blue-500 text-gray-100 text-center hover:bg-blue-700 cursor-pointer hover:scale-105 transition-all duration-200"
+            className="w-full btn-base"
           >
             {getActivityName(selectedActivity)}
           </button>
@@ -169,7 +169,7 @@ export default function EditTemplatePage() {
         />
         <button
           onClick={() => router.push("/activities/templates")}
-          className="w-full bg-gray-700 py-3 rounded-md shadow-md border-2 border-gray-500 text-gray-100 text-center hover:bg-gray-600 cursor-pointer hover:scale-105 transition-all duration-200"
+          className="w-full btn-neutral"
         >
           {t("activities.editTemplateScreen.cancelButton")}
         </button>

@@ -12,7 +12,7 @@ export async function get30dAnalytics() {
     supabase.rpc("last_30d_analytics"),
     supabase
       .from("sessions")
-      .select("title, created_at")
+      .select("title, created_at, duration")
       .gte(
         "created_at",
         new Date(new Date().setDate(new Date().getDate() - 30)).toISOString(),

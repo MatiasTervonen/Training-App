@@ -9,7 +9,7 @@ type SessionExercise = {
     main_group: string;
     name: string;
     equipment: string;
-    gym_exercises_translations: { name: string; language: string }[];
+    gym_exercises_translations: { name: string }[];
   };
   sessions: { created_at: string; user_id: string };
 };
@@ -37,12 +37,18 @@ export async function getLastExerciseHistory({
       id,
       session_id,
       exercise_id,
-      gym_exercises(main_group, name, equipment, gym_exercises_translations(name, language)),
+      gym_exercises(
+        main_group,
+        name,
+        equipment,
+        gym_exercises_translations!inner(name)
+      ),
       sessions!inner(created_at, user_id)
       `,
     )
     .eq("exercise_id", exerciseId)
-    .eq("sessions.user_id", user.sub);
+    .eq("sessions.user_id", user.sub)
+    .eq("gym_exercises.gym_exercises_translations.language", language);
 
   if (exerciseError) {
     handleError(exerciseError, {
@@ -59,16 +65,7 @@ export async function getLastExerciseHistory({
     return [];
   }
 
-  if (exerciseError) {
-    handleError(exerciseError, {
-      message: "Error fetching exercise history",
-      route: "/database/gym/last-exercise-history",
-      method: "GET",
-    });
-    throw new Error("Error fetching exercise history");
-  }
-
-  const sorted = sessions.sort(
+  const sorted = [...sessions].sort(
     (a, b) =>
       new Date(b.sessions.created_at || 0).getTime() -
       new Date(a.sessions.created_at || 0).getTime(),
@@ -78,7 +75,7 @@ export async function getLastExerciseHistory({
     sorted.map(async (session) => {
       const { data: sets, error: setsError } = await supabase
         .from("gym_sets")
-        .select("set_number,weight, reps, rpe, time_min, distance_meters")
+        .select("set_number, weight, reps, rpe")
         .eq("session_exercise_id", session.id)
         .order("set_number", { ascending: true });
 
@@ -92,15 +89,10 @@ export async function getLastExerciseHistory({
         throw new Error("Error fetching sets");
       }
 
-      const translatedName =
-        session.gym_exercises.gym_exercises_translations.find(
-          (t) => t.language === language,
-        )?.name ?? session.gym_exercises.name;
-
       return {
         date: session.sessions.created_at,
         main_group: session.gym_exercises.main_group,
-        name: translatedName,
+        name: session.gym_exercises.gym_exercises_translations?.[0]?.name ?? session.gym_exercises.name,
         equipment: session.gym_exercises.equipment,
         sets,
       };

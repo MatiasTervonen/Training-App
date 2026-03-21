@@ -169,12 +169,12 @@ export default function TodoSession({
       <div className="text-center flex flex-col min-h-full justify-between page-padding max-w-lg mx-auto">
         <div className="flex flex-col items-center w-full">
           <div className="flex w-full justify-between items-center mb-5">
-            <div className="flex flex-col gap-2 text-sm text-gray-400">
+            <div className="flex flex-col gap-2 text-sm text-gray-400 font-body">
               <p>
                 {t("todo.session.created")} {formatDate(sessionData.created_at)}
               </p>
               {sessionData.updated_at && (
-                <p className="text-yellow-500">
+                <p className="text-slate-400">
                   {t("todo.session.updated")}{" "}
                   {formatDate(sessionData.updated_at)}
                 </p>
@@ -200,7 +200,7 @@ export default function TodoSession({
               {sessionData.title}
             </div>
 
-            <ul className="flex flex-col gap-5">
+            <ul className="flex flex-col gap-3">
               {sessionData.todo_tasks.map((task, index) => {
                 return (
                   <div
@@ -213,24 +213,24 @@ export default function TodoSession({
                       }}
                       checked={task.is_completed}
                       type="checkbox"
-                      className="h-6 w-6 shrink-0 rounded-md border border-gray-400 cursor-pointer transition-colors appearance-none bg-slate-700 checked:bg-blue-500 grid place-content-center before:content-['✓']  before:scale-0 checked:before:scale-100 before:transition-transform"
+                      className="h-6 w-6 shrink-0 rounded-md border border-slate-600 cursor-pointer transition-colors appearance-none bg-slate-800 checked:bg-blue-500 grid place-content-center before:content-['✓'] before:scale-0 checked:before:scale-100 before:transition-transform"
                     />
                     <li
-                      className="w-full items-center border p-2 rounded-md flex justify-between gap-2 bg-slate-900 min-w-0 cursor-move"
+                      className="w-full items-center border border-slate-700 p-2 rounded-md flex justify-between gap-2 bg-slate-900 min-w-0 cursor-move"
                       draggable
                       onDragStart={() => handleDragStart(index)}
                       onDragOver={(e) => handleDragOver(e, index)}
                       onDragEnd={handleDragEnd}
                     >
-                      <p className="text-left line-clamp-1 truncate mr-8">
+                      <p className="text-left line-clamp-1 truncate mr-8 font-body">
                         {task.task}
                       </p>
                     </li>
                     <button
                       onClick={() => setOpen(index)}
-                      className="bg-blue-500 p-1 rounded-md hover:bg-blue-400 absolute right-2"
+                      className="p-1 absolute right-2 cursor-pointer"
                     >
-                      <SquareArrowOutUpRight size={20} />
+                      <SquareArrowOutUpRight size={18} className="text-slate-500" />
                     </button>
 
                     {open === index && (
@@ -241,7 +241,7 @@ export default function TodoSession({
                         isOpen={true}
                       >
                         <div className="text-center max-w-lg mx-auto page-padding">
-                          <div className="bg-slate-900 px-5 pt-5 pb-10 rounded-md shadow-md mt-5">
+                          <div className="bg-white/5 border border-white/10 px-5 pt-5 pb-10 rounded-md shadow-md mt-5">
                             <h3 className="text-xl text-center mb-10 border-b border-gray-700 pb-2 wrap-break-word">
                               {task.task}
                             </h3>
@@ -255,8 +255,8 @@ export default function TodoSession({
                     {task.is_completed && (
                       <Check
                         size={50}
-                        color="green"
-                        className="absolute left-1/2 -translate-x-1/2 bg-gray-400/30 w-[110%] pointer-events-none rounded-md"
+                        color="#15803d"
+                        className="absolute left-1/2 -translate-x-1/2 bg-gray-400/20 w-[110%] pointer-events-none rounded-md"
                       />
                     )}
                   </div>

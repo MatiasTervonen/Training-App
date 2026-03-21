@@ -20,22 +20,23 @@ export default function useSetNotification({
     if (!notifyAt) return;
 
     try {
-      // Schedule native alarm for high priority mode (Android only)
-      if (mode === "alarm") {
+      // Android: use native alarm for all modes (native snooze works even when app is killed)
+      if (Platform.OS === "android") {
         scheduleNativeAlarm(
           notifyAt.getTime(),
           reminderId,
           title,
-          "reminder",
+          mode === "alarm" ? "reminder" : "reminder-normal",
           notes,
           t("reminders:reminders.notification.tapToOpen"),
           t("reminders:reminders.notification.reminder"),
           t("reminders:reminders.notification.stopAlarm"),
           t("reminders:reminders.notification.snooze")
         );
+        return reminderId;
       }
 
-      // Always schedule a regular notification as backup / for iOS
+      // iOS: use Expo Notifications
       const notificationId = await Notifications.scheduleNotificationAsync({
         content: {
           title: title,
@@ -45,10 +46,7 @@ export default function useSetNotification({
             reminderId: reminderId,
             type: "local-reminders",
           },
-          ...(Platform.OS === "android" && { channelId: "reminders" }),
-          ...(mode === "normal" && {
-            categoryIdentifier: SNOOZE_CATEGORY_ID,
-          }),
+          categoryIdentifier: SNOOZE_CATEGORY_ID,
         },
         trigger: {
           type: Notifications.SchedulableTriggerInputTypes.DATE,

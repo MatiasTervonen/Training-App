@@ -22,14 +22,12 @@ export default function useSetNotification({
       const hour = notifyAt.getHours();
       const minute = notifyAt.getMinutes();
 
-      // Use native alarm for high-priority mode
-      if (mode === "alarm" && Platform.OS === "android") {
-        // Calculate first trigger time (today or tomorrow at the specified time)
+      // Android: use native alarm for all modes (native snooze works even when app is killed)
+      if (Platform.OS === "android") {
         const now = new Date();
         const triggerDate = new Date();
         triggerDate.setHours(hour, minute, 0, 0);
 
-        // If the time has already passed today, schedule for tomorrow
         if (triggerDate.getTime() <= now.getTime()) {
           triggerDate.setDate(triggerDate.getDate() + 1);
         }
@@ -38,7 +36,7 @@ export default function useSetNotification({
           triggerDate.getTime(),
           reminderId,
           title,
-          "reminder",
+          mode === "alarm" ? "reminder" : "reminder-normal",
           notes,
           "daily",
           hour,
@@ -48,20 +46,13 @@ export default function useSetNotification({
         return reminderId;
       }
 
-      // Use Expo Notifications for normal mode
-      const trigger: Notifications.NotificationTriggerInput =
-        Platform.OS === "android"
-          ? {
-              type: Notifications.SchedulableTriggerInputTypes.DAILY,
-              hour,
-              minute,
-            }
-          : {
-              type: Notifications.SchedulableTriggerInputTypes.CALENDAR,
-              hour,
-              minute,
-              repeats: true,
-            };
+      // iOS: use Expo Notifications
+      const trigger: Notifications.NotificationTriggerInput = {
+        type: Notifications.SchedulableTriggerInputTypes.CALENDAR,
+        hour,
+        minute,
+        repeats: true,
+      };
 
       const id = await Notifications.scheduleNotificationAsync({
         content: {
@@ -69,7 +60,6 @@ export default function useSetNotification({
           body: notes,
           sound: true,
           data: { reminderId: reminderId, type: "local-reminders" },
-          ...(Platform.OS === "android" && { channelId: "reminders" }),
           categoryIdentifier: SNOOZE_CATEGORY_ID,
         },
         trigger,

@@ -11,4 +11,16 @@
 -keep class com.swmansion.reanimated.** { *; }
 -keep class com.facebook.react.turbomodule.** { *; }
 
+# expo-notifications: keep serialization methods and model classes
+# R8 strips writeObject/readObject which breaks Java serialization of scheduled notifications
+-keep class expo.modules.notifications.notifications.model.** { *; }
+-keep class expo.modules.notifications.notifications.triggers.** { *; }
+-keep class expo.modules.notifications.notifications.interfaces.** { *; }
+-keep class expo.modules.notifications.service.delegates.** { *; }
+
+# expo-task-manager: keep task consumer classes (instantiated via reflection)
+-keep class expo.modules.notifications.notifications.background.** { *; }
+-keep class expo.modules.taskManager.** { *; }
+-keep class expo.modules.interfaces.taskManager.** { *; }
+
 # Add any project specific keep options here:

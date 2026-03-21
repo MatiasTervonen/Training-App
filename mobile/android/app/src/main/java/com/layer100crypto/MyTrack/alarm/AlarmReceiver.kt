@@ -1,11 +1,19 @@
 package com.layer100crypto.MyTrack.alarm
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
+import android.os.Build
 import android.os.PowerManager
+import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import com.layer100crypto.MyTrack.AppForegroundState
+import com.layer100crypto.MyTrack.MainActivity
+import com.layer100crypto.MyTrack.R
 import com.layer100crypto.MyTrack.ReactEventEmitter
 import com.layer100crypto.MyTrack.timer.TimerService
 import java.util.Calendar
@@ -31,6 +39,14 @@ class AlarmReceiver : BroadcastReceiver() {
         // Stop the timer countdown notification — the alarm replaces it
         if (soundType == "timer" || soundType == "habit-priority" || soundType == "habit") {
             context.stopService(Intent(context, TimerService::class.java))
+        }
+
+        // Normal-mode reminders: simple notification with native snooze button (no alarm sound)
+        if (soundType == "reminder-normal" || soundType == "global-reminder-normal") {
+            postSimpleReminderNotification(context, reminderId, title, content, snoozeText)
+            AlarmScheduler(context).cleanUpFiredOneTimeAlarm(reminderId)
+            scheduleNextRepeat(context, reminderId)
+            return
         }
 
         // For timers/habits: JS handles the alarm when in foreground AND screen is on
@@ -82,6 +98,68 @@ class AlarmReceiver : BroadcastReceiver() {
 
         // Schedule next occurrence for repeating alarms
         scheduleNextRepeat(context, reminderId)
+    }
+
+    private fun postSimpleReminderNotification(
+        context: Context,
+        reminderId: String,
+        title: String,
+        content: String,
+        snoozeText: String
+    ) {
+        val channelId = "reminders"
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                channelId,
+                "Reminders",
+                NotificationManager.IMPORTANCE_HIGH
+            ).apply {
+                description = "Reminder notifications"
+            }
+            context.getSystemService(NotificationManager::class.java)
+                .createNotificationChannel(channel)
+        }
+
+        // Tap action: open dashboard with reminder expanded
+        val openIntent = Intent(context, MainActivity::class.java).apply {
+            action = Intent.ACTION_VIEW
+            data = Uri.parse("kurvi://dashboard?reminderId=$reminderId")
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or
+                    Intent.FLAG_ACTIVITY_CLEAR_TOP or
+                    Intent.FLAG_ACTIVITY_SINGLE_TOP
+        }
+        val openPendingIntent = PendingIntent.getActivity(
+            context, reminderId.hashCode(), openIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        // Snooze action: handled natively by SnoozeAlarmReceiver
+        val snoozeIntent = Intent(context, SnoozeAlarmReceiver::class.java).apply {
+            putExtra("REMINDER_ID", reminderId)
+            putExtra("TITLE", title)
+            putExtra("SOUND_TYPE", "reminder-normal")
+            putExtra("CONTENT", content)
+            putExtra("SNOOZE_DURATION_MINUTES", 5)
+            putExtra("SNOOZE_TEXT", snoozeText)
+        }
+        val snoozePendingIntent = PendingIntent.getBroadcast(
+            context, reminderId.hashCode() + 1, snoozeIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val notification = NotificationCompat.Builder(context, channelId)
+            .setContentTitle(title)
+            .setContentText(content.ifEmpty { null })
+            .setSmallIcon(R.drawable.ic_stat_kurvi_icon_ice_blue_transparent)
+            .setAutoCancel(true)
+            .setContentIntent(openPendingIntent)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .addAction(0, snoozeText, snoozePendingIntent)
+            .build()
+
+        context.getSystemService(NotificationManager::class.java)
+            .notify(reminderId.hashCode(), notification)
     }
 
     private fun scheduleNextRepeat(context: Context, reminderId: String) {

@@ -1,4 +1,5 @@
 import * as Notifications from "expo-notifications";
+import { Platform } from "react-native";
 import { useEffect } from "react";
 import {
   SNOOZE_ACTION_ID,
@@ -37,25 +38,25 @@ export default function useNotificationResponse() {
         const notification = response.notification;
         const { title, body } = notification.request.content;
 
-        // Dismiss current notification and schedule snooze in parallel
-        await Promise.all([
-          Notifications.dismissNotificationAsync(
-            notification.request.identifier,
-          ),
-          Notifications.scheduleNotificationAsync({
-            content: {
-              title: title ?? undefined,
-              body: body ?? undefined,
-              sound: true,
-              data,
-              categoryIdentifier: SNOOZE_CATEGORY_ID,
-            },
-            trigger: {
-              type: Notifications.SchedulableTriggerInputTypes.DATE,
-              date: new Date(Date.now() + SNOOZE_DELAY_MS),
-            },
-          }),
-        ]);
+        // Dismiss current notification first, then schedule snooze
+        await Notifications.dismissNotificationAsync(
+          notification.request.identifier,
+        ).catch(() => {});
+
+        await Notifications.scheduleNotificationAsync({
+          content: {
+            title: title ?? undefined,
+            body: body ?? undefined,
+            sound: true,
+            data,
+            ...(Platform.OS === "android" && { channelId: "reminders" }),
+            categoryIdentifier: SNOOZE_CATEGORY_ID,
+          },
+          trigger: {
+            type: Notifications.SchedulableTriggerInputTypes.DATE,
+            date: new Date(Date.now() + SNOOZE_DELAY_MS),
+          },
+        });
 
         // If this is a global reminder, update the DB so cron re-delivers
         if (data?.type === "global-reminder" && data?.reminderId) {

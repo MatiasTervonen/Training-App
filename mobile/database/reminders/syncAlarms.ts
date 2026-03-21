@@ -18,7 +18,7 @@ export async function syncAlarms() {
   // 1. Fetch all data BEFORE canceling alarms — if fetching fails, keep existing alarms
   const [{ data: localReminders, error: localRemindersError }, deviceId] =
     await Promise.all([
-      supabase.from("local_reminders").select("*").eq("mode", "alarm"),
+      supabase.from("local_reminders").select("*"),
       getDeviceId(),
     ]);
 
@@ -35,8 +35,7 @@ export async function syncAlarms() {
     await supabase
       .from("global_reminders")
       .select("*")
-      .eq("created_from_device_id", deviceId)
-      .eq("mode", "alarm");
+      .eq("created_from_device_id", deviceId);
 
   if (globalRemindersError) {
     handleError(globalRemindersError, {
@@ -54,18 +53,17 @@ export async function syncAlarms() {
   // 3. Re-schedule all alarms (allSettled so one failure doesn't skip the rest)
   await Promise.allSettled(
     (localReminders || []).map(async (reminder) => {
+      const soundType = reminder.mode === "alarm" ? "reminder" : "reminder-normal";
+
       switch (reminder.type) {
         case "daily": {
           if (!reminder.notify_at_time) return;
-          // notify_at_time is a time-only string like "14:30:00"
           const [hour, minute] = reminder.notify_at_time.split(":").map(Number);
 
-          // Calculate first trigger time (today or tomorrow at the specified time)
           const now = new Date();
           const triggerDate = new Date();
           triggerDate.setHours(hour, minute, 0, 0);
 
-          // If the time has already passed today, schedule for tomorrow
           if (triggerDate.getTime() <= now.getTime()) {
             triggerDate.setDate(triggerDate.getDate() + 1);
           }
@@ -74,7 +72,7 @@ export async function syncAlarms() {
             triggerDate.getTime(),
             reminder.id,
             reminder.title,
-            "reminder",
+            soundType,
             reminder.notes || "",
             "daily",
             hour,
@@ -90,16 +88,13 @@ export async function syncAlarms() {
           const weekdays: number[] = (reminder.weekdays as number[]) || [];
           if (weekdays.length === 0) return;
 
-          // Calculate first trigger time based on next matching weekday
           const now = new Date();
-          const currentDay = now.getDay() + 1; // JS: 0=Sun, convert to 1=Sun like our weekdays
+          const currentDay = now.getDay() + 1;
 
-          // Find the next weekday that matches
           let daysToAdd = 7;
           for (let i = 0; i <= 7; i++) {
             const checkDay = ((currentDay - 1 + i) % 7) + 1;
             if (weekdays.includes(checkDay)) {
-              // If it's today, check if the time has passed
               if (i === 0) {
                 const todayTrigger = new Date();
                 todayTrigger.setHours(hour, minute, 0, 0);
@@ -122,7 +117,7 @@ export async function syncAlarms() {
             triggerDate.getTime(),
             reminder.id,
             reminder.title,
-            "reminder",
+            soundType,
             reminder.notes || "",
             "weekly",
             hour,
@@ -133,11 +128,9 @@ export async function syncAlarms() {
         }
 
         case "one-time": {
-          // One-time reminders use notify_date (full timestamp), not notify_at_time
           if (!reminder.notify_date) return;
           const triggerDate = new Date(reminder.notify_date);
 
-          // Do NOT schedule past one-time reminders
           if (triggerDate <= new Date()) {
             return;
           }
@@ -146,7 +139,7 @@ export async function syncAlarms() {
             triggerDate.getTime(),
             reminder.id,
             reminder.title,
-            "reminder",
+            soundType,
             reminder.notes || "",
             t("reminders:reminders.notification.tapToOpen"),
             t("reminders:reminders.notification.reminder"),
@@ -159,22 +152,23 @@ export async function syncAlarms() {
     }),
   );
 
-  // 4. Schedule global reminders (one-time alarms)
+  // 4. Schedule global reminders
   await Promise.allSettled(
     globalReminders.map(async (reminder) => {
       if (!reminder.notify_at) return;
       const notifyAt = new Date(reminder.notify_at);
 
-      // Do NOT schedule past reminders
       if (notifyAt <= new Date()) {
         return;
       }
+
+      const soundType = reminder.mode === "alarm" ? "global-reminder" : "global-reminder-normal";
 
       scheduleNativeAlarm(
         notifyAt.getTime(),
         reminder.id,
         reminder.title,
-        "global-reminder",
+        soundType,
         reminder.notes || "",
         t("reminders:reminders.notification.tapToOpen"),
         t("reminders:reminders.notification.reminder"),

@@ -24,18 +24,15 @@ export default function useSetNotificationWeekly({
       const hour = notifyAt.getHours();
       const minute = notifyAt.getMinutes();
 
-      // Use native alarm for high-priority mode
-      if (mode === "alarm" && Platform.OS === "android") {
-        // Calculate first trigger time based on next matching weekday
+      // Android: use native alarm for all modes (native snooze works even when app is killed)
+      if (Platform.OS === "android") {
         const now = new Date();
-        const currentDay = now.getDay() + 1; // JS: 0=Sun, convert to 1=Sun like our weekdays
+        const currentDay = now.getDay() + 1;
 
-        // Find the next weekday that matches
         let daysToAdd = 7;
         for (let i = 0; i <= 7; i++) {
           const checkDay = ((currentDay - 1 + i) % 7) + 1;
           if (weekdays.includes(checkDay)) {
-            // If it's today, check if the time has passed
             if (i === 0) {
               const todayTrigger = new Date();
               todayTrigger.setHours(hour, minute, 0, 0);
@@ -58,7 +55,7 @@ export default function useSetNotificationWeekly({
           triggerDate.getTime(),
           reminderId,
           title,
-          "reminder",
+          mode === "alarm" ? "reminder" : "reminder-normal",
           notes,
           "weekly",
           hour,
@@ -69,37 +66,26 @@ export default function useSetNotificationWeekly({
         return reminderId;
       }
 
-      // Use Expo Notifications for normal mode
+      // iOS: use Expo Notifications
       const notifications = await Promise.all(
         weekdays.map((day) => {
-          const trigger: Notifications.NotificationTriggerInput =
-            Platform.OS === "android"
-              ? {
-                  type: Notifications.SchedulableTriggerInputTypes.WEEKLY,
-                  weekday: day,
-                  hour,
-                  minute,
-                }
-              : {
-                  type: Notifications.SchedulableTriggerInputTypes.CALENDAR,
-                  weekday: day,
-                  hour,
-                  minute,
-                };
+          const trigger: Notifications.NotificationTriggerInput = {
+            type: Notifications.SchedulableTriggerInputTypes.CALENDAR,
+            weekday: day,
+            hour,
+            minute,
+          };
 
-          const id = Notifications.scheduleNotificationAsync({
+          return Notifications.scheduleNotificationAsync({
             content: {
               title: title,
               body: notes,
               sound: true,
               data: { reminderId: reminderId, type: "local-reminders" },
-              ...(Platform.OS === "android" && { channelId: "reminders" }),
               categoryIdentifier: SNOOZE_CATEGORY_ID,
             },
             trigger,
           });
-
-          return id;
         })
       );
 

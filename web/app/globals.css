@@ -1,6 +1,12 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
+html,
+body {
+  overscroll-behavior-y: contain;
+  height: 100%;
+}
+
 @theme {
   --color-primary: #f3f4f6;
   --breakpoint-xs: 26rem;
@@ -9,10 +15,30 @@
   --font-body: var(--font-body);
 }
 
-html,
-body {
-  overscroll-behavior-y: contain;
-  height: 100%;
+  .btn-base {
+    @apply bg-slate-400/20 px-3 py-2 rounded-md shadow-md border border-slate-400/40;
+  }
+  .btn-danger {
+    @apply bg-red-500/20 px-3 py-2 rounded-md shadow-md border border-red-500/40;
+  }
+  .btn-disabled {
+    @apply bg-gray-500/20 px-3 py-2 rounded-md shadow-md border border-gray-500/40;
+  }
+  .btn-add {
+    @apply bg-blue-500/20 px-3 py-2 rounded-md shadow-md border border-blue-500/40;
+  }
+  .btn-save {
+    @apply bg-green-500/20 px-3 py-2 rounded-md shadow-md border border-green-500/40;
+  }
+  .btn-edit {
+    @apply bg-amber-500/20 px-3 py-2 rounded-md shadow-md border border-amber-500/40;
+  }
+  .btn-start {
+    @apply bg-emerald-500/25 px-3 py-2 rounded-md shadow-md border border-emerald-500/50;
+  }
+  .btn-neutral {
+    @apply bg-gray-500/20 border border-gray-500/40 px-3 py-2 shadow-md rounded-md;
+  }
 }
 
 @layer utilities {
@@ -35,23 +61,6 @@ body {
   .custom-login-input:-webkit-autofill::first-line {
     color: #f3f4f6 !important;
   }
-
-  /* all the basic button variables */
-  .btn-base {
-    @apply w-full bg-blue-800 py-1.5 rounded-md shadow-md border-2 border-blue-500 text-base cursor-pointer hover:bg-blue-700 hover:scale-105 transition-all duration-200;
-  }
-
-  .btn-danger {
-    @apply w-full bg-red-800 py-1.5 rounded-md shadow-md border-2 border-red-500 text-gray-100 text-base cursor-pointer hover:bg-red-700 hover:scale-105 transition-all duration-200;
-  }
-
-  .btn-disabled {
-    @apply bg-gray-400 py-1.5 rounded-md shadow-md border-2 border-gray-500 text-gray-100 text-base cursor-not-allowed opacity-50;
-  }
-  .btn-neutral {
-    @apply bg-gray-800 border-2 border-gray-600 py-1.5 shadow-md rounded-md text-gray-100 text-base cursor-pointer hover:bg-gray-700 hover:scale-105 transition-all duration-200;
-  }
-}
 
 .my-heatmap .w-heatmap-week {
   fill: #ffffffea !important; /* green weekdays */

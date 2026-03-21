@@ -7,12 +7,14 @@ interface LinkButtonProps {
   href: string;
   onClick?: (e: React.MouseEvent) => void;
   children: React.ReactNode;
+  className?: string;
 }
 
 export default function LinkButton({
   href,
   children,
   onClick,
+  className,
 }: LinkButtonProps) {
   const { setDirection } = useTransitionDirectionStore();
 
@@ -23,7 +25,7 @@ export default function LinkButton({
         onClick?.(e);
         setDirection(0);
       }}
-      className="btn-base flex items-center gap-2 justify-center w-full"
+      className={`${className || "btn-base"} flex items-center gap-2 justify-center w-full`}
     >
       {children}
     </Link>

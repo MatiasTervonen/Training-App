@@ -15,7 +15,7 @@ export default function EmailVerified() {
 
     if (cooldown <= 0) {
       if (isMobile) {
-        window.location.href = "mytrack://";
+        window.location.href = "kurvi://";
       } else {
         router.replace("/login");
       }
@@ -31,7 +31,7 @@ export default function EmailVerified() {
 
   return (
     <div className="h-dvh flex justify-center items-center bg-linear-to-tr from-slate-950 via-slate-950 to-blue-900 text-gray-100 text-lg px-2">
-      <div className="flex flex-col items-center justify-center gap-10 max-w-xl border-2 py-10 px-5 sm:px-10 rounded-xl bg-slate-900 shadow-lg">
+      <div className="flex flex-col items-center justify-center gap-10 max-w-xl border-[1.5px] border-slate-600 py-10 px-5 sm:px-10 rounded-xl bg-slate-900 shadow-[0_0_20px_rgba(59,130,246,0.4)]">
         <h1 className="text-2xl ">{APP_NAME}</h1>
         <h2 className="text-green-400">Email Verified Successfully</h2>
         <p className="text-center font-body">
@@ -41,7 +41,7 @@ export default function EmailVerified() {
           <span className="inline-block w-10 text-center">{cooldown}</span>
           seconds...
         </p>
-        <LinkButton href="/login">Log in</LinkButton>
+        <LinkButton href="/login" className="btn-save">Log in</LinkButton>
       </div>
     </div>
   );

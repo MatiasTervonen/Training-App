@@ -15,13 +15,14 @@ import EditActivity from "@/features/activities/cards/activity-edit";
 import FeedHeader from "@/features/dashboard/components/feedHeader";
 import useFullSessions from "@/features/dashboard/hooks/useFullSessions";
 import useUpdateFeedItem from "@/features/dashboard/hooks/useUpdateFeedItem";
+import EmptyState from "@/components/EmptyState";
+import { MapPin } from "lucide-react";
 
 export default function MyActivitySessionsPage() {
   const { t } = useTranslation(["activities", "common"]);
   const [expandedItem, setExpandedItem] = useState<FeedItemUI | null>(null);
   const [editingItem, setEditingItem] = useState<FeedItemUI | null>(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-
   const {
     data,
     error,
@@ -79,10 +80,6 @@ export default function MyActivitySessionsPage() {
           <p className="font-body text-center text-lg mt-10">
             {t("activities:activities.mySessions.loadError")}
           </p>
-        ) : !data || (unpinnedFeed.length === 0 && pinnedFeed.length === 0) ? (
-          <p className="font-body text-center text-lg mt-20">
-            {t("activities:activities.mySessions.noSessions")}
-          </p>
         ) : (
           <>
             <FeedHeader
@@ -93,45 +90,55 @@ export default function MyActivitySessionsPage() {
               queryKey={["myActivitySessions"]}
             />
 
-            {unpinnedFeed.map((feedItem) => {
-              return (
-                <div className="mt-8" key={feedItem.id}>
-                  <FeedCard
-                    item={feedItem}
-                    pinned={false}
-                    onExpand={() => {
-                      setExpandedItem(feedItem);
-                    }}
-                    onTogglePin={() =>
-                      togglePin(
-                        feedItem.id,
-                        feedItem.type,
-                        feedItem.feed_context,
-                      )
-                    }
-                    onDelete={() =>
-                      handleDelete(feedItem.source_id, feedItem.type)
-                    }
-                    onEdit={() => {
-                      setEditingItem(feedItem);
-                    }}
-                  />
-                </div>
-              );
-            })}
-            {isFetchingNextPage && (
-              <div className="flex flex-col gap-2 items-center mt-10">
-                <p className="font-body">{t("common:feed.loadingMore")}</p>
-                <Spinner />
-              </div>
-            )}
+            {unpinnedFeed.length === 0 ? (
+              <EmptyState
+                icon={MapPin}
+                title={t("activities:activities.mySessions.noSessions")}
+                description={t("activities:activities.mySessions.noSessionsDesc")}
+              />
+            ) : (
+              <>
+                {unpinnedFeed.map((feedItem) => {
+                  return (
+                    <div className="mt-8" key={feedItem.id}>
+                      <FeedCard
+                        item={feedItem}
+                        pinned={false}
+                        onExpand={() => {
+                          setExpandedItem(feedItem);
+                        }}
+                        onTogglePin={() =>
+                          togglePin(
+                            feedItem.id,
+                            feedItem.type,
+                            feedItem.feed_context,
+                          )
+                        }
+                        onDelete={() =>
+                          handleDelete(feedItem.source_id, feedItem.type)
+                        }
+                        onEdit={() => {
+                          setEditingItem(feedItem);
+                        }}
+                      />
+                    </div>
+                  );
+                })}
+                {isFetchingNextPage && (
+                  <div className="flex flex-col gap-2 items-center mt-10">
+                    <p className="font-body">{t("common:feed.loadingMore")}</p>
+                    <Spinner />
+                  </div>
+                )}
 
-            {hasNextPage && <div ref={loadMoreRef} className="h-20"></div>}
+                {hasNextPage && <div ref={loadMoreRef} className="h-20"></div>}
 
-            {!hasNextPage && data?.pages.length > 1 && (
-              <p className="font-body text-center justify-center mt-10 text-gray-300">
-                {t("common:feed.noMoreSessions")}
-              </p>
+                {!hasNextPage && (data?.pages.length ?? 0) > 1 && (
+                  <p className="font-body text-center justify-center mt-10 text-gray-300">
+                    {t("common:feed.noMoreSessions")}
+                  </p>
+                )}
+              </>
             )}
           </>
         )}
@@ -158,10 +165,7 @@ export default function MyActivitySessionsPage() {
         {editingItem && (
           <Modal
             isOpen={true}
-            onClose={() => {
-              setEditingItem(null);
-              setHasUnsavedChanges(false);
-            }}
+            onClose={() => { setEditingItem(null); setHasUnsavedChanges(false); }}
             confirmBeforeClose={hasUnsavedChanges}
           >
             {isLoadingActivitySession ? (
@@ -178,15 +182,13 @@ export default function MyActivitySessionsPage() {
                 <EditActivity
                   activity={activitySessionFull}
                   onClose={() => setEditingItem(null)}
-                  onDirtyChange={setHasUnsavedChanges}
                   onSave={async (updatedItem) => {
                     await Promise.all([
                       updateFeedItem(updatedItem),
                       refetchFullActivity(),
                     ]);
-                    setEditingItem(null);
-                    setHasUnsavedChanges(false);
                   }}
+                  onDirtyChange={setHasUnsavedChanges}
                 />
               )
             )}

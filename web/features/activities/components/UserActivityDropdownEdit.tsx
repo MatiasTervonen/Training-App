@@ -60,7 +60,7 @@ export default function UserActivityDropdownEdit({ onSelect }: Props) {
           placeholder={t("activities.activityDropdownEdit.searchPlaceholder")}
           autoComplete="off"
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="p-2 rounded-md border-2 border-gray-100 z-10 placeholder-gray-500 bg-gray-900 hover:border-blue-500 focus:outline-none focus:border-green-300"
+          className="p-2 rounded-md border-[1.5px] border-gray-100 z-10 placeholder-gray-500 bg-gray-900 hover:border-blue-500 focus:outline-none focus:border-green-300"
         />
       </div>
 

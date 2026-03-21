@@ -34,7 +34,7 @@ export default function Toggle({ isOn, onToggle, disabled }: ToggleProps) {
     <Pressable onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); onToggle(); }} hitSlop={10} disabled={disabled}>
       <Animated.View
         style={animatedStyleBg}
-        className={`rounded-full border-2 border-gray-300 w-[48px] h-[24px] transition-colors p-0.5 flex items-center   justify-center`}
+        className={`rounded-full border-[1.5px] border-gray-300 w-[48px] h-[24px] transition-colors p-0.5 flex items-center   justify-center`}
         hitSlop={10}
       >
         <Animated.View className="absolute left-0" style={animatedStyleKnot}>

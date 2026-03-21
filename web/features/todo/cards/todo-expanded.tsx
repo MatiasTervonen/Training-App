@@ -2,16 +2,15 @@
 
 import { formatDate } from "@/lib/formatDate";
 import { full_todo_session } from "@/types/models";
-import { SquareArrowOutUpRight, Check, Dot } from "lucide-react";
-import { useState, useRef, useEffect } from "react";
-import toast from "react-hot-toast";
-import SaveButton from "@/components/buttons/save-button";
+import { SquareArrowOutUpRight, Check } from "lucide-react";
+import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import Modal from "@/components/modal";
-import FullScreenLoader from "@/components/FullScreenLoader";
 import { checkedTodo } from "@/database/todo/check-todo";
 import ExerciseTypeSelect from "@/features/gym/components/ExerciseTypeSelect";
 import { FeedItemUI } from "@/types/session";
 import { useTranslation } from "react-i18next";
+import { useAutoSave } from "@/hooks/useAutoSave";
+import AutoSaveIndicator from "@/components/AutoSaveIndicator";
 
 type TodoSessionProps = {
   initialTodo: full_todo_session;
@@ -27,13 +26,18 @@ export default function TodoSession({
   const { t } = useTranslation("todo");
   const [open, setOpen] = useState<number | null>(null);
   const [sessionData, setSessionData] = useState(initialTodo);
-  const [isSaving, setIsSaving] = useState(false);
   const [sortField, setSortField] = useState<"original" | "completed">(
     "original",
   );
   const [originalOrder, setOriginalOrder] = useState(initialTodo.todo_tasks);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const lastSavedRef = useRef(initialTodo.todo_tasks);
+
+  const sessionDataRef = useRef(sessionData);
+  sessionDataRef.current = sessionData;
+
+  const onSaveRef = useRef(onSave);
+  onSaveRef.current = onSave;
 
   // Sync with initialTodo when it changes (after refetch)
   useEffect(() => {
@@ -50,6 +54,48 @@ export default function TodoSession({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialTodo]);
 
+  // Only track task completion and order — ignore updated_at and other fields
+  // to prevent infinite save loops when the parent updates initialTodo after save
+  const autoSaveData = useMemo(
+    () =>
+      sessionData.todo_tasks.map((t) => ({
+        id: t.id,
+        is_completed: t.is_completed,
+      })),
+    [sessionData.todo_tasks],
+  );
+
+  const handleAutoSave = useCallback(async () => {
+    const current = sessionDataRef.current;
+
+    const updatedFeedItem = await checkedTodo({
+      updated_at: new Date().toISOString(),
+      list_id: current.id,
+      todo_tasks: current.todo_tasks.map((task, index) => ({
+        id: task.id,
+        list_id: task.list_id,
+        task: task.task,
+        is_completed: task.is_completed,
+        position: index,
+      })),
+    });
+
+    // Update the baseline to match what was just saved
+    lastSavedRef.current = current.todo_tasks;
+    setOriginalOrder(current.todo_tasks);
+
+    await onSaveRef.current(updatedFeedItem as FeedItemUI);
+  }, []);
+
+  const { status, hasPendingChanges } = useAutoSave({
+    data: autoSaveData,
+    onSave: handleAutoSave,
+  });
+
+  useEffect(() => {
+    onDirtyChange?.(hasPendingChanges);
+  }, [hasPendingChanges, onDirtyChange]);
+
   const toggleCompleted = (index: number) => {
     setSessionData((prev) => {
       const updatedTasks = [...prev.todo_tasks];
@@ -64,7 +110,6 @@ export default function TodoSession({
   const sortTodoByCompleted = () => {
     setSessionData((prev) => {
       const sortedTasks = [...prev.todo_tasks].sort((a, b) => {
-        // Sort incomplete tasks first (false before true)
         if (a.is_completed === b.is_completed) return 0;
         return a.is_completed ? 1 : -1;
       });
@@ -115,57 +160,9 @@ export default function TodoSession({
     setDraggedIndex(null);
   };
 
-  const updated = new Date().toISOString();
-
-  const saveChanges = async () => {
-    setIsSaving(true);
-
-    try {
-      const updatedFeedItem = await checkedTodo({
-        updated_at: updated,
-        list_id: sessionData.id,
-        todo_tasks: sessionData.todo_tasks.map((task, index) => ({
-          id: task.id,
-          list_id: task.list_id,
-          task: task.task,
-          is_completed: task.is_completed,
-          position: index,
-        })),
-      });
-
-      // Update the baseline to match what was just saved
-      lastSavedRef.current = sessionData.todo_tasks;
-      setOriginalOrder(sessionData.todo_tasks);
-
-      onSave(updatedFeedItem as FeedItemUI);
-      toast.success(t("todo.session.saveSuccess"));
-    } catch {
-      toast.error(t("todo.session.saveError"));
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-  const hasChanges =
-    JSON.stringify(sessionData.todo_tasks) !==
-    JSON.stringify(lastSavedRef.current);
-
-  useEffect(() => {
-    onDirtyChange?.(hasChanges);
-  }, [hasChanges, onDirtyChange]);
-
   return (
     <>
-      {hasChanges && (
-        <div className="bg-slate-900 z-50 py-1 px-4 flex items-center rounded-lg fixed top-5 ml-5">
-          <p className="text-sm text-yellow-500">
-            {hasChanges ? t("todo.session.unsavedChanges") : ""}
-          </p>
-          <div className="animate-pulse">
-            <Dot color="#eab308" />
-          </div>
-        </div>
-      )}
+      <AutoSaveIndicator status={status} />
       <div className="text-center flex flex-col min-h-full justify-between page-padding max-w-lg mx-auto">
         <div className="flex flex-col items-center w-full">
           <div className="flex w-full justify-between items-center mb-5">
@@ -265,20 +262,6 @@ export default function TodoSession({
             </ul>
           </div>
         </div>
-        <div className="mt-10  w-full">
-          <SaveButton
-            onClick={saveChanges}
-            disabled={!hasChanges}
-            label={
-              !hasChanges
-                ? t("todo.session.save")
-                : t("todo.session.saveChanges")
-            }
-          />
-        </div>
-        {isSaving && (
-          <FullScreenLoader message={t("todo.session.savingChanges")} />
-        )}
       </div>
     </>
   );

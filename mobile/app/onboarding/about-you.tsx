@@ -116,7 +116,7 @@ export default function AboutYouScreen() {
             <View className="flex-row justify-center mb-4 gap-3">
               <AnimatedButton
                 onPress={() => setUnit("kg")}
-                className={`w-20 py-2 rounded-lg border-2 items-center ${
+                className={`w-20 py-2 rounded-lg border-[1.5px] items-center ${
                   unit === "kg"
                     ? "bg-blue-900/40 border-blue-500"
                     : "bg-slate-800 border-slate-700"
@@ -130,7 +130,7 @@ export default function AboutYouScreen() {
               </AnimatedButton>
               <AnimatedButton
                 onPress={() => setUnit("lbs")}
-                className={`w-20 py-2 rounded-lg border-2 items-center ${
+                className={`w-20 py-2 rounded-lg border-[1.5px] items-center ${
                   unit === "lbs"
                     ? "bg-blue-900/40 border-blue-500"
                     : "bg-slate-800 border-slate-700"
@@ -162,7 +162,7 @@ export default function AboutYouScreen() {
                 placeholder="0"
                 placeholderTextColor="#64748b"
                 keyboardType="decimal-pad"
-                className="bg-slate-800 border-2 border-slate-700 rounded-lg text-center text-gray-100 text-2xl py-2 px-4 w-36 font-russo"
+                className="bg-slate-800 border-[1.5px] border-slate-700 rounded-lg text-center text-gray-100 text-2xl py-2 px-4 w-36 font-russo"
                 maxLength={6}
               />
               <AppText className="text-xl ml-3 text-slate-400 w-10">
@@ -177,7 +177,7 @@ export default function AboutYouScreen() {
             <View className="flex-row justify-center mb-4 gap-3">
               <AnimatedButton
                 onPress={() => setHeightUnit("cm")}
-                className={`w-20 py-2 rounded-lg border-2 items-center ${
+                className={`w-20 py-2 rounded-lg border-[1.5px] items-center ${
                   heightUnit === "cm"
                     ? "bg-blue-900/40 border-blue-500"
                     : "bg-slate-800 border-slate-700"
@@ -193,7 +193,7 @@ export default function AboutYouScreen() {
               </AnimatedButton>
               <AnimatedButton
                 onPress={() => setHeightUnit("ft")}
-                className={`w-20 py-2 rounded-lg border-2 items-center ${
+                className={`w-20 py-2 rounded-lg border-[1.5px] items-center ${
                   heightUnit === "ft"
                     ? "bg-blue-900/40 border-blue-500"
                     : "bg-slate-800 border-slate-700"
@@ -222,7 +222,7 @@ export default function AboutYouScreen() {
                       placeholder={t("aboutYou.heightFtPlaceholder")}
                       placeholderTextColor="#64748b"
                       keyboardType="number-pad"
-                      className="bg-slate-800 border-2 border-slate-700 rounded-lg text-center text-gray-100 text-2xl py-2 px-4 w-20 font-russo"
+                      className="bg-slate-800 border-[1.5px] border-slate-700 rounded-lg text-center text-gray-100 text-2xl py-2 px-4 w-20 font-russo"
                       maxLength={1}
                     />
                     <AppText className="text-xl ml-2 text-slate-400">
@@ -238,7 +238,7 @@ export default function AboutYouScreen() {
                       placeholder={t("aboutYou.heightInPlaceholder")}
                       placeholderTextColor="#64748b"
                       keyboardType="number-pad"
-                      className="bg-slate-800 border-2 border-slate-700 rounded-lg text-center text-gray-100 text-2xl py-2 px-4 w-20 font-russo"
+                      className="bg-slate-800 border-[1.5px] border-slate-700 rounded-lg text-center text-gray-100 text-2xl py-2 px-4 w-20 font-russo"
                       maxLength={2}
                     />
                     <AppText className="text-xl ml-2 text-slate-400">
@@ -257,7 +257,7 @@ export default function AboutYouScreen() {
                   placeholder="0"
                   placeholderTextColor="#64748b"
                   keyboardType="number-pad"
-                  className="bg-slate-800 border-2 border-slate-700 rounded-lg text-center text-gray-100 text-2xl py-2 px-4 w-36 font-russo"
+                  className="bg-slate-800 border-[1.5px] border-slate-700 rounded-lg text-center text-gray-100 text-2xl py-2 px-4 w-36 font-russo"
                   maxLength={3}
                 />
                 <AppText className="text-xl ml-3 text-slate-400">cm</AppText>

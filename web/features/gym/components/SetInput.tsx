@@ -18,7 +18,7 @@ export default function SetInput({
     <>
       <label>{label}</label>
       <input
-        className="text-lg  p-2 rounded-md border-2 border-gray-100 z-10 w-full  placeholder-gray-500 text-gray-100 bg-[linear-gradient(50deg,#0f172a,#1e293b,#333333)] hover:border-blue-500 focus:outline-none focus:border-green-300"
+        className="text-lg  p-2 rounded-md border-[1.5px] border-gray-100 z-10 w-full  placeholder-gray-500 text-gray-100 bg-[linear-gradient(50deg,#0f172a,#1e293b,#333333)] hover:border-blue-500 focus:outline-none focus:border-green-300"
         type={type}
         placeholder={placeholder}
         value={value ?? ""}

@@ -16,7 +16,8 @@
     "mySessions": {
       "title": "Omat sessiot",
       "loadError": "Aktiviteettisessioiden lataus epäonnistui. Yritä myöhemmin uudelleen.",
-      "noSessions": "Ei aktiviteettisessioita vielä. Lisää sessio aloittaaksesi!",
+      "noSessions": "Ei aktiviteettisessioita vielä",
+      "noSessionsDesc": "Aktiviteettisessiosi näkyvät täällä",
       "loadingDetails": "Ladataan aktiviteettisession tietoja...",
       "loadingSession": "Ladataan aktiviteettisessiota...",
       "loadDetailsError": "Aktiviteettisession tietojen lataus epäonnistui. Yritä myöhemmin uudelleen."

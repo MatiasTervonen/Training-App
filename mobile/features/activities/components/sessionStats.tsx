@@ -164,7 +164,7 @@ export default function SessionStats({
             {hasStartedTracking && lastMovingPoint?.speed != null ? (
               <View className="items-center justify-center">
                 <View className="flex-row items-center gap-2">
-                  <View className="border-2 border-blue-500 rounded-full w-14 h-14 items-center justify-center mb-2">
+                  <View className="border-[1.5px] border-blue-500 rounded-full w-14 h-14 items-center justify-center mb-2">
                     <AppText className="text-xl font-mono font-bold">
                       {formatSpeedFromMs(lastMovingPoint?.speed ?? 0)}
                     </AppText>
@@ -178,7 +178,7 @@ export default function SessionStats({
             ) : (
               <View className="items-center justify-center">
                 <Animated.View style={pulseStyle}>
-                  <View className="border-2 border-blue-500 rounded-full w-14 h-14 items-center justify-center mb-2">
+                  <View className="border-[1.5px] border-blue-500 rounded-full w-14 h-14 items-center justify-center mb-2">
                     <AppText className="text-xl">-</AppText>
                   </View>
                 </Animated.View>
@@ -191,7 +191,7 @@ export default function SessionStats({
             {hasStartedTracking && lastMovingPoint?.heading != null ? (
               <View className="items-center justify-center">
                 <View className="flex-row items-center gap-2">
-                  <View className="border-2 border-blue-500 rounded-full w-14 h-14 items-center justify-center mb-2">
+                  <View className="border-[1.5px] border-blue-500 rounded-full w-14 h-14 items-center justify-center mb-2">
                     <AppText className="text-xl font-mono font-bold">
                       {Math.round(lastMovingPoint.heading)}
                     </AppText>
@@ -207,7 +207,7 @@ export default function SessionStats({
             ) : (
               <View className="items-center justify-center">
                 <Animated.View style={pulseStyle}>
-                  <View className="border-2 border-blue-500 rounded-full w-14 h-14 items-center justify-center mb-2">
+                  <View className="border-[1.5px] border-blue-500 rounded-full w-14 h-14 items-center justify-center mb-2">
                     <AppText className="text-xl">-</AppText>
                   </View>
                 </Animated.View>
@@ -220,7 +220,7 @@ export default function SessionStats({
             {hasStartedTracking && lastMovingPoint?.altitude != null ? (
               <View className="items-center justify-center">
                 <View className="flex-row items-center gap-2">
-                  <View className="border-2 border-blue-500 rounded-full w-14 h-14 items-center justify-center mb-2">
+                  <View className="border-[1.5px] border-blue-500 rounded-full w-14 h-14 items-center justify-center mb-2">
                     <AppText className="text-xl font-mono font-bold">
                       {formatAltitude(lastMovingPoint.altitude).split(" ")[0]}
                     </AppText>
@@ -234,7 +234,7 @@ export default function SessionStats({
             ) : (
               <View className="items-center justify-center">
                 <Animated.View style={pulseStyle}>
-                  <View className="border-2 border-blue-500 rounded-full w-14 h-14 items-center justify-center mb-2">
+                  <View className="border-[1.5px] border-blue-500 rounded-full w-14 h-14 items-center justify-center mb-2">
                     <AppText className="text-xl">-</AppText>
                   </View>
                 </Animated.View>

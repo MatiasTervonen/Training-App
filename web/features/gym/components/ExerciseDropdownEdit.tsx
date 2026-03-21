@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
-import { useRef } from "react";
+import { useState, useRef } from "react";
 import { gym_exercises } from "@/types/models";
 import Spinner from "@/components/spinner";
 import { useQuery } from "@tanstack/react-query";
 import { getUserExercises } from "@/database/gym/user-exercises";
 import { useTranslation } from "react-i18next";
+import EmptyState from "@/components/EmptyState";
+import { Dumbbell } from "lucide-react";
 
 type Props = {
   onSelect: (exercise: gym_exercises) => void;
@@ -50,6 +51,7 @@ export default function ExerciseDropdownEdit({ onSelect }: Props) {
       setFilteredExercises(filteredExercises);
       setSelectedIndex(-1);
     } else {
+      setFilteredExercises([]);
     }
   };
 
@@ -58,7 +60,6 @@ export default function ExerciseDropdownEdit({ onSelect }: Props) {
     onSelect(exercise);
   };
 
-  //  Handles arrow key navigation in the dropdown
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     const activeList =
       searchQuery.length > 0 ? filteredExercises : allExercises;
@@ -72,90 +73,89 @@ export default function ExerciseDropdownEdit({ onSelect }: Props) {
     } else if (e.key === "Enter") {
       e.preventDefault();
       if (selectedIndex !== -1) {
-        handleSelectExercise(activeList[selectedIndex]); // Select highlighted city
+        handleSelectExercise(activeList[selectedIndex]);
       }
     }
   };
 
   return (
-    <>
-      <div className="flex flex-col px-2 w-full h-[calc(100dvh-74px)] z-50">
-        <div className="flex flex-col mt-8 px-20">
-          <input
-            className="p-2 rounded-md border-2 border-gray-100 z-10 placeholder-gray-500 text-gray-100 bg-gray-900 hover:border-blue-500 focus:outline-none focus:border-green-300"
-            type="text"
-            value={searchQuery}
-            placeholder={t("gym.exerciseDropdown.searchPlaceholder")}
-            autoComplete="off"
-            onChange={handleSearchChange}
-            onKeyDown={handleKeyDown}
-            spellCheck={false}
-            name="exercise"
-          />
-        </div>
+    <div className="flex flex-col px-2 w-full h-[calc(100dvh-74px)] z-50">
+      <div className="flex flex-col mt-8 px-8">
+        <input
+          className="p-2 rounded-md border-[1.5px] border-gray-100 z-10 placeholder-gray-500 text-gray-100 bg-gray-900 hover:border-blue-500 focus:outline-none focus:border-green-300"
+          type="text"
+          value={searchQuery}
+          placeholder={t("gym.exerciseDropdown.searchPlaceholder")}
+          autoComplete="off"
+          onChange={handleSearchChange}
+          onKeyDown={handleKeyDown}
+          spellCheck={false}
+          name="exercise"
+        />
+      </div>
 
-        <div
-          ref={dropdownRef}
-          className="w-full overflow-y-auto border rounded-md shadow-md 
-                    bg-slate-900 border-gray-100 touch-pan-y mt-10 h-full"
-        >
-          {isLoading || isError || exercises?.length === 0 ? (
-            <div className="h-[calc(100dvh-200px)] flex flex-col gap-6 items-center justify-center z-50 text-center">
-              {isLoading && (
-                <>
-                  <p className="text-lg">
-                    {t("gym.exerciseDropdown.loadingExercises")}
-                  </p>
-                  <Spinner size="h-10 w-10" />
-                </>
-              )}
-              {isError && (
-                <p className="text-red-500 px-5 text-lg">
-                  {t("gym.exerciseDropdown.loadError")}
-                </p>
-              )}
-              {exercises?.length === 0 && (
-                <div className="flex flex-col gap-3 text-lg px-5">
-                  <p>{t("gym.exerciseDropdown.noExercisesFound")}</p>
-                  <p>{t("gym.exerciseDropdownEdit.addNewExercise")}</p>
-                </div>
-              )}
-            </div>
-          ) : (
-            <>
-              <h2 className=" text-center bg-blue-600">
-                {" "}
-                {t("gym.exerciseDropdownEdit.myExercises")}
-              </h2>
-              {(searchQuery.length > 0 ? filteredExercises : allExercises).map(
-                (exercise, index) => (
-                  <button
-                    key={index}
-                    onClick={() => handleSelectExercise(exercise)}
-                    className={`w-full text-left px-4 py-2 cursor-pointer z-40 hover:bg-slate-800  border-b ${
-                      selectedIndex === index
-                        ? "bg-slate-800 hover:bg-slate-500"
-                        : ""
-                    }`}
-                  >
-                    <div className="flex flex-col ">
-                      <div className="flex justify-between items-center">
-                        <p className="truncate mr-5">{exercise.name} </p>
-                        <p className="text-sm text-gray-300">
-                          {t(`gym.muscleGroups.${exercise.muscle_group}`)}
-                        </p>
-                      </div>
-                      <p className="text-sm text-gray-400">
-                        {t(`gym.equipment.${exercise.equipment}`)}
+      <div
+        ref={dropdownRef}
+        className="w-full overflow-y-auto border border-gray-100 rounded-md bg-slate-900 touch-pan-y mt-10 h-full"
+      >
+        {isError ? (
+          <div className="flex flex-col gap-6 items-center justify-center z-50 text-center mt-20">
+            <p className="text-red-500 px-5 text-lg">
+              {t("gym.exerciseDropdown.loadError")}
+            </p>
+          </div>
+        ) : isLoading ? (
+          <div className="flex flex-col gap-6 items-center justify-center z-50 text-center mt-20">
+            <p className="text-lg">
+              {t("gym.exerciseDropdown.loadingExercises")}
+            </p>
+            <Spinner size="h-10 w-10" />
+          </div>
+        ) : exercises?.length === 0 ? (
+          <EmptyState
+            icon={Dumbbell}
+            title={t("gym.exerciseDropdown.noExercisesFound")}
+            description={t("gym.exerciseDropdownEdit.addNewExercise")}
+          />
+        ) : searchQuery.length > 0 && filteredExercises.length === 0 ? (
+          <div className="flex items-center justify-center mt-20 px-5">
+            <p className="text-lg">{t("gym.exerciseDropdownEdit.noMatching")}</p>
+          </div>
+        ) : (
+          <>
+            <p className="text-center bg-blue-600 py-0.5">
+              {t("gym.exerciseDropdownEdit.myExercises")}
+            </p>
+            {(searchQuery.length > 0 ? filteredExercises : allExercises).map(
+              (exercise, index) => (
+                <button
+                  key={exercise.id}
+                  onClick={() => handleSelectExercise(exercise)}
+                  className={`w-full text-left px-4 py-2 cursor-pointer z-40 hover:bg-slate-800 border-b border-gray-400 ${
+                    selectedIndex === index
+                      ? "bg-slate-800 hover:bg-slate-500"
+                      : ""
+                  }`}
+                >
+                  <div className="flex flex-col">
+                    <div className="flex justify-between items-center">
+                      <p className="font-body text-gray-200 truncate mr-4">
+                        {exercise.name}
+                      </p>
+                      <p className="text-sm text-gray-300 shrink-0">
+                        {t(`gym.muscleGroups.${exercise.muscle_group}`)}
                       </p>
                     </div>
-                  </button>
-                ),
-              )}
-            </>
-          )}
-        </div>
+                    <p className="text-sm text-gray-400">
+                      {t(`gym.equipment.${exercise.equipment}`)}
+                    </p>
+                  </div>
+                </button>
+              ),
+            )}
+          </>
+        )}
       </div>
-    </>
+    </div>
   );
 }

@@ -324,7 +324,7 @@ export default function Sessions() {
                       </select>
 
                       {showBanReason === user.id && (
-                        <div className="fixed inset-0 z-50 left-1/2 -translate-x-1/2 h-fit top-30 w-fit rounded-lg  border-2 border-gray-700 bg-slate-900 p-10">
+                        <div className="fixed inset-0 z-50 left-1/2 -translate-x-1/2 h-fit top-30 w-fit rounded-lg  border-[1.5px] border-gray-700 bg-slate-900 p-10">
                           <div className="mb-4">
                             <h3>{t("admin.analytics.banModal.title")}</h3>
                             <p>{user.id}</p>
@@ -347,7 +347,7 @@ export default function Sessions() {
                             />
                           </div>
                           <button
-                            className="mr-5 mt-4 bg-red-800 py-1 w-28 rounded-md shadow-xl border-2 border-red-500 text-lg cursor-pointer hover:bg-red-700 hover:scale-105 transition-all duration-200"
+                            className="mr-5 mt-4 bg-red-800 py-1 w-28 rounded-md shadow-xl border-[1.5px] border-red-500 text-lg cursor-pointer hover:bg-red-700 hover:scale-105 transition-all duration-200"
                             onClick={() => {
                               handleBanUser({
                                 user_id: user.id,
@@ -365,7 +365,7 @@ export default function Sessions() {
                             {t("admin.analytics.ban")}
                           </button>
                           <button
-                            className="w-28 mt-2 bg-gray-600 py-1 rounded-md shadow-xl border-2 border-gray-500 text-lg cursor-pointer hover:bg-gray-700 hover:scale-105 transition-all duration-200"
+                            className="w-28 mt-2 bg-gray-600 py-1 rounded-md shadow-xl border-[1.5px] border-gray-500 text-lg cursor-pointer hover:bg-gray-700 hover:scale-105 transition-all duration-200"
                             onClick={() => {
                               setShowBanReason(null);
                               setSelectedDurations((prev) => ({

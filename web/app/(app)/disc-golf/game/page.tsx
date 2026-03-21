@@ -376,7 +376,7 @@ export default function DiscGolfGame() {
                 Hole {viewingHoleNumber}
               </h1>
               <p className="flex justify-center my-2">{courseName}</p>
-              <div className="border-2 border-gray-100 p-5 rounded-xl mb-10 mx-10">
+              <div className="border-[1.5px] border-gray-100 p-5 rounded-xl mb-10 mx-10">
                 <div className="flex items-center justify-between gap-2">
                   <p className="text-xl">Par</p>
                   <div className="flex items-center gap-4">

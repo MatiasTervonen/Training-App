@@ -34,7 +34,7 @@ export default function DraftImageItem({ uri, isLoading, onDelete, onPress }: Pr
         <View className="absolute top-2 right-2">
           <AnimatedButton
             onPress={onDelete}
-            className="bg-red-800 border-red-500 border-2 rounded-full p-1"
+            className="bg-red-800 border-red-500 border-[1.5px] rounded-full p-1"
           >
             <X color="white" size={18} />
           </AnimatedButton>

@@ -623,7 +623,7 @@ export default function StartActivityScreen() {
           <View className="absolute z-50 bottom-20 right-5">
             <AnimatedButton
               onPress={() => setShowNotesModal(true)}
-              className="p-3 rounded-full bg-blue-700 border-2 border-blue-500"
+              className="p-3 rounded-full bg-blue-700 border-[1.5px] border-blue-500"
               hitSlop={10}
             >
               <NotebookPen size={24} color="#f3f4f6" />

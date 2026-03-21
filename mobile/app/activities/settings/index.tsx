@@ -153,7 +153,7 @@ export default function ActivitySettingsScreen() {
                 <AnimatedButton
                   key={style.labelKey}
                   onPress={() => setDefaultMapStyle(style.url)}
-                  className={`flex-1 py-3 rounded-lg items-center border-2 ${
+                  className={`flex-1 py-3 rounded-lg items-center border-[1.5px] ${
                     isSelected
                       ? "bg-blue-700 border-blue-500"
                       : "bg-slate-800 border-slate-600"
@@ -193,7 +193,7 @@ export default function ActivitySettingsScreen() {
                   key={color.labelKey}
                   onPress={() => setDefaultLineColorIndex(index)}
                   className={`w-12 h-12 rounded-full items-center justify-center ${
-                    isSelected ? "border-2 border-white" : ""
+                    isSelected ? "border-[1.5px] border-white" : ""
                   }`}
                   style={{ backgroundColor: color.core }}
                 >
@@ -235,7 +235,7 @@ export default function ActivitySettingsScreen() {
                     <AnimatedButton
                       key={val}
                       onPress={() => updateMetric("steps", { interval: val })}
-                      className={`basis-[23%] flex-grow py-2 rounded-lg border-2 items-center ${
+                      className={`basis-[23%] flex-grow py-2 rounded-lg border-[1.5px] items-center ${
                         milestoneAlerts.steps.interval === val
                           ? "bg-blue-700 border-blue-500"
                           : "bg-slate-800 border-slate-600"
@@ -281,7 +281,7 @@ export default function ActivitySettingsScreen() {
                       onPress={() =>
                         updateMetric("duration", { interval: val })
                       }
-                      className={`basis-[23%] flex-grow py-2 rounded-lg border-2 items-center ${
+                      className={`basis-[23%] flex-grow py-2 rounded-lg border-[1.5px] items-center ${
                         milestoneAlerts.duration.interval === val
                           ? "bg-blue-700 border-blue-500"
                           : "bg-slate-800 border-slate-600"
@@ -328,7 +328,7 @@ export default function ActivitySettingsScreen() {
                       onPress={() =>
                         updateMetric("distance", { interval: val })
                       }
-                      className={`basis-[23%] flex-grow py-2 rounded-lg border-2 items-center ${
+                      className={`basis-[23%] flex-grow py-2 rounded-lg border-[1.5px] items-center ${
                         milestoneAlerts.distance.interval === val
                           ? "bg-blue-700 border-blue-500"
                           : "bg-slate-800 border-slate-600"
@@ -374,7 +374,7 @@ export default function ActivitySettingsScreen() {
                       onPress={() =>
                         updateMetric("calories", { interval: val })
                       }
-                      className={`basis-[23%] flex-grow py-2 rounded-lg border-2 items-center ${
+                      className={`basis-[23%] flex-grow py-2 rounded-lg border-[1.5px] items-center ${
                         milestoneAlerts.calories.interval === val
                           ? "bg-blue-700 border-blue-500"
                           : "bg-slate-800 border-slate-600"

@@ -1,7 +1,8 @@
 {
   "feed": {
     "loadError": "Sessioiden lataaminen epäonnistui. Yritä myöhemmin uudelleen.",
-    "noSessions": "Ei vielä sessioita. Aloitetaan!",
+    "noSessions": "Ei vielä sessioita",
+    "noSessionsDesc": "Sessiosi ja aktiviteettisi näkyvät täällä",
     "loadingTodo": "Ladataan tehtävälistaa...",
     "todoError": "Tehtävälistan tietojen lataaminen epäonnistui. Yritä myöhemmin uudelleen.",
     "loadingGym": "Ladataan harjoituksen tietoja...",

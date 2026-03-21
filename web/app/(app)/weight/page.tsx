@@ -8,8 +8,9 @@ import { weight } from "@/types/models";
 import { useQuery } from "@tanstack/react-query";
 import { getWeight } from "@/database/weight/get-weight";
 import { useTranslation } from "react-i18next";
-import { Plus } from "lucide-react";
+import { Plus, Weight } from "lucide-react";
 import Link from "next/link";
+import EmptyState from "@/components/EmptyState";
 
 type RangeType = "week" | "month" | "year";
 
@@ -54,28 +55,30 @@ export default function WeightPage() {
           </div>
         </div>
 
-        {/* Chart */}
-        <div>
-          {isLoading ? (
-            <div className="flex flex-col items-center text-gray-400 justify-center h-[300px] w-full mb-5 font-body">
-              <p className="mb-4">{t("weight.analyticsScreen.loading")}</p>
-              <Spinner />
-            </div>
-          ) : error ? (
-            <div className="flex flex-col items-center justify-center h-[300px] w-full font-body">
-              <p className="mb-4 text-lg text-red-500">
-                {t("weight.analyticsScreen.error")}
-              </p>
-            </div>
-          ) : (
+        {/* Content */}
+        {isLoading ? (
+          <div className="flex flex-col items-center text-gray-400 justify-center h-[300px] w-full mb-5 font-body">
+            <p className="mb-4">{t("weight.analyticsScreen.loading")}</p>
+            <Spinner />
+          </div>
+        ) : error ? (
+          <div className="flex flex-col items-center justify-center h-[300px] w-full font-body">
+            <p className="mb-4 text-lg text-red-500">
+              {t("weight.analyticsScreen.error")}
+            </p>
+          </div>
+        ) : weight.length === 0 ? (
+          <EmptyState
+            icon={Weight}
+            title={t("weight.analyticsScreen.noData")}
+            description={t("weight.analyticsScreen.noDataDesc")}
+          />
+        ) : (
+          <>
             <WeightChart range={range} data={weight} />
-          )}
-        </div>
-
-        {/* Data table */}
-        <div>
-          <AllDataTable data={weight} />
-        </div>
+            <AllDataTable data={weight} />
+          </>
+        )}
       </div>
 
       {/* Floating Action Button */}

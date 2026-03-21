@@ -23,17 +23,17 @@ export default function MyReminderSession(reminder: full_reminder) {
     <div className="page-padding mt-10">
       <div
         id="reminder-id"
-        className="max-w-lg mx-auto rounded-2xl border-2 border-slate-500 bg-linear-to-tr from-gray-900 via-slate-900 to-blue-900 shadow-xl p-4"
+        className="max-w-lg mx-auto rounded-2xl border-[1.5px] border-slate-500 bg-linear-to-tr from-gray-900 via-slate-900 to-blue-900 shadow-xl p-4"
       >
         <div className="flex flex-col justify-center gap-4">
-          <div className="flex gap-2 items-center justify-center bg-gray-900 rounded-xl py-5 border-2 border-slate-600 w-full">
+          <div className="flex gap-2 items-center justify-center bg-gray-900 rounded-xl py-5 border-[1.5px] border-slate-600 w-full">
             <CalendarSync size={28} />
             <p className="text-lg">
               {reminder.type === "global_reminders" ? t("reminders.global") : reminder.type}
             </p>
           </div>
 
-          <div className="flex items-center gap-2 justify-center bg-gray-900 rounded-xl py-5 border-2 border-slate-600 w-full px-2">
+          <div className="flex items-center gap-2 justify-center bg-gray-900 rounded-xl py-5 border-[1.5px] border-slate-600 w-full px-2">
             <Bell size={28} />
             {reminder.type === "one-time" ? (
               <p className="text-lg">{formatDateTime(reminder.notify_date!)}</p>
@@ -51,7 +51,7 @@ export default function MyReminderSession(reminder: full_reminder) {
         {reminder.weekdays &&
           Array.isArray(reminder.weekdays) &&
           reminder.weekdays.length > 0 && (
-            <div className="bg-gray-900 rounded-xl border-2 border-slate-600 p-4 mt-6">
+            <div className="bg-gray-900 rounded-xl border-[1.5px] border-slate-600 p-4 mt-6">
               <p className="text-center text-lg ">
                 {(reminder.weekdays as number[])
                   .map((dayNum) => days[dayNum - 1])
@@ -60,13 +60,13 @@ export default function MyReminderSession(reminder: full_reminder) {
             </div>
           )}
 
-        <div className="bg-gray-900 rounded-xl p-5 mt-6 border-2 border-slate-600 text-center">
+        <div className="bg-gray-900 rounded-xl p-5 mt-6 border-[1.5px] border-slate-600 text-center">
           <p className="text-xl wrap-break-word">{reminder.title}</p>
         </div>
 
         {reminder.notes && (
           <div className="mt-6">
-            <div className="bg-gray-900 rounded-xl border-2 border-slate-600 p-4 whitespace-pre-wrap">
+            <div className="bg-gray-900 rounded-xl border-[1.5px] border-slate-600 p-4 whitespace-pre-wrap">
               {reminder.notes}
             </div>
           </div>

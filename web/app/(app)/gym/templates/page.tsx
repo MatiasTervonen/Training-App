@@ -14,6 +14,8 @@ import useDeleteTemplate from "@/features/gym/hooks/template/useDeleteTemplate";
 import useStartWorkoutTemplate from "@/features/gym/hooks/template/useStartWorkoutTemplate";
 import { useTranslation } from "react-i18next";
 import { FullGymTemplate } from "@/database/gym/templates/full-gym-template";
+import EmptyState from "@/components/EmptyState";
+import { Dumbbell } from "lucide-react";
 
 type templateSummary = {
   id: string;
@@ -76,9 +78,11 @@ export default function TemplatesPage() {
       )}
 
       {!isLoading && templates?.length === 0 && (
-        <p className="text-gray-300 text-center mt-20 px-10">
-          {t("gym.TemplatesScreen.noTemplates")}
-        </p>
+        <EmptyState
+          icon={Dumbbell}
+          title={t("gym.TemplatesScreen.noTemplates")}
+          description={t("gym.TemplatesScreen.noTemplatesDesc")}
+        />
       )}
 
       {templates &&

@@ -19,9 +19,11 @@ import FolderFilterChips from "@/features/notes/components/FolderFilterChips";
 import MoveToFolderDropdown from "@/features/notes/components/MoveToFolderDropdown";
 import { useTranslation } from "react-i18next";
 import type { FolderFilter } from "@/database/notes/get-notes";
+import EmptyState from "@/components/EmptyState";
+import { StickyNote } from "lucide-react";
 
 export default function MyNotesPage() {
-  const { t } = useTranslation("notes");
+  const { t } = useTranslation(["notes", "common"]);
   const [expandedItem, setExpandedItem] = useState<FeedItemUI | null>(null);
   const [editingItem, setEditingItem] = useState<FeedItemUI | null>(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
@@ -80,12 +82,12 @@ export default function MyNotesPage() {
         >
           {refreshing ? (
             <div className="flex text-xl items-center gap-4">
-              <p className="font-body">Refreshing...</p>
+              <p className="font-body">{t("common:feed.refreshing")}</p>
               <Spinner />
             </div>
           ) : pullDistance > 0 ? (
             <div className="flex text-xl items-center gap-2">
-              <p className="font-body text-gray-100/70">Pull to refresh...</p>
+              <p className="font-body text-gray-100/70">{t("common:feed.pullToRefresh")}</p>
             </div>
           ) : null}
         </div>
@@ -112,8 +114,6 @@ export default function MyNotesPage() {
           <p className="font-body text-center text-lg mt-10">
             {t("notes.failedToLoad")}
           </p>
-        ) : !data || (unpinnedFeed.length === 0 && pinnedFeed.length === 0) ? (
-          <p className="font-body text-center text-lg mt-20">{getEmptyMessage()}</p>
         ) : (
           <>
             <FeedHeader
@@ -124,48 +124,58 @@ export default function MyNotesPage() {
               queryKey={queryKey}
             />
 
-            {unpinnedFeed.map((feedItem) => {
-              return (
-                <div className="mt-8" key={feedItem.id}>
-                  <FeedCard
-                    item={feedItem}
-                    pinned={false}
-                    onExpand={() => {
-                      setExpandedItem(feedItem);
-                    }}
-                    onTogglePin={() =>
-                      togglePin(
-                        feedItem.id,
-                        feedItem.type,
-                        feedItem.feed_context,
-                      )
-                    }
-                    onDelete={() =>
-                      handleDelete(feedItem.source_id, feedItem.type)
-                    }
-                    onEdit={() => {
-                      setEditingItem(feedItem);
-                    }}
-                    onMoveToFolder={() => {
-                      setMoveToFolderItem(feedItem);
-                    }}
-                  />
-                </div>
-              );
-            })}
-            {isFetchingNextPage && (
-              <div className="flex flex-col gap-2 items-center mt-10">
-                <p className="font-body">Loading more...</p>
-                <Spinner />
-              </div>
-            )}
+            {unpinnedFeed.length === 0 ? (
+              <EmptyState
+                icon={StickyNote}
+                title={getEmptyMessage()}
+                description={selectedFolderId ? undefined : t("notes.noNotesDesc")}
+              />
+            ) : (
+              <>
+                {unpinnedFeed.map((feedItem) => {
+                  return (
+                    <div className="mt-8" key={feedItem.id}>
+                      <FeedCard
+                        item={feedItem}
+                        pinned={false}
+                        onExpand={() => {
+                          setExpandedItem(feedItem);
+                        }}
+                        onTogglePin={() =>
+                          togglePin(
+                            feedItem.id,
+                            feedItem.type,
+                            feedItem.feed_context,
+                          )
+                        }
+                        onDelete={() =>
+                          handleDelete(feedItem.source_id, feedItem.type)
+                        }
+                        onEdit={() => {
+                          setEditingItem(feedItem);
+                        }}
+                        onMoveToFolder={() => {
+                          setMoveToFolderItem(feedItem);
+                        }}
+                      />
+                    </div>
+                  );
+                })}
+                {isFetchingNextPage && (
+                  <div className="flex flex-col gap-2 items-center mt-10">
+                    <p className="font-body">{t("common:feed.loadingMore")}</p>
+                    <Spinner />
+                  </div>
+                )}
 
-            {hasNextPage && <div ref={loadMoreRef} className="h-20"></div>}
+                {hasNextPage && <div ref={loadMoreRef} className="h-20"></div>}
 
-            {!hasNextPage && data?.pages.length > 1 && (
-              <p className="font-body text-center justify-center mt-10 text-gray-300">
-                No more notes
-              </p>
+                {!hasNextPage && (data?.pages.length ?? 0) > 1 && (
+                  <p className="font-body text-center justify-center mt-10 text-gray-300">
+                    {t("notes:notes.noMoreNotes")}
+                  </p>
+                )}
+              </>
             )}
           </>
         )}
@@ -179,20 +189,15 @@ export default function MyNotesPage() {
         {editingItem && (
           <Modal
             isOpen={true}
-            onClose={() => {
-              setEditingItem(null);
-              setHasUnsavedChanges(false);
-            }}
+            onClose={() => { setEditingItem(null); setHasUnsavedChanges(false); }}
             confirmBeforeClose={hasUnsavedChanges}
           >
             <EditNote
               note={editingItem}
-              onDirtyChange={setHasUnsavedChanges}
               onSave={(updatedItem) => {
                 updateFeedItemToTop(updatedItem);
-                setEditingItem(null);
-                setHasUnsavedChanges(false);
               }}
+              onDirtyChange={setHasUnsavedChanges}
             />
           </Modal>
         )}

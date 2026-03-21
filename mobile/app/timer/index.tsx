@@ -111,7 +111,7 @@ export default function TimerScreen() {
 
       <Modal visible={showPushModal} transparent={true} animationType="slide">
         <View className="flex-1 justify-center items-center bg-black/50 px-5">
-          <View className="bg-slate-700 rounded-lg p-6 w-full border-2 border-gray-100">
+          <View className="bg-slate-700 rounded-lg p-6 w-full border-[1.5px] border-gray-100">
             <View className="mb-5">
               <Info size={35} color="#fbbf24" />
             </View>

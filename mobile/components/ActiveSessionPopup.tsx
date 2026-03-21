@@ -83,8 +83,8 @@ export default function ActiveSessionPopup() {
       style={animatedStyle}
       className={`z-0 ${
         alarmFired
-          ? "bg-red-500 border-2 border-red-400"
-          : "bg-gray-600 border-2 border-green-500"
+          ? "bg-red-500 border-[1.5px] border-red-400"
+          : "bg-gray-600 border-[1.5px] border-green-500"
       } `}
     >
       <LinearGradient

@@ -23,9 +23,9 @@ export default function NotificationBell() {
     try {
       await acceptFriendRequest(sender_id);
 
-      toast.success("Friend request accepted!");
+      toast.success(t("notifications.friendRequestAccepted"));
     } catch (error) {
-      toast.error("Failed to accept friend request");
+      toast.error(t("notifications.friendRequestFailed"));
       console.error("Error accepting friend request:", error);
     }
   };
@@ -40,7 +40,7 @@ export default function NotificationBell() {
       <CustomDropDown
         className="mr-[-110px] mt-2.5 bg-slate-950 border-blue-500"
         button={
-          <div className="text-gray-100 border-2 p-2 rounded-full border-blue-500 cursor-pointer">
+          <div className="text-gray-100 border-[1.5px] p-2 rounded-full border-blue-500 cursor-pointer">
             <Bell size={20} />
           </div>
         }

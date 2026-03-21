@@ -18,6 +18,8 @@ import SetInput from "@/features/gym/components/SetInput";
 import SaveButton from "@/components/buttons/save-button";
 import FullScreenLoader from "@/components/FullScreenLoader";
 import useUpdateTimer from "@/features/timer/hooks/useUpdateTimer";
+import EmptyState from "@/components/EmptyState";
+import { Timer } from "lucide-react";
 
 export default function TimersPage() {
   const { t } = useTranslation(["timer", "common"]);
@@ -148,9 +150,11 @@ export default function TimersPage() {
       )}
 
       {!isLoading && timer.length === 0 && (
-        <p className="text-gray-300 text-center">
-          {t("timer.noTimers")}
-        </p>
+        <EmptyState
+          icon={Timer}
+          title={t("timer.noTimers")}
+          description={t("timer.noTimersDesc")}
+        />
       )}
 
       {timer &&
@@ -158,7 +162,7 @@ export default function TimersPage() {
           <div
             key={timer.id}
             onClick={() => setExpandedItem(timer)}
-            className="text-center bg-blue-800 py-2 my-3 rounded-md shadow-md border-2 border-blue-500 text-lg cursor-pointer hover:scale-105 transition-all duration-200"
+            className="text-center bg-blue-800 py-2 my-3 rounded-md shadow-md border-[1.5px] border-blue-500 text-lg cursor-pointer hover:scale-105 transition-all duration-200"
           >
             {timer.title}
           </div>
@@ -226,7 +230,7 @@ export default function TimersPage() {
               />
               <button
                 onClick={closeEditModal}
-                className="w-full bg-gray-700 py-2 rounded-md shadow-md border-2 border-gray-500 text-lg cursor-pointer hover:bg-gray-600 hover:scale-105 transition-all duration-200"
+                className="w-full bg-gray-700 py-2 rounded-md shadow-md border-[1.5px] border-gray-500 text-lg cursor-pointer hover:bg-gray-600 hover:scale-105 transition-all duration-200"
               >
                 {t("common:common.cancel")}
               </button>

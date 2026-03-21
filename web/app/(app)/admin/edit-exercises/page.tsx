@@ -250,7 +250,7 @@ export default function EditExercises() {
                   onClick={() => {
                     resetFields();
                   }}
-                  className="bg-red-800 py-2 rounded-md shadow-xl border-2 border-red-500 text-gray-100 text-lg cursor-pointer hover:bg-red-700 hover:scale-105 transition-all duration-200"
+                  className="bg-red-800 py-2 rounded-md shadow-xl border-[1.5px] border-red-500 text-gray-100 text-lg cursor-pointer hover:bg-red-700 hover:scale-105 transition-all duration-200"
                 >
                   {t("common:common.cancel")}
                 </button>

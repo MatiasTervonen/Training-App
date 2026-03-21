@@ -334,8 +334,8 @@ export default function TemplateForm() {
                   end={{ x: 0, y: 1 }}
                   className={`mt-5 rounded-md overflow-hidden ${
                     group.length > 1
-                      ? "border-2 border-blue-700"
-                      : "border-2 border-gray-600"
+                      ? "border-[1.5px] border-blue-700"
+                      : "border-[1.5px] border-gray-600"
                   }`}
                 >
                   {group.length > 1 && (

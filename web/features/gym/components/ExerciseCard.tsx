@@ -112,7 +112,17 @@ export default function ExerciseCard({
                     {set.weight} {weightUnit}
                   </td>
                   <td className="p-2">{set.reps}</td>
-                  <td className="p-2">{set.rpe}</td>
+                  <td className="p-2">
+                    {set.rpe
+                      ? ({
+                          "Warm-up": "1",
+                          Easy: "2",
+                          Medium: "3",
+                          Hard: "4",
+                          Failure: "5",
+                        } as Record<string, string>)[set.rpe] || set.rpe
+                      : ""}
+                  </td>
                   <td>
                     <button
                       className="bg-red-600 p-1 rounded text-gray-100 "
@@ -135,7 +145,7 @@ export default function ExerciseCard({
           <div className="flex items-center justify-center gap-4 mt-6">
             <div className="flex items-center gap-2 w-2/3">
               <SetInput
-                placeholder="Weight..."
+                placeholder={t("gym.exerciseCard.weight")}
                 type="text"
                 inputMode="numeric"
                 maxLength={5}
@@ -145,7 +155,7 @@ export default function ExerciseCard({
                 }}
               />
               <SetInput
-                placeholder="Reps..."
+                placeholder={t("gym.exerciseCard.reps")}
                 type="text"
                 inputMode="numeric"
                 value={input.reps ?? ""}
@@ -161,26 +171,11 @@ export default function ExerciseCard({
                 value={input.rpe!}
                 onChange={(val) => onInputChange(index, "rpe", val)}
                 options={[
-                  {
-                    value: "Warm-up",
-                    label: t("gym.exerciseCard.rpeOptions.warmup"),
-                  },
-                  {
-                    value: "Easy",
-                    label: t("gym.exerciseCard.rpeOptions.easy"),
-                  },
-                  {
-                    value: "Medium",
-                    label: t("gym.exerciseCard.rpeOptions.medium"),
-                  },
-                  {
-                    value: "Hard",
-                    label: t("gym.exerciseCard.rpeOptions.hard"),
-                  },
-                  {
-                    value: "Failure",
-                    label: t("gym.exerciseCard.rpeOptions.failure"),
-                  },
+                  { value: "Warm-up", label: "1" },
+                  { value: "Easy", label: "2" },
+                  { value: "Medium", label: "3" },
+                  { value: "Hard", label: "4" },
+                  { value: "Failure", label: "5" },
                 ]}
               />
             </div>
@@ -199,7 +194,7 @@ export default function ExerciseCard({
 
                 onAddSet(index);
               }}
-              className="px-10 bg-blue-900 py-2 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-105 transition-all duration-200"
+              className="px-10 bg-blue-900 py-2 rounded-md shadow-xl border-[1.5px] border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-105 transition-all duration-200"
             >
               {t("gym.exerciseCard.addSet")}
             </button>

@@ -29,8 +29,7 @@ export default function TodoPage() {
   const [expandedItem, setExpandedItem] = useState<FeedItemUI | null>(null);
   const [editingItem, setEditingItem] = useState<FeedItemUI | null>(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-  const [hasUnsavedExpandedChanges, setHasUnsavedExpandedChanges] =
-    useState(false);
+  const [hasUnsavedExpandedChanges, setHasUnsavedExpandedChanges] = useState(false);
   const [filter, setFilter] = useState<TodoFilter>("active");
 
   const {
@@ -202,10 +201,7 @@ export default function TodoPage() {
 
         {expandedItem && (
           <Modal
-            onClose={() => {
-              setHasUnsavedExpandedChanges(false);
-              setExpandedItem(null);
-            }}
+            onClose={() => { setExpandedItem(null); setHasUnsavedExpandedChanges(false); }}
             isOpen={true}
             confirmBeforeClose={hasUnsavedExpandedChanges}
           >
@@ -227,7 +223,6 @@ export default function TodoPage() {
                       updateFeedItemToTop(updatedItem),
                       refetchFullTodo(),
                     ]);
-                    setHasUnsavedExpandedChanges(false);
                   }}
                   onDirtyChange={setHasUnsavedExpandedChanges}
                 />
@@ -239,10 +234,7 @@ export default function TodoPage() {
         {editingItem && (
           <Modal
             isOpen={true}
-            onClose={() => {
-              setEditingItem(null);
-              setHasUnsavedChanges(false);
-            }}
+            onClose={() => { setEditingItem(null); setHasUnsavedChanges(false); }}
             confirmBeforeClose={hasUnsavedChanges}
           >
             {isLoadingTodoSession ? (
@@ -259,15 +251,13 @@ export default function TodoPage() {
                 <EditTodo
                   todo_session={TodoSessionFull}
                   onClose={() => setEditingItem(null)}
-                  onDirtyChange={setHasUnsavedChanges}
                   onSave={async (updatedItem) => {
                     await Promise.all([
                       updateFeedItemToTop(updatedItem),
                       refetchFullTodo(),
                     ]);
-                    setEditingItem(null);
-                    setHasUnsavedChanges(false);
                   }}
+                  onDirtyChange={setHasUnsavedChanges}
                 />
               )
             )}

@@ -1,10 +1,9 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
-import SaveButton from "@/components/buttons/save-button";
 import FullScreenLoader from "@/components/FullScreenLoader";
 import Modal from "@/components/modal";
 import TitleInput from "@/ui/TitleInput";
@@ -14,6 +13,8 @@ import { editActivity } from "@/database/activities/edit-activity";
 import { deleteActivity } from "@/database/activities/delete-activity";
 import { UserActivity } from "@/database/activities/get-user-activities";
 import { ActivityCategory } from "@/database/activities/get-categories";
+import { useAutoSave } from "@/hooks/useAutoSave";
+import AutoSaveIndicator from "@/components/AutoSaveIndicator";
 
 export default function EditActivity() {
   const { t } = useTranslation("activities");
@@ -21,7 +22,6 @@ export default function EditActivity() {
   const [met, setMet] = useState("");
   const [category, setCategory] = useState("");
   const [categoryId, setCategoryId] = useState("");
-  const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState<UserActivity | null>(
     null,
@@ -63,60 +63,42 @@ export default function EditActivity() {
     [t],
   );
 
-  const handleSave = async () => {
-    if (!name) {
-      toast.error(t("activities.editActivityScreen.errorNameRequired"));
-      return;
-    }
+  const selectedActivityRef = useRef(selectedActivity);
+  selectedActivityRef.current = selectedActivity;
 
-    if (!category) {
-      toast.error(t("activities.editActivityScreen.errorCategoryRequired"));
-      return;
-    }
+  const handleAutoSave = useCallback(
+    async (data: { name: string; met: string; categoryId: string }) => {
+      if (!data.name) throw new Error("Name required");
+      if (!data.categoryId) throw new Error("Category required");
 
-    const metValue = parseFloat(met);
+      const metValue = parseFloat(data.met);
+      if (!data.met || data.met === "." || isNaN(metValue)) throw new Error("Invalid MET");
+      if (metValue < 1 || metValue > 20) throw new Error("MET out of range");
 
-    if (!met || met === "." || isNaN(metValue)) {
-      toast.error(
-        `${t("activities.editActivityScreen.errorInvalidMet")} - ${t("activities.editActivityScreen.errorInvalidMetDesc")}`,
-      );
-      return;
-    }
+      const finalMet = Number(metValue.toFixed(2));
+      const current = selectedActivityRef.current;
+      if (!current) return;
 
-    if (metValue < 1 || metValue > 20) {
-      toast.error(
-        `${t("activities.editActivityScreen.errorMetOutOfRange")} - ${t("activities.editActivityScreen.errorMetRangeDesc")}`,
-      );
-      return;
-    }
-
-    const finalMet = Number(metValue.toFixed(2));
-
-    setIsSaving(true);
-
-    const activityData = {
-      name,
-      base_met: finalMet,
-      category_id: categoryId,
-      id: selectedActivity!.id,
-    };
-
-    try {
-      await editActivity(activityData);
+      await editActivity({
+        name: data.name,
+        base_met: finalMet,
+        category_id: data.categoryId,
+        id: current.id,
+      });
 
       queryClient.refetchQueries({ queryKey: ["userActivities"], exact: true });
-      toast.success(t("activities.editActivityScreen.successEdited"));
-      resetFields();
-    } catch {
-      toast.error(t("activities.editActivityScreen.errorEditFailed"));
-    } finally {
-      setIsSaving(false);
-    }
-  };
+    },
+    [queryClient],
+  );
+
+  const { status } = useAutoSave({
+    data: { name, met, categoryId },
+    onSave: handleAutoSave,
+    enabled: !!selectedActivity,
+  });
 
   const handleDeleteActivity = async (activityId: string) => {
     setIsDeleting(true);
-    setIsSaving(true);
 
     try {
       await deleteActivity(activityId);
@@ -131,7 +113,6 @@ export default function EditActivity() {
       toast.error(t("activities.editActivityScreen.errorDeleteFailed"));
     } finally {
       setIsDeleting(false);
-      setIsSaving(false);
     }
   };
 
@@ -207,7 +188,7 @@ export default function EditActivity() {
         <div className="mb-5">
           <button
             onClick={() => setOpenCategoryModal(true)}
-            className="w-full bg-blue-800 py-2 rounded-md shadow-md border-2 border-blue-500 text-lg cursor-pointer hover:bg-blue-700 hover:scale-105 transition-all duration-200"
+            className="w-full bg-blue-800 py-2 rounded-md shadow-md border-[1.5px] border-blue-500 text-lg cursor-pointer hover:bg-blue-700 hover:scale-105 transition-all duration-200"
           >
             {category || t("activities.editActivityScreen.selectCategory")}
           </button>
@@ -227,32 +208,26 @@ export default function EditActivity() {
         </Modal>
       </div>
 
+      <AutoSaveIndicator status={status} />
+
       <div className="mt-20 flex flex-col gap-5">
-        <SaveButton
-          onClick={handleSave}
-          label={t("activities.editActivityScreen.updateButton")}
-        />
         <button
           onClick={() => handleDeleteActivity(selectedActivity!.id)}
-          className="w-full bg-red-800 py-3 rounded-md shadow-md border-2 border-red-500 text-gray-100 text-center hover:bg-red-700 cursor-pointer hover:scale-105 transition-all duration-200"
+          className="w-full bg-red-800 py-3 rounded-md shadow-md border-[1.5px] border-red-500 text-gray-100 text-center hover:bg-red-700 cursor-pointer hover:scale-105 transition-all duration-200"
         >
           {t("activities.editActivityScreen.deleteButton")}
         </button>
         <button
           onClick={resetFields}
-          className="w-full bg-gray-700 py-3 rounded-md shadow-md border-2 border-gray-500 text-gray-100 text-center hover:bg-gray-600 cursor-pointer hover:scale-105 transition-all duration-200"
+          className="w-full bg-gray-700 py-3 rounded-md shadow-md border-[1.5px] border-gray-500 text-gray-100 text-center hover:bg-gray-600 cursor-pointer hover:scale-105 transition-all duration-200"
         >
           {t("activities.editActivityScreen.cancelButton")}
         </button>
       </div>
 
-      {isSaving && (
+      {isDeleting && (
         <FullScreenLoader
-          message={
-            isDeleting
-              ? t("activities.editActivityScreen.deletingActivity")
-              : t("activities.editActivityScreen.savingActivity")
-          }
+          message={t("activities.editActivityScreen.deletingActivity")}
         />
       )}
     </div>

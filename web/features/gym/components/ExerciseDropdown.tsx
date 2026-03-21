@@ -41,7 +41,6 @@ export default function ExerciseDropdown({ onSelect }: Props) {
   const isLoading = isExercisesLoading || isRecentLoading;
   const isError = exercisesError || recentError;
 
-  // Filter exercises with translated values
   const allExercises = useMemo(() => {
     if (!allExercisesData) return [];
     if (!searchQuery.trim()) return allExercisesData;
@@ -84,9 +83,9 @@ export default function ExerciseDropdown({ onSelect }: Props) {
 
   return (
     <div className="flex flex-col px-2 w-full h-full z-50">
-      <div className="flex flex-col mt-8 px-20">
+      <div className="flex flex-col mt-8 px-8">
         <input
-          className="p-2 rounded-md border-2 border-gray-100 z-10 placeholder-gray-500 bg-gray-900 hover:border-blue-500 focus:outline-none focus:border-green-300"
+          className="p-2 rounded-md border-[1.5px] border-gray-100 z-10 placeholder-gray-500 bg-gray-900 hover:border-blue-500 focus:outline-none focus:border-green-300"
           type="text"
           value={searchQuery}
           placeholder={t("gym.exerciseDropdown.searchPlaceholder")}
@@ -97,27 +96,26 @@ export default function ExerciseDropdown({ onSelect }: Props) {
         />
       </div>
 
-      <div
-        className="w-full overflow-y-auto border rounded-md shadow-md
-                bg-slate-900 border-gray-100 touch-pan-y mt-10 h-full"
-      >
+      <div className="w-full overflow-y-auto border border-gray-100 rounded-md bg-slate-900 touch-pan-y mt-10 h-full overflow-hidden">
         {searchQuery.length === 0 &&
           recentExercises &&
           recentExercises.length > 0 && (
-            <div className="bg-slate-900">
-              <h2 className="text-center bg-blue-600">
+            <>
+              <p className="text-center bg-blue-600 py-0.5">
                 {t("gym.exerciseDropdown.recentExercises")}
-              </h2>
-              {recentExercises.map((exercise) => (
+              </p>
+              {recentExercises.map((exercise, index) => (
                 <button
                   key={exercise.id}
-                  className="w-full text-left px-4 py-2 cursor-pointer z-40 hover:bg-slate-800 border-b"
+                  className={`w-full text-left px-4 py-2 cursor-pointer z-40 hover:bg-slate-800 border-b border-gray-700 ${index % 2 === 1 ? "bg-slate-800/50" : ""}`}
                   onClick={() => onSelect(exercise)}
                 >
                   <div className="flex justify-between flex-col">
                     <div className="flex justify-between items-center">
-                      <span className="truncate mr-5">{exercise.name}</span> 
-                      <span className="text-sm text-gray-300">
+                      <span className="font-body text-gray-200 truncate mr-4">
+                        {exercise.name}
+                      </span>
+                      <span className="text-sm text-gray-300 shrink-0">
                         {t(`gym.muscleGroups.${exercise.muscle_group}`)}
                       </span>
                     </div>
@@ -127,12 +125,12 @@ export default function ExerciseDropdown({ onSelect }: Props) {
                   </div>
                 </button>
               ))}
-            </div>
+            </>
           )}
 
-        <h2 className="text-center bg-blue-600">
+        <p className="text-center bg-blue-600 py-0.5">
           {t("gym.exerciseDropdown.allExercises")}
-        </h2>
+        </p>
 
         {searchQuery.length > 0 && allExercises.length === 0 && (
           <p className="text-center py-4 text-gray-400 mt-20 text-lg">
@@ -142,14 +140,16 @@ export default function ExerciseDropdown({ onSelect }: Props) {
 
         {allExercises.map((exercise, index) => (
           <button
-            key={index}
+            key={exercise.id}
             onClick={() => onSelect(exercise)}
-            className="w-full text-left px-4 py-2 cursor-pointer z-40 hover:bg-slate-800 border-b"
+            className={`w-full text-left px-4 py-2 cursor-pointer z-40 hover:bg-slate-800 border-b border-gray-700 ${index % 2 === 1 ? "bg-slate-800/50" : ""}`}
           >
             <div className="flex flex-col">
               <div className="flex justify-between items-center">
-                <p className="truncate mr-5">{exercise.name}</p>
-                <p className="text-sm text-gray-300">
+                <p className="font-body text-gray-200 truncate mr-4">
+                  {exercise.name}
+                </p>
+                <p className="text-sm text-gray-300 shrink-0">
                   {t(`gym.muscleGroups.${exercise.muscle_group}`)}
                 </p>
               </div>

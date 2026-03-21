@@ -127,7 +127,7 @@ export default function VideoPlayerModal({ uri, visible, onClose }: Props) {
           >
             <AnimatedButton
               onPress={handleClose}
-              className="bg-slate-800 border-slate-600 border-2 rounded-full p-2"
+              className="bg-slate-800 border-slate-600 border-[1.5px] rounded-full p-2"
             >
               <X color="white" size={24} />
             </AnimatedButton>

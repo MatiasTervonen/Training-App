@@ -12,7 +12,7 @@ import {
   stopAlarmAudio,
 } from "@/features/timer/components/alarmAudio";
 import BaseButton from "@/components/buttons/BaseButton";
-import DeleteSessionBtn from "@/components/buttons/deleteSessionBtn";
+
 import { useTranslation } from "react-i18next";
 import { formatDateShort } from "@/lib/formatDate";
 
@@ -35,11 +35,6 @@ export default function TimerPage() {
     clearEverything,
   } = useTimerStore();
 
-  const clear = () => {
-    setAlarmMinutes("");
-    setAlarmSeconds("");
-  };
-
   const cancelTimer = () => {
     const confirmCancel = confirm(t("timer.cancelTimerMessage"));
     if (!confirmCancel) return;
@@ -49,7 +44,8 @@ export default function TimerPage() {
     stopAlarmAudio();
     clearEverything();
     localStorage.removeItem("timer_session_draft");
-    clear();
+    setAlarmMinutes("");
+    setAlarmSeconds("");
     router.replace("/timer");
   };
 
@@ -161,17 +157,10 @@ export default function TimerPage() {
             </div>
           </div>
 
-          <div className="flex flex-col gap-5">
-            <BaseButton
-              onClick={handleStartTimer}
-              label={t("timer.startTimer")}
-            />
-            <DeleteSessionBtn
-              confirm={false}
-              label={t("timer.clear")}
-              onDelete={clear}
-            />
-          </div>
+          <BaseButton
+            onClick={handleStartTimer}
+            label={t("timer.startTimer")}
+          />
         </div>
       )}
     </>

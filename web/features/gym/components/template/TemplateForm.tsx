@@ -159,8 +159,8 @@ export default function TemplateForm({
             key={superset_id}
             className={`mt-5 bg-linear-to-tr from-gray-900 via-slate-900 to-blue-900  rounded-md mx-2 ${
               group.length > 1
-                ? "border-2 border-blue-700"
-                : "border-2 border-gray-600"
+                ? "border-[1.5px] border-blue-700"
+                : "border-[1.5px] border-gray-600"
             }`}
           >
             {group.length > 1 && (
@@ -240,7 +240,7 @@ export default function TemplateForm({
         <div className="flex gap-3 w-full px-2 my-5">
           <div className="relative w-full">
             <select
-              className="appearance-none w-full px-10 bg-blue-800 py-2 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700"
+              className="appearance-none w-full px-10 bg-blue-800 py-2 rounded-md shadow-xl border-[1.5px] border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700"
               value={exerciseType}
               onChange={(e) => {
                 const type = e.target.value;
@@ -270,7 +270,7 @@ export default function TemplateForm({
               handleAddExercise();
               setIsExerciseModalOpen(false);
             }}
-            className="w-full px-2 bg-blue-800 py-2 rounded-md shadow-xl border-2 border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700"
+            className="w-full px-2 bg-blue-800 py-2 rounded-md shadow-xl border-[1.5px] border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700"
           >
             {exerciseType === "Super-Set"
               ? t("gym.templateForm.addSuperSet")
@@ -295,7 +295,7 @@ export default function TemplateForm({
             setNormalExercises([emptyExerciseEntry]);
             setIsExerciseModalOpen(true);
           }}
-          className="px-10 bg-blue-800 py-2 rounded-md shadow-md border-2 border-blue-500 text-lg cursor-pointer hover:bg-blue-700 hover:scale-105 transition-transform duration-200"
+          className="px-10 bg-blue-800 py-2 rounded-md shadow-md border-[1.5px] border-blue-500 text-lg cursor-pointer hover:bg-blue-700 hover:scale-105 transition-transform duration-200"
         >
           {t("gym.templateForm.addExercise")}
           <Plus className=" inline ml-2" size={20} />

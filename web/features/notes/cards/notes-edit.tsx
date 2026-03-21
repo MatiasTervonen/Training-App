@@ -1,8 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import SaveButton from "@/components/buttons/save-button";
-import FullScreenLoader from "@/components/FullScreenLoader";
+import { useState, useCallback, useRef, useEffect } from "react";
 import toast from "react-hot-toast";
 import { editNotes } from "@/database/notes/edit-notes";
 import { FeedItemUI } from "@/types/session";
@@ -11,13 +9,14 @@ import type { UploadedImage } from "@/features/notes/components/TiptapEditor";
 import TitleInput from "@/ui/TitleInput";
 import FolderPicker from "@/features/notes/components/FolderPicker";
 import useFolders from "@/features/notes/hooks/useFolders";
-import { Dot } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { useAutoSave } from "@/hooks/useAutoSave";
+import AutoSaveIndicator from "@/components/AutoSaveIndicator";
 
 type Props = {
   note: FeedItemUI;
   onSave: (updatedItem: FeedItemUI) => void;
-  onDirtyChange?: (isDirty: boolean) => void;
+  onDirtyChange?: (dirty: boolean) => void;
 };
 
 type NotesPayload = {
@@ -34,57 +33,57 @@ export default function EditNotes({ note, onSave, onDirtyChange }: Props) {
   const [selectedFolderId, setSelectedFolderId] = useState<string | null>(
     payload.folder_id ?? null,
   );
-  const [isSaving, setIsSaving] = useState(false);
   const [newImages, setNewImages] = useState<UploadedImage[]>([]);
 
   const { folders, isLoading: foldersLoading } = useFolders();
 
+  const newImagesRef = useRef<UploadedImage[]>([]);
+
   const handleImagesChange = useCallback((images: UploadedImage[]) => {
+    newImagesRef.current = images;
     setNewImages(images);
   }, []);
 
-  const handleSubmit = async () => {
-    setIsSaving(true);
-    const updated = new Date().toISOString();
-    try {
-      const updatedFeedItem = await editNotes({
-        id: note.source_id,
-        title,
-        notes,
-        updated_at: updated,
-        folderId: selectedFolderId,
-        newImages: newImages.length > 0 ? newImages : undefined,
-      });
+  const handleAutoSave = useCallback(
+    async (data: {
+      title: string;
+      notes: string;
+      selectedFolderId: string | null;
+      newImageCount: number;
+    }) => {
+      const updated = new Date().toISOString();
+      const images = newImagesRef.current;
+      try {
+        const updatedFeedItem = await editNotes({
+          id: note.source_id,
+          title: data.title,
+          notes: data.notes,
+          updated_at: updated,
+          folderId: data.selectedFolderId,
+          newImages: images.length > 0 ? images : undefined,
+        });
 
-      onSave(updatedFeedItem as FeedItemUI);
-    } catch {
-      setIsSaving(false);
-      toast.error(t("notes.editScreen.errorTitle"));
-    }
-  };
+        onSave(updatedFeedItem as FeedItemUI);
+      } catch {
+        toast.error(t("notes.editScreen.errorTitle"));
+        throw new Error("Save failed");
+      }
+    },
+    [note.source_id, onSave, t],
+  );
 
-  const hasChanges =
-    title !== note.title ||
-    notes !== payload.notes ||
-    selectedFolderId !== (payload.folder_id ?? null) ||
-    newImages.length > 0;
+  const { status, hasPendingChanges } = useAutoSave({
+    data: { title, notes, selectedFolderId, newImageCount: newImages.length },
+    onSave: handleAutoSave,
+  });
 
   useEffect(() => {
-    onDirtyChange?.(hasChanges);
-  }, [hasChanges, onDirtyChange]);
+    onDirtyChange?.(hasPendingChanges);
+  }, [hasPendingChanges, onDirtyChange]);
 
   return (
     <>
-      {hasChanges && (
-        <div className="bg-slate-900 z-50 py-1 px-4 flex items-center rounded-lg fixed top-5 self-start ml-5">
-          <p className="text-sm text-yellow-500">
-            {hasChanges ? t("notes.editScreen.unsavedChanges") : ""}
-          </p>
-          <div className="animate-pulse">
-            <Dot color="#eab308" />
-          </div>
-        </div>
-      )}
+      <AutoSaveIndicator status={status} />
       <div className="flex flex-col h-full max-w-3xl mx-auto page-padding">
         <div className="flex flex-col items-center gap-5 grow min-h-0">
           <h2 className="text-lg text-center mb-5">
@@ -110,14 +109,7 @@ export default function EditNotes({ note, onSave, onDirtyChange }: Props) {
             label={t("notes.notesLabel")}
           />
         </div>
-        <div className="w-full mt-5">
-          <SaveButton onClick={handleSubmit} />
-        </div>
       </div>
-
-      {isSaving && (
-        <FullScreenLoader message={t("notes.editScreen.savingNotes")} />
-      )}
     </>
   );
 }

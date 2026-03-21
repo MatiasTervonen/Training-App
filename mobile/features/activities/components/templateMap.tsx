@@ -128,7 +128,7 @@ export default function TemplateMap({ template, setFullScreen }: MapProps) {
       </View>
       <AnimatedButton
         onPress={() => setFullScreen(true)}
-        className="absolute z-50 p-2 rounded-full bg-blue-700 border-2 border-blue-500"
+        className="absolute z-50 p-2 rounded-full bg-blue-700 border-[1.5px] border-blue-500"
         style={{ bottom: 15, right: 15 }}
         hitSlop={10}
       >

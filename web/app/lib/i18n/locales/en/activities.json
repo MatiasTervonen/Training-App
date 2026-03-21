@@ -16,7 +16,8 @@
     "mySessions": {
       "title": "My Sessions",
       "loadError": "Failed to load activity sessions. Please try again later.",
-      "noSessions": "No activity sessions yet. Add a session to get started!",
+      "noSessions": "No activity sessions yet",
+      "noSessionsDesc": "Your activity sessions will appear here",
       "loadingDetails": "Loading activity session details...",
       "loadingSession": "Loading activity session...",
       "loadDetailsError": "Failed to load activity session details. Please try again later."

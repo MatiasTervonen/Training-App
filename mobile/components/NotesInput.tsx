@@ -30,7 +30,7 @@ export default function NotesInput({
   return (
     <View>
       {label && <AppText className="text-gray-300 mb-1">{label}</AppText>}
-      <View className="border-2 rounded-lg overflow-hidden border-gray-400 focus:border-green-500">
+      <View className="border-[1.5px] rounded-lg overflow-hidden border-gray-400 focus:border-green-500">
         <LinearGradient
           colors={["#0f172a", "#1e293b", "#333333"]}
           start={{ x: 0, y: 0 }}

@@ -179,7 +179,7 @@ export default function MonthGrid({
                 <AnimatedButton
                   onPress={() => onDayPress?.(date)}
                   className={`w-8 h-8 rounded-full items-center justify-center ${
-                    isSelected ? "border-2 border-blue-400" : ""
+                    isSelected ? "border-[1.5px] border-blue-400" : ""
                   }`}
                   disabled={!onDayPress}
                 >

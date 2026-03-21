@@ -2,6 +2,7 @@ import ExerciseDropdown from "@/features/gym/components/ExerciseDropdown";
 import { CircleX } from "lucide-react";
 import { ExerciseEntry, emptyExerciseEntry } from "@/types/session";
 import { generateUUID } from "@/lib/generateUUID";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   draftExercises: ExerciseEntry[];
@@ -22,6 +23,8 @@ export default function ExerciseSelectorList({
   setExercises,
   setIsExerciseModalOpen,
 }: Props) {
+  const { t } = useTranslation("gym");
+
   return (
     <div className="flex flex-col h-[calc(100dvh-120px)] overflow-hidden">
       <div className="shrink-0">
@@ -39,7 +42,8 @@ export default function ExerciseSelectorList({
               <div className="flex flex-col ">
                 <p className="">{exercise.name}</p>
                 <p className="text-sm text-gray-400">
-                  {exercise.equipment} / {exercise.muscle_group}
+                  {t(`gym.equipment.${exercise.equipment?.toLowerCase()}`)} /{" "}
+                  {t(`gym.muscleGroups.${exercise.muscle_group?.toLowerCase().replace(/ /g, "_")}`)}
                 </p>
               </div>
               <button

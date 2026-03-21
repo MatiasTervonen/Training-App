@@ -27,7 +27,8 @@
     "saveSuccess": "Todo saved successfully",
     "saveError": "Failed to save todo",
     "failedToLoad": "Failed to load todo lists. Please try again later.",
-    "noTodoLists": "No todo lists yet. Add a todo list to get started!",
+    "noTodoLists": "No todo lists yet",
+    "noTodoListsDesc": "Create a todo list to see it here",
     "noActiveTodoLists": "No active todo lists",
     "noActiveTodoListsDesc": "All your todo lists are completed!",
     "noCompletedTodoLists": "No completed todo lists",
@@ -53,6 +54,7 @@
       "saveSuccess": "Changes saved successfully",
       "saveError": "Failed to save changes"
     },
+    "noMoreTodoLists": "No more todo lists",
     "editScreen": {
       "title": "Edit your todo list",
       "titleLabel": "Title...",

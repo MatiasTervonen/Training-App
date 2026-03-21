@@ -16,13 +16,16 @@ import { useQuery } from "@tanstack/react-query";
 import { getFullTodoSession } from "@/database/todo/get-full-todo";
 import { full_todo_session } from "@/types/models";
 import FeedHeader from "@/features/dashboard/components/feedHeader";
+import EmptyState from "@/components/EmptyState";
+import { ClipboardList } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export default function MyTodoListsPage() {
+  const { t } = useTranslation(["todo", "common"]);
   const [expandedItem, setExpandedItem] = useState<FeedItemUI | null>(null);
   const [editingItem, setEditingItem] = useState<FeedItemUI | null>(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-  const [hasUnsavedExpandedChanges, setHasUnsavedExpandedChanges] =
-    useState(false);
+  const [hasUnsavedExpandedChanges, setHasUnsavedExpandedChanges] = useState(false);
 
   const {
     data,
@@ -67,12 +70,12 @@ export default function MyTodoListsPage() {
         >
           {refreshing ? (
             <div className="flex text-xl items-center gap-4">
-              <p className="font-body">Refreshing...</p>
+              <p className="font-body">{t("common:feed.refreshing")}</p>
               <Spinner />
             </div>
           ) : pullDistance > 0 ? (
             <div className="flex text-xl items-center gap-2">
-              <p className="font-body text-gray-100/70">Pull to refresh...</p>
+              <p className="font-body text-gray-100/70">{t("common:feed.pullToRefresh")}</p>
             </div>
           ) : null}
         </div>
@@ -81,11 +84,7 @@ export default function MyTodoListsPage() {
           <FeedSkeleton count={6} />
         ) : error ? (
           <p className="font-body text-center text-lg mt-10">
-            Failed to load todo lists. Please try again later.
-          </p>
-        ) : !data || (unpinnedFeed.length === 0 && pinnedFeed.length === 0) ? (
-          <p className="font-body text-center text-lg mt-20">
-            No todo lists yet. Create a todo list to see it here!
+            {t("todo.failedToLoad")}
           </p>
         ) : (
           <>
@@ -96,66 +95,74 @@ export default function MyTodoListsPage() {
               pinned_context="todo"
               queryKey={["myTodoLists"]}
             />
-            {unpinnedFeed.map((feedItem) => {
-              return (
-                <div className="mt-8" key={feedItem.id}>
-                  <FeedCard
-                    item={feedItem}
-                    pinned={false}
-                    onExpand={() => {
-                      setExpandedItem(feedItem);
-                    }}
-                    onTogglePin={() =>
-                      togglePin(
-                        feedItem.id,
-                        feedItem.type,
-                        feedItem.feed_context,
-                      )
-                    }
-                    onDelete={() =>
-                      handleDelete(feedItem.source_id, feedItem.type)
-                    }
-                    onEdit={() => {
-                      setEditingItem(feedItem);
-                    }}
-                  />
-                </div>
-              );
-            })}
-            {isFetchingNextPage && (
-              <div className="flex flex-col gap-2 items-center mt-10">
-                <p className="font-body">Loading more...</p>
-                <Spinner />
-              </div>
-            )}
 
-            {hasNextPage && <div ref={loadMoreRef} className="h-20"></div>}
+            {unpinnedFeed.length === 0 ? (
+              <EmptyState
+                icon={ClipboardList}
+                title={t("todo.noTodoLists")}
+                description={t("todo.noTodoListsDesc")}
+              />
+            ) : (
+              <>
+                {unpinnedFeed.map((feedItem) => {
+                  return (
+                    <div className="mt-8" key={feedItem.id}>
+                      <FeedCard
+                        item={feedItem}
+                        pinned={false}
+                        onExpand={() => {
+                          setExpandedItem(feedItem);
+                        }}
+                        onTogglePin={() =>
+                          togglePin(
+                            feedItem.id,
+                            feedItem.type,
+                            feedItem.feed_context,
+                          )
+                        }
+                        onDelete={() =>
+                          handleDelete(feedItem.source_id, feedItem.type)
+                        }
+                        onEdit={() => {
+                          setEditingItem(feedItem);
+                        }}
+                      />
+                    </div>
+                  );
+                })}
+                {isFetchingNextPage && (
+                  <div className="flex flex-col gap-2 items-center mt-10">
+                    <p className="font-body">{t("common:feed.loadingMore")}</p>
+                    <Spinner />
+                  </div>
+                )}
 
-            {!hasNextPage && data?.pages.length > 1 && (
-              <p className="font-body text-center justify-center mt-10 text-gray-300">
-                No more todo lists
-              </p>
+                {hasNextPage && <div ref={loadMoreRef} className="h-20"></div>}
+
+                {!hasNextPage && (data?.pages.length ?? 0) > 1 && (
+                  <p className="font-body text-center justify-center mt-10 text-gray-300">
+                    {t("todo.noMoreTodoLists")}
+                  </p>
+                )}
+              </>
             )}
           </>
         )}
 
         {expandedItem && (
           <Modal
-            onClose={() => {
-              setHasUnsavedExpandedChanges(false);
-              setExpandedItem(null);
-            }}
+            onClose={() => { setExpandedItem(null); setHasUnsavedExpandedChanges(false); }}
             isOpen={true}
             confirmBeforeClose={hasUnsavedExpandedChanges}
           >
             {isLoadingTodoSession ? (
               <div className="flex flex-col gap-5 items-center justify-center pt-40 px-10">
-                <p className="font-body">Loading todo session details...</p>
+                <p className="font-body">{t("todo.loadingDetails")}</p>
                 <Spinner />
               </div>
             ) : TodoSessionError ? (
               <p className="font-body text-center text-lg mt-40 px-10">
-                Failed to load todo session details. Please try again later.
+                {t("todo.failedToLoadDetails")}
               </p>
             ) : (
               TodoSessionFull && (
@@ -166,7 +173,6 @@ export default function MyTodoListsPage() {
                       updateFeedItemToTop(updatedItem),
                       refetchFullTodo(),
                     ]);
-                    setHasUnsavedExpandedChanges(false);
                   }}
                   onDirtyChange={setHasUnsavedExpandedChanges}
                 />
@@ -178,35 +184,30 @@ export default function MyTodoListsPage() {
         {editingItem && (
           <Modal
             isOpen={true}
-            onClose={() => {
-              setEditingItem(null);
-              setHasUnsavedChanges(false);
-            }}
+            onClose={() => { setEditingItem(null); setHasUnsavedChanges(false); }}
             confirmBeforeClose={hasUnsavedChanges}
           >
             {isLoadingTodoSession ? (
               <div className="flex flex-col gap-5 items-center justify-center pt-40 px-10">
-                <p className="font-body">Loading todo session details...</p>
+                <p className="font-body">{t("todo.loadingDetails")}</p>
                 <Spinner />
               </div>
             ) : TodoSessionError ? (
               <p className="font-body text-center text-lg mt-40 px-10">
-                Failed to load todo session details. Please try again later.
+                {t("todo.failedToLoadDetails")}
               </p>
             ) : (
               TodoSessionFull && (
                 <EditTodo
                   todo_session={TodoSessionFull}
                   onClose={() => setEditingItem(null)}
-                  onDirtyChange={setHasUnsavedChanges}
                   onSave={async (updatedItem) => {
                     await Promise.all([
                       updateFeedItemToTop(updatedItem),
                       refetchFullTodo(),
                     ]);
-                    setEditingItem(null);
-                    setHasUnsavedChanges(false);
                   }}
+                  onDirtyChange={setHasUnsavedChanges}
                 />
               )
             )}

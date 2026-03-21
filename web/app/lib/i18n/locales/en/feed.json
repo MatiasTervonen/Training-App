@@ -1,7 +1,8 @@
 {
   "feed": {
     "loadError": "Failed to load sessions. Please try again later.",
-    "noSessions": "No sessions yet. Let's get started!",
+    "noSessions": "No sessions yet",
+    "noSessionsDesc": "Your sessions and activities will appear here",
     "loadingTodo": "Loading todo session...",
     "todoError": "Failed to load todo session details. Please try again later.",
     "loadingGym": "Loading gym session details...",

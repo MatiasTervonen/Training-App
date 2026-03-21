@@ -1,0 +1,113 @@
+{
+  "hero": {
+    "subtitle": "The Only Tracking App You'll Ever Need",
+    "heading": "Track Your Progress",
+    "description": "Track everything from gym workouts to outdoor activities and personal goals. {{appName}} helps you stay organized and motivated — your progress, your way.",
+    "comingSoon": "Coming Soon on",
+    "googlePlay": "Google Play"
+  },
+  "phone": {
+    "heading": "Just Your Phone. That's It.",
+    "description": "No extra devices, no additional apps. {{appName}} uses your phone's built-in sensors to track everything — GPS, steps, motion, and more. Install and start tracking in seconds.",
+    "sync": "All your data is securely stored in the cloud and synced between the mobile app and web. Switch devices, never lose your progress."
+  },
+  "simplicity": {
+    "heading": "Built for Simplicity",
+    "description": "Intuitive design that gets out of your way. Focus on what matters — your progress.",
+    "intuitiveTitle": "Smart Feed",
+    "intuitiveDesc": "Your sessions organize themselves as you go. Pin favorites to the top for quick access",
+    "navigationTitle": "Easy Navigation",
+    "navigationDesc": "Swipe between pages, tap to explore — everything flows naturally",
+    "editTitle": "Edit Anything, Anytime",
+    "editDesc": "Everything you create is fully editable afterwards. Auto-save keeps your changes safe as you go",
+    "allInOneTitle": "All-in-One App",
+    "allInOneDesc": "Gym, activities, notes, habits, chat, and more — all in a single app"
+  },
+  "activities": {
+    "heading": "Track Every Activity",
+    "description": "From runs to rides, hikes to gym sessions — {{appName}} tracks it all with precision.",
+    "gpsTitle": "GPS Location Tracking",
+    "gpsDesc": "Real-time tracking with interactive maps and route visualization",
+    "statsTitle": "Comprehensive Stats",
+    "statsDesc": "Distance, pace, calories, steps, moving time, duration — all tracked automatically",
+    "templatesTitle": "Templates & History",
+    "templatesDesc": "Save favorite routes and workouts, review your complete session history",
+    "shareTitle": "Share Your Sessions",
+    "shareDesc": "Create beautiful, fully customizable images of your sessions and share them with friends"
+  },
+  "analytics": {
+    "heading": "Powerful Analytics",
+    "description": "See your progress, hit your goals. Detailed insights across all your activities.",
+    "chartsTitle": "Progress Charts",
+    "chartsDesc": "Visualize your improvement over days, weeks, months, and years",
+    "recordsTitle": "Personal Records",
+    "recordsDesc": "Automatically track your PRs and celebrate milestones",
+    "reportsTitle": "Custom Reports",
+    "reportsDesc": "Generate weekly, monthly, and quarterly summaries of all your data",
+    "goalsTitle": "Goal Setting",
+    "goalsDesc": "Set personal goals and track your progress toward achieving them"
+  },
+  "social": {
+    "heading": "Share Your Journey",
+    "description": "Connect with friends, share your sessions, and celebrate achievements together.",
+    "shareTitle": "Share Sessions",
+    "shareDesc": "Post your workouts and activities to the social feed for friends to see",
+    "likeTitle": "Like & Comment",
+    "likeDesc": "Engage with your friends' achievements and keep each other motivated",
+    "friendsTitle": "Friends Network",
+    "friendsDesc": "Connect with friends and follow each other's fitness progress",
+    "feedTitle": "Activity Feed",
+    "feedDesc": "See what your friends are up to with a real-time activity feed"
+  },
+  "chat": {
+    "heading": "Stay Connected",
+    "description": "Full-featured chat built right in. Share your progress without leaving the app.",
+    "messagesTitle": "Real-Time Messages",
+    "messagesDesc": "Instant messaging with typing indicators and delivery status",
+    "mediaTitle": "Media Sharing",
+    "mediaDesc": "Share photos and videos directly in your conversations",
+    "voiceTitle": "Voice Messages",
+    "voiceDesc": "Record and send voice messages when typing isn't enough",
+    "shareSessionsTitle": "Share Sessions in Chat",
+    "shareSessionsDesc": "Send workout and activity summaries directly to friends"
+  },
+  "reminders": {
+    "heading": "Smart Reminders",
+    "description": "Reminders built into every feature. Stay on track with your habits, activities, and goals.",
+    "globalTitle": "Global Reminders",
+    "globalDesc": "Set a global reminder and get notified on every device — mobile and web, always in sync",
+    "localTitle": "Local Reminders",
+    "localDesc": "Keep it simple with reminders that only fire on the device you set them on",
+    "priorityTitle": "Priority Alerts",
+    "priorityDesc": "Important reminders break through with full-screen alerts that demand your attention",
+    "integratedTitle": "Built Into Every Feature",
+    "integratedDesc": "Get reminded to complete habits, receive milestone alerts during activities, and more"
+  },
+  "notifications": {
+    "heading": "Never Miss a Moment",
+    "description": "Live push notifications keep you in the loop. Friend requests, new comments, messages — delivered instantly to your device."
+  },
+  "cta": {
+    "heading": "Ready to Start Tracking?",
+    "description": "Join {{appName}} and take control of your fitness journey today.",
+    "button": "Get Started — It's Free"
+  },
+  "navbar": {
+    "login": "Log in / Sign up",
+    "loginNote": "Same account works on mobile & web"
+  },
+  "marquee": {
+    "gym": "Gym",
+    "activities": "Activities",
+    "timer": "Timer",
+    "notes": "Notes",
+    "weight": "Weight",
+    "habits": "Habits",
+    "todo": "Todo",
+    "reminders": "Reminders",
+    "reports": "Reports",
+    "chat": "Chat",
+    "friends": "Friends",
+    "analytics": "Analytics"
+  }
+}

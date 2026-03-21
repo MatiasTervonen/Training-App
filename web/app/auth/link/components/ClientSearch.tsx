@@ -55,7 +55,7 @@ export default function ClientSearch() {
 
   return (
     <>
-      <div className="flex flex-col items-center justify-center gap-10 max-w-xl border-2 py-10 px-5 sm:px-10 rounded-xl bg-slate-900 shadow-lg w-full">
+      <div className="flex flex-col items-center justify-center gap-10 max-w-xl border-[1.5px] py-10 px-5 sm:px-10 rounded-xl bg-slate-900 shadow-lg w-full">
         <h1 className="text-2xl ">{APP_NAME}</h1>
         <h2 className="text-green-400">{title}</h2>
         <p className="text-center">{message}</p>

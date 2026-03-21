@@ -222,7 +222,7 @@ export default function LoginPage() {
                 <h3 className="text-xl underline mt-5 text-gray-100">
                   {t("login.forgotPassword.title")}
                 </h3>
-                <p className="text-gray-300">
+                <p className="text-gray-300 font-body">
                   {t("login.forgotPassword.description")}
                 </p>
                 <div className="w-full">
@@ -389,7 +389,7 @@ export default function LoginPage() {
                 <h3 className="text-xl underline mt-5">
                   {t("login.resendEmail.title")}
                 </h3>
-                <p className="text-gray-300">
+                <p className="text-gray-300 font-body">
                   {t("login.resendEmail.description")}
                 </p>
                 <div className="w-full">
@@ -433,8 +433,8 @@ export default function LoginPage() {
               </h1>
               <div className="flex flex-col text-center gap-10">
                 <h2 className="text-2xl underline">{t("login.guest.title")}</h2>
-                <p className="text-lg">{t("login.guest.description")}</p>
-                <p>{t("login.guest.testInfo")}</p>
+                <p className="text-lg font-body">{t("login.guest.description")}</p>
+                <p className="font-body">{t("login.guest.testInfo")}</p>
               </div>
               <button
                 type="button"
@@ -450,7 +450,7 @@ export default function LoginPage() {
                     }
                   })
                 }
-                className="w-full border-2 border-blue-500 p-2 rounded-md bg-linear-to-tr from-slate-950  to-blue-700 hover:from-blue-700 hover:to-slate-950 transform hover:scale-105 transition duration-200 cursor-pointer"
+                className="w-full border-[1.5px] border-blue-500 p-2 rounded-md bg-linear-to-tr from-slate-950  to-blue-700 hover:from-blue-700 hover:to-slate-950 transform hover:scale-105 transition duration-200 cursor-pointer"
                 disabled={isPending}
               >
                 <span>{t("login.guest.continue")}</span>
@@ -476,7 +476,7 @@ export default function LoginPage() {
                 setActiveForm(!activeForm);
                 setHideErrorMessage(true);
               }}
-              className="border-2 border-blue-400 py-2 px-10 rounded-md bg-linear-to-tr from-slate-950  to-blue-700 hover:from-blue-700 hover:to-slate-950 transform hover:scale-105 transition-all duration-200 cursor-pointer"
+              className="border-[1.5px] border-blue-400 py-2 px-10 rounded-md bg-linear-to-tr from-slate-950  to-blue-700 hover:from-blue-700 hover:to-slate-950 transform hover:scale-105 transition-all duration-200 cursor-pointer"
             >
               {activeForm ? t("login.logIn") : t("login.signUp")}
             </button>

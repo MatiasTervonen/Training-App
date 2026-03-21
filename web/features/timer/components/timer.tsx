@@ -139,7 +139,7 @@ export default function Timer({
               onClick={() => {
                 onStopAlarmSound?.();
               }}
-              className="min-w-[129px] bg-red-600 border-2 border-red-400 py-2 px-4y rounded-md text-white hover:bg-red-500 hover:scale-105 transition-all duration-200"
+              className="min-w-[129px] bg-red-600 border-[1.5px] border-red-400 py-2 px-4y rounded-md text-white hover:bg-red-500 hover:scale-105 transition-all duration-200"
             >
               Stop Alarm
             </button>
@@ -158,7 +158,7 @@ export default function Timer({
                   path: "/timer/empty-timer",
                 });
               }}
-              className="flex gap-2 items-center bg-blue-800 border-2 border-blue-500 py-2 px-4 rounded-md text-white hover:bg-blue-700 hover:scale-105 transition-all duration-200"
+              className="flex gap-2 items-center bg-blue-800 border-[1.5px] border-blue-500 py-2 px-4 rounded-md text-white hover:bg-blue-700 hover:scale-105 transition-all duration-200"
             >
               <p>Restart</p>
               <RotateCcw />

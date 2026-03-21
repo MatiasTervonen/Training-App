@@ -12,6 +12,8 @@ import { deleteActivityTemplate } from "@/database/activities/delete-template";
 import { templateSummary } from "@/types/models";
 import ActivityTemplateCard from "@/features/activities/templates/ActivityTemplateCard";
 import ActivityTemplateExpanded from "@/features/activities/templates/ActivityTemplateExpanded";
+import EmptyState from "@/components/EmptyState";
+import { MapPin } from "lucide-react";
 
 export default function TemplatesPage() {
   const { t } = useTranslation("activities");
@@ -62,14 +64,11 @@ export default function TemplatesPage() {
       )}
 
       {!isLoading && !error && templates.length === 0 && (
-        <div className="bg-slate-900 rounded-md mt-20 px-10 py-5 text-center">
-          <p className="text-gray-300 text-lg">
-            {t("activities.templatesScreen.noTemplates")}
-          </p>
-          <p className="text-gray-300 text-lg mt-2">
-            {t("activities.templatesScreen.noTemplatesHint")}
-          </p>
-        </div>
+        <EmptyState
+          icon={MapPin}
+          title={t("activities.templatesScreen.noTemplates")}
+          description={t("activities.templatesScreen.noTemplatesHint")}
+        />
       )}
 
       {templates.map((template) => (

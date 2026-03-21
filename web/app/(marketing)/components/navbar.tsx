@@ -2,20 +2,48 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import InstallApp from "@/components/installApp";
 import { Menu, CircleX } from "lucide-react";
 import { useState, useRef } from "react";
 import { useClickOutside } from "@/components/clickOutside";
-import { useInstallPrompt } from "@/lib/useInstallPrompt";
+import { useTranslation } from "react-i18next";
+
+function LanguageToggle() {
+  const { i18n } = useTranslation();
+  const currentLang = i18n.language;
+
+  return (
+    <div className="flex items-center rounded-lg border border-slate-700 overflow-hidden text-sm">
+      <button
+        onClick={() => i18n.changeLanguage("en")}
+        className={`px-2.5 py-1 transition-colors cursor-pointer ${
+          currentLang === "en"
+            ? "bg-blue-600 text-white"
+            : "text-gray-400 hover:text-gray-200"
+        }`}
+      >
+        EN
+      </button>
+      <button
+        onClick={() => i18n.changeLanguage("fi")}
+        className={`px-2.5 py-1 transition-colors cursor-pointer ${
+          currentLang === "fi"
+            ? "bg-blue-600 text-white"
+            : "text-gray-400 hover:text-gray-200"
+        }`}
+      >
+        FI
+      </button>
+    </div>
+  );
+}
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const { t } = useTranslation("marketing");
 
-  const installRef = useRef<HTMLDivElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
 
-  useClickOutside(installRef, () => setIsOpen(false));
-
-  const promptEvent = useInstallPrompt();
+  useClickOutside(menuRef, () => setIsOpen(false));
 
   return (
     <>
@@ -37,14 +65,12 @@ export default function Navbar() {
           </Link>
         </div>
         <div className="hidden md:flex items-center gap-4">
+          <LanguageToggle />
           <Link href={"/login"}>
-            <button className="w-[183px] text-white bg-gradient-to-tr from-slate-950  to-blue-700 px-5 py-2 rounded-xl border-2 border-blue-900 shadow-md shadow-blue-950 hover:from-blue-700 hover:to-slate-950 transform hover:scale-105 transition-all duration-200 cursor-pointer">
-              Log in / Sign up
+            <button className="w-[250px] text-white bg-gradient-to-tr from-slate-950 to-blue-700 px-5 py-2 rounded-xl border-[1.5px] border-blue-900 shadow-md shadow-blue-950 hover:from-blue-700 hover:to-slate-950 transform hover:scale-105 transition-all duration-200 cursor-pointer text-nowrap">
+              {t("navbar.login")}
             </button>
           </Link>
-          <div>
-            <InstallApp promptEvent={promptEvent} />
-          </div>
         </div>
         <div className="md:hidden">
           <div className="relative w-10 h-10">
@@ -65,18 +91,16 @@ export default function Navbar() {
             <>
               <div className="absolute inset-0  backdrop-blur-sm" />
               <div
-                ref={installRef}
-                className="absolute left-1/2 -translate-x-1/2 top-20 w-full bg-slate-950 p-4 shadow-lg text-gray-100 z-50 border-y-2 border-blue-500 ba"
+                ref={menuRef}
+                className="absolute left-1/2 -translate-x-1/2 top-20 w-full bg-slate-950 p-4 shadow-lg text-gray-100 z-50 border-y-2 border-blue-500"
               >
                 <div className="flex flex-col items-center gap-4 my-5">
+                  <LanguageToggle />
                   <Link href={"/login"}>
-                    <button className="w-[183px] text-white bg-gradient-to-tr from-slate-950  to-blue-700 px-5 py-2 rounded-xl border-2 border-blue-900 shadow-md shadow-blue-950 hover:from-blue-700 hover:to-slate-950 transform hover:scale-105 transition duration-200">
-                      Log in / Sign up
+                    <button className="text-white bg-gradient-to-tr from-slate-950 to-blue-700 px-5 py-2 rounded-xl border-[1.5px] border-blue-900 shadow-md shadow-blue-950 hover:from-blue-700 hover:to-slate-950 transform hover:scale-105 transition duration-200">
+                      {t("navbar.login")}
                     </button>
                   </Link>
-                  <div>
-                    <InstallApp promptEvent={promptEvent} />
-                  </div>
                 </div>
               </div>
             </>

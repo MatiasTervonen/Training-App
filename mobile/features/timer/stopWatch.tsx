@@ -97,14 +97,14 @@ export default function Stopwatch({
           <View className="w-1/3">
             <AnimatedButton
               onPress={cancelStopwatch}
-              className="bg-red-600 border-2 border-red-400 py-2 px-4 shadow-md rounded-md items-center justify-center"
+              className="bg-red-600 border-[1.5px] border-red-400 py-2 px-4 shadow-md rounded-md items-center justify-center"
               label={t("timer.stopwatch.cancel")}
             />
           </View>
           <View className="w-1/3">
             <AnimatedButton
               onPress={handlePause}
-              className="flex-row justify-center items-center gap-2 bg-blue-800 py-2 border-2 border-blue-500 rounded-md px-4"
+              className="flex-row justify-center items-center gap-2 bg-blue-800 py-2 border-[1.5px] border-blue-500 rounded-md px-4"
               label={t("timer.stopwatch.pause")}
             />
           </View>
@@ -114,14 +114,14 @@ export default function Stopwatch({
           <View className="w-1/3">
             <AnimatedButton
               onPress={cancelStopwatch}
-              className="bg-red-600 border-2 border-red-400 py-2 px-4 shadow-md rounded-md items-center justify-center"           
+              className="bg-red-600 border-[1.5px] border-red-400 py-2 px-4 shadow-md rounded-md items-center justify-center"           
               label={t("timer.stopwatch.cancel")}
             />
           </View>
           <View className="w-1/3">
             <AnimatedButton
               onPress={handleStart}
-              className="flex-row justify-center items-center gap-2 bg-blue-800 py-2 border-2 border-blue-500 rounded-md px-4"
+              className="flex-row justify-center items-center gap-2 bg-blue-800 py-2 border-[1.5px] border-blue-500 rounded-md px-4"
               label={t("timer.stopwatch.start")}
             />
           </View>

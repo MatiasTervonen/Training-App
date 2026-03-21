@@ -311,7 +311,7 @@ export default function ReportSection({ feature, data }: ReportSectionProps) {
       colors={["#1e3a8a", "#0f172a", "#0f172a"]}
       start={{ x: 1, y: 0 }}
       end={{ x: 0, y: 1 }}
-      className="rounded-lg overflow-hidden p-4 border-2 border-gray-600"
+      className="rounded-lg overflow-hidden p-4 border-[1.5px] border-gray-600"
     >
       <View className="flex-row items-center gap-2 mb-2">
         {FEATURE_ICONS[feature]}

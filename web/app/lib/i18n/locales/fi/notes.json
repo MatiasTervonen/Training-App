@@ -13,7 +13,9 @@
     "deleteRecordingMessage": "Haluatko varmasti poistaa tämän äänitteen?",
     "savingNotes": "Tallennetaan muistiinpanoja...",
     "failedToLoad": "Muistiinpanojen lataaminen epäonnistui. Yritä myöhemmin uudelleen.",
-    "noNotes": "Ei vielä muistiinpanoja. Lisää ensimmäinen muistiinpanosi!",
+    "noNotes": "Ei vielä muistiinpanoja",
+    "noNotesDesc": "Muistiinpanosi näkyvät täällä",
+    "noMoreNotes": "Ei enempää muistiinpanoja",
     "voiceRecording": {
       "microphoneAccessTitle": "Mikrofonin käyttöoikeus tarvitaan",
       "microphoneAccessMessage": "Salli mikrofonin käyttö äänimuistiinpanojen nauhoittamiseksi.",

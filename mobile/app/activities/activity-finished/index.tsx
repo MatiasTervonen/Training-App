@@ -554,7 +554,7 @@ export default function ActivityFinishedScreen() {
                           <View
                             className={`w-[32px] h-[32px] rounded-full ${
                               lineColorIndex === i
-                                ? "border-2 border-white"
+                                ? "border-[1.5px] border-white"
                                 : "border border-gray-600"
                             }`}
                             style={{ backgroundColor: color.core }}

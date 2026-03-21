@@ -38,7 +38,7 @@ export default function Navbar() {
           <NotificationBell />
           <Link
             href={"/chat"}
-            className="border-2 p-2 border-blue-500 rounded-full bg-gray-800"
+            className="border-[1.5px] p-2 border-blue-500 rounded-full bg-gray-800"
           >
             <MessageCircle size={20} />
           </Link>
@@ -48,7 +48,7 @@ export default function Navbar() {
               alt="Profile Picture"
               width={20}
               height={20}
-              className="rounded-full border-2 border-blue-500 w-10 h-10 cursor-pointer"
+              className="rounded-full border-[1.5px] border-blue-500 w-10 h-10 cursor-pointer"
             />
           </Link>
         </div>

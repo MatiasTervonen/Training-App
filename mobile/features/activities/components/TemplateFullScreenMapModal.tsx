@@ -175,21 +175,21 @@ export default function TemplateFullScreenMapModal({
           >
             <AnimatedButton
               onPress={toggleMapStyle}
-              className="p-2 rounded-full bg-blue-700 border-2 border-blue-500"
+              className="p-2 rounded-full bg-blue-700 border-[1.5px] border-blue-500"
               hitSlop={10}
             >
               <Layers2 size={22} color="#f3f4f6" />
             </AnimatedButton>
             <AnimatedButton
               onPress={toggleLineColor}
-              className="p-2 rounded-full bg-blue-700 border-2 border-blue-500"
+              className="p-2 rounded-full bg-blue-700 border-[1.5px] border-blue-500"
               hitSlop={10}
             >
               <Route size={22} color="#f3f4f6" />
             </AnimatedButton>
             <AnimatedButton
               onPress={recenter}
-              className="p-2 rounded-full bg-blue-700 border-2 border-blue-500"
+              className="p-2 rounded-full bg-blue-700 border-[1.5px] border-blue-500"
               hitSlop={10}
             >
               <LocateFixed size={22} color="#f3f4f6" />

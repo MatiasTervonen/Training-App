@@ -17,6 +17,7 @@ import { Plus, Bell } from "lucide-react";
 import Link from "next/link";
 import { useTranslation } from "react-i18next";
 import type { ReminderFilter } from "@/database/reminders/get-reminders-feed";
+import EmptyState from "@/components/EmptyState";
 
 const FILTERS: ReminderFilter[] = ["upcoming", "delivered"];
 
@@ -107,17 +108,6 @@ export default function RemindersPage() {
           <p className="font-body text-center text-lg mt-10">
             {t("reminders.errorLoading")}
           </p>
-        ) : !data ||
-          (unpinnedFeed.length === 0 && pinnedFeed.length === 0) ? (
-          <div className="flex flex-col items-center mt-[15%] px-8">
-            <div className="w-20 h-20 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center mb-5">
-              <Bell size={36} className="text-slate-400" />
-            </div>
-            <p className="text-xl text-center mb-3">{getEmptyMessage()}</p>
-            <p className="font-body text-sm text-gray-400 text-center">
-              {getEmptyDescription()}
-            </p>
-          </div>
         ) : (
           <>
             <FeedHeader
@@ -127,39 +117,50 @@ export default function RemindersPage() {
               pinned_context="reminders"
               queryKey={queryKey}
             />
-            {unpinnedFeed.map((feedItem) => (
-              <div className="mt-8" key={feedItem.id}>
-                <FeedCard
-                  item={feedItem}
-                  pinned={false}
-                  onExpand={() => setExpandedItem(feedItem)}
-                  onTogglePin={() =>
-                    togglePin(
-                      feedItem.id,
-                      feedItem.type,
-                      feedItem.feed_context
-                    )
-                  }
-                  onDelete={() =>
-                    handleDelete(feedItem.source_id, feedItem.type)
-                  }
-                  onEdit={() => setEditingItem(feedItem)}
-                />
-              </div>
-            ))}
-            {isFetchingNextPage && (
-              <div className="flex flex-col gap-2 items-center mt-10">
-                <p className="font-body">Loading more...</p>
-                <Spinner />
-              </div>
-            )}
 
-            {hasNextPage && <div ref={loadMoreRef} className="h-20"></div>}
+            {unpinnedFeed.length === 0 ? (
+              <EmptyState
+                icon={Bell}
+                title={getEmptyMessage()}
+                description={getEmptyDescription()}
+              />
+            ) : (
+              <>
+                {unpinnedFeed.map((feedItem) => (
+                  <div className="mt-8" key={feedItem.id}>
+                    <FeedCard
+                      item={feedItem}
+                      pinned={false}
+                      onExpand={() => setExpandedItem(feedItem)}
+                      onTogglePin={() =>
+                        togglePin(
+                          feedItem.id,
+                          feedItem.type,
+                          feedItem.feed_context
+                        )
+                      }
+                      onDelete={() =>
+                        handleDelete(feedItem.source_id, feedItem.type)
+                      }
+                      onEdit={() => setEditingItem(feedItem)}
+                    />
+                  </div>
+                ))}
+                {isFetchingNextPage && (
+                  <div className="flex flex-col gap-2 items-center mt-10">
+                    <p className="font-body">Loading more...</p>
+                    <Spinner />
+                  </div>
+                )}
 
-            {!hasNextPage && data?.pages.length > 1 && (
-              <p className="font-body text-center justify-center mt-10 text-gray-300">
-                No more reminders
-              </p>
+                {hasNextPage && <div ref={loadMoreRef} className="h-20"></div>}
+
+                {!hasNextPage && (data?.pages.length ?? 0) > 1 && (
+                  <p className="font-body text-center justify-center mt-10 text-gray-300">
+                    No more reminders
+                  </p>
+                )}
+              </>
             )}
           </>
         )}
@@ -176,21 +177,16 @@ export default function RemindersPage() {
         {editingItem && (
           <Modal
             isOpen={true}
-            onClose={() => {
-              setEditingItem(null);
-              setHasUnsavedChanges(false);
-            }}
+            onClose={() => { setEditingItem(null); setHasUnsavedChanges(false); }}
             confirmBeforeClose={hasUnsavedChanges}
           >
             <EditReminder
               reminder={editingItem}
               onClose={() => setEditingItem(null)}
-              onDirtyChange={setHasUnsavedChanges}
               onSave={(updatedItem) => {
                 updateFeedItemToTop(updatedItem);
-                setEditingItem(null);
-                setHasUnsavedChanges(false);
               }}
+              onDirtyChange={setHasUnsavedChanges}
             />
           </Modal>
         )}

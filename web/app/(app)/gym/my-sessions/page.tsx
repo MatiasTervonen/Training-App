@@ -14,6 +14,8 @@ import useGymDeleteSession from "@/features/gym/hooks/useGymDeleteSession";
 import { useTranslation } from "react-i18next";
 import FeedHeader from "@/features/dashboard/components/feedHeader";
 import useFullSessions from "@/features/dashboard/hooks/useFullSessions";
+import EmptyState from "@/components/EmptyState";
+import { Dumbbell } from "lucide-react";
 
 export default function MySessionsPage() {
   const { t } = useTranslation(["gym", "common"]);
@@ -72,10 +74,6 @@ export default function MySessionsPage() {
           <p className="text-center text-lg mt-10 font-body">
             {t("gym:gym.mySessions.loadError")}
           </p>
-        ) : !data || (unpinnedFeed.length === 0 && pinnedFeed.length === 0) ? (
-          <p className="text-center text-lg mt-20 font-body">
-            {t("gym:gym.mySessions.noSessions")}
-          </p>
         ) : (
           <>
             <FeedHeader
@@ -86,45 +84,55 @@ export default function MySessionsPage() {
               queryKey={["myGymSessions"]}
             />
 
-            {unpinnedFeed.map((feedItem) => {
-              return (
-                <div className="mt-8" key={feedItem.id}>
-                  <FeedCard
-                    item={feedItem}
-                    pinned={false}
-                    onExpand={() => {
-                      setExpandedItem(feedItem);
-                    }}
-                    onTogglePin={() =>
-                      togglePin(
-                        feedItem.id,
-                        feedItem.type,
-                        feedItem.feed_context,
-                      )
-                    }
-                    onDelete={() =>
-                      handleDelete(feedItem.source_id, feedItem.type)
-                    }
-                    onEdit={() => {
-                      router.push(`/gym/gym/${feedItem.source_id}/edit`);
-                    }}
-                  />
-                </div>
-              );
-            })}
-            {isFetchingNextPage && (
-              <div className="flex flex-col gap-2 items-center mt-10 font-body">
-                <p>{t("common:feed.loadingMore")}</p>
-                <Spinner />
-              </div>
-            )}
+            {unpinnedFeed.length === 0 ? (
+              <EmptyState
+                icon={Dumbbell}
+                title={t("gym:gym.mySessions.noSessions")}
+                description={t("gym:gym.mySessions.noSessionsDesc")}
+              />
+            ) : (
+              <>
+                {unpinnedFeed.map((feedItem) => {
+                  return (
+                    <div className="mt-8" key={feedItem.id}>
+                      <FeedCard
+                        item={feedItem}
+                        pinned={false}
+                        onExpand={() => {
+                          setExpandedItem(feedItem);
+                        }}
+                        onTogglePin={() =>
+                          togglePin(
+                            feedItem.id,
+                            feedItem.type,
+                            feedItem.feed_context,
+                          )
+                        }
+                        onDelete={() =>
+                          handleDelete(feedItem.source_id, feedItem.type)
+                        }
+                        onEdit={() => {
+                          router.push(`/gym/gym/${feedItem.source_id}/edit`);
+                        }}
+                      />
+                    </div>
+                  );
+                })}
+                {isFetchingNextPage && (
+                  <div className="flex flex-col gap-2 items-center mt-10 font-body">
+                    <p>{t("common:feed.loadingMore")}</p>
+                    <Spinner />
+                  </div>
+                )}
 
-            {hasNextPage && <div ref={loadMoreRef} className="h-20"></div>}
+                {hasNextPage && <div ref={loadMoreRef} className="h-20"></div>}
 
-            {!hasNextPage && data?.pages.length > 1 && (
-              <p className="text-center justify-center mt-10 text-gray-300 font-body">
-                {t("common:feed.noMoreSessions")}
-              </p>
+                {!hasNextPage && (data?.pages.length ?? 0) > 1 && (
+                  <p className="text-center justify-center mt-10 text-gray-300 font-body">
+                    {t("common:feed.noMoreSessions")}
+                  </p>
+                )}
+              </>
             )}
           </>
         )}

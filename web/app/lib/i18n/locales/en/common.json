@@ -28,7 +28,12 @@
     "elementNotFound": "Element not found.",
     "chat": "Chat",
     "unsavedChanges": "unsaved changes",
-    "moveToFolder": "Move to Folder"
+    "moveToFolder": "Move to Folder",
+    "autoSave": {
+      "saving": "Saving...",
+      "saved": "Saved",
+      "error": "Save failed"
+    }
   },
   "modal": {
     "closeAlt": "Close modal",
@@ -70,7 +75,9 @@
     "noNotifications": "No new notifications",
     "friendRequest": "Friend request from",
     "accept": "Accept",
-    "reject": "Reject"
+    "reject": "Reject",
+    "friendRequestAccepted": "Friend request accepted!",
+    "friendRequestFailed": "Failed to accept friend request"
   },
   "feed": {
     "refreshing": "Refreshing...",
@@ -83,6 +90,11 @@
     "failedToLoadGymSession": "Failed to load gym session details. Please try again later.",
     "loadingTodoSession": "Loading todo session details...",
     "failedToLoadTodoSession": "Failed to load todo session details. Please try again later."
+  },
+  "notFound": {
+    "title": "Page Not Found",
+    "description": "The page you are looking for does not exist.",
+    "goHome": "Go to Home"
   },
   "installApp": {
     "downloadApp": "Download app",

@@ -28,7 +28,12 @@
     "elementNotFound": "Elementtiä ei löytynyt.",
     "chat": "Keskustelu",
     "unsavedChanges": "tallentamattomia muutoksia",
-    "moveToFolder": "Siirrä kansioon"
+    "moveToFolder": "Siirrä kansioon",
+    "autoSave": {
+      "saving": "Tallennetaan...",
+      "saved": "Tallennettu",
+      "error": "Tallennus epäonnistui"
+    }
   },
   "modal": {
     "closeAlt": "Sulje ikkuna",
@@ -70,7 +75,9 @@
     "noNotifications": "Ei uusia ilmoituksia",
     "friendRequest": "Kaveripyyntö käyttäjältä",
     "accept": "Hyväksy",
-    "reject": "Hylkää"
+    "reject": "Hylkää",
+    "friendRequestAccepted": "Kaveripyyntö hyväksytty!",
+    "friendRequestFailed": "Kaveripyynnön hyväksyminen epäonnistui"
   },
   "feed": {
     "refreshing": "Päivitetään...",
@@ -83,6 +90,11 @@
     "failedToLoadGymSession": "Kuntosalisession lataus epäonnistui. Yritä myöhemmin uudelleen.",
     "loadingTodoSession": "Ladataan tehtävälistan tietoja...",
     "failedToLoadTodoSession": "Tehtävälistan lataus epäonnistui. Yritä myöhemmin uudelleen."
+  },
+  "notFound": {
+    "title": "Sivua ei löytynyt",
+    "description": "Etsimääsi sivua ei ole olemassa.",
+    "goHome": "Siirry etusivulle"
   },
   "installApp": {
     "downloadApp": "Lataa sovellus",

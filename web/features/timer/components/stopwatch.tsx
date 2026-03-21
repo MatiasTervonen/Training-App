@@ -133,7 +133,7 @@ export default function Stopwatch({ className = "" }: StopwatchProps) {
         <button
           aria-label={t("timer.cancel")}
           onClick={handleCancel}
-          className="flex items-center justify-center gap-2 w-36 bg-red-600 border-2 border-red-400 py-2 rounded-md text-gray-100 hover:bg-red-500 hover:scale-105 transition-all duration-200"
+          className="flex items-center justify-center gap-2 w-36 bg-red-600 border-[1.5px] border-red-400 py-2 rounded-md text-gray-100 hover:bg-red-500 hover:scale-105 transition-all duration-200"
         >
           <X size={20} />
           <span>{t("timer.cancel")}</span>
@@ -143,7 +143,7 @@ export default function Stopwatch({ className = "" }: StopwatchProps) {
           <button
             aria-label={t("timer.pause")}
             onClick={handlePause}
-            className="flex items-center justify-center gap-2 w-36 bg-blue-800 border-2 border-blue-500 py-2 rounded-md text-gray-100 hover:bg-blue-700 hover:scale-105 transition-all duration-200"
+            className="flex items-center justify-center gap-2 w-36 bg-blue-800 border-[1.5px] border-blue-500 py-2 rounded-md text-gray-100 hover:bg-blue-700 hover:scale-105 transition-all duration-200"
           >
             <CirclePause size={20} />
             <span>{t("timer.pause")}</span>
@@ -152,7 +152,7 @@ export default function Stopwatch({ className = "" }: StopwatchProps) {
           <button
             aria-label={paused ? t("timer.resume") : t("timer.start")}
             onClick={handleStart}
-            className="flex items-center justify-center gap-2 w-36 bg-blue-800 border-2 border-blue-500 py-2 rounded-md text-gray-100 hover:bg-blue-700 hover:scale-105 transition-all duration-200"
+            className="flex items-center justify-center gap-2 w-36 bg-blue-800 border-[1.5px] border-blue-500 py-2 rounded-md text-gray-100 hover:bg-blue-700 hover:scale-105 transition-all duration-200"
           >
             <CirclePlay size={20} />
             <span>{paused ? t("timer.resume") : t("timer.start")}</span>

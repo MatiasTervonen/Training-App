@@ -161,7 +161,7 @@ function TemplateHistoryContent({
                       colors={["#78350f", "#1e1b4b", "#0f172a"]}
                       start={{ x: 0, y: 0 }}
                       end={{ x: 1, y: 1 }}
-                      className="mt-6 rounded-md px-4 py-4 overflow-hidden border-2 border-amber-500/60"
+                      className="mt-6 rounded-md px-4 py-4 overflow-hidden border-[1.5px] border-amber-500/60"
                     >
                       <BodyTextNC className="text-center text-amber-400 text-sm mb-3">
                         {t("activities.templateHistory.personalBests")}
@@ -220,7 +220,7 @@ function TemplateHistoryContent({
                     colors={isBest ? ["#78350f", "#1e1b4b", "#0f172a"] : ["#1e3a8a", "#0f172a", "#0f172a"]}
                     start={isBest ? { x: 0, y: 0 } : { x: 1, y: 0 }}
                     end={{ x: isBest ? 1 : 0, y: 1 }}
-                    className={`pb-4 px-4 rounded-md overflow-hidden border-2 ${isBest ? "pt-2 border-amber-500/60" : "pt-4 border-gray-600"}`}
+                    className={`pb-4 px-4 rounded-md overflow-hidden border-[1.5px] ${isBest ? "pt-2 border-amber-500/60" : "pt-4 border-gray-600"}`}
                   >
                     {isBest && (
                       <BodyTextNC className="text-amber-400 text-xs text-center mt-1 mb-3">

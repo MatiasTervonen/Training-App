@@ -21,6 +21,7 @@ import { useTranslation } from "react-i18next";
 import type { FolderFilter } from "@/database/notes/get-notes";
 import { Plus, StickyNote, FolderCog } from "lucide-react";
 import Link from "next/link";
+import EmptyState from "@/components/EmptyState";
 
 export default function NotesPage() {
   const { t } = useTranslation("notes");
@@ -116,13 +117,6 @@ export default function NotesPage() {
           <p className="font-body text-center text-lg mt-10">
             {t("notes.failedToLoad")}
           </p>
-        ) : !data || (unpinnedFeed.length === 0 && pinnedFeed.length === 0) ? (
-          <div className="flex flex-col items-center mt-[15%] px-8">
-            <div className="w-20 h-20 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center mb-5">
-              <StickyNote size={36} className="text-slate-400" />
-            </div>
-            <p className="text-xl text-center mb-3">{getEmptyMessage()}</p>
-          </div>
         ) : (
           <>
             <FeedHeader
@@ -133,40 +127,50 @@ export default function NotesPage() {
               queryKey={queryKey}
             />
 
-            {unpinnedFeed.map((feedItem) => (
-              <div className="mt-8" key={feedItem.id}>
-                <FeedCard
-                  item={feedItem}
-                  pinned={false}
-                  onExpand={() => setExpandedItem(feedItem)}
-                  onTogglePin={() =>
-                    togglePin(
-                      feedItem.id,
-                      feedItem.type,
-                      feedItem.feed_context
-                    )
-                  }
-                  onDelete={() =>
-                    handleDelete(feedItem.source_id, feedItem.type)
-                  }
-                  onEdit={() => setEditingItem(feedItem)}
-                  onMoveToFolder={() => setMoveToFolderItem(feedItem)}
-                />
-              </div>
-            ))}
-            {isFetchingNextPage && (
-              <div className="flex flex-col gap-2 items-center mt-10">
-                <p className="font-body">Loading more...</p>
-                <Spinner />
-              </div>
-            )}
+            {unpinnedFeed.length === 0 ? (
+              <EmptyState
+                icon={StickyNote}
+                title={getEmptyMessage()}
+                description={selectedFolderId ? undefined : t("notes.noNotesDesc")}
+              />
+            ) : (
+              <>
+                {unpinnedFeed.map((feedItem) => (
+                  <div className="mt-8" key={feedItem.id}>
+                    <FeedCard
+                      item={feedItem}
+                      pinned={false}
+                      onExpand={() => setExpandedItem(feedItem)}
+                      onTogglePin={() =>
+                        togglePin(
+                          feedItem.id,
+                          feedItem.type,
+                          feedItem.feed_context
+                        )
+                      }
+                      onDelete={() =>
+                        handleDelete(feedItem.source_id, feedItem.type)
+                      }
+                      onEdit={() => setEditingItem(feedItem)}
+                      onMoveToFolder={() => setMoveToFolderItem(feedItem)}
+                    />
+                  </div>
+                ))}
+                {isFetchingNextPage && (
+                  <div className="flex flex-col gap-2 items-center mt-10">
+                    <p className="font-body">Loading more...</p>
+                    <Spinner />
+                  </div>
+                )}
 
-            {hasNextPage && <div ref={loadMoreRef} className="h-20"></div>}
+                {hasNextPage && <div ref={loadMoreRef} className="h-20"></div>}
 
-            {!hasNextPage && data?.pages.length > 1 && (
-              <p className="font-body text-center justify-center mt-10 text-gray-300">
-                No more notes
-              </p>
+                {!hasNextPage && (data?.pages.length ?? 0) > 1 && (
+                  <p className="font-body text-center justify-center mt-10 text-gray-300">
+                    No more notes
+                  </p>
+                )}
+              </>
             )}
           </>
         )}
@@ -180,20 +184,15 @@ export default function NotesPage() {
         {editingItem && (
           <Modal
             isOpen={true}
-            onClose={() => {
-              setEditingItem(null);
-              setHasUnsavedChanges(false);
-            }}
+            onClose={() => { setEditingItem(null); setHasUnsavedChanges(false); }}
             confirmBeforeClose={hasUnsavedChanges}
           >
             <EditNote
               note={editingItem}
-              onDirtyChange={setHasUnsavedChanges}
               onSave={(updatedItem) => {
                 updateFeedItemToTop(updatedItem);
-                setEditingItem(null);
-                setHasUnsavedChanges(false);
               }}
+              onDirtyChange={setHasUnsavedChanges}
             />
           </Modal>
         )}

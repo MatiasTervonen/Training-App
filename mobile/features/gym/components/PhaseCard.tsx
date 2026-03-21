@@ -110,7 +110,7 @@ export default function PhaseCard(props: Props) {
         colors={["#065f46", "#0f172a", "#0f172a"]}
         start={{ x: 1, y: 0 }}
         end={{ x: 0, y: 1 }}
-        className="rounded-md overflow-hidden border-2 border-emerald-600 p-4"
+        className="rounded-md overflow-hidden border-[1.5px] border-emerald-600 p-4"
       >
         <View className="flex-row items-center justify-between mb-3">
           <AppText className="text-lg flex-1" numberOfLines={1}>
@@ -227,7 +227,7 @@ export default function PhaseCard(props: Props) {
         colors={["#1e3a8a", "#0f172a", "#0f172a"]}
         start={{ x: 1, y: 0 }}
         end={{ x: 0, y: 1 }}
-        className="rounded-md overflow-hidden border-2 border-blue-600 p-4"
+        className="rounded-md overflow-hidden border-[1.5px] border-blue-600 p-4"
       >
         <View className="flex-row items-center justify-between mb-3">
           <AppText className="text-lg flex-1" numberOfLines={1}>
@@ -261,7 +261,7 @@ export default function PhaseCard(props: Props) {
         colors={["#1e3a8a", "#0f172a", "#0f172a"]}
         start={{ x: 1, y: 0 }}
         end={{ x: 0, y: 1 }}
-        className="rounded-md overflow-hidden border-2 border-blue-600 p-3 flex-row items-center justify-between"
+        className="rounded-md overflow-hidden border-[1.5px] border-blue-600 p-3 flex-row items-center justify-between"
       >
         <AppText className="text-base flex-1" numberOfLines={1}>
           {phaseLabel(props.phase.phase_type)}:{" "}
@@ -289,7 +289,7 @@ export default function PhaseCard(props: Props) {
       colors={["#1e3a8a", "#0f172a", "#0f172a"]}
       start={{ x: 1, y: 0 }}
       end={{ x: 0, y: 1 }}
-      className="rounded-md overflow-hidden border-2 border-blue-600"
+      className="rounded-md overflow-hidden border-[1.5px] border-blue-600"
     >
       <AnimatedButton
         onPress={onExpand}
@@ -431,7 +431,7 @@ function ManualEntryCard({
         colors={["#1e3a8a", "#0f172a", "#0f172a"]}
         start={{ x: 1, y: 0 }}
         end={{ x: 0, y: 1 }}
-        className="rounded-md overflow-hidden border-2 border-blue-600 p-4"
+        className="rounded-md overflow-hidden border-[1.5px] border-blue-600 p-4"
       >
         <View className="flex-row items-center justify-between mb-4">
           <AppText className="text-lg flex-1" numberOfLines={1}>

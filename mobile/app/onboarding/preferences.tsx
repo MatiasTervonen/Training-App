@@ -58,7 +58,7 @@ export default function PreferencesScreen() {
         <View className="flex-row justify-center gap-3">
           <AnimatedButton
             onPress={() => setDistanceUnit("km")}
-            className={`w-20 py-2 rounded-lg border-2 items-center ${
+            className={`w-20 py-2 rounded-lg border-[1.5px] items-center ${
               distanceUnit === "km"
                 ? "bg-blue-900/40 border-blue-500"
                 : "bg-slate-800 border-slate-700"
@@ -74,7 +74,7 @@ export default function PreferencesScreen() {
           </AnimatedButton>
           <AnimatedButton
             onPress={() => setDistanceUnit("mi")}
-            className={`w-20 py-2 rounded-lg border-2 items-center ${
+            className={`w-20 py-2 rounded-lg border-[1.5px] items-center ${
               distanceUnit === "mi"
                 ? "bg-blue-900/40 border-blue-500"
                 : "bg-slate-800 border-slate-700"

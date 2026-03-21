@@ -46,7 +46,7 @@ export default function DateTimePicker({
         locale={locales[lang]}
         dateFormat={dateFormats[lang]}
         timeCaption={lang === "fi" ? "Aika" : "Time"}
-        className="w-full p-2 rounded border-2 text-gray-100 placeholder:text-slate-400 border-slate-400 bg-[linear-gradient(50deg,#0f172a,#1e293b,#333333)] hover:border-blue-500 focus:outline-none focus:border-green-300"
+        className="w-full p-2 rounded border-[1.5px] text-gray-100 placeholder:text-slate-400 border-slate-400 bg-[linear-gradient(50deg,#0f172a,#1e293b,#333333)] hover:border-blue-500 focus:outline-none focus:border-green-300"
         placeholderText={placeholder}
       />
     </div>

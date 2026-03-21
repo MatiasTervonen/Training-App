@@ -34,7 +34,7 @@ export default function GymTemplate({ item, onStartWorkout }: Props) {
       {Object.entries(groupedExercises).map(([superset_id, group]) => (
         <div
           key={superset_id}
-          className="mt-6 bg-linear-to-tr from-gray-900 via-slate-900 to-blue-900 rounded-md px-4 py-2 shadow-md border-2 border-gray-600"
+          className="mt-6 bg-linear-to-tr from-gray-900 via-slate-900 to-blue-900 rounded-md px-4 py-2 shadow-md border-[1.5px] border-gray-600"
         >
           {group.length > 1 && (
             <h3 className="text-lg mb-2 text-center">
@@ -64,7 +64,7 @@ export default function GymTemplate({ item, onStartWorkout }: Props) {
       ))}
       <button
         onClick={onStartWorkout}
-        className="w-full mt-10 bg-blue-800 py-2 rounded-md shadow-md border-2 border-blue-500 text-lg cursor-pointer hover:bg-blue-700 hover:scale-105 transition-transform duration-200"
+        className="w-full mt-10 bg-blue-800 py-2 rounded-md shadow-md border-[1.5px] border-blue-500 text-lg cursor-pointer hover:bg-blue-700 hover:scale-105 transition-transform duration-200"
       >
         {t("gym.templateForm.startWorkout")}
       </button>

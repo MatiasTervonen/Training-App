@@ -71,7 +71,7 @@ export default function ActivityTemplateExpanded({ item }: Props) {
       <div className="mt-10">
         <button
           disabled
-          className="flex items-center justify-center w-full gap-2 bg-gray-700 py-2 rounded-md shadow-md border-2 border-gray-500 text-gray-400 text-lg cursor-not-allowed"
+          className="flex items-center justify-center w-full gap-2 bg-gray-700 py-2 rounded-md shadow-md border-[1.5px] border-gray-500 text-gray-400 text-lg cursor-not-allowed"
         >
           {t("activities.templatesScreen.startActivity")}
         </button>

@@ -1,22 +1,21 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import SaveButton from "@/components/buttons/save-button";
-import FullScreenLoader from "@/components/FullScreenLoader";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import toast from "react-hot-toast";
 import { editWeight } from "@/database/weight/edit-weight";
 import { FeedItemUI } from "@/types/session";
 import SubNotesInput from "@/ui/SubNotesInput";
 import TitleInput from "@/ui/TitleInput";
 import CustomInput from "@/ui/CustomInput";
-import { Dot } from "lucide-react";
+import { useAutoSave } from "@/hooks/useAutoSave";
+import AutoSaveIndicator from "@/components/AutoSaveIndicator";
 import { useTranslation } from "react-i18next";
 
 type Props = {
   weight: FeedItemUI;
   onClose: () => void;
   onSave: (updatedItem: FeedItemUI) => void;
-  onDirtyChange?: (isDirty: boolean) => void;
+  onDirtyChange?: (dirty: boolean) => void;
 };
 
 type WeightPayload = {
@@ -25,7 +24,7 @@ type WeightPayload = {
 };
 
 export default function EditWeight({ weight, onClose, onSave, onDirtyChange }: Props) {
-  const { t } = useTranslation("common");
+  const { t } = useTranslation("weight");
   const payload = weight.extra_fields as unknown as WeightPayload;
 
   const [title, setValue] = useState(weight.title);
@@ -33,84 +32,72 @@ export default function EditWeight({ weight, onClose, onSave, onDirtyChange }: P
   const [weightValue, setWeightValue] = useState(
     payload.weight?.toString() ?? ""
   );
-  const [isSaving, setIsSaving] = useState(false);
 
-  const handleSubmit = async () => {
-    const parsedWeight = Number(weightValue);
+  const data = useMemo(
+    () => ({ title, notes, weightValue }),
+    [title, notes, weightValue]
+  );
 
-    if (isNaN(parsedWeight) || parsedWeight <= 0) {
-      toast.error("Please enter a valid weight value");
-      return;
-    }
+  const handleAutoSave = useCallback(
+    async (saveData: { title: string; notes: string; weightValue: string }) => {
+      const parsedWeight = Number(saveData.weightValue);
 
-    setIsSaving(true);
+      if (isNaN(parsedWeight) || parsedWeight <= 0) {
+        toast.error(t("weight.invalidWeight"));
+        throw new Error("Invalid weight value");
+      }
 
-    try {
       const updatedFeedItem = await editWeight({
         id: weight.source_id,
-        title,
-        notes,
+        title: saveData.title,
+        notes: saveData.notes,
         weight: parsedWeight,
         updated_at: new Date().toISOString(),
       });
 
       onSave(updatedFeedItem as FeedItemUI);
-      onClose();
-    } catch {
-      setIsSaving(false);
-      toast.error("Failed to update weight session");
-    }
-  };
+    },
+    [weight.source_id, onSave]
+  );
 
-  const hasChanges =
-    title !== weight.title ||
-    notes !== payload.notes ||
-    weightValue !== (payload.weight?.toString() ?? "");
+  const { status, hasPendingChanges } = useAutoSave({
+    data,
+    onSave: handleAutoSave,
+  });
 
   useEffect(() => {
-    onDirtyChange?.(hasChanges);
-  }, [hasChanges, onDirtyChange]);
+    onDirtyChange?.(hasPendingChanges);
+  }, [hasPendingChanges, onDirtyChange]);
 
   return (
     <>
-      {hasChanges && (
-        <div className="bg-slate-900 z-50 py-1 px-4 flex items-center rounded-lg fixed top-5 self-start ml-5">
-          <p className="text-sm text-yellow-500">{t("common.unsavedChanges")}</p>
-          <div className="animate-pulse">
-            <Dot color="#eab308" />
-          </div>
-        </div>
-      )}
+      <AutoSaveIndicator status={status} />
       <div className="flex flex-col justify-between h-full max-w-lg mx-auto page-padding">
         <div className="flex flex-col gap-5">
-          <h2 className="text-lg text-center mb-5">Edit your weight session</h2>
-        <TitleInput
-          value={title || ""}
-          setValue={setValue}
-          placeholder="Weight title..."
-          label="Title..."
-        />
-        <SubNotesInput
-          notes={notes || ""}
-          setNotes={setNotes}
-          placeholder="Write your notes here..."
-          label="Notes..."
-        />
+          <h2 className="text-lg text-center mb-5">{t("weight.editTitle")}</h2>
+          <TitleInput
+            value={title || ""}
+            setValue={setValue}
+            placeholder={t("weight.titlePlaceholder")}
+            label={t("weight.titleLabel")}
+          />
+          <SubNotesInput
+            notes={notes || ""}
+            setNotes={setNotes}
+            placeholder={t("weight.notesPlaceholder")}
+            label={t("weight.notesLabel")}
+          />
 
-        <CustomInput
-          label="Weight..."
-          type="number"
-          inputMode="decimal"
-          placeholder="Enter your weight here..."
-          value={weightValue}
-          onChange={(e) => setWeightValue(e.target.value)}
-        />
+          <CustomInput
+            label={t("weight.weightLabel")}
+            type="number"
+            inputMode="decimal"
+            placeholder={t("weight.weightPlaceholder")}
+            value={weightValue}
+            onChange={(e) => setWeightValue(e.target.value)}
+          />
+        </div>
       </div>
-      <div className="pt-10">
-        <SaveButton onClick={handleSubmit} />
-      </div>
-      {isSaving && <FullScreenLoader message="Saving weight..." />}
-    </div>
     </>
   );
 }

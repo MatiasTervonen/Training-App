@@ -10,7 +10,8 @@
     "mySessions": {
       "title": "Omat sessiot",
       "loadError": "Kuntosalisessioiden lataus epäonnistui. Yritä myöhemmin uudelleen.",
-      "noSessions": "Ei kuntosalisessioita vielä. Lisää sessio aloittaaksesi!",
+      "noSessions": "Ei kuntosalisessioita vielä",
+      "noSessionsDesc": "Valmiit kuntosalisessiosi näkyvät täällä",
       "loadingDetails": "Ladataan kuntosalisession tietoja...",
       "loadDetailsError": "Kuntosalisession tietojen lataus epäonnistui. Yritä myöhemmin uudelleen."
     },
@@ -71,7 +72,8 @@
       "deleteError2": "Yritä uudelleen.",
       "title": "Omat harjoituspohjat",
       "errorLoading": "Virhe harjoituspohjien lataamisessa. Yritä uudelleen!",
-      "noTemplates": "Harjoituspohjia ei löytynyt. Luo ensimmäinen harjoituspohjasi!",
+      "noTemplates": "Ei pohjia vielä",
+      "noTemplatesDesc": "Luo ensimmäinen kuntosalipohjasi aloittaaksesi",
       "errorLoadingExpanded": "Virhe harjoituspohjan tietojen lataamisessa. Yritä uudelleen!",
       "loadingExpanded": "Ladataan tietoja...",
       "createTemplate": "Luo harjoituspohja",
@@ -219,7 +221,8 @@
       "title": "Harjoitusanalytiikka",
       "loading": "Ladataan...",
       "error": "Virhe harjoitustietojen lataamisessa. Yritä uudelleen!",
-      "noData": "Harjoitustietoja ei saatavilla. Aloita harjoitusten kirjaaminen nähdäksesi analytiikkaa!"
+      "noData": "Ei harjoitustietoja vielä",
+      "noDataDesc": "Aloita harjoitusten kirjaaminen nähdäksesi analytiikkaa täällä"
     },
     "saveSession": {
       "titleRequired": "Otsikko vaaditaan.",
@@ -233,6 +236,11 @@
       "exercises": "Liikkeet",
       "totalSets": "Sarjat",
       "muscleGroups": "Lihasryhmät"
+    },
+    "trainingFinished": {
+      "congratulations": "Onnittelut!",
+      "completed": "Olet suorittanut harjoituksesi!",
+      "done": "Valmis"
     },
     "analytics": {
       "title": "Viimeisten 30 päivän analytiikka",

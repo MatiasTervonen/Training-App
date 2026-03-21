@@ -26,14 +26,15 @@ import { useTranslation } from "react-i18next";
 import ActivitySession from "@/features/activities/cards/activity-feed-expanded/activity";
 import EditActivity from "@/features/activities/cards/activity-edit";
 import FeedHeader from "@/features/dashboard/components/feedHeader";
+import EmptyState from "@/components/EmptyState";
+import { LayoutDashboard } from "lucide-react";
 
 export default function SessionFeed() {
   const { t } = useTranslation("feed");
   const [expandedItem, setExpandedItem] = useState<FeedItemUI | null>(null);
   const [editingItem, setEditingItem] = useState<FeedItemUI | null>(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-  const [hasUnsavedExpandedChanges, setHasUnsavedExpandedChanges] =
-    useState(false);
+  const [hasUnsavedExpandedChanges, setHasUnsavedExpandedChanges] = useState(false);
 
   const router = useRouter();
 
@@ -105,13 +106,9 @@ export default function SessionFeed() {
           ) : null}
         </div>
         {isLoading && !data ? (
-          <>
-            <FeedSkeleton count={6} />
-          </>
+          <FeedSkeleton count={6} />
         ) : error ? (
           <p className="text-center text-lg mt-10 font-body">{t("feed.failedToLoad")}</p>
-        ) : !data || (unpinnedFeed.length === 0 && pinnedFeed.length === 0) ? (
-          <p className="text-center text-lg mt-20 font-body">{t("feed.noSessions")}</p>
         ) : (
           <>
             <FeedHeader
@@ -121,60 +118,67 @@ export default function SessionFeed() {
               pinned_context="main"
             />
 
-            {unpinnedFeed.map((feedItem) => {
-              return (
-                <div className="mt-8" key={feedItem.id}>
-                  <FeedCard
-                    item={feedItem}
-                    pinned={false}
-                    onExpand={() => {
-                      setExpandedItem(feedItem);
-                    }}
-                    onTogglePin={() =>
-                      togglePin(
-                        feedItem.id,
-                        feedItem.type,
-                        feedItem.feed_context,
-                        "main",
-                      )
-                    }
-                    onDelete={() =>
-                      handleDelete(feedItem.source_id, feedItem.type)
-                    }
-                    onEdit={() => {
-                      if (feedItem.type === "gym_sessions") {
-                        router.push(`/gym/gym/${feedItem.source_id}/edit`);
-                      } else {
-                        setEditingItem(feedItem);
-                      }
-                    }}
-                  />
-                </div>
-              );
-            })}
-            {isFetchingNextPage && (
-              <div className="flex flex-col gap-2 items-center mt-10 font-body">
-                <p>{t("feed.loadingMore")}</p>
-                <Spinner />
-              </div>
-            )}
+            {unpinnedFeed.length === 0 ? (
+              <EmptyState
+                icon={LayoutDashboard}
+                title={t("feed.noSessions")}
+                description={t("feed.noSessionsDesc")}
+              />
+            ) : (
+              <>
+                {unpinnedFeed.map((feedItem) => {
+                  return (
+                    <div className="mt-8" key={feedItem.id}>
+                      <FeedCard
+                        item={feedItem}
+                        pinned={false}
+                        onExpand={() => {
+                          setExpandedItem(feedItem);
+                        }}
+                        onTogglePin={() =>
+                          togglePin(
+                            feedItem.id,
+                            feedItem.type,
+                            feedItem.feed_context,
+                            "main",
+                          )
+                        }
+                        onDelete={() =>
+                          handleDelete(feedItem.source_id, feedItem.type)
+                        }
+                        onEdit={() => {
+                          if (feedItem.type === "gym_sessions") {
+                            router.push(`/gym/gym/${feedItem.source_id}/edit`);
+                          } else {
+                            setEditingItem(feedItem);
+                          }
+                        }}
+                      />
+                    </div>
+                  );
+                })}
+                {isFetchingNextPage && (
+                  <div className="flex flex-col gap-2 items-center mt-10 font-body">
+                    <p>{t("feed.loadingMore")}</p>
+                    <Spinner />
+                  </div>
+                )}
 
-            {hasNextPage && <div ref={loadMoreRef} className="h-20"></div>}
+                {hasNextPage && <div ref={loadMoreRef} className="h-20"></div>}
 
-            {!hasNextPage && data?.pages.length > 1 && (
-              <p className="text-center justify-center mt-10 text-gray-300 font-body">
-                {t("feed.noMoreSessions")}
-              </p>
+                {!hasNextPage && (data?.pages.length ?? 0) > 1 && (
+                  <p className="text-center justify-center mt-10 text-gray-300 font-body">
+                    {t("feed.noMoreSessions")}
+                  </p>
+                )}
+              </>
             )}
           </>
         )}
 
         {expandedItem && (
           <Modal
-            onClose={() => {
-              setHasUnsavedExpandedChanges(false);
-              setExpandedItem(null);
-            }}
+            onClose={() => { setExpandedItem(null); setHasUnsavedExpandedChanges(false); }}
             isOpen={true}
             confirmBeforeClose={hasUnsavedExpandedChanges}
           >
@@ -249,7 +253,6 @@ export default function SessionFeed() {
                           updateFeedItemToTop(updatedItem),
                           refetchFullTodo(),
                         ]);
-                        setHasUnsavedExpandedChanges(false);
                       }}
                       onDirtyChange={setHasUnsavedExpandedChanges}
                     />
@@ -263,33 +266,26 @@ export default function SessionFeed() {
         {editingItem && (
           <Modal
             isOpen={true}
-            onClose={() => {
-              setEditingItem(null);
-              setHasUnsavedChanges(false);
-            }}
+            onClose={() => { setEditingItem(null); setHasUnsavedChanges(false); }}
             confirmBeforeClose={hasUnsavedChanges}
           >
             {editingItem.type === "notes" && (
               <EditNote
                 note={editingItem}
-                onDirtyChange={setHasUnsavedChanges}
                 onSave={(updatedItem) => {
                   updateFeedItemToTop(updatedItem);
-                  setEditingItem(null);
-                  setHasUnsavedChanges(false);
                 }}
+                onDirtyChange={setHasUnsavedChanges}
               />
             )}
             {editingItem.type === "global_reminders" && (
               <EditReminder
                 reminder={editingItem}
                 onClose={() => setEditingItem(null)}
-                onDirtyChange={setHasUnsavedChanges}
                 onSave={(updatedItem) => {
                   updateFeedItemToTop(updatedItem);
-                  setEditingItem(null);
-                  setHasUnsavedChanges(false);
                 }}
+                onDirtyChange={setHasUnsavedChanges}
               />
             )}
             {editingItem.type === "todo_lists" && (
@@ -308,15 +304,13 @@ export default function SessionFeed() {
                     <EditTodo
                       todo_session={TodoSessionFull}
                       onClose={() => setEditingItem(null)}
-                      onDirtyChange={setHasUnsavedChanges}
                       onSave={async (updatedItem) => {
                         await Promise.all([
                           updateFeedItemToTop(updatedItem),
                           refetchFullTodo(),
                         ]);
-                        setEditingItem(null);
-                        setHasUnsavedChanges(false);
                       }}
+                      onDirtyChange={setHasUnsavedChanges}
                     />
                   )
                 )}
@@ -326,12 +320,10 @@ export default function SessionFeed() {
               <EditWeight
                 weight={editingItem}
                 onClose={() => setEditingItem(null)}
-                onDirtyChange={setHasUnsavedChanges}
                 onSave={(updatedItem) => {
                   updateFeedItem(updatedItem);
-                  setEditingItem(null);
-                  setHasUnsavedChanges(false);
                 }}
+                onDirtyChange={setHasUnsavedChanges}
               />
             )}
             {editingItem.type === "activity_sessions" && (
@@ -350,15 +342,13 @@ export default function SessionFeed() {
                     <EditActivity
                       activity={activitySessionFull}
                       onClose={() => setEditingItem(null)}
-                      onDirtyChange={setHasUnsavedChanges}
                       onSave={async (updatedItem) => {
                         await Promise.all([
                           updateFeedItem(updatedItem),
                           refetchFullActivity(),
                         ]);
-                        setEditingItem(null);
-                        setHasUnsavedChanges(false);
                       }}
+                      onDirtyChange={setHasUnsavedChanges}
                     />
                   )
                 )}

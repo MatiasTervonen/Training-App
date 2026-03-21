@@ -18,7 +18,7 @@ export default function LanguageCard({
   return (
     <AnimatedButton
       onPress={onSelect}
-      className={`flex-row items-center p-4 rounded-lg border-2 mb-3 ${
+      className={`flex-row items-center p-4 rounded-lg border-[1.5px] mb-3 ${
         isSelected
           ? "bg-blue-900/40 border-blue-500"
           : "bg-slate-800 border-slate-700"

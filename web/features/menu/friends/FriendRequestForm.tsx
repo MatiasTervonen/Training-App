@@ -39,7 +39,7 @@ export default function FriendRequestForm() {
   };
 
   return (
-    <div className="flex flex-col max-w-md mx-auto bg-slate-950 p-5 rounded-md shadow-md border-slate-700 border-2">
+    <div className="flex flex-col max-w-md mx-auto bg-slate-950 p-5 rounded-md shadow-md border-slate-700 border-[1.5px]">
       <CustomInput
         id="friend-identifier"
         label={t("friends.sendFriendRequest")}
@@ -59,7 +59,7 @@ export default function FriendRequestForm() {
       <button
         disabled={sendRequest.isPending || !identifier.trim()}
         onClick={handleSendFriendRequest}
-        className="bg-blue-800 py-2 px-10 rounded-md shadow-md border-2 border-blue-500 text-md cursor-pointer hover:bg-blue-700 hover:scale-105 transition-transform duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+        className="bg-blue-800 py-2 px-10 rounded-md shadow-md border-[1.5px] border-blue-500 text-md cursor-pointer hover:bg-blue-700 hover:scale-105 transition-transform duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
       >
         {t("friends.sendRequest")}
       </button>

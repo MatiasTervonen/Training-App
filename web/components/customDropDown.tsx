@@ -25,7 +25,7 @@ export default function DropdownMenu({
 
       {open && (
         <div
-          className={`absolute right-0 top-full flex flex-col border-2 text-gray-100 shadow-lg rounded-md z-50 bg-gray-800 ${className}`}
+          className={`absolute right-0 top-full flex flex-col border-[1.5px] text-gray-100 shadow-lg rounded-md z-50 bg-gray-800 ${className}`}
           onClick={() => setOpen(false)}
         >
           {children}

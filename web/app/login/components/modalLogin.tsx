@@ -20,7 +20,7 @@ export default function ModalLogin({
   return (
     <AnimatePresence>
       <div
-        className={`fixed inset-0 z-50 backdrop-blur-sm flex items-center justify-center ${className}`}
+        className={`fixed inset-0 z-50 bg-black/50 flex items-center justify-center ${className}`}
       >
         <motion.div
           key={"modal"}
@@ -35,7 +35,7 @@ export default function ModalLogin({
             }
           }}
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
-          className="bg-slate-800 relative flex flex-col justify-center items-center mx-auto rounded-xl h-1/2 w-[90vw] max-w-md"
+          className="bg-slate-900 border-[1.5px] border-slate-600 shadow-[0_0_20px_rgba(59,130,246,0.4)] relative flex flex-col justify-center items-center mx-auto rounded-xl h-1/2 w-[90vw] max-w-md"
         >
           <button
             className="absolute top-2 right-2 hover:text-gray-200 z-100"

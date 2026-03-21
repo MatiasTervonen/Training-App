@@ -180,7 +180,7 @@ export default function NotificationBell() {
       >
         <Pressable className="flex-1" onPress={() => setIsOpen(false)}>
           <View
-            className="mt-28 self-end mr-4 border-2 border-blue-500 rounded-md bg-slate-950 shadow-lg"
+            className="mt-28 self-end mr-4 border-[1.5px] border-blue-500 rounded-md bg-slate-950 shadow-lg"
             style={{ width: screenWidth * 0.85, maxHeight: 450 }}
           >
             <Pressable onPress={() => {}}>

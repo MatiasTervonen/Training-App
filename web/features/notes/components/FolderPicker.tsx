@@ -41,7 +41,7 @@ export default function FolderPicker({
         <label className="text-gray-300 mb-1 text-sm">
           {t("notes.folders.saveToFolder")}
         </label>
-        <div className="w-full p-2 rounded-md border-2 border-gray-400 bg-[linear-gradient(50deg,#0f172a,#1e293b,#333333)] animate-pulse">
+        <div className="w-full p-2 rounded-md border-[1.5px] border-gray-400 bg-[linear-gradient(50deg,#0f172a,#1e293b,#333333)] animate-pulse">
           <div className="h-5 bg-slate-700 rounded w-32" />
         </div>
       </div>
@@ -63,7 +63,7 @@ export default function FolderPicker({
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full p-2 rounded-md border-2 border-gray-400 text-gray-100 bg-[linear-gradient(50deg,#0f172a,#1e293b,#333333)] hover:border-blue-500 focus:outline-none focus:border-green-300 flex items-center justify-between cursor-pointer"
+        className="w-full p-2 rounded-md border-[1.5px] border-gray-400 text-gray-100 bg-[linear-gradient(50deg,#0f172a,#1e293b,#333333)] hover:border-blue-500 focus:outline-none focus:border-green-300 flex items-center justify-between cursor-pointer"
       >
         <span>{displayName}</span>
         <ChevronDown
@@ -73,7 +73,7 @@ export default function FolderPicker({
       </button>
 
       {isOpen && (
-        <div className="absolute top-full left-0 right-0 mt-1 rounded-md border-2 border-gray-400 bg-slate-800 overflow-hidden z-50">
+        <div className="absolute top-full left-0 right-0 mt-1 rounded-md border-[1.5px] border-gray-400 bg-slate-800 overflow-hidden z-50">
           {options.map((option) => {
             const isActive = option.id === selectedFolderId;
             return (

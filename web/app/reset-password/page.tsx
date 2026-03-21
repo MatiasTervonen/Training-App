@@ -83,7 +83,7 @@ export default function Page() {
   return (
     <div className="p-5 h-full relative">
       <div className="max-w-lg mx-auto flex flex-col justify-center h-full">
-        <div className="bg-slate-800 py-10 px-6  rounded-xl border-2 ">
+        <div className="bg-slate-800 py-10 px-6  rounded-xl border-[1.5px] ">
           <h1 className="flex justify-center mb-10 text-2xl">Reset Password</h1>
           <div className="mb-5">
             <CustomInput

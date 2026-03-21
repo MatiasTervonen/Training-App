@@ -1,33 +1,33 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import SaveButton from "@/components/buttons/save-button";
-import FullScreenLoader from "@/components/FullScreenLoader";
-import toast from "react-hot-toast";
 import { editTodo } from "@/database/todo/edit-todo";
 import SubNotesInput from "@/ui/SubNotesInput";
 import TitleInput from "@/ui/TitleInput";
-import { ChevronDown, ChevronUp, Dot } from "lucide-react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import { FeedItemUI } from "@/types/session";
 import { full_todo_session_optional_id } from "@/types/session";
 import { generateUUID } from "@/lib/generateUUID";
 import { ModalSwipeBlocker } from "@/components/modal";
+import { useAutoSave } from "@/hooks/useAutoSave";
+import AutoSaveIndicator from "@/components/AutoSaveIndicator";
 
 type Props = {
   todo_session: full_todo_session_optional_id;
   onClose: () => void;
   onSave: (updatedItem: FeedItemUI) => void;
-  onDirtyChange?: (isDirty: boolean) => void;
+  onDirtyChange?: (dirty: boolean) => void;
 };
 
 export default function EditTodo({ todo_session, onClose, onSave, onDirtyChange }: Props) {
   const { t } = useTranslation("todo");
-  const [originalData] = useState(todo_session);
-  const [isSaving, setIsSaving] = useState(false);
   const [sessionData, setSessionData] = useState(todo_session);
   const [deletedIds, setDeletedIds] = useState<string[]>([]);
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
+
+  const deletedIdsRef = useRef(deletedIds);
+  deletedIdsRef.current = deletedIds;
 
   const handleTitleChange = (value: string) => {
     setSessionData((prev) => ({ ...prev, title: value }));
@@ -81,69 +81,49 @@ export default function EditTodo({ todo_session, onClose, onSave, onDirtyChange 
       setExpandedIndex(expandedIndex - 1);
   };
 
-  const handleSave = async () => {
-    const updated = new Date().toISOString();
-
-    const hasEmptyTasks = sessionData.todo_tasks.some(
-      (task) => task.task.trim().length === 0,
-    );
-
-    if (hasEmptyTasks) {
-      toast.error(
-        <div className="flex flex-col gap-2 text-center">
-          <p>{t("todo.editScreen.emptyTasksError")}</p>
-          <p>{t("todo.editScreen.emptyTasksErrorSub")}</p>
-        </div>,
+  const handleAutoSave = useCallback(
+    async (data: { sessionData: full_todo_session_optional_id; deletedIds: string[] }) => {
+      const hasEmptyTasks = data.sessionData.todo_tasks.some(
+        (task) => task.task.trim().length === 0,
       );
-      return;
-    }
 
-    setIsSaving(true);
+      if (hasEmptyTasks) {
+        throw new Error("Empty tasks");
+      }
 
-    try {
+      const updated = new Date().toISOString();
+
       const updatedFeedItem = await editTodo({
-        id: sessionData.id,
-        title: sessionData.title,
-        tasks: sessionData.todo_tasks.map((task, index) => ({
+        id: data.sessionData.id,
+        title: data.sessionData.title,
+        tasks: data.sessionData.todo_tasks.map((task, index) => ({
           id: task.id,
           task: task.task,
           notes: task.notes ?? undefined,
           position: index,
           updated_at: updated,
         })),
-        deletedIds,
+        deletedIds: deletedIdsRef.current,
         updated_at: updated,
       });
 
-      toast.success(t("todo.editScreen.updateSuccess"));
-      await onSave(updatedFeedItem as FeedItemUI);
-      onClose();
-    } catch {
-      toast.error(t("todo.editScreen.updateError"));
-    } finally {
-      setIsSaving(false);
-    }
-  };
+      onSave(updatedFeedItem as FeedItemUI);
+    },
+    [onSave],
+  );
 
-  const hasChanges =
-    JSON.stringify(sessionData) !== JSON.stringify(originalData);
+  const { status, hasPendingChanges } = useAutoSave({
+    data: { sessionData, deletedIds },
+    onSave: handleAutoSave,
+  });
 
   useEffect(() => {
-    onDirtyChange?.(hasChanges);
-  }, [hasChanges, onDirtyChange]);
+    onDirtyChange?.(hasPendingChanges);
+  }, [hasPendingChanges, onDirtyChange]);
 
   return (
     <>
-      {hasChanges && (
-        <div className="bg-slate-900 z-50 py-1 px-4 flex items-center rounded-lg fixed top-5 ml-5">
-          <p className="text-sm text-yellow-500">
-            {t("todo.session.unsavedChanges")}
-          </p>
-          <div className="animate-pulse">
-            <Dot color="#eab308" />
-          </div>
-        </div>
-      )}
+      <AutoSaveIndicator status={status} />
       <div className="flex flex-col justify-between mx-auto page-padding min-h-full max-w-lg">
         <div className="w-full">
           <h2 className="text-lg text-center mb-10">{t("todo.editScreen.title")}</h2>
@@ -229,15 +209,12 @@ export default function EditTodo({ todo_session, onClose, onSave, onDirtyChange 
           </div>
         </div>
 
-        <div className="w-full flex flex-col gap-5 mt-10">
+        <div className="w-full mt-10">
           <button onClick={addNewTask} className="btn-add w-full">
             {t("todo.editScreen.addTask")}
           </button>
-          <SaveButton onClick={handleSave} />
         </div>
       </div>
-
-      {isSaving && <FullScreenLoader message={t("todo.editScreen.savingTodoList")} />}
     </>
   );
 }

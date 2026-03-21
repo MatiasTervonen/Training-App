@@ -536,7 +536,7 @@ export default function MediaToolbar({
         >
           <View
             style={{ maxHeight: "75%", width: screenWidth * 0.85 }}
-            className="border-2 border-slate-300 rounded-xl bg-slate-900 py-5 justify-center"
+            className="border-[1.5px] border-slate-300 rounded-xl bg-slate-900 py-5 justify-center"
           >
             <AppText className="mb-6 text-center text-xl px-4">
               {t("notes:notes.folders.saveToFolder")}

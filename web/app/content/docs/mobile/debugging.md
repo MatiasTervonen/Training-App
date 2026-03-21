@@ -89,3 +89,15 @@ It restarts automatically when you start a build.
 ## Important
 
 **Always rebuild your app after making changes to native code.** Unlike JS/TS changes which hot-reload, native Kotlin changes require a full rebuild with `npx expo run:android`.
+
+---
+
+## Pulling Screenshots from Device
+
+To copy screenshots from your Android device to your desktop, run this in **cmd.exe** (not bash):
+
+```cmd
+adb pull /sdcard/DCIM/Screenshots C:\Users\Matias\OneDrive\Desktop
+```
+
+This copies the entire `Screenshots` folder from the device to your desktop.

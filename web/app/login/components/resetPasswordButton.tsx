@@ -12,7 +12,7 @@ export default function ResetPasswordButton() {
     <>
       <button
         type="submit"
-        className="flex items-center justify-center gap-2 w-full cursor-pointer text-gray-100 border-2 border-blue-500 p-2 rounded-md bg-linear-to-tr from-slate-950  to-blue-700 hover:from-blue-700 hover:to-slate-950 transform hover:scale-105 transition-all duration-200"
+        className="flex items-center justify-center gap-2 w-full cursor-pointer text-gray-100 border-[1.5px] border-blue-500 p-2 rounded-md bg-linear-to-tr from-slate-950  to-blue-700 hover:from-blue-700 hover:to-slate-950 transform hover:scale-105 transition-all duration-200"
         disabled={pending}
       >
         {pending ? t("login.actions.sendingPasswordReset") : t("login.forgotPassword.sendResetLink")}

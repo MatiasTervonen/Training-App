@@ -5,6 +5,7 @@ import ModalPageWrapper from "@/components/modalPageWrapper";
 import { useRouter } from "next/navigation";
 import { useTimerStore } from "@/lib/stores/timerStore";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 
 export default function ClientModalWrapper({
   children,
@@ -12,6 +13,7 @@ export default function ClientModalWrapper({
   children: ReactNode;
 }) {
   const router = useRouter();
+  const { t } = useTranslation("gym");
 
   const { activeSession } = useTimerStore();
 
@@ -20,7 +22,7 @@ export default function ClientModalWrapper({
       onSwipeLeft={() => {
         if (activeSession) {
           toast.error(
-            "You already have an active session. Finish it before starting a new one."
+            `${t("gym.activeSessionError")} ${t("gym.activeSessionErrorSub")}`
           );
           return;
         }

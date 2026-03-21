@@ -15,6 +15,8 @@ import {
   getRemindersByTab,
 } from "@/database/reminders/get-reminders-by-tab";
 import { useTranslation } from "react-i18next";
+import EmptyState from "@/components/EmptyState";
+import { Bell } from "lucide-react";
 
 export default function Sessions() {
   const { t } = useTranslation("reminders");
@@ -73,11 +75,12 @@ export default function Sessions() {
         </p>
       )}
       {!isLoading && reminders.length === 0 && (
-        <p className="text-gray-300 text-center mt-10 text-lg">
-          {t("reminders.noReminders", {
+        <EmptyState
+          icon={Bell}
+          title={t("reminders.noReminders", {
             tab: t(`reminders.tabs.${activeTab}`).toLowerCase(),
           })}
-        </p>
+        />
       )}
       {reminders.map((reminder, index) => (
         <MyReminderCard
@@ -104,20 +107,14 @@ export default function Sessions() {
       {editingItem && (
         <Modal
           isOpen={true}
-          onClose={() => {
-            setEditingItem(null);
-            setHasUnsavedChanges(false);
-          }}
+          onClose={() => { setEditingItem(null); setHasUnsavedChanges(false); }}
           confirmBeforeClose={hasUnsavedChanges}
         >
           <EditMyGlobalReminder
             reminder={editingItem}
             onClose={() => setEditingItem(null)}
+            onSave={async () => {}}
             onDirtyChange={setHasUnsavedChanges}
-            onSave={async () => {
-              setEditingItem(null);
-              setHasUnsavedChanges(false);
-            }}
           />
         </Modal>
       )}

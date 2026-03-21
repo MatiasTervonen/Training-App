@@ -9,6 +9,8 @@ import { useAcceptFriendRequest } from "@/features/menu/friends/hooks/useAcceptF
 import { useRejectFriendRequest } from "@/features/menu/friends/hooks/useRejectFriendRequest";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
+import EmptyState from "@/components/EmptyState";
+import { Users } from "lucide-react";
 
 export default function FriendsPage() {
   const { t } = useTranslation("menu");
@@ -50,7 +52,7 @@ export default function FriendsPage() {
       ) : (
         <>
           {requests && requests.length > 0 && (
-            <div className="mt-5 px-4 rounded-md shadow-md bg-slate-950 border-slate-700 border-2 mb-5">
+            <div className="mt-5 px-4 rounded-md shadow-md bg-slate-950 border-slate-700 border-[1.5px] mb-5">
               <div className="flex items-center justify-center mt-5 mb-5">
                 <h2 className="text-lg">{t("friends.pendingRequests")}</h2>
               </div>
@@ -82,7 +84,7 @@ export default function FriendsPage() {
             </div>
           )}
 
-          <div className="mt-5 px-2 rounded-md shadow-md bg-slate-950 border-slate-700 border-2">
+          <div className="mt-5 px-2 rounded-md shadow-md bg-slate-950 border-slate-700 border-[1.5px]">
             <div className="flex items-center justify-center mt-5 mb-10">
               <h2 className="text-2xl">{t("friends.myFriends")}</h2>
             </div>
@@ -93,9 +95,13 @@ export default function FriendsPage() {
                 </div>
               ))
             ) : (
-              <p className="text-gray-400 text-center mb-10">
-                {t("friends.noFriendsFound")}
-              </p>
+              <div className="mb-5">
+                <EmptyState
+                  icon={Users}
+                  title={t("friends.noFriendsFound")}
+                  description={t("friends.noFriendsFoundDesc")}
+                />
+              </div>
             )}
           </div>
         </>

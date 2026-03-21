@@ -1,0 +1,113 @@
+{
+  "hero": {
+    "subtitle": "Ainoa seurantasovellus, jonka tarvitset",
+    "heading": "Seuraa edistymistäsi",
+    "description": "Seuraa kaikkea kuntosalitreeneistä ulkoiluaktiviteetteihin ja henkilökohtaisiin tavoitteisiin. {{appName}} auttaa sinua pysymään järjestäytyneenä ja motivoituneena — edistymisesi, sinun tavallasi.",
+    "comingSoon": "Tulossa pian",
+    "googlePlay": "Google Play"
+  },
+  "phone": {
+    "heading": "Vain puhelimesi. Siinä kaikki.",
+    "description": "Ei ylimääräisiä laitteita, ei lisäsovelluksia. {{appName}} käyttää puhelimesi sisäänrakennettuja antureita kaiken seurantaan — GPS, askeleet, liike ja paljon muuta. Asenna ja aloita seuranta sekunneissa.",
+    "sync": "Kaikki tietosi tallennetaan turvallisesti pilveen ja synkronoidaan mobiilisovelluksen ja webin välillä. Vaihda laitetta, älä koskaan menetä edistymistäsi."
+  },
+  "simplicity": {
+    "heading": "Rakennettu yksinkertaisuudelle",
+    "description": "Intuitiivinen suunnittelu, joka ei tule tiellesi. Keskity siihen mikä on tärkeää — edistymiseesi.",
+    "intuitiveTitle": "Älykäs syöte",
+    "intuitiveDesc": "Sisältösi järjestyy automaattisesti. Kiinnitä suosikit ylös nopeaa käyttöä varten",
+    "navigationTitle": "Helppo navigointi",
+    "navigationDesc": "Pyyhkäise sivujen välillä, napauta tutkiaksesi — kaikki sujuu luonnollisesti",
+    "editTitle": "Muokkaa mitä vain, milloin vain",
+    "editDesc": "Kaikki luomasi on täysin muokattavissa jälkikäteen. Automaattinen tallennus pitää muutoksesi turvassa",
+    "allInOneTitle": "Kaikki yhdessä sovelluksessa",
+    "allInOneDesc": "Kuntosali, aktiviteetit, muistiinpanot, tavat, chat ja paljon muuta — kaikki yhdessä sovelluksessa"
+  },
+  "activities": {
+    "heading": "Seuraa jokaista aktiviteettia",
+    "description": "Juoksuista pyöräilyyn, patikointiin ja kuntosalitreeneihin — {{appName}} seuraa kaiken tarkasti.",
+    "gpsTitle": "GPS-paikannus",
+    "gpsDesc": "Reaaliaikainen seuranta interaktiivisilla kartoilla ja reitin visualisoinnilla",
+    "statsTitle": "Kattavat tilastot",
+    "statsDesc": "Matka, vauhti, kalorit, askeleet, liikkumisaika, kesto — kaikki seurataan automaattisesti",
+    "templatesTitle": "Mallit ja historia",
+    "templatesDesc": "Tallenna suosikkireitit ja treenit, tarkastele koko treenihistoriaasi",
+    "shareTitle": "Jaa treenejäsi",
+    "shareDesc": "Luo kauniita, täysin muokattavia kuvia treeneistäsi ja jaa ne ystävillesi"
+  },
+  "analytics": {
+    "heading": "Tehokas analytiikka",
+    "description": "Näe edistymisesi, saavuta tavoitteesi. Yksityiskohtaiset näkemykset kaikista aktiviteeteistasi.",
+    "chartsTitle": "Edistymiskaaviot",
+    "chartsDesc": "Visualisoi kehityksesi päivien, viikkojen, kuukausien ja vuosien ajalta",
+    "recordsTitle": "Henkilökohtaiset ennätykset",
+    "recordsDesc": "Seuraa automaattisesti ennätyksiäsi ja juhli virstanpylväitä",
+    "reportsTitle": "Mukautetut raportit",
+    "reportsDesc": "Luo viikoittaisia, kuukausittaisia ja neljännesvuosittaisia yhteenvetoja kaikesta datastasi",
+    "goalsTitle": "Tavoitteiden asettaminen",
+    "goalsDesc": "Aseta henkilökohtaisia tavoitteita ja seuraa edistymistäsi niitä kohti"
+  },
+  "social": {
+    "heading": "Jaa matkasi",
+    "description": "Yhdistä ystäviin, jaa treenejäsi ja juhli saavutuksia yhdessä.",
+    "shareTitle": "Jaa treenejä",
+    "shareDesc": "Julkaise treenisi ja aktiviteettisi sosiaaliseen syötteeseen ystävien nähtäväksi",
+    "likeTitle": "Tykkää ja kommentoi",
+    "likeDesc": "Osallistu ystäviesi saavutuksiin ja pidä toisianne motivoituneina",
+    "friendsTitle": "Kaveriverkosto",
+    "friendsDesc": "Yhdistä ystäviin ja seuraa toistenne kuntoilun edistymistä",
+    "feedTitle": "Aktiviteettisyöte",
+    "feedDesc": "Näe mitä ystäväsi tekevät reaaliaikaisella aktiviteettisyötteellä"
+  },
+  "chat": {
+    "heading": "Pysy yhteydessä",
+    "description": "Täysiverinen chat suoraan sovelluksessa. Jaa edistymisesi poistumatta sovelluksesta.",
+    "messagesTitle": "Reaaliaikaiset viestit",
+    "messagesDesc": "Pikaviestit kirjoitusilmaisimilla ja toimitustilalla",
+    "mediaTitle": "Median jakaminen",
+    "mediaDesc": "Jaa valokuvia ja videoita suoraan keskusteluissasi",
+    "voiceTitle": "Ääniviestit",
+    "voiceDesc": "Nauhoita ja lähetä ääniviestejä kun kirjoittaminen ei riitä",
+    "shareSessionsTitle": "Jaa treenejä chatissa",
+    "shareSessionsDesc": "Lähetä treeni- ja aktiviteettiyhteenvetoja suoraan ystäville"
+  },
+  "reminders": {
+    "heading": "Älykkäät muistutukset",
+    "description": "Muistutukset sisäänrakennettuna jokaiseen ominaisuuteen. Pysy aikataulussa tavoitteidesi, tapojen ja aktiviteettien kanssa.",
+    "globalTitle": "Globaalit muistutukset",
+    "globalDesc": "Aseta globaali muistutus ja saat ilmoituksen jokaisella laitteella — mobiili ja web, aina synkronoituna",
+    "localTitle": "Paikalliset muistutukset",
+    "localDesc": "Pidä asiat yksinkertaisina muistutuksilla, jotka hälyttävät vain laitteella jolle ne on asetettu",
+    "priorityTitle": "Tärkeät hälytykset",
+    "priorityDesc": "Tärkeät muistutukset tulevat koko näytön hälytyksillä, jotka vaativat huomiotasi",
+    "integratedTitle": "Sisäänrakennettu joka ominaisuuteen",
+    "integratedDesc": "Saat muistutuksen tapojen suorittamiseen, virstanpylväsilmoituksia aktiviteettien aikana ja paljon muuta"
+  },
+  "notifications": {
+    "heading": "Älä missaa hetkeäkään",
+    "description": "Reaaliaikaiset push-ilmoitukset pitävät sinut ajan tasalla. Kaveripyynnöt, uudet kommentit, viestit — toimitetaan heti laitteellesi."
+  },
+  "cta": {
+    "heading": "Valmis aloittamaan seurannan?",
+    "description": "Liity {{appName}}iin ja ota kuntoilumatkasi hallintaan jo tänään.",
+    "button": "Aloita — Se on ilmaista"
+  },
+  "navbar": {
+    "login": "Kirjaudu / Rekisteröidy",
+    "loginNote": "Sama tili toimii mobiilissa ja webissä"
+  },
+  "marquee": {
+    "gym": "Kuntosali",
+    "activities": "Aktiviteetit",
+    "timer": "Ajastin",
+    "notes": "Muistiinpanot",
+    "weight": "Paino",
+    "habits": "Tavat",
+    "todo": "Tehtävät",
+    "reminders": "Muistutukset",
+    "reports": "Raportit",
+    "chat": "Chat",
+    "friends": "Kaverit",
+    "analytics": "Analytiikka"
+  }
+}

@@ -68,7 +68,7 @@ export default function ActiveSessionPopup() {
   return (
     <div
       onClick={handleStopTimer}
-      className={`sticky w-full bg-slate-800 py-4 z-1000 border-2 border-blue-500 ${
+      className={`sticky w-full bg-slate-800 py-4 z-1000 border-[1.5px] border-blue-500 ${
         alarmFired ? "bg-red-500 animate-pulse" : ""
       }`}
     >

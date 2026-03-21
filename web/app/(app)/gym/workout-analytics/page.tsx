@@ -5,6 +5,8 @@ import { useQuery } from "@tanstack/react-query";
 import { get30dAnalytics } from "@/database/gym/analytics/last-30-days";
 import Spinner from "@/components/spinner";
 import { useTranslation } from "react-i18next";
+import EmptyState from "@/components/EmptyState";
+import { Dumbbell } from "lucide-react";
 
 export default function WorkoutAnalyticsPage() {
   const { t } = useTranslation("gym");
@@ -30,9 +32,11 @@ export default function WorkoutAnalyticsPage() {
           {t("gym.analyticsScreen.error")}
         </p>
       ) : !data || data.analytics.total_sessions === 0 ? (
-        <p className="text-gray-300 text-center mt-20 px-6 font-body">
-          {t("gym.analyticsScreen.noData")}
-        </p>
+        <EmptyState
+          icon={Dumbbell}
+          title={t("gym.analyticsScreen.noData")}
+          description={t("gym.analyticsScreen.noDataDesc")}
+        />
       ) : (
         <AnalyticsForm data={data} />
       )}

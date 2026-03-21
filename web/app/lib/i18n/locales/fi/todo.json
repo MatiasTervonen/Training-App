@@ -27,7 +27,8 @@
     "saveSuccess": "Tehtävälista tallennettu onnistuneesti",
     "saveError": "Tehtävälistan tallennus epäonnistui",
     "failedToLoad": "Tehtävälistojen lataaminen epäonnistui. Yritä myöhemmin uudelleen.",
-    "noTodoLists": "Ei vielä tehtävälistoja. Lisää ensimmäinen tehtävälistasi!",
+    "noTodoLists": "Ei vielä tehtävälistoja",
+    "noTodoListsDesc": "Luo tehtävälista nähdäksesi sen täällä",
     "noActiveTodoLists": "Ei aktiivisia tehtävälistoja",
     "noActiveTodoListsDesc": "Kaikki tehtävälistasi on suoritettu!",
     "noCompletedTodoLists": "Ei suoritettuja tehtävälistoja",
@@ -53,6 +54,7 @@
       "saveSuccess": "Muutokset tallennettu onnistuneesti",
       "saveError": "Muutosten tallennus epäonnistui"
     },
+    "noMoreTodoLists": "Ei enempää tehtävälistoja",
     "editScreen": {
       "title": "Muokkaa tehtävälistaa",
       "titleLabel": "Otsikko...",

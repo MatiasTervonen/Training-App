@@ -108,7 +108,7 @@ export default function SessionFeed() {
         {isLoading && !data ? (
           <FeedSkeleton count={6} />
         ) : error ? (
-          <p className="text-center text-lg mt-10 font-body">{t("feed.failedToLoad")}</p>
+          <p className="text-center text-lg mt-10 font-body">{t("feed.loadError")}</p>
         ) : (
           <>
             <FeedHeader
@@ -202,7 +202,7 @@ export default function SessionFeed() {
                   </div>
                 ) : GymSessionError ? (
                   <p className="text-center text-lg mt-40 px-10 font-body">
-                    {t("feed.failedToLoadGymSession")}
+                    {t("feed.gymError")}
                   </p>
                 ) : (
                   GymSessionFull && <GymSession {...GymSessionFull} />
@@ -237,12 +237,12 @@ export default function SessionFeed() {
               <>
                 {isLoadingTodoSession ? (
                   <div className="flex flex-col gap-5 items-center justify-center pt-40 px-10 font-body">
-                    <p>{t("feed.loadingTodoSession")}</p>
+                    <p>{t("feed.loadingTodo")}</p>
                     <Spinner />
                   </div>
                 ) : TodoSessionError ? (
                   <p className="text-center text-lg mt-40 px-10">
-                    {t("feed.failedToLoadTodoSession")}
+                    {t("feed.todoError")}
                   </p>
                 ) : (
                   TodoSessionFull && (
@@ -297,7 +297,7 @@ export default function SessionFeed() {
                   </div>
                 ) : TodoSessionError ? (
                   <p className="text-center text-lg mt-40 px-10 font-body">
-                    {t("feed.failedToLoadTodoSession")}
+                    {t("feed.todoError")}
                   </p>
                 ) : (
                   TodoSessionFull && (

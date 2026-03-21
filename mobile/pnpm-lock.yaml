@@ -123,8 +123,8 @@ importers:
         specifier: ~18.2.1
         version: 18.2.1(expo@54.0.30)(react-native@0.81.5(@babel/core@7.28.5)(@react-native-community/cli@20.0.2(typescript@5.9.3))(@types/react@19.1.17)(react@19.1.0))
       expo-notifications:
-        specifier: ~0.32.12
-        version: 0.32.15(expo@54.0.30)(react-native@0.81.5(@babel/core@7.28.5)(@react-native-community/cli@20.0.2(typescript@5.9.3))(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
+        specifier: 0.32.12
+        version: 0.32.12(expo@54.0.30)(react-native@0.81.5(@babel/core@7.28.5)(@react-native-community/cli@20.0.2(typescript@5.9.3))(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
       expo-router:
         specifier: 6.0.14
         version: 6.0.14(89266e87a6c45e889740bfb3b8fbd4e6)
@@ -3235,8 +3235,8 @@ packages:
       react: '*'
       react-native: '*'
 
-  expo-notifications@0.32.15:
-    resolution: {integrity: sha512-gnJcauheC2S0Wl0RuJaFkaBRVzCG011j5hlG0TEbsuOCPBuB/F30YEk8yurK8Psv+zHkVfeiJ5AC+nL0LWk0WA==}
+  expo-notifications@0.32.12:
+    resolution: {integrity: sha512-FVJ5W4rOpKvmrLJ1Sd5pxiVTV4a7ApgTlKro+E5X8M2TBbXmEVOjs09klzdalXTjlzmU/Gu8aRw9xr7Ea/gZdw==}
     peerDependencies:
       expo: '*'
       react: '*'
@@ -9721,7 +9721,7 @@ snapshots:
       react: 19.1.0
       react-native: 0.81.5(@babel/core@7.28.5)(@react-native-community/cli@20.0.2(typescript@5.9.3))(@types/react@19.1.17)(react@19.1.0)
 
-  expo-notifications@0.32.15(expo@54.0.30)(react-native@0.81.5(@babel/core@7.28.5)(@react-native-community/cli@20.0.2(typescript@5.9.3))(@types/react@19.1.17)(react@19.1.0))(react@19.1.0):
+  expo-notifications@0.32.12(expo@54.0.30)(react-native@0.81.5(@babel/core@7.28.5)(@react-native-community/cli@20.0.2(typescript@5.9.3))(@types/react@19.1.17)(react@19.1.0))(react@19.1.0):
     dependencies:
       '@expo/image-utils': 0.8.8
       '@ide/backoff': 1.0.0

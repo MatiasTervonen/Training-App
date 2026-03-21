@@ -6,6 +6,7 @@ import { handleError } from "@/utils/handleError";
 
 export async function POST(request: NextRequest) {
   const authHeader = request.headers.get("authorization");
+  console.log("CRON DEBUG:", { authHeader, expected: `Bearer ${process.env.CRON_SECRET}` });
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
     return new Response(JSON.stringify({ error: "Unauthorized" }), {
       status: 401,

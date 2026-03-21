@@ -36,7 +36,7 @@ Deno.serve(async (req) => {
       };
     };
 
-    const baseUrl = site_url;
+    const baseUrl = "https://kurvi.io";
     let subject: string;
     let html: string;
 

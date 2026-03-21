@@ -44,22 +44,22 @@ body {
   .page-padding {
     padding: var(--page-padding);
   }
+}
 
-  .custom-login-input:-webkit-autofill {
-    /* Paint a solid dark background over Chrome's autofill color */
-    -webkit-box-shadow: 0 0 0px 1000px #0f172a inset !important;
+.custom-login-input:-webkit-autofill {
+  /* Paint a solid dark background over Chrome's autofill color */
+  -webkit-box-shadow: 0 0 0px 1000px #0f172a inset !important;
 
-    /* Set text color */
-    -webkit-text-fill-color: #f3f4f6 !important;
+  /* Set text color */
+  -webkit-text-fill-color: #f3f4f6 !important;
 
-    /* Border + transitions */
-    border-color: #f3f4f6 !important;
-    transition: background-color 9999s ease-in-out 0s !important;
-  }
+  /* Border + transitions */
+  border-color: #f3f4f6 !important;
+  transition: background-color 9999s ease-in-out 0s !important;
+}
 
-  .custom-login-input:-webkit-autofill::first-line {
-    color: #f3f4f6 !important;
-  }
+.custom-login-input:-webkit-autofill::first-line {
+  color: #f3f4f6 !important;
 }
 
 .my-heatmap .w-heatmap-week {

@@ -38,6 +38,7 @@ export default function setDailyNotification({
       body: notes || "",
       sound: true,
       data: { reminderId: reminderId },
+      ...(Platform.OS === "android" && { channelId: "reminders" }),
       ...(mode === "normal" && {
         categoryIdentifier: SNOOZE_CATEGORY_ID,
       }),

@@ -143,13 +143,13 @@ class AlarmService : Service() {
         // Determine route based on alarm type
         val isHabitAlarm = soundType == "habit" || soundType == "habit-priority"
         val route = if ((soundType == "reminder" || soundType == "global-reminder") && reminderId.isNotEmpty()) {
-            "mytrack://dashboard?reminderId=$reminderId"
+            "kurvi://dashboard?reminderId=$reminderId"
         } else if (soundType == "reminder" || soundType == "global-reminder") {
-            "mytrack://dashboard"
+            "kurvi://dashboard"
         } else if (isHabitAlarm) {
-            "mytrack://dashboard"
+            "kurvi://dashboard"
         } else {
-            "mytrack://timer/empty-timer"
+            "kurvi://timer/empty-timer"
         }
         val contentText = tapToOpenText
 
@@ -219,8 +219,6 @@ class AlarmService : Service() {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        val useFullScreen = soundType != "habit"
-
         val builder = NotificationCompat.Builder(this, channelId)
             .setContentTitle(alarmTitle)
             .setContentText(contentText)
@@ -237,9 +235,7 @@ class AlarmService : Service() {
             .setWhen(System.currentTimeMillis())
             .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
 
-        if (useFullScreen) {
-            builder.setFullScreenIntent(fullScreenPendingIntent, true)
-        }
+        builder.setFullScreenIntent(fullScreenPendingIntent, true)
 
         return builder.build()
     }

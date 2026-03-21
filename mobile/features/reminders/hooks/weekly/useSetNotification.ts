@@ -93,6 +93,7 @@ export default function useSetNotificationWeekly({
               body: notes,
               sound: true,
               data: { reminderId: reminderId, type: "local-reminders" },
+              ...(Platform.OS === "android" && { channelId: "reminders" }),
               categoryIdentifier: SNOOZE_CATEGORY_ID,
             },
             trigger,

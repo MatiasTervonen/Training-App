@@ -1,3 +1,4 @@
+import { Platform } from "react-native";
 import * as Notifications from "expo-notifications";
 import { handleError } from "@/utils/handleError";
 import { scheduleNativeAlarm } from "@/native/android/NativeAlarm";
@@ -44,6 +45,7 @@ export default function useSetNotification({
             reminderId: reminderId,
             type: "global-reminder",
           },
+          ...(Platform.OS === "android" && { channelId: "reminders" }),
           ...(mode === "normal" && {
             categoryIdentifier: SNOOZE_CATEGORY_ID,
           }),

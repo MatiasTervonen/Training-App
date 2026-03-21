@@ -71,3 +71,10 @@ export function stopNativeAlarm() {
     nativeAlarm.stopAlarm();
   }
 }
+
+export async function isNativeAlarmRunning(): Promise<boolean> {
+  if (Platform.OS === "android" && nativeAlarm) {
+    return nativeAlarm.isAlarmServiceRunning();
+  }
+  return false;
+}

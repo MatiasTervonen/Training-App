@@ -51,16 +51,17 @@ export default function PushNotificationManager() {
         push_enabled: true,
       });
 
-      await Promise.all([
-        syncNotifications(),
-        syncHabitNotifications(),
-        platform === "android" ? syncAlarms() : Promise.resolve(),
-      ]);
-
       Toast.show({
         type: "success",
         text1: t("settings.pushNotifications.enabledToast"),
       });
+
+      // Sync notifications in the background — non-critical
+      Promise.all([
+        syncNotifications(),
+        syncHabitNotifications(),
+        platform === "android" ? syncAlarms() : Promise.resolve(),
+      ]).catch(() => {});
     } catch {
       Toast.show({
         type: "error",

@@ -50,11 +50,16 @@ export async function syncNotifications() {
 
   await Promise.all(
     (localReminders || []).map(async (reminder) => {
-      if (!reminder.notify_at_time) return;
       switch (reminder.type) {
         case "daily": {
+          if (!reminder.notify_at_time) return;
+          // notify_at_time is a time-only string like "14:30:00"
+          const [h, m] = reminder.notify_at_time.split(":").map(Number);
+          const notifyAtDate = new Date();
+          notifyAtDate.setHours(h, m, 0, 0);
+
           const notificationId = await setDailyNotification({
-            notifyAt: new Date(reminder.notify_at_time),
+            notifyAt: notifyAtDate,
             title: reminder.title,
             notes: reminder.notes,
             reminderId: reminder.id,
@@ -68,8 +73,13 @@ export async function syncNotifications() {
         }
 
         case "weekly": {
+          if (!reminder.notify_at_time) return;
+          const [h, m] = reminder.notify_at_time.split(":").map(Number);
+          const notifyAtDate = new Date();
+          notifyAtDate.setHours(h, m, 0, 0);
+
           const notificationId = await setWeeklyNotification({
-            notifyAt: new Date(reminder.notify_at_time),
+            notifyAt: notifyAtDate,
             title: reminder.title,
             notes: reminder.notes,
             weekdays: reminder.weekdays as number[],
@@ -84,7 +94,9 @@ export async function syncNotifications() {
         }
 
         case "one-time": {
-          const notifyAt = new Date(reminder.notify_at_time);
+          // One-time reminders use notify_date (full timestamp), not notify_at_time
+          if (!reminder.notify_date) return;
+          const notifyAt = new Date(reminder.notify_date);
 
           if (notifyAt <= new Date()) {
             return; // do NOT schedule past one-time reminders

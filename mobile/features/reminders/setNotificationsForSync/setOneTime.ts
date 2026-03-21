@@ -1,3 +1,4 @@
+import { Platform } from "react-native";
 import * as Notifications from "expo-notifications";
 import { SNOOZE_CATEGORY_ID } from "@/features/push-notifications/constants";
 
@@ -23,6 +24,7 @@ export default function setOneTimeNotification({
         reminderId: reminderId,
         type: "onetime-reminder",
       },
+      ...(Platform.OS === "android" && { channelId: "reminders" }),
       ...(mode === "normal" && {
         categoryIdentifier: SNOOZE_CATEGORY_ID,
       }),

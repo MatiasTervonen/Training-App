@@ -54,13 +54,12 @@ export async function syncAlarms() {
   // 3. Re-schedule all alarms (allSettled so one failure doesn't skip the rest)
   await Promise.allSettled(
     (localReminders || []).map(async (reminder) => {
-      if (!reminder.notify_at_time) return;
-      const notifyAt = new Date(reminder.notify_at_time);
-      const hour = notifyAt.getHours();
-      const minute = notifyAt.getMinutes();
-
       switch (reminder.type) {
         case "daily": {
+          if (!reminder.notify_at_time) return;
+          // notify_at_time is a time-only string like "14:30:00"
+          const [hour, minute] = reminder.notify_at_time.split(":").map(Number);
+
           // Calculate first trigger time (today or tomorrow at the specified time)
           const now = new Date();
           const triggerDate = new Date();
@@ -85,6 +84,9 @@ export async function syncAlarms() {
         }
 
         case "weekly": {
+          if (!reminder.notify_at_time) return;
+          const [hour, minute] = reminder.notify_at_time.split(":").map(Number);
+
           const weekdays: number[] = (reminder.weekdays as number[]) || [];
           if (weekdays.length === 0) return;
 
@@ -131,14 +133,9 @@ export async function syncAlarms() {
         }
 
         case "one-time": {
-          // For one-time reminders, use the notify_date if available
-          let triggerDate: Date;
-          if (reminder.notify_date) {
-            triggerDate = new Date(reminder.notify_date);
-            triggerDate.setHours(hour, minute, 0, 0);
-          } else {
-            triggerDate = notifyAt;
-          }
+          // One-time reminders use notify_date (full timestamp), not notify_at_time
+          if (!reminder.notify_date) return;
+          const triggerDate = new Date(reminder.notify_date);
 
           // Do NOT schedule past one-time reminders
           if (triggerDate <= new Date()) {

@@ -64,6 +64,7 @@ export default function useSetNotification({
               reminderId:
                 reminderId
             },
+            ...(Platform.OS === "android" && { channelId: "reminders" }),
             ...(mode === "normal" && {
               categoryIdentifier: SNOOZE_CATEGORY_ID,
             }),
@@ -97,6 +98,7 @@ export default function useSetNotification({
             data: {
               reminderId: reminderId,
             },
+            ...(Platform.OS === "android" && { channelId: "reminders" }),
             ...(mode === "normal" && {
               categoryIdentifier: SNOOZE_CATEGORY_ID,
             }),
@@ -133,6 +135,7 @@ export default function useSetNotification({
                 data: {
                   reminderId: reminderId,
                 },
+                ...(Platform.OS === "android" && { channelId: "reminders" }),
                 ...(mode === "normal" && {
                   categoryIdentifier: SNOOZE_CATEGORY_ID,
                 }),

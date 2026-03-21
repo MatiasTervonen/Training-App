@@ -171,13 +171,13 @@ class AlarmActivity : AppCompatActivity() {
 
         // Determine route based on alarm type
         val route = if ((soundType == "reminder" || soundType == "global-reminder") && reminderId.isNotEmpty()) {
-            "mytrack://dashboard?reminderId=$reminderId"
+            "kurvi://dashboard?reminderId=$reminderId"
         } else if (soundType == "reminder" || soundType == "global-reminder") {
-            "mytrack://dashboard"
+            "kurvi://dashboard"
         } else if (soundType == "habit" || soundType == "habit-priority") {
-            "mytrack://dashboard"
+            "kurvi://dashboard"
         } else {
-            "mytrack://timer/empty-timer"
+            "kurvi://timer/empty-timer"
         }
 
         // Open the main app with appropriate page

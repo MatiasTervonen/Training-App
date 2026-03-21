@@ -1,7 +1,10 @@
 import { useEffect } from "react";
 import { DeviceEventEmitter, Platform } from "react-native";
 import { useRouter } from "expo-router";
-import { stopNativeAlarm } from "@/native/android/NativeAlarm";
+import {
+  stopNativeAlarm,
+  isNativeAlarmRunning,
+} from "@/native/android/NativeAlarm";
 import { useTimerStore } from "@/lib/stores/timerStore";
 
 type AlarmInfo = {
@@ -11,17 +14,41 @@ type AlarmInfo = {
   content: string;
 };
 
+function clearAlarmState() {
+  const store = useTimerStore.getState();
+  if (store.alarmFired) store.setAlarmFired(false);
+  if (store.alarmSoundPlaying) store.setAlarmSoundPlaying(false);
+}
+
 export default function AlarmPlayingListener() {
   const router = useRouter();
+
+  // On mount, check if alarm state is stale (alarm fired but native service no longer running)
+  useEffect(() => {
+    if (Platform.OS !== "android") return;
+
+    const checkStaleAlarmState = async () => {
+      const { alarmFired } = useTimerStore.getState();
+      if (!alarmFired) return;
+
+      const running = await isNativeAlarmRunning();
+      if (!running) {
+        clearAlarmState();
+      }
+    };
+
+    checkStaleAlarmState();
+  }, []);
 
   useEffect(() => {
     if (Platform.OS !== "android") return;
 
-    const sub = DeviceEventEmitter.addListener(
+    const alarmSub = DeviceEventEmitter.addListener(
       "ALARM_PLAYING",
       (data: AlarmInfo) => {
         // Stop the alarm immediately
         stopNativeAlarm();
+        clearAlarmState();
 
         const isHabitSession =
           useTimerStore.getState().activeSession?.type === "habit";
@@ -41,7 +68,15 @@ export default function AlarmPlayingListener() {
       }
     );
 
-    return () => sub.remove();
+    // Listen for STOP_ALARM_SOUND to clear stale alarm state
+    const stopSub = DeviceEventEmitter.addListener("STOP_ALARM_SOUND", () => {
+      clearAlarmState();
+    });
+
+    return () => {
+      alarmSub.remove();
+      stopSub.remove();
+    };
   }, [router]);
 
   return null;

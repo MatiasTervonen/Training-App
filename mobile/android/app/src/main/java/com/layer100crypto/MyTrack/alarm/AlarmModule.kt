@@ -69,6 +69,11 @@ class AlarmModule(private val reactContext: ReactApplicationContext)
     }
 
     @ReactMethod
+    fun isAlarmServiceRunning(promise: Promise) {
+        promise.resolve(AlarmService.isRunning)
+    }
+
+    @ReactMethod
     fun canScheduleExactAlarms(promise: Promise) {
         val alarmManager =
             reactContext.getSystemService(Context.ALARM_SERVICE) as AlarmManager

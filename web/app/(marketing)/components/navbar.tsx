@@ -11,10 +11,15 @@ function LanguageToggle() {
   const { i18n } = useTranslation();
   const currentLang = i18n.language;
 
+  const switchLang = (lng: string) => {
+    i18n.changeLanguage(lng);
+    localStorage.setItem("marketing-lang", lng);
+  };
+
   return (
     <div className="flex items-center rounded-lg border border-slate-700 overflow-hidden text-sm">
       <button
-        onClick={() => i18n.changeLanguage("en")}
+        onClick={() => switchLang("en")}
         className={`px-2.5 py-1 transition-colors cursor-pointer ${
           currentLang === "en"
             ? "bg-blue-600 text-white"
@@ -24,7 +29,7 @@ function LanguageToggle() {
         EN
       </button>
       <button
-        onClick={() => i18n.changeLanguage("fi")}
+        onClick={() => switchLang("fi")}
         className={`px-2.5 py-1 transition-colors cursor-pointer ${
           currentLang === "fi"
             ? "bg-blue-600 text-white"

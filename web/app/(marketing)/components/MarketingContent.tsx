@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useTranslation } from "react-i18next";
@@ -35,21 +34,8 @@ import {
   Puzzle,
 } from "lucide-react";
 
-const SUPPORTED_LANGS = ["en", "fi"];
-
 export default function MarketingContent() {
-  const { t, i18n } = useTranslation("marketing");
-
-  // Auto-detect browser language once for unauthenticated visitors
-  const hasDetected = useRef(false);
-  useEffect(() => {
-    if (hasDetected.current) return;
-    hasDetected.current = true;
-    const browserLang = navigator.language?.split("-")[0];
-    if (browserLang && SUPPORTED_LANGS.includes(browserLang)) {
-      i18n.changeLanguage(browserLang);
-    }
-  }, [i18n]);
+  const { t } = useTranslation("marketing");
 
   const simplicityFeatures = [
     {

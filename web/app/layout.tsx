@@ -18,19 +18,19 @@ export const metadata: Metadata = {
     apple: "/favicon/apple-touch-icon.png",
   },
   description:
-    `Track everything from gym workouts to Disc Golf rounds and personal goals. ${APP_NAME} helps you stay organized and motivated—your progress, your way.`,
+    `The only tracking app you'll ever need. Gym, activities, habits, notes, to-dos, and more — all in one place. ${APP_NAME} keeps everything organized, your way.`,
   metadataBase: new URL("https://training-app-bay.vercel.app/"),
   openGraph: {
     title: APP_NAME,
     description:
-      `Track everything from gym workouts to Disc Golf rounds and personal goals. ${APP_NAME} helps you stay organized and motivated—your progress, your way.`,
+      `The only tracking app you'll ever need. Gym, activities, habits, notes, to-dos, and more — all in one place. ${APP_NAME} keeps everything organized, your way.`,
     url: "https://training-app-bay.vercel.app/",
     siteName: APP_NAME,
     images: [
       {
-        url: "https://training-app-bay.vercel.app/opengraph-desktop.png",
-        width: 1200,
-        height: 630,
+        url: "https://training-app-bay.vercel.app/Hero-image-3.png",
+        width: 1218,
+        height: 927,
         alt: "Home OG Image",
       },
     ],

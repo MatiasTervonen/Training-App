@@ -169,14 +169,14 @@ export function useHabitTimer() {
     queryClient.invalidateQueries({ queryKey: ["feed"] });
   }, [context, queryClient]);
 
-  const cancelHabitTimer = useCallback(async () => {
-    if (!context) return;
+  const cancelHabitTimer = useCallback(async (): Promise<boolean> => {
+    if (!context) return false;
 
     const confirmed = await confirmAction({
       title: t("habitTimerCancelTitle"),
       message: t("habitTimerCancelMessage"),
     });
-    if (!confirmed) return;
+    if (!confirmed) return false;
 
     const store = useTimerStore.getState();
 
@@ -197,6 +197,7 @@ export function useHabitTimer() {
     queryClient.invalidateQueries({ queryKey: ["habit-logs"] });
     queryClient.invalidateQueries({ queryKey: ["habit-stats"] });
     queryClient.invalidateQueries({ queryKey: ["feed"] });
+    return true;
   }, [context, confirmAction, t, queryClient]);
 
   return {

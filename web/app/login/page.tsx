@@ -103,107 +103,111 @@ export default function LoginPage() {
         <div className="relative flex grow w-full overflow-hidden max-w-md">
           {/* Log in Form */}
 
-          <form
-            action={formAction2}
-            onSubmit={() => setHideErrorMessage(false)}
-            className={`absolute top-0 left-0 w-full transition-transform duration-500 ease-in-out ${
+          <div
+            className={`absolute top-0 left-0 w-full h-full transition-transform duration-500 ease-in-out ${
               activeForm ? "-translate-y-full" : "translate-y-0"
-            } flex flex-col justify-center h-full gap-5 px-10`}
+            } overflow-y-auto`}
           >
-            <CustomInput
-              className="custom-login-input"
-              id="email-login"
-              name="email"
-              type="email"
-              placeholder={t("login.emailPlaceholder")}
-              autoComplete="email"
-              required
-              label={`${t("login.email")}:`}
-              maxLength={128}
-              onChange={() => setHideErrorMessage(true)}
-            />
-            <CustomInput
-              className="custom-login-input"
-              id="password-login"
-              name="password"
-              type="password"
-              placeholder={t("login.passwordPlaceholder")}
-              autoComplete="current-password"
-              required
-              label={`${t("login.password")}:`}
-              maxLength={128}
-              onChange={() => setHideErrorMessage(true)}
-            />
-            <div className="flex flex-col ">
-              <LoginButton />
-              <p
-                aria-live="polite"
-                className={`mt-4 text-sm text-center min-h-5  ${
-                  state2.message
-                    ? state2.success
-                      ? "text-green-500"
-                      : "text-red-500"
-                    : "invisible"
-                }`}
-              >
-                {!hideErrorMessage && state2.message}
-              </p>
-              {state2.message ===
-                "Please verify your email before logging in." && (
-                <p
-                  onClick={() => setModal2Open(true)}
-                  className="cursor-pointer text-center hover:underline mt-2"
-                >
-                  {t("login.resendEmail.didntGetEmail")}
-                </p>
-              )}
-            </div>
-
-            {/* Google Sign-In divider */}
-            <div className="flex items-center">
-              <div className="flex-1 h-px bg-gray-600" />
-              <span className="mx-4 text-gray-400">{t("login.or")}</span>
-              <div className="flex-1 h-px bg-gray-600" />
-            </div>
-
-            {/* Google Sign-In button */}
-            <button
-              type="button"
-              onClick={handleGoogleSignIn}
-              disabled={googleLoading}
-              className="flex items-center justify-center gap-3 btn-neutral"
+            <form
+              action={formAction2}
+              onSubmit={() => setHideErrorMessage(false)}
+              className="flex flex-col my-auto min-h-full justify-center gap-3 sm:gap-5 px-6 sm:px-10 py-4"
             >
-              <GoogleIcon />
-              <span>{t("login.signInWithGoogle")}</span>
-            </button>
-
-            {/*  Guest login button */}
-
-            <div className="flex flex-col items-center justify-center mt-5">
-              <button
-                type="button"
-                onClick={() => setGuestModalOpen(true)}
-                className="cursor-pointer text-center hover:underline"
-                disabled={isPending}
-              >
-                <span>{t("login.logInAsGuest")}</span>
-              </button>
-              <div className="h-6">
-                {error && (
-                  <p className="text-red-500 pt-5 text-center text-sm">
-                    {error}
+              <CustomInput
+                className="custom-login-input"
+                id="email-login"
+                name="email"
+                type="email"
+                placeholder={t("login.emailPlaceholder")}
+                autoComplete="email"
+                required
+                label={`${t("login.email")}:`}
+                maxLength={128}
+                onChange={() => setHideErrorMessage(true)}
+              />
+              <CustomInput
+                className="custom-login-input"
+                id="password-login"
+                name="password"
+                type="password"
+                placeholder={t("login.passwordPlaceholder")}
+                autoComplete="current-password"
+                required
+                label={`${t("login.password")}:`}
+                maxLength={128}
+                onChange={() => setHideErrorMessage(true)}
+              />
+              <div className="flex flex-col">
+                <LoginButton />
+                <p
+                  aria-live="polite"
+                  className={`mt-2 text-sm text-center min-h-5 ${
+                    state2.message
+                      ? state2.success
+                        ? "text-green-500"
+                        : "text-red-500"
+                      : "invisible"
+                  }`}
+                >
+                  {!hideErrorMessage && state2.message}
+                </p>
+                {state2.message ===
+                  "Please verify your email before logging in." && (
+                  <p
+                    onClick={() => setModal2Open(true)}
+                    className="cursor-pointer text-center hover:underline mt-1"
+                  >
+                    {t("login.resendEmail.didntGetEmail")}
                   </p>
                 )}
               </div>
-            </div>
 
-            <p
-              onClick={() => setModalOpen(true)}
-              className="cursor-pointer text-center hover:underline"
-            >
-              {t("login.forgotPassword.link")}
-            </p>
-          </form>
+              {/* Google Sign-In divider */}
+              <div className="flex items-center">
+                <div className="flex-1 h-px bg-gray-600" />
+                <span className="mx-4 text-gray-400">{t("login.or")}</span>
+                <div className="flex-1 h-px bg-gray-600" />
+              </div>
+
+              {/* Google Sign-In button */}
+              <button
+                type="button"
+                onClick={handleGoogleSignIn}
+                disabled={googleLoading}
+                className="flex items-center justify-center gap-3 btn-neutral"
+              >
+                <GoogleIcon />
+                <span>{t("login.signInWithGoogle")}</span>
+              </button>
+
+              {/*  Guest login button */}
+
+              <div className="flex flex-col items-center justify-center mt-1 sm:mt-3">
+                <button
+                  type="button"
+                  onClick={() => setGuestModalOpen(true)}
+                  className="cursor-pointer text-center hover:underline font-body"
+                  disabled={isPending}
+                >
+                  <span>{t("login.logInAsGuest")}</span>
+                </button>
+                <div className="h-6">
+                  {error && (
+                    <p className="text-red-500 pt-5 text-center text-sm">
+                      {error}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              <p
+                onClick={() => setModalOpen(true)}
+                className="cursor-pointer text-center hover:underline font-body"
+              >
+                {t("login.forgotPassword.link")}
+              </p>
+            </form>
+          </div>
 
           <ModalLogin
             isOpen={modalOpen}
@@ -259,88 +263,92 @@ export default function LoginPage() {
           </ModalLogin>
 
           {/* Sign Up Form */}
-          <form
-            action={formAction}
-            onSubmit={() => setHideErrorMessage(false)}
-            className={`absolute top-0 left-0 w-full transition-transform duration-500 ease-in-out ${
+          <div
+            className={`absolute top-0 left-0 w-full h-full transition-transform duration-500 ease-in-out ${
               activeForm ? "translate-y-0" : "translate-y-full"
-            } h-full flex flex-col justify-center gap-5 p-10`}
+            } overflow-y-auto`}
           >
-            <CustomInput
-              className="custom-login-input"
-              id="email-signup"
-              name="email"
-              type="email"
-              placeholder={t("login.emailPlaceholder")}
-              autoComplete="email"
-              required
-              label={`${t("login.email")}:`}
-              maxLength={128}
-              onChange={() => setHideErrorMessage(true)}
-            />
-            <CustomInput
-              className="custom-login-input"
-              id="password-signup"
-              name="password"
-              type="password"
-              placeholder={t("login.passwordPlaceholder")}
-              autoComplete="new-password"
-              required
-              label={`${t("login.password")}:`}
-              maxLength={128}
-              onChange={() => setHideErrorMessage(true)}
-            />
-            <CustomInput
-              className="custom-login-input"
-              id="confirmPassword"
-              name="confirmPassword"
-              type="password"
-              placeholder={t("login.confirmPasswordPlaceholder")}
-              autoComplete="new-password"
-              required
-              label={`${t("login.confirmPassword")}:`}
-              maxLength={128}
-              onChange={() => setHideErrorMessage(true)}
-            />
-            <div className="flex flex-col gap-4">
-              <SignupButton />
-              <p
-                aria-live="polite"
-                className={`my-2 text-sm text-center min-h-5 ${
-                  !state.success ? "text-red-500" : "invisible"
-                }`}
-              >
-                {!hideErrorMessage && state.message}
-              </p>
-
-              {/* Google Sign-In divider */}
-              <div className="flex items-center">
-                <div className="flex-1 h-px bg-gray-600" />
-                <span className="mx-4 text-gray-400">{t("login.or")}</span>
-                <div className="flex-1 h-px bg-gray-600" />
-              </div>
-
-              {/* Google Sign-In button */}
-              <button
-                type="button"
-                onClick={handleGoogleSignIn}
-                disabled={googleLoading}
-                className="flex items-center justify-center gap-3 btn-neutral"
-              >
-                <GoogleIcon />
-                <span>{t("login.signInWithGoogle")}</span>
-              </button>
-
-              {state.success && (
+            <form
+              action={formAction}
+              onSubmit={() => setHideErrorMessage(false)}
+              className="flex flex-col min-h-full justify-center gap-3 sm:gap-5 px-6 sm:px-10 py-4"
+            >
+              <CustomInput
+                className="custom-login-input"
+                id="email-signup"
+                name="email"
+                type="email"
+                placeholder={t("login.emailPlaceholder")}
+                autoComplete="email"
+                required
+                label={`${t("login.email")}:`}
+                maxLength={128}
+                onChange={() => setHideErrorMessage(true)}
+              />
+              <CustomInput
+                className="custom-login-input"
+                id="password-signup"
+                name="password"
+                type="password"
+                placeholder={t("login.passwordPlaceholder")}
+                autoComplete="new-password"
+                required
+                label={`${t("login.password")}:`}
+                maxLength={128}
+                onChange={() => setHideErrorMessage(true)}
+              />
+              <CustomInput
+                className="custom-login-input"
+                id="confirmPassword"
+                name="confirmPassword"
+                type="password"
+                placeholder={t("login.confirmPasswordPlaceholder")}
+                autoComplete="new-password"
+                required
+                label={`${t("login.confirmPassword")}:`}
+                maxLength={128}
+                onChange={() => setHideErrorMessage(true)}
+              />
+              <div className="flex flex-col gap-2 sm:gap-3">
+                <SignupButton />
                 <p
-                  onClick={() => setModal2Open(true)}
-                  className="cursor-pointer text-center hover:underline"
+                  aria-live="polite"
+                  className={`text-sm text-center min-h-5 ${
+                    !state.success ? "text-red-500" : "invisible"
+                  }`}
                 >
-                  {t("login.resendEmail.didntGetEmail")}
+                  {!hideErrorMessage && state.message}
                 </p>
-              )}
-            </div>
-          </form>
+
+                {/* Google Sign-In divider */}
+                <div className="flex items-center">
+                  <div className="flex-1 h-px bg-gray-600" />
+                  <span className="mx-4 text-gray-400">{t("login.or")}</span>
+                  <div className="flex-1 h-px bg-gray-600" />
+                </div>
+
+                {/* Google Sign-In button */}
+                <button
+                  type="button"
+                  onClick={handleGoogleSignIn}
+                  disabled={googleLoading}
+                  className="flex items-center justify-center gap-3 btn-neutral"
+                >
+                  <GoogleIcon />
+                  <span>{t("login.signInWithGoogle")}</span>
+                </button>
+
+                {state.success && (
+                  <p
+                    onClick={() => setModal2Open(true)}
+                    className="cursor-pointer text-center hover:underline"
+                  >
+                    {t("login.resendEmail.didntGetEmail")}
+                  </p>
+                )}
+              </div>
+            </form>
+          </div>
 
           {/* Success modal */}
 
@@ -464,9 +472,9 @@ export default function LoginPage() {
             <FullScreenLoader message={t("login.actions.loggingIn")} />
           )}
         </div>
-        <div className="flex justify-center items-center w-full  pb-10">
-          <div className="flex flex-col items-center justify-center gap-5">
-            <p className="text-center text-lg">
+        <div className="flex justify-center items-center w-full pb-4 sm:pb-10">
+          <div className="flex flex-col items-center justify-center gap-3 sm:gap-5">
+            <p className="text-center text-base sm:text-lg font-body">
               {activeForm
                 ? t("login.alreadyHaveAccount")
                 : t("login.dontHaveAccount")}

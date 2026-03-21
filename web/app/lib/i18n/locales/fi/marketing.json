@@ -91,14 +91,7 @@
   "reminders": {
     "heading": "Älykkäät muistutukset",
     "description": "Muistutukset sisäänrakennettuna jokaiseen ominaisuuteen. Pysy aikataulussa tavoitteidesi, tapojen ja aktiviteettien kanssa.",
-    "globalTitle": "Globaalit muistutukset",
-    "globalDesc": "Aseta globaali muistutus ja saat ilmoituksen jokaisella laitteella — mobiili ja web, aina synkronoituna",
-    "localTitle": "Paikalliset muistutukset",
-    "localDesc": "Pidä asiat yksinkertaisina muistutuksilla, jotka hälyttävät vain laitteella jolle ne on asetettu",
-    "priorityTitle": "Tärkeät hälytykset",
-    "priorityDesc": "Tärkeät muistutukset tulevat koko näytön hälytyksillä, jotka vaativat huomiotasi",
-    "integratedTitle": "Sisäänrakennettu joka ominaisuuteen",
-    "integratedDesc": "Saat muistutuksen tapojen suorittamiseen, virstanpylväsilmoituksia aktiviteettien aikana ja paljon muuta"
+    "statement": "Aseta globaaleja muistutuksia, jotka ilmoittavat jokaisella laitteella, tai paikallisia vain puhelimeesi. Tärkeät hälytykset tulevat koko näytön ilmoituksilla. Muistutukset on rakennettu jokaiseen ominaisuuteen — tavat, aktiviteetit ja paljon muuta."
   },
   "notifications": {
     "heading": "Älä missaa hetkeäkään",

@@ -94,12 +94,12 @@ export default function SettingsScreen() {
 
   const cancelTimer = async () => {
     if (isHabitSession) {
-      // Habit timer cancel: saves progress, shows confirm dialog
+      const confirmed = await cancelHabitTimer();
+      if (!confirmed) return;
       if (player) {
         try { player.pause(); player.seekTo(0); } catch {}
       }
       router.replace("/dashboard");
-      await cancelHabitTimer();
       handleReset();
       return;
     }

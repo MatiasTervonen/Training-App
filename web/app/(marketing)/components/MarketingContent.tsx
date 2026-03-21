@@ -1,8 +1,10 @@
 "use client";
 
+import { useLayoutEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useTranslation } from "react-i18next";
+import Navbar from "./navbar";
 import AnimatedH1 from "./AnimatedH1";
 import FeatureMarquee from "./FeatureMarquee";
 import AnimatedSection from "./AnimatedSection";
@@ -32,10 +34,35 @@ import {
   Smartphone,
   BellRing,
   Puzzle,
+  Clock,
+  Flame,
+  Bell,
 } from "lucide-react";
 
+const SUPPORTED_LANGS = ["en", "fi"];
+
 export default function MarketingContent() {
-  const { t } = useTranslation("marketing");
+  const { t, i18n } = useTranslation("marketing");
+  const [ready, setReady] = useState(false);
+
+  // Apply saved/detected language before first paint, then allow render
+  const hasDetected = useRef(false);
+  useLayoutEffect(() => {
+    if (hasDetected.current) return;
+    hasDetected.current = true;
+    const saved = localStorage.getItem("marketing-lang");
+    if (saved && SUPPORTED_LANGS.includes(saved)) {
+      i18n.changeLanguage(saved);
+    } else {
+      const browserLang = navigator.language?.split("-")[0];
+      if (browserLang && SUPPORTED_LANGS.includes(browserLang)) {
+        i18n.changeLanguage(browserLang);
+      }
+    }
+    setReady(true);
+  }, [i18n]);
+
+  if (!ready) return null;
 
   const simplicityFeatures = [
     {
@@ -161,6 +188,37 @@ export default function MarketingContent() {
     },
   ];
 
+  const habitsFeatures = [
+    {
+      icon: Footprints,
+      title: t("habits.stepsTitle"),
+      desc: t("habits.stepsDesc"),
+      color: "text-rose-400",
+      border: "border-rose-500/20",
+    },
+    {
+      icon: Clock,
+      title: t("habits.timedTitle"),
+      desc: t("habits.timedDesc"),
+      color: "text-pink-400",
+      border: "border-pink-500/20",
+    },
+    {
+      icon: Bell,
+      title: t("habits.remindersTitle"),
+      desc: t("habits.remindersDesc"),
+      color: "text-fuchsia-400",
+      border: "border-fuchsia-500/20",
+    },
+    {
+      icon: Flame,
+      title: t("habits.streaksTitle"),
+      desc: t("habits.streaksDesc"),
+      color: "text-orange-400",
+      border: "border-orange-500/20",
+    },
+  ];
+
   const reminderFeatures = [
     {
       icon: Globe,
@@ -225,6 +283,10 @@ export default function MarketingContent() {
 
   return (
     <>
+      <header>
+        <Navbar />
+      </header>
+
       {/* Hero */}
       <main className="flex flex-col justify-center items-center gap-10 text-gray-100 py-10 lg:py-20 bg-linear-to-tr from-slate-950 via-slate-950 to-blue-900 rounded-t-xl px-5">
         <section>
@@ -308,6 +370,9 @@ export default function MarketingContent() {
             <p className="font-[family-name:var(--font-body)] text-gray-400 text-lg mt-4">
               {t("phone.sync")}
             </p>
+            <p className="font-[family-name:var(--font-body)] text-gray-400 text-lg mt-4">
+              {t("phone.multitask")}
+            </p>
           </div>
         </AnimatedSection>
 
@@ -351,16 +416,28 @@ export default function MarketingContent() {
         </AnimatedSection>
 
         {/* Reminders */}
-        <AnimatedSection className="py-16 sm:py-24 px-5 bg-linear-to-br from-slate-950 via-slate-950 to-yellow-950/20">
-          <div className="text-center mb-12">
+        <AnimatedSection className="py-16 sm:py-24 px-5 text-center border-y border-slate-800/50">
+          <div className="max-w-2xl mx-auto">
             <h2 className="text-3xl sm:text-4xl mb-4">
               {t("reminders.heading")}
             </h2>
-            <p className="font-[family-name:var(--font-body)] text-gray-400 max-w-2xl mx-auto text-lg">
-              {t("reminders.description")}
+            <p className="font-[family-name:var(--font-body)] text-gray-400 text-lg">
+              {t("reminders.statement")}
             </p>
           </div>
-          <FeatureGrid features={reminderFeatures} />
+        </AnimatedSection>
+
+        {/* Habits */}
+        <AnimatedSection className="py-16 sm:py-24 px-5">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl sm:text-4xl mb-4">
+              {t("habits.heading")}
+            </h2>
+            <p className="font-[family-name:var(--font-body)] text-gray-400 max-w-2xl mx-auto text-lg">
+              {t("habits.description")}
+            </p>
+          </div>
+          <FeatureGrid features={habitsFeatures} />
         </AnimatedSection>
 
         {/* Social Feed */}

@@ -12,19 +12,10 @@ const resources = {
 
 const supportedLangs = Object.keys(resources);
 
-function getInitialLang(): string {
-  if (typeof window === "undefined") return "en";
-  const saved = localStorage.getItem("marketing-lang");
-  if (saved && supportedLangs.includes(saved)) return saved;
-  const browserLang = navigator.language?.split("-")[0];
-  if (browserLang && supportedLangs.includes(browserLang)) return browserLang;
-  return "en";
-}
-
 i18n.use(initReactI18next).init({
   resources,
   defaultNS: "common",
-  lng: getInitialLang(),
+  lng: "en",
   fallbackLng: "en",
   supportedLngs: supportedLangs,
   interpolation: {

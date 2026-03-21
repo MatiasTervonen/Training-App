@@ -2,14 +2,15 @@
   "hero": {
     "subtitle": "The Only Tracking App You'll Ever Need",
     "heading": "Track Your Progress",
-    "description": "Track everything from gym workouts to outdoor activities and personal goals. {{appName}} helps you stay organized and motivated — your progress, your way.",
+    "description": "Gym workouts, outdoor activities, habits, notes, to-dos, and more. {{appName}} keeps everything organized in one place — your life, your way.",
     "comingSoon": "Coming Soon on",
     "googlePlay": "Google Play"
   },
   "phone": {
     "heading": "Just Your Phone. That's It.",
     "description": "No extra devices, no additional apps. {{appName}} uses your phone's built-in sensors to track everything — GPS, steps, motion, and more. Install and start tracking in seconds.",
-    "sync": "All your data is securely stored in the cloud and synced between the mobile app and web. Switch devices, never lose your progress."
+    "sync": "All your data is securely stored in the cloud and synced between the mobile app and web. Switch devices, never lose your progress.",
+    "multitask": "Use the full app while tracking. Write notes, check your to-dos, chat with friends — all without stopping your session."
   },
   "simplicity": {
     "heading": "Built for Simplicity",
@@ -25,23 +26,27 @@
   },
   "activities": {
     "heading": "Track Every Activity",
-    "description": "From runs to rides, hikes to gym sessions — {{appName}} tracks it all with precision.",
+    "description": "Running, cycling, hiking, or just a walk — {{appName}} tracks it all with precision.",
     "gpsTitle": "GPS Location Tracking",
     "gpsDesc": "Real-time tracking with interactive maps and route visualization",
     "statsTitle": "Comprehensive Stats",
     "statsDesc": "Distance, pace, calories, steps, moving time, duration — all tracked automatically",
     "templatesTitle": "Templates & History",
-    "templatesDesc": "Save favorite routes and workouts, review your complete session history",
+    "templatesDesc": "Save favorite routes and sessions, review your complete history anytime",
     "shareTitle": "Share Your Sessions",
     "shareDesc": "Create beautiful, fully customizable images of your sessions and share them with friends"
   },
+  "multitask": {
+    "heading": "Full App Access During Sessions",
+    "description": "Your session keeps running in the background. Write notes, check your to-dos, chat with friends — all without stopping your tracking."
+  },
   "analytics": {
     "heading": "Powerful Analytics",
-    "description": "See your progress, hit your goals. Detailed insights across all your activities.",
+    "description": "See your progress, hit your goals. Detailed insights across everything you track.",
     "chartsTitle": "Progress Charts",
     "chartsDesc": "Visualize your improvement over days, weeks, months, and years",
     "recordsTitle": "Personal Records",
-    "recordsDesc": "Automatically track your PRs and celebrate milestones",
+    "recordsDesc": "Automatically track your best results and celebrate milestones",
     "reportsTitle": "Custom Reports",
     "reportsDesc": "Generate weekly, monthly, and quarterly summaries of all your data",
     "goalsTitle": "Goal Setting",
@@ -51,13 +56,13 @@
     "heading": "Share Your Journey",
     "description": "Connect with friends, share your sessions, and celebrate achievements together.",
     "shareTitle": "Share Sessions",
-    "shareDesc": "Post your workouts and activities to the social feed for friends to see",
+    "shareDesc": "Post your sessions to the social feed for friends to see",
     "likeTitle": "Like & Comment",
-    "likeDesc": "Engage with your friends' achievements and keep each other motivated",
+    "likeDesc": "Engage with your friends' achievements and keep each other going",
     "friendsTitle": "Friends Network",
-    "friendsDesc": "Connect with friends and follow each other's fitness progress",
+    "friendsDesc": "Connect with friends and follow each other's progress",
     "feedTitle": "Activity Feed",
-    "feedDesc": "See what your friends are up to with a real-time activity feed"
+    "feedDesc": "See what your friends are up to with a real-time feed"
   },
   "chat": {
     "heading": "Stay Connected",
@@ -69,27 +74,32 @@
     "voiceTitle": "Voice Messages",
     "voiceDesc": "Record and send voice messages when typing isn't enough",
     "shareSessionsTitle": "Share Sessions in Chat",
-    "shareSessionsDesc": "Send workout and activity summaries directly to friends"
+    "shareSessionsDesc": "Send session summaries directly to friends in chat"
+  },
+  "habits": {
+    "heading": "Build Better Habits",
+    "description": "Create daily habits and let {{appName}} handle the rest. Step goals, timed habits, and reminders — everything works automatically.",
+    "stepsTitle": "Step-Based Habits",
+    "stepsDesc": "Set a daily step goal and it's automatically marked done when you reach it",
+    "timedTitle": "Timed Habits",
+    "timedDesc": "Track duration-based habits that complete automatically when your time is up",
+    "remindersTitle": "Built-In Reminders",
+    "remindersDesc": "Set reminders for each habit so you never forget — normal or priority alerts",
+    "streaksTitle": "Streaks & Stats",
+    "streaksDesc": "Track your current and longest streaks, completion rates, and monthly progress"
   },
   "reminders": {
     "heading": "Smart Reminders",
     "description": "Reminders built into every feature. Stay on track with your habits, activities, and goals.",
-    "globalTitle": "Global Reminders",
-    "globalDesc": "Set a global reminder and get notified on every device — mobile and web, always in sync",
-    "localTitle": "Local Reminders",
-    "localDesc": "Keep it simple with reminders that only fire on the device you set them on",
-    "priorityTitle": "Priority Alerts",
-    "priorityDesc": "Important reminders break through with full-screen alerts that demand your attention",
-    "integratedTitle": "Built Into Every Feature",
-    "integratedDesc": "Get reminded to complete habits, receive milestone alerts during activities, and more"
+    "statement": "Set global reminders that notify you on every device, or local ones for just your phone. Priority alerts break through with full-screen notifications. Reminders are built into every feature — habits, activities, and more."
   },
   "notifications": {
     "heading": "Never Miss a Moment",
-    "description": "Live push notifications keep you in the loop. Friend requests, new comments, messages — delivered instantly to your device."
+    "description": "Live push notifications keep you in the loop. Friend requests, new comments, messages — delivered instantly. Add home screen widgets to see your steps and jump straight into logging weight, adding notes, or starting a gym session with a single tap."
   },
   "cta": {
     "heading": "Ready to Start Tracking?",
-    "description": "Join {{appName}} and take control of your fitness journey today.",
+    "description": "Join {{appName}} today and keep everything organized in one place.",
     "button": "Get Started — It's Free"
   },
   "navbar": {

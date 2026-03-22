@@ -273,7 +273,7 @@ export default function SettingsScreen() {
           <AnimatedButton
             label={t("timer.start")}
             onPress={handleStartTimer}
-            className="btn-base py-2"
+            className="btn-start"
           />
         </View>
       )}

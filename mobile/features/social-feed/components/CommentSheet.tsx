@@ -134,7 +134,7 @@ export default function CommentSheet({ feedItemId, onClose }: CommentSheetProps)
   );
 
   const commentCount = comments?.length ?? 0;
-  const sheetIndex = feedItemId ? 0 : -1;
+  const sheetIndex = feedItemId ? 1 : -1;
 
   const listHeader = useCallback(
     () => (

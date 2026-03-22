@@ -139,9 +139,10 @@ export default function SessionFeed({
       if (reminderItem) {
         expandedReminderRef.current = expandReminderId;
         setExpandedItem(reminderItem);
+        router.setParams({ reminderId: undefined });
       }
     }
-  }, [expandReminderId, isSuccess, isLoading, pinnedFeed, unpinnedFeed]);
+  }, [expandReminderId, isSuccess, isLoading, pinnedFeed, unpinnedFeed, router]);
 
   // handle feedItem pin toggling
 

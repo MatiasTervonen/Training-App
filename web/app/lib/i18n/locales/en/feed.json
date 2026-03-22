@@ -38,8 +38,54 @@
         "todo": "To-Do",
         "gym": "Gym",
         "notes": "Notes",
-        "reminder": "Reminder"
+        "reminder": "Reminder",
+        "tutorial": "Tutorial"
       }
+    },
+    "tutorial": {
+      "title": "Welcome to {{appName}}!",
+      "subtitle": "Your complete guide to getting started",
+      "gym": {
+        "title": "Gym Tracking",
+        "desc": "Log your workouts with exercises, sets, reps, and weight. Use templates to save your favorite routines."
+      },
+      "activities": {
+        "title": "Activities",
+        "desc": "Track outdoor activities like running, cycling, and walking with GPS, duration, and distance."
+      },
+      "weight": {
+        "title": "Weight Tracking",
+        "desc": "Log your weight and track your progress over time with charts and statistics."
+      },
+      "notes": {
+        "title": "Notes",
+        "desc": "Write notes and organize them into folders. Add voice recordings, images, and videos."
+      },
+      "reminders": {
+        "title": "Reminders",
+        "desc": "Set one-time or recurring reminders with push notifications to stay on track."
+      },
+      "habits": {
+        "title": "Habits",
+        "desc": "Build daily habits and track your streaks. See your consistency on the feed."
+      },
+      "todo": {
+        "title": "To-Do Lists",
+        "desc": "Create task lists to organize your training goals and daily tasks."
+      },
+      "chat": {
+        "title": "Chat",
+        "desc": "Message your friends, share sessions, and react to messages. Send text, images, videos, and voice messages."
+      },
+      "reports": {
+        "title": "Reports",
+        "desc": "Get weekly and monthly summaries of your training, weight, habits, and activities."
+      },
+      "tap_to_read": "Click Details to read the full guide"
+    },
+    "hide": {
+      "success": "Hidden from feed",
+      "error": "Failed to hide item"
     },
     "deleteSession": {
       "confirmTitle": "Are you sure you want to delete this session?",

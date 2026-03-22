@@ -31,6 +31,8 @@ export function useNotificationSubscription() {
           });
           queryClient.invalidateQueries({ queryKey: ["notifications"] });
           queryClient.invalidateQueries({ queryKey: ["friend-requests"] });
+          queryClient.invalidateQueries({ queryKey: ["feed-comments"] });
+          queryClient.invalidateQueries({ queryKey: ["social-feed"] });
         },
       )
       .subscribe();

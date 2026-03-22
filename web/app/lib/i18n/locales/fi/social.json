@@ -1,0 +1,32 @@
+{
+  "social": {
+    "myFeed": "Oma syöte",
+    "friendsFeed": "Kaverit",
+    "noFriendPosts": "Ei vielä kavereiden julkaisuja",
+    "noFriendsYet": "Lisää kavereita nähdäksesi heidän aktiviteettinsa täällä",
+    "shareWithFriends": "Julkaise sosiaaliseen syötteeseen",
+    "likes": "tykkäystä",
+    "like": "tykkäys",
+    "liked": "Tykätty",
+    "details": "Tiedot",
+    "readOnly": "Vain luku -näkymä",
+    "comments": "Kommentit",
+    "comment": "kommentti",
+    "commentPlural": "kommenttia",
+    "noComments": "Ei vielä kommentteja",
+    "addComment": "Kirjoita kommentti...",
+    "send": "Lähetä",
+    "deleteComment": "Poista kommentti?",
+    "reply": "Vastaa",
+    "replyingTo": "Vastaus käyttäjälle {{name}}",
+    "sharedWithFriends": "Julkaistu sosiaaliseen syötteeseen",
+    "removedFromFriends": "Poistettu sosiaalisesta syötteestä",
+    "shareWithFriendsTitle": "Julkaise sosiaaliseen syötteeseen",
+    "shareWithFriendsMessage": "Tämä harjoitus näkyy kavereillesi sosiaalisessa syötteessä.",
+    "removeFromFriendsTitle": "Poista sosiaalisesta syötteestä",
+    "removeFromFriendsMessage": "Tämä harjoitus ei näy enää sosiaalisessa syötteessä.",
+    "shareConfirm": "Julkaise",
+    "removeConfirm": "Poista",
+    "cancel": "Peruuta"
+  }
+}

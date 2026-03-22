@@ -29,6 +29,7 @@
     "chat": "Keskustelu",
     "unsavedChanges": "tallentamattomia muutoksia",
     "moveToFolder": "Siirrä kansioon",
+    "hideFromFeed": "Piilota syötteestä",
     "autoSave": {
       "saving": "Tallennetaan...",
       "saved": "Tallennettu",

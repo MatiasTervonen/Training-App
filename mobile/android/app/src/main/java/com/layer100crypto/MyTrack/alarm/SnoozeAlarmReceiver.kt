@@ -1,5 +1,6 @@
 package com.layer100crypto.MyTrack.alarm
 
+import android.app.NotificationManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -13,6 +14,10 @@ class SnoozeAlarmReceiver : BroadcastReceiver() {
 
         // Read alarm context from intent extras
         val reminderId = intent.getStringExtra("REMINDER_ID") ?: return
+
+        // Dismiss the notification
+        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.cancel(reminderId.hashCode())
         val title = intent.getStringExtra("TITLE") ?: "Alarm"
         val soundType = intent.getStringExtra("SOUND_TYPE") ?: "default"
         val content = intent.getStringExtra("CONTENT") ?: ""

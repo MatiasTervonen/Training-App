@@ -20,7 +20,7 @@ export default function FeatureGrid({ features }: { features: Feature[] }) {
           >
             <Icon className={`${f.color} mb-3`} size={28} />
             <h3 className="text-lg mb-2">{f.title}</h3>
-            <p className="font-[family-name:var(--font-body)] text-gray-400 text-sm">
+            <p className="font-body text-gray-400 text-sm">
               {f.desc}
             </p>
           </div>

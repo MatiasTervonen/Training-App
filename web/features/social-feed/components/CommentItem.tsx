@@ -1,6 +1,7 @@
 "use client";
 
 import { memo } from "react";
+import Image from "next/image";
 import { Trash2 } from "lucide-react";
 import { FeedComment } from "@/types/social-feed";
 import { useTranslation } from "react-i18next";
@@ -45,9 +46,11 @@ function CommentItem({
   return (
     <div className={`flex gap-3 py-3 ${isReply ? "pl-12 pr-4" : "px-4"}`}>
       {comment.author_profile_picture ? (
-        <img
+        <Image
           src={comment.author_profile_picture}
           alt={comment.author_display_name}
+          width={isReply ? 28 : 36}
+          height={isReply ? 28 : 36}
           className={`rounded-full bg-slate-600 object-cover ${isReply ? "w-7 h-7" : "w-9 h-9"}`}
         />
       ) : (

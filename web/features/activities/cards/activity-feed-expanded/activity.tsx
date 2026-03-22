@@ -1,11 +1,14 @@
 "use client";
 
 import { FullActivitySession } from "@/types/models";
-import { formatDateShort, formatTime, formatDuration } from "@/lib/formatDate";
+import { formatDateShort, formatTime, formatDurationLong } from "@/lib/formatDate";
 import RouteMap from "@/features/activities/cards/activity-feed-expanded/components/Map";
 import SessionStats from "@/features/activities/cards/activity-feed-expanded/components/SessionStats";
 import { useTranslation } from "react-i18next";
 import { ModalSwipeBlocker } from "@/components/modal";
+import { useQuery } from "@tanstack/react-query";
+import { getSessionMedia } from "@/database/media/get-session-media";
+import SessionMediaGallery from "@/components/media/SessionMediaGallery";
 
 type ActivitySessionProps = FullActivitySession & {
   feed_context: "pinned" | "feed";
@@ -15,6 +18,11 @@ export default function ActivitySession(
   activity_session: ActivitySessionProps,
 ) {
   const { t } = useTranslation("activities");
+
+  const { data: media } = useQuery({
+    queryKey: ["session-media", activity_session.session.id],
+    queryFn: () => getSessionMedia(activity_session.session.id),
+  });
 
   const hasRoute = activity_session.route !== null;
 
@@ -41,7 +49,7 @@ export default function ActivitySession(
           {!hasRoute && (
             <p className="text-lg text-center mt-5 text-gray-100">
               {t("activities.sessionDetails.duration")}:{" "}
-              {formatDuration(activity_session.session.duration)}
+              {formatDurationLong(activity_session.session.duration)}
             </p>
           )}
 
@@ -50,6 +58,14 @@ export default function ActivitySession(
               {t("activities.sessionDetails.steps")}:{" "}
               {activity_session.stats.steps}
             </p>
+          )}
+
+          {media && (
+            <SessionMediaGallery
+              images={media.images}
+              videos={media.videos}
+              voiceRecordings={media.voiceRecordings}
+            />
           )}
         </div>
       </div>

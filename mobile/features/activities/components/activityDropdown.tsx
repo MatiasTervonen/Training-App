@@ -184,7 +184,7 @@ export default function ActivityDropdown({ onSelect }: Props) {
               renderItem={({ item, index }: { item: activities_with_category; index: number }) => {
                 return (
                   <AnimatedButton
-                    className={`w-full text-left px-4 py-2 z-40 border-b border-gray-700 ${selectedActivity?.id === item.id ? "bg-blue-800" : index % 2 === 1 ? "bg-slate-800/50" : ""}`}
+                    className={`w-full text-left px-4 py-2 z-40 border-b border-gray-700 ${selectedActivity?.id === item.id ? "bg-indigo-500/20" : index % 2 === 1 ? "bg-slate-800/50" : ""}`}
                     onPress={() => {
                       handleSelectActivity(item);
 
@@ -209,7 +209,7 @@ export default function ActivityDropdown({ onSelect }: Props) {
                 );
               }}
               renderSectionHeader={({ section: { title } }) => (
-                <AppText className="text-center text-base bg-blue-600 py-0.5">
+                <AppText className="text-center text-base bg-blue-500/20 border-y border-blue-500/40 py-0.5">
                   {title}
                 </AppText>
               )}

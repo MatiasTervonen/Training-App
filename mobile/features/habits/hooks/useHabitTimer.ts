@@ -123,7 +123,7 @@ export function useHabitTimer() {
 
       await saveContext(ctx);
 
-      store.startTimer(remaining, habit.name);
+      store.startTimer(remaining, habit.name, { skipExtend: true });
       store.setActiveSession({
         label: habit.name,
         path: "/timer/empty-timer",

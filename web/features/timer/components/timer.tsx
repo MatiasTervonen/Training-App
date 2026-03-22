@@ -4,16 +4,18 @@ import { CirclePlay, CirclePause, RotateCcw } from "lucide-react";
 import { useTimerStore } from "@/lib/stores/timerStore";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { formatDateShort } from "@/lib/formatDate";
+
 
 type TimerProps = {
   className?: string;
   onStopAlarmSound?: () => void;
+  alarmStyle?: boolean;
 };
 
 export default function Timer({
   className = "",
   onStopAlarmSound,
+  alarmStyle = false,
 }: TimerProps) {
   const {
     elapsedTime,
@@ -55,11 +57,15 @@ export default function Timer({
   }, [resumeTimer]);
 
   const formatTime = (seconds: number) => {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${String(minutes).padStart(2, "0")}:${String(
-      remainingSeconds,
-    ).padStart(2, "0")}`;
+    const total = Math.round(seconds);
+    const h = Math.floor(total / 3600);
+    const m = Math.floor((total % 3600) / 60);
+    const s = total % 60;
+
+    if (h > 0) {
+      return `${h}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+    }
+    return `${m}:${String(s).padStart(2, "0")}`;
   };
 
   const handleStart = () => {
@@ -101,17 +107,17 @@ export default function Timer({
   return (
     <div
       ref={containerRef}
-      className={`flex items-center  w-full h-full overflow-hidden gap-2 ${className}`}
+      className={`flex items-center  w-full h-full gap-2 ${className}`}
     >
       <p
         ref={textRef}
-        className="text-center font-mono font-bold leading-none"
+        className={`text-center font-mono font-bold leading-none ${alarmStyle ? "text-red-500" : ""}`}
         style={{
           fontSize: `${fontSize}px`,
           whiteSpace: "nowrap",
         }}
       >
-        {formatTime(elapsedTime)}
+        {formatTime(Math.max(0, totalDuration - elapsedTime))}
       </p>
       <div className="flex items-center transition-opacity duration-300">
         {!alarmFired ? (
@@ -135,33 +141,31 @@ export default function Timer({
         ) : (
           <div className="flex items-center gap-5">
             <button
-              aria-label="Stop alarm"
+              aria-label={t("timer.notification.stopAlarm")}
               onClick={() => {
                 onStopAlarmSound?.();
               }}
-              className="min-w-[129px] bg-red-600 border-[1.5px] border-red-400 py-2 px-4y rounded-md text-white hover:bg-red-500 hover:scale-105 transition-all duration-200"
+              className="btn-danger w-40 text-center"
             >
-              Stop Alarm
+              {t("timer.notification.stopAlarm")}
             </button>
 
             <button
-              aria-label="Restart timer"
+              aria-label={t("timer.notification.restart")}
               onClick={() => {
                 stopTimer();
                 startTimer(totalDuration);
 
-                const now = formatDateShort(new Date());
-
                 setActiveSession({
                   type: t("timer.title"),
-                  label: `${t("timer.title")} - ${now}`,
+                  label: t("timer.title"),
                   path: "/timer/empty-timer",
                 });
               }}
-              className="flex gap-2 items-center bg-blue-800 border-[1.5px] border-blue-500 py-2 px-4 rounded-md text-white hover:bg-blue-700 hover:scale-105 transition-all duration-200"
+              className="btn-base w-40 flex gap-2 items-center justify-center"
             >
-              <p>Restart</p>
-              <RotateCcw />
+              <p>{t("timer.notification.restart")}</p>
+              <RotateCcw size={20} />
             </button>
           </div>
         )}

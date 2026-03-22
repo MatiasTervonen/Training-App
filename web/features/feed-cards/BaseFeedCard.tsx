@@ -69,7 +69,7 @@ export default function BaseFeedCard({
     <div className="shadow-sm shadow-black/50 rounded-md">
       <div
         className={`
-          border rounded-md flex flex-col justify-between transition-colors min-h-[160px] overflow-hidden ${gradientClass} ${
+          border rounded-md flex flex-col justify-between transition-colors min-h-40 overflow-hidden ${gradientClass} ${
             pinned ? "border-yellow-400/70" : "border-slate-700"
           }`}
       >

@@ -14,7 +14,7 @@ export default function MenuPage() {
     <div className="page-padding max-w-md mx-auto flex flex-col min-h-full justify-between">
       <div>
         <h1 className="text-2xl text-center mb-10">{t("menu.title")}</h1>
-        <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-3">
           <LinkButton href={"/menu/friends"}>
             <p>{t("menu.friends")}</p>
             <ContactRound />

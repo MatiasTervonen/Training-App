@@ -1,8 +1,7 @@
 "use client";
 
-import { useLayoutEffect, useRef, useState } from "react";
+import { useLayoutEffect, useRef } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { useTranslation } from "react-i18next";
 import Navbar from "./navbar";
 import AnimatedH1 from "./AnimatedH1";
@@ -30,10 +29,6 @@ import {
   Package,
   Star,
   Footprints,
-  Globe,
-  Smartphone,
-  BellRing,
-  Puzzle,
   Clock,
   Flame,
   Bell,
@@ -43,9 +38,8 @@ const SUPPORTED_LANGS = ["en", "fi"];
 
 export default function MarketingContent() {
   const { t, i18n } = useTranslation("marketing");
-  const [ready, setReady] = useState(false);
 
-  // Apply saved/detected language before first paint, then allow render
+  // Apply saved/detected language before first paint
   const hasDetected = useRef(false);
   useLayoutEffect(() => {
     if (hasDetected.current) return;
@@ -59,10 +53,7 @@ export default function MarketingContent() {
         i18n.changeLanguage(browserLang);
       }
     }
-    setReady(true);
   }, [i18n]);
-
-  if (!ready) return null;
 
   const simplicityFeatures = [
     {
@@ -219,37 +210,6 @@ export default function MarketingContent() {
     },
   ];
 
-  const reminderFeatures = [
-    {
-      icon: Globe,
-      title: t("reminders.globalTitle"),
-      desc: t("reminders.globalDesc"),
-      color: "text-yellow-400",
-      border: "border-yellow-500/20",
-    },
-    {
-      icon: Smartphone,
-      title: t("reminders.localTitle"),
-      desc: t("reminders.localDesc"),
-      color: "text-orange-400",
-      border: "border-orange-500/20",
-    },
-    {
-      icon: BellRing,
-      title: t("reminders.priorityTitle"),
-      desc: t("reminders.priorityDesc"),
-      color: "text-red-400",
-      border: "border-red-500/20",
-    },
-    {
-      icon: Puzzle,
-      title: t("reminders.integratedTitle"),
-      desc: t("reminders.integratedDesc"),
-      color: "text-amber-400",
-      border: "border-amber-500/20",
-    },
-  ];
-
   const chatFeatures = [
     {
       icon: MessageCircle,
@@ -291,7 +251,7 @@ export default function MarketingContent() {
       <main className="flex flex-col justify-center items-center gap-10 text-gray-100 py-10 lg:py-20 bg-linear-to-tr from-slate-950 via-slate-950 to-blue-900 rounded-t-xl px-5">
         <section>
           <AnimatedH1 />
-          <p className="font-[family-name:var(--font-body)] text-md text-gray-300 py-2 sm:text-xl text-center">
+          <p className="font-body text-md text-gray-300 py-2 sm:text-xl text-center">
             {t("hero.subtitle")}
           </p>
         </section>
@@ -301,7 +261,7 @@ export default function MarketingContent() {
             <h2 className="text-2xl sm:text-3xl mb-4">
               {t("hero.heading")}
             </h2>
-            <p className="font-[family-name:var(--font-body)] text-md sm:text-lg mt-4 max-w-lg text-gray-300">
+            <p className="font-body text-md sm:text-lg mt-4 max-w-lg text-gray-300">
               {t("hero.description")}
             </p>
             <button
@@ -332,10 +292,10 @@ export default function MarketingContent() {
                 />
               </svg>
               <div className="text-left">
-                <p className="font-[family-name:var(--font-body)] text-[10px] text-gray-500 uppercase tracking-widest leading-tight">
+                <p className="font-body text-[10px] text-gray-500 uppercase tracking-widest leading-tight">
                   {t("hero.comingSoon")}
                 </p>
-                <p className="font-[family-name:var(--font-body)] text-sm text-gray-300 leading-tight">
+                <p className="font-body text-sm text-gray-300 leading-tight">
                   {t("hero.googlePlay")}
                 </p>
               </div>
@@ -364,13 +324,13 @@ export default function MarketingContent() {
             <h2 className="text-3xl sm:text-4xl mb-4">
               {t("phone.heading")}
             </h2>
-            <p className="font-[family-name:var(--font-body)] text-gray-400 text-lg">
+            <p className="font-body text-gray-400 text-lg">
               {t("phone.description")}
             </p>
-            <p className="font-[family-name:var(--font-body)] text-gray-400 text-lg mt-4">
+            <p className="font-body text-gray-400 text-lg mt-4">
               {t("phone.sync")}
             </p>
-            <p className="font-[family-name:var(--font-body)] text-gray-400 text-lg mt-4">
+            <p className="font-body text-gray-400 text-lg mt-4">
               {t("phone.multitask")}
             </p>
           </div>
@@ -382,7 +342,7 @@ export default function MarketingContent() {
             <h2 className="text-3xl sm:text-4xl mb-4">
               {t("simplicity.heading")}
             </h2>
-            <p className="font-[family-name:var(--font-body)] text-gray-400 max-w-2xl mx-auto text-lg">
+            <p className="font-body text-gray-400 max-w-2xl mx-auto text-lg">
               {t("simplicity.description")}
             </p>
           </div>
@@ -395,7 +355,7 @@ export default function MarketingContent() {
             <h2 className="text-3xl sm:text-4xl mb-4">
               {t("activities.heading")}
             </h2>
-            <p className="font-[family-name:var(--font-body)] text-gray-400 max-w-2xl mx-auto text-lg">
+            <p className="font-body text-gray-400 max-w-2xl mx-auto text-lg">
               {t("activities.description")}
             </p>
           </div>
@@ -408,7 +368,7 @@ export default function MarketingContent() {
             <h2 className="text-3xl sm:text-4xl mb-4">
               {t("analytics.heading")}
             </h2>
-            <p className="font-[family-name:var(--font-body)] text-gray-400 max-w-2xl mx-auto text-lg">
+            <p className="font-body text-gray-400 max-w-2xl mx-auto text-lg">
               {t("analytics.description")}
             </p>
           </div>
@@ -421,7 +381,7 @@ export default function MarketingContent() {
             <h2 className="text-3xl sm:text-4xl mb-4">
               {t("reminders.heading")}
             </h2>
-            <p className="font-[family-name:var(--font-body)] text-gray-400 text-lg">
+            <p className="font-body text-gray-400 text-lg">
               {t("reminders.statement")}
             </p>
           </div>
@@ -433,7 +393,7 @@ export default function MarketingContent() {
             <h2 className="text-3xl sm:text-4xl mb-4">
               {t("habits.heading")}
             </h2>
-            <p className="font-[family-name:var(--font-body)] text-gray-400 max-w-2xl mx-auto text-lg">
+            <p className="font-body text-gray-400 max-w-2xl mx-auto text-lg">
               {t("habits.description")}
             </p>
           </div>
@@ -446,7 +406,7 @@ export default function MarketingContent() {
             <h2 className="text-3xl sm:text-4xl mb-4">
               {t("social.heading")}
             </h2>
-            <p className="font-[family-name:var(--font-body)] text-gray-400 max-w-2xl mx-auto text-lg">
+            <p className="font-body text-gray-400 max-w-2xl mx-auto text-lg">
               {t("social.description")}
             </p>
           </div>
@@ -459,7 +419,7 @@ export default function MarketingContent() {
             <h2 className="text-3xl sm:text-4xl mb-4">
               {t("notifications.heading")}
             </h2>
-            <p className="font-[family-name:var(--font-body)] text-gray-400 text-lg">
+            <p className="font-body text-gray-400 text-lg">
               {t("notifications.description")}
             </p>
           </div>
@@ -471,7 +431,7 @@ export default function MarketingContent() {
             <h2 className="text-3xl sm:text-4xl mb-4">
               {t("chat.heading")}
             </h2>
-            <p className="font-[family-name:var(--font-body)] text-gray-400 max-w-2xl mx-auto text-lg">
+            <p className="font-body text-gray-400 max-w-2xl mx-auto text-lg">
               {t("chat.description")}
             </p>
           </div>
@@ -481,7 +441,7 @@ export default function MarketingContent() {
         {/* CTA */}
         <AnimatedSection className="py-20 sm:py-28 px-5 text-center bg-linear-to-t from-blue-950/30 to-transparent">
           <h2 className="text-3xl sm:text-4xl mb-4">{t("cta.heading")}</h2>
-          <p className="font-[family-name:var(--font-body)] text-gray-400 text-lg mb-8 max-w-xl mx-auto">
+          <p className="font-body text-gray-400 text-lg mb-8 max-w-xl mx-auto">
             {t("cta.description")}
           </p>
           {/* Login button hidden — web app not fully ready yet */}

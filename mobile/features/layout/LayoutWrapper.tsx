@@ -25,12 +25,27 @@ import { syncHabitNotifications } from "@/database/habits/syncHabitNotifications
 import { syncAlarms } from "@/database/reminders/syncAlarms";
 import BootScreen from "@/features/feed/fakeFeedLoader";
 
+type PendingSession = {
+  session: Session;
+  skipRedirect: boolean;
+};
+
 export default function LayoutWrapper({
   children,
 }: {
   children: React.ReactNode;
 }) {
   const [sessionChecked, setSessionChecked] = useState(false);
+  // Pending session from SIGNED_IN / TOKEN_REFRESHED / SIGNED_OUT events.
+  // Set inside the onAuthStateChange callback (which may run inside the
+  // Supabase auth lock) and processed by a separate useEffect that runs
+  // after the lock is guaranteed to be released. This avoids the deadlock
+  // that occurs when supabase.from() calls getSession() → _acquireLock
+  // while the lock is still held by exchangeCodeForSession.
+  const [pendingSession, setPendingSession] = useState<PendingSession | null>(
+    null,
+  );
+  const [pendingSignOut, setPendingSignOut] = useState(false);
 
   const router = useRouter();
   const pathname = usePathname();
@@ -191,18 +206,15 @@ export default function LayoutWrapper({
         }
 
         if (event === "SIGNED_IN") {
-          // If INITIAL_SESSION already handled a deep link / notification,
-          // skip redirect so we don't override that navigation.
-          // NOTE: Deferred via setTimeout so it runs after the auth lock is
-          // released. signInWithPassword / exchangeCodeForSession hold the
-          // lock when emitting SIGNED_IN — calling supabase.from() inside
-          // the callback deadlocks because the queries call getSession()
-          // which re-acquires the same lock.
           const skipRedirect = deepLinkHandledRef.current;
-          setTimeout(() => handleSessionChange(session, skipRedirect), 0);
+          setPendingSession({ session: session!, skipRedirect });
+        } else if (event === "SIGNED_OUT") {
+          setPendingSignOut(true);
         } else {
-          // TOKEN_REFRESHED, SIGNED_OUT — no redirect (deferred for same lock reason)
-          setTimeout(() => handleSessionChange(session, true), 0);
+          // TOKEN_REFRESHED — update session without redirect
+          if (session) {
+            setPendingSession({ session, skipRedirect: true });
+          }
         }
       },
     );
@@ -212,6 +224,21 @@ export default function LayoutWrapper({
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hasHydrated]);
+
+  // Process pending session changes outside the auth callback.
+  // React schedules this effect after the render triggered by setPendingSession,
+  // which guarantees all microtasks (including Supabase lock release) have settled.
+  useEffect(() => {
+    if (pendingSignOut) {
+      setPendingSignOut(false);
+      handleSessionChange(null);
+      return;
+    }
+    if (!pendingSession) return;
+    const { session, skipRedirect } = pendingSession;
+    setPendingSession(null);
+    handleSessionChange(session, skipRedirect);
+  }, [pendingSession, pendingSignOut, handleSessionChange]);
 
   useEffect(() => {
     if (pathname !== "/dashboard") {

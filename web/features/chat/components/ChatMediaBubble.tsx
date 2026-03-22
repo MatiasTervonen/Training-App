@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import Image from "next/image";
 import { Play, Loader2 } from "lucide-react";
 import { ChatMessage } from "@/types/chat";
 import { getChatMediaSignedUrl, clearSignedUrlCache, formatDurationMs } from "@/lib/chat/upload-chat-media";
@@ -14,36 +15,26 @@ type ChatMediaBubbleProps = {
 export default function ChatMediaBubble({ message, isOwn }: ChatMediaBubbleProps) {
   const { message_type, media_storage_path, media_duration_ms, _isUploading, _localPreviewUrl } = message;
 
-  const [mediaUrl, setMediaUrl] = useState<string | null>(_localPreviewUrl ?? null);
+  const [fetchResult, setFetchResult] = useState<{ path: string; url: string | null; error: boolean } | null>(null);
   const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null);
-  const [loading, setLoading] = useState(!_localPreviewUrl);
-  const [error, setError] = useState(false);
   const [fullscreen, setFullscreen] = useState(false);
 
+  const currentResult = fetchResult?.path === media_storage_path ? fetchResult : null;
+  const mediaUrl = _localPreviewUrl ?? currentResult?.url ?? null;
+  const loading = !_localPreviewUrl && !!media_storage_path && !currentResult;
+  const error = currentResult?.error ?? false;
+
   useEffect(() => {
-    if (_localPreviewUrl) {
-      setMediaUrl(_localPreviewUrl);
-      setLoading(false);
-      return;
-    }
-    if (!media_storage_path) return;
+    if (_localPreviewUrl || !media_storage_path) return;
 
     let cancelled = false;
-    setLoading(true);
-    setError(false);
 
     getChatMediaSignedUrl(media_storage_path)
       .then((url) => {
-        if (!cancelled) {
-          setMediaUrl(url);
-          setLoading(false);
-        }
+        if (!cancelled) setFetchResult({ path: media_storage_path, url, error: false });
       })
       .catch(() => {
-        if (!cancelled) {
-          setError(true);
-          setLoading(false);
-        }
+        if (!cancelled) setFetchResult({ path: media_storage_path, url: null, error: true });
       });
 
     // Load thumbnail for videos
@@ -61,12 +52,10 @@ export default function ChatMediaBubble({ message, isOwn }: ChatMediaBubbleProps
   const handleRetry = useCallback(() => {
     if (media_storage_path) {
       clearSignedUrlCache(media_storage_path);
-      setError(false);
-      setLoading(true);
+      setFetchResult(null);
       getChatMediaSignedUrl(media_storage_path)
-        .then(setMediaUrl)
-        .catch(() => setError(true))
-        .finally(() => setLoading(false));
+        .then((url) => setFetchResult({ path: media_storage_path, url, error: false }))
+        .catch(() => setFetchResult({ path: media_storage_path, url: null, error: true }));
     }
   }, [media_storage_path]);
 
@@ -84,7 +73,7 @@ export default function ChatMediaBubble({ message, isOwn }: ChatMediaBubbleProps
 
   if (loading) {
     return (
-      <div className="w-[240px] h-[160px] rounded-lg bg-slate-700/50 flex items-center justify-center">
+      <div className="w-60 h-40 rounded-lg bg-slate-700/50 flex items-center justify-center">
         <Loader2 size={24} className="animate-spin text-slate-400" />
       </div>
     );
@@ -94,7 +83,7 @@ export default function ChatMediaBubble({ message, isOwn }: ChatMediaBubbleProps
     return (
       <button
         onClick={handleRetry}
-        className="w-[240px] h-[160px] rounded-lg bg-slate-700/50 flex items-center justify-center"
+        className="w-60 h-40 rounded-lg bg-slate-700/50 flex items-center justify-center"
       >
         <span className="font-body text-xs text-slate-400">Tap to retry</span>
       </button>
@@ -105,11 +94,13 @@ export default function ChatMediaBubble({ message, isOwn }: ChatMediaBubbleProps
     return (
       <>
         <button onClick={() => setFullscreen(true)} className="block">
-          <img
+          <Image
             src={mediaUrl}
             alt=""
-            className="max-w-[240px] max-h-[320px] rounded-lg object-cover"
-            loading="lazy"
+            width={240}
+            height={320}
+            unoptimized
+            className="max-w-60 max-h-80 rounded-lg object-cover"
           />
           {_isUploading && (
             <div className="absolute inset-0 flex items-center justify-center bg-black/30 rounded-lg">
@@ -123,9 +114,12 @@ export default function ChatMediaBubble({ message, isOwn }: ChatMediaBubbleProps
             className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center cursor-pointer"
             onClick={() => setFullscreen(false)}
           >
-            <img
+            <Image
               src={mediaUrl}
               alt=""
+              width={1920}
+              height={1080}
+              unoptimized
               className="max-w-[90vw] max-h-[90vh] object-contain"
             />
           </div>
@@ -141,14 +135,16 @@ export default function ChatMediaBubble({ message, isOwn }: ChatMediaBubbleProps
       <>
         <button onClick={() => setFullscreen(true)} className="relative block">
           {thumbnailUrl ? (
-            <img
+            <Image
               src={displayUrl}
               alt=""
-              className="w-[240px] h-[160px] rounded-lg object-cover"
-              loading="lazy"
+              width={240}
+              height={160}
+              unoptimized
+              className="w-60 h-40 rounded-lg object-cover"
             />
           ) : (
-            <div className="w-[240px] h-[160px] rounded-lg bg-slate-700/50" />
+            <div className="w-60 h-40 rounded-lg bg-slate-700/50" />
           )}
 
           <div className="absolute inset-0 flex items-center justify-center">

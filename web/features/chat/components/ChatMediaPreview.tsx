@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { X, Mic } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { formatDurationMs } from "@/lib/chat/upload-chat-media";
@@ -33,9 +34,12 @@ export default function ChatMediaPreview({ type, previewUrl, durationMs, onCance
       ) : (
         <div className="relative">
           {type === "image" ? (
-            <img
+            <Image
               src={previewUrl}
               alt=""
+              width={64}
+              height={64}
+              unoptimized
               className="w-16 h-16 rounded-lg object-cover"
             />
           ) : (

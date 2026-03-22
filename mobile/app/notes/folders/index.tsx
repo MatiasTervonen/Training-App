@@ -6,7 +6,7 @@ import useFolders from "@/features/notes/hooks/useFolders";
 import useCreateFolder from "@/features/notes/hooks/useCreateFolder";
 import useRenameFolder from "@/features/notes/hooks/useRenameFolder";
 import useDeleteFolder from "@/features/notes/hooks/useDeleteFolder";
-import { Trash2, Pencil, Check, X, ArrowRight, FolderCog } from "lucide-react-native";
+import { Trash2, Pencil, Check, X, ArrowRight, FolderCog, FolderOpen } from "lucide-react-native";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
@@ -109,9 +109,17 @@ export default function ManageFoldersScreen() {
 
           {/* Empty state */}
           {!isLoading && folders.length === 0 && (
-            <AppText className="text-center text-lg mt-10 mx-auto">
-              {t("notes.folders.noFolders")}
-            </AppText>
+            <View className="items-center mt-[15%] px-8">
+              <View className="w-20 h-20 rounded-full bg-slate-800 border border-slate-700 items-center justify-center mb-5">
+                <FolderOpen size={36} color="#94a3b8" />
+              </View>
+              <AppText className="text-xl text-center mb-3">
+                {t("notes.folders.noFolders")}
+              </AppText>
+              <AppText className="text-sm text-gray-400 text-center font-body">
+                {t("notes.folders.noFoldersDesc")}
+              </AppText>
+            </View>
           )}
 
           {/* Folder list */}

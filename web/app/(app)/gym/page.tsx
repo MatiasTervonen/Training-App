@@ -23,7 +23,7 @@ export default function TrainingPage() {
   return (
     <div className="page-padding">
       <h1 className="text-2xl mb-10 text-center">{t("gym.title")}</h1>
-      <div className="flex flex-col gap-5 max-w-md mx-auto">
+      <div className="flex flex-col gap-3 max-w-md mx-auto">
         <LinkButton href={"/gym/gym"} onClick={handleClick} className="link-gym">
           {t("gym.startEmptyWorkout")}
         </LinkButton>

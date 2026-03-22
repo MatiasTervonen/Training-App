@@ -23,12 +23,12 @@ export default function ExerciseTypeSelect({
       {label && <label className="text-gray-300 block mb-1">{label}</label>}
       <div className="relative">
         <select
-          className="appearance-none p-2 pr-10 rounded-md border-[1.5px] border-gray-400 z-10 w-full bg-slate-900 placeholder-gray-500 bg-[linear-gradient(50deg,#0f172a,#1e293b,#333333)] hover:border-blue-500 focus:outline-none focus:border-green-300"
+          className="appearance-none p-2 pr-10 rounded-md border-[1.5px] border-gray-400 z-10 w-full bg-slate-900 placeholder-gray-500 bg-[linear-gradient(50deg,#0f172a,#1e293b,#333333)] hover:border-blue-500 focus:outline-none focus:border-green-300 font-body"
           value={value}
           onChange={(e) => onChange(e.target.value)}
         >
           {options.map((opt) => (
-            <option className="w-full flex" key={opt.value} value={opt.value}>
+            <option className="w-full flex bg-slate-800 text-gray-100 font-body" key={opt.value} value={opt.value}>
               {opt.label}
             </option>
           ))}

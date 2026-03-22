@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import { Reply, Copy, Forward, Trash2 } from "lucide-react";
@@ -54,9 +54,7 @@ export default function MessageContextMenu({
     };
   }, [onClose]);
 
-  const [adjusted, setAdjusted] = useState({ left: x, top: y });
-
-  useEffect(() => {
+  useLayoutEffect(() => {
     const menu = menuRef.current;
     if (!menu) return;
 
@@ -75,13 +73,14 @@ export default function MessageContextMenu({
     }
     if (top < padding) top = padding;
 
-    setAdjusted({ left, top });
+    menu.style.left = `${left}px`;
+    menu.style.top = `${top}px`;
   }, [x, y]);
 
   const style: React.CSSProperties = {
     position: "fixed",
-    left: adjusted.left,
-    top: adjusted.top,
+    left: x,
+    top: y,
     zIndex: 9999,
   };
 

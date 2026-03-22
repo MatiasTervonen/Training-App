@@ -76,7 +76,7 @@ export default function BaseFeedCard({
       colors={gradientColors}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
-      className={`border rounded-md overflow-hidden min-h-[160px] ${
+      className={`border rounded-md overflow-hidden min-h-40 ${
         pinned ? "border-yellow-400/70" : "border-slate-700"
       }`}
     >

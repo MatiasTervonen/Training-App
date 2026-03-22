@@ -104,8 +104,12 @@ export default function ExerciseCard({
                 <tr
                   key={i}
                   className={`border-b border-gray-600 ${
-                    set.rpe === "Failure" ? "bg-red-800" : ""
-                  } ${set.rpe === "Warm-up" ? "bg-blue-500" : ""}`}
+                    set.rpe === "Failure"
+                      ? "bg-red-500/15"
+                      : set.rpe === "Warm-up"
+                        ? "bg-blue-500/15"
+                        : ""
+                  }`}
                 >
                   <td className="p-2">{i + 1}</td>
                   <td className="p-2">
@@ -194,7 +198,7 @@ export default function ExerciseCard({
 
                 onAddSet(index);
               }}
-              className="px-10 bg-blue-900 py-2 rounded-md shadow-xl border-[1.5px] border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700 hover:scale-105 transition-all duration-200"
+              className="px-10 btn-add"
             >
               {t("gym.exerciseCard.addSet")}
             </button>

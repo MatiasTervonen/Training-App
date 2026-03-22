@@ -20,32 +20,26 @@ export default function ChatVoicePlayer({
   isUploading,
 }: ChatVoicePlayerProps) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const [audioUrl, setAudioUrl] = useState<string | null>(localPreviewUrl ?? null);
+  const [fetchResult, setFetchResult] = useState<{ path: string; url: string | null } | null>(null);
   const [playing, setPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState((durationMs ?? 0) / 1000);
-  const [loading, setLoading] = useState(!localPreviewUrl && !!storagePath);
   const progressRef = useRef<HTMLDivElement>(null);
 
+  const currentResult = fetchResult?.path === storagePath ? fetchResult : null;
+  const audioUrl = localPreviewUrl ?? currentResult?.url ?? null;
+  const loading = !localPreviewUrl && !!storagePath && !currentResult;
+
   useEffect(() => {
-    if (localPreviewUrl) {
-      setAudioUrl(localPreviewUrl);
-      setLoading(false);
-      return;
-    }
-    if (!storagePath) return;
+    if (localPreviewUrl || !storagePath) return;
 
     let cancelled = false;
-    setLoading(true);
     getChatMediaSignedUrl(storagePath)
       .then((url) => {
-        if (!cancelled) {
-          setAudioUrl(url);
-          setLoading(false);
-        }
+        if (!cancelled) setFetchResult({ path: storagePath, url });
       })
       .catch(() => {
-        if (!cancelled) setLoading(false);
+        if (!cancelled) setFetchResult({ path: storagePath, url: null });
       });
     return () => { cancelled = true; };
   }, [storagePath, localPreviewUrl]);

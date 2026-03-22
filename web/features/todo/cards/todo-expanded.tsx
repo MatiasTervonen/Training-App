@@ -11,6 +11,9 @@ import { FeedItemUI } from "@/types/session";
 import { useTranslation } from "react-i18next";
 import { useAutoSave } from "@/hooks/useAutoSave";
 import AutoSaveIndicator from "@/components/AutoSaveIndicator";
+import { useQuery } from "@tanstack/react-query";
+import { getTodoMedia } from "@/database/media/get-todo-media";
+import SessionMediaGallery from "@/components/media/SessionMediaGallery";
 
 type TodoSessionProps = {
   initialTodo: full_todo_session;
@@ -26,6 +29,17 @@ export default function TodoSession({
   const { t } = useTranslation("todo");
   const [open, setOpen] = useState<number | null>(null);
   const [sessionData, setSessionData] = useState(initialTodo);
+
+  const taskIds = useMemo(
+    () => initialTodo.todo_tasks.map((task) => task.id),
+    [initialTodo.todo_tasks],
+  );
+
+  const { data: todoMedia } = useQuery({
+    queryKey: ["todo-media", initialTodo.id],
+    queryFn: () => getTodoMedia(taskIds),
+    enabled: taskIds.length > 0,
+  });
   const [sortField, setSortField] = useState<"original" | "completed">(
     "original",
   );
@@ -245,6 +259,13 @@ export default function TodoSession({
                             <p className="whitespace-pre-wrap wrap-break-word overflow-hidden max-w-full text-left font-body">
                               {task.notes || t("todo.noNotesAvailable")}
                             </p>
+                            {todoMedia?.[task.id] && (
+                              <SessionMediaGallery
+                                images={todoMedia[task.id].images}
+                                videos={todoMedia[task.id].videos}
+                                voiceRecordings={todoMedia[task.id].voiceRecordings}
+                              />
+                            )}
                           </div>
                         </div>
                       </Modal>

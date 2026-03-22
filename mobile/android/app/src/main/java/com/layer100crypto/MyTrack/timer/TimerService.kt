@@ -134,8 +134,8 @@ class TimerService : Service() {
             formatTime(System.currentTimeMillis() - startTime)
         }
 
-        if (mode == "countdown") {
-            // Countdown: collapsed = no buttons, expanded = buttons below timer
+        if (mode == "countdown" && !extendText.isNullOrEmpty()) {
+            // Countdown with extend: collapsed = no buttons, expanded = buttons below timer
             collapsedViews = RemoteViews(packageName, R.layout.notification_timer_collapsed).apply {
                 setTextViewText(R.id.timer_label, label)
                 setTextViewText(R.id.timer_text, timeText)
@@ -150,6 +150,17 @@ class TimerService : Service() {
                 setViewVisibility(R.id.btn_secondary, View.VISIBLE)
                 setOnClickPendingIntent(R.id.btn_secondary, extendPendingIntent)
             }
+        } else if (mode == "countdown") {
+            // Countdown without extend (e.g. habit timer): pause button inline with time
+            val inlineViews = RemoteViews(packageName, R.layout.notification_timer_expanded_inline).apply {
+                setTextViewText(R.id.timer_label, label)
+                setTextViewText(R.id.timer_text, timeText)
+                setTextViewText(R.id.btn_primary, pauseText)
+                setViewVisibility(R.id.btn_primary, View.VISIBLE)
+                setOnClickPendingIntent(R.id.btn_primary, pausePendingIntent)
+            }
+            collapsedViews = inlineViews
+            expandedViews = inlineViews
         } else {
             // Stopwatch: single button inline — same layout for collapsed and expanded
             val inlineViews = RemoteViews(packageName, R.layout.notification_timer_expanded_inline).apply {

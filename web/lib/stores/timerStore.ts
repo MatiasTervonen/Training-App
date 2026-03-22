@@ -33,9 +33,60 @@ interface TimerState {
   setAlarmSoundPlaying: (playing: boolean) => void;
 }
 
-let interval: NodeJS.Timeout | null = null;
-
 type NewSession = Omit<ActiveSession, "started_at">;
+
+let worker: Worker | null = null;
+
+function getWorker(): Worker | null {
+  if (typeof window === "undefined") return null;
+
+  if (!worker) {
+    worker = new Worker("/timer-worker.js");
+    worker.onmessage = (e) => {
+      const { type, elapsed } = e.data;
+
+      if (type === "tick") {
+        useTimerStore.setState({ elapsedTime: elapsed });
+      } else if (type === "alarm") {
+        useTimerStore.setState({
+          alarmFired: true,
+          alarmSoundPlaying: true,
+          isRunning: false,
+        });
+        showTimerNotification();
+      }
+    };
+  }
+
+  return worker;
+}
+
+function showTimerNotification() {
+  if (typeof window === "undefined") return;
+  if (document.visibilityState === "visible") return;
+  if (Notification.permission !== "granted") return;
+
+  new Notification("Timer", {
+    body: "Time is up!",
+    icon: "/favicon/favicon.ico",
+  });
+}
+
+function startWorker(
+  startTimestamp: number,
+  mode: SessionMode,
+  totalDuration: number,
+) {
+  const w = getWorker();
+  if (!w) return;
+  w.postMessage({ type: "start", startTimestamp, mode, totalDuration });
+}
+
+function stopWorker() {
+  const w = getWorker();
+  if (!w) return;
+  w.postMessage({ type: "stop" });
+}
 
 export const useTimerStore = create<TimerState>()(
   persist(
@@ -61,7 +112,7 @@ export const useTimerStore = create<TimerState>()(
       setAlarmSoundPlaying: (playing) => set({ alarmSoundPlaying: playing }),
 
       startSession: () => {
-        if (interval) clearInterval(interval);
+        stopWorker();
 
         const now = Date.now();
 
@@ -75,17 +126,11 @@ export const useTimerStore = create<TimerState>()(
           paused: false,
         });
 
-        interval = setInterval(() => {
-          const { startTimestamp, isRunning } = get();
-          if (!isRunning || !startTimestamp) return;
-
-          const newElapsed = Math.floor((Date.now() - startTimestamp) / 1000);
-          set({ elapsedTime: newElapsed });
-        }, 1000);
+        startWorker(now, "countup", 0);
       },
 
       startTimer: (totalDuration) => {
-        if (interval) clearInterval(interval);
+        stopWorker();
 
         const now = Date.now();
 
@@ -99,29 +144,11 @@ export const useTimerStore = create<TimerState>()(
           paused: false,
         });
 
-        interval = setInterval(() => {
-          const { startTimestamp, totalDuration, isRunning } = get();
-          if (!isRunning || !startTimestamp) return;
-
-          const newElapsed = Math.floor((Date.now() - startTimestamp) / 1000);
-          set({ elapsedTime: newElapsed });
-
-          if (totalDuration > 0 && newElapsed >= totalDuration) {
-            clearInterval(interval!);
-            set({
-              alarmFired: true,
-              alarmSoundPlaying: true,
-              isRunning: false,
-            });
-          }
-        }, 1000);
+        startWorker(now, "countdown", totalDuration);
       },
 
       stopTimer: () => {
-        if (interval) {
-          clearInterval(interval);
-          interval = null;
-        }
+        stopWorker();
 
         set((state) => ({
           isRunning: false,
@@ -136,10 +163,7 @@ export const useTimerStore = create<TimerState>()(
       },
 
       clearEverything: () => {
-        if (interval) {
-          clearInterval(interval);
-          interval = null;
-        }
+        stopWorker();
 
         set({
           isRunning: false,
@@ -156,10 +180,7 @@ export const useTimerStore = create<TimerState>()(
       },
 
       pauseTimer: () => {
-        if (interval) {
-          clearInterval(interval);
-          interval = null;
-        }
+        stopWorker();
 
         const { startTimestamp, mode } = get();
         if (startTimestamp) {
@@ -179,10 +200,10 @@ export const useTimerStore = create<TimerState>()(
       },
 
       resumeTimer: () => {
-        if (interval) clearInterval(interval);
+        stopWorker();
 
         const now = Date.now();
-        const { elapsedTime, startTimestamp, mode, remainingMs } = get();
+        const { elapsedTime, startTimestamp, mode, remainingMs, totalDuration } = get();
 
         let newElapsed = elapsedTime;
         let newStart = now;
@@ -205,22 +226,7 @@ export const useTimerStore = create<TimerState>()(
           paused: false,
         });
 
-        interval = setInterval(() => {
-          const { startTimestamp, totalDuration, isRunning, mode } = get();
-          if (!isRunning || !startTimestamp) return;
-
-          const newElapsed = Math.floor((Date.now() - startTimestamp) / 1000);
-          set({ elapsedTime: newElapsed });
-
-          if (mode === "countdown" && totalDuration > 0 && newElapsed >= totalDuration) {
-            clearInterval(interval!);
-            set({
-              alarmFired: true,
-              alarmSoundPlaying: true,
-              isRunning: false,
-            });
-          }
-        }, 1000);
+        startWorker(newStart, mode ?? "countup", totalDuration);
       },
 
       setAlarmFired: (fired) => set({ alarmFired: fired }),

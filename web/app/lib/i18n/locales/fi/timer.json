@@ -58,7 +58,8 @@
       "inProgress": "Käynnissä",
       "tapToOpenTimer": "Avaa ajastin napauttamalla",
       "timesUp": "Aika loppui!",
-      "stopAlarm": "Pysäytä hälytys"
+      "stopAlarm": "Pysäytä hälytys",
+      "restart": "Uudelleen"
     }
   }
 }

@@ -20,7 +20,7 @@ export default function Sessions() {
   return (
     <div className="page-padding min-h-full max-w-md mx-auto">
       <h1 className="text-center mb-10 text-2xl ">{t("sessions.title")}</h1>
-      <div className="flex flex-col gap-5">
+      <div className="flex flex-col gap-3">
         <LinkButton href="/gym" className="link-gym">
           {t("sessions.gym")}
           <Dumbbell />

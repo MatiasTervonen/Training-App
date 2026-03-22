@@ -268,16 +268,24 @@ async function aggregateReportData(
       }
 
       case "activities": {
-        // Activity sessions = sessions that do NOT have gym_session_exercises
+        // Activity sessions grouped by activity type, excluding gym and non-exercise activities
         const { data: allSessions } = await supabase
           .from("sessions")
-          .select("id, duration, start_time, session_stats(calories, steps, distance_meters)")
+          .select("id, duration, activity_id, activities(name, slug, is_gps_relevant, is_step_relevant, is_calories_relevant), session_stats(calories, steps, distance_meters)")
           .eq("user_id", userId)
           .gte("start_time", tsStart)
           .lte("start_time", tsEnd);
 
-        const allSessionsList = allSessions || [];
-        const allIds = allSessionsList.map((s: { id: string }) => s.id);
+        type ActSession = {
+          id: string;
+          duration: number | null;
+          activity_id: string;
+          activities: { name: string; slug: string | null; is_gps_relevant: boolean; is_step_relevant: boolean; is_calories_relevant: boolean } | null;
+          session_stats: { calories: number; steps: number; distance_meters: number } | null;
+        };
+
+        const allSessionsList = (allSessions || []) as ActSession[];
+        const allIds = allSessionsList.map((s) => s.id);
 
         // Find which of these have gym exercises (to exclude them)
         let gymIds = new Set<string>();
@@ -289,28 +297,39 @@ async function aggregateReportData(
           gymIds = new Set((gymRows || []).map((r: { session_id: string }) => r.session_id));
         }
 
-        const actSessions = allSessionsList.filter((s: { id: string }) => !gymIds.has(s.id));
-        const totalDuration = actSessions.reduce((sum: number, s: { duration: number | null }) => sum + (s.duration || 0), 0);
-        const totalDistance = actSessions.reduce(
-          (sum: number, s: { session_stats: { distance_meters: number } | null }) => sum + (s.session_stats?.distance_meters || 0),
-          0,
-        );
-        const totalCalories = actSessions.reduce(
-          (sum: number, s: { session_stats: { calories: number } | null }) => sum + (s.session_stats?.calories || 0),
-          0,
-        );
-        const totalSteps = actSessions.reduce(
-          (sum: number, s: { session_stats: { steps: number } | null }) => sum + (s.session_stats?.steps || 0),
-          0,
+        // Exclude gym sessions and non-exercise activities (is_calories_relevant = false, e.g. driving)
+        const actSessions = allSessionsList.filter(
+          (s) => !gymIds.has(s.id) && s.activities?.is_calories_relevant !== false,
         );
 
-        data.activities = {
-          session_count: actSessions.length,
-          total_duration: totalDuration,
-          total_distance_meters: Math.round(totalDistance),
-          total_calories: Math.round(totalCalories),
-          total_steps: totalSteps,
-        };
+        // Group by activity_id
+        const grouped: Record<string, ActSession[]> = {};
+        for (const s of actSessions) {
+          if (!grouped[s.activity_id]) grouped[s.activity_id] = [];
+          grouped[s.activity_id].push(s);
+        }
+
+        const byActivity = Object.values(grouped).map((sessions) => {
+          const act = sessions[0].activities!;
+          return {
+            activity_name: act.name,
+            activity_slug: act.slug,
+            session_count: sessions.length,
+            total_duration: sessions.reduce((sum, s) => sum + (s.duration || 0), 0),
+            total_distance_meters: act.is_gps_relevant
+              ? Math.round(sessions.reduce((sum, s) => sum + (s.session_stats?.distance_meters || 0), 0))
+              : null,
+            total_calories: Math.round(sessions.reduce((sum, s) => sum + (s.session_stats?.calories || 0), 0)),
+            total_steps: act.is_step_relevant
+              ? sessions.reduce((sum, s) => sum + (s.session_stats?.steps || 0), 0)
+              : null,
+          };
+        });
+
+        // Sort by session count descending
+        byActivity.sort((a, b) => b.session_count - a.session_count);
+
+        data.activities = { by_activity: byActivity };
         break;
       }
 
@@ -339,7 +358,7 @@ async function aggregateReportData(
       case "habits": {
         const { data: logs, error: logErr } = await supabase
           .from("habit_logs")
-          .select("habit_id, completed_date")
+          .select("habit_id, completed_date, accumulated_seconds")
           .eq("user_id", userId)
           .gte("completed_date", start)
           .lte("completed_date", end);
@@ -348,7 +367,7 @@ async function aggregateReportData(
 
         const { data: habits, error: habErr } = await supabase
           .from("habits")
-          .select("id")
+          .select("id, frequency_days, type, target_value, created_at")
           .eq("user_id", userId)
           .eq("is_active", true);
 
@@ -356,34 +375,79 @@ async function aggregateReportData(
         console.log(`habits: ${logs?.length ?? 0} logs, ${habits?.length ?? 0} active habits, range ${start} to ${end}`);
 
         const habitLogs = logs || [];
-        const activeHabits = habits || [];
+        const activeHabits = (habits || []) as {
+          id: string;
+          frequency_days: number[] | null;
+          type: string;
+          target_value: number | null;
+          created_at: string;
+        }[];
         const totalDays = Math.ceil(
           (periodEnd.getTime() - periodStart.getTime()) / (1000 * 60 * 60 * 24),
         ) + 1;
 
-        // Days where ALL habits were completed
+        const habitMap = new Map(activeHabits.map((h) => [h.id, h]));
+
+        // Check if a habit is scheduled for a given date
+        // frequency_days uses 1=Sun,2=Mon,...,7=Sat (same as JS getUTCDay()+1)
+        // Also check that the habit existed on that date (created_at converted to user's timezone)
+        const isScheduled = (h: { frequency_days: number[] | null; created_at: string }, date: Date) => {
+          const createdLocal = new Date(new Intl.DateTimeFormat("en-CA", { timeZone: timezone }).format(new Date(h.created_at)) + "T00:00:00Z");
+          if (date < createdLocal) return false; // habit didn't exist yet
+          if (!h.frequency_days) return true; // daily
+          return h.frequency_days.includes(date.getUTCDay() + 1);
+        };
+
+        // Only count a log as completed if duration habits meet their target
+        const isCompleted = (log: { habit_id: string; accumulated_seconds: number | null }) => {
+          const h = habitMap.get(log.habit_id);
+          if (!h) return false;
+          if (h.type === "duration") {
+            return (log.accumulated_seconds ?? 0) >= (h.target_value ?? 0);
+          }
+          return true; // manual and steps are toggle-based
+        };
+
+        const completedLogs = habitLogs.filter(isCompleted);
+
+        // Group completed logs by date
         const logsByDate: Record<string, Set<string>> = {};
-        for (const log of habitLogs) {
+        for (const log of completedLogs) {
           if (!logsByDate[log.completed_date]) {
             logsByDate[log.completed_date] = new Set();
           }
           logsByDate[log.completed_date].add(log.habit_id);
         }
 
-        const daysAllDone = Object.values(logsByDate).filter(
-          (s) => s.size >= activeHabits.length,
-        ).length;
+        // For each day, check if all SCHEDULED habits were completed
+        let daysAllDone = 0;
+        let totalExpected = 0;
+        for (let d = 0; d < totalDays; d++) {
+          const date = new Date(periodStart);
+          date.setUTCDate(date.getUTCDate() + d);
+          const dateStr = formatDate(date);
+
+          const scheduled = activeHabits.filter((h) => isScheduled(h, date));
+          totalExpected += scheduled.length;
+
+          if (scheduled.length > 0) {
+            const doneSet = logsByDate[dateStr] || new Set();
+            if (scheduled.every((h) => doneSet.has(h.id))) {
+              daysAllDone++;
+            }
+          }
+        }
 
         const completionRate =
-          activeHabits.length > 0 && totalDays > 0
-            ? Math.round((habitLogs.length / (activeHabits.length * totalDays)) * 100)
+          totalExpected > 0
+            ? Math.round((completedLogs.length / totalExpected) * 100)
             : 0;
 
         data.habits = {
           completion_rate: Math.min(completionRate, 100),
           days_all_done: daysAllDone,
           total_days: totalDays,
-          total_completions: habitLogs.length,
+          total_completions: completedLogs.length,
         };
         break;
       }

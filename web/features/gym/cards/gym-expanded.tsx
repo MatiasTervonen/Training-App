@@ -1,7 +1,7 @@
 import {
-  formatDate,
+  formatDateShort,
   formatTime,
-  formatDuration,
+  formatDurationLong,
 } from "@/lib/formatDate";
 import { useUserStore } from "@/lib/stores/useUserStore";
 import { GroupExercises } from "@/utils/GroupExercises";
@@ -12,14 +12,18 @@ import { useState } from "react";
 import ExerciseHistoryModal from "@/features/gym/components/ExerciseHistory/ExerciseHistoryModal";
 import { useTranslation } from "react-i18next";
 import { FullGymSession } from "@/database/gym/get-full-gym-session";
-import { Clock } from "lucide-react";
 import { StatCard } from "@/components/StatCard";
+import { getSessionMedia } from "@/database/media/get-session-media";
+import SessionMediaGallery from "@/components/media/SessionMediaGallery";
 
 type GymSessionProps = FullGymSession & {
   readOnly?: boolean;
+  sessionImages?: { id: string; storage_path: string; uri: string }[];
+  sessionVideos?: { id: string; storage_path: string; thumbnail_storage_path: string | null; duration_ms: number | null; uri: string; thumbnailUri: string }[];
+  sessionVoiceRecordings?: { id: string; storage_path: string; duration_ms: number | null; uri: string }[];
 };
 
-export default function GymSession({ readOnly, ...gym_session }: GymSessionProps) {
+export default function GymSession({ readOnly, sessionImages, sessionVideos, sessionVoiceRecordings, ...gym_session }: GymSessionProps) {
   const { t, i18n } = useTranslation("gym");
   const [exerciseId, setExerciseId] = useState("");
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
@@ -54,6 +58,25 @@ export default function GymSession({ readOnly, ...gym_session }: GymSessionProps
     return rpeMap[rpe] || rpe;
   };
 
+  const hasPrefetchedMedia =
+    (sessionImages && sessionImages.length > 0) ||
+    (sessionVideos && sessionVideos.length > 0) ||
+    (sessionVoiceRecordings && sessionVoiceRecordings.length > 0);
+
+  const { data: fetchedMedia } = useQuery({
+    queryKey: ["session-media", gym_session.id],
+    queryFn: () => getSessionMedia(gym_session.id),
+    enabled: !hasPrefetchedMedia,
+  });
+
+  const media = hasPrefetchedMedia
+    ? {
+        images: sessionImages ?? [],
+        videos: sessionVideos ?? [],
+        voiceRecordings: sessionVoiceRecordings ?? [],
+      }
+    : fetchedMedia;
+
   const {
     data: history,
     error: historyError,
@@ -71,22 +94,15 @@ export default function GymSession({ readOnly, ...gym_session }: GymSessionProps
 
   return (
     <div className="max-w-lg mx-auto page-padding">
-      <div className="text-sm text-gray-400 text-center font-body">
-        {formatDate(gym_session.start_time)}
-      </div>
       <div className="flex flex-col gap-4 justify-center items-center bg-linear-to-tr from-gray-900 via-slate-900 to-blue-900 border-[1.5px] border-gray-700 rounded-md p-5 mt-5">
         <h2 className="text-xl text-center border-b border-gray-700">{gym_session.title}</h2>
-        <div className="flex items-center gap-2 font-body">
-          <Clock />
-          <p className="text-lg text-center">
-            {formatTime(gym_session.start_time)} -{" "}
-            {formatTime(gym_session.end_time)}
-          </p>
-        </div>
+        <p className="text-sm text-gray-400 font-body">
+          {formatDateShort(gym_session.start_time)}  ·  {formatTime(gym_session.start_time)} – {formatTime(gym_session.end_time)}
+        </p>
         <div className="flex gap-2 w-full">
           <StatCard
             label={t("gym.analytics.duration")}
-            value={formatDuration(gym_session.duration)}
+            value={formatDurationLong(gym_session.duration)}
           />
           <StatCard
             label={t("gym.session.totalVolume")}
@@ -115,6 +131,14 @@ export default function GymSession({ readOnly, ...gym_session }: GymSessionProps
           <p className="mt-4 text-gray-200 font-body whitespace-pre-wrap wrap-break-word overflow-hidden max-w-full">
             {gym_session.notes}
           </p>
+        )}
+
+        {media && (
+          <SessionMediaGallery
+            images={media.images}
+            videos={media.videos}
+            voiceRecordings={media.voiceRecordings}
+          />
         )}
       </div>
       {Object.entries(groupedExercises).map(([superset_id, group]) => (
@@ -183,9 +207,13 @@ export default function GymSession({ readOnly, ...gym_session }: GymSessionProps
                   {exercise.gym_sets.map((set, setIndex) => (
                     <tr
                       key={setIndex}
-                      className={`${
-                        set.rpe === "Failure" ? "bg-red-500 text-white" : "text-gray-100"
-                      } ${set.rpe === "Warm-up" ? "bg-blue-500" : ""} border-b border-gray-600`}
+                      className={`border-b border-gray-600 ${
+                        set.rpe === "Failure"
+                          ? "bg-red-500/15"
+                          : set.rpe === "Warm-up"
+                            ? "bg-blue-500/15"
+                            : ""
+                      }`}
                     >
                       <td className="p-2">{setIndex + 1}</td>
                       <td className="p-2">

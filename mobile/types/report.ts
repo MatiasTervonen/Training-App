@@ -51,12 +51,18 @@ export type GymReportData = {
   exercise_count: number;
 };
 
-export type ActivitiesReportData = {
+export type ActivityBreakdown = {
+  activity_name: string;
+  activity_slug: string | null;
   session_count: number;
   total_duration: number;
-  total_distance_meters: number;
+  total_distance_meters: number | null;
   total_calories: number;
-  total_steps: number;
+  total_steps: number | null;
+};
+
+export type ActivitiesReportData = {
+  by_activity: ActivityBreakdown[];
 };
 
 export type WeightReportData = {

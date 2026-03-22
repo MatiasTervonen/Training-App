@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import ConversationList from "@/features/chat/components/ConversationList";
 import ChatView from "@/features/chat/components/ChatView";
 import ChatEmptyState from "@/features/chat/components/ChatEmptyState";
@@ -15,19 +15,9 @@ type ActiveChat = {
 };
 
 export default function ChatLayout() {
-  const searchParams = useSearchParams();
   const router = useRouter();
   const currentUserId = useCurrentUserId();
   const [activeChat, setActiveChat] = useState<ActiveChat | null>(null);
-
-  // Sync from URL params on mount
-  useEffect(() => {
-    const id = searchParams.get("id");
-    if (id && !activeChat) {
-      // Will be resolved when ConversationList loads and we can find the conversation
-      setActiveChat((prev) => prev?.conversationId === id ? prev : null);
-    }
-  }, [searchParams]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleSelectConversation = useCallback((conversationId: string, otherUserId: string, otherUserName: string, otherUserPicture: string | null) => {
     setActiveChat({ conversationId, otherUserId, otherUserName, otherUserPicture });

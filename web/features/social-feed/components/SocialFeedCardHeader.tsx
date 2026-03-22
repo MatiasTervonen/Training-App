@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { SocialFeedItem } from "@/types/social-feed";
 import { ReactNode } from "react";
 import { X } from "lucide-react";
@@ -29,9 +30,11 @@ export default function SocialFeedCardHeader({ item, typeIcon, onClose }: Props)
   return (
     <div className="flex items-center gap-3 px-4 pt-4 pb-3">
       {item.author_profile_picture ? (
-        <img
+        <Image
           src={item.author_profile_picture}
           alt={item.author_display_name}
+          width={40}
+          height={40}
           className="w-10 h-10 rounded-full bg-slate-600 object-cover"
         />
       ) : (

@@ -5,7 +5,7 @@ import { useTimerStore } from "@/lib/stores/timerStore";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
-import { formatDateShort } from "@/lib/formatDate";
+
 
 type StopwatchProps = {
   className?: string;
@@ -66,7 +66,7 @@ export default function Stopwatch({ className = "" }: StopwatchProps) {
   const handleStart = () => {
     setActiveSession({
       type: t("timer.stopwatchTitle"),
-      label: `${t("timer.stopwatchTitle")} - ${formatDateShort(new Date())}`,
+      label: t("timer.stopwatchTitle"),
       path: "/timer/start-stopwatch",
     });
 
@@ -116,7 +116,7 @@ export default function Stopwatch({ className = "" }: StopwatchProps) {
   return (
     <div
       ref={containerRef}
-      className={`flex items-center w-full h-full overflow-hidden gap-2 ${className}`}
+      className={`flex items-center w-full h-full gap-2 ${className}`}
     >
       <p
         ref={textRef}
@@ -133,7 +133,7 @@ export default function Stopwatch({ className = "" }: StopwatchProps) {
         <button
           aria-label={t("timer.cancel")}
           onClick={handleCancel}
-          className="flex items-center justify-center gap-2 w-36 bg-red-600 border-[1.5px] border-red-400 py-2 rounded-md text-gray-100 hover:bg-red-500 hover:scale-105 transition-all duration-200"
+          className="btn-danger flex items-center justify-center gap-2 w-36"
         >
           <X size={20} />
           <span>{t("timer.cancel")}</span>
@@ -143,7 +143,7 @@ export default function Stopwatch({ className = "" }: StopwatchProps) {
           <button
             aria-label={t("timer.pause")}
             onClick={handlePause}
-            className="flex items-center justify-center gap-2 w-36 bg-blue-800 border-[1.5px] border-blue-500 py-2 rounded-md text-gray-100 hover:bg-blue-700 hover:scale-105 transition-all duration-200"
+            className="btn-base flex items-center justify-center gap-2 w-36"
           >
             <CirclePause size={20} />
             <span>{t("timer.pause")}</span>
@@ -152,7 +152,7 @@ export default function Stopwatch({ className = "" }: StopwatchProps) {
           <button
             aria-label={paused ? t("timer.resume") : t("timer.start")}
             onClick={handleStart}
-            className="flex items-center justify-center gap-2 w-36 bg-blue-800 border-[1.5px] border-blue-500 py-2 rounded-md text-gray-100 hover:bg-blue-700 hover:scale-105 transition-all duration-200"
+            className="btn-base flex items-center justify-center gap-2 w-36"
           >
             <CirclePlay size={20} />
             <span>{paused ? t("timer.resume") : t("timer.start")}</span>

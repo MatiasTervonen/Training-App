@@ -101,7 +101,7 @@ export default function ExerciseDropdown({ onSelect }: Props) {
           recentExercises &&
           recentExercises.length > 0 && (
             <>
-              <p className="text-center bg-blue-600 py-0.5">
+              <p className="text-center bg-blue-500/20 border-y border-blue-500/40 py-0.5">
                 {t("gym.exerciseDropdown.recentExercises")}
               </p>
               {recentExercises.map((exercise, index) => (
@@ -128,7 +128,7 @@ export default function ExerciseDropdown({ onSelect }: Props) {
             </>
           )}
 
-        <p className="text-center bg-blue-600 py-0.5">
+        <p className="text-center bg-blue-500/20 border-y border-blue-500/40 py-0.5">
           {t("gym.exerciseDropdown.allExercises")}
         </p>
 

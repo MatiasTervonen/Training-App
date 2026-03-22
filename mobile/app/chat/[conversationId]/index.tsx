@@ -2,7 +2,7 @@ import { useEffect, useCallback, useRef, useState } from "react";
 import { View, FlatList, ActivityIndicator, Pressable, Alert, Platform, Linking } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { ChevronLeft } from "lucide-react-native";
+import { ChevronDown, ChevronLeft } from "lucide-react-native";
 import FullScreenModal from "@/components/FullScreenModal";
 import { Image } from "expo-image";
 import * as Clipboard from "expo-clipboard";
@@ -29,6 +29,7 @@ import useTypingIndicator from "@/features/chat/hooks/useTypingIndicator";
 import TypingIndicator from "@/features/chat/components/TypingIndicator";
 import { useUserStore } from "@/lib/stores/useUserStore";
 import { useTimerStore } from "@/lib/stores/timerStore";
+import { NativeSyntheticEvent, NativeScrollEvent } from "react-native";
 import { ChatMessage, LinkPreview, SessionShareContent, LocationShareContent } from "@/types/chat";
 import { KeyboardAvoidingView } from "react-native-keyboard-controller";
 import { LinearGradient } from "expo-linear-gradient";
@@ -106,6 +107,7 @@ export default function ChatScreen() {
     string | null
   >(null);
   const [showForwardPicker, setShowForwardPicker] = useState(false);
+  const [showScrollDown, setShowScrollDown] = useState(false);
   const messageToForward = useRef<ChatMessage | null>(null);
 
   const {
@@ -406,6 +408,15 @@ export default function ChatScreen() {
     ],
   );
 
+  const handleScroll = useCallback((e: NativeSyntheticEvent<NativeScrollEvent>) => {
+    // Inverted FlatList: offset 0 = bottom, scrolling up increases offset
+    setShowScrollDown(e.nativeEvent.contentOffset.y > 300);
+  }, []);
+
+  const scrollToBottom = useCallback(() => {
+    flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
+  }, []);
+
   const handleLoadMore = useCallback(() => {
     if (hasNextPage && !isFetchingNextPage) {
       fetchNextPage();
@@ -464,6 +475,8 @@ export default function ChatScreen() {
             onEndReachedThreshold={0.3}
             keyboardDismissMode="on-drag"
             showsVerticalScrollIndicator={false}
+            onScroll={handleScroll}
+            scrollEventThrottle={100}
             onScrollBeginDrag={handleDismissToolbar}
             ListFooterComponent={
               isFetchingNextPage ? (
@@ -474,6 +487,15 @@ export default function ChatScreen() {
             }
             contentContainerStyle={CHAT_CONTENT_STYLE}
           />
+        )}
+
+        {/* Scroll to bottom button */}
+        {showScrollDown && (
+          <View className="absolute bottom-28 right-4 z-10">
+            <AnimatedButton onPress={scrollToBottom} className="w-9 h-9 rounded-full bg-slate-700 border border-slate-600 items-center justify-center shadow-lg">
+              <ChevronDown color="#e5e7eb" size={20} />
+            </AnimatedButton>
+          </View>
         )}
 
         {/* Typing indicator */}

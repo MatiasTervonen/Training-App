@@ -9,7 +9,7 @@ import { useUserStore } from "@/lib/stores/useUserStore";
 import { useRouter } from "next/navigation";
 import ActiveSessionPopup from "@/components/activeSessionPopup";
 import { useTranslation } from "react-i18next";
-import { APP_NAME } from "@/lib/app-config";
+import { useTotalUnreadCount } from "@/features/chat/hooks/useTotalUnreadCount";
 
 export default function Navbar() {
   const { t } = useTranslation("common");
@@ -17,6 +17,7 @@ export default function Navbar() {
   const router = useRouter();
 
   const preferences = useUserStore((state) => state.preferences);
+  const { data: unreadCount } = useTotalUnreadCount();
 
   const fullPage =
     pathname === "/admin/user-analytics" || pathname.startsWith("/admin/docs")
@@ -38,9 +39,14 @@ export default function Navbar() {
           <NotificationBell />
           <Link
             href={"/chat"}
-            className="border-[1.5px] p-2 border-blue-500 rounded-full bg-gray-800"
+            className="relative border-[1.5px] p-2 border-blue-500 rounded-full bg-gray-800"
           >
             <MessageCircle size={20} />
+            {unreadCount != null && unreadCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full min-w-4 h-4 flex items-center justify-center px-1">
+                {unreadCount > 9 ? "9+" : unreadCount}
+              </span>
+            )}
           </Link>
           <Link href={"/menu"}>
             <Image

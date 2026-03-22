@@ -10,3 +10,4 @@ export { default as activities } from "./activities.json";
 export { default as login } from "./login.json";
 export { default as feed } from "./feed.json";
 export { default as marketing } from "./marketing.json";
+export { default as chat } from "./chat.json";

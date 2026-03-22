@@ -40,5 +40,10 @@
 ## TypeScript
 - Never use `any` type. Fix TypeScript errors with proper types. If you're unsure of the type, read the codebase to find the correct one.
 
+## Authentication
+- Never use `supabase.auth.getSession()` — it reads from insecure local storage and the returned user object cannot be trusted.
+- Always use `supabase.auth.getClaims()` to get the current user identity. It verifies the JWT locally using RS256 asymmetric keys — no network call needed.
+- Access the user ID via `data.claims.sub` from the `getClaims()` response.
+
 ## Post-Implementation Review
 - After implementing a feature from the `specs/` folder, scan the changed code against the best practices rules in `.agents/skills/vercel-react-best-practices/rules/`. Focus on Critical and High impact patterns only.

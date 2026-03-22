@@ -1,0 +1,286 @@
+"use client";
+
+import { useState, useRef, useCallback } from "react";
+import { useTranslation } from "react-i18next";
+import { Check, CheckCheck, Dumbbell, Activity, Image as ImageIcon, Video, Mic, MapPin } from "lucide-react";
+import { ChatMessage, MessageType } from "@/types/chat";
+import ReplyPreview from "@/features/chat/components/ReplyPreview";
+import ReactionPills from "@/features/chat/components/ReactionPills";
+import LinkPreviewCard from "@/features/chat/components/LinkPreviewCard";
+import MessageContextMenu from "@/features/chat/components/MessageContextMenu";
+
+type ChatBubbleProps = {
+  message: ChatMessage;
+  isOwn: boolean;
+  showReadReceipt: boolean;
+  onReply: () => void;
+  onDelete: () => void;
+  onReact: (emoji: string) => void;
+  onForward: () => void;
+  onScrollToMessage?: (messageId: string) => void;
+};
+
+type SessionShareData = {
+  session_type: string;
+  source_id: string;
+  title: string;
+  activity_name?: string;
+  stats: Record<string, number>;
+};
+
+function formatDuration(minutes: number): string {
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  if (h > 0) return `${h}h ${m}min`;
+  return `${m}min`;
+}
+
+function SessionShareCard({ data, t }: { data: SessionShareData; t: (key: string) => string }) {
+  const isGym = data.session_type === "gym_sessions";
+
+  return (
+    <div
+      className={`rounded-xl overflow-hidden border border-slate-600/50 w-[280px] ${
+        isGym
+          ? "bg-gradient-to-br from-blue-500/15 to-blue-500/5"
+          : "bg-gradient-to-br from-green-500/15 to-green-500/5"
+      }`}
+    >
+      <div className="px-4 pt-3.5 pb-3">
+        {/* Category */}
+        <div className="flex items-center gap-2 mb-2.5">
+          {isGym ? (
+            <Dumbbell size={16} className="text-slate-400" />
+          ) : (
+            <Activity size={16} className="text-slate-400" />
+          )}
+          <span className="font-body text-sm text-slate-400">
+            {isGym ? t("chat.gymSession") : (data.activity_name ?? t("chat.activitySession"))}
+          </span>
+        </div>
+
+        {/* Title */}
+        <p className="text-lg truncate mb-3">{data.title}</p>
+
+        {/* Stats */}
+        <div className="flex items-center gap-4">
+          {data.stats.duration > 0 && (
+            <div className="flex flex-col items-center">
+              <span className="font-body text-base">{formatDuration(data.stats.duration)}</span>
+              <span className="font-body text-[10px] text-slate-400">{t("chat.duration")}</span>
+            </div>
+          )}
+          {isGym && data.stats.exercises_count > 0 && (
+            <div className="flex flex-col items-center">
+              <span className="font-body text-base">{data.stats.exercises_count}</span>
+              <span className="font-body text-[10px] text-slate-400">{t("chat.exercises")}</span>
+            </div>
+          )}
+          {isGym && data.stats.sets_count > 0 && (
+            <div className="flex flex-col items-center">
+              <span className="font-body text-base">{data.stats.sets_count}</span>
+              <span className="font-body text-[10px] text-slate-400">{t("chat.sets")}</span>
+            </div>
+          )}
+          {isGym && (data.stats.total_volume ?? 0) > 0 && (
+            <div className="flex flex-col items-center">
+              <span className="font-body text-base">{Math.round(data.stats.total_volume)}</span>
+              <span className="font-body text-[10px] text-slate-400">{t("chat.volume")}</span>
+            </div>
+          )}
+          {!isGym && data.stats.distance_meters > 0 && (
+            <div className="flex flex-col items-center">
+              <span className="font-body text-base">{(data.stats.distance_meters / 1000).toFixed(1)}km</span>
+              <span className="font-body text-[10px] text-slate-400">{t("chat.distance")}</span>
+            </div>
+          )}
+          {!isGym && data.stats.calories > 0 && (
+            <div className="flex flex-col items-center">
+              <span className="font-body text-base">{Math.round(data.stats.calories)}</span>
+              <span className="font-body text-[10px] text-slate-400">{t("chat.calories")}</span>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function MessageContent({ message, t }: { message: ChatMessage; t: (key: string) => string }) {
+  if (message.message_type === "text") {
+    return <p className="font-body text-sm whitespace-pre-wrap break-words">{message.content}</p>;
+  }
+
+  if (message.message_type === "session_share") {
+    try {
+      const data: SessionShareData = JSON.parse(message.content ?? "{}");
+      return <SessionShareCard data={data} t={t} />;
+    } catch {
+      return <p className="font-body text-sm text-gray-500 italic">{t("chat.sessionShare")}</p>;
+    }
+  }
+
+  if (message.message_type === "image") {
+    return (
+      <div className="flex items-center gap-2 font-body text-sm text-gray-400">
+        <ImageIcon size={16} />
+        <span>{t("chat.photo")}</span>
+      </div>
+    );
+  }
+
+  if (message.message_type === "video") {
+    return (
+      <div className="flex items-center gap-2 font-body text-sm text-gray-400">
+        <Video size={16} />
+        <span>{t("chat.video")}</span>
+      </div>
+    );
+  }
+
+  if (message.message_type === "voice") {
+    return (
+      <div className="flex items-center gap-2 font-body text-sm text-gray-400">
+        <Mic size={16} />
+        <span>{t("chat.voiceMessage")}</span>
+      </div>
+    );
+  }
+
+  if (message.message_type === "location") {
+    return (
+      <div className="flex items-center gap-2 font-body text-sm text-gray-400">
+        <MapPin size={16} />
+        <span>{t("chat.location")}</span>
+      </div>
+    );
+  }
+
+  return <p className="font-body text-sm text-gray-500 italic">{t("chat.unsupportedType")}</p>;
+}
+
+export default function ChatBubble({
+  message,
+  isOwn,
+  showReadReceipt,
+  onReply,
+  onDelete,
+  onReact,
+  onForward,
+  onScrollToMessage,
+}: ChatBubbleProps) {
+  const { t } = useTranslation("chat");
+  const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null);
+  const longPressTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const bubbleRef = useRef<HTMLDivElement>(null);
+
+  const isDeleted = !!message.deleted_at;
+  const isSessionShare = message.message_type === "session_share";
+  const hasTextContent = message.message_type === "text" && !!message.content;
+  const time = new Date(message.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+
+  const handleContextMenu = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    setContextMenu({ x: e.clientX, y: e.clientY });
+  }, []);
+
+  const handleTouchStart = useCallback(() => {
+    longPressTimer.current = setTimeout(() => {
+      const rect = bubbleRef.current?.getBoundingClientRect();
+      if (rect) {
+        setContextMenu({ x: rect.left + rect.width / 2, y: rect.top });
+      }
+    }, 500);
+  }, []);
+
+  const handleTouchEnd = useCallback(() => {
+    clearTimeout(longPressTimer.current);
+  }, []);
+
+  const handleCopy = useCallback(() => {
+    if (message.content) {
+      navigator.clipboard.writeText(message.content);
+    }
+  }, [message.content]);
+
+  return (
+    <div className={`flex flex-col ${isOwn ? "items-end" : "items-start"} px-4`}>
+      <div
+        ref={bubbleRef}
+        id={`msg-${message.id}`}
+        onContextMenu={handleContextMenu}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+        onTouchMove={handleTouchEnd}
+        className={`max-w-[80%] rounded-2xl ${
+          isDeleted
+            ? "px-3 py-1.5 bg-slate-800/50"
+            : isSessionShare
+            ? "p-0 overflow-hidden"
+            : isOwn
+            ? "px-3 py-1.5 bg-cyan-800 rounded-br-sm"
+            : "px-3 py-1.5 bg-slate-700 rounded-bl-sm"
+        }`}
+      >
+        {/* Reply preview */}
+        {message.reply_to_message_id && !isDeleted && (
+          <ReplyPreview
+            senderName={message.reply_to_sender_name}
+            content={message.reply_to_content}
+            messageType={message.reply_to_message_type}
+            isDeleted={!!message.reply_to_deleted_at}
+            onClick={() => onScrollToMessage?.(message.reply_to_message_id!)}
+          />
+        )}
+
+        {/* Message content */}
+        {isDeleted ? (
+          <p className="font-body text-sm text-gray-500 italic">{t("chat.messageDeleted")}</p>
+        ) : (
+          <MessageContent message={message} t={t} />
+        )}
+
+        {/* Link preview */}
+        {message.link_preview && !isDeleted && (
+          <div className="mt-2">
+            <LinkPreviewCard preview={message.link_preview} />
+          </div>
+        )}
+      </div>
+
+      {/* Reactions */}
+      <div className={`${isOwn ? "self-end" : "self-start"} px-3`}>
+        <ReactionPills reactions={message.reactions} onToggle={onReact} />
+      </div>
+
+      {/* Timestamp + read receipt */}
+      <div className={`flex items-center gap-1 px-3 mt-0.5 ${isOwn ? "self-end" : "self-start"}`}>
+        <span className={`text-[10px] ${isOwn ? "text-cyan-200/60" : "text-slate-400/70"}`}>{time}</span>
+        {isOwn && !isDeleted && (
+          showReadReceipt ? (
+            <CheckCheck size={14} className="text-cyan-300" />
+          ) : (
+            <Check size={14} className="text-slate-400" />
+          )
+        )}
+      </div>
+
+      {/* Context menu */}
+      {contextMenu && (
+        <MessageContextMenu
+          x={contextMenu.x}
+          y={contextMenu.y}
+          isOwn={isOwn}
+          isDeleted={isDeleted}
+          hasTextContent={hasTextContent}
+          onClose={() => setContextMenu(null)}
+          onReply={onReply}
+          onCopy={handleCopy}
+          onForward={onForward}
+          onDelete={onDelete}
+          onReact={onReact}
+        />
+      )}
+    </div>
+  );
+}

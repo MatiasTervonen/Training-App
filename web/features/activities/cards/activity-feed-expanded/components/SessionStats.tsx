@@ -37,7 +37,6 @@ export default function SessionStats({ activity_session }: SessionStatsProps) {
       <div className="flex gap-2 mb-2">
         <StatCard
           label={t("activities.sessionStats.avgPace")}
-          sublabel={t("activities.sessionStats.moving")}
           value={`${formatAveragePace(stats?.avg_pace ?? 0)} ${t("activities.sessionStats.minPerKm")}`}
         />
         <StatCard

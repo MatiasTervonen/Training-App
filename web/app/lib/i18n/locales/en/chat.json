@@ -39,6 +39,14 @@
     "volume": "Volume",
     "distance": "Distance",
     "calories": "Calories",
-    "unsupportedType": "Unsupported message type"
+    "unsupportedType": "Unsupported message type",
+    "mediaUploadError": "Failed to send media",
+    "attachMedia": "Attach media",
+    "sendMedia": "Press send to share media",
+    "recording": "Recording",
+    "cancel": "Cancel",
+    "fileTooLarge": "File is too large",
+    "videoTooLong": "Video must be under 5 minutes",
+    "imageTooLarge": "Image is too large after compression"
   }
 }

@@ -29,13 +29,5 @@ export default function FeedFooter({
     return <View className="h-20" />;
   }
 
-  if (!hasNextPage && data?.pages.length > 1) {
-    return (
-      <BodyText className="text-center justify-center mt-10">
-        {t("feed.noMoreSessions")}
-      </BodyText>
-    );
-  }
-
   return null;
 }

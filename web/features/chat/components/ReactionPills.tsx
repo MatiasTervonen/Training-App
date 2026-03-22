@@ -8,7 +8,7 @@ type ReactionPillsProps = {
 };
 
 export default function ReactionPills({ reactions, onToggle }: ReactionPillsProps) {
-  if (reactions.length === 0) return null;
+  if (!reactions || reactions.length === 0) return null;
 
   return (
     <div className="flex gap-1 mt-1 flex-wrap">

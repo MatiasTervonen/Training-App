@@ -2,12 +2,13 @@
 
 import { useState, useRef, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { Check, CheckCheck, Dumbbell, Activity, Image as ImageIcon, Video, Mic, MapPin } from "lucide-react";
-import { ChatMessage, MessageType } from "@/types/chat";
+import { Check, CheckCheck, Dumbbell, Activity, MapPin } from "lucide-react";
+import { ChatMessage } from "@/types/chat";
 import ReplyPreview from "@/features/chat/components/ReplyPreview";
 import ReactionPills from "@/features/chat/components/ReactionPills";
 import LinkPreviewCard from "@/features/chat/components/LinkPreviewCard";
 import MessageContextMenu from "@/features/chat/components/MessageContextMenu";
+import ChatMediaBubble from "@/features/chat/components/ChatMediaBubble";
 
 type ChatBubbleProps = {
   message: ChatMessage;
@@ -35,15 +36,21 @@ function formatDuration(minutes: number): string {
   return `${m}min`;
 }
 
-function SessionShareCard({ data, t }: { data: SessionShareData; t: (key: string) => string }) {
+function SessionShareCard({
+  data,
+  t,
+}: {
+  data: SessionShareData;
+  t: (key: string) => string;
+}) {
   const isGym = data.session_type === "gym_sessions";
 
   return (
     <div
       className={`rounded-xl overflow-hidden border border-slate-600/50 w-[280px] ${
         isGym
-          ? "bg-gradient-to-br from-blue-500/15 to-blue-500/5"
-          : "bg-gradient-to-br from-green-500/15 to-green-500/5"
+          ? "bg-linear-to-br from-blue-500/15 to-blue-500/5"
+          : "bg-linear-to-br from-green-500/15 to-green-500/5"
       }`}
     >
       <div className="px-4 pt-3.5 pb-3">
@@ -55,7 +62,9 @@ function SessionShareCard({ data, t }: { data: SessionShareData; t: (key: string
             <Activity size={16} className="text-slate-400" />
           )}
           <span className="font-body text-sm text-slate-400">
-            {isGym ? t("chat.gymSession") : (data.activity_name ?? t("chat.activitySession"))}
+            {isGym
+              ? t("chat.gymSession")
+              : (data.activity_name ?? t("chat.activitySession"))}
           </span>
         </div>
 
@@ -66,38 +75,62 @@ function SessionShareCard({ data, t }: { data: SessionShareData; t: (key: string
         <div className="flex items-center gap-4">
           {data.stats.duration > 0 && (
             <div className="flex flex-col items-center">
-              <span className="font-body text-base">{formatDuration(data.stats.duration)}</span>
-              <span className="font-body text-[10px] text-slate-400">{t("chat.duration")}</span>
+              <span className="font-body text-base">
+                {formatDuration(data.stats.duration)}
+              </span>
+              <span className="font-body text-[10px] text-slate-400">
+                {t("chat.duration")}
+              </span>
             </div>
           )}
           {isGym && data.stats.exercises_count > 0 && (
             <div className="flex flex-col items-center">
-              <span className="font-body text-base">{data.stats.exercises_count}</span>
-              <span className="font-body text-[10px] text-slate-400">{t("chat.exercises")}</span>
+              <span className="font-body text-base">
+                {data.stats.exercises_count}
+              </span>
+              <span className="font-body text-[10px] text-slate-400">
+                {t("chat.exercises")}
+              </span>
             </div>
           )}
           {isGym && data.stats.sets_count > 0 && (
             <div className="flex flex-col items-center">
-              <span className="font-body text-base">{data.stats.sets_count}</span>
-              <span className="font-body text-[10px] text-slate-400">{t("chat.sets")}</span>
+              <span className="font-body text-base">
+                {data.stats.sets_count}
+              </span>
+              <span className="font-body text-[10px] text-slate-400">
+                {t("chat.sets")}
+              </span>
             </div>
           )}
           {isGym && (data.stats.total_volume ?? 0) > 0 && (
             <div className="flex flex-col items-center">
-              <span className="font-body text-base">{Math.round(data.stats.total_volume)}</span>
-              <span className="font-body text-[10px] text-slate-400">{t("chat.volume")}</span>
+              <span className="font-body text-base">
+                {Math.round(data.stats.total_volume)}
+              </span>
+              <span className="font-body text-[10px] text-slate-400">
+                {t("chat.volume")}
+              </span>
             </div>
           )}
           {!isGym && data.stats.distance_meters > 0 && (
             <div className="flex flex-col items-center">
-              <span className="font-body text-base">{(data.stats.distance_meters / 1000).toFixed(1)}km</span>
-              <span className="font-body text-[10px] text-slate-400">{t("chat.distance")}</span>
+              <span className="font-body text-base">
+                {(data.stats.distance_meters / 1000).toFixed(1)}km
+              </span>
+              <span className="font-body text-[10px] text-slate-400">
+                {t("chat.distance")}
+              </span>
             </div>
           )}
           {!isGym && data.stats.calories > 0 && (
             <div className="flex flex-col items-center">
-              <span className="font-body text-base">{Math.round(data.stats.calories)}</span>
-              <span className="font-body text-[10px] text-slate-400">{t("chat.calories")}</span>
+              <span className="font-body text-base">
+                {Math.round(data.stats.calories)}
+              </span>
+              <span className="font-body text-[10px] text-slate-400">
+                {t("chat.calories")}
+              </span>
             </div>
           )}
         </div>
@@ -106,45 +139,48 @@ function SessionShareCard({ data, t }: { data: SessionShareData; t: (key: string
   );
 }
 
-function MessageContent({ message, t }: { message: ChatMessage; t: (key: string) => string }) {
+function MessageContent({
+  message,
+  isOwn,
+  t,
+}: {
+  message: ChatMessage;
+  isOwn: boolean;
+  t: (key: string) => string;
+}) {
   if (message.message_type === "text") {
-    return <p className="font-body text-sm whitespace-pre-wrap break-words">{message.content}</p>;
+    return (
+      <p className="font-body text-sm whitespace-pre-wrap wrap-break-words">
+        {message.content}
+      </p>
+    );
   }
 
   if (message.message_type === "session_share") {
+    let data: SessionShareData | null = null;
     try {
-      const data: SessionShareData = JSON.parse(message.content ?? "{}");
-      return <SessionShareCard data={data} t={t} />;
+      data = JSON.parse(message.content ?? "{}");
     } catch {
-      return <p className="font-body text-sm text-gray-500 italic">{t("chat.sessionShare")}</p>;
+      // invalid JSON — fall through to fallback
     }
-  }
 
-  if (message.message_type === "image") {
+    if (data) {
+      return <SessionShareCard data={data} t={t} />;
+    }
+
     return (
-      <div className="flex items-center gap-2 font-body text-sm text-gray-400">
-        <ImageIcon size={16} />
-        <span>{t("chat.photo")}</span>
-      </div>
+      <p className="font-body text-sm text-gray-500 italic">
+        {t("chat.sessionShare")}
+      </p>
     );
   }
 
-  if (message.message_type === "video") {
-    return (
-      <div className="flex items-center gap-2 font-body text-sm text-gray-400">
-        <Video size={16} />
-        <span>{t("chat.video")}</span>
-      </div>
-    );
-  }
-
-  if (message.message_type === "voice") {
-    return (
-      <div className="flex items-center gap-2 font-body text-sm text-gray-400">
-        <Mic size={16} />
-        <span>{t("chat.voiceMessage")}</span>
-      </div>
-    );
+  if (
+    message.message_type === "image" ||
+    message.message_type === "video" ||
+    message.message_type === "voice"
+  ) {
+    return <ChatMediaBubble message={message} isOwn={isOwn} />;
   }
 
   if (message.message_type === "location") {
@@ -156,7 +192,11 @@ function MessageContent({ message, t }: { message: ChatMessage; t: (key: string)
     );
   }
 
-  return <p className="font-body text-sm text-gray-500 italic">{t("chat.unsupportedType")}</p>;
+  return (
+    <p className="font-body text-sm text-gray-500 italic">
+      {t("chat.unsupportedType")}
+    </p>
+  );
 }
 
 export default function ChatBubble({
@@ -170,14 +210,22 @@ export default function ChatBubble({
   onScrollToMessage,
 }: ChatBubbleProps) {
   const { t } = useTranslation("chat");
-  const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null);
+  const [contextMenu, setContextMenu] = useState<{
+    x: number;
+    y: number;
+  } | null>(null);
   const longPressTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
   const bubbleRef = useRef<HTMLDivElement>(null);
 
   const isDeleted = !!message.deleted_at;
   const isSessionShare = message.message_type === "session_share";
+  const isMedia =
+    message.message_type === "image" || message.message_type === "video";
   const hasTextContent = message.message_type === "text" && !!message.content;
-  const time = new Date(message.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  const time = new Date(message.created_at).toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 
   const handleContextMenu = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
@@ -204,7 +252,9 @@ export default function ChatBubble({
   }, [message.content]);
 
   return (
-    <div className={`flex flex-col ${isOwn ? "items-end" : "items-start"} px-4`}>
+    <div
+      className={`flex flex-col ${isOwn ? "items-end" : "items-start"} px-4`}
+    >
       <div
         ref={bubbleRef}
         id={`msg-${message.id}`}
@@ -212,14 +262,16 @@ export default function ChatBubble({
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
         onTouchMove={handleTouchEnd}
-        className={`max-w-[80%] rounded-2xl ${
+        className={`max-w-[80%] rounded-2xl transition-all duration-200 ${
+          contextMenu ? "ring-2 ring-cyan-400/50 scale-[1.02]" : ""
+        } ${
           isDeleted
             ? "px-3 py-1.5 bg-slate-800/50"
-            : isSessionShare
-            ? "p-0 overflow-hidden"
-            : isOwn
-            ? "px-3 py-1.5 bg-cyan-800 rounded-br-sm"
-            : "px-3 py-1.5 bg-slate-700 rounded-bl-sm"
+            : isSessionShare || isMedia
+              ? "p-0 overflow-hidden"
+              : isOwn
+                ? "px-3 py-1.5 bg-cyan-800 rounded-br-sm"
+                : "px-3 py-1.5 bg-slate-700 rounded-bl-sm"
         }`}
       >
         {/* Reply preview */}
@@ -235,9 +287,11 @@ export default function ChatBubble({
 
         {/* Message content */}
         {isDeleted ? (
-          <p className="font-body text-sm text-gray-500 italic">{t("chat.messageDeleted")}</p>
+          <p className="font-body text-sm text-gray-500 italic">
+            {t("chat.messageDeleted")}
+          </p>
         ) : (
-          <MessageContent message={message} t={t} />
+          <MessageContent message={message} isOwn={isOwn} t={t} />
         )}
 
         {/* Link preview */}
@@ -254,15 +308,21 @@ export default function ChatBubble({
       </div>
 
       {/* Timestamp + read receipt */}
-      <div className={`flex items-center gap-1 px-3 mt-0.5 ${isOwn ? "self-end" : "self-start"}`}>
-        <span className={`text-[10px] ${isOwn ? "text-cyan-200/60" : "text-slate-400/70"}`}>{time}</span>
-        {isOwn && !isDeleted && (
-          showReadReceipt ? (
+      <div
+        className={`flex items-center gap-1 px-3 mt-0.5 ${isOwn ? "self-end" : "self-start"}`}
+      >
+        <span
+          className={`font-body text-xs ${isOwn ? "text-cyan-200/60" : "text-slate-400/70"}`}
+        >
+          {time}
+        </span>
+        {isOwn &&
+          !isDeleted &&
+          (showReadReceipt ? (
             <CheckCheck size={14} className="text-cyan-300" />
           ) : (
             <Check size={14} className="text-slate-400" />
-          )
-        )}
+          ))}
       </div>
 
       {/* Context menu */}

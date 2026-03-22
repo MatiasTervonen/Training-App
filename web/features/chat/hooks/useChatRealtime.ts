@@ -26,6 +26,7 @@ export function useChatRealtime(conversationId: string, currentUserId: string) {
           const newMsg = payload.new as ChatMessage;
           if (newMsg.sender_id === currentUserId) return;
 
+          // Optimistically insert the raw message for instant display
           queryClient.setQueryData(["messages", conversationId], (old: unknown) => {
             if (!old) return old;
             const data = old as { pages: ChatMessage[][]; pageParams: unknown[] };
@@ -33,10 +34,12 @@ export function useChatRealtime(conversationId: string, currentUserId: string) {
             if (exists) return data;
             return {
               ...data,
-              pages: [[newMsg, ...data.pages[0]], ...data.pages.slice(1)],
+              pages: [[{ ...newMsg, reactions: newMsg.reactions ?? [] }, ...data.pages[0]], ...data.pages.slice(1)],
             };
           });
 
+          // Refetch to get full computed fields (reply_to_*, reactions, etc.)
+          queryClient.invalidateQueries({ queryKey: ["messages", conversationId] });
           queryClient.invalidateQueries({ queryKey: ["conversations"] });
           queryClient.invalidateQueries({ queryKey: ["total-unread-count"] });
           queryClient.invalidateQueries({ queryKey: ["other-last-read", conversationId] });

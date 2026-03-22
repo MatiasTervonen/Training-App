@@ -1,12 +1,11 @@
 "use client";
 
 import { FullActivitySession } from "@/types/models";
-import { formatDate, formatTime, formatDuration } from "@/lib/formatDate";
+import { formatDateShort, formatTime, formatDuration } from "@/lib/formatDate";
 import RouteMap from "@/features/activities/cards/activity-feed-expanded/components/Map";
 import SessionStats from "@/features/activities/cards/activity-feed-expanded/components/SessionStats";
 import { useTranslation } from "react-i18next";
 import { ModalSwipeBlocker } from "@/components/modal";
-import { Clock } from "lucide-react";
 
 type ActivitySessionProps = FullActivitySession & {
   feed_context: "pinned" | "feed";
@@ -21,23 +20,17 @@ export default function ActivitySession(
 
   return (
     <div className="max-w-lg mx-auto page-padding">
-      <p className="text-gray-300 text-center text-sm">
-        {formatDate(activity_session.session.start_time)}
-      </p>
-
       <div className="bg-linear-to-tr from-gray-900 via-slate-900 to-blue-900 rounded-lg overflow-hidden shadow-md mt-5">
         <div className="p-5">
-          <h2 className="text-xl text-center mb-5 border-b border-gray-700 pb-2 text-gray-100">
+          <h2 className="text-xl text-center mb-4 text-gray-100">
             {activity_session.session.title}
           </h2>
 
-          <div className="flex items-center justify-center gap-3">
-            <Clock />
-            <p className="text-lg text-center text-gray-100">
-              {formatTime(activity_session.session.start_time)} -{" "}
-              {formatTime(activity_session.session.end_time)}
-            </p>
-          </div>
+          <p className="text-sm text-center text-gray-400">
+            {formatDateShort(activity_session.session.start_time)} ·{" "}
+            {formatTime(activity_session.session.start_time)} –{" "}
+            {formatTime(activity_session.session.end_time)}
+          </p>
 
           {activity_session.session.notes && (
             <p className="text-center mt-5 text-gray-300 whitespace-pre-wrap">

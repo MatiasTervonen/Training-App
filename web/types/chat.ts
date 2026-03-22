@@ -34,6 +34,9 @@ export type ChatMessage = {
   reply_to_message_type: MessageType | null;
   reply_to_deleted_at: string | null;
   reactions: ReactionSummary[];
+  // Client-only fields for optimistic media uploads
+  _isUploading?: boolean;
+  _localPreviewUrl?: string;
 };
 
 export type Conversation = {

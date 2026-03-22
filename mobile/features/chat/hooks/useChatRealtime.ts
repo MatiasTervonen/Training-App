@@ -41,12 +41,18 @@ export default function useChatRealtime(
               if (allMessages.some((m) => m.id === newMessage.id)) return old;
 
               const newPages = [...old.pages];
-              newPages[0] = [newMessage, ...(newPages[0] ?? [])];
+              newPages[0] = [
+                { ...newMessage, reactions: newMessage.reactions ?? [] },
+                ...(newPages[0] ?? []),
+              ];
               return { ...old, pages: newPages };
             },
           );
 
-          // Refresh conversations list and read receipts
+          // Refetch to get full computed fields (reply_to_*, reactions, etc.)
+          queryClient.invalidateQueries({
+            queryKey: ["messages", conversationId],
+          });
           queryClient.invalidateQueries({ queryKey: ["conversations"] });
           queryClient.invalidateQueries({
             queryKey: ["total-unread-count"],

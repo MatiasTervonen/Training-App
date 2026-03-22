@@ -2,6 +2,7 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { deleteMessage } from "@/database/chat/delete-message";
+import { deleteChatMedia } from "@/lib/chat/upload-chat-media";
 import { ChatMessage } from "@/types/chat";
 
 export function useDeleteMessage(conversationId: string) {
@@ -29,6 +30,14 @@ export function useDeleteMessage(conversationId: string) {
       });
 
       return { previous };
+    },
+    onSuccess: (result) => {
+      const paths: string[] = [];
+      if (result.media_path) paths.push(result.media_path);
+      if (result.thumbnail_path) paths.push(result.thumbnail_path);
+      if (paths.length > 0) {
+        deleteChatMedia(paths).catch(() => {});
+      }
     },
     onError: (_err, _vars, context) => {
       if (context?.previous) {

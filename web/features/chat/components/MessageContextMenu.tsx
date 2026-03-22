@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import { Reply, Copy, Forward, Trash2 } from "lucide-react";
@@ -54,11 +54,34 @@ export default function MessageContextMenu({
     };
   }, [onClose]);
 
-  // Adjust position to keep menu in viewport
+  const [adjusted, setAdjusted] = useState({ left: x, top: y });
+
+  useEffect(() => {
+    const menu = menuRef.current;
+    if (!menu) return;
+
+    const rect = menu.getBoundingClientRect();
+    const padding = 8;
+    let left = x;
+    let top = y;
+
+    if (left + rect.width > window.innerWidth - padding) {
+      left = window.innerWidth - rect.width - padding;
+    }
+    if (left < padding) left = padding;
+
+    if (top + rect.height > window.innerHeight - padding) {
+      top = window.innerHeight - rect.height - padding;
+    }
+    if (top < padding) top = padding;
+
+    setAdjusted({ left, top });
+  }, [x, y]);
+
   const style: React.CSSProperties = {
     position: "fixed",
-    left: x,
-    top: y,
+    left: adjusted.left,
+    top: adjusted.top,
     zIndex: 9999,
   };
 

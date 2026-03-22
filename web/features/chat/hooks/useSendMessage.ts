@@ -13,7 +13,7 @@ export function useSendMessage(conversationId: string) {
 
   return useMutation({
     mutationFn: async ({ content, replyToMessageId }: { content: string; replyToMessageId?: string }) => {
-      return sendMessage(conversationId, content, replyToMessageId);
+      return sendMessage({ conversationId, content, messageType: "text", replyToMessageId });
     },
     onMutate: async ({ content, replyToMessageId }) => {
       await queryClient.cancelQueries({ queryKey: ["messages", conversationId] });

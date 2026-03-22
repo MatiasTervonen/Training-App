@@ -10,6 +10,7 @@ import { useChatRealtime } from "@/features/chat/hooks/useChatRealtime";
 import { useTypingIndicator } from "@/features/chat/hooks/useTypingIndicator";
 import { useMarkRead } from "@/features/chat/hooks/useMarkRead";
 import { useSendMessage } from "@/features/chat/hooks/useSendMessage";
+import { useSendMediaMessage } from "@/features/chat/hooks/useSendMediaMessage";
 import { useDeleteMessage } from "@/features/chat/hooks/useDeleteMessage";
 import { useToggleReaction } from "@/features/chat/hooks/useToggleReaction";
 import { useForwardMessage } from "@/features/chat/hooks/useForwardMessage";
@@ -46,6 +47,7 @@ export default function ChatView({ conversationId, otherUser, isActive, onBack }
   const { isOtherTyping, sendTyping, stopTyping, broadcastRead } = useTypingIndicator(conversationId);
   const markRead = useMarkRead();
   const sendMessage = useSendMessage(conversationId);
+  const sendMediaMessage = useSendMediaMessage(conversationId);
   const deleteMsg = useDeleteMessage(conversationId);
   const toggleReaction = useToggleReaction(conversationId);
   const forwardMessage = useForwardMessage();
@@ -115,6 +117,12 @@ export default function ChatView({ conversationId, otherUser, isActive, onBack }
     });
   }, [sendMessage, t]);
 
+  const handleSendMedia = useCallback((params: { messageType: "image" | "video" | "voice"; file: File; localPreviewUrl: string; durationMs?: number }) => {
+    sendMediaMessage.mutate(params, {
+      onError: () => toast.error(t("chat.mediaUploadError")),
+    });
+  }, [sendMediaMessage, t]);
+
   const handleDelete = useCallback((messageId: string) => {
     if (confirm(t("chat.deleteConfirmMessage"))) {
       deleteMsg.mutate(messageId);
@@ -126,9 +134,9 @@ export default function ChatView({ conversationId, otherUser, isActive, onBack }
   }, [toggleReaction]);
 
   const handleForward = useCallback((friendId: string) => {
-    if (!forwardingMessage?.content) return;
+    if (!forwardingMessage) return;
     forwardMessage.mutate(
-      { friendId, content: forwardingMessage.content },
+      { message: forwardingMessage, friendId },
       {
         onSuccess: () => {
           toast.success(t("chat.messageForwarded"));
@@ -212,6 +220,8 @@ export default function ChatView({ conversationId, otherUser, isActive, onBack }
       {/* Input */}
       <ChatInput
         onSend={handleSend}
+        onSendMedia={handleSendMedia}
+        isSendingMedia={sendMediaMessage.isPending}
         isActive={isActive}
         replyingTo={replyingTo}
         onCancelReply={() => setReplyingTo(null)}

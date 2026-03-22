@@ -230,11 +230,6 @@ export default function SessionFeed() {
 
                     {hasNextPage && <div ref={loadMoreRef} className="h-20"></div>}
 
-                    {!hasNextPage && (data?.pages.length ?? 0) > 1 && (
-                      <p className="text-center justify-center mt-10 text-gray-300 font-body">
-                        {t("feed.noMoreSessions")}
-                      </p>
-                    )}
                   </>
                 )}
               </>
@@ -277,11 +272,6 @@ export default function SessionFeed() {
 
                 {socialFeed.hasNextPage && <div ref={socialLoadMoreRef} className="h-20"></div>}
 
-                {!socialFeed.hasNextPage && socialFeed.items.length > 0 && (
-                  <p className="text-center justify-center mt-10 text-gray-300 font-body">
-                    {t("feed.noMoreSessions")}
-                  </p>
-                )}
               </>
             )}
           </>

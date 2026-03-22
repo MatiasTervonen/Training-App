@@ -34,8 +34,8 @@ export default function ReplyPreview({ senderName, content, messageType, isDelet
     >
       <div className="w-0.5 bg-cyan-400 rounded-full shrink-0" />
       <div className="min-w-0">
-        <p className="text-cyan-400 truncate">{senderName}</p>
-        <p className="text-gray-400 truncate">
+        <p className="font-body text-cyan-400 truncate">{senderName}</p>
+        <p className="font-body text-gray-400 truncate">
           {getPreviewText(messageType, content, isDeleted, t)}
         </p>
       </div>

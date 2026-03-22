@@ -29,6 +29,7 @@
     "chat": "Chat",
     "unsavedChanges": "unsaved changes",
     "moveToFolder": "Move to Folder",
+    "hideFromFeed": "Hide from feed",
     "autoSave": {
       "saving": "Saving...",
       "saved": "Saved",

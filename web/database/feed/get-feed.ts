@@ -18,21 +18,20 @@ export default async function getFeed({
 }> {
   const supabase = createClient();
   const from = pageParam * limit;
-  const to = from + limit - 1;
 
   const pinnedPromise =
     pageParam === 0
       ? supabase
           .from("pinned_items")
           .select(`feed_items(*)`)
+          .eq("pinned_context", "main")
           .order("created_at", { ascending: false })
       : Promise.resolve({ data: [], error: null });
 
-  const feedPromise = supabase
-    .from("feed_items")
-    .select("*")
-    .order("occurred_at", { ascending: false })
-    .range(from, to);
+  const feedPromise = supabase.rpc("get_feed_sorted", {
+    p_limit: limit,
+    p_offset: from,
+  });
 
   const [pinnedResult, feedResult] = await Promise.all([
     pinnedPromise,
@@ -65,6 +64,7 @@ export default async function getFeed({
       .filter((i) => !pinnedIds.has(i.id))
       .map((item) => ({
         ...item,
+        hidden_at: null,
         feed_context: "feed" as const,
       })),
   ];

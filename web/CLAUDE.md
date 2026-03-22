@@ -22,6 +22,7 @@
 - Always use `page-padding` tailwind class on the outer div of every new page.
 - Buttons: use `btn-base` for standard buttons, `btn-danger` for delete/cancel actions.
 - Always if its possible use existing button components.
+- Never use bold text (`font-bold`, `font-semibold`, `font-medium`) with the default font (Russo One) — it is already bold by design. Only use `font-body` class for text that needs a lighter weight.
 
 ## Components
 - Small notes field: use `SubNotes` component

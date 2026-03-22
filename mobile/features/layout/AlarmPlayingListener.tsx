@@ -22,15 +22,16 @@ function clearAlarmState() {
 
 export default function AlarmPlayingListener() {
   const router = useRouter();
+  const alarmFired = useTimerStore((s) => s.alarmFired);
 
-  // On mount, check if alarm state is stale (alarm fired but native service no longer running)
+  // When alarmFired is true (including after store rehydration), check if
+  // the native alarm service is actually still running. If not, the user
+  // already stopped it from the notification — clear the stale JS state.
   useEffect(() => {
     if (Platform.OS !== "android") return;
+    if (!alarmFired) return;
 
     const checkStaleAlarmState = async () => {
-      const { alarmFired } = useTimerStore.getState();
-      if (!alarmFired) return;
-
       const running = await isNativeAlarmRunning();
       if (!running) {
         clearAlarmState();
@@ -38,7 +39,7 @@ export default function AlarmPlayingListener() {
     };
 
     checkStaleAlarmState();
-  }, []);
+  }, [alarmFired]);
 
   useEffect(() => {
     if (Platform.OS !== "android") return;

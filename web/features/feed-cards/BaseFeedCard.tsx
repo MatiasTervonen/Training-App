@@ -15,6 +15,7 @@ type BaseCardProps = {
   onExpand: () => void;
   onEdit?: () => void;
   onMoveToFolder?: () => void;
+  onHide?: () => void;
   statsContent: ReactNode;
   typeIcon: ReactNode;
   typeName: string;
@@ -55,6 +56,7 @@ export default function BaseFeedCard({
   onExpand,
   onEdit,
   onMoveToFolder,
+  onHide,
   statsContent,
   typeIcon,
   typeName,
@@ -90,6 +92,7 @@ export default function BaseFeedCard({
             onTogglePin={onTogglePin}
             onDelete={onDelete}
             onMoveToFolder={onMoveToFolder}
+            onHide={onHide}
           />
         </div>
 

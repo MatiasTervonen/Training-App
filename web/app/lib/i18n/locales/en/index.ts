@@ -9,4 +9,5 @@ export { default as reminders } from "./reminders.json";
 export { default as activities } from "./activities.json";
 export { default as login } from "./login.json";
 export { default as feed } from "./feed.json";
+export { default as social } from "./social.json";
 export { default as marketing } from "./marketing.json";

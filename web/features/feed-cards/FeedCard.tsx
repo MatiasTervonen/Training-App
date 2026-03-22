@@ -6,9 +6,10 @@ import { FeedCardProps } from "@/types/session";
 import LocalReminderCard from "@/features/reminders/cards/localReminderCard";
 import GlobalReminderCard from "@/features/reminders/cards/globalReminderCard";
 import ActivityCard from "@/features/activities/cards/activity-feed";
+import TutorialCard from "@/features/feed-cards/tutorial-feed";
 
 export default function FeedCard(props: FeedCardProps) {
-  const { pinned, onTogglePin, onDelete, onExpand, onEdit, onMoveToFolder } = props;
+  const { pinned, onTogglePin, onDelete, onExpand, onEdit, onMoveToFolder, onHide } = props;
 
   const commomProps = {
     item: props.item,
@@ -17,6 +18,7 @@ export default function FeedCard(props: FeedCardProps) {
     onDelete: onDelete,
     onExpand: onExpand,
     onEdit: onEdit,
+    onHide: onHide,
   };
 
   switch (props.item.type) {
@@ -34,5 +36,7 @@ export default function FeedCard(props: FeedCardProps) {
       return <TodoCard {...commomProps} />;
     case "activity_sessions":
       return <ActivityCard {...commomProps} />;
+    case "tutorial":
+      return <TutorialCard {...commomProps} />;
   }
 }

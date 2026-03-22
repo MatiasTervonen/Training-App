@@ -15,7 +15,11 @@ import { FullGymSession } from "@/database/gym/get-full-gym-session";
 import { Clock } from "lucide-react";
 import { StatCard } from "@/components/StatCard";
 
-export default function GymSession(gym_session: FullGymSession) {
+type GymSessionProps = FullGymSession & {
+  readOnly?: boolean;
+};
+
+export default function GymSession({ readOnly, ...gym_session }: GymSessionProps) {
   const { t, i18n } = useTranslation("gym");
   const [exerciseId, setExerciseId] = useState("");
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
@@ -135,13 +139,15 @@ export default function GymSession(gym_session: FullGymSession) {
                   <h3 className="text-lg">
                     {index + 1}. {exercise.gym_exercises.name}
                   </h3>
-                  <button
-                    onClick={() => {
-                      openHistory(exercise.gym_exercises.id);
-                    }}
-                  >
-                    <History color="#f3f4f6" />
-                  </button>
+                  {!readOnly && (
+                    <button
+                      onClick={() => {
+                        openHistory(exercise.gym_exercises.id);
+                      }}
+                    >
+                      <History color="#f3f4f6" />
+                    </button>
+                  )}
                 </div>
                 <h3 className="text-sm text-gray-400 font-body">
                   {t(

@@ -84,7 +84,7 @@ export default function FriendsPage() {
             </div>
           )}
 
-          <div className="mt-5 px-2 rounded-md shadow-md bg-slate-950 border-slate-700 border-[1.5px]">
+          <div className="mt-5 px-2 rounded-md shadow-md bg-slate-950 border-slate-700 border-[1.5px] min-h-[400px]">
             <div className="flex items-center justify-center mt-5 mb-10">
               <h2 className="text-2xl">{t("friends.myFriends")}</h2>
             </div>

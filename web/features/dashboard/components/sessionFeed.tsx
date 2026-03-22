@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import NotesSession from "@/features/notes/cards/notes-expanded";
 import Modal from "@/components/modal";
 import FeedCard from "@/features/feed-cards/FeedCard";
@@ -17,6 +17,7 @@ import EditReminder from "@/features/reminders/cards/EditGlobalReminder";
 import { useRouter } from "next/navigation";
 import useDeleteSession from "@/features/dashboard/hooks/useDeleteSession";
 import useTogglePin from "@/features/dashboard/hooks/useTogglePin";
+import useHideFeedItem from "@/features/dashboard/hooks/useHideFeedItem";
 import { FeedItemUI } from "@/types/session";
 import useFeed from "@/features/dashboard/hooks/useFeed";
 import useFullSessions from "@/features/dashboard/hooks/useFullSessions";
@@ -25,21 +26,41 @@ import useUpdateFeedItemToTop from "@/features/dashboard/hooks/useUpdateFeedItem
 import { useTranslation } from "react-i18next";
 import ActivitySession from "@/features/activities/cards/activity-feed-expanded/activity";
 import EditActivity from "@/features/activities/cards/activity-edit";
+import TutorialSession from "@/features/feed-cards/tutorial-expanded";
 import FeedHeader from "@/features/dashboard/components/feedHeader";
 import EmptyState from "@/components/EmptyState";
-import { LayoutDashboard } from "lucide-react";
+import { LayoutDashboard, Users } from "lucide-react";
+
+// Social feed imports
+import FeedModeToggle from "@/features/social-feed/components/FeedModeToggle";
+import SocialFeedCard from "@/features/social-feed/components/SocialFeedCard";
+import SocialPostModal from "@/features/social-feed/components/SocialPostModal";
+import useSocialFeed from "@/features/social-feed/hooks/useSocialFeed";
+import useToggleLike from "@/features/social-feed/hooks/useToggleLike";
+import { SocialFeedItem } from "@/types/social-feed";
+import { useQuery } from "@tanstack/react-query";
+import { getFriendGymSession } from "@/database/social-feed/get-friend-gym-session";
+import { getFriendActivitySession } from "@/database/social-feed/get-friend-activity-session";
+import type { FullGymSession } from "@/database/gym/get-full-gym-session";
+import type { FullActivitySession } from "@/types/models";
+
+type FeedMode = "my" | "friends";
 
 export default function SessionFeed() {
   const { t } = useTranslation("feed");
+  const { t: tSocial } = useTranslation("social");
+  const [feedMode, setFeedMode] = useState<FeedMode>("my");
   const [expandedItem, setExpandedItem] = useState<FeedItemUI | null>(null);
   const [editingItem, setEditingItem] = useState<FeedItemUI | null>(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [hasUnsavedExpandedChanges, setHasUnsavedExpandedChanges] = useState(false);
 
+  // Social feed state — one modal for both details and comments
+  const [openSocialItem, setOpenSocialItem] = useState<{ item: SocialFeedItem; scrollToComments: boolean } | null>(null);
+
   const router = useRouter();
 
-  // useFeed hook to get feed data
-  // includes infinite scrolling, prefetching, sorting, and other feed related logic
+  // ─── Personal feed ───
   const {
     data,
     error,
@@ -54,15 +75,9 @@ export default function SessionFeed() {
     loadMoreRef,
   } = useFeed();
 
-  // Toggle pin
-
   const { togglePin } = useTogglePin();
-
-  // Delete session
-
   const { handleDelete } = useDeleteSession();
-
-  // useFullSessions hook to get full sessions
+  const { handleHide } = useHideFeedItem();
 
   const {
     GymSessionFull,
@@ -78,11 +93,52 @@ export default function SessionFeed() {
     refetchFullActivity,
   } = useFullSessions(expandedItem, editingItem);
 
-  // useUpdateFeedItem hook to update feed item in cache
   const { updateFeedItem } = useUpdateFeedItem();
-
-  // useUpdateFeedItem hook to update feed item in cache and move it to top
   const { updateFeedItemToTop } = useUpdateFeedItemToTop();
+
+  // ─── Social feed ───
+  const socialFeed = useSocialFeed();
+  const { mutate: toggleLike } = useToggleLike();
+
+  // Social feed infinite scroll
+  const socialLoadMoreRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (feedMode !== "friends" || !socialLoadMoreRef.current) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && socialFeed.hasNextPage && !socialFeed.isFetchingNextPage) {
+          socialFeed.fetchNextPage();
+        }
+      },
+      { rootMargin: "300px" },
+    );
+
+    observer.observe(socialLoadMoreRef.current);
+    return () => observer.disconnect();
+  }, [feedMode, socialFeed.hasNextPage, socialFeed.isFetchingNextPage, socialFeed.fetchNextPage]);
+
+  // Friend expanded session queries
+  const {
+    data: friendGymSession,
+    error: friendGymError,
+    isLoading: isLoadingFriendGym,
+  } = useQuery<FullGymSession>({
+    queryKey: ["friendGymSession", openSocialItem?.item.id],
+    queryFn: () => getFriendGymSession(openSocialItem!.item.id),
+    enabled: !!openSocialItem && openSocialItem.item.type === "gym_sessions",
+  });
+
+  const {
+    data: friendActivitySession,
+    error: friendActivityError,
+    isLoading: isLoadingFriendActivity,
+  } = useQuery<FullActivitySession>({
+    queryKey: ["friendActivitySession", openSocialItem?.item.id],
+    queryFn: () => getFriendActivitySession(openSocialItem!.item.id),
+    enabled: !!openSocialItem && openSocialItem.item.type === "activity_sessions",
+  });
 
   return (
     <div className="h-full">
@@ -105,68 +161,123 @@ export default function SessionFeed() {
             </div>
           ) : null}
         </div>
-        {isLoading && !data ? (
-          <FeedSkeleton count={6} />
-        ) : error ? (
-          <p className="text-center text-lg mt-10 font-body">{t("feed.loadError")}</p>
-        ) : (
-          <>
-            <FeedHeader
-              pinnedFeed={pinnedFeed}
-              setExpandedItem={setExpandedItem}
-              setEditingItem={setEditingItem}
-              pinned_context="main"
-            />
 
-            {unpinnedFeed.length === 0 ? (
+        {/* Feed mode toggle */}
+        <FeedModeToggle feedMode={feedMode} setFeedMode={setFeedMode} />
+
+        {/* ─── Personal feed ─── */}
+        {feedMode === "my" && (
+          <>
+            {isLoading && !data ? (
+              <FeedSkeleton count={6} />
+            ) : error ? (
+              <p className="text-center text-lg mt-10 font-body">{t("feed.loadError")}</p>
+            ) : (
+              <>
+                <FeedHeader
+                  pinnedFeed={pinnedFeed}
+                  setExpandedItem={setExpandedItem}
+                  setEditingItem={setEditingItem}
+                  pinned_context="main"
+                />
+
+                {unpinnedFeed.length === 0 && pinnedFeed.length === 0 ? (
+                  <EmptyState
+                    icon={LayoutDashboard}
+                    title={t("feed.noSessions")}
+                    description={t("feed.noSessionsDesc")}
+                  />
+                ) : (
+                  <>
+                    {unpinnedFeed.map((feedItem) => {
+                      return (
+                        <div className="mt-8" key={feedItem.id}>
+                          <FeedCard
+                            item={feedItem}
+                            pinned={false}
+                            onExpand={() => {
+                              setExpandedItem(feedItem);
+                            }}
+                            onTogglePin={() =>
+                              togglePin(
+                                feedItem.id,
+                                feedItem.type,
+                                feedItem.feed_context,
+                                "main",
+                              )
+                            }
+                            onDelete={() =>
+                              handleDelete(feedItem.source_id, feedItem.type)
+                            }
+                            onHide={() => handleHide(feedItem.id)}
+                            onEdit={() => {
+                              if (feedItem.type === "gym_sessions") {
+                                router.push(`/gym/gym/${feedItem.source_id}/edit`);
+                              } else {
+                                setEditingItem(feedItem);
+                              }
+                            }}
+                          />
+                        </div>
+                      );
+                    })}
+                    {isFetchingNextPage && (
+                      <div className="flex flex-col gap-2 items-center mt-10 font-body">
+                        <p>{t("feed.loadingMore")}</p>
+                        <Spinner />
+                      </div>
+                    )}
+
+                    {hasNextPage && <div ref={loadMoreRef} className="h-20"></div>}
+
+                    {!hasNextPage && (data?.pages.length ?? 0) > 1 && (
+                      <p className="text-center justify-center mt-10 text-gray-300 font-body">
+                        {t("feed.noMoreSessions")}
+                      </p>
+                    )}
+                  </>
+                )}
+              </>
+            )}
+          </>
+        )}
+
+        {/* ─── Social feed ─── */}
+        {feedMode === "friends" && (
+          <>
+            {socialFeed.isLoading ? (
+              <FeedSkeleton count={6} />
+            ) : socialFeed.error ? (
+              <p className="text-center text-lg mt-10 font-body">{t("feed.loadError")}</p>
+            ) : socialFeed.items.length === 0 ? (
               <EmptyState
-                icon={LayoutDashboard}
-                title={t("feed.noSessions")}
-                description={t("feed.noSessionsDesc")}
+                icon={Users}
+                title={tSocial("social.noFriendPosts")}
+                description={tSocial("social.noFriendsYet")}
               />
             ) : (
               <>
-                {unpinnedFeed.map((feedItem) => {
-                  return (
-                    <div className="mt-8" key={feedItem.id}>
-                      <FeedCard
-                        item={feedItem}
-                        pinned={false}
-                        onExpand={() => {
-                          setExpandedItem(feedItem);
-                        }}
-                        onTogglePin={() =>
-                          togglePin(
-                            feedItem.id,
-                            feedItem.type,
-                            feedItem.feed_context,
-                            "main",
-                          )
-                        }
-                        onDelete={() =>
-                          handleDelete(feedItem.source_id, feedItem.type)
-                        }
-                        onEdit={() => {
-                          if (feedItem.type === "gym_sessions") {
-                            router.push(`/gym/gym/${feedItem.source_id}/edit`);
-                          } else {
-                            setEditingItem(feedItem);
-                          }
-                        }}
-                      />
-                    </div>
-                  );
-                })}
-                {isFetchingNextPage && (
+                {socialFeed.items.map((item) => (
+                  <div className="mt-4" key={item.id}>
+                    <SocialFeedCard
+                      item={item}
+                      onToggleLike={() => toggleLike(item.id)}
+                      onExpand={() => setOpenSocialItem({ item, scrollToComments: false })}
+                      onOpenComments={() => setOpenSocialItem({ item, scrollToComments: true })}
+                    />
+                  </div>
+                ))}
+
+                {socialFeed.isFetchingNextPage && (
                   <div className="flex flex-col gap-2 items-center mt-10 font-body">
                     <p>{t("feed.loadingMore")}</p>
                     <Spinner />
                   </div>
                 )}
 
-                {hasNextPage && <div ref={loadMoreRef} className="h-20"></div>}
+                {socialFeed.hasNextPage && <div ref={socialLoadMoreRef} className="h-20"></div>}
 
-                {!hasNextPage && (data?.pages.length ?? 0) > 1 && (
+                {!socialFeed.hasNextPage && socialFeed.items.length > 0 && (
                   <p className="text-center justify-center mt-10 text-gray-300 font-body">
                     {t("feed.noMoreSessions")}
                   </p>
@@ -176,6 +287,7 @@ export default function SessionFeed() {
           </>
         )}
 
+        {/* ─── Personal feed expanded modals ─── */}
         {expandedItem && (
           <Modal
             onClose={() => { setExpandedItem(null); setHasUnsavedExpandedChanges(false); }}
@@ -231,6 +343,10 @@ export default function SessionFeed() {
 
             {expandedItem.type === "weight" && (
               <WeightSession {...expandedItem} />
+            )}
+
+            {expandedItem.type === "tutorial" && (
+              <TutorialSession />
             )}
 
             {expandedItem.type === "todo_lists" && (
@@ -356,6 +472,33 @@ export default function SessionFeed() {
             )}
           </Modal>
         )}
+
+        {/* ─── Social post modal (details + comments) ─── */}
+        {openSocialItem && (
+          <SocialPostModal
+            item={openSocialItem.item}
+            onClose={() => setOpenSocialItem(null)}
+            onToggleLike={() => toggleLike(openSocialItem.item.id)}
+            scrollToComments={openSocialItem.scrollToComments}
+            isLoadingSession={
+              openSocialItem.item.type === "gym_sessions" ? isLoadingFriendGym : isLoadingFriendActivity
+            }
+            sessionError={
+              openSocialItem.item.type === "gym_sessions" ? !!friendGymError : !!friendActivityError
+            }
+            sessionContent={
+              <>
+                {openSocialItem.item.type === "gym_sessions" && friendGymSession && (
+                  <GymSession {...friendGymSession} readOnly />
+                )}
+                {openSocialItem.item.type === "activity_sessions" && friendActivitySession && (
+                  <ActivitySession {...friendActivitySession} feed_context="feed" />
+                )}
+              </>
+            }
+          />
+        )}
+
       </div>
     </div>
   );

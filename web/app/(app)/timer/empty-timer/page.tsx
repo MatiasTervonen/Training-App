@@ -80,13 +80,16 @@ export default function TimerPage() {
     stopAlarmAudio();
   };
 
+  const activeSession = useTimerStore((s) => s.activeSession);
+
   useEffect(() => {
+    if (activeSession?.type === "habit") return;
     if (alarmSoundPlaying) {
       playAlarmAudio();
     } else {
       stopAlarmAudio();
     }
-  }, [alarmSoundPlaying]);
+  }, [alarmSoundPlaying, activeSession?.type]);
 
   const showTimerUI = isCancelling || totalDuration > 0;
 
@@ -109,9 +112,9 @@ export default function TimerPage() {
 
               <Timer
                 className={`flex-col items-center justify-center w-full  ${
-                  alarmFired ? "animate-pulse" : ""
+                  alarmFired && activeSession?.type !== "habit" ? "animate-pulse" : ""
                 }`}
-                alarmStyle={alarmFired}
+                alarmStyle={alarmFired && activeSession?.type !== "habit"}
               />
 
               <div className="w-full bg-gray-700 h-5 rounded-full overflow-hidden mt-5">

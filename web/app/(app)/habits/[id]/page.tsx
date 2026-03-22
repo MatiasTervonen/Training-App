@@ -116,7 +116,8 @@ export default function HabitDetailPage() {
   }
 
   return (
-    <div className="page-padding min-h-full max-w-md mx-auto">
+    <div className="page-padding min-h-full max-w-md mx-auto flex flex-col justify-between">
+      <div>
       <h1 className="text-center mb-6 text-2xl">{habit.name}</h1>
 
       {/* Stats */}
@@ -173,11 +174,10 @@ export default function HabitDetailPage() {
         />
       </div>
 
+      </div>
+
       {/* Actions */}
-      <div className="flex flex-col gap-3">
-        <LinkButton href={`/habits/${id}/history`}>
-          {t("habits.seeFullHistory")}
-        </LinkButton>
+      <div className="flex flex-col gap-3 mt-6">
         <LinkButton href={`/habits/edit?id=${id}`}>
           {t("habits.editHabit")}
         </LinkButton>

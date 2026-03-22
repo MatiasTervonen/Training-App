@@ -24,12 +24,13 @@ export default function ActiveSessionPopup() {
   } = useTimerStore();
 
   useEffect(() => {
+    if (activeSession?.type === "habit") return;
     if (alarmSoundPlaying) {
       playAlarmAudio();
     } else {
       stopAlarmAudio();
     }
-  }, [alarmSoundPlaying]);
+  }, [alarmSoundPlaying, activeSession?.type]);
 
   const handleStopTimer = () => {
     setAlarmSoundPlaying(false);

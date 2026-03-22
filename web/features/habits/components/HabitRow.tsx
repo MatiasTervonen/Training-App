@@ -132,7 +132,7 @@ export default function HabitRow({
   // Steps habit — read-only
   if (habit.type === "steps") {
     const targetSteps = habit.target_value ?? 0;
-    const currentSteps = log?.accumulated_seconds ?? 0; // steps stored in accumulated_seconds
+    const currentSteps = completed ? targetSteps : (log?.accumulated_seconds ?? 0);
     const progress = targetSteps > 0 ? Math.min(currentSteps / targetSteps, 1) : 0;
 
     return (

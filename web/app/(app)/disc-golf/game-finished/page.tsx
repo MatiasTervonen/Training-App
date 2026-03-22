@@ -1,13 +1,29 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import { clearLocalStorage } from "@/features/disc-golf/components/ClearLocalStorage";
 import SaveButton from "@/components/buttons/save-button";
 import { useRouter } from "next/navigation";
 
+function getInitialHoles() {
+  if (typeof window === "undefined") return [];
+  const dataJSON = localStorage.getItem("holes");
+  return dataJSON ? JSON.parse(dataJSON) : [];
+}
+
+function getInitialTime() {
+  if (typeof window === "undefined") return "N/A";
+  const endTime = localStorage.getItem("finalTime");
+  if (!endTime) return "N/A";
+  const totalSeconds = parseInt(endTime, 10);
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+}
+
 export default function GameFinished() {
-  const [holes, setHoles] = useState<
+  const [holes] = useState<
     {
       hole_number: number;
       par: number;
@@ -21,31 +37,9 @@ export default function GameFinished() {
         c2attempted: boolean;
       }[];
     }[]
-  >([]);
-  const [time, setTime] = useState("N/A");
+  >(getInitialHoles);
+  const [time] = useState(getInitialTime);
   const router = useRouter();
-
-  useEffect(() => {
-    const dataJSON = localStorage.getItem("holes");
-    if (dataJSON) {
-      setHoles(JSON.parse(dataJSON));
-    }
-
-    const endTime = localStorage.getItem("finalTime");
-
-    if (endTime) {
-      const totalSeconds = parseInt(endTime, 10);
-      const minutes = Math.floor(totalSeconds / 60);
-      const seconds = totalSeconds % 60;
-
-      setTime(
-        `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(
-          2,
-          "0"
-        )}`
-      );
-    }
-  }, []);
 
   const finishGame = async () => {
     clearLocalStorage();

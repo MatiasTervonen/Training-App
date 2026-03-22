@@ -235,7 +235,7 @@ export default function ExerciseDropdown({
                 );
               }}
               renderSectionHeader={({ section: { title } }) => (
-                <AppText className="text-center text-base bg-blue-600 py-0.5">
+                <AppText className="text-center text-base bg-blue-500/20 border-y border-blue-500/40 py-0.5">
                   {title}
                 </AppText>
               )}

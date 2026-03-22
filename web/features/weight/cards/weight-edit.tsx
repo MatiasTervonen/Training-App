@@ -23,7 +23,7 @@ type WeightPayload = {
   weight: number;
 };
 
-export default function EditWeight({ weight, onClose, onSave, onDirtyChange }: Props) {
+export default function EditWeight({ weight, onSave, onDirtyChange }: Props) {
   const { t } = useTranslation("weight");
   const payload = weight.extra_fields as unknown as WeightPayload;
 
@@ -57,7 +57,7 @@ export default function EditWeight({ weight, onClose, onSave, onDirtyChange }: P
 
       onSave(updatedFeedItem as FeedItemUI);
     },
-    [weight.source_id, onSave]
+    [weight.source_id, onSave, t]
   );
 
   const { status, hasPendingChanges } = useAutoSave({

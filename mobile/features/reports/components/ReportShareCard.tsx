@@ -70,6 +70,7 @@ function FeatureCard({
   titleFontSize?: number;
 }) {
   const { t } = useTranslation("reports");
+  const { t: tActivities } = useTranslation("activities");
   const featureData = data[feature];
   if (!featureData) return null;
 
@@ -104,6 +105,7 @@ function FeatureCard({
     }
     case "activities": {
       const d = featureData as ActivitiesReportData;
+      if (!d.by_activity || d.by_activity.length === 0) return null;
       return (
         <View
           className="flex-1 border rounded-lg"
@@ -119,11 +121,29 @@ function FeatureCard({
           >
             {label}
           </AppText>
-          <ShareStatRow label={t("reports.expanded.sessions")} value={String(d.session_count)} theme={theme} fontSize={fontSize} />
-          <ShareStatRow label={t("reports.expanded.totalDistance")} value={formatMeters(d.total_distance_meters)} theme={theme} fontSize={fontSize} />
-          <ShareStatRow label={t("reports.expanded.totalDuration")} value={formatDuration(d.total_duration)} theme={theme} fontSize={fontSize} />
-          <ShareStatRow label={t("reports.expanded.totalCalories")} value={String(d.total_calories)} theme={theme} fontSize={fontSize} />
-          <ShareStatRow label={t("reports.expanded.totalSteps")} value={d.total_steps.toLocaleString()} theme={theme} fontSize={fontSize} />
+          {d.by_activity.map((activity) => {
+            const name = activity.activity_slug
+              ? tActivities(`activities.activityNames.${activity.activity_slug}`, {
+                  defaultValue: activity.activity_name,
+                })
+              : activity.activity_name;
+            return (
+              <View key={activity.activity_slug ?? activity.activity_name} style={{ marginBottom: 8 }}>
+                <AppText style={{ fontSize: fontSize, color: theme.colors.textPrimary, marginBottom: 4 }}>
+                  {name}
+                </AppText>
+                <ShareStatRow label={t("reports.expanded.sessions")} value={String(activity.session_count)} theme={theme} fontSize={fontSize} />
+                <ShareStatRow label={t("reports.expanded.totalDuration")} value={formatDuration(activity.total_duration)} theme={theme} fontSize={fontSize} />
+                {activity.total_distance_meters != null && activity.total_distance_meters > 0 && (
+                  <ShareStatRow label={t("reports.expanded.totalDistance")} value={formatMeters(activity.total_distance_meters)} theme={theme} fontSize={fontSize} />
+                )}
+                <ShareStatRow label={t("reports.expanded.totalCalories")} value={String(activity.total_calories)} theme={theme} fontSize={fontSize} />
+                {activity.total_steps != null && activity.total_steps > 0 && (
+                  <ShareStatRow label={t("reports.expanded.totalSteps")} value={activity.total_steps.toLocaleString()} theme={theme} fontSize={fontSize} />
+                )}
+              </View>
+            );
+          })}
         </View>
       );
     }

@@ -117,20 +117,20 @@ export default function ActivityDropdown({
   };
 
   return (
-    <div className="flex flex-col px-2 w-full h-full z-50 pb-5">
-      <div className="flex flex-col mt-12 px-20">
+    <div className="flex flex-col w-full h-full z-50 pb-5">
+      <div className="flex flex-col mt-8 px-4">
         <input
           type="text"
           value={searchQuery}
           placeholder={t("activities.activityDropdown.searchPlaceholder")}
           autoComplete="off"
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="p-2 rounded-md border-[1.5px] border-gray-100 z-10 placeholder-gray-500 bg-gray-900 hover:border-blue-500 focus:outline-none focus:border-green-300"
+          className="p-2 rounded-md border border-gray-100 z-10 placeholder-gray-500 bg-gray-900 font-body focus:outline-none focus:border-green-300"
         />
       </div>
 
       <div
-        className="w-full overflow-y-auto border rounded-md shadow-md
+        className="w-full overflow-y-auto border rounded-md
                 bg-slate-900 border-gray-100 touch-pan-y mt-10 h-full"
       >
         {isError ? (
@@ -151,22 +151,26 @@ export default function ActivityDropdown({
         ) : (
           sections.map((section) => (
             <div key={section.title}>
-              <div className="text-center bg-blue-600 py-1">
+              <div className="text-center bg-blue-500/20 border-y border-blue-500/40 py-0.5">
                 {section.title}
               </div>
-              {section.data.map((item) => (
+              {section.data.map((item, index) => (
                 <button
                   key={item.id}
                   onClick={() => handleSelectActivity(item)}
-                  className={`w-full text-left px-4 py-3 border-b border-gray-600 transition-colors ${
-                    selectedActivity?.id === item.id ? "bg-blue-800" : "hover:bg-slate-800"
+                  className={`w-full text-left px-4 py-2 border-b border-gray-700 transition-colors hover:bg-slate-700 ${
+                    selectedActivity?.id === item.id
+                      ? "bg-indigo-500/20"
+                      : index % 2 === 1
+                        ? "bg-slate-800/50"
+                        : ""
                   }`}
                 >
                   <div className="flex justify-between items-center">
-                    <span className=" text-gray-100 truncate mr-4">
+                    <span className="font-body text-gray-200 truncate mr-4">
                       {getActivityName(item)}
                     </span>
-                    <span className="text-gray-400">
+                    <span className="text-gray-300">
                       {getCategoryName(item)}
                     </span>
                   </div>

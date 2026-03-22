@@ -123,7 +123,7 @@ export default function ExerciseDropdownEdit({ onSelect }: Props) {
           </div>
         ) : (
           <>
-            <p className="text-center bg-blue-600 py-0.5">
+            <p className="text-center bg-blue-500/20 border-y border-blue-500/40 py-0.5">
               {t("gym.exerciseDropdownEdit.myExercises")}
             </p>
             {(searchQuery.length > 0 ? filteredExercises : allExercises).map(

@@ -19,7 +19,6 @@ export default function ActiveSessionPopup() {
   const {
     activeSession,
     alarmFired,
-    totalDuration,
     alarmSoundPlaying,
     setAlarmSoundPlaying,
   } = useTimerStore();
@@ -45,7 +44,7 @@ export default function ActiveSessionPopup() {
 
   if (
     pathname === "/timer/empty-timer" &&
-    activeSession.type === t("timer:timer.title")
+    (activeSession.type === t("timer:timer.title") || activeSession.type === "timer")
   ) {
     return null;
   }
@@ -54,9 +53,6 @@ export default function ActiveSessionPopup() {
     return null;
   }
 
-  if (pathname === "/activities/start-activity" && activeSession.path === "/activities/start-activity") {
-    return null;
-  }
 
   if (
     pathname === "/timer/start-stopwatch" &&
@@ -72,25 +68,21 @@ export default function ActiveSessionPopup() {
         alarmFired ? "bg-red-500 animate-pulse" : ""
       }`}
     >
-      <div className="flex flex-row justify-between max-w-3xl items-center mx-auto">
-        <div className="ml-10">
-          <p className="pb-2 text-start text-gray-100">{activeSession.label}</p>
-          <div className="flex gap-5 text-gray-300 text-start items-center">
-            <Timer />
-            <p>{activeSession.type}</p>
-            {alarmFired && <p>ALARM!</p>}
-            {activeSession.type === t("timer:timer.title") && totalDuration && (
-              <p className="text-nowrap">
-                {Math.floor(totalDuration / 60)} min {totalDuration % 60} sec
-              </p>
-            )}
-          </div>
-        </div>
-        <div className="mr-5">
-          <Link onClick={handleStopTimer} href={activeSession.path}>
-            <SquareArrowRight size={40} className="text-gray-100" />
-          </Link>
-        </div>
+      <div className="flex flex-row items-center justify-between max-w-3xl mx-auto gap-5 px-5">
+        <Timer textClassName="text-2xl" />
+        {activeSession.label && (
+          <p className="text-lg text-gray-100 truncate flex-1 text-center">
+            {activeSession.label}
+          </p>
+        )}
+        {alarmFired && (
+          <p className="text-gray-100">
+            {t("timer:timer.notification.alarm", "ALARM!")}
+          </p>
+        )}
+        <Link onClick={handleStopTimer} href={activeSession.path}>
+          <SquareArrowRight size={40} className="text-gray-100" />
+        </Link>
       </div>
     </div>
   );

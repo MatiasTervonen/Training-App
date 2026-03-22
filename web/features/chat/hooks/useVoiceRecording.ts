@@ -4,6 +4,12 @@ import { useState, useRef, useCallback, useEffect } from "react";
 
 const MAX_VOICE_DURATION_MS = 30 * 60 * 1000; // 30 min
 
+type VoiceRecordingResult = {
+  audioFile: File;
+  audioUrl: string;
+  durationMs: number;
+};
+
 type VoiceRecordingState = {
   isRecording: boolean;
   durationMs: number;
@@ -11,7 +17,7 @@ type VoiceRecordingState = {
   audioUrl: string | null;
 };
 
-export function useVoiceRecording() {
+export function useVoiceRecording(onComplete?: (result: VoiceRecordingResult) => void) {
   const [state, setState] = useState<VoiceRecordingState>({
     isRecording: false,
     durationMs: 0,
@@ -23,6 +29,11 @@ export function useVoiceRecording() {
   const chunksRef = useRef<Blob[]>([]);
   const startTimeRef = useRef<number>(0);
   const timerRef = useRef<ReturnType<typeof setInterval>>(undefined);
+
+  const onCompleteRef = useRef(onComplete);
+  useEffect(() => {
+    onCompleteRef.current = onComplete;
+  }, [onComplete]);
 
   const cleanup = useCallback(() => {
     if (timerRef.current) {
@@ -88,6 +99,8 @@ export function useVoiceRecording() {
           audioFile: file,
           audioUrl: url,
         });
+
+        onCompleteRef.current?.({ audioFile: file, audioUrl: url, durationMs: finalDuration });
 
         stream.getTracks().forEach((track) => track.stop());
         if (timerRef.current) {

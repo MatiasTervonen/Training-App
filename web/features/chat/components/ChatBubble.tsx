@@ -3,12 +3,13 @@
 import { useState, useRef, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Check, CheckCheck, Dumbbell, Activity, MapPin } from "lucide-react";
-import { ChatMessage } from "@/types/chat";
+import { ChatMessage, LocationShareContent } from "@/types/chat";
 import ReplyPreview from "@/features/chat/components/ReplyPreview";
 import ReactionPills from "@/features/chat/components/ReactionPills";
 import LinkPreviewCard from "@/features/chat/components/LinkPreviewCard";
 import MessageContextMenu from "@/features/chat/components/MessageContextMenu";
 import ChatMediaBubble from "@/features/chat/components/ChatMediaBubble";
+import ChatLocationCard from "@/features/chat/components/ChatLocationCard";
 
 type ChatBubbleProps = {
   message: ChatMessage;
@@ -184,6 +185,17 @@ function MessageContent({
   }
 
   if (message.message_type === "location") {
+    let locationData: LocationShareContent | null = null;
+    try {
+      locationData = JSON.parse(message.content ?? "{}");
+    } catch {
+      // invalid JSON
+    }
+
+    if (locationData && locationData.lat != null && locationData.lng != null) {
+      return <ChatLocationCard data={locationData} />;
+    }
+
     return (
       <div className="flex items-center gap-2 font-body text-sm text-gray-400">
         <MapPin size={16} />
@@ -219,6 +231,7 @@ export default function ChatBubble({
 
   const isDeleted = !!message.deleted_at;
   const isSessionShare = message.message_type === "session_share";
+  const isLocation = message.message_type === "location";
   const isMedia =
     message.message_type === "image" || message.message_type === "video";
   const hasTextContent = message.message_type === "text" && !!message.content;
@@ -267,7 +280,7 @@ export default function ChatBubble({
         } ${
           isDeleted
             ? "px-3 py-1.5 bg-slate-800/50"
-            : isSessionShare || isMedia
+            : isSessionShare || isMedia || isLocation
               ? "p-0 overflow-hidden"
               : isOwn
                 ? "px-3 py-1.5 bg-cyan-800 rounded-br-sm"

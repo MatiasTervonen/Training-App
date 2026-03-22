@@ -10,6 +10,8 @@ import { useQuery } from "@tanstack/react-query";
 import { getWeight } from "@/database/weight/get-weight";
 import WeightFeedChart from "@/features/weight/components/WeightFeedChart";
 import Spinner from "@/components/spinner";
+import { getWeightMedia } from "@/database/media/get-weight-media";
+import SessionMediaGallery from "@/components/media/SessionMediaGallery";
 
 type weightPayload = {
   weight: number;
@@ -22,6 +24,11 @@ export default function WeightSession(weight: FeedItemUI) {
 
   const weightUnit =
     useUserStore((state) => state.preferences?.weight_unit) || "kg";
+
+  const { data: media } = useQuery({
+    queryKey: ["weight-media", weight.source_id],
+    queryFn: () => getWeightMedia(weight.source_id),
+  });
 
   const {
     data: weightData,
@@ -46,6 +53,14 @@ export default function WeightSession(weight: FeedItemUI) {
               {payload.weight} {weightUnit}
             </p>
           </div>
+
+          {media && (
+            <SessionMediaGallery
+              images={media.images}
+              videos={media.videos}
+              voiceRecordings={media.voiceRecordings}
+            />
+          )}
         </div>
 
         {isLoading ? (

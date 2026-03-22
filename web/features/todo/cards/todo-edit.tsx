@@ -20,14 +20,16 @@ type Props = {
   onDirtyChange?: (dirty: boolean) => void;
 };
 
-export default function EditTodo({ todo_session, onClose, onSave, onDirtyChange }: Props) {
+export default function EditTodo({ todo_session, onSave, onDirtyChange }: Props) {
   const { t } = useTranslation("todo");
   const [sessionData, setSessionData] = useState(todo_session);
   const [deletedIds, setDeletedIds] = useState<string[]>([]);
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
 
   const deletedIdsRef = useRef(deletedIds);
-  deletedIdsRef.current = deletedIds;
+  useEffect(() => {
+    deletedIdsRef.current = deletedIds;
+  }, [deletedIds]);
 
   const handleTitleChange = (value: string) => {
     setSessionData((prev) => ({ ...prev, title: value }));

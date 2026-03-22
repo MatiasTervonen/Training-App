@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import Image from "next/image";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ChevronDown } from "lucide-react";
 import { ChatMessage } from "@/types/chat";
 import { useMessages } from "@/features/chat/hooks/useMessages";
 import { useChatRealtime } from "@/features/chat/hooks/useChatRealtime";
@@ -41,10 +41,11 @@ export default function ChatView({ conversationId, otherUser, isActive, onBack }
   const [forwardingMessage, setForwardingMessage] = useState<ChatMessage | null>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const messageListRef = useRef<HTMLDivElement>(null);
+  const [showScrollDown, setShowScrollDown] = useState(false);
 
   // Hooks
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useMessages(conversationId);
-  const { isOtherTyping, sendTyping, stopTyping, broadcastRead } = useTypingIndicator(conversationId);
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useMessages(conversationId);
+  const { isOtherTyping, sendTyping, stopTyping, broadcastRead } = useTypingIndicator(conversationId, currentUserId);
   const markRead = useMarkRead();
   const sendMessage = useSendMessage(conversationId);
   const sendMediaMessage = useSendMediaMessage(conversationId);
@@ -146,6 +147,17 @@ export default function ChatView({ conversationId, otherUser, isActive, onBack }
     );
   }, [forwardMessage, forwardingMessage, t]);
 
+  const handleScroll = useCallback(() => {
+    const el = messageListRef.current;
+    if (!el) return;
+    // flex-col-reverse: scrollTop is 0 at bottom, negative when scrolled up
+    setShowScrollDown(el.scrollTop < -200);
+  }, []);
+
+  const scrollToBottom = useCallback(() => {
+    messageListRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
+
   const scrollToMessage = useCallback((messageId: string) => {
     const el = document.getElementById(`msg-${messageId}`);
     if (el) {
@@ -175,9 +187,11 @@ export default function ChatView({ conversationId, otherUser, isActive, onBack }
       </div>
 
       {/* Message list */}
+      <div className="relative flex-1">
       <div
         ref={messageListRef}
-        className="flex-1 flex flex-col-reverse overflow-y-auto"
+        onScroll={handleScroll}
+        className="absolute inset-0 flex flex-col-reverse overflow-y-auto"
       >
         {/* Typing indicator */}
         {isOtherTyping && <TypingIndicator />}
@@ -215,6 +229,17 @@ export default function ChatView({ conversationId, otherUser, isActive, onBack }
             </div>
           )}
         </div>
+      </div>
+
+      {/* Scroll to bottom button */}
+      {showScrollDown && (
+        <button
+          onClick={scrollToBottom}
+          className="absolute bottom-4 right-4 z-10 flex items-center justify-center w-9 h-9 rounded-full bg-slate-700 hover:bg-slate-600 border border-slate-600 shadow-lg transition-colors"
+        >
+          <ChevronDown size={20} className="text-gray-200" />
+        </button>
+      )}
       </div>
 
       {/* Input */}

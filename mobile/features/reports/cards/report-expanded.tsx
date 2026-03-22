@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { View, ScrollView, ActivityIndicator } from "react-native";
+import { View, ScrollView, ActivityIndicator, NativeSyntheticEvent, NativeScrollEvent } from "react-native";
 import AppText from "@/components/AppText";
 import ErrorMessage from "@/components/ErrorMessage";
 import PageContainer from "@/components/PageContainer";
@@ -7,6 +7,7 @@ import AnimatedButton from "@/components/buttons/animatedButton";
 import ReportSection from "@/features/reports/components/ReportSection";
 import ReportShareModal from "@/features/reports/components/ReportShareModal";
 import useGeneratedReport from "@/features/reports/hooks/useGeneratedReport";
+import { useFullScreenModalScroll } from "@/components/FullScreenModal";
 import { FeedItemUI } from "@/types/session";
 import { ReportFeature } from "@/types/report";
 import { formatDateShort } from "@/lib/formatDate";
@@ -28,6 +29,13 @@ type ReportSessionProps = {
 export default function ReportSession({ item }: ReportSessionProps) {
   const { t } = useTranslation("reports");
   const [shareVisible, setShareVisible] = useState(false);
+  const modalScroll = useFullScreenModalScroll();
+
+  const handleScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+    if (modalScroll) {
+      modalScroll.innerScrollY.value = e.nativeEvent.contentOffset.y;
+    }
+  };
 
   const payload = item.extra_fields as ReportPayload;
 
@@ -55,7 +63,7 @@ export default function ReportSession({ item }: ReportSessionProps) {
   const dateRange = `${formatDateShort(report.period_start)} – ${formatDateShort(report.period_end)}`;
 
   return (
-    <ScrollView showsVerticalScrollIndicator={false}>
+    <ScrollView showsVerticalScrollIndicator={false} onScroll={handleScroll} scrollEventThrottle={16}>
       <PageContainer className="mb-10">
         <AppText className="text-gray-400 text-center mb-2 text-sm">
           {dateRange}

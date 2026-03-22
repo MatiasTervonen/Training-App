@@ -204,8 +204,12 @@ function ExerciseHistoryContent({
                           <View
                             key={setIndex}
                             className={`border-b border-gray-700 flex-row items-center ${
-                              set.rpe === "Failure" ? "bg-red-500" : ""
-                            } ${set.rpe === "Warm-up" ? "bg-blue-500" : ""}`}
+                              set.rpe === "Failure"
+                                ? "bg-red-500/15"
+                                : set.rpe === "Warm-up"
+                                  ? "bg-blue-500/15"
+                                  : ""
+                            }`}
                           >
                             <View className="flex-1 items-center">
                               <AppText className="p-2">

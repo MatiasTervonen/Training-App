@@ -100,7 +100,7 @@ export default function GymForm({
     setHasLoadedDraft,
   });
 
-  const { setActiveSession, startTimer, stopTimer, elapsedTime } =
+  const { setActiveSession, startSession: startCountUp, stopTimer, elapsedTime } =
     useTimerStore();
 
   const {
@@ -128,8 +128,8 @@ export default function GymForm({
       path: "/gym/gym",
     });
 
-    startTimer(0);
-  }, [sessionTitle, setActiveSession, startTimer, t]);
+    startCountUp();
+  }, [sessionTitle, setActiveSession, startCountUp, t]);
 
   useEffect(() => {
     const flag = localStorage.getItem("startedFromTemplate");
@@ -351,7 +351,7 @@ export default function GymForm({
             <div className="flex gap-3 w-full px-2 my-5">
               <div className="relative w-full">
                 <select
-                  className="appearance-none w-full px-10 bg-blue-800 py-2 rounded-md shadow-xl border-[1.5px] border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700"
+                  className="appearance-none w-full px-10 btn-base text-lg bg-slate-800"
                   value={exerciseType}
                   onChange={(e) => {
                     const type = e.target.value;
@@ -363,10 +363,10 @@ export default function GymForm({
                     }
                   }}
                 >
-                  <option value="Normal">
+                  <option value="Normal" className="bg-slate-800 text-gray-100">
                     {t("gym.gymForm.exerciseTypeSelector.normal")}
                   </option>
-                  <option value="Super-Set">
+                  <option value="Super-Set" className="bg-slate-800 text-gray-100">
                     {t("gym.gymForm.exerciseTypeSelector.superSet")}
                   </option>
                 </select>
@@ -379,7 +379,7 @@ export default function GymForm({
                   startExercise();
                   setIsExerciseModalOpen(false);
                 }}
-                className="w-full px-2 bg-blue-800 py-2 rounded-md shadow-xl border-[1.5px] border-blue-500 text-gray-100 text-lg cursor-pointer hover:bg-blue-700"
+                className="w-full px-2 btn-add text-lg"
               >
                 {exerciseType === "Super-Set"
                   ? t("gym.gymForm.exerciseTypeButton.addSuperSet")
@@ -404,7 +404,7 @@ export default function GymForm({
                 setNormalExercises([emptyExerciseEntry]);
                 setIsExerciseModalOpen(true);
               }}
-              className="w-full px-10 bg-blue-800 py-2 rounded-md shadow-xl border-[1.5px] border-blue-500 text-lg cursor-pointer hover:bg-blue-700 hover:scale-105 transition-transform duration-200"
+              className="w-full px-10 btn-add text-lg"
             >
               {t("gym.gymForm.addExerciseButtonLabel")}
               <Plus className=" inline ml-2" size={20} />

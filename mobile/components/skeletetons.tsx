@@ -11,7 +11,7 @@ export const FeedSkeleton = ({
     {[...Array(count)].map((_, i) => (
       <View
         key={i}
-        className="items-center justify-center bg-slate-800/30 mb-5 rounded-md border border-slate-700 min-h-[160px] animate-pulse mx-4"
+        className="items-center justify-center bg-slate-800/30 mb-5 rounded-md border border-slate-700 min-h-40 animate-pulse mx-4"
       >
         <ActivityIndicator size="small" color="#6b7280" />
       </View>

@@ -1,22 +1,25 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
+
+function readHolesFromStorage() {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = localStorage.getItem("holes");
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
 
 export default function DiscGolfScores() {
-  const [holes, setHoles] = useState<
+  const [holes] = useState<
     {
       hole_number: number;
       par: number;
       scores: { playerName: string; strokes: number }[];
     }[]
-  >([]);
-
-  useEffect(() => {
-    const dataJSON = localStorage.getItem("holes");
-    if (dataJSON) {
-      setHoles(JSON.parse(dataJSON));
-    }
-  }, []);
+  >(readHolesFromStorage);
 
   return (
       <div className="page-padding">

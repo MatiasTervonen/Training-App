@@ -5,7 +5,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/utils/supabase/client";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 
-export function useTypingIndicator(conversationId: string) {
+export function useTypingIndicator(conversationId: string, currentUserId: string | null) {
   const queryClient = useQueryClient();
   const [isOtherTyping, setIsOtherTyping] = useState(false);
   const channelRef = useRef<RealtimeChannel | null>(null);
@@ -45,16 +45,16 @@ export function useTypingIndicator(conversationId: string) {
     const now = Date.now();
     if (now - lastSentRef.current < 2000) return;
     lastSentRef.current = now;
-    channelRef.current?.send({ type: "broadcast", event: "typing", payload: {} });
-  }, []);
+    channelRef.current?.send({ type: "broadcast", event: "typing", payload: { userId: currentUserId } });
+  }, [currentUserId]);
 
   const stopTyping = useCallback(() => {
-    channelRef.current?.send({ type: "broadcast", event: "stop_typing", payload: {} });
-  }, []);
+    channelRef.current?.send({ type: "broadcast", event: "stop_typing", payload: { userId: currentUserId } });
+  }, [currentUserId]);
 
   const broadcastRead = useCallback(() => {
-    channelRef.current?.send({ type: "broadcast", event: "read", payload: {} });
-  }, []);
+    channelRef.current?.send({ type: "broadcast", event: "read", payload: { userId: currentUserId } });
+  }, [currentUserId]);
 
   return { isOtherTyping, sendTyping, stopTyping, broadcastRead };
 }

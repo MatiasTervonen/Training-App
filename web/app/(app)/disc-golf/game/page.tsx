@@ -14,25 +14,95 @@ import SwipeWrapper from "@/features/disc-golf/components/SwipeWrapper";
 import StatsTracker from "@/features/disc-golf/components/StatsTracker";
 import BaseButton from "@/components/buttons/BaseButton";
 
-export default function DiscGolfGame() {
-  const [length, setLength] = useState(""); // input value
-  const [par, setPar] = useState(3); // input value
-  const [courseName, setCourseName] = useState("");
-  const [players, setPlayers] = useState<Player[]>([]);
-  const [playerStats, setPlayerStats] = useState<PlayerStats>({});
-  const [trackStats, setTrackStats] = useState(false);
-  const router = useRouter();
-  const [totalHoles, setTotalHoles] = useState<number>(18); // default fallback
-  const [holeHistory, setHoleHistory] = useState<HoleData[]>([]);
-  const [viewingHoleNumber, setViewingHoleNumber] = useState<number>(() => {
-    if (typeof window === "undefined") return 1;
-    const saved = localStorage.getItem("viewingHoleNumber");
-    return saved ? parseInt(saved) : 1;
-  });
+function readDiscGolfState() {
+  if (typeof window === "undefined") return null;
+  try {
+    const setup = localStorage.getItem("setupData");
+    const savedHoles = localStorage.getItem("holes");
+    const currentHole = localStorage.getItem("currentHole");
+    const savedViewingHole = localStorage.getItem("viewingHoleNumber");
+    const trackStatsStr = localStorage.getItem("trackStats");
+    const numHoles = localStorage.getItem("numHoles");
 
-  const [previousHoleNumber, setPreviousHoleNumber] = useState<number | null>(
-    null
+    const parsedSetup = setup ? JSON.parse(setup) : null;
+    const parsedHoles: HoleData[] = savedHoles ? JSON.parse(savedHoles) : [];
+    const parsedTrackStats = trackStatsStr ? JSON.parse(trackStatsStr) : false;
+    const holeToLoad = parseInt(currentHole || savedViewingHole || "1");
+    const parsedNumHoles = numHoles ? parseInt(numHoles) : 18;
+
+    return {
+      courseName: (parsedSetup?.courseName ?? "") as string,
+      players: (parsedSetup?.players ?? []) as Player[],
+      holeHistory: parsedHoles,
+      trackStats: parsedTrackStats as boolean,
+      viewingHoleNumber: holeToLoad,
+      totalHoles: parsedNumHoles,
+    };
+  } catch {
+    clearLocalStorage();
+    return null;
+  }
+}
+
+function computeHoleFormState(
+  holeHistory: HoleData[],
+  viewingHoleNumber: number,
+  players: Player[]
+): { par: number; length: string; playerStats: PlayerStats } {
+  const holeData = holeHistory.find((h) => h.hole_number === viewingHoleNumber);
+  if (!holeData) {
+    return {
+      par: 3,
+      length: "",
+      playerStats: players.reduce((acc, player) => {
+        acc[player.name] = {
+          strokes: 3,
+          fairwayHit: false,
+          c1made: false,
+          c1attempted: false,
+          c2made: false,
+          c2attempted: false,
+        };
+        return acc;
+      }, {} as PlayerStats),
+    };
+  }
+  const stats: PlayerStats = {};
+  holeData.scores.forEach((s) => {
+    stats[s.playerName] = {
+      strokes: s.strokes,
+      fairwayHit: s.fairwayHit,
+      c1made: s.c1made,
+      c1attempted: s.c1attempted,
+      c2made: s.c2made,
+      c2attempted: s.c2attempted,
+    };
+  });
+  return {
+    par: holeData.par,
+    length: holeData.length?.toString() || "",
+    playerStats: stats,
+  };
+}
+
+export default function DiscGolfGame() {
+  const initialData = readDiscGolfState();
+  const initialHole = computeHoleFormState(
+    initialData?.holeHistory ?? [],
+    initialData?.viewingHoleNumber ?? 1,
+    initialData?.players ?? [],
   );
+
+  const [length, setLength] = useState(initialHole.length);
+  const [par, setPar] = useState(initialHole.par);
+  const [courseName] = useState(initialData?.courseName ?? "");
+  const [players] = useState<Player[]>(initialData?.players ?? []);
+  const [playerStats, setPlayerStats] = useState<PlayerStats>(initialHole.playerStats);
+  const [trackStats] = useState(initialData?.trackStats ?? false);
+  const router = useRouter();
+  const [totalHoles] = useState<number>(initialData?.totalHoles ?? 18);
+  const [holeHistory, setHoleHistory] = useState<HoleData[]>(initialData?.holeHistory ?? []);
+  const [viewingHoleNumber, setViewingHoleNumber] = useState<number>(initialData?.viewingHoleNumber ?? 1);
   const [isSaving, setIsSaving] = useState(false);
 
   const { stopTimer, elapsedTime, activeSession } = useTimerStore();
@@ -42,90 +112,6 @@ export default function DiscGolfGame() {
       router.push("/");
     }
   }, [activeSession, router]);
-
-  useEffect(() => {
-    if (viewingHoleNumber) {
-      localStorage.setItem("viewingHoleNumber", viewingHoleNumber.toString());
-    }
-  }, [viewingHoleNumber]);
-
-  useEffect(() => {
-    if (viewingHoleNumber < 1) {
-      setViewingHoleNumber(1); // Prevent ever rendering hole 0
-      return;
-    }
-
-    if (previousHoleNumber === null || !players.length) {
-      setPreviousHoleNumber(viewingHoleNumber);
-      return;
-    }
-
-    const updatedHole: HoleData = {
-      hole_number: previousHoleNumber,
-      length: parseInt(length),
-      par,
-      scores: players.map((player) => ({
-        playerName: player.name,
-        strokes: playerStats[player.name]?.strokes ?? 0,
-        fairwayHit: playerStats[player.name]?.fairwayHit ?? false,
-        c1made: playerStats[player.name]?.c1made ?? false,
-        c1attempted: playerStats[player.name]?.c1attempted ?? false,
-        c2made: playerStats[player.name]?.c2made ?? false,
-        c2attempted: playerStats[player.name]?.c2attempted ?? false,
-      })),
-    };
-
-    const updatedHistory = [...holeHistory];
-    const existingIndex = updatedHistory.findIndex(
-      (h) => h.hole_number === previousHoleNumber
-    );
-
-    if (existingIndex !== -1) {
-      updatedHistory[existingIndex] = updatedHole;
-    } else {
-      updatedHistory.push(updatedHole);
-    }
-
-    setHoleHistory(updatedHistory);
-    localStorage.setItem("holes", JSON.stringify(updatedHistory));
-
-    setPreviousHoleNumber(viewingHoleNumber);
-  }, [viewingHoleNumber]);
-
-  useEffect(() => {
-    const savedHoles = localStorage.getItem("holes");
-    if (savedHoles) {
-      try {
-        setHoleHistory(JSON.parse(savedHoles));
-      } catch {
-        localStorage.removeItem("holes");
-      }
-    }
-  }, []);
-
-  useEffect(() => {
-    const holeData = holeHistory.find(
-      (h) => h.hole_number === viewingHoleNumber
-    );
-    if (!holeData) return;
-
-    setPar(holeData.par);
-    setLength(holeData.length?.toString() || "");
-
-    const stats: typeof playerStats = {};
-    holeData.scores.forEach((s) => {
-      stats[s.playerName] = {
-        strokes: s.strokes,
-        fairwayHit: s.fairwayHit,
-        c1made: s.c1made,
-        c1attempted: s.c1made || false,
-        c2made: s.c2made,
-        c2attempted: s.c2made || false,
-      };
-    });
-
-    setPlayerStats(stats);
-  }, [viewingHoleNumber]);
 
   const getPlayerTotals = (playerName: string) => {
     const playerHoles = holeHistory.flatMap((hole) =>
@@ -180,90 +166,14 @@ export default function DiscGolfGame() {
     });
   };
 
-  useEffect(() => {
-    const setup = localStorage.getItem("setupData");
-    const savedHoles = localStorage.getItem("holes");
-    const currentHole = localStorage.getItem("currentHole");
-    const savedViewingHole = localStorage.getItem("viewingHoleNumber");
-    const trackStats = localStorage.getItem("trackStats");
-    const numHoles = localStorage.getItem("numHoles");
+  /** Save current hole data and return the updated history */
+  const saveCurrentHole = (): HoleData[] => {
+    if (!players.length) return holeHistory;
 
-    try {
-      if (setup) {
-        const { courseName, players } = JSON.parse(setup);
-        setCourseName(courseName);
-        setPlayers(players);
-      }
-
-      if (savedHoles) {
-        const parsedHoles = JSON.parse(savedHoles);
-        setHoleHistory(parsedHoles);
-      }
-
-      if (trackStats) {
-        setTrackStats(JSON.parse(trackStats));
-      }
-    } catch {
-      // Corrupted localStorage — clear and start fresh
-      clearLocalStorage();
-    }
-
-    const holeToLoad = parseInt(currentHole || savedViewingHole || "1");
-
-    setViewingHoleNumber(holeToLoad);
-    setPreviousHoleNumber(holeToLoad); // <--- ensure this is initialized here
-
-    if (numHoles) {
-      setTotalHoles(parseInt(numHoles));
-    }
-  }, []);
-
-  useEffect(() => {
-    const holeData = holeHistory.find(
-      (h) => h.hole_number === viewingHoleNumber
-    );
-    if (!holeData) {
-      // This is a new hole
-
-      setPar(3);
-      setLength("");
-
-      setPlayerStats(
-        players.reduce((acc, player) => {
-          acc[player.name] = {
-            strokes: 3, // Default to 3 strokes
-            fairwayHit: false,
-            c1made: false,
-            c1attempted: false,
-            c2made: false,
-            c2attempted: false,
-          };
-          return acc;
-        }, {} as PlayerStats)
-      );
-      return;
-    }
-
-    const stats: PlayerStats = {};
-    holeData.scores.forEach((s) => {
-      stats[s.playerName] = {
-        strokes: s.strokes,
-        fairwayHit: s.fairwayHit,
-        c1made: s.c1made,
-        c1attempted: s.c1attempted,
-        c2made: s.c2made,
-        c2attempted: s.c2attempted,
-      };
-    });
-
-    setPlayerStats(stats);
-  }, [holeHistory, viewingHoleNumber, players]);
-
-  const handleFinishGame = async () => {
-    const finalHoleData: HoleData = {
+    const updatedHole: HoleData = {
       hole_number: viewingHoleNumber,
       length: parseInt(length),
-      par: par,
+      par,
       scores: players.map((player) => ({
         playerName: player.name,
         strokes: playerStats[player.name]?.strokes ?? 0,
@@ -275,28 +185,48 @@ export default function DiscGolfGame() {
       })),
     };
 
-    let existingHoles: HoleData[] = [];
-    try {
-      existingHoles = JSON.parse(
-        localStorage.getItem("holes") || "[]"
-      ) as HoleData[];
-    } catch {
-      // If corrupted, use current in-memory state
-      existingHoles = holeHistory;
-    }
-
-    const updatedHoles = [...existingHoles, finalHoleData];
-
-    localStorage.setItem(
-      "holes",
-      JSON.stringify([...existingHoles, finalHoleData])
+    const updatedHistory = [...holeHistory];
+    const existingIndex = updatedHistory.findIndex(
+      (h) => h.hole_number === viewingHoleNumber
     );
 
-    setHoleHistory(updatedHoles);
+    if (existingIndex !== -1) {
+      updatedHistory[existingIndex] = updatedHole;
+    } else {
+      updatedHistory.push(updatedHole);
+    }
+
+    setHoleHistory(updatedHistory);
+    localStorage.setItem("holes", JSON.stringify(updatedHistory));
+    return updatedHistory;
+  };
+
+  /** Save current hole, navigate to a new hole, and load its form state */
+  const navigateToHole = (newHoleNumber: number) => {
+    if (newHoleNumber < 1) return;
+    window.scrollTo(0, 0);
+
+    const updatedHistory = saveCurrentHole();
+    const holeState = computeHoleFormState(updatedHistory, newHoleNumber, players);
+
+    setPar(holeState.par);
+    setLength(holeState.length);
+    setPlayerStats(holeState.playerStats);
+    setViewingHoleNumber(newHoleNumber);
+
+    localStorage.setItem("currentHole", JSON.stringify(newHoleNumber));
+    localStorage.setItem("viewingHoleNumber", newHoleNumber.toString());
+  };
+
+  const handleNextHole = () => navigateToHole(viewingHoleNumber + 1);
+
+  const handlePerviousHole = () => navigateToHole(viewingHoleNumber - 1);
+
+  const handleFinishGame = async () => {
+    const updatedHoles = saveCurrentHole();
 
     const duration = elapsedTime;
-
-    setIsSaving(true); // Start saving
+    setIsSaving(true);
 
     try {
       const response = await fetch("/api/disc-golf/save-golf-session", {
@@ -307,7 +237,7 @@ export default function DiscGolfGame() {
         body: JSON.stringify({
           courseName,
           holes: updatedHoles,
-          isPublic: false, // You can change this based on your app logic
+          isPublic: false,
           type: "disc-golf",
           duration,
         }),
@@ -324,26 +254,6 @@ export default function DiscGolfGame() {
       console.error("Error saving session:", error);
       alert("Failed to save session. Please try again.");
     }
-  };
-
-  const handleNextHole = () => {
-    window.scrollTo(0, 0); // Scroll to top of the page
-    // This triggers the same animation path as a swipe
-    setViewingHoleNumber((prev) => {
-      const nextHole = prev + 1;
-      localStorage.setItem("currentHole", JSON.stringify(nextHole));
-      return nextHole;
-    });
-  };
-
-  const handlePerviousHole = () => {
-    window.scrollTo(0, 0); // Scroll to top of the page
-    // This triggers the same animation path as a swipe
-    setViewingHoleNumber((prev) => {
-      const perviousHole = prev - 1;
-      localStorage.setItem("currentHole", JSON.stringify(perviousHole));
-      return perviousHole;
-    });
   };
 
   const deleteSession = () => {

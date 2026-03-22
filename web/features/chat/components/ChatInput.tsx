@@ -19,8 +19,6 @@ const VIDEO_ACCEPT = "video/mp4,video/quicktime,video/webm";
 const MAX_IMAGE_SIZE = 50 * 1024 * 1024; // 50 MB raw
 const MAX_VIDEO_SIZE = 100 * 1024 * 1024; // 100 MB
 const MAX_VIDEO_DURATION_MS = 5 * 60 * 1000; // 5 min
-const MAX_VOICE_DURATION_MS = 30 * 60 * 1000; // 30 min
-
 type PendingMedia = {
   type: "image" | "video" | "voice";
   file: File;
@@ -60,7 +58,15 @@ export default function ChatInput({
   const imageInputRef = useRef<HTMLInputElement>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
 
-  const voice = useVoiceRecording();
+  const voice = useVoiceRecording((result) => {
+    setPendingMedia({
+      type: "voice",
+      file: result.audioFile,
+      previewUrl: result.audioUrl,
+      durationMs: result.durationMs,
+    });
+    setShowMediaToolbar(false);
+  });
 
   // Auto-resize textarea
   useEffect(() => {
@@ -77,33 +83,16 @@ export default function ChatInput({
     }
   }, [replyingTo]);
 
-  // When voice recording finishes, set as pending media
-  useEffect(() => {
-    if (!voice.isRecording && voice.audioFile && voice.audioUrl) {
-      setPendingMedia({
-        type: "voice",
-        file: voice.audioFile,
-        previewUrl: voice.audioUrl,
-        durationMs: voice.durationMs,
-      });
-      setShowMediaToolbar(false);
-    }
-  }, [voice.isRecording, voice.audioFile, voice.audioUrl, voice.durationMs]);
-
   // URL detection with debounce
-  useEffect(() => {
-    if (previewDismissed || pendingMedia) return;
-    clearTimeout(debounceRef.current);
+  const currentUrlMatch = text.match(URL_REGEX)?.[0] ?? null;
 
-    const match = text.match(URL_REGEX);
-    if (!match) {
-      setLinkPreview(null);
-      return;
-    }
+  useEffect(() => {
+    if (previewDismissed || pendingMedia || !currentUrlMatch) return;
+    clearTimeout(debounceRef.current);
 
     debounceRef.current = setTimeout(async () => {
       try {
-        const preview = await fetchLinkPreview(match[0]);
+        const preview = await fetchLinkPreview(currentUrlMatch);
         setLinkPreview(preview as LinkPreview);
       } catch {
         setLinkPreview(null);
@@ -111,7 +100,7 @@ export default function ChatInput({
     }, 500);
 
     return () => clearTimeout(debounceRef.current);
-  }, [text, previewDismissed, pendingMedia]);
+  }, [currentUrlMatch, previewDismissed, pendingMedia]);
 
   const handleSend = useCallback(() => {
     if (pendingMedia) {
@@ -238,7 +227,7 @@ export default function ChatInput({
       )}
 
       {/* Link preview */}
-      {linkPreview && !previewDismissed && !pendingMedia && (
+      {linkPreview && currentUrlMatch && !previewDismissed && !pendingMedia && (
         <div className="px-4 pt-3">
           <LinkPreviewCard
             preview={linkPreview}

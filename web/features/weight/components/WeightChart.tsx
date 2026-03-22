@@ -171,17 +171,19 @@ export default function WeightChart({ range, data }: WeightChartProps) {
       }
     }
 
+    const result: { date: string; weight: number | null; label: string }[] = [];
     let carry: number | null = priorWeight;
-    return fullDateRange.map((date) => {
+    for (const date of fullDateRange) {
       if (weightMap.has(date)) {
         carry = weightMap.get(date)!;
       }
-      return {
+      result.push({
         date,
         weight: carry,
         label: formatDatelabel(date, range, locale),
-      };
-    });
+      });
+    }
+    return result;
   })();
 
   function formatDateRange(start: Date | null, end: Date | null) {

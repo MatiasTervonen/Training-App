@@ -1,5 +1,11 @@
 export type MessageType = "text" | "image" | "video" | "voice" | "session_share" | "location";
 
+export type LocationShareContent = {
+  lat: number;
+  lng: number;
+  address?: string;
+};
+
 export type ReactionSummary = {
   emoji: string;
   count: number;

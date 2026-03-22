@@ -14,39 +14,32 @@ import { useQueryClient } from "@tanstack/react-query";
 import CustomInput from "@/ui/CustomInput";
 import { useTranslation } from "react-i18next";
 
+function readWeightDraft() {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = localStorage.getItem("weight_draft");
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
 export default function WorkoutAnalyticsPage() {
   const { t } = useTranslation("weight");
   const now = formatDateShort(new Date());
 
+  const initialDraft = readWeightDraft();
   const [weightTitle, setWeightTitle] = useState(
-    `${t("weight.defaultTitle")} - ${now}`,
+    initialDraft?.title || `${t("weight.defaultTitle")} - ${now}`,
   );
-  const [weightNotes, setWeightNotes] = useState("");
-  const [weight, setWeight] = useState("");
+  const [weightNotes, setWeightNotes] = useState(initialDraft?.notes || "");
+  const [weight, setWeight] = useState(initialDraft?.weight || "");
   const [isSaving, setIsSaving] = useState(false);
-  const [isLoaded, setIsLoaded] = useState(false);
   const router = useRouter();
 
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    const draft = localStorage.getItem("weight_draft");
-    if (draft) {
-      const {
-        title: savedWeightTitle,
-        notes: savedWeightNotes,
-        weight: savedWeight,
-      } = JSON.parse(draft);
-      if (savedWeightTitle) setWeightTitle(savedWeightTitle);
-      if (savedWeightNotes) setWeightNotes(savedWeightNotes);
-      if (savedWeight) setWeight(savedWeight);
-    }
-    setIsLoaded(true);
-  }, []);
-
-  useEffect(() => {
-    if (!isLoaded) return;
-
     if (weight.trim().length === 0 && weightNotes.trim().length === 0) {
       localStorage.removeItem("weight_draft");
     } else {
@@ -57,7 +50,7 @@ export default function WorkoutAnalyticsPage() {
       };
       localStorage.setItem("weight_draft", JSON.stringify(sessionDraft));
     }
-  }, [weightTitle, weightNotes, weight, isLoaded]);
+  }, [weightTitle, weightNotes, weight]);
 
   const resetWeight = () => {
     localStorage.removeItem("weight_draft");

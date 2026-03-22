@@ -55,7 +55,7 @@ function FeatureItems({
             className="flex items-center gap-2.5 px-6 text-nowrap"
           >
             <Icon className={f.color} size={20} />
-            <span className="text-gray-200 font-[family-name:var(--font-body)] text-sm sm:text-base">
+            <span className="text-gray-200 font-body text-sm sm:text-base">
               {t(`marquee.${f.key}`)}
             </span>
           </div>
@@ -70,8 +70,8 @@ export default function FeatureMarquee() {
 
   return (
     <div className="relative overflow-hidden bg-slate-900/80 py-4 border-y border-slate-800">
-      <div className="absolute left-0 top-0 bottom-0 w-16 sm:w-24 bg-gradient-to-r from-slate-900 to-transparent z-10" />
-      <div className="absolute right-0 top-0 bottom-0 w-16 sm:w-24 bg-gradient-to-l from-slate-900 to-transparent z-10" />
+      <div className="absolute left-0 top-0 bottom-0 w-16 sm:w-24 bg-linear-to-r from-slate-900 to-transparent z-10" />
+      <div className="absolute right-0 top-0 bottom-0 w-16 sm:w-24 bg-linear-to-l from-slate-900 to-transparent z-10" />
       <div className="flex animate-marquee">
         <div className="flex shrink-0">
           <FeatureItems t={t} />

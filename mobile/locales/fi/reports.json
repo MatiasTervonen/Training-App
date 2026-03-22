@@ -65,7 +65,8 @@
       "totalCompletions": "Suorituksia",
       "tasksCompleted": "Suoritettu",
       "tasksCreated": "Luotu",
-      "listsUpdated": "Päivitetty"
+      "listsUpdated": "Päivitetty",
+      "noActivities": "Ei aktiviteetteja tällä jaksolla"
     },
     "share": {
       "share": "Jaa",

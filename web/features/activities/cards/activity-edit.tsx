@@ -22,7 +22,7 @@ type Props = {
   onDirtyChange?: (dirty: boolean) => void;
 };
 
-export default function EditActivity({ activity, onClose, onSave, onDirtyChange }: Props) {
+export default function EditActivity({ activity, onSave, onDirtyChange }: Props) {
   const { t } = useTranslation("activities");
 
   const [title, setTitle] = useState(activity.session.title || "");

@@ -19,6 +19,7 @@ import {
   TodoReportData,
   ReportData,
 } from "@/types/report";
+import { useUserStore } from "@/lib/stores/useUserStore";
 import BodyTextNC from "@/components/BodyTextNC";
 import BodyText from "@/components/BodyText";
 
@@ -64,7 +65,7 @@ function StatRow({
   return (
     <View className="flex-row items-center py-2 border-b border-gray-700/50">
       <BodyTextNC className="text-gray-400 text-sm flex-1">{label}</BodyTextNC>
-      <View className="w-20 items-center">
+      <View className="w-28 items-center">
         {delta && delta.direction === "up" && (
           <BodyTextNC className="text-xs text-green-400">
             ▲ {delta.text}
@@ -92,6 +93,7 @@ function GymSection({
   prev?: GymReportData;
 }) {
   const { t } = useTranslation("reports");
+  const unit = useUserStore((s) => s.profile?.weight_unit) || "kg";
   return (
     <>
       <StatRow
@@ -101,7 +103,7 @@ function GymSection({
       />
       <StatRow
         label={t("reports.expanded.totalVolume")}
-        value={`${data.total_volume.toLocaleString()} kg`}
+        value={`${data.total_volume.toLocaleString()} ${unit}`}
         delta={makeDelta(data.total_volume, prev?.total_volume)}
       />
       <StatRow
@@ -140,39 +142,67 @@ function ActivitiesSection({
   prev?: ActivitiesReportData;
 }) {
   const { t } = useTranslation("reports");
+  const { t: tActivities } = useTranslation("activities");
+
+  if (!data.by_activity || data.by_activity.length === 0) {
+    return (
+      <BodyText className="text-gray-400 text-sm py-2">
+        {t("reports.expanded.noActivities")}
+      </BodyText>
+    );
+  }
+
+  // Build lookup for previous period's activities by slug/name
+  const prevMap = new Map(
+    (prev?.by_activity ?? []).map((a) => [a.activity_slug ?? a.activity_name, a]),
+  );
+
   return (
     <>
-      <StatRow
-        label={t("reports.expanded.sessions")}
-        value={String(data.session_count)}
-        delta={makeDelta(data.session_count, prev?.session_count)}
-      />
-      <StatRow
-        label={t("reports.expanded.totalDistance")}
-        value={formatMeters(data.total_distance_meters)}
-        delta={makeDelta(
-          data.total_distance_meters,
-          prev?.total_distance_meters,
-          (n) => formatMeters(n),
-        )}
-      />
-      <StatRow
-        label={t("reports.expanded.totalDuration")}
-        value={formatDuration(data.total_duration)}
-        delta={makeDelta(data.total_duration, prev?.total_duration, (n) =>
-          formatDuration(n),
-        )}
-      />
-      <StatRow
-        label={t("reports.expanded.totalCalories")}
-        value={String(data.total_calories)}
-        delta={makeDelta(data.total_calories, prev?.total_calories)}
-      />
-      <StatRow
-        label={t("reports.expanded.totalSteps")}
-        value={data.total_steps.toLocaleString()}
-        delta={makeDelta(data.total_steps, prev?.total_steps)}
-      />
+      {data.by_activity.map((activity) => {
+        const key = activity.activity_slug ?? activity.activity_name;
+        const prevActivity = prevMap.get(key);
+        const name = activity.activity_slug
+          ? tActivities(`activities.activityNames.${activity.activity_slug}`, {
+              defaultValue: activity.activity_name,
+            })
+          : activity.activity_name;
+
+        return (
+          <View key={key} className="mb-3">
+            <AppText className="text-sm mb-1">{name}</AppText>
+            <StatRow
+              label={t("reports.expanded.sessions")}
+              value={String(activity.session_count)}
+              delta={makeDelta(activity.session_count, prevActivity?.session_count)}
+            />
+            <StatRow
+              label={t("reports.expanded.totalDuration")}
+              value={formatDuration(activity.total_duration)}
+              delta={makeDelta(activity.total_duration, prevActivity?.total_duration, (n) => formatDuration(n))}
+            />
+            {activity.total_distance_meters != null && activity.total_distance_meters > 0 && (
+              <StatRow
+                label={t("reports.expanded.totalDistance")}
+                value={formatMeters(activity.total_distance_meters)}
+                delta={makeDelta(activity.total_distance_meters, prevActivity?.total_distance_meters, (n) => formatMeters(n))}
+              />
+            )}
+            <StatRow
+              label={t("reports.expanded.totalCalories")}
+              value={String(activity.total_calories)}
+              delta={makeDelta(activity.total_calories, prevActivity?.total_calories)}
+            />
+            {activity.total_steps != null && activity.total_steps > 0 && (
+              <StatRow
+                label={t("reports.expanded.totalSteps")}
+                value={activity.total_steps.toLocaleString()}
+                delta={makeDelta(activity.total_steps, prevActivity?.total_steps)}
+              />
+            )}
+          </View>
+        );
+      })}
     </>
   );
 }
@@ -185,7 +215,8 @@ function WeightSection({
   prev?: WeightReportData;
 }) {
   const { t } = useTranslation("reports");
-  const formatKg = (n: number) => `${n.toFixed(1)} kg`;
+  const unit = useUserStore((s) => s.profile?.weight_unit) || "kg";
+  const formatWeight = (n: number) => `${n.toFixed(1)} ${unit}`;
   return (
     <>
       <StatRow
@@ -195,19 +226,19 @@ function WeightSection({
       />
       <StatRow
         label={t("reports.expanded.startWeight")}
-        value={data.start_weight != null ? `${data.start_weight} kg` : "-"}
+        value={data.start_weight != null ? formatWeight(data.start_weight) : "-"}
         delta={
           data.start_weight != null
-            ? makeDelta(data.start_weight, prev?.start_weight, formatKg)
+            ? makeDelta(data.start_weight, prev?.start_weight, formatWeight)
             : null
         }
       />
       <StatRow
         label={t("reports.expanded.endWeight")}
-        value={data.end_weight != null ? `${data.end_weight} kg` : "-"}
+        value={data.end_weight != null ? formatWeight(data.end_weight) : "-"}
         delta={
           data.end_weight != null
-            ? makeDelta(data.end_weight, prev?.end_weight, formatKg)
+            ? makeDelta(data.end_weight, prev?.end_weight, formatWeight)
             : null
         }
       />
@@ -215,13 +246,8 @@ function WeightSection({
         label={t("reports.expanded.weightChange")}
         value={
           data.change != null
-            ? `${data.change > 0 ? "+" : ""}${data.change} kg`
+            ? `${data.change > 0 ? "+" : ""}${data.change.toFixed(1)} ${unit}`
             : "-"
-        }
-        delta={
-          data.change != null
-            ? makeDelta(data.change, prev?.change, formatKg)
-            : null
         }
       />
     </>
@@ -280,11 +306,6 @@ function TodoSection({
         label={t("reports.expanded.tasksCreated")}
         value={String(data.tasks_created)}
         delta={makeDelta(data.tasks_created, prev?.tasks_created)}
-      />
-      <StatRow
-        label={t("reports.expanded.listsUpdated")}
-        value={String(data.lists_updated)}
-        delta={makeDelta(data.lists_updated, prev?.lists_updated)}
       />
     </>
   );

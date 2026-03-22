@@ -22,7 +22,6 @@ type Props = {
 
 export default function EditMyGlobalReminder({
   reminder,
-  onClose,
   onSave,
   onDirtyChange,
 }: Props) {
@@ -36,10 +35,14 @@ export default function EditMyGlobalReminder({
   const queryClient = useQueryClient();
 
   const notifyAtRef = useRef(notify_at);
-  notifyAtRef.current = notify_at;
+  useEffect(() => {
+    notifyAtRef.current = notify_at;
+  }, [notify_at]);
 
   const onSaveRef = useRef(onSave);
-  onSaveRef.current = onSave;
+  useEffect(() => {
+    onSaveRef.current = onSave;
+  }, [onSave]);
 
   const formattedNotifyAt = formatDateTime(reminder.notify_at!);
 

@@ -27,6 +27,7 @@ declare module "react-map-gl/mapbox" {
       };
     };
     attributionControl?: boolean;
+    interactive?: boolean;
     onLoad?: (event: MapEvent) => void;
     children?: React.ReactNode;
   }

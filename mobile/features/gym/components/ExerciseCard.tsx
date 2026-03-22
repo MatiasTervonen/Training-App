@@ -192,8 +192,12 @@ export default function ExerciseCard({
             <View
               key={setIndex}
               className={`border-b border-gray-300 flex-row items-center ${
-                set.rpe === "Failure" ? "bg-red-800" : ""
-              } ${set.rpe === "Warm-up" ? "bg-blue-500" : ""}`}
+                set.rpe === "Failure"
+                  ? "bg-red-500/15"
+                  : set.rpe === "Warm-up"
+                    ? "bg-blue-500/15"
+                    : ""
+              }`}
             >
               <View className="flex-1 items-center">
                 <AppText className="p-2 text-lg">{setIndex + 1}</AppText>

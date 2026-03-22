@@ -3,6 +3,7 @@
 import { CirclePlay, CirclePause } from "lucide-react";
 import { useTimerStore } from "@/lib/stores/timerStore";
 import { useEffect } from "react";
+import { formatDurationLong } from "@/lib/formatDate";
 
 type ActiveSession = {
   label: string;
@@ -12,14 +13,20 @@ type ActiveSession = {
 
 type TimerProps = {
   className?: string;
+  textClassName?: string;
   manualSession?: ActiveSession;
 };
 
-export default function Timer({ className = "", manualSession }: TimerProps) {
+export default function Timer({
+  className = "",
+  textClassName = "",
+  manualSession,
+}: TimerProps) {
   const {
     elapsedTime,
     isRunning,
     startTimer,
+    startSession,
     pauseTimer,
     totalDuration,
     setActiveSession,
@@ -27,6 +34,7 @@ export default function Timer({ className = "", manualSession }: TimerProps) {
     resumeTimer,
     startTimestamp,
     alarmFired,
+    mode,
   } = useTimerStore();
 
   useEffect(() => {
@@ -53,14 +61,6 @@ export default function Timer({ className = "", manualSession }: TimerProps) {
     };
   }, [resumeTimer]);
 
-  const formatTime = (seconds: number) => {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${String(minutes).padStart(2, "0")}:${String(
-      remainingSeconds,
-    ).padStart(2, "0")}`;
-  };
-
   const handleStart = () => {
     if (!activeSession && manualSession) {
       setActiveSession(manualSession);
@@ -70,8 +70,10 @@ export default function Timer({ className = "", manualSession }: TimerProps) {
 
     if (isPaused) {
       resumeTimer();
-    } else {
+    } else if (mode === "countdown" || totalDuration > 0) {
       startTimer(totalDuration);
+    } else {
+      startSession();
     }
   };
 
@@ -79,10 +81,15 @@ export default function Timer({ className = "", manualSession }: TimerProps) {
     pauseTimer();
   };
 
+  const displaySeconds =
+    mode === "countdown"
+      ? Math.max(0, totalDuration - elapsedTime)
+      : elapsedTime;
+
   return (
     <div className={`flex items-center gap-2 ${className}`}>
-      <p className="font-mono font-bold leading-none text-lg">
-        {formatTime(elapsedTime)}
+      <p className={`font-mono font-bold leading-none text-lg ${textClassName}`}>
+        {formatDurationLong(displaySeconds)}
       </p>
       {!alarmFired &&
         (isRunning ? (

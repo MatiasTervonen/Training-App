@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import Modal from "@/components/modal";
 import FeedCard from "@/features/feed-cards/FeedCard";
 import TodoSession from "@/features/todo/cards/todo-expanded";
@@ -51,22 +51,22 @@ export default function TodoPage() {
   const { updateFeedItemToTop } = useTodoUpdateFeedItemToTop();
 
   // Client-side filter
-  const filterItem = (item: FeedItemUI) => {
+  const filterItem = useCallback((item: FeedItemUI) => {
     if (filter === "all") return true;
     const extra = item.extra_fields as TodoExtraFields;
     const completed = extra?.completed ?? 0;
     const total = extra?.total ?? 0;
     if (filter === "active") return completed < total;
     return total > 0 && completed === total;
-  };
+  }, [filter]);
 
   const filteredPinned = useMemo(
     () => pinnedFeed.filter(filterItem),
-    [pinnedFeed, filter]
+    [pinnedFeed, filterItem]
   );
   const filteredUnpinned = useMemo(
     () => unpinnedFeed.filter(filterItem),
-    [unpinnedFeed, filter]
+    [unpinnedFeed, filterItem]
   );
 
   const getEmptyMessage = () => {

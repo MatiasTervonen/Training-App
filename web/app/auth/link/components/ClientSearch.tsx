@@ -5,53 +5,43 @@ import { useState, useEffect } from "react";
 import SaveButtonSpinner from "@/components/buttons/save-button-spinner";
 import { APP_NAME } from "@/lib/app-config";
 
+const TYPE_CONFIG = {
+  recovery: {
+    message: "To keep your account secure, please click the button below to reset your password.",
+    title: "Reset Your Password",
+    buttonText: "Continue to reset password",
+  },
+  email: {
+    message: "To complete your sign-in, please click the button below to verify your email address.",
+    title: "Verify Your Email Address",
+    buttonText: "Continue to verify email",
+  },
+} as const;
+
 export default function ClientSearch() {
   const searchParams = useSearchParams();
   const redirectUrl = searchParams.get("redirect");
   const type = searchParams.get("type");
-
-  const [message, setMessage] = useState("");
-  const [title, setTitle] = useState("");
-  const [buttonText, setButtonText] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [isReady, setIsReady] = useState(false);
   const router = useRouter();
 
+  const [loading, setLoading] = useState(false);
+
   useEffect(() => {
-    if (!type || !redirectUrl) {
+    if (!type || !redirectUrl || !(type in TYPE_CONFIG)) {
       router.replace("/error");
-      return;
     }
-
-    switch (type) {
-      case "recovery":
-        setMessage(
-          "To keep your account secure, please click the button below to reset your password."
-        );
-        setTitle("Reset Your Password");
-        setButtonText("Continue to reset password");
-        break;
-      case "email":
-        setMessage(
-          "To complete your sign-in, please click the button below to verify your email address."
-        );
-        setTitle("Verify Your Email Address");
-        setButtonText("Continue to verify email");
-        break;
-      default:
-        router.replace("/error");
-        return;
-    }
-
-    setIsReady(true);
   }, [type, redirectUrl, router]);
+
+  const config = type && type in TYPE_CONFIG ? TYPE_CONFIG[type as keyof typeof TYPE_CONFIG] : null;
+
+  if (!config || !redirectUrl) return null;
+
+  const { message, title, buttonText } = config;
 
   const handleClick = () => {
     setLoading(true);
-    router.replace(redirectUrl!);
+    router.replace(redirectUrl);
   };
-
-  if (!isReady) return null;
 
   return (
     <>

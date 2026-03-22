@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Menu, X } from "lucide-react";
+import { Menu } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -43,7 +43,7 @@ function LanguageToggle() {
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const { t } = useTranslation("marketing");
+  useTranslation("marketing");
 
   // Lock body scroll when menu is open
   useEffect(() => {

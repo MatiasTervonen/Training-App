@@ -5,6 +5,9 @@ import CopyButton from "@/components/buttons/CopyButton";
 import { FeedItemUI } from "@/types/session";
 import { useTranslation } from "react-i18next";
 import { ensureHtml } from "@/features/notes/lib/ensureHtml";
+import { useQuery } from "@tanstack/react-query";
+import { getNotesMedia } from "@/database/media/get-notes-media";
+import SessionMediaGallery from "@/components/media/SessionMediaGallery";
 
 type notesPayload = {
   notes: string;
@@ -13,6 +16,11 @@ type notesPayload = {
 export default function NotesSession(notes: FeedItemUI) {
   const { t } = useTranslation("common");
   const payload = notes.extra_fields as notesPayload;
+
+  const { data: media } = useQuery({
+    queryKey: ["notes-media", notes.source_id],
+    queryFn: () => getNotesMedia(notes.source_id),
+  });
 
   return (
     <div className="text-center max-w-3xl mx-auto page-padding">
@@ -40,6 +48,14 @@ export default function NotesSession(notes: FeedItemUI) {
           className="prose prose-invert max-w-none text-left font-body"
           dangerouslySetInnerHTML={{ __html: ensureHtml(payload.notes) }}
         />
+
+        {media && (
+          <SessionMediaGallery
+            images={media.images}
+            videos={media.videos}
+            voiceRecordings={media.voiceRecordings}
+          />
+        )}
       </div>
     </div>
   );

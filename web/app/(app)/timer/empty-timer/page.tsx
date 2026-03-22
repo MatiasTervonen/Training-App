@@ -14,7 +14,7 @@ import {
 import BaseButton from "@/components/buttons/BaseButton";
 
 import { useTranslation } from "react-i18next";
-import { formatDateShort } from "@/lib/formatDate";
+
 
 export default function TimerPage() {
   const { t } = useTranslation("timer");
@@ -27,6 +27,7 @@ export default function TimerPage() {
   const {
     totalDuration,
     elapsedTime,
+    alarmFired,
     alarmSoundPlaying,
     setAlarmFired,
     setActiveSession,
@@ -49,12 +50,14 @@ export default function TimerPage() {
     router.replace("/timer");
   };
 
-  const now = formatDateShort(new Date());
-
   const handleStartTimer = () => {
+    if (typeof Notification !== "undefined" && Notification.permission === "default") {
+      Notification.requestPermission();
+    }
+
     setActiveSession({
       type: t("timer.title"),
-      label: `${t("timer.title")} - ${now}`,
+      label: t("timer.title"),
       path: "/timer/empty-timer",
     });
 
@@ -106,16 +109,15 @@ export default function TimerPage() {
 
               <Timer
                 className={`flex-col items-center justify-center w-full  ${
-                  elapsedTime >= totalDuration
-                    ? "animate-pulse text-red-500"
-                    : ""
+                  alarmFired ? "animate-pulse" : ""
                 }`}
+                alarmStyle={alarmFired}
               />
 
-              <div className="w-full bg-gray-200 h-5 rounded-full overflow-hidden mt-5">
+              <div className="w-full bg-gray-700 h-5 rounded-full overflow-hidden mt-5">
                 <div
                   className="h-full bg-green-500 transition-all duration-100 ease-in-out"
-                  style={{ width: `${(elapsedTime / totalDuration) * 100}%` }}
+                  style={{ width: `${Math.max(0, ((totalDuration - elapsedTime) / totalDuration) * 100)}%` }}
                 ></div>
               </div>
             </div>

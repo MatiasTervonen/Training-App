@@ -323,9 +323,11 @@ export default function GymSession(gym_session: FullGymSession & { readOnly?: bo
                       key={setIndex}
                       className={`border-b border-gray-600 flex-row items-center ${
                         set.rpe === "Failure"
-                          ? "bg-red-500 text-white"
-                          : "text-gray-100"
-                      } ${set.rpe === "Warm-up" ? "bg-blue-500" : ""}`}
+                          ? "bg-red-500/15"
+                          : set.rpe === "Warm-up"
+                            ? "bg-blue-500/15"
+                            : ""
+                      }`}
                     >
                       <View className="flex-1 items-center">
                         <AppText className="p-2">{setIndex + 1}</AppText>

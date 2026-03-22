@@ -52,7 +52,7 @@ interface TimerState {
   alarmSoundPlaying: boolean;
   paused: boolean;
   setActiveSession: (session: NewSession) => void;
-  startTimer: (totalDuration: number, label: string) => void;
+  startTimer: (totalDuration: number, label: string, options?: { skipExtend?: boolean }) => void;
   pauseTimer: () => void;
   clearEverything: () => void;
   resumeTimer: (label: string) => void;
@@ -112,7 +112,7 @@ export const useTimerStore = create<TimerState>()(
         }, 1000);
       },
 
-      startTimer: (totalDurationInSeconds, label) => {
+      startTimer: (totalDurationInSeconds, label, options) => {
         if (interval) clearInterval(interval);
 
         const now = Date.now();
@@ -128,7 +128,7 @@ export const useTimerStore = create<TimerState>()(
           totalDuration: totalDurationInSeconds,
         });
 
-        startNativeTimer(endTimestamp, label, "countdown", t("timer:timer.notification.timeRemaining"), t("timer:timer.notification.pauseTimer"), t("timer:timer.notification.extendTimer"));
+        startNativeTimer(endTimestamp, label, "countdown", t("timer:timer.notification.timeRemaining"), t("timer:timer.notification.pauseTimer"), options?.skipExtend ? "" : t("timer:timer.notification.extendTimer"));
 
         interval = setInterval(() => {
           const { isRunning, mode, endTimestamp } = get();
@@ -248,10 +248,11 @@ export const useTimerStore = create<TimerState>()(
           });
         }
 
+        const isHabit = get().activeSession?.type === "habit";
         if (mode === "countup") {
           startNativeTimer(now - remainingMs, label, "countup", t("timer:timer.notification.inProgress"), t("timer:timer.notification.pauseTimer"));
         } else {
-          startNativeTimer(now + remainingMs, label, "countdown", t("timer:timer.notification.timeRemaining"), t("timer:timer.notification.pauseTimer"), t("timer:timer.notification.extendTimer"));
+          startNativeTimer(now + remainingMs, label, "countdown", t("timer:timer.notification.timeRemaining"), t("timer:timer.notification.pauseTimer"), isHabit ? "" : t("timer:timer.notification.extendTimer"));
         }
 
         if (get().activeSession?.type === "timer") {

@@ -103,13 +103,15 @@ export default function SessionFeed() {
   // Social feed infinite scroll
   const socialLoadMoreRef = useRef<HTMLDivElement | null>(null);
 
+  const { hasNextPage: socialHasNext, isFetchingNextPage: socialFetchingNext, fetchNextPage: socialFetchNext } = socialFeed;
+
   useEffect(() => {
     if (feedMode !== "friends" || !socialLoadMoreRef.current) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && socialFeed.hasNextPage && !socialFeed.isFetchingNextPage) {
-          socialFeed.fetchNextPage();
+        if (entries[0].isIntersecting && socialHasNext && !socialFetchingNext) {
+          socialFetchNext();
         }
       },
       { rootMargin: "300px" },
@@ -117,7 +119,7 @@ export default function SessionFeed() {
 
     observer.observe(socialLoadMoreRef.current);
     return () => observer.disconnect();
-  }, [feedMode, socialFeed.hasNextPage, socialFeed.isFetchingNextPage, socialFeed.fetchNextPage]);
+  }, [feedMode, socialHasNext, socialFetchingNext, socialFetchNext]);
 
   // Friend expanded session queries
   const {

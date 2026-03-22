@@ -166,8 +166,12 @@ export default function ExerciseHistoryModal({
                       <tr
                         key={setIndex}
                         className={`border-b border-gray-700 ${
-                          set.rpe === "Failure" ? "bg-red-500" : ""
-                        } ${set.rpe === "Warm-up" ? "bg-blue-500" : ""}`}
+                          set.rpe === "Failure"
+                            ? "bg-red-500/15"
+                            : set.rpe === "Warm-up"
+                              ? "bg-blue-500/15"
+                              : ""
+                        }`}
                       >
                         <td className="p-2">{setIndex + 1}</td>
                         <td className="p-2">

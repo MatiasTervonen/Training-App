@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useCallback, useRef, useEffect } from "react";
-import toast from "react-hot-toast";
 import DateTimePicker from "@/components/DateTimePicker";
 import { Bell } from "lucide-react";
 import { formatDateTime } from "@/lib/formatDate";
@@ -29,7 +28,6 @@ type ReminderPayload = {
 
 export default function EditGlobalReminder({
   reminder,
-  onClose,
   onSave,
   onDirtyChange,
 }: Props) {
@@ -45,10 +43,14 @@ export default function EditGlobalReminder({
   const queryClient = useQueryClient();
 
   const notifyAtRef = useRef(notify_at);
-  notifyAtRef.current = notify_at;
+  useEffect(() => {
+    notifyAtRef.current = notify_at;
+  }, [notify_at]);
 
   const onSaveRef = useRef(onSave);
-  onSaveRef.current = onSave;
+  useEffect(() => {
+    onSaveRef.current = onSave;
+  }, [onSave]);
 
   const formattedNotifyAt = formatDateTime(payload.notify_at!);
 

@@ -162,7 +162,7 @@ export default function TimersPage() {
           <div
             key={timer.id}
             onClick={() => setExpandedItem(timer)}
-            className="text-center bg-blue-800 py-2 my-3 rounded-md shadow-md border-[1.5px] border-blue-500 text-lg cursor-pointer hover:scale-105 transition-all duration-200"
+            className="text-center btn-base my-3 text-lg"
           >
             {timer.title}
           </div>
@@ -230,7 +230,7 @@ export default function TimersPage() {
               />
               <button
                 onClick={closeEditModal}
-                className="w-full bg-gray-700 py-2 rounded-md shadow-md border-[1.5px] border-gray-500 text-lg cursor-pointer hover:bg-gray-600 hover:scale-105 transition-all duration-200"
+                className="w-full btn-danger text-lg"
               >
                 {t("common:common.cancel")}
               </button>

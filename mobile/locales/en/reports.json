@@ -65,7 +65,8 @@
       "totalCompletions": "Completions",
       "tasksCompleted": "Completed",
       "tasksCreated": "Created",
-      "listsUpdated": "Updated"
+      "listsUpdated": "Updated",
+      "noActivities": "No activities this period"
     },
     "share": {
       "share": "Share",

@@ -58,7 +58,8 @@
       "inProgress": "In progress",
       "tapToOpenTimer": "Tap to open timer",
       "timesUp": "Time's up!",
-      "stopAlarm": "Stop Alarm"
+      "stopAlarm": "Stop Alarm",
+      "restart": "Restart"
     }
   }
 }

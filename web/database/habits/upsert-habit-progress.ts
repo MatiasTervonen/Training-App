@@ -1,0 +1,28 @@
+import { createClient } from "@/utils/supabase/client";
+import { handleError } from "@/utils/handleError";
+
+export async function upsertHabitProgress(
+  habitId: string,
+  date: string,
+  accumulatedSeconds: number,
+) {
+  const supabase = createClient();
+
+  const { error } = await supabase.from("habit_logs").upsert(
+    {
+      habit_id: habitId,
+      completed_date: date,
+      accumulated_seconds: accumulatedSeconds,
+    },
+    { onConflict: "habit_id,completed_date" },
+  );
+
+  if (error) {
+    handleError(error, {
+      message: "Error updating habit progress",
+      route: "/database/habits/upsert-habit-progress",
+      method: "POST",
+    });
+    throw new Error("Error updating habit progress");
+  }
+}

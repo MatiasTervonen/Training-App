@@ -45,8 +45,12 @@ export default function ActiveSessionPopup() {
 
   if (
     pathname === "/timer/empty-timer" &&
-    activeSession.type === t("timer:timer.title")
+    (activeSession.type === t("timer:timer.title") || activeSession.type === "habit")
   ) {
+    return null;
+  }
+
+  if (pathname === "/habits" && activeSession.type === "habit") {
     return null;
   }
 
@@ -77,7 +81,7 @@ export default function ActiveSessionPopup() {
           <p className="pb-2 text-start text-gray-100">{activeSession.label}</p>
           <div className="flex gap-5 text-gray-300 text-start items-center">
             <Timer />
-            <p>{activeSession.type}</p>
+            {activeSession.type !== "habit" && <p>{activeSession.type}</p>}
             {alarmFired && <p>ALARM!</p>}
             {activeSession.type === t("timer:timer.title") && totalDuration && (
               <p className="text-nowrap">

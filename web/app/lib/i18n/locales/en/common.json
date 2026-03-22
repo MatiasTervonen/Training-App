@@ -55,7 +55,8 @@
     "timer": "Timer",
     "bodyWeight": "Body Weight",
     "todoList": "Todo List",
-    "reminders": "Reminders"
+    "reminders": "Reminders",
+    "habits": "Habits"
   },
   "deleteButton": {
     "confirmDeleteTitle": "Confirm Deletion",

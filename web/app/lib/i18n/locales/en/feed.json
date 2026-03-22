@@ -39,7 +39,8 @@
         "gym": "Gym",
         "notes": "Notes",
         "reminder": "Reminder",
-        "tutorial": "Tutorial"
+        "tutorial": "Tutorial",
+        "habits": "Habits"
       }
     },
     "tutorial": {

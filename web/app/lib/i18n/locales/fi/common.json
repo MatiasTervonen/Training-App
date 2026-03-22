@@ -55,7 +55,8 @@
     "timer": "Ajastin",
     "bodyWeight": "Paino",
     "todoList": "Tehtävälista",
-    "reminders": "Muistutukset"
+    "reminders": "Muistutukset",
+    "habits": "Tavat"
   },
   "deleteButton": {
     "confirmDeleteTitle": "Vahvista poisto",

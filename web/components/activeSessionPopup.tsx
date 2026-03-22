@@ -24,12 +24,13 @@ export default function ActiveSessionPopup() {
   } = useTimerStore();
 
   useEffect(() => {
+    if (activeSession?.type === "habit") return;
     if (alarmSoundPlaying) {
       playAlarmAudio();
     } else {
       stopAlarmAudio();
     }
-  }, [alarmSoundPlaying]);
+  }, [alarmSoundPlaying, activeSession?.type]);
 
   const handleStopTimer = () => {
     setAlarmSoundPlaying(false);
@@ -44,15 +45,18 @@ export default function ActiveSessionPopup() {
 
   if (
     pathname === "/timer/empty-timer" &&
-    (activeSession.type === t("timer:timer.title") || activeSession.type === "timer")
+    (activeSession.type === t("timer:timer.title") || activeSession.type === "timer" || activeSession.type === "habit")
   ) {
+    return null;
+  }
+
+  if (pathname === "/habits" && activeSession.type === "habit") {
     return null;
   }
 
   if (pathname === "/disc-golf/game" && activeSession.type === "disc-golf") {
     return null;
   }
-
 
   if (
     pathname === "/timer/start-stopwatch" &&

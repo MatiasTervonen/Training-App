@@ -8,6 +8,7 @@ import SplashScreen from "@/components/SplashScreen";
 import MenuSidebar from "@/components/sidebar/MenuSidebar";
 import SessionsSidebar from "@/components/sidebar/SessionsSidebar";
 import ActiveSessionPopup from "@/components/activeSessionPopup";
+import HabitTimerListener from "@/features/habits/components/HabitTimerListener";
 
 export default function appLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -41,6 +42,7 @@ export default function appLayout({ children }: { children: React.ReactNode }) {
           </div>
         </div>
       </SplashScreen>
+      <HabitTimerListener />
       <Suspense fallback={null}>
         <UserLoader />
       </Suspense>

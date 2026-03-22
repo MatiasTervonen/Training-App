@@ -26,7 +26,13 @@ export default function FeedHeader({
       {pinnedFeed.length > 0 && (
         <PinnedCarousel
           pinnedFeed={pinnedFeed}
-          onExpand={setExpandedItem}
+          onExpand={(item) => {
+            if (item.type === "habits") {
+              router.push("/habits");
+            } else {
+              setExpandedItem(item);
+            }
+          }}
           onEdit={(feedItem) => {
             if (feedItem.type === "gym_sessions") {
               router.push(`/gym/gym/${feedItem.source_id}`);

@@ -39,7 +39,8 @@
         "gym": "Kuntosali",
         "notes": "Muistiinpanot",
         "reminder": "Muistutus",
-        "tutorial": "Opas"
+        "tutorial": "Opas",
+        "habits": "Tavat"
       }
     },
     "tutorial": {

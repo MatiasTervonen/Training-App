@@ -53,7 +53,10 @@ function getWorker(): Worker | null {
           alarmSoundPlaying: true,
           isRunning: false,
         });
-        showTimerNotification();
+        const session = useTimerStore.getState().activeSession;
+        if (session?.type !== "habit") {
+          showTimerNotification();
+        }
       }
     };
   }

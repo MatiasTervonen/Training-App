@@ -198,7 +198,11 @@ export default function SessionFeed() {
                             item={feedItem}
                             pinned={false}
                             onExpand={() => {
-                              setExpandedItem(feedItem);
+                              if (feedItem.type === "habits") {
+                                router.push("/habits");
+                              } else {
+                                setExpandedItem(feedItem);
+                              }
                             }}
                             onTogglePin={() =>
                               togglePin(

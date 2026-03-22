@@ -7,6 +7,7 @@ import LocalReminderCard from "@/features/reminders/cards/localReminderCard";
 import GlobalReminderCard from "@/features/reminders/cards/globalReminderCard";
 import ActivityCard from "@/features/activities/cards/activity-feed";
 import TutorialCard from "@/features/feed-cards/tutorial-feed";
+import HabitCard from "@/features/habits/cards/habit-feed";
 
 export default function FeedCard(props: FeedCardProps) {
   const { pinned, onTogglePin, onDelete, onExpand, onEdit, onMoveToFolder, onHide } = props;
@@ -38,5 +39,7 @@ export default function FeedCard(props: FeedCardProps) {
       return <ActivityCard {...commomProps} />;
     case "tutorial":
       return <TutorialCard {...commomProps} />;
+    case "habits":
+      return <HabitCard {...commomProps} />;
   }
 }

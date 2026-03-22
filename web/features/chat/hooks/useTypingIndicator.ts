@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/utils/supabase/client";
-import type { RealtimeChannel } from "@supabase/realtime-js";
+import type { RealtimeChannel } from "@supabase/supabase-js";
 
 export function useTypingIndicator(conversationId: string) {
   const queryClient = useQueryClient();

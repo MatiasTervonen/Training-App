@@ -80,11 +80,7 @@ export default function Navbar() {
         </div>
         <div className="hidden md:flex items-center gap-4">
           <LanguageToggle />
-          <Link href={"/login"}>
-            <button className="w-[250px] text-white bg-gradient-to-tr from-slate-950 to-blue-700 px-5 py-2 rounded-xl border-[1.5px] border-blue-900 shadow-md shadow-blue-950 hover:from-blue-700 hover:to-slate-950 transform hover:scale-105 transition-all duration-200 cursor-pointer text-nowrap">
-              {t("navbar.login")}
-            </button>
-          </Link>
+          {/* Login button hidden — web app not fully ready yet */}
         </div>
         <div className="md:hidden">
           <button onClick={() => setIsOpen(true)}>
@@ -99,11 +95,7 @@ export default function Navbar() {
               />
               <div className="absolute left-5 right-5 top-14 z-50 bg-slate-900 border-[1.5px] border-slate-600 rounded-xl shadow-[0_0_20px_rgba(59,130,246,0.4)] py-16 px-8 flex flex-col items-center gap-8">
                 <LanguageToggle />
-                <Link href={"/login"} onClick={() => setIsOpen(false)}>
-                  <button className="text-white bg-gradient-to-tr from-slate-950 to-blue-700 px-5 py-2 rounded-xl border-[1.5px] border-blue-900 shadow-md shadow-blue-950 hover:from-blue-700 hover:to-slate-950 transition duration-200 text-nowrap">
-                    {t("navbar.login")}
-                  </button>
-                </Link>
+                {/* Login button hidden — web app not fully ready yet */}
               </div>
             </>
           )}

@@ -484,11 +484,7 @@ export default function MarketingContent() {
           <p className="font-[family-name:var(--font-body)] text-gray-400 text-lg mb-8 max-w-xl mx-auto">
             {t("cta.description")}
           </p>
-          <Link href="/login">
-            <button className="text-white bg-gradient-to-tr from-blue-700 to-blue-500 px-8 py-3 rounded-xl shadow-lg shadow-blue-950/50 hover:from-blue-600 hover:to-blue-400 transform hover:scale-105 transition-all duration-200 cursor-pointer text-lg">
-              {t("cta.button")}
-            </button>
-          </Link>
+          {/* Login button hidden — web app not fully ready yet */}
         </AnimatedSection>
       </div>
 

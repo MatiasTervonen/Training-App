@@ -1,7 +1,6 @@
 "use client";
 
 import { Users, LayoutDashboard } from "lucide-react";
-import { useTranslation } from "react-i18next";
 
 type FeedMode = "my" | "friends";
 
@@ -11,31 +10,22 @@ type Props = {
 };
 
 export default function FeedModeToggle({ feedMode, setFeedMode }: Props) {
-  const { t } = useTranslation("social");
+  const isFriends = feedMode === "friends";
 
   return (
-    <div className="flex gap-2 mb-4">
+    <div className="absolute bottom-8 right-6 z-50">
+      <div className="absolute -inset-0.5 rounded-full bg-cyan-400/20" />
+      <div className="absolute -inset-2 rounded-full bg-cyan-400/10" />
+      <div className="absolute -inset-3.5 rounded-full bg-cyan-400/5" />
       <button
-        onClick={() => setFeedMode("my")}
-        className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-md text-sm cursor-pointer transition-colors ${
-          feedMode === "my"
-            ? "bg-cyan-600/20 border border-cyan-500/50 text-cyan-300"
-            : "bg-slate-800/50 border border-slate-700 text-slate-400 hover:text-slate-300"
-        }`}
+        onClick={() => setFeedMode(isFriends ? "my" : "friends")}
+        className="relative w-14 h-14 rounded-full flex items-center justify-center bg-slate-800 border-[1.5px] border-cyan-400/60 shadow-xl shadow-cyan-400/60 cursor-pointer transition-colors hover:bg-slate-700"
       >
-        <LayoutDashboard size={16} />
-        {t("social.myFeed")}
-      </button>
-      <button
-        onClick={() => setFeedMode("friends")}
-        className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-md text-sm cursor-pointer transition-colors ${
-          feedMode === "friends"
-            ? "bg-cyan-600/20 border border-cyan-500/50 text-cyan-300"
-            : "bg-slate-800/50 border border-slate-700 text-slate-400 hover:text-slate-300"
-        }`}
-      >
-        <Users size={16} />
-        {t("social.friendsFeed")}
+        {isFriends ? (
+          <LayoutDashboard size={26} className="text-cyan-400" />
+        ) : (
+          <Users size={26} className="text-cyan-400" />
+        )}
       </button>
     </div>
   );

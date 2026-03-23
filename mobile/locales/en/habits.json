@@ -62,6 +62,10 @@
   "habitTimerCancelTitle": "Stop timer?",
   "habitTimerCancelMessage": "Your progress will be saved.",
   "durationCompleted": "Target reached!",
+  "durationResetTitle": "Reset timer?",
+  "durationResetMessage": "This will reset your accumulated time for today. Are you sure?",
+  "durationResetCancel": "Cancel",
+  "durationResetConfirm": "Reset",
   "reminderDisabledPush": "Push notifications are disabled. Enable in",
   "reminderDisabledPushLink": "Settings",
   "durationPushDisabled": {

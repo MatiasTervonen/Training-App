@@ -1,6 +1,8 @@
 import { Pressable, View, DeviceEventEmitter } from "react-native";
 import AppText from "@/components/AppText";
-import { AlarmClock, CircleX } from "lucide-react-native";
+import BodyText from "@/components/BodyText";
+import { AlarmClock, CircleX, Check } from "lucide-react-native";
+import { Confetti } from "react-native-fast-confetti";
 import { TimerPicker } from "react-native-timer-picker";
 import { LinearGradient } from "expo-linear-gradient";
 import * as Haptics from "expo-haptics";
@@ -49,8 +51,12 @@ export default function SettingsScreen() {
   const totalDuration = useTimerStore((s) => s.totalDuration);
   const clearEverything = useTimerStore((s) => s.clearEverything);
   const activeSession = useTimerStore((s) => s.activeSession);
+  useTimerStore((s) => (s.isRunning ? s.uiTick : 0));
 
   const isHabitSession = activeSession?.type === "habit";
+  const completionSound = useAudioPlayer(
+    require("@/assets/audio/freesound_community-bell-ringing-ii-98323.mp3"),
+  );
   const { cancelHabitTimer } = useHabitTimer();
 
   const handleReset = () => {
@@ -133,7 +139,7 @@ export default function SettingsScreen() {
     : remainingMs;
 
   useEffect(() => {
-    if (alarmSoundPlaying && !skipPlaying) {
+    if (alarmSoundPlaying && !skipPlaying && !isHabitSession) {
       player.seekTo(0);
       player.play();
       player.loop = true;
@@ -141,7 +147,15 @@ export default function SettingsScreen() {
       player.pause();
       player.seekTo(0);
     }
-  }, [alarmSoundPlaying, player, skipPlaying]);
+  }, [alarmSoundPlaying, player, skipPlaying, isHabitSession]);
+
+  // Play completion chime for habit timers
+  useEffect(() => {
+    if (isHabitSession && alarmFired && completionSound) {
+      completionSound.seekTo(0);
+      completionSound.play();
+    }
+  }, [isHabitSession, alarmFired, completionSound]);
 
   const handleStopTimer = async () => {
     setAlarmSoundPlaying(false);
@@ -196,7 +210,22 @@ export default function SettingsScreen() {
 
   return (
     <View className="flex-1 px-4">
-      {hasSessionStarted ? (
+      {isHabitSession && alarmFired ? (
+        <View className="flex-1 items-center justify-center">
+          <View className="absolute inset-0 pointer-events-none">
+            <Confetti />
+          </View>
+          <View className="w-20 h-20 rounded-full bg-green-500/20 border-2 border-green-500 items-center justify-center mb-6">
+            <Check size={40} color="#22c55e" />
+          </View>
+          <AppText className="text-2xl text-center mb-2">
+            {activeSession?.label}
+          </AppText>
+          <BodyText className="text-green-400 text-lg">
+            {t("timer.habitCompleted", { defaultValue: "Completed!" })}
+          </BodyText>
+        </View>
+      ) : hasSessionStarted ? (
         <Pressable
           onPress={handleStopTimer}
           className="flex-1"
@@ -223,7 +252,7 @@ export default function SettingsScreen() {
             )}
 
             <View className="absolute top-5 right-5" hitSlop={10}>
-              <AnimatedButton hitSlop={10} onPress={cancelTimer}>
+              <AnimatedButton hitSlop={10} onPress={isHabitSession ? cancelHabitTimer : cancelTimer}>
                 <CircleX color="#d1d5db" size={30} />
               </AnimatedButton>
             </View>

@@ -27,6 +27,9 @@
     "removeFromFriendsMessage": "This session will no longer be visible on the social feed.",
     "shareConfirm": "Post",
     "removeConfirm": "Remove",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "shareToChat": "Share to chat",
+    "sessionShared": "Session shared",
+    "shareError": "Failed to share session"
   }
 }

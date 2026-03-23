@@ -55,6 +55,8 @@ interface TimerState {
   startTimer: (totalDuration: number, label: string, options?: { skipExtend?: boolean }) => void;
   pauseTimer: () => void;
   clearEverything: () => void;
+  clearTimerMechanics: () => void;
+  clearUIState: () => void;
   resumeTimer: (label: string) => void;
   setAlarmFired: (fired: boolean) => void;
   startSession: (label: string) => void;
@@ -175,15 +177,43 @@ export const useTimerStore = create<TimerState>()(
         });
       },
 
+      // Stops interval, native timer, and sound — but keeps activeSession,
+      // alarmFired etc. alive so UI can still read them during transitions.
+      // Does NOT cancel the native alarm — let it fire to post the notification.
+      clearTimerMechanics: () => {
+        if (interval) {
+          clearInterval(interval);
+          interval = null;
+        }
+
+        stopNativeTimer();
+
+        set({
+          isRunning: false,
+          alarmSoundPlaying: false,
+          startTimestamp: null,
+          endTimestamp: null,
+          remainingMs: null,
+          paused: false,
+        });
+      },
+
+      // Clears the UI-visible state (activeSession, alarmFired).
+      // Call after navigation is complete.
+      clearUIState: () => {
+        set({
+          alarmFired: false,
+          activeSession: null,
+        });
+      },
+
       pauseTimer: () => {
         if (interval) {
           clearInterval(interval);
           interval = null;
         }
 
-        if (get().activeSession?.type === "timer") {
-          cancelNativeAlarm("timer");
-        }
+        cancelNativeAlarm("timer");
 
         const { isRunning, endTimestamp, mode, startTimestamp } = get();
         if (!startTimestamp || !isRunning) return;

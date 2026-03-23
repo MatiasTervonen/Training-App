@@ -1,5 +1,14 @@
 export type MessageType = "text" | "image" | "video" | "voice" | "session_share" | "location";
 
+export type SessionShareContent = {
+  session_type: "gym_sessions" | "activity_sessions";
+  source_id: string;
+  feed_item_id: string | null;
+  title: string;
+  activity_name?: string;
+  stats: Record<string, number>;
+};
+
 export type LocationShareContent = {
   lat: number;
   lng: number;

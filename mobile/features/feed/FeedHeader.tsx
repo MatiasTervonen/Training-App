@@ -29,7 +29,7 @@ export default function FeedHeader({
         <PinnedCarousel
           pinnedFeed={pinnedFeed}
           width={width}
-          height={176}
+          height={140}
           onExpand={(feedItem) => {
             if (feedItem.type === "habits") {
               router.push("/habits");

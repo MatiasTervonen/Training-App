@@ -17,12 +17,18 @@ import useFullSessions from "@/features/dashboard/hooks/useFullSessions";
 import useUpdateFeedItem from "@/features/dashboard/hooks/useUpdateFeedItem";
 import EmptyState from "@/components/EmptyState";
 import { MapPin } from "lucide-react";
+import useActivityTypes from "@/features/activities/hooks/useActivityTypes";
+import ActivityTypeFilterChips from "@/features/activities/components/ActivityTypeFilterChips";
 
 export default function MyActivitySessionsPage() {
   const { t } = useTranslation(["activities", "common"]);
   const [expandedItem, setExpandedItem] = useState<FeedItemUI | null>(null);
   const [editingItem, setEditingItem] = useState<FeedItemUI | null>(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
+
+  const { activityTypes } = useActivityTypes();
+
   const {
     data,
     error,
@@ -35,7 +41,9 @@ export default function MyActivitySessionsPage() {
     pullDistance,
     refreshing,
     loadMoreRef,
-  } = useMyActivityFeed();
+    queryKey,
+    pinnedContext,
+  } = useMyActivityFeed(selectedSlug ?? undefined);
 
   const { togglePin } = useActivityTogglePin();
   const { handleDelete } = useActivityDeleteSession();
@@ -48,7 +56,7 @@ export default function MyActivitySessionsPage() {
   } = useFullSessions(expandedItem, editingItem);
 
   // handle feed item updates
-  const { updateFeedItem } = useUpdateFeedItem(["myActivitySessions"]);
+  const { updateFeedItem } = useUpdateFeedItem(queryKey);
 
   return (
     <div className="h-full">
@@ -74,6 +82,13 @@ export default function MyActivitySessionsPage() {
           ) : null}
         </div>
 
+        <ActivityTypeFilterChips
+          activityTypes={activityTypes}
+          selectedSlug={selectedSlug}
+          onSelectAll={() => setSelectedSlug(null)}
+          onSelectType={setSelectedSlug}
+        />
+
         {isLoading && !data ? (
           <FeedSkeleton count={6} />
         ) : error ? (
@@ -86,8 +101,8 @@ export default function MyActivitySessionsPage() {
               pinnedFeed={pinnedFeed}
               setExpandedItem={setExpandedItem}
               setEditingItem={setEditingItem}
-              pinned_context="activities"
-              queryKey={["myActivitySessions"]}
+              pinned_context={pinnedContext}
+              queryKey={queryKey}
             />
 
             {unpinnedFeed.length === 0 ? (

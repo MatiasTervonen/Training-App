@@ -3,7 +3,7 @@
 import { useState, useRef, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Check, CheckCheck, Dumbbell, Activity, MapPin } from "lucide-react";
-import { ChatMessage, LocationShareContent } from "@/types/chat";
+import { ChatMessage, LocationShareContent, SessionShareContent } from "@/types/chat";
 import ReplyPreview from "@/features/chat/components/ReplyPreview";
 import ReactionPills from "@/features/chat/components/ReactionPills";
 import LinkPreviewCard from "@/features/chat/components/LinkPreviewCard";
@@ -20,35 +20,49 @@ type ChatBubbleProps = {
   onReact: (emoji: string) => void;
   onForward: () => void;
   onScrollToMessage?: (messageId: string) => void;
+  onSessionPress?: (data: SessionShareContent, conversationId: string) => void;
 };
 
-type SessionShareData = {
-  session_type: string;
-  source_id: string;
-  title: string;
-  activity_name?: string;
-  stats: Record<string, number>;
-};
+type SessionShareData = SessionShareContent;
 
-function formatDuration(minutes: number): string {
-  const h = Math.floor(minutes / 60);
-  const m = minutes % 60;
+function formatDuration(seconds: number): string {
+  const totalMinutes = Math.floor(seconds / 60);
+  const h = Math.floor(totalMinutes / 60);
+  const m = totalMinutes % 60;
   if (h > 0) return `${h}h ${m}min`;
   return `${m}min`;
+}
+
+function getTranslatedActivityName(
+  activityName: string | undefined,
+  tActivities: (key: string, options?: Record<string, string>) => string,
+  fallback: string,
+): string {
+  if (!activityName) return fallback;
+  const slug = activityName.toLowerCase().replace(/\s+/g, "_");
+  const key = `activities.activityNames.${slug}`;
+  const translated = tActivities(key, { defaultValue: "" });
+  if (translated && translated !== key) return translated;
+  return activityName;
 }
 
 function SessionShareCard({
   data,
   t,
+  tActivities,
+  onClick,
 }: {
   data: SessionShareData;
   t: (key: string) => string;
+  tActivities: (key: string, options?: Record<string, string>) => string;
+  onClick?: () => void;
 }) {
   const isGym = data.session_type === "gym_sessions";
 
   return (
     <div
-      className={`rounded-xl overflow-hidden border border-slate-600/50 w-[280px] ${
+      onClick={onClick}
+      className={`rounded-xl overflow-hidden border border-slate-600/50 w-[280px] ${onClick ? "cursor-pointer hover:brightness-110 transition-all" : ""} ${
         isGym
           ? "bg-linear-to-br from-blue-500/15 to-blue-500/5"
           : "bg-linear-to-br from-green-500/15 to-green-500/5"
@@ -65,7 +79,7 @@ function SessionShareCard({
           <span className="font-body text-sm text-slate-400">
             {isGym
               ? t("chat.gymSession")
-              : (data.activity_name ?? t("chat.activitySession"))}
+              : getTranslatedActivityName(data.activity_name, tActivities, t("chat.activitySession"))}
           </span>
         </div>
 
@@ -135,6 +149,15 @@ function SessionShareCard({
             </div>
           )}
         </div>
+
+        {/* Tap to view hint */}
+        {onClick && (
+          <div className="flex items-center justify-start mt-2.5 gap-0.5">
+            <span className="font-body text-xs text-slate-500">
+              {t("chat.tapToView")}
+            </span>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -144,10 +167,14 @@ function MessageContent({
   message,
   isOwn,
   t,
+  tActivities,
+  onSessionPress,
 }: {
   message: ChatMessage;
   isOwn: boolean;
   t: (key: string) => string;
+  tActivities: (key: string, options?: Record<string, string>) => string;
+  onSessionPress?: (data: SessionShareContent, conversationId: string) => void;
 }) {
   if (message.message_type === "text") {
     return (
@@ -166,7 +193,14 @@ function MessageContent({
     }
 
     if (data) {
-      return <SessionShareCard data={data} t={t} />;
+      return (
+        <SessionShareCard
+          data={data}
+          t={t}
+          tActivities={tActivities}
+          onClick={onSessionPress ? () => onSessionPress(data, message.conversation_id) : undefined}
+        />
+      );
     }
 
     return (
@@ -220,8 +254,10 @@ export default function ChatBubble({
   onReact,
   onForward,
   onScrollToMessage,
+  onSessionPress,
 }: ChatBubbleProps) {
   const { t } = useTranslation("chat");
+  const { t: tActivities } = useTranslation("activities");
   const [contextMenu, setContextMenu] = useState<{
     x: number;
     y: number;
@@ -304,7 +340,7 @@ export default function ChatBubble({
             {t("chat.messageDeleted")}
           </p>
         ) : (
-          <MessageContent message={message} isOwn={isOwn} t={t} />
+          <MessageContent message={message} isOwn={isOwn} t={t} tActivities={tActivities} onSessionPress={onSessionPress} />
         )}
 
         {/* Link preview */}

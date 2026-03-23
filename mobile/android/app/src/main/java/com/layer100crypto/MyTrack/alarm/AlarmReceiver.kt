@@ -49,6 +49,17 @@ class AlarmReceiver : BroadcastReceiver() {
             return
         }
 
+        // Normal habit alarm: simple notification, no fullscreen/looping sound
+        // JS handles completion via HabitTimerListener (foreground) or completeExpiredHabit (background)
+        if (soundType == "habit") {
+            postSimpleHabitNotification(context, title, timesUpText)
+            if (isAppInForeground && isScreenOn) {
+                ReactEventEmitter.sendTimerFinished(context, reminderId, title)
+            }
+            AlarmScheduler(context).cleanUpFiredOneTimeAlarm(reminderId)
+            return
+        }
+
         // For timers/habits: JS handles the alarm when in foreground AND screen is on
         // For reminders: Always use native alarm (no JS handling exists)
         val shouldStartService = soundType == "reminder" || soundType == "global-reminder" || !isAppInForeground || !isScreenOn
@@ -160,6 +171,51 @@ class AlarmReceiver : BroadcastReceiver() {
 
         context.getSystemService(NotificationManager::class.java)
             .notify(reminderId.hashCode(), notification)
+    }
+
+    private fun postSimpleHabitNotification(
+        context: Context,
+        title: String,
+        timesUpText: String
+    ) {
+        val channelId = "reminders"
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                channelId,
+                "Reminders",
+                NotificationManager.IMPORTANCE_HIGH
+            ).apply {
+                description = "Reminder notifications"
+            }
+            context.getSystemService(NotificationManager::class.java)
+                .createNotificationChannel(channel)
+        }
+
+        // Tap action: open dashboard
+        val openIntent = Intent(context, MainActivity::class.java).apply {
+            action = Intent.ACTION_VIEW
+            data = Uri.parse("kurvi://dashboard")
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or
+                    Intent.FLAG_ACTIVITY_CLEAR_TOP or
+                    Intent.FLAG_ACTIVITY_SINGLE_TOP
+        }
+        val openPendingIntent = PendingIntent.getActivity(
+            context, title.hashCode(), openIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val notification = NotificationCompat.Builder(context, channelId)
+            .setContentTitle(title)
+            .setContentText(timesUpText)
+            .setSmallIcon(R.drawable.ic_stat_kurvi_icon_ice_blue_transparent)
+            .setAutoCancel(true)
+            .setContentIntent(openPendingIntent)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .build()
+
+        context.getSystemService(NotificationManager::class.java)
+            .notify(title.hashCode(), notification)
     }
 
     private fun scheduleNextRepeat(context: Context, reminderId: String) {

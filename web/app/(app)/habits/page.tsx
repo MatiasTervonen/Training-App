@@ -102,7 +102,7 @@ export default function HabitsPage() {
 
   if (isLoading) {
     return (
-      <div className="page-padding min-h-full max-w-md mx-auto flex justify-center pt-20">
+      <div className="page-padding min-h-full max-w-md mx-auto flex items-center justify-center">
         <Spinner />
       </div>
     );

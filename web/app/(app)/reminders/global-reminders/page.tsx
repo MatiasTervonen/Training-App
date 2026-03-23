@@ -110,7 +110,7 @@ export default function GlobalReminder() {
       {isSaving && <FullScreenLoader message={t("reminders.savingReminder")} />}
 
       <InfoModal isOpen={isOpen} onClose={() => setIsOpen(false)}>
-        <div className="p-6 items-center text-center">
+        <div className="items-center text-center">
           <h2 className="text-xl mb-4">{t("reminders.pushDisabledTitle")}</h2>
           <p className="mb-10 text-gray-300 text-lg font-body">
             {t("reminders.pushDisabledMessage")}

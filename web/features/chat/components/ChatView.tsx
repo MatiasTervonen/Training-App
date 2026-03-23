@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import Image from "next/image";
 import { ArrowLeft, ChevronDown } from "lucide-react";
-import { ChatMessage } from "@/types/chat";
+import { ChatMessage, SessionShareContent } from "@/types/chat";
 import { useMessages } from "@/features/chat/hooks/useMessages";
 import { useChatRealtime } from "@/features/chat/hooks/useChatRealtime";
 import { useTypingIndicator } from "@/features/chat/hooks/useTypingIndicator";
@@ -21,6 +21,14 @@ import ChatInput from "@/features/chat/components/ChatInput";
 import DateSeparator from "@/features/chat/components/DateSeparator";
 import TypingIndicator from "@/features/chat/components/TypingIndicator";
 import FriendPickerModal from "@/features/chat/components/FriendPickerModal";
+import Modal from "@/components/modal";
+import Spinner from "@/components/spinner";
+import GymSession from "@/features/gym/cards/gym-expanded";
+import ActivitySession from "@/features/activities/cards/activity-feed-expanded/activity";
+import { getSharedGymSession } from "@/database/chat/get-shared-session";
+import { getSharedActivitySession } from "@/database/chat/get-shared-session";
+import type { FullGymSession } from "@/database/gym/get-full-gym-session";
+import type { FullActivitySession } from "@/types/models";
 import toast from "react-hot-toast";
 
 type ChatViewProps = {
@@ -39,6 +47,11 @@ export default function ChatView({ conversationId, otherUser, isActive, onBack }
   const currentUserId = useCurrentUserId();
   const [replyingTo, setReplyingTo] = useState<ChatMessage | null>(null);
   const [forwardingMessage, setForwardingMessage] = useState<ChatMessage | null>(null);
+  const [sessionModalData, setSessionModalData] = useState<SessionShareContent | null>(null);
+  const [isLoadingSession, setIsLoadingSession] = useState(false);
+  const [loadedGymSession, setLoadedGymSession] = useState<FullGymSession | null>(null);
+  const [loadedActivitySession, setLoadedActivitySession] = useState<FullActivitySession | null>(null);
+  const [sessionError, setSessionError] = useState(false);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const messageListRef = useRef<HTMLDivElement>(null);
   const [showScrollDown, setShowScrollDown] = useState(false);
@@ -82,7 +95,7 @@ export default function ChatView({ conversationId, otherUser, isActive, onBack }
           fetchNextPage();
         }
       },
-      { rootMargin: "200px" }
+      { root: messageListRef.current, rootMargin: "200px" }
     );
     observer.observe(sentinelRef.current);
     return () => observer.disconnect();
@@ -146,6 +159,35 @@ export default function ChatView({ conversationId, otherUser, isActive, onBack }
       }
     );
   }, [forwardMessage, forwardingMessage, t]);
+
+  const handleSessionPress = useCallback(async (data: SessionShareContent, convId: string) => {
+    setSessionModalData(data);
+    setIsLoadingSession(true);
+    setSessionError(false);
+    setLoadedGymSession(null);
+    setLoadedActivitySession(null);
+
+    try {
+      if (data.session_type === "gym_sessions") {
+        const result = await getSharedGymSession(data.source_id, convId);
+        setLoadedGymSession(result);
+      } else {
+        const result = await getSharedActivitySession(data.source_id, convId);
+        setLoadedActivitySession(result);
+      }
+    } catch {
+      setSessionError(true);
+    } finally {
+      setIsLoadingSession(false);
+    }
+  }, []);
+
+  const closeSessionModal = useCallback(() => {
+    setSessionModalData(null);
+    setLoadedGymSession(null);
+    setLoadedActivitySession(null);
+    setSessionError(false);
+  }, []);
 
   const handleScroll = useCallback(() => {
     const el = messageListRef.current;
@@ -216,6 +258,7 @@ export default function ChatView({ conversationId, otherUser, isActive, onBack }
                 onReact={(emoji) => handleReact(msg.id, emoji)}
                 onForward={() => setForwardingMessage(msg)}
                 onScrollToMessage={scrollToMessage}
+                onSessionPress={handleSessionPress}
               />
             );
           })}
@@ -261,6 +304,30 @@ export default function ChatView({ conversationId, otherUser, isActive, onBack }
         onSelect={handleForward}
         title={t("chat.forwardTo")}
       />
+
+      {/* Session share modal */}
+      {sessionModalData && (
+        <Modal isOpen={true} onClose={closeSessionModal}>
+          {isLoadingSession ? (
+            <div className="flex flex-col gap-5 items-center justify-center pt-20 px-10 font-body">
+              <p className="text-lg">
+                {sessionModalData.session_type === "gym_sessions"
+                  ? t("chat.loadingSession")
+                  : t("chat.loadingSession")}
+              </p>
+              <Spinner />
+            </div>
+          ) : sessionError ? (
+            <p className="text-center text-lg mt-20 px-10 font-body">
+              {t("chat.sessionUnavailable")}
+            </p>
+          ) : loadedGymSession ? (
+            <GymSession {...loadedGymSession} readOnly />
+          ) : loadedActivitySession ? (
+            <ActivitySession {...loadedActivitySession} feed_context="feed" />
+          ) : null}
+        </Modal>
+      )}
     </div>
   );
 }

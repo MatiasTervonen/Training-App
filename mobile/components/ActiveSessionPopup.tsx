@@ -1,9 +1,9 @@
 import { Link, usePathname } from "expo-router";
-import { SquareArrowRight } from "lucide-react-native";
+import { SquareArrowRight, PartyPopper } from "lucide-react-native";
 import { useTimerStore } from "@/lib/stores/timerStore";
 import { useEffect } from "react";
 import AppText from "@/components/AppText";
-import { View, Pressable, TouchableOpacity } from "react-native";
+import { View, Pressable, TouchableOpacity, DeviceEventEmitter } from "react-native";
 import Timer from "@/components/timer";
 import Animated, {
   useSharedValue,
@@ -19,27 +19,54 @@ import { useTranslation } from "react-i18next";
 import { LinearGradient } from "expo-linear-gradient";
 
 export default function ActiveSessionPopup() {
-  const { t } = useTranslation(["gym", "timer"]);
+  const { t } = useTranslation(["gym", "timer", "habits"]);
   const activeSession = useTimerStore((state) => state.activeSession);
   const alarmFired = useTimerStore((state) => state.alarmFired);
 
   const pathname = usePathname();
 
+  const isHabitSession = activeSession?.type === "habit";
+
   const opacity = useSharedValue(1);
 
   useEffect(() => {
-    if (alarmFired) {
+    if (alarmFired && !isHabitSession) {
       opacity.value = withRepeat(withTiming(0.2, { duration: 500 }), -1, true);
     } else {
       opacity.value = withTiming(1, { duration: 300 });
     }
-  }, [alarmFired, opacity]);
+  }, [alarmFired, opacity, isHabitSession]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,
   }));
 
   if (!activeSession) return null;
+
+  // Habit completed — timer page has its own UI, hide popup there
+  if (isHabitSession && alarmFired && pathname === "/timer/empty-timer") return null;
+
+  // Habit completed state — show celebration bar on other pages
+  if (isHabitSession && alarmFired) {
+    return (
+      <View className="z-0">
+        <LinearGradient
+          colors={["#0a1f1a", "#0f172a"]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+        >
+          <View className="flex-row items-center justify-center gap-3" style={{ height: 61 }}>
+            <PartyPopper size={22} color="#22c55e" />
+            <AppText className="text-lg">
+              {t("habits:durationCompleted")}
+            </AppText>
+            <PartyPopper size={22} color="#22c55e" />
+          </View>
+        </LinearGradient>
+        <View className="h-px bg-white/5" />
+      </View>
+    );
+  }
 
   if (pathname === "/gym/gym" && activeSession.type === t("gym:gym.title")) {
     return null;
@@ -81,54 +108,60 @@ export default function ActiveSessionPopup() {
   return (
     <Animated.View
       style={animatedStyle}
-      className={`z-0 ${
-        alarmFired
-          ? "bg-red-500 border-[1.5px] border-red-400"
-          : "bg-gray-600 border-[1.5px] border-green-500"
-      } `}
+      className="z-0"
     >
       <LinearGradient
-        colors={["#1e3a8a", "#0f172a", "#0f172a"]}
-        start={{ x: 1, y: 0 }} // bottom-left
-        end={{ x: 0, y: 1 }} // top-right
+        colors={alarmFired ? ["#2a0a0a", "#0f172a"] : ["#0a1f1a", "#0f172a"]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 0 }}
       >
-        <Pressable
-          onPress={() => {
-            stopNativeAlarm();
-            cancelNativeAlarm("timer");
-          }}
-          className="w-full py-3 flex-row items-center z-50"
-        >
-          <View className="flex-row flex-1 justify-between items-center gap-5 ml-10">
-            <Timer textClassName="text-2xl" />
-            {activeSession.label && (
-              <AppText
-                numberOfLines={1}
-                ellipsizeMode="tail"
-                className="mr-8 text-lg"
-              >
-                {activeSession.label}
-              </AppText>
-            )}
-            {alarmFired && (
-              <AppText>{t("timer:timer.notification.alarm")}</AppText>
-            )}
-
-            <Link
-              className="mr-5"
-              onPress={() => {
+        <View className="flex-row">
+          <Pressable
+            onPress={() => {
+              if (isHabitSession) {
+                // Pause habit timer — reuses TIMER_STOPPED flow (saves progress + pauses)
+                DeviceEventEmitter.emit("TIMER_STOPPED");
+              } else {
                 stopNativeAlarm();
                 cancelNativeAlarm("timer");
-              }}
-              asChild
-              href={activeSession.path as any}
-            >
-              <TouchableOpacity>
-                <SquareArrowRight size={40} color="#f3f4f6" />
-              </TouchableOpacity>
-            </Link>
-          </View>
-        </Pressable>
+              }
+            }}
+            className="flex-1 py-3 flex-row items-center z-50"
+          >
+            <View className="flex-row flex-1 justify-between items-center gap-5 ml-7">
+              <Timer textClassName="text-2xl" />
+              {activeSession?.label && (
+                <AppText
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                  className="mr-8 text-lg"
+                >
+                  {activeSession.label}
+                </AppText>
+              )}
+              {alarmFired && (
+                <AppText>{t("timer:timer.notification.alarm")}</AppText>
+              )}
+
+              {activeSession && (
+              <Link
+                className="mr-5"
+                onPress={() => {
+                  stopNativeAlarm();
+                  cancelNativeAlarm("timer");
+                }}
+                asChild
+                href={activeSession.path as any}
+              >
+                <TouchableOpacity>
+                  <SquareArrowRight size={40} color="#6b7280" />
+                </TouchableOpacity>
+              </Link>
+              )}
+            </View>
+          </Pressable>
+        </View>
+        <View className={`h-px ${alarmFired ? "bg-red-500/20" : "bg-white/5"}`} />
       </LinearGradient>
     </Animated.View>
   );

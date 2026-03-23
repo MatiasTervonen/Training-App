@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { MessageCircle } from "lucide-react";
+import { MessageCircle, ArrowLeft } from "lucide-react";
 import Image from "next/image";
 import NotificationBell from "@/components/navbar/NotificationBell";
 import { useUserStore } from "@/lib/stores/useUserStore";
@@ -26,7 +26,16 @@ export default function Navbar() {
 
   return (
     <div className={`w-full lg:max-w-[1600px] ${fullPage} sticky top-0 mx-auto z-50`}>
-      <nav className="w-full flex items-center justify-between p-4 bg-linear-to-tr from-gray-900 via-slate-900 to-blue-900 shadow-lg">
+      <nav className="relative w-full flex items-center justify-between p-4 bg-linear-to-tr from-gray-900 via-slate-900 to-blue-900 shadow-lg">
+        {!["/dashboard", "/menu", "/sessions"].includes(pathname) && (
+          <button
+            onClick={() => router.back()}
+            className="absolute left-60 xl:left-76 top-1/2 -translate-y-1/2 flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-300 hover:text-white hover:bg-slate-700/50 rounded-lg transition-colors cursor-pointer"
+          >
+            <ArrowLeft size={16} />
+            {t("navigation.back")}
+          </button>
+        )}
         <Link href="/dashboard">
           <Image
             src="/app-logos/kurvi_icon_ice_blue_rounded.svg"
@@ -60,35 +69,34 @@ export default function Navbar() {
         </div>
       </nav>
       {["/dashboard", "/menu", "/sessions"].includes(pathname) && (
-        <div className="flex justify-between bg-slate-600 w-full text-center text-gray-100 lg:hidden">
+        <div className="flex gap-1.5 p-1 bg-slate-800 w-full lg:hidden">
           <Link
             href={"/menu"}
-            className={
+            className={`flex-1 py-1.5 px-3 rounded-md text-center text-sm ${
               pathname === "/menu"
-                ? "bg-slate-500 p-2 w-1/3"
-                : "p-2 w-1/3 hover:bg-slate-500"
-            }
+                ? "bg-slate-700 text-cyan-400"
+                : "text-gray-200 hover:bg-slate-700"
+            }`}
           >
             {t("navbar.menu")}
           </Link>
-
           <Link
             href={"/dashboard"}
-            className={
+            className={`flex-1 py-1.5 px-3 rounded-md text-center text-sm ${
               pathname === "/dashboard"
-                ? "bg-slate-500 p-2 w-1/3"
-                : "p-2 w-1/3 hover:bg-slate-500"
-            }
+                ? "bg-slate-700 text-cyan-400"
+                : "text-gray-200 hover:bg-slate-700"
+            }`}
           >
             {t("navbar.feed")}
           </Link>
           <button
             onClick={() => router.push("/sessions")}
-            className={
+            className={`flex-1 py-1.5 px-3 rounded-md text-center text-sm cursor-pointer ${
               pathname === "/sessions"
-                ? "bg-slate-500 p-2 w-1/3"
-                : "p-2 w-1/3 hover:bg-slate-500"
-            }
+                ? "bg-slate-700 text-cyan-400"
+                : "text-gray-200 hover:bg-slate-700"
+            }`}
           >
             {t("navbar.sessions")}
           </button>

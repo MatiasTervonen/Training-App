@@ -1,7 +1,7 @@
 import AppText from "@/components/AppText";
 import LinkButton from "@/components/buttons/LinkButton";
 import PageContainer from "@/components/PageContainer";
-import { View, Modal, AppState } from "react-native";
+import { View, AppState } from "react-native";
 import { useTimerStore } from "@/lib/stores/timerStore";
 import Toast from "react-native-toast-message";
 import { useEffect, useState } from "react";
@@ -10,8 +10,6 @@ import {
   requestExactAlarm,
 } from "@/native/android/EnsureExactAlarmPermission";
 import InfoModal from "@/components/InfoModal";
-import BodyText from "@/components/BodyText";
-import { Info } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import { useUserStore } from "@/lib/stores/useUserStore";
 import { SESSION_COLORS } from "@/lib/sessionColors";
@@ -109,34 +107,27 @@ export default function TimerScreen() {
         onConfirm={() => requestExactAlarm()}
       />
 
-      <Modal visible={showPushModal} transparent={true} animationType="slide">
-        <View className="flex-1 justify-center items-center bg-black/50 px-5">
-          <View className="bg-slate-700 rounded-lg p-6 w-full border-[1.5px] border-gray-100">
-            <View className="mb-5">
-              <Info size={35} color="#fbbf24" />
+      <InfoModal
+        visible={showPushModal}
+        onClose={() => router.replace("/sessions")}
+        title={t("timer.pushPermission.title")}
+        description={t("timer.pushPermission.description")}
+        customActions={
+          <>
+            <View className="flex-1">
+              <LinkButton href="/sessions" label={t("timer.pushPermission.skip")} gradientColors={colors.gradient} borderColor={colors.border} />
             </View>
-            <AppText className="text-xl mb-6 text-center">
-              {t("timer.pushPermission.title")}
-            </AppText>
-            <BodyText className=" text-lg mb-6 text-center">
-              {t("timer.pushPermission.description")}
-            </BodyText>
-            <View className="flex-row gap-4">
-              <View className="flex-1">
-                <LinkButton href="/sessions" label={t("timer.pushPermission.skip")} gradientColors={colors.gradient} borderColor={colors.border} />
-              </View>
-              <View className="flex-1">
-                <LinkButton
-                  href="/menu/settings"
-                  label={t("timer.pushPermission.settings")}
-                  gradientColors={colors.gradient}
-                  borderColor={colors.border}
-                />
-              </View>
+            <View className="flex-1">
+              <LinkButton
+                href="/menu/settings"
+                label={t("timer.pushPermission.settings")}
+                gradientColors={colors.gradient}
+                borderColor={colors.border}
+              />
             </View>
-          </View>
-        </View>
-      </Modal>
+          </>
+        }
+      />
     </>
   );
 }

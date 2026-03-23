@@ -62,6 +62,10 @@
   "habitTimerCancelTitle": "Pysäytä ajastin?",
   "habitTimerCancelMessage": "Edistymisesi tallennetaan.",
   "durationCompleted": "Tavoite saavutettu!",
+  "durationResetTitle": "Nollaa ajastin?",
+  "durationResetMessage": "Tämä nollaa kertyneen aikasi tältä päivältä. Oletko varma?",
+  "durationResetCancel": "Peruuta",
+  "durationResetConfirm": "Nollaa",
   "reminderDisabledPush": "Push-ilmoitukset ovat pois päältä. Ota käyttöön",
   "reminderDisabledPushLink": "Asetuksista",
   "durationPushDisabled": {

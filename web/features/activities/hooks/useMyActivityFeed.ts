@@ -1,14 +1,20 @@
 "use client";
 
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
-import { getActivitySessions } from "@/database/activities/get-activity-sessions";
+import { getActivitySessions, getActivityPinnedContext } from "@/database/activities/get-activity-sessions";
 import { FeedData } from "@/types/session";
 import { useEffect, useMemo, useRef } from "react";
 import usePullToRefresh from "@/lib/usePullToRefresh";
 
-export default function useMyActivityFeed() {
+export default function useMyActivityFeed(activitySlug?: string) {
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
   const queryClient = useQueryClient();
+
+  const queryKey = activitySlug
+    ? ["myActivitySessions", activitySlug]
+    : ["myActivitySessions"];
+
+  const pinnedContext = getActivityPinnedContext(activitySlug);
 
   const {
     data,
@@ -19,8 +25,8 @@ export default function useMyActivityFeed() {
     hasNextPage,
     isFetchingNextPage,
   } = useInfiniteQuery({
-    queryKey: ["myActivitySessions"],
-    queryFn: ({ pageParam = 0 }) => getActivitySessions({ pageParam, limit: 10 }),
+    queryKey,
+    queryFn: ({ pageParam = 0 }) => getActivitySessions({ pageParam, limit: 10, activitySlug }),
     initialPageParam: 0,
     getNextPageParam: (lastPage) => lastPage.nextPage,
   });
@@ -28,7 +34,7 @@ export default function useMyActivityFeed() {
   // Keep only first page in cache when user leaves feed
   useEffect(() => {
     return () => {
-      queryClient.setQueryData<FeedData>(["myActivitySessions"], (old) => {
+      queryClient.setQueryData<FeedData>(queryKey, (old) => {
         if (!old) return old;
 
         return {
@@ -38,7 +44,7 @@ export default function useMyActivityFeed() {
         };
       });
     };
-  }, [queryClient]);
+  }, [queryClient, activitySlug]);
 
   // Load more when the bottom of the feed is in view
   useEffect(() => {
@@ -96,5 +102,7 @@ export default function useMyActivityFeed() {
     pullDistance,
     refreshing,
     loadMoreRef,
+    queryKey,
+    pinnedContext,
   };
 }

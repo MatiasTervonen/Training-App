@@ -63,7 +63,7 @@ export default function Timer({
   const isHabitSession = activeSession?.type === "habit";
 
   useEffect(() => {
-    if (alarmFired) {
+    if (alarmFired && !isHabitSession) {
       // Pulse between 0 and 1 repeatedly (color loop)
       colorProgress.value = withRepeat(
         withTiming(1, { duration: 500 }),
@@ -73,7 +73,7 @@ export default function Timer({
     } else {
       colorProgress.value = withTiming(0, { duration: 300 });
     }
-  }, [alarmFired, colorProgress]);
+  }, [alarmFired, colorProgress, isHabitSession]);
 
   const handleStart = () => {
     if (!remainingMs) return;
@@ -130,9 +130,9 @@ export default function Timer({
             <CirclePlay color="#f3f4f6" size={iconSize} />
           </AnimatedButton>
         )
-      ) : (
+      ) : isHabitSession ? null : (
         <View className="flex-row gap-3 justify-center">
-          <View className={isHabitSession ? "w-1/2" : "flex-1"}>
+          <View className="flex-1">
             <AnimatedButton
               label={t("timer.notification.stopAlarm")}
               className="btn-danger"
@@ -146,80 +146,76 @@ export default function Timer({
               }}
             />
           </View>
-          {!isHabitSession && (
-            <>
-              <View className="flex-1">
-                <AnimatedButton
-                  label={t("timer.notification.restart")}
-                  onPress={() => {
-                    if (!totalDuration) return;
+          <View className="flex-1">
+            <AnimatedButton
+              label={t("timer.notification.restart")}
+              onPress={() => {
+                if (!totalDuration) return;
 
-                    clearEverything();
-                    cancelNativeAlarm("timer");
-                    scheduleNativeAlarm(
-                      Date.now() + totalDuration * 1000,
-                      "timer",
-                      t("timer.title"),
-                      "timer",
-                      "",
-                      t("timer.notification.tapToOpenTimer"),
-                      t("timer.notification.timesUp"),
-                      t("timer.notification.stopAlarm"),
-                      t("timer.notification.extendTimer"),
-                    );
-                    startTimer(totalDuration, t("timer.title"));
-                    setActiveSession({
-                      type: t("timer.title"),
-                      label: t("timer.title"),
-                      path: "/timer/empty-timer",
-                    });
-                  }}
-                  className="btn-base flex-row gap-2 justify-center items-center"
-                >
-                  <RotateCcw size={20} color="#f3f4f6" />
-                </AnimatedButton>
-              </View>
-              <View className="flex-1">
-                <AnimatedButton
-                  label={t("timer.notification.extendTimer")}
-                  onPress={() => {
-                    onStopAlarmSound?.();
-                    stopNativeAlarm();
+                clearEverything();
+                cancelNativeAlarm("timer");
+                scheduleNativeAlarm(
+                  Date.now() + totalDuration * 1000,
+                  "timer",
+                  t("timer.title"),
+                  "timer",
+                  "",
+                  t("timer.notification.tapToOpenTimer"),
+                  t("timer.notification.timesUp"),
+                  t("timer.notification.stopAlarm"),
+                  t("timer.notification.extendTimer"),
+                );
+                startTimer(totalDuration, t("timer.title"));
+                setActiveSession({
+                  type: t("timer.title"),
+                  label: t("timer.title"),
+                  path: "/timer/empty-timer",
+                });
+              }}
+              className="btn-base flex-row gap-2 justify-center items-center"
+            >
+              <RotateCcw size={20} color="#f3f4f6" />
+            </AnimatedButton>
+          </View>
+          <View className="flex-1">
+            <AnimatedButton
+              label={t("timer.notification.extendTimer")}
+              onPress={() => {
+                onStopAlarmSound?.();
+                stopNativeAlarm();
 
-                    const snoozeDuration = 60;
-                    const newEndTimestamp = Date.now() + snoozeDuration * 1000;
+                const snoozeDuration = 60;
+                const newEndTimestamp = Date.now() + snoozeDuration * 1000;
 
-                    cancelNativeAlarm("timer");
-                    scheduleNativeAlarm(
-                      newEndTimestamp,
-                      "timer",
-                      t("timer.title"),
-                      "timer",
-                      "",
-                      t("timer.notification.tapToOpenTimer"),
-                      t("timer.notification.timesUp"),
-                      t("timer.notification.stopAlarm"),
-                      t("timer.notification.extendTimer"),
-                    );
+                cancelNativeAlarm("timer");
+                scheduleNativeAlarm(
+                  newEndTimestamp,
+                  "timer",
+                  t("timer.title"),
+                  "timer",
+                  "",
+                  t("timer.notification.tapToOpenTimer"),
+                  t("timer.notification.timesUp"),
+                  t("timer.notification.stopAlarm"),
+                  t("timer.notification.extendTimer"),
+                );
 
-                    startNativeTimer(
-                      newEndTimestamp,
-                      t("timer.title"),
-                      "countdown",
-                      t("timer.notification.timeRemaining"),
-                      t("timer.notification.pauseTimer"),
-                      t("timer.notification.extendTimer"),
-                    );
+                startNativeTimer(
+                  newEndTimestamp,
+                  t("timer.title"),
+                  "countdown",
+                  t("timer.notification.timeRemaining"),
+                  t("timer.notification.pauseTimer"),
+                  t("timer.notification.extendTimer"),
+                );
 
-                    useTimerStore
-                      .getState()
-                      .snoozedTimer(newEndTimestamp, snoozeDuration);
-                  }}
-                  className="btn-neutral"
-                />
-              </View>
-            </>
-          )}
+                useTimerStore
+                  .getState()
+                  .snoozedTimer(newEndTimestamp, snoozeDuration);
+              }}
+              className="btn-neutral"
+            />
+          </View>
         </View>
       )}
     </View>

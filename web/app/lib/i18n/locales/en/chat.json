@@ -48,6 +48,9 @@
     "fileTooLarge": "File is too large",
     "videoTooLong": "Video must be under 5 minutes",
     "imageTooLarge": "Image is too large after compression",
+    "tapToView": "Click to view details",
+    "loadingSession": "Loading session...",
+    "sessionUnavailable": "This session is no longer available",
     "locationCard": {
       "location": "Location",
       "tapToView": "Click to open in Google Maps"

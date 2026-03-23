@@ -2,8 +2,9 @@
 
 import { useRef, useCallback, useState, useEffect, ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, SendHorizonal } from "lucide-react";
+import { X, SendHorizonal, Forward } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import toast from "react-hot-toast";
 import useFeedComments from "@/features/social-feed/hooks/useFeedComments";
 import useAddComment from "@/features/social-feed/hooks/useAddComment";
 import useDeleteComment from "@/features/social-feed/hooks/useDeleteComment";
@@ -14,6 +15,9 @@ import { FeedComment, SocialFeedItem } from "@/types/social-feed";
 import { createClient } from "@/utils/supabase/client";
 import { createPortal } from "react-dom";
 import Spinner from "@/components/spinner";
+import FriendPickerModal from "@/features/chat/components/FriendPickerModal";
+import { sendSessionShareToChat } from "@/database/chat/send-session-share";
+import { SessionShareContent } from "@/types/chat";
 
 type ReplyState = {
   parentId: string;
@@ -48,6 +52,8 @@ export default function SocialPostModal({
   const [inputText, setInputText] = useState("");
   const [replyingTo, setReplyingTo] = useState<ReplyState>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [showSharePicker, setShowSharePicker] = useState(false);
+  const [isSharingToChat, setIsSharingToChat] = useState(false);
 
   const { data: comments, isLoading: isLoadingComments } = useFeedComments(item.id);
   const { mutate: addComment } = useAddComment();
@@ -69,14 +75,14 @@ export default function SocialPostModal({
     return () => window.removeEventListener("keydown", handleKey);
   }, [onClose]);
 
-  // Scroll to comments section if opened via comment button
+  // Scroll to comments section if opened via comment button (wait for session to load)
   useEffect(() => {
-    if (scrollToComments && commentsRef.current) {
+    if (scrollToComments && !isLoadingSession && commentsRef.current) {
       setTimeout(() => {
         commentsRef.current?.scrollIntoView({ behavior: "smooth" });
       }, 200);
     }
-  }, [scrollToComments]);
+  }, [scrollToComments, isLoadingSession]);
 
   const handleSend = useCallback(() => {
     if (!inputText.trim()) return;
@@ -118,6 +124,41 @@ export default function SocialPostModal({
     },
     [handleSend],
   );
+
+  const handleShareToChat = useCallback(async (friendId: string) => {
+    setIsSharingToChat(true);
+    try {
+      const extraFields = item.extra_fields as Record<string, unknown>;
+      const sessionData: SessionShareContent = {
+        session_type: item.type as "gym_sessions" | "activity_sessions",
+        source_id: item.source_id,
+        feed_item_id: item.id,
+        title: item.title,
+        ...(item.type === "activity_sessions" && extraFields.activity_name
+          ? { activity_name: extraFields.activity_name as string }
+          : {}),
+        stats: {
+          duration: (extraFields.duration as number) ?? 0,
+          ...(item.type === "gym_sessions"
+            ? {
+                exercises_count: (extraFields.exercises_count as number) ?? 0,
+                sets_count: (extraFields.sets_count as number) ?? 0,
+              }
+            : {
+                distance_meters: (extraFields.distance as number) ?? 0,
+              }),
+        },
+      };
+
+      await sendSessionShareToChat(friendId, sessionData);
+      toast.success(t("social.sessionShared"));
+      setShowSharePicker(false);
+    } catch {
+      toast.error(t("social.shareError"));
+    } finally {
+      setIsSharingToChat(false);
+    }
+  }, [item, t]);
 
   const commentCount = comments?.length ?? 0;
 
@@ -174,6 +215,18 @@ export default function SocialPostModal({
                 commentsRef.current?.scrollIntoView({ behavior: "smooth" });
               }}
             />
+          </div>
+
+          {/* Share to chat */}
+          <div className="border-t border-slate-700/50 px-4 py-2">
+            <button
+              onClick={() => setShowSharePicker(true)}
+              disabled={isSharingToChat}
+              className="flex items-center gap-2 cursor-pointer"
+            >
+              <Forward size={18} className="text-slate-500" />
+              <span className="text-slate-500 text-sm font-body">{t("social.shareToChat")}</span>
+            </button>
           </div>
 
           {/* ─── Comments section ─── */}
@@ -248,6 +301,14 @@ export default function SocialPostModal({
           </div>
         </div>
         </motion.div>
+
+        {/* Friend picker for share to chat */}
+        <FriendPickerModal
+          isOpen={showSharePicker}
+          onClose={() => setShowSharePicker(false)}
+          onSelect={handleShareToChat}
+          title={t("social.shareToChat")}
+        />
       </div>
     </AnimatePresence>,
     document.body,

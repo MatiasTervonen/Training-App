@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { DeviceEventEmitter, Platform } from "react-native";
+import { AppState, DeviceEventEmitter, Platform } from "react-native";
 import { useRouter } from "expo-router";
 import {
   stopNativeAlarm,
@@ -22,24 +22,27 @@ function clearAlarmState() {
 
 export default function AlarmPlayingListener() {
   const router = useRouter();
-  const alarmFired = useTimerStore((s) => s.alarmFired);
 
-  // When alarmFired is true (including after store rehydration), check if
+  // When app returns to foreground with alarmFired still true, check if
   // the native alarm service is actually still running. If not, the user
   // already stopped it from the notification — clear the stale JS state.
+  // Only runs on foreground resume, NOT on alarmFired change (in foreground,
+  // JS handles the alarm and AlarmService isn't started).
   useEffect(() => {
     if (Platform.OS !== "android") return;
-    if (!alarmFired) return;
 
-    const checkStaleAlarmState = async () => {
+    const sub = AppState.addEventListener("change", async (state) => {
+      if (state !== "active") return;
+      if (!useTimerStore.getState().alarmFired) return;
+
       const running = await isNativeAlarmRunning();
       if (!running) {
         clearAlarmState();
       }
-    };
+    });
 
-    checkStaleAlarmState();
-  }, [alarmFired]);
+    return () => sub.remove();
+  }, []);
 
   useEffect(() => {
     if (Platform.OS !== "android") return;

@@ -20,7 +20,8 @@
       "noSessionsDesc": "Aktiviteettisessiosi näkyvät täällä",
       "loadingDetails": "Ladataan aktiviteettisession tietoja...",
       "loadingSession": "Ladataan aktiviteettisessiota...",
-      "loadDetailsError": "Aktiviteettisession tietojen lataus epäonnistui. Yritä myöhemmin uudelleen."
+      "loadDetailsError": "Aktiviteettisession tietojen lataus epäonnistui. Yritä myöhemmin uudelleen.",
+      "all": "Kaikki"
     },
     "activeSessionError": "Sinulla on jo aktiivinen sessio.",
     "activeSessionErrorSub": "Lopeta se ennen uuden aloittamista.",

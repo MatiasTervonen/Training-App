@@ -1,12 +1,11 @@
-import { View, ScrollView, Platform, AppState, Modal } from "react-native";
+import { View, ScrollView, Platform, AppState } from "react-native";
 import AppText from "@/components/AppText";
+import AppTextNC from "@/components/AppTextNC";
 import AppInput from "@/components/AppInput";
 import PageContainer from "@/components/PageContainer";
 import AutoSaveIndicator from "@/components/AutoSaveIndicator";
 import InfoModal from "@/components/InfoModal";
-import BodyText from "@/components/BodyText";
 import LinkButton from "@/components/buttons/LinkButton";
-import { Info } from "lucide-react-native";
 import { SESSION_COLORS } from "@/lib/sessionColors";
 
 import SaveButton from "@/components/buttons/SaveButton";
@@ -593,15 +592,15 @@ export default function CreateHabitScreen() {
                   />
                 </View>
                 {!pushEnabled && (
-                  <AppText className="text-gray-400 text-xs">
+                  <AppTextNC className="text-gray-400 text-xs">
                     {t("reminderDisabledPush")}{" "}
-                    <AppText
+                    <AppTextNC
                       className="text-blue-400 text-xs underline"
                       onPress={() => router.push("/menu/settings")}
                     >
                       {t("reminderDisabledPushLink")}
-                    </AppText>
-                  </AppText>
+                    </AppTextNC>
+                  </AppTextNC>
                 )}
 
                 {reminderEnabled && (
@@ -659,42 +658,31 @@ export default function CreateHabitScreen() {
         />
       )}
 
-      <Modal
+      <InfoModal
         visible={showDurationPushModal}
-        transparent={true}
-        animationType="slide"
-      >
-        <View className="flex-1 justify-center items-center bg-black/50 px-5">
-          <View className="bg-slate-700 rounded-lg p-6 w-full border-[1.5px] border-gray-100">
-            <View className="mb-5">
-              <Info size={35} color="#fbbf24" />
+        onClose={() => setHabitType("manual")}
+        title={t("durationPushDisabled.title")}
+        description={t("durationPushDisabled.description")}
+        customActions={
+          <>
+            <View className="flex-1">
+              <AnimatedButton
+                onPress={() => setHabitType("manual")}
+                className="btn-neutral"
+                label={t("durationPushDisabled.back")}
+              />
             </View>
-            <AppText className="text-xl mb-6 text-center">
-              {t("durationPushDisabled.title")}
-            </AppText>
-            <BodyText className="text-lg mb-6 text-center">
-              {t("durationPushDisabled.description")}
-            </BodyText>
-            <View className="flex-row gap-4">
-              <View className="flex-1">
-                <AnimatedButton
-                  onPress={() => setHabitType("manual")}
-                  className="btn-neutral"
-                  label={t("durationPushDisabled.back")}
-                />
-              </View>
-              <View className="flex-1">
-                <LinkButton
-                  href="/menu/settings"
-                  label={t("durationPushDisabled.settings")}
-                  gradientColors={colors.gradient}
-                  borderColor={colors.border}
-                />
-              </View>
+            <View className="flex-1">
+              <LinkButton
+                href="/menu/settings"
+                label={t("durationPushDisabled.settings")}
+                gradientColors={colors.gradient}
+                borderColor={colors.border}
+              />
             </View>
-          </View>
-        </View>
-      </Modal>
+          </>
+        }
+      />
 
       <InfoModal
         visible={showAlarmModal}

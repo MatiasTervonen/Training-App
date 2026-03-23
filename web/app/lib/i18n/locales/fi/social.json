@@ -27,6 +27,9 @@
     "removeFromFriendsMessage": "Tämä harjoitus ei näy enää sosiaalisessa syötteessä.",
     "shareConfirm": "Julkaise",
     "removeConfirm": "Poista",
-    "cancel": "Peruuta"
+    "cancel": "Peruuta",
+    "shareToChat": "Jaa chatiin",
+    "sessionShared": "Treeni jaettu",
+    "shareError": "Treenin jakaminen epäonnistui"
   }
 }

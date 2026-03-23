@@ -1,4 +1,4 @@
-import { View, Text } from "react-native";
+import { View, Text, Alert } from "react-native";
 import AppText from "@/components/AppText";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import Toggle from "@/components/toggle";
@@ -40,30 +40,38 @@ function DurationProgress({
   const targetSeconds = habit.target_value!;
   let currentAccumulated = accumulatedSeconds;
 
-  if (timerState === "running") {
+  if (timerState === "running" || timerState === "paused") {
     const store = useTimerStore.getState();
     const ctx = useHabitContextStore.getState().context;
-    if (store.endTimestamp && ctx) {
-      const remainingNow = Math.max(0, store.endTimestamp - Date.now()) / 1000;
-      const remainingAtStart = ctx.targetSeconds - ctx.accumulatedAtStart;
-      const elapsed = Math.max(0, remainingAtStart - remainingNow);
-      currentAccumulated = Math.round(ctx.accumulatedAtStart + elapsed);
+    if (ctx) {
+      if (timerState === "running" && store.endTimestamp) {
+        const remainingNow = Math.max(0, store.endTimestamp - Date.now()) / 1000;
+        const remainingAtStart = ctx.targetSeconds - ctx.accumulatedAtStart;
+        const elapsed = Math.max(0, remainingAtStart - remainingNow);
+        currentAccumulated = Math.round(ctx.accumulatedAtStart + elapsed);
+      } else if (timerState === "paused" && store.remainingMs != null) {
+        const remainingAtStart = ctx.targetSeconds - ctx.accumulatedAtStart;
+        const elapsed = Math.max(0, remainingAtStart - store.remainingMs / 1000);
+        currentAccumulated = Math.round(ctx.accumulatedAtStart + elapsed);
+      }
     }
   }
 
-  const progress = Math.min(currentAccumulated / targetSeconds, 1);
+  const remaining = Math.max(0, targetSeconds - currentAccumulated);
+  const remainingRatio = remaining / targetSeconds;
 
   return (
     <View className="mt-2">
       <View className="h-2 bg-gray-700 rounded-full overflow-hidden">
         <View
           className={`h-full rounded-full ${isCompleted ? "bg-green-500" : "bg-blue-500"}`}
-          style={{ width: `${progress * 100}%` }}
+          style={{ width: `${(isCompleted ? 1 : remainingRatio) * 100}%` }}
         />
       </View>
       <Text className="text-xs text-gray-400 mt-1 font-mono">
-        {formatDurationLong(currentAccumulated)} /{" "}
-        {formatDurationLong(targetSeconds)}
+        {isCompleted
+          ? formatDurationLong(targetSeconds)
+          : `${formatDurationLong(remaining)} / ${formatDurationLong(targetSeconds)}`}
       </Text>
     </View>
   );
@@ -85,6 +93,17 @@ export default function HabitRow({
   const isStepHabit = habit.type === "steps" && habit.target_value;
   const isDurationHabit = habit.type === "duration" && habit.target_value;
 
+  const handleDurationToggleOff = () => {
+    Alert.alert(
+      t("durationResetTitle"),
+      t("durationResetMessage"),
+      [
+        { text: t("durationResetCancel"), style: "cancel" },
+        { text: t("durationResetConfirm"), style: "destructive", onPress: onToggle },
+      ],
+    );
+  };
+
   return (
     <AnimatedButton
       onPress={onPress}
@@ -104,7 +123,10 @@ export default function HabitRow({
             onResume={onResumeTimer}
           />
         ) : (
-          <Toggle isOn={isCompleted} onToggle={onToggle} />
+          <Toggle
+            isOn={isCompleted}
+            onToggle={isDurationHabit && isCompleted ? handleDurationToggleOff : onToggle}
+          />
         )}
       </View>
       {isStepHabit && currentSteps !== undefined && (

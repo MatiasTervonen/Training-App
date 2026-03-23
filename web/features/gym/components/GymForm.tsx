@@ -199,7 +199,7 @@ export default function GymForm({
       {isEditing ? (
         ""
       ) : (
-        <nav className="flex items-center bg-gray-700 p-2 px-4 w-full z-40 max-w-3xl mx-auto sticky top-0">
+        <nav className="flex items-center bg-slate-800 p-1.5 px-4 w-full z-40 max-w-3xl mx-auto sticky top-0">
           <Timer
             className="text-xl"
             manualSession={{

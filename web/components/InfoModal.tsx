@@ -15,9 +15,9 @@ export default function InfoModal({
   if (!isOpen) return null;
 
   return portal.createPortal(
-    <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
-      <div className="bg-slate-800 rounded-xl w-[90vw] max-w-md border-[1.5px] border-gray-100">
-        <div className="ml-5 mt-5">
+    <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center px-5">
+      <div className="bg-slate-900 rounded-xl p-6 w-full max-w-md border-[1.5px] border-slate-600 shadow-lg shadow-blue-500/40">
+        <div className="mb-5 flex justify-center">
           <Info size={35} color="#fbbf24" />
         </div>
         <div>{children}</div>

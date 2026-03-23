@@ -15,7 +15,8 @@
 ## Styling
 - Always use NativeWind (`className`) for styling — never use inline `style` props.
 - Always use `AppText` (Russo One) or `BodyText` (Lexend) for text — never use raw `<Text>`.
-- `AppText` defaults to `text-gray-100`, `BodyText` defaults to `text-gray-200`. Overriding the color on these does not work (Tailwind class conflicts) — when you need a different text color, use `AppTextNC` or `BodyTextNC` instead (same font/sizing, no default color).
+- `AppText` defaults to `text-gray-100`, `BodyText` defaults to `text-gray-200`. Overriding the color on these does not work (Tailwind class conflicts).
+- When you need colored text (anything other than `text-gray-100`), use `AppTextNC` instead of `AppText`. When you need colored body text (anything other than `text-gray-200`), use `BodyTextNC` instead of `BodyText`. Both are the same font/sizing, just without the default color.
 - Use `AppText` for titles, headings, short labels, button text, stat values, and nav items.
 - Use `BodyText` for descriptions, helper text, metadata, error/loading messages, dates, and longer text.
 - Never override `AppText` with `font-lexend` — the Russo One base class wins and the override is ignored.

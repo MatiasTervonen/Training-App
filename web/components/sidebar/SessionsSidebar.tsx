@@ -3,7 +3,6 @@
 import {
   NotebookPen,
   Dumbbell,
-  Disc,
   Timer,
   Weight,
   ListTodo,
@@ -37,10 +36,6 @@ export default function SessionsSidebar() {
         <LinkButton href="/notes" className="link-notes">
           {t("sessions.notes")}
           <NotebookPen size={18} />
-        </LinkButton>
-        <LinkButton href="/disc-golf" className="link-disc-golf">
-          Disc Golf
-          <Disc size={18} />
         </LinkButton>
         <LinkButton href="/timer" className="link-timer">
           {t("sessions.timer")}

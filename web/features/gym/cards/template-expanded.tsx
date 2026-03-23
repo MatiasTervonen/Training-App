@@ -4,6 +4,7 @@ import { formatDate } from "@/lib/formatDate";
 import { GroupTemplateExercises } from "@/utils/GroupTemplateExercises";
 import { useTranslation } from "react-i18next";
 import { FullGymTemplate } from "@/database/gym/templates/full-gym-template";
+import BaseButton from "@/components/buttons/BaseButton";
 
 type Props = {
   item: FullGymTemplate;
@@ -15,8 +16,6 @@ export default function GymTemplate({ item, onStartWorkout }: Props) {
   const groupedExercises = GroupTemplateExercises(
     item.gym_template_exercises || [],
   );
-
-  console.log("groupedExercises", groupedExercises);
 
   return (
     <div className="page-padding max-w-lg mx-auto">
@@ -62,12 +61,11 @@ export default function GymTemplate({ item, onStartWorkout }: Props) {
           ))}
         </div>
       ))}
-      <button
+      <BaseButton
         onClick={onStartWorkout}
-        className="w-full mt-10 bg-blue-800 py-2 rounded-md shadow-md border-[1.5px] border-blue-500 text-lg cursor-pointer hover:bg-blue-700 hover:scale-105 transition-transform duration-200"
-      >
-        {t("gym.templateForm.startWorkout")}
-      </button>
+        label={t("gym.templateForm.startWorkout")}
+        className="mt-10"
+      />
     </div>
   );
 }

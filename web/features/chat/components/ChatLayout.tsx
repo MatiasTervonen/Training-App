@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useCallback, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import ConversationList from "@/features/chat/components/ConversationList";
 import ChatView from "@/features/chat/components/ChatView";
 import ChatEmptyState from "@/features/chat/components/ChatEmptyState";
 import { useCurrentUserId } from "@/features/chat/hooks/useCurrentUserId";
+import { useConversations } from "@/features/chat/hooks/useConversations";
 
 type ActiveChat = {
   conversationId: string;
@@ -16,8 +17,26 @@ type ActiveChat = {
 
 export default function ChatLayout() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const currentUserId = useCurrentUserId();
+  const { data: conversations } = useConversations();
   const [activeChat, setActiveChat] = useState<ActiveChat | null>(null);
+
+  // Restore active chat from URL query param (e.g. notification deep-link)
+  useEffect(() => {
+    const idFromUrl = searchParams.get("id");
+    if (!idFromUrl || !conversations || activeChat) return;
+
+    const conv = conversations.find((c) => c.conversation_id === idFromUrl);
+    if (conv) {
+      setActiveChat({
+        conversationId: conv.conversation_id,
+        otherUserId: conv.other_user_id ?? "",
+        otherUserName: conv.other_user_display_name ?? "",
+        otherUserPicture: conv.other_user_profile_picture ?? null,
+      });
+    }
+  }, [searchParams, conversations, activeChat]);
 
   const handleSelectConversation = useCallback((conversationId: string, otherUserId: string, otherUserName: string, otherUserPicture: string | null) => {
     setActiveChat({ conversationId, otherUserId, otherUserName, otherUserPicture });

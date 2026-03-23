@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { ReactNode } from "react";
 import { SquareArrowLeft } from "lucide-react";
 import { SquareArrowRight } from "lucide-react";
+import { useMedia } from "react-use";
 import { useTransitionDirectionStore } from "@/lib/stores/transitionDirection";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -11,7 +12,6 @@ import { usePathname } from "next/navigation";
 import { useModalPageConfig } from "@/lib/stores/modalPageConfig";
 import { useTimerStore } from "@/lib/stores/timerStore";
 import { useTranslation } from "react-i18next";
-import { useMedia } from "react-use";
 
 type Props = {
   children: ReactNode;
@@ -39,7 +39,6 @@ export default function ModalPageWrapper({
 
   const { blockSwipe } = useModalPageConfig();
   const isDesktop = useMedia("(min-width: 1024px)", false);
-
   const activeSession = useTimerStore((state) => state.activeSession);
 
   const handleSwipeLeft = () => {

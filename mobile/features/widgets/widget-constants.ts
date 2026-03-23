@@ -20,6 +20,7 @@ const ICONS = {
   bell: `<path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/>`,
   listChecks: `<path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/>`,
   repeat2: `<path d="m2 9 3-3 3 3"/><path d="M13 18H7a2 2 0 0 1-2-2V6"/><path d="m22 15-3 3-3-3"/><path d="M11 6h6a2 2 0 0 1 2 2v10"/>`,
+  messageCircle: `<path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/>`,
 } as const;
 
 export const LINK_TARGETS: LinkTarget[] = [
@@ -78,6 +79,13 @@ export const LINK_TARGETS: LinkTarget[] = [
     labelFi: "Tavat",
     route: "habits",
     iconSvg: lucideSvg(ICONS.repeat2),
+  },
+  {
+    key: "chat",
+    labelEn: "Chat",
+    labelFi: "Chat",
+    route: "chat",
+    iconSvg: lucideSvg(ICONS.messageCircle),
   },
 ];
 

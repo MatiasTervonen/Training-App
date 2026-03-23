@@ -14,7 +14,9 @@ import { useConfirmAction } from "@/lib/confirmAction";
 import { useTranslation } from "react-i18next";
 import Toast from "react-native-toast-message";
 import { Habit } from "@/types/habit";
-import { router } from "expo-router";
+import { router, usePathname } from "expo-router";
+import * as Haptics from "expo-haptics";
+
 
 const CONTEXT_KEY = "habit-timer-context";
 
@@ -191,8 +193,12 @@ export function useHabitTimer() {
       await upsertHabitProgress(context.habitId, context.date, newAccumulated);
     }
 
-    store.clearEverything();
-    await saveContext(null);
+    // Navigate before clearing to avoid flashing the empty timer picker
+    router.replace("/dashboard");
+    setTimeout(() => {
+      store.clearEverything();
+      saveContext(null);
+    }, 300);
 
     queryClient.invalidateQueries({ queryKey: ["habit-logs"] });
     queryClient.invalidateQueries({ queryKey: ["habit-stats"] });
@@ -214,6 +220,7 @@ export function useHabitTimer() {
 export function HabitTimerListener() {
   const { t } = useTranslation("habits");
   const queryClient = useQueryClient();
+  const pathname = usePathname();
 
   const context = useHabitContextStore((s) => s.context);
   const activeSession = useTimerStore((s) => s.activeSession);
@@ -223,12 +230,33 @@ export function HabitTimerListener() {
 
   const isHabitTimer = activeSession?.type === "habit";
   const completionHandledRef = useRef(false);
+  const pathnameRef = useRef(pathname);
+  pathnameRef.current = pathname;
 
   const invalidateQueries = useCallback(() => {
     queryClient.invalidateQueries({ queryKey: ["habit-logs"] });
     queryClient.invalidateQueries({ queryKey: ["habit-stats"] });
     queryClient.invalidateQueries({ queryKey: ["feed"] });
   }, [queryClient]);
+
+  const cleanupAfterCompletion = useCallback(() => {
+    // Haptic feedback for completion
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+
+    // Step 1: Stop mechanics (interval, native alarm, sound)
+    // Keep activeSession + alarmFired alive so UI shows completion state
+    useTimerStore.getState().clearTimerMechanics();
+    saveContext(null);
+    completionHandledRef.current = false;
+
+    // Step 2: Clear UI state after celebration. Navigate only from timer page.
+    setTimeout(() => {
+      useTimerStore.getState().clearUIState();
+      if (pathnameRef.current === "/timer/empty-timer") {
+        router.replace("/dashboard");
+      }
+    }, 3500);
+  }, []);
 
 
   // Handle completion
@@ -239,25 +267,17 @@ export function HabitTimerListener() {
     const completeHabit = async () => {
       completionHandledRef.current = true;
 
-      await upsertHabitProgress(
-        context.habitId,
-        context.date,
-        context.targetSeconds,
-      );
-      await markHabitDone(context.habitId, context.date);
-
-      Toast.show({
-        type: "success",
-        text1: t("habitTimerDone", { habitName: context.habitName }),
-      });
-      invalidateQueries();
-
-      setTimeout(async () => {
-        router.replace("/dashboard");
-        useTimerStore.getState().clearEverything();
-        await saveContext(null);
-        completionHandledRef.current = false;
-      }, 2000);
+      try {
+        await upsertHabitProgress(
+          context.habitId,
+          context.date,
+          context.targetSeconds,
+        );
+        await markHabitDone(context.habitId, context.date);
+      } finally {
+        invalidateQueries();
+        cleanupAfterCompletion();
+      }
     };
 
     if (context.alarmType === "normal") {
@@ -280,21 +300,35 @@ export function HabitTimerListener() {
 
       completionHandledRef.current = true;
 
-      await upsertHabitProgress(ctx.habitId, ctx.date, ctx.targetSeconds);
-      await markHabitDone(ctx.habitId, ctx.date);
-
-      Toast.show({
-        type: "success",
-        text1: t("habitTimerDone", { habitName: ctx.habitName }),
-      });
-
-      store.clearEverything();
-      await saveContext(null);
-      invalidateQueries();
-      completionHandledRef.current = false;
+      try {
+        await upsertHabitProgress(ctx.habitId, ctx.date, ctx.targetSeconds);
+        await markHabitDone(ctx.habitId, ctx.date);
+      } finally {
+        invalidateQueries();
+        cleanupAfterCompletion();
+      }
     });
     return () => sub.remove();
-  }, [t, invalidateQueries]);
+  }, [t, invalidateQueries, cleanupAfterCompletion]);
+
+  // When habit timer is paused (native notification or ActiveSessionPopup), save progress to DB
+  useEffect(() => {
+    const sub = DeviceEventEmitter.addListener("TIMER_STOPPED", async () => {
+      const ctx = useHabitContextStore.getState().context;
+      const store = useTimerStore.getState();
+      if (!ctx || store.activeSession?.type !== "habit") return;
+
+      // pauseTimer() already ran — use remainingMs to calculate elapsed
+      if (store.remainingMs != null) {
+        const remainingAtStart = ctx.targetSeconds - ctx.accumulatedAtStart;
+        const elapsed = Math.max(0, remainingAtStart - store.remainingMs / 1000);
+        const newAccumulated = Math.round(ctx.accumulatedAtStart + elapsed);
+        await upsertHabitProgress(ctx.habitId, ctx.date, newAccumulated);
+        invalidateQueries();
+      }
+    });
+    return () => sub.remove();
+  }, [invalidateQueries]);
 
   // Complete expired habit timer (on mount and when app returns to foreground)
   const completeExpiredHabit = useCallback(async () => {
@@ -310,18 +344,15 @@ export function HabitTimerListener() {
     ) {
       completionHandledRef.current = true;
 
-      await upsertHabitProgress(ctx.habitId, ctx.date, ctx.targetSeconds);
-      await markHabitDone(ctx.habitId, ctx.date);
-      store.clearEverything();
-      await saveContext(null);
-      Toast.show({
-        type: "success",
-        text1: t("habitTimerDone", { habitName: ctx.habitName }),
-      });
-      invalidateQueries();
-      completionHandledRef.current = false;
+      try {
+        await upsertHabitProgress(ctx.habitId, ctx.date, ctx.targetSeconds);
+        await markHabitDone(ctx.habitId, ctx.date);
+      } finally {
+        invalidateQueries();
+        cleanupAfterCompletion();
+      }
     }
-  }, [t, invalidateQueries]);
+  }, [t, invalidateQueries, cleanupAfterCompletion]);
 
   // On mount: check for expired habit timer
   useEffect(() => {

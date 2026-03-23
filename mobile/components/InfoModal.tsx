@@ -31,7 +31,7 @@ export default function InfoModal({
   return (
     <Modal visible={visible} transparent animationType="slide">
       <View className="flex-1 justify-center items-center bg-black/50 px-5">
-        <View className="bg-slate-950 rounded-xl p-6 w-full border-[1.5px] border-slate-600 shadow-lg shadow-blue-500/40 elevation-5">
+        <View className="bg-slate-900 rounded-xl p-6 w-full border-[1.5px] border-slate-600 shadow-lg shadow-blue-500/40 elevation-5">
           <View className="mb-5 items-center">
             <Info size={35} color="#fbbf24" />
           </View>

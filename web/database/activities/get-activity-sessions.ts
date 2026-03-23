@@ -2,12 +2,19 @@ import { handleError } from "@/utils/handleError";
 import { createClient } from "@/utils/supabase/client";
 import { FeedItemUI } from "@/types/session";
 
+export function getActivityPinnedContext(activitySlug?: string): string {
+  if (!activitySlug) return "activities";
+  return `activities:type:${activitySlug}`;
+}
+
 export async function getActivitySessions({
   pageParam = 0,
   limit = 10,
+  activitySlug,
 }: {
   pageParam?: number;
   limit?: number;
+  activitySlug?: string;
 }): Promise<{
   feed: FeedItemUI[];
   nextPage: number | null;
@@ -15,17 +22,18 @@ export async function getActivitySessions({
   const supabase = createClient();
   const from = pageParam * limit;
   const to = from + limit - 1;
+  const pinnedContext = getActivityPinnedContext(activitySlug);
 
   const pinnedPromise =
     pageParam === 0
       ? supabase
           .from("pinned_items")
           .select(`feed_items(*)`)
-          .eq("pinned_context", "activities")
+          .eq("pinned_context", pinnedContext)
           .order("created_at", { ascending: false })
       : Promise.resolve({ data: [], error: null });
 
-  const feedPromise = supabase
+  const feedQuery = supabase
     .from("feed_items")
     .select(
       `
@@ -40,7 +48,13 @@ export async function getActivitySessions({
     extra_fields
 `
     )
-    .eq("type", "activity_sessions")
+    .eq("type", "activity_sessions");
+
+  if (activitySlug) {
+    feedQuery.eq("extra_fields->>activity_slug", activitySlug);
+  }
+
+  const feedPromise = feedQuery
     .order("activity_at", { ascending: false })
     .range(from, to);
 

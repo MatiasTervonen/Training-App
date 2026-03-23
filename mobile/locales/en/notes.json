@@ -11,6 +11,11 @@
     "recordings": "Recordings:",
     "deleteRecordingTitle": "Delete Recording",
     "deleteRecordingMessage": "Are you sure you want to delete this recording?",
+    "save": {
+      "titleRequired": "Title cannot be empty.",
+      "success": "Note saved successfully!",
+      "error": "Failed to save notes. Please try again."
+    },
     "savingNotes": "Saving your notes...",
     "failedToLoad": "Failed to load notes. Please try again later.",
     "noNotes": "No notes yet",

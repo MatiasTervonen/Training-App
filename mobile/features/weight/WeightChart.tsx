@@ -282,16 +282,23 @@ export default function WeightChart({
   useEffect(() => {
     if (!skiaRef.current || size.width === 0 || size.height === 0) return;
 
-    const chart = echarts.init(skiaRef.current, "light", {
-      renderer: "skia",
-      width: size.width,
-      height: size.height,
-    } as any);
-    chartRef.current = chart;
-    chart.setOption(option);
+    let disposed = false;
+
+    const rafId = requestAnimationFrame(() => {
+      if (disposed || !skiaRef.current) return;
+      const chart = echarts.init(skiaRef.current, "light", {
+        renderer: "skia",
+        width: size.width,
+        height: size.height,
+      } as any);
+      chartRef.current = chart;
+      chart.setOption(option);
+    });
 
     return () => {
-      chart.dispose();
+      disposed = true;
+      cancelAnimationFrame(rafId);
+      chartRef.current?.dispose();
       chartRef.current = null;
     };
   }, [size, option]);

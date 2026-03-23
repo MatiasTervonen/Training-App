@@ -43,4 +43,26 @@ To create a production build of the mobile application, run the following comman
 npx expo run:android --variant=release
 ```
 
+## Build install APK
+
+To build a signed release APK that can be installed directly on a device (sideload), run Gradle's `assembleRelease` task:
+
+```bash
+cd android && ./gradlew assembleRelease
+```
+
+Run this from the `mobile/` directory. The signed APK will be at:
+
+```
+android/app/build/outputs/apk/release/app-arm64-v8a-release.apk
+```
+
+Install it on a connected device with:
+
+```bash
+adb install android/app/build/outputs/apk/release/app-arm64-v8a-release.apk
+```
+
+> **Note:** This requires a signing keystore configured in `android/keystore.properties`. The release signing config is already set up in `build.gradle`.
+
 That's it! You're ready to go.

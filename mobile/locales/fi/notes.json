@@ -11,6 +11,11 @@
     "recordings": "Äänitteet:",
     "deleteRecordingTitle": "Poista äänite",
     "deleteRecordingMessage": "Haluatko varmasti poistaa tämän äänitteen?",
+    "save": {
+      "titleRequired": "Otsikko ei voi olla tyhjä.",
+      "success": "Muistiinpano tallennettu onnistuneesti!",
+      "error": "Muistiinpanojen tallentaminen epäonnistui. Yritä uudelleen."
+    },
     "savingNotes": "Tallennetaan muistiinpanoja...",
     "failedToLoad": "Muistiinpanojen lataaminen epäonnistui. Yritä myöhemmin uudelleen.",
     "noNotes": "Ei vielä muistiinpanoja",

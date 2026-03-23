@@ -131,7 +131,7 @@ export default function Sessions() {
     : 0;
 
   return (
-    <div className="relative max-w-7xl mx-auto page-padding">
+    <div className="relative mx-auto page-padding">
       <h1 className="text-2xl text-center mb-10">
         {t("admin.analytics.title")}
       </h1>
@@ -169,26 +169,26 @@ export default function Sessions() {
           </div>
         )}
         {!isLoading && !error && data && data.length > 0 && (
-          <div className="overflow-x-auto min-h-[451px] bg-gray-900">
-            <table className="min-w-full bg-gray-900 rounded-md">
+          <div className="overflow-x-auto min-h-[451px] bg-gray-900 rounded-md">
+            <table className="w-full bg-gray-900 table-auto font-body">
               <thead>
-                <tr className="text-left border-b border-gray-700">
-                  <th className="px-4 py-2 font-normal">
+                <tr className="text-left border-b border-gray-700 whitespace-nowrap">
+                  <th className="px-3 py-2 font-normal w-28">
                     {t("admin.analytics.tableHeaders.id")}
                   </th>
-                  <th className="px-4 py-2 font-normal">
+                  <th className="px-3 py-2 font-normal w-36">
                     {t("admin.analytics.tableHeaders.displayName")}
                   </th>
-                  <th className="px-4 py-2 font-normal">
+                  <th className="px-3 py-2 font-normal w-48">
                     {t("admin.analytics.tableHeaders.email")}
                   </th>
-                  <th className="px-4 py-2 font-normal">
+                  <th className="px-3 py-2 font-normal w-32">
                     {t("admin.analytics.tableHeaders.role")}
                   </th>
-                  <th className="px-4 py-2 font-normal">
+                  <th className="px-3 py-2 font-normal w-28">
                     {t("admin.analytics.tableHeaders.created")}
                   </th>
-                  <th className="px-4 py-2 font-normal">
+                  <th className="px-3 py-2 font-normal">
                     {t("admin.analytics.tableHeaders.actions")}
                   </th>
                 </tr>
@@ -199,12 +199,39 @@ export default function Sessions() {
                     key={user.id}
                     className="relative hover:bg-gray-700 border-b border-gray-600"
                   >
-                    <td className="px-4 py-2 ">
-                      <span className="">{shorterId(user.id)}</span>
+                    <td
+                      className="px-3 py-2 cursor-pointer hover:text-cyan-400 transition-colors"
+                      title={user.id}
+                      onClick={() => {
+                        navigator.clipboard.writeText(user.id);
+                        toast.success(t("common.copiedToClipboard"));
+                      }}
+                    >
+                      <span>{shorterId(user.id)}</span>
                     </td>
-                    <td className="px-4 py-2 ">{user.display_name || "-"}</td>
-                    <td className="px-4 py-2">{user.email}</td>
-                    <td className="px-4 py-2 relative group">
+                    <td
+                      className="px-3 py-2 truncate cursor-pointer hover:text-cyan-400 transition-colors"
+                      onClick={() => {
+                        if (user.display_name) {
+                          navigator.clipboard.writeText(user.display_name);
+                          toast.success(t("common.copiedToClipboard"));
+                        }
+                      }}
+                    >
+                      {user.display_name || "-"}
+                    </td>
+                    <td
+                      className="px-3 py-2 truncate cursor-pointer hover:text-cyan-400 transition-colors"
+                      onClick={() => {
+                        if (user.email) {
+                          navigator.clipboard.writeText(user.email);
+                          toast.success(t("common.copiedToClipboard"));
+                        }
+                      }}
+                    >
+                      {user.email}
+                    </td>
+                    <td className="px-3 py-2 relative group">
                       <span
                         className={`border py-1 px-2 rounded-xl text-sm ${
                           user.banned_until &&
@@ -246,10 +273,10 @@ export default function Sessions() {
                           </div>
                         )}
                     </td>
-                    <td className="px-4 py-2">
+                    <td className="px-3 py-2 whitespace-nowrap">
                       {new Date(user.created_at).toLocaleDateString()}
                     </td>
-                    <td className="px-4 py-2 flex gap-2 flex-nowrap">
+                    <td className="px-3 py-2 flex gap-2 flex-nowrap">
                       <button
                         className="text-red-500 cursor-pointer  hover:text-red-700"
                         onClick={async () => {

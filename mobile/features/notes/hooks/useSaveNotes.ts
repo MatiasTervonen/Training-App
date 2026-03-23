@@ -35,7 +35,7 @@ export default function useSaveNotes({
 }: saveNotesProps) {
   const queryClient = useQueryClient();
   const router = useRouter();
-  const { t } = useTranslation("common");
+  const { t } = useTranslation(["notes", "common"]);
 
   const handleSaveNotes = async () => {
     if (draftVideos.some((v) => v.isCompressing)) {
@@ -45,8 +45,8 @@ export default function useSaveNotes({
     if (!title.trim()) {
       Toast.show({
         type: "error",
-        text1: "Error",
-        text2: "Title cannot be empty.",
+        text1: t("common:common.error"),
+        text2: t("notes:notes.save.titleRequired"),
       });
       return;
     }
@@ -73,15 +73,15 @@ export default function useSaveNotes({
       router.push("/dashboard");
       Toast.show({
         type: "success",
-        text1: "Success",
-        text2: "Note saved successfully!",
+        text1: t("common:common.success"),
+        text2: t("notes:notes.save.success"),
       });
       resetNote();
     } catch {
       Toast.show({
         type: "error",
-        text1: "Error",
-        text2: "Failed to save notes. Please try again.",
+        text1: t("common:common.error"),
+        text2: t("notes:notes.save.error"),
       });
       setIsSaving(false);
     }

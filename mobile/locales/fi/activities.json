@@ -25,6 +25,15 @@
     },
     "activeSessionError": "Sinulla on jo aktiivinen sessio.",
     "activeSessionErrorSub": "Lopeta se ennen uuden aloittamista.",
+    "dbInitError": "Tietokannan alustaminen epäonnistui. Yritä uudelleen.",
+    "selectActivityError": "Valitse aktiviteetti",
+    "deleteTemplate": {
+      "confirmTitle": "Poista pohja",
+      "confirmMessage": "Haluatko varmasti poistaa tämän pohjan? Tätä toimintoa ei voi perua.",
+      "success": "Pohja poistettu onnistuneesti",
+      "error": "Pohjan poistaminen epäonnistui",
+      "errorSub": "Yritä uudelleen."
+    },
     "activityDropdownEdit": {
       "searchPlaceholder": "Etsi aktiviteetteja...",
       "loadError": "Aktiviteettien lataus epäonnistui. Yritä uudelleen!",

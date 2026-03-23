@@ -14,6 +14,14 @@
     "savingWeight": "Tallennetaan painoa...",
     "alreadyLoggedTitle": "Jo kirjattu",
     "alreadyLoggedMessage": "Poista päivän merkintä lisätäksesi uusi.",
+    "save": {
+      "missingTitle": "Otsikko puuttuu",
+      "missingTitleSub": "Syötä otsikko painomerkinnälle.",
+      "invalidWeight": "Virheellinen paino",
+      "invalidWeightSub": "Syötä kelvollinen numeerinen paino.",
+      "success": "Paino tallennettu onnistuneesti!",
+      "error": "Painon tallentaminen epäonnistui. Yritä uudelleen."
+    },
     "created": "luotu",
     "fullAnalytics": "Täysi analytiikka",
     "chartError": "Virhe painotietojen latauksessa.",

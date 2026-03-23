@@ -26,7 +26,7 @@ export function useStartActivity({
   allowGPS: boolean;
   stepsAllowed: boolean;
 }) {
-  const { t } = useTranslation("activities"); 
+  const { t } = useTranslation(["activities", "common"]);
   const setActiveSession = useTimerStore((state) => state.setActiveSession);
   const startSession = useTimerStore((state) => state.startSession);
   const { startGPStracking } = useStartGPStracking();
@@ -36,8 +36,8 @@ export function useStartActivity({
     if (!activityName || activityName.trim() === "") {
       Toast.show({
         type: "error",
-        text1: "Error",
-        text2: "Please select an activity",
+        text1: t("common:common.error"),
+        text2: t("activities:activities.selectActivityError"),
       });
       return;
     }
@@ -75,8 +75,8 @@ export function useStartActivity({
           console.error("Error initializing database", error);
           Toast.show({
             type: "error",
-            text1: "Error",
-            text2: "Failed to initialize database. Please try again.",
+            text1: t("common:common.error"),
+            text2: t("activities:activities.dbInitError"),
           });
           return false;
         }

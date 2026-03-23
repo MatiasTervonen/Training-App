@@ -174,6 +174,53 @@
       "errorBanning": "Virhe käyttäjän estämisessä. Yritä uudelleen!",
       "errorDeleting": "Virhe käyttäjän poistamisessa. Yritä uudelleen!",
       "errorPromoting": "Virhe käyttäjän ylentämisessä. Yritä uudelleen!"
+    },
+    "feedback": {
+      "link": "Palaute",
+      "title": "Käyttäjäpalaute",
+      "empty": "Ei palautetta vielä.",
+      "details": "Tiedot",
+      "categories": {
+        "bug": "Bugi",
+        "feature": "Ominaisuus",
+        "general": "Yleinen"
+      },
+      "filters": {
+        "all": "Kaikki",
+        "bug": "Bugit",
+        "feature": "Ominaisuudet",
+        "general": "Yleinen"
+      }
+    },
+    "dashboard": {
+      "link": "Kojelauta",
+      "title": "Ylläpidon kojelauta",
+      "loadError": "Kojelautatietojen lataus epäonnistui.",
+      "activeUsers": "Aktiiviset käyttäjät",
+      "active5m": "Viimeiset 5 min",
+      "active15m": "Viimeiset 15 min",
+      "active1h": "Viimeinen tunti",
+      "active24h": "Viimeiset 24 tuntia",
+      "overview": "Yleiskatsaus",
+      "totalUsers": "Käyttäjiä yhteensä",
+      "newToday": "Uusia tänään",
+      "newThisWeek": "Uusia tällä viikolla",
+      "newThisMonth": "Uusia tässä kuussa",
+      "platformSplit": "Alustajakauma",
+      "last24h": "Aktiivisia viimeisen 24 tunnin aikana",
+      "web": "Verkko",
+      "mobile": "Mobiili",
+      "users": "käyttäjää",
+      "noActiveUsers": "Ei aktiivisia käyttäjiä viimeisen 24 tunnin aikana.",
+      "userGrowth": "Käyttäjäkasvu",
+      "newRegistrations": "Uudet rekisteröitymiset",
+      "newUsers": "uutta käyttäjää",
+      "totalInPeriod": "Yhteensä jaksolla:",
+      "ranges": {
+        "week": "7pv",
+        "month": "30pv",
+        "threeMonths": "90pv"
+      }
     }
   }
 }

@@ -9,7 +9,10 @@ export default function AdminPage() {
   return (
     <div className="max-w-md mx-auto page-padding">
       <h1 className="text-2xl mb-10 text-center">{t("admin.title")}</h1>
-      <div className="flex flex-col gap-5">
+      <div className="flex flex-col gap-3">
+        <LinkButton href={"/admin/dashboard"}>
+          {t("admin.dashboard.link")}
+        </LinkButton>
         <LinkButton href={"/admin/user-analytics"}>
           {t("admin.userAnalytics")}
         </LinkButton>
@@ -18,6 +21,9 @@ export default function AdminPage() {
         </LinkButton>
         <LinkButton href={"/admin/edit-exercises"}>
           {t("admin.editExercises")}
+        </LinkButton>
+        <LinkButton href={"/admin/feedback"}>
+          {t("admin.feedback.link")}
         </LinkButton>
         <LinkButton href={"/admin/docs"}>
           {t("admin.devDocs")}

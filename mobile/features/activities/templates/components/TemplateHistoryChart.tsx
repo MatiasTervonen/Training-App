@@ -255,15 +255,24 @@ export default function TemplateHistoryChart({
   useEffect(() => {
     if (!skiaRef.current || !option || size.width === 0) return;
 
-    const chart = echarts.init(skiaRef.current as HTMLElement, "light", {
-      renderer: "skia",
-      width: size.width,
-      height: size.height,
-    } as unknown as echarts.EChartsInitOpts);
+    let disposed = false;
+    let chart: ReturnType<typeof echarts.init> | null = null;
 
-    chart.setOption(option);
+    const rafId = requestAnimationFrame(() => {
+      if (disposed || !skiaRef.current) return;
+      chart = echarts.init(skiaRef.current as HTMLElement, "light", {
+        renderer: "skia",
+        width: size.width,
+        height: size.height,
+      } as unknown as echarts.EChartsInitOpts);
+      chart.setOption(option);
+    });
 
-    return () => chart.dispose();
+    return () => {
+      disposed = true;
+      cancelAnimationFrame(rafId);
+      chart?.dispose();
+    };
   }, [option, size]);
 
   function formatDateRange(start: Date, end: Date) {

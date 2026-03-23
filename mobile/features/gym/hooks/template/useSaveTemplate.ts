@@ -4,6 +4,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
 import { ExerciseEntry, TemplatePhaseData } from "@/types/session";
+import { useTranslation } from "react-i18next";
 
 export default function useSaveTemplate({
   workoutName,
@@ -24,6 +25,7 @@ export default function useSaveTemplate({
 }) {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const { t } = useTranslation("gym");
 
   const handleSaveTemplate = async () => {
     if (workoutName.trim() === "" || exercises.length === 0) return;
@@ -80,15 +82,15 @@ export default function useSaveTemplate({
       resetSession();
       Toast.show({
         type: "success",
-        text1: "Template saved",
-        text2: "Template has been saved successfully.",
+        text1: t("gym.templateForm.saveSuccess"),
+        text2: t("gym.templateForm.saveSuccessSub"),
       });
     } catch {
       setIsSaving(false);
       Toast.show({
         type: "error",
-        text1: "Error saving template",
-        text2: "Please try again later.",
+        text1: t("gym.templateForm.saveError"),
+        text2: t("gym.templateForm.saveErrorSub"),
       });
     }
   };

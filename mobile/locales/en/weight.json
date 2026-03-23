@@ -14,6 +14,14 @@
     "savingWeight": "Saving weight...",
     "alreadyLoggedTitle": "Already Logged",
     "alreadyLoggedMessage": "Delete today's entry to add a new one.",
+    "save": {
+      "missingTitle": "Missing Title",
+      "missingTitleSub": "Please enter a title for your weight entry.",
+      "invalidWeight": "Invalid Weight",
+      "invalidWeightSub": "Please enter a valid numeric weight.",
+      "success": "Weight saved successfully!",
+      "error": "Failed to save weights. Please try again."
+    },
     "created": "created",
     "fullAnalytics": "Full Analytics",
     "chartError": "Error loading weight data.",

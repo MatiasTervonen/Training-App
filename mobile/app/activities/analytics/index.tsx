@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { View, ActivityIndicator, ScrollView } from "react-native";
+import { View, ActivityIndicator, ScrollView, InteractionManager } from "react-native";
 import { useQuery } from "@tanstack/react-query";
 import AppText from "@/components/AppText";
 import AnimatedButton from "@/components/buttons/animatedButton";
@@ -44,6 +44,7 @@ export default function ActivityAnalytics() {
   const [loadingToday, setLoadingToday] = useState(true);
   const [stepsPermitted, setStepsPermitted] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [chartsReady, setChartsReady] = useState(false);
 
   const { data: stepsData = [], isLoading: isLoadingSteps } = useQuery({
     queryKey: ["steps-analytics"],
@@ -55,6 +56,13 @@ export default function ActivityAnalytics() {
     queryKey: ["activity-sessions-analytics"],
     queryFn: () => getActivitySessions(90),
   });
+
+  useEffect(() => {
+    const task = InteractionManager.runAfterInteractions(() => {
+      setChartsReady(true);
+    });
+    return () => task.cancel();
+  }, []);
 
   useEffect(() => {
     if (!Device.isDevice) {
@@ -153,7 +161,7 @@ export default function ActivityAnalytics() {
             </AnimatedButton>
           ))}
         </View>
-        {stepsPermitted && (
+        {chartsReady && stepsPermitted && (
           <View className="pt-5">
             <StepsChart
               range={selectedRange}
@@ -176,19 +184,23 @@ export default function ActivityAnalytics() {
             )}
           </View>
         )}
-        <View className="mt-4">
-          <DistanceChart
-            range={selectedRange}
-            data={sessionsData}
-          />
-        </View>
-        <View className="mt-4">
-          <ActivityBreakdownChart
-            data={sessionsData}
-            startDate={startDate}
-            endDate={endDate}
-          />
-        </View>
+        {chartsReady && (
+          <View className="mt-4">
+            <DistanceChart
+              range={selectedRange}
+              data={sessionsData}
+            />
+          </View>
+        )}
+        {chartsReady && (
+          <View className="mt-4">
+            <ActivityBreakdownChart
+              data={sessionsData}
+              startDate={startDate}
+              endDate={endDate}
+            />
+          </View>
+        )}
         {stepsPermitted && (
           <StepsShareModal
             visible={isShareModalOpen}

@@ -17,6 +17,18 @@ export async function getFullExercise(
 ): Promise<ExerciseForEdit> {
   const supabase = await createClient();
 
+  const { data: authData, error: authError } = await supabase.auth.getClaims();
+  const user = authData?.claims;
+
+  if (authError || !user) {
+    throw new Error("Unauthorized");
+  }
+
+  const role = user.app_metadata?.role;
+  if (role !== "admin" && role !== "super_admin") {
+    throw new Error("Forbidden");
+  }
+
   const { data, error } = await supabase
     .from("gym_exercises")
     .select(

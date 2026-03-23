@@ -3,16 +3,17 @@ import { templateSummary } from "@/types/session";
 import { useQueryClient } from "@tanstack/react-query";
 import Toast from "react-native-toast-message";
 import { deleteActivityTemplate } from "@/database/activities/delete-template";
+import { useTranslation } from "react-i18next";
 
 export function useDeleteTemplate() {
   const queryClient = useQueryClient();
   const confirmAction = useConfirmAction();
+  const { t } = useTranslation("activities");
 
   const handleDeleteTemplate = async (templateId: string) => {
     const confirmDelete = await confirmAction({
-      message: "Delete Template",
-      title:
-        "Are you sure you want to delete this template? This action cannot be undone.",
+      message: t("activities.deleteTemplate.confirmTitle"),
+      title: t("activities.deleteTemplate.confirmMessage"),
     });
     if (!confirmDelete) return;
 
@@ -32,7 +33,7 @@ export function useDeleteTemplate() {
 
       Toast.show({
         type: "success",
-        text1: "Template deleted successfully",
+        text1: t("activities.deleteTemplate.success"),
       });
 
       queryClient.invalidateQueries({ queryKey: ["fullActivitySession"] });
@@ -40,8 +41,8 @@ export function useDeleteTemplate() {
       queryClient.setQueryData(queryKey, previousTemplates);
       Toast.show({
         type: "error",
-        text1: "Failed to delete template",
-        text2: "Please try again.",
+        text1: t("activities.deleteTemplate.error"),
+        text2: t("activities.deleteTemplate.errorSub"),
       });
     }
   };

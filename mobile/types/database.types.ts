@@ -2794,8 +2794,20 @@ export type Database = {
         Args: { p_feed_item_id: string }
         Returns: Json
       }
+      get_friend_activity_session_by_chat: {
+        Args: { p_conversation_id: string; p_session_id: string }
+        Returns: Json
+      }
       get_friend_gym_session: {
         Args: { p_feed_item_id: string; p_language?: string }
+        Returns: Json
+      }
+      get_friend_gym_session_by_chat: {
+        Args: {
+          p_conversation_id: string
+          p_language?: string
+          p_session_id: string
+        }
         Returns: Json
       }
       get_friends_feed: {
@@ -2845,6 +2857,10 @@ export type Database = {
         }[]
       }
       get_or_create_dm: { Args: { p_friend_id: string }; Returns: string }
+      get_other_participant_last_read: {
+        Args: { p_conversation_id: string }
+        Returns: string
+      }
       get_total_unread_count: { Args: never; Returns: number }
       gym_edit_session: {
         Args: {

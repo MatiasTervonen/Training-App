@@ -67,7 +67,15 @@ export function useChatRealtime(conversationId: string, currentUserId: string) {
           });
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        if (status === "SUBSCRIBED") {
+          // Refetch to catch any messages that arrived between the initial
+          // query and the subscription becoming active (closes the race window).
+          queryClient.invalidateQueries({
+            queryKey: ["messages", conversationId],
+          });
+        }
+      });
 
     return () => {
       supabase.removeChannel(channel);

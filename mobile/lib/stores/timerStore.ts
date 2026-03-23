@@ -383,6 +383,62 @@ export const useTimerStore = create<TimerState>()(
           await AsyncStorage.removeItem(key);
         },
       },
+      onRehydrateStorage: () => (state) => {
+        if (!state) return;
+
+        // Restart the JS interval if the timer was running before the app died.
+        // The interval closure is lost on crash/restart — this recreates it.
+        if (state.isRunning && !interval) {
+          const { mode, endTimestamp } = state;
+
+          interval = setInterval(() => {
+            const s = useTimerStore.getState();
+            if (!s.isRunning) return;
+
+            if (
+              mode === "countdown" &&
+              endTimestamp &&
+              Date.now() >= endTimestamp
+            ) {
+              useTimerStore.setState({
+                alarmFired: true,
+                isRunning: false,
+                alarmSoundPlaying: true,
+              });
+              stopNativeTimer();
+              if (interval) {
+                clearInterval(interval);
+                interval = null;
+              }
+              return;
+            }
+
+            useTimerStore.setState((prev) => ({ uiTick: prev.uiTick + 1 }));
+          }, 1000);
+
+          // Also restart the native foreground timer so the notification shows
+          const label = state.activeSession?.label ?? "";
+          if (mode === "countup" && state.startTimestamp) {
+            startNativeTimer(
+              state.startTimestamp,
+              label,
+              "countup",
+              t("timer:timer.notification.inProgress"),
+              t("timer:timer.notification.pauseTimer"),
+            );
+          } else if (mode === "countdown" && endTimestamp) {
+            const isHabit = state.activeSession?.type === "habit";
+            startNativeTimer(
+              endTimestamp,
+              label,
+              "countdown",
+              t("timer:timer.notification.timeRemaining"),
+              t("timer:timer.notification.pauseTimer"),
+              isHabit ? "" : t("timer:timer.notification.extendTimer"),
+            );
+          }
+        }
+      },
     }
   )
 );

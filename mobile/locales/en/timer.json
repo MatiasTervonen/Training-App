@@ -19,6 +19,11 @@
     "titlePlaceholder": "Timer Title",
     "notesLabel": "Notes...",
     "notesPlaceholder": "Timer notes...",
+    "save": {
+      "fillAllFields": "Please fill in all fields",
+      "success": "Timer saved successfully",
+      "error": "Error saving timer"
+    },
     "savingTimer": "Saving timer...",
     "updatingTimer": "Updating timer...",
     "loadingTimers": "Loading timers...",

@@ -19,6 +19,7 @@ import i18n from "@/app/i18n";
 import { useNotificationSubscription } from "@/features/notifications/hooks/useNotificationSubscription";
 import useNotificationNavigation from "@/features/notifications/useNotificationNavigation";
 import { useStepGoalSync } from "@/features/habits/hooks/useStepGoalSync";
+import { useHeartbeat } from "@/lib/hooks/useHeartbeat";
 import { queryClient } from "@/lib/queryClient";
 import { syncNotifications } from "@/database/reminders/syncNotifications";
 import { syncHabitNotifications } from "@/database/habits/syncHabitNotifications";
@@ -74,6 +75,9 @@ export default function LayoutWrapper({
 
   // Sync step habit goals to native SharedPreferences for background notifications
   useStepGoalSync();
+
+  // Heartbeat for active user tracking + activity tracking status
+  useHeartbeat(sessionChecked);
 
   // Refresh chat unread badge when a chat push notification arrives in-app
   useEffect(() => {

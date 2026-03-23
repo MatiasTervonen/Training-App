@@ -62,7 +62,11 @@
         "message": "Haluatko varmasti poistaa tämän liikkeen harjoituspohjasta?"
       },
       "cancel": "Peruuta",
-      "savingTemplate": "Tallennetaan harjoituspohjaa..."
+      "savingTemplate": "Tallennetaan harjoituspohjaa...",
+      "saveSuccess": "Harjoituspohja tallennettu",
+      "saveSuccessSub": "Harjoituspohja on tallennettu onnistuneesti.",
+      "saveError": "Virhe harjoituspohjan tallennuksessa",
+      "saveErrorSub": "Yritä myöhemmin uudelleen."
     },
     "TemplatesScreen": {
       "confirmDeleteTitle": "Poista harjoituspohja",

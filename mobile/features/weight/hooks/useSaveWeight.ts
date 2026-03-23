@@ -40,7 +40,7 @@ export default function useSaveWeight({
 }) {
   const queryClient = useQueryClient();
   const router = useRouter();
-  const { t } = useTranslation("common");
+  const { t } = useTranslation(["weight", "common"]);
 
   const handleSaveWeight = async () => {
     if (draftVideos.some((v) => v.isCompressing)) {
@@ -65,8 +65,8 @@ export default function useSaveWeight({
     if (!title.trim()) {
       Toast.show({
         type: "error",
-        text1: "Missing Title",
-        text2: "Please enter a title for your weight entry.",
+        text1: t("weight:weight.save.missingTitle"),
+        text2: t("weight:weight.save.missingTitleSub"),
       });
       return;
     }
@@ -74,8 +74,8 @@ export default function useSaveWeight({
     if (!weight.trim() || isNaN(Number(weight))) {
       Toast.show({
         type: "error",
-        text1: "Invalid Weight",
-        text2: "Please enter a valid numeric weight.",
+        text1: t("weight:weight.save.invalidWeight"),
+        text2: t("weight:weight.save.invalidWeightSub"),
       });
       return;
     }
@@ -105,14 +105,14 @@ export default function useSaveWeight({
       resetWeight();
       Toast.show({
         type: "success",
-        text1: "Success",
-        text2: "Weight saved successfully!",
+        text1: t("common:common.success"),
+        text2: t("weight:weight.save.success"),
       });
     } catch {
       Toast.show({
         type: "error",
-        text1: "Error",
-        text2: "Failed to save weights. Please try again.",
+        text1: t("common:common.error"),
+        text2: t("weight:weight.save.error"),
       });
       setIsSaving(false);
     }

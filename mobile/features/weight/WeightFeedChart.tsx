@@ -179,17 +179,26 @@ export default function WeightFeedChart({ data }: WeightFeedChartProps) {
   );
 
   useEffect(() => {
-    if (!skiaRef.current) return;
+    if (!skiaRef.current || size.width === 0) return;
 
-    const chart = echarts.init(skiaRef.current, "light", {
-      renderer: "skia",
-      width: size.width,
-      height: size.height,
-    } as any);
+    let disposed = false;
+    let chart: ReturnType<typeof echarts.init> | null = null;
 
-    chart.setOption(option);
+    const rafId = requestAnimationFrame(() => {
+      if (disposed || !skiaRef.current) return;
+      chart = echarts.init(skiaRef.current, "light", {
+        renderer: "skia",
+        width: size.width,
+        height: size.height,
+      } as any);
+      chart.setOption(option);
+    });
 
-    return () => chart.dispose();
+    return () => {
+      disposed = true;
+      cancelAnimationFrame(rafId);
+      chart?.dispose();
+    };
   }, [option, size]);
 
   return (

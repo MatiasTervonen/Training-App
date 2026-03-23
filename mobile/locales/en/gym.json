@@ -62,7 +62,11 @@
         "message": "Are you sure you want to delete this exercise from the template?"
       },
       "cancel": "Cancel",
-      "savingTemplate": "Saving template..."
+      "savingTemplate": "Saving template...",
+      "saveSuccess": "Template saved",
+      "saveSuccessSub": "Template has been saved successfully.",
+      "saveError": "Error saving template",
+      "saveErrorSub": "Please try again later."
     },
     "TemplatesScreen": {
       "confirmDeleteTitle": "Delete Template",

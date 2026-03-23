@@ -2455,6 +2455,9 @@ export type Database = {
           email: string | null
           height_cm: number | null
           id: string
+          is_tracking_activity: boolean | null
+          last_active_at: string | null
+          platform: string | null
           profile_picture: string | null
           role: string
           weight_unit: string
@@ -2468,6 +2471,9 @@ export type Database = {
           email?: string | null
           height_cm?: number | null
           id: string
+          is_tracking_activity?: boolean | null
+          last_active_at?: string | null
+          platform?: string | null
           profile_picture?: string | null
           role?: string
           weight_unit?: string
@@ -2481,6 +2487,9 @@ export type Database = {
           email?: string | null
           height_cm?: number | null
           id?: string
+          is_tracking_activity?: boolean | null
+          last_active_at?: string | null
+          platform?: string | null
           profile_picture?: string | null
           role?: string
           weight_unit?: string
@@ -2741,6 +2750,29 @@ export type Database = {
       feed_delete_session: {
         Args: { p_id: string; p_type: string }
         Returns: undefined
+      }
+      get_admin_dashboard_stats: { Args: never; Returns: Json }
+      get_admin_user_growth: {
+        Args: { p_days?: number }
+        Returns: {
+          cumulative_users: number
+          day: string
+          new_users: number
+        }[]
+      }
+      get_all_feedback: {
+        Args: { p_limit?: number; p_offset?: number }
+        Returns: {
+          category: string
+          created_at: string
+          display_name: string
+          id: string
+          image_paths: string[]
+          message: string
+          title: string
+          user_email: string
+          user_id: string
+        }[]
       }
       get_conversations: {
         Args: never
@@ -3226,6 +3258,7 @@ export type Database = {
         }
         Returns: string
       }
+      set_tracking_status: { Args: { p_tracking: boolean }; Returns: undefined }
       storage_friend_can_read: {
         Args: { p_bucket: string; p_path: string }
         Returns: boolean
@@ -3317,6 +3350,7 @@ export type Database = {
         Args: { p_emoji: string; p_message_id: string }
         Returns: boolean
       }
+      update_last_active: { Args: { p_platform?: string }; Returns: undefined }
       weight_edit_weight: {
         Args: {
           p_deleted_image_ids?: string[]

@@ -25,6 +25,15 @@
     },
     "activeSessionError": "You already have an active session.",
     "activeSessionErrorSub": "Finish it before starting a new one.",
+    "dbInitError": "Failed to initialize database. Please try again.",
+    "selectActivityError": "Please select an activity",
+    "deleteTemplate": {
+      "confirmTitle": "Delete Template",
+      "confirmMessage": "Are you sure you want to delete this template? This action cannot be undone.",
+      "success": "Template deleted successfully",
+      "error": "Failed to delete template",
+      "errorSub": "Please try again."
+    },
     "activityDropdownEdit": {
       "searchPlaceholder": "Search activities...",
       "loadError": "Failed to load activities. Try again!",

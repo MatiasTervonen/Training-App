@@ -6,5 +6,6 @@ export function useFriendRequests() {
     queryKey: ["friend-requests"],
     queryFn: getFriendRequests,
     staleTime: 0,
+    refetchInterval: 15_000,
   });
 }

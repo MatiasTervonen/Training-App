@@ -12,11 +12,13 @@ import { startStepSession } from "@/native/android/NativeStepCounter";
 import { useState } from "react";
 import { useRouter } from "expo-router";
 import { useUserStore } from "@/lib/stores/useUserStore";
+import { useTranslation } from "react-i18next";
 
 export function useStartActivity() {
   const activeSession = useTimerStore((state) => state.activeSession);
   const setActiveSession = useTimerStore((state) => state.setActiveSession);
   const startSession = useTimerStore((state) => state.startSession);
+  const { t } = useTranslation(["activities", "common"]);
   const gpsEnabledGlobally = useUserStore(
     (state) => state.settings?.gps_tracking_enabled,
   );
@@ -30,8 +32,8 @@ export function useStartActivity() {
     if (activeSession) {
       Toast.show({
         type: "error",
-        text1: "You already have an active session.",
-        text2: "Finish it before starting a new one.",
+        text1: t("activities:activities.activeSessionError"),
+        text2: t("activities:activities.activeSessionErrorSub"),
       });
       return;
     }
@@ -106,8 +108,8 @@ export function useStartActivity() {
         console.error("Error initializing database", error);
         Toast.show({
           type: "error",
-          text1: "Error",
-          text2: "Failed to initialize database. Please try again.",
+          text1: t("common:common.error"),
+          text2: t("activities:activities.dbInitError"),
         });
         setIsStartingActivity(false);
         return false;

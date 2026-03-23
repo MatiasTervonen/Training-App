@@ -382,9 +382,8 @@ export default function TemplateForm() {
                         }}
                         onDeleteExercise={async (index) => {
                           const confirmDelete = await confirmAction({
-                            title: "Delete Exercise",
-                            message:
-                              "Are you sure you want to delete this exercise from the template?",
+                            title: t("gym.templateForm.deleteExerciseConfirm.title"),
+                            message: t("gym.templateForm.deleteExerciseConfirm.message"),
                           });
                           if (!confirmDelete) return;
 

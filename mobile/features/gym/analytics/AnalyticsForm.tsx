@@ -157,14 +157,24 @@ export default function AnalyticsForm({ data, heatmap }: AnalyticsFormProps) {
     if (!skiaRef.current) return;
     if (chartSize.width === 0 || chartSize.height === 0) return;
 
-    const chart = echarts.init(skiaRef.current, "light", {
-      renderer: "skia",
-      width: chartSize.width,
-      height: chartSize.height,
-    } as any);
+    let disposed = false;
+    let chart: ReturnType<typeof echarts.init> | null = null;
 
-    chart.setOption(option);
-    return () => chart.dispose();
+    const rafId = requestAnimationFrame(() => {
+      if (disposed || !skiaRef.current) return;
+      chart = echarts.init(skiaRef.current, "light", {
+        renderer: "skia",
+        width: chartSize.width,
+        height: chartSize.height,
+      } as any);
+      chart.setOption(option);
+    });
+
+    return () => {
+      disposed = true;
+      cancelAnimationFrame(rafId);
+      chart?.dispose();
+    };
   }, [option, chartSize]);
 
   return (

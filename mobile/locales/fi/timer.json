@@ -19,6 +19,11 @@
     "titlePlaceholder": "Ajastimen otsikko",
     "notesLabel": "Muistiinpanot...",
     "notesPlaceholder": "Ajastimen muistiinpanot...",
+    "save": {
+      "fillAllFields": "Täytä kaikki kentät",
+      "success": "Ajastin tallennettu onnistuneesti",
+      "error": "Virhe ajastimen tallennuksessa"
+    },
     "savingTimer": "Tallennetaan ajastinta...",
     "updatingTimer": "Päivitetään ajastinta...",
     "loadingTimers": "Ladataan ajastimia...",

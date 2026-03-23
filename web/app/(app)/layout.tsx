@@ -9,6 +9,7 @@ import MenuSidebar from "@/components/sidebar/MenuSidebar";
 import SessionsSidebar from "@/components/sidebar/SessionsSidebar";
 import ActiveSessionPopup from "@/components/activeSessionPopup";
 import HabitTimerListener from "@/features/habits/components/HabitTimerListener";
+import HeartbeatListener from "@/components/HeartbeatListener";
 
 export default function appLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -43,6 +44,7 @@ export default function appLayout({ children }: { children: React.ReactNode }) {
         </div>
       </SplashScreen>
       <HabitTimerListener />
+      <HeartbeatListener />
       <Suspense fallback={null}>
         <UserLoader />
       </Suspense>

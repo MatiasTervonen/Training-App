@@ -38,7 +38,7 @@ export default function PinnedCarousel({
       : activeIndex;
 
   return (
-    <View className="mb-5">
+    <View className="-mb-2">
       <View className="flex-row items-center mb-2 gap-2 ml-4 mt-3">
         <Pin size={20} color="#d1d5db" />
         <AppText>{t("common.pinned")}</AppText>

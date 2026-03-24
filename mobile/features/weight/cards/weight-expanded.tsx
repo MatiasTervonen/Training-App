@@ -18,7 +18,7 @@ import DraftImageItem from "@/features/notes/components/DraftImageItem";
 import DraftVideoItem from "@/features/notes/components/DraftVideoItem";
 import { DraftRecordingItem } from "@/features/notes/components/draftRecording";
 import ImageViewerModal from "@/features/notes/components/ImageViewerModal";
-import { NotesVoiceSkeleton } from "@/components/skeletetons";
+import { NotesVoiceSkeleton, NotesImageSkeleton, NotesVideoSkeleton } from "@/components/skeletetons";
 import { useState } from "react";
 
 type weightPayload = {
@@ -98,7 +98,7 @@ export default function WeightSession({
           {imageCount > 0 && (
             <View className="mt-5">
               {isLoadingMedia ? (
-                <NotesVoiceSkeleton count={imageCount} />
+                <NotesImageSkeleton count={imageCount} />
               ) : (
                 images.map((image, idx) => (
                   <DraftImageItem
@@ -115,7 +115,7 @@ export default function WeightSession({
           {videoCount > 0 && (
             <View className="mt-3">
               {isLoadingMedia ? (
-                <NotesVoiceSkeleton count={videoCount} />
+                <NotesVideoSkeleton count={videoCount} />
               ) : (
                 videos.map((video) => (
                   <DraftVideoItem

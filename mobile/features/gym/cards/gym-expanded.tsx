@@ -1,7 +1,9 @@
 import { formatDateShort, formatDurationLong, formatTime, formatMeters } from "@/lib/formatDate";
 import { PhaseType } from "@/types/session";
 import { useUserStore } from "@/lib/stores/useUserStore";
-import { FullGymSession } from "@/database/gym/get-full-gym-session";
+import { FullGymSession, GymSessionMedia } from "@/database/gym/get-full-gym-session";
+import { NotesImageSkeleton, NotesVideoSkeleton, NotesVoiceSkeleton } from "@/components/skeletetons";
+import ErrorMessage from "@/components/ErrorMessage";
 import GroupExercises from "@/features/gym/lib/GroupExercises";
 import { View, ScrollView, NativeSyntheticEvent, NativeScrollEvent } from "react-native";
 import { useFullScreenModalScroll } from "@/components/FullScreenModal";
@@ -25,7 +27,15 @@ import ImageViewerModal from "@/features/notes/components/ImageViewerModal";
 import ShareModal from "@/features/gym/components/ShareModal";
 import ShareWithFriendsButton from "@/features/social-feed/components/ShareWithFriendsToggle";
 
-export default function GymSession(gym_session: FullGymSession & { readOnly?: boolean }) {
+type GymSessionProps = FullGymSession & {
+  readOnly?: boolean;
+  gymMedia?: GymSessionMedia;
+  isLoadingMedia?: boolean;
+  mediaError?: unknown;
+  mediaHints?: { "image-count"?: number; "video-count"?: number; "voice-count"?: number };
+};
+
+export default function GymSession(gym_session: GymSessionProps) {
   const { t } = useTranslation("gym");
   const modalScroll = useFullScreenModalScroll();
   const [exerciseId, setExerciseId] = useState("");
@@ -33,9 +43,9 @@ export default function GymSession(gym_session: FullGymSession & { readOnly?: bo
   const [viewerIndex, setViewerIndex] = useState(-1);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
-  const images = gym_session.sessionImages ?? [];
-  const videos = gym_session.sessionVideos ?? [];
-  const voiceRecordings = gym_session.sessionVoiceRecordings ?? [];
+  const images = gym_session.gymMedia?.images ?? [];
+  const videos = gym_session.gymMedia?.videos ?? [];
+  const voiceRecordings = gym_session.gymMedia?.voiceRecordings ?? [];
 
   const groupedExercises = GroupExercises(
     gym_session.gym_session_exercises || [],
@@ -172,6 +182,29 @@ export default function GymSession(gym_session: FullGymSession & { readOnly?: bo
               </BodyText>
             )}
 
+            {/* Media loading skeletons */}
+            {gym_session.isLoadingMedia && (
+              <View className="w-full mt-4">
+                {(gym_session.mediaHints?.["image-count"] ?? 0) > 0 && (
+                  <NotesImageSkeleton count={gym_session.mediaHints!["image-count"]} />
+                )}
+                {(gym_session.mediaHints?.["video-count"] ?? 0) > 0 && (
+                  <NotesVideoSkeleton count={gym_session.mediaHints!["video-count"]} />
+                )}
+                {(gym_session.mediaHints?.["voice-count"] ?? 0) > 0 && (
+                  <NotesVoiceSkeleton count={gym_session.mediaHints!["voice-count"]} />
+                )}
+              </View>
+            )}
+
+            {/* Media error */}
+            {!!gym_session.mediaError && (
+              <View className="w-full mt-4">
+                <ErrorMessage message={t("gym.session.mediaLoadError")} />
+              </View>
+            )}
+
+            {/* Images */}
             {images.length > 0 && (
               <View className="w-full mt-4">
                 {images.map((image, idx) => (
@@ -184,6 +217,7 @@ export default function GymSession(gym_session: FullGymSession & { readOnly?: bo
               </View>
             )}
 
+            {/* Videos */}
             {videos.length > 0 && (
               <View className="w-full mt-4">
                 {videos.map((video) => (
@@ -197,6 +231,7 @@ export default function GymSession(gym_session: FullGymSession & { readOnly?: bo
               </View>
             )}
 
+            {/* Voice Recordings */}
             {voiceRecordings.length > 0 && (
               <View className="w-full mt-4">
                 {voiceRecordings.map((recording) => (

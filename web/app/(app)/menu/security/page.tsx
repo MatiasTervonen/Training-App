@@ -114,7 +114,6 @@ export default function Page() {
 
   return (
     <div className="page-padding max-w-md mx-auto">
-      <h1 className="flex justify-center mb-10 text-2xl">{t("security.title")}</h1>
       {isGoogleUser ? (
         <div className="mb-10">
           <h2 className="mb-5 underline">{t("security.resetPassword.title")}</h2>

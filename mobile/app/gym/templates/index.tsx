@@ -74,6 +74,7 @@ export default function TemplatesPage() {
         main_group: ex.gym_exercises.main_group,
         sets: [],
         superset_id: ex.superset_id,
+        rest_timer_seconds: (ex as typeof ex & { rest_timer_seconds?: number | null }).rest_timer_seconds ?? null,
       }));
 
     // Build phase data from template phases
@@ -129,11 +130,14 @@ export default function TemplatesPage() {
       }
     }
 
+    const templateRestTimer = (template as typeof template & { rest_timer_seconds?: number | null }).rest_timer_seconds ?? null;
+
     const sessionDraft = {
       title: template.name,
       exercises: workoutExercises,
       warmup,
       cooldown,
+      templateRestTimerSeconds: templateRestTimer,
     };
 
     await AsyncStorage.setItem(

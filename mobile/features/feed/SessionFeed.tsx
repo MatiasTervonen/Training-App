@@ -162,6 +162,9 @@ export default function SessionFeed({
     GymSessionFull,
     GymSessionError,
     isLoadingGymSession,
+    gymMediaFull,
+    gymMediaError,
+    isLoadingGymMedia,
     todoSessionFull,
     todoSessionError,
     isLoadingTodoSession,
@@ -459,7 +462,15 @@ export default function SessionFeed({
                   {t("feed.gymError")}
                 </BodyText>
               ) : (
-                GymSessionFull && <GymSession {...GymSessionFull} />
+                GymSessionFull && (
+                  <GymSession
+                    {...GymSessionFull}
+                    gymMedia={gymMediaFull}
+                    isLoadingMedia={isLoadingGymMedia}
+                    mediaError={gymMediaError}
+                    mediaHints={expandedItem.extra_fields as { "image-count"?: number; "video-count"?: number; "voice-count"?: number }}
+                  />
+                )
               )}
             </>
           )}

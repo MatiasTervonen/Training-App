@@ -7,6 +7,8 @@ import android.os.CountDownTimer
 import android.util.Log
 import android.view.View
 import android.graphics.Color
+import android.media.AudioAttributes
+import android.net.Uri
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import android.app.PendingIntent
@@ -22,6 +24,7 @@ class RestTimerService : Service() {
     private var notificationBuilder: NotificationCompat.Builder? = null
     private var collapsedViews: RemoteViews? = null
     private var expandedViews: RemoteViews? = null
+    private var finishedText: String = "Rest time is up!"
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Log.d("RestTimer", "Rest Timer Service started")
@@ -29,6 +32,7 @@ class RestTimerService : Service() {
         val endTime = intent?.getLongExtra("endTime", 0L) ?: 0L
         val label = intent?.getStringExtra("label") ?: "Rest"
         val cancelText = intent?.getStringExtra("cancelText") ?: "Skip"
+        finishedText = intent?.getStringExtra("finishedText") ?: "Rest time is up!"
 
         // Create notification channel
         val channel = NotificationChannel(
@@ -99,11 +103,40 @@ class RestTimerService : Service() {
                 notificationManager?.notify(3, notificationBuilder!!.build())
             }
             override fun onFinish() {
+                showFinishedNotification()
                 stopSelf()
             }
         }.start()
 
         return START_STICKY
+    }
+
+    private fun showFinishedNotification() {
+        val nm = notificationManager ?: getSystemService(NotificationManager::class.java) ?: return
+
+        // Create a high-importance channel with the rest timer sound
+        val channel = NotificationChannel(
+            "rest_timer_end",
+            "Rest Timer End",
+            NotificationManager.IMPORTANCE_HIGH,
+        ).apply {
+            val soundUri = Uri.parse("android.resource://$packageName/${R.raw.mixkit_alert_bells_echo_765}")
+            setSound(soundUri, AudioAttributes.Builder()
+                .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                .build())
+        }
+        nm.createNotificationChannel(channel)
+
+        val notification = NotificationCompat.Builder(this, "rest_timer_end")
+            .setSmallIcon(R.drawable.ic_stat_kurvi_icon_ice_blue_transparent)
+            .setContentTitle(finishedText)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setAutoCancel(true)
+            .setTimeoutAfter(5000)
+            .build()
+
+        nm.notify(3002, notification)
     }
 
     private fun formatTime(millis: Long): String {

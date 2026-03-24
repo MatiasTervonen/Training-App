@@ -41,8 +41,6 @@ export default function FriendsPage() {
 
   return (
     <div className="page-padding max-w-md mx-auto">
-      <h1 className="text-center mb-10 text-2xl">{t("friends.title")}</h1>
-
       <FriendRequestForm />
 
       {isLoading ? (

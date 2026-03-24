@@ -16,10 +16,7 @@ export default function WorkoutAnalyticsPage() {
   });
 
   return (
-    <div className="sm:px-5 pb-10">
-      <h1 className="text-2xl my-5 text-center">
-        {t("gym.analyticsScreen.title")}
-      </h1>
+    <div className="sm:px-5 pb-10 pt-5">
       {isLoading && !data ? (
         <div className="flex flex-col  items-center gap-2 mt-20 px-6">
           <p className="text-gray-300 text-center text-xl font-body">

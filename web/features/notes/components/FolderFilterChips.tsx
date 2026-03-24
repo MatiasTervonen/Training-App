@@ -100,19 +100,18 @@ export default function FolderFilterChips({
   }, [selectedFolderId, folders]);
 
   return (
-    <div className="py-3">
-      <div
-        ref={scrollRef}
-        {...dragHandlers}
-        className="flex items-center bg-slate-800 rounded-lg p-1 min-w-0 gap-1 overflow-x-auto select-none"
-      >
+    <div
+      ref={scrollRef}
+      {...dragHandlers}
+      className="flex items-center bg-slate-800 rounded-lg p-1 min-w-0 gap-1 overflow-x-auto select-none"
+    >
         {canScrollLeft && (
           <ChevronLeft size={16} className="shrink-0 text-gray-400 sticky left-0 z-10" />
         )}
 
         <button
           onClick={onSelectAll}
-          className={`py-2 px-3 rounded-md text-center font-medium text-sm transition-colors w-[100px] truncate shrink-0 ${
+          className={`py-2 px-3 rounded-md text-center transition-colors w-[100px] truncate shrink-0 ${
             isAllSelected ? "bg-slate-700 text-cyan-400" : "text-gray-200"
           }`}
         >
@@ -125,7 +124,7 @@ export default function FolderFilterChips({
             <button
               key={folder.id}
               onClick={() => onSelectFolder(folder.id)}
-              className={`py-2 px-3 rounded-md text-center font-medium text-sm transition-colors w-[100px] truncate shrink-0 ${
+              className={`py-2 px-3 rounded-md text-center transition-colors w-[100px] truncate shrink-0 ${
                 isActive ? "bg-slate-700 text-cyan-400" : "text-gray-200"
               }`}
             >
@@ -137,7 +136,6 @@ export default function FolderFilterChips({
         {canScrollRight && (
           <ChevronRight size={16} className="shrink-0 text-gray-400 sticky right-0 z-10" />
         )}
-      </div>
     </div>
   );
 }

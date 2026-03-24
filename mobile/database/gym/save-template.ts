@@ -6,6 +6,7 @@ type gym_template_exercises = {
   exercise_id: string;
   position: number;
   superset_id?: string;
+  rest_timer_seconds?: number | null;
 };
 
 type TemplatePhasePayload = {
@@ -17,15 +18,18 @@ export async function saveTemplate({
   exercises,
   name,
   phases = [],
+  restTimerSeconds,
 }: {
   exercises: gym_template_exercises[];
   name: string;
   phases?: TemplatePhasePayload[];
+  restTimerSeconds?: number | null;
 }) {
   const { error } = await supabase.rpc("gym_save_template", {
     p_exercises: exercises,
     p_name: name,
     p_phases: phases,
+    p_rest_timer_seconds: restTimerSeconds ?? null,
   });
 
   if (error) {

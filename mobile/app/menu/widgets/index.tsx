@@ -1,6 +1,4 @@
 import { View } from "react-native";
-import AppText from "@/components/AppText";
-import BodyText from "@/components/BodyText";
 import LinkButton from "@/components/buttons/LinkButton";
 import PageContainer from "@/components/PageContainer";
 import { useTranslation } from "react-i18next";
@@ -12,9 +10,6 @@ export default function WidgetsHubPage() {
 
   return (
     <PageContainer>
-      <AppText className="text-2xl text-center mb-10">
-        {t("widgets.hub.title")}
-      </AppText>
       <View className="flex-row items-start gap-2 bg-card rounded-xl p-4 mb-6">
         <Info size={18} color="#9ca3af" className="mt-0.5" />
         <BodyTextNC className="text-sm text-gray-400 flex-1">

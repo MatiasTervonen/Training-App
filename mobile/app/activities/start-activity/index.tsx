@@ -59,6 +59,7 @@ import {
   requestIgnoreBatteryOptimizations,
 } from "@/native/android/NativeBatteryOptimization";
 import BodyText from "@/components/BodyText";
+import AppTextNC from "@/components/AppTextNC";
 
 type DraftImage = {
   id: string;
@@ -533,9 +534,9 @@ export default function StartActivityScreen() {
                   className="px-4 mt-1"
                   onPress={() => requestIgnoreBatteryOptimizations()}
                 >
-                  <AppText className="text-sm text-blue-500 underline">
+                  <AppTextNC className="text-sm text-blue-400 underline">
                     {t("activities.startActivityScreen.batteryOptHint")}
-                  </AppText>
+                  </AppTextNC>
                 </Pressable>
               )}
             </>

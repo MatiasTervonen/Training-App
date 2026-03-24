@@ -77,7 +77,7 @@ export default function DropDownModal({
                   onChange?.(option.value);
                   setIsOpen(false);
                 }}
-                className="flex-row items-center border p-2 my-2 rounded-xl mx-6 px-4 bg-slate-800 border-slate-700"
+                className="flex-row items-center border py-4 my-2 rounded-xl mx-6 px-4 bg-slate-800 border-slate-700"
               >
                 <AppText className="flex-1 text-center">
                   {option.label}

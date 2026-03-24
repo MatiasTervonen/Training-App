@@ -5,6 +5,7 @@ import { useTimerStore } from "@/lib/stores/timerStore";
 import * as Crypto from "expo-crypto";
 import * as FileSystem from "expo-file-system/legacy";
 import { DraftVideo, ExerciseEntry } from "@/types/session";
+import { prepareAndEnqueueMedia } from "@/lib/upload-queue-helpers";
 
 type DraftRecording = {
   id: string;
@@ -170,4 +171,81 @@ export async function saveSession({
     });
     throw new Error("Error saving session");
   }
+}
+
+type SaveWithoutMediaProps = {
+  title: string;
+  notes: string;
+  duration: number;
+  exercises: ExerciseEntry[];
+  phases?: PhasePayload[];
+  draftImages?: DraftImage[];
+  draftRecordings?: DraftRecording[];
+  draftVideos?: DraftVideo[];
+};
+
+/**
+ * Saves the session to the database immediately (no media uploads),
+ * then enqueues media for background upload via the upload queue.
+ */
+export async function saveSessionWithoutMedia({
+  exercises,
+  notes,
+  duration,
+  title,
+  phases = [],
+  draftImages = [],
+  draftRecordings = [],
+  draftVideos = [],
+}: SaveWithoutMediaProps) {
+  const {
+    data: { session },
+    error: sessionError,
+  } = await supabase.auth.getSession();
+
+  if (sessionError || !session || !session.user) {
+    throw new Error("Unauthorized");
+  }
+
+  const start_time = new Date(
+    useTimerStore.getState().activeSession?.started_at ?? Date.now(),
+  ).toISOString();
+  const end_time = new Date().toISOString();
+
+  const { data: sessionId, error } = await supabase.rpc("gym_save_session", {
+    p_exercises: exercises,
+    p_notes: notes,
+    p_duration: duration,
+    p_title: title,
+    p_start_time: start_time,
+    p_end_time: end_time,
+    p_phases: phases,
+  });
+
+  if (error) {
+    handleError(error, {
+      message: "Error saving session",
+      route: "/database/gym/save-session",
+      method: "POST",
+    });
+    throw new Error("Error saving session");
+  }
+
+  const hasMedia =
+    draftImages.length > 0 ||
+    draftRecordings.length > 0 ||
+    draftVideos.length > 0;
+
+  if (hasMedia) {
+    await prepareAndEnqueueMedia({
+      targetId: sessionId as string,
+      targetType: "session",
+      draftImages,
+      draftRecordings,
+      draftVideos,
+      userId: session.user.id,
+    });
+  }
+
+  return { success: true, sessionId: sessionId as string, hasMedia };
 }

@@ -15,6 +15,7 @@ export default function useSaveGymDraft({
   draftVideos,
   warmup,
   cooldown,
+  templateRestTimerSeconds,
   setTitle,
   setExercises,
   setNotes,
@@ -24,6 +25,7 @@ export default function useSaveGymDraft({
   setDraftVideos,
   setWarmup,
   setCooldown,
+  setTemplateRestTimerSeconds,
 }: {
   exercises: ExerciseEntry[];
   notes: string;
@@ -34,6 +36,7 @@ export default function useSaveGymDraft({
   draftVideos: DraftVideo[];
   warmup?: PhaseData | null;
   cooldown?: PhaseData | null;
+  templateRestTimerSeconds?: number | null;
   setTitle: (title: string) => void;
   setExercises: (exercises: ExerciseEntry[]) => void;
   setNotes: (notes: string) => void;
@@ -43,6 +46,7 @@ export default function useSaveGymDraft({
   setDraftVideos: (videos: DraftVideo[]) => void;
   setWarmup?: (warmup: PhaseData | null) => void;
   setCooldown?: (cooldown: PhaseData | null) => void;
+  setTemplateRestTimerSeconds?: (seconds: number | null) => void;
 }) {
   const [hasLoadedDraft, setHasLoadedDraft] = useState(false);
 
@@ -77,6 +81,9 @@ export default function useSaveGymDraft({
           }
           if (parsedDraft.cooldown) {
             setCooldown?.(parsedDraft.cooldown);
+          }
+          if (parsedDraft.templateRestTimerSeconds != null) {
+            setTemplateRestTimerSeconds?.(parsedDraft.templateRestTimerSeconds);
           }
         }
       } catch (error) {
@@ -125,6 +132,7 @@ export default function useSaveGymDraft({
           draftVideos: draftVideos.filter((v) => !v.isCompressing),
           warmup: warmup ?? null,
           cooldown: cooldown ?? null,
+          templateRestTimerSeconds: templateRestTimerSeconds ?? null,
         };
 
         await AsyncStorage.setItem(

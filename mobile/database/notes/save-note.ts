@@ -3,6 +3,7 @@ import { handleError } from "@/utils/handleError";
 import { uploadFileToStorage, getAccessToken } from "@/lib/upload-with-progress";
 import * as Crypto from "expo-crypto";
 import * as FileSystem from "expo-file-system/legacy";
+import { prepareAndEnqueueMedia } from "@/lib/upload-queue-helpers";
 
 type DraftImage = {
   id: string;
@@ -216,4 +217,69 @@ export async function saveNote({
     });
     throw new Error("Error saving note");
   }
+}
+
+type SaveNoteWithoutMediaProps = {
+  title: string;
+  notes: string;
+  folderId?: string | null;
+  draftRecordings?: {
+    id: string;
+    uri: string;
+    createdAt: number;
+    durationMs?: number;
+  }[];
+  draftImages?: DraftImage[];
+  draftVideos?: DraftVideo[];
+};
+
+export async function saveNoteWithoutMedia({
+  title,
+  notes,
+  folderId,
+  draftRecordings = [],
+  draftImages = [],
+  draftVideos = [],
+}: SaveNoteWithoutMediaProps) {
+  const {
+    data: { session },
+    error: sessionError,
+  } = await supabase.auth.getSession();
+
+  if (sessionError || !session || !session.user) {
+    throw new Error("Unauthorized");
+  }
+
+  const { data: noteId, error } = await supabase.rpc("notes_save_note", {
+    p_title: title,
+    p_notes: notes,
+    p_folder_id: folderId ?? undefined,
+  });
+
+  if (error) {
+    handleError(error, {
+      message: "Error saving note",
+      route: "/database/notes/save-note",
+      method: "POST",
+    });
+    throw new Error("Error saving note");
+  }
+
+  const hasMedia =
+    draftImages.length > 0 ||
+    draftRecordings.length > 0 ||
+    draftVideos.length > 0;
+
+  if (hasMedia) {
+    await prepareAndEnqueueMedia({
+      targetId: noteId as string,
+      targetType: "note",
+      draftImages,
+      draftRecordings,
+      draftVideos,
+      userId: session.user.id,
+    });
+  }
+
+  return { noteId: noteId as string, hasMedia };
 }

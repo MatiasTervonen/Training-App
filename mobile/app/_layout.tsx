@@ -48,6 +48,7 @@ import Mapbox from "@rnmapbox/maps";
 import TimerFinishListener from "@/features/layout/TimerFinished";
 import AlarmPlayingListener from "@/features/layout/AlarmPlayingListener";
 import GlobalReminderSnoozedListener from "@/features/layout/GlobalReminderSnoozedListener";
+import UploadQueueListener from "@/features/layout/UploadQueueListener";
 import AppStatePermissionListener from "@/features/push-notifications/AppStatePermissionListener";
 import GpsTrackingPermission from "@/features/activities/gpsToggle/gpsTrackingPermission";
 import { backfillMissingDaysThrottled } from "@/database/activities/syncStepsToDatabase";
@@ -198,6 +199,7 @@ export default Sentry.wrap(function RootLayout() {
               <HabitBgSyncListener />
               <StepHabitAutoCompleteListener />
               <HabitTimerListener />
+              <UploadQueueListener />
               <StatusBar
                 barStyle="light-content"
                 backgroundColor="#020617"

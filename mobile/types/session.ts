@@ -48,6 +48,7 @@ export type ExerciseEntry = {
   notes?: string | null;
   superset_id?: string | null;
   muscle_group?: string | null;
+  rest_timer_seconds?: number | null;
 };
 
 export const emptyExerciseEntry: ExerciseEntry = {

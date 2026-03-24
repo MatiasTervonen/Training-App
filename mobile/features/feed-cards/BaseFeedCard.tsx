@@ -2,13 +2,13 @@ import { Ellipsis, SquareArrowOutUpRight, Users } from "lucide-react-native";
 import { View } from "react-native";
 import AppText from "@/components/AppText";
 import DropdownMenu from "@/components/DropdownMenu";
-import { formatDate, formatDateShort } from "@/lib/formatDate";
+import { formatDateShort } from "@/lib/formatDate";
 import { FeedCardProps } from "@/types/session";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { LinearGradient } from "expo-linear-gradient";
-import BodyTextNC from "@/components/BodyTextNC";
+
 
 type BaseCardProps = {
   item: FeedCardProps["item"];
@@ -20,6 +20,7 @@ type BaseCardProps = {
   onMoveToFolder?: () => void;
   onHide?: () => void;
   statsContent: ReactNode; // Middle section with stats
+  mediaContent?: ReactNode; // Media icons row above footer
   typeIcon: ReactNode; // Icon for activity type
   typeName: string; // Name of the activity type
   showUpdatedAt?: boolean; // Whether to show updated at or created at
@@ -61,6 +62,7 @@ export default function BaseFeedCard({
   onMoveToFolder,
   onHide,
   statsContent,
+  mediaContent,
   typeIcon,
   typeName,
   showUpdatedAt = false,
@@ -76,7 +78,7 @@ export default function BaseFeedCard({
       colors={gradientColors}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
-      className={`border rounded-md overflow-hidden min-h-40 ${
+      className={`border rounded-md overflow-hidden h-48 ${
         pinned ? "border-yellow-400/70" : "border-slate-700"
       }`}
     >
@@ -103,13 +105,9 @@ export default function BaseFeedCard({
       {/* Stats content */}
       <View className="flex-1 justify-center px-4 pb-2">{statsContent}</View>
 
-      {/* Updated timestamp (optional) */}
-      {showUpdatedAt && item.updated_at && (
-        <View className="px-4 pb-1">
-          <BodyTextNC className="text-sm text-slate-400">
-            {t("feed.card.updated")} {formatDate(item.updated_at)}
-          </BodyTextNC>
-        </View>
+      {/* Media icons row above footer */}
+      {mediaContent && (
+        <View className="px-4 pb-2">{mediaContent}</View>
       )}
 
       {/* Footer - type, date, details */}
@@ -121,7 +119,9 @@ export default function BaseFeedCard({
           </AppText>
           <AppText className="text-slate-500 text-sm">·</AppText>
           <AppText className="text-slate-400 text-sm">
-            {formatDateShort(item.created_at)}
+            {showUpdatedAt && item.updated_at
+              ? formatDateShort(item.updated_at)
+              : formatDateShort(item.created_at)}
           </AppText>
           {item.visibility === "friends" && <Users size={14} color="#64748b" />}
         </View>

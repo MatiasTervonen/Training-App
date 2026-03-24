@@ -11,12 +11,13 @@ class RestTimerModule(reactContext: ReactApplicationContext) :
     override fun getName() = "NativeRestTimer"
 
     @ReactMethod
-    fun startRestTimer(endTime: Double, label: String?, statusText: String?, cancelText: String?) {
+    fun startRestTimer(endTime: Double, label: String?, statusText: String?, cancelText: String?, finishedText: String?) {
         val intent = Intent(reactApplicationContext, RestTimerService::class.java)
         intent.putExtra("endTime", endTime.toLong())
         intent.putExtra("label", label ?: "Rest")
         intent.putExtra("statusText", statusText ?: "Resting")
         intent.putExtra("cancelText", cancelText ?: "Skip")
+        intent.putExtra("finishedText", finishedText ?: "Rest time is up!")
         reactApplicationContext.startForegroundService(intent)
     }
 

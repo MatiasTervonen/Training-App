@@ -1,4 +1,3 @@
-import AppText from "@/components/AppText";
 import PageContainer from "@/components/PageContainer";
 import PushNotificationManager from "@/features/push-notifications/pushNotificationManager";
 import GpsToggleManager from "@/features/activities/gpsToggle/gpsToggleManager";
@@ -29,9 +28,6 @@ export default function SettingsPage() {
 
   return (
     <PageContainer>
-      <AppText className="text-2xl text-center mb-10">
-        {t("settings.title")}
-      </AppText>
       <PushNotificationManager />
       <View className="my-5">
         <GpsToggleManager />

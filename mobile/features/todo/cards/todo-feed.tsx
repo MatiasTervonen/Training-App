@@ -28,6 +28,7 @@ export default function TodoCard({
   const voiceCount = payload["voice-count"] ?? 0;
   const imageCount = payload["image-count"] ?? 0;
   const videoCount = payload["video-count"] ?? 0;
+  const hasMedia = voiceCount > 0 || imageCount > 0 || videoCount > 0;
 
   return (
     <BaseFeedCard
@@ -41,42 +42,36 @@ export default function TodoCard({
       typeIcon={<ListTodo size={20} color={"#cbd5e1"} />}
       typeName={t("feed.card.types.todo")}
       statsContent={
-        <View>
-          {(voiceCount > 0 || imageCount > 0 || videoCount > 0) && (
-            <View className="flex-row items-center gap-3 mb-1">
-              {voiceCount > 0 && (
-                <View className="flex-row items-center gap-1">
-                  <Mic size={12} color="#94a3b8" />
-                  <AppText className="text-xs text-slate-400">
-                    {voiceCount}
-                  </AppText>
-                </View>
-              )}
-              {imageCount > 0 && (
-                <View className="flex-row items-center gap-1">
-                  <ImageIcon size={12} color="#94a3b8" />
-                  <AppText className="text-xs text-slate-400">
-                    {imageCount}
-                  </AppText>
-                </View>
-              )}
-              {videoCount > 0 && (
-                <View className="flex-row items-center gap-1">
-                  <Video size={12} color="#94a3b8" />
-                  <AppText className="text-xs text-slate-400">
-                    {videoCount}
-                  </AppText>
-                </View>
-              )}
-            </View>
-          )}
-          <View className="flex-row gap-2 items-center">
-            <BodyText className="text-slate-300">
-              {t("feed.card.completed")}: {payload.completed} / {payload.total}
-            </BodyText>
-            {payload.completed === payload.total && <Check color="#22c55e" />}
-          </View>
+        <View className="flex-row gap-2 items-center">
+          <BodyText className="text-slate-300">
+            {t("feed.card.completed")}: {payload.completed} / {payload.total}
+          </BodyText>
+          {payload.completed === payload.total && <Check color="#22c55e" />}
         </View>
+      }
+      mediaContent={
+        hasMedia ? (
+          <View className="flex-row items-center gap-3">
+            {voiceCount > 0 && (
+              <View className="flex-row items-center gap-1">
+                <Mic size={12} color="#94a3b8" />
+                <AppText className="text-xs text-slate-400">{voiceCount}</AppText>
+              </View>
+            )}
+            {imageCount > 0 && (
+              <View className="flex-row items-center gap-1">
+                <ImageIcon size={12} color="#94a3b8" />
+                <AppText className="text-xs text-slate-400">{imageCount}</AppText>
+              </View>
+            )}
+            {videoCount > 0 && (
+              <View className="flex-row items-center gap-1">
+                <Video size={12} color="#94a3b8" />
+                <AppText className="text-xs text-slate-400">{videoCount}</AppText>
+              </View>
+            )}
+          </View>
+        ) : undefined
       }
       showUpdatedAt={true}
     />

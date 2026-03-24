@@ -21,6 +21,7 @@ import Toast from "react-native-toast-message";
 import { useTranslation } from "react-i18next";
 import { nanoid } from "nanoid/non-secure";
 import RecordingModal from "@/features/notes/components/RecordingModal";
+import VideoCameraModal from "@/features/notes/components/VideoCameraModal";
 import type { FolderWithCount } from "@/database/notes/get-folders";
 import type { DraftVideo } from "@/types/session";
 import { MEDIA_LIMITS } from "@/constants/media-limits";
@@ -58,6 +59,7 @@ export default function MediaToolbar({
 }: Props) {
   const { t } = useTranslation(["notes", "common"]);
   const [showRecordingModal, setShowRecordingModal] = useState(false);
+  const [showVideoCameraModal, setShowVideoCameraModal] = useState(false);
   const [showFolderModal, setShowFolderModal] = useState(false);
 
   const rawScreenWidth = Dimensions.get("window").width;
@@ -339,88 +341,58 @@ export default function MediaToolbar({
     }
   };
 
-  const takeVideo = async () => {
-    if (videosAtLimit) {
-      Toast.show({
-        type: "info",
-        text1: t("common:common.media.maxVideosReached", {
-          max: MEDIA_LIMITS.MAX_VIDEOS,
-        }),
-      });
-      return;
-    }
-
-    const { status } = await ExpoImagePicker.requestCameraPermissionsAsync();
-    if (status !== "granted") {
-      Toast.show({
-        type: "error",
-        text1: t("notes:notes.videos.permissionRequired"),
-      });
-      return;
-    }
-
-    const result = await ExpoImagePicker.launchCameraAsync({
-      mediaTypes: ["videos"],
-      videoMaxDuration: MEDIA_LIMITS.MAX_VIDEO_DURATION_SEC,
+  const handleVideoRecorded = async (uri: string, durationMs: number) => {
+    const id = nanoid();
+    const thumbnail = await VideoThumbnails.getThumbnailAsync(uri, {
+      time: 0,
+    });
+    onVideoSelected?.({
+      id,
+      uri,
+      thumbnailUri: thumbnail.uri,
+      durationMs,
+      isCompressing: true,
     });
 
-    if (!result.canceled && result.assets[0]) {
-      const asset = result.assets[0];
+    // Compress in background, then update
+    try {
+      const compressedUri = await compressVideo(uri);
 
-      // Add video to draft immediately with thumbnail + compressing state
-      const id = nanoid();
-      const durationMs = Math.round(asset.duration ?? 0);
-      const thumbnail = await VideoThumbnails.getThumbnailAsync(asset.uri, {
-        time: 0,
-      });
+      // Check file size after compression
+      const sizeMB = await getFileSizeMB(compressedUri);
+      if (sizeMB > MEDIA_LIMITS.MAX_VIDEO_SIZE_MB) {
+        Toast.show({
+          type: "error",
+          text1: t("common:common.media.videoTooLarge", {
+            max: MEDIA_LIMITS.MAX_VIDEO_SIZE_MB,
+          }),
+        });
+        onVideoSelected?.({
+          id,
+          uri: "",
+          thumbnailUri: "",
+          durationMs: 0,
+          isCompressing: false,
+        });
+        return;
+      }
+
       onVideoSelected?.({
         id,
-        uri: asset.uri,
+        uri: compressedUri,
         thumbnailUri: thumbnail.uri,
         durationMs,
-        isCompressing: true,
+        isCompressing: false,
       });
-
-      // Compress in background, then update
-      try {
-        const compressedUri = await compressVideo(asset.uri);
-
-        // Check file size after compression
-        const sizeMB = await getFileSizeMB(compressedUri);
-        if (sizeMB > MEDIA_LIMITS.MAX_VIDEO_SIZE_MB) {
-          Toast.show({
-            type: "error",
-            text1: t("common:common.media.videoTooLarge", {
-              max: MEDIA_LIMITS.MAX_VIDEO_SIZE_MB,
-            }),
-          });
-          onVideoSelected?.({
-            id,
-            uri: "",
-            thumbnailUri: "",
-            durationMs: 0,
-            isCompressing: false,
-          });
-          return;
-        }
-
-        onVideoSelected?.({
-          id,
-          uri: compressedUri,
-          thumbnailUri: thumbnail.uri,
-          durationMs,
-          isCompressing: false,
-        });
-      } catch {
-        // Fallback: use original if compression fails
-        onVideoSelected?.({
-          id,
-          uri: asset.uri,
-          thumbnailUri: thumbnail.uri,
-          durationMs,
-          isCompressing: false,
-        });
-      }
+    } catch {
+      // Fallback: use original if compression fails
+      onVideoSelected?.({
+        id,
+        uri,
+        thumbnailUri: thumbnail.uri,
+        durationMs,
+        isCompressing: false,
+      });
     }
   };
 
@@ -442,7 +414,10 @@ export default function MediaToolbar({
         size: MEDIA_LIMITS.MAX_VIDEO_SIZE_MB,
       }),
       [
-        { text: t("notes:notes.videos.takeVideo"), onPress: takeVideo },
+        {
+          text: t("notes:notes.videos.takeVideo"),
+          onPress: () => setShowVideoCameraModal(true),
+        },
         {
           text: t("notes:notes.videos.chooseFromLibrary"),
           onPress: pickVideoFromLibrary,
@@ -522,6 +497,12 @@ export default function MediaToolbar({
         onClose={() => setShowRecordingModal(false)}
         onRecordingComplete={onRecordingComplete}
         recordLabel={recordLabel}
+      />
+
+      <VideoCameraModal
+        visible={showVideoCameraModal}
+        onClose={() => setShowVideoCameraModal(false)}
+        onVideoRecorded={handleVideoRecorded}
       />
 
       <Modal

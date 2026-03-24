@@ -2,7 +2,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import Toast from "react-native-toast-message";
 import { useTranslation } from "react-i18next";
-import { saveWeight } from "@/database/weight/save-weight";
+import { saveWeightWithoutMedia } from "@/database/weight/save-weight";
 import { DraftVideo, weight } from "@/types/session";
 
 type DraftRecording = {
@@ -83,14 +83,13 @@ export default function useSaveWeight({
     setSavingProgress?.(undefined);
 
     try {
-      await saveWeight({
+      const { hasMedia } = await saveWeightWithoutMedia({
         title,
         notes,
         weight: Number(weight),
         draftImages,
         draftVideos,
         draftRecordings,
-        onProgress: (p) => setSavingProgress?.(p),
       });
 
       await Promise.all([
@@ -108,6 +107,12 @@ export default function useSaveWeight({
         text1: t("common:common.success"),
         text2: t("weight:weight.save.success"),
       });
+      if (hasMedia) {
+        Toast.show({
+          type: "info",
+          text1: t("common:common.media.uploadingBackground"),
+        });
+      }
     } catch {
       Toast.show({
         type: "error",

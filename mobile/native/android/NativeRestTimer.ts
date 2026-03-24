@@ -7,9 +7,16 @@ export function startNativeRestTimer(
   label: string,
   statusText: string,
   cancelText: string,
+  finishedText: string,
 ) {
   if (Platform.OS === "android" && nativeRestTimer) {
-    nativeRestTimer.startRestTimer(endTime, label, statusText, cancelText);
+    nativeRestTimer.startRestTimer(
+      endTime,
+      label,
+      statusText,
+      cancelText,
+      finishedText,
+    );
   }
 }
 

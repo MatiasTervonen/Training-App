@@ -77,6 +77,9 @@ export default function FullScreenModal({
   };
 
   const threshold = screenHeight * 0.15;
+  const modalTop = screenHeight * 0.05; // modal is h-[95%] anchored to bottom
+  const handleZoneHeight = 44; // generous touch target for the handle bar
+  const touchInHandleArea = useSharedValue(false);
 
   // Track scroll position for the scrollable case (no dismiss logic here)
   const scrollHandler = useAnimatedScrollHandler({
@@ -94,8 +97,12 @@ export default function FullScreenModal({
     .onTouchesDown((e) => {
       'worklet';
       if (e.numberOfTouches === 1) {
-        startY.value = e.allTouches[0].absoluteY;
+        const touchY = e.allTouches[0].absoluteY;
+        startY.value = touchY;
         failedThisTouch.value = false;
+        // Allow dismiss from handle area even when scrolled down
+        touchInHandleArea.value =
+          touchY >= modalTop && touchY <= modalTop + handleZoneHeight;
       }
     })
     .onTouchesMove((e, state) => {
@@ -103,7 +110,7 @@ export default function FullScreenModal({
       if (failedThisTouch.value) return;
       if (e.numberOfTouches === 1) {
         const dy = e.allTouches[0].absoluteY - startY.value;
-        if (dy > 15 && innerScrollY.value <= 1) {
+        if (dy > 15 && (innerScrollY.value <= 1 || touchInHandleArea.value)) {
           state.activate();
         } else if (dy < -15 || dy > 15) {
           failedThisTouch.value = true;
@@ -159,8 +166,8 @@ export default function FullScreenModal({
             style={[animatedStyle]}
           >
             <View className={`flex-1 ${bgClassName}`}>
-              <View className="items-center pt-2 pb-0.5">
-                <View className="w-10 h-1 rounded-full bg-slate-500" />
+              <View className="items-center pt-3 pb-2">
+                <View className="w-12 h-1.5 rounded-full bg-slate-400" />
               </View>
               <FullScreenModalScrollContext.Provider value={{ innerScrollY }}>
                 {scrollable ? (
@@ -172,6 +179,7 @@ export default function FullScreenModal({
                     showsVerticalScrollIndicator={false}
                     bounces={false}
                     overScrollMode="never"
+                    keyboardShouldPersistTaps="handled"
                   >
                     <View
                       className="flex-1 max-w-xl px-2 w-full"

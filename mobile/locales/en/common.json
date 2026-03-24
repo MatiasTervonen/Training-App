@@ -43,7 +43,10 @@
       "videoStillCompressing": "Please wait for video compression to finish",
       "videoLimitInfo": "Max {{duration}} min, {{size}} MB",
       "imageLimitInfo": "Max {{size}} MB per image",
-      "voiceLimitInfo": "Max {{duration}} min"
+      "voiceLimitInfo": "Max {{duration}} min",
+      "uploadingBackground": "Media uploading in background",
+      "uploadFailed": "Upload failed",
+      "tapToRetry": "Tap to retry"
     }
   },
   "navbar": {

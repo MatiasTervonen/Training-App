@@ -72,7 +72,7 @@ export default function RemindersPage() {
                 <button
                   key={f}
                   onClick={() => setFilter(f)}
-                  className={`flex-1 py-2 px-3 rounded-md cursor-pointer transition-colors font-primary ${
+                  className={`flex-1 py-2 px-3 rounded-md cursor-pointer transition-colors ${
                     isActive
                       ? "bg-slate-700 text-cyan-400"
                       : "text-gray-200 hover:text-gray-100"
@@ -126,8 +126,8 @@ export default function RemindersPage() {
               />
             ) : (
               <>
-                {unpinnedFeed.map((feedItem) => (
-                  <div className="mt-8" key={feedItem.id}>
+                {unpinnedFeed.map((feedItem, i) => (
+                  <div className={i === 0 && pinnedFeed.length === 0 ? "mt-2" : "mt-8"} key={feedItem.id}>
                     <FeedCard
                       item={feedItem}
                       pinned={false}

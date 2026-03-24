@@ -62,6 +62,8 @@
         "message": "Haluatko varmasti poistaa tämän liikkeen harjoituspohjasta?"
       },
       "cancel": "Peruuta",
+      "restTimerLabel": "Oletuslepoaika (sek)",
+      "restTimerPlaceholder": "Käytä yleistä oletusta...",
       "savingTemplate": "Tallennetaan harjoituspohjaa...",
       "saveSuccess": "Harjoituspohja tallennettu",
       "saveSuccessSub": "Harjoituspohja on tallennettu onnistuneesti.",
@@ -195,6 +197,9 @@
         "hard": "4 - Vaikea",
         "failure": "5 - Epäonnistuminen"
       },
+      "restTimer": "Lepoajastin",
+      "restTimerLabel": "Lepoaika (sek)",
+      "restTimerPlaceholder": "Käytä oletusta...",
       "missingData": "Puuttuvat tiedot",
       "fillReps": "Täytä toistot.",
       "setsLabel": "sarjaa"
@@ -231,7 +236,8 @@
       "calories": "Kalorit",
       "exercises": "Liikkeet",
       "totalSets": "Sarjat",
-      "muscleGroups": "Lihakset"
+      "muscleGroups": "Lihakset",
+      "mediaLoadError": "Virhe median latauksessa."
     },
     "editScreen": {
       "loadingSession": "Ladataan kuntosalisessiota...",

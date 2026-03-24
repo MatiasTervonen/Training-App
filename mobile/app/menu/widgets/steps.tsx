@@ -68,7 +68,7 @@ export default function StepsConfigPage() {
       widgetName: "Steps",
       renderWidget: () => <StepsWidget config={effectiveConfig} steps={steps} />,
     }).catch(() => {});
-  }, [showGoal, dailyGoal, stepHabitTarget, isGoalValid, parsedGoal]);
+  }, [showGoal, stepHabitTarget, isGoalValid, parsedGoal]);
 
   const { status } = useAutoSave({
     data: autoSaveData,

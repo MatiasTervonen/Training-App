@@ -4,6 +4,7 @@ import { uploadFileToStorage, getAccessToken } from "@/lib/upload-with-progress"
 import { DraftRecording, DraftVideo } from "@/types/session";
 import * as Crypto from "expo-crypto";
 import * as FileSystem from "expo-file-system/legacy";
+import { prepareAndEnqueueMedia } from "@/lib/upload-queue-helpers";
 
 type DraftImage = {
   id: string;
@@ -213,4 +214,102 @@ export async function saveActivitySession({
     });
     throw new Error("Error saving activity session");
   }
+}
+
+type SaveActivityWithoutMediaProps = {
+  title: string;
+  notes: string;
+  duration: number;
+  start_time: string;
+  end_time: string;
+  track: {
+    latitude: number;
+    longitude: number;
+    altitude?: number | null;
+    accuracy?: number | null;
+    speed?: number | null;
+    heading?: number | null;
+    timestamp: number;
+    is_stationary: number;
+  }[];
+  activityId: string;
+  steps: number;
+  draftRecordings?: DraftRecording[];
+  draftImages?: DraftImage[];
+  draftVideos?: DraftVideo[];
+  templateId?: string | null;
+  stepDistanceMeters?: number | null;
+};
+
+export async function saveActivitySessionWithoutMedia({
+  title,
+  notes,
+  duration,
+  start_time,
+  end_time,
+  track,
+  activityId,
+  steps,
+  draftRecordings = [],
+  draftImages = [],
+  draftVideos = [],
+  templateId = null,
+  stepDistanceMeters = null,
+}: SaveActivityWithoutMediaProps) {
+  const {
+    data: { session },
+    error: sessionError,
+  } = await supabase.auth.getSession();
+
+  if (sessionError || !session || !session.user) {
+    throw new Error("Unauthorized");
+  }
+
+  const normalizedTrack = track.map((point) => ({
+    ...point,
+    timestamp: new Date(point.timestamp).toISOString(),
+  }));
+
+  const { data: sessionId, error } = await supabase.rpc(
+    "activities_save_activity",
+    {
+      p_title: title,
+      p_notes: notes,
+      p_duration: duration,
+      p_start_time: start_time,
+      p_end_time: end_time,
+      p_track: normalizedTrack,
+      p_activity_id: activityId,
+      p_steps: steps,
+      p_template_id: templateId ?? undefined,
+      p_step_distance_meters: stepDistanceMeters ?? undefined,
+    },
+  );
+
+  if (error || !sessionId) {
+    handleError(error, {
+      message: "Error saving activity session",
+      route: "/database/activities/save-session",
+      method: "POST",
+    });
+    throw new Error("Error saving activity session");
+  }
+
+  const hasMedia =
+    draftImages.length > 0 ||
+    draftRecordings.length > 0 ||
+    draftVideos.length > 0;
+
+  if (hasMedia) {
+    await prepareAndEnqueueMedia({
+      targetId: sessionId as string,
+      targetType: "session",
+      draftImages,
+      draftRecordings,
+      draftVideos,
+      userId: session.user.id,
+    });
+  }
+
+  return { success: true, sessionId: sessionId as string, hasMedia };
 }

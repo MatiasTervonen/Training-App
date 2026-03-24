@@ -1,5 +1,5 @@
 import { useEffect, useCallback, useRef, useState } from "react";
-import { View, FlatList, ActivityIndicator, Pressable, Alert, Platform, Linking } from "react-native";
+import { View, FlatList, ActivityIndicator, Pressable, Alert, Platform, Linking, NativeSyntheticEvent, NativeScrollEvent } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { ChevronDown, ChevronLeft } from "lucide-react-native";
@@ -29,7 +29,6 @@ import useTypingIndicator from "@/features/chat/hooks/useTypingIndicator";
 import TypingIndicator from "@/features/chat/components/TypingIndicator";
 import { useUserStore } from "@/lib/stores/useUserStore";
 import { useTimerStore } from "@/lib/stores/timerStore";
-import { NativeSyntheticEvent, NativeScrollEvent } from "react-native";
 import { ChatMessage, LinkPreview, SessionShareContent, LocationShareContent } from "@/types/chat";
 import { KeyboardAvoidingView } from "react-native-keyboard-controller";
 import { LinearGradient } from "expo-linear-gradient";
@@ -38,6 +37,8 @@ import Toast from "react-native-toast-message";
 import { setActiveChatId } from "@/lib/stores/activeChatStore";
 import { getSharedGymSession, getSharedActivitySession } from "@/database/chat/get-shared-session";
 import type { FullGymSession } from "@/database/gym/get-full-gym-session";
+import GymSession from "@/features/gym/cards/gym-expanded";
+import ActivitySession from "@/features/activities/cards/activity-feed-expanded/activity";
 
 function shouldShowTimestamp(
   current: ChatMessage,
@@ -65,10 +66,6 @@ function shouldShowDateSeparator(
 }
 
 const CHAT_CONTENT_STYLE = { paddingVertical: 8 };
-
-// Lazy-loaded session views for the session share modal
-const GymSession = require("@/features/gym/cards/gym-expanded").default;
-const ActivitySession = require("@/features/activities/cards/activity-feed-expanded/activity").default;
 
 function GymSessionView({ session }: { session: FullGymSession }) {
   return <GymSession {...session} readOnly />;
@@ -313,7 +310,6 @@ export default function ChatScreen() {
 
   // Session share modal state
   const [sessionModalData, setSessionModalData] = useState<SessionShareContent | null>(null);
-  const [sessionModalConversationId, setSessionModalConversationId] = useState<string>("");
   const [isLoadingSession, setIsLoadingSession] = useState(false);
   const [loadedGymSession, setLoadedGymSession] = useState<FullGymSession | null>(null);
   const [loadedActivityData, setLoadedActivityData] = useState<Awaited<ReturnType<typeof getSharedActivitySession>> | null>(null);
@@ -322,7 +318,6 @@ export default function ChatScreen() {
   const handleSessionPress = useCallback(
     async (data: SessionShareContent, convId: string) => {
       setSessionModalData(data);
-      setSessionModalConversationId(convId);
       setIsLoadingSession(true);
       setSessionError(false);
       setLoadedGymSession(null);

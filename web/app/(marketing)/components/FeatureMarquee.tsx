@@ -72,7 +72,7 @@ export default function FeatureMarquee() {
     <div className="relative overflow-hidden bg-slate-900/80 py-4 border-y border-slate-800">
       <div className="absolute left-0 top-0 bottom-0 w-16 sm:w-24 bg-linear-to-r from-slate-900 to-transparent z-10" />
       <div className="absolute right-0 top-0 bottom-0 w-16 sm:w-24 bg-linear-to-l from-slate-900 to-transparent z-10" />
-      <div className="flex animate-marquee">
+      <div className="flex w-max animate-marquee">
         <div className="flex shrink-0">
           <FeatureItems t={t} />
         </div>

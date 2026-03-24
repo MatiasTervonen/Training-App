@@ -37,13 +37,13 @@ export default function WeightPage() {
     <div className="h-full relative">
       <div className="max-w-2xl mx-auto relative bg-linear-to-b from-slate-950 via-slate-900 to-slate-800 px-5 pt-3 pb-10 overflow-y-auto touch-pan-y h-full">
         {/* Range selector */}
-        <div className="flex justify-center mb-4 mt-2">
-          <div className="flex bg-slate-800 rounded-lg p-1 w-full">
+        <div className="sticky top-0 z-10 bg-slate-800 rounded-lg mb-4">
+          <div className="flex p-1 gap-2">
             {ranges.map((option) => (
               <button
                 key={option.key}
                 onClick={() => setRange(option.key)}
-                className={`flex-1 py-2 rounded-md font-medium transition-colors cursor-pointer ${
+                className={`flex-1 py-2 px-3 rounded-md cursor-pointer transition-colors ${
                   range === option.key
                     ? "bg-slate-700 text-cyan-400"
                     : "text-gray-200 hover:text-gray-100"

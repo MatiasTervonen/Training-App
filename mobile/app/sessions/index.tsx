@@ -9,6 +9,7 @@ import {
   Activity,
   CalendarCheck,
   FileBarChart,
+  Utensils,
   LucideIcon,
 } from "lucide-react-native";
 import LinkButton from "@/components/buttons/LinkButton";
@@ -41,6 +42,7 @@ const DEFAULT_ITEMS: SessionItem[] = [
   { id: "reminders", labelKey: "sessions.reminders", href: "/reminders", icon: Bell, colors: SESSION_COLORS.reminders },
   { id: "habits", labelKey: "sessions.habits", href: "/habits", icon: CalendarCheck, colors: SESSION_COLORS.habits },
   { id: "reports", labelKey: "sessions.reports", href: "/reports", icon: FileBarChart, colors: SESSION_COLORS.reports },
+  { id: "nutrition", labelKey: "sessions.nutrition", href: "/nutrition", icon: Utensils, colors: SESSION_COLORS.nutrition },
 ];
 
 function sortByOrder(order: string[]): SessionItem[] {

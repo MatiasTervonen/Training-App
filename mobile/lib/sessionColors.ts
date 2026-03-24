@@ -50,4 +50,9 @@ export const SESSION_COLORS: Record<string, SessionColors> = {
     border: "rgba(99,102,241,0.45)",
     icon: "#6366f1",
   },
+  nutrition: {
+    gradient: ["rgba(249,115,22,0.25)", "rgba(249,115,22,0.08)"],
+    border: "rgba(249,115,22,0.45)",
+    icon: "#f97316",
+  },
 };

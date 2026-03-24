@@ -1,0 +1,89 @@
+{
+  "title": "Ravinto",
+  "daily": {
+    "title": "Päivän yhteenveto",
+    "calories": "Kalorit",
+    "protein": "Proteiini",
+    "carbs": "Hiilihydraatit",
+    "fat": "Rasva",
+    "remaining": "jäljellä",
+    "over": "yli",
+    "noLogs": "Ei kirjattuja ruokia",
+    "noLogsDesc": "Napauta + aloittaaksesi aterioiden kirjaamisen"
+  },
+  "meals": {
+    "breakfast": "Aamiainen",
+    "lunch": "Lounas",
+    "dinner": "Päivällinen",
+    "snack": "Välipala"
+  },
+  "log": {
+    "title": "Lisää ruoka",
+    "search": "Haku",
+    "scan": "Skannaa",
+    "favorites": "Suosikit",
+    "recent": "Viimeisimmät",
+    "searchPlaceholder": "Hae ruokia...",
+    "searching": "Haetaan...",
+    "noResults": "Ruokia ei löytynyt",
+    "noResultsDesc": "Kokeile eri hakusanaa tai luo oma ruoka",
+    "scanBarcode": "Skannaa viivakoodi",
+    "pointCamera": "Osoita kamera viivakoodiin",
+    "notFound": "Ruokaa ei löytynyt",
+    "notFoundDesc": "Tätä viivakoodia ei ole tietokannassamme. Luodaanko oma ruoka?",
+    "createCustom": "Luo oma ruoka",
+    "noFavorites": "Ei suosikkeja",
+    "noFavoritesDesc": "Lisää ruokia suosikkeihin kirjatessasi",
+    "noRecent": "Ei viimeaikaisia ruokia",
+    "noRecentDesc": "Kirjaamasi ruoat näkyvät täällä"
+  },
+  "detail": {
+    "servingSize": "Annoskoko (g)",
+    "quantity": "Määrä",
+    "mealType": "Ateriatyyppi",
+    "per100g": "per 100g",
+    "logFood": "Kirjaa ruoka",
+    "addFavorite": "Lisää suosikkeihin",
+    "removeFavorite": "Poista suosikeista"
+  },
+  "goals": {
+    "title": "Ravintotavoitteet",
+    "calorieGoal": "Päivittäinen kaloritavoite",
+    "proteinGoal": "Proteiinitavoite (g)",
+    "carbsGoal": "Hiilihydraattitavoite (g)",
+    "fatGoal": "Rasvatavoite (g)",
+    "customMeals": "Omat ateriatyypit",
+    "addMealType": "Lisää ateriatyyppi",
+    "mealTypePlaceholder": "esim. Ennen treeniä",
+    "saved": "Tavoitteet tallennettu",
+    "noGoal": "Ei asetettu"
+  },
+  "custom": {
+    "title": "Luo oma ruoka",
+    "name": "Ruoan nimi",
+    "brand": "Merkki (valinnainen)",
+    "servingSize": "Annoskoko (g)",
+    "servingDesc": "Annoskuvaus",
+    "servingDescPlaceholder": "esim. 1 viipale (30g)",
+    "caloriesPer100g": "Kalorit per 100g",
+    "proteinPer100g": "Proteiini per 100g",
+    "carbsPer100g": "Hiilihydraatit per 100g",
+    "fatPer100g": "Rasva per 100g",
+    "saved": "Oma ruoka tallennettu",
+    "missingName": "Nimi on pakollinen",
+    "missingCalories": "Kalorit ovat pakollisia"
+  },
+  "feed": {
+    "kcal": "kcal",
+    "entries": "merkintää",
+    "entry": "merkintä"
+  },
+  "toast": {
+    "logged": "Ruoka kirjattu",
+    "deleted": "Ruokakirjaus poistettu",
+    "error": "Jokin meni pieleen",
+    "favoriteAdded": "Lisätty suosikkeihin",
+    "favoriteRemoved": "Poistettu suosikeista",
+    "cameraPermission": "Kameran käyttöoikeus vaaditaan viivakoodien skannaamiseen"
+  }
+}

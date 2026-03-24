@@ -61,7 +61,8 @@
     "todoList": "Tehtävälista",
     "reminders": "Muistutukset",
     "habits": "Tavat",
-    "reports": "Raportit"
+    "reports": "Raportit",
+    "nutrition": "Ravinto"
   },
   "deleteButton": {
     "confirmDeleteTitle": "Vahvista poisto",

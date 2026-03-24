@@ -37,6 +37,7 @@ import ActivitySession from "@/features/activities/cards/activity-feed-expanded/
 import ActivitySessionEdit from "@/features/activities/cards/activity-edit";
 import ReportSession from "@/features/reports/cards/report-expanded";
 import TutorialSession from "@/features/feed-cards/tutorial-expanded";
+import NutritionExpanded from "@/features/nutrition/cards/nutrition-expanded";
 import useUpdateFeedItemToTop from "./hooks/useUpdateFeedItemToTop";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
@@ -469,6 +470,10 @@ export default function SessionFeed({
           )}
 
           {expandedItem.type === "tutorial" && <TutorialSession />}
+
+          {expandedItem.type === "nutrition" && (
+            <NutritionExpanded item={expandedItem} />
+          )}
 
           {expandedItem.type === "activity_sessions" && (
             <>

@@ -4,6 +4,7 @@ import { uploadFileToStorage, getAccessToken } from "@/lib/upload-with-progress"
 import * as Crypto from "expo-crypto";
 import * as FileSystem from "expo-file-system/legacy";
 import { DraftVideo } from "@/types/session";
+import { prepareAndEnqueueMedia } from "@/lib/upload-queue-helpers";
 
 type DraftRecording = {
   id: string;
@@ -147,4 +148,64 @@ export async function saveWeight({
     });
     throw new Error("Error saving weight");
   }
+}
+
+type SaveWeightWithoutMediaProps = {
+  title: string;
+  notes: string;
+  weight: number;
+  draftImages?: DraftImage[];
+  draftVideos?: DraftVideo[];
+  draftRecordings?: DraftRecording[];
+};
+
+export async function saveWeightWithoutMedia({
+  title,
+  notes,
+  weight,
+  draftImages = [],
+  draftVideos = [],
+  draftRecordings = [],
+}: SaveWeightWithoutMediaProps) {
+  const {
+    data: { session },
+    error: sessionError,
+  } = await supabase.auth.getSession();
+
+  if (sessionError || !session || !session.user) {
+    throw new Error("Unauthorized");
+  }
+
+  const { data: weightId, error } = await supabase.rpc("weight_save_weight", {
+    p_title: title,
+    p_notes: notes,
+    p_weight: weight,
+  });
+
+  if (error) {
+    handleError(error, {
+      message: "Error saving weight",
+      route: "/database/weight/save-weight",
+      method: "POST",
+    });
+    throw new Error("Error saving weight");
+  }
+
+  const hasMedia =
+    draftImages.length > 0 ||
+    draftRecordings.length > 0 ||
+    draftVideos.length > 0;
+
+  if (hasMedia) {
+    await prepareAndEnqueueMedia({
+      targetId: weightId as string,
+      targetType: "weight",
+      draftImages,
+      draftRecordings,
+      draftVideos,
+      userId: session.user.id,
+    });
+  }
+
+  return { weightId: weightId as string, hasMedia };
 }

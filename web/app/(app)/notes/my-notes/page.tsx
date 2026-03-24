@@ -94,7 +94,7 @@ export default function MyNotesPage() {
 
         {/* Folder filter chips */}
         {folders.length > 0 && (
-          <div className={pinnedFeed.length === 0 ? "mb-4" : ""}>
+          <div className="sticky top-0 z-10 mb-4">
             <FolderFilterChips
               folders={folders}
               selectedFolderId={selectedFolderId}
@@ -132,9 +132,9 @@ export default function MyNotesPage() {
               />
             ) : (
               <>
-                {unpinnedFeed.map((feedItem) => {
+                {unpinnedFeed.map((feedItem, i) => {
                   return (
-                    <div className="mt-8" key={feedItem.id}>
+                    <div className={i === 0 && pinnedFeed.length === 0 ? "mt-2" : "mt-8"} key={feedItem.id}>
                       <FeedCard
                         item={feedItem}
                         pinned={false}

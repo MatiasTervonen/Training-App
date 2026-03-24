@@ -59,6 +59,11 @@
 - NEVER run `npx expo prebuild` or `npx expo prebuild --clean`. It deletes all custom native code (widgets, custom activities, sound assets, build config).
 - Always make targeted edits to specific native files (e.g., AndroidManifest.xml) instead of regenerating.
 
+## FullScreenModal
+- Never use `scrollable={false}` with a custom ScrollView inside FullScreenModal. The dismiss gesture tracks scroll position via FullScreenModal's own `Animated.ScrollView` on the UI thread — a custom ScrollView bypasses this and causes the modal to dismiss while scrolled down.
+- Always use the default `scrollable={true}` and let FullScreenModal handle scrolling. Child content that needs scrolling should just render its content directly (like gym-expanded does).
+- Only use `scrollable={false}` for content that genuinely does not scroll (e.g., a short picker or fixed-height form).
+
 ## Post-Implementation Review
 - After implementing a feature from the `specs/` folder, scan the changed code against the best practices references in `.agents/skills/react-native-best-practices/references/` and `.agents/skills/react-data-patterns/references/`. Focus on Critical and High impact patterns only.
 

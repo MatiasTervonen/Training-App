@@ -118,7 +118,6 @@ export default function Settings() {
 
   return (
     <div className="page-padding max-w-md mx-auto">
-      <h1 className="flex justify-center my-5 text-2xl">{t("profile.title")}</h1>
       <div>
         <CustomInput
           label={t("profile.userName")}

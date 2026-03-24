@@ -175,8 +175,7 @@ export default function EditTodo({
     () => ({
       title: sessionData.title,
       tasks: sessionData.todo_tasks.map((t) => ({
-        id: t.id,
-        tempId: t.tempId,
+        id: t.id ?? t.tempId,
         task: t.task,
         notes: t.notes,
         is_completed: t.is_completed,
@@ -248,9 +247,11 @@ export default function EditTodo({
     const savedTempIds = new Set(
       nonEmptyTasks.map(({ task }) => task.tempId),
     );
-    setSessionData((prev) => ({
-      ...prev,
-      todo_tasks: prev.todo_tasks.map((task) =>
+
+    const assignSavedIds = (
+      tasks: typeof sessionDataRef.current.todo_tasks,
+    ) =>
+      tasks.map((task) =>
         task.id || !savedTempIds.has(task.tempId)
           ? task
           : {
@@ -260,7 +261,20 @@ export default function EditTodo({
               draftImages: [],
               draftVideos: [],
             },
-      ),
+      );
+
+    // Update ref immediately so pending saves (fired from useAutoSave's
+    // finally block before React re-renders) see the assigned IDs
+    // and use the UPDATE path instead of INSERT (preventing duplicates).
+    sessionDataRef.current = {
+      ...sessionDataRef.current,
+      todo_tasks: assignSavedIds(sessionDataRef.current.todo_tasks),
+    };
+
+    // Also update React state for re-render
+    setSessionData((prev) => ({
+      ...prev,
+      todo_tasks: assignSavedIds(prev.todo_tasks),
     }));
     // Don't clear deleted arrays — the baseline already includes them,
     // and clearing would change autoSaveData, triggering a second save cycle.

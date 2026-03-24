@@ -13,7 +13,7 @@ import { FullWeightSession } from "@/database/weight/get-full-weight";
 import { DraftRecordingItem } from "@/features/notes/components/draftRecording";
 import { nanoid } from "nanoid/non-secure";
 import { useConfirmAction } from "@/lib/confirmAction";
-import { NotesVoiceSkeleton } from "@/components/skeletetons";
+import { NotesVoiceSkeleton, NotesImageSkeleton, NotesVideoSkeleton } from "@/components/skeletetons";
 import DraftImageItem from "@/features/notes/components/DraftImageItem";
 import DraftVideoItem from "@/features/notes/components/DraftVideoItem";
 import ImageViewerModal from "@/features/notes/components/ImageViewerModal";
@@ -340,7 +340,7 @@ export default function EditWeight({
                   {t("weight.editScreen.images")}
                 </AppText>
                 {isLoadingMedia ? (
-                  <NotesVoiceSkeleton count={imageCount} />
+                  <NotesImageSkeleton count={imageCount} />
                 ) : (
                   existingImages.map((image, idx) => (
                     <DraftImageItem
@@ -380,7 +380,7 @@ export default function EditWeight({
                   {t("weight.editScreen.videos")}
                 </AppText>
                 {isLoadingMedia ? (
-                  <NotesVoiceSkeleton count={videoCount} />
+                  <NotesVideoSkeleton count={videoCount} />
                 ) : (
                   existingVideos.map((video) => (
                     <DraftVideoItem

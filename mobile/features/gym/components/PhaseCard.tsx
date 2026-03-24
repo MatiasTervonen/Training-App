@@ -6,7 +6,8 @@ import AnimatedButton from "@/components/buttons/animatedButton";
 import SaveButton from "@/components/buttons/SaveButton";
 import { PhaseData, PhaseType, TemplatePhaseData } from "@/types/session";
 import { LinearGradient } from "expo-linear-gradient";
-import { X, ChevronDown, ChevronUp, Footprints, Flame, ArrowLeftRight, Ruler } from "lucide-react-native";
+import { ChevronDown, ChevronUp, Footprints, Flame, Ruler } from "lucide-react-native";
+import DropDownModal from "@/components/DropDownModal";
 import { useTranslation } from "react-i18next";
 import { formatDurationLong, formatMeters } from "@/lib/formatDate";
 
@@ -67,6 +68,7 @@ type TemplatePhaseCardProps = {
   mode: "template";
   phase: TemplatePhaseData;
   onRemove: () => void;
+  onChangeActivity?: () => void;
 };
 
 type Props =
@@ -117,16 +119,19 @@ export default function PhaseCard(props: Props) {
             {phaseLabel(props.phaseType)}:{" "}
             {getTranslatedName(props.activityName, props.activitySlug)}
           </AppText>
-          <View className="flex-row items-center gap-3">
-            {props.onChangeActivity && (
-              <AnimatedButton onPress={props.onChangeActivity} hitSlop={10}>
-                <ArrowLeftRight color="#9ca3af" size={16} />
-              </AnimatedButton>
-            )}
-            <AnimatedButton onPress={props.onRemove} hitSlop={10}>
-              <X color="#f87171" size={20} />
-            </AnimatedButton>
-          </View>
+          <DropDownModal
+            label={`${phaseLabel(props.phaseType)}: ${getTranslatedName(props.activityName, props.activitySlug)}`}
+            options={[
+              ...(props.onChangeActivity
+                ? [{ value: "change", label: t("gym.exerciseCard.change") }]
+                : []),
+              { value: "delete", label: t("gym.exerciseCard.delete") },
+            ]}
+            onChange={(value) => {
+              if (value === "change") props.onChangeActivity?.();
+              if (value === "delete") props.onRemove();
+            }}
+          />
         </View>
         {props.isStepRelevant !== false ? (
           <View className="flex-row flex-wrap mb-4">
@@ -234,16 +239,19 @@ export default function PhaseCard(props: Props) {
             {phaseLabel(props.phaseType)}:{" "}
             {getTranslatedName(props.activityName, props.activitySlug)}
           </AppText>
-          <View className="flex-row items-center gap-3">
-            {props.onChangeActivity && (
-              <AnimatedButton onPress={props.onChangeActivity} hitSlop={10}>
-                <ArrowLeftRight color="#9ca3af" size={16} />
-              </AnimatedButton>
-            )}
-            <AnimatedButton onPress={props.onRemove} hitSlop={10}>
-              <X color="#f87171" size={20} />
-            </AnimatedButton>
-          </View>
+          <DropDownModal
+            label={`${phaseLabel(props.phaseType)}: ${getTranslatedName(props.activityName, props.activitySlug)}`}
+            options={[
+              ...(props.onChangeActivity
+                ? [{ value: "change", label: t("gym.exerciseCard.change") }]
+                : []),
+              { value: "delete", label: t("gym.exerciseCard.delete") },
+            ]}
+            onChange={(value) => {
+              if (value === "change") props.onChangeActivity?.();
+              if (value === "delete") props.onRemove();
+            }}
+          />
         </View>
         <AnimatedButton
           onPress={props.onStart}
@@ -267,9 +275,19 @@ export default function PhaseCard(props: Props) {
           {phaseLabel(props.phase.phase_type)}:{" "}
           {getTranslatedName(props.phase.activity_name, props.phase.activity_slug)}
         </AppText>
-        <AnimatedButton onPress={props.onRemove} hitSlop={10}>
-          <X color="#f87171" size={20} />
-        </AnimatedButton>
+        <DropDownModal
+          label={`${phaseLabel(props.phase.phase_type)}: ${getTranslatedName(props.phase.activity_name, props.phase.activity_slug)}`}
+          options={[
+            ...(props.onChangeActivity
+              ? [{ value: "change", label: t("gym.phase.changeActivity") }]
+              : []),
+            { value: "delete", label: t("gym.exerciseCard.delete") },
+          ]}
+          onChange={(value) => {
+            if (value === "change") props.onChangeActivity?.();
+            if (value === "delete") props.onRemove();
+          }}
+        />
       </LinearGradient>
     );
   }
@@ -305,19 +323,19 @@ export default function PhaseCard(props: Props) {
             {phaseLabel(phase.phase_type)}: {getTranslatedName(phase.activity_name, phase.activity_slug)}
           </AppText>
         </View>
-        <View className="flex-row items-center gap-3">
-          {onChangeActivity && (
-            <AnimatedButton onPress={onChangeActivity} hitSlop={10}>
-              <ArrowLeftRight color="#9ca3af" size={16} />
-            </AnimatedButton>
-          )}
-          <AnimatedButton
-            onPress={onRemove}
-            hitSlop={10}
-          >
-            <X color="#f87171" size={20} />
-          </AnimatedButton>
-        </View>
+        <DropDownModal
+          label={`${phaseLabel(phase.phase_type)}: ${getTranslatedName(phase.activity_name, phase.activity_slug)}`}
+          options={[
+            ...(onChangeActivity
+              ? [{ value: "change", label: t("gym.exerciseCard.change") }]
+              : []),
+            { value: "delete", label: t("gym.exerciseCard.delete") },
+          ]}
+          onChange={(value) => {
+            if (value === "change") onChangeActivity?.();
+            if (value === "delete") onRemove();
+          }}
+        />
       </AnimatedButton>
 
       {isExpanded && (
@@ -437,16 +455,19 @@ function ManualEntryCard({
           <AppText className="text-lg flex-1" numberOfLines={1}>
             {phaseLabel}: {translatedName}
           </AppText>
-          <View className="flex-row items-center gap-3">
-            {onChangeActivity && (
-              <AnimatedButton onPress={onChangeActivity} hitSlop={10}>
-                <ArrowLeftRight color="#9ca3af" size={16} />
-              </AnimatedButton>
-            )}
-            <AnimatedButton onPress={onRemove} hitSlop={10}>
-              <X color="#f87171" size={20} />
-            </AnimatedButton>
-          </View>
+          <DropDownModal
+            label={`${phaseLabel}: ${translatedName}`}
+            options={[
+              ...(onChangeActivity
+                ? [{ value: "change", label: t("gym.exerciseCard.change") }]
+                : []),
+              { value: "delete", label: t("gym.exerciseCard.delete") },
+            ]}
+            onChange={(value) => {
+              if (value === "change") onChangeActivity?.();
+              if (value === "delete") onRemove();
+            }}
+          />
         </View>
         <View className="gap-3">
           <View className="flex-row gap-3">

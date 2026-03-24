@@ -13,7 +13,7 @@ import { FullNotesSession } from "@/database/notes/get-full-notes";
 import { DraftRecordingItem } from "@/features/notes/components/draftRecording";
 import { nanoid } from "nanoid/non-secure";
 import { useConfirmAction } from "@/lib/confirmAction";
-import { NotesVoiceSkeleton } from "@/components/skeletetons";
+import { NotesVoiceSkeleton, NotesImageSkeleton, NotesVideoSkeleton } from "@/components/skeletetons";
 import { useTranslation } from "react-i18next";
 import useFolders from "@/features/notes/hooks/useFolders";
 import DraftImageItem from "@/features/notes/components/DraftImageItem";
@@ -283,7 +283,7 @@ export default function EditNotes({
             autoGrow
           />
           {/* Existing Voice Recordings */}
-          {(voiceCount > 0 ||
+          {((isLoadingVoice && voiceCount > 0) ||
             existingRecordings.length > 0 ||
             newRecordings.length > 0) && (
             <View className="mt-5">
@@ -318,13 +318,13 @@ export default function EditNotes({
           )}
 
           {/* Existing Images */}
-          {(imageCount > 0 ||
+          {((isLoadingVoice && imageCount > 0) ||
             existingImages.length > 0 ||
             newImages.length > 0) && (
             <View className="mt-5">
               <AppText className="mb-2">{t("notes.images.title")}</AppText>
               {isLoadingVoice ? (
-                <NotesVoiceSkeleton count={imageCount} />
+                <NotesImageSkeleton count={imageCount} />
               ) : (
                 existingImages.map((image, idx) => (
                   <DraftImageItem
@@ -354,13 +354,13 @@ export default function EditNotes({
           )}
 
           {/* Existing Videos */}
-          {(videoCount > 0 ||
+          {((isLoadingVoice && videoCount > 0) ||
             existingVideos.length > 0 ||
             newVideos.length > 0) && (
             <View className="mt-5">
               <AppText className="mb-2">{t("notes.videos.title")}</AppText>
               {isLoadingVoice ? (
-                <NotesVoiceSkeleton count={videoCount} />
+                <NotesVideoSkeleton count={videoCount} />
               ) : (
                 existingVideos.map((video) => (
                   <DraftVideoItem

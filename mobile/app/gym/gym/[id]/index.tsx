@@ -1,7 +1,7 @@
 import GymForm from "@/features/gym/components/GymForm";
 import { useLocalSearchParams } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
-import { getFullGymSession } from "@/database/gym/get-full-gym-session";
+import { getFullGymSession, getGymSessionMedia } from "@/database/gym/get-full-gym-session";
 import Toast from "react-native-toast-message";
 import { View, ActivityIndicator } from "react-native";
 import AppText from "@/components/AppText";
@@ -21,7 +21,16 @@ export default function EditGymScreen() {
     enabled: !!id,
   });
 
-  if (isLoadingGymSession) {
+  const {
+    data: gymMedia,
+    isLoading: isLoadingMedia,
+  } = useQuery({
+    queryKey: ["gymSessionMedia", id],
+    queryFn: () => getGymSessionMedia(id!),
+    enabled: !!id,
+  });
+
+  if (isLoadingGymSession || isLoadingMedia) {
     return (
       <View className="gap-3">
         <AppText className="text-xl text-center mt-20">
@@ -40,5 +49,14 @@ export default function EditGymScreen() {
     });
   }
 
-  return <GymForm initialData={GymSessionFull!} />;
+  return (
+    <GymForm
+      initialData={{
+        ...GymSessionFull!,
+        sessionImages: gymMedia?.images ?? [],
+        sessionVideos: gymMedia?.videos ?? [],
+        sessionVoiceRecordings: gymMedia?.voiceRecordings ?? [],
+      }}
+    />
+  );
 }

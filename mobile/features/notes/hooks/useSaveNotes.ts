@@ -1,5 +1,5 @@
 import Toast from "react-native-toast-message";
-import { saveNote } from "@/database/notes/save-note";
+import { saveNoteWithoutMedia } from "@/database/notes/save-note";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
@@ -39,7 +39,7 @@ export default function useSaveNotes({
 
   const handleSaveNotes = async () => {
     if (draftVideos.some((v) => v.isCompressing)) {
-      Toast.show({ type: "info", text1: t("common.media.videoStillCompressing") });
+      Toast.show({ type: "info", text1: t("common:common.media.videoStillCompressing") });
       return;
     }
     if (!title.trim()) {
@@ -54,14 +54,13 @@ export default function useSaveNotes({
     setSavingProgress?.(undefined);
 
     try {
-      await saveNote({
+      const { hasMedia } = await saveNoteWithoutMedia({
         title,
         notes,
         folderId,
         draftRecordings,
         draftImages,
         draftVideos,
-        onProgress: (p) => setSavingProgress?.(p),
       });
 
       await Promise.all([
@@ -76,6 +75,12 @@ export default function useSaveNotes({
         text1: t("common:common.success"),
         text2: t("notes:notes.save.success"),
       });
+      if (hasMedia) {
+        Toast.show({
+          type: "info",
+          text1: t("common:common.media.uploadingBackground"),
+        });
+      }
       resetNote();
     } catch {
       Toast.show({

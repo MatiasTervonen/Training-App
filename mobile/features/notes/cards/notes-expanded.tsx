@@ -8,7 +8,7 @@ import PageContainer from "@/components/PageContainer";
 import { FeedItemUI } from "@/types/session";
 import { FullNotesSession } from "@/database/notes/get-full-notes";
 import { DraftRecordingItem } from "../components/draftRecording";
-import { NotesVoiceSkeleton } from "@/components/skeletetons";
+import { NotesVoiceSkeleton, NotesImageSkeleton, NotesVideoSkeleton } from "@/components/skeletetons";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import BodyText from "@/components/BodyText";
@@ -84,7 +84,7 @@ export default function NotesSession({
           {imageCount > 0 && !isRichHtml && (
             <View className="mt-10">
               {isLoadingVoice ? (
-                <NotesVoiceSkeleton count={imageCount} />
+                <NotesImageSkeleton count={imageCount} />
               ) : (
                 images.map((image, idx) => (
                   <DraftImageItem
@@ -101,7 +101,7 @@ export default function NotesSession({
             <View className="mt-6">
               <AppText className="mb-2">{t("notes.videos.title")}</AppText>
               {isLoadingVoice ? (
-                <NotesVoiceSkeleton count={videoCount} />
+                <NotesVideoSkeleton count={videoCount} />
               ) : (
                 videos.map((video) => (
                   <DraftVideoItem

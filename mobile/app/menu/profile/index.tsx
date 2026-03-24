@@ -219,11 +219,6 @@ export default function ProfileScreen() {
       >
         <PageContainer className="justify-between">
           <View>
-            <View>
-              <AppText className="text-2xl text-center mb-10">
-                {t("menu:profile.title")}
-              </AppText>
-            </View>
             <AppInput
               value={userName}
               setValue={(value) => {

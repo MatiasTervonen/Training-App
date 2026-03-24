@@ -11,7 +11,7 @@ export const FeedSkeleton = ({
     {[...Array(count)].map((_, i) => (
       <View
         key={i}
-        className="items-center justify-center bg-slate-800/30 mb-5 rounded-md border border-slate-700 min-h-40 animate-pulse mx-4"
+        className="items-center justify-center bg-slate-800/30 mb-5 rounded-md border border-slate-700 h-48 animate-pulse mx-4"
       >
         <ActivityIndicator size="small" color="#6b7280" />
       </View>
@@ -38,6 +38,32 @@ export const NotesVoiceSkeleton = ({ count = 1 }: { count?: number }) => (
       <View
         key={i}
         className="items-center justify-center bg-slate-950 mb-4 rounded-xl border-[1.5px] border-blue-500/60 w-full animate-pulse h-[78px]"
+      >
+        <ActivityIndicator size="small" color="#6b7280" />
+      </View>
+    ))}
+  </>
+);
+
+export const NotesImageSkeleton = ({ count = 1 }: { count?: number }) => (
+  <>
+    {[...Array(count)].map((_, i) => (
+      <View
+        key={i}
+        className="items-center justify-center bg-slate-950 mb-3 rounded-md border-[1.5px] border-blue-500/60 w-full animate-pulse h-48"
+      >
+        <ActivityIndicator size="small" color="#6b7280" />
+      </View>
+    ))}
+  </>
+);
+
+export const NotesVideoSkeleton = ({ count = 1 }: { count?: number }) => (
+  <>
+    {[...Array(count)].map((_, i) => (
+      <View
+        key={i}
+        className="items-center justify-center bg-slate-950 mb-3 rounded-md border-[1.5px] border-blue-500/60 w-full animate-pulse h-48"
       >
         <ActivityIndicator size="small" color="#6b7280" />
       </View>

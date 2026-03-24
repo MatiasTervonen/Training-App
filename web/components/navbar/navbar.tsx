@@ -30,7 +30,7 @@ export default function Navbar() {
         {!["/dashboard", "/menu", "/sessions"].includes(pathname) && (
           <button
             onClick={() => router.back()}
-            className="absolute left-60 xl:left-76 top-1/2 -translate-y-1/2 flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-300 hover:text-white hover:bg-slate-700/50 rounded-lg transition-colors cursor-pointer"
+            className="absolute left-60 xl:left-76 top-1/2 -translate-y-1/2 hidden lg:flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-300 hover:text-white hover:bg-slate-700/50 rounded-lg transition-colors cursor-pointer"
           >
             <ArrowLeft size={16} />
             {t("navigation.back")}

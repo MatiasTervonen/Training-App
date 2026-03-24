@@ -156,9 +156,6 @@ export default function SecurityPage() {
     <KeyboardAwareScrollView bottomOffset={50}>
       <Pressable onPress={Keyboard.dismiss} className="flex-1">
         <PageContainer className="items-center">
-          <AppText className="text-2xl mb-10">
-            {t("menu:security.title")}
-          </AppText>
           {isGoogleUser || isGuest ? (
             <View className="mb-10">
               <AppText className="text-xl mb-5 underline text-center">

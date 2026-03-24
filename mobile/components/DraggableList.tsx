@@ -92,7 +92,9 @@ function DraggableItem({
           activeIndex.value = -1;
           currentSlot.value = -1;
           dragHeight.value = 0;
+          scheduleOnRN(onCancel);
         });
+        return;
       }
 
       scheduleOnRN(onDrop, idx, slot);
@@ -120,6 +122,7 @@ function DraggableItem({
           { scale: withTiming(1.03, { duration: 150 }) },
           { translateY: transY },
         ],
+        opacity: withTiming(0.85, { duration: 150 }),
         zIndex: 999,
         shadowColor: "#3b82f6",
         shadowOffset: { width: 0, height: 4 },
@@ -131,7 +134,11 @@ function DraggableItem({
 
     if (dragIdx === -1) {
       return {
-        transform: [{ scale: 1 }, { translateY: 0 }],
+        transform: [
+          { scale: withTiming(1, { duration: 150 }) },
+          { translateY: 0 },
+        ],
+        opacity: withTiming(1, { duration: 150 }),
         zIndex: 1,
         shadowColor: "transparent",
         shadowOffset: { width: 0, height: 0 },
@@ -159,6 +166,7 @@ function DraggableItem({
         { scale: withTiming(1, { duration: 150 }) },
         { translateY: withTiming(shift, { duration: 200 }) },
       ],
+      opacity: withTiming(1, { duration: 150 }),
       zIndex: 1,
       shadowColor: "transparent",
       shadowOffset: { width: 0, height: 0 },

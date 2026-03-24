@@ -1,7 +1,7 @@
 import { useConfirmAction } from "@/lib/confirmAction";
 import { useRouter } from "expo-router";
 import Toast from "react-native-toast-message";
-import { saveActivitySession } from "@/database/activities/save-session";
+import { saveActivitySessionWithoutMedia } from "@/database/activities/save-session";
 import { getFullActivitySession } from "@/database/activities/get-full-activity-session";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useStopGPStracking } from "@/features/activities/lib/location-actions";
@@ -167,7 +167,7 @@ export default function useSaveActivitySession({
         stepDistanceMeters = getDistanceFromSteps(steps, stride);
       }
 
-      const { sessionId } = await saveActivitySession({
+      const { sessionId, hasMedia } = await saveActivitySessionWithoutMedia({
         title,
         notes,
         duration: durationInSeconds,
@@ -180,7 +180,6 @@ export default function useSaveActivitySession({
         draftImages,
         draftVideos,
         templateId,
-        onProgress: (p) => setSavingProgress?.(p),
         stepDistanceMeters,
       });
 
@@ -214,6 +213,13 @@ export default function useSaveActivitySession({
 
       resetSession();
       router.replace("/activities/activity-finished");
+
+      if (hasMedia) {
+        Toast.show({
+          type: "info",
+          text1: t("common:common.media.uploadingBackground"),
+        });
+      }
     } catch (error) {
       console.error("Error saving activity session", error);
       Toast.show({

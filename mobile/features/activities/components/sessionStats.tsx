@@ -92,7 +92,7 @@ export default function SessionStats({
           <View className="w-full">
             <View className="flex-row items-center justify-around">
               <Timer
-                textClassName="text-2xl z-[999]"
+                textClassName="text-3xl z-[999]"
                 manualSession={{
                   label: title || "Activity",
                   path: "/activities/start-activity",
@@ -102,24 +102,24 @@ export default function SessionStats({
                 onPause={stopGPStracking}
                 color="#3b82f6"
               />
-              <AppText className="text-xl font-mono font-bold z-[999]">
+              <AppText className="text-2xl font-mono font-bold z-[999]">
                 {formatAveragePace(averagePacePerKm)} {labels.pace}
               </AppText>
             </View>
             <View className="flex-row items-center justify-around mt-3">
               {isStepRelevant && (
                 <View className="flex-row gap-2 items-center">
-                  <Footprints size={20} color="#f3f4f6" />
-                  <AppText className="text-xl font-mono font-bold z-[999]">{currentStepCount}</AppText>
+                  <Footprints size={24} color="#f3f4f6" />
+                  <AppText className="text-2xl font-mono font-bold z-[999]">{currentStepCount}</AppText>
                 </View>
               )}
               {isCaloriesRelevant && (
                 <View className="flex-row gap-1 items-center">
-                  <Flame size={20} color="#f97316" />
-                  <AppText className="text-xl font-mono font-bold z-[999]">{liveCalories ?? 0} kcal</AppText>
+                  <Flame size={24} color="#f97316" />
+                  <AppText className="text-2xl font-mono font-bold z-[999]">{liveCalories ?? 0} kcal</AppText>
                 </View>
               )}
-              <AppText className="text-xl font-mono font-bold z-[999]">
+              <AppText className="text-2xl font-mono font-bold z-[999]">
                 {formatMeters(totalDistance)}
               </AppText>
             </View>
@@ -161,33 +161,6 @@ export default function SessionStats({
       {gpsEnabled && (
         <View className="gap-10 flex-row items-center justify-around">
           <View>
-            {hasStartedTracking && lastMovingPoint?.speed != null ? (
-              <View className="items-center justify-center">
-                <View className="flex-row items-center gap-2">
-                  <View className="border-[1.5px] border-blue-500 rounded-full w-14 h-14 items-center justify-center mb-2">
-                    <AppText className="text-xl font-mono font-bold">
-                      {formatSpeedFromMs(lastMovingPoint?.speed ?? 0)}
-                    </AppText>
-                  </View>
-                  <View>
-                    <AppText>{labels.speed}</AppText>
-                  </View>
-                </View>
-                <Gauge size={20} color="#f3f4f6" />
-              </View>
-            ) : (
-              <View className="items-center justify-center">
-                <Animated.View style={pulseStyle}>
-                  <View className="border-[1.5px] border-blue-500 rounded-full w-14 h-14 items-center justify-center mb-2">
-                    <AppText className="text-xl">-</AppText>
-                  </View>
-                </Animated.View>
-                <Gauge size={20} color="#f3f4f6" />
-              </View>
-            )}
-          </View>
-
-          <View>
             {hasStartedTracking && lastMovingPoint?.heading != null ? (
               <View className="items-center justify-center">
                 <View className="flex-row items-center gap-2">
@@ -212,6 +185,33 @@ export default function SessionStats({
                   </View>
                 </Animated.View>
                 <Compass size={20} color="#f3f4f6" />
+              </View>
+            )}
+          </View>
+
+          <View>
+            {hasStartedTracking && lastMovingPoint?.speed != null ? (
+              <View className="items-center justify-center">
+                <View className="flex-row items-center gap-2">
+                  <View className="border-[1.5px] border-blue-500 rounded-full w-14 h-14 items-center justify-center mb-2">
+                    <AppText className="text-xl font-mono font-bold">
+                      {formatSpeedFromMs(lastMovingPoint?.speed ?? 0)}
+                    </AppText>
+                  </View>
+                  <View>
+                    <AppText>{labels.speed}</AppText>
+                  </View>
+                </View>
+                <Gauge size={20} color="#f3f4f6" />
+              </View>
+            ) : (
+              <View className="items-center justify-center">
+                <Animated.View style={pulseStyle}>
+                  <View className="border-[1.5px] border-blue-500 rounded-full w-14 h-14 items-center justify-center mb-2">
+                    <AppText className="text-xl">-</AppText>
+                  </View>
+                </Animated.View>
+                <Gauge size={20} color="#f3f4f6" />
               </View>
             )}
           </View>

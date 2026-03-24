@@ -1,6 +1,5 @@
 import { View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
-import AppText from "@/components/AppText";
 import AppInput from "@/components/AppInput";
 import SelectInput from "@/components/Selectinput";
 import AnimatedButton from "@/components/buttons/animatedButton";
@@ -124,9 +123,6 @@ export default function FeedbackScreen() {
       <KeyboardAwareScrollView contentContainerStyle={{ flexGrow: 1 }} bottomOffset={50}>
         <PageContainer className="justify-between">
           <View>
-            <AppText className="text-2xl text-center mb-10">
-              {t("menu:feedback.title")}
-            </AppText>
             <View className="mb-4">
               <SelectInput
                 topLabel={t("menu:feedback.category")}

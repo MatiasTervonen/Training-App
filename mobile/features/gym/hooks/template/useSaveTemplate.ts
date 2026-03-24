@@ -14,6 +14,7 @@ export default function useSaveTemplate({
   templateId,
   warmup,
   cooldown,
+  templateRestTimerSeconds,
 }: {
   workoutName: string;
   exercises: ExerciseEntry[];
@@ -22,6 +23,7 @@ export default function useSaveTemplate({
   templateId: string;
   warmup?: TemplatePhaseData | null;
   cooldown?: TemplatePhaseData | null;
+  templateRestTimerSeconds?: number | null;
 }) {
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -37,6 +39,7 @@ export default function useSaveTemplate({
       exercise_id: ex.exercise_id,
       position: index,
       superset_id: ex.superset_id ?? undefined,
+      rest_timer_seconds: ex.rest_timer_seconds ?? undefined,
     }));
 
     const phases: { phase_type: string; activity_id: string }[] = [];
@@ -57,12 +60,14 @@ export default function useSaveTemplate({
           exercises: simplified,
           name: workoutName,
           phases,
+          restTimerSeconds: templateRestTimerSeconds,
         });
       } else {
         await saveTemplate({
           exercises: simplified,
           name: workoutName,
           phases,
+          restTimerSeconds: templateRestTimerSeconds,
         });
       }
 

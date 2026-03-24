@@ -24,7 +24,7 @@ input[type="number"] {
   --font-primary: var(--font-primary);
   --font-body: var(--font-body);
   --animate-fade-in: fade-in 200ms ease-in;
-  --animate-marquee: marquee 12s linear infinite;
+  --animate-marquee: marquee 45s linear infinite;
 }
 
 @keyframes fade-in {
@@ -37,9 +37,14 @@ input[type="number"] {
   100% { transform: translateX(-50%); }
 }
 
+.animate-marquee {
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
 @media (min-width: 768px) {
   .animate-marquee {
-    animation-duration: 25s;
+    animation-duration: 60s;
   }
 }
 

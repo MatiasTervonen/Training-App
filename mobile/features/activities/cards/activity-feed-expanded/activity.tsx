@@ -26,7 +26,7 @@ import { DraftRecordingItem } from "@/features/notes/components/draftRecording";
 import DraftImageItem from "@/features/notes/components/DraftImageItem";
 import DraftVideoItem from "@/features/notes/components/DraftVideoItem";
 import ImageViewerModal from "@/features/notes/components/ImageViewerModal";
-import { NotesVoiceSkeleton } from "@/components/skeletetons";
+import { NotesVoiceSkeleton, NotesImageSkeleton } from "@/components/skeletetons";
 import { useTemplateHistory } from "@/features/activities/templates/hooks/useTemplateHistory";
 import TemplateHistoryModal from "@/features/activities/templates/components/TemplateHistoryModal";
 import ShareWithFriendsButton from "@/features/social-feed/components/ShareWithFriendsToggle";
@@ -215,7 +215,7 @@ export default function ActivitySession(
 
             {activity_session.isLoadingMedia && (
               <View className="mt-10">
-                <NotesVoiceSkeleton />
+                <NotesImageSkeleton />
               </View>
             )}
 

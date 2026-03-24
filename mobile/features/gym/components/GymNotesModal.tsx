@@ -1,5 +1,5 @@
-import { ScrollView, View, NativeSyntheticEvent, NativeScrollEvent } from "react-native";
-import { useFullScreenModalScroll } from "@/components/FullScreenModal";
+import { View } from "react-native";
+import FullScreenModal from "@/components/FullScreenModal";
 import AppText from "@/components/AppText";
 import { useTranslation } from "react-i18next";
 import AppInput from "@/components/AppInput";
@@ -12,7 +12,6 @@ import { useState, type SetStateAction } from "react";
 import { nanoid } from "nanoid/non-secure";
 import { useConfirmAction } from "@/lib/confirmAction";
 import { DraftVideo, DraftRecording } from "@/types/session";
-import FullScreenModal from "@/components/FullScreenModal";
 import PageContainer from "@/components/PageContainer";
 import ImageViewerModal from "@/features/notes/components/ImageViewerModal";
 import AutoSaveIndicator from "@/components/AutoSaveIndicator";
@@ -73,29 +72,15 @@ export default function GymNotesModal({
   const { t } = useTranslation(["gym", "notes"]);
   const confirmAction = useConfirmAction();
   const [viewerIndex, setViewerIndex] = useState(-1);
-  const modalScroll = useFullScreenModalScroll();
-
-  const handleScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
-    if (modalScroll) {
-      modalScroll.innerScrollY.value = e.nativeEvent.contentOffset.y;
-    }
-  };
-
   const allImages = [
     ...existingImages.map((img) => ({ id: img.id, uri: img.uri })),
     ...draftImages.map((img) => ({ id: img.id, uri: img.uri })),
   ];
 
   return (
-    <FullScreenModal isOpen={isOpen} onClose={onClose} scrollable={false}>
+    <FullScreenModal isOpen={isOpen} onClose={onClose}>
       {autoSaveStatus && <AutoSaveIndicator status={autoSaveStatus} />}
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="handled"
-        onScroll={handleScroll}
-        scrollEventThrottle={16}
-      >
-        <PageContainer className="pt-10">
+        <PageContainer>
           <AppText className="text-2xl mb-6 text-center">
             {t("gym.gymForm.notesModalTitle")}
           </AppText>
@@ -142,7 +127,9 @@ export default function GymNotesModal({
           {draftRecordings.length > 0 && (
             <View className={existingRecordings.length === 0 ? "mt-5" : ""}>
               {existingRecordings.length === 0 && (
-                <AppText className="mb-2">{t("notes:notes.recordings")}</AppText>
+                <AppText className="mb-2">
+                  {t("notes:notes.recordings")}
+                </AppText>
               )}
               {draftRecordings.map((recording, index) => (
                 <DraftRecordingItem
@@ -201,7 +188,9 @@ export default function GymNotesModal({
                       message: t("notes:notes.images.deleteImageMessage"),
                     });
                     if (!confirm) return;
-                    setDraftImages((prev) => prev.filter((_, i) => i !== index));
+                    setDraftImages((prev) =>
+                      prev.filter((_, i) => i !== index),
+                    );
                   }}
                 />
               ))}
@@ -248,7 +237,12 @@ export default function GymNotesModal({
               onRecordingComplete={(uri, duration) => {
                 setDraftRecordings((prev) => [
                   ...prev,
-                  { id: nanoid(), uri, createdAt: Date.now(), durationMs: duration },
+                  {
+                    id: nanoid(),
+                    uri,
+                    createdAt: Date.now(),
+                    durationMs: duration,
+                  },
                 ]);
               }}
               onImageSelected={(image) =>
@@ -259,9 +253,7 @@ export default function GymNotesModal({
                   if (!image.uri) {
                     return prev.filter((img) => img.id !== image.id);
                   }
-                  return prev.map((img) =>
-                    img.id === image.id ? image : img,
-                  );
+                  return prev.map((img) => (img.id === image.id ? image : img));
                 })
               }
               onVideoSelected={(video) =>
@@ -270,14 +262,16 @@ export default function GymNotesModal({
                     if (!video.uri) {
                       return prev.filter((v) => v.id !== video.id);
                     }
-                    return prev.map((v) => v.id === video.id ? video : v);
+                    return prev.map((v) => (v.id === video.id ? video : v));
                   }
                   return video.isCompressing ? [...prev, video] : prev;
                 })
               }
               currentImageCount={existingImages.length + draftImages.length}
               currentVideoCount={existingVideos.length + draftVideos.length}
-              currentVoiceCount={existingRecordings.length + draftRecordings.length}
+              currentVoiceCount={
+                existingRecordings.length + draftRecordings.length
+              }
               folders={[]}
               selectedFolderId={null}
               onFolderSelect={() => {}}
@@ -287,7 +281,6 @@ export default function GymNotesModal({
 
           <View className="h-10" />
         </PageContainer>
-      </ScrollView>
 
       {allImages.length > 0 && viewerIndex >= 0 && (
         <ImageViewerModal

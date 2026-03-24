@@ -87,7 +87,20 @@ export async function getFullGymSession(sessionId: string) {
     }
   });
 
-  // Fetch session media
+  return data;
+}
+
+export type FullGymSession = NonNullable<
+  Awaited<ReturnType<typeof getFullGymSession>>
+>;
+
+export type GymSessionMedia = {
+  images: SessionImage[];
+  videos: SessionVideo[];
+  voiceRecordings: SessionVoiceRecording[];
+};
+
+export async function getGymSessionMedia(sessionId: string): Promise<GymSessionMedia> {
   const [imageResult, videoResult, voiceResult] = await Promise.all([
     supabase
       .from("session_images" as "sessions")
@@ -120,13 +133,20 @@ export async function getFullGymSession(sessionId: string) {
 
   const videos: SessionVideo[] = await Promise.all(
     (videoResult.data ?? []).map(async (vid) => {
-      const { data: videoUrlData } = await supabase.storage
-        .from("media-videos")
-        .createSignedUrl(vid.storage_path, 3600);
-      const thumbnailUri = vid.thumbnail_storage_path
-        ? (await supabase.storage.from("media-videos").createSignedUrl(vid.thumbnail_storage_path, 3600)).data?.signedUrl ?? ""
-        : "";
-      return { id: vid.id, storage_path: vid.storage_path, thumbnail_storage_path: vid.thumbnail_storage_path, uri: videoUrlData?.signedUrl ?? "", thumbnailUri, duration_ms: vid.duration_ms };
+      const [videoUrlResult, thumbnailUrlResult] = await Promise.all([
+        supabase.storage.from("media-videos").createSignedUrl(vid.storage_path, 3600),
+        vid.thumbnail_storage_path
+          ? supabase.storage.from("media-videos").createSignedUrl(vid.thumbnail_storage_path, 3600)
+          : Promise.resolve({ data: null }),
+      ]);
+      return {
+        id: vid.id,
+        storage_path: vid.storage_path,
+        thumbnail_storage_path: vid.thumbnail_storage_path,
+        uri: videoUrlResult.data?.signedUrl ?? "",
+        thumbnailUri: thumbnailUrlResult.data?.signedUrl ?? "",
+        duration_ms: vid.duration_ms,
+      };
     }),
   );
 
@@ -140,13 +160,8 @@ export async function getFullGymSession(sessionId: string) {
   );
 
   return {
-    ...data,
-    sessionImages: images.filter((img) => img.uri !== ""),
-    sessionVideos: videos.filter((v) => v.uri !== ""),
-    sessionVoiceRecordings: voiceRecordings.filter((v) => v.uri !== ""),
+    images: images.filter((img) => img.uri !== ""),
+    videos: videos.filter((v) => v.uri !== ""),
+    voiceRecordings: voiceRecordings.filter((v) => v.uri !== ""),
   };
 }
-
-export type FullGymSession = NonNullable<
-  Awaited<ReturnType<typeof getFullGymSession>>
->;

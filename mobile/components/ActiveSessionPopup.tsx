@@ -107,11 +107,20 @@ export default function ActiveSessionPopup() {
 
   return (
     <Animated.View
-      style={animatedStyle}
+      style={[
+        animatedStyle,
+        {
+          shadowColor: alarmFired ? "#ef4444" : "#22d3ee",
+          shadowOffset: { width: 0, height: 4 },
+          shadowOpacity: 0.3,
+          shadowRadius: 8,
+          elevation: 8,
+        },
+      ]}
       className="z-0"
     >
       <LinearGradient
-        colors={alarmFired ? ["#2a0a0a", "#0f172a"] : ["#0a1f1a", "#0f172a"]}
+        colors={alarmFired ? ["#3a0a0a", "#1a0f2a"] : ["#0d3326", "#0f172a"]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}
       >

@@ -1,11 +1,12 @@
 import { Pressable, View } from "react-native";
+import { useState } from "react";
 import AppText from "@/components/AppText";
 import {
   ExerciseEntry,
   ExerciseInput,
   LatestHistoryPerExercise,
 } from "@/types/session";
-import { SquareX, ChevronDown, ChevronUp } from "lucide-react-native";
+import { SquareX, ChevronDown, ChevronUp, Timer } from "lucide-react-native";
 import AppInput from "@/components/AppInput";
 import { useUserStore } from "@/lib/stores/useUserStore";
 
@@ -64,6 +65,7 @@ export default function ExerciseCard({
 
   const { t } = useTranslation("gym");
   const showContent = isExpanded !== false;
+  const [showRestTimerInput, setShowRestTimerInput] = useState(false);
 
   return (
     <View className="py-2 px-4">
@@ -103,6 +105,7 @@ export default function ExerciseCard({
             { value: "delete", label: t("gym.exerciseCard.delete") },
             { value: "change", label: t("gym.exerciseCard.change") },
             { value: "history", label: t("gym.exerciseCard.history") },
+            { value: "restTimer", label: t("gym.exerciseCard.restTimer") },
           ]}
           onChange={(value) => {
             switch (value) {
@@ -114,6 +117,9 @@ export default function ExerciseCard({
                 break;
               case "history":
                 lastExerciseHistory(index);
+                break;
+              case "restTimer":
+                setShowRestTimerInput((prev) => !prev);
                 break;
               default:
                 break;
@@ -149,6 +155,42 @@ export default function ExerciseCard({
           </Pressable>
         )}
       </View>
+      {exercise.rest_timer_seconds != null && !showRestTimerInput && (
+        <View className="flex-row items-center mt-2">
+          <Timer size={14} color="#60a5fa" />
+          <BodyTextNC className="text-sm text-blue-400 ml-1">
+            {exercise.rest_timer_seconds}s
+          </BodyTextNC>
+        </View>
+      )}
+      {showRestTimerInput && (
+        <View className="mt-3 mb-1">
+          <AppInput
+            value={
+              exercise.rest_timer_seconds != null
+                ? String(exercise.rest_timer_seconds)
+                : ""
+            }
+            onChangeText={(val) => {
+              if (val === "") {
+                onUpdateExercise(index, {
+                  ...exercise,
+                  rest_timer_seconds: null,
+                });
+              } else if (/^\d+$/.test(val)) {
+                onUpdateExercise(index, {
+                  ...exercise,
+                  rest_timer_seconds: Number(val),
+                });
+              }
+            }}
+            placeholder={t("gym.exerciseCard.restTimerPlaceholder")}
+            label={t("gym.exerciseCard.restTimerLabel")}
+            keyboardType="numeric"
+            maxLength={4}
+          />
+        </View>
+      )}
       {mode === "session" && showContent && (
         <>
           <View className="my-4">

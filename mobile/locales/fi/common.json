@@ -43,7 +43,10 @@
       "videoStillCompressing": "Odota videon pakkauksen valmistumista",
       "videoLimitInfo": "Enintään {{duration}} min, {{size}} Mt",
       "imageLimitInfo": "Enintään {{size}} Mt per kuva",
-      "voiceLimitInfo": "Enintään {{duration}} min"
+      "voiceLimitInfo": "Enintään {{duration}} min",
+      "uploadingBackground": "Media ladataan taustalla",
+      "uploadFailed": "Lataus epäonnistui",
+      "tapToRetry": "Yritä uudelleen"
     }
   },
   "navbar": {

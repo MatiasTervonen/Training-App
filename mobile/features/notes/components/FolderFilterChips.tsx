@@ -1,9 +1,9 @@
 import { useEffect, useRef, ReactNode } from "react";
 import { ScrollView, View, useWindowDimensions } from "react-native";
-import AppText from "@/components/AppText";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import { useTranslation } from "react-i18next";
 import type { FolderWithCount } from "@/database/notes/get-folders";
+import AppTextNC from "@/components/AppTextNC";
 
 const TAB_WIDTH = 100;
 const GAP = 8;
@@ -55,39 +55,39 @@ export default function FolderFilterChips({
         className="flex-1"
       >
         <View className="flex-row p-1 gap-2">
-        <AnimatedButton
-          onPress={onSelectAll}
-          className={`w-[100px] py-2 px-3 rounded-md ${isAllSelected ? "bg-slate-700" : ""}`}
-        >
-          <AppText
-            numberOfLines={1}
-            className={`text-center font-medium ${
-              isAllSelected ? "text-cyan-400" : "text-gray-200"
-            }`}
+          <AnimatedButton
+            onPress={onSelectAll}
+            className={`w-[100px] py-2 px-3 rounded-md ${isAllSelected ? "bg-slate-700" : ""}`}
           >
-            {t("notes.folders.all")}
-          </AppText>
-        </AnimatedButton>
-
-        {folders.map((folder) => {
-          const isActive = selectedFolderId === folder.id;
-          return (
-            <AnimatedButton
-              key={folder.id}
-              onPress={() => onSelectFolder(folder.id)}
-              className={`w-[100px] py-2 px-3 rounded-md ${isActive ? "bg-slate-700" : ""}`}
+            <AppTextNC
+              numberOfLines={1}
+              className={`text-center font-medium ${
+                isAllSelected ? "text-cyan-400" : "text-gray-200"
+              }`}
             >
-              <AppText
-                numberOfLines={1}
-                className={`text-center font-medium ${
-                  isActive ? "text-cyan-400" : "text-gray-200"
-                }`}
+              {t("notes.folders.all")}
+            </AppTextNC>
+          </AnimatedButton>
+
+          {folders.map((folder) => {
+            const isActive = selectedFolderId === folder.id;
+            return (
+              <AnimatedButton
+                key={folder.id}
+                onPress={() => onSelectFolder(folder.id)}
+                className={`w-[100px] py-2 px-3 rounded-md ${isActive ? "bg-slate-700" : ""}`}
               >
-                {folder.name}
-              </AppText>
-            </AnimatedButton>
-          );
-        })}
+                <AppTextNC
+                  numberOfLines={1}
+                  className={`text-center font-medium ${
+                    isActive ? "text-cyan-400" : "text-gray-200"
+                  }`}
+                >
+                  {folder.name}
+                </AppTextNC>
+              </AnimatedButton>
+            );
+          })}
         </View>
       </ScrollView>
       {rightIcon}

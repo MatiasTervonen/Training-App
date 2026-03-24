@@ -6,6 +6,7 @@ import { formatMeters, formatDuration } from "@/lib/formatDate";
 import { FeedCardProps } from "@/types/session";
 import BaseFeedCard from "@/features/feed-cards/BaseFeedCard";
 import { useTranslation } from "react-i18next";
+import UploadProgressBadge from "@/features/feed-cards/UploadProgressBadge";
 
 type activityPayload = {
   duration: number;
@@ -30,6 +31,7 @@ export default function ActivityCard({
   const voiceCount = payload["voice-count"] ?? 0;
   const imageCount = payload["image-count"] ?? 0;
   const videoCount = payload["video-count"] ?? 0;
+  const hasMedia = voiceCount > 0 || imageCount > 0 || videoCount > 0;
 
   // Get translated activity name using slug, fallback to stored name
   const getActivityTypeName = () => {
@@ -62,46 +64,49 @@ export default function ActivityCard({
       typeIcon={<Activity size={20} color={"#cbd5e1"} />}
       typeName={getActivityTypeName()}
       statsContent={
-        <View>
-          {(voiceCount > 0 || imageCount > 0 || videoCount > 0) && (
-            <View className="flex-row items-center gap-3 mb-1">
-              {voiceCount > 0 && (
-                <View className="flex-row items-center gap-1">
-                  <Mic size={12} color="#94a3b8" />
-                  <AppText className="text-xs text-slate-400">{voiceCount}</AppText>
-                </View>
-              )}
-              {imageCount > 0 && (
-                <View className="flex-row items-center gap-1">
-                  <ImageIcon size={12} color="#94a3b8" />
-                  <AppText className="text-xs text-slate-400">{imageCount}</AppText>
-                </View>
-              )}
-              {videoCount > 0 && (
-                <View className="flex-row items-center gap-1">
-                  <Video size={12} color="#94a3b8" />
-                  <AppText className="text-xs text-slate-400">{videoCount}</AppText>
-                </View>
-              )}
-            </View>
-          )}
-          <View className="flex-row items-center gap-5">
-            {payload.distance > 0 && (
-              <View className="flex-row items-center gap-2">
-                <Route size={20} color={"#cbd5e1"} />
-                <BodyText>
-                  {formatMeters(payload.distance)}
-                </BodyText>
-              </View>
-            )}
+        <View className="flex-row items-center gap-5">
+          {payload.distance > 0 && (
             <View className="flex-row items-center gap-2">
-              <Timer size={20} color={"#cbd5e1"} />
+              <Route size={20} color={"#cbd5e1"} />
               <BodyText>
-                {formatDuration(payload.duration)}
+                {formatMeters(payload.distance)}
               </BodyText>
             </View>
+          )}
+          <View className="flex-row items-center gap-2">
+            <Timer size={20} color={"#cbd5e1"} />
+            <BodyText>
+              {formatDuration(payload.duration)}
+            </BodyText>
           </View>
         </View>
+      }
+      mediaContent={
+        hasMedia ? (
+          <View className="flex-row items-center gap-3">
+            {voiceCount > 0 && (
+              <View className="flex-row items-center gap-1">
+                <Mic size={12} color="#94a3b8" />
+                <AppText className="text-xs text-slate-400">{voiceCount}</AppText>
+              </View>
+            )}
+            {imageCount > 0 && (
+              <View className="flex-row items-center gap-1">
+                <ImageIcon size={12} color="#94a3b8" />
+                <AppText className="text-xs text-slate-400">{imageCount}</AppText>
+              </View>
+            )}
+            {videoCount > 0 && (
+              <View className="flex-row items-center gap-1">
+                <Video size={12} color="#94a3b8" />
+                <AppText className="text-xs text-slate-400">{videoCount}</AppText>
+              </View>
+            )}
+            <UploadProgressBadge targetId={item.source_id} />
+          </View>
+        ) : (
+          <UploadProgressBadge targetId={item.source_id} />
+        )
       }
     />
   );

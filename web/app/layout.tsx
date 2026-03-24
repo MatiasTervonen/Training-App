@@ -18,12 +18,12 @@ export const metadata: Metadata = {
     apple: "/favicon/apple-touch-icon.png",
   },
   description:
-    `The only tracking app you'll ever need. Gym, activities, habits, notes, to-dos, and more — all in one place. ${APP_NAME} keeps everything organized, your way.`,
+    `Gym workouts, outdoor activities, habits, notes, to-dos, and more. ${APP_NAME} keeps everything organized in one place — your life, your way.`,
   metadataBase: new URL("https://kurvi.io/"),
   openGraph: {
     title: APP_NAME,
     description:
-      `The only tracking app you'll ever need. Gym, activities, habits, notes, to-dos, and more — all in one place. ${APP_NAME} keeps everything organized, your way.`,
+      `Gym workouts, outdoor activities, habits, notes, to-dos, and more. ${APP_NAME} keeps everything organized in one place — your life, your way.`,
     url: "https://kurvi.io/",
     siteName: APP_NAME,
     images: [

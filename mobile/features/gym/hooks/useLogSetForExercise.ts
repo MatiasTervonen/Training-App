@@ -7,11 +7,13 @@ export default function useLogSetForExercise({
   exerciseInputs,
   setExerciseInputs,
   setExercises,
+  templateRestTimerSeconds,
 }: {
   exercises: ExerciseEntry[];
   exerciseInputs: ExerciseInput[];
   setExerciseInputs: (exerciseInputs: ExerciseInput[]) => void;
   setExercises: (exercises: ExerciseEntry[]) => void;
+  templateRestTimerSeconds?: number | null;
 }) {
   const logSetForExercise = (index: number) => {
     const input = exerciseInputs[index];
@@ -33,11 +35,13 @@ export default function useLogSetForExercise({
     setExerciseInputs(updatedInputs);
     setExercises(updated);
 
-    // Start rest timer if enabled
+    // Start rest timer: exercise-level → template-level → global default
     const { restTimerEnabled, restTimerDurationSeconds } =
       useGymSettingsStore.getState();
     if (restTimerEnabled) {
-      useRestTimerStore.getState().startRestTimer(restTimerDurationSeconds);
+      const duration =
+        exercise.rest_timer_seconds ?? templateRestTimerSeconds ?? restTimerDurationSeconds;
+      useRestTimerStore.getState().startRestTimer(duration);
     }
   };
 

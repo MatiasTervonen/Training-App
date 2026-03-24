@@ -1,6 +1,6 @@
 import { FeedItemUI } from "@/types/session";
 import { useQuery } from "@tanstack/react-query";
-import { getFullGymSession } from "@/database/gym/get-full-gym-session";
+import { getFullGymSession, getGymSessionMedia, GymSessionMedia } from "@/database/gym/get-full-gym-session";
 import { getFullTodoSession } from "@/database/todo/get-full-todo";
 import { FullActivitySession, full_todo_session } from "@/types/models";
 import { getFullActivitySession } from "@/database/activities/get-full-activity-session";
@@ -34,12 +34,24 @@ export default function useFullSessions(
   const expandedId = getId(expandedItem);
   const editingId = getId(editingItem);
 
-  const gymId =
+  const gymItem =
     expandedItem?.type === "gym_sessions"
-      ? expandedId
+      ? expandedItem
       : editingItem?.type === "gym_sessions"
-        ? editingId
+        ? editingItem
         : null;
+
+  const gymId = gymItem ? getId(gymItem) : null;
+
+  const gymExtra = gymItem?.extra_fields as
+    | { "image-count"?: number; "video-count"?: number; "voice-count"?: number }
+    | undefined;
+  const gymImageCount = gymExtra?.["image-count"] ?? 0;
+  const gymVideoCount = gymExtra?.["video-count"] ?? 0;
+  const gymVoiceCount = gymExtra?.["voice-count"] ?? 0;
+
+  const gymHasMedia = gymItem && (gymImageCount > 0 || gymVideoCount > 0 || gymVoiceCount > 0);
+  const gymMediaId = gymHasMedia ? getId(gymItem) : null;
 
   const todoItem =
     expandedItem?.type === "todo_lists"
@@ -133,6 +145,16 @@ export default function useFullSessions(
   });
 
   const {
+    data: gymMediaFull,
+    error: gymMediaError,
+    isLoading: isLoadingGymMedia,
+  } = useQuery<GymSessionMedia>({
+    queryKey: ["gymSessionMedia", gymMediaId],
+    queryFn: async () => await getGymSessionMedia(gymMediaId!),
+    enabled: !!gymMediaId,
+  });
+
+  const {
     data: todoSessionFull,
     error: todoSessionError,
     isLoading: isLoadingTodoSession,
@@ -216,6 +238,9 @@ export default function useFullSessions(
     GymSessionFull,
     GymSessionError,
     isLoadingGymSession,
+    gymMediaFull,
+    gymMediaError,
+    isLoadingGymMedia,
     todoSessionFull,
     todoSessionError,
     isLoadingTodoSession,

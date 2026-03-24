@@ -1,7 +1,6 @@
 import {
   View,
   ActivityIndicator,
-  Pressable,
   Keyboard,
 } from "react-native";
 import AppText from "@/components/AppText";

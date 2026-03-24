@@ -12,13 +12,14 @@ export async function getFullTemplate(sessionId: string) {
   const { data: template, error: templateError } = await supabase
     .from("gym_templates")
     .select(
-      `id, name, user_id, updated_at, created_at,
+      `id, name, user_id, updated_at, created_at, rest_timer_seconds,
        gym_template_phases(*, activities(name, slug, base_met, is_step_relevant, is_calories_relevant)),
        gym_template_exercises(
          id,
          exercise_id,
          superset_id,
          position,
+         rest_timer_seconds,
          gym_exercises:exercise_id(
            equipment,
            muscle_group,

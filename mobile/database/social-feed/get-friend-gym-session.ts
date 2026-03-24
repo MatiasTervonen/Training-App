@@ -60,8 +60,10 @@ export async function getFriendGymSession(feedItemId: string) {
 
   return {
     ...raw,
-    sessionImages: sessionImages.filter((img) => img.uri !== ""),
-    sessionVideos: sessionVideos.filter((v) => v.uri !== ""),
-    sessionVoiceRecordings: sessionVoiceRecordings.filter((v) => v.uri !== ""),
-  } as unknown as FullGymSession;
+    gymMedia: {
+      images: sessionImages.filter((img) => img.uri !== ""),
+      videos: sessionVideos.filter((v) => v.uri !== ""),
+      voiceRecordings: sessionVoiceRecordings.filter((v) => v.uri !== ""),
+    },
+  } as unknown as FullGymSession & { gymMedia: { images: typeof sessionImages; videos: typeof sessionVideos; voiceRecordings: typeof sessionVoiceRecordings } };
 }

@@ -39,7 +39,7 @@ export default function ActivityTypeFilterChips({
   }, [selectedSlug, activityTypes]);
 
   return (
-    <div className="mb-3 bg-slate-800 rounded-lg">
+    <div className="sticky top-0 z-10 mb-4 bg-slate-800 rounded-lg">
       <div
         ref={scrollRef}
         className="flex overflow-x-auto p-1 gap-2"
@@ -51,7 +51,7 @@ export default function ActivityTypeFilterChips({
           }`}
         >
           <p
-            className={`text-center text-sm truncate ${
+            className={`text-center truncate ${
               isAllSelected ? "text-cyan-400" : "text-gray-200"
             }`}
           >
@@ -72,7 +72,7 @@ export default function ActivityTypeFilterChips({
               }`}
             >
               <p
-                className={`text-center text-sm truncate ${
+                className={`text-center truncate ${
                   isActive ? "text-cyan-400" : "text-gray-200"
                 }`}
               >

@@ -87,7 +87,6 @@ export default function FeedbackPage() {
   return (
     <div className="page-padding max-w-3xl mx-auto h-full flex flex-col pb-10">
       <div className="flex flex-col grow min-h-0">
-        <h1 className="text-2xl text-center mb-10">{t("feedback.title")}</h1>
         <div className="flex flex-col gap-5 grow min-h-0">
           <ExerciseTypeSelect
             value={category}

@@ -63,6 +63,9 @@ export default function TemplateForm() {
     null,
   );
   const [isScrollEnabled, setIsScrollEnabled] = useState(true);
+  const [templateRestTimerSeconds, setTemplateRestTimerSeconds] = useState<
+    number | null
+  >(null);
 
   // Phase state for templates
   const [warmup, setWarmup] = useState<TemplatePhaseData | null>(null);
@@ -113,9 +116,10 @@ export default function TemplateForm() {
       exercises,
       warmup,
       cooldown,
+      templateRestTimerSeconds,
     };
     AsyncStorage.setItem(storageKey, JSON.stringify(sessionDraft));
-  }, [exercises, workoutName, storageKey, warmup, cooldown]);
+  }, [exercises, workoutName, storageKey, warmup, cooldown, templateRestTimerSeconds]);
 
   // Load existing template when editing
 
@@ -131,6 +135,9 @@ export default function TemplateForm() {
   useEffect(() => {
     if (existingTemplate) {
       setWorkoutName(existingTemplate.name);
+      setTemplateRestTimerSeconds(
+        (existingTemplate as typeof existingTemplate & { rest_timer_seconds?: number | null }).rest_timer_seconds ?? null,
+      );
 
       const mappedExercises = existingTemplate.gym_template_exercises.map(
         (ex) => ({
@@ -145,6 +152,7 @@ export default function TemplateForm() {
             rpe: undefined,
           })),
           superset_id: ex.superset_id,
+          rest_timer_seconds: (ex as typeof ex & { rest_timer_seconds?: number | null }).rest_timer_seconds ?? null,
         }),
       );
 
@@ -231,6 +239,7 @@ export default function TemplateForm() {
     templateId: templateId || "",
     warmup,
     cooldown,
+    templateRestTimerSeconds,
   });
 
   // useLogSetForExercise hook to log the set for the exercise. not used in this component.
@@ -290,12 +299,32 @@ export default function TemplateForm() {
                   ? t("gym.templateForm.titleEdit")
                   : t("gym.templateForm.titleCreate")}
               </AppText>
-              <View className="mb-10">
+              <View className="mb-5">
                 <AppInput
                   value={workoutName}
                   onChangeText={setWorkoutName}
                   placeholder={t("gym.templateForm.workoutNamePlaceholder")}
                   label={t("gym.templateForm.workoutNameLabel")}
+                />
+              </View>
+              <View className="mb-10">
+                <AppInput
+                  value={
+                    templateRestTimerSeconds != null
+                      ? String(templateRestTimerSeconds)
+                      : ""
+                  }
+                  onChangeText={(val) => {
+                    if (val === "") {
+                      setTemplateRestTimerSeconds(null);
+                    } else if (/^\d+$/.test(val)) {
+                      setTemplateRestTimerSeconds(Number(val));
+                    }
+                  }}
+                  placeholder={t("gym.templateForm.restTimerPlaceholder")}
+                  label={t("gym.templateForm.restTimerLabel")}
+                  keyboardType="numeric"
+                  maxLength={4}
                 />
               </View>
             </View>
@@ -306,6 +335,10 @@ export default function TemplateForm() {
                   mode="template"
                   phase={warmup}
                   onRemove={() => setWarmup(null)}
+                  onChangeActivity={() => {
+                    setPhasePickerType("warmup");
+                    setPhasePickerOpen(true);
+                  }}
                 />
               </View>
             )}
@@ -415,6 +448,10 @@ export default function TemplateForm() {
                   mode="template"
                   phase={cooldown}
                   onRemove={() => setCooldown(null)}
+                  onChangeActivity={() => {
+                    setPhasePickerType("cooldown");
+                    setPhasePickerOpen(true);
+                  }}
                 />
               </View>
             )}

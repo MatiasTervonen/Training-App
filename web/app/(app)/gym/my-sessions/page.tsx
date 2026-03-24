@@ -92,9 +92,9 @@ export default function MySessionsPage() {
               />
             ) : (
               <>
-                {unpinnedFeed.map((feedItem) => {
+                {unpinnedFeed.map((feedItem, i) => {
                   return (
-                    <div className="mt-8" key={feedItem.id}>
+                    <div className={i === 0 && pinnedFeed.length === 0 ? "mt-2" : "mt-8"} key={feedItem.id}>
                       <FeedCard
                         item={feedItem}
                         pinned={false}

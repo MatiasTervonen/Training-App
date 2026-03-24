@@ -1,8 +1,8 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { useNavigation, useRouter } from "expo-router";
-import { View, ScrollView, LayoutChangeEvent, ActivityIndicator, PixelRatio } from "react-native";
+import { View, ScrollView, LayoutChangeEvent, ActivityIndicator, PixelRatio, FlatList } from "react-native";
 import AppText from "@/components/AppText";
-import { Image } from "expo-image";
+import { Image, Image as ExpoImage } from "expo-image";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import ActivityShareCard from "@/features/activities/components/share/ActivityShareCard";
 import StatToggleChips from "@/features/activities/components/share/StatToggleChips";
@@ -32,8 +32,6 @@ import ShareTypePicker from "@/lib/components/share/ShareTypePicker";
 import { useFriends } from "@/features/friends/hooks/useFriends";
 import { sendSessionShareToChat } from "@/database/chat/send-session-share";
 import { SessionShareContent } from "@/types/chat";
-import { Image as ExpoImage } from "expo-image";
-import { FlatList } from "react-native";
 import { Friends } from "@/types/models";
 
 const MAP_VIEW_STYLE = { flex: 1 };

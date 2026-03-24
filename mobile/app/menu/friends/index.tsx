@@ -70,10 +70,6 @@ export default function FriendsScreen() {
       keyboardShouldPersistTaps="handled"
     >
       <PageContainer>
-        <AppText className="text-2xl text-center mb-10">
-          {t("friends.title")}
-        </AppText>
-
         <FriendRequestForm />
 
         {isLoading ? (

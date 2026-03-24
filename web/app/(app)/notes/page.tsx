@@ -77,7 +77,7 @@ export default function NotesPage() {
         className="max-w-2xl mx-auto relative bg-linear-to-b from-slate-950 via-slate-900 to-slate-800 px-5 pt-3 pb-10 overflow-y-auto touch-pan-y h-full"
       >
         {/* Folder filter chips + manage folders link */}
-        <div className="sticky top-0 z-10 flex items-center gap-2 mb-4">
+        <div className="sticky top-0 z-10 flex items-center gap-1 mb-4">
           <div className="flex-1 min-w-0">
             <FolderFilterChips
               folders={folders}
@@ -88,7 +88,7 @@ export default function NotesPage() {
           </div>
           <Link
             href="/notes/folders"
-            className="shrink-0 px-3 py-2 hover:bg-slate-700/50 rounded-md transition-colors"
+            className="shrink-0 p-2 bg-slate-800 rounded-lg hover:bg-slate-700/50 transition-colors"
           >
             <FolderCog size={20} className="text-slate-400" />
           </Link>
@@ -135,8 +135,8 @@ export default function NotesPage() {
               />
             ) : (
               <>
-                {unpinnedFeed.map((feedItem) => (
-                  <div className="mt-8" key={feedItem.id}>
+                {unpinnedFeed.map((feedItem, i) => (
+                  <div className={i === 0 && pinnedFeed.length === 0 ? "mt-2" : "mt-8"} key={feedItem.id}>
                     <FeedCard
                       item={feedItem}
                       pinned={false}

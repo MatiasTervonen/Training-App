@@ -1,8 +1,8 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { useNavigation, useRouter } from "expo-router";
-import { View, ScrollView, LayoutChangeEvent } from "react-native";
+import { View, ScrollView, LayoutChangeEvent, FlatList, ActivityIndicator } from "react-native";
 import AppText from "@/components/AppText";
-import { Image } from "expo-image";
+import { Image, Image as ExpoImage } from "expo-image";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import ShareCard from "@/features/gym/components/ShareCard";
 import ShareCardPicker from "@/lib/components/share/ShareCardPicker";
@@ -23,8 +23,6 @@ import { useFriends } from "@/features/friends/hooks/useFriends";
 import { sendShareCardToChat } from "@/database/chat/send-share-card";
 import { sendSessionShareToChat } from "@/database/chat/send-session-share";
 import { SessionShareContent } from "@/types/chat";
-import { Image as ExpoImage } from "expo-image";
-import { FlatList, ActivityIndicator } from "react-native";
 import { Friends } from "@/types/models";
 
 export default function TrainingFinishedScreen() {

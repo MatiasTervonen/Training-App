@@ -37,7 +37,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import Timer from "@/components/timer";
 import PageContainer from "@/components/PageContainer";
 import AnimatedButton from "@/components/buttons/animatedButton";
-import { FullGymSession } from "@/database/gym/get-full-gym-session";
+import { FullGymSession, SessionImage, SessionVideo, SessionVoiceRecording } from "@/database/gym/get-full-gym-session";
 import useSaveGymDraft from "@/features/gym/hooks/useSaveGymDraft";
 import useStartExercise from "@/features/gym/hooks/useStartExercise";
 import useLogSetForExercise from "@/features/gym/hooks/useLogSetForExercise";
@@ -80,10 +80,11 @@ type GymFormData = Pick<
   | "notes"
   | "duration"
   | "gym_session_exercises"
-  | "sessionImages"
-  | "sessionVideos"
-  | "sessionVoiceRecordings"
 > & {
+  sessionImages: SessionImage[];
+  sessionVideos: SessionVideo[];
+  sessionVoiceRecordings: SessionVoiceRecording[];
+} & {
   gym_session_phases?: {
     phase_type: string;
     activity_id: string;
@@ -135,6 +136,9 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
   const [collapsedExercises, setCollapsedExercises] = useState<Set<string>>(
     () => new Set(exercises.map((ex) => ex.exercise_id)),
   );
+  const [templateRestTimerSeconds, setTemplateRestTimerSeconds] = useState<
+    number | null
+  >(null);
   const [scrollEnabled, setScrollEnabled] = useState(true);
   const addedViaModalRef = useRef(false);
   const prevExerciseCountRef = useRef(exercises.length);
@@ -272,6 +276,7 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
     draftVideos,
     warmup,
     cooldown,
+    templateRestTimerSeconds,
     setTitle,
     setExercises,
     setNotes,
@@ -281,6 +286,7 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
     setDraftVideos,
     setWarmup,
     setCooldown,
+    setTemplateRestTimerSeconds,
   });
 
   // Resume phase tracking from persisted tracking_started_at
@@ -408,6 +414,7 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
     exerciseInputs,
     setExerciseInputs,
     setExercises,
+    templateRestTimerSeconds,
   });
 
   const resetSession = () => {
@@ -424,6 +431,9 @@ export default function GymForm({ initialData }: { initialData: GymFormData }) {
     setExerciseInputs([]);
     setWarmup(null);
     setCooldown(null);
+    setDraftImages([]);
+    setDraftVideos([]);
+    setDraftRecordings([]);
   };
 
   const handlePhaseSelect = (phaseType: PhaseType) => {

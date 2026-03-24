@@ -60,7 +60,7 @@ export default function Page() {
         const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
         if (isMobile) {
-          window.location.href = "mytrack://";
+          window.location.href = "kurvi://";
 
           setTimeout(() => {
             router.push("/login");

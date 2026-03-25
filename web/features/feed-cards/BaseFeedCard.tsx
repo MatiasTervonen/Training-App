@@ -43,6 +43,8 @@ function getCardGradientClass(type: string): string {
       return "card-reports";
     case "tutorial":
       return "card-tutorial";
+    case "nutrition":
+      return "card-nutrition";
     default:
       return "card-default";
   }

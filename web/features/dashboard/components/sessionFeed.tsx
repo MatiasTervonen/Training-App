@@ -27,6 +27,8 @@ import { useTranslation } from "react-i18next";
 import ActivitySession from "@/features/activities/cards/activity-feed-expanded/activity";
 import EditActivity from "@/features/activities/cards/activity-edit";
 import TutorialSession from "@/features/feed-cards/tutorial-expanded";
+import dynamic from "next/dynamic";
+const NutritionExpanded = dynamic(() => import("@/features/nutrition/cards/nutrition-expanded"), { ssr: false });
 import FeedHeader from "@/features/dashboard/components/feedHeader";
 import EmptyState from "@/components/EmptyState";
 import { LayoutDashboard, Users } from "lucide-react";
@@ -370,6 +372,9 @@ export default function SessionFeed() {
                   )
                 )}
               </>
+            )}
+            {expandedItem.type === "nutrition" && (
+              <NutritionExpanded item={expandedItem} />
             )}
           </Modal>
         )}

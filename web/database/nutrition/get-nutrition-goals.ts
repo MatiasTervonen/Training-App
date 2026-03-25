@@ -1,29 +1,21 @@
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/utils/supabase/client";
 import { handleError } from "@/utils/handleError";
-
-export type NutritionGoals = {
-  calorie_goal: number;
-  protein_goal: number;
-  carbs_goal: number;
-  fat_goal: number;
-  fiber_goal: number | null;
-  sugar_goal: number | null;
-  sodium_goal: number | null;
-  saturated_fat_goal: number | null;
-  visible_nutrients: string[] | null;
-  custom_meal_types: string[] | null;
-  updated_at: string;
-};
+import type { NutritionGoals } from "@/types/nutrition";
 
 export async function getNutritionGoals(): Promise<NutritionGoals | null> {
+  const supabase = createClient();
+
   const { data, error } = await supabase
     .from("nutrition_goals")
-    .select("*")
+    .select(
+      "calorie_goal, protein_goal, carbs_goal, fat_goal, fiber_goal, sugar_goal, sodium_goal, saturated_fat_goal, visible_nutrients, custom_meal_types, updated_at"
+    )
     .single();
 
   if (error) {
-    if (error.code === "PGRST116") return null;
-
+    if (error.code === "PGRST116") {
+      return null;
+    }
     handleError(error, {
       message: "Error getting nutrition goals",
       route: "/database/nutrition/get-nutrition-goals",

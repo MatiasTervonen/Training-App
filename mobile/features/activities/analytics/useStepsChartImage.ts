@@ -3,13 +3,6 @@ import { useStepsShareData } from "@/features/activities/analytics/StepsShareCar
 import { StepRecord } from "@/database/activities/get-steps";
 import { ShareCardTheme } from "@/lib/share/themes";
 
-function formatNumber(num: number): string {
-  if (num >= 1000) {
-    return (num / 1000).toFixed(1).replace(/\.0$/, "") + "k";
-  }
-  return num.toString();
-}
-
 export default function useStepsChartImage(
   range: "week" | "month" | "3months",
   data: StepRecord[],

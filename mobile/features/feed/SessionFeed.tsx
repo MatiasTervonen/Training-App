@@ -40,7 +40,8 @@ import TutorialSession from "@/features/feed-cards/tutorial-expanded";
 import useUpdateFeedItemToTop from "./hooks/useUpdateFeedItemToTop";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
-import { LayoutDashboard, Users } from "lucide-react-native";
+import { LayoutDashboard, Users, UserPlus } from "lucide-react-native";
+import AnimatedButton from "@/components/buttons/animatedButton";
 import useSocialFeed from "@/features/social-feed/hooks/useSocialFeed";
 import useToggleLike from "@/features/social-feed/hooks/useToggleLike";
 import SocialFeedCard from "@/features/social-feed/components/SocialFeedCard";
@@ -350,6 +351,15 @@ export default function SessionFeed({
                 <BodyTextNC className="text-sm text-gray-400 text-center">
                   {t("social:social.noFriendsYet")}
                 </BodyTextNC>
+                <AnimatedButton
+                  onPress={() => router.push("/menu/friends")}
+                  className="btn-add self-center mt-4"
+                >
+                  <View className="flex-row items-center gap-2 px-6">
+                    <UserPlus size={16} color="#93c5fd" />
+                    <AppText numberOfLines={1}>{t("social:social.addFriends")}</AppText>
+                  </View>
+                </AnimatedButton>
               </View>
             </View>
           ) : (
@@ -483,7 +493,15 @@ export default function SessionFeed({
             <ReportSession item={expandedItem} />
           )}
 
-          {expandedItem.type === "tutorial" && <TutorialSession />}
+          {expandedItem.type === "tutorial" && (
+            <TutorialSession
+              onClose={() => {
+                setHasUnsavedExpandedChanges(false);
+                setExpandedItem(null);
+                expandedReminderRef.current = null;
+              }}
+            />
+          )}
 
           {expandedItem.type === "activity_sessions" && (
             <>

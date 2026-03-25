@@ -60,7 +60,7 @@ export default function ActivityTypeFilterChips({
             <AppTextNC
               numberOfLines={1}
               className={`text-center font-medium ${
-                isAllSelected ? "text-cyan-400" : "text-gray-200"
+                isAllSelected ? "text-green-400" : "text-gray-200"
               }`}
             >
               {t("activities.mySessions.all")}
@@ -80,7 +80,7 @@ export default function ActivityTypeFilterChips({
                 <AppTextNC
                   numberOfLines={1}
                   className={`text-center font-medium ${
-                    isActive ? "text-cyan-400" : "text-gray-200"
+                    isActive ? "text-green-400" : "text-gray-200"
                   }`}
                 >
                   {translated}

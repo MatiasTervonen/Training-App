@@ -52,7 +52,7 @@ export default function MealTypePicker({
                 onPress={() => onSelect(type.value)}
                 className={`flex-1 items-center py-2.5 rounded-lg border ${
                   isSelected
-                    ? "bg-orange-500/20 border-orange-500/50"
+                    ? "bg-fuchsia-500/20 border-fuchsia-500/50"
                     : "bg-slate-800 border-slate-700"
                 }`}
               >

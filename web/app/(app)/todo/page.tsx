@@ -9,7 +9,7 @@ import Spinner from "@/components/spinner";
 import { FeedSkeleton } from "@/ui/loadingSkeletons/skeletons";
 import { FeedItemUI } from "@/types/session";
 import useMyTodoFeed from "@/features/todo/hooks/useMyTodoFeed";
-import useTodoTogglePin from "@/features/todo/hooks/useTodoTogglePin";
+import useTogglePin from "@/hooks/useTogglePin";
 import useTodoDeleteSession from "@/features/todo/hooks/useTodoDeleteSession";
 import useTodoUpdateFeedItemToTop from "@/features/todo/hooks/useTodoUpdateFeedItemToTop";
 import { useQuery } from "@tanstack/react-query";
@@ -46,7 +46,7 @@ export default function TodoPage() {
     loadMoreRef,
   } = useMyTodoFeed();
 
-  const { togglePin } = useTodoTogglePin();
+  const { togglePin } = useTogglePin(["myTodoLists"], "todo");
   const { handleDelete } = useTodoDeleteSession();
   const { updateFeedItemToTop } = useTodoUpdateFeedItemToTop();
 

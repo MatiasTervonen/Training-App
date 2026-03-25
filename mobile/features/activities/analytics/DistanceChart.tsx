@@ -1,5 +1,5 @@
 import { ChevronLeft, ChevronRight } from "lucide-react-native";
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { View, ScrollView, useWindowDimensions } from "react-native";
 import AppText from "@/components/AppText";
 import AppTextNC from "@/components/AppTextNC";
@@ -174,12 +174,12 @@ export default function DistanceChart({ range, data }: DistanceChartProps) {
   }, [filteredData]);
 
   // Convert meters to display unit (km or miles)
-  const toDisplayUnit = (meters: number): number => {
+  const toDisplayUnit = useCallback((meters: number): number => {
     if (distanceUnit === "mi") {
       return meters / 1609.344;
     }
     return meters / 1000;
-  };
+  }, [distanceUnit]);
 
   const unitLabel = distanceUnit === "mi" ? "mi" : "km";
 
@@ -221,7 +221,7 @@ export default function DistanceChart({ range, data }: DistanceChartProps) {
         value: toDisplayUnit(cumulative),
       };
     });
-  }, [fullDateRange, dailyDistanceMap, range, i18n.language, distanceUnit]);
+  }, [fullDateRange, dailyDistanceMap, range, i18n.language, toDisplayUnit]);
 
   // Total distance in the period
   const totalDistance = useMemo(() => {
@@ -230,7 +230,7 @@ export default function DistanceChart({ range, data }: DistanceChartProps) {
       total += dailyDistanceMap.get(date) || 0;
     });
     return toDisplayUnit(total);
-  }, [fullDateRange, dailyDistanceMap, distanceUnit]);
+  }, [fullDateRange, dailyDistanceMap, toDisplayUnit]);
 
   // Daily average (only counting days with distance)
   const avgDistance = useMemo(() => {
@@ -244,7 +244,7 @@ export default function DistanceChart({ range, data }: DistanceChartProps) {
       }
     });
     return daysWithData > 0 ? toDisplayUnit(total) / daysWithData : 0;
-  }, [fullDateRange, dailyDistanceMap, distanceUnit]);
+  }, [fullDateRange, dailyDistanceMap, toDisplayUnit]);
 
   const values = chartData.map((item) => item.value);
   const maxValue = Math.max(...values, 1);
@@ -290,11 +290,11 @@ export default function DistanceChart({ range, data }: DistanceChartProps) {
           smooth: true,
           showSymbol: false,
           lineStyle: {
-            color: "#38bdf8",
+            color: "#4ade80", // green-400
             width: 3,
           },
           itemStyle: {
-            color: "#38bdf8",
+            color: "#22c55e", // green-500
           },
           areaStyle: {
             color: {
@@ -304,8 +304,8 @@ export default function DistanceChart({ range, data }: DistanceChartProps) {
               x2: 0,
               y2: 1,
               colorStops: [
-                { offset: 0, color: "rgba(56, 189, 248, 0.35)" },
-                { offset: 1, color: "rgba(56, 189, 248, 0.05)" },
+                { offset: 0, color: "rgba(34, 197, 94, 0.35)" },
+                { offset: 1, color: "rgba(34, 197, 94, 0.05)" },
               ],
             },
           },
@@ -390,7 +390,7 @@ export default function DistanceChart({ range, data }: DistanceChartProps) {
                 <AppTextNC
                   numberOfLines={1}
                   className={`text-center font-medium ${
-                    selectedActivity === null ? "text-cyan-400" : "text-gray-200"
+                    selectedActivity === null ? "text-green-400" : "text-gray-200"
                   }`}
                 >
                   {t("activities.mySessions.all")}
@@ -411,7 +411,7 @@ export default function DistanceChart({ range, data }: DistanceChartProps) {
                     <AppTextNC
                       numberOfLines={1}
                       className={`text-center font-medium ${
-                        isActive ? "text-cyan-400" : "text-gray-200"
+                        isActive ? "text-green-400" : "text-gray-200"
                       }`}
                     >
                       {activity.name}
@@ -431,7 +431,7 @@ export default function DistanceChart({ range, data }: DistanceChartProps) {
           disabled={!canGoBack}
           style={{ opacity: canGoBack ? 1 : 0.5 }}
         >
-          <ChevronLeft color={canGoBack ? "#38bdf8" : "#f3f4f6"} size={20} />
+          <ChevronLeft color={canGoBack ? "#22c55e" : "#f3f4f6"} size={20} />
         </AnimatedButton>
         <AppText className="min-w-[200px] text-center text-sm">
           {formatDateRange(start, end)}
@@ -443,7 +443,7 @@ export default function DistanceChart({ range, data }: DistanceChartProps) {
           style={{ opacity: offset === 0 ? 0.5 : 1 }}
         >
           <ChevronRight
-            color={offset === 0 ? "#f3f4f6" : "#38bdf8"}
+            color={offset === 0 ? "#f3f4f6" : "#22c55e"}
             size={20}
           />
         </AnimatedButton>
@@ -454,7 +454,7 @@ export default function DistanceChart({ range, data }: DistanceChartProps) {
           <AppText className="text-gray-400 text-xs">
             {rangeLabels[range]}
           </AppText>
-          <AppText className="text-xl font-bold text-sky-400">
+          <AppText className="text-xl font-bold text-green-400">
             {totalDistance.toFixed(1)} {unitLabel}
           </AppText>
         </View>
@@ -462,7 +462,7 @@ export default function DistanceChart({ range, data }: DistanceChartProps) {
           <AppText className="text-gray-400 text-xs">
             {t("activities.analyticsScreen.dailyAvg")}
           </AppText>
-          <AppText className="text-xl font-bold text-sky-400">
+          <AppText className="text-xl font-bold text-green-400">
             {avgDistance.toFixed(1)} {unitLabel}
           </AppText>
         </View>

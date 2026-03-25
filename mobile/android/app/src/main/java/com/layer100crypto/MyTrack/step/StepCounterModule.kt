@@ -315,14 +315,17 @@ class StepCounterModule(private val reactContext: ReactApplicationContext)
                 if (sessionStart == -1L) return
 
                 val displaySteps = if (currentValue < sessionStart) {
-                    currentValue // reboot: treat current value as steps
+                    currentValue // reboot: treat current value as steps since reboot
                 } else {
                     currentValue - sessionStart
                 }.toInt()
 
+                // Cap to prevent inflated values from sensor glitches
+                val safeSteps = displaySteps.coerceIn(0, 100_000)
+
                 reactContext
                     .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
-                    .emit(EVENT_LIVE_STEPS, maxOf(displaySteps, 0))
+                    .emit(EVENT_LIVE_STEPS, safeSteps)
             }
 
             override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}

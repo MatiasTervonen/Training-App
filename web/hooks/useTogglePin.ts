@@ -1,20 +1,29 @@
+"use client";
+
 import { useQueryClient } from "@tanstack/react-query";
-import Toast from "react-native-toast-message";
+import { toast } from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 import { FeedData } from "@/types/session";
 import { unpinItem } from "@/database/pinned/unpin-items";
 import { pinItem } from "@/database/pinned/pin-items";
-import { useTranslation } from "react-i18next";
+import { handleError } from "@/utils/handleError";
 
-export default function useTogglePin(queryKey: string[] = ["feed"]) {
+export default function useTogglePin(
+  queryKey: string[] = ["feed"],
+  defaultPinnedContext?: string,
+) {
+  const { t } = useTranslation("common");
   const queryClient = useQueryClient();
-  const { t } = useTranslation("feed");
 
   const togglePin = async (
     id: string,
     type: string,
     feed_context: "pinned" | "feed",
-    pinned_context: string
+    pinned_context?: string,
   ) => {
+    const context = pinned_context ?? defaultPinnedContext;
+    if (!context) return;
+
     const feedData = queryClient.getQueryData<FeedData>(queryKey);
 
     const pinnedFeed =
@@ -23,11 +32,7 @@ export default function useTogglePin(queryKey: string[] = ["feed"]) {
         .filter((item) => item.feed_context === "pinned") ?? [];
 
     if (feed_context === "feed" && pinnedFeed.length >= 10) {
-      Toast.show({
-        type: "error",
-        text1: t("common:common.error"),
-        text2: t("feed.togglePin.maxPinned"),
-      });
+      toast.error(t("common.pinLimitReached", { max: 10 }));
       return;
     }
 
@@ -116,23 +121,24 @@ export default function useTogglePin(queryKey: string[] = ["feed"]) {
 
     try {
       if (feed_context === "pinned") {
-        await unpinItem({ id, type, pinned_context });
+        await unpinItem({ id, type, pinned_context: context });
       } else {
-        await pinItem({ id, type, pinned_context });
+        await pinItem({ id, type, pinned_context: context });
       }
 
-      Toast.show({
-        type: "success",
-        text1: feed_context === "pinned" ? t("feed.togglePin.unpinned") : t("feed.togglePin.pinned"),
-        text2: feed_context === "pinned" ? t("feed.togglePin.unpinnedMessage") : t("feed.togglePin.pinnedMessage"),
-      });
-    } catch {
+      toast.success(
+        feed_context === "pinned"
+          ? t("common.unpinnedSuccess")
+          : t("common.pinnedSuccess"),
+      );
+    } catch (error) {
       queryClient.setQueryData(queryKey, previousFeed);
-      Toast.show({
-        type: "error",
-        text1: t("common:common.error"),
-        text2: t("feed.togglePin.errorMessage"),
+      handleError(error, {
+        message: "Failed to toggle pin",
+        route: "server-action: togglePin",
+        method: "direct",
       });
+      toast.error(t("common.pinToggleFailed"));
     }
   };
 

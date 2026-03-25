@@ -294,14 +294,6 @@ export default function PhaseCard(props: Props) {
 
   // collapsed mode
   const { phase, userWeight, onRemove, onExpand, isExpanded, onChangeActivity } = props;
-  const formattedDuration = formatDurationLong(phase.duration_seconds);
-  const summary = [
-    formattedDuration,
-    phase.is_step_relevant && phase.steps ? `${phase.steps.toLocaleString()} ${t("gym.phase.stepsLabel")}` : null,
-  ]
-    .filter(Boolean)
-    .join(" · ");
-
   return (
     <LinearGradient
       colors={["#1e3a8a", "#0f172a", "#0f172a"]}

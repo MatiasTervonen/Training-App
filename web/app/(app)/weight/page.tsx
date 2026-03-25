@@ -45,7 +45,7 @@ export default function WeightPage() {
                 onClick={() => setRange(option.key)}
                 className={`flex-1 py-2 px-3 rounded-md cursor-pointer transition-colors ${
                   range === option.key
-                    ? "bg-slate-700 text-cyan-400"
+                    ? "bg-slate-700 text-amber-500"
                     : "text-gray-200 hover:text-gray-100"
                 }`}
               >

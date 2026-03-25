@@ -196,8 +196,8 @@ export default function NotesScreen() {
         />
       )}
 
-      <FloatingActionButton onPress={() => router.push("/notes/quick-notes")}>
-        <Plus size={30} color="#06b6d4" />
+      <FloatingActionButton onPress={() => router.push("/notes/quick-notes")} color="#a855f7">
+        <Plus size={30} color="#a855f7" />
       </FloatingActionButton>
 
       {expandedItem && (

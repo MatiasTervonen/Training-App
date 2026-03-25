@@ -9,7 +9,7 @@ import { FeedSkeleton } from "@/ui/loadingSkeletons/skeletons";
 import { useRouter } from "next/navigation";
 import { FeedItemUI } from "@/types/session";
 import useMyGymFeed from "@/features/gym/hooks/useMyGymFeed";
-import useGymTogglePin from "@/features/gym/hooks/useGymTogglePin";
+import useTogglePin from "@/hooks/useTogglePin";
 import useGymDeleteSession from "@/features/gym/hooks/useGymDeleteSession";
 import { useTranslation } from "react-i18next";
 import FeedHeader from "@/features/dashboard/components/feedHeader";
@@ -38,7 +38,7 @@ export default function MySessionsPage() {
     loadMoreRef,
   } = useMyGymFeed();
 
-  const { togglePin } = useGymTogglePin();
+  const { togglePin } = useTogglePin(["myGymSessions"], "gym");
   const { handleDelete } = useGymDeleteSession();
 
   const { GymSessionFull, GymSessionError, isLoadingGymSession } =

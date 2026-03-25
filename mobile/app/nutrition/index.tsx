@@ -182,7 +182,7 @@ export default function NutritionScreen() {
 
   return (
     <View className="flex-1">
-      <ScrollView className="flex-1">
+      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         <PageContainer>
           {/* Header */}
           <View className="flex-row justify-between items-center mb-4">
@@ -259,8 +259,9 @@ export default function NutritionScreen() {
 
       <FloatingActionButton
         onPress={() => router.push(`/nutrition/log?date=${date}`)}
+        color="#ff00ff"
       >
-        <Plus size={30} color="#f97316" />
+        <Plus size={30} color="#ff00ff" />
       </FloatingActionButton>
 
       <FoodDetailSheet

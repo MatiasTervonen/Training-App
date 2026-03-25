@@ -7,7 +7,6 @@ import { useHabits } from "@/features/habits/hooks/useHabits";
 import { useHabitLogs } from "@/features/habits/hooks/useHabitLogs";
 import { useToggleHabit } from "@/features/habits/hooks/useToggleHabit";
 import { useHabitTimer } from "@/features/habits/hooks/useHabitTimer";
-import { isHabitScheduledForDate } from "@/features/habits/utils/isHabitScheduled";
 import HabitChecklist from "@/features/habits/components/HabitChecklist";
 import MonthGrid from "@/features/habits/components/MonthGrid";
 import Spinner from "@/components/spinner";
@@ -39,22 +38,6 @@ export default function HabitsPage() {
     habitTimerState,
     elapsedTime,
   } = useHabitTimer();
-
-  // Check if all habits done today (for celebration message)
-  const scheduledToday = useMemo(
-    () => habits.filter((h) => isHabitScheduledForDate(h, today)),
-    [habits, today],
-  );
-  const allDoneToday =
-    scheduledToday.length > 0 &&
-    scheduledToday.every((h) => {
-      const log = logs.find((l) => l.habit_id === h.id && l.completed_date === today);
-      if (!log) return false;
-      if (h.type === "duration" && h.target_value) {
-        return (log.accumulated_seconds ?? 0) >= h.target_value;
-      }
-      return true;
-    });
 
   const handleToggle = useCallback(
     (habitId: string) => {
@@ -117,7 +100,7 @@ export default function HabitsPage() {
           description={t("habits.emptyDescription")}
         />
         <div className="mt-6">
-          <LinkButton href="/habits/create">{t("habits.createFirst")}</LinkButton>
+          <LinkButton href="/habits/create" className="link-habits">{t("habits.createFirst")}</LinkButton>
         </div>
       </div>
     );
@@ -158,7 +141,7 @@ export default function HabitsPage() {
       </div>
 
       <div className="mt-6">
-        <LinkButton href="/habits/create">
+        <LinkButton href="/habits/create" className="link-habits">
           <Plus size={20} />
           {t("habits.addHabit")}
         </LinkButton>

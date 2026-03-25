@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { View } from "react-native";
 import CalorieRing from "@/features/nutrition/components/CalorieRing";
+import MacroRing from "@/features/nutrition/components/MacroRing";
 import MacroProgressBar from "@/features/nutrition/components/MacroProgressBar";
 import { useTranslation } from "react-i18next";
 
@@ -39,7 +40,7 @@ export default function DailySummary(props: DailySummaryProps) {
       { key: "fiber", label: t("daily.fiber"), current: props.fiber, goal: props.fiberGoal, color: "bg-green-500", unit: "g" },
       { key: "sugar", label: t("daily.sugar"), current: props.sugar, goal: props.sugarGoal, color: "bg-purple-500", unit: "g" },
       { key: "sodium", label: t("daily.sodium"), current: props.sodium, goal: props.sodiumGoal, color: "bg-cyan-500", unit: "mg" },
-      { key: "saturated_fat", label: t("daily.saturatedFat"), current: props.saturatedFat, goal: props.saturatedFatGoal, color: "bg-orange-400", unit: "g" },
+      { key: "saturated_fat", label: t("daily.saturatedFat"), current: props.saturatedFat, goal: props.saturatedFatGoal, color: "bg-fuchsia-500", unit: "g" },
     ];
 
     return optionalBars.filter((bar) => props.visibleNutrients.includes(bar.key));
@@ -51,25 +52,27 @@ export default function DailySummary(props: DailySummaryProps) {
         consumed={Math.round(props.calories)}
         goal={props.calorieGoal}
       />
-      <View className="w-full gap-3 mt-2">
-        <MacroProgressBar
-          label={t("daily.protein")}
-          current={props.protein}
+      <View className="flex-row justify-evenly w-full mt-2">
+        <MacroRing
+          value={props.protein}
           goal={props.proteinGoal}
-          color="bg-blue-500"
+          label={t("daily.protein")}
+          color="#3b82f6"
         />
-        <MacroProgressBar
-          label={t("daily.carbs")}
-          current={props.carbs}
+        <MacroRing
+          value={props.carbs}
           goal={props.carbsGoal}
-          color="bg-amber-500"
+          label={t("daily.carbs")}
+          color="#f59e0b"
         />
-        <MacroProgressBar
-          label={t("daily.fat")}
-          current={props.fat}
+        <MacroRing
+          value={props.fat}
           goal={props.fatGoal}
-          color="bg-rose-500"
+          label={t("daily.fat")}
+          color="#f43f5e"
         />
+      </View>
+      <View className="w-full gap-3">
         {visibleBars.map((bar) => (
           <MacroProgressBar
             key={bar.key}

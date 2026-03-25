@@ -88,7 +88,7 @@ export default function BarcodeScannerModal({
                 {t("toast.cameraPermission")}
               </BodyText>
             ) : (
-              <ActivityIndicator size="large" color="#f97316" />
+              <ActivityIndicator size="large" color="#ff00ff" />
             )}
           </View>
         )}
@@ -109,10 +109,10 @@ export default function BarcodeScannerModal({
           {permissionGranted && (
             <View className="flex-1 items-center justify-center" pointerEvents="none">
               <View className="w-72 h-48 rounded-2xl border-2 border-white/70">
-                <View className="absolute -top-1 -left-1 w-8 h-8 border-t-4 border-l-4 border-orange-500 rounded-tl-2xl" />
-                <View className="absolute -top-1 -right-1 w-8 h-8 border-t-4 border-r-4 border-orange-500 rounded-tr-2xl" />
-                <View className="absolute -bottom-1 -left-1 w-8 h-8 border-b-4 border-l-4 border-orange-500 rounded-bl-2xl" />
-                <View className="absolute -bottom-1 -right-1 w-8 h-8 border-b-4 border-r-4 border-orange-500 rounded-br-2xl" />
+                <View className="absolute -top-1 -left-1 w-8 h-8 border-t-4 border-l-4 border-fuchsia-500 rounded-tl-2xl" />
+                <View className="absolute -top-1 -right-1 w-8 h-8 border-t-4 border-r-4 border-fuchsia-500 rounded-tr-2xl" />
+                <View className="absolute -bottom-1 -left-1 w-8 h-8 border-b-4 border-l-4 border-fuchsia-500 rounded-bl-2xl" />
+                <View className="absolute -bottom-1 -right-1 w-8 h-8 border-b-4 border-r-4 border-fuchsia-500 rounded-br-2xl" />
               </View>
 
               <View className="mt-6">

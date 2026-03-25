@@ -32,6 +32,10 @@ import {
   Clock,
   Flame,
   Bell,
+  ScanBarcode,
+  Search,
+  PieChart,
+  UtensilsCrossed,
 } from "lucide-react";
 
 const SUPPORTED_LANGS = ["en", "fi"];
@@ -114,6 +118,37 @@ export default function MarketingContent() {
       desc: t("activities.shareDesc"),
       color: "text-emerald-400",
       border: "border-emerald-500/20",
+    },
+  ];
+
+  const nutritionFeatures = [
+    {
+      icon: ScanBarcode,
+      title: t("nutrition.barcodeTitle"),
+      desc: t("nutrition.barcodeDesc"),
+      color: "text-orange-400",
+      border: "border-orange-500/20",
+    },
+    {
+      icon: Search,
+      title: t("nutrition.searchTitle"),
+      desc: t("nutrition.searchDesc"),
+      color: "text-amber-400",
+      border: "border-amber-500/20",
+    },
+    {
+      icon: PieChart,
+      title: t("nutrition.trackingTitle"),
+      desc: t("nutrition.trackingDesc"),
+      color: "text-yellow-400",
+      border: "border-yellow-500/20",
+    },
+    {
+      icon: UtensilsCrossed,
+      title: t("nutrition.mealsTitle"),
+      desc: t("nutrition.mealsDesc"),
+      color: "text-red-400",
+      border: "border-red-500/20",
     },
   ];
 
@@ -373,6 +408,19 @@ export default function MarketingContent() {
             </p>
           </div>
           <FeatureGrid features={analyticsFeatures} />
+        </AnimatedSection>
+
+        {/* Nutrition */}
+        <AnimatedSection className="py-16 sm:py-24 px-5 bg-linear-to-br from-slate-950 via-slate-950 to-orange-950/30">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl sm:text-4xl mb-4">
+              {t("nutrition.heading")}
+            </h2>
+            <p className="font-body text-gray-400 max-w-2xl mx-auto text-lg">
+              {t("nutrition.description")}
+            </p>
+          </div>
+          <FeatureGrid features={nutritionFeatures} />
         </AnimatedSection>
 
         {/* Reminders */}

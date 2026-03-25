@@ -23,10 +23,6 @@ export default function LinkPreviewCard({
 }: LinkPreviewCardProps) {
   if (!preview.title && !preview.description && !preview.image) return null;
 
-  const siteName = preview.site_name ?? getDomain(preview.url);
-  const showSiteName =
-    siteName.toLowerCase() !== (preview.title ?? "").toLowerCase();
-
   return (
     <AnimatedButton
       onPress={() => Linking.openURL(preview.url)}

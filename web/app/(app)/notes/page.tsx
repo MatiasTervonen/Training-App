@@ -10,7 +10,7 @@ import Spinner from "@/components/spinner";
 import { FeedSkeleton } from "@/ui/loadingSkeletons/skeletons";
 import { FeedItemUI } from "@/types/session";
 import useMyNotesFeed from "@/features/notes/hooks/useMyNotesFeed";
-import useNotesTogglePin from "@/features/notes/hooks/useNotesTogglePin";
+import useTogglePin from "@/hooks/useTogglePin";
 import useNotesDeleteSession from "@/features/notes/hooks/useNotesDeleteSession";
 import useNotesUpdateFeedItemToTop from "@/features/notes/hooks/useNotesUpdateFeedItemToTop";
 import FeedHeader from "@/features/dashboard/components/feedHeader";
@@ -61,7 +61,7 @@ export default function NotesPage() {
     pinnedContext,
   } = useMyNotesFeed(folderFilter);
 
-  const { togglePin } = useNotesTogglePin(queryKey, pinnedContext);
+  const { togglePin } = useTogglePin(queryKey, pinnedContext);
   const { handleDelete } = useNotesDeleteSession();
   const { updateFeedItemToTop } = useNotesUpdateFeedItemToTop();
 

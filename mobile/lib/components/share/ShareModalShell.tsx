@@ -1,4 +1,4 @@
-import { ReactNode, useCallback, useEffect, useMemo, useState } from "react";
+import { ReactNode, RefObject, useCallback, useEffect, useMemo, useState } from "react";
 import { View, LayoutChangeEvent, FlatList, ActivityIndicator } from "react-native";
 import { Image } from "expo-image";
 import AppText from "@/components/AppText";
@@ -13,7 +13,6 @@ import { getTheme, SHARE_CARD_DIMENSIONS, ShareCardTheme, ShareCardSize, ShareCa
 import { Download, Share2, MessageCircle, ChevronLeft } from "lucide-react-native";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
 import * as Haptics from "expo-haptics";
-import { RefObject } from "react";
 import { useFriends } from "@/features/friends/hooks/useFriends";
 import { sendShareCardToChat } from "@/database/chat/send-share-card";
 import { sendSessionShareToChat } from "@/database/chat/send-session-share";

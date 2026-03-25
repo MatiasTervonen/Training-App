@@ -63,7 +63,7 @@ export default function useSaveMealDraft({
       }
     };
     loadDraft();
-  }, [setIsLoaded, editingMealId]);
+  }, [setIsLoaded, editingMealId, setName, setItems]);
 
   const saveDraft = useDebouncedCallback(
     async () => {

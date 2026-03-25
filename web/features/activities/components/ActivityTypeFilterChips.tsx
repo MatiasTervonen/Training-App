@@ -52,7 +52,7 @@ export default function ActivityTypeFilterChips({
         >
           <p
             className={`text-center truncate ${
-              isAllSelected ? "text-cyan-400" : "text-gray-200"
+              isAllSelected ? "text-green-400" : "text-gray-200"
             }`}
           >
             {t("activities.mySessions.all")}
@@ -73,7 +73,7 @@ export default function ActivityTypeFilterChips({
             >
               <p
                 className={`text-center truncate ${
-                  isActive ? "text-cyan-400" : "text-gray-200"
+                  isActive ? "text-green-400" : "text-gray-200"
                 }`}
               >
                 {translated}

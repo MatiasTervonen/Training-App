@@ -54,7 +54,7 @@ export default function SessionsSidebar() {
           {t("sessions.reminders")}
           <Bell size={18} />
         </LinkButton>
-        <LinkButton href="/habits">
+        <LinkButton href="/habits" className="link-habits">
           {t("sessions.habits")}
           <Repeat size={18} />
         </LinkButton>

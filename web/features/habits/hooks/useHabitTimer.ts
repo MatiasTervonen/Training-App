@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef } from "react";
+import { useCallback, useRef, useState } from "react";
 import { useTimerStore } from "@/lib/stores/timerStore";
 import { useQueryClient } from "@tanstack/react-query";
 import { upsertHabitProgress } from "@/database/habits/upsert-habit-progress";
@@ -47,9 +47,9 @@ export function useHabitTimer() {
   const totalDuration = useTimerStore((s) => s.totalDuration);
 
   const contextRef = useRef<HabitTimerContext | null>(loadContext());
+  const [context, setContext] = useState<HabitTimerContext | null>(() => loadContext());
 
   const isHabitTimer = activeSession?.type === "habit";
-  const context = contextRef.current;
   const activeHabitId = isHabitTimer ? context?.habitId ?? null : null;
 
   const habitTimerState: "idle" | "running" | "paused" = !isHabitTimer
@@ -105,6 +105,7 @@ export function useHabitTimer() {
       };
 
       contextRef.current = ctx;
+      setContext(ctx);
       saveContextToStorage(ctx);
 
       store.setActiveSession({
@@ -146,6 +147,7 @@ export function useHabitTimer() {
 
     store.clearEverything();
     contextRef.current = null;
+    setContext(null);
     saveContextToStorage(null);
     invalidateQueries();
   }, [t, invalidateQueries]);

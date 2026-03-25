@@ -218,13 +218,11 @@ export function useHabitTimer() {
 
 // Place this component in the layout to handle habit timer side effects
 export function HabitTimerListener() {
-  const { t } = useTranslation("habits");
   const queryClient = useQueryClient();
   const pathname = usePathname();
 
   const context = useHabitContextStore((s) => s.context);
   const activeSession = useTimerStore((s) => s.activeSession);
-  const isRunning = useTimerStore((s) => s.isRunning);
   const alarmFired = useTimerStore((s) => s.alarmFired);
   const alarmSoundPlaying = useTimerStore((s) => s.alarmSoundPlaying);
 
@@ -286,7 +284,7 @@ export function HabitTimerListener() {
       // Priority: complete after user stops the alarm
       completeHabit();
     }
-  }, [alarmFired, alarmSoundPlaying, isHabitTimer, context, t, invalidateQueries]);
+  }, [alarmFired, alarmSoundPlaying, isHabitTimer, context, invalidateQueries, cleanupAfterCompletion]);
 
   // When native alarm is stopped, complete the habit and clear JS timer
   useEffect(() => {
@@ -309,7 +307,7 @@ export function HabitTimerListener() {
       }
     });
     return () => sub.remove();
-  }, [t, invalidateQueries, cleanupAfterCompletion]);
+  }, [invalidateQueries, cleanupAfterCompletion]);
 
   // When habit timer is paused (native notification or ActiveSessionPopup), save progress to DB
   useEffect(() => {
@@ -352,7 +350,7 @@ export function HabitTimerListener() {
         cleanupAfterCompletion();
       }
     }
-  }, [t, invalidateQueries, cleanupAfterCompletion]);
+  }, [invalidateQueries, cleanupAfterCompletion]);
 
   // On mount: check for expired habit timer
   useEffect(() => {

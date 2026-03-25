@@ -247,12 +247,12 @@ export default function WeightChart({
           showSymbol: uniqueValues <= 1,
           symbolSize: 8,
           itemStyle: {
-            color: "#3b82f6", // dot color (Tailwind blue-500)
-            borderColor: "#60a5fa", // outline
+            color: "#f59e0b", // dot color (amber-500)
+            borderColor: "#fbbf24", // outline (amber-400)
             borderWidth: 2,
           },
           lineStyle: {
-            color: "#93c5fd",
+            color: "#fcd34d", // amber-300
             width: 3,
           },
 
@@ -264,8 +264,8 @@ export default function WeightChart({
               x2: 0,
               y2: 1,
               colorStops: [
-                { offset: 0, color: "rgba(56, 189, 248, 0.4)" }, // top
-                { offset: 1, color: "rgba(56, 189, 248, 0.05)" }, // fade bottom
+                { offset: 0, color: "rgba(245, 158, 11, 0.4)" }, // top
+                { offset: 1, color: "rgba(245, 158, 11, 0.05)" }, // fade bottom
               ],
             },
           },
@@ -321,7 +321,7 @@ export default function WeightChart({
           style={{ opacity: canGoBack ? 1 : 0.5 }}
           hitSlop={20}
         >
-          <ChevronLeft color={canGoBack ? "#22d3ee" : "#f3f4f6"} />
+          <ChevronLeft color={canGoBack ? "#f59e0b" : "#f3f4f6"} />
         </AnimatedButton>
         <BodyText className="text-gray-200 min-w-[200px] text-center">
           {formatDateRange(start, end)}
@@ -333,7 +333,7 @@ export default function WeightChart({
           style={{ opacity: offset === 0 ? 0.5 : 1 }}
           hitSlop={20}
         >
-          <ChevronRight color={offset === 0 ? "#f3f4f6" : "#22d3ee"} />
+          <ChevronRight color={offset === 0 ? "#f3f4f6" : "#f59e0b"} />
         </AnimatedButton>
       </View>
       <BodyText className="text-gray-200 text-center mb-4 px-10">

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import ConversationList from "@/features/chat/components/ConversationList";
 import ChatView from "@/features/chat/components/ChatView";
@@ -20,26 +20,26 @@ export default function ChatLayout() {
   const searchParams = useSearchParams();
   const currentUserId = useCurrentUserId();
   const { data: conversations } = useConversations();
-  const [activeChat, setActiveChat] = useState<ActiveChat | null>(null);
+  const [selectedChat, setSelectedChat] = useState<ActiveChat | null>(null);
 
-  // Restore active chat from URL query param (e.g. notification deep-link)
-  useEffect(() => {
-    const idFromUrl = searchParams.get("id");
-    if (!idFromUrl || !conversations || activeChat) return;
-
+  // Derive chat from URL when no user selection has been made
+  const idFromUrl = searchParams.get("id");
+  const urlChat = useMemo<ActiveChat | null>(() => {
+    if (!idFromUrl || !conversations) return null;
     const conv = conversations.find((c) => c.conversation_id === idFromUrl);
-    if (conv) {
-      setActiveChat({
-        conversationId: conv.conversation_id,
-        otherUserId: conv.other_user_id ?? "",
-        otherUserName: conv.other_user_display_name ?? "",
-        otherUserPicture: conv.other_user_profile_picture ?? null,
-      });
-    }
-  }, [searchParams, conversations, activeChat]);
+    if (!conv) return null;
+    return {
+      conversationId: conv.conversation_id,
+      otherUserId: conv.other_user_id ?? "",
+      otherUserName: conv.other_user_display_name ?? "",
+      otherUserPicture: conv.other_user_profile_picture ?? null,
+    };
+  }, [idFromUrl, conversations]);
+
+  const activeChat = selectedChat ?? urlChat;
 
   const handleSelectConversation = useCallback((conversationId: string, otherUserId: string, otherUserName: string, otherUserPicture: string | null) => {
-    setActiveChat({ conversationId, otherUserId, otherUserName, otherUserPicture });
+    setSelectedChat({ conversationId, otherUserId, otherUserName, otherUserPicture });
     router.replace(`/chat?id=${conversationId}`, { scroll: false });
   }, [router]);
 

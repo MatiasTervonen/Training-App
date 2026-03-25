@@ -3,7 +3,6 @@ import { Linking } from 'react-native';
 import { QuickLinksWidget } from '@/features/widgets/QuickLinksWidget';
 import { StepsWidget } from '@/features/widgets/StepsWidget';
 import {
-  getQuickLinksConfig,
   getStepsConfig,
   getGlobalQuickLinksConfig,
   getEffectiveStepsConfig,

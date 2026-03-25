@@ -11,6 +11,7 @@
     "you": "You",
     "selectFriend": "Select a friend",
     "noFriends": "Add friends to start chatting",
+    "addFriends": "Add Friends",
     "inactive": "You are no longer friends with this user",
     "messageSendError": "Failed to send message",
     "mediaPhoto": "Photo",

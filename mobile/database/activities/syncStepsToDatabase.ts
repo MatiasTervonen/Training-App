@@ -27,9 +27,9 @@ async function backfillMissingDays() {
   // Get last 30 days of step data from native SharedPreferences
   const stepsHistory = await getDailyStepsHistory(30);
 
-  // Filter to only days after the last saved day with steps > 0
+  // Include the last saved day (re-sync with final count) and any newer days
   const daysToSave = Object.entries(stepsHistory)
-    .filter(([day, steps]) => day > lastSavedDay && steps > 0)
+    .filter(([day, steps]) => day >= lastSavedDay && steps > 0)
     .map(([day, steps]) => ({ day, steps, timezone }));
 
   if (daysToSave.length > 0) {

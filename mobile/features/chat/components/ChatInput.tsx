@@ -10,7 +10,7 @@ import LinkPreviewCard from "@/features/chat/components/LinkPreviewCard";
 import { extractFirstUrl } from "@/lib/chat/linkUtils";
 import { fetchLinkPreviewOnly } from "@/database/chat/fetch-link-preview";
 import ReplyInputBar from "@/features/chat/components/ReplyInputBar";
-import type { MessageType, LinkPreview, ChatMessage } from "@/types/chat";
+import type { LinkPreview, ChatMessage } from "@/types/chat";
 import type { DraftVideo } from "@/types/session";
 
 type MediaPayload = {

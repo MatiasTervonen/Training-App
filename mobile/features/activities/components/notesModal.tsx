@@ -1,5 +1,5 @@
 import { ScrollView, View, NativeSyntheticEvent, NativeScrollEvent } from "react-native";
-import { useFullScreenModalScroll } from "@/components/FullScreenModal";
+import FullScreenModal, { useFullScreenModalScroll } from "@/components/FullScreenModal";
 import AppText from "@/components/AppText";
 import { useTranslation } from "react-i18next";
 import AppInput from "@/components/AppInput";
@@ -12,7 +12,6 @@ import { useState, type SetStateAction } from "react";
 import { nanoid } from "nanoid/non-secure";
 import { useConfirmAction } from "@/lib/confirmAction";
 import { DraftRecording, DraftVideo } from "@/types/session";
-import FullScreenModal from "@/components/FullScreenModal";
 import PageContainer from "@/components/PageContainer";
 import ImageViewerModal from "@/features/notes/components/ImageViewerModal";
 type DraftImage = { id: string; uri: string; isLoading?: boolean };

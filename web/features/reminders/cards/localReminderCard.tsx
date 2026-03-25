@@ -44,7 +44,7 @@ export default function LocalReminderCard({
       onDelete={onDelete}
       onExpand={onExpand}
       onEdit={onEdit}
-      typeIcon={<Bell size={20} className="text-slate-300" />}
+      typeIcon={<Bell size={20} className="text-pink-500" />}
       typeName={t("feed.card.types.reminder")}
       showUpdatedAt={!payload.delivered}
       statsContent={

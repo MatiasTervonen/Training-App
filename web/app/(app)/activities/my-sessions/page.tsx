@@ -7,7 +7,7 @@ import Spinner from "@/components/spinner";
 import { FeedSkeleton } from "@/ui/loadingSkeletons/skeletons";
 import { FeedItemUI } from "@/types/session";
 import useMyActivityFeed from "@/features/activities/hooks/useMyActivityFeed";
-import useActivityTogglePin from "@/features/activities/hooks/useActivityTogglePin";
+import useTogglePin from "@/hooks/useTogglePin";
 import useActivityDeleteSession from "@/features/activities/hooks/useActivityDeleteSession";
 import { useTranslation } from "react-i18next";
 import ActivitySession from "@/features/activities/cards/activity-feed-expanded/activity";
@@ -45,7 +45,7 @@ export default function MyActivitySessionsPage() {
     pinnedContext,
   } = useMyActivityFeed(selectedSlug ?? undefined);
 
-  const { togglePin } = useActivityTogglePin();
+  const { togglePin } = useTogglePin(["myActivitySessions"], "activities");
   const { handleDelete } = useActivityDeleteSession();
 
   const {

@@ -10,9 +10,12 @@ export default function useMyActivityFeed(activitySlug?: string) {
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
   const queryClient = useQueryClient();
 
-  const queryKey = activitySlug
-    ? ["myActivitySessions", activitySlug]
-    : ["myActivitySessions"];
+  const queryKey = useMemo(
+    () => activitySlug
+      ? ["myActivitySessions", activitySlug]
+      : ["myActivitySessions"],
+    [activitySlug],
+  );
 
   const pinnedContext = getActivityPinnedContext(activitySlug);
 
@@ -44,7 +47,7 @@ export default function useMyActivityFeed(activitySlug?: string) {
         };
       });
     };
-  }, [queryClient, activitySlug]);
+  }, [queryClient, queryKey]);
 
   // Load more when the bottom of the feed is in view
   useEffect(() => {

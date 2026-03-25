@@ -3,6 +3,7 @@ import { View, Keyboard, TextInput } from "react-native";
 import BottomSheet, {
   BottomSheetFlatList,
   BottomSheetBackdrop,
+  BottomSheetFlatListMethods,
 } from "@gorhom/bottom-sheet";
 import { KeyboardStickyView } from "react-native-keyboard-controller";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -16,7 +17,6 @@ import useDeleteComment from "@/features/social-feed/hooks/useDeleteComment";
 import CommentItem from "@/features/social-feed/components/CommentItem";
 import { FeedComment } from "@/types/social-feed";
 import { supabase } from "@/lib/supabase";
-import { BottomSheetFlatListMethods } from "@gorhom/bottom-sheet";
 
 type ReplyState = {
   parentId: string;

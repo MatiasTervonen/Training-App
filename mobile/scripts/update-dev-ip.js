@@ -1,3 +1,4 @@
+/* global __dirname */
 // Updates EXPO_PUBLIC_API_URL_DEV in .env with the current LAN IP
 // Runs automatically before Expo starts via the "start" script
 

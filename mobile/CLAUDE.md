@@ -29,6 +29,8 @@
 - If no matching button exists, use `AnimatedButton` with the correct style class.
 - Always check `app/global.css` for the correct button style class before using one. Available styles: `btn-base`, `btn-danger`, `btn-disabled`, `btn-add`, `btn-save`, `btn-edit`, `btn-start`, `btn-neutral`.
 - Use the semantically correct style: `btn-save` for save actions, `btn-danger` for delete/cancel, `btn-add` for add/create, `btn-edit` for edit actions, `btn-start` for start actions, `btn-base` for generic actions, `btn-neutral` for neutral actions.
+- Never add padding (`px-*`, `py-*`) or layout classes (`flex-row`, `items-center`) directly on `AnimatedButton`'s className to override btn styles — `@apply` styles from `global.css` always win and cannot be overridden. If you need extra padding or layout, wrap the button content in an inner `<View>` and apply those classes there.
+- Button labels can wrap to multiple lines in constrained layouts (bottom sheets, modals, flex containers with `items-center`). Always use `numberOfLines={1}` on text inside buttons to prevent wrapping.
 
 ## Components
 - Small notes field: `SubNotesInput`
@@ -61,10 +63,10 @@
 - Always make targeted edits to specific native files (e.g., AndroidManifest.xml) instead of regenerating.
 
 ## FullScreenModal
-- Never use `scrollable={false}` with a custom ScrollView inside FullScreenModal. The dismiss gesture tracks scroll position via FullScreenModal's own `KeyboardAwareScrollView` on the UI thread — a custom ScrollView bypasses this and causes the modal to dismiss while scrolled down.
-- Always use the default `scrollable={true}` and let FullScreenModal handle scrolling. Child content that needs scrolling should just render its content directly (like gym-expanded does).
-- Only use `scrollable={false}` for content that genuinely does not scroll (e.g., a short picker or fixed-height form).
-- FullScreenModal uses `KeyboardAwareScrollView` from `react-native-keyboard-controller` — inputs inside the modal automatically scroll into view when the keyboard opens. No extra keyboard handling is needed in child components.
+- The feed uses `scrollable={false}` — each expanded card provides its own `ScrollView` and wires it to the dismiss gesture via `useFullScreenModalScroll()`. Follow this pattern: call `useFullScreenModalScroll()`, create an `onScroll` handler that sets `modalScroll.innerScrollY.value`, and pass it to `<ScrollView onScroll={handleScroll} scrollEventThrottle={16}>`. See `weight-expanded.tsx` for the reference implementation.
+- Never use `scrollable={true}` with a custom ScrollView inside FullScreenModal — the modal's built-in `KeyboardAwareScrollView` and the custom ScrollView will compete, causing scroll conflicts.
+- When using `scrollable={true}` (e.g., for simple content), let FullScreenModal handle scrolling and render child content directly without a ScrollView.
+- FullScreenModal uses `KeyboardAwareScrollView` from `react-native-keyboard-controller` — inputs inside a `scrollable={true}` modal automatically scroll into view when the keyboard opens.
 
 ## Post-Implementation Review
 - After implementing a feature from the `specs/` folder, scan the changed code against the best practices references in `.agents/skills/react-native-best-practices/references/` and `.agents/skills/react-data-patterns/references/`. Focus on Critical and High impact patterns only.

@@ -109,7 +109,7 @@ export function useTrackHydration({
           if (dbCount > lastHydratedCountRef.current) {
             hydrateFromDatabase();
           }
-        } catch (error) {
+        } catch {
           // Verification failed silently
         }
       }, 3000);

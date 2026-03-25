@@ -52,6 +52,18 @@
     "goalsTitle": "Tavoitteiden asettaminen",
     "goalsDesc": "Aseta henkilökohtaisia tavoitteita ja seuraa edistymistäsi niitä kohti"
   },
+  "nutrition": {
+    "heading": "Seuraa ruokavaliotasi",
+    "description": "Kirjaa ateriat, skannaa viivakoodeja ja saavuta päivittäiset kalori- ja makrotavoitteesi — kaikki sisäänrakennettuna.",
+    "barcodeTitle": "Viivakoodiskannaus",
+    "barcodeDesc": "Skannaa mikä tahansa tuotteen viivakoodi mobiilissa ja kirjaa ravintotiedot heti",
+    "searchTitle": "Ruokahaku",
+    "searchDesc": "Hae miljoonista ruoista USDA:n ja Open Food Facts -tietokannoista",
+    "trackingTitle": "Kalori- ja makroseuranta",
+    "trackingDesc": "Aseta päivittäiset tavoitteet kaloreille, proteiinille, hiilihydraateille ja rasvalle — seuraa edistymistäsi visuaalisella kehällä",
+    "mealsTitle": "Tallennetut ateriat",
+    "mealsDesc": "Tallenna suosikkiateriasi ja kirjaa ne yhdellä napautuksella seuraavalla kerralla"
+  },
   "social": {
     "heading": "Jaa matkasi",
     "description": "Yhdistä ystäviin, jaa sessioitasi ja juhli saavutuksia yhdessä.",
@@ -118,6 +130,7 @@
     "reports": "Raportit",
     "chat": "Chat",
     "friends": "Kaverit",
+    "nutrition": "Ravinto",
     "analytics": "Analytiikka"
   }
 }

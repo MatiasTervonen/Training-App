@@ -227,6 +227,8 @@ export default function CreateEditMealModal({
         sort_order: index,
       })),
     });
+    setName("");
+    setItems([]);
   };
 
   const handleDelete = () => {
@@ -380,11 +382,11 @@ export default function CreateEditMealModal({
                       }}
                       className={`flex-1 flex-row items-center justify-center gap-1.5 py-2.5 rounded-lg border ${
                         isActive
-                          ? "bg-orange-500/20 border-orange-500/50"
+                          ? "bg-fuchsia-500/20 border-fuchsia-500/50"
                           : "bg-slate-800/50 border-slate-700/50"
                       }`}
                     >
-                      <Icon size={14} color={isActive ? "#f97316" : "#94a3b8"} />
+                      <Icon size={14} color={isActive ? "#ff00ff" : "#94a3b8"} />
                       <AppText className={`text-xs ${isActive ? "" : "text-slate-400"}`}>
                         {tab.label}
                       </AppText>

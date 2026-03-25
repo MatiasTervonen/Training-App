@@ -9,7 +9,7 @@ import Spinner from "@/components/spinner";
 import { FeedSkeleton } from "@/ui/loadingSkeletons/skeletons";
 import { FeedItemUI } from "@/types/session";
 import useMyRemindersFeed from "@/features/reminders/hooks/useMyRemindersFeed";
-import useRemindersTogglePin from "@/features/reminders/hooks/useRemindersTogglePin";
+import useTogglePin from "@/hooks/useTogglePin";
 import useRemindersDeleteSession from "@/features/reminders/hooks/useRemindersDeleteSession";
 import useRemindersUpdateFeedItemToTop from "@/features/reminders/hooks/useRemindersUpdateFeedItemToTop";
 import FeedHeader from "@/features/dashboard/components/feedHeader";
@@ -43,7 +43,7 @@ export default function RemindersPage() {
     queryKey,
   } = useMyRemindersFeed(filter);
 
-  const { togglePin } = useRemindersTogglePin(queryKey);
+  const { togglePin } = useTogglePin(queryKey, "reminders");
   const { handleDelete } = useRemindersDeleteSession(queryKey);
   const { updateFeedItemToTop } = useRemindersUpdateFeedItemToTop();
 
@@ -74,7 +74,7 @@ export default function RemindersPage() {
                   onClick={() => setFilter(f)}
                   className={`flex-1 py-2 px-3 rounded-md cursor-pointer transition-colors ${
                     isActive
-                      ? "bg-slate-700 text-cyan-400"
+                      ? "bg-slate-700 text-pink-500"
                       : "text-gray-200 hover:text-gray-100"
                   }`}
                 >
@@ -197,9 +197,9 @@ export default function RemindersPage() {
       <div className="absolute bottom-8 right-6 z-50 pointer-events-none">
         <Link
           href="/reminders/global-reminders"
-          className="pointer-events-auto w-14 h-14 rounded-full bg-slate-800 border-[1.5px] border-yellow-400/60 shadow-lg shadow-yellow-400/30 flex items-center justify-center hover:scale-110 transition-transform"
+          className="pointer-events-auto w-14 h-14 rounded-full bg-slate-800 border-[1.5px] border-pink-500/60 shadow-lg shadow-pink-500/30 flex items-center justify-center hover:scale-110 transition-transform"
         >
-          <Plus size={30} className="text-yellow-400" />
+          <Plus size={30} className="text-pink-500" />
         </Link>
       </div>
     </div>

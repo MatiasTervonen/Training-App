@@ -31,9 +31,6 @@ export default function useFullSessions(
   expandedItem: FeedItemUI | null,
   editingItem: FeedItemUI | null,
 ) {
-  const expandedId = getId(expandedItem);
-  const editingId = getId(editingItem);
-
   const gymItem =
     expandedItem?.type === "gym_sessions"
       ? expandedItem

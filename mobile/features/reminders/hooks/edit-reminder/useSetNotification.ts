@@ -2,7 +2,7 @@ import { Platform } from "react-native";
 import * as Notifications from "expo-notifications";
 import { handleError } from "@/utils/handleError";
 import { FeedItemUI, full_reminder } from "@/types/session";
-import { cancelNativeAlarm, scheduleNativeAlarm, scheduleRepeatingNativeAlarm } from "@/native/android/NativeAlarm";
+import { scheduleNativeAlarm, scheduleRepeatingNativeAlarm } from "@/native/android/NativeAlarm";
 import { t } from "i18next";
 import { SNOOZE_CATEGORY_ID } from "@/features/push-notifications/constants";
 

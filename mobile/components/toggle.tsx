@@ -1,10 +1,12 @@
-import { Pressable, View } from "react-native";
+import { View } from "react-native";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
+  runOnJS,
 } from "react-native-reanimated";
-import { useEffect } from "react";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import { useEffect, useCallback } from "react";
 import * as Haptics from "expo-haptics";
 
 interface ToggleProps {
@@ -30,17 +32,28 @@ export default function Toggle({ isOn, onToggle, disabled }: ToggleProps) {
     backgroundColor: bgColor.value,
   }));
 
+  const handlePress = useCallback(() => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    onToggle();
+  }, [onToggle]);
+
+  const tap = Gesture.Tap()
+    .enabled(!disabled)
+    .onEnd(() => {
+      runOnJS(handlePress)();
+    });
+
   return (
-    <Pressable onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); onToggle(); }} hitSlop={10} disabled={disabled}>
+    <GestureDetector gesture={tap}>
       <Animated.View
         style={animatedStyleBg}
-        className={`rounded-full border-[1.5px] border-gray-300 w-[48px] h-[24px] transition-colors p-0.5 flex items-center   justify-center`}
+        className="rounded-full border-[1.5px] border-gray-300 w-[48px] h-[24px] p-0.5"
         hitSlop={10}
       >
         <Animated.View className="absolute left-0" style={animatedStyleKnot}>
-          <View className={`w-[20px] h-[20px] bg-slate-900 rounded-full`} />
+          <View className="w-[20px] h-[20px] bg-slate-900 rounded-full" />
         </Animated.View>
       </Animated.View>
-    </Pressable>
+    </GestureDetector>
   );
 }

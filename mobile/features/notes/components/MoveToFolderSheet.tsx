@@ -1,10 +1,9 @@
 import { View, Pressable, ScrollView, NativeSyntheticEvent, NativeScrollEvent } from "react-native";
-import { useFullScreenModalScroll } from "@/components/FullScreenModal";
+import FullScreenModal, { useFullScreenModalScroll } from "@/components/FullScreenModal";
 import AppText from "@/components/AppText";
 import BodyText from "@/components/BodyText";
 import { Check, FolderOpen, X } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
-import FullScreenModal from "@/components/FullScreenModal";
 import useMoveNoteToFolder from "@/features/notes/hooks/useMoveNoteToFolder";
 import type { FolderWithCount } from "@/database/notes/get-folders";
 

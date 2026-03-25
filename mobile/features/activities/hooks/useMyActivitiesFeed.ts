@@ -32,8 +32,11 @@ export default function useMyActivitiesFeed(activitySlug?: string) {
   // Keep only first page in cache when user leaves feed
 
   useEffect(() => {
+    const qk = activitySlug
+      ? ["myActivitySessions", activitySlug]
+      : ["myActivitySessions"];
     return () => {
-      queryClient.setQueryData<FeedData>(queryKey, (old) => {
+      queryClient.setQueryData<FeedData>(qk, (old) => {
         if (!old) return old;
 
         return {

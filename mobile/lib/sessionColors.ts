@@ -36,9 +36,9 @@ export const SESSION_COLORS: Record<string, SessionColors> = {
     icon: "#06b6d4",
   },
   reminders: {
-    gradient: ["rgba(234,179,8,0.25)", "rgba(234,179,8,0.08)"],
-    border: "rgba(234,179,8,0.45)",
-    icon: "#eab308",
+    gradient: ["rgba(236,72,153,0.25)", "rgba(236,72,153,0.08)"],
+    border: "rgba(236,72,153,0.45)",
+    icon: "#ec4899",
   },
   habits: {
     gradient: ["rgba(244,63,94,0.25)", "rgba(244,63,94,0.08)"],
@@ -51,8 +51,8 @@ export const SESSION_COLORS: Record<string, SessionColors> = {
     icon: "#6366f1",
   },
   nutrition: {
-    gradient: ["rgba(249,115,22,0.25)", "rgba(249,115,22,0.08)"],
-    border: "rgba(249,115,22,0.45)",
-    icon: "#f97316",
+    gradient: ["rgba(255,0,255,0.25)", "rgba(255,0,255,0.08)"],
+    border: "rgba(255,0,255,0.45)",
+    icon: "#ff00ff",
   },
 };

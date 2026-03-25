@@ -35,7 +35,7 @@ export default function NutritionCard({
       onDelete={onDelete}
       onExpand={onExpand}
       onHide={onHide}
-      typeIcon={<Utensils size={20} color="#f97316" />}
+      typeIcon={<Utensils size={20} color={"#cbd5e1"} />}
       typeName={t("feed.card.types.nutrition")}
       statsContent={
         <View className="gap-1">

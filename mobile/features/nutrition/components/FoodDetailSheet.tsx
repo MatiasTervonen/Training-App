@@ -142,8 +142,8 @@ export default function FoodDetailSheet({
             <AnimatedButton onPress={onToggleFavorite} hitSlop={10}>
               <Heart
                 size={24}
-                color={isFavorite ? "#f97316" : "#64748b"}
-                fill={isFavorite ? "#f97316" : "transparent"}
+                color={isFavorite ? "#ff00ff" : "#ff00ff"}
+                fill={isFavorite ? "#ff00ff" : "transparent"}
               />
             </AnimatedButton>
           </View>

@@ -179,11 +179,11 @@ export default function LogFoodScreen() {
               }}
               className={`flex-1 flex-row items-center justify-center gap-1.5 py-2.5 rounded-lg border ${
                 isActive
-                  ? "bg-orange-500/20 border-orange-500/50"
+                  ? "bg-fuchsia-500/20 border-fuchsia-500/50"
                   : "bg-slate-800/50 border-slate-700/50"
               }`}
             >
-              <Icon size={14} color={isActive ? "#f97316" : "#94a3b8"} />
+              <Icon size={14} color={isActive ? "#ff00ff" : "#94a3b8"} />
               <AppText className={`text-xs ${isActive ? "" : "text-slate-400"}`}>
                 {tab.label}
               </AppText>
@@ -201,11 +201,11 @@ export default function LogFoodScreen() {
               onPress={() => setActiveTab(tab.id)}
               className={`flex-1 flex-row items-center justify-center gap-1.5 py-2.5 rounded-lg border ${
                 isActive
-                  ? "bg-orange-500/20 border-orange-500/50"
+                  ? "bg-fuchsia-500/20 border-fuchsia-500/50"
                   : "bg-slate-800/50 border-slate-700/50"
               }`}
             >
-              <Icon size={14} color={isActive ? "#f97316" : "#94a3b8"} />
+              <Icon size={14} color={isActive ? "#ff00ff" : "#94a3b8"} />
               <AppText className={`text-xs ${isActive ? "" : "text-slate-400"}`}>
                 {tab.label}
               </AppText>
@@ -324,6 +324,7 @@ export default function LogFoodScreen() {
         meal={loggingMeal}
         visible={!!loggingMeal}
         onClose={() => setLoggingMeal(null)}
+        customMealTypes={customMealTypes}
         onLog={async (params) => {
           await handleLogMeal({ ...params, loggedAt });
           setLoggingMeal(null);

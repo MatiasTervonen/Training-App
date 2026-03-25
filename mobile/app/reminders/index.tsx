@@ -86,7 +86,7 @@ export default function RemindersScreen() {
             >
               <AppTextNC
                 className={`text-center font-medium ${
-                  isActive ? "text-cyan-400" : "text-gray-200"
+                  isActive ? "text-pink-500" : "text-gray-200"
                 }`}
               >
                 {t(`reminders.tabs.${f}`)}
@@ -199,8 +199,8 @@ export default function RemindersScreen() {
         />
       )}
 
-      <FloatingActionButton onPress={() => router.push("/reminders/create-reminder")}>
-        <Plus size={30} color="#06b6d4" />
+      <FloatingActionButton onPress={() => router.push("/reminders/create-reminder")} color="#ec4899">
+        <Plus size={30} color="#ec4899" />
       </FloatingActionButton>
 
       {expandedItem && (

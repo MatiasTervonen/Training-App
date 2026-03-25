@@ -110,11 +110,11 @@ export default function ChatListScreen() {
       />
 
       {/* Floating new chat button */}
-      <FloatingActionButton onPress={() => setShowFriendPicker(true)} disabled={isCreating}>
+      <FloatingActionButton onPress={() => setShowFriendPicker(true)} disabled={isCreating} color="#3b82f6">
         {isCreating ? (
-          <ActivityIndicator size={20} color="#06b6d4" />
+          <ActivityIndicator size={20} color="#3b82f6" />
         ) : (
-          <MessageSquarePlus size={26} color="#06b6d4" />
+          <MessageSquarePlus size={26} color="#3b82f6" />
         )}
       </FloatingActionButton>
 

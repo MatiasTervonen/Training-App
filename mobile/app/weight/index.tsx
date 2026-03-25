@@ -20,8 +20,8 @@ export default function WeightScreen() {
   return (
     <>
       <AllDataTable data={weightData ?? []} isLoading={isLoading} error={error} />
-      <FloatingActionButton onPress={() => router.push("/weight/tracking")}>
-        <Plus size={30} color="#06b6d4" />
+      <FloatingActionButton onPress={() => router.push("/weight/tracking")} color="#f59e0b">
+        <Plus size={30} color="#f59e0b" />
       </FloatingActionButton>
     </>
   );

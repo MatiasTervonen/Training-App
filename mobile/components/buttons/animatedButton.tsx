@@ -22,6 +22,7 @@ export default function AnimatedButton({
   onPress,
   className,
   textClassName,
+  style,
   ...props
 }: AppButtonProps) {
   const scale = useSharedValue(1);
@@ -44,7 +45,7 @@ export default function AnimatedButton({
 
   return (
     <AnimatedPressable
-      style={animatedStyle}
+      style={[animatedStyle, style]}
       onPress={onPress}
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
@@ -52,7 +53,7 @@ export default function AnimatedButton({
       {...props}
     >
       {label && (
-        <AppText className={`text-base text-center ${textClassName}`}>
+        <AppText className={`text-base text-center ${textClassName}`} numberOfLines={1}>
           {label}
         </AppText>
       )}

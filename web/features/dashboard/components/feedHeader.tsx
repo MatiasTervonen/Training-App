@@ -1,7 +1,7 @@
 import PinnedCarousel from "@/features/dashboard/components/pinnedCarousel";
 import { FeedItemUI } from "@/types/session";
 import { useRouter } from "next/navigation";
-import useTogglePin from "@/features/dashboard/hooks/useTogglePin";
+import useTogglePin from "@/hooks/useTogglePin";
 import useDeleteSession from "@/features/dashboard/hooks/useDeleteSession";
 
 export default function FeedHeader({

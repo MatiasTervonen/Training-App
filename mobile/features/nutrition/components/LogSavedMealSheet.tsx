@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { View } from "react-native";
 import FullScreenModal from "@/components/FullScreenModal";
 import PageContainer from "@/components/PageContainer";
@@ -5,6 +6,7 @@ import AppText from "@/components/AppText";
 import BodyTextNC from "@/components/BodyTextNC";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import NutritionInfo from "@/features/nutrition/components/NutritionInfo";
+import MealTypePicker from "@/features/nutrition/components/MealTypePicker";
 import { useTranslation } from "react-i18next";
 import type { SavedMeal } from "@/database/nutrition/get-saved-meals";
 
@@ -13,6 +15,8 @@ type LogSavedMealSheetProps = {
   visible: boolean;
   onClose: () => void;
   onLog: (params: { savedMealId: string; mealType: string }) => void;
+  customMealTypes: string[];
+  defaultMealType?: string;
 };
 
 export default function LogSavedMealSheet({
@@ -20,8 +24,17 @@ export default function LogSavedMealSheet({
   visible,
   onClose,
   onLog,
+  customMealTypes,
+  defaultMealType = "snack",
 }: LogSavedMealSheetProps) {
   const { t } = useTranslation("nutrition");
+  const [mealType, setMealType] = useState(defaultMealType);
+
+  useEffect(() => {
+    if (visible) {
+      setMealType(defaultMealType);
+    }
+  }, [visible, defaultMealType]);
 
   if (!meal) return null;
 
@@ -75,12 +88,21 @@ export default function LogSavedMealSheet({
 
         </View>
 
-        {/* Log button */}
-        <AnimatedButton
-          onPress={() => onLog({ savedMealId: meal.id, mealType: meal.name })}
-          className="btn-save py-3"
-          label={t("savedMeals.logMeal")}
-        />
+        {/* Meal type picker + Log button */}
+        <View>
+          <View className="mb-4">
+            <MealTypePicker
+              selected={mealType}
+              onSelect={setMealType}
+              customTypes={customMealTypes}
+            />
+          </View>
+          <AnimatedButton
+            onPress={() => onLog({ savedMealId: meal.id, mealType })}
+            className="btn-save py-3"
+            label={t("savedMeals.logMeal")}
+          />
+        </View>
       </PageContainer>
     </FullScreenModal>
   );

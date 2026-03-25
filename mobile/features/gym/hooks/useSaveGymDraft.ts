@@ -50,11 +50,10 @@ export default function useSaveGymDraft({
 }) {
   const [hasLoadedDraft, setHasLoadedDraft] = useState(false);
 
-  const now = formatDate(new Date());
-
   useEffect(() => {
     if (isEditing) return;
 
+    const now = formatDate(new Date());
     const loadDraft = async () => {
       try {
         const draft = await AsyncStorage.getItem("gym_session_draft");
@@ -107,6 +106,9 @@ export default function useSaveGymDraft({
     setDraftImages,
     setDraftVideos,
     setHasLoadedDraft,
+    setWarmup,
+    setCooldown,
+    setTemplateRestTimerSeconds,
   ]);
 
   const saveGymDraft = useDebouncedCallback(

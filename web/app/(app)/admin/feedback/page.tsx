@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import Image from "next/image";
 import { SquareArrowOutUpRight, MessageSquare, ImageIcon } from "lucide-react";
 import useFeedbackFeed from "@/features/admin/hooks/useFeedbackFeed";
 import { FeedbackItem } from "@/database/admin/get-feedback";
@@ -15,12 +16,6 @@ const categoryColors: Record<string, string> = {
   bug: "bg-red-500/20 text-red-400",
   feature: "bg-blue-500/20 text-blue-400",
   general: "bg-gray-500/20 text-gray-400",
-};
-
-const cardGradients: Record<string, string> = {
-  bug: "card-danger",
-  feature: "card-notes",
-  general: "card-default",
 };
 
 function stripForPreview(content: string): string {
@@ -59,7 +54,7 @@ function FeedbackImages({ paths }: { paths: string[] }) {
             onClick={() => setFullscreen(url)}
             className="rounded-md overflow-hidden border-[1.5px] border-blue-500/60 bg-slate-950"
           >
-            <img src={url} alt="" className="w-full h-48 object-cover" />
+            <Image src={url} alt="" width={400} height={192} className="w-full h-48 object-cover" unoptimized />
           </button>
         ))}
       </div>
@@ -69,10 +64,13 @@ function FeedbackImages({ paths }: { paths: string[] }) {
           className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center cursor-pointer"
           onClick={() => setFullscreen(null)}
         >
-          <img
+          <Image
             src={fullscreen}
             alt=""
+            width={1920}
+            height={1080}
             className="max-w-[90vw] max-h-[90vh] object-contain"
+            unoptimized
           />
         </div>
       )}

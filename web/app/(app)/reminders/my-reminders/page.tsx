@@ -46,7 +46,7 @@ export default function Sessions() {
         <button
           onClick={() => setActiveTab("normal")}
           className={`px-4 py-2 w-[150px] rounded-xl cursor-pointer ${
-            activeTab === "normal" ? "bg-gray-900 text-cyan-500" : ""
+            activeTab === "normal" ? "bg-gray-900 text-pink-500" : ""
           }`}
         >
           {t("reminders.tabs.normal")}
@@ -54,7 +54,7 @@ export default function Sessions() {
         <button
           onClick={() => setActiveTab("repeating")}
           className={`px-4 py-2 w-[150px] rounded-xl cursor-pointer ${
-            activeTab === "repeating" ? "bg-gray-900 text-cyan-500" : ""
+            activeTab === "repeating" ? "bg-gray-900 text-pink-500" : ""
           }`}
         >
           {t("reminders.tabs.repeating")}
@@ -62,7 +62,7 @@ export default function Sessions() {
         <button
           onClick={() => setActiveTab("delivered")}
           className={`px-4 py-2 w-[150px] rounded-xl cursor-pointer ${
-            activeTab === "delivered" ? "bg-gray-900 text-cyan-500" : ""
+            activeTab === "delivered" ? "bg-gray-900 text-pink-500" : ""
           }`}
         >
           {t("reminders.tabs.delivered")}

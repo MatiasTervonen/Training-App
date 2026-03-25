@@ -42,7 +42,7 @@ export default function CalorieRing({
           cx={size / 2}
           cy={size / 2}
           r={radius}
-          stroke={isOver ? "#ef4444" : "#f97316"}
+          stroke={isOver ? "#ef4444" : "#ff00ff"}
           strokeWidth={strokeWidth}
           fill="none"
           strokeDasharray={circumference}
@@ -58,7 +58,7 @@ export default function CalorieRing({
           / {goal} {t("feed.kcal")}
         </BodyText>
         <AppTextNC
-          className={`text-xs mt-1 ${isOver ? "text-red-400" : "text-orange-400"}`}
+          className={`text-xs mt-1 ${isOver ? "text-red-400" : "text-slate-400"}`}
         >
           {Math.abs(remaining)} {isOver ? t("daily.over") : t("daily.remaining")}
         </AppTextNC>

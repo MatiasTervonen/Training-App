@@ -1,9 +1,8 @@
 import { supabase } from "@/lib/supabase";
 import { handleError } from "@/utils/handleError";
-import { ExerciseEntry } from "@/types/session";
+import { ExerciseEntry, DraftVideo } from "@/types/session";
 import * as Crypto from "expo-crypto";
 import { File } from "expo-file-system/next";
-import { DraftVideo } from "@/types/session";
 
 type DraftRecording = {
   id: string;

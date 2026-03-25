@@ -62,7 +62,7 @@ export default function FolderFilterChips({
             <AppTextNC
               numberOfLines={1}
               className={`text-center font-medium ${
-                isAllSelected ? "text-cyan-400" : "text-gray-200"
+                isAllSelected ? "text-purple-400" : "text-gray-200"
               }`}
             >
               {t("notes.folders.all")}
@@ -80,7 +80,7 @@ export default function FolderFilterChips({
                 <AppTextNC
                   numberOfLines={1}
                   className={`text-center font-medium ${
-                    isActive ? "text-cyan-400" : "text-gray-200"
+                    isActive ? "text-purple-400" : "text-gray-200"
                   }`}
                 >
                   {folder.name}

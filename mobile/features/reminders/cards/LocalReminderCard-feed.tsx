@@ -1,8 +1,6 @@
 import { Bell } from "lucide-react-native";
 import { formatDateTime, formatNotifyTime } from "@/lib/formatDate";
 import { View } from "react-native";
-import AppText from "@/components/AppText";
-import BodyText from "@/components/BodyText";
 import { FeedCardProps } from "@/types/session";
 import BaseFeedCard from "@/features/feed-cards/BaseFeedCard";
 import { useTranslation } from "react-i18next";

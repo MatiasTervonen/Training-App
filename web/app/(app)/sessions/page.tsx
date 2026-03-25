@@ -51,7 +51,7 @@ export default function Sessions() {
           {t("sessions.reminders")}
           <Bell />
         </LinkButton>
-        <LinkButton href="/habits">
+        <LinkButton href="/habits" className="link-habits">
           {t("sessions.habits")}
           <Repeat />
         </LinkButton>

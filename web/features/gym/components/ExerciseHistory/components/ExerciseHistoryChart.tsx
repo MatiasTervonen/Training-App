@@ -183,7 +183,7 @@ export default function ExerciseHistoryChart({
               onClick={() => setRange(option.key)}
               className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${
                 range === option.key
-                  ? "bg-slate-700 text-cyan-400"
+                  ? "bg-slate-700 text-blue-400"
                   : "text-gray-200 hover:text-gray-100"
               }`}
             >

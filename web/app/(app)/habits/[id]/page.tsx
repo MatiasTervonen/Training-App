@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useHabits } from "@/features/habits/hooks/useHabits";
 import { useHabitStats } from "@/features/habits/hooks/useHabitStats";
@@ -59,23 +59,25 @@ export default function HabitDetailPage() {
     currentYear < now.getFullYear() ||
     (currentYear === now.getFullYear() && currentMonth < now.getMonth());
 
-  const handlePrevMonth = useCallback(() => {
-    if (currentMonth === 0) {
-      setCurrentMonth(11);
-      setCurrentYear((y) => y - 1);
-    } else {
-      setCurrentMonth((m) => m - 1);
-    }
-  }, [currentMonth]);
+  const handlePrevMonth = () => {
+    setCurrentMonth((m) => {
+      if (m === 0) {
+        setCurrentYear((y) => y - 1);
+        return 11;
+      }
+      return m - 1;
+    });
+  };
 
-  const handleNextMonth = useCallback(() => {
-    if (currentMonth === 11) {
-      setCurrentMonth(0);
-      setCurrentYear((y) => y + 1);
-    } else {
-      setCurrentMonth((m) => m + 1);
-    }
-  }, [currentMonth]);
+  const handleNextMonth = () => {
+    setCurrentMonth((m) => {
+      if (m === 11) {
+        setCurrentYear((y) => y + 1);
+        return 0;
+      }
+      return m + 1;
+    });
+  };
 
   const handleDelete = () => {
     if (!window.confirm(t("habits.deleteConfirm"))) return;
@@ -178,7 +180,7 @@ export default function HabitDetailPage() {
 
       {/* Actions */}
       <div className="flex flex-col gap-3 mt-6">
-        <LinkButton href={`/habits/edit?id=${id}`}>
+        <LinkButton href={`/habits/edit?id=${id}`} className="link-habits">
           {t("habits.editHabit")}
         </LinkButton>
         <button

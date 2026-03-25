@@ -46,7 +46,7 @@
     },
     "tutorial": {
       "title": "Tervetuloa Kurviin!",
-      "subtitle": "Täydellinen opas alkuun pääsemiseen",
+      "subtitle": "Tutustu kaikkiin ominaisuuksiin",
       "gym": {
         "title": "Kuntosaliharjoittelu",
         "desc": "Kirjaa treenisi liikkeineen, sarjoineen, toistoineen ja painoineen. Käytä pohjia tallentaaksesi suosikkirutiinisi."
@@ -79,11 +79,17 @@
         "title": "Chat",
         "desc": "Viesti ystäviesi kanssa, jaa treenejä ja reagoi viesteihin. Lähetä tekstiä, kuvia, videoita ja ääniviestejä."
       },
+      "nutrition": {
+        "title": "Ravinto",
+        "desc": "Seuraa aterioitasi, skannaa viivakoodeja ja tarkkaile päivittäisiä kaloreja ja makroja."
+      },
       "reports": {
         "title": "Raportit",
         "desc": "Saat viikoittaiset ja kuukausittaiset yhteenvedot treeneistäsi, painostasi, tavoistasi ja aktiviteeteistasi."
       },
-      "tap_to_read": "Klikkaa Tiedot lukeaksesi koko oppaan"
+      "navigation_hint": "Käytä sivupalkkia siirtyäksesi sivujen välillä",
+      "platform_hint": "Jotkin ominaisuudet voivat erota mobiili- ja web-versioiden välillä",
+      "tap_to_read": "Klikkaa Tiedot nähdäksesi kaikki ominaisuudet"
     },
     "hide": {
       "success": "Piilotettu syötteestä",

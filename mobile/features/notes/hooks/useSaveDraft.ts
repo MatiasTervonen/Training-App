@@ -58,7 +58,7 @@ export default function useSaveDraft({
       }
     };
     loadDraft();
-  }, [setIsLoaded, setTitle, setNotes, setDraftRecordings]);
+  }, [setIsLoaded, setTitle, setNotes, setDraftRecordings, setDraftImages, setDraftVideos]);
 
   const saveNotesDraft = useDebouncedCallback(
     async () => {

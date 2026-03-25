@@ -244,7 +244,7 @@ export default function CreateReminderScreen() {
                   >
                     <AppTextNC
                       className={`text-center font-medium ${
-                        isActive ? "text-cyan-400" : "text-gray-200"
+                        isActive ? "text-pink-500" : "text-gray-200"
                       }`}
                     >
                       {t(labelKey)}
@@ -264,7 +264,7 @@ export default function CreateReminderScreen() {
                   >
                     <AppTextNC
                       className={`text-center font-medium ${
-                        isActive ? "text-cyan-400" : "text-gray-200"
+                        isActive ? "text-pink-500" : "text-gray-200"
                       }`}
                     >
                       {t(labelKey)}

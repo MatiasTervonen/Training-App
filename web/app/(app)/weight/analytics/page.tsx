@@ -44,7 +44,7 @@ export default function Page() {
                 onClick={() => setRange(option.key)}
                 className={`px-6 py-2 rounded-md font-medium transition-colors ${
                   range === option.key
-                    ? "bg-slate-700 text-cyan-400"
+                    ? "bg-slate-700 text-amber-500"
                     : "text-gray-200 hover:text-gray-100"
                 }`}
               >

@@ -46,7 +46,7 @@
     },
     "tutorial": {
       "title": "Welcome to {{appName}}!",
-      "subtitle": "Your complete guide to getting started",
+      "subtitle": "Discover all the features in {{appName}}",
       "gym": {
         "title": "Gym Tracking",
         "desc": "Log your workouts with exercises, sets, reps, and weight. Use templates to save your favorite routines."
@@ -79,11 +79,17 @@
         "title": "Chat",
         "desc": "Message your friends, share sessions, and react to messages. Send text, images, videos, and voice messages."
       },
+      "nutrition": {
+        "title": "Nutrition",
+        "desc": "Track your meals, scan barcodes, and monitor your daily calories and macros."
+      },
       "reports": {
         "title": "Reports",
         "desc": "Get weekly and monthly summaries of your training, weight, habits, and activities."
       },
-      "tap_to_read": "Click Details to read the full guide"
+      "navigation_hint": "Use the sidebar to navigate between pages",
+      "platform_hint": "Some features may differ between mobile and web",
+      "tap_to_read": "Click Details to see all features"
     },
     "hide": {
       "success": "Hidden from feed",

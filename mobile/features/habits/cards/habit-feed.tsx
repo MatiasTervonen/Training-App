@@ -1,6 +1,5 @@
 import { Check, Repeat, Flame } from "lucide-react-native";
 import { View } from "react-native";
-import AppText from "@/components/AppText";
 import BodyText from "@/components/BodyText";
 import { FeedCardProps } from "@/types/session";
 import BaseFeedCard from "@/features/feed-cards/BaseFeedCard";

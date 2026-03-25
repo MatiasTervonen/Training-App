@@ -58,9 +58,7 @@ export default function HabitForm({ initialValues, onSave, onAutoSave, isSaving 
   const [selectedDays, setSelectedDays] = useState<number[]>(
     initialValues?.frequency_days ?? [],
   );
-  const [alarmType, setAlarmType] = useState<"normal" | "priority">(
-    initialValues?.alarm_type ?? "normal",
-  );
+  const alarmType = initialValues?.alarm_type ?? "normal";
 
   const toggleDay = (value: number) => {
     setSelectedDays((prev) =>

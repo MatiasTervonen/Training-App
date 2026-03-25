@@ -112,7 +112,7 @@ export default function FolderFilterChips({
         <button
           onClick={onSelectAll}
           className={`py-2 px-3 rounded-md text-center transition-colors w-[100px] truncate shrink-0 ${
-            isAllSelected ? "bg-slate-700 text-cyan-400" : "text-gray-200"
+            isAllSelected ? "bg-slate-700 text-purple-400" : "text-gray-200"
           }`}
         >
           {t("notes.folders.all")}
@@ -125,7 +125,7 @@ export default function FolderFilterChips({
               key={folder.id}
               onClick={() => onSelectFolder(folder.id)}
               className={`py-2 px-3 rounded-md text-center transition-colors w-[100px] truncate shrink-0 ${
-                isActive ? "bg-slate-700 text-cyan-400" : "text-gray-200"
+                isActive ? "bg-slate-700 text-purple-400" : "text-gray-200"
               }`}
             >
               {folder.name}

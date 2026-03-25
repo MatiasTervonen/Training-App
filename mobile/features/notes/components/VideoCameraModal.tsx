@@ -5,7 +5,6 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import AnimatedButton from "@/components/buttons/animatedButton";
-import AppText from "@/components/AppText";
 import AppTextNC from "@/components/AppTextNC";
 import BodyText from "@/components/BodyText";
 import { SwitchCamera, X, Pause, Play } from "lucide-react-native";

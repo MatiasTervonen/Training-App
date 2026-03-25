@@ -3,11 +3,13 @@ import { View, Pressable } from "react-native";
 import { BottomSheetModal, BottomSheetFlatList, BottomSheetBackdrop } from "@gorhom/bottom-sheet";
 import { Image } from "expo-image";
 import AppText from "@/components/AppText";
-import BodyText from "@/components/BodyText";
 import { useFriends } from "@/features/friends/hooks/useFriends";
 import { Friends } from "@/types/models";
 import { useTranslation } from "react-i18next";
 import BodyTextNC from "@/components/BodyTextNC";
+import AnimatedButton from "@/components/buttons/animatedButton";
+import { useRouter } from "expo-router";
+import { UserPlus } from "lucide-react-native";
 
 type FriendPickerSheetProps = {
   visible: boolean;
@@ -24,6 +26,7 @@ export default function FriendPickerSheet({
   const snapPoints = useMemo(() => ["50%", "80%"], []);
   const { t } = useTranslation("chat");
   const { data: friends } = useFriends();
+  const router = useRouter();
 
   useEffect(() => {
     if (visible) {
@@ -84,18 +87,31 @@ export default function FriendPickerSheet({
           {t("chat.selectFriend")}
         </AppText>
       </View>
-      <BottomSheetFlatList
-        data={friends ?? []}
-        keyExtractor={(item: Friends) => item.id}
-        renderItem={renderItem}
-        ListEmptyComponent={
-          <View className="items-center py-10">
-            <BodyTextNC className="text-slate-400">
-              {t("chat.noFriends")}
-            </BodyTextNC>
-          </View>
-        }
-      />
+      {friends && friends.length > 0 ? (
+        <BottomSheetFlatList
+          data={friends}
+          keyExtractor={(item: Friends) => item.id}
+          renderItem={renderItem}
+        />
+      ) : (
+        <View className="items-center py-10 gap-4">
+          <BodyTextNC className="text-slate-400">
+            {t("chat.noFriends")}
+          </BodyTextNC>
+          <AnimatedButton
+            onPress={() => {
+              onClose();
+              router.push("/menu/friends");
+            }}
+            className="btn-add self-center"
+          >
+            <View className="flex-row items-center gap-2 px-6">
+              <UserPlus size={16} color="#93c5fd" />
+              <AppText numberOfLines={1}>{t("chat.addFriends")}</AppText>
+            </View>
+          </AnimatedButton>
+        </View>
+      )}
     </BottomSheetModal>
   );
 }

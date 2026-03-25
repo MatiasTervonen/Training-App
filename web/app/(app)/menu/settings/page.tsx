@@ -2,11 +2,7 @@
 
 import { PushNotificationManager } from "@/components/pushnotifications/pushnotifications";
 import LanguageSelector from "@/components/LanguageSelector";
-import { useTranslation } from "react-i18next";
-
 export default function SettingsPage() {
-  const { t } = useTranslation("menu");
-
   return (
     <div className="page-padding max-w-md mx-auto flex flex-col">
       <div className="flex flex-col gap-5">

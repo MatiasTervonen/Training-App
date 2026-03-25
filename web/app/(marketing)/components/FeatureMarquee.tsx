@@ -14,6 +14,7 @@ import {
   MessageCircle,
   Users,
   TrendingUp,
+  UtensilsCrossed,
   LucideIcon,
 } from "lucide-react";
 
@@ -31,10 +32,11 @@ const features: MarqueeFeature[] = [
   { key: "weight", icon: Scale, color: "text-amber-400" },
   { key: "habits", icon: Target, color: "text-rose-400" },
   { key: "todo", icon: ListChecks, color: "text-cyan-400" },
-  { key: "reminders", icon: Bell, color: "text-yellow-400" },
+  { key: "reminders", icon: Bell, color: "text-pink-500" },
   { key: "reports", icon: ChartArea, color: "text-indigo-400" },
   { key: "chat", icon: MessageCircle, color: "text-sky-400" },
   { key: "friends", icon: Users, color: "text-pink-400" },
+  { key: "nutrition", icon: UtensilsCrossed, color: "text-orange-400" },
   { key: "analytics", icon: TrendingUp, color: "text-emerald-400" },
 ];
 

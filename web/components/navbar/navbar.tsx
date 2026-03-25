@@ -74,7 +74,7 @@ export default function Navbar() {
             href={"/menu"}
             className={`flex-1 py-1.5 px-3 rounded-md text-center text-sm ${
               pathname === "/menu"
-                ? "bg-slate-700 text-cyan-400"
+                ? "bg-slate-700 text-blue-400"
                 : "text-gray-200 hover:bg-slate-700"
             }`}
           >
@@ -84,7 +84,7 @@ export default function Navbar() {
             href={"/dashboard"}
             className={`flex-1 py-1.5 px-3 rounded-md text-center text-sm ${
               pathname === "/dashboard"
-                ? "bg-slate-700 text-cyan-400"
+                ? "bg-slate-700 text-blue-400"
                 : "text-gray-200 hover:bg-slate-700"
             }`}
           >
@@ -94,7 +94,7 @@ export default function Navbar() {
             onClick={() => router.push("/sessions")}
             className={`flex-1 py-1.5 px-3 rounded-md text-center text-sm cursor-pointer ${
               pathname === "/sessions"
-                ? "bg-slate-700 text-cyan-400"
+                ? "bg-slate-700 text-blue-400"
                 : "text-gray-200 hover:bg-slate-700"
             }`}
           >

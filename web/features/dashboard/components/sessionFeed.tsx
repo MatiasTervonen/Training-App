@@ -16,7 +16,7 @@ import ReminderSession from "@/features/reminders/cards/reminder-expanded";
 import EditReminder from "@/features/reminders/cards/EditGlobalReminder";
 import { useRouter } from "next/navigation";
 import useDeleteSession from "@/features/dashboard/hooks/useDeleteSession";
-import useTogglePin from "@/features/dashboard/hooks/useTogglePin";
+import useTogglePin from "@/hooks/useTogglePin";
 import useHideFeedItem from "@/features/dashboard/hooks/useHideFeedItem";
 import { FeedItemUI } from "@/types/session";
 import useFeed from "@/features/dashboard/hooks/useFeed";
@@ -343,7 +343,7 @@ export default function SessionFeed() {
             )}
 
             {expandedItem.type === "tutorial" && (
-              <TutorialSession />
+              <TutorialSession onClose={() => { setExpandedItem(null); setHasUnsavedExpandedChanges(false); }} />
             )}
 
             {expandedItem.type === "todo_lists" && (

@@ -52,6 +52,18 @@
     "goalsTitle": "Goal Setting",
     "goalsDesc": "Set personal goals and track your progress toward achieving them"
   },
+  "nutrition": {
+    "heading": "Track What You Eat",
+    "description": "Log meals, scan barcodes, and hit your daily calorie and macro goals — all built in.",
+    "barcodeTitle": "Barcode Scanning",
+    "barcodeDesc": "Scan any product barcode on mobile and instantly log its nutrition info",
+    "searchTitle": "Food Search",
+    "searchDesc": "Search from millions of foods across USDA and Open Food Facts databases",
+    "trackingTitle": "Calorie & Macro Tracking",
+    "trackingDesc": "Set daily goals for calories, protein, carbs, and fat — track your progress with a visual ring",
+    "mealsTitle": "Saved Meals",
+    "mealsDesc": "Save your go-to meals and log them with a single tap next time"
+  },
   "social": {
     "heading": "Share Your Journey",
     "description": "Connect with friends, share your sessions, and celebrate achievements together.",
@@ -118,6 +130,7 @@
     "reports": "Reports",
     "chat": "Chat",
     "friends": "Friends",
+    "nutrition": "Nutrition",
     "analytics": "Analytics"
   }
 }

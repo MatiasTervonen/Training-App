@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
-import { AppState } from "react-native";
+import { AppState, Platform } from "react-native";
 import { getTodaySteps } from "@/native/android/NativeStepCounter";
-import { Platform } from "react-native";
 
 const POLL_INTERVAL_MS = 30_000; // 30 seconds
 

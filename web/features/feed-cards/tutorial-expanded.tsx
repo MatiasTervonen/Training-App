@@ -1,62 +1,122 @@
 "use client";
 
-import { BookOpen } from "lucide-react";
+import {
+  BookOpen,
+  Dumbbell,
+  Activity,
+  Scale,
+  NotebookPen,
+  Bell,
+  Repeat,
+  ListTodo,
+  MessageCircle,
+  FileBarChart,
+  Utensils,
+  ArrowLeftRight,
+  ChevronRight,
+  type LucideIcon,
+} from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { APP_NAME } from "@/lib/app-config";
-import Image from "next/image";
+import Link from "next/link";
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const TUTORIAL_IMAGE_BASE = `${SUPABASE_URL}/storage/v1/object/public/tutorial-images`;
+type TutorialFeature = {
+  icon: LucideIcon;
+  color: string;
+  bgColor: string;
+  titleKey: string;
+  descKey: string;
+  route: string;
+};
 
-const TUTORIAL_SECTIONS = [
+const TUTORIAL_FEATURES: TutorialFeature[] = [
   {
-    image: `${TUTORIAL_IMAGE_BASE}/gym-tracking.webp`,
+    icon: Dumbbell,
+    color: "text-blue-500",
+    bgColor: "bg-blue-900/40",
     titleKey: "feed.tutorial.gym.title",
     descKey: "feed.tutorial.gym.desc",
+    route: "/gym",
   },
   {
-    image: `${TUTORIAL_IMAGE_BASE}/activities.webp`,
+    icon: Activity,
+    color: "text-green-400",
+    bgColor: "bg-green-900/40",
     titleKey: "feed.tutorial.activities.title",
     descKey: "feed.tutorial.activities.desc",
+    route: "/activities",
   },
   {
-    image: `${TUTORIAL_IMAGE_BASE}/weight.webp`,
+    icon: Utensils,
+    color: "text-fuchsia-500",
+    bgColor: "bg-fuchsia-900/40",
+    titleKey: "feed.tutorial.nutrition.title",
+    descKey: "feed.tutorial.nutrition.desc",
+    route: "/nutrition",
+  },
+  {
+    icon: Scale,
+    color: "text-amber-500",
+    bgColor: "bg-amber-900/40",
     titleKey: "feed.tutorial.weight.title",
     descKey: "feed.tutorial.weight.desc",
+    route: "/weight",
   },
   {
-    image: `${TUTORIAL_IMAGE_BASE}/notes.webp`,
+    icon: NotebookPen,
+    color: "text-purple-500",
+    bgColor: "bg-purple-900/40",
     titleKey: "feed.tutorial.notes.title",
     descKey: "feed.tutorial.notes.desc",
+    route: "/notes",
   },
   {
-    image: `${TUTORIAL_IMAGE_BASE}/reminders.webp`,
+    icon: Bell,
+    color: "text-pink-500",
+    bgColor: "bg-pink-900/40",
     titleKey: "feed.tutorial.reminders.title",
     descKey: "feed.tutorial.reminders.desc",
+    route: "/reminders",
   },
   {
-    image: `${TUTORIAL_IMAGE_BASE}/habits.webp`,
+    icon: Repeat,
+    color: "text-rose-500",
+    bgColor: "bg-rose-900/40",
     titleKey: "feed.tutorial.habits.title",
     descKey: "feed.tutorial.habits.desc",
+    route: "/habits",
   },
   {
-    image: `${TUTORIAL_IMAGE_BASE}/todo.webp`,
+    icon: ListTodo,
+    color: "text-cyan-500",
+    bgColor: "bg-cyan-900/40",
     titleKey: "feed.tutorial.todo.title",
     descKey: "feed.tutorial.todo.desc",
+    route: "/todo",
   },
   {
-    image: `${TUTORIAL_IMAGE_BASE}/chat.webp`,
+    icon: MessageCircle,
+    color: "text-cyan-400",
+    bgColor: "bg-cyan-900/40",
     titleKey: "feed.tutorial.chat.title",
     descKey: "feed.tutorial.chat.desc",
+    route: "/chat",
   },
   {
-    image: `${TUTORIAL_IMAGE_BASE}/reports.webp`,
+    icon: FileBarChart,
+    color: "text-indigo-500",
+    bgColor: "bg-indigo-900/40",
     titleKey: "feed.tutorial.reports.title",
     descKey: "feed.tutorial.reports.desc",
+    route: "/dashboard",
   },
 ];
 
-export default function TutorialSession() {
+interface TutorialSessionProps {
+  onClose?: () => void;
+}
+
+export default function TutorialSession({ onClose }: TutorialSessionProps) {
   const { t } = useTranslation("feed");
 
   return (
@@ -69,35 +129,47 @@ export default function TutorialSession() {
           {t("feed.tutorial.title", { appName: APP_NAME })}
         </h2>
         <p className="text-gray-400 text-center mt-2 font-body">
-          {t("feed.tutorial.subtitle")}
+          {t("feed.tutorial.subtitle", { appName: APP_NAME })}
         </p>
+
+        <div className="flex flex-col gap-2 mt-4 w-full">
+          <div className="flex items-center bg-slate-800 rounded-lg px-4 py-3 border border-slate-700">
+            <ArrowLeftRight size={18} className="text-slate-400 shrink-0" />
+            <p className="text-sm text-gray-400 ml-3 font-body">
+              {t("feed.tutorial.navigation_hint")}
+            </p>
+          </div>
+          <p className="text-xs text-slate-500 text-center font-body">
+            {t("feed.tutorial.platform_hint")}
+          </p>
+        </div>
       </div>
 
-      <div className="flex flex-col gap-6">
-        {TUTORIAL_SECTIONS.map((section) => (
-          <div
-            key={section.titleKey}
-            className="bg-slate-800 rounded-lg overflow-hidden border border-slate-700"
-          >
-            <div className="relative w-full h-48">
-              <Image
-                src={section.image}
-                alt={t(section.titleKey)}
-                fill
-                className="object-cover"
-                sizes="(max-width: 672px) 100vw, 672px"
-              />
-            </div>
-            <div className="p-4">
-              <h3 className="text-lg mb-2 text-gray-100">
-                {t(section.titleKey)}
-              </h3>
-              <p className="text-sm text-gray-400 font-body">
-                {t(section.descKey)}
-              </p>
-            </div>
-          </div>
-        ))}
+      <div className="flex flex-col gap-3">
+        {TUTORIAL_FEATURES.map((feature) => {
+          const Icon = feature.icon;
+          return (
+            <Link
+              key={feature.titleKey}
+              href={feature.route}
+              onClick={onClose}
+              className="bg-slate-800 rounded-lg border border-slate-700 p-4 flex items-center hover:bg-slate-700/70 transition-colors cursor-pointer"
+            >
+              <div className={`w-11 h-11 rounded-full ${feature.bgColor} flex items-center justify-center shrink-0`}>
+                <Icon size={22} className={feature.color} />
+              </div>
+              <div className="flex-1 ml-3 mr-2">
+                <h3 className="text-base text-gray-100">
+                  {t(feature.titleKey)}
+                </h3>
+                <p className="text-xs text-gray-400 mt-0.5 font-body">
+                  {t(feature.descKey)}
+                </p>
+              </div>
+              <ChevronRight size={18} className="text-slate-500 shrink-0" />
+            </Link>
+          );
+        })}
       </div>
     </div>
   );

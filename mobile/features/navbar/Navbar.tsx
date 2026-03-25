@@ -80,7 +80,7 @@ export default function Navbar() {
                 }`}
               >
                 <AppTextNC className={`text-center font-medium ${
-                  pathname === "/menu" ? "text-cyan-400" : "text-gray-200"
+                  pathname === "/menu" ? "text-blue-400" : "text-gray-200"
                 }`}>{t("navbar.menu")}</AppTextNC>
               </Pressable>
             </Link>
@@ -92,7 +92,7 @@ export default function Navbar() {
                 }`}
               >
                 <AppTextNC className={`text-center font-medium ${
-                  pathname === "/dashboard" ? "text-cyan-400" : "text-gray-200"
+                  pathname === "/dashboard" ? "text-blue-400" : "text-gray-200"
                 }`}>{t("navbar.feed")}</AppTextNC>
               </Pressable>
             </Link>
@@ -104,7 +104,7 @@ export default function Navbar() {
                 }`}
               >
                 <AppTextNC className={`text-center font-medium ${
-                  pathname === "/sessions" ? "text-cyan-400" : "text-gray-200"
+                  pathname === "/sessions" ? "text-blue-400" : "text-gray-200"
                 }`}>{t("navbar.sessions")}</AppTextNC>
               </Pressable>
             </Link>

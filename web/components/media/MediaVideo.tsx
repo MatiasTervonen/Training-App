@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { Play } from "lucide-react";
 import type { SessionVideo } from "@/types/media";
 
@@ -25,10 +26,13 @@ export default function MediaVideo({ video }: MediaVideoProps) {
         className="relative rounded-md overflow-hidden border-[1.5px] border-blue-500/60 bg-slate-950"
       >
         {video.thumbnailUri ? (
-          <img
+          <Image
             src={video.thumbnailUri}
             alt=""
+            width={400}
+            height={192}
             className="w-full h-48 object-cover"
+            unoptimized
           />
         ) : (
           <div className="w-full h-48 bg-slate-800" />

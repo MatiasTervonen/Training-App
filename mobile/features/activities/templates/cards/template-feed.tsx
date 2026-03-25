@@ -1,7 +1,6 @@
 import { formatDate, formatDateShort } from "@/lib/formatDate";
 import { Activity, SquareArrowOutUpRight } from "lucide-react-native";
 import AppText from "@/components/AppText";
-import BodyText from "@/components/BodyText";
 import { View } from "react-native";
 import DropDownModal from "@/components/DropDownModal";
 import { templateSummary } from "@/types/session";

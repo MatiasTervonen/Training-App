@@ -42,7 +42,6 @@ export default function FloatingToolbarOverlay({
 
   const touchY = bubbleLayout.pageY;
   const spaceAbove = touchY - insets.top;
-  const spaceBelow = screenHeight - touchY - insets.bottom;
 
   // Place toolbar above the touch point if there's room, otherwise below
   const top = spaceAbove > TOOLBAR_HEIGHT + MARGIN

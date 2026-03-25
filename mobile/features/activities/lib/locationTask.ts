@@ -133,9 +133,10 @@ TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
         if (dist >= 2) totalDistance += dist;
       }
 
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       const { NativeModules } = require("react-native");
       NativeModules.NativeTimer?.updateCumulativeDistance(totalDistance);
-    } catch (e) {
+    } catch {
       // Distance update failed silently
     }
   } catch (error) {

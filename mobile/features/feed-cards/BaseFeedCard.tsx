@@ -40,7 +40,7 @@ function getGradientColors(type: string): [string, string] {
       return ["rgba(6,182,212,0.12)", "rgba(6,182,212,0.04)"];
     case "global_reminders":
     case "local_reminders":
-      return ["rgba(234,179,8,0.12)", "rgba(234,179,8,0.04)"];
+      return ["rgba(236,72,153,0.12)", "rgba(236,72,153,0.04)"];
     case "habits":
       return ["rgba(244,63,94,0.12)", "rgba(244,63,94,0.04)"];
     case "reports":
@@ -48,7 +48,7 @@ function getGradientColors(type: string): [string, string] {
     case "tutorial":
       return ["rgba(20,184,166,0.12)", "rgba(20,184,166,0.04)"];
     case "nutrition":
-      return ["rgba(249,115,22,0.12)", "rgba(249,115,22,0.04)"];
+      return ["rgba(255,0,255,0.12)", "rgba(255,0,255,0.04)"];
     default:
       return ["rgba(100,116,139,0.12)", "rgba(100,116,139,0.04)"];
   }

@@ -51,7 +51,7 @@ export default function HeaderAllDataTable({
             >
               <AppTextNC
                 className={`text-center font-medium ${
-                  range === option.key ? "text-cyan-400" : "text-gray-200"
+                  range === option.key ? "text-amber-400" : "text-gray-200"
                 }`}
               >
                 {t(option.translationKey)}

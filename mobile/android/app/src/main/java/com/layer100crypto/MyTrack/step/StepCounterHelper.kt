@@ -21,6 +21,9 @@ class StepCounterHelper(private val context: Context) {
         private const val KEY_DAILY_STEPS = "daily_steps"
         private const val KEY_SESSION_START_VALUE = "session_start_value"
         private const val MAX_HISTORY_DAYS = 60
+        // Safety cap: no single sensor event can produce more than 100K steps.
+        // Prevents inflated counts from sensor glitches or false reboot detection.
+        private const val MAX_SINGLE_DELTA = 100_000L
     }
 
     private val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -72,11 +75,12 @@ class StepCounterHelper(private val context: Context) {
 
         val delta = when {
             lastValue == -1L -> 0L // First ever read, no delta yet
-            currentValue < lastValue -> currentValue // Reboot detected: sensor reset to 0, treat current as new steps
+            currentValue < lastValue -> 0L // Reboot or sensor glitch: re-anchor without adding steps
             else -> currentValue - lastValue
         }
 
-        if (delta > 0) {
+        // Safety: discard impossibly large deltas (sensor glitch / corrupted lastValue)
+        if (delta in 1..MAX_SINGLE_DELTA) {
             val dailySteps = loadDailySteps()
             val currentDaySteps = dailySteps.optLong(today, 0L)
             dailySteps.put(today, currentDaySteps + delta)
@@ -131,12 +135,13 @@ class StepCounterHelper(private val context: Context) {
         if (sessionStart == -1L) return 0L
 
         val rawSteps = if (currentValue < sessionStart) {
-            currentValue // reboot: treat current value as steps
+            currentValue // reboot: treat current value as steps since reboot
         } else {
             currentValue - sessionStart
         }
 
-        return maxOf(rawSteps, 0L)
+        // Cap to prevent inflated values from sensor glitches
+        return rawSteps.coerceIn(0L, MAX_SINGLE_DELTA)
     }
 
     private fun loadDailySteps(): JSONObject {

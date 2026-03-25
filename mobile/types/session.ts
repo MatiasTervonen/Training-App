@@ -1,4 +1,4 @@
-import { feed_items, activities_with_category } from "./models";
+import { feed_items } from "./models";
 
 export type Template = {
   id: string;

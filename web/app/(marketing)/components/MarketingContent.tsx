@@ -338,7 +338,7 @@ export default function MarketingContent() {
           </div>
           <div>
             <Image
-              src="/marketing/Screenshot_20260321_173043_Kurvi-portrait.png"
+              src="/marketing/Screenshot_20260325_190256_Kurvi-portrait.png"
               alt="App Feed"
               width={300}
               height={650}

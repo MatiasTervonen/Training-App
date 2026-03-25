@@ -56,7 +56,8 @@
     "bodyWeight": "Paino",
     "todoList": "Tehtävälista",
     "reminders": "Muistutukset",
-    "habits": "Tavat"
+    "habits": "Tavat",
+    "nutrition": "Ravinto"
   },
   "deleteButton": {
     "confirmDeleteTitle": "Vahvista poisto",

@@ -106,6 +106,9 @@ input[type="number"] {
   .card-tutorial {
     background: linear-gradient(135deg, rgba(20,184,166,0.12), rgba(20,184,166,0.04));
   }
+  .card-nutrition {
+    background: linear-gradient(135deg, rgba(255,0,255,0.12), rgba(255,0,255,0.04));
+  }
   .card-default {
     background: linear-gradient(135deg, rgba(100,116,139,0.12), rgba(100,116,139,0.04));
   }
@@ -161,6 +164,12 @@ input[type="number"] {
     background: linear-gradient(135deg, rgba(99,102,241,0.25), rgba(99,102,241,0.08));
     border: 1px solid rgba(99,102,241,0.45);
     &:hover { background: linear-gradient(135deg, rgba(99,102,241,0.40), rgba(99,102,241,0.18)); }
+  }
+  .link-nutrition {
+    @apply rounded-md shadow-md px-3 py-2 hover:scale-105 transition-all duration-200 cursor-pointer;
+    background: linear-gradient(135deg, rgba(255,0,255,0.25), rgba(255,0,255,0.08));
+    border: 1px solid rgba(255,0,255,0.45);
+    &:hover { background: linear-gradient(135deg, rgba(255,0,255,0.40), rgba(255,0,255,0.18)); }
   }
 }
 

@@ -9,6 +9,7 @@ import {
   Bell,
   Activity,
   Repeat,
+  Utensils,
 } from "lucide-react";
 import LinkButton from "@/components/buttons/LinkButton";
 import { useTranslation } from "react-i18next";
@@ -53,6 +54,10 @@ export default function Sessions() {
         <LinkButton href="/habits">
           {t("sessions.habits")}
           <Repeat />
+        </LinkButton>
+        <LinkButton href="/nutrition" className="link-nutrition">
+          {t("sessions.nutrition")}
+          <Utensils />
         </LinkButton>
       </div>
     </div>

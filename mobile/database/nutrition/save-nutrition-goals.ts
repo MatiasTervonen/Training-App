@@ -15,18 +15,8 @@ type SaveNutritionGoalsParams = {
 };
 
 export async function saveNutritionGoals(params: SaveNutritionGoalsParams) {
-  const {
-    data: { user },
-    error: userError,
-  } = await supabase.auth.getUser();
-
-  if (userError || !user) {
-    throw new Error("Unauthorized");
-  }
-
   const { error } = await supabase.from("nutrition_goals").upsert(
     {
-      user_id: user.id,
       calorie_goal: params.calorieGoal,
       protein_goal: params.proteinGoal,
       carbs_goal: params.carbsGoal,

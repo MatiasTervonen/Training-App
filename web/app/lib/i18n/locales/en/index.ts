@@ -13,3 +13,4 @@ export { default as social } from "./social.json";
 export { default as marketing } from "./marketing.json";
 export { default as chat } from "./chat.json";
 export { default as habits } from "./habits.json";
+export { default as nutrition } from "./nutrition.json";

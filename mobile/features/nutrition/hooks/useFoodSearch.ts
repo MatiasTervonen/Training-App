@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from "react";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
+import { useDebounce } from "use-debounce";
 import { searchFoods as searchFoodsLocal } from "@/database/nutrition/search-foods";
 import { searchFoods as searchFoodsOFF } from "@/lib/open-food-facts";
 import { searchFoods as searchFoodsUSDA } from "@/lib/usda-food-data";
@@ -99,80 +100,51 @@ function mapUSDAResult(r: USDAFoodResult): NutritionSearchResult {
   };
 }
 
+async function searchAllSources(
+  query: string,
+): Promise<NutritionSearchResult[]> {
+  const [rawLocal, rawOFF, rawUSDA] = await Promise.all([
+    searchFoodsLocal(query).catch((): FoodSearchResult[] => []),
+    searchFoodsOFF(query).catch((): OpenFoodFactsProduct[] => []),
+    searchFoodsUSDA(query).catch((): USDAFoodResult[] => []),
+  ]);
+
+  const localMapped = rawLocal.map(mapLocalResult);
+
+  const seenBarcodes = new Set(
+    localMapped.filter((r) => r.barcode !== null).map((r) => r.barcode),
+  );
+
+  const uniqueOFF = rawOFF
+    .filter((r) => !seenBarcodes.has(r.barcode))
+    .map(mapOFFResult);
+
+  for (const r of uniqueOFF) {
+    if (r.barcode) seenBarcodes.add(r.barcode);
+  }
+
+  const uniqueUSDA = rawUSDA
+    .filter((r) => !seenBarcodes.has(r.barcode))
+    .map(mapUSDAResult);
+
+  return [...localMapped, ...uniqueOFF, ...uniqueUSDA];
+}
+
+const EMPTY_RESULTS: NutritionSearchResult[] = [];
+
 export function useFoodSearch(query: string) {
-  const [results, setResults] = useState<NutritionSearchResult[]>([]);
-  const [isSearching, setIsSearching] = useState(false);
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const abortRef = useRef(false);
+  const [debouncedQuery] = useDebounce(query.trim(), 500);
 
-  useEffect(() => {
-    if (debounceRef.current) {
-      clearTimeout(debounceRef.current);
-    }
+  const { data, isFetching } = useQuery({
+    queryKey: ["foodSearch", debouncedQuery],
+    queryFn: () => searchAllSources(debouncedQuery),
+    enabled: debouncedQuery.length >= 2,
+    placeholderData: keepPreviousData,
+    staleTime: 60 * 1000,
+  });
 
-    if (!query.trim() || query.trim().length < 2) {
-      setResults([]);
-      setIsSearching(false);
-      return;
-    }
-
-    setIsSearching(true);
-    abortRef.current = false;
-
-    debounceRef.current = setTimeout(async () => {
-      const currentQuery = query.trim();
-
-      try {
-        // Search all three sources in parallel — each handles its own errors
-        const [rawLocal, rawOFF, rawUSDA] = await Promise.all([
-          searchFoodsLocal(currentQuery).catch((): FoodSearchResult[] => []),
-          searchFoodsOFF(currentQuery).catch((): OpenFoodFactsProduct[] => []),
-          searchFoodsUSDA(currentQuery).catch((): USDAFoodResult[] => []),
-        ]);
-
-        if (abortRef.current) return;
-
-        const localMapped = rawLocal.map(mapLocalResult);
-
-        // Collect barcodes already in local DB to deduplicate API results
-        const seenBarcodes = new Set(
-          localMapped
-            .filter((r) => r.barcode !== null)
-            .map((r) => r.barcode),
-        );
-
-        // Open Food Facts results — dedupe against local
-        const uniqueOFF = rawOFF
-          .filter((r) => !seenBarcodes.has(r.barcode))
-          .map(mapOFFResult);
-
-        // Add OFF barcodes to seen set before deduping USDA
-        for (const r of uniqueOFF) {
-          if (r.barcode) seenBarcodes.add(r.barcode);
-        }
-
-        // USDA results — dedupe against local + OFF
-        const uniqueUSDA = rawUSDA
-          .filter((r) => !seenBarcodes.has(r.barcode))
-          .map(mapUSDAResult);
-
-        setResults([...localMapped, ...uniqueOFF, ...uniqueUSDA]);
-      } catch {
-        // All have individual .catch() so this shouldn't fire
-      } finally {
-        if (!abortRef.current) {
-          setIsSearching(false);
-        }
-      }
-    }, 500);
-
-    return () => {
-      abortRef.current = true;
-      if (debounceRef.current) {
-        clearTimeout(debounceRef.current);
-      }
-    };
-  }, [query]);
-
-  return { results, isSearching };
+  return {
+    results: data ?? EMPTY_RESULTS,
+    isSearching: isFetching,
+  };
 }

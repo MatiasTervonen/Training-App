@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { View, Keyboard, Pressable } from "react-native";
 import FullScreenModal from "@/components/FullScreenModal";
 import PageContainer from "@/components/PageContainer";
@@ -21,16 +21,18 @@ type FoodForDetail = {
   protein_per_100g: number;
   carbs_per_100g: number;
   fat_per_100g: number;
-  saturated_fat_per_100g?: number | null;
-  sugar_per_100g?: number | null;
-  fiber_per_100g?: number | null;
-  sodium_per_100g?: number | null;
+  saturated_fat_per_100g: number | null;
+  sugar_per_100g: number | null;
+  fiber_per_100g: number | null;
+  sodium_per_100g: number | null;
   serving_size_g: number;
   serving_description: string | null;
   is_custom: boolean;
   barcode: string | null;
-  image_url?: string | null;
-  image_nutrition_url?: string | null;
+  image_url: string | null;
+  image_nutrition_url: string | null;
+  source: "local" | "custom" | "api";
+  apiSource?: "openfoodfacts" | "usda";
 };
 
 type FoodDetailSheetProps = {
@@ -107,6 +109,14 @@ export default function FoodDetailSheet({
       fat: calculatedFat,
     });
   };
+
+  const images = useMemo(
+    () => [
+      ...(food?.image_url ? [{ id: "front", uri: food.image_url }] : []),
+      ...(food?.image_nutrition_url ? [{ id: "label", uri: food.image_nutrition_url }] : []),
+    ],
+    [food?.image_url, food?.image_nutrition_url],
+  );
 
   if (!food) return null;
 
@@ -229,20 +239,14 @@ export default function FoodDetailSheet({
         />
       </PageContainer>
 
-      {(() => {
-        const images = [
-          ...(food.image_url ? [{ id: "front", uri: food.image_url }] : []),
-          ...(food.image_nutrition_url ? [{ id: "label", uri: food.image_nutrition_url }] : []),
-        ];
-        return images.length > 0 && viewerIndex >= 0 ? (
-          <ImageViewerModal
-            images={images}
-            initialIndex={viewerIndex}
-            visible={viewerIndex >= 0}
-            onClose={() => setViewerIndex(-1)}
-          />
-        ) : null;
-      })()}
+      {images.length > 0 && viewerIndex >= 0 && (
+        <ImageViewerModal
+          images={images}
+          initialIndex={viewerIndex}
+          visible={viewerIndex >= 0}
+          onClose={() => setViewerIndex(-1)}
+        />
+      )}
     </FullScreenModal>
   );
 }

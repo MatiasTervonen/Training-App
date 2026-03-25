@@ -1,9 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { View, TextInput } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import AppText from "@/components/AppText";
 import BodyText from "@/components/BodyText";
-import BodyTextNC from "@/components/BodyTextNC";
 import Toggle from "@/components/toggle";
 import PageContainer from "@/components/PageContainer";
 import AnimatedButton from "@/components/buttons/animatedButton";
@@ -32,9 +31,11 @@ export default function NutritionGoalsScreen() {
   const [customMealTypes, setCustomMealTypes] = useState<string[]>([]);
   const [newMealType, setNewMealType] = useState("");
 
-  // Populate form when goals load
+  // Populate form when goals load (only on initial load to avoid overwriting in-progress edits)
+  const hasInitialized = useRef(false);
   useEffect(() => {
-    if (goals) {
+    if (goals && !hasInitialized.current) {
+      hasInitialized.current = true;
       setCalorieGoal(String(goals.calorie_goal ?? 2000));
       setProteinGoal(goals.protein_goal ? String(goals.protein_goal) : "");
       setCarbsGoal(goals.carbs_goal ? String(goals.carbs_goal) : "");
@@ -164,7 +165,6 @@ export default function NutritionGoalsScreen() {
                 key === "sugar" ? setSugarGoal :
                 key === "sodium" ? setSodiumGoal :
                 setSaturatedFatGoal;
-              const unit = key === "sodium" ? "mg" : "g";
 
               return (
                 <View key={key} className="mb-3">

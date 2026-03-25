@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { View, Alert } from "react-native";
 import AppText from "@/components/AppText";
 import BodyTextNC from "@/components/BodyTextNC";
@@ -13,7 +14,7 @@ type FoodLogItemProps = {
   showBorder?: boolean;
 };
 
-export default function FoodLogItem({
+export default memo(function FoodLogItem({
   item,
   onPress,
   onDelete,
@@ -59,4 +60,4 @@ export default function FoodLogItem({
       </AnimatedButton>
     </AnimatedButton>
   );
-}
+});

@@ -15,61 +15,19 @@ export async function toggleFavorite(
     throw new Error("Either foodId or customFoodId must be provided");
   }
 
-  // Check if favorite already exists
-  let query = supabase.from("favorite_foods").select("id");
+  const { data, error } = await supabase.rpc("nutrition_toggle_favorite", {
+    p_food_id: foodId ?? undefined,
+    p_custom_food_id: customFoodId ?? undefined,
+  });
 
-  if (foodId) {
-    query = query.eq("food_id", foodId);
-  } else if (customFoodId) {
-    query = query.eq("custom_food_id", customFoodId);
-  }
-
-  const { data: existing, error: checkError } = await query.maybeSingle();
-
-  if (checkError) {
-    handleError(checkError, {
-      message: "Error checking favorite status",
-      route: "/database/nutrition/toggle-favorite",
-      method: "GET",
-    });
-    throw new Error("Error checking favorite status");
-  }
-
-  if (existing) {
-    // Remove favorite
-    const { error: deleteError } = await supabase
-      .from("favorite_foods")
-      .delete()
-      .eq("id", existing.id);
-
-    if (deleteError) {
-      handleError(deleteError, {
-        message: "Error removing favorite",
-        route: "/database/nutrition/toggle-favorite",
-        method: "DELETE",
-      });
-      throw new Error("Error removing favorite");
-    }
-
-    return false; // No longer a favorite
-  }
-
-  // Add favorite
-  const { error: insertError } = await supabase
-    .from("favorite_foods")
-    .insert({
-      food_id: foodId ?? null,
-      custom_food_id: customFoodId ?? null,
-    });
-
-  if (insertError) {
-    handleError(insertError, {
-      message: "Error adding favorite",
+  if (error) {
+    handleError(error, {
+      message: "Error toggling favorite",
       route: "/database/nutrition/toggle-favorite",
       method: "POST",
     });
-    throw new Error("Error adding favorite");
+    throw new Error("Error toggling favorite");
   }
 
-  return true; // Now a favorite
+  return data as boolean;
 }

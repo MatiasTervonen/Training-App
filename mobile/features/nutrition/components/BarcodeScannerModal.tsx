@@ -4,6 +4,7 @@ import {
   CameraView,
   useCameraPermissions,
   BarcodeScanningResult,
+  type BarcodeSettings,
 } from "expo-camera";
 import * as Haptics from "expo-haptics";
 import AppText from "@/components/AppText";
@@ -11,7 +12,10 @@ import BodyText from "@/components/BodyText";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import { X } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
-import Toast from "react-native-toast-message";
+
+const BARCODE_SCANNER_SETTINGS: BarcodeSettings = {
+  barcodeTypes: ["ean13", "ean8", "upc_a", "upc_e"],
+};
 
 type BarcodeScannerModalProps = {
   visible: boolean;
@@ -71,11 +75,9 @@ export default function BarcodeScannerModal({
       <View className="flex-1 bg-black">
         {permissionGranted ? (
           <CameraView
-            style={{ flex: 1 }}
+            className="flex-1"
             facing="back"
-            barcodeScannerSettings={{
-              barcodeTypes: ["ean13", "ean8", "upc_a", "upc_e"],
-            }}
+            barcodeScannerSettings={BARCODE_SCANNER_SETTINGS}
             onBarcodeScanned={handleBarCodeScanned}
             onCameraReady={() => setReady(true)}
           />

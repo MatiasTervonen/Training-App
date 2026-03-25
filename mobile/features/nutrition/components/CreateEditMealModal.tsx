@@ -1,10 +1,9 @@
-import { useState, useEffect, useCallback } from "react";
-import { View, TextInput, Keyboard, Pressable, FlatList, Alert } from "react-native";
+import { useState, useEffect, useCallback, useMemo } from "react";
+import { View, TextInput, Keyboard, Pressable, Alert } from "react-native";
 import FullScreenModal from "@/components/FullScreenModal";
 import PageContainer from "@/components/PageContainer";
 import AppText from "@/components/AppText";
 import AppInput from "@/components/AppInput";
-import BodyText from "@/components/BodyText";
 import BodyTextNC from "@/components/BodyTextNC";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import NutritionInfo from "@/features/nutrition/components/NutritionInfo";
@@ -19,7 +18,7 @@ import useSaveMealDraft from "@/features/nutrition/hooks/useSaveMealDraft";
 import { useTranslation } from "react-i18next";
 import { Plus, X, Search, ScanLine, Heart, Clock } from "lucide-react-native";
 import Toast from "react-native-toast-message";
-import type { SavedMeal, SavedMealItem } from "@/database/nutrition/get-saved-meals";
+import type { SavedMeal } from "@/database/nutrition/get-saved-meals";
 import type { NutritionSearchResult } from "@/features/nutrition/hooks/useFoodSearch";
 
 type MealBuilderItem = {
@@ -75,10 +74,10 @@ export default function CreateEditMealModal({
   const [searchQuery, setSearchQuery] = useState("");
 
   const { results, isSearching } = useFoodSearch(searchQuery);
-  const { lookup, isLooking } = useBarcodeLookup();
+  const { lookup } = useBarcodeLookup();
   const [showScanner, setShowScanner] = useState(false);
 
-  const { clearDraft, isLoaded: isDraftLoaded } = useSaveMealDraft({
+  const { clearDraft } = useSaveMealDraft({
     name,
     items,
     editingMealId: editingMeal?.id,
@@ -189,17 +188,21 @@ export default function CreateEditMealModal({
     );
   };
 
-  const totals = items.reduce(
-    (acc, item) => {
-      const factor = (item.serving_size_g * item.quantity) / 100;
-      return {
-        calories: acc.calories + item.calories_per_100g * factor,
-        protein: acc.protein + item.protein_per_100g * factor,
-        carbs: acc.carbs + item.carbs_per_100g * factor,
-        fat: acc.fat + item.fat_per_100g * factor,
-      };
-    },
-    { calories: 0, protein: 0, carbs: 0, fat: 0 },
+  const totals = useMemo(
+    () =>
+      items.reduce(
+        (acc, item) => {
+          const factor = (item.serving_size_g * item.quantity) / 100;
+          return {
+            calories: acc.calories + item.calories_per_100g * factor,
+            protein: acc.protein + item.protein_per_100g * factor,
+            carbs: acc.carbs + item.carbs_per_100g * factor,
+            fat: acc.fat + item.fat_per_100g * factor,
+          };
+        },
+        { calories: 0, protein: 0, carbs: 0, fat: 0 },
+      ),
+    [items],
   );
 
   const handleSave = () => {
@@ -238,12 +241,15 @@ export default function CreateEditMealModal({
     );
   };
 
-  const addTabs: { id: AddFoodTab; icon: typeof Search; label: string }[] = [
-    { id: "search", icon: Search, label: t("log.search") },
-    { id: "scan", icon: ScanLine, label: t("log.scan") },
-    { id: "favorites", icon: Heart, label: t("log.favorites") },
-    { id: "recent", icon: Clock, label: t("log.recent") },
-  ];
+  const addTabs = useMemo<{ id: AddFoodTab; icon: typeof Search; label: string }[]>(
+    () => [
+      { id: "search", icon: Search, label: t("log.search") },
+      { id: "scan", icon: ScanLine, label: t("log.scan") },
+      { id: "favorites", icon: Heart, label: t("log.favorites") },
+      { id: "recent", icon: Clock, label: t("log.recent") },
+    ],
+    [t],
+  );
 
   return (
     <>

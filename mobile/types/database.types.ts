@@ -1913,9 +1913,14 @@ export type Database = {
           created_at: string | null
           custom_meal_types: string[] | null
           fat_goal: number | null
+          fiber_goal: number | null
           protein_goal: number | null
+          saturated_fat_goal: number | null
+          sodium_goal: number | null
+          sugar_goal: number | null
           updated_at: string | null
           user_id: string
+          visible_nutrients: string[] | null
         }
         Insert: {
           calorie_goal?: number | null
@@ -1923,9 +1928,14 @@ export type Database = {
           created_at?: string | null
           custom_meal_types?: string[] | null
           fat_goal?: number | null
+          fiber_goal?: number | null
           protein_goal?: number | null
+          saturated_fat_goal?: number | null
+          sodium_goal?: number | null
+          sugar_goal?: number | null
           updated_at?: string | null
           user_id?: string
+          visible_nutrients?: string[] | null
         }
         Update: {
           calorie_goal?: number | null
@@ -1933,9 +1943,14 @@ export type Database = {
           created_at?: string | null
           custom_meal_types?: string[] | null
           fat_goal?: number | null
+          fiber_goal?: number | null
           protein_goal?: number | null
+          saturated_fat_goal?: number | null
+          sodium_goal?: number | null
+          sugar_goal?: number | null
           updated_at?: string | null
           user_id?: string
+          visible_nutrients?: string[] | null
         }
         Relationships: []
       }
@@ -2057,6 +2072,82 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      saved_meal_items: {
+        Row: {
+          custom_food_id: string | null
+          food_id: string | null
+          id: string
+          quantity: number
+          saved_meal_id: string
+          serving_size_g: number
+          sort_order: number
+        }
+        Insert: {
+          custom_food_id?: string | null
+          food_id?: string | null
+          id?: string
+          quantity?: number
+          saved_meal_id: string
+          serving_size_g?: number
+          sort_order?: number
+        }
+        Update: {
+          custom_food_id?: string | null
+          food_id?: string | null
+          id?: string
+          quantity?: number
+          saved_meal_id?: string
+          serving_size_g?: number
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "saved_meal_items_custom_food_id_fkey"
+            columns: ["custom_food_id"]
+            isOneToOne: false
+            referencedRelation: "custom_foods"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "saved_meal_items_food_id_fkey"
+            columns: ["food_id"]
+            isOneToOne: false
+            referencedRelation: "foods"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "saved_meal_items_saved_meal_id_fkey"
+            columns: ["saved_meal_id"]
+            isOneToOne: false
+            referencedRelation: "saved_meals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      saved_meals: {
+        Row: {
+          created_at: string | null
+          id: string
+          name: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          name: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          name?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
       session_images: {
         Row: {
@@ -3372,6 +3463,10 @@ export type Database = {
         Args: { p_log_id: string; p_logged_at: string }
         Returns: undefined
       }
+      nutrition_delete_saved_meal: {
+        Args: { p_meal_id: string }
+        Returns: undefined
+      }
       nutrition_get_daily_logs: {
         Args: { p_date: string }
         Returns: {
@@ -3403,6 +3498,16 @@ export type Database = {
           sugar_per_100g: number
         }[]
       }
+      nutrition_get_saved_meals: {
+        Args: never
+        Returns: {
+          created_at: string
+          id: string
+          items: Json
+          name: string
+          updated_at: string
+        }[]
+      }
       nutrition_log_food: {
         Args: {
           p_calories?: number
@@ -3419,6 +3524,22 @@ export type Database = {
           p_serving_size_g?: number
         }
         Returns: string
+      }
+      nutrition_log_saved_meal: {
+        Args: {
+          p_logged_at?: string
+          p_meal_type?: string
+          p_saved_meal_id: string
+        }
+        Returns: undefined
+      }
+      nutrition_save_meal: {
+        Args: { p_items?: Json; p_meal_id?: string; p_name?: string }
+        Returns: string
+      }
+      nutrition_toggle_favorite: {
+        Args: { p_custom_food_id?: string; p_food_id?: string }
+        Returns: boolean
       }
       nutrition_upsert_food_from_barcode: {
         Args: {

@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { View } from "react-native";
 import AppText from "@/components/AppText";
 import AnimatedButton from "@/components/buttons/animatedButton";
@@ -18,22 +19,25 @@ export default function MealTypePicker({
 }: MealTypePickerProps) {
   const { t } = useTranslation("nutrition");
 
-  const allTypes = [
-    ...DEFAULT_TYPES.map((type) => ({
-      value: type,
-      label: t(`meals.${type}`),
-    })),
-    ...customTypes.map((type) => ({
-      value: type,
-      label: type,
-    })),
-  ];
+  const rows = useMemo(() => {
+    const allTypes = [
+      ...DEFAULT_TYPES.map((type) => ({
+        value: type,
+        label: t(`meals.${type}`),
+      })),
+      ...customTypes.map((type) => ({
+        value: type,
+        label: type,
+      })),
+    ];
 
-  // Split into rows of 2
-  const rows: (typeof allTypes)[] = [];
-  for (let i = 0; i < allTypes.length; i += 2) {
-    rows.push(allTypes.slice(i, i + 2));
-  }
+    // Split into rows of 2
+    const result: (typeof allTypes)[] = [];
+    for (let i = 0; i < allTypes.length; i += 2) {
+      result.push(allTypes.slice(i, i + 2));
+    }
+    return result;
+  }, [customTypes, t]);
 
   return (
     <View className="gap-2">

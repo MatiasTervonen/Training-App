@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useCallback, useState } from "react";
 import { lookupBarcode as lookupLocal } from "@/database/nutrition/lookup-barcode";
 import { lookupBarcode as lookupAPI } from "@/lib/open-food-facts";
 import { saveSharedFood } from "@/database/nutrition/save-shared-food";
@@ -29,20 +29,16 @@ function mapFoodItem(f: FoodItem): NutritionSearchResult {
 }
 
 export function useBarcodeLookup() {
-  const [food, setFood] = useState<NutritionSearchResult | null>(null);
   const [isLooking, setIsLooking] = useState(false);
 
   const lookup = useCallback(async (barcode: string) => {
     setIsLooking(true);
-    setFood(null);
 
     try {
       // 1. Check local DB first
       const localResult = await lookupLocal(barcode);
       if (localResult) {
-        const mapped = mapFoodItem(localResult);
-        setFood(mapped);
-        return mapped;
+        return mapFoodItem(localResult);
       }
 
       // 2. If not found, call Open Food Facts API
@@ -86,7 +82,6 @@ export function useBarcodeLookup() {
           is_custom: false,
           source: "local",
         };
-        setFood(mapped);
         return mapped;
       }
 
@@ -98,5 +93,5 @@ export function useBarcodeLookup() {
     }
   }, []);
 
-  return { food, isLooking, lookup };
+  return { isLooking, lookup };
 }

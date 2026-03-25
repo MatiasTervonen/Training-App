@@ -1,0 +1,105 @@
+import { supabase } from "@/lib/supabase";
+import { handleError } from "@/utils/handleError";
+
+export type FoodSearchResult = {
+  id: string;
+  name: string;
+  brand: string | null;
+  serving_size_g: number;
+  serving_description: string | null;
+  calories_per_100g: number;
+  protein_per_100g: number;
+  carbs_per_100g: number;
+  fat_per_100g: number;
+  fiber_per_100g: number | null;
+  sugar_per_100g: number | null;
+  sodium_per_100g: number | null;
+  saturated_fat_per_100g: number | null;
+  image_url: string | null;
+  nutrition_label_url: string | null;
+  is_custom: boolean;
+  barcode: string | null;
+};
+
+export async function searchFoods(query: string): Promise<FoodSearchResult[]> {
+  const pattern = `%${query}%`;
+
+  const [foodsResult, customFoodsResult] = await Promise.all([
+    supabase
+      .from("foods")
+      .select(
+        "id, name, brand, serving_size_g, serving_description, calories_per_100g, protein_per_100g, carbs_per_100g, fat_per_100g, fiber_per_100g, sugar_per_100g, sodium_per_100g, saturated_fat_per_100g, image_url, nutrition_label_url, barcode",
+      )
+      .ilike("name", pattern)
+      .limit(20),
+    supabase
+      .from("custom_foods")
+      .select(
+        "id, name, brand, serving_size_g, serving_description, calories_per_100g, protein_per_100g, carbs_per_100g, fat_per_100g, fiber_per_100g, sugar_per_100g, sodium_per_100g, saturated_fat_per_100g, image_url, nutrition_label_url",
+      )
+      .ilike("name", pattern)
+      .limit(20),
+  ]);
+
+  if (foodsResult.error) {
+    handleError(foodsResult.error, {
+      message: "Error searching foods",
+      route: "/database/nutrition/search-foods",
+      method: "GET",
+    });
+    throw new Error("Error searching foods");
+  }
+
+  if (customFoodsResult.error) {
+    handleError(customFoodsResult.error, {
+      message: "Error searching custom foods",
+      route: "/database/nutrition/search-foods",
+      method: "GET",
+    });
+    throw new Error("Error searching custom foods");
+  }
+
+  const foods: FoodSearchResult[] = (foodsResult.data ?? []).map((f) => ({
+    id: f.id,
+    name: f.name,
+    brand: f.brand,
+    serving_size_g: f.serving_size_g,
+    serving_description: f.serving_description,
+    calories_per_100g: f.calories_per_100g,
+    protein_per_100g: f.protein_per_100g,
+    carbs_per_100g: f.carbs_per_100g,
+    fat_per_100g: f.fat_per_100g,
+    fiber_per_100g: f.fiber_per_100g,
+    sugar_per_100g: f.sugar_per_100g,
+    sodium_per_100g: f.sodium_per_100g,
+    saturated_fat_per_100g: f.saturated_fat_per_100g,
+    image_url: f.image_url,
+    nutrition_label_url: f.nutrition_label_url,
+    is_custom: false,
+    barcode: f.barcode,
+  }));
+
+  const customFoods: FoodSearchResult[] = (customFoodsResult.data ?? []).map(
+    (f) => ({
+      id: f.id,
+      name: f.name,
+      brand: f.brand,
+      serving_size_g: f.serving_size_g,
+      serving_description: f.serving_description,
+      calories_per_100g: f.calories_per_100g,
+      protein_per_100g: f.protein_per_100g,
+      carbs_per_100g: f.carbs_per_100g,
+      fat_per_100g: f.fat_per_100g,
+      fiber_per_100g: f.fiber_per_100g,
+      sugar_per_100g: f.sugar_per_100g,
+      sodium_per_100g: f.sodium_per_100g,
+      saturated_fat_per_100g: f.saturated_fat_per_100g,
+      image_url: f.image_url,
+      nutrition_label_url: f.nutrition_label_url,
+      is_custom: true,
+      barcode: null,
+    }),
+  );
+
+  return [...foods, ...customFoods];
+}

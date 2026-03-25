@@ -18,3 +18,4 @@ export { default as reports } from "./reports.json";
 export { default as social } from "./social.json";
 export { default as sharing } from "./sharing.json";
 export { default as chat } from "./chat.json";
+export { default as nutrition } from "./nutrition.json";

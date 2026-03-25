@@ -282,6 +282,10 @@ export default function SessionFeed({
                         router.push("/habits");
                         return;
                       }
+                      if (feedItem.type === "nutrition") {
+                        router.push("/nutrition");
+                        return;
+                      }
                       setExpandedItem(feedItem);
                     }}
                     onTogglePin={() =>

@@ -47,6 +47,8 @@ function getGradientColors(type: string): [string, string] {
       return ["rgba(99,102,241,0.12)", "rgba(99,102,241,0.04)"];
     case "tutorial":
       return ["rgba(20,184,166,0.12)", "rgba(20,184,166,0.04)"];
+    case "nutrition":
+      return ["rgba(249,115,22,0.12)", "rgba(249,115,22,0.04)"];
     default:
       return ["rgba(100,116,139,0.12)", "rgba(100,116,139,0.04)"];
   }

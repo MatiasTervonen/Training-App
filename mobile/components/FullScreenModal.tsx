@@ -16,6 +16,7 @@ import AppText from "@/components/AppText";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import { useTranslation } from "react-i18next";
 import { scheduleOnRN } from "react-native-worklets";
+import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 
 type FullScreenModalScrollContextType = {
   innerScrollY: SharedValue<number>;
@@ -67,6 +68,7 @@ export default function FullScreenModal({
       setShowConfirm(false);
     }
   }, [isOpen, translateY, innerScrollY, isDismissing]);
+
 
   const handleClose = () => {
     if (confirmBeforeClose) {
@@ -171,15 +173,14 @@ export default function FullScreenModal({
               </View>
               <FullScreenModalScrollContext.Provider value={{ innerScrollY }}>
                 {scrollable ? (
-                  <Animated.ScrollView
-                    className="flex-1"
+                  <KeyboardAwareScrollView
                     contentContainerStyle={{ flexGrow: 1 }}
-                    scrollEventThrottle={16}
                     onScroll={scrollHandler}
                     showsVerticalScrollIndicator={false}
                     bounces={false}
                     overScrollMode="never"
                     keyboardShouldPersistTaps="handled"
+                    bottomOffset={20}
                   >
                     <View
                       className="flex-1 max-w-xl px-2 w-full"
@@ -187,7 +188,7 @@ export default function FullScreenModal({
                     >
                       {children}
                     </View>
-                  </Animated.ScrollView>
+                  </KeyboardAwareScrollView>
                 ) : (
                   <View
                     className="flex-1 max-w-xl px-2 w-full"

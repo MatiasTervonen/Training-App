@@ -64,7 +64,8 @@
     "todoList": "Todo List",
     "reminders": "Reminders",
     "habits": "Habits",
-    "reports": "Reports"
+    "reports": "Reports",
+    "nutrition": "Nutrition"
   },
   "deleteButton": {
     "confirmDeleteTitle": "Confirm Deletion",

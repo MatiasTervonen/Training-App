@@ -27,7 +27,8 @@
 - Always use `AnimatedButton` instead of `Pressable` for buttons — never use raw `Pressable` as a button.
 - Always check `app/components/buttons` for existing buttons before creating new ones.
 - If no matching button exists, use `AnimatedButton` with the correct style class.
-- Use `btn-base` for standard buttons, `btn-danger` for delete/cancel actions, `btn-neutral` for neutral actions.
+- Always check `app/global.css` for the correct button style class before using one. Available styles: `btn-base`, `btn-danger`, `btn-disabled`, `btn-add`, `btn-save`, `btn-edit`, `btn-start`, `btn-neutral`.
+- Use the semantically correct style: `btn-save` for save actions, `btn-danger` for delete/cancel, `btn-add` for add/create, `btn-edit` for edit actions, `btn-start` for start actions, `btn-base` for generic actions, `btn-neutral` for neutral actions.
 
 ## Components
 - Small notes field: `SubNotesInput`
@@ -60,9 +61,10 @@
 - Always make targeted edits to specific native files (e.g., AndroidManifest.xml) instead of regenerating.
 
 ## FullScreenModal
-- Never use `scrollable={false}` with a custom ScrollView inside FullScreenModal. The dismiss gesture tracks scroll position via FullScreenModal's own `Animated.ScrollView` on the UI thread — a custom ScrollView bypasses this and causes the modal to dismiss while scrolled down.
+- Never use `scrollable={false}` with a custom ScrollView inside FullScreenModal. The dismiss gesture tracks scroll position via FullScreenModal's own `KeyboardAwareScrollView` on the UI thread — a custom ScrollView bypasses this and causes the modal to dismiss while scrolled down.
 - Always use the default `scrollable={true}` and let FullScreenModal handle scrolling. Child content that needs scrolling should just render its content directly (like gym-expanded does).
 - Only use `scrollable={false}` for content that genuinely does not scroll (e.g., a short picker or fixed-height form).
+- FullScreenModal uses `KeyboardAwareScrollView` from `react-native-keyboard-controller` — inputs inside the modal automatically scroll into view when the keyboard opens. No extra keyboard handling is needed in child components.
 
 ## Post-Implementation Review
 - After implementing a feature from the `specs/` folder, scan the changed code against the best practices references in `.agents/skills/react-native-best-practices/references/` and `.agents/skills/react-data-patterns/references/`. Focus on Critical and High impact patterns only.

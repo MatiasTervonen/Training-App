@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import Toast from "react-native-toast-message";
 import { useTranslation } from "react-i18next";
@@ -24,22 +23,10 @@ export function useLogFood() {
   const queryClient = useQueryClient();
   const router = useRouter();
   const { t } = useTranslation(["nutrition", "common"]);
-  const [isLogging, setIsLogging] = useState(false);
 
-  const handleLogFood = async (params: LogFoodParams) => {
-    if (!params.foodName.trim() || params.servingSizeG <= 0) {
-      Toast.show({
-        type: "error",
-        text1: t("common:common.error"),
-        text2: t("nutrition:toast.error"),
-      });
-      return;
-    }
-
-    setIsLogging(true);
-
-    try {
-      await logFood({
+  const mutation = useMutation({
+    mutationFn: (params: LogFoodParams) =>
+      logFood({
         foodId: params.foodId ?? undefined,
         customFoodId: params.customFoodId ?? undefined,
         foodName: params.foodName,
@@ -52,9 +39,9 @@ export function useLogFood() {
         fat: params.fat,
         loggedAt: params.loggedAt,
         notes: params.notes,
-      });
-
-      await Promise.all([
+      }),
+    onSuccess: (_data, params) => {
+      Promise.all([
         queryClient.invalidateQueries({
           queryKey: ["dailyLogs", params.loggedAt],
         }),
@@ -68,16 +55,28 @@ export function useLogFood() {
         text1: t("common:common.success"),
         text2: t("nutrition:toast.logged"),
       });
-    } catch {
+    },
+    onError: () => {
       Toast.show({
         type: "error",
         text1: t("common:common.error"),
         text2: t("nutrition:toast.error"),
       });
-    } finally {
-      setIsLogging(false);
+    },
+  });
+
+  const handleLogFood = async (params: LogFoodParams) => {
+    if (!params.foodName.trim() || params.servingSizeG <= 0) {
+      Toast.show({
+        type: "error",
+        text1: t("common:common.error"),
+        text2: t("nutrition:toast.error"),
+      });
+      return;
     }
+
+    await mutation.mutateAsync(params);
   };
 
-  return { handleLogFood, isLogging };
+  return { handleLogFood, isLogging: mutation.isPending };
 }

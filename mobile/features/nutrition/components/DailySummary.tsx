@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { View } from "react-native";
 import CalorieRing from "@/features/nutrition/components/CalorieRing";
 import MacroProgressBar from "@/features/nutrition/components/MacroProgressBar";
@@ -26,21 +27,23 @@ type DailySummaryProps = {
 export default function DailySummary(props: DailySummaryProps) {
   const { t } = useTranslation("nutrition");
 
-  const optionalBars: {
-    key: string;
-    label: string;
-    current: number;
-    goal: number | null;
-    color: string;
-    unit: string;
-  }[] = [
-    { key: "fiber", label: t("daily.fiber"), current: props.fiber, goal: props.fiberGoal, color: "bg-green-500", unit: "g" },
-    { key: "sugar", label: t("daily.sugar"), current: props.sugar, goal: props.sugarGoal, color: "bg-purple-500", unit: "g" },
-    { key: "sodium", label: t("daily.sodium"), current: props.sodium, goal: props.sodiumGoal, color: "bg-cyan-500", unit: "mg" },
-    { key: "saturated_fat", label: t("daily.saturatedFat"), current: props.saturatedFat, goal: props.saturatedFatGoal, color: "bg-orange-400", unit: "g" },
-  ];
+  const visibleBars = useMemo(() => {
+    const optionalBars: {
+      key: string;
+      label: string;
+      current: number;
+      goal: number | null;
+      color: string;
+      unit: string;
+    }[] = [
+      { key: "fiber", label: t("daily.fiber"), current: props.fiber, goal: props.fiberGoal, color: "bg-green-500", unit: "g" },
+      { key: "sugar", label: t("daily.sugar"), current: props.sugar, goal: props.sugarGoal, color: "bg-purple-500", unit: "g" },
+      { key: "sodium", label: t("daily.sodium"), current: props.sodium, goal: props.sodiumGoal, color: "bg-cyan-500", unit: "mg" },
+      { key: "saturated_fat", label: t("daily.saturatedFat"), current: props.saturatedFat, goal: props.saturatedFatGoal, color: "bg-orange-400", unit: "g" },
+    ];
 
-  const visibleBars = optionalBars.filter((bar) => props.visibleNutrients.includes(bar.key));
+    return optionalBars.filter((bar) => props.visibleNutrients.includes(bar.key));
+  }, [t, props.fiber, props.fiberGoal, props.sugar, props.sugarGoal, props.sodium, props.sodiumGoal, props.saturatedFat, props.saturatedFatGoal, props.visibleNutrients]);
 
   return (
     <View className="items-center gap-4 py-4">

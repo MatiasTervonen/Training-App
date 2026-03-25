@@ -8,7 +8,6 @@ import { useDailyLogs } from "@/features/nutrition/hooks/useDailyLogs";
 import { useNutritionGoals } from "@/features/nutrition/hooks/useNutritionGoals";
 import { useDeleteFoodLog } from "@/features/nutrition/hooks/useDeleteFoodLog";
 import { useTranslation } from "react-i18next";
-import { useFullScreenModalScroll } from "@/components/FullScreenModal";
 
 type NutritionExpandedProps = {
   item: FeedItemUI;
@@ -30,7 +29,6 @@ export default function NutritionExpanded({ item }: NutritionExpandedProps) {
   const { data: logs, isLoading } = useDailyLogs(date);
   const { data: goals } = useNutritionGoals();
   const { handleDelete } = useDeleteFoodLog();
-  const { onScroll } = useFullScreenModalScroll();
 
   // Group logs by meal type
   const defaultMeals = ["breakfast", "lunch", "dinner", "snack"];
@@ -66,16 +64,19 @@ export default function NutritionExpanded({ item }: NutritionExpandedProps) {
         fiber: acc.fiber + Number(log.fiber_per_100g ?? 0) * factor,
         sugar: acc.sugar + Number(log.sugar_per_100g ?? 0) * factor,
         sodium: acc.sodium + Number(log.sodium_per_100g ?? 0) * factor * 1000,
-        saturatedFat: acc.saturatedFat + Number(log.saturated_fat_per_100g ?? 0) * factor,
+        saturatedFat:
+          acc.saturatedFat + Number(log.saturated_fat_per_100g ?? 0) * factor,
       };
     },
     { fiber: 0, sugar: 0, sodium: 0, saturatedFat: 0 },
   );
 
   return (
-    <ScrollView onScroll={onScroll} scrollEventThrottle={16}>
+    <ScrollView scrollEventThrottle={16}>
       <PageContainer>
-        <AppText className="text-xl text-center mb-4">{t("daily.title")}</AppText>
+        <AppText className="text-xl text-center mb-4">
+          {t("daily.title")}
+        </AppText>
 
         <DailySummary
           calories={payload.total_calories}

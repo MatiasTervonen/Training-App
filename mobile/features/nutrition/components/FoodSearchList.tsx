@@ -6,6 +6,8 @@ import AnimatedButton from "@/components/buttons/animatedButton";
 import { NutritionSearchResult } from "@/features/nutrition/hooks/useFoodSearch";
 import { useTranslation } from "react-i18next";
 
+const CONTENT_CONTAINER_STYLE = { paddingBottom: 100 };
+
 type FoodSearchListProps = {
   results: NutritionSearchResult[];
   isSearching: boolean;
@@ -47,7 +49,7 @@ export default function FoodSearchList({
       keyExtractor={(item, index) => item.barcode ?? item.id ?? `${index}`}
       keyboardShouldPersistTaps="handled"
       showsVerticalScrollIndicator={false}
-      contentContainerStyle={{ paddingBottom: 100 }}
+      contentContainerStyle={CONTENT_CONTAINER_STYLE}
       renderItem={({ item }) => (
         <AnimatedButton
           onPress={() => onSelect(item)}

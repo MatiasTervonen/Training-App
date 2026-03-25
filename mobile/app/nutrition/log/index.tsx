@@ -1,8 +1,7 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { View, TextInput, Keyboard, Pressable } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import AppText from "@/components/AppText";
-import BodyTextNC from "@/components/BodyTextNC";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import PageContainer from "@/components/PageContainer";
 import FoodSearchList from "@/features/nutrition/components/FoodSearchList";
@@ -27,7 +26,6 @@ import { saveSharedFood } from "@/database/nutrition/save-shared-food";
 import { useTranslation } from "react-i18next";
 import { useLocalSearchParams } from "expo-router";
 import { Search, ScanLine, Heart, Clock, PenLine, UtensilsCrossed } from "lucide-react-native";
-import Toast from "react-native-toast-message";
 import type { NutritionSearchResult } from "@/features/nutrition/hooks/useFoodSearch";
 import type { SavedMeal } from "@/database/nutrition/get-saved-meals";
 
@@ -50,7 +48,7 @@ export default function LogFoodScreen() {
 
   const { results, isSearching } = useFoodSearch(query);
   const { lookup, isLooking } = useBarcodeLookup();
-  const { handleLogFood, isLogging } = useLogFood();
+  const { handleLogFood } = useLogFood();
   const { handleToggle } = useToggleFavorite();
   const { data: favorites } = useFavorites();
   const { data: goals } = useNutritionGoals();
@@ -151,14 +149,17 @@ export default function LogFoodScreen() {
     });
   };
 
-  const tabs: { id: Tab; label: string; icon: typeof Search }[] = [
-    { id: "search", label: t("log.search"), icon: Search },
-    { id: "scan", label: t("log.scan"), icon: ScanLine },
-    { id: "favorites", label: t("log.favorites"), icon: Heart },
-    { id: "recent", label: t("log.recent"), icon: Clock },
-    { id: "custom", label: t("log.custom"), icon: PenLine },
-    { id: "meals", label: t("log.meals"), icon: UtensilsCrossed },
-  ];
+  const tabs = useMemo<{ id: Tab; label: string; icon: typeof Search }[]>(
+    () => [
+      { id: "search", label: t("log.search"), icon: Search },
+      { id: "scan", label: t("log.scan"), icon: ScanLine },
+      { id: "favorites", label: t("log.favorites"), icon: Heart },
+      { id: "recent", label: t("log.recent"), icon: Clock },
+      { id: "custom", label: t("log.custom"), icon: PenLine },
+      { id: "meals", label: t("log.meals"), icon: UtensilsCrossed },
+    ],
+    [t],
+  );
 
   const renderTabs = () => (
     <View className="mb-6 gap-2 pb-4 border-b border-slate-700/50">

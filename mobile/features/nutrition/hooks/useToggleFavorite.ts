@@ -1,5 +1,4 @@
-import { useState, useCallback } from "react";
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toggleFavorite } from "@/database/nutrition/toggle-favorite";
 
 type ToggleFavoriteParams = {
@@ -9,23 +8,15 @@ type ToggleFavoriteParams = {
 
 export function useToggleFavorite() {
   const queryClient = useQueryClient();
-  const [isToggling, setIsToggling] = useState(false);
 
-  const handleToggle = useCallback(
-    async (params: ToggleFavoriteParams) => {
-      setIsToggling(true);
-
-      try {
-        await toggleFavorite(params);
-        await queryClient.invalidateQueries({
-          queryKey: ["nutritionFavorites"],
-        });
-      } finally {
-        setIsToggling(false);
-      }
+  const mutation = useMutation({
+    mutationFn: (params: ToggleFavoriteParams) => toggleFavorite(params),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: ["nutritionFavorites"],
+      });
     },
-    [queryClient],
-  );
+  });
 
-  return { handleToggle, isToggling };
+  return { handleToggle: mutation.mutate, isToggling: mutation.isPending };
 }

@@ -6,5 +6,6 @@ export function useDailyLogs(date: string) {
     queryKey: ["dailyLogs", date],
     queryFn: () => getDailyLogs(date),
     enabled: !!date,
+    staleTime: 30_000,
   });
 }

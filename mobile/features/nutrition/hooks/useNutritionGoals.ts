@@ -5,5 +5,6 @@ export function useNutritionGoals() {
   return useQuery({
     queryKey: ["nutritionGoals"],
     queryFn: getNutritionGoals,
+    staleTime: 60_000,
   });
 }

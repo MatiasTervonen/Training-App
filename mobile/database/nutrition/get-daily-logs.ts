@@ -16,6 +16,17 @@ export type DailyFoodLog = {
   is_custom: boolean;
   food_id: string | null;
   custom_food_id: string | null;
+  image_url: string | null;
+  nutrition_label_url: string | null;
+  serving_description: string | null;
+  fiber_per_100g: number | null;
+  sugar_per_100g: number | null;
+  sodium_per_100g: number | null;
+  saturated_fat_per_100g: number | null;
+  calories_per_100g: number | null;
+  protein_per_100g: number | null;
+  carbs_per_100g: number | null;
+  fat_per_100g: number | null;
   created_at: string;
 };
 

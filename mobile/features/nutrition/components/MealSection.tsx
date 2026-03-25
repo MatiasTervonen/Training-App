@@ -7,12 +7,14 @@ import { DailyFoodLog } from "@/database/nutrition/get-daily-logs";
 type MealSectionProps = {
   title: string;
   items: DailyFoodLog[];
+  onPress?: (item: DailyFoodLog) => void;
   onDelete: (id: string) => void;
 };
 
 export default function MealSection({
   title,
   items,
+  onPress,
   onDelete,
 }: MealSectionProps) {
   if (items.length === 0) return null;
@@ -32,6 +34,7 @@ export default function MealSection({
           <FoodLogItem
             key={item.id}
             item={item}
+            onPress={() => onPress?.(item)}
             onDelete={() => onDelete(item.id)}
             showBorder={index < items.length - 1}
           />

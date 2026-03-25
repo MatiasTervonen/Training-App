@@ -47,13 +47,13 @@ export default function NutritionCard({
           </View>
           <View className="flex-row gap-4">
             <BodyText className="text-sm text-slate-400">
-              P: {Math.round(payload.total_protein)}g
+              {tNutrition("feed.proteinShort")}: {Math.round(payload.total_protein)}g
             </BodyText>
             <BodyText className="text-sm text-slate-400">
-              C: {Math.round(payload.total_carbs)}g
+              {tNutrition("feed.carbsShort")}: {Math.round(payload.total_carbs)}g
             </BodyText>
             <BodyText className="text-sm text-slate-400">
-              F: {Math.round(payload.total_fat)}g
+              {tNutrition("feed.fatShort")}: {Math.round(payload.total_fat)}g
             </BodyText>
           </View>
           <BodyText className="text-xs text-slate-500">

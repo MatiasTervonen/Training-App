@@ -1,4 +1,4 @@
-import { View, ScrollView } from "react-native";
+import { View } from "react-native";
 import AppText from "@/components/AppText";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import { useTranslation } from "react-i18next";
@@ -29,32 +29,36 @@ export default function MealTypePicker({
     })),
   ];
 
+  // Split into rows of 2
+  const rows: (typeof allTypes)[] = [];
+  for (let i = 0; i < allTypes.length; i += 2) {
+    rows.push(allTypes.slice(i, i + 2));
+  }
+
   return (
     <View className="gap-2">
       <AppText className="text-sm">{t("detail.mealType")}</AppText>
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerClassName="gap-2"
-      >
-        {allTypes.map((type) => {
-          const isSelected = selected === type.value;
-
-          return (
-            <AnimatedButton
-              key={type.value}
-              onPress={() => onSelect(type.value)}
-              className={`px-4 py-2 rounded-full border ${
-                isSelected
-                  ? "bg-orange-500/20 border-orange-500/50"
-                  : "bg-slate-800 border-slate-700"
-              }`}
-            >
-              <AppText className="text-sm">{type.label}</AppText>
-            </AnimatedButton>
-          );
-        })}
-      </ScrollView>
+      {rows.map((row, rowIndex) => (
+        <View key={rowIndex} className="flex-row gap-2">
+          {row.map((type) => {
+            const isSelected = selected === type.value;
+            return (
+              <AnimatedButton
+                key={type.value}
+                onPress={() => onSelect(type.value)}
+                className={`flex-1 items-center py-2.5 rounded-lg border ${
+                  isSelected
+                    ? "bg-orange-500/20 border-orange-500/50"
+                    : "bg-slate-800 border-slate-700"
+                }`}
+              >
+                <AppText className="text-sm">{type.label}</AppText>
+              </AnimatedButton>
+            );
+          })}
+          {row.length === 1 && <View className="flex-1" />}
+        </View>
+      ))}
     </View>
   );
 }

@@ -1,14 +1,18 @@
 import { useState, useEffect } from "react";
-import { View, ScrollView, TextInput, Keyboard, Pressable, Alert } from "react-native";
+import { View, TextInput } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import AppText from "@/components/AppText";
 import BodyText from "@/components/BodyText";
 import BodyTextNC from "@/components/BodyTextNC";
+import Toggle from "@/components/toggle";
 import PageContainer from "@/components/PageContainer";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import { useNutritionGoals } from "@/features/nutrition/hooks/useNutritionGoals";
 import { useSaveGoals } from "@/features/nutrition/hooks/useSaveGoals";
 import { useTranslation } from "react-i18next";
 import { Plus, X } from "lucide-react-native";
+
+const OPTIONAL_NUTRIENTS = ["fiber", "sugar", "sodium", "saturated_fat"] as const;
 
 export default function NutritionGoalsScreen() {
   const { t } = useTranslation("nutrition");
@@ -20,6 +24,11 @@ export default function NutritionGoalsScreen() {
   const [proteinGoal, setProteinGoal] = useState("");
   const [carbsGoal, setCarbsGoal] = useState("");
   const [fatGoal, setFatGoal] = useState("");
+  const [fiberGoal, setFiberGoal] = useState("");
+  const [sugarGoal, setSugarGoal] = useState("");
+  const [sodiumGoal, setSodiumGoal] = useState("");
+  const [saturatedFatGoal, setSaturatedFatGoal] = useState("");
+  const [visibleNutrients, setVisibleNutrients] = useState<string[]>([]);
   const [customMealTypes, setCustomMealTypes] = useState<string[]>([]);
   const [newMealType, setNewMealType] = useState("");
 
@@ -30,9 +39,20 @@ export default function NutritionGoalsScreen() {
       setProteinGoal(goals.protein_goal ? String(goals.protein_goal) : "");
       setCarbsGoal(goals.carbs_goal ? String(goals.carbs_goal) : "");
       setFatGoal(goals.fat_goal ? String(goals.fat_goal) : "");
+      setFiberGoal(goals.fiber_goal ? String(goals.fiber_goal) : "");
+      setSugarGoal(goals.sugar_goal ? String(goals.sugar_goal) : "");
+      setSodiumGoal(goals.sodium_goal ? String(goals.sodium_goal) : "");
+      setSaturatedFatGoal(goals.saturated_fat_goal ? String(goals.saturated_fat_goal) : "");
+      setVisibleNutrients(goals.visible_nutrients ?? []);
       setCustomMealTypes(goals.custom_meal_types ?? []);
     }
   }, [goals]);
+
+  const toggleNutrient = (key: string) => {
+    setVisibleNutrients((prev) =>
+      prev.includes(key) ? prev.filter((n) => n !== key) : [...prev, key],
+    );
+  };
 
   const addMealType = () => {
     const trimmed = newMealType.trim();
@@ -52,6 +72,11 @@ export default function NutritionGoalsScreen() {
       proteinGoal: proteinGoal ? Number(proteinGoal) : null,
       carbsGoal: carbsGoal ? Number(carbsGoal) : null,
       fatGoal: fatGoal ? Number(fatGoal) : null,
+      fiberGoal: fiberGoal ? Number(fiberGoal) : null,
+      sugarGoal: sugarGoal ? Number(sugarGoal) : null,
+      sodiumGoal: sodiumGoal ? Number(sodiumGoal) : null,
+      saturatedFatGoal: saturatedFatGoal ? Number(saturatedFatGoal) : null,
+      visibleNutrients,
       customMealTypes,
     });
   };
@@ -65,9 +90,9 @@ export default function NutritionGoalsScreen() {
   }
 
   return (
-    <ScrollView className="flex-1">
-      <Pressable onPress={Keyboard.dismiss}>
-        <PageContainer>
+    <View className="flex-1">
+    <KeyboardAwareScrollView bottomOffset={50} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
+      <PageContainer>
           <AppText className="text-xl text-center mb-6">{t("goals.title")}</AppText>
 
           {/* Calorie goal */}
@@ -122,6 +147,51 @@ export default function NutritionGoalsScreen() {
             />
           </View>
 
+          {/* Optional nutrients toggles */}
+          <View className="mb-6">
+            <AppText className="text-sm mb-3">{t("goals.optionalNutrients")}</AppText>
+            <BodyText className="text-xs mb-3">{t("goals.optionalNutrientsDesc")}</BodyText>
+
+            {OPTIONAL_NUTRIENTS.map((key) => {
+              const enabled = visibleNutrients.includes(key);
+              const goalValue =
+                key === "fiber" ? fiberGoal :
+                key === "sugar" ? sugarGoal :
+                key === "sodium" ? sodiumGoal :
+                saturatedFatGoal;
+              const setGoalValue =
+                key === "fiber" ? setFiberGoal :
+                key === "sugar" ? setSugarGoal :
+                key === "sodium" ? setSodiumGoal :
+                setSaturatedFatGoal;
+              const unit = key === "sodium" ? "mg" : "g";
+
+              return (
+                <View key={key} className="mb-3">
+                  <View className="flex-row items-center justify-between mb-2">
+                    <AppText className="text-sm">
+                      {t(`goals.${key}Toggle` as "goals.fiberToggle")}
+                    </AppText>
+                    <Toggle
+                      isOn={enabled}
+                      onToggle={() => toggleNutrient(key)}
+                    />
+                  </View>
+                  {enabled && (
+                    <TextInput
+                      value={goalValue}
+                      onChangeText={setGoalValue}
+                      keyboardType="decimal-pad"
+                      placeholderTextColor="#9ca3af"
+                      placeholder={t("goals.noGoal")}
+                      className="bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 text-gray-100 font-lexend text-sm"
+                    />
+                  )}
+                </View>
+              );
+            })}
+          </View>
+
           {/* Custom meal types */}
           <View className="mb-6">
             <AppText className="text-sm mb-3">{t("goals.customMeals")}</AppText>
@@ -155,16 +225,18 @@ export default function NutritionGoalsScreen() {
               </AnimatedButton>
             </View>
           </View>
+      </PageContainer>
+    </KeyboardAwareScrollView>
 
-          {/* Save button */}
-          <AnimatedButton
-            onPress={onSave}
-            className="btn-base py-3"
-            label={isSaving ? tCommon("common.saving") : tCommon("common.save")}
-            disabled={isSaving}
-          />
-        </PageContainer>
-      </Pressable>
-    </ScrollView>
+    {/* Sticky save button */}
+    <View className="border-t border-slate-700/50 px-5 py-4 pb-8">
+      <AnimatedButton
+        onPress={onSave}
+        className="btn-save py-3"
+        label={isSaving ? tCommon("common.saving") : tCommon("common.save")}
+        disabled={isSaving}
+      />
+    </View>
+    </View>
   );
 }

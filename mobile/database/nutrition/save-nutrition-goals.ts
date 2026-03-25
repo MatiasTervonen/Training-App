@@ -6,6 +6,11 @@ type SaveNutritionGoalsParams = {
   proteinGoal: number | null;
   carbsGoal: number | null;
   fatGoal: number | null;
+  fiberGoal: number | null;
+  sugarGoal: number | null;
+  sodiumGoal: number | null;
+  saturatedFatGoal: number | null;
+  visibleNutrients: string[];
   customMealTypes: string[];
 };
 
@@ -26,6 +31,11 @@ export async function saveNutritionGoals(params: SaveNutritionGoalsParams) {
       protein_goal: params.proteinGoal,
       carbs_goal: params.carbsGoal,
       fat_goal: params.fatGoal,
+      fiber_goal: params.fiberGoal,
+      sugar_goal: params.sugarGoal,
+      sodium_goal: params.sodiumGoal,
+      saturated_fat_goal: params.saturatedFatGoal,
+      visible_nutrients: params.visibleNutrients,
       custom_meal_types: params.customMealTypes,
       updated_at: new Date().toISOString(),
     },

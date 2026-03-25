@@ -8,16 +8,17 @@ import { useTranslation } from "react-i18next";
 
 type FoodLogItemProps = {
   item: DailyFoodLog;
+  onPress?: () => void;
   onDelete: () => void;
   showBorder?: boolean;
 };
 
 export default function FoodLogItem({
   item,
+  onPress,
   onDelete,
   showBorder = true,
 }: FoodLogItemProps) {
-  const { t } = useTranslation("nutrition");
   const { t: tCommon } = useTranslation();
 
   const handleDelete = () => {
@@ -32,7 +33,8 @@ export default function FoodLogItem({
   };
 
   return (
-    <View
+    <AnimatedButton
+      onPress={onPress}
       className={`flex-row items-center px-3 py-3 ${showBorder ? "border-b border-slate-700/50" : ""}`}
     >
       <View className="flex-1 mr-3">
@@ -55,6 +57,6 @@ export default function FoodLogItem({
       <AnimatedButton onPress={handleDelete} hitSlop={10}>
         <Trash2 size={16} color="#64748b" />
       </AnimatedButton>
-    </View>
+    </AnimatedButton>
   );
 }

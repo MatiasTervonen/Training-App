@@ -58,6 +58,20 @@ export default function NutritionExpanded({ item }: NutritionExpandedProps) {
     ...Array.from(mealGroups.keys()).filter((m) => !defaultMeals.includes(m)),
   ];
 
+  // Compute micro totals from per_100g values in daily logs
+  const microTotals = (logs ?? []).reduce(
+    (acc, log) => {
+      const factor = (Number(log.serving_size_g) * Number(log.quantity)) / 100;
+      return {
+        fiber: acc.fiber + Number(log.fiber_per_100g ?? 0) * factor,
+        sugar: acc.sugar + Number(log.sugar_per_100g ?? 0) * factor,
+        sodium: acc.sodium + Number(log.sodium_per_100g ?? 0) * factor * 1000,
+        saturatedFat: acc.saturatedFat + Number(log.saturated_fat_per_100g ?? 0) * factor,
+      };
+    },
+    { fiber: 0, sugar: 0, sodium: 0, saturatedFat: 0 },
+  );
+
   return (
     <ScrollView onScroll={onScroll} scrollEventThrottle={16}>
       <PageContainer>
@@ -72,6 +86,15 @@ export default function NutritionExpanded({ item }: NutritionExpandedProps) {
           proteinGoal={goals?.protein_goal ?? null}
           carbsGoal={goals?.carbs_goal ?? null}
           fatGoal={goals?.fat_goal ?? null}
+          fiber={microTotals.fiber}
+          sugar={microTotals.sugar}
+          sodium={microTotals.sodium}
+          saturatedFat={microTotals.saturatedFat}
+          fiberGoal={goals?.fiber_goal ?? null}
+          sugarGoal={goals?.sugar_goal ?? null}
+          sodiumGoal={goals?.sodium_goal ?? null}
+          saturatedFatGoal={goals?.saturated_fat_goal ?? null}
+          visibleNutrients={goals?.visible_nutrients ?? []}
         />
 
         {isLoading ? (

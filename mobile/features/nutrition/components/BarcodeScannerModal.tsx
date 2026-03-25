@@ -71,7 +71,7 @@ export default function BarcodeScannerModal({
       <View className="flex-1 bg-black">
         {permissionGranted ? (
           <CameraView
-            className="flex-1"
+            style={{ flex: 1 }}
             facing="back"
             barcodeScannerSettings={{
               barcodeTypes: ["ean13", "ean8", "upc_a", "upc_e"],

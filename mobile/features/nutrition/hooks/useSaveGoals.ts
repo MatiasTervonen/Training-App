@@ -9,6 +9,11 @@ type NutritionGoalsInput = {
   proteinGoal: number | null;
   carbsGoal: number | null;
   fatGoal: number | null;
+  fiberGoal: number | null;
+  sugarGoal: number | null;
+  sodiumGoal: number | null;
+  saturatedFatGoal: number | null;
+  visibleNutrients: string[];
   customMealTypes: string[];
 };
 

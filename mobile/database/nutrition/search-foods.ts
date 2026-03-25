@@ -16,6 +16,7 @@ export type FoodSearchResult = {
   sodium_per_100g: number | null;
   saturated_fat_per_100g: number | null;
   image_url: string | null;
+  nutrition_label_url: string | null;
   is_custom: boolean;
   barcode: string | null;
 };
@@ -27,14 +28,14 @@ export async function searchFoods(query: string): Promise<FoodSearchResult[]> {
     supabase
       .from("foods")
       .select(
-        "id, name, brand, serving_size_g, serving_description, calories_per_100g, protein_per_100g, carbs_per_100g, fat_per_100g, fiber_per_100g, sugar_per_100g, sodium_per_100g, saturated_fat_per_100g, image_url, barcode",
+        "id, name, brand, serving_size_g, serving_description, calories_per_100g, protein_per_100g, carbs_per_100g, fat_per_100g, fiber_per_100g, sugar_per_100g, sodium_per_100g, saturated_fat_per_100g, image_url, nutrition_label_url, barcode",
       )
       .ilike("name", pattern)
       .limit(20),
     supabase
       .from("custom_foods")
       .select(
-        "id, name, brand, serving_size_g, serving_description, calories_per_100g, protein_per_100g, carbs_per_100g, fat_per_100g, fiber_per_100g, sugar_per_100g, sodium_per_100g, saturated_fat_per_100g",
+        "id, name, brand, serving_size_g, serving_description, calories_per_100g, protein_per_100g, carbs_per_100g, fat_per_100g, fiber_per_100g, sugar_per_100g, sodium_per_100g, saturated_fat_per_100g, image_url, nutrition_label_url",
       )
       .ilike("name", pattern)
       .limit(20),
@@ -73,6 +74,7 @@ export async function searchFoods(query: string): Promise<FoodSearchResult[]> {
     sodium_per_100g: f.sodium_per_100g,
     saturated_fat_per_100g: f.saturated_fat_per_100g,
     image_url: f.image_url,
+    nutrition_label_url: f.nutrition_label_url,
     is_custom: false,
     barcode: f.barcode,
   }));
@@ -92,7 +94,8 @@ export async function searchFoods(query: string): Promise<FoodSearchResult[]> {
       sugar_per_100g: f.sugar_per_100g,
       sodium_per_100g: f.sodium_per_100g,
       saturated_fat_per_100g: f.saturated_fat_per_100g,
-      image_url: null,
+      image_url: f.image_url,
+      nutrition_label_url: f.nutrition_label_url,
       is_custom: true,
       barcode: null,
     }),

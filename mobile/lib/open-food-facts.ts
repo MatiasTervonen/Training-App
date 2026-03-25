@@ -1,5 +1,5 @@
-const BASE_URL = "https://world.openfoodfacts.org";
-const USER_AGENT = "MyTrack/1.0";
+const BASE_URL = "https://world.openfoodfacts.net";
+const USER_AGENT = "Kurvi/1.0 (https://kurvi.app)";
 const TIMEOUT_MS = 5000;
 
 export type OpenFoodFactsProduct = {
@@ -17,6 +17,7 @@ export type OpenFoodFactsProduct = {
   sodium_per_100g: number | null;
   saturated_fat_per_100g: number | null;
   image_url: string | null;
+  image_nutrition_url: string | null;
 };
 
 type Nutriments = {
@@ -36,6 +37,7 @@ type RawProduct = {
   brands?: string;
   serving_size?: string;
   image_url?: string;
+  image_nutrition_url?: string;
   nutriments?: Nutriments;
 };
 
@@ -65,6 +67,7 @@ function parseProduct(raw: RawProduct): OpenFoodFactsProduct | null {
     sodium_per_100g: nutriments.sodium_100g ?? null,
     saturated_fat_per_100g: nutriments["saturated-fat_100g"] ?? null,
     image_url: raw.image_url ?? null,
+    image_nutrition_url: raw.image_nutrition_url ?? null,
   };
 }
 

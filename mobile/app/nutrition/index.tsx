@@ -5,6 +5,7 @@ import BodyText from "@/components/BodyText";
 import BodyTextNC from "@/components/BodyTextNC";
 import PageContainer from "@/components/PageContainer";
 import AnimatedButton from "@/components/buttons/animatedButton";
+import FloatingActionButton from "@/components/buttons/FloatingActionButton";
 import DailySummary from "@/features/nutrition/components/DailySummary";
 import MealSection from "@/features/nutrition/components/MealSection";
 import { useDailyLogs } from "@/features/nutrition/hooks/useDailyLogs";
@@ -13,31 +14,81 @@ import { useDeleteFoodLog } from "@/features/nutrition/hooks/useDeleteFoodLog";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { Plus, Settings, ChevronLeft, ChevronRight } from "lucide-react-native";
+import FoodDetailSheet from "@/features/nutrition/components/FoodDetailSheet";
+import { useToggleFavorite } from "@/features/nutrition/hooks/useToggleFavorite";
+import { useFavorites } from "@/features/nutrition/hooks/useFavorites";
+import type { DailyFoodLog } from "@/database/nutrition/get-daily-logs";
 
 export default function NutritionScreen() {
   const { t } = useTranslation("nutrition");
   const router = useRouter();
   const [date, setDate] = useState(() => new Date().toLocaleDateString("en-CA"));
+  const [selectedLog, setSelectedLog] = useState<DailyFoodLog | null>(null);
 
-  const { data: logs, isLoading } = useDailyLogs(date);
+  const { data: logs } = useDailyLogs(date);
   const { data: goals } = useNutritionGoals();
   const { handleDelete } = useDeleteFoodLog();
+  const { handleToggle } = useToggleFavorite();
+  const { data: favorites } = useFavorites();
+
+  const selectedFood = selectedLog
+    ? {
+        id: selectedLog.food_id ?? selectedLog.custom_food_id,
+        name: selectedLog.food_name,
+        brand: selectedLog.brand,
+        calories_per_100g: Number(selectedLog.calories_per_100g ?? 0),
+        protein_per_100g: Number(selectedLog.protein_per_100g ?? 0),
+        carbs_per_100g: Number(selectedLog.carbs_per_100g ?? 0),
+        fat_per_100g: Number(selectedLog.fat_per_100g ?? 0),
+        saturated_fat_per_100g: selectedLog.saturated_fat_per_100g != null ? Number(selectedLog.saturated_fat_per_100g) : null,
+        sugar_per_100g: selectedLog.sugar_per_100g != null ? Number(selectedLog.sugar_per_100g) : null,
+        fiber_per_100g: selectedLog.fiber_per_100g != null ? Number(selectedLog.fiber_per_100g) : null,
+        sodium_per_100g: selectedLog.sodium_per_100g != null ? Number(selectedLog.sodium_per_100g) : null,
+        serving_size_g: Number(selectedLog.serving_size_g),
+        serving_description: selectedLog.serving_description,
+        is_custom: selectedLog.is_custom,
+        barcode: null,
+        image_url: selectedLog.image_url,
+        image_nutrition_url: selectedLog.nutrition_label_url,
+      }
+    : null;
+
+  const isSelectedFavorite = selectedLog
+    ? (favorites ?? []).some((f) =>
+        selectedLog.is_custom
+          ? f.custom_food_id === selectedLog.custom_food_id
+          : f.food_id === selectedLog.food_id,
+      )
+    : false;
 
   const calorieGoal = goals?.calorie_goal ?? 2000;
   const proteinGoal = goals?.protein_goal ?? null;
   const carbsGoal = goals?.carbs_goal ?? null;
   const fatGoal = goals?.fat_goal ?? null;
+  const fiberGoal = goals?.fiber_goal ?? null;
+  const sugarGoal = goals?.sugar_goal ?? null;
+  const sodiumGoal = goals?.sodium_goal ?? null;
+  const saturatedFatGoal = goals?.saturated_fat_goal ?? null;
+  const visibleNutrients = goals?.visible_nutrients ?? [];
   const customMealTypes = goals?.custom_meal_types ?? [];
 
   // Aggregate daily totals from logs
+  // Macros are stored directly on food_logs; micros are computed from per_100g values
   const totals = (logs ?? []).reduce(
-    (acc, log) => ({
-      calories: acc.calories + Number(log.calories),
-      protein: acc.protein + Number(log.protein ?? 0),
-      carbs: acc.carbs + Number(log.carbs ?? 0),
-      fat: acc.fat + Number(log.fat ?? 0),
-    }),
-    { calories: 0, protein: 0, carbs: 0, fat: 0 },
+    (acc, log) => {
+      const factor = (Number(log.serving_size_g) * Number(log.quantity)) / 100;
+      return {
+        calories: acc.calories + Number(log.calories),
+        protein: acc.protein + Number(log.protein ?? 0),
+        carbs: acc.carbs + Number(log.carbs ?? 0),
+        fat: acc.fat + Number(log.fat ?? 0),
+        fiber: acc.fiber + Number(log.fiber_per_100g ?? 0) * factor,
+        sugar: acc.sugar + Number(log.sugar_per_100g ?? 0) * factor,
+        sodium: acc.sodium + Number(log.sodium_per_100g ?? 0) * factor * 1000,
+        saturatedFat: acc.saturatedFat + Number(log.saturated_fat_per_100g ?? 0) * factor,
+      };
+    },
+    { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0, sugar: 0, sodium: 0, saturatedFat: 0 },
   );
 
   // Group logs by meal type
@@ -88,6 +139,7 @@ export default function NutritionScreen() {
   };
 
   return (
+    <View className="flex-1">
     <ScrollView className="flex-1">
       <PageContainer>
         {/* Header */}
@@ -129,18 +181,28 @@ export default function NutritionScreen() {
           proteinGoal={proteinGoal}
           carbsGoal={carbsGoal}
           fatGoal={fatGoal}
+          fiber={totals.fiber}
+          sugar={totals.sugar}
+          sodium={totals.sodium}
+          saturatedFat={totals.saturatedFat}
+          fiberGoal={fiberGoal}
+          sugarGoal={sugarGoal}
+          sodiumGoal={sodiumGoal}
+          saturatedFatGoal={saturatedFatGoal}
+          visibleNutrients={visibleNutrients}
         />
 
         {/* Meal sections */}
-        {isLoading ? (
+        {logs === undefined ? (
           <ActivityIndicator className="mt-6" />
-        ) : logs && logs.length > 0 ? (
+        ) : logs.length > 0 ? (
           <View className="mt-4">
             {orderedMeals.map((mealType) => (
               <MealSection
                 key={mealType}
                 title={getMealLabel(mealType)}
                 items={mealGroups.get(mealType) ?? []}
+                onPress={(item) => setSelectedLog(item)}
                 onDelete={(id) => handleDelete(id, date)}
               />
             ))}
@@ -154,16 +216,27 @@ export default function NutritionScreen() {
           </View>
         )}
       </PageContainer>
-
-      {/* FAB */}
-      <View className="absolute bottom-8 right-6">
-        <AnimatedButton
-          onPress={() => router.push(`/nutrition/log?date=${date}`)}
-          className="w-14 h-14 rounded-full bg-orange-500 items-center justify-center shadow-lg"
-        >
-          <Plus size={28} color="#ffffff" />
-        </AnimatedButton>
-      </View>
     </ScrollView>
+
+    <FloatingActionButton onPress={() => router.push(`/nutrition/log?date=${date}`)}>
+      <Plus size={30} color="#f97316" />
+    </FloatingActionButton>
+
+    <FoodDetailSheet
+      food={selectedFood}
+      visible={!!selectedLog}
+      onClose={() => setSelectedLog(null)}
+      onLog={() => setSelectedLog(null)}
+      isFavorite={isSelectedFavorite}
+      onToggleFavorite={() => {
+        if (!selectedLog) return;
+        handleToggle({
+          foodId: selectedLog.is_custom ? null : selectedLog.food_id,
+          customFoodId: selectedLog.is_custom ? selectedLog.custom_food_id : null,
+        });
+      }}
+      customMealTypes={customMealTypes}
+    />
+    </View>
   );
 }

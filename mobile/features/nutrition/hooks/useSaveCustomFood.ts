@@ -17,6 +17,7 @@ type CustomFoodInput = {
   sugarPer100g: number | null;
   sodiumPer100g: number | null;
   saturatedFatPer100g: number | null;
+  imageUri: string | null;
 };
 
 export function useSaveCustomFood() {

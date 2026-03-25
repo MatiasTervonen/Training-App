@@ -1,6 +1,8 @@
 import { useState, useCallback } from "react";
 import { View, TextInput, Keyboard, Pressable } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import AppText from "@/components/AppText";
+import BodyTextNC from "@/components/BodyTextNC";
 import AnimatedButton from "@/components/buttons/animatedButton";
 import PageContainer from "@/components/PageContainer";
 import FoodSearchList from "@/features/nutrition/components/FoodSearchList";
@@ -9,19 +11,27 @@ import BarcodeScannerModal from "@/features/nutrition/components/BarcodeScannerM
 import FavoriteFoodsList from "@/features/nutrition/components/FavoriteFoodsList";
 import RecentFoodsList from "@/features/nutrition/components/RecentFoodsList";
 import CustomFoodForm from "@/features/nutrition/components/CustomFoodForm";
+import SavedMealsList from "@/features/nutrition/components/SavedMealsList";
+import CreateEditMealModal from "@/features/nutrition/components/CreateEditMealModal";
+import LogSavedMealSheet from "@/features/nutrition/components/LogSavedMealSheet";
 import { useFoodSearch } from "@/features/nutrition/hooks/useFoodSearch";
 import { useBarcodeLookup } from "@/features/nutrition/hooks/useBarcodeLookup";
 import { useLogFood } from "@/features/nutrition/hooks/useLogFood";
 import { useToggleFavorite } from "@/features/nutrition/hooks/useToggleFavorite";
 import { useFavorites } from "@/features/nutrition/hooks/useFavorites";
 import { useNutritionGoals } from "@/features/nutrition/hooks/useNutritionGoals";
+import { useSaveMeal } from "@/features/nutrition/hooks/useSaveMeal";
+import { useDeleteSavedMeal } from "@/features/nutrition/hooks/useDeleteSavedMeal";
+import { useLogSavedMeal } from "@/features/nutrition/hooks/useLogSavedMeal";
+import { saveSharedFood } from "@/database/nutrition/save-shared-food";
 import { useTranslation } from "react-i18next";
 import { useLocalSearchParams } from "expo-router";
-import { Search, ScanLine, Heart, Clock, PenLine } from "lucide-react-native";
+import { Search, ScanLine, Heart, Clock, PenLine, UtensilsCrossed } from "lucide-react-native";
 import Toast from "react-native-toast-message";
 import type { NutritionSearchResult } from "@/features/nutrition/hooks/useFoodSearch";
+import type { SavedMeal } from "@/database/nutrition/get-saved-meals";
 
-type Tab = "search" | "scan" | "favorites" | "recent" | "custom";
+type Tab = "search" | "scan" | "favorites" | "recent" | "custom" | "meals";
 
 export default function LogFoodScreen() {
   const { t } = useTranslation("nutrition");
@@ -33,6 +43,10 @@ export default function LogFoodScreen() {
   const [selectedFood, setSelectedFood] = useState<NutritionSearchResult | null>(null);
   const [showScanner, setShowScanner] = useState(false);
   const [showDetail, setShowDetail] = useState(false);
+  const [notFoundBarcode, setNotFoundBarcode] = useState<string | null>(null);
+  const [showCreateMeal, setShowCreateMeal] = useState(false);
+  const [editingMeal, setEditingMeal] = useState<SavedMeal | null>(null);
+  const [loggingMeal, setLoggingMeal] = useState<SavedMeal | null>(null);
 
   const { results, isSearching } = useFoodSearch(query);
   const { lookup, isLooking } = useBarcodeLookup();
@@ -40,6 +54,9 @@ export default function LogFoodScreen() {
   const { handleToggle } = useToggleFavorite();
   const { data: favorites } = useFavorites();
   const { data: goals } = useNutritionGoals();
+  const { handleSaveMeal, isSaving: isSavingMeal } = useSaveMeal();
+  const { handleDeleteMeal } = useDeleteSavedMeal();
+  const { handleLogMeal } = useLogSavedMeal();
 
   const customMealTypes = goals?.custom_meal_types ?? [];
 
@@ -61,20 +78,18 @@ export default function LogFoodScreen() {
 
   const handleBarcodeScan = async (barcode: string) => {
     setShowScanner(false);
+    setNotFoundBarcode(null);
     const result = await lookup(barcode);
     if (result) {
       setSelectedFood(result);
       setShowDetail(true);
     } else {
-      Toast.show({
-        type: "info",
-        text1: t("log.notFound"),
-        text2: t("log.notFoundDesc"),
-      });
+      setNotFoundBarcode(barcode);
+      setActiveTab("custom");
     }
   };
 
-  const handleLog = (params: {
+  const handleLog = async (params: {
     food: NutritionSearchResult;
     servingSizeG: number;
     quantity: number;
@@ -84,9 +99,38 @@ export default function LogFoodScreen() {
     carbs: number;
     fat: number;
   }) => {
-    handleLogFood({
-      foodId: params.food.is_custom ? null : params.food.id,
-      customFoodId: params.food.is_custom ? params.food.id : null,
+    let foodId = params.food.is_custom ? null : params.food.id;
+    const customFoodId = params.food.is_custom ? params.food.id : null;
+
+    // Cache API result before logging so we have a food_id
+    if (params.food.source === "api" && !foodId && params.food.barcode) {
+      try {
+        foodId = await saveSharedFood({
+          barcode: params.food.barcode,
+          name: params.food.name,
+          brand: params.food.brand,
+          servingSizeG: params.food.serving_size_g,
+          servingDescription: params.food.serving_description,
+          caloriesPer100g: params.food.calories_per_100g,
+          proteinPer100g: params.food.protein_per_100g,
+          carbsPer100g: params.food.carbs_per_100g,
+          fatPer100g: params.food.fat_per_100g,
+          fiberPer100g: params.food.fiber_per_100g,
+          sugarPer100g: params.food.sugar_per_100g,
+          sodiumPer100g: params.food.sodium_per_100g,
+          saturatedFatPer100g: params.food.saturated_fat_per_100g,
+          imageUrl: params.food.image_url,
+          nutritionLabelUrl: params.food.image_nutrition_url ?? null,
+          source: params.food.apiSource ?? "openfoodfacts",
+        });
+      } catch {
+        // Save failed — log without food_id
+      }
+    }
+
+    await handleLogFood({
+      foodId,
+      customFoodId,
       foodName: params.food.name,
       mealType: params.mealType,
       servingSizeG: params.servingSizeG,
@@ -97,8 +141,6 @@ export default function LogFoodScreen() {
       fat: params.fat,
       loggedAt,
     });
-    setShowDetail(false);
-    setSelectedFood(null);
   };
 
   const handleToggleFavorite = () => {
@@ -114,47 +156,93 @@ export default function LogFoodScreen() {
     { id: "scan", label: t("log.scan"), icon: ScanLine },
     { id: "favorites", label: t("log.favorites"), icon: Heart },
     { id: "recent", label: t("log.recent"), icon: Clock },
-    { id: "custom", label: t("log.createCustom"), icon: PenLine },
+    { id: "custom", label: t("log.custom"), icon: PenLine },
+    { id: "meals", label: t("log.meals"), icon: UtensilsCrossed },
   ];
 
+  const renderTabs = () => (
+    <View className="mb-6 gap-2 pb-4 border-b border-slate-700/50">
+      <View className="flex-row gap-2">
+        {tabs.slice(0, 3).map((tab) => {
+          const Icon = tab.icon;
+          const isActive = activeTab === tab.id;
+          return (
+            <AnimatedButton
+              key={tab.id}
+              onPress={() => {
+                if (tab.id === "scan") {
+                  setShowScanner(true);
+                } else {
+                  setActiveTab(tab.id);
+                }
+              }}
+              className={`flex-1 flex-row items-center justify-center gap-1.5 py-2.5 rounded-lg border ${
+                isActive
+                  ? "bg-orange-500/20 border-orange-500/50"
+                  : "bg-slate-800/50 border-slate-700/50"
+              }`}
+            >
+              <Icon size={14} color={isActive ? "#f97316" : "#94a3b8"} />
+              <AppText className={`text-xs ${isActive ? "" : "text-slate-400"}`}>
+                {tab.label}
+              </AppText>
+            </AnimatedButton>
+          );
+        })}
+      </View>
+      <View className="flex-row gap-2">
+        {tabs.slice(3).map((tab) => {
+          const Icon = tab.icon;
+          const isActive = activeTab === tab.id;
+          return (
+            <AnimatedButton
+              key={tab.id}
+              onPress={() => setActiveTab(tab.id)}
+              className={`flex-1 flex-row items-center justify-center gap-1.5 py-2.5 rounded-lg border ${
+                isActive
+                  ? "bg-orange-500/20 border-orange-500/50"
+                  : "bg-slate-800/50 border-slate-700/50"
+              }`}
+            >
+              <Icon size={14} color={isActive ? "#f97316" : "#94a3b8"} />
+              <AppText className={`text-xs ${isActive ? "" : "text-slate-400"}`}>
+                {tab.label}
+              </AppText>
+            </AnimatedButton>
+          );
+        })}
+      </View>
+    </View>
+  );
+
+  // Custom tab uses KeyboardAwareScrollView wrapping PageContainer (same pattern as notes)
+  if (activeTab === "custom") {
+    return (
+      <View className="flex-1">
+        <KeyboardAwareScrollView
+          contentContainerStyle={{ flexGrow: 1 }}
+          bottomOffset={50}
+          showsVerticalScrollIndicator={false}
+        >
+          <PageContainer>
+            <AppText className="text-xl text-center mb-4">{t("log.title")}</AppText>
+            {renderTabs()}
+            <CustomFoodForm barcode={notFoundBarcode} onSaved={() => { setNotFoundBarcode(null); setActiveTab("search"); }} />
+          </PageContainer>
+        </KeyboardAwareScrollView>
+      </View>
+    );
+  }
+
+  // Other tabs: no keyboard scroll needed
   return (
     <Pressable onPress={Keyboard.dismiss} className="flex-1">
-      <PageContainer>
+      <View className="px-5 pt-5">
         <AppText className="text-xl text-center mb-4">{t("log.title")}</AppText>
+        {renderTabs()}
+      </View>
 
-        {/* Tabs */}
-        <View className="flex-row mb-4 gap-1">
-          {tabs.map((tab) => {
-            const Icon = tab.icon;
-            const isActive = activeTab === tab.id;
-            return (
-              <AnimatedButton
-                key={tab.id}
-                onPress={() => {
-                  if (tab.id === "scan") {
-                    setShowScanner(true);
-                  } else {
-                    setActiveTab(tab.id);
-                  }
-                }}
-                className={`flex-1 items-center py-2 rounded-lg border ${
-                  isActive
-                    ? "bg-orange-500/20 border-orange-500/50"
-                    : "bg-slate-800/50 border-slate-700/50"
-                }`}
-              >
-                <Icon size={16} color={isActive ? "#f97316" : "#94a3b8"} />
-                <AppText
-                  className={`text-xs mt-1 ${isActive ? "" : "text-slate-400"}`}
-                >
-                  {tab.label}
-                </AppText>
-              </AnimatedButton>
-            );
-          })}
-        </View>
-
-        {/* Tab content */}
+      <View className="flex-1 px-5">
         {activeTab === "search" && (
           <View className="flex-1">
             <TextInput
@@ -182,10 +270,14 @@ export default function LogFoodScreen() {
           <RecentFoodsList onSelect={handleSelectFood} />
         )}
 
-        {activeTab === "custom" && (
-          <CustomFoodForm onSaved={() => setActiveTab("search")} />
+        {activeTab === "meals" && (
+          <SavedMealsList
+            onCreate={() => { setEditingMeal(null); setShowCreateMeal(true); }}
+            onEdit={(meal) => { setEditingMeal(meal); setShowCreateMeal(true); }}
+            onLog={(meal) => setLoggingMeal(meal)}
+          />
         )}
-      </PageContainer>
+      </View>
 
       {/* Barcode scanner modal */}
       <BarcodeScannerModal
@@ -206,6 +298,35 @@ export default function LogFoodScreen() {
         isFavorite={selectedFood ? isFavorite(selectedFood) : false}
         onToggleFavorite={handleToggleFavorite}
         customMealTypes={customMealTypes}
+      />
+
+      {/* Create/Edit meal modal */}
+      <CreateEditMealModal
+        visible={showCreateMeal}
+        onClose={() => { setShowCreateMeal(false); setEditingMeal(null); }}
+        onSave={async (params) => {
+          await handleSaveMeal(params);
+          setShowCreateMeal(false);
+          setEditingMeal(null);
+        }}
+        onDelete={async (mealId) => {
+          await handleDeleteMeal(mealId);
+          setShowCreateMeal(false);
+          setEditingMeal(null);
+        }}
+        editingMeal={editingMeal}
+        isSaving={isSavingMeal}
+      />
+
+      {/* Log saved meal sheet */}
+      <LogSavedMealSheet
+        meal={loggingMeal}
+        visible={!!loggingMeal}
+        onClose={() => setLoggingMeal(null)}
+        onLog={async (params) => {
+          await handleLogMeal({ ...params, loggedAt });
+          setLoggingMeal(null);
+        }}
       />
     </Pressable>
   );

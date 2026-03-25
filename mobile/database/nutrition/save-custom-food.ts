@@ -1,5 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import { handleError } from "@/utils/handleError";
+import * as Crypto from "expo-crypto";
 
 type SaveCustomFoodParams = {
   name: string;
@@ -14,6 +15,7 @@ type SaveCustomFoodParams = {
   sugarPer100g: number | null;
   sodiumPer100g: number | null;
   saturatedFatPer100g: number | null;
+  imageUri: string | null;
 };
 
 export type CustomFood = {
@@ -31,12 +33,41 @@ export type CustomFood = {
   sugar_per_100g: number | null;
   sodium_per_100g: number | null;
   saturated_fat_per_100g: number | null;
+  image_url: string | null;
   created_at: string;
 };
+
+async function uploadCustomFoodImage(uri: string): Promise<string | null> {
+  try {
+    const response = await fetch(uri);
+    const blob = await response.blob();
+    const ext = uri.includes(".png") ? "png" : "jpg";
+    const path = `custom/${Crypto.randomUUID()}.${ext}`;
+
+    const { error } = await supabase.storage
+      .from("food-images")
+      .upload(path, blob, { contentType: `image/${ext === "png" ? "png" : "jpeg"}` });
+
+    if (error) return null;
+
+    const { data: urlData } = supabase.storage
+      .from("food-images")
+      .getPublicUrl(path);
+
+    return urlData.publicUrl;
+  } catch {
+    return null;
+  }
+}
 
 export async function saveCustomFood(
   params: SaveCustomFoodParams,
 ): Promise<CustomFood> {
+  let imageUrl: string | null = null;
+  if (params.imageUri) {
+    imageUrl = await uploadCustomFoodImage(params.imageUri);
+  }
+
   const { data, error } = await supabase
     .from("custom_foods")
     .insert({
@@ -52,6 +83,7 @@ export async function saveCustomFood(
       sugar_per_100g: params.sugarPer100g,
       sodium_per_100g: params.sodiumPer100g,
       saturated_fat_per_100g: params.saturatedFatPer100g,
+      image_url: imageUrl,
     })
     .select()
     .single();

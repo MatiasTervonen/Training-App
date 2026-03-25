@@ -6,6 +6,11 @@ export type NutritionGoals = {
   protein_goal: number;
   carbs_goal: number;
   fat_goal: number;
+  fiber_goal: number | null;
+  sugar_goal: number | null;
+  sodium_goal: number | null;
+  saturated_fat_goal: number | null;
+  visible_nutrients: string[] | null;
   custom_meal_types: string[] | null;
   updated_at: string;
 };

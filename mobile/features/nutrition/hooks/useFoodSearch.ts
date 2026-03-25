@@ -1,8 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import { searchFoods as searchFoodsLocal } from "@/database/nutrition/search-foods";
-import { searchFoods as searchFoodsAPI } from "@/lib/open-food-facts";
+import { searchFoods as searchFoodsOFF } from "@/lib/open-food-facts";
+import { searchFoods as searchFoodsUSDA } from "@/lib/usda-food-data";
 import type { FoodSearchResult } from "@/database/nutrition/search-foods";
 import type { OpenFoodFactsProduct } from "@/lib/open-food-facts";
+import type { USDAFoodResult } from "@/lib/usda-food-data";
 
 export type NutritionSearchResult = {
   id: string | null;
@@ -12,12 +14,18 @@ export type NutritionSearchResult = {
   protein_per_100g: number;
   carbs_per_100g: number;
   fat_per_100g: number;
+  saturated_fat_per_100g: number | null;
+  sugar_per_100g: number | null;
+  fiber_per_100g: number | null;
+  sodium_per_100g: number | null;
   serving_size_g: number;
   serving_description: string | null;
   image_url: string | null;
+  image_nutrition_url: string | null;
   barcode: string | null;
   is_custom: boolean;
   source: "local" | "custom" | "api";
+  apiSource?: "openfoodfacts" | "usda";
 };
 
 function mapLocalResult(r: FoodSearchResult): NutritionSearchResult {
@@ -29,16 +37,21 @@ function mapLocalResult(r: FoodSearchResult): NutritionSearchResult {
     protein_per_100g: r.protein_per_100g,
     carbs_per_100g: r.carbs_per_100g,
     fat_per_100g: r.fat_per_100g,
+    saturated_fat_per_100g: r.saturated_fat_per_100g,
+    sugar_per_100g: r.sugar_per_100g,
+    fiber_per_100g: r.fiber_per_100g,
+    sodium_per_100g: r.sodium_per_100g,
     serving_size_g: r.serving_size_g,
     serving_description: r.serving_description,
     image_url: r.image_url,
+    image_nutrition_url: r.nutrition_label_url,
     barcode: r.barcode,
     is_custom: r.is_custom,
     source: r.is_custom ? "custom" : "local",
   };
 }
 
-function mapApiResult(r: OpenFoodFactsProduct): NutritionSearchResult {
+function mapOFFResult(r: OpenFoodFactsProduct): NutritionSearchResult {
   return {
     id: null,
     name: r.name,
@@ -47,12 +60,42 @@ function mapApiResult(r: OpenFoodFactsProduct): NutritionSearchResult {
     protein_per_100g: r.protein_per_100g,
     carbs_per_100g: r.carbs_per_100g,
     fat_per_100g: r.fat_per_100g,
+    saturated_fat_per_100g: r.saturated_fat_per_100g,
+    sugar_per_100g: r.sugar_per_100g,
+    fiber_per_100g: r.fiber_per_100g,
+    sodium_per_100g: r.sodium_per_100g,
     serving_size_g: r.serving_size_g,
     serving_description: r.serving_description,
     image_url: r.image_url,
+    image_nutrition_url: r.image_nutrition_url,
     barcode: r.barcode,
     is_custom: false,
     source: "api",
+    apiSource: "openfoodfacts",
+  };
+}
+
+function mapUSDAResult(r: USDAFoodResult): NutritionSearchResult {
+  return {
+    id: null,
+    name: r.name,
+    brand: r.brand,
+    calories_per_100g: r.calories_per_100g,
+    protein_per_100g: r.protein_per_100g,
+    carbs_per_100g: r.carbs_per_100g,
+    fat_per_100g: r.fat_per_100g,
+    saturated_fat_per_100g: r.saturated_fat_per_100g,
+    sugar_per_100g: r.sugar_per_100g,
+    fiber_per_100g: r.fiber_per_100g,
+    sodium_per_100g: r.sodium_per_100g,
+    serving_size_g: r.serving_size_g,
+    serving_description: r.serving_description,
+    image_url: null,
+    image_nutrition_url: null,
+    barcode: r.barcode,
+    is_custom: false,
+    source: "api",
+    apiSource: "usda",
   };
 }
 
@@ -67,7 +110,7 @@ export function useFoodSearch(query: string) {
       clearTimeout(debounceRef.current);
     }
 
-    if (!query.trim()) {
+    if (!query.trim() || query.trim().length < 2) {
       setResults([]);
       setIsSearching(false);
       return;
@@ -80,44 +123,48 @@ export function useFoodSearch(query: string) {
       const currentQuery = query.trim();
 
       try {
-        const localPromise = searchFoodsLocal(currentQuery);
-        const apiPromise = searchFoodsAPI(currentQuery);
+        // Search all three sources in parallel — each handles its own errors
+        const [rawLocal, rawOFF, rawUSDA] = await Promise.all([
+          searchFoodsLocal(currentQuery).catch((): FoodSearchResult[] => []),
+          searchFoodsOFF(currentQuery).catch((): OpenFoodFactsProduct[] => []),
+          searchFoodsUSDA(currentQuery).catch((): USDAFoodResult[] => []),
+        ]);
 
-        // Show local results first
-        const rawLocal = await localPromise;
         if (abortRef.current) return;
+
         const localMapped = rawLocal.map(mapLocalResult);
-        setResults(localMapped);
 
-        // Merge API results after
-        try {
-          const rawApi = await apiPromise;
-          if (abortRef.current) return;
+        // Collect barcodes already in local DB to deduplicate API results
+        const seenBarcodes = new Set(
+          localMapped
+            .filter((r) => r.barcode !== null)
+            .map((r) => r.barcode),
+        );
 
-          const localBarcodes = new Set(
-            localMapped
-              .filter((r) => r.barcode !== null)
-              .map((r) => r.barcode),
-          );
+        // Open Food Facts results — dedupe against local
+        const uniqueOFF = rawOFF
+          .filter((r) => !seenBarcodes.has(r.barcode))
+          .map(mapOFFResult);
 
-          const uniqueApi = rawApi
-            .filter((r) => !localBarcodes.has(r.barcode))
-            .map(mapApiResult);
-
-          setResults([...localMapped, ...uniqueApi]);
-        } catch {
-          // API failure is non-fatal — local results are already shown
+        // Add OFF barcodes to seen set before deduping USDA
+        for (const r of uniqueOFF) {
+          if (r.barcode) seenBarcodes.add(r.barcode);
         }
+
+        // USDA results — dedupe against local + OFF
+        const uniqueUSDA = rawUSDA
+          .filter((r) => !seenBarcodes.has(r.barcode))
+          .map(mapUSDAResult);
+
+        setResults([...localMapped, ...uniqueOFF, ...uniqueUSDA]);
       } catch {
-        if (!abortRef.current) {
-          setResults([]);
-        }
+        // All have individual .catch() so this shouldn't fire
       } finally {
         if (!abortRef.current) {
           setIsSearching(false);
         }
       }
-    }, 300);
+    }, 500);
 
     return () => {
       abortRef.current = true;

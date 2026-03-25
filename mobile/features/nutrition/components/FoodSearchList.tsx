@@ -46,6 +46,8 @@ export default function FoodSearchList({
       data={results}
       keyExtractor={(item, index) => item.barcode ?? item.id ?? `${index}`}
       keyboardShouldPersistTaps="handled"
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={{ paddingBottom: 100 }}
       renderItem={({ item }) => (
         <AnimatedButton
           onPress={() => onSelect(item)}
